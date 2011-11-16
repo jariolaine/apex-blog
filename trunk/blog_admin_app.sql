@@ -12,7 +12,7 @@ prompt  APPLICATION 103 - Blog Administration
 -- Application Export:
 --   Application:     103
 --   Name:            Blog Administration
---   Date and Time:   15:23 Monday November 14, 2011
+--   Date and Time:   18:38 Wednesday November 16, 2011
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -146,7 +146,7 @@ wwv_flow_api.create_flow(
   p_default_region_template=> 106308459948853846 + wwv_flow_api.g_id_offset,
   p_error_template=> 106301470845853804 + wwv_flow_api.g_id_offset,
   p_page_protection_enabled_y_n=> 'Y',
-  p_checksum_salt_last_reset => '20111114152310',
+  p_checksum_salt_last_reset => '20111116183852',
   p_max_session_length_sec=> 28800,
   p_max_session_idle_sec=> 1800,
   p_compatibility_mode=> '4.0',
@@ -202,7 +202,7 @@ wwv_flow_api.create_flow(
   p_substitution_string_02 => 'ASKUS_DATE_FORMAT',
   p_substitution_value_02  => 'fmDD Mon YYYY fmfx HH:MIPM',
   p_last_updated_by => 'LAINFJAR',
-  p_last_upd_yyyymmddhh24miss=> '20111114152310',
+  p_last_upd_yyyymmddhh24miss=> '20111116183852',
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
  
@@ -17227,7 +17227,7 @@ wwv_flow_api.create_page (
  ,p_cache_timeout_seconds => 21600
  ,p_cache_by_user_yn => 'N'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20111112001208'
+ ,p_last_upd_yyyymmddhh24miss => '20111116183028'
   );
 null;
  
@@ -17745,13 +17745,15 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-p:=p||'declare'||unistr('\000a')||
-'    l_id    number;'||unistr('\000a')||
-'begin'||unistr('\000a')||
-'if :P291_FILE is not null then'||unistr('\000a')||
-'    select id into l_id from wwv_flow_files where name = :P291_FILE;'||unistr('\000a')||
-'    '||unistr('\000a')||
-'    insert into BLOG_FILES(id,'||unistr('\000a')||
+p:=p||'DECLARE'||unistr('\000a')||
+'  l_id NUMBER;'||unistr('\000a')||
+'BEGIN'||unistr('\000a')||
+'  IF :P291_FILE IS NOT NULL THEN'||unistr('\000a')||
+'    SELECT id INTO l_id FROM wwv_flow_files WHERE name = :P291_FILE;'||unistr('\000a')||
+'    INSERT'||unistr('\000a')||
+'    INTO BLOG_FILES'||unistr('\000a')||
+'      ('||unistr('\000a')||
+'        id,'||unistr('\000a')||
 '        NAME,'||unistr('\000a')||
 '        FILENAME,'||unistr('\000a')||
 '        MIME_TYPE,'||unistr('\000a')||
@@ -17762,45 +17764,52 @@ p:=p||'declare'||unistr('\000a')||
 '        CONTENT_TYPE,'||unistr('\000a')||
 '        BLOB_CONTENT,'||unistr('\000a')||
 '        DESCRIPTION,'||unistr('\000a')||
-'        PUBLISH)'||unistr('\000a')||
-'    select id,'||unistr('\000a')||
-'   ';
-
-p:=p||'     NAME,'||unistr('\000a')||
-'        FILENAME,        '||unistr('\000a')||
-'        MIME_TYPE,'||unistr('\000a')||
-'        DOC_SIZE,'||unistr('\000a')||
-'        DAD_CHARSET,'||unistr('\000a')||
-'        CREATED_ON,'||unistr('\000a')||
-'        UPDATED_ON,'||unistr('\000a')||
-'        CONTENT_TYPE,'||unistr('\000a')||
-'        BLOB_CONTENT,'||unistr('\000a')||
-'        DESCRIPTION,'||unistr('\000a')||
-'        :P291_PUBLISH'||unistr('\000a')||
-'      from wwv_flow_files'||unistr('\000a')||
-'     where name = :P291_FILE;   '||unistr('\000a')||
-'update BLOG_FILES set description = :P291_DESCRIPTION where id = l_id;'||unistr('\000a')||
-'delete from wwv_flow_files where id = l_id;'||unistr('\000a')||
-'else';
+'        PUBLISH'||unistr('\000a')||
+'      )';
 
 p:=p||''||unistr('\000a')||
-'    insert into BLOG_FILES(id,'||unistr('\000a')||
+'    SELECT id,'||unistr('\000a')||
+'      NAME,'||unistr('\000a')||
+'      FILENAME,'||unistr('\000a')||
+'      MIME_TYPE,'||unistr('\000a')||
+'      DOC_SIZE,'||unistr('\000a')||
+'      DAD_CHARSET,'||unistr('\000a')||
+'      CREATED_ON,'||unistr('\000a')||
+'      UPDATED_ON,'||unistr('\000a')||
+'      CONTENT_TYPE,'||unistr('\000a')||
+'      BLOB_CONTENT,'||unistr('\000a')||
+'      DESCRIPTION,'||unistr('\000a')||
+'      :P291_PUBLISH'||unistr('\000a')||
+'    FROM wwv_flow_files'||unistr('\000a')||
+'    WHERE name = :P291_FILE;'||unistr('\000a')||
+'    UPDATE BLOG_FILES SET description = :P291_DESCRIPTION WHERE id = l_id;'||unistr('\000a')||
+'    DELETE FROM wwv_flow_files WHERE id = l_id;'||unistr('\000a')||
+'  ELSE'||unistr('\000a')||
+'    IN';
+
+p:=p||'SERT'||unistr('\000a')||
+'    INTO BLOG_FILES'||unistr('\000a')||
+'      ('||unistr('\000a')||
+'        id,'||unistr('\000a')||
 '        FILENAME,'||unistr('\000a')||
+'        EXTERNAL_LINK,'||unistr('\000a')||
 '        CREATED_ON,'||unistr('\000a')||
 '        UPDATED_ON,'||unistr('\000a')||
 '        DESCRIPTION,'||unistr('\000a')||
 '        PUBLISH,'||unistr('\000a')||
-'        DOC_SIZE)'||unistr('\000a')||
-'    select blog_id.next_val,'||unistr('\000a')||
-'        :P291_FILENAME,        '||unistr('\000a')||
-'        sysdate,'||unistr('\000a')||
-'        sysdate,'||unistr('\000a')||
-'        :P291_DESCRIPTION,'||unistr('\000a')||
-'        :P291_PUBLISH,'||unistr('\000a')||
-'        :P291_SIZE_BYTES'||unistr('\000a')||
-'      from dual; '||unistr('\000a')||
-'end if;'||unistr('\000a')||
-'end;';
+'        DOC_SIZE'||unistr('\000a')||
+'      )'||unistr('\000a')||
+'    SELECT blog_id.next_val,'||unistr('\000a')||
+'      :P291_FILENAME,'||unistr('\000a')||
+'      :P291_EXTERNAL_LINK,'||unistr('\000a')||
+'      sysdate,'||unistr('\000a')||
+'      sysdate,'||unistr('\000a')||
+'      :P291_DESCRIPTION,'||unistr('\000a')||
+'      :P291_PUBLISH,'||unistr('\000a')||
+'      :P291_SIZE_BYTES'||unistr('\000a')||
+'    FROM dual;'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'END;';
 
 wwv_flow_api.create_page_process(
   p_id     => 662935821494385131 + wwv_flow_api.g_id_offset,
@@ -17860,7 +17869,7 @@ wwv_flow_api.create_page (
  ,p_page_is_public_y_n => 'N'
  ,p_cache_page_yn => 'N'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20111112001245'
+ ,p_last_upd_yyyymmddhh24miss => '20111116183801'
   );
 null;
  
@@ -18399,15 +18408,14 @@ wwv_flow_api.create_page_validation(
   p_tabular_form_region_id => null + wwv_flow_api.g_id_offset,
   p_validation_name => 'P292_FILE',
   p_validation_sequence=> 10,
-  p_validation => 'select 1'||unistr('\000a')||
-'from dual'||unistr('\000a')||
-'where :P292_FILE_NAME is null'||unistr('\000a')||
-'and :P292_EXTERNAL_LINK is null',
-  p_validation_type => 'EXISTS',
+  p_validation => 'IF COALESCE(:P292_FILE_NAME,:P292_EXTERNAL_LINK) IS NOT NULL THEN'||unistr('\000a')||
+'  RETURN TRUE;'||unistr('\000a')||
+'END IF;'||unistr('\000a')||
+'RETURN FALSE;',
+  p_validation_type => 'FUNC_BODY_RETURNING_BOOLEAN',
   p_error_message => 'Please specify File or External Link',
   p_always_execute=>'N',
   p_when_button_pressed=> 663282009560845413 + wwv_flow_api.g_id_offset,
-  p_associated_item=> 663275291421830675 + wwv_flow_api.g_id_offset,
   p_error_display_location=>'INLINE_IN_NOTIFICATION',
   p_validation_comment=> '');
  
