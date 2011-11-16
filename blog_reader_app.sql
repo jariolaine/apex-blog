@@ -12,7 +12,7 @@ prompt  APPLICATION 102 - Blog Reader
 -- Application Export:
 --   Application:     102
 --   Name:            Blog Reader
---   Date and Time:   15:22 Monday November 14, 2011
+--   Date and Time:   18:38 Wednesday November 16, 2011
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -146,7 +146,7 @@ wwv_flow_api.create_flow(
   p_default_region_template=> 688940150349450120 + wwv_flow_api.g_id_offset,
   p_error_template=> 688491250757388827 + wwv_flow_api.g_id_offset,
   p_page_protection_enabled_y_n=> 'Y',
-  p_checksum_salt_last_reset => '20111114152244',
+  p_checksum_salt_last_reset => '20111116183839',
   p_max_session_length_sec=> 28800,
   p_max_session_idle_sec=> 1800,
   p_compatibility_mode=> '4.0',
@@ -209,7 +209,7 @@ wwv_flow_api.create_flow(
   p_substitution_string_07 => 'BLOG_DATE_FORMAT',
   p_substitution_value_07  => 'fmDD Mon YYYY fmfx HH',
   p_last_updated_by => 'LAINFJAR',
-  p_last_upd_yyyymmddhh24miss=> '20111114152244',
+  p_last_upd_yyyymmddhh24miss=> '20111116183839',
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
  
@@ -4531,7 +4531,7 @@ wwv_flow_api.create_page (
  ,p_cache_timeout_seconds => 21600
  ,p_cache_by_user_yn => 'N'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20111112111944'
+ ,p_last_upd_yyyymmddhh24miss => '20111116183500'
   );
 null;
  
@@ -4550,15 +4550,15 @@ s:=s||'SELECT NULL dummy,'||unistr('\000a')||
 '  created_on,'||unistr('\000a')||
 '  CASE'||unistr('\000a')||
 '    WHEN external_link IS NOT NULL'||unistr('\000a')||
-'    THEN ''<a href="'''||unistr('\000a')||
+'    THEN ''<a target="_blank" href="'''||unistr('\000a')||
 '      ||external_link'||unistr('\000a')||
 '      ||''">'''||unistr('\000a')||
 '      ||filename'||unistr('\000a')||
 '      ||''</a>'''||unistr('\000a')||
 '    ELSE ''<a href="z?p_url='''||unistr('\000a')||
-'      ||APEX_UTIL.PREPARE_URL(''f?p=&APP_ID.:&APP_PAGE_ID.:&APP_SESSION.:DOWNLOAD:NO::';
+'      ||APEX_UTIL.PREPARE_URL(''f?p=&APP_ID.:&APP_PAGE_ID.:&APP_SESSIO';
 
-s:=s||'FILE_ID:'''||unistr('\000a')||
+s:=s||'N.:DOWNLOAD:NO::FILE_ID:'''||unistr('\000a')||
 '      ||id,NULL,''PUBLIC_BOOKMARK'')'||unistr('\000a')||
 '      || ''&p_cat='''||unistr('\000a')||
 '      ||category'||unistr('\000a')||
@@ -4575,9 +4575,9 @@ s:=s||'FILE_ID:'''||unistr('\000a')||
 '    WHEN doc_size < 1048576'||unistr('\000a')||
 '    THEN ROUND((doc_size/1024),1)'||unistr('\000a')||
 '      ||'' kb'''||unistr('\000a')||
-'    ELSE ROUND((doc_size/1024/1024)';
+'    ELSE ROUND((doc';
 
-s:=s||',1)'||unistr('\000a')||
+s:=s||'_size/1024/1024),1)'||unistr('\000a')||
 '      ||'' mb'''||unistr('\000a')||
 '  END the_size,'||unistr('\000a')||
 '  id upload_id'||unistr('\000a')||
@@ -9712,7 +9712,7 @@ s:=s||'val;'||unistr('\000a')||
 
 s:=s||'LE BLOG_FILES('||unistr('\000a')||
 '    ID            NUMBER NOT NULL ENABLE,'||unistr('\000a')||
-'    NAME          VARCHAR2(90 BYTE) NOT NULL ENABLE,'||unistr('\000a')||
+'    NAME          VARCHAR2(255 BYTE),'||unistr('\000a')||
 '    FILENAME      VARCHAR2(400 BYTE) NOT NULL ENABLE,'||unistr('\000a')||
 '    MIME_TYPE     VARCHAR2(48 BYTE),'||unistr('\000a')||
 '    DOC_SIZE      NUMBER,'||unistr('\000a')||
@@ -9720,10 +9720,10 @@ s:=s||'LE BLOG_FILES('||unistr('\000a')||
 '    CREATED_ON    DATE NOT NULL ENABLE,'||unistr('\000a')||
 '    UPDATED_ON    DATE,'||unistr('\000a')||
 '    CONTENT_TYPE  VARCHAR2(128 BYTE),'||unistr('\000a')||
-'    BLOB_CONTENT  BLOB NOT NULL E';
+'    BLOB_CONTENT  BLOB,'||unistr('\000a')||
+'    DESCRIPTION   VARCHA';
 
-s:=s||'NABLE,'||unistr('\000a')||
-'    DESCRIPTION   VARCHAR2(4000 BYTE),'||unistr('\000a')||
+s:=s||'R2(4000 BYTE),'||unistr('\000a')||
 '    CATEGORY      VARCHAR2(400 BYTE),'||unistr('\000a')||
 '    PUBLISH       VARCHAR2(1 BYTE),'||unistr('\000a')||
 '    EXTERNAL_LINK VARCHAR2(2000 BYTE),'||unistr('\000a')||
@@ -9736,10 +9736,10 @@ s:=s||'NABLE,'||unistr('\000a')||
 '  IF inserting THEN'||unistr('\000a')||
 '    IF :NEW.id IS NULL THEN'||unistr('\000a')||
 '      :NEW.id := BLOG_ID.next_val;'||unistr('\000a')||
-'    END';
+'    END IF;'||unistr('\000a')||
+'    :NEW.created_on := SYS';
 
-s:=s||' IF;'||unistr('\000a')||
-'    :NEW.created_on := SYSDATE;'||unistr('\000a')||
+s:=s||'DATE;'||unistr('\000a')||
 '    :NEW.category := :NEW.filename;'||unistr('\000a')||
 '  END IF;'||unistr('\000a')||
 '  IF updating THEN'||unistr('\000a')||
@@ -9752,10 +9752,10 @@ s:=s||' IF;'||unistr('\000a')||
 '--  DDL for Table BLOG_FILES'||unistr('\000a')||
 '--------------------------------------------------------'||unistr('\000a')||
 'CREATE TABLE BLOG_MESSAGES_PREVIEW('||unistr('\000a')||
-'    ID              NUMBER NOT NU';
+'    ID              NUMBER NOT NULL ENABLE,'||unistr('\000a')||
+'    MSG_ID          ';
 
-s:=s||'LL ENABLE,'||unistr('\000a')||
-'    MSG_ID          NUMBER,'||unistr('\000a')||
+s:=s||'NUMBER,'||unistr('\000a')||
 '    MSG_TYPE        VARCHAR2(30 BYTE),'||unistr('\000a')||
 '    MSG_SUBJECT     VARCHAR2(3000 BYTE),'||unistr('\000a')||
 '    MSG_TEXT        CLOB,'||unistr('\000a')||
@@ -9767,10 +9767,10 @@ s:=s||'LL ENABLE,'||unistr('\000a')||
 '    SESSION_ID      NUMBER,'||unistr('\000a')||
 '    CREATED_ON      DATE,'||unistr('\000a')||
 '    MODIFIED_ON     DATE,'||unistr('\000a')||
-'    CREATED_BY_';
+'    CREATED_BY_ID   NUMBER,'||unistr('\000a')||
+'    MODIFIED_BY_ID';
 
-s:=s||'ID   NUMBER,'||unistr('\000a')||
-'    MODIFIED_BY_ID  NUMBER'||unistr('\000a')||
+s:=s||'  NUMBER'||unistr('\000a')||
 ');'||unistr('\000a')||
 'CREATE OR REPLACE TRIGGER BLOG_MESSAGES_PREVIEW_TRG before'||unistr('\000a')||
 '  INSERT OR'||unistr('\000a')||
