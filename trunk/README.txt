@@ -1,4 +1,4 @@
-*  DbSWH Apex blogging platfrom
+*  DbSWH Apex blogging platform
 *  Date: 16.11.2011
 *  Dual licensed under the MIT and GPL licenses:
 *  http://www.opensource.org/licenses/mit-license.php
@@ -8,55 +8,57 @@
 *  Oracle Application Express 4.1 or higher
 
 Installation:
-1. Unzip file to some folder (eg, TEMP on Windows and tmp on UNIX or Linux)
-2. Run the create_blog_db_user.sql script to create Db user:
-     
-    Change directory to the folder where Blog application is unzipped
-    Start SQL*Plus and connect to the database where Oracle Application Express is installed as SYS specifying the SYSDBA role:
 
+1)  Unzip files to some folder (e.g. c:\temp on Windows or /tmp on UNIX or Linux)
+
+2)  Run the create_blog_db_user.sql script to create new DB user:
+     
+    Change directory to the folder where Blog application file are unzipped.
+    Start SQL*Plus and connect to the database where Oracle Application Express is installed as SYS specifying the SYSDBA role:
         sqlplus /nolog
         SQL> CONNECT SYS as SYSDBA
         Enter password: SYS_password
 
     Run create_blog_db_user.sql:
+        @create_blog_db_user.sql
 
+    When prompted give password for new database user.
 
-        @create_blog_db_user.sql 
+3)  Connect to Apex internal workspace and create new workspace and assign above created schema to that workspace.
 
+4)  Connect to your new workspace.
+    Import and install dbswh_blog_reader.sql.
+    Choose install Supporting objects during installation. This will create Blog application and DB objects.
+    When installation completes, note down Blog application ID.
 
-3. Run upload_images.sql to create images in EPG if you use EPG to connect to Apex, otherwise copy the folder blog to your
-Oracle HTTP directory to the root folder of Apex images 
+5)  Import and install dbswh_blog_admin.sql application. Choose install Supporting objects during installation. In Application Substitution Strings enter Blog application ID.
+    
 
+Depending on your architecture select one of the methods:
+6 a) When using Oracle HTTP server with mod_plsql copy the folder blog from install files to your Oracle HTTP sever Apex image folder root.
 
-To run the upload_images.sql script:
+When using Embed PL/SQL Gateway (EPG)
+6 b)Run upload_images.sql for creating images to XDB.
 
-    Change directory to the folder where Blog application is unzipped
+    Change directory to the folder where Blog application file are unzipped.
     Start SQL*Plus and connect to the database where Oracle Application Express is installed as SYS specifying the SYSDBA role:
-
         sqlplus /nolog
         SQL> CONNECT SYS as SYSDBA
         Enter password: SYS_password
 
-    Run upload_images.sql passing the file system path to the base directory where Blog application was unzipped as shown in the following example:
+    Run upload_images.sql passing the file system directory where Blog application was unzipped as shown in the following example:
 
         On Windows:
-
-        @upload_images.sql SYSTEM_DRIVE:\TEMP
+        @upload_images.sql c:\temp
 
         On UNIX and Linux:
-
         @upload_images.sql /tmp
 
-4. Connect to Apex internal workspace and create new workspace and assign above created schema to that workspace. 
 
-5. Connect to your new workspace and import first dbswh_blog_appl.sql, choose install Supporting objects during installation.
-This will create Blog application and DB objects.
+7)  Run Blog admin application and login using credentials:
+        username - admin@blog.com
+        password - blog
 
-6. Import dbswh_blog_admin.sql application
+8)  Create your own user and assign it to administrators, delete the above generic admin. 
 
-7. Run Blog admin application and login using credentials:
-username - admin@blog.com
-password - blog
-
-8. Create your own user and assign it to administrators, delete generic admin. 
-   Change the substitution string BLOG_EMAIL to reflect your new Admin email.
+Happy blogging.
