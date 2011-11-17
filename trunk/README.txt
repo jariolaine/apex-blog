@@ -47,13 +47,6 @@ To run the upload_images.sql script:
 
         @upload_images.sql /tmp
 
-
-
-
-    Tip:
-    The above examples assume that you unzipped Oracle Application Express in a directory called TEMP on Windows and tmp on 
-      UNIX or Linux.
-
 4. Connect to Apex internal workspace and create new workspace and assign above created schema to that workspace. 
 
 5. Connect to your new workspace and import first dbswh_blog_appl.sql, choose install Supporting objects during installation.
