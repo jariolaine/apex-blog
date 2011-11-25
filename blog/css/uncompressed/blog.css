@@ -402,6 +402,11 @@ white-space:normal;
 font-size:80%;
 }
 
+.rabits{
+background-color:#414141;
+padding: 5px;
+}
+
 /***** Page Sub Templates *****/
 .DkBlogSuccess {
 padding:5px;
