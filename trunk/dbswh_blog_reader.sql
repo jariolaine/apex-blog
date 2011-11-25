@@ -12,7 +12,7 @@ prompt  APPLICATION 100 - Blog Reader
 -- Application Export:
 --   Application:     100
 --   Name:            Blog Reader
---   Date and Time:   11:30 Friday November 25, 2011
+--   Date and Time:   12:30 Friday November 25, 2011
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -146,7 +146,7 @@ wwv_flow_api.create_flow(
   p_default_region_template=> 758174573175603752 + wwv_flow_api.g_id_offset,
   p_error_template=> 757725673583542459 + wwv_flow_api.g_id_offset,
   p_page_protection_enabled_y_n=> 'Y',
-  p_checksum_salt_last_reset => '20111125113047',
+  p_checksum_salt_last_reset => '20111125123047',
   p_max_session_length_sec=> 28800,
   p_max_session_idle_sec=> 1800,
   p_compatibility_mode=> '4.0',
@@ -209,7 +209,7 @@ wwv_flow_api.create_flow(
   p_substitution_string_07 => 'BLOG_DATE_FORMAT',
   p_substitution_value_07  => 'fmDD Mon YYYY fmfx HH',
   p_last_updated_by => 'LAINFJAR',
-  p_last_upd_yyyymmddhh24miss=> '20111125113047',
+  p_last_upd_yyyymmddhh24miss=> '20111125123047',
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
  
@@ -9700,6 +9700,45 @@ s:=s||'NOTIFY VARCHAR2(1 BYTE),'||unistr('\000a')||
 'ALTER TRIGGER';
 
 s:=s||' BLOG_MESSAGES_PREVIEW_TRG ENABLE;'||unistr('\000a')||
+'--------------------------------------------------------'||unistr('\000a')||
+'--  DDL for Table BLOG_PARAMETERS'||unistr('\000a')||
+'--------------------------------------------------------'||unistr('\000a')||
+'CREATE TABLE BLOG_PARAMETERS('||unistr('\000a')||
+'  PK_ID         NUMBER NOT NULL ,'||unistr('\000a')||
+'  PARAM_NAME    VARCHAR2(80) NOT NULL ,'||unistr('\000a')||
+'  ITEM_NAME     VARCHAR2(80) NOT NULL ,'||unistr('\000a')||
+'  PARAM_VALUE   VARCHAR2(255) ,'||unistr('\000a')||
+'  CREATED_ON    DATE NOT NULL ,'||unistr('\000a')||
+'  CREATED';
+
+s:=s||'_BY    VARCHAR2(255) NOT NULL ,'||unistr('\000a')||
+'  CHANGED_ON    DATE ,'||unistr('\000a')||
+'  CHANGED_BY    VARCHAR2(20) ,'||unistr('\000a')||
+'  CONSTRAINT BLOG_PARAMETERS_PK PRIMARY KEY ( PK_ID ) ENABLE,'||unistr('\000a')||
+'  CONSTRAINT BLOG_PARAMETERS_UK1 UNIQUE(PARAM_NAME),'||unistr('\000a')||
+'  CONSTRAINT BLOG_PARAMETERS_UK2 UNIQUE(ITEM_NAME)'||unistr('\000a')||
+');'||unistr('\000a')||
+'CREATE OR REPLACE'||unistr('\000a')||
+'TRIGGER BLOG_PARAMETERS_TRG before'||unistr('\000a')||
+'  INSERT OR'||unistr('\000a')||
+'  UPDATE ON BLOG_PARAMETERS FOR EACH row'||unistr('\000a')||
+'BEGIN'||unistr('\000a')||
+'  IF inserting THEN'||unistr('\000a')||
+'    IF :NEW.P';
+
+s:=s||'K_ID IS NULL THEN'||unistr('\000a')||
+'      :NEW.PK_ID := BLOG_ID.next_val;'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'   :NEW.created_on := SYSDATE;'||unistr('\000a')||
+'   :NEW.created_by := NVL(v(''APP_USER''),USER);'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'  IF updating THEN'||unistr('\000a')||
+'   :NEW.changed_on := SYSDATE;'||unistr('\000a')||
+'   :NEW.changed_by := NVL(v(''APP_USER''),USER);'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'END;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TRIGGER BLOG_ACTIVITY_LOG_TRG ENABLE;'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_install_script(
@@ -9869,7 +9908,33 @@ s:=s||'    REGION,'||unistr('\000a')||
 '    REGION,'||unistr('\000a')||
 '    COUNTRY,'||unistr('\000a')||
 '    COUNTRY_CODE'||unistr('\000a')||
-'  ORDER BY MIN(TIME_STAMP) DESC ;';
+'  ORDER BY MIN(TIME_STAMP) DESC ;'||unistr('\000a')||
+''||unistr('\000a')||
+''||unistr('\000a')||
+'CREATE OR REPLACE FORCE VIEW BLOG_MSG'||unistr('\000a')||
+'    AS'||unistr('\000a')||
+'SELECT a.ID,'||unistr('\000a')||
+'  a.MSG_ID,'||unistr('\000a')||
+'  a.MSG_TYPE,'||unistr('\000a')||
+'  a.MSG_SUBJECT,'||unistr('\000a')||
+'  a.MSG_TEXT,'||unistr('\000a')||
+'  a.CATEGORY_ID,'||unistr('\000a')||
+'  a.EXPIRE_DATE,'||unistr('\000a')||
+'  a.VI';
+
+s:=s||'EWED,'||unistr('\000a')||
+'  a.RSS_DESCRIPTION,'||unistr('\000a')||
+'  a.FOLLOWUP_NOTIFY,'||unistr('\000a')||
+'  a.SESSION_ID,'||unistr('\000a')||
+'  a.CREATED_ON,'||unistr('\000a')||
+'  a.MODIFIED_ON,'||unistr('\000a')||
+'  a.CREATED_BY_ID,'||unistr('\000a')||
+'  a.MODIFIED_BY_ID ,'||unistr('\000a')||
+'  b.nick'||unistr('\000a')||
+'FROM blog_messages a,'||unistr('\000a')||
+'  blog_reg_users b'||unistr('\000a')||
+'WHERE a.created_by_id = b.id;'||unistr('\000a')||
+'';
 
 wwv_flow_api.create_install_script(
   p_id => 125419355031290248 + wwv_flow_api.g_id_offset,
@@ -13746,57 +13811,6 @@ declare
     l_length number := 1;
 begin
 s:=s||'create or replace'||unistr('\000a')||
-'FUNCTION "BLOG_AUTH"('||unistr('\000a')||
-'    p_username IN VARCHAR2,'||unistr('\000a')||
-'    p_password IN VARCHAR2)'||unistr('\000a')||
-'  RETURN BOOLEAN'||unistr('\000a')||
-'IS'||unistr('\000a')||
-'  l_password        VARCHAR2(4000);'||unistr('\000a')||
-'  l_stored_password VARCHAR2(4000);'||unistr('\000a')||
-'  l_expires_on DATE;'||unistr('\000a')||
-'  l_count NUMBER;'||unistr('\000a')||
-'BEGIN'||unistr('\000a')||
-'  -- First, check to see if the user is in the user table'||unistr('\000a')||
-'  SELECT COUNT(*)'||unistr('\000a')||
-'  INTO l_count'||unistr('\000a')||
-'  FROM blog_reg_users'||unistr('\000a')||
-'  WHERE upper(email) = upper(p_username);'||unistr('\000a')||
-'  IF l_count';
-
-s:=s||'         > 0 THEN'||unistr('\000a')||
-'    -- First, we fetch the stored hashed password & expire date'||unistr('\000a')||
-'    SELECT password,'||unistr('\000a')||
-'      sysdate + 1'||unistr('\000a')||
-'    INTO l_stored_password,'||unistr('\000a')||
-'      l_expires_on'||unistr('\000a')||
-'    FROM blog_reg_users'||unistr('\000a')||
-'    WHERE upper(email) = upper(p_username);'||unistr('\000a')||
-'    -- Next, we check to see if the user''s account is expired'||unistr('\000a')||
-'    -- If it is, return FALSE'||unistr('\000a')||
-'    IF l_expires_on > sysdate OR l_expires_on IS NULL THEN'||unistr('\000a')||
-'      -- If t';
-
-s:=s||'he account is not expired, we have to apply the custom hash'||unistr('\000a')||
-'      -- function to the password'||unistr('\000a')||
-'      l_password := blog_custom_hash(p_username, p_password);'||unistr('\000a')||
-'      -- Finally, we compare them to see if they are the same and return'||unistr('\000a')||
-'      -- either TRUE or FALSE'||unistr('\000a')||
-'      IF l_password = l_stored_password THEN'||unistr('\000a')||
-'        RETURN true;'||unistr('\000a')||
-'      ELSE'||unistr('\000a')||
-'        RETURN false;'||unistr('\000a')||
-'      END IF;'||unistr('\000a')||
-'    ELSE'||unistr('\000a')||
-'      RETURN false;';
-
-s:=s||''||unistr('\000a')||
-'    END IF;'||unistr('\000a')||
-'  ELSE'||unistr('\000a')||
-'    RETURN false;'||unistr('\000a')||
-'  END IF;'||unistr('\000a')||
-'END;'||unistr('\000a')||
-'/'||unistr('\000a')||
-'create or replace'||unistr('\000a')||
 'FUNCTION "BLOG_CUSTOM_HASH"('||unistr('\000a')||
 '    p_username IN VARCHAR2,'||unistr('\000a')||
 '    p_password IN VARCHAR2)'||unistr('\000a')||
@@ -13806,10 +13820,10 @@ s:=s||''||unistr('\000a')||
 '  l_salt     VARCHAR2(4000) := ''EVQELZY27PVLWPHMRN8B0CRRMAXBR8'';'||unistr('\000a')||
 'BEGIN'||unistr('\000a')||
 '  -- This function should be wrapped, as the hash algorhythm is exposed here.'||unistr('\000a')||
-'  -- You can change the value of l_salt or ';
+'  -- You can change the value of l_salt or the method of which to call the'||unistr('\000a')||
+'  -- DBMS_OBFUSCATOIN t';
 
-s:=s||'the method of which to call the'||unistr('\000a')||
-'  -- DBMS_OBFUSCATOIN toolkit, but you much reset all of your passwords'||unistr('\000a')||
+s:=s||'oolkit, but you much reset all of your passwords'||unistr('\000a')||
 '  -- if you choose to do this.'||unistr('\000a')||
 '  l_password := utl_raw.cast_to_raw(dbms_obfuscation_toolkit.md5 (input_string => p_password || SUBSTR(l_salt,10,13) || p_username || SUBSTR(l_salt, 4,10)));'||unistr('\000a')||
 '  RETURN l_password;'||unistr('\000a')||
@@ -13818,13 +13832,13 @@ s:=s||'the method of which to call the'||unistr('\000a')||
 'create or replace'||unistr('\000a')||
 'FUNCTION "CHECK_EMAIL"('||unistr('\000a')||
 '    l_email IN VARCHAR2)'||unistr('\000a')||
-'  RETURN BOO';
-
-s:=s||'LEAN'||unistr('\000a')||
+'  RETURN BOOLEAN'||unistr('\000a')||
 'IS'||unistr('\000a')||
 '  l_dot_pos    NUMBER;'||unistr('\000a')||
 '  l_at_pos     NUMBER;'||unistr('\000a')||
-'  l_str_length NUMBER;'||unistr('\000a')||
+' ';
+
+s:=s||' l_str_length NUMBER;'||unistr('\000a')||
 'BEGIN'||unistr('\000a')||
 '  IF l_email IS NULL THEN'||unistr('\000a')||
 '    RETURN false;'||unistr('\000a')||
@@ -13832,12 +13846,12 @@ s:=s||'LEAN'||unistr('\000a')||
 '  l_dot_pos     := instr(l_email ,''.'');'||unistr('\000a')||
 '  l_at_pos      := instr(l_email ,''@'');'||unistr('\000a')||
 '  l_str_length  := LENGTH(l_email);'||unistr('\000a')||
-'  IF ((l_dot_pos = 0) OR (l_at_pos = 0) OR (l_dot_pos = l_at_pos + 1) OR (l_at_pos = 1) OR (l_at_pos = l_str_length) OR (l_dot_pos = l_str_length))';
-
-s:=s||' THEN'||unistr('\000a')||
+'  IF ((l_dot_pos = 0) OR (l_at_pos = 0) OR (l_dot_pos = l_at_pos + 1) OR (l_at_pos = 1) OR (l_at_pos = l_str_length) OR (l_dot_pos = l_str_length)) THEN'||unistr('\000a')||
 '    RETURN false;'||unistr('\000a')||
 '  END IF;'||unistr('\000a')||
-'  IF instr(SUBSTR(l_email ,l_at_pos) ,''.'') = 0 THEN'||unistr('\000a')||
+'  IF instr(SUBSTR(l_e';
+
+s:=s||'mail ,l_at_pos) ,''.'') = 0 THEN'||unistr('\000a')||
 '    RETURN false;'||unistr('\000a')||
 '  END IF;'||unistr('\000a')||
 '  RETURN true;'||unistr('\000a')||
@@ -13850,7 +13864,77 @@ s:=s||' THEN'||unistr('\000a')||
 'BEGIN'||unistr('\000a')||
 '  RETURN owa_util.get_cgi_env(''REMOTE_ADDR'');'||unistr('\000a')||
 'END;'||unistr('\000a')||
-'/';
+'/'||unistr('\000a')||
+'create or replace'||unistr('\000a')||
+'FUNCTION "BLOG_AUTH"('||unistr('\000a')||
+'    p_username IN VARCHAR2,'||unistr('\000a')||
+'    p_password IN VARCHAR2)'||unistr('\000a')||
+'  RETURN BOOLEAN'||unistr('\000a')||
+'IS'||unistr('\000a')||
+'  AUTH_SUCCESS            CONSTANT INTEGER      := 0;'||unistr('\000a')||
+'  AUTH_UNKNOWN';
+
+s:=s||'_USER       CONSTANT INTEGER      := 1;'||unistr('\000a')||
+'  AUTH_ACCOUNT_LOCKED     CONSTANT INTEGER      := 2;'||unistr('\000a')||
+'  AUTH_ACCOUNT_EXPIRED    CONSTANT INTEGER      := 3;'||unistr('\000a')||
+'  AUTH_PASSWORD_INCORRECT CONSTANT INTEGER      := 4;'||unistr('\000a')||
+'  AUTH_PASSWORD_FIRST_USE CONSTANT INTEGER      := 5;'||unistr('\000a')||
+'  AUTH_ATTEMPTS_EXCEEDED  CONSTANT INTEGER      := 6;'||unistr('\000a')||
+'  AUTH_INTERNAL_ERROR     CONSTANT INTEGER      := 7;'||unistr('\000a')||
+'  '||unistr('\000a')||
+'  l_password        VARCHAR2(4000';
+
+s:=s||');'||unistr('\000a')||
+'  l_stored_password VARCHAR2(4000);'||unistr('\000a')||
+'  l_expires_on      DATE;'||unistr('\000a')||
+'  l_count           NUMBER;'||unistr('\000a')||
+'BEGIN'||unistr('\000a')||
+'  -- First, check to see if the user is in the user table'||unistr('\000a')||
+'  SELECT COUNT(1)'||unistr('\000a')||
+'  INTO l_count'||unistr('\000a')||
+'  FROM blog_reg_users'||unistr('\000a')||
+'  WHERE upper(email) = upper(p_username);'||unistr('\000a')||
+'    '||unistr('\000a')||
+'  IF l_count > 0 THEN'||unistr('\000a')||
+'    -- First, we fetch the stored hashed password & expire date'||unistr('\000a')||
+'    SELECT password,'||unistr('\000a')||
+'      sysdate + 1'||unistr('\000a')||
+'    INTO l_store';
+
+s:=s||'d_password,'||unistr('\000a')||
+'      l_expires_on'||unistr('\000a')||
+'    FROM blog_reg_users'||unistr('\000a')||
+'    WHERE upper(email) = upper(p_username);'||unistr('\000a')||
+'    -- Next, we check to see if the user''s account is expired'||unistr('\000a')||
+'    -- If it is, return FALSE'||unistr('\000a')||
+'    IF l_expires_on > sysdate OR l_expires_on IS NULL THEN'||unistr('\000a')||
+'      -- If the account is not expired, we have to apply the custom hash'||unistr('\000a')||
+'      -- function to the password'||unistr('\000a')||
+'      l_password := blog_custom_hash(p_user';
+
+s:=s||'name, p_password);'||unistr('\000a')||
+'      -- Finally, we compare them to see if they are the same and return'||unistr('\000a')||
+'      -- either TRUE or FALSE'||unistr('\000a')||
+'      IF l_password = l_stored_password THEN'||unistr('\000a')||
+'        APEX_UTIL.SET_AUTHENTICATION_RESULT(AUTH_SUCCESS);'||unistr('\000a')||
+'        RETURN TRUE;'||unistr('\000a')||
+'      ELSE'||unistr('\000a')||
+'        APEX_UTIL.SET_AUTHENTICATION_RESULT(AUTH_PASSWORD_INCORRECT);'||unistr('\000a')||
+'        RETURN FALSE;'||unistr('\000a')||
+'      END IF;'||unistr('\000a')||
+'    ELSE'||unistr('\000a')||
+'      APEX_UTIL.SET_AUTHENT';
+
+s:=s||'ICATION_RESULT(AUTH_ACCOUNT_EXPIRED);'||unistr('\000a')||
+'      RETURN FALSE;'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'  ELSE'||unistr('\000a')||
+'    APEX_UTIL.SET_AUTHENTICATION_RESULT(AUTH_UNKNOWN_USER);'||unistr('\000a')||
+'    RETURN false;'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'END;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'';
 
 wwv_flow_api.create_install_script(
   p_id => 125478426250329299 + wwv_flow_api.g_id_offset,
@@ -13874,35 +13958,7 @@ declare
     l_clob clob;
     l_length number := 1;
 begin
-s:=s||'CREATE MATERIALIZED VIEW LOG ON BLOG_MESSAGES WITH PRIMARY KEY EXCLUDING NEW VALUES;'||unistr('\000a')||
-'CREATE MATERIALIZED VIEW BLOG_MSG'||unistr('\000a')||
-'BUILD IMMEDIATE USING INDEX REFRESH COMPLETE ON COMMIT USING DEFAULT LOCAL ROLLBACK SEGMENT DISABLE QUERY REWRITE'||unistr('\000a')||
-'AS'||unistr('\000a')||
-'  SELECT a.ID,'||unistr('\000a')||
-'    a.MSG_ID,'||unistr('\000a')||
-'    a.MSG_TYPE,'||unistr('\000a')||
-'    a.MSG_SUBJECT,'||unistr('\000a')||
-'    a.MSG_TEXT,'||unistr('\000a')||
-'    a.CATEGORY_ID,'||unistr('\000a')||
-'    a.EXPIRE_DATE,'||unistr('\000a')||
-'    a.VIEWED,'||unistr('\000a')||
-'    a.RSS_DESCRIPTION,'||unistr('\000a')||
-'    a.FOL';
-
-s:=s||'LOWUP_NOTIFY,'||unistr('\000a')||
-'    a.SESSION_ID,'||unistr('\000a')||
-'    a.CREATED_ON,'||unistr('\000a')||
-'    a.MODIFIED_ON,'||unistr('\000a')||
-'    a.CREATED_BY_ID,'||unistr('\000a')||
-'    a.MODIFIED_BY_ID ,'||unistr('\000a')||
-'    b.nick'||unistr('\000a')||
-'  FROM blog_messages a,'||unistr('\000a')||
-'    blog_reg_users b'||unistr('\000a')||
-'  WHERE a.created_by_id = b.id ;'||unistr('\000a')||
-''||unistr('\000a')||
-'CREATE MATERIALIZED VIEW BLOG_STATS_SUMMARY BUILD IMMEDIATE USING INDEX REFRESH COMPLETE ON DEMAND START WITH SYSDATE + 0 NEXT (SYSDATE+1/24) USING DEFAULT LOCAL ROLLBACK SEGMENT DISABLE QUERY REWR';
-
-s:=s||'ITE'||unistr('\000a')||
+s:=s||'CREATE MATERIALIZED VIEW BLOG_STATS_SUMMARY BUILD IMMEDIATE USING INDEX REFRESH COMPLETE ON DEMAND START WITH SYSDATE + 0 NEXT (SYSDATE+1/24) USING DEFAULT LOCAL ROLLBACK SEGMENT DISABLE QUERY REWRITE'||unistr('\000a')||
 'AS'||unistr('\000a')||
 '  SELECT ''New Articles'' what,'||unistr('\000a')||
 '    MIN(COUNT(      *)) min_cnt,'||unistr('\000a')||
@@ -13910,16 +13966,16 @@ s:=s||'ITE'||unistr('\000a')||
 '    ROUND(AVG(COUNT(*)),0) avg_cnt,'||unistr('\000a')||
 '    SUM(COUNT(      *)) sum_cnt'||unistr('\000a')||
 '  FROM blog_messages'||unistr('\000a')||
-'  WHERE msg_type  = ''STANDARD'''||unistr('\000a')||
+'  WHERE msg';
+
+s:=s||'_type  = ''STANDARD'''||unistr('\000a')||
 '  AND created_on >= SYSDATE - 28'||unistr('\000a')||
 '  GROUP BY TRUNC(created_on)'||unistr('\000a')||
 '  UNION ALL'||unistr('\000a')||
 '  SELECT ''Comments'' what,'||unistr('\000a')||
 '    MIN(COUNT(      *)),'||unistr('\000a')||
 '    MAX(COUNT(      *)),'||unistr('\000a')||
-'    ROUND(AVG(COUNT(*)),0),';
-
-s:=s||''||unistr('\000a')||
+'    ROUND(AVG(COUNT(*)),0),'||unistr('\000a')||
 '    SUM(COUNT(      *))'||unistr('\000a')||
 '  FROM blog_messages'||unistr('\000a')||
 '  WHERE msg_type  = ''COMMENT'''||unistr('\000a')||
@@ -13928,7 +13984,9 @@ s:=s||''||unistr('\000a')||
 '  UNION ALL'||unistr('\000a')||
 '  SELECT ''Files'' what,'||unistr('\000a')||
 '    MIN(COUNT(      *)),'||unistr('\000a')||
-'    MAX(COUNT(      *)),'||unistr('\000a')||
+'    M';
+
+s:=s||'AX(COUNT(      *)),'||unistr('\000a')||
 '    ROUND(AVG(COUNT(*)),0),'||unistr('\000a')||
 '    SUM(COUNT(      *))'||unistr('\000a')||
 '  FROM BLOG_FILES'||unistr('\000a')||
