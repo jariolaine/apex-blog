@@ -6,7 +6,7 @@ begin wwv_flow.g_import_in_progress := true; end;
 /
  
  
---application/set_environment
+--application/set_environmentdbswh
 prompt  APPLICATION 100 - Blog Reader
 --
 -- Application Export:
@@ -172,7 +172,7 @@ wwv_flow_api.create_flow(
   p_flow_version=> 'release 1.0',
   p_flow_status=> 'AVAILABLE_W_EDIT_LINK',
   p_flow_unavailable_text=> 'This application is currently unavailable at this time.',
-  p_build_status=> 'RUN_ONLY',
+  p_build_status=> 'RUN_AND_BUILD',
   p_exact_substitutions_only=> 'Y',
   p_browser_cache=>'Y',
   p_browser_frame=>'A',
@@ -201,9 +201,9 @@ wwv_flow_api.create_flow(
   p_substitution_string_03 => 'BLOG_EMAIL',
   p_substitution_value_03  => 'admin@blog.com',
   p_substitution_string_04 => 'GOOGLE_API_KEY',
-  p_substitution_value_04  => 'ABQIAAAA5QLLLLGCLHycNzPvJrNe2BQ8fGNW3Ai3vnX9nzoYclP5PQyLMxTpb4QB2hOBE7CpJdwx6Be5NaBOsQ',
+  p_substitution_value_04  => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
   p_substitution_string_05 => 'GOOGLE_ANALYTICS_ACCOUNT_NUM',
-  p_substitution_value_05  => 'UA-4233498-6',
+  p_substitution_value_05  => 'UA-XXXXXXX-X',
   p_substitution_string_06 => 'WEBSITE',
   p_substitution_value_06  => 'example.blog/blog_dad',
   p_substitution_string_07 => 'BLOG_DATE_FORMAT',
