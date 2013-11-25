@@ -5,7 +5,7 @@
 *  http://www.gnu.org/licenses/gpl.html
 *
 *  Requires: 
-*  Oracle Application Express 4.1 or higherdbswh
+*  Oracle Application Express 4.1 or higherd
 
 Change log:
 
