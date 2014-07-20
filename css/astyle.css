@@ -22,6 +22,12 @@ div.comment{
 	z-index: 9999;
 }
 
+/******************** Breadcrumb **********************/
+div#uBreadcrumbs ul li {
+    font-size: 14px!important;
+    padding: 0!important;
+}
+
 /******************** Labels **********************/
 a.helplabel {
 	cursor:help;

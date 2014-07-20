@@ -179,11 +179,12 @@ blockquote {
 	clear:both;
 }
 
-#center div.comment a.comment-link {
+#center div.comment .comment-link {
+	color: #005EB0;
 	float: right;
 }
 
-#center div.comment a.comment-link img {
+#center div.comment .comment-link img {
 	margin-left: 5px;
 }
 
