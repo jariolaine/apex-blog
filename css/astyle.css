@@ -58,30 +58,15 @@ a.helplabel div {
 	display:none
 }
 
-/******************** Item **********************/
-#P12_ADD_CAT {
+/******************** Custom button **********************/
+.add-btn {
 	margin-left: 6px;
 }
-#P12_ADD_CAT > img {
+.add-btn {
     border: 1px solid #6A9CDA;
 }
-#P12_ADD_CAT > img:hover {
+.add-btn:hover {
     box-shadow: 0 0 3px #6A9CDA;
-}
-
-/******************** Page 21 Interactive Report ********************/
-#EDIT_COMMENT > div {
-	display: none;
-}
-
-/******************** Page 50 Interactive Report ********************/
-td[headers="PARAM_VALUE"] {
-    white-space: pre-wrap;
-}
-
-/******************** Page 63 Interactive Report ********************/
-#PASSWD > div {
-	display: none;
 }
 
 /******************** Interactive Report ********************/

@@ -61,6 +61,7 @@ blockquote {
 }
 
 #header {
+	background: inherit;
 	height: 100px;
 	position: relative;
 	margin: 0 auto;
@@ -165,7 +166,8 @@ blockquote {
 }
 
 #center div.comment {
-    background: none repeat scroll 0 0 #F5F5F5;
+    background-color: #F5F5F5;
+	background-image:linear-gradient(#FCFCFC, #F5F5F5);
     border: 1px solid #CACACA;
     border-radius: 3px 3px 3px 3px;
     font-size: 1.2em;
