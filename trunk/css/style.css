@@ -317,24 +317,24 @@ button span {
 }
 
 button.button-gray {
-    background: url(bt-gray-r.png) right no-repeat;
+    background: url("bt-gray-r.png") right no-repeat;
 }
 
 button.button-gray span {
     height: 20px;
     line-height: 20px;
-    background: url(bt-gray-l.png) left no-repeat;
+    background: url("bt-gray-l.png") left no-repeat;
     color: #4F4F4F;
 }
 
 button.button-alt1 {
-    background: url(bt-alt1-r.png) right no-repeat;
+    background: url("bt-alt1-r.png") right no-repeat;
 }
 
 button.button-alt1 span {
     height: 20px;
     line-height: 20px;
-    background: url(bt-alt1-l.png) left no-repeat;
+    background: url("bt-alt1-l.png") left no-repeat;
     color: #4F4F4F;
 }
 
@@ -536,48 +536,48 @@ table.apexir_WORKSHEET_DATA tr th div{
 }
 
 button.apexir-button {
-    background: url(bt-gray-r.png) right no-repeat;
+    background: url("bt-gray-r.png") right no-repeat;
 }
 
 button.apexir-button span {
     height: 20px;
     line-height: 20px;
-    background: url(bt-gray-l.png) left no-repeat;
+    background: url("bt-gray-l.png") left no-repeat;
     color: #4F4F4F;
 }
 
 button.apexir-go-button {
-    background: url(bt-gray-r.png) right no-repeat;
+    background: url("bt-gray-r.png") right no-repeat;
 }
 
 button.apexir-go-button span {
     height: 20px;
     line-height: 20px;
-    background: url(bt-gray-l.png) left no-repeat;
+    background: url("bt-gray-l.png") left no-repeat;
     color: #4F4F4F;
 }
 
 #apexir_TOOLBAR button.dhtmlMenu {
-    background: url(bt-pulldown-gray-bg-r.png) right no-repeat;
+    background: url("bt-pulldown-gray-bg-r.png") right no-repeat;
     padding: 0 25px 0 0;
 }
 
 #apexir_TOOLBAR button.dhtmlMenu span {
     height: 20px;
     line-height: 20px;
-    background: url(bt-gray-l.png) left no-repeat;
+    background: url("bt-gray-l.png") left no-repeat;
     color: #4F4F4F;
 }
 
 #apexir_TOOLBAR button.dhtmlMenuOn {
-    background: url(bt-pulldown-gray-bg-r.png) right no-repeat;
+    background: url("bt-pulldown-gray-bg-r.png") right no-repeat;
     padding: 0 25px 0 0;
 }
 
 #apexir_TOOLBAR button.dhtmlMenuOn span {
     height: 20px;
     line-height: 20px;
-    background: url(bt-gray-l.png) left no-repeat;
+    background: url("bt-gray-l.png") left no-repeat;
     color: #4F4F4F;
 }
 
@@ -695,7 +695,7 @@ div.author-right {
 }
 
 .lbLoading {
-	background: #FAFAFA url(loading.gif) no-repeat center;
+	background: #FAFAFA url("loading.gif") no-repeat center;
 }
 
 #lbImage {
@@ -720,7 +720,7 @@ div.author-right {
 }
 
 #lbPrevLink:hover {
-	background: transparent url(prevlabel.png) no-repeat 0 15%;
+	background: transparent url("prevlabel.png") no-repeat 0 15%;
 }
 
 #lbNextLink {
@@ -728,7 +728,7 @@ div.author-right {
 }
 
 #lbNextLink:hover {
-	background: transparent url(nextlabel.png) no-repeat 100% 15%;
+	background: transparent url("nextlabel.png") no-repeat 100% 15%;
 }
 
 #lbBottom {
@@ -746,7 +746,7 @@ div.author-right {
 	float: right;
 	width: 66px;
 	height: 22px;
-	background: transparent url(closelabel.png) no-repeat center;
+	background: transparent url("closelabel.png") no-repeat center;
 	margin: 5px 0;
 	outline: none;
 }
