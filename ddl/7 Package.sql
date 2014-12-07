@@ -2091,13 +2091,11 @@ CREATE OR REPLACE PACKAGE  "BLOG_INSTALL"
 AUTHID DEFINER
 AS
 --------------------------------------------------------------------------------
-  PROCEDURE update_meta_data(
-    p_reader_alias    IN VARCHAR2 DEFAULT 'BLOG',
-    p_admin_full_name IN VARCHAR2 DEFAULT 'Administrator',
-    p_admin_email     IN VARCHAR2 DEFAULT 'admin@axample.org',
-    p_admin_user_name IN VARCHAR2 DEFAULT 'ADMIN',
-    p_admin_password  IN VARCHAR2 DEFAULT 'admin'
+  PROCEDURE update_param_data(
+    p_reader_app_id IN NUMBER,
+    p_theme_path    IN VARCHAR2 DEFAULT NULL
   );
+--------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE post_install;
 --------------------------------------------------------------------------------
@@ -2109,52 +2107,44 @@ CREATE OR REPLACE PACKAGE BODY  "BLOG_INSTALL"
 AS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  PROCEDURE update_meta_data(
-    p_reader_alias    IN VARCHAR2 DEFAULT 'BLOG',
-    p_admin_full_name IN VARCHAR2 DEFAULT 'Administrator',
-    p_admin_email     IN VARCHAR2 DEFAULT 'admin@axample.org',
-    p_admin_user_name IN VARCHAR2 DEFAULT 'ADMIN',
-    p_admin_password  IN VARCHAR2 DEFAULT 'admin'
+  PROCEDURE update_param_data(
+    p_reader_app_id IN NUMBER,
+    p_theme_path    IN VARCHAR2 DEFAULT NULL
   )
   AS
-    l_reader_id NUMBER;
+    l_alias VARCHAR2(2000);
   BEGIN
-    SELECT application_id
-    INTO l_reader_id
+    SELECT alias
+    INTO l_alias
     FROM apex_applications
-    WHERE alias = UPPER(p_reader_alias)
+    WHERE application_id = p_reader_app_id
     ;
     UPDATE blog_param
-    SET param_value = TO_CHAR(l_reader_id)
+    SET param_value = TO_CHAR(p_reader_app_id)
     WHERE param_name  = 'G_BLOG_READER_APP_ID'
     ;
+    
+    IF p_theme_path IS NULL THEN
+      UPDATE blog_param
+      SET param_value = 'f?p=' || l_alias || ':DOWNLOAD:0:'
+      WHERE param_name  = 'G_THEME_PATH'
+      ;
+    ELSE
+      UPDATE blog_param
+      SET param_value = p_theme_path
+      WHERE param_name  = 'G_THEME_PATH'
+      ;
+    END IF;
     UPDATE blog_param
-    SET param_value = 'f?p=' || UPPER(p_reader_alias) || ':RSS:0'
+    SET param_value = 'f?p=' || l_alias || ':RSS:0'
     WHERE param_name  = 'G_RSS_FEED_URL'
-    ;
-    UPDATE blog_param
-    SET param_value = 'f?p=' || UPPER(p_reader_alias) || ':DOWNLOAD:0:'
-    WHERE param_name  = 'G_THEME_PATH'
     ;
     UPDATE blog_param
     SET param_value = apex_util.host_url('SCRIPT')
     WHERE param_name  = 'G_BASE_URL'
     ;
-    /* Add generic admin */
-    INSERT INTO blog_author(
-      email
-      ,user_name
-      ,passwd
-      ,author_name
-      ,author_seq
-    ) VALUES (
-      p_admin_email
-      ,UPPER(p_admin_user_name)
-      ,blog_pw_hash(UPPER(p_admin_user_name),LOWER('admin'))
-      ,p_admin_full_name
-      ,1
-    );
-  END update_meta_data;
+    blog_install.post_install;
+  END update_param_data;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE post_install
@@ -2164,7 +2154,7 @@ AS
     blog_job.rotate_log_job;
     blog_job.update_activity_logs_job;
     blog_job.purge_preview_job;
-    dbms_mview.refresh('BLOG_PARAM_APP');
+    dbms_mview.refresh('BLOG_PARAM_APP','C');
   END post_install;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2264,18 +2254,22 @@ AS
     l_len   SIMPLE_INTEGER := 0;
     l_data  CLOB;
   BEGIN
+
     l_len := p_table.COUNT;
+
     IF l_len = 0
     OR COALESCE(LENGTH(p_table(1)), 0) = 0
     THEN
       RETURN EMPTY_CLOB();
     END IF;
+
     dbms_lob.createtemporary(
       lob_loc => l_data,
       cache   => TRUE,
       dur     => dbms_lob.session
     );
     dbms_lob.open(l_data, dbms_lob.lob_readwrite);
+
     FOR i IN 1 .. l_len
     LOOP
       dbms_lob.writeappend(
@@ -2411,6 +2405,7 @@ AS
     IF SQL%ROWCOUNT > 0 THEN
       p_success_message := COALESCE(p_success_message, p_message);
     END IF;
+
   END save_article_text;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2423,8 +2418,10 @@ AS
   )
   AS
   BEGIN
+
     /* Hopefully we can someday share collections between applications */
     blog_admin_app.table_to_collection (p_article_text);
+
     MERGE INTO blog_article_preview a
     USING (
       SELECT p_article_id AS article_id,
@@ -2572,17 +2569,20 @@ AS
       AND passwd IS NOT NULL
       ;
     EXCEPTION WHEN NO_DATA_FOUND THEN
-      apex_util.set_authentication_result(AUTH_UNKNOWN_USER);
+      APEX_UTIL.SET_AUTHENTICATION_RESULT(AUTH_UNKNOWN_USER);
       RETURN FALSE;
     END;
+
     -- Apply the custom hash function to the password
     l_password := blog_pw_hash(p_username, p_password);
+
     -- Compare them to see if they are the same and return either TRUE or FALSE
     IF l_password = l_stored_password THEN
-      apex_util.set_authentication_result(AUTH_SUCCESS);
+      APEX_UTIL.SET_AUTHENTICATION_RESULT(AUTH_SUCCESS);
       RETURN TRUE;
     END IF;
-    apex_util.set_authentication_result(AUTH_PASSWORD_INCORRECT);
+
+    APEX_UTIL.SET_AUTHENTICATION_RESULT(AUTH_PASSWORD_INCORRECT);
     RETURN FALSE;
   END login;
 --------------------------------------------------------------------------------
@@ -2625,7 +2625,9 @@ AS
     l_author_id NUMBER(38,0);
     l_app_user  VARCHAR2(255);
   BEGIN
+
     l_app_user := v('APP_USER');
+
     SELECT author_id
       INTO l_author_id
       FROM blog_author
@@ -2633,9 +2635,11 @@ AS
       AND active = 'Y'
       AND passwd IS NOT NULL
     ;
-    apex_util.set_session_state('G_AUTHOR_ID', l_author_id);
-    apex_util.set_session_state('G_DATE_TIME_FORMAT', COALESCE(APEX_UTIL.GET_PREFERENCE('DATE_TIME_FORMAT', l_app_user), 'DD Mon YYYY HH24:MI:SS'));
+
+    APEX_UTIL.SET_SESSION_STATE('G_AUTHOR_ID', l_author_id);
+    APEX_UTIL.SET_SESSION_STATE('G_DATE_TIME_FORMAT', COALESCE(APEX_UTIL.GET_PREFERENCE('DATE_TIME_FORMAT', l_app_user), 'DD Mon YYYY HH24:MI:SS'));
     blog_util.set_items_from_param(v('APP_ID'));
+
   END post_login;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2648,3 +2652,4 @@ AS
 --------------------------------------------------------------------------------
 END "BLOG_ADMIN_APP";
 /
+

@@ -11,20 +11,18 @@ AUTHID DEFINER
 AS
 /* This function should be wrapped, as the hash algorhythm for password is exposed. */
   l_password VARCHAR2(4000);
-  l_salt     VARCHAR2(255);
+  l_salt     VARCHAR2(255) := 'EVQELZY27PVLWPHMRN8B0CRRMAXBR8';
 BEGIN
-  l_salt      := v('SALT');
   l_password  :=
         SUBSTR(l_salt, 8, 13)
     ||  p_password
     ||  SUBSTR(l_salt, 4, 10)
+	||  SUBSTR(l_salt, 22, 28)
     ||  p_username
     ||  SUBSTR(l_salt, 18, 26)
   ;
   l_password := utl_raw.cast_to_raw(l_password);
   l_password := dbms_obfuscation_toolkit.md5(input_string => l_password);
-  l_password := utl_raw.cast_to_raw(l_password);
-  l_password := dbms_obfuscation_toolkit.md5(input => l_password);
   RETURN l_password;
 END "BLOG_PW_HASH";
 /

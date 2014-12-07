@@ -14,10 +14,6 @@ BEGIN
     :NEW.changed_by := COALESCE(v('APP_USER'),USER);
   END IF;
 END;
-
-
-
-
 /
 ALTER TRIGGER  "BLOG_RESOURCE_TRG" ENABLE
 /
