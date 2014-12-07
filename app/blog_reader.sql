@@ -18183,7 +18183,7 @@ s:=s||'PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT
 'Insert into BLOG_PARAM (PARAM_NAME,EDITABLE,PARAM_DESC,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT) values (''SHOW_BLOG_REPORT'',''Y'',''Show list of other blogs in resource page'',''Y'',null,';
 
 s:=s||'''YESNO'',''N'',''AUTH'',''SHOW_RESOURCE_PAGE'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_NAME,EDITABLE,PARAM_DESC,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT) values (''SHOW_CONTACT_PAGE'',''Y'',''Show contact form tab/page'',''Y'',''If set to "<b>Yes</b>", contact form page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null);'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_NAME,EDITABLE,PARAM_DESC,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT) values (''SHOW_CONTACT_PAGE'',''N'',''Show contact form tab/page'',''N'',''THIS FAETUR IS NOT READY. LEAVE IT AS "<b>No</b>" !!!'',''YESNO'',''N'',''AUTH'',null);'||unistr('\000a')||
 'Insert into BLOG_PARAM (PARAM_NAME,EDITABLE,PARAM_DESC,PARA';
 
 s:=s||'M_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT) values (''SHOW_DISCLAIMER_PAGE'',''Y'',''Show disclaimer page/tab'',''Y'',''If set to "<b>Yes</b>", disclaimer page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null);'||unistr('\000a')||
