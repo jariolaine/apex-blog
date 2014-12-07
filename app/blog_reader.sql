@@ -12,7 +12,7 @@ prompt  APPLICATION 290 - Blog Reader
 -- Application Export:
 --   Application:     290
 --   Name:            Blog Reader
---   Date and Time:   11:49 Sunday December 7, 2014
+--   Date and Time:   13:48 Sunday December 7, 2014
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -199,7 +199,7 @@ wwv_flow_api.create_flow(
   p_error_handling_function=> 'blog_log.apex_error_handler',
   p_default_error_display_loc=> 'INLINE_IN_NOTIFICATION',
   p_last_updated_by => 'LAINFJAR',
-  p_last_upd_yyyymmddhh24miss=> '20141207114942',
+  p_last_upd_yyyymmddhh24miss=> '20141207134838',
   p_ui_type_name => null,
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
@@ -18183,7 +18183,7 @@ s:=s||'PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT
 'Insert into BLOG_PARAM (PARAM_NAME,EDITABLE,PARAM_DESC,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT) values (''SHOW_BLOG_REPORT'',''Y'',''Show list of other blogs in resource page'',''Y'',null,';
 
 s:=s||'''YESNO'',''N'',''AUTH'',''SHOW_RESOURCE_PAGE'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_NAME,EDITABLE,PARAM_DESC,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT) values (''SHOW_CONTACT_PAGE'',''N'',''Show contact form tab/page'',''N'',''THIS FAETUR IS NOT READY. LEAVE IT AS "<b>No</b>" !!!'',''YESNO'',''N'',''AUTH'',null);'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_NAME,EDITABLE,PARAM_DESC,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT) values (''SHOW_CONTACT_PAGE'',''Y'',''Show contact form tab/page'',''Y'',''If set to "<b>Yes</b>", contact form page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null);'||unistr('\000a')||
 'Insert into BLOG_PARAM (PARAM_NAME,EDITABLE,PARAM_DESC,PARA';
 
 s:=s||'M_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT) values (''SHOW_DISCLAIMER_PAGE'',''Y'',''Show disclaimer page/tab'',''Y'',''If set to "<b>Yes</b>", disclaimer page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null);'||unistr('\000a')||
@@ -18641,6 +18641,36 @@ declare
     l_clob clob;
     l_length number := 1;
 begin
+s:=s||'Insert into BLOG_LONG_TEXT (LONG_TEXT_TYPE,LONG_TEXT_DESCRIPTION) values (''FOOTER'',''Footer text shown on every page'');'||unistr('\000a')||
+'Insert into BLOG_LONG_TEXT (LONG_TEXT_TYPE,LONG_TEXT_DESCRIPTION) values (''ABOUT'',''About page text'');'||unistr('\000a')||
+'Insert into BLOG_LONG_TEXT (LONG_TEXT_TYPE,LONG_TEXT_DESCRIPTION) values (''CONTACT'',''Contact page information'');'||unistr('\000a')||
+'Insert into BLOG_LONG_TEXT (LONG_TEXT_TYPE,LONG_TEXT_DESCRIPTION) ';
+
+s:=s||'values (''DISCLAIMER'',''Blog site disclaimer'');'||unistr('\000a')||
+'';
+
+wwv_flow_api.create_install_script(
+  p_id => 9695109138868768 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_install_id=> 178096713088992135 + wwv_flow_api.g_id_offset,
+  p_name => 'Long text',
+  p_sequence=> 110,
+  p_script_type=> 'INSTALL',
+  p_script_clob=> s);
+end;
+ 
+ 
+end;
+/
+
+ 
+begin
+ 
+declare
+    s varchar2(32767) := null;
+    l_clob clob;
+    l_length number := 1;
+begin
 s:=s||'INSERT INTO blog_author(email,user_name,passwd,author_name,author_seq) VALUES (''admin@axample.org'',''ADMIN'',blog_pw_hash(''ADMIN'',''admin''),''Administrator'',1);';
 
 wwv_flow_api.create_install_script(
@@ -18648,7 +18678,7 @@ wwv_flow_api.create_install_script(
   p_flow_id => wwv_flow.g_flow_id,
   p_install_id=> 178096713088992135 + wwv_flow_api.g_id_offset,
   p_name => 'Insert admin',
-  p_sequence=> 110,
+  p_sequence=> 120,
   p_script_type=> 'INSTALL',
   p_script_clob=> s);
 end;
@@ -18735,7 +18765,7 @@ wwv_flow_api.create_install_script(
   p_flow_id => wwv_flow.g_flow_id,
   p_install_id=> 178096713088992135 + wwv_flow_api.g_id_offset,
   p_name => 'Foreign key',
-  p_sequence=> 120,
+  p_sequence=> 130,
   p_script_type=> 'INSTALL',
   p_script_clob=> s);
 end;
