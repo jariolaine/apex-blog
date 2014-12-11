@@ -207,7 +207,7 @@ AS
   ) RETURN NUMBER;
 --------------------------------------------------------------------------------
   FUNCTION get_param_value (
-    p_param_name      IN VARCHAR2
+    p_param_id        IN VARCHAR2
   ) RETURN VARCHAR2;
 --------------------------------------------------------------------------------
   FUNCTION get_article_url(
@@ -262,7 +262,10 @@ AS
   );
 --------------------------------------------------------------------------------
   PROCEDURE download_file (
-    p_file_name       IN VARCHAR2
+    p_session_id  IN NUMBER,
+    p_file_name   IN VARCHAR2,
+    p_user_id     IN VARCHAR2,
+    p_error_link  IN VARCHAR2
   );
 --------------------------------------------------------------------------------
   FUNCTION validate_email (
@@ -349,6 +352,7 @@ AS
     INVALID_NUMBER
   THEN
     apex_debug.warn('blog_util.get_author_record_by_article(p_article_id => %s); error: %s', p_article_id, sqlerrm);
+    RETURN NULL;
   END get_article_author;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -579,7 +583,7 @@ AS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   FUNCTION get_param_value(
-    p_param_name IN VARCHAR2
+    p_param_id IN VARCHAR2
   ) RETURN VARCHAR2
   AS
     l_value VARCHAR2(4000);
@@ -587,7 +591,7 @@ AS
     SELECT param_value
     INTO l_value
     FROM blog_param
-    WHERE param_name = p_param_name
+    WHERE param_id = p_param_id
     ;
     RETURN l_value;
   END get_param_value;
@@ -614,7 +618,7 @@ AS
   BEGIN
     FOR c1 IN (
       SELECT
-        p.param_name,
+        p.param_id,
         p.param_value
       FROM blog_param p
       WHERE p.param_value IS NOT NULL
@@ -622,10 +626,10 @@ AS
           SELECT 1
           FROM blog_param_app a
           WHERE a.application_id = p_app_id
-          AND a.param_name = p.param_name
+          AND a.param_id = p.param_id
         )
     ) LOOP
-      APEX_UTIL.SET_SESSION_STATE(c1.param_name, c1.param_value);
+      APEX_UTIL.SET_SESSION_STATE(c1.param_id, c1.param_value);
     END LOOP;
   END set_items_from_param;
 --------------------------------------------------------------------------------
@@ -883,95 +887,81 @@ AS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE download_file (
-    p_file_name IN VARCHAR2
+    p_session_id  IN NUMBER,
+    p_file_name   IN VARCHAR2,
+    p_user_id     IN VARCHAR2,
+    p_error_link  IN VARCHAR2
   )
   AS
-    l_lob               BLOB;
-    l_file_id           NUMBER;
-    l_length            NUMBER;
-    l_utc               TIMESTAMP;
     l_file_name         VARCHAR2(2000);
-    l_type              VARCHAR2(2000);
-    l_modified_since    VARCHAR2(2000);
-    l_if_none_match     VARCHAR2(2000);
-    l_file_modified     VARCHAR2(2000);
-    l_etag              VARCHAR2(2000);
-    l_mime              VARCHAR2(2000);
-    l_arr               APEX_APPLICATION_GLOBAL.vc_arr2;
+    l_utc               TIMESTAMP;
+    l_file_cached       BOOLEAN;
+    l_file_rowtype      blog_file%ROWTYPE;
+    l_arr               apex_application_global.vc_arr2;
     c_date_lang         CONSTANT VARCHAR2(255) := 'NLS_DATE_LANGUAGE=ENGLISH';
-    c_date_format       CONSTANT VARCHAR2(255) := 'FMDy, DD Mon YYYY HH24:MI:SS "GMT"';
-    PROCEDURE file_log(p_file_id IN NUMBER)
-    AS
-      PRAGMA autonomous_transaction;
-    BEGIN
-      blog_log.write_file_log(p_file_id);
-      blog_log.write_activity_log(
-        p_user_id       => v('G_USER_ID'),
-        p_session_id    => v('APP_SESSION'),
-        p_activity_type => 'DOWNLOAD',
-        p_related_id    => p_file_id
-      );
-      COMMIT;
-    END file_log;
+    c_date_format       CONSTANT VARCHAR2(255) := 'Dy, DD Mon YYYY HH24:MI:SS "GMT"';
   BEGIN
     IF NOT wwv_flow_custom_auth_std.is_session_valid THEN
       htp.p('Unauthorized access - file will not be retrieved.');
       RETURN;
     END IF;
+    l_file_cached := FALSE;
     /* APEX request can also contain query string */
     l_arr := APEX_UTIL.STRING_TO_TABLE(p_file_name, '?');
     l_file_name := l_arr(1);
     l_utc := SYS_EXTRACT_UTC(SYSTIMESTAMP);
-    SELECT file_id,
-      mime_type,
-      blob_content,
-      file_type,
-      file_size,
-      file_modified_since,
-      file_etag
-    INTO l_file_id,
-      l_mime,
-      l_lob,
-      l_type,
-      l_length,
-      l_file_modified,
-      l_etag
+    SELECT *
+    INTO l_file_rowtype
     FROM blog_file
     WHERE file_name = l_file_name
       AND active = 'Y'
     ;
-    sys.owa_util.mime_header(COALESCE (l_mime, 'application/octet'), FALSE);
-    sys.htp.p('Content-length: ' || l_length);
-    IF l_type != 'FILE' THEN
+    sys.owa_util.mime_header(COALESCE (l_file_rowtype.mime_type, 'application/octet'), FALSE);
+    IF l_file_rowtype.file_type != 'FILE' THEN
       /* File type is not FILE, then use cache e.g. for images, css and JavaScript */
-      l_if_none_match   := sys.OWA_UTIL.GET_CGI_ENV('HTTP_IF_NONE_MATCH');
-      l_modified_since  := sys.OWA_UTIL.GET_CGI_ENV('HTTP_IF_MODIFIED_SINCE');
       /* Cache and ETag headers */
-      sys.htp.p('Cache-Control: public');
+      sys.htp.p('Cache-Control: public, max-age=31536000');
       sys.htp.p('Date: '    || TO_CHAR(l_utc, c_date_format, c_date_lang));
       sys.htp.p('Expires: ' || TO_CHAR(l_utc + 365, c_date_format, c_date_lang));
-      sys.htp.p('ETag: "'   || l_etag || '"');
+      sys.htp.p('ETag: "'   || l_file_rowtype.file_etag || '"');
       /* Check if file is modified after last download */
-      IF (l_modified_since = l_file_modified)
-      OR (l_etag = l_if_none_match)
+      IF (UPPER(TRIM(sys.OWA_UTIL.GET_CGI_ENV('HTTP_IF_MODIFIED_SINCE'))) = UPPER(l_file_rowtype.file_modified_since))
+      OR (UPPER(TRIM(sys.OWA_UTIL.GET_CGI_ENV('HTTP_IF_NONE_MATCH')))  = UPPER(l_file_rowtype.file_etag))
       THEN
         owa_util.status_line(
           nstatus       => 304,
           creason       => 'Not Modified',
-          bclose_header => TRUE
+          bclose_header => FALSE
         );
-        /* Exit from procedure */
-        RETURN;
+        l_file_cached := TRUE;
       ELSE
-        sys.htp.p('Last-Modified : ' || l_file_modified);
+        sys.htp.p('Last-Modified : ' || l_file_rowtype.file_modified_since);
       END IF;
     ELSE
-      /* Log file download */
-      blog_util.download_file.file_log(l_file_id);
+      IF apex_util.public_check_authorization('LOGGING_ENABLED') THEN
+        /* Log file download */
+        blog_log.write_file_log(l_file_rowtype.file_id);
+        blog_log.write_activity_log(
+          p_user_id       => p_user_id,
+          p_session_id    => p_session_id,
+          p_activity_type => 'DOWNLOAD',
+          p_related_id    => l_file_rowtype.file_id
+        );
+      END IF;
       sys.htp.p('Content-Disposition: attachment; filename="' || l_file_name || '"');
     END IF;
+    IF NOT l_file_cached THEN
+      sys.htp.p('Content-length: ' || l_file_rowtype.file_size);
+      sys.wpg_docload.download_file(l_file_rowtype.blob_content);
+    END IF;
     sys.owa_util.http_header_close;
-    sys.wpg_docload.download_file(l_lob);
+    apex_application.stop_apex_engine;
+  EXCEPTION WHEN 
+    NO_DATA_FOUND OR
+    INVALID_NUMBER OR
+    VALUE_ERROR
+  THEN
+    apex_util.redirect_url(p_error_link);
   END download_file;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1319,8 +1309,8 @@ AS
     SELECT COUNT(1)
     INTO l_count
     FROM blog_param c
-    LEFT JOIN blog_param p ON c.param_parent = p.param_name
-    WHERE c.param_name = l_feature_name
+    LEFT JOIN blog_param p ON c.param_parent = p.param_id
+    WHERE c.param_id = l_feature_name
       AND c.param_value = 'Y' 
       AND CASE WHEN p.param_type = 'YESNO'
       THEN p.param_value ELSE 'Y' END = 'Y'
@@ -1644,6 +1634,7 @@ AS
     p_additional_info IN VARCHAR2 DEFAULT NULL
   )
   AS
+    PRAGMA AUTONOMOUS_TRANSACTION;
   BEGIN
     INSERT /*+ append */ INTO blog_activity_log (
       ACTIVITY_TYPE,
@@ -1678,6 +1669,7 @@ AS
       p_search,
       p_additional_info
     );
+    COMMIT;
   END write_activity_log;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1685,6 +1677,9 @@ AS
     p_article_id  IN NUMBER
   )
   AS
+    PRAGMA AUTONOMOUS_TRANSACTION;
+    INSERT_NULL_VALUE EXCEPTION;
+    PRAGMA EXCEPTION_INIT(INSERT_NULL_VALUE, -1400);
   BEGIN
     MERGE INTO blog_article_log a
     USING (SELECT p_article_id AS article_id FROM DUAL) b
@@ -1696,6 +1691,9 @@ AS
     INSERT (article_id, view_count, last_view)
     VALUES (b.article_id, 1, SYSDATE)
     ;
+    COMMIT;
+  EXCEPTION WHEN INSERT_NULL_VALUE THEN
+    NULL;
   END write_article_log;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1720,6 +1718,9 @@ AS
     p_category_id  IN NUMBER
   )
   AS
+    PRAGMA AUTONOMOUS_TRANSACTION;
+    INSERT_NULL_VALUE EXCEPTION;
+    PRAGMA EXCEPTION_INIT(INSERT_NULL_VALUE, -1400);
   BEGIN
     MERGE INTO blog_category_log a
     USING (SELECT p_category_id AS category_id FROM DUAL) b
@@ -1731,6 +1732,9 @@ AS
     INSERT (category_id, view_count, last_view)
     VALUES (b.category_id, 1, SYSDATE)
     ;
+    COMMIT;
+  EXCEPTION WHEN INSERT_NULL_VALUE THEN
+    NULL;
   END write_category_log;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1738,6 +1742,9 @@ AS
     p_file_id  IN NUMBER
   )
   AS
+    PRAGMA AUTONOMOUS_TRANSACTION;
+    INSERT_NULL_VALUE EXCEPTION;
+    PRAGMA EXCEPTION_INIT(INSERT_NULL_VALUE, -1400);
   BEGIN
     MERGE INTO blog_file_log a
     USING (SELECT p_file_id AS file_id FROM DUAL) b
@@ -1749,6 +1756,9 @@ AS
     INSERT (file_id, click_count, last_click)
     VALUES (b.file_id, 1, SYSDATE)
     ;
+    COMMIT;
+  EXCEPTION WHEN INSERT_NULL_VALUE THEN
+    NULL;
   END write_file_log;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2121,27 +2131,27 @@ AS
     ;
     UPDATE blog_param
     SET param_value = TO_CHAR(p_reader_app_id)
-    WHERE param_name  = 'G_BLOG_READER_APP_ID'
+    WHERE param_id  = 'G_BLOG_READER_APP_ID'
     ;
     
     IF p_theme_path IS NULL THEN
       UPDATE blog_param
-      SET param_value = 'f?p=' || l_alias || ':DOWNLOAD:0:'
-      WHERE param_name  = 'G_THEME_PATH'
+      SET param_value = 'f?p=' || TO_CHAR(p_reader_app_id) || ':DOWNLOAD:0:'
+      WHERE param_id  = 'G_THEME_PATH'
       ;
     ELSE
       UPDATE blog_param
       SET param_value = p_theme_path
-      WHERE param_name  = 'G_THEME_PATH'
+      WHERE param_id  = 'G_THEME_PATH'
       ;
     END IF;
     UPDATE blog_param
     SET param_value = 'f?p=' || l_alias || ':RSS:0'
-    WHERE param_name  = 'G_RSS_FEED_URL'
+    WHERE param_id  = 'G_RSS_FEED_URL'
     ;
     UPDATE blog_param
     SET param_value = apex_util.host_url('SCRIPT')
-    WHERE param_name  = 'G_BASE_URL'
+    WHERE param_id  = 'G_BASE_URL'
     ;
     blog_install.post_install;
   END update_param_data;
@@ -2208,20 +2218,20 @@ AS
   FUNCTION get_next_faq_no RETURN NUMBER;
 --------------------------------------------------------------------------------
   FUNCTION display_param_value_item (
-    p_param_name      IN VARCHAR2,
+    p_param_id        IN VARCHAR2,
     p_param_type      IN VARCHAR2,
     p_param_nullable  IN VARCHAR2
   ) RETURN BOOLEAN;
 --------------------------------------------------------------------------------
   FUNCTION set_param_value_item (
-    p_param_name        VARCHAR2,
-    p_yesno             VARCHAR2,
-    p_text_null         VARCHAR2,
-    p_number_null       VARCHAR2,
-    p_number_not_null   VARCHAR2,
-    p_text_not_null     VARCHAR2,
-    p_textarea_null     VARCHAR2,
-    p_textarea_not_null VARCHAR2
+    p_param_id          IN VARCHAR2,
+    p_yesno             IN VARCHAR2,
+    p_text_null         IN VARCHAR2,
+    p_number_null       IN VARCHAR2,
+    p_number_not_null   IN VARCHAR2,
+    p_text_not_null     IN VARCHAR2,
+    p_textarea_null     IN VARCHAR2,
+    p_textarea_not_null IN VARCHAR2
   ) RETURN VARCHAR2;
 --------------------------------------------------------------------------------
   FUNCTION login(
@@ -2238,13 +2248,54 @@ AS
 --------------------------------------------------------------------------------
   FUNCTION is_developer RETURN PLS_INTEGER;
 --------------------------------------------------------------------------------
+  PROCEDURE get_apex_lang_message (
+    p_application_id        IN NUMBER,
+    p_translation_entry_id  IN NUMBER,
+    p_translatable_message  OUT NOCOPY VARCHAR2,
+    p_language_code         OUT NOCOPY VARCHAR2,
+    p_message_text          OUT NOCOPY VARCHAR2,
+    p_md5                   OUT NOCOPY VARCHAR2
+   );
+--------------------------------------------------------------------------------
+  PROCEDURE upd_apex_lang_message (
+    p_application_id        IN NUMBER,
+    p_translation_entry_id  IN NUMBER,
+    p_translatable_message  IN VARCHAR2,
+    p_language_code         IN VARCHAR2,
+    p_message_text          IN VARCHAR2,
+    p_md5                   IN VARCHAR2,
+    p_success_message       OUT NOCOPY VARCHAR2
+   );
+--------------------------------------------------------------------------------  
 END "BLOG_ADMIN_APP";
 /
 CREATE OR REPLACE PACKAGE BODY  "BLOG_ADMIN_APP" 
 AS
 --------------------------------------------------------------------------------
-  -- Private constants
+  -- Private constants and functions
   g_article_text_collection CONSTANT VARCHAR2(80) := 'ARTICLE_TEXT_COLLECTION';
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  FUNCTION build_apex_lang_message_md5 (
+    p_translation_entry_id  IN NUMBER,
+    p_translatable_message  IN VARCHAR2,
+    p_language_code         IN VARCHAR2,
+    p_message_text          IN VARCHAR2,
+    p_col_sep   IN VARCHAR2 DEFAULT '|'
+  ) RETURN VARCHAR2
+  AS
+  BEGIN
+    RETURN sys.utl_raw.cast_to_raw(sys.dbms_obfuscation_toolkit.md5(input_string => 
+      p_translation_entry_id || p_col_sep ||
+      p_translatable_message || p_col_sep ||
+      p_language_code || p_col_sep ||
+      p_message_text || p_col_sep ||
+      ''
+    ));
+  END build_apex_lang_message_md5;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  -- Global procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   FUNCTION table_to_clob (
@@ -2418,10 +2469,8 @@ AS
   )
   AS
   BEGIN
-
     /* Hopefully we can someday share collections between applications */
     blog_admin_app.table_to_collection (p_article_text);
-
     MERGE INTO blog_article_preview a
     USING (
       SELECT p_article_id AS article_id,
@@ -2443,7 +2492,6 @@ AS
     INSERT (apex_session_id, author_id, category_id, article_title, article_text)
     VALUES (b.article_id, b.author_id, b.category_id, b.article_title, b.article_text)
     ;
-
   END save_article_preview;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2484,7 +2532,7 @@ AS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   FUNCTION display_param_value_item (
-    p_param_name      IN VARCHAR2,
+    p_param_id        IN VARCHAR2,
     p_param_type      IN VARCHAR2,
     p_param_nullable  IN VARCHAR2
   ) RETURN BOOLEAN
@@ -2495,7 +2543,7 @@ AS
       SELECT 1
       INTO l_num
       FROM blog_param
-      WHERE param_name = p_param_name
+      WHERE param_id = p_param_id
       AND param_type = p_param_type
       AND param_nullable = p_param_nullable
       ;
@@ -2507,14 +2555,14 @@ AS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   FUNCTION set_param_value_item (
-    p_param_name        VARCHAR2,
-    p_yesno             VARCHAR2,
-    p_text_null         VARCHAR2,
-    p_number_null       VARCHAR2,
-    p_number_not_null   VARCHAR2,
-    p_text_not_null     VARCHAR2,
-    p_textarea_null     VARCHAR2,
-    p_textarea_not_null VARCHAR2
+    p_param_id          IN VARCHAR2,
+    p_yesno             IN VARCHAR2,
+    p_text_null         IN VARCHAR2,
+    p_number_null       IN VARCHAR2,
+    p_number_not_null   IN VARCHAR2,
+    p_text_not_null     IN VARCHAR2,
+    p_textarea_null     IN VARCHAR2,
+    p_textarea_not_null IN VARCHAR2
   ) RETURN VARCHAR2
   AS
     l_value VARCHAR2(32700);
@@ -2537,7 +2585,7 @@ AS
     END AS param_value
     INTO l_value
     FROM blog_param
-    WHERE param_name = p_param_name
+    WHERE param_id = p_param_id
     ;
     RETURN l_value;
   END set_param_value_item;
@@ -2572,22 +2620,19 @@ AS
       APEX_UTIL.SET_AUTHENTICATION_RESULT(AUTH_UNKNOWN_USER);
       RETURN FALSE;
     END;
-
     -- Apply the custom hash function to the password
     l_password := blog_pw_hash(p_username, p_password);
-
     -- Compare them to see if they are the same and return either TRUE or FALSE
     IF l_password = l_stored_password THEN
       APEX_UTIL.SET_AUTHENTICATION_RESULT(AUTH_SUCCESS);
       RETURN TRUE;
     END IF;
-
     APEX_UTIL.SET_AUTHENTICATION_RESULT(AUTH_PASSWORD_INCORRECT);
     RETURN FALSE;
   END login;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  FUNCTION check_password(
+  FUNCTION check_password (
     p_username IN VARCHAR2,
     p_password IN VARCHAR2
   ) RETURN BOOLEAN
@@ -2607,27 +2652,25 @@ AS
     EXCEPTION WHEN NO_DATA_FOUND THEN
       RETURN FALSE;
     END;
-
     -- Apply the custom hash function to the password
     l_password := blog_pw_hash(p_username, p_password);
-
     -- Compare them to see if they are the same and return either TRUE or FALSE
     IF l_password = l_stored_password THEN
       RETURN TRUE;
     END IF;
-
     RETURN FALSE;
   END check_password;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE post_login
   AS
-    l_author_id NUMBER(38,0);
     l_app_user  VARCHAR2(255);
+    l_author_id NUMBER;
+    l_app_id    NUMBER;
+    l_reader_id NUMBER;
   BEGIN
-
-    l_app_user := v('APP_USER');
-
+    l_app_user  := v('APP_USER');
+    l_app_id    := nv('APP_ID');
     SELECT author_id
       INTO l_author_id
       FROM blog_author
@@ -2635,11 +2678,24 @@ AS
       AND active = 'Y'
       AND passwd IS NOT NULL
     ;
-
-    APEX_UTIL.SET_SESSION_STATE('G_AUTHOR_ID', l_author_id);
-    APEX_UTIL.SET_SESSION_STATE('G_DATE_TIME_FORMAT', COALESCE(APEX_UTIL.GET_PREFERENCE('DATE_TIME_FORMAT', l_app_user), 'DD Mon YYYY HH24:MI:SS'));
-    blog_util.set_items_from_param(v('APP_ID'));
-
+    blog_util.set_items_from_param(l_app_id);
+    apex_util.set_session_state('G_AUTHOR_ID', l_author_id);
+    apex_util.set_session_state('G_DATE_TIME_FORMAT', COALESCE(apex_util.get_preference('DATE_TIME_FORMAT', l_app_user), 'DD Mon YYYY HH24:MI:SS'));
+    IF apex_util.get_preference('SHOW_HELP', l_app_user) IS NULL THEN
+      apex_util.set_preference(
+        p_preference => 'SHOW_HELP',
+        p_value => 'Y',
+        p_user => l_app_user
+      );
+    END IF;
+    l_reader_id := nv('G_BLOG_READER_APP_ID');
+    FOR c1 IN (
+      SELECT alias
+      FROM apex_applications
+      WHERE application_id = l_reader_id
+    ) LOOP
+      apex_util.set_session_state('G_BLOG_READER_APP_ALIAS', c1.alias);
+    END LOOP;
   END post_login;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2648,6 +2704,91 @@ AS
   BEGIN
     RETURN CASE WHEN apex_util.public_check_authorization('IS_DEVELOPER') THEN 1 ELSE 0 END;
   END ;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE get_apex_lang_message (
+    p_application_id        IN NUMBER,
+    p_translation_entry_id  IN NUMBER,
+    p_translatable_message  OUT NOCOPY VARCHAR2,
+    p_language_code         OUT NOCOPY VARCHAR2,
+    p_message_text          OUT NOCOPY VARCHAR2,
+    p_md5                   OUT NOCOPY VARCHAR2
+   )
+   AS
+   BEGIN
+    FOR c1 IN (
+      SELECT translation_entry_id
+        ,translatable_message
+        ,language_code
+        ,message_text
+      FROM apex_application_translations
+      WHERE application_id = p_application_id
+        AND translation_entry_id = p_translation_entry_id
+    ) LOOP
+      p_translatable_message := c1.translatable_message;
+      p_language_code := c1.language_code;
+      p_message_text := c1.message_text;
+      p_md5 := build_apex_lang_message_md5 (
+          c1.translation_entry_id,
+          c1.translatable_message,
+          c1.language_code,
+          c1.message_text 
+      );
+    END LOOP;
+  END get_apex_lang_message;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE upd_apex_lang_message (
+    p_application_id        IN NUMBER,
+    p_translation_entry_id  IN NUMBER,
+    p_translatable_message  IN VARCHAR2,
+    p_language_code         IN VARCHAR2,
+    p_message_text          IN VARCHAR2,
+    p_md5                   IN VARCHAR2,
+    p_success_message       OUT NOCOPY VARCHAR2
+  )
+  AS
+    l_input_md5 varchar2(32676);
+    l_table_md5 varchar2(32676);
+  BEGIN
+    l_input_md5 := build_apex_lang_message_md5 (
+        p_translation_entry_id,
+        p_translatable_message,
+        p_language_code,
+        p_message_text 
+     );
+    IF p_md5 IS NOT NULL THEN
+      FOR c1 IN (
+        SELECT translation_entry_id
+          ,translatable_message
+          ,language_code
+          ,message_text
+        FROM apex_application_translations
+        WHERE application_id = p_application_id
+        AND translation_entry_id = p_translation_entry_id
+      ) LOOP
+          l_table_md5 := build_apex_lang_message_md5 (
+              c1.translation_entry_id,
+              c1.translatable_message,
+              c1.language_code,
+              c1.message_text 
+           );
+      END LOOP;
+    END IF;
+    IF l_table_md5 != p_md5 THEN
+      raise_application_error (-20001, apex_lang.message('MSG_LOST_UPDATE', l_table_md5, p_md5));
+    ELSIF p_md5       IS NOT NULL
+    AND   l_table_md5 IS NOT NULL
+    AND   l_table_md5 = p_md5
+    AND   l_input_md5 != p_md5
+    THEN
+      apex_lang.update_message(
+        p_id => p_translation_entry_id,
+        p_message_text => p_message_text
+      );
+      p_success_message := apex_lang.message('MSG_ACTION_PROCESSED');
+    END IF;
+  END upd_apex_lang_message;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 END "BLOG_ADMIN_APP";

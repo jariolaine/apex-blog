@@ -30,11 +30,11 @@ CREATE MATERIALIZED VIEW blog_param_app
   REFRESH COMPLETE ON DEMAND
 AS
 SELECT a.application_id
-  ,a.item_name AS param_name
+  ,a.item_name AS param_id
 FROM apex_application_items a
-WHERE EXISTS (SELECT 1 FROM blog_param p WHERE p.param_name = a.item_name)
+WHERE EXISTS (SELECT 1 FROM blog_param p WHERE p.param_id = a.item_name)
 /
-ALTER TABLE BLOG_PARAM_APP ADD CONSTRAINT BLOG_PARAM_APP_PK PRIMARY KEY (APPLICATION_ID, PARAM_NAME)
+ALTER TABLE BLOG_PARAM_APP ADD CONSTRAINT BLOG_PARAM_APP_PK PRIMARY KEY (APPLICATION_ID, PARAM_ID)
 /
 --------------------------------------------------------------
 --------------------------------------------------------------
