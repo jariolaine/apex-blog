@@ -12,7 +12,7 @@ prompt  APPLICATION 291 - Blog Administration
 -- Application Export:
 --   Application:     291
 --   Name:            Blog Administration
---   Date and Time:   10:42 Sunday December 14, 2014
+--   Date and Time:   11:06 Sunday December 14, 2014
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -206,7 +206,7 @@ wwv_flow_api.create_flow(
   p_error_handling_function=> 'blog_log.apex_error_handler',
   p_default_error_display_loc=> 'INLINE_WITH_FIELD_AND_NOTIFICATION',
   p_last_updated_by => 'LAINFJAR',
-  p_last_upd_yyyymmddhh24miss=> '20141213171034',
+  p_last_upd_yyyymmddhh24miss=> '20141214110338',
   p_ui_type_name => null,
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
@@ -13084,7 +13084,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141213081905'
+ ,p_last_upd_yyyymmddhh24miss => '20141214110257'
   );
 null;
  
@@ -13096,7 +13096,7 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-s:=s||'SELECT t.long_text_type'||unistr('\000a')||
+s:=s||'SELECT t.long_text_id'||unistr('\000a')||
 '  ,t.created_on'||unistr('\000a')||
 '  ,t.created_by'||unistr('\000a')||
 '  ,t.changed_on'||unistr('\000a')||
@@ -13108,9 +13108,9 @@ s:=s||'SELECT t.long_text_type'||unistr('\000a')||
 '    THEN apex_plugin_util.replace_substitutions(substr(t.long_text, 1, instr(t.long_text, '' '', 256)) || ''...'')'||unistr('\000a')||
 '   ELSE apex_plugin_util.replace_substitutions(t.LONG_TEXT)'||unistr('\000a')||
 '   END AS long_text'||unistr('\000a')||
-'  ,(SELECT ap';
+'  ,(SELECT apex';
 
-s:=s||'ex_lang.message(''TITLE_EDIT_LINK'') FROM dual) AS edit_link_title'||unistr('\000a')||
+s:=s||'_lang.message(''TITLE_EDIT_LINK'') FROM dual) AS edit_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_long_text t'||unistr('\000a')||
 '';
 
@@ -13145,7 +13145,7 @@ end;
 declare
  a1 varchar2(32767) := null;
 begin
-a1:=a1||'SELECT t.long_text_type'||unistr('\000a')||
+a1:=a1||'SELECT t.long_text_id'||unistr('\000a')||
 '  ,t.created_on'||unistr('\000a')||
 '  ,t.created_by'||unistr('\000a')||
 '  ,t.changed_on'||unistr('\000a')||
@@ -13157,9 +13157,9 @@ a1:=a1||'SELECT t.long_text_type'||unistr('\000a')||
 '    THEN apex_plugin_util.replace_substitutions(substr(t.long_text, 1, instr(t.long_text, '' '', 256)) || ''...'')'||unistr('\000a')||
 '   ELSE apex_plugin_util.replace_substitutions(t.LONG_TEXT)'||unistr('\000a')||
 '   END AS long_text'||unistr('\000a')||
-'  ,(SELECT ap';
+'  ,(SELECT apex';
 
-a1:=a1||'ex_lang.message(''TITLE_EDIT_LINK'') FROM dual) AS edit_link_title'||unistr('\000a')||
+a1:=a1||'_lang.message(''TITLE_EDIT_LINK'') FROM dual) AS edit_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_long_text t'||unistr('\000a')||
 '';
 
@@ -13213,7 +13213,7 @@ wwv_flow_api.create_worksheet(
   p_show_download=>'Y',
   p_show_help=>'Y',
   p_download_formats=>'CSV:HTML:EMAIL',
-  p_detail_link=>'f?p=&APP_ID.:24:&SESSION.::&DEBUG.::P24_LONG_TEXT_TYPE:#LONG_TEXT_TYPE#',
+  p_detail_link=>'f?p=&APP_ID.:24:&SESSION.::&DEBUG.::P24_LONG_TEXT_ID:#LONG_TEXT_ID#',
   p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="#EDIT_LINK_TITLE#" title="#EDIT_LINK_TITLE#" />',
   p_allow_exclude_null_values=>'N',
   p_allow_hide_extra_columns=>'N',
@@ -13223,43 +13223,6 @@ wwv_flow_api.create_worksheet(
   p_detail_view_enabled_yn=>'N',
   p_owner=>'LAINFJAR',
   p_internal_uid=> 2528029908310270);
-end;
-/
-begin
-wwv_flow_api.create_worksheet_column(
-  p_id => 6075241810076126+wwv_flow_api.g_id_offset,
-  p_flow_id=> wwv_flow.g_flow_id,
-  p_page_id=> 23,
-  p_worksheet_id => 5566850360840309+wwv_flow_api.g_id_offset,
-  p_db_column_name         =>'LONG_TEXT_TYPE',
-  p_display_order          =>3,
-  p_column_identifier      =>'H',
-  p_column_label           =>'Type',
-  p_report_label           =>'Type',
-  p_sync_form_label        =>'Y',
-  p_display_in_default_rpt =>'Y',
-  p_is_sortable            =>'Y',
-  p_allow_sorting          =>'Y',
-  p_allow_filtering        =>'Y',
-  p_allow_highlighting     =>'Y',
-  p_allow_ctrl_breaks      =>'Y',
-  p_allow_aggregations     =>'Y',
-  p_allow_computations     =>'Y',
-  p_allow_charting         =>'Y',
-  p_allow_group_by         =>'Y',
-  p_allow_hide             =>'Y',
-  p_others_may_edit        =>'Y',
-  p_others_may_view        =>'Y',
-  p_column_type            =>'STRING',
-  p_display_as             =>'TEXT',
-  p_display_text_as        =>'HIDDEN',
-  p_heading_alignment      =>'CENTER',
-  p_column_alignment       =>'LEFT',
-  p_tz_dependent           =>'N',
-  p_rpt_distinct_lov       =>'Y',
-  p_rpt_show_filter_lov    =>'D',
-  p_rpt_filter_date_ranges =>'ALL',
-  p_help_text              =>'');
 end;
 /
 begin
@@ -13412,12 +13375,49 @@ end;
 /
 begin
 wwv_flow_api.create_worksheet_column(
+  p_id => 11222529534932389+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 23,
+  p_worksheet_id => 5566850360840309+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'LONG_TEXT_ID',
+  p_display_order          =>8,
+  p_column_identifier      =>'K',
+  p_column_label           =>'Type',
+  p_report_label           =>'Type',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'ESCAPE_SC',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
+begin
+wwv_flow_api.create_worksheet_column(
   p_id => 6075043401074479+wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_page_id=> 23,
   p_worksheet_id => 5566850360840309+wwv_flow_api.g_id_offset,
   p_db_column_name         =>'LONG_TEXT_DESCRIPTION',
-  p_display_order          =>8,
+  p_display_order          =>9,
   p_column_identifier      =>'G',
   p_column_label           =>'Description',
   p_report_label           =>'Description',
@@ -13454,7 +13454,7 @@ wwv_flow_api.create_worksheet_column(
   p_page_id=> 23,
   p_worksheet_id => 5566850360840309+wwv_flow_api.g_id_offset,
   p_db_column_name         =>'LONG_TEXT',
-  p_display_order          =>9,
+  p_display_order          =>10,
   p_column_identifier      =>'I',
   p_column_label           =>'Text',
   p_report_label           =>'Text',
@@ -13491,7 +13491,7 @@ wwv_flow_api.create_worksheet_column(
   p_page_id=> 23,
   p_worksheet_id => 5566850360840309+wwv_flow_api.g_id_offset,
   p_db_column_name         =>'EDIT_LINK_TITLE',
-  p_display_order          =>10,
+  p_display_order          =>11,
   p_column_identifier      =>'J',
   p_column_label           =>'Edit link title',
   p_report_label           =>'Edit link title',
@@ -13524,7 +13524,7 @@ end;
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'LONG_TEXT_DESCRIPTION:LONG_TEXT:EDIT_LINK_TITLE';
+rc1:=rc1||'LONG_TEXT_DESCRIPTION:LONG_TEXT:';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 5568440129853167+wwv_flow_api.g_id_offset,
@@ -13603,7 +13603,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20140725215651'
+ ,p_last_upd_yyyymmddhh24miss => '20141214110338'
   );
 null;
  
@@ -13661,7 +13661,7 @@ wwv_flow_api.create_page_button(
   p_button_alignment=> 'RIGHT',
   p_button_redirect_url=> '',
   p_button_execute_validations=>'Y',
-  p_button_condition=> 'P24_LONG_TEXT_TYPE',
+  p_button_condition=> 'P24_LONG_TEXT_ID',
   p_button_condition_type=> 'ITEM_IS_NOT_NULL',
   p_database_action=>'UPDATE',
   p_required_patch => null + wwv_flow_api.g_id_offset);
@@ -13802,7 +13802,7 @@ wwv_flow_api.create_page_item(
   p_id=>6082047294225518 + wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_flow_step_id=> 24,
-  p_name=>'P24_LONG_TEXT_TYPE',
+  p_name=>'P24_LONG_TEXT_ID',
   p_data_type=> 'VARCHAR',
   p_is_required=> false,
   p_accept_processing=> 'REPLACE_EXISTING',
@@ -13810,7 +13810,7 @@ wwv_flow_api.create_page_item(
   p_item_plug_id => 148850577367660460+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'NO',
   p_item_default_type=> 'STATIC_TEXT_WITH_SUBSTITUTIONS',
-  p_source=>'LONG_TEXT_TYPE',
+  p_source=>'LONG_TEXT_ID',
   p_source_type=> 'DB_COLUMN',
   p_display_as=> 'NATIVE_HIDDEN',
   p_lov_display_null=> 'NO',
@@ -13846,7 +13846,7 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-p:=p||'F|#OWNER#:BLOG_LONG_TEXT:P24_LONG_TEXT_TYPE:LONG_TEXT_TYPE';
+p:=p||'F|#OWNER#:BLOG_LONG_TEXT:P24_LONG_TEXT_ID:LONG_TEXT_ID';
 
 wwv_flow_api.create_page_process(
   p_id     => 5565748448840288 + wwv_flow_api.g_id_offset,
@@ -13876,7 +13876,7 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-p:=p||'#OWNER#:BLOG_LONG_TEXT:P24_LONG_TEXT_TYPE:LONG_TEXT_TYPE|U';
+p:=p||'#OWNER#:BLOG_LONG_TEXT:P24_LONG_TEXT_ID:LONG_TEXT_ID|U';
 
 wwv_flow_api.create_page_process(
   p_id     => 5565929224840289 + wwv_flow_api.g_id_offset,
