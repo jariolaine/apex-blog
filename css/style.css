@@ -366,16 +366,20 @@ button.button-alt1 span {
 	left: 1em;
 	top: 1em;
 	margin-left: 0;
+	/*
 	width: 250px;
 	white-space: normal;
+	*/
+	white-space: nowrap;
 	text-decoration: none;
 	background-color: #EEEEEE;
 	border: 1px solid #CCCCCC;
 	color: #333333;
+	font-weight:bold;
 	padding: 0.8em 1em;
 	text-align: left;
 	text-decoration: none;
-	z-index: 99;
+	z-index: 9999;
 	display:none
 }
 
@@ -616,6 +620,10 @@ button.apexir-go-button span {
 	background: url("resize-e.png") no-repeat scroll 0 50% #F0F0F0;
 	border-left:2px solid #F0F0F0;
 	right: 0;
+}
+
+#apexir_DATA_PANEL table {
+    width: 100%;
 }
 /******************** Textarea formating buttons ********************/
 ul.format-btn {
