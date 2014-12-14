@@ -12,7 +12,7 @@ prompt  APPLICATION 290 - Blog Reader
 -- Application Export:
 --   Application:     290
 --   Name:            Blog Reader
---   Date and Time:   10:42 Sunday December 14, 2014
+--   Date and Time:   11:31 Sunday December 14, 2014
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -200,7 +200,7 @@ wwv_flow_api.create_flow(
   p_error_handling_function=> 'blog_log.apex_error_handler',
   p_default_error_display_loc=> 'INLINE_IN_NOTIFICATION',
   p_last_updated_by => 'LAINFJAR',
-  p_last_upd_yyyymmddhh24miss=> '20141214104233',
+  p_last_upd_yyyymmddhh24miss=> '20141214113108',
   p_ui_type_name => null,
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
@@ -10473,7 +10473,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141213113615'
+ ,p_last_upd_yyyymmddhh24miss => '20141214105908'
   );
 null;
  
@@ -10487,8 +10487,8 @@ declare
 begin
 s:=s||'SELECT t.long_text'||unistr('\000a')||
 'FROM #OWNER#.blog_long_text t'||unistr('\000a')||
-'WHERE t.long_text_type = ''ABOUT'''||unistr('\000a')||
-'ORDER BY t.long_text_type';
+'WHERE t.long_text_id = ''ABOUT'''||unistr('\000a')||
+'ORDER BY t.long_text_id';
 
 wwv_flow_api.create_report_region (
   p_id=> 85767035081573823 + wwv_flow_api.g_id_offset,
@@ -10684,7 +10684,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141213113826'
+ ,p_last_upd_yyyymmddhh24miss => '20141214105927'
   );
 null;
  
@@ -10698,8 +10698,8 @@ declare
 begin
 s:=s||'SELECT t.long_text'||unistr('\000a')||
 'FROM #OWNER#.blog_long_text t'||unistr('\000a')||
-'WHERE t.long_text_type = ''DISCLAIMER'''||unistr('\000a')||
-'ORDER BY t.long_text_type';
+'WHERE t.long_text_id = ''DISCLAIMER'''||unistr('\000a')||
+'ORDER BY t.long_text_id';
 
 wwv_flow_api.create_report_region (
   p_id=> 20923198867617671 + wwv_flow_api.g_id_offset,
@@ -15548,11 +15548,170 @@ declare
     s varchar2(32767) := null;
     l_clob clob;
 begin
-s := null;
+s:=s||'BEGIN'||unistr('\000a')||
+'    blog_install.pre_deinstall;'||unistr('\000a')||
+'END;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE "BLOG_COMMENT" DROP CONSTRAINT "BLOG_COMMENT_FK3"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE "BLOG_ARTICLE_LOG" DROP CONSTRAINT "BLOG_ARTICLE_LOG_FK1"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE "BLOG_COMMENT" DROP CONSTRAINT "BLOG_COMMENT_FK2"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE "BLOG_COMMENT_NOTIFY" DROP CONSTRAINT "BLOG_COMMENT_NOTIFY_FK1"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE "BLOG_FILE_LOG" DROP CONSTRAINT "BLOG_FILES_LOG_FK1"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABL';
+
+s:=s||'E "BLOG_ARTICLE" DROP CONSTRAINT "BLOG_ARTICLE_FK1"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE "BLOG_CONTACT_MESSAGE" DROP CONSTRAINT "BLOG_CONTACT_MESSAGE_FK1";'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE "BLOG_AUTHOR" DROP CONSTRAINT "BLOG_AUTHOR_FK1"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE "BLOG_COMMENT" DROP CONSTRAINT "BLOG_COMMENT_FK1"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE "BLOG_COMMENT_NOTIFY" DROP CONSTRAINT "BLOG_COMMENT_NOTIFY_FK2"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE "BLOG_CATEGORY_LOG" DROP CONSTRAINT "BLOG_CATEGOR';
+
+s:=s||'Y_LOG_FK1"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE "BLOG_ARTICLE" DROP CONSTRAINT "BLOG_ARTICLE_FK2"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE  BLOG_ARTICLE_HIT20 DROP CONSTRAINT BLOG_ARTICLE_HIT20_FK1'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE  BLOG_ARTICLE_LAST20 DROP CONSTRAINT BLOG_ARTICLE_LAST20_FK1'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE  BLOG_ARTICLE_TOP20 DROP CONSTRAINT BLOG_ARTICLE_TOP20_FK1'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE  BLOG_COMMENT_LOG DROP CONSTRAINT BLOG_COMMENT_LOG_FK1'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE  BLOG_PARAM_APP DROP ';
+
+s:=s||'CONSTRAINT BLOG_PARAM_APP_FK1'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP TABLE "BLOG_COMMENT"'||unistr('\000a')||
+'/    '||unistr('\000a')||
+'DROP TABLE "BLOG_FAQ"'||unistr('\000a')||
+'/    '||unistr('\000a')||
+'DROP TABLE "BLOG_FILE_LOG"'||unistr('\000a')||
+'/    '||unistr('\000a')||
+'DROP TABLE "BLOG_COMMENT_BLOCK"'||unistr('\000a')||
+'/    '||unistr('\000a')||
+'DROP TABLE "BLOG_CONTACT_MESSAGE"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP TABLE "BLOG_ACTIVITY_LOG2"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP TABLE "BLOG_PARAM"'||unistr('\000a')||
+'/    '||unistr('\000a')||
+'DROP TABLE "BLOG_COUNTRY"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP TABLE "BLOG_ARTICLE"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP TABLE "BLOG_FILE"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP TABLE "BLOG_ARTICLE_PREVIEW"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP TABLE "BLOG_AUT';
+
+s:=s||'HOR"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP TABLE "BLOG_COMMENT_USER"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP TABLE "BLOG_CATEGORY"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP TABLE "BLOG_ARTICLE_LOG"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP TABLE "BLOG_CATEGORY_LOG"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP TABLE "BLOG_RESOURCE"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP TABLE "BLOG_ACTIVITY_LOG1"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP TABLE "BLOG_COMMENT_NOTIFY"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP TABLE "BLOG_LONG_TEXT";'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP VIEW "BLOG_V$ACTIVITY"'||unistr('\000a')||
+'/    '||unistr('\000a')||
+'DROP VIEW "BLOG_V$ACTIVITY_LOG"'||unistr('\000a')||
+'/    '||unistr('\000a')||
+'DROP VIEW "BLOG_V$ARTICLE"'||unistr('\000a')||
+'/    '||unistr('\000a')||
+'DROP SYNONYM "BLOG_ACTIVITY_LOG"';
+
+s:=s||''||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP SEQUENCE "BLOG_SEQ"'||unistr('\000a')||
+'/    '||unistr('\000a')||
+'DROP MATERIALIZED VIEW "BLOG_ARTICLE_TOP20"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP MATERIALIZED VIEW "BLOG_ARTICLE_LAST20"'||unistr('\000a')||
+'/    '||unistr('\000a')||
+'DROP MATERIALIZED VIEW "BLOG_ARTICLE_HIT20"'||unistr('\000a')||
+'/    '||unistr('\000a')||
+'DROP MATERIALIZED VIEW "BLOG_ARCHIVE_LOV"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP MATERIALIZED VIEW "BLOG_COMMENT_LOG"'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP MATERIALIZED VIEW BLOG_PARAM_APP'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP PACKAGE BLOG_ADMIN_APP'||unistr('\000a')||
+'/    '||unistr('\000a')||
+'DROP PACKAGE BLOG_JOB'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP PACKAGE BLOG_PLUGIN'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP P';
+
+s:=s||'ACKAGE BLOG_LOG'||unistr('\000a')||
+'/    '||unistr('\000a')||
+'DROP PACKAGE BLOG_UTIL'||unistr('\000a')||
+'/    '||unistr('\000a')||
+'DROP PACKAGE BLOG_XML'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP PACKAGE BLOG_INSTALL'||unistr('\000a')||
+'/    '||unistr('\000a')||
+'DROP FUNCTION BLOG_SGID'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP FUNCTION BLOG_PW_HASH'||unistr('\000a')||
+'/';
+
 wwv_flow_api.create_install (
   p_id => 10834514095423806 + wwv_flow_api.g_id_offset,
   p_flow_id => wwv_flow.g_flow_id,
   p_include_in_export_yn => 'Y',
+  p_welcome_message => 'This application installer will guide you through the process of creating your database objects and seed data.',
+  p_license_message    => '<p>'||unistr('\000a')||
+'DbSWH APEX blogging platform <br/>'||unistr('\000a')||
+'Date: 07.12.2014'||unistr('\000a')||
+'</p>'||unistr('\000a')||
+'<p>'||unistr('\000a')||
+'Dual licensed under the MIT and GPL licenses:<br/>'||unistr('\000a')||
+'http://www.opensource.org/licenses/mit-license.php <br/>'||unistr('\000a')||
+'http://www.gnu.org/licenses/gpl.html <br/>'||unistr('\000a')||
+'</p>'||unistr('\000a')||
+'<p>'||unistr('\000a')||
+'Requires:<br/>'||unistr('\000a')||
+'Oracle Application Express 4.2 or higher<br/>'||unistr('\000a')||
+'Oracle Database 11G R2<br/>'||unistr('\000a')||
+'</p>',
+  p_configuration_message => 'You can configure the following attributes of your application.',
+  p_build_options_message => 'You can choose to include the following build options.',
+  p_validation_message => 'The following validations will be performed to ensure your system is compatible with this application.',
+  p_install_message=> 'Please confirm that you would like to install this application''s supporting objects.',
+  p_install_success_message => 'Your application''s supporting objects have been installed.',
+  p_install_failure_message => 'Installation of database objects and seed data has failed.',
+  p_upgrade_message => 'The application installer has detected that this application''s supporting objects were previously installed.  This wizard will guide you through the process of upgrading these supporting objects.',
+  p_upgrade_confirm_message => 'Please confirm that you would like to install this application''s supporting objects.',
+  p_upgrade_success_message => 'Your application''s supporting objects have been installed.',
+  p_upgrade_failure_message => 'Installation of database objects and seed data has failed.',
+  p_deinstall_success_message => 'Deinstallation complete.',
+  p_deinstall_script_clob => s,
+  p_required_free_kb => 6400,
+  p_required_sys_privs => 'CREATE MATERIALIZED VIEW:CREATE PROCEDURE:CREATE SEQUENCE:CREATE SYNONYM:CREATE TABLE:CREATE TRIGGER:CREATE VIEW',
   p_deinstall_message=> '');
 end;
  
@@ -15925,26 +16084,26 @@ s:=s||'LOG_FILE_LOG_CK1 CHECK (FILE_ID > 0) ENABLE,'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE TABLE  BLOG_LONG_TEXT'||unistr('\000a')||
-'(    LONG_TEXT_TYPE VARCHAR2(40 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
+'(    LONG_TEXT_ID VARCHAR2(30 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
-'LONG_TEXT_DESCRI';
+'LONG_TEXT_DESCRIPT';
 
-s:=s||'PTION VARCHAR2(256 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
+s:=s||'ION VARCHAR2(256 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'LONG_TEXT CLOB,'||unistr('\000a')||
-'CONSTRAINT BLOG_LONG_TEXT_PK PRIMARY KEY (LONG_TEXT_TYPE) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_LONG_TEXT_CK1 CHECK (LONG_TEXT_TYPE IN(''ABOUT'',''DISCLAIMER'')) ENABLE,'||unistr('\000a')||
+'CONSTRAINT BLOG_LONG_TEXT_PK PRIMARY KEY (LONG_TEXT_ID) ENABLE,'||unistr('\000a')||
+'CONSTRAINT BLOG_LONG_TEXT_CK1 CHECK (LONG_TEXT_ID IN(''ABOUT'',''DISCLAIMER'')) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE TABLE  BLOG_PARAM'||unistr('\000a')||
 '(    PARAM_ID VARCHAR2(30 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
-'CHANGED_ON DATE D';
+'CHANGED_ON DATE DEFAULT ';
 
-s:=s||'EFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
+s:=s||'SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'EDITABLE VARCHAR2(1 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'PARAM_NAME VARCHAR2(60 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
@@ -15953,22 +16112,22 @@ s:=s||'EFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'PARAM_TYPE VARCHAR2(20 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'PARAM_NULLABLE VARCHAR2(1 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'PARAM_GROUP VARCHAR2(10 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
-'PARAM_USE_SKILL VARCHAR2(1';
+'PARAM_USE_SKILL VARCHAR2(1) DEFAU';
 
-s:=s||') DEFAULT ''B '' NOT NULL ENABLE,'||unistr('\000a')||
+s:=s||'LT ''B'' NOT NULL ENABLE,'||unistr('\000a')||
 'PARAM_PARENT VARCHAR2(40 CHAR),'||unistr('\000a')||
-'CONSTRAINT BLOG_PARAM_PK PRIMARY KEY (PARAM_NAME) ENABLE,'||unistr('\000a')||
+'CONSTRAINT BLOG_PARAM_PK PRIMARY KEY (PARAM_ID) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_PARAM_CK1 CHECK (EDITABLE IN(''Y'', ''N'')) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_PARAM_CK2 CHECK (PARAM_NULLABLE IN(''Y'', ''N'')) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_PARAM_CK3 CHECK (PARAM_TYPE IN(''TEXT'',''TEXTAREA'',''NUMBER'',''YESNO'')) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_PARAM_CK4 CHECK ((PARAM_NULLABLE = ''';
+'CONSTRAINT BLOG_PARAM_CK4 CHECK ((PARAM_NULLABLE = ''N'' AND PAR';
 
-s:=s||'N'' AND PARAM_VALUE IS NOT NULL) OR (PARAM_NULLABLE = ''Y'')) ENABLE,'||unistr('\000a')||
+s:=s||'AM_VALUE IS NOT NULL) OR (PARAM_NULLABLE = ''Y'')) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_PARAM_CK5 CHECK ((PARAM_TYPE = ''YESNO'' AND PARAM_VALUE IS NOT NULL) OR (PARAM_TYPE != ''YESNO'')) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_PARAM_CK6 CHECK ((PARAM_TYPE =''YESNO'' AND PARAM_NULLABLE = ''N'') OR (PARAM_TYPE !=''YESNO'')) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_PARAM_CK7 CHECK (PARAM_GROUP IN(''SEO'', ''UI'', ''EMAIL'', ''LOG'', ''AUTH'', ''RSS'', ''INTER';
+'CONSTRAINT BLOG_PARAM_CK7 CHECK (PARAM_GROUP IN(''SEO'', ''UI'', ''EMAIL'', ''LOG'', ''AUTH'', ''RSS'', ''INTERNAL'')) ENA';
 
-s:=s||'NAL'')) ENABLE,'||unistr('\000a')||
+s:=s||'BLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_PARAM_CK8 CHECK (PARAM_USE_SKILL IN(''A'', ''B'')) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
@@ -15976,9 +16135,9 @@ s:=s||'NAL'')) ENABLE,'||unistr('\000a')||
 '/'||unistr('\000a')||
 'COMMENT ON COLUMN BLOG_PARAM.PARAM_GROUP IS ''Values defined in blog admin app PARAM_GROUP list of values'''||unistr('\000a')||
 '/'||unistr('\000a')||
-'COMMENT ON COLUMN BLOG_PARAM.PARAM_USE_SKILL IS ''Values defined in blog admin app PARAM_USE_SKILL';
+'COMMENT ON COLUMN BLOG_PARAM.PARAM_USE_SKILL IS ''Values defined in blog admin app PARAM_USE_SKILL list of v';
 
-s:=s||' list of values'''||unistr('\000a')||
+s:=s||'alues'''||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE TABLE  BLOG_RESOURCE'||unistr('\000a')||
 '(    LINK_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
@@ -15988,9 +16147,9 @@ s:=s||' list of values'''||unistr('\000a')||
 'CHANGED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'ACTIVE VARCHAR2(1 CHAR) DEFAULT ''Y'' NOT NULL ENABLE,'||unistr('\000a')||
 'LINK_TYPE VARCHAR2(40 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
-'LINK_TITLE VARCHAR2(25';
+'LINK_TITLE VARCHAR2(256 CHAR) NO';
 
-s:=s||'6 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
+s:=s||'T NULL ENABLE,'||unistr('\000a')||
 'LINK_TEXT VARCHAR2(4000 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'LINK_URL VARCHAR2(256 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_RESOURCE_PK PRIMARY KEY (LINK_ID) ENABLE,'||unistr('\000a')||
@@ -16002,7 +16161,7 @@ s:=s||'6 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_install_script(
-  p_id => 11220330064810617 + wwv_flow_api.g_id_offset,
+  p_id => 11224317574059470 + wwv_flow_api.g_id_offset,
   p_flow_id => wwv_flow.g_flow_id,
   p_install_id=> 10834514095423806 + wwv_flow_api.g_id_offset,
   p_name => '1 Table',
@@ -20887,8 +21046,8 @@ declare
 begin
 s:=s||'--REM INSERTING into BLOG_LONG_TEXT'||unistr('\000a')||
 '--SET DEFINE OFF;'||unistr('\000a')||
-'Insert into BLOG_LONG_TEXT (LONG_TEXT_TYPE,LONG_TEXT_DESCRIPTION) values (''ABOUT'',''About page text'');'||unistr('\000a')||
-'Insert into BLOG_LONG_TEXT (LONG_TEXT_TYPE,LONG_TEXT_DESCRIPTION) values (''DISCLAIMER'',''Blog site disclaimer'');'||unistr('\000a')||
+'Insert into BLOG_LONG_TEXT (LONG_TEXT_ID,LONG_TEXT_DESCRIPTION) values (''ABOUT'',''About page text'');'||unistr('\000a')||
+'Insert into BLOG_LONG_TEXT (LONG_TEXT_ID,LONG_TEXT_DESCRIPTION) values (''DISCLAIMER'',''Blog site disclaimer'');'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_install_script(
