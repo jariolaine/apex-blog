@@ -242,11 +242,11 @@ AS
   ELSE
     d.comment_count
   END AS comment_count
-  ,(SELECT apex_lang.lang('Posted on') FROM DUAL) AS created_on_txt
-  ,(SELECT apex_lang.lang('by') FROM DUAL) AS posted_by_txt
-  ,(SELECT apex_lang.lang('Category') FROM DUAL) AS category_txt
-  ,(SELECT apex_lang.lang('View Comments') FROM DUAL) AS view_comment
-  ,(SELECT apex_lang.lang('Post a Comment') FROM DUAL) AS post_comment
+  ,(SELECT apex_lang.message('TEXT_POSTED_ON') FROM DUAL) AS created_on_txt
+  ,(SELECT apex_lang.message('TEXT_BY') FROM DUAL) AS posted_by_txt
+  ,(SELECT apex_lang.message('TEXT_CATEGORY') FROM DUAL) AS category_txt
+  ,(SELECT apex_lang.message('TEXT_VIEW_COMMENTS') FROM DUAL) AS view_comment
+  ,(SELECT apex_lang.message('TEXT_POST_COMMENT') FROM DUAL) AS post_comment
 FROM blog_article a
   JOIN blog_author b ON a.author_id = b.author_id
   JOIN blog_category c ON a.category_id = c.category_id
