@@ -44,17 +44,20 @@ a.helplabel div {
 	position: absolute;
 	left: 1em;
 	top: 1em;
-	margin-left: 0;
+	/*
 	width: 250px;
 	white-space: normal;
+	*/
+	white-space: nowrap;
 	text-decoration: none;
 	background-color: #EEEEEE;
 	border: 1px solid #CCCCCC;
 	color: #333333;
+	font-weight:bold;
 	padding: 0.8em 1em;
 	text-align: left;
 	text-decoration: none;
-	z-index: 99;
+	z-index: 9999;
 	display:none
 }
 

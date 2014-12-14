@@ -12,7 +12,7 @@ prompt  APPLICATION 290 - Blog Reader
 -- Application Export:
 --   Application:     290
 --   Name:            Blog Reader
---   Date and Time:   11:31 Sunday December 14, 2014
+--   Date and Time:   13:13 Sunday December 14, 2014
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -54,10 +54,10 @@ prompt  APPLICATION 290 - Blog Reader
 --         Button:               1
 --         Report:               6
 --       LOVs:                   2
---       Shortcuts:             14
+--       Shortcuts:             16
 --       Plug-ins:               4
 --     Globalization:
---       Messages:              55
+--       Messages:              59
 --     Reports:
  
  
@@ -200,7 +200,7 @@ wwv_flow_api.create_flow(
   p_error_handling_function=> 'blog_log.apex_error_handler',
   p_default_error_display_loc=> 'INLINE_IN_NOTIFICATION',
   p_last_updated_by => 'LAINFJAR',
-  p_last_upd_yyyymmddhh24miss=> '20141214113108',
+  p_last_upd_yyyymmddhh24miss=> '20141214131341',
   p_ui_type_name => null,
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
@@ -1172,7 +1172,7 @@ wwv_flow_api.create_page (
  ,p_protection_level => 'D'
  ,p_cache_page_yn => 'N'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141213170941'
+ ,p_last_upd_yyyymmddhh24miss => '20141214123108'
   );
 null;
  
@@ -3574,7 +3574,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141213112812'
+ ,p_last_upd_yyyymmddhh24miss => '20141214123131'
   );
 null;
  
@@ -6034,7 +6034,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141213110555'
+ ,p_last_upd_yyyymmddhh24miss => '20141214130358'
   );
 null;
  
@@ -6254,7 +6254,7 @@ declare
     h varchar2(32767) := null;
 begin
 h := null;
-h:=h||'"HELP_LAST_NAME" It will be displayed in comment posted by.';
+h:=h||'"HELP_COMMENT_LAST_NAME"';
 
 wwv_flow_api.create_page_item(
   p_id=>61211999514985211 + wwv_flow_api.g_id_offset,
@@ -6357,7 +6357,7 @@ declare
     h varchar2(32767) := null;
 begin
 h := null;
-h:=h||'"HELP_NICK_NAME" It will be displayed in comment posted by.';
+h:=h||'"HELP_COMMENT_NICK_NAME"';
 
 wwv_flow_api.create_page_item(
   p_id=>85769214223581412 + wwv_flow_api.g_id_offset,
@@ -6408,7 +6408,7 @@ declare
     h varchar2(32767) := null;
 begin
 h := null;
-h:=h||'"HELP_WEBSITE" It will not be displayed for others.';
+h:=h||'"HELP_COMMENT_WEBSITE"';
 
 wwv_flow_api.create_page_item(
   p_id=>85769722049581431 + wwv_flow_api.g_id_offset,
@@ -6544,7 +6544,7 @@ declare
     h varchar2(32767) := null;
 begin
 h := null;
-h:=h||'"HELP_EMAIL" It will not be displayed for others.';
+h:=h||'"HELP_COMMENT_EMAIL"';
 
 wwv_flow_api.create_page_item(
   p_id=>85770621663581433 + wwv_flow_api.g_id_offset,
@@ -6595,7 +6595,7 @@ declare
     h varchar2(32767) := null;
 begin
 h := null;
-h:=h||'Enter your comment. Use the formatting buttons to add allowed HTML tags. E.g. wrap program code to code tags so it is easier to read.';
+h:=h||'"HELP_COMMENT_COMMENT"';
 
 wwv_flow_api.create_page_item(
   p_id=>85771134958581434 + wwv_flow_api.g_id_offset,
@@ -6643,7 +6643,7 @@ declare
     h varchar2(32767) := null;
 begin
 h := null;
-h:=h||'Check this box if you want an email sent when a new comment is posted to this article.';
+h:=h||'"HELP_COMMENT_FOLLOWUP_NOTIFY"';
 
 wwv_flow_api.create_page_item(
   p_id=>85771617307581435 + wwv_flow_api.g_id_offset,
@@ -6665,7 +6665,10 @@ wwv_flow_api.create_page_item(
 '  AND n.article_id = :P9_ARTICLE',
   p_source_type=> 'QUERY',
   p_display_as=> 'NATIVE_CHECKBOX',
-  p_lov=> 'STATIC2:Notify me of follow-up comments via email.;Y',
+  p_lov=> 'SELECT apex_lang.message(''FOLLOWUP_NOTIFY_CHECKBOX'') as d,'||unistr('\000a')||
+'  ''Y'' r'||unistr('\000a')||
+'FROM dual'||unistr('\000a')||
+'',
   p_lov_display_null=> 'NO',
   p_lov_translated=> 'N',
   p_cSize=> 30,
@@ -8562,7 +8565,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141213105952'
+ ,p_last_upd_yyyymmddhh24miss => '20141214115344'
   );
 null;
  
@@ -8617,7 +8620,7 @@ wwv_flow_api.create_flash_chart5(
   p_chart_rendering        =>'FLASH_PREFERRED',
   p_chart_name             =>'chart_22269404799758900',
   p_chart_width            =>700,
-  p_chart_height           =>500,
+  p_chart_height           =>400,
   p_chart_animation        =>'Appear',
   p_display_attr           =>':H:::B::N::V:Y:None:::::::::',
   p_dial_tick_attr         =>'',
@@ -9406,6 +9409,7 @@ wwv_flow_api.create_page (
 '"ROBOTS_NOINDEX"'
  ,p_javascript_file_urls => '#IMAGE_PREFIX#libraries/jquery-ui/1.8.22/ui/minified/jquery.ui.button.min.js'
  ,p_required_role => 186579061301136844 + wwv_flow_api.g_id_offset
+ ,p_required_patch => 19434169279261909 + wwv_flow_api.g_id_offset
  ,p_page_is_public_y_n => 'Y'
  ,p_protection_level => 'U'
  ,p_browser_cache => 'N'
@@ -9416,7 +9420,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141213113409'
+ ,p_last_upd_yyyymmddhh24miss => '20141214114716'
   );
 null;
  
@@ -10876,7 +10880,7 @@ wwv_flow_api.create_page (
  ,p_user_interface_id => 244292879420806699 + wwv_flow_api.g_id_offset
  ,p_name => 'Photo Gallery'
  ,p_alias => 'PHOTOS'
- ,p_step_title => 'Photo Gallery'
+ ,p_step_title => '&G_PAGE_TITLE.'
  ,p_allow_duplicate_submissions => 'Y'
  ,p_step_sub_title => 'Photo Gallery'
  ,p_step_sub_title_type => 'TEXT_WITH_SUBSTITUTIONS'
@@ -10922,7 +10926,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141213151957'
+ ,p_last_upd_yyyymmddhh24miss => '20141214115454'
   );
 null;
  
@@ -12643,6 +12647,7 @@ wwv_flow_api.create_list_item (
   p_list_countclicks_y_n=> 'N',
   p_list_text_01=> '',
   p_security_scheme => 186579061301136844+ wwv_flow_api.g_id_offset,
+  p_required_patch => 19434169279261909 + wwv_flow_api.g_id_offset,
   p_list_item_current_type=> 'TARGET_PAGE',
   p_list_item_owner=> '');
  
@@ -13719,7 +13724,7 @@ wwv_flow_api.create_field_template (
   p_id=> 194906175811062416 + wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_template_name=>'Optional Label with Help',
-  p_template_body1=>'<label for="#CURRENT_ITEM_NAME#"><a href="#" class="helplabel" tabindex="999">',
+  p_template_body1=>'<label for="#CURRENT_ITEM_NAME#"><a href="##CURRENT_ITEM_NAME#" class="helplabel" tabindex="999">',
   p_template_body2=>'<div class="htmltooltip">#CURRENT_ITEM_HELP_TEXT#</div></a></label>',
   p_before_item=>'',
   p_after_item=>'',
@@ -13727,7 +13732,6 @@ wwv_flow_api.create_field_template (
   p_on_error_after_label=>'',
   p_theme_id  => 202,
   p_theme_class_id => 1,
-  p_translate_this_template=> 'N',
   p_template_comment=> '');
 end;
 null;
@@ -13745,7 +13749,7 @@ wwv_flow_api.create_field_template (
   p_id=> 194906279967063673 + wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_template_name=>'Required Label with Help',
-  p_template_body1=>'<label for="#CURRENT_ITEM_NAME#"><img src="&G_THEME_PATH.required.png" alt="#VALUE_REQUIRED#" /><a href="#" class="helplabel" tabindex="999">',
+  p_template_body1=>'<label for="#CURRENT_ITEM_NAME#"><img src="&G_THEME_PATH.required.png" alt="#VALUE_REQUIRED#" /><a href="##CURRENT_ITEM_NAME#" class="helplabel" tabindex="999">',
   p_template_body2=>'<div>#CURRENT_ITEM_HELP_TEXT#</div></a></label>',
   p_before_item=>'',
   p_after_item=>'',
@@ -13753,7 +13757,6 @@ wwv_flow_api.create_field_template (
   p_on_error_after_label=>'',
   p_theme_id  => 202,
   p_theme_class_id => 2,
-  p_translate_this_template=> 'N',
   p_template_comment=> '');
 end;
 null;
@@ -14682,6 +14685,84 @@ null;
 end;
 /
 
+prompt  ......Message page_title_photos
+declare
+  h varchar2(32767) := null;
+ 
+begin
+ 
+h:=h||'Photo Gallery';
+
+wwv_flow_api.create_message (
+  p_id=>11226212884259153 + wwv_flow_api.g_id_offset,
+  p_flow_id=>wwv_flow.g_flow_id,
+  p_name=>'PAGE_TITLE_PHOTOS',
+  p_message_language=>'en',
+  p_message_text=>h);
+null;
+ 
+end;
+/
+
+prompt  ......Message help_comment_followup_notify
+declare
+  h varchar2(32767) := null;
+ 
+begin
+ 
+h:=h||'Check this box if you want an email sent<br/>when a new comment is posted to this article.'||unistr('\000a')||
+'';
+
+wwv_flow_api.create_message (
+  p_id=>11238705243642476 + wwv_flow_api.g_id_offset,
+  p_flow_id=>wwv_flow.g_flow_id,
+  p_name=>'HELP_COMMENT_FOLLOWUP_NOTIFY',
+  p_message_language=>'en',
+  p_message_text=>h);
+null;
+ 
+end;
+/
+
+prompt  ......Message help_comment_comment
+declare
+  h varchar2(32767) := null;
+ 
+begin
+ 
+h:=h||'Enter your comment.<br/>Use the formatting buttons to add allowed HTML tags.<br/>Example wrap program code to &lt;code&gt; tags so it is easier to read.'||unistr('\000a')||
+'';
+
+wwv_flow_api.create_message (
+  p_id=>11239606956656909 + wwv_flow_api.g_id_offset,
+  p_flow_id=>wwv_flow.g_flow_id,
+  p_name=>'HELP_COMMENT_COMMENT',
+  p_message_language=>'en',
+  p_message_text=>h);
+null;
+ 
+end;
+/
+
+prompt  ......Message followup_notify_checkbox
+declare
+  h varchar2(32767) := null;
+ 
+begin
+ 
+h:=h||'Notify me of follow-up comments via email.';
+
+wwv_flow_api.create_message (
+  p_id=>11240308669671316 + wwv_flow_api.g_id_offset,
+  p_flow_id=>wwv_flow.g_flow_id,
+  p_name=>'FOLLOWUP_NOTIFY_CHECKBOX',
+  p_message_language=>'en',
+  p_message_text=>h);
+null;
+ 
+end;
+/
+
 prompt  ......Message msg_no_html
 declare
   h varchar2(32767) := null;
@@ -14739,18 +14820,18 @@ null;
 end;
 /
 
-prompt  ......Message help_nick_name
+prompt  ......Message help_comment_nick_name
 declare
   h varchar2(32767) := null;
  
 begin
  
-h:=h||'Please enter your name.';
+h:=h||'Please enter your name.<br/>It will be displayed in comment posted by.';
 
 wwv_flow_api.create_message (
   p_id=>19794267816933737 + wwv_flow_api.g_id_offset,
   p_flow_id=>wwv_flow.g_flow_id,
-  p_name=>'HELP_NICK_NAME',
+  p_name=>'HELP_COMMENT_NICK_NAME',
   p_message_language=>'en',
   p_message_text=>h);
 null;
@@ -14758,18 +14839,18 @@ null;
 end;
 /
 
-prompt  ......Message help_last_name
+prompt  ......Message help_comment_last_name
 declare
   h varchar2(32767) := null;
  
 begin
  
-h:=h||'Please enter your last name.';
+h:=h||'Please enter your last name.<br/>It will be displayed in comment posted by.';
 
 wwv_flow_api.create_message (
   p_id=>19796981821942393 + wwv_flow_api.g_id_offset,
   p_flow_id=>wwv_flow.g_flow_id,
-  p_name=>'HELP_LAST_NAME',
+  p_name=>'HELP_COMMENT_LAST_NAME',
   p_message_language=>'en',
   p_message_text=>h);
 null;
@@ -14777,18 +14858,18 @@ null;
 end;
 /
 
-prompt  ......Message help_email
+prompt  ......Message help_comment_email
 declare
   h varchar2(32767) := null;
  
 begin
  
-h:=h||'Please enter your email address.';
+h:=h||'Please enter your email address.<br/>It will not be displayed for others.';
 
 wwv_flow_api.create_message (
   p_id=>19798894533951717 + wwv_flow_api.g_id_offset,
   p_flow_id=>wwv_flow.g_flow_id,
-  p_name=>'HELP_EMAIL',
+  p_name=>'HELP_COMMENT_EMAIL',
   p_message_language=>'en',
   p_message_text=>h);
 null;
@@ -14796,18 +14877,18 @@ null;
 end;
 /
 
-prompt  ......Message help_website
+prompt  ......Message help_comment_website
 declare
   h varchar2(32767) := null;
  
 begin
  
-h:=h||'Optionally please enter your website address.';
+h:=h||'Optionally please enter your website address.<br/>It will not be displayed for others.';
 
 wwv_flow_api.create_message (
   p_id=>19800297324965578 + wwv_flow_api.g_id_offset,
   p_flow_id=>wwv_flow.g_flow_id,
-  p_name=>'HELP_WEBSITE',
+  p_name=>'HELP_COMMENT_WEBSITE',
   p_message_language=>'en',
   p_message_text=>h);
 null;
@@ -15083,6 +15164,50 @@ null;
 end;
 /
 
+--application/shared_components/user_interface/shortcuts/help_comment_followup_notify
+ 
+begin
+ 
+declare
+  c1 varchar2(32767) := null;
+  l_clob clob;
+  l_length number := 1;
+begin
+c1 := null;
+wwv_flow_api.create_shortcut (
+ p_id=> 11238510850639898 + wwv_flow_api.g_id_offset,
+ p_flow_id=> wwv_flow.g_flow_id,
+ p_shortcut_name=> 'HELP_COMMENT_FOLLOWUP_NOTIFY',
+ p_shortcut_type=> 'MESSAGE',
+ p_shortcut=> c1);
+end;
+null;
+ 
+end;
+/
+
+--application/shared_components/user_interface/shortcuts/help_comment_comment
+ 
+begin
+ 
+declare
+  c1 varchar2(32767) := null;
+  l_clob clob;
+  l_length number := 1;
+begin
+c1 := null;
+wwv_flow_api.create_shortcut (
+ p_id=> 11239421405650202 + wwv_flow_api.g_id_offset,
+ p_flow_id=> wwv_flow.g_flow_id,
+ p_shortcut_name=> 'HELP_COMMENT_COMMENT',
+ p_shortcut_type=> 'MESSAGE',
+ p_shortcut=> c1);
+end;
+null;
+ 
+end;
+/
+
 --application/shared_components/user_interface/shortcuts/msg_no_html
  
 begin
@@ -15127,7 +15252,7 @@ null;
 end;
 /
 
---application/shared_components/user_interface/shortcuts/help_website
+--application/shared_components/user_interface/shortcuts/help_comment_website
  
 begin
  
@@ -15140,7 +15265,7 @@ c1 := null;
 wwv_flow_api.create_shortcut (
  p_id=> 19800988698969593 + wwv_flow_api.g_id_offset,
  p_flow_id=> wwv_flow.g_flow_id,
- p_shortcut_name=> 'HELP_WEBSITE',
+ p_shortcut_name=> 'HELP_COMMENT_WEBSITE',
  p_shortcut_type=> 'MESSAGE',
  p_shortcut=> c1);
 end;
@@ -15149,7 +15274,7 @@ null;
 end;
 /
 
---application/shared_components/user_interface/shortcuts/help_email
+--application/shared_components/user_interface/shortcuts/help_comment_email
  
 begin
  
@@ -15162,7 +15287,7 @@ c1 := null;
 wwv_flow_api.create_shortcut (
  p_id=> 19801382012972668 + wwv_flow_api.g_id_offset,
  p_flow_id=> wwv_flow.g_flow_id,
- p_shortcut_name=> 'HELP_EMAIL',
+ p_shortcut_name=> 'HELP_COMMENT_EMAIL',
  p_shortcut_type=> 'MESSAGE',
  p_shortcut=> c1);
 end;
@@ -15171,7 +15296,7 @@ null;
 end;
 /
 
---application/shared_components/user_interface/shortcuts/help_last_name
+--application/shared_components/user_interface/shortcuts/help_comment_last_name
  
 begin
  
@@ -15184,7 +15309,7 @@ c1 := null;
 wwv_flow_api.create_shortcut (
  p_id=> 19801578562974303 + wwv_flow_api.g_id_offset,
  p_flow_id=> wwv_flow.g_flow_id,
- p_shortcut_name=> 'HELP_LAST_NAME',
+ p_shortcut_name=> 'HELP_COMMENT_LAST_NAME',
  p_shortcut_type=> 'MESSAGE',
  p_shortcut=> c1);
 end;
@@ -15193,7 +15318,7 @@ null;
 end;
 /
 
---application/shared_components/user_interface/shortcuts/help_nick_name
+--application/shared_components/user_interface/shortcuts/help_comment_nick_name
  
 begin
  
@@ -15206,7 +15331,7 @@ c1 := null;
 wwv_flow_api.create_shortcut (
  p_id=> 19801775758975601 + wwv_flow_api.g_id_offset,
  p_flow_id=> wwv_flow.g_flow_id,
- p_shortcut_name=> 'HELP_NICK_NAME',
+ p_shortcut_name=> 'HELP_COMMENT_NICK_NAME',
  p_shortcut_type=> 'MESSAGE',
  p_shortcut=> c1);
 end;
@@ -20525,7 +20650,7 @@ s:=s||'ions, article access, category access and users search are logged. Settin
 s:=s||'ogs. Nothing to do with APEX engine logs. In future release this might be controlled by author. Currently only developer can change this attribute and it do affect only when blog is installed. Changing this already installed blog don''''t have any affects.'',''NUMBER'',''N'',''INTERNAL'',null,''A'');'||unistr('\000a')||
 'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_G';
 
-s:=s||'ROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''MODERATION_ENABLED'',''Y'',''Comments moderate'',''N'',''If set to "<b>Yes</b>", all comments must be moderated and approved by blog author(s).'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
+s:=s||'ROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''MODERATION_ENABLED'',''Y'',''Comments moderate'',''Y'',''If set to "<b>Yes</b>", all comments must be moderated and approved by blog author(s).'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
 'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''NEW_COMMENT_EMAIL_BODY'',''Y'',''Author ';
 
 s:=s||'notify email body'',''Hi #AUTHOR_NAME#,'||unistr('\000a')||
