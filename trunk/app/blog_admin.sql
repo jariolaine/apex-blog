@@ -12,7 +12,7 @@ prompt  APPLICATION 291 - Blog Administration
 -- Application Export:
 --   Application:     291
 --   Name:            Blog Administration
---   Date and Time:   18:07 Thursday December 11, 2014
+--   Date and Time:   10:42 Sunday December 14, 2014
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -62,7 +62,7 @@ prompt  APPLICATION 291 - Blog Administration
 --       Shortcuts:              4
 --       Plug-ins:               3
 --     Globalization:
---       Messages:              21
+--       Messages:              28
 --     Reports:
  
  
@@ -206,7 +206,7 @@ wwv_flow_api.create_flow(
   p_error_handling_function=> 'blog_log.apex_error_handler',
   p_default_error_display_loc=> 'INLINE_WITH_FIELD_AND_NOTIFICATION',
   p_last_updated_by => 'LAINFJAR',
-  p_last_upd_yyyymmddhh24miss=> '20141211133919',
+  p_last_upd_yyyymmddhh24miss=> '20141213171034',
   p_ui_type_name => null,
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
@@ -786,9 +786,25 @@ end;
 begin
  
 wwv_flow_api.create_static_lov_data (
-  p_id=>135840525341495812 + wwv_flow_api.g_id_offset,
+  p_id=>10909114035342411 + wwv_flow_api.g_id_offset,
   p_lov_id=>148903294211881959 + wwv_flow_api.g_id_offset,
   p_lov_disp_sequence=>30,
+  p_lov_disp_value=>'Photo Gallery',
+  p_lov_return_value=>'GALLERY',
+  p_lov_data_comment=> '');
+ 
+null;
+ 
+end;
+/
+
+ 
+begin
+ 
+wwv_flow_api.create_static_lov_data (
+  p_id=>135840525341495812 + wwv_flow_api.g_id_offset,
+  p_lov_id=>148903294211881959 + wwv_flow_api.g_id_offset,
+  p_lov_disp_sequence=>40,
   p_lov_disp_value=>'Theme',
   p_lov_return_value=>'THEME',
   p_lov_data_comment=> '');
@@ -1446,9 +1462,9 @@ wwv_flow_api.create_page (
  ,p_cache_timeout_seconds => 21600
  ,p_cache_by_user_yn => 'N'
  ,p_help_text => 
-'Welcome.'
+'&G_BLOG_NAME. administration console.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141130095128'
+ ,p_last_upd_yyyymmddhh24miss => '20141213084121'
   );
 null;
  
@@ -1646,7 +1662,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'Publish new articles or edit existing ones. Report shows also statistic about articles.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141206094536'
+ ,p_last_upd_yyyymmddhh24miss => '20141213091240'
   );
 null;
  
@@ -1688,14 +1704,14 @@ s:=s||' APEX_UTIL.PREPARE_URL('||unistr('\000a')||
 '    ''#'''||unistr('\000a')||
 '   END AS article_link'||unistr('\000a')||
 '  ,CASE WHEN a.active = ''Y'' AND a.valid_from <= SYSDATE THEN'||unistr('\000a')||
-'    ''target="_blank" title="'' || APEX_LANG.LANG(''View article'') || ''"'''||unistr('\000a')||
+'    ''target="_blank" title="'' || APEX_LANG.MESSAGE(''TITLE_ARTICLE_LINK'') || ''"'''||unistr('\000a')||
 '   ELSE'||unistr('\000a')||
 '    ''class="unwrap"'''||unistr('\000a')||
 '   END AS link_attr'||unistr('\000a')||
-'  ,b.author_id'||unistr('\000a')||
-'  ,b';
+'  ,b.autho';
 
-s:=s||'.author_name AS author'||unistr('\000a')||
+s:=s||'r_id'||unistr('\000a')||
+'  ,b.author_name AS author'||unistr('\000a')||
 '  ,a.keywords'||unistr('\000a')||
 '  ,c.category_id'||unistr('\000a')||
 '  ,c.category_name'||unistr('\000a')||
@@ -1708,15 +1724,20 @@ s:=s||'.author_name AS author'||unistr('\000a')||
 '  ,COALESCE(d.rate_click, 0) AS rate_click'||unistr('\000a')||
 '  ,COALESCE(d.article_rate, 0) AS article_rate'||unistr('\000a')||
 '  ,d.last_rate'||unistr('\000a')||
-'FROM #OWNER#.blog_article a'||unistr('\000a')||
-'JOIN #OWNER#.blog_auth';
+'  ,(select apex_lang.message(''TITLE_EDIT_';
 
-s:=s||'or b'||unistr('\000a')||
+s:=s||'LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_CATEGORY_LINK'') from dual) AS category_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_COMMENT_LINK'') from dual) AS comment_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_article a'||unistr('\000a')||
+'JOIN #OWNER#.blog_author b'||unistr('\000a')||
 '  ON a.author_id = b.author_id'||unistr('\000a')||
 'JOIN #OWNER#.blog_category c'||unistr('\000a')||
 '  ON a.category_id = c.category_id'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_article_log d'||unistr('\000a')||
-'  ON a.article_id = d.article_id'||unistr('\000a')||
+'  ON a';
+
+s:=s||'.article_id = d.article_id'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_comment_log e'||unistr('\000a')||
 '  ON a.article_id = e.article_id';
 
@@ -1810,14 +1831,14 @@ a1:=a1||' APEX_UTIL.PREPARE_URL('||unistr('\000a')||
 '    ''#'''||unistr('\000a')||
 '   END AS article_link'||unistr('\000a')||
 '  ,CASE WHEN a.active = ''Y'' AND a.valid_from <= SYSDATE THEN'||unistr('\000a')||
-'    ''target="_blank" title="'' || APEX_LANG.LANG(''View article'') || ''"'''||unistr('\000a')||
+'    ''target="_blank" title="'' || APEX_LANG.MESSAGE(''TITLE_ARTICLE_LINK'') || ''"'''||unistr('\000a')||
 '   ELSE'||unistr('\000a')||
 '    ''class="unwrap"'''||unistr('\000a')||
 '   END AS link_attr'||unistr('\000a')||
-'  ,b.author_id'||unistr('\000a')||
-'  ,b';
+'  ,b.autho';
 
-a1:=a1||'.author_name AS author'||unistr('\000a')||
+a1:=a1||'r_id'||unistr('\000a')||
+'  ,b.author_name AS author'||unistr('\000a')||
 '  ,a.keywords'||unistr('\000a')||
 '  ,c.category_id'||unistr('\000a')||
 '  ,c.category_name'||unistr('\000a')||
@@ -1830,15 +1851,20 @@ a1:=a1||'.author_name AS author'||unistr('\000a')||
 '  ,COALESCE(d.rate_click, 0) AS rate_click'||unistr('\000a')||
 '  ,COALESCE(d.article_rate, 0) AS article_rate'||unistr('\000a')||
 '  ,d.last_rate'||unistr('\000a')||
-'FROM #OWNER#.blog_article a'||unistr('\000a')||
-'JOIN #OWNER#.blog_auth';
+'  ,(select apex_lang.message(''TITLE_EDIT_';
 
-a1:=a1||'or b'||unistr('\000a')||
+a1:=a1||'LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_CATEGORY_LINK'') from dual) AS category_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_COMMENT_LINK'') from dual) AS comment_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_article a'||unistr('\000a')||
+'JOIN #OWNER#.blog_author b'||unistr('\000a')||
 '  ON a.author_id = b.author_id'||unistr('\000a')||
 'JOIN #OWNER#.blog_category c'||unistr('\000a')||
 '  ON a.category_id = c.category_id'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_article_log d'||unistr('\000a')||
-'  ON a.article_id = d.article_id'||unistr('\000a')||
+'  ON a';
+
+a1:=a1||'.article_id = d.article_id'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_comment_log e'||unistr('\000a')||
 '  ON a.article_id = e.article_id';
 
@@ -1893,7 +1919,7 @@ wwv_flow_api.create_worksheet(
   p_show_help=>'Y',
   p_download_formats=>'CSV:HTML:EMAIL',
   p_detail_link=>'f?p=&APP_ID.:12:&SESSION.::&DEBUG.:12:P12_ARTICLE_ID:#ARTICLE_ID#',
-  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="Edit" title="Edit" />',
+  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="#EDIT_LINK_TITLE#" title="#EDIT_LINK_TITLE#" />',
   p_allow_exclude_null_values=>'N',
   p_allow_hide_extra_columns=>'N',
   p_icon_view_enabled_yn=>'N',
@@ -2331,6 +2357,7 @@ wwv_flow_api.create_worksheet_column(
   p_display_in_default_rpt =>'Y',
   p_column_link            =>'f?p=&APP_ID.:13:&SESSION.::&DEBUG.:RP,CIR,RIR:IR_CATEGORY_ID:#CATEGORY_ID#',
   p_column_linktext        =>'#CATEGORY_NAME#',
+  p_column_link_attr       =>'title="#CATEGORY_LINK_TITLE#"',
   p_is_sortable            =>'Y',
   p_allow_sorting          =>'Y',
   p_allow_filtering        =>'Y',
@@ -2408,6 +2435,7 @@ wwv_flow_api.create_worksheet_column(
   p_display_in_default_rpt =>'Y',
   p_column_link            =>'f?p=&APP_ID.:21:&SESSION.::&DEBUG.:RP,CIR,RIR:IR_ARTICLE_ID:#ARTICLE_ID#',
   p_column_linktext        =>'#COMMENT_COUNT#',
+  p_column_link_attr       =>'title="#COMMENT_LINK_TITLE#"',
   p_is_sortable            =>'Y',
   p_allow_sorting          =>'Y',
   p_allow_filtering        =>'Y',
@@ -2888,10 +2916,121 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10841632494586724+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 11,
+  p_worksheet_id => 148825799137162516+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'EDIT_LINK_TITLE',
+  p_display_order          =>41,
+  p_column_identifier      =>'AO',
+  p_column_label           =>'Edit link title',
+  p_report_label           =>'Edit link title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10852400482981429+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 11,
+  p_worksheet_id => 148825799137162516+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'CATEGORY_LINK_TITLE',
+  p_display_order          =>42,
+  p_column_identifier      =>'AP',
+  p_column_label           =>'Category Link Title',
+  p_report_label           =>'Category Link Title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10853431944997203+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 11,
+  p_worksheet_id => 148825799137162516+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'COMMENT_LINK_TITLE',
+  p_display_order          =>43,
+  p_column_identifier      =>'AQ',
+  p_column_label           =>'Comment Link Title',
+  p_report_label           =>'Comment Link Title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'ARTICLE_LINK:ARTICLE_TITLE:AUTHOR:ACTIVE:VALID_FROM:CATEGORY_NAME:COMMENT_COUNT:LAST_COMMENT:VIEW_COUNT:LAST_VIEW:KEYWORDS:';
+rc1:=rc1||'ARTICLE_LINK:ARTICLE_TITLE:AUTHOR:ACTIVE:VALID_FROM:CATEGORY_NAME:COMMENT_COUNT:LAST_COMMENT:VIEW_COUNT:LAST_VIEW:KEYWORDS:EDIT_LINK_TITLE:CATEGORY_LINK_TITLE:COMMENT_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 148827990164162746+wwv_flow_api.g_id_offset,
@@ -4550,7 +4689,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'Report showing current categories for blog articles. Also shows statistics for category usage in articles. Allows for edit and creation of categories.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141206094806'
+ ,p_last_upd_yyyymmddhh24miss => '20141213080626'
   );
 null;
  
@@ -4580,9 +4719,10 @@ s:=s||'WITH cat_stat AS ('||unistr('\000a')||
 '  ,COALESCE(a.article_count, 0) AS article_count'||unistr('\000a')||
 '  ,COALESCE(b.view_count, 0) AS view_count'||unistr('\000a')||
 '  ,b.last_view'||unistr('\000a')||
-'FROM #OWNER#.blog_cate';
+'  ,(select apex_lang.m';
 
-s:=s||'gory c'||unistr('\000a')||
+s:=s||'essage(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_category c'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_category_log b'||unistr('\000a')||
 '  ON c.category_id = b.category_id'||unistr('\000a')||
 'LEFT JOIN cat_stat a'||unistr('\000a')||
@@ -4637,9 +4777,10 @@ a1:=a1||'WITH cat_stat AS ('||unistr('\000a')||
 '  ,COALESCE(a.article_count, 0) AS article_count'||unistr('\000a')||
 '  ,COALESCE(b.view_count, 0) AS view_count'||unistr('\000a')||
 '  ,b.last_view'||unistr('\000a')||
-'FROM #OWNER#.blog_cate';
+'  ,(select apex_lang.m';
 
-a1:=a1||'gory c'||unistr('\000a')||
+a1:=a1||'essage(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_category c'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_category_log b'||unistr('\000a')||
 '  ON c.category_id = b.category_id'||unistr('\000a')||
 'LEFT JOIN cat_stat a'||unistr('\000a')||
@@ -4696,7 +4837,7 @@ wwv_flow_api.create_worksheet(
   p_show_help=>'Y',
   p_download_formats=>'CSV:HTML:EMAIL',
   p_detail_link=>'f?p=&APP_ID.:14:&SESSION.::&DEBUG.:14:P14_CATEGORY_ID:#CATEGORY_ID#',
-  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="Edit" title="Edit" />',
+  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="#EDIT_LINK_TITLE#" title="#EDIT_LINK_TITLE#" />',
   p_allow_exclude_null_values=>'N',
   p_allow_hide_extra_columns=>'N',
   p_icon_view_enabled_yn=>'N',
@@ -5123,10 +5264,47 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10842404026599963+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 13,
+  p_worksheet_id => 148834472196288479+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'EDIT_LINK_TITLE',
+  p_display_order          =>12,
+  p_column_identifier      =>'L',
+  p_column_label           =>'Edit link title',
+  p_report_label           =>'Edit link title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'CATEGORY_SEQ:CATEGORY_NAME:ACTIVE:ARTICLE_COUNT:VIEW_COUNT:LAST_VIEW:';
+rc1:=rc1||'CATEGORY_SEQ:CATEGORY_NAME:ACTIVE:ARTICLE_COUNT:VIEW_COUNT:LAST_VIEW:EDIT_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 148836000525288694+wwv_flow_api.g_id_offset,
@@ -5804,7 +5982,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'Report showing current files used in blog articles. Also shows statistics for file usage in articles. Allows for edit and creation of files to be uploaded.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141206095119'
+ ,p_last_upd_yyyymmddhh24miss => '20141213080712'
   );
 null;
  
@@ -5841,6 +6019,7 @@ s:=s||'HEN'||unistr('\000a')||
 '     COALESCE(l.click_count, 0)'||unistr('\000a')||
 '   END AS click_count'||unistr('\000a')||
 '  ,l.last_click'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_file f'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_file_log l'||unistr('\000a')||
 '  ON f.file_id = l.file_id'||unistr('\000a')||
@@ -5902,6 +6081,7 @@ a1:=a1||'HEN'||unistr('\000a')||
 '     COALESCE(l.click_count, 0)'||unistr('\000a')||
 '   END AS click_count'||unistr('\000a')||
 '  ,l.last_click'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_file f'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_file_log l'||unistr('\000a')||
 '  ON f.file_id = l.file_id'||unistr('\000a')||
@@ -5958,7 +6138,7 @@ wwv_flow_api.create_worksheet(
   p_show_help=>'Y',
   p_download_formats=>'CSV:HTML:EMAIL',
   p_detail_link=>'f?p=&APP_ID.:16:&SESSION.::&DEBUG.:16:P16_FILE_ID:#FILE_ID#',
-  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="Edit" title="Edit" />',
+  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="#EDIT_LINK_TITLE#" title="#EDIT_LINK_TITLE#" />',
   p_allow_exclude_null_values=>'N',
   p_allow_hide_extra_columns=>'N',
   p_icon_view_enabled_yn=>'N',
@@ -6568,10 +6748,47 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10842626874604608+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 15,
+  p_worksheet_id => 148898787615715330+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'EDIT_LINK_TITLE',
+  p_display_order          =>20,
+  p_column_identifier      =>'U',
+  p_column_label           =>'Edit link title',
+  p_report_label           =>'Edit link title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'FILE_NAME:ACTIVE:MIME_TYPE:FILE_SIZE:BLOB_CONTENT:CLICK_COUNT:LAST_CLICK:FILE_TYPE:LINK_URL';
+rc1:=rc1||'FILE_NAME:ACTIVE:MIME_TYPE:FILE_SIZE:BLOB_CONTENT:CLICK_COUNT:LAST_CLICK:FILE_TYPE:LINK_URL:EDIT_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 148900874668715519+wwv_flow_api.g_id_offset,
@@ -6681,9 +6898,14 @@ wwv_flow_api.create_page (
  ,p_cache_timeout_seconds => 21600
  ,p_cache_by_user_yn => 'N'
  ,p_help_text => 
-'Allows user to upload file and add it to available files for blog usage. Also can edit attributes of existing file.'
+'Allows user to upload file and add it to available files for blog usage. Also can edit attributes of existing file.<br/>'||unistr('\000a')||
+'Files with type "<b>Download</b>" are listed in blog reader files page and available for users to download.<br/>'||unistr('\000a')||
+'Files with type "<b>Photo Gallery</b>" are shown in blog reader photos page as slider.<br/>'||unistr('\000a')||
+'Files with type "<b>Image</b>" are not visible automatically in blog reade'||
+'r. You can use this for pictures you like include e.g. articles.<br/>'||unistr('\000a')||
+'Files with type "<b>Theme</b>" is for blog theme CSS, JavaScripts and images.<br/>'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141211133919'
+ ,p_last_upd_yyyymmddhh24miss => '20141213171034'
   );
 null;
  
@@ -6836,7 +7058,7 @@ wwv_flow_api.create_page_item(
   p_data_type=> 'VARCHAR',
   p_is_required=> false,
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 1,
+  p_item_sequence=> 10,
   p_item_plug_id => 148926493907163453+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'NO',
   p_item_default_type=> 'STATIC_TEXT_WITH_SUBSTITUTIONS',
@@ -6886,7 +7108,7 @@ wwv_flow_api.create_page_item(
   p_data_type=> 'VARCHAR',
   p_is_required=> true,
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 30,
+  p_item_sequence=> 40,
   p_item_plug_id => 148926493907163453+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'NO',
   p_item_default=> 'Y',
@@ -6939,7 +7161,7 @@ wwv_flow_api.create_page_item(
   p_data_type=> 'VARCHAR',
   p_is_required=> true,
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 20,
+  p_item_sequence=> 30,
   p_item_plug_id => 148926493907163453+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'NO',
   p_item_default_type=> 'STATIC_TEXT_WITH_SUBSTITUTIONS',
@@ -6991,7 +7213,7 @@ wwv_flow_api.create_page_item(
   p_data_type=> 'VARCHAR',
   p_is_required=> false,
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 10,
+  p_item_sequence=> 20,
   p_item_plug_id => 148926493907163453+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'NO',
   p_item_default_type=> 'STATIC_TEXT_WITH_SUBSTITUTIONS',
@@ -7046,7 +7268,7 @@ wwv_flow_api.create_page_item(
   p_data_type=> 'VARCHAR',
   p_is_required=> false,
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 40,
+  p_item_sequence=> 50,
   p_item_plug_id => 148926493907163453+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'NO',
   p_item_default_type=> 'STATIC_TEXT_WITH_SUBSTITUTIONS',
@@ -7095,7 +7317,7 @@ wwv_flow_api.create_page_item(
   p_data_type=> 'VARCHAR',
   p_is_required=> false,
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 50,
+  p_item_sequence=> 60,
   p_item_plug_id => 148850577367660460+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'NO',
   p_item_default_type=> 'STATIC_TEXT_WITH_SUBSTITUTIONS',
@@ -7131,7 +7353,7 @@ end;
 begin
  
 wwv_flow_api.create_page_computation(
-  p_id=> 63368944448015346 + wwv_flow_api.g_id_offset,
+  p_id=> 10914611514525873 + wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_flow_step_id=> 16,
   p_computation_sequence => 10,
@@ -7139,9 +7361,9 @@ wwv_flow_api.create_page_computation(
   p_computation_point=> 'AFTER_SUBMIT',
   p_computation_type=> 'PLSQL_EXPRESSION',
   p_computation_processed=> 'REPLACE_EXISTING',
-  p_computation=> 'REPLACE(:P16_DESCRIPTION, CHR(13))',
+  p_computation=> 'REPLACE(:P16_DESCRIPTION, CHR(13));',
   p_compute_when => '',
-  p_compute_when_type=>'');
+  p_compute_when_type=>'NEVER');
  
 null;
  
@@ -7373,7 +7595,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'Report showing current resources for blog viewers. Allows for edit and creation of resources.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141206203524'
+ ,p_last_upd_yyyymmddhh24miss => '20141213080906'
   );
 null;
  
@@ -7385,17 +7607,18 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-s:=s||'SELECT link_id'||unistr('\000a')||
-'  ,created_on'||unistr('\000a')||
-'  ,created_by'||unistr('\000a')||
-'  ,changed_on'||unistr('\000a')||
-'  ,changed_by'||unistr('\000a')||
-'  ,active'||unistr('\000a')||
-'  ,link_type'||unistr('\000a')||
-'  ,link_title'||unistr('\000a')||
-'  ,link_text'||unistr('\000a')||
-'  ,link_url         '||unistr('\000a')||
-'FROM #OWNER#.blog_resource'||unistr('\000a')||
+s:=s||'SELECT r.link_id'||unistr('\000a')||
+'  ,r.created_on'||unistr('\000a')||
+'  ,r.created_by'||unistr('\000a')||
+'  ,r.changed_on'||unistr('\000a')||
+'  ,r.changed_by'||unistr('\000a')||
+'  ,r.active'||unistr('\000a')||
+'  ,r.link_type'||unistr('\000a')||
+'  ,r.link_title'||unistr('\000a')||
+'  ,r.link_text'||unistr('\000a')||
+'  ,r.link_url'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_resource r'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_page_plug (
@@ -7428,17 +7651,18 @@ end;
 declare
  a1 varchar2(32767) := null;
 begin
-a1:=a1||'SELECT link_id'||unistr('\000a')||
-'  ,created_on'||unistr('\000a')||
-'  ,created_by'||unistr('\000a')||
-'  ,changed_on'||unistr('\000a')||
-'  ,changed_by'||unistr('\000a')||
-'  ,active'||unistr('\000a')||
-'  ,link_type'||unistr('\000a')||
-'  ,link_title'||unistr('\000a')||
-'  ,link_text'||unistr('\000a')||
-'  ,link_url         '||unistr('\000a')||
-'FROM #OWNER#.blog_resource'||unistr('\000a')||
+a1:=a1||'SELECT r.link_id'||unistr('\000a')||
+'  ,r.created_on'||unistr('\000a')||
+'  ,r.created_by'||unistr('\000a')||
+'  ,r.changed_on'||unistr('\000a')||
+'  ,r.changed_by'||unistr('\000a')||
+'  ,r.active'||unistr('\000a')||
+'  ,r.link_type'||unistr('\000a')||
+'  ,r.link_title'||unistr('\000a')||
+'  ,r.link_text'||unistr('\000a')||
+'  ,r.link_url'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_resource r'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_worksheet(
@@ -7492,7 +7716,7 @@ wwv_flow_api.create_worksheet(
   p_show_help=>'Y',
   p_download_formats=>'CSV:HTML:EMAIL',
   p_detail_link=>'f?p=&APP_ID.:18:&SESSION.::&DEBUG.:18:P18_LINK_ID:#LINK_ID#',
-  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="Edit" title="Edit" />',
+  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="#EDIT_LINK_TITLE#" title="#EDIT_LINK_TITLE#" />',
   p_allow_exclude_null_values=>'N',
   p_allow_hide_extra_columns=>'N',
   p_icon_view_enabled_yn=>'N',
@@ -7878,10 +8102,47 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10843010484612127+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 17,
+  p_worksheet_id => 148973179922993874+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'EDIT_LINK_TITLE',
+  p_display_order          =>12,
+  p_column_identifier      =>'L',
+  p_column_label           =>'Edit link title',
+  p_report_label           =>'Edit link title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'LINK_TITLE:LINK_TYPE:ACTIVE:LINK_TEXT:';
+rc1:=rc1||'LINK_TITLE:LINK_TYPE:ACTIVE:LINK_TEXT:EDIT_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 148974800001994060+wwv_flow_api.g_id_offset,
@@ -8618,7 +8879,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'Report showing current Frequently Asked Questions (FAQ) for blog articles. Allows for edit and creation of FAQ''s.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141206095444'
+ ,p_last_upd_yyyymmddhh24miss => '20141213081550'
   );
 null;
  
@@ -8630,16 +8891,17 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-s:=s||'SELECT faq_id'||unistr('\000a')||
-'  ,created_on'||unistr('\000a')||
-'  ,created_by'||unistr('\000a')||
-'  ,changed_on'||unistr('\000a')||
-'  ,changed_by'||unistr('\000a')||
-'  ,active'||unistr('\000a')||
-'  ,faq_seq'||unistr('\000a')||
-'  ,question'||unistr('\000a')||
-'  ,answer'||unistr('\000a')||
-'FROM #OWNER#.blog_faq'||unistr('\000a')||
+s:=s||'SELECT q.faq_id'||unistr('\000a')||
+'  ,q.created_on'||unistr('\000a')||
+'  ,q.created_by'||unistr('\000a')||
+'  ,q.changed_on'||unistr('\000a')||
+'  ,q.changed_by'||unistr('\000a')||
+'  ,q.active'||unistr('\000a')||
+'  ,q.faq_seq'||unistr('\000a')||
+'  ,q.question'||unistr('\000a')||
+'  ,q.answer'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_faq q'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_page_plug (
@@ -8672,16 +8934,17 @@ end;
 declare
  a1 varchar2(32767) := null;
 begin
-a1:=a1||'SELECT faq_id'||unistr('\000a')||
-'  ,created_on'||unistr('\000a')||
-'  ,created_by'||unistr('\000a')||
-'  ,changed_on'||unistr('\000a')||
-'  ,changed_by'||unistr('\000a')||
-'  ,active'||unistr('\000a')||
-'  ,faq_seq'||unistr('\000a')||
-'  ,question'||unistr('\000a')||
-'  ,answer'||unistr('\000a')||
-'FROM #OWNER#.blog_faq'||unistr('\000a')||
+a1:=a1||'SELECT q.faq_id'||unistr('\000a')||
+'  ,q.created_on'||unistr('\000a')||
+'  ,q.created_by'||unistr('\000a')||
+'  ,q.changed_on'||unistr('\000a')||
+'  ,q.changed_by'||unistr('\000a')||
+'  ,q.active'||unistr('\000a')||
+'  ,q.faq_seq'||unistr('\000a')||
+'  ,q.question'||unistr('\000a')||
+'  ,q.answer'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_faq q'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_worksheet(
@@ -8735,17 +8998,15 @@ wwv_flow_api.create_worksheet(
   p_show_help=>'Y',
   p_download_formats=>'CSV:HTML:EMAIL',
   p_detail_link=>'f?p=&APP_ID.:20:&SESSION.::&DEBUG.:20:P20_FAQ_ID:#FAQ_ID#',
-  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="Edit" title="Edit" />',
+  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="#EDIT_LINK_TITLE#" title="#EDIT_LINK_TITLE#" />',
   p_allow_exclude_null_values=>'N',
   p_allow_hide_extra_columns=>'N',
   p_icon_view_enabled_yn=>'N',
   p_icon_view_use_custom=>'N',
   p_icon_view_columns_per_row=>1,
   p_detail_view_enabled_yn=>'Y',
-  p_detail_view_for_each_row=>'<h3><span>Q#FAQ_NO#.</span>&nbsp;#QUESTION#</h3>'||unistr('\000a')||
-'<div style="margin:6px 0">'||unistr('\000a')||
-'    #ANSWER#'||unistr('\000a')||
-'</div>',
+  p_detail_view_for_each_row=>'<h2><span>Q</span>&nbsp;#QUESTION#</h2>'||unistr('\000a')||
+'<div style="margin:3px 0 20px 0">#ANSWER#</div>',
   p_owner=>'LAINFJAR',
   p_internal_uid=> 6659202447754956);
 end;
@@ -9084,10 +9345,47 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10843415000625241+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 19,
+  p_worksheet_id => 148986872736158089+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'EDIT_LINK_TITLE',
+  p_display_order          =>11,
+  p_column_identifier      =>'K',
+  p_column_label           =>'Edit link title',
+  p_report_label           =>'Edit link title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'FAQ_SEQ:ACTIVE:QUESTION:ANSWER:';
+rc1:=rc1||'FAQ_SEQ:ACTIVE:QUESTION:ANSWER:EDIT_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 148989185176169562+wwv_flow_api.g_id_offset,
@@ -9748,7 +10046,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'Allows to see and respond to posted comments from blog readers.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141206095938'
+ ,p_last_upd_yyyymmddhh24miss => '20141213082834'
   );
 null;
  
@@ -9802,17 +10100,20 @@ s:=s||' ,c.moderated_on AS moderated_on_since'||unistr('\000a')||
 s:=s||' = ''Y'' THEN'||unistr('\000a')||
 '     c.article_id'||unistr('\000a')||
 '   END AS reply_article_id'||unistr('\000a')||
-'  ,(SELECT apex_lang.lang(''Reply'') FROM dual) AS reply_img_title '||unistr('\000a')||
-'  ,(SELECT apex_lang.lang(''Edit'') FROM dual) AS edit_img_title '||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_REPLY_LINK'') from dual) AS reply_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_ARTICLE_LINK'') from dual) AS article_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_USER_LINK'') from dual) AS user_link_title'||unistr('\000a')||
+'  ,(select apex_lang.me';
+
+s:=s||'ssage(''TITLE_SESSION_LINK'') from dual) AS session_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_comment c'||unistr('\000a')||
 'INNER JOIN #OWNER#.blog_article a'||unistr('\000a')||
 '  ON c.article_id = a.article_id'||unistr('\000a')||
 'INNER JOIN #OWNER#.blog_comment_user u'||unistr('\000a')||
 '  ON c.user_id = u.user_id'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_comment_notify n'||unistr('\000a')||
-'  ON c.user_';
-
-s:=s||'id = n.user_id'||unistr('\000a')||
+'  ON c.user_id = n.user_id'||unistr('\000a')||
 ' AND c.article_id = n.article_id'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_author a'||unistr('\000a')||
 '  ON u.user_id = a.author_id';
@@ -9890,17 +10191,20 @@ a1:=a1||' ,c.moderated_on AS moderated_on_since'||unistr('\000a')||
 a1:=a1||' = ''Y'' THEN'||unistr('\000a')||
 '     c.article_id'||unistr('\000a')||
 '   END AS reply_article_id'||unistr('\000a')||
-'  ,(SELECT apex_lang.lang(''Reply'') FROM dual) AS reply_img_title '||unistr('\000a')||
-'  ,(SELECT apex_lang.lang(''Edit'') FROM dual) AS edit_img_title '||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_REPLY_LINK'') from dual) AS reply_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_ARTICLE_LINK'') from dual) AS article_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_USER_LINK'') from dual) AS user_link_title'||unistr('\000a')||
+'  ,(select apex_lang.me';
+
+a1:=a1||'ssage(''TITLE_SESSION_LINK'') from dual) AS session_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_comment c'||unistr('\000a')||
 'INNER JOIN #OWNER#.blog_article a'||unistr('\000a')||
 '  ON c.article_id = a.article_id'||unistr('\000a')||
 'INNER JOIN #OWNER#.blog_comment_user u'||unistr('\000a')||
 '  ON c.user_id = u.user_id'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_comment_notify n'||unistr('\000a')||
-'  ON c.user_';
-
-a1:=a1||'id = n.user_id'||unistr('\000a')||
+'  ON c.user_id = n.user_id'||unistr('\000a')||
 ' AND c.article_id = n.article_id'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_author a'||unistr('\000a')||
 '  ON u.user_id = a.author_id';
@@ -9956,7 +10260,7 @@ wwv_flow_api.create_worksheet(
   p_show_help=>'Y',
   p_download_formats=>'CSV:HTML:EMAIL',
   p_detail_link=>'f?p=&APP_ID.:22:&SESSION.::&DEBUG.:22:P22_ARTICLE_ID,P22_PARENT_ID:#REPLY_ARTICLE_ID#,#REPLY_COMMENT_ID#',
-  p_detail_link_text=>'<img src="&G_THEME_PATH.nav_feedback.png" class="#ACTIVE#" alt="#REPLY_IMG_TITLE#" title="#REPLY_IMG_TITLE#" />',
+  p_detail_link_text=>'<img src="&G_THEME_PATH.nav_feedback.png" class="#ACTIVE#" alt="#REPLY_LINK_TITLE#" title="#REPLY_LINK_TITLE#" />',
   p_allow_exclude_null_values=>'N',
   p_allow_hide_extra_columns=>'N',
   p_icon_view_enabled_yn=>'N',
@@ -9981,7 +10285,7 @@ wwv_flow_api.create_worksheet_column(
   p_sync_form_label        =>'Y',
   p_display_in_default_rpt =>'Y',
   p_column_link            =>'f?p=&APP_ID.:22:&SESSION.::&DEBUG.:22:P22_COMMENT_ID:#COMMENT_ID#',
-  p_column_linktext        =>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="#EDIT_IMG_TITLE#" title="#EDIT_IMG_TITLE#" />',
+  p_column_linktext        =>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="#EDIT_LINK_TITLE#" title="#EDIT_LINK_TITLE#" />',
   p_is_sortable            =>'Y',
   p_allow_sorting          =>'N',
   p_allow_filtering        =>'N',
@@ -10132,6 +10436,7 @@ wwv_flow_api.create_worksheet_column(
   p_display_in_default_rpt =>'Y',
   p_column_link            =>'f?p=&APP_ID.:35:&SESSION.::&DEBUG.:RP,35,CIR,RIR:P35_APEX_SESSION_ID,P35_CALLING_PAGE:#APEX_SESSION_ID#,&APP_PAGE_ID.',
   p_column_linktext        =>'#APEX_SESSION_ID#',
+  p_column_link_attr       =>'title="#SESSION_LINK_TITLE#"',
   p_is_sortable            =>'Y',
   p_allow_sorting          =>'Y',
   p_allow_filtering        =>'Y',
@@ -10171,6 +10476,7 @@ wwv_flow_api.create_worksheet_column(
   p_display_in_default_rpt =>'Y',
   p_column_link            =>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:RP,CIR,RIR:IR_ARTICLE_ID:#ARTICLE_ID#',
   p_column_linktext        =>'#ARTICLE_TITLE#',
+  p_column_link_attr       =>'title="#ARTICLE_LINK_TITLE#"',
   p_is_sortable            =>'Y',
   p_allow_sorting          =>'Y',
   p_allow_filtering        =>'Y',
@@ -10210,6 +10516,7 @@ wwv_flow_api.create_worksheet_column(
   p_display_in_default_rpt =>'Y',
   p_column_link            =>'f?p=&APP_ID.:61:&SESSION.::&DEBUG.:RP,CIR,RIR:IR_USER_ID:#USER_ID#',
   p_column_linktext        =>'#NICK_NAME#',
+  p_column_link_attr       =>'title="#USER_LINK_TITLE#"',
   p_is_sortable            =>'Y',
   p_allow_sorting          =>'Y',
   p_allow_filtering        =>'Y',
@@ -10953,15 +11260,15 @@ end;
 /
 begin
 wwv_flow_api.create_worksheet_column(
-  p_id => 3153931480637594+wwv_flow_api.g_id_offset,
+  p_id => 10844313441686790+wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_page_id=> 21,
   p_worksheet_id => 149058386212127839+wwv_flow_api.g_id_offset,
-  p_db_column_name         =>'REPLY_IMG_TITLE',
+  p_db_column_name         =>'REPLY_LINK_TITLE',
   p_display_order          =>38,
   p_column_identifier      =>'AK',
-  p_column_label           =>'Reply Img Title',
-  p_report_label           =>'Reply Img Title',
+  p_column_label           =>'Reply link title',
+  p_report_label           =>'Reply link title',
   p_sync_form_label        =>'Y',
   p_display_in_default_rpt =>'Y',
   p_is_sortable            =>'Y',
@@ -10990,15 +11297,126 @@ end;
 /
 begin
 wwv_flow_api.create_worksheet_column(
-  p_id => 3154106248649214+wwv_flow_api.g_id_offset,
+  p_id => 10844415884686791+wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_page_id=> 21,
   p_worksheet_id => 149058386212127839+wwv_flow_api.g_id_offset,
-  p_db_column_name         =>'EDIT_IMG_TITLE',
+  p_db_column_name         =>'EDIT_LINK_TITLE',
   p_display_order          =>39,
   p_column_identifier      =>'AL',
-  p_column_label           =>'Edit Img Title',
-  p_report_label           =>'Edit Img Title',
+  p_column_label           =>'Edit link title',
+  p_report_label           =>'Edit link title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10845127003710868+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 21,
+  p_worksheet_id => 149058386212127839+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'ARTICLE_LINK_TITLE',
+  p_display_order          =>40,
+  p_column_identifier      =>'AM',
+  p_column_label           =>'Article link title',
+  p_report_label           =>'Article link title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10845302849722088+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 21,
+  p_worksheet_id => 149058386212127839+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'USER_LINK_TITLE',
+  p_display_order          =>41,
+  p_column_identifier      =>'AN',
+  p_column_label           =>'User link title',
+  p_report_label           =>'User link title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10845715129731596+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 21,
+  p_worksheet_id => 149058386212127839+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'SESSION_LINK_TITLE',
+  p_display_order          =>42,
+  p_column_identifier      =>'AO',
+  p_column_label           =>'Session link title',
+  p_report_label           =>'Session link title',
   p_sync_form_label        =>'Y',
   p_display_in_default_rpt =>'Y',
   p_is_sortable            =>'Y',
@@ -11028,7 +11446,7 @@ end;
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'EDIT_COMMENT:ARTICLE_TITLE:NICK_NAME:FOLLOWUP_NOTIFY:COMMENT_TEXT:MODERATED:ACTIVE:NOTIFY_EMAIL_SENT:CREATED_ON_SINCE:APEX_SESSION_ID:REPLY_IMG_TITLE:EDIT_IMG_TITLE';
+rc1:=rc1||'EDIT_COMMENT:ARTICLE_TITLE:NICK_NAME:FOLLOWUP_NOTIFY:COMMENT_TEXT:MODERATED:ACTIVE:NOTIFY_EMAIL_SENT:CREATED_ON_SINCE:APEX_SESSION_ID:REPLY_LINK_TITLE:EDIT_LINK_TITLE:ARTICLE_LINK_TITLE:USER_LINK_TITLE:SESSION_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 149060895572132198+wwv_flow_api.g_id_offset,
@@ -12666,7 +13084,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20140719130454'
+ ,p_last_upd_yyyymmddhh24miss => '20141213081905'
   );
 null;
  
@@ -12678,23 +13096,22 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-s:=s||'SELECT t.LONG_TEXT_TYPE,'||unistr('\000a')||
-'  t.CREATED_ON,'||unistr('\000a')||
-'  t.CREATED_BY,'||unistr('\000a')||
-'  t.CHANGED_ON,'||unistr('\000a')||
-'  t.CHANGED_BY,'||unistr('\000a')||
-'  t.LONG_TEXT_DESCRIPTION,'||unistr('\000a')||
-'  CASE WHEN t.LONG_TEXT IS NULL THEN'||unistr('\000a')||
-'    NULL'||unistr('\000a')||
-'  WHEN LENGTH(t.LONG_TEXT) > 256 THEN'||unistr('\000a')||
-'    apex_plugin_util.replace_substitutions(SUBSTR(t.LONG_TEXT, 1, INSTR(t.LONG_TEXT, '' '', 256)) || ''...'')'||unistr('\000a')||
-'  ELSE'||unistr('\000a')||
-'    apex_plugin_util.replace_substitutions(t.LONG_TEXT)'||unistr('\000a')||
-'  END AS LONG_TEXT'||unistr('\000a')||
-'FROM #OWNER#';
+s:=s||'SELECT t.long_text_type'||unistr('\000a')||
+'  ,t.created_on'||unistr('\000a')||
+'  ,t.created_by'||unistr('\000a')||
+'  ,t.changed_on'||unistr('\000a')||
+'  ,t.changed_by'||unistr('\000a')||
+'  ,t.long_text_description'||unistr('\000a')||
+'  ,CASE WHEN t.long_text IS NULL'||unistr('\000a')||
+'    THEN NULL'||unistr('\000a')||
+'   WHEN length(t.long_text) > 256'||unistr('\000a')||
+'    THEN apex_plugin_util.replace_substitutions(substr(t.long_text, 1, instr(t.long_text, '' '', 256)) || ''...'')'||unistr('\000a')||
+'   ELSE apex_plugin_util.replace_substitutions(t.LONG_TEXT)'||unistr('\000a')||
+'   END AS long_text'||unistr('\000a')||
+'  ,(SELECT ap';
 
-s:=s||'.BLOG_LONG_TEXT t'||unistr('\000a')||
-'  '||unistr('\000a')||
+s:=s||'ex_lang.message(''TITLE_EDIT_LINK'') FROM dual) AS edit_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_long_text t'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_page_plug (
@@ -12728,23 +13145,22 @@ end;
 declare
  a1 varchar2(32767) := null;
 begin
-a1:=a1||'SELECT t.LONG_TEXT_TYPE,'||unistr('\000a')||
-'  t.CREATED_ON,'||unistr('\000a')||
-'  t.CREATED_BY,'||unistr('\000a')||
-'  t.CHANGED_ON,'||unistr('\000a')||
-'  t.CHANGED_BY,'||unistr('\000a')||
-'  t.LONG_TEXT_DESCRIPTION,'||unistr('\000a')||
-'  CASE WHEN t.LONG_TEXT IS NULL THEN'||unistr('\000a')||
-'    NULL'||unistr('\000a')||
-'  WHEN LENGTH(t.LONG_TEXT) > 256 THEN'||unistr('\000a')||
-'    apex_plugin_util.replace_substitutions(SUBSTR(t.LONG_TEXT, 1, INSTR(t.LONG_TEXT, '' '', 256)) || ''...'')'||unistr('\000a')||
-'  ELSE'||unistr('\000a')||
-'    apex_plugin_util.replace_substitutions(t.LONG_TEXT)'||unistr('\000a')||
-'  END AS LONG_TEXT'||unistr('\000a')||
-'FROM #OWNER#';
+a1:=a1||'SELECT t.long_text_type'||unistr('\000a')||
+'  ,t.created_on'||unistr('\000a')||
+'  ,t.created_by'||unistr('\000a')||
+'  ,t.changed_on'||unistr('\000a')||
+'  ,t.changed_by'||unistr('\000a')||
+'  ,t.long_text_description'||unistr('\000a')||
+'  ,CASE WHEN t.long_text IS NULL'||unistr('\000a')||
+'    THEN NULL'||unistr('\000a')||
+'   WHEN length(t.long_text) > 256'||unistr('\000a')||
+'    THEN apex_plugin_util.replace_substitutions(substr(t.long_text, 1, instr(t.long_text, '' '', 256)) || ''...'')'||unistr('\000a')||
+'   ELSE apex_plugin_util.replace_substitutions(t.LONG_TEXT)'||unistr('\000a')||
+'   END AS long_text'||unistr('\000a')||
+'  ,(SELECT ap';
 
-a1:=a1||'.BLOG_LONG_TEXT t'||unistr('\000a')||
-'  '||unistr('\000a')||
+a1:=a1||'ex_lang.message(''TITLE_EDIT_LINK'') FROM dual) AS edit_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_long_text t'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_worksheet(
@@ -12798,7 +13214,7 @@ wwv_flow_api.create_worksheet(
   p_show_help=>'Y',
   p_download_formats=>'CSV:HTML:EMAIL',
   p_detail_link=>'f?p=&APP_ID.:24:&SESSION.::&DEBUG.::P24_LONG_TEXT_TYPE:#LONG_TEXT_TYPE#',
-  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif"  border="0">',
+  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="#EDIT_LINK_TITLE#" title="#EDIT_LINK_TITLE#" />',
   p_allow_exclude_null_values=>'N',
   p_allow_hide_extra_columns=>'N',
   p_icon_view_enabled_yn=>'N',
@@ -13068,10 +13484,47 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10844003749676072+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 23,
+  p_worksheet_id => 5566850360840309+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'EDIT_LINK_TITLE',
+  p_display_order          =>10,
+  p_column_identifier      =>'J',
+  p_column_label           =>'Edit link title',
+  p_report_label           =>'Edit link title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'LONG_TEXT_DESCRIPTION:LONG_TEXT';
+rc1:=rc1||'LONG_TEXT_DESCRIPTION:LONG_TEXT:EDIT_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 5568440129853167+wwv_flow_api.g_id_offset,
@@ -13485,9 +13938,9 @@ wwv_flow_api.create_page (
  ,p_cache_timeout_seconds => 21600
  ,p_cache_by_user_yn => 'N'
  ,p_help_text => 
-'High level view of application logging information.'
+'Display blog logging information.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141206100130'
+ ,p_last_upd_yyyymmddhh24miss => '20141213083914'
   );
 null;
  
@@ -13587,9 +14040,9 @@ wwv_flow_api.create_page (
  ,p_cache_timeout_seconds => 21600
  ,p_cache_by_user_yn => 'N'
  ,p_help_text => 
-'No help is available for this page.'
+'High level view of application logging information.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20140718141214'
+ ,p_last_upd_yyyymmddhh24miss => '20141213083928'
   );
 null;
  
@@ -14719,7 +15172,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141206173313'
+ ,p_last_upd_yyyymmddhh24miss => '20141213083130'
   );
 null;
  
@@ -14752,6 +15205,9 @@ s:=s||'SELECT '||unistr('\000a')||
 
 s:=s||'tp_user_agent'||unistr('\000a')||
 '  ,v.additional_info'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_ARTICLE_LINK'') from dual) AS article_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_USER_LINK'') from dual) AS user_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_SESSION_LINK'') from dual) AS session_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_v$activity v'||unistr('\000a')||
 'WHERE v.activity_type = ''READ'''||unistr('\000a')||
 '';
@@ -14807,6 +15263,9 @@ a1:=a1||'SELECT '||unistr('\000a')||
 
 a1:=a1||'tp_user_agent'||unistr('\000a')||
 '  ,v.additional_info'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_ARTICLE_LINK'') from dual) AS article_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_USER_LINK'') from dual) AS user_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_SESSION_LINK'') from dual) AS session_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_v$activity v'||unistr('\000a')||
 'WHERE v.activity_type = ''READ'''||unistr('\000a')||
 '';
@@ -14962,6 +15421,7 @@ wwv_flow_api.create_worksheet_column(
   p_display_in_default_rpt =>'Y',
   p_column_link            =>'f?p=&APP_ID.:35:&SESSION.::&DEBUG.:RP,35,CIR,RIR:P35_APEX_SESSION_ID,P35_CALLING_PAGE:#APEX_SESSION_ID#,&APP_PAGE_ID.',
   p_column_linktext        =>'#APEX_SESSION_ID#',
+  p_column_link_attr       =>'title="#SESSION_LINK_TITLE#"',
   p_is_sortable            =>'Y',
   p_allow_sorting          =>'Y',
   p_allow_filtering        =>'Y',
@@ -15149,6 +15609,7 @@ wwv_flow_api.create_worksheet_column(
   p_display_in_default_rpt =>'Y',
   p_column_link            =>'f?p=&APP_ID.:61:&SESSION.::&DEBUG.:RP,CIR,RIR:IR_USER_ID:#USER_ID#',
   p_column_linktext        =>'#NICK_NAME#',
+  p_column_link_attr       =>'title="#USER_LINK_TITLE#"',
   p_is_sortable            =>'Y',
   p_allow_sorting          =>'Y',
   p_allow_filtering        =>'Y',
@@ -15543,10 +16004,121 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10847705844751040+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 32,
+  p_worksheet_id => 149542270298038188+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'ARTICLE_LINK_TITLE',
+  p_display_order          =>26,
+  p_column_identifier      =>'AA',
+  p_column_label           =>'Article Link Title',
+  p_report_label           =>'Article Link Title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10847814054751040+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 32,
+  p_worksheet_id => 149542270298038188+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'USER_LINK_TITLE',
+  p_display_order          =>27,
+  p_column_identifier      =>'AB',
+  p_column_label           =>'User Link Title',
+  p_report_label           =>'User Link Title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10847928079751041+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 32,
+  p_worksheet_id => 149542270298038188+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'SESSION_LINK_TITLE',
+  p_display_order          =>28,
+  p_column_identifier      =>'AC',
+  p_column_label           =>'Session Link Title',
+  p_report_label           =>'Session Link Title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'ARTICLE_TITLE:ACTIVITY_SINCE:APEX_SESSION_ID:NICK_NAME:EMAIL:WEBSITE:IP_ADDRESS:COUNTRY_NAME:COUNTRY_CITY:';
+rc1:=rc1||'ARTICLE_TITLE:ACTIVITY_SINCE:APEX_SESSION_ID:NICK_NAME:EMAIL:WEBSITE:IP_ADDRESS:COUNTRY_NAME:COUNTRY_CITY:ARTICLE_LINK_TITLE:USER_LINK_TITLE:SESSION_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 149544093024038449+wwv_flow_api.g_id_offset,
@@ -15659,7 +16231,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141206173341'
+ ,p_last_upd_yyyymmddhh24miss => '20141213083308'
   );
 null;
  
@@ -15694,6 +16266,8 @@ s:=s||'SELECT activity_date'||unistr('\000a')||
 '  ,additiona';
 
 s:=s||'l_info'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_USER_LINK'') from dual) AS user_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_SESSION_LINK'') from dual) AS session_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_v$activity'||unistr('\000a')||
 'WHERE activity_type = ''READCAT'''||unistr('\000a')||
 '';
@@ -15752,6 +16326,8 @@ a1:=a1||'SELECT activity_date'||unistr('\000a')||
 '  ,additiona';
 
 a1:=a1||'l_info'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_USER_LINK'') from dual) AS user_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_SESSION_LINK'') from dual) AS session_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_v$activity'||unistr('\000a')||
 'WHERE activity_type = ''READCAT'''||unistr('\000a')||
 '';
@@ -15907,6 +16483,7 @@ wwv_flow_api.create_worksheet_column(
   p_display_in_default_rpt =>'Y',
   p_column_link            =>'f?p=&APP_ID.:35:&SESSION.::&DEBUG.:RP,35,CIR,RIR:P35_APEX_SESSION_ID,P35_CALLING_PAGE:#APEX_SESSION_ID#,&APP_PAGE_ID.',
   p_column_linktext        =>'#APEX_SESSION_ID#',
+  p_column_link_attr       =>'title="#SESSION_LINK_TITLE#"',
   p_is_sortable            =>'Y',
   p_allow_sorting          =>'Y',
   p_allow_filtering        =>'Y',
@@ -16094,6 +16671,7 @@ wwv_flow_api.create_worksheet_column(
   p_display_in_default_rpt =>'Y',
   p_column_link            =>'f?p=&APP_ID.:61:&SESSION.::&DEBUG.:RP,CIR,RIR:IR_USER_ID:#USER_ID#',
   p_column_linktext        =>'#NICK_NAME#',
+  p_column_link_attr       =>'title="#USER_LINK_TITLE#"',
   p_is_sortable            =>'Y',
   p_allow_sorting          =>'Y',
   p_allow_filtering        =>'Y',
@@ -16488,10 +17066,84 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10848418340760486+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 33,
+  p_worksheet_id => 149555400798178433+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'USER_LINK_TITLE',
+  p_display_order          =>25,
+  p_column_identifier      =>'Z',
+  p_column_label           =>'User Link Title',
+  p_report_label           =>'User Link Title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10848518322760486+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 33,
+  p_worksheet_id => 149555400798178433+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'SESSION_LINK_TITLE',
+  p_display_order          =>26,
+  p_column_identifier      =>'AA',
+  p_column_label           =>'Session Link Title',
+  p_report_label           =>'Session Link Title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'ACTIVITY_SINCE:APEX_SESSION_ID:CATEGORY_NAME:NICK_NAME:EMAIL:WEBSITE:IP_ADDRESS:COUNTRY_NAME:COUNTRY_CITY:ADDITIONAL_INFO:';
+rc1:=rc1||'ACTIVITY_SINCE:APEX_SESSION_ID:CATEGORY_NAME:NICK_NAME:EMAIL:WEBSITE:IP_ADDRESS:COUNTRY_NAME:COUNTRY_CITY:ADDITIONAL_INFO:USER_LINK_TITLE:SESSION_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 149556987639178443+wwv_flow_api.g_id_offset,
@@ -16604,7 +17256,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141206173431'
+ ,p_last_upd_yyyymmddhh24miss => '20141213083554'
   );
 null;
  
@@ -16616,24 +17268,28 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-s:=s||'SELECT activity_date'||unistr('\000a')||
-'  ,activity_date AS activity_since'||unistr('\000a')||
-'  ,apex_session_id'||unistr('\000a')||
-'  ,ip_address'||unistr('\000a')||
-'  ,user_id'||unistr('\000a')||
-'  ,email'||unistr('\000a')||
-'  ,nick_name'||unistr('\000a')||
-'  ,website'||unistr('\000a')||
-'  ,latitude'||unistr('\000a')||
-'  ,longitude'||unistr('\000a')||
-'  ,country_code'||unistr('\000a')||
-'  ,country_name'||unistr('\000a')||
-'  ,country_region'||unistr('\000a')||
-'  ,country_city'||unistr('\000a')||
-'  ,http_user_agent'||unistr('\000a')||
-'  ,http_referer'||unistr('\000a')||
-'FROM #OWNER#.blog_v$activity'||unistr('\000a')||
-'WHERE activity_type = ''NEW_SESSION'''||unistr('\000a')||
+s:=s||'SELECT a.activity_date'||unistr('\000a')||
+'  ,a.activity_date AS activity_since'||unistr('\000a')||
+'  ,a.apex_session_id'||unistr('\000a')||
+'  ,a.ip_address'||unistr('\000a')||
+'  ,a.user_id'||unistr('\000a')||
+'  ,a.email'||unistr('\000a')||
+'  ,a.nick_name'||unistr('\000a')||
+'  ,a.website'||unistr('\000a')||
+'  ,a.latitude'||unistr('\000a')||
+'  ,a.longitude'||unistr('\000a')||
+'  ,a.country_code'||unistr('\000a')||
+'  ,a.country_name'||unistr('\000a')||
+'  ,a.country_region'||unistr('\000a')||
+'  ,a.country_city'||unistr('\000a')||
+'  ,a.http_user_agent'||unistr('\000a')||
+'  ,a.http_referer'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_USER_LINK'') from dual) AS user_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''T';
+
+s:=s||'ITLE_SESSION_LINK'') from dual) AS session_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_v$activity a'||unistr('\000a')||
+'WHERE a.activity_type = ''NEW_SESSION'''||unistr('\000a')||
 '';
 
 wwv_flow_api.create_page_plug (
@@ -16666,24 +17322,28 @@ end;
 declare
  a1 varchar2(32767) := null;
 begin
-a1:=a1||'SELECT activity_date'||unistr('\000a')||
-'  ,activity_date AS activity_since'||unistr('\000a')||
-'  ,apex_session_id'||unistr('\000a')||
-'  ,ip_address'||unistr('\000a')||
-'  ,user_id'||unistr('\000a')||
-'  ,email'||unistr('\000a')||
-'  ,nick_name'||unistr('\000a')||
-'  ,website'||unistr('\000a')||
-'  ,latitude'||unistr('\000a')||
-'  ,longitude'||unistr('\000a')||
-'  ,country_code'||unistr('\000a')||
-'  ,country_name'||unistr('\000a')||
-'  ,country_region'||unistr('\000a')||
-'  ,country_city'||unistr('\000a')||
-'  ,http_user_agent'||unistr('\000a')||
-'  ,http_referer'||unistr('\000a')||
-'FROM #OWNER#.blog_v$activity'||unistr('\000a')||
-'WHERE activity_type = ''NEW_SESSION'''||unistr('\000a')||
+a1:=a1||'SELECT a.activity_date'||unistr('\000a')||
+'  ,a.activity_date AS activity_since'||unistr('\000a')||
+'  ,a.apex_session_id'||unistr('\000a')||
+'  ,a.ip_address'||unistr('\000a')||
+'  ,a.user_id'||unistr('\000a')||
+'  ,a.email'||unistr('\000a')||
+'  ,a.nick_name'||unistr('\000a')||
+'  ,a.website'||unistr('\000a')||
+'  ,a.latitude'||unistr('\000a')||
+'  ,a.longitude'||unistr('\000a')||
+'  ,a.country_code'||unistr('\000a')||
+'  ,a.country_name'||unistr('\000a')||
+'  ,a.country_region'||unistr('\000a')||
+'  ,a.country_city'||unistr('\000a')||
+'  ,a.http_user_agent'||unistr('\000a')||
+'  ,a.http_referer'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_USER_LINK'') from dual) AS user_link_title'||unistr('\000a')||
+'  ,(select apex_lang.message(''T';
+
+a1:=a1||'ITLE_SESSION_LINK'') from dual) AS session_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_v$activity a'||unistr('\000a')||
+'WHERE a.activity_type = ''NEW_SESSION'''||unistr('\000a')||
 '';
 
 wwv_flow_api.create_worksheet(
@@ -16837,6 +17497,7 @@ wwv_flow_api.create_worksheet_column(
   p_display_in_default_rpt =>'Y',
   p_column_link            =>'f?p=&APP_ID.:35:&SESSION.::&DEBUG.:RP,35,CIR,RIR:P35_APEX_SESSION_ID,P35_CALLING_PAGE:#APEX_SESSION_ID#,&APP_PAGE_ID.',
   p_column_linktext        =>'#APEX_SESSION_ID#',
+  p_column_link_attr       =>'title="#SESSION_LINK_TITLE#"',
   p_is_sortable            =>'Y',
   p_allow_sorting          =>'Y',
   p_allow_filtering        =>'Y',
@@ -16950,6 +17611,7 @@ wwv_flow_api.create_worksheet_column(
   p_display_in_default_rpt =>'Y',
   p_column_link            =>'f?p=&APP_ID.:61:&SESSION.::&DEBUG.:RP,CIR;RIR:IR_USER_ID:#USER_ID#',
   p_column_linktext        =>'#NICK_NAME#',
+  p_column_link_attr       =>'title="#USER_LINK_TITLE#"',
   p_is_sortable            =>'Y',
   p_allow_sorting          =>'Y',
   p_allow_filtering        =>'Y',
@@ -17344,10 +18006,84 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10849918112775738+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 34,
+  p_worksheet_id => 149560375987334084+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'USER_LINK_TITLE',
+  p_display_order          =>18,
+  p_column_identifier      =>'R',
+  p_column_label           =>'User Link Title',
+  p_report_label           =>'User Link Title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10850007491775739+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 34,
+  p_worksheet_id => 149560375987334084+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'SESSION_LINK_TITLE',
+  p_display_order          =>19,
+  p_column_identifier      =>'S',
+  p_column_label           =>'Session Link Title',
+  p_report_label           =>'Session Link Title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'ACTIVITY_SINCE:APEX_SESSION_ID:IP_ADDRESS:NICK_NAME:EMAIL:WEBSITE:COUNTRY_NAME:COUNTRY_CITY:HTTP_USER_AGENT:HTTP_REFERER:';
+rc1:=rc1||'ACTIVITY_SINCE:APEX_SESSION_ID:IP_ADDRESS:NICK_NAME:EMAIL:WEBSITE:COUNTRY_NAME:COUNTRY_CITY:HTTP_USER_AGENT:HTTP_REFERER:USER_LINK_TITLE:SESSION_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 149562278301346443+wwv_flow_api.g_id_offset,
@@ -18638,7 +19374,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141206173404'
+ ,p_last_upd_yyyymmddhh24miss => '20141213083412'
   );
 null;
  
@@ -18668,6 +19404,10 @@ s:=s||'SELECT activity_date'||unistr('\000a')||
 '  ,search_type'||unistr('\000a')||
 '  ,search_criteria'||unistr('\000a')||
 '  ,additional_info'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_USER_LINK'') from dual) AS user_link_title'||unistr('\000a')||
+'  ,(select apex_lang.messa';
+
+s:=s||'ge(''TITLE_SESSION_LINK'') from dual) AS session_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_v$activity'||unistr('\000a')||
 'WHERE activity_type = ''SEARCH''';
 
@@ -18719,6 +19459,10 @@ a1:=a1||'SELECT activity_date'||unistr('\000a')||
 '  ,search_type'||unistr('\000a')||
 '  ,search_criteria'||unistr('\000a')||
 '  ,additional_info'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_USER_LINK'') from dual) AS user_link_title'||unistr('\000a')||
+'  ,(select apex_lang.messa';
+
+a1:=a1||'ge(''TITLE_SESSION_LINK'') from dual) AS session_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_v$activity'||unistr('\000a')||
 'WHERE activity_type = ''SEARCH''';
 
@@ -18873,6 +19617,7 @@ wwv_flow_api.create_worksheet_column(
   p_display_in_default_rpt =>'Y',
   p_column_link            =>'f?p=&APP_ID.:35:&SESSION.::&DEBUG.:RP,35,CIR,RIR:P35_APEX_SESSION_ID,P35_CALLING_PAGE:#APEX_SESSION_ID#,&APP_PAGE_ID.',
   p_column_linktext        =>'#APEX_SESSION_ID#',
+  p_column_link_attr       =>'title="#SESSION_LINK_TITLE#"',
   p_is_sortable            =>'Y',
   p_allow_sorting          =>'Y',
   p_allow_filtering        =>'Y',
@@ -19023,6 +19768,7 @@ wwv_flow_api.create_worksheet_column(
   p_display_in_default_rpt =>'Y',
   p_column_link            =>'f?p=&APP_ID.:61:&SESSION.::&DEBUG.:RP,CIR,RIR:IR_USER_ID:#USER_ID#',
   p_column_linktext        =>'#NICK_NAME#',
+  p_column_link_attr       =>'title="#USER_LINK_TITLE#"',
   p_is_sortable            =>'Y',
   p_allow_sorting          =>'Y',
   p_allow_filtering        =>'Y',
@@ -19454,10 +20200,84 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10849207341765512+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 36,
+  p_worksheet_id => 135092326702158460+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'USER_LINK_TITLE',
+  p_display_order          =>19,
+  p_column_identifier      =>'S',
+  p_column_label           =>'User Link Title',
+  p_report_label           =>'User Link Title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10849314712765515+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 36,
+  p_worksheet_id => 135092326702158460+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'SESSION_LINK_TITLE',
+  p_display_order          =>20,
+  p_column_identifier      =>'T',
+  p_column_label           =>'Session Link Title',
+  p_report_label           =>'Session Link Title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'ACTIVITY_SINCE:APEX_SESSION_ID:IP_ADDRESS:EMAIL:NICK_NAME:WEBSITE:COUNTRY_NAME:COUNTRY_CITY:SEARCH_TYPE:SEARCH_CRITERIA:';
+rc1:=rc1||'ACTIVITY_SINCE:APEX_SESSION_ID:IP_ADDRESS:EMAIL:NICK_NAME:WEBSITE:COUNTRY_NAME:COUNTRY_CITY:SEARCH_TYPE:SEARCH_CRITERIA:USER_LINK_TITLE:SESSION_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 135093927149158725+wwv_flow_api.g_id_offset,
@@ -19569,7 +20389,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'Displays APEX application error log showing detailed information about application errors that have occurred.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141206100145'
+ ,p_last_upd_yyyymmddhh24miss => '20141213083729'
   );
 null;
  
@@ -19581,29 +20401,30 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-s:=s||'SELECT page_id'||unistr('\000a')||
-'  ,apex_user'||unistr('\000a')||
-'  ,page_name'||unistr('\000a')||
-'  ,view_date'||unistr('\000a')||
-'  ,view_date AS view_since'||unistr('\000a')||
-'  ,think_time'||unistr('\000a')||
-'  ,log_context'||unistr('\000a')||
-'  ,elapsed_time'||unistr('\000a')||
-'  ,rows_queried'||unistr('\000a')||
-'  ,ip_address'||unistr('\000a')||
-'  ,agent'||unistr('\000a')||
-'  ,apex_session_id'||unistr('\000a')||
-'  ,error_message'||unistr('\000a')||
-'  ,error_on_component_type'||unistr('\000a')||
-'  ,error_on_component_name'||unistr('\000a')||
-'  ,page_view_mode'||unistr('\000a')||
-'  ,application_info'||unistr('\000a')||
-'  ,regions_from_cache'||unistr('\000a')||
-'FROM apex_workspace_activity_log'||unistr('\000a')||
-'WHERE error_message IS NOT NULL'||unistr('\000a')||
-'  AND application_id';
+s:=s||'SELECT a.page_id'||unistr('\000a')||
+'  ,a.apex_user'||unistr('\000a')||
+'  ,a.page_name'||unistr('\000a')||
+'  ,a.view_date'||unistr('\000a')||
+'  ,a.view_date AS view_since'||unistr('\000a')||
+'  ,a.think_time'||unistr('\000a')||
+'  ,a.log_context'||unistr('\000a')||
+'  ,a.elapsed_time'||unistr('\000a')||
+'  ,a.rows_queried'||unistr('\000a')||
+'  ,a.ip_address'||unistr('\000a')||
+'  ,a.agent'||unistr('\000a')||
+'  ,a.apex_session_id'||unistr('\000a')||
+'  ,a.error_message'||unistr('\000a')||
+'  ,a.error_on_component_type'||unistr('\000a')||
+'  ,a.error_on_component_name'||unistr('\000a')||
+'  ,a.page_view_mode'||unistr('\000a')||
+'  ,a.application_info'||unistr('\000a')||
+'  ,a.regions_from_cache'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_SESSION_LINK''';
 
-s:=s||' = :G_BLOG_READER_APP_ID';
+s:=s||') from dual) AS session_link_title'||unistr('\000a')||
+'FROM apex_workspace_activity_log a'||unistr('\000a')||
+'WHERE a.error_message IS NOT NULL'||unistr('\000a')||
+'  AND a.application_id = :G_BLOG_READER_APP_ID';
 
 wwv_flow_api.create_page_plug (
   p_id=> 149568784166515873 + wwv_flow_api.g_id_offset,
@@ -19636,29 +20457,30 @@ end;
 declare
  a1 varchar2(32767) := null;
 begin
-a1:=a1||'SELECT page_id'||unistr('\000a')||
-'  ,apex_user'||unistr('\000a')||
-'  ,page_name'||unistr('\000a')||
-'  ,view_date'||unistr('\000a')||
-'  ,view_date AS view_since'||unistr('\000a')||
-'  ,think_time'||unistr('\000a')||
-'  ,log_context'||unistr('\000a')||
-'  ,elapsed_time'||unistr('\000a')||
-'  ,rows_queried'||unistr('\000a')||
-'  ,ip_address'||unistr('\000a')||
-'  ,agent'||unistr('\000a')||
-'  ,apex_session_id'||unistr('\000a')||
-'  ,error_message'||unistr('\000a')||
-'  ,error_on_component_type'||unistr('\000a')||
-'  ,error_on_component_name'||unistr('\000a')||
-'  ,page_view_mode'||unistr('\000a')||
-'  ,application_info'||unistr('\000a')||
-'  ,regions_from_cache'||unistr('\000a')||
-'FROM apex_workspace_activity_log'||unistr('\000a')||
-'WHERE error_message IS NOT NULL'||unistr('\000a')||
-'  AND application_id';
+a1:=a1||'SELECT a.page_id'||unistr('\000a')||
+'  ,a.apex_user'||unistr('\000a')||
+'  ,a.page_name'||unistr('\000a')||
+'  ,a.view_date'||unistr('\000a')||
+'  ,a.view_date AS view_since'||unistr('\000a')||
+'  ,a.think_time'||unistr('\000a')||
+'  ,a.log_context'||unistr('\000a')||
+'  ,a.elapsed_time'||unistr('\000a')||
+'  ,a.rows_queried'||unistr('\000a')||
+'  ,a.ip_address'||unistr('\000a')||
+'  ,a.agent'||unistr('\000a')||
+'  ,a.apex_session_id'||unistr('\000a')||
+'  ,a.error_message'||unistr('\000a')||
+'  ,a.error_on_component_type'||unistr('\000a')||
+'  ,a.error_on_component_name'||unistr('\000a')||
+'  ,a.page_view_mode'||unistr('\000a')||
+'  ,a.application_info'||unistr('\000a')||
+'  ,a.regions_from_cache'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_SESSION_LINK''';
 
-a1:=a1||' = :G_BLOG_READER_APP_ID';
+a1:=a1||') from dual) AS session_link_title'||unistr('\000a')||
+'FROM apex_workspace_activity_log a'||unistr('\000a')||
+'WHERE a.error_message IS NOT NULL'||unistr('\000a')||
+'  AND a.application_id = :G_BLOG_READER_APP_ID';
 
 wwv_flow_api.create_worksheet(
   p_id=> 149568897146515873+wwv_flow_api.g_id_offset,
@@ -20144,6 +20966,7 @@ wwv_flow_api.create_worksheet_column(
   p_display_in_default_rpt =>'Y',
   p_column_link            =>'f?p=&APP_ID.:35:&SESSION.::&DEBUG.:RP,35,CIR,RIR:P35_APEX_SESSION_ID,P35_CALLING_PAGE:#APEX_SESSION_ID#,&APP_PAGE_ID.',
   p_column_linktext        =>'#APEX_SESSION_ID#',
+  p_column_link_attr       =>'title="#SESSION_LINK_TITLE#"',
   p_is_sortable            =>'Y',
   p_allow_sorting          =>'Y',
   p_allow_filtering        =>'Y',
@@ -20390,10 +21213,47 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10850426294787172+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 37,
+  p_worksheet_id => 149568897146515873+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'SESSION_LINK_TITLE',
+  p_display_order          =>24,
+  p_column_identifier      =>'X',
+  p_column_label           =>'Session Link Title',
+  p_report_label           =>'Session Link Title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'ESCAPE_SC',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'VIEW_SINCE:APEX_SESSION_ID:PAGE_ID:PAGE_NAME:IP_ADDRESS:ERROR_MESSAGE:ERROR_ON_COMPONENT_NAME:';
+rc1:=rc1||'VIEW_SINCE:APEX_SESSION_ID:PAGE_ID:PAGE_NAME:IP_ADDRESS:ERROR_MESSAGE:ERROR_ON_COMPONENT_NAME:SESSION_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 149571583775518290+wwv_flow_api.g_id_offset,
@@ -21103,7 +21963,7 @@ wwv_flow_api.create_page (
 'Manage blog preferences.'||unistr('\000a')||
 '<p class="fielddatabold">Please note that changes take affect to new sessions in blog reader application!</p>'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141211131950'
+ ,p_last_upd_yyyymmddhh24miss => '20141213080510'
   );
 null;
  
@@ -21138,6 +21998,7 @@ s:=s||'SELECT c.param_id'||unistr('\000a')||
 
 s:=s||'lable'||unistr('\000a')||
 '  ,c.param_type'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_param c'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_param p'||unistr('\000a')||
 '  ON c.param_parent = p.param_name'||unistr('\000a')||
@@ -21205,6 +22066,7 @@ a1:=a1||'SELECT c.param_id'||unistr('\000a')||
 
 a1:=a1||'lable'||unistr('\000a')||
 '  ,c.param_type'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_param c'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_param p'||unistr('\000a')||
 '  ON c.param_parent = p.param_name'||unistr('\000a')||
@@ -21268,8 +22130,8 @@ wwv_flow_api.create_worksheet(
   p_show_download=>'Y',
   p_show_help=>'Y',
   p_download_formats=>'CSV:HTML:EMAIL',
-  p_detail_link=>'f?p=&APP_ID.:51:&SESSION.::&DEBUG.::P51_PARAM_NAME:#PARAM_NAME#',
-  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="Edit" title="Edit" />',
+  p_detail_link=>'f?p=&APP_ID.:51:&SESSION.::&DEBUG.::P51_PARAM_ID:#PARAM_ID#',
+  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="#EDIT_LINK_TITLE#" title="#EDIT_LINK_TITLE#" />',
   p_allow_exclude_null_values=>'N',
   p_allow_hide_extra_columns=>'N',
   p_icon_view_enabled_yn=>'N',
@@ -21770,10 +22632,47 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10841821279591964+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 50,
+  p_worksheet_id => 125590532514023146+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'EDIT_LINK_TITLE',
+  p_display_order          =>18,
+  p_column_identifier      =>'R',
+  p_column_label           =>'Edit link title',
+  p_report_label           =>'Edit link title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'PARAM_GROUP:PARAM_NAME:PARAM_VALUE:PARAM_HELP:EDITABLE:PARAM_NULLABLE:PARAM_TYPE:';
+rc1:=rc1||'PARAM_GROUP:PARAM_NAME:PARAM_VALUE:PARAM_HELP:EDITABLE:PARAM_NULLABLE:PARAM_TYPE:EDIT_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 125592728211028537+wwv_flow_api.g_id_offset,
@@ -21882,7 +22781,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141211133343'
+ ,p_last_upd_yyyymmddhh24miss => '20141213074912'
   );
 null;
  
@@ -22464,7 +23363,7 @@ wwv_flow_api.create_page_item(
   p_grid_column=> null,
   p_label_alignment=> 'RIGHT',
   p_field_alignment=> 'LEFT-CENTER',
-  p_display_when=>'blog_admin_app.display_param_value_item (:P51_PARAM_NAME,''TEXT'',''Y'')',
+  p_display_when=>'blog_admin_app.display_param_value_item (:P51_PARAM_ID,''TEXT'',''Y'')',
   p_display_when_type=>'PLSQL_EXPRESSION',
   p_field_template=> 148519802593156858+wwv_flow_api.g_id_offset,
   p_is_persistent=> 'Y',
@@ -22513,7 +23412,7 @@ wwv_flow_api.create_page_item(
   p_grid_column=> null,
   p_label_alignment=> 'RIGHT',
   p_field_alignment=> 'LEFT-CENTER',
-  p_display_when=>'blog_admin_app.display_param_value_item (:P51_PARAM_NAME,''TEXT'',''N'')',
+  p_display_when=>'blog_admin_app.display_param_value_item (:P51_PARAM_ID,''TEXT'',''N'')',
   p_display_when_type=>'PLSQL_EXPRESSION',
   p_field_template=> 148519971914156859+wwv_flow_api.g_id_offset,
   p_is_persistent=> 'Y',
@@ -22562,7 +23461,7 @@ wwv_flow_api.create_page_item(
   p_grid_column=> null,
   p_label_alignment=> 'RIGHT',
   p_field_alignment=> 'LEFT-CENTER',
-  p_display_when=>'blog_admin_app.display_param_value_item (:P51_PARAM_NAME,''NUMBER'',''Y'')',
+  p_display_when=>'blog_admin_app.display_param_value_item (:P51_PARAM_ID,''NUMBER'',''Y'')',
   p_display_when_type=>'PLSQL_EXPRESSION',
   p_field_template=> 148519802593156858+wwv_flow_api.g_id_offset,
   p_is_persistent=> 'Y',
@@ -22609,7 +23508,7 @@ wwv_flow_api.create_page_item(
   p_grid_column=> null,
   p_label_alignment=> 'RIGHT',
   p_field_alignment=> 'LEFT-CENTER',
-  p_display_when=>'blog_admin_app.display_param_value_item (:P51_PARAM_NAME,''NUMBER'',''N'')',
+  p_display_when=>'blog_admin_app.display_param_value_item (:P51_PARAM_ID,''NUMBER'',''N'')',
   p_display_when_type=>'PLSQL_EXPRESSION',
   p_field_template=> 148519971914156859+wwv_flow_api.g_id_offset,
   p_is_persistent=> 'Y',
@@ -22659,7 +23558,7 @@ wwv_flow_api.create_page_item(
   p_grid_column=> null,
   p_label_alignment=> 'RIGHT',
   p_field_alignment=> 'LEFT-CENTER',
-  p_display_when=>'blog_admin_app.display_param_value_item (:P51_PARAM_NAME,''YESNO'',''N'')',
+  p_display_when=>'blog_admin_app.display_param_value_item (:P51_PARAM_ID,''YESNO'',''N'')',
   p_display_when_type=>'PLSQL_EXPRESSION',
   p_field_template=> 148519971914156859+wwv_flow_api.g_id_offset,
   p_is_persistent=> 'Y',
@@ -22707,7 +23606,7 @@ wwv_flow_api.create_page_item(
   p_grid_column=> null,
   p_label_alignment=> 'RIGHT',
   p_field_alignment=> 'LEFT-CENTER',
-  p_display_when=>'blog_admin_app.display_param_value_item (:P51_PARAM_NAME,''TEXTAREA'',''Y'')',
+  p_display_when=>'blog_admin_app.display_param_value_item (:P51_PARAM_ID,''TEXTAREA'',''Y'')',
   p_display_when_type=>'PLSQL_EXPRESSION',
   p_field_template=> 148519802593156858+wwv_flow_api.g_id_offset,
   p_is_persistent=> 'Y',
@@ -22756,7 +23655,7 @@ wwv_flow_api.create_page_item(
   p_grid_column=> null,
   p_label_alignment=> 'RIGHT',
   p_field_alignment=> 'LEFT-CENTER',
-  p_display_when=>'blog_admin_app.display_param_value_item (:P51_PARAM_NAME,''TEXTAREA'',''N'')',
+  p_display_when=>'blog_admin_app.display_param_value_item (:P51_PARAM_ID,''TEXTAREA'',''N'')',
   p_display_when_type=>'PLSQL_EXPRESSION',
   p_field_template=> 148519971914156859+wwv_flow_api.g_id_offset,
   p_is_persistent=> 'Y',
@@ -22786,7 +23685,7 @@ wwv_flow_api.create_page_computation(
   p_computation_type=> 'PLSQL_EXPRESSION',
   p_computation_processed=> 'REPLACE_EXISTING',
   p_computation=> 'blog_admin_app.set_param_value_item ('||unistr('\000a')||
-'    p_param_id          => :P51_PARAM_NAME,'||unistr('\000a')||
+'    p_param_id          => :P51_PARAM_ID,'||unistr('\000a')||
 '    p_yesno             => :P51_YESNO,'||unistr('\000a')||
 '    p_text_null         => :P51_TEXT_NULL,'||unistr('\000a')||
 '    p_text_not_null     => :P51_TEXT_NOT_NULL,'||unistr('\000a')||
@@ -22834,7 +23733,7 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-p:=p||'F|#OWNER#:BLOG_PARAM:P51_PARAM_NAME:PARAM_NAME';
+p:=p||'F|#OWNER#:BLOG_PARAM:P51_PARAM_ID:PARAM_ID';
 
 wwv_flow_api.create_page_process(
   p_id     => 125589438375023084 + wwv_flow_api.g_id_offset,
@@ -22865,7 +23764,7 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-p:=p||'#OWNER#:BLOG_PARAM:P51_PARAM_NAME:PARAM_NAME|U';
+p:=p||'#OWNER#:BLOG_PARAM:P51_PARAM_ID:PARAM_ID|U';
 
 wwv_flow_api.create_page_process(
   p_id     => 125589631882023103 + wwv_flow_api.g_id_offset,
@@ -22958,7 +23857,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141208171121'
+ ,p_last_upd_yyyymmddhh24miss => '20141213114316'
   );
 null;
  
@@ -22970,15 +23869,16 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-s:=s||'SELECT translation_entry_id'||unistr('\000a')||
-'	,last_updated_by'||unistr('\000a')||
-'	,last_updated_on'||unistr('\000a')||
-'	,translatable_message'||unistr('\000a')||
-'	,language_code'||unistr('\000a')||
-'	,message_text'||unistr('\000a')||
-'	,developer_comment'||unistr('\000a')||
-'FROM apex_application_translations'||unistr('\000a')||
-'WHERE application_id = :G_BLOG_READER_APP_ID';
+s:=s||'SELECT t.translation_entry_id'||unistr('\000a')||
+'  ,t.last_updated_by'||unistr('\000a')||
+'  ,t.last_updated_on'||unistr('\000a')||
+'  ,t.translatable_message'||unistr('\000a')||
+'  ,t.language_code'||unistr('\000a')||
+'  ,t.message_text'||unistr('\000a')||
+'  ,t.developer_comment'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'FROM apex_application_translations t'||unistr('\000a')||
+'WHERE t.application_id = :G_BLOG_READER_APP_ID';
 
 wwv_flow_api.create_page_plug (
   p_id=> 10187525638567123 + wwv_flow_api.g_id_offset,
@@ -23009,15 +23909,16 @@ end;
 declare
  a1 varchar2(32767) := null;
 begin
-a1:=a1||'SELECT translation_entry_id'||unistr('\000a')||
-'	,last_updated_by'||unistr('\000a')||
-'	,last_updated_on'||unistr('\000a')||
-'	,translatable_message'||unistr('\000a')||
-'	,language_code'||unistr('\000a')||
-'	,message_text'||unistr('\000a')||
-'	,developer_comment'||unistr('\000a')||
-'FROM apex_application_translations'||unistr('\000a')||
-'WHERE application_id = :G_BLOG_READER_APP_ID';
+a1:=a1||'SELECT t.translation_entry_id'||unistr('\000a')||
+'  ,t.last_updated_by'||unistr('\000a')||
+'  ,t.last_updated_on'||unistr('\000a')||
+'  ,t.translatable_message'||unistr('\000a')||
+'  ,t.language_code'||unistr('\000a')||
+'  ,t.message_text'||unistr('\000a')||
+'  ,t.developer_comment'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'FROM apex_application_translations t'||unistr('\000a')||
+'WHERE t.application_id = :G_BLOG_READER_APP_ID';
 
 wwv_flow_api.create_worksheet(
   p_id=> 10187610341567123+wwv_flow_api.g_id_offset,
@@ -23070,7 +23971,7 @@ wwv_flow_api.create_worksheet(
   p_show_help=>'Y',
   p_download_formats=>'CSV:HTML:EMAIL',
   p_detail_link=>'f?p=&APP_ID.:53:&SESSION.::&DEBUG.:53:P53_TRANSLATION_ENTRY_ID:#TRANSLATION_ENTRY_ID#',
-  p_detail_link_text=>'<img src="#IMAGE_PREFIX#e2.gif" alt="">',
+  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="#EDIT_LINK_TITLE#" title="#EDIT_LINK_TITLE#" />',
   p_allow_exclude_null_values=>'N',
   p_allow_hide_extra_columns=>'N',
   p_icon_view_enabled_yn=>'N',
@@ -23340,10 +24241,47 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10842012653595942+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 52,
+  p_worksheet_id => 10187610341567123+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'EDIT_LINK_TITLE',
+  p_display_order          =>8,
+  p_column_identifier      =>'H',
+  p_column_label           =>'Edit link title',
+  p_report_label           =>'Edit link title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'TRANSLATABLE_MESSAGE:LANGUAGE_CODE:MESSAGE_TEXT:TRANSLATION_ENTRY_ID';
+rc1:=rc1||'TRANSLATABLE_MESSAGE:LANGUAGE_CODE:MESSAGE_TEXT:TRANSLATION_ENTRY_ID:EDIT_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 10188416250568962+wwv_flow_api.g_id_offset,
@@ -24009,7 +24947,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'List of user witch have submit comment(s).'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141129090758'
+ ,p_last_upd_yyyymmddhh24miss => '20141213090319'
   );
 null;
  
@@ -24039,11 +24977,12 @@ s:=s||'WITH reader_stat AS ('||unistr('\000a')||
 '  ,u.website'||unistr('\000a')||
 '  ,u.blocked'||unistr('\000a')||
 '  ,u.blocked_on'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS ';
+
+s:=s||'edit_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_comment_user u'||unistr('\000a')||
 'LEFT JOIN reader_stat c'||unistr('\000a')||
-'  ON ';
-
-s:=s||'u.user_id = c.user_id'||unistr('\000a')||
+'  ON u.user_id = c.user_id'||unistr('\000a')||
 'WHERE u.user_type = ''R'''||unistr('\000a')||
 '';
 
@@ -24095,11 +25034,12 @@ a1:=a1||'WITH reader_stat AS ('||unistr('\000a')||
 '  ,u.website'||unistr('\000a')||
 '  ,u.blocked'||unistr('\000a')||
 '  ,u.blocked_on'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS ';
+
+a1:=a1||'edit_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_comment_user u'||unistr('\000a')||
 'LEFT JOIN reader_stat c'||unistr('\000a')||
-'  ON ';
-
-a1:=a1||'u.user_id = c.user_id'||unistr('\000a')||
+'  ON u.user_id = c.user_id'||unistr('\000a')||
 'WHERE u.user_type = ''R'''||unistr('\000a')||
 '';
 
@@ -24154,7 +25094,7 @@ wwv_flow_api.create_worksheet(
   p_show_help=>'Y',
   p_download_formats=>'CSV:HTML:EMAIL',
   p_detail_link=>'f?p=&APP_ID.:62:&SESSION.::&DEBUG.::P62_USER_ID:#USER_ID#',
-  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="">',
+  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="#EDIT_LINK_TITLE#" title="#EDIT_LINK_TITLE#" />',
   p_allow_exclude_null_values=>'N',
   p_allow_hide_extra_columns=>'N',
   p_icon_view_enabled_yn=>'N',
@@ -24616,10 +25556,47 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10851621211941460+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 61,
+  p_worksheet_id => 134490536066033719+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'EDIT_LINK_TITLE',
+  p_display_order          =>16,
+  p_column_identifier      =>'R',
+  p_column_label           =>'Edit Link Title',
+  p_report_label           =>'Edit Link Title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'CREATED_ON_SINCE:NICK_NAME:COMMENTS_BY_USER:EMAIL:BLOCKED:BLOCKED_ON:WEBSITE';
+rc1:=rc1||'CREATED_ON_SINCE:NICK_NAME:COMMENTS_BY_USER:EMAIL:BLOCKED:BLOCKED_ON:WEBSITE:EDIT_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 134492121207034103+wwv_flow_api.g_id_offset,
@@ -25221,9 +26198,9 @@ wwv_flow_api.create_page (
  ,p_cache_timeout_seconds => 21600
  ,p_cache_by_user_yn => 'N'
  ,p_help_text => 
-'Report listing all article authors for this blog site.'
+'Report listing all authors for this blog site.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141210173354'
+ ,p_last_upd_yyyymmddhh24miss => '20141213090721'
   );
 null;
  
@@ -25235,23 +26212,23 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-s:=s||'SELECT '||unistr('\000a')||
-'  created_by'||unistr('\000a')||
-'  ,created_on'||unistr('\000a')||
-'  ,changed_by'||unistr('\000a')||
-'  ,changed_on'||unistr('\000a')||
-'  ,author_id'||unistr('\000a')||
-'  ,active'||unistr('\000a')||
-'  ,email'||unistr('\000a')||
-'  ,user_name'||unistr('\000a')||
-'  ,author_name'||unistr('\000a')||
-'  ,author_seq'||unistr('\000a')||
-'  ,CASE WHEN passwd IS NULL THEN'||unistr('\000a')||
+s:=s||'SELECT a.created_by'||unistr('\000a')||
+'  ,a.created_on'||unistr('\000a')||
+'  ,a.changed_by'||unistr('\000a')||
+'  ,a.changed_on'||unistr('\000a')||
+'  ,a.author_id'||unistr('\000a')||
+'  ,a.active'||unistr('\000a')||
+'  ,a.email'||unistr('\000a')||
+'  ,a.user_name'||unistr('\000a')||
+'  ,a.author_name'||unistr('\000a')||
+'  ,a.author_seq'||unistr('\000a')||
+'  ,CASE WHEN a.passwd IS NULL THEN'||unistr('\000a')||
 '    ''Set password'''||unistr('\000a')||
-'  WHEN author_id = :G_AUTHOR_ID THEN'||unistr('\000a')||
+'  WHEN a.author_id = :G_AUTHOR_ID THEN'||unistr('\000a')||
 '    ''Change password'''||unistr('\000a')||
 '  END AS passwd '||unistr('\000a')||
-'FROM #OWNER#.blog_author'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_author a'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_page_plug (
@@ -25287,23 +26264,23 @@ end;
 declare
  a1 varchar2(32767) := null;
 begin
-a1:=a1||'SELECT '||unistr('\000a')||
-'  created_by'||unistr('\000a')||
-'  ,created_on'||unistr('\000a')||
-'  ,changed_by'||unistr('\000a')||
-'  ,changed_on'||unistr('\000a')||
-'  ,author_id'||unistr('\000a')||
-'  ,active'||unistr('\000a')||
-'  ,email'||unistr('\000a')||
-'  ,user_name'||unistr('\000a')||
-'  ,author_name'||unistr('\000a')||
-'  ,author_seq'||unistr('\000a')||
-'  ,CASE WHEN passwd IS NULL THEN'||unistr('\000a')||
+a1:=a1||'SELECT a.created_by'||unistr('\000a')||
+'  ,a.created_on'||unistr('\000a')||
+'  ,a.changed_by'||unistr('\000a')||
+'  ,a.changed_on'||unistr('\000a')||
+'  ,a.author_id'||unistr('\000a')||
+'  ,a.active'||unistr('\000a')||
+'  ,a.email'||unistr('\000a')||
+'  ,a.user_name'||unistr('\000a')||
+'  ,a.author_name'||unistr('\000a')||
+'  ,a.author_seq'||unistr('\000a')||
+'  ,CASE WHEN a.passwd IS NULL THEN'||unistr('\000a')||
 '    ''Set password'''||unistr('\000a')||
-'  WHEN author_id = :G_AUTHOR_ID THEN'||unistr('\000a')||
+'  WHEN a.author_id = :G_AUTHOR_ID THEN'||unistr('\000a')||
 '    ''Change password'''||unistr('\000a')||
 '  END AS passwd '||unistr('\000a')||
-'FROM #OWNER#.blog_author'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_author a'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_worksheet(
@@ -25357,7 +26334,7 @@ wwv_flow_api.create_worksheet(
   p_show_help=>'Y',
   p_download_formats=>'CSV:HTML:EMAIL',
   p_detail_link=>'f?p=&APP_ID.:64:&SESSION.::&DEBUG.:RP,64:P64_AUTHOR_ID:#AUTHOR_ID#',
-  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="">',
+  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="#EDIT_LINK_TITLE#" title="#EDIT_LINK_TITLE#" />',
   p_allow_exclude_null_values=>'N',
   p_allow_hide_extra_columns=>'N',
   p_icon_view_enabled_yn=>'N',
@@ -25779,10 +26756,47 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10852000495966231+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 63,
+  p_worksheet_id => 134563343534633791+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'EDIT_LINK_TITLE',
+  p_display_order          =>16,
+  p_column_identifier      =>'P',
+  p_column_label           =>'Edit Link Title',
+  p_report_label           =>'Edit Link Title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'AUTHOR_NAME:ACTIVE:EMAIL:USER_NAME:AUTHOR_SEQ:PASSWD:CREATED_BY:CREATED_ON:CHANGED_BY:CHANGED_ON';
+rc1:=rc1||'AUTHOR_NAME:ACTIVE:EMAIL:USER_NAME:AUTHOR_SEQ:PASSWD:EDIT_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 134564435347634153+wwv_flow_api.g_id_offset,
@@ -27051,7 +28065,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'List of email addresses, ip addresses and user agents that can not post comments.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20140504110915'
+ ,p_last_upd_yyyymmddhh24miss => '20141213090553'
   );
 null;
  
@@ -27063,16 +28077,16 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-s:=s||'select "BLOCK_ID", '||unistr('\000a')||
-'"CREATED_ON",'||unistr('\000a')||
-'"CREATED_BY",'||unistr('\000a')||
-'"CHANGED_ON",'||unistr('\000a')||
-'"CHANGED_BY",'||unistr('\000a')||
-'"ACTIVE",'||unistr('\000a')||
-'"BLOCK_TYPE",'||unistr('\000a')||
-'"BLOCK_VALUE"'||unistr('\000a')||
-'from "#OWNER#"."BLOG_COMMENT_BLOCK" '||unistr('\000a')||
-'  '||unistr('\000a')||
+s:=s||'SELECT b.block_id'||unistr('\000a')||
+'  ,b.created_on'||unistr('\000a')||
+'  ,b.created_by'||unistr('\000a')||
+'  ,b.changed_on'||unistr('\000a')||
+'  ,b.changed_by'||unistr('\000a')||
+'  ,b.active'||unistr('\000a')||
+'  ,b.block_type'||unistr('\000a')||
+'  ,b.block_value'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_comment_block b'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_page_plug (
@@ -27106,16 +28120,16 @@ end;
 declare
  a1 varchar2(32767) := null;
 begin
-a1:=a1||'select "BLOCK_ID", '||unistr('\000a')||
-'"CREATED_ON",'||unistr('\000a')||
-'"CREATED_BY",'||unistr('\000a')||
-'"CHANGED_ON",'||unistr('\000a')||
-'"CHANGED_BY",'||unistr('\000a')||
-'"ACTIVE",'||unistr('\000a')||
-'"BLOCK_TYPE",'||unistr('\000a')||
-'"BLOCK_VALUE"'||unistr('\000a')||
-'from "#OWNER#"."BLOG_COMMENT_BLOCK" '||unistr('\000a')||
-'  '||unistr('\000a')||
+a1:=a1||'SELECT b.block_id'||unistr('\000a')||
+'  ,b.created_on'||unistr('\000a')||
+'  ,b.created_by'||unistr('\000a')||
+'  ,b.changed_on'||unistr('\000a')||
+'  ,b.changed_by'||unistr('\000a')||
+'  ,b.active'||unistr('\000a')||
+'  ,b.block_type'||unistr('\000a')||
+'  ,b.block_value'||unistr('\000a')||
+'  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
+'FROM #OWNER#.blog_comment_block b'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_worksheet(
@@ -27169,7 +28183,7 @@ wwv_flow_api.create_worksheet(
   p_show_help=>'Y',
   p_download_formats=>'CSV:HTML:EMAIL',
   p_detail_link=>'f?p=&APP_ID.:66:&SESSION.::&DEBUG.::P66_BLOCK_ID:#BLOCK_ID#',
-  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="">',
+  p_detail_link_text=>'<img src="#IMAGE_PREFIX#ed-item.gif" alt="#EDIT_LINK_TITLE#" title="#EDIT_LINK_TITLE#" />',
   p_allow_exclude_null_values=>'N',
   p_allow_hide_extra_columns=>'N',
   p_icon_view_enabled_yn=>'N',
@@ -27478,10 +28492,47 @@ wwv_flow_api.create_worksheet_column(
   p_help_text              =>'');
 end;
 /
+begin
+wwv_flow_api.create_worksheet_column(
+  p_id => 10851819904957210+wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_page_id=> 65,
+  p_worksheet_id => 5549921742129162+wwv_flow_api.g_id_offset,
+  p_db_column_name         =>'EDIT_LINK_TITLE',
+  p_display_order          =>9,
+  p_column_identifier      =>'I',
+  p_column_label           =>'Edit Link Title',
+  p_report_label           =>'Edit Link Title',
+  p_sync_form_label        =>'Y',
+  p_display_in_default_rpt =>'Y',
+  p_is_sortable            =>'Y',
+  p_allow_sorting          =>'Y',
+  p_allow_filtering        =>'Y',
+  p_allow_highlighting     =>'Y',
+  p_allow_ctrl_breaks      =>'Y',
+  p_allow_aggregations     =>'Y',
+  p_allow_computations     =>'Y',
+  p_allow_charting         =>'Y',
+  p_allow_group_by         =>'Y',
+  p_allow_hide             =>'Y',
+  p_others_may_edit        =>'Y',
+  p_others_may_view        =>'Y',
+  p_column_type            =>'STRING',
+  p_display_as             =>'TEXT',
+  p_display_text_as        =>'HIDDEN',
+  p_heading_alignment      =>'CENTER',
+  p_column_alignment       =>'LEFT',
+  p_tz_dependent           =>'N',
+  p_rpt_distinct_lov       =>'Y',
+  p_rpt_show_filter_lov    =>'D',
+  p_rpt_filter_date_ranges =>'ALL',
+  p_help_text              =>'');
+end;
+/
 declare
     rc1 varchar2(32767) := null;
 begin
-rc1:=rc1||'CREATED_ON:CREATED_BY:CHANGED_ON:CHANGED_BY:ACTIVE:BLOCK_TYPE:BLOCK_VALUE:';
+rc1:=rc1||'CREATED_ON:CREATED_BY:CHANGED_ON:CHANGED_BY:ACTIVE:BLOCK_TYPE:BLOCK_VALUE:EDIT_LINK_TITLE';
 
 wwv_flow_api.create_worksheet_rpt(
   p_id => 5551424285129544+wwv_flow_api.g_id_offset,
@@ -32316,6 +33367,139 @@ wwv_flow_api.create_message (
   p_id=>10213725407620079 + wwv_flow_api.g_id_offset,
   p_flow_id=>wwv_flow.g_flow_id,
   p_name=>'MSG_LOST_UPDATE',
+  p_message_language=>'en',
+  p_message_text=>h);
+null;
+ 
+end;
+/
+
+prompt  ......Message title_edit_link
+declare
+  h varchar2(32767) := null;
+ 
+begin
+ 
+h:=h||'Edit';
+
+wwv_flow_api.create_message (
+  p_id=>10841405548584048 + wwv_flow_api.g_id_offset,
+  p_flow_id=>wwv_flow.g_flow_id,
+  p_name=>'TITLE_EDIT_LINK',
+  p_message_language=>'en',
+  p_message_text=>h);
+null;
+ 
+end;
+/
+
+prompt  ......Message title_reply_link
+declare
+  h varchar2(32767) := null;
+ 
+begin
+ 
+h:=h||'Reply';
+
+wwv_flow_api.create_message (
+  p_id=>10844622271697888 + wwv_flow_api.g_id_offset,
+  p_flow_id=>wwv_flow.g_flow_id,
+  p_name=>'TITLE_REPLY_LINK',
+  p_message_language=>'en',
+  p_message_text=>h);
+null;
+ 
+end;
+/
+
+prompt  ......Message title_article_link
+declare
+  h varchar2(32767) := null;
+ 
+begin
+ 
+h:=h||'View article';
+
+wwv_flow_api.create_message (
+  p_id=>10844903077706733 + wwv_flow_api.g_id_offset,
+  p_flow_id=>wwv_flow.g_flow_id,
+  p_name=>'TITLE_ARTICLE_LINK',
+  p_message_language=>'en',
+  p_message_text=>h);
+null;
+ 
+end;
+/
+
+prompt  ......Message title_user_link
+declare
+  h varchar2(32767) := null;
+ 
+begin
+ 
+h:=h||'View user';
+
+wwv_flow_api.create_message (
+  p_id=>10845522893727950 + wwv_flow_api.g_id_offset,
+  p_flow_id=>wwv_flow.g_flow_id,
+  p_name=>'TITLE_USER_LINK',
+  p_message_language=>'en',
+  p_message_text=>h);
+null;
+ 
+end;
+/
+
+prompt  ......Message title_session_link
+declare
+  h varchar2(32767) := null;
+ 
+begin
+ 
+h:=h||'View session information';
+
+wwv_flow_api.create_message (
+  p_id=>10845902837737293 + wwv_flow_api.g_id_offset,
+  p_flow_id=>wwv_flow.g_flow_id,
+  p_name=>'TITLE_SESSION_LINK',
+  p_message_language=>'en',
+  p_message_text=>h);
+null;
+ 
+end;
+/
+
+prompt  ......Message title_category_link
+declare
+  h varchar2(32767) := null;
+ 
+begin
+ 
+h:=h||'View category';
+
+wwv_flow_api.create_message (
+  p_id=>10852620742987182 + wwv_flow_api.g_id_offset,
+  p_flow_id=>wwv_flow.g_flow_id,
+  p_name=>'TITLE_CATEGORY_LINK',
+  p_message_language=>'en',
+  p_message_text=>h);
+null;
+ 
+end;
+/
+
+prompt  ......Message title_comment_link
+declare
+  h varchar2(32767) := null;
+ 
+begin
+ 
+h:=h||'View comments';
+
+wwv_flow_api.create_message (
+  p_id=>10853205215994424 + wwv_flow_api.g_id_offset,
+  p_flow_id=>wwv_flow.g_flow_id,
+  p_name=>'TITLE_COMMENT_LINK',
   p_message_language=>'en',
   p_message_text=>h);
 null;

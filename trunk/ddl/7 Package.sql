@@ -264,8 +264,7 @@ AS
   PROCEDURE download_file (
     p_session_id  IN NUMBER,
     p_file_name   IN VARCHAR2,
-    p_user_id     IN VARCHAR2,
-    p_error_link  IN VARCHAR2
+    p_user_id     IN VARCHAR2
   );
 --------------------------------------------------------------------------------
   FUNCTION validate_email (
@@ -889,21 +888,21 @@ AS
   PROCEDURE download_file (
     p_session_id  IN NUMBER,
     p_file_name   IN VARCHAR2,
-    p_user_id     IN VARCHAR2,
-    p_error_link  IN VARCHAR2
+    p_user_id     IN VARCHAR2
   )
   AS
-    l_file_name         VARCHAR2(2000);
-    l_utc               TIMESTAMP;
-    l_file_cached       BOOLEAN;
-    l_file_rowtype      blog_file%ROWTYPE;
-    l_arr               apex_application_global.vc_arr2;
-    c_date_lang         CONSTANT VARCHAR2(255) := 'NLS_DATE_LANGUAGE=ENGLISH';
-    c_date_format       CONSTANT VARCHAR2(255) := 'Dy, DD Mon YYYY HH24:MI:SS "GMT"';
+    l_file_name       VARCHAR2(2000);
+    l_utc             TIMESTAMP;
+    l_file_cached     BOOLEAN;
+    l_file_rowtype    blog_file%ROWTYPE;
+    l_arr             apex_application_global.vc_arr2;
+    c_date_lang       CONSTANT VARCHAR2(255) := 'NLS_DATE_LANGUAGE=ENGLISH';
+    c_date_format     CONSTANT VARCHAR2(255) := 'Dy, DD Mon YYYY HH24:MI:SS "GMT"';
+    SESSION_NOT_VALID EXCEPTION;
+    PRAGMA EXCEPTION_INIT(SESSION_NOT_VALID, -20001);
   BEGIN
     IF NOT wwv_flow_custom_auth_std.is_session_valid THEN
-      htp.p('Unauthorized access - file will not be retrieved.');
-      RETURN;
+      RAISE_APPLICATION_ERROR(-20001, 'Unauthorized access - file will not be retrieved.');
     END IF;
     l_file_cached := FALSE;
     /* APEX request can also contain query string */
@@ -961,7 +960,18 @@ AS
     INVALID_NUMBER OR
     VALUE_ERROR
   THEN
-    apex_util.redirect_url(p_error_link);
+    owa_util.status_line(
+      nstatus       => 404,
+      creason       => 'Not Found',
+      bclose_header => true
+    );
+  WHEN SESSION_NOT_VALID
+  THEN
+    owa_util.status_line(
+      nstatus       => 403,
+      creason       => 'Forbidden',
+      bclose_header => true
+    );
   END download_file;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2136,7 +2146,7 @@ AS
     
     IF p_theme_path IS NULL THEN
       UPDATE blog_param
-      SET param_value = 'f?p=' || TO_CHAR(p_reader_app_id) || ':DOWNLOAD:0:'
+      SET param_value = 'f?p=' || TO_CHAR(p_reader_app_id) || ':FILES:0:APPLICATION_PROCESS=DOWNLOAD:::P11_FILE_NAME:'
       WHERE param_id  = 'G_THEME_PATH'
       ;
     ELSE
