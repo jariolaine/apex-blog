@@ -12,7 +12,7 @@ prompt  APPLICATION 290 - Blog Reader
 -- Application Export:
 --   Application:     290
 --   Name:            Blog Reader
---   Date and Time:   13:13 Sunday December 14, 2014
+--   Date and Time:   16:14 Sunday December 14, 2014
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -155,6 +155,9 @@ wwv_flow_api.create_flow(
   p_owner => nvl(wwv_flow_application_install.get_schema,'BLOG_020900'),
   p_name  => nvl(wwv_flow_application_install.get_application_name,'Blog Reader'),
   p_alias => nvl(wwv_flow_application_install.get_application_alias,'BLOG'),
+  p_application_group=>11245122453116684,
+  p_application_group_name=>'Blog',
+  p_application_group_comment=>'DbSWH APEX blogging platform',
   p_page_view_logging => 'YES',
   p_page_protection_enabled_y_n=> 'Y',
   p_checksum_salt=> '4DC18F44D89444E71B1FF26A7D89E0F7A174335914DB4B6F88E429DA1B788FB7',
@@ -200,7 +203,7 @@ wwv_flow_api.create_flow(
   p_error_handling_function=> 'blog_log.apex_error_handler',
   p_default_error_display_loc=> 'INLINE_IN_NOTIFICATION',
   p_last_updated_by => 'LAINFJAR',
-  p_last_upd_yyyymmddhh24miss=> '20141214131341',
+  p_last_upd_yyyymmddhh24miss=> '20141214161433',
   p_ui_type_name => null,
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
@@ -1172,7 +1175,7 @@ wwv_flow_api.create_page (
  ,p_protection_level => 'D'
  ,p_cache_page_yn => 'N'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141214123108'
+ ,p_last_upd_yyyymmddhh24miss => '20141214132743'
   );
 null;
  
@@ -1222,7 +1225,7 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-s:=s||'<p itemprop="description">&G_BLOG_DESCRIPTION.</p>';
+s:=s||'<p>&G_BLOG_DESCRIPTION.</p>';
 
 wwv_flow_api.create_page_plug (
   p_id=> 177260419964322693 + wwv_flow_api.g_id_offset,
@@ -3574,7 +3577,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141214123131'
+ ,p_last_upd_yyyymmddhh24miss => '20141214133212'
   );
 null;
  
@@ -8565,7 +8568,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141214115344'
+ ,p_last_upd_yyyymmddhh24miss => '20141214134841'
   );
 null;
  
@@ -8628,7 +8631,7 @@ wwv_flow_api.create_flash_chart5(
   p_pie_attr               =>'Outside:::',
   p_map_attr               =>'Equirectangular:RegionBounds:REGION_NAME:Y:Y:Series::::N:',
   p_map_source             =>'world/world.amap',
-  p_margins                =>'8:::',
+  p_margins                =>'26:::',
   p_omit_label_interval    => null,
   p_bgtype                 =>'Trans',
   p_bgcolor1               =>'',
@@ -10926,7 +10929,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141214115454'
+ ,p_last_upd_yyyymmddhh24miss => '20141214152244'
   );
 null;
  
