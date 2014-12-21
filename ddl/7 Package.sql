@@ -37,23 +37,17 @@ AS
     p_condition_expression2   IN VARCHAR2
   ) RETURN VARCHAR2
   AS
-    l_retval    VARCHAR2(1);
-    l_entry_id  VARCHAR2(100);
+    l_retval  BOOLEAN;
   BEGIN
-    IF apex_plugin_util.is_component_used (
-            p_build_option_id         => p_build_option_id,
-            p_authorization_scheme_id => p_authorization_scheme_id,
-            p_condition_type          => p_condition_type_code,
-            p_condition_expression1   => p_condition_expression1,
-            p_condition_expression2   => p_condition_expression2
-        )
-      THEN
-        l_retval := 'Y';
-      ELSE
-        l_retval := 'N';
-      END IF;
-      RETURN l_retval;
-   END show_entry;
+    l_retval := apex_plugin_util.is_component_used (
+      p_build_option_id         => p_build_option_id,
+      p_authorization_scheme_id => p_authorization_scheme_id,
+      p_condition_type          => p_condition_type_code,
+      p_condition_expression1   => p_condition_expression1,
+      p_condition_expression2   => p_condition_expression2
+    );
+    RETURN apex_debug.tochar(l_retval);
+  END show_entry;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE rss(
@@ -69,18 +63,18 @@ AS
     l_home_url    VARCHAR2(255);
     l_article_url VARCHAR2(255);
     l_webmaster   VARCHAR2(255);
+    l_rss_lang    VARCHAR2(5);
 
     c_version     CONSTANT VARCHAR2(5) := '2.0';
-    c_rss_lang    CONSTANT VARCHAR2(5) := 'en';
 
-    c_date_lang   CONSTANT VARCHAR2(255) := 'NLS_DATE_LANGUAGE=ENGLISH';
-    c_date_form   CONSTANT VARCHAR2(255) := 'Dy, DD Mon RRRR HH24:MI:SS "+0100"';
   BEGIN
 
+    l_rss_lang    := apex_application.g_browser_language;
     l_rss_desc    := blog_util.get_param_value('RSS_DESCRIPTION');
+    
     l_url         := 'f?p=' || p_app_alias || ':';
-    l_rss_url     := p_base_url || l_url || 'RSS:0';
-    l_home_url    := p_base_url || l_url || 'HOME:0';
+    l_rss_url     := p_base_url || l_url || 'RSS';
+    l_home_url    := p_base_url || l_url || 'HOME';
     l_article_url := l_url || 'READ:0::::ARTICLE:';
 
     SELECT xmlelement("rss", xmlattributes(c_version AS "version", 'http://www.w3.org/2005/Atom' AS "xmlns:atom", 'http://purl.org/dc/elements/1.1/' AS "xmlns:dc"),
@@ -90,17 +84,17 @@ AS
           p_blog_name AS "title"
           ,l_home_url AS "link"
           ,l_rss_desc AS "description"
-          ,c_rss_lang AS "language"
+          ,l_rss_lang AS "language"
         ),
         xmlagg(
           xmlelement("item",
             xmlelement("title", l.rss_title),
             xmlelement("dc:creator", l.posted_by),
-            xmlelement("category", l.category_name),
-            xmlelement("link", p_base_url || APEX_UTIL.PREPARE_URL(l_article_url || l.article_id, NULL, 'PUBLIC_BOOKMARK')),
-            xmlelement("description", l.description),
-            xmlelement("pubDate", TO_CHAR(l.created_on, c_date_form, c_date_lang)),
-            xmlelement("guid", xmlattributes('false' AS "isPermaLink"), l.article_id || TO_CHAR(l.created_on, 'JHH24MISS'))
+            xmlelement("category", l.rss_category),
+            xmlelement("link", p_base_url || apex_util.prepare_url(l_article_url || l.article_id, NULL, 'PUBLIC_BOOKMARK')),
+            xmlelement("description", l.rss_description),
+            xmlelement("pubDate", l.rss_pubdate),
+            xmlelement("guid", xmlattributes('false' AS "isPermaLink"), l.rss_guid)
           ) ORDER BY created_on DESC
         )
       )
@@ -110,7 +104,7 @@ AS
     ;
     owa_util.mime_header('application/rss+xml', TRUE);
     wpg_docload.download_file(l_xml);
-    APEX_APPLICATION.STOP_APEX_ENGINE;
+    apex_application.stop_apex_engine;
 
   END rss;
 --------------------------------------------------------------------------------
@@ -133,19 +127,16 @@ AS
     WITH article_cat AS(
       SELECT category_id,
         MAX(changed_on) AS changed_on
-      FROM blog_article b
-      WHERE b.active = 'Y'
-        AND b.valid_from <= SYSDATE
+      FROM blog_v$article b
       GROUP BY category_id
     ), sitemap_query AS (
       SELECT 1 AS grp,
         ROW_NUMBER() OVER(ORDER BY e.display_sequence) AS rnum,
-        APEX_PLUGIN_UTIL.REPLACE_SUBSTITUTIONS(e.entry_target) AS url,
+        apex_plugin_util.replace_substitutions(e.entry_target) AS url,
         (SELECT MAX(changed_on) FROM article_cat) AS lastmod
       FROM APEX_APPLICATION_LIST_ENTRIES e
       WHERE e.application_id = p_app_id
         AND e.list_name      = p_tab_list
-        --AND COALESCE(blog_util.get_param_value(e.authorization_scheme), 'Y') = 'Y'
         AND
           blog_xml.show_entry(
             (SELECT o.build_option_id FROM apex_application_build_options o WHERE o.build_option_name = e.build_option),
@@ -153,23 +144,22 @@ AS
             e.condition_type_code,
             e.condition_expression1,
             e.condition_expression2
-           ) = 'Y'
+           ) = 'true'
       UNION ALL
       SELECT 2 AS grp,
         ROW_NUMBER() OVER(ORDER BY a.created_on) AS rnum,
-        APEX_UTIL.PREPARE_URL(l_article_url || a.article_id, NULL, 'PUBLIC_BOOKMARK') AS url,
+        apex_util.prepare_url(l_article_url || a.article_id, NULL, 'PUBLIC_BOOKMARK') AS url,
         a.changed_on AS lastmod
-      FROM blog_article a
-      WHERE a.active = 'Y'
-        AND a.valid_from <= SYSDATE
+      FROM blog_v$article a
       UNION ALL
       SELECT 3 AS grp,
         ROW_NUMBER() OVER(ORDER BY c.category_seq) AS rnum,
-        APEX_UTIL.PREPARE_URL(l_category_url || c.category_id, NULL, 'PUBLIC_BOOKMARK') AS url,
+        apex_util.prepare_url(l_category_url || c.category_id, NULL, 'PUBLIC_BOOKMARK') AS url,
         a.changed_on AS lastmod
       FROM blog_category c
       JOIN article_cat a
         ON c.category_id = a.category_id
+       AND c.active = 'Y'
     )
     SELECT XMLElement("urlset", XMLAttributes('http://www.sitemaps.org/schemas/sitemap/0.9' AS "xmlns"),
         (
@@ -189,7 +179,7 @@ AS
 
     owa_util.mime_header('application/xml', TRUE);
     wpg_docload.download_file(l_xml);
-    APEX_APPLICATION.STOP_APEX_ENGINE;
+    apex_application.stop_apex_engine;
 
   END sitemap;
 --------------------------------------------------------------------------------
@@ -208,12 +198,6 @@ AS
 --------------------------------------------------------------------------------
   FUNCTION get_param_value (
     p_param_id        IN VARCHAR2
-  ) RETURN VARCHAR2;
---------------------------------------------------------------------------------
-  FUNCTION get_article_url(
-    p_article_id      IN NUMBER,
-    p_app_alias       IN VARCHAR2,
-    p_base_url        IN VARCHAR2 DEFAULT NULL
   ) RETURN VARCHAR2;
 --------------------------------------------------------------------------------
   PROCEDURE set_items_from_param (
@@ -251,8 +235,7 @@ AS
     p_article_title   IN VARCHAR2,
     p_app_alias       IN VARCHAR2,
     p_base_url        IN VARCHAR2,
-    p_blog_name       IN VARCHAR2,
-    p_article_url     IN VARCHAR2
+    p_blog_name       IN VARCHAR2
   );
 --------------------------------------------------------------------------------
   PROCEDURE unsubscribe (
@@ -262,14 +245,30 @@ AS
   );
 --------------------------------------------------------------------------------
   PROCEDURE download_file (
-    p_session_id  IN NUMBER,
     p_file_name   IN VARCHAR2,
+    p_session_id  IN NUMBER,
     p_user_id     IN VARCHAR2
   );
 --------------------------------------------------------------------------------
   FUNCTION validate_email (
     p_email           IN VARCHAR2
   ) RETURN BOOLEAN;
+--------------------------------------------------------------------------------
+  PROCEDURE get_article_page_items (
+    p_article_id    IN VARCHAR2,
+    p_page_title    OUT NOCOPY VARCHAR2,
+    p_region_title  OUT NOCOPY VARCHAR2,
+    p_keywords      OUT NOCOPY VARCHAR2,
+    p_description   OUT NOCOPY VARCHAR2,
+    p_author_name   OUT NOCOPY VARCHAR2
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE get_category_page_items (
+    p_category_id   IN VARCHAR2,
+    p_page_title    OUT NOCOPY VARCHAR2,
+    p_region_title  OUT NOCOPY VARCHAR2,
+    p_category_name OUT NOCOPY VARCHAR2
+  );
 --------------------------------------------------------------------------------
 END "BLOG_UTIL";
 /
@@ -284,7 +283,6 @@ AS
     n_author_id     NUMBER(38),
     v_author_name   VARCHAR2(80),
     v_email         VARCHAR2(120),
-    v_active        VARCHAR2(1),
     v_email_notify  VARCHAR2(1)
   );
   TYPE t_email  IS RECORD (
@@ -294,8 +292,8 @@ AS
   );
   g_cookie_expires    CONSTANT DATE           := ADD_MONTHS(TRUNC(SYSDATE), 12);
   g_watche_expires    CONSTANT DATE           := ADD_MONTHS(TRUNC(SYSDATE), -1);
-  g_cookie_name       CONSTANT VARCHAR2(30)   := '__dbswhblog';
-  g_cookie_version    CONSTANT VARCHAR2(30)   := '020100';
+  g_cookie_name       CONSTANT VARCHAR2(30)   := '__uid';
+  g_cookie_version    CONSTANT VARCHAR2(30)   := '1.0';
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   FUNCTION get_user_name (
@@ -315,7 +313,7 @@ AS
     VALUE_ERROR OR
     INVALID_NUMBER
   THEN
-    apex_debug.warn('blog_util.get_user_name(p_user_id => %s); error: %s', p_user_id, sqlerrm);
+    apex_debug.warn('blog_util.get_user_name(p_user_id => %s); error: %s', COALESCE(to_char(p_user_id), 'NULL'), sqlerrm);
     RETURN NULL;
   END get_user_name;
 --------------------------------------------------------------------------------
@@ -329,28 +327,23 @@ AS
     SELECT u.author_id,
       author_name,
       email,
-      active,
       email_notify
-      INTO l_author.n_author_id,
-        l_author.v_author_name,
-        l_author.v_email,
-        l_author.v_active,
-        l_author.v_email_notify
+      INTO l_author
     FROM blog_author u
-    WHERE EXISTS(
+    WHERE u.active = 'Y'
+      AND EXISTS(
       SELECT 1
-      FROM blog_article a
+      FROM blog_v$article a
       WHERE a.article_id = p_article_id
       AND a.author_id = u.author_id
-    )
-    ;
+    );
     RETURN l_author;
   EXCEPTION WHEN
     NO_DATA_FOUND OR
     VALUE_ERROR OR
     INVALID_NUMBER
   THEN
-    apex_debug.warn('blog_util.get_author_record_by_article(p_article_id => %s); error: %s', p_article_id, sqlerrm);
+    apex_debug.warn('blog_util.get_author_record_by_article(p_article_id => %s); error: %s', coalesce(to_char(p_article_id), 'NULL'), sqlerrm);
     RETURN NULL;
   END get_article_author;
 --------------------------------------------------------------------------------
@@ -362,9 +355,9 @@ AS
   AS
     l_value VARCHAR2(32700);
   BEGIN
-    l_value := UTL_RAW.CAST_TO_VARCHAR2(p_value);
-    l_value := UTL_URL.UNESCAPE(l_value);
-    RETURN APEX_UTIL.STRING_TO_TABLE(l_value, COALESCE(p_separator, ':'));
+    l_value := sys.utl_raw.cast_to_varchar2(p_value);
+    l_value := sys.utl_url.unescape(l_value);
+    RETURN apex_util.string_to_table(l_value, COALESCE(p_separator, ':'));
   END raw_to_table;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -373,15 +366,15 @@ AS
   )
   AS
   BEGIN
-    owa_util.mime_header('text/html', FALSE);
+    sys.owa_util.mime_header('text/html', FALSE);
     -- The first element in the table is the cookie version
     -- The second element in the table is the user id
-    owa_cookie.send(
+    sys.owa_cookie.send(
       name    => blog_util.g_cookie_name,
-      value   => UTL_RAW.CAST_TO_RAW(blog_util.g_cookie_version || ':' || p_user_id),
+      value   => sys.utl_raw.cast_to_raw(blog_util.g_cookie_version || ':' || p_user_id),
       expires => blog_util.g_cookie_expires
     );
-    --owa_util.http_header_close;
+    --sys.owa_util.http_header_close;
   END set_cookie;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -392,13 +385,13 @@ AS
     l_cookie_val  VARCHAR2(2000);
     l_cookie_vals apex_application_global.vc_arr2;
   BEGIN
-    l_cookie_val := APEX_AUTHENTICATION.GET_LOGIN_USERNAME_COOKIE(blog_util.g_cookie_name);
+    l_cookie_val := apex_authentication.get_login_username_cookie(blog_util.g_cookie_name);
     IF l_cookie_val IS NOT NULL THEN
       l_cookie_vals := blog_util.raw_to_table(l_cookie_val);
       -- The first element in the table is the cookie version
       IF l_cookie_vals(1) = blog_util.g_cookie_version THEN
         -- The second element in the table is the user id
-        l_user_id := TO_NUMBER(l_cookie_vals(2));
+        l_user_id := to_number(l_cookie_vals(2));
       END IF;
     END IF;
     RETURN l_user_id;
@@ -435,8 +428,8 @@ AS
     l_key := l_arr.FIRST;
     -- Substitude message
     WHILE l_key IS NOT NULL LOOP
-      l_email.v_subj := REGEXP_REPLACE( l_email.v_subj, l_key, l_arr(l_key), 1, 0, 'i' );
-      l_email.v_body := REGEXP_REPLACE( l_email.v_body, l_key, l_arr(l_key), 1, 0, 'i' );
+      l_email.v_subj := regexp_replace( l_email.v_subj, l_key, l_arr(l_key), 1, 0, 'i' );
+      l_email.v_body := regexp_replace( l_email.v_body, l_key, l_arr(l_key), 1, 0, 'i' );
       l_key := l_arr.NEXT(l_key);
     END LOOP;
     /* Get blog email */
@@ -444,6 +437,21 @@ AS
     --
     RETURN l_email;
   END get_email_message;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  FUNCTION get_article_url(
+    p_article_id  IN NUMBER,
+    p_app_alias   IN VARCHAR2,
+    p_base_url    IN VARCHAR2 DEFAULT NULL
+  ) RETURN VARCHAR2
+  AS
+    l_url VARCHAR2(2000);
+  BEGIN
+    l_url := 'f?p=' || p_app_alias || ':READ:0::::ARTICLE:' || p_article_id;
+    l_url := apex_util.prepare_url(p_url => l_url, p_checksum_type => 'PUBLIC_BOOKMARK');
+    l_url := p_base_url || l_url;
+    RETURN l_url;
+  END get_article_url;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   FUNCTION get_unsubscribe_url (
@@ -458,9 +466,9 @@ AS
     l_url       VARCHAR2(2000);
     l_value     VARCHAR2(2000);
   BEGIN
-    l_value := UTL_RAW.CAST_TO_RAW(p_user_id || ':' || p_article_id);
+    l_value := sys.utl_raw.cast_to_raw(p_user_id || ':' || p_article_id);
     l_url   := 'f?p=' || p_app_alias || ':UNSUBSCRIBE:' || p_session_id || '::::SUBSCRIBER_ID:' || l_value;
-    l_url   := APEX_UTIL.PREPARE_URL(p_url => l_url, p_checksum_type => 'PUBLIC_BOOKMARK');
+    l_url   := apex_util.prepare_url(p_url => l_url, p_checksum_type => 'PUBLIC_BOOKMARK');
     l_url   := p_base_url || l_url;
     RETURN l_url;
   END get_unsubscribe_url;
@@ -534,7 +542,7 @@ AS
       p_body          => 'NEW_COMMENT_EMAIL_BODY'
     );
     /* Send mail to author */
-    APEX_MAIL.SEND (
+    apex_mail.send (
       p_from => l_email.v_from,
       p_to   => p_author_email,
       p_subj => l_email.v_subj,
@@ -543,6 +551,23 @@ AS
     /* we do have time wait email sending */
     --APEX_MAIL.PUSH_QUEUE;
   END notify_author;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------  
+  PROCEDURE raise_http_error(
+    p_id          IN VARCHAR2,
+    p_error_code  IN NUMBER DEFAULT 404,
+    p_reason      IN VARCHAR2 DEFAULT 'Not Found'
+  )
+  AS
+  BEGIN
+    apex_debug.warn('HTTP %s %s id: %s', p_error_code, p_reason, coalesce(p_id, '(NULL)'));
+    sys.owa_util.status_line(
+      nstatus       => p_error_code,
+      creason       => p_reason,
+      bclose_header => true
+    );
+    apex_application.stop_apex_engine;
+  END raise_http_error;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -562,18 +587,18 @@ AS
       l_user_name := blog_util.get_user_name(l_user_id);
       IF l_user_name IS NOT NULL THEN
         /* Set APP_USER */
-        APEX_CUSTOM_AUTH.SET_USER(UPPER(l_user_name));
+        apex_custom_auth.set_user(upper(l_user_name));
       ELSE
         l_user_id := NULL;
       END IF;
     END IF;
-    IF apex_util.public_check_authorization('LOGGING_ENABLED') THEN
+    IF apex_authorization.is_authorized('LOGGING_ENABLED') THEN
       blog_log.write_activity_log(
         p_user_id       => l_user_id,
         p_session_id    => p_session_id,
-        p_ip_address    => owa_util.get_cgi_env('REMOTE_ADDR'),
-        p_user_agent    => owa_util.get_cgi_env('HTTP_USER_AGENT'),
-        p_referer       => owa_util.get_cgi_env('HTTP_REFERER'),
+        p_ip_address    => sys.owa_util.get_cgi_env('REMOTE_ADDR'),
+        p_user_agent    => sys.owa_util.get_cgi_env('HTTP_USER_AGENT'),
+        p_referer       => sys.owa_util.get_cgi_env('HTTP_REFERER'),
         p_activity_type => 'NEW_SESSION'
       );
     END IF;
@@ -596,24 +621,10 @@ AS
   END get_param_value;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  FUNCTION get_article_url(
-    p_article_id  IN NUMBER,
-    p_app_alias   IN VARCHAR2,
-    p_base_url    IN VARCHAR2 DEFAULT NULL
-  ) RETURN VARCHAR2
-  AS
-    l_url VARCHAR2(2000);
-  BEGIN
-    l_url := 'f?p=' || p_app_alias || ':READ:0::::ARTICLE:' || p_article_id;
-    l_url := APEX_UTIL.PREPARE_URL(p_url => l_url, p_checksum_type => 'PUBLIC_BOOKMARK');
-    l_url := p_base_url || l_url;
-    RETURN l_url;
-  END get_article_url;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   PROCEDURE set_items_from_param(
     p_app_id IN NUMBER
   ) AS
+  --PRAGMA AUTONOMOUS_TRANSACTION;
   BEGIN
     FOR c1 IN (
       SELECT
@@ -628,7 +639,7 @@ AS
           AND a.param_id = p.param_id
         )
     ) LOOP
-      APEX_UTIL.SET_SESSION_STATE(c1.param_id, c1.param_value);
+      apex_util.set_session_state(c1.param_id, c1.param_value);
     END LOOP;
   END set_items_from_param;
 --------------------------------------------------------------------------------
@@ -648,13 +659,13 @@ AS
     p_comment         IN VARCHAR2
   )
   AS
-    l_comment_id  NUMBER(38);
     l_article_url VARCHAR2(4000);
+    l_comment_id  NUMBER(38);
     l_publish     VARCHAR2(1) := 'N';
     l_author      t_author;
   BEGIN
     /* Set APP_USER */
-    APEX_CUSTOM_AUTH.SET_USER(UPPER(p_nick_name));
+    apex_custom_auth.set_user(upper(p_nick_name));
     --
     /* Insert or update user */
     blog_util.save_user_attr(
@@ -673,7 +684,7 @@ AS
     blog_util.set_cookie(p_user_id);
     --
     /* Should author moderate comment before it is published */
-    IF NOT apex_util.public_check_authorization('MODERATION_ENABLED') THEN
+    IF NOT apex_authorization.is_authorized('MODERATION_ENABLED') THEN
       l_publish := 'Y';
     END IF;
     --
@@ -692,42 +703,41 @@ AS
       AND user_id IS NULL
     ;
     --
-    /* Get article url */
-    l_article_url := blog_util.get_article_url(p_article_id, p_app_alias, p_base_url);
-    --
     /* Send email about new comment to readers */
-    IF l_publish = 'Y' THEN
-      blog_util.notify_readers (
-        p_comment_id    => l_comment_id,
-        p_user_id       => p_user_id,
-        p_article_id    => p_article_id,
-        p_article_title => p_article_title,
-        p_article_url   => l_article_url,
-        p_app_alias     => p_app_alias,
-        p_base_url      => p_base_url,
-        p_blog_name     => p_blog_name
-      );
-    END IF;
+    IF apex_authorization.is_authorized('NOTIFICATION_EMAIL_ENABLED') THEN
+      IF l_publish = 'Y' THEN
+        blog_util.notify_readers (
+          p_comment_id    => l_comment_id,
+          p_user_id       => p_user_id,
+          p_article_id    => p_article_id,
+          p_article_title => p_article_title,
+          p_app_alias     => p_app_alias,
+          p_base_url      => p_base_url,
+          p_blog_name     => p_blog_name
+        );
+      END IF;
     --
+      /* Get author details for notification emails */
+      l_author := blog_util.get_article_author(p_article_id);
+      --
+      /* Send email about new comment to author */
+      /* If we have author email and author is active and like have notifications */
+      IF  l_author.v_email IS NOT NULL AND l_author.v_email_notify = 'Y'
+      THEN
+        /* Get article url */
+        l_article_url := blog_util.get_article_url(p_article_id, p_app_alias, p_base_url);
+        --
+        blog_util.notify_author (
+          p_article_title => p_article_title,
+          p_article_url   => l_article_url,
+          p_blog_name     => p_blog_name,
+          p_author_name   => l_author.v_author_name,
+          p_author_email  => l_author.v_email
+        );
+      END IF;
+    END IF;
     /* Refresh comment log */
-    DBMS_MVIEW.REFRESH('BLOG_COMMENT_LOG');
-    --
-    /* Get author details for notification emails */
-    l_author := blog_util.get_article_author(p_article_id);
-    --
-    /* Send email about new comment to author */
-    /* If we have author email and author is active and like have notifications */
-    IF  l_author.v_email IS NOT NULL
-    AND (l_author.v_active = 'Y' AND l_author.v_email_notify = 'Y')
-    THEN
-      blog_util.notify_author (
-        p_article_title => p_article_title,
-        p_article_url   => l_article_url,
-        p_blog_name     => p_blog_name,
-        p_author_name   => l_author.v_author_name,
-        p_author_email  => l_author.v_email
-      );
-    END IF;
+    dbms_mview.refresh('BLOG_COMMENT_LOG');
   END save_comment;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -742,7 +752,7 @@ AS
   AS
   BEGIN
     /* Set APP_USER */
-    APEX_CUSTOM_AUTH.SET_USER(UPPER(p_nick_name));
+    apex_custom_auth.set_user(upper(p_nick_name));
     /* Insert or update user */
     blog_util.save_user_attr(
       p_user_id     => p_user_id,
@@ -768,18 +778,20 @@ AS
     p_article_title IN VARCHAR2,
     p_app_alias     IN VARCHAR2,
     p_base_url      IN VARCHAR2,
-    p_blog_name     IN VARCHAR2,
-    p_article_url   IN VARCHAR2
+    p_blog_name     IN VARCHAR2
   )
   AS
+    l_article_url     VARCHAR2(2000);
     l_unsubscribe_url VARCHAR2(2000);
     l_user_email      t_email;
     l_email           t_email;
   BEGIN
+    /* Get article url */
+    l_article_url := blog_util.get_article_url(p_article_id, p_app_alias, p_base_url);
     /* Get email subject and body to variables */
     l_email := blog_util.get_email_message(
       p_article_title => p_article_title,
-      p_article_url   => p_article_url,
+      p_article_url   => l_article_url,
       p_blog_name     => p_blog_name,
       p_author_name   => '#AUTHOR_NAME#',
       p_subj          => 'FOLLOWUP_EMAIL_SUBJ',
@@ -819,11 +831,11 @@ AS
         p_base_url    => p_base_url
       );
       /* Make user specific substitutions */
-      l_user_email.v_subj := REGEXP_REPLACE(l_email.v_subj, '#NICK_NAME#', c1.nick_name, 1, 0, 'i');
-      l_user_email.v_body := REGEXP_REPLACE(l_email.v_body, '#NICK_NAME#', c1.nick_name, 1, 0, 'i');
-      l_user_email.v_body := REGEXP_REPLACE(l_user_email.v_body, '#UNSUBSCRIBE_URL#', l_unsubscribe_url, 1, 0, 'i');
+      l_user_email.v_subj := regexp_replace(l_email.v_subj, '#NICK_NAME#', c1.nick_name, 1, 0, 'i');
+      l_user_email.v_body := regexp_replace(l_email.v_body, '#NICK_NAME#', c1.nick_name, 1, 0, 'i');
+      l_user_email.v_body := regexp_replace(l_user_email.v_body, '#UNSUBSCRIBE_URL#', l_unsubscribe_url, 1, 0, 'i');
       /* Send mail to user */
-      APEX_MAIL.SEND (
+      apex_mail.send (
         p_from => l_email.v_from,
         p_to   => c1.email,
         p_subj => l_user_email.v_subj,
@@ -863,34 +875,31 @@ AS
     AND p_article_id IS NOT NULL
     THEN
       /* Set APP_USER */
-      APEX_CUSTOM_AUTH.SET_USER(UPPER(l_user_name));
+      apex_custom_auth.set_user(upper(l_user_name));
       blog_util.save_notify_user(
         p_user_id    => p_user_id,
         p_article_id => p_article_id,
         p_followup   => 'N'
       );
     ELSE
-      p_user_id     := NULL;
-      p_article_id  := NULL;
+      blog_util.raise_http_error(p_value);
     END IF;
   EXCEPTION WHEN
     NO_DATA_FOUND OR
     INVALID_NUMBER OR
     VALUE_ERROR
   THEN
-    apex_debug.warn('blog_util.unsubscribe(p_value => %s); error: %s', p_value, sqlerrm);
-    p_value       := NULL;
-    p_user_id     := NULL;
-    p_article_id  := NULL;
+    blog_util.raise_http_error(p_value);
   END unsubscribe;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE download_file (
-    p_session_id  IN NUMBER,
     p_file_name   IN VARCHAR2,
+    p_session_id  IN NUMBER,
     p_user_id     IN VARCHAR2
   )
   AS
+    l_id_source       VARCHAR2(256);
     l_file_name       VARCHAR2(2000);
     l_utc             TIMESTAMP;
     l_file_cached     BOOLEAN;
@@ -899,35 +908,39 @@ AS
     c_date_lang       CONSTANT VARCHAR2(255) := 'NLS_DATE_LANGUAGE=ENGLISH';
     c_date_format     CONSTANT VARCHAR2(255) := 'Dy, DD Mon YYYY HH24:MI:SS "GMT"';
     SESSION_NOT_VALID EXCEPTION;
+    FILE_NOT_ACTIVE   EXCEPTION;
     PRAGMA EXCEPTION_INIT(SESSION_NOT_VALID, -20001);
+    PRAGMA EXCEPTION_INIT(SESSION_NOT_VALID, -20002);
   BEGIN
-    IF NOT wwv_flow_custom_auth_std.is_session_valid THEN
-      RAISE_APPLICATION_ERROR(-20001, 'Unauthorized access - file will not be retrieved.');
+    IF NOT apex_custom_auth.is_session_valid THEN
+      apex_debug.warn('File download session is not valid: %s', p_session_id);
+      raise_application_error(-20001, 'Unauthorized access - file will not be retrieved.');
     END IF;
     l_file_cached := FALSE;
-    /* APEX request can also contain query string */
-    l_arr := APEX_UTIL.STRING_TO_TABLE(p_file_name, '?');
+    l_arr := apex_util.string_to_table(p_file_name, '?');
     l_file_name := l_arr(1);
     l_utc := SYS_EXTRACT_UTC(SYSTIMESTAMP);
     SELECT *
     INTO l_file_rowtype
     FROM blog_file
     WHERE file_name = l_file_name
-      AND active = 'Y'
     ;
+    IF NOT l_file_rowtype.active = 'Y' THEN
+      raise_application_error(-20002, 'File is not available for download.');
+    END IF;
     sys.owa_util.mime_header(COALESCE (l_file_rowtype.mime_type, 'application/octet'), FALSE);
     IF l_file_rowtype.file_type != 'FILE' THEN
       /* File type is not FILE, then use cache e.g. for images, css and JavaScript */
       /* Cache and ETag headers */
       sys.htp.p('Cache-Control: public, max-age=31536000');
-      sys.htp.p('Date: '    || TO_CHAR(l_utc, c_date_format, c_date_lang));
-      sys.htp.p('Expires: ' || TO_CHAR(l_utc + 365, c_date_format, c_date_lang));
+      sys.htp.p('Date: '    || to_char(l_utc, c_date_format, c_date_lang));
+      sys.htp.p('Expires: ' || to_char(l_utc + 365, c_date_format, c_date_lang));
       sys.htp.p('ETag: "'   || l_file_rowtype.file_etag || '"');
       /* Check if file is modified after last download */
-      IF (UPPER(TRIM(sys.OWA_UTIL.GET_CGI_ENV('HTTP_IF_MODIFIED_SINCE'))) = UPPER(l_file_rowtype.file_modified_since))
-      OR (UPPER(TRIM(sys.OWA_UTIL.GET_CGI_ENV('HTTP_IF_NONE_MATCH')))  = UPPER(l_file_rowtype.file_etag))
+      IF sys.owa_util.get_cgi_env('HTTP_IF_MODIFIED_SINCE') = l_file_rowtype.file_modified_since
+      OR sys.owa_util.get_cgi_env('HTTP_IF_NONE_MATCH')  = l_file_rowtype.file_etag
       THEN
-        owa_util.status_line(
+        sys.owa_util.status_line(
           nstatus       => 304,
           creason       => 'Not Modified',
           bclose_header => FALSE
@@ -937,7 +950,7 @@ AS
         sys.htp.p('Last-Modified : ' || l_file_rowtype.file_modified_since);
       END IF;
     ELSE
-      IF apex_util.public_check_authorization('LOGGING_ENABLED') THEN
+      IF apex_authorization.is_authorized('LOGGING_ENABLED') THEN
         /* Log file download */
         blog_log.write_file_log(l_file_rowtype.file_id);
         blog_log.write_activity_log(
@@ -947,7 +960,7 @@ AS
           p_related_id    => l_file_rowtype.file_id
         );
       END IF;
-      sys.htp.p('Content-Disposition: attachment; filename="' || l_file_name || '"');
+      sys.htp.p('Content-Disposition: attachment; filename="' || l_file_rowtype.file_name || '"');
     END IF;
     IF NOT l_file_cached THEN
       sys.htp.p('Content-length: ' || l_file_rowtype.file_size);
@@ -956,22 +969,29 @@ AS
     sys.owa_util.http_header_close;
     apex_application.stop_apex_engine;
   EXCEPTION WHEN 
-    NO_DATA_FOUND OR
-    INVALID_NUMBER OR
-    VALUE_ERROR
+    NO_DATA_FOUND
   THEN
-    owa_util.status_line(
-      nstatus       => 404,
-      creason       => 'Not Found',
-      bclose_header => true
-    );
+    BEGIN
+      SELECT c.id_source
+      INTO l_id_source
+      FROM blog_http410 c
+      WHERE c.deleted_id = l_file_name
+      ;
+      blog_util.raise_http_error(p_file_name, 410, 'Gone');
+    EXCEPTION WHEN 
+      NO_DATA_FOUND
+    THEN
+      blog_util.raise_http_error(p_file_name);
+    END;
+  WHEN
+    VALUE_ERROR OR
+    INVALID_NUMBER OR
+    FILE_NOT_ACTIVE
+  THEN
+    blog_util.raise_http_error(p_file_name);
   WHEN SESSION_NOT_VALID
   THEN
-    owa_util.status_line(
-      nstatus       => 403,
-      creason       => 'Forbidden',
-      bclose_header => true
-    );
+    blog_util.raise_http_error(p_file_name, 403, 'Forbidden');
   END download_file;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1002,11 +1022,107 @@ AS
         l_is_valid := FALSE;
       END IF;
       IF l_is_valid THEN
-        l_is_valid := NOT instr(SUBSTR(p_email ,l_at_pos) ,'.') = 0;
+        l_is_valid := NOT instr(substr(p_email ,l_at_pos) ,'.') = 0;
       END IF;
     END IF;
     RETURN l_is_valid;
   END validate_email;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE get_article_page_items (
+    p_article_id    IN VARCHAR2,
+    p_page_title    OUT NOCOPY VARCHAR2,
+    p_region_title  OUT NOCOPY VARCHAR2,
+    p_keywords      OUT NOCOPY VARCHAR2,
+    p_description   OUT NOCOPY VARCHAR2,
+    p_author_name   OUT NOCOPY VARCHAR2
+  ) 
+  AS
+    l_article_id    NUMBER;
+    l_category_name VARCHAR2(256);
+    l_id_source     VARCHAR2(256);
+  BEGIN
+    /* Input parameter p_category_id is string because we handle invalid number exception */
+    l_article_id := to_number(p_article_id);
+    SELECT a.article_title,
+      a.category_name,
+      a.keywords,
+      a.description,
+      a.author_name
+    INTO p_page_title,
+      l_category_name,
+      p_keywords,
+      p_description,
+      p_author_name
+    FROM blog_v$article a
+    WHERE a.article_id = l_article_id
+    ;
+    p_region_title  := apex_lang.message('REGION_TITLE_COMMENTS');
+    p_keywords      := ltrim(trim(BOTH ',' FROM p_keywords) || ',' || l_category_name, ',');
+  EXCEPTION WHEN 
+    NO_DATA_FOUND
+  THEN
+    BEGIN
+      SELECT c.id_source
+      INTO l_id_source
+      FROM blog_http410 c
+      WHERE c.deleted_id = p_article_id
+      ;
+      blog_util.raise_http_error(p_article_id,410, 'Gone');
+    EXCEPTION WHEN 
+      NO_DATA_FOUND
+    THEN
+      blog_util.raise_http_error(p_article_id);
+    END;
+  WHEN
+    INVALID_NUMBER OR
+    VALUE_ERROR
+  THEN
+    blog_util.raise_http_error(p_article_id);
+  END get_article_page_items;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE get_category_page_items (
+    p_category_id   IN VARCHAR2,
+    p_page_title    OUT NOCOPY VARCHAR2,
+    p_region_title  OUT NOCOPY VARCHAR2,
+    p_category_name OUT NOCOPY VARCHAR2
+  )
+  AS
+    l_category_id NUMBER;
+    l_id_source   VARCHAR2(256);
+  BEGIN
+    /* Input parameter p_category_id is string because we handle invalid number exception */
+    l_category_id := to_number(p_category_id);
+    SELECT c.category_name
+    INTO p_category_name
+    FROM blog_category c
+    WHERE c.category_id = l_category_id
+    ;
+    p_page_title    := apex_lang.message('PAGE_TITLE_CATEGORY', p_category_name);
+    p_region_title  := apex_lang.message('REGION_TITLE_CATEGORY', apex_escape.html(p_category_name));
+    p_category_name := p_category_name;
+  EXCEPTION WHEN 
+    NO_DATA_FOUND
+  THEN
+    BEGIN
+      SELECT c.id_source
+      INTO l_id_source
+      FROM blog_http410 c
+      WHERE c.deleted_id = p_category_id
+      ;
+      blog_util.raise_http_error(p_category_id, 410, 'Gone');
+    EXCEPTION WHEN 
+      NO_DATA_FOUND
+    THEN
+      blog_util.raise_http_error(p_category_id);
+    END;
+  WHEN
+    INVALID_NUMBER OR
+    VALUE_ERROR
+  THEN
+    blog_util.raise_http_error(p_category_id);
+  END get_category_page_items;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 END "BLOG_UTIL";
@@ -1536,6 +1652,12 @@ CREATE OR REPLACE PACKAGE BODY  "BLOG_LOG"
 AS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  INSERT_NULL_VALUE EXCEPTION;
+  PARENT_NOT_FOUND  EXCEPTION;
+  PRAGMA EXCEPTION_INIT(INSERT_NULL_VALUE, -1400);
+  PRAGMA EXCEPTION_INIT(PARENT_NOT_FOUND, -2291);
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   FUNCTION apex_error_handler(
     p_error IN apex_error.t_error
   ) RETURN apex_error.t_error_result
@@ -1688,8 +1810,6 @@ AS
   )
   AS
     PRAGMA AUTONOMOUS_TRANSACTION;
-    INSERT_NULL_VALUE EXCEPTION;
-    PRAGMA EXCEPTION_INIT(INSERT_NULL_VALUE, -1400);
   BEGIN
     MERGE INTO blog_article_log a
     USING (SELECT p_article_id AS article_id FROM DUAL) b
@@ -1702,8 +1822,13 @@ AS
     VALUES (b.article_id, 1, SYSDATE)
     ;
     COMMIT;
-  EXCEPTION WHEN INSERT_NULL_VALUE THEN
-    NULL;
+  EXCEPTION WHEN 
+  VALUE_ERROR OR
+  INVALID_NUMBER OR
+  PARENT_NOT_FOUND OR
+  INSERT_NULL_VALUE
+  THEN
+      apex_debug.warn('blog_log.write_article_log(p_article_id => %s); error: %s', COALESCE(to_char(p_article_id), 'NULL'), sqlerrm);
   END write_article_log;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1729,8 +1854,6 @@ AS
   )
   AS
     PRAGMA AUTONOMOUS_TRANSACTION;
-    INSERT_NULL_VALUE EXCEPTION;
-    PRAGMA EXCEPTION_INIT(INSERT_NULL_VALUE, -1400);
   BEGIN
     MERGE INTO blog_category_log a
     USING (SELECT p_category_id AS category_id FROM DUAL) b
@@ -1743,8 +1866,13 @@ AS
     VALUES (b.category_id, 1, SYSDATE)
     ;
     COMMIT;
-  EXCEPTION WHEN INSERT_NULL_VALUE THEN
-    NULL;
+  EXCEPTION WHEN
+    VALUE_ERROR OR
+    INVALID_NUMBER OR
+    PARENT_NOT_FOUND OR
+    INSERT_NULL_VALUE
+  THEN
+    apex_debug.warn('blog_log.write_category_log(p_category_id => %s); error: %s', COALESCE(to_char(p_category_id), 'NULL'), sqlerrm);
   END write_category_log;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1753,8 +1881,6 @@ AS
   )
   AS
     PRAGMA AUTONOMOUS_TRANSACTION;
-    INSERT_NULL_VALUE EXCEPTION;
-    PRAGMA EXCEPTION_INIT(INSERT_NULL_VALUE, -1400);
   BEGIN
     MERGE INTO blog_file_log a
     USING (SELECT p_file_id AS file_id FROM DUAL) b
@@ -1767,8 +1893,13 @@ AS
     VALUES (b.file_id, 1, SYSDATE)
     ;
     COMMIT;
-  EXCEPTION WHEN INSERT_NULL_VALUE THEN
-    NULL;
+  EXCEPTION WHEN
+  VALUE_ERROR OR
+  INVALID_NUMBER OR
+  PARENT_NOT_FOUND OR
+  INSERT_NULL_VALUE
+  THEN
+    apex_debug.warn('blog_log.write_file_log(p_file_id => %s); error: %s', COALESCE(to_char(p_file_id), 'NULL'), sqlerrm);
   END write_file_log;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2111,8 +2242,11 @@ CREATE OR REPLACE PACKAGE  "BLOG_INSTALL"
 AUTHID DEFINER
 AS
 --------------------------------------------------------------------------------
+  i sys.dbms_sql.varchar2_table;
+  e sys.dbms_sql.varchar2_table;
+  b BLOB;
+--------------------------------------------------------------------------------
   PROCEDURE update_param_data(
-    p_reader_app_id IN NUMBER,
     p_theme_path    IN VARCHAR2 DEFAULT NULL
   );
 --------------------------------------------------------------------------------
@@ -2121,6 +2255,10 @@ AS
 --------------------------------------------------------------------------------
   PROCEDURE pre_deinstall;
 --------------------------------------------------------------------------------
+  FUNCTION varchar2_to_blob(
+    p_varchar2_tab in dbms_sql.varchar2_table
+  ) RETURN BLOB;
+--------------------------------------------------------------------------------
 END "BLOG_INSTALL";
 /
 CREATE OR REPLACE PACKAGE BODY  "BLOG_INSTALL" 
@@ -2128,35 +2266,33 @@ AS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE update_param_data(
-    p_reader_app_id IN NUMBER,
     p_theme_path    IN VARCHAR2 DEFAULT NULL
   )
   AS
-    l_alias VARCHAR2(2000);
+    l_app_id    NUMBER;
+    l_app_alias VARCHAR2(2000);
   BEGIN
+    SELECT application_id
+    INTO l_app_id
+    FROM apex_application_substitutions
+    WHERE substitution_string = 'SCHEMA_VERSION'
+      AND substitution_value = (select blog_util.get_param_value('SCHEMA_VERSION') from dual)
+    ;
     SELECT alias
-    INTO l_alias
+    INTO l_app_alias
     FROM apex_applications
-    WHERE application_id = p_reader_app_id
+    WHERE application_id = l_app_id
     ;
     UPDATE blog_param
-    SET param_value = TO_CHAR(p_reader_app_id)
+    SET param_value = TO_CHAR(l_app_id)
     WHERE param_id  = 'G_BLOG_READER_APP_ID'
     ;
-    
-    IF p_theme_path IS NULL THEN
-      UPDATE blog_param
-      SET param_value = 'f?p=' || TO_CHAR(p_reader_app_id) || ':FILES:0:APPLICATION_PROCESS=DOWNLOAD:::P11_FILE_NAME:'
-      WHERE param_id  = 'G_THEME_PATH'
-      ;
-    ELSE
-      UPDATE blog_param
-      SET param_value = p_theme_path
-      WHERE param_id  = 'G_THEME_PATH'
-      ;
-    END IF;
     UPDATE blog_param
-    SET param_value = 'f?p=' || l_alias || ':RSS:0'
+    SET param_value = coalesce(p_theme_path,'f?p=' || TO_CHAR(l_app_id) || ':FILES:0:APPLICATION_PROCESS=DOWNLOAD:::P11_FILE_NAME:')
+    WHERE param_id  = 'G_THEME_PATH'
+    ;
+    UPDATE blog_param
+    SET param_value = 'f?p=' || l_app_alias || ':RSS'
     WHERE param_id  = 'G_RSS_FEED_URL'
     ;
     UPDATE blog_param
@@ -2188,12 +2324,34 @@ AS
   END pre_deinstall;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
- END "BLOG_INSTALL";
+  FUNCTION varchar2_to_blob(
+    p_varchar2_tab in dbms_sql.varchar2_table
+  ) RETURN BLOB
+  AS
+    l_blob blob;
+    l_size number;
+  BEGIN
+    dbms_lob.createtemporary(l_blob, true, dbms_lob.session);
+    FOR i IN 1 .. p_varchar2_tab.count
+    LOOP
+      l_size := length(p_varchar2_tab(i)) / 2;
+      dbms_lob.writeappend(l_blob, l_size, hextoraw(p_varchar2_tab(i)));
+    END LOOP;
+    RETURN l_blob;
+  EXCEPTION WHEN OTHERS THEN
+    dbms_lob.close(l_blob);
+    RETURN NULL;
+  END varchar2_to_blob;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+END "BLOG_INSTALL";
 /
 
 CREATE OR REPLACE PACKAGE  "BLOG_ADMIN_APP" 
 AUTHID DEFINER
 AS
+--------------------------------------------------------------------------------
+  PROCEDURE refresh_article_mview;
 --------------------------------------------------------------------------------
   FUNCTION get_collection_name RETURN VARCHAR2;
 --------------------------------------------------------------------------------
@@ -2220,12 +2378,28 @@ AS
     p_article_title   IN VARCHAR2,
     p_article_text    IN APEX_APPLICATION_GLOBAL.VC_ARR2
   );
+--------------------------------------------------------------------------------  
+  PROCEDURE create_new_category(
+    p_category_name IN VARCHAR2
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE cleanup_category_sequence;
+--------------------------------------------------------------------------------
+  PROCEDURE cleanup_faq_sequence;
+--------------------------------------------------------------------------------
+  PROCEDURE cleanup_author_sequence;
+--------------------------------------------------------------------------------
+  PROCEDURE cleanup_resource_sequence;
 --------------------------------------------------------------------------------
   FUNCTION get_next_category_seq RETURN NUMBER;
 --------------------------------------------------------------------------------
   FUNCTION get_next_author_seq RETURN NUMBER;
 --------------------------------------------------------------------------------
-  FUNCTION get_next_faq_no RETURN NUMBER;
+  FUNCTION get_next_faq_seq RETURN NUMBER;
+--------------------------------------------------------------------------------
+  FUNCTION get_next_resource_seq (
+    p_link_type IN VARCHAR2
+  ) RETURN NUMBER;
 --------------------------------------------------------------------------------
   FUNCTION display_param_value_item (
     p_param_id        IN VARCHAR2,
@@ -2306,6 +2480,13 @@ AS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   -- Global procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE refresh_article_mview
+  AS
+  BEGIN
+    dbms_mview.refresh('BLOG_ARCHIVE_LOV,BLOG_ARTICLE_HIT20,BLOG_ARTICLE_LAST20,BLOG_ARTICLE_TOP20','CCCC');
+  END refresh_article_mview;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   FUNCTION table_to_clob (
@@ -2505,6 +2686,85 @@ AS
   END save_article_preview;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  PROCEDURE create_new_category(
+    p_category_name IN VARCHAR2
+  )
+  AS
+    l_category_id NUMBER;
+  BEGIN
+    INSERT INTO blog_category (category_name, category_seq)
+    VALUES(p_category_name, blog_admin_app.get_next_category_seq)
+    RETURNING category_id INTO l_category_id;
+    sys.htp.prn(l_category_id);
+  EXCEPTION WHEN DUP_VAL_ON_INDEX THEN
+    sys.htp.prn(APEX_LANG.MESSAGE('MSG_CATEGORY_EXISTS'));
+  END create_new_category;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE cleanup_category_sequence
+  AS
+  BEGIN
+    MERGE INTO blog_category a
+    USING (
+      SELECT c.category_id,
+        ROW_NUMBER() OVER(ORDER BY c.category_seq) * 10 AS new_seq
+      FROM blog_category c
+    ) b
+    ON (a.category_id = b.category_id)
+    WHEN MATCHED THEN UPDATE 
+    SET a.category_seq = b.new_seq
+    ;
+  END cleanup_category_sequence;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE cleanup_faq_sequence
+  AS
+  BEGIN
+    MERGE INTO blog_faq a
+    USING (
+      SELECT c.faq_id,
+        ROW_NUMBER() OVER(ORDER BY c.faq_seq) * 10 AS new_seq
+      FROM blog_faq c
+    ) b
+    ON (a.faq_id = b.faq_id)
+    WHEN MATCHED THEN UPDATE 
+    SET a.faq_seq = b.new_seq
+    ;
+  END cleanup_faq_sequence;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE cleanup_author_sequence
+  AS
+  BEGIN
+    MERGE INTO blog_author a
+    USING (
+      SELECT c.author_id,
+        ROW_NUMBER() OVER(ORDER BY c.author_seq) * 10 AS new_seq
+      FROM blog_author c
+    ) b
+    ON (a.author_id = b.author_id)
+    WHEN MATCHED THEN UPDATE 
+    SET a.author_seq = b.new_seq
+    ;
+  END cleanup_author_sequence;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE cleanup_resource_sequence
+  AS
+  BEGIN
+    MERGE INTO blog_resource a
+    USING (
+      SELECT c.link_id,
+        ROW_NUMBER() OVER(PARTITION BY c.link_type ORDER BY c.link_seq) * 10 AS new_seq
+      FROM blog_resource c
+    ) b
+    ON (a.link_id = b.link_id)
+    WHEN MATCHED THEN UPDATE 
+    SET a.link_seq = b.new_seq
+    ;
+  END cleanup_resource_sequence;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   FUNCTION get_next_category_seq RETURN NUMBER
   AS
     l_max  NUMBER;
@@ -2529,16 +2789,31 @@ AS
   END get_next_author_seq;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  FUNCTION get_next_faq_no RETURN NUMBER
+  FUNCTION get_next_faq_seq RETURN NUMBER
   AS
     l_max  NUMBER;
   BEGIN
-    SELECT COALESCE(MAX(faq_seq) + 1, 1)
+    SELECT CEIL(COALESCE(MAX(faq_seq) + 1, 1) / 10) * 10
     INTO l_max
     FROM blog_faq
     ;
     RETURN l_max;
-  END get_next_faq_no;
+  END get_next_faq_seq;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  FUNCTION get_next_resource_seq (
+    p_link_type IN VARCHAR2
+  ) RETURN NUMBER
+  AS
+    l_max  NUMBER;
+  BEGIN
+    SELECT CEIL(COALESCE(MAX(link_seq) + 1, 1) / 10) * 10
+    INTO l_max
+    FROM blog_resource
+    WHERE link_type = p_link_type
+    ;
+    RETURN l_max;
+  END get_next_resource_seq;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   FUNCTION display_param_value_item (
@@ -2712,7 +2987,7 @@ AS
   FUNCTION is_developer RETURN PLS_INTEGER
   AS
   BEGIN
-    RETURN CASE WHEN apex_util.public_check_authorization('IS_DEVELOPER') THEN 1 ELSE 0 END;
+    RETURN CASE WHEN apex_authorization.is_authorized('IS_DEVELOPER') THEN 1 ELSE 0 END;
   END ;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

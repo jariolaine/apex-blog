@@ -12,7 +12,7 @@ prompt  APPLICATION 290 - Blog Reader
 -- Application Export:
 --   Application:     290
 --   Name:            Blog Reader
---   Date and Time:   16:14 Sunday December 14, 2014
+--   Date and Time:   13:35 Sunday December 21, 2014
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -26,10 +26,10 @@ prompt  APPLICATION 290 - Blog Reader
  
 -- Application Statistics:
 --   Pages:                     21
---     Items:                   47
---     Computations:            47
+--     Items:                   45
+--     Computations:            45
 --     Validations:             16
---     Processes:               23
+--     Processes:               24
 --     Regions:                 33
 --     Dynamic Actions:          5
 --   Shared Components:
@@ -42,7 +42,7 @@ prompt  APPLICATION 290 - Blog Reader
 --       Lists:                  6
 --     Security:
 --       Authentication:         1
---       Authorization:         20
+--       Authorization:         21
 --     User Interface:
 --       Themes:                 1
 --       Templates:
@@ -57,7 +57,7 @@ prompt  APPLICATION 290 - Blog Reader
 --       Shortcuts:             16
 --       Plug-ins:               4
 --     Globalization:
---       Messages:              59
+--       Messages:              62
 --     Reports:
  
  
@@ -167,7 +167,7 @@ wwv_flow_api.create_flow(
   p_compatibility_mode=> '4.2',
   p_html_escaping_mode=> 'E',
   p_flow_language=> 'en',
-  p_flow_language_derived_from=> '0',
+  p_flow_language_derived_from=> 'FLOW_PRIMARY_LANGUAGE',
   p_allow_feedback_yn=> 'N',
   p_date_format=> '&G_DATE_FORMAT.',
   p_flow_image_prefix => nvl(wwv_flow_application_install.get_image_prefix,''),
@@ -184,7 +184,7 @@ wwv_flow_api.create_flow(
   p_proxy_server=> nvl(wwv_flow_application_install.get_proxy,''),
   p_cust_authentication_process=> '',
   p_cust_authentication_page=> '',
-  p_flow_version=> '2.9.0.2',
+  p_flow_version=> '2.9.0.1',
   p_flow_status=> 'AVAILABLE_W_EDIT_LINK',
   p_flow_unavailable_text=> 'This application is currently unavailable at this time.',
   p_build_status=> 'RUN_AND_BUILD',
@@ -202,8 +202,10 @@ wwv_flow_api.create_flow(
   p_include_legacy_javascript=> 'N',
   p_error_handling_function=> 'blog_log.apex_error_handler',
   p_default_error_display_loc=> 'INLINE_IN_NOTIFICATION',
+  p_substitution_string_01 => 'SCHEMA_VERSION',
+  p_substitution_value_01  => '2.9.0.1',
   p_last_updated_by => 'LAINFJAR',
-  p_last_upd_yyyymmddhh24miss=> '20141214161433',
+  p_last_upd_yyyymmddhh24miss=> '20141221133547',
   p_ui_type_name => null,
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
@@ -281,6 +283,16 @@ wwv_flow_api.create_security_scheme (
  ,p_name => 'SHOW_PHOTOS_PAGE'
  ,p_scheme_type => 'PLUGIN_NET.WEBHOP.DBSWH.FEATURE_AUTHORIZATION'
  ,p_attribute_01 => 'SHOW_PHOTOS_PAGE'
+ ,p_error_message => 'This feature is currently disabled.'
+ ,p_caching => 'BY_USER_BY_SESSION'
+  );
+--application/shared_components/security/authorization/notification_email_enabled
+wwv_flow_api.create_security_scheme (
+  p_id => 11634507649441425 + wwv_flow_api.g_id_offset
+ ,p_flow_id => wwv_flow.g_flow_id
+ ,p_name => 'NOTIFICATION_EMAIL_ENABLED'
+ ,p_scheme_type => 'PLUGIN_NET.WEBHOP.DBSWH.FEATURE_AUTHORIZATION'
+ ,p_attribute_01 => 'NOTIFICATION_EMAIL_ENABLED'
  ,p_error_message => 'This feature is currently disabled.'
  ,p_caching => 'BY_USER_BY_SESSION'
   );
@@ -364,13 +376,13 @@ wwv_flow_api.create_security_scheme (
  ,p_error_message => 'This feature is currently disabled.'
  ,p_caching => 'BY_USER_BY_SESSION'
   );
---application/shared_components/security/authorization/show_rss_feed
+--application/shared_components/security/authorization/rss_feed_enabled
 wwv_flow_api.create_security_scheme (
   p_id => 177269928459346158 + wwv_flow_api.g_id_offset
  ,p_flow_id => wwv_flow.g_flow_id
- ,p_name => 'SHOW_RSS_FEED'
+ ,p_name => 'RSS_FEED_ENABLED'
  ,p_scheme_type => 'PLUGIN_NET.WEBHOP.DBSWH.FEATURE_AUTHORIZATION'
- ,p_attribute_01 => 'SHOW_RSS_FEED'
+ ,p_attribute_01 => 'RSS_FEED_ENABLED'
  ,p_error_message => 'This feature is currently disabled.'
  ,p_caching => 'BY_USER_BY_SESSION'
   );
@@ -2287,7 +2299,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141209122807'
+ ,p_last_upd_yyyymmddhh24miss => '20141220100610'
   );
 null;
  
@@ -2862,7 +2874,7 @@ end;
 
  
 --application/pages/page_00002
-prompt  ...PAGE 2: Search
+prompt  ...PAGE 2: Search Result
 --
  
 begin
@@ -2871,7 +2883,7 @@ wwv_flow_api.create_page (
   p_flow_id => wwv_flow.g_flow_id
  ,p_id => 2
  ,p_user_interface_id => 244292879420806699 + wwv_flow_api.g_id_offset
- ,p_name => 'Search'
+ ,p_name => 'Search Result'
  ,p_alias => 'SEARCH'
  ,p_step_title => '&G_PAGE_TITLE.'
  ,p_allow_duplicate_submissions => 'Y'
@@ -2890,7 +2902,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141213112556'
+ ,p_last_upd_yyyymmddhh24miss => '20141220100638'
   );
 null;
  
@@ -3442,7 +3454,7 @@ end;
 begin
  
 wwv_flow_api.create_page_computation(
-  p_id=> 10874007895399317 + wwv_flow_api.g_id_offset,
+  p_id=> 11619823844970250 + wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_flow_step_id=> 2,
   p_computation_sequence => 20,
@@ -3451,6 +3463,7 @@ wwv_flow_api.create_page_computation(
   p_computation_type=> 'PLSQL_EXPRESSION',
   p_computation_processed=> 'REPLACE_EXISTING',
   p_computation=> 'apex_lang.message(''PAGE_TITLE_SEARCH_RESULT'')',
+  p_computation_error_message => 'Error on: Computation TITLE',
   p_compute_when => '',
   p_compute_when_type=>'');
  
@@ -3556,7 +3569,7 @@ wwv_flow_api.create_page (
  ,p_user_interface_id => 244292879420806699 + wwv_flow_api.g_id_offset
  ,p_name => 'Read article'
  ,p_alias => 'READ'
- ,p_step_title => '&P3_ARTICLE_TITLE.'
+ ,p_step_title => '&G_PAGE_TITLE.'
  ,p_allow_duplicate_submissions => 'Y'
  ,p_step_sub_title => 'Read Article'
  ,p_step_sub_title_type => 'TEXT_WITH_SUBSTITUTIONS'
@@ -3567,7 +3580,7 @@ wwv_flow_api.create_page (
  ,p_html_page_header => 
 '"CANONICAL_URL"'||unistr('\000a')||
 '<meta content="&P3_DESCRIPTION." name="description" />'||unistr('\000a')||
-'<meta content="&P3_KEYWORDS.,&P3_CATEGORY_NAME." name="keywords" />'||unistr('\000a')||
+'<meta content="&P3_KEYWORDS." name="keywords" />'||unistr('\000a')||
 '<meta content="&P3_AUTHOR_NAME." name="author" />'
  ,p_page_is_public_y_n => 'Y'
  ,p_protection_level => 'N'
@@ -3577,7 +3590,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141214133212'
+ ,p_last_upd_yyyymmddhh24miss => '20141220101632'
   );
 null;
  
@@ -4042,20 +4055,20 @@ declare
 begin
 s:=s||'WITH qry AS ('||unistr('\000a')||
 '  SELECT '||unistr('\000a')||
-'    CEIL(ROW_NUMBER() OVER(ORDER BY a.created_on DESC) / :G_COMMENT_ROWS) AS rn'||unistr('\000a')||
-'    ,a.created_on'||unistr('\000a')||
+'    CEIL(ROW_NUMBER() OVER(ORDER BY c.created_on DESC) / :G_COMMENT_ROWS) AS rn'||unistr('\000a')||
+'    ,c.created_on'||unistr('\000a')||
 '    ,b.nick_name AS posted_by'||unistr('\000a')||
-'    ,a.comment_text'||unistr('\000a')||
-'    ,(SELECT APEX_LANG.LANG(''Posted on'') FROM DUAL) AS created_txt'||unistr('\000a')||
-'    ,(SELECT APEX_LANG.LANG(''by'') FROM DUAL) AS posted_by_txt'||unistr('\000a')||
-'  FROM #OWNER#.blog_comment a'||unistr('\000a')||
+'    ,c.comment_text'||unistr('\000a')||
+'    ,(SELECT APEX_LANG.message(''TEXT_POSTED_ON'') FROM DUAL) AS created_txt'||unistr('\000a')||
+'    ,(SELECT APEX_LANG.message(''TEXT_POSTED_BY'') FROM DUAL) AS posted_by_txt'||unistr('\000a')||
+'  FROM #OWNER#.blog_comment c'||unistr('\000a')||
 '  JOIN #OWNER#.blog_comment_user b'||unistr('\000a')||
-'    ON a.user_id = b.user_id'||unistr('\000a')||
-'  WHE';
+'    ON c.us';
 
-s:=s||'RE a.article_id = :ARTICLE'||unistr('\000a')||
-'    AND a.moderated = ''Y'''||unistr('\000a')||
-'    AND a.active = ''Y'''||unistr('\000a')||
+s:=s||'er_id = b.user_id'||unistr('\000a')||
+'  WHERE c.article_id = :ARTICLE'||unistr('\000a')||
+'    AND c.moderated = ''Y'''||unistr('\000a')||
+'    AND c.active = ''Y'''||unistr('\000a')||
 ')'||unistr('\000a')||
 'SELECT'||unistr('\000a')||
 '  qry.created_on'||unistr('\000a')||
@@ -4212,6 +4225,7 @@ wwv_flow_api.create_report_columns (
   p_column_alias=> 'CREATED_TXT',
   p_column_display_sequence=> 4,
   p_column_heading=> '',
+  p_use_as_row_header=> 'N',
   p_column_alignment=>'LEFT',
   p_heading_alignment=>'CENTER',
   p_default_sort_column_sequence=>0,
@@ -4219,8 +4233,11 @@ wwv_flow_api.create_report_columns (
   p_sum_column=> 'N',
   p_hidden_column=> 'Y',
   p_display_as=>'ESCAPE_SC',
+  p_lov_show_nulls=> 'NO',
   p_is_required=> false,
   p_pk_col_source=> s,
+  p_lov_display_extra=> 'YES',
+  p_include_in_export=> 'Y',
   p_column_comment=>'');
 end;
 /
@@ -4276,12 +4293,11 @@ wwv_flow_api.create_page_item(
   p_data_type=> 'VARCHAR',
   p_is_required=> false,
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 30,
+  p_item_sequence=> 10,
   p_item_plug_id => 409282767205906764+wwv_flow_api.g_id_offset,
-  p_use_cache_before_default=> 'NO',
+  p_use_cache_before_default=> 'YES',
   p_item_default_type=> 'STATIC_TEXT_WITH_SUBSTITUTIONS',
-  p_source=>'KEYWORDS',
-  p_source_type=> 'DB_COLUMN',
+  p_source_type=> 'STATIC',
   p_display_as=> 'NATIVE_DISPLAY_ONLY',
   p_lov_display_null=> 'NO',
   p_lov_translated=> 'N',
@@ -4296,13 +4312,14 @@ wwv_flow_api.create_page_item(
   p_grid_column=> null,
   p_label_alignment=> 'RIGHT',
   p_field_alignment=> 'LEFT-CENTER',
+  p_field_template=> 1003338938911992905+wwv_flow_api.g_id_offset,
   p_is_persistent=> 'Y',
   p_lov_display_extra=>'YES',
   p_protection_level => 'I',
   p_escape_on_http_output => 'Y',
   p_attribute_01 => 'N',
   p_attribute_02 => 'VALUE',
-  p_attribute_04 => 'N',
+  p_attribute_04 => 'Y',
   p_show_quick_picks=>'N',
   p_item_comment => '');
  
@@ -4321,12 +4338,12 @@ wwv_flow_api.create_page_item(
   p_data_type=> 'VARCHAR',
   p_is_required=> false,
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 40,
+  p_item_sequence=> 20,
   p_item_plug_id => 409282767205906764+wwv_flow_api.g_id_offset,
-  p_use_cache_before_default=> 'YES',
+  p_use_cache_before_default=> 'NO',
   p_item_default_type=> 'STATIC_TEXT_WITH_SUBSTITUTIONS',
   p_source=>'AUTHOR_NAME',
-  p_source_type=> 'DB_COLUMN',
+  p_source_type=> 'STATIC',
   p_display_as=> 'NATIVE_DISPLAY_ONLY',
   p_lov_display_null=> 'NO',
   p_lov_translated=> 'N',
@@ -4341,13 +4358,14 @@ wwv_flow_api.create_page_item(
   p_grid_column=> null,
   p_label_alignment=> 'RIGHT',
   p_field_alignment=> 'LEFT-CENTER',
+  p_field_template=> 1003338938911992905+wwv_flow_api.g_id_offset,
   p_is_persistent=> 'Y',
   p_lov_display_extra=>'YES',
   p_protection_level => 'I',
   p_escape_on_http_output => 'Y',
   p_attribute_01 => 'N',
   p_attribute_02 => 'VALUE',
-  p_attribute_04 => 'N',
+  p_attribute_04 => 'Y',
   p_show_quick_picks=>'N',
   p_item_comment => '');
  
@@ -4366,12 +4384,12 @@ wwv_flow_api.create_page_item(
   p_data_type=> 'VARCHAR',
   p_is_required=> false,
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 50,
+  p_item_sequence=> 30,
   p_item_plug_id => 409282767205906764+wwv_flow_api.g_id_offset,
-  p_use_cache_before_default=> 'YES',
+  p_use_cache_before_default=> 'NO',
   p_item_default_type=> 'STATIC_TEXT_WITH_SUBSTITUTIONS',
   p_source=>'DESCRIPTION',
-  p_source_type=> 'DB_COLUMN',
+  p_source_type=> 'ALWAYS_NULL',
   p_display_as=> 'NATIVE_DISPLAY_ONLY',
   p_lov_display_null=> 'NO',
   p_lov_translated=> 'N',
@@ -4386,103 +4404,14 @@ wwv_flow_api.create_page_item(
   p_grid_column=> null,
   p_label_alignment=> 'RIGHT',
   p_field_alignment=> 'LEFT-CENTER',
+  p_field_template=> 1003338938911992905+wwv_flow_api.g_id_offset,
   p_is_persistent=> 'Y',
   p_lov_display_extra=>'YES',
   p_protection_level => 'I',
   p_escape_on_http_output => 'Y',
   p_attribute_01 => 'N',
   p_attribute_02 => 'VALUE',
-  p_attribute_04 => 'N',
-  p_show_quick_picks=>'N',
-  p_item_comment => '');
- 
- 
-end;
-/
-
-declare
-    h varchar2(32767) := null;
-begin
-wwv_flow_api.create_page_item(
-  p_id=>204701710630713783 + wwv_flow_api.g_id_offset,
-  p_flow_id=> wwv_flow.g_flow_id,
-  p_flow_step_id=> 3,
-  p_name=>'P3_CATEGORY_NAME',
-  p_data_type=> 'VARCHAR',
-  p_is_required=> false,
-  p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 20,
-  p_item_plug_id => 409282767205906764+wwv_flow_api.g_id_offset,
-  p_use_cache_before_default=> 'NO',
-  p_item_default_type=> 'STATIC_TEXT_WITH_SUBSTITUTIONS',
-  p_source=>'CATEGORY_NAME',
-  p_source_type=> 'DB_COLUMN',
-  p_display_as=> 'NATIVE_DISPLAY_ONLY',
-  p_lov_display_null=> 'NO',
-  p_lov_translated=> 'N',
-  p_cSize=> 30,
-  p_cMaxlength=> 4000,
-  p_cHeight=> 1,
-  p_new_grid=> false,
-  p_begin_on_new_line=> 'YES',
-  p_begin_on_new_field=> 'YES',
-  p_colspan=> null,
-  p_rowspan=> null,
-  p_grid_column=> null,
-  p_label_alignment=> 'RIGHT',
-  p_field_alignment=> 'LEFT-CENTER',
-  p_is_persistent=> 'Y',
-  p_lov_display_extra=>'YES',
-  p_protection_level => 'I',
-  p_escape_on_http_output => 'Y',
-  p_attribute_01 => 'N',
-  p_attribute_02 => 'VALUE',
-  p_attribute_04 => 'N',
-  p_show_quick_picks=>'N',
-  p_item_comment => '');
- 
- 
-end;
-/
-
-declare
-    h varchar2(32767) := null;
-begin
-wwv_flow_api.create_page_item(
-  p_id=>235072386476534835 + wwv_flow_api.g_id_offset,
-  p_flow_id=> wwv_flow.g_flow_id,
-  p_flow_step_id=> 3,
-  p_name=>'P3_ARTICLE_TITLE',
-  p_data_type=> 'VARCHAR',
-  p_is_required=> false,
-  p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 10,
-  p_item_plug_id => 409282767205906764+wwv_flow_api.g_id_offset,
-  p_use_cache_before_default=> 'NO',
-  p_item_default_type=> 'STATIC_TEXT_WITH_SUBSTITUTIONS',
-  p_source=>'ARTICLE_TITLE',
-  p_source_type=> 'DB_COLUMN',
-  p_display_as=> 'NATIVE_DISPLAY_ONLY',
-  p_lov_display_null=> 'NO',
-  p_lov_translated=> 'N',
-  p_cSize=> 30,
-  p_cMaxlength=> 4000,
-  p_cHeight=> 1,
-  p_new_grid=> false,
-  p_begin_on_new_line=> 'YES',
-  p_begin_on_new_field=> 'YES',
-  p_colspan=> null,
-  p_rowspan=> null,
-  p_grid_column=> null,
-  p_label_alignment=> 'RIGHT',
-  p_field_alignment=> 'LEFT-CENTER',
-  p_is_persistent=> 'Y',
-  p_lov_display_extra=>'YES',
-  p_protection_level => 'I',
-  p_escape_on_http_output => 'Y',
-  p_attribute_01 => 'N',
-  p_attribute_02 => 'VALUE',
-  p_attribute_04 => 'N',
+  p_attribute_04 => 'Y',
   p_show_quick_picks=>'N',
   p_item_comment => '');
  
@@ -4504,27 +4433,6 @@ wwv_flow_api.create_page_computation(
   p_computation_processed=> 'REPLACE_EXISTING',
   p_computation=> 'APEX_UTIL.PREPARE_URL(''f?p='' || :APP_ALIAS || '':READ:0::::ARTICLE:'' || :ARTICLE, NULL, ''PUBLIC_BOOKMARK'')',
   p_computation_error_message => 'Error on: Computation ARTICLE_URL',
-  p_compute_when => '',
-  p_compute_when_type=>'');
- 
-null;
- 
-end;
-/
-
- 
-begin
- 
-wwv_flow_api.create_page_computation(
-  p_id=> 10895018349808636 + wwv_flow_api.g_id_offset,
-  p_flow_id=> wwv_flow.g_flow_id,
-  p_flow_step_id=> 3,
-  p_computation_sequence => 20,
-  p_computation_item=> 'G_REGION_TITLE',
-  p_computation_point=> 'BEFORE_HEADER',
-  p_computation_type=> 'PLSQL_EXPRESSION',
-  p_computation_processed=> 'REPLACE_EXISTING',
-  p_computation=> 'apex_lang.message(''REGION_TITLE_COMMENTS'')',
   p_compute_when => '',
   p_compute_when_type=>'');
  
@@ -4649,18 +4557,25 @@ declare
   l_clob clob;
   l_length number := 1;
 begin
-p:=p||'F|#OWNER#:BLOG_V$ARTICLE:ARTICLE:ARTICLE_ID';
+p:=p||'#OWNER#.blog_util.get_article_page_items ('||unistr('\000a')||
+'  p_article_id    => :ARTICLE,'||unistr('\000a')||
+'  p_page_title    => :G_PAGE_TITLE,'||unistr('\000a')||
+'  p_region_title  => :G_REGION_TITLE,'||unistr('\000a')||
+'  p_keywords      => :P3_KEYWORDS,'||unistr('\000a')||
+'  p_description   => :P3_DESCRIPTION,'||unistr('\000a')||
+'  p_author_name   => :P3_AUTHOR_NAME'||unistr('\000a')||
+');';
 
 wwv_flow_api.create_page_process(
-  p_id     => 21480293918473050 + wwv_flow_api.g_id_offset,
+  p_id     => 11565411871650841 + wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_flow_step_id => 3,
   p_process_sequence=> 40,
   p_process_point=> 'BEFORE_HEADER',
-  p_process_type=> 'DML_FETCH_ROW',
-  p_process_name=> 'Fetch BLOG_V$ARTICLE',
+  p_process_type=> 'PLSQL',
+  p_process_name=> 'Set items session state',
   p_process_sql_clob => p,
-  p_process_error_message=> 'Error on process: Automated Row Fetch ',
+  p_process_error_message=> '',
   p_error_display_location=> 'ON_ERROR_PAGE',
   p_only_for_changed_rows=> 'Y',
   p_process_success_message=> '',
@@ -4720,7 +4635,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141213110446'
+ ,p_last_upd_yyyymmddhh24miss => '20141220100749'
   );
 null;
  
@@ -4755,7 +4670,7 @@ wwv_flow_api.create_report_region (
   p_id=> 235031100366495355 + wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_page_id=> 4,
-  p_name=> '&G_PAGE_TITLE.',
+  p_name=> '&G_REGION_TITLE.',
   p_region_name=>'PPR_ARTICLES',
   p_template=> 179113213838116989+ wwv_flow_api.g_id_offset,
   p_display_sequence=> 10,
@@ -5208,11 +5123,11 @@ wwv_flow_api.create_page_item(
   p_data_type=> 'VARCHAR',
   p_is_required=> false,
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 10,
+  p_item_sequence=> 30,
   p_item_plug_id => 409282767205906764+wwv_flow_api.g_id_offset,
-  p_use_cache_before_default=> 'NO',
+  p_use_cache_before_default=> 'YES',
   p_item_default_type=> 'STATIC_TEXT_WITH_SUBSTITUTIONS',
-  p_source_type=> 'ALWAYS_NULL',
+  p_source_type=> 'STATIC',
   p_display_as=> 'NATIVE_DISPLAY_ONLY',
   p_lov_display_null=> 'NO',
   p_lov_translated=> 'N',
@@ -5234,7 +5149,7 @@ wwv_flow_api.create_page_item(
   p_escape_on_http_output => 'Y',
   p_attribute_01 => 'N',
   p_attribute_02 => 'VALUE',
-  p_attribute_04 => 'N',
+  p_attribute_04 => 'Y',
   p_show_quick_picks=>'N',
   p_item_comment => '');
  
@@ -5246,64 +5161,16 @@ end;
 begin
  
 wwv_flow_api.create_page_computation(
-  p_id=> 21479095763425482 + wwv_flow_api.g_id_offset,
-  p_flow_id=> wwv_flow.g_flow_id,
-  p_flow_step_id=> 4,
-  p_computation_sequence => 10,
-  p_computation_item=> 'P4_CATEGORY_NAME',
-  p_computation_point=> 'BEFORE_HEADER',
-  p_computation_type=> 'QUERY',
-  p_computation_processed=> 'REPLACE_EXISTING',
-  p_computation=> 'SELECT c.category_name'||unistr('\000a')||
-' FROM #OWNER#.blog_category c'||unistr('\000a')||
-'WHERE c.category_id = :CATEGORY'||unistr('\000a')||
-'  AND c.active = ''Y''',
-  p_computation_error_message => 'Error on: Computation TITLE',
-  p_compute_when => '',
-  p_compute_when_type=>'');
- 
-null;
- 
-end;
-/
-
- 
-begin
- 
-wwv_flow_api.create_page_computation(
   p_id=> 28031019266891740 + wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_flow_step_id=> 4,
-  p_computation_sequence => 20,
+  p_computation_sequence => 10,
   p_computation_item=> 'G_CANONICAL_HREF',
   p_computation_point=> 'BEFORE_HEADER',
   p_computation_type=> 'PLSQL_EXPRESSION',
   p_computation_processed=> 'REPLACE_EXISTING',
   p_computation=> 'APEX_UTIL.PREPARE_URL(''f?p='' || :APP_ALIAS || '':READCAT:0::::CATEGORY:'' || :CATEGORY, NULL, ''PUBLIC_BOOKMARK'')',
   p_computation_error_message => 'Error on: Computation CATEGORY_URL',
-  p_compute_when => '',
-  p_compute_when_type=>'');
- 
-null;
- 
-end;
-/
-
- 
-begin
- 
-wwv_flow_api.create_page_computation(
-  p_id=> 10887420617670932 + wwv_flow_api.g_id_offset,
-  p_flow_id=> wwv_flow.g_flow_id,
-  p_flow_step_id=> 4,
-  p_computation_sequence => 30,
-  p_computation_item=> 'G_PAGE_TITLE',
-  p_computation_point=> 'BEFORE_HEADER',
-  p_computation_type=> 'PLSQL_EXPRESSION',
-  p_computation_processed=> 'REPLACE_EXISTING',
-  p_computation=> 'apex_lang.message(''TEXT_CATEGORY'')'||unistr('\000a')||
-' || '': '''||unistr('\000a')||
-' || :P4_CATEGORY_NAME',
   p_compute_when => '',
   p_compute_when_type=>'');
  
@@ -5383,6 +5250,42 @@ end;
  
 begin
  
+declare
+  p varchar2(32767) := null;
+  l_clob clob;
+  l_length number := 1;
+begin
+p:=p||'#OWNER#.blog_util.get_category_page_items ('||unistr('\000a')||
+'  p_category_id   => :CATEGORY,'||unistr('\000a')||
+'  p_page_title    => :G_PAGE_TITLE,'||unistr('\000a')||
+'  p_region_title  => :G_REGION_TITLE,'||unistr('\000a')||
+'  p_category_name => :P4_CATEGORY_NAME'||unistr('\000a')||
+');';
+
+wwv_flow_api.create_page_process(
+  p_id     => 11565618797652878 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_flow_step_id => 4,
+  p_process_sequence=> 30,
+  p_process_point=> 'BEFORE_HEADER',
+  p_process_type=> 'PLSQL',
+  p_process_name=> 'Set items session state',
+  p_process_sql_clob => p,
+  p_process_error_message=> '',
+  p_error_display_location=> 'ON_ERROR_PAGE',
+  p_only_for_changed_rows=> 'Y',
+  p_process_success_message=> '',
+  p_process_is_stateful_y_n=>'N',
+  p_process_comment=>'');
+end;
+null;
+ 
+end;
+/
+
+ 
+begin
+ 
 ---------------------------------------
 -- ...updatable report columns for page 4
 --
@@ -5427,7 +5330,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141213110800'
+ ,p_last_upd_yyyymmddhh24miss => '20141220100815'
   );
 null;
  
@@ -5463,7 +5366,7 @@ wwv_flow_api.create_report_region (
   p_id=> 200401890867486805 + wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_page_id=> 5,
-  p_name=> '&G_PAGE_TITLE.',
+  p_name=> '&G_REGION_TITLE.',
   p_region_name=>'PPR_ARTICLES',
   p_template=> 179113213838116989+ wwv_flow_api.g_id_offset,
   p_display_sequence=> 10,
@@ -5512,6 +5415,7 @@ wwv_flow_api.create_report_columns (
   p_column_alias=> 'ARTICLE_ID',
   p_column_display_sequence=> 1,
   p_column_heading=> '',
+  p_use_as_row_header=> 'N',
   p_column_alignment=>'LEFT',
   p_heading_alignment=>'CENTER',
   p_default_sort_column_sequence=>0,
@@ -5519,8 +5423,11 @@ wwv_flow_api.create_report_columns (
   p_sum_column=> 'N',
   p_hidden_column=> 'Y',
   p_display_as=>'ESCAPE_SC',
+  p_lov_show_nulls=> 'NO',
   p_is_required=> false,
   p_pk_col_source=> s,
+  p_lov_display_extra=> 'YES',
+  p_include_in_export=> 'Y',
   p_column_comment=>'');
 end;
 /
@@ -5636,7 +5543,7 @@ wwv_flow_api.create_report_columns (
   p_disable_sort_column=>'Y',
   p_sum_column=> 'N',
   p_hidden_column=> 'Y',
-  p_display_as=>'TEXT_FROM_LOV',
+  p_display_as=>'ESCAPE_SC',
   p_lov_show_nulls=> 'NO',
   p_is_required=> false,
   p_pk_col_source=> s,
@@ -5935,18 +5842,36 @@ end;
 begin
  
 wwv_flow_api.create_page_computation(
-  p_id=> 21475883963355022 + wwv_flow_api.g_id_offset,
+  p_id=> 11617801089658263 + wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_flow_step_id=> 5,
   p_computation_sequence => 10,
+  p_computation_item=> 'G_REGION_TITLE',
+  p_computation_point=> 'BEFORE_BOX_BODY',
+  p_computation_type=> 'PLSQL_EXPRESSION',
+  p_computation_processed=> 'REPLACE_EXISTING',
+  p_computation=> 'apex_lang.message(''REGION_TITLE_ARCHIVES'', to_char(to_date(:P0_ARCHIVES, ''YYYYMM''), ''fmMonth, YYYY''))',
+  p_compute_when => '',
+  p_compute_when_type=>'');
+ 
+null;
+ 
+end;
+/
+
+ 
+begin
+ 
+wwv_flow_api.create_page_computation(
+  p_id=> 21475883963355022 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_flow_step_id=> 5,
+  p_computation_sequence => 20,
   p_computation_item=> 'G_PAGE_TITLE',
   p_computation_point=> 'BEFORE_HEADER',
   p_computation_type=> 'PLSQL_EXPRESSION',
   p_computation_processed=> 'REPLACE_EXISTING',
-  p_computation=> 'apex_lang.message(''REGION_TITLE_ARCHIVES'') '||unistr('\000a')||
-' || '': '' '||unistr('\000a')||
-' || to_char(to_date(:P0_ARCHIVES, ''YYYYMM''), ''fmMonth, YYYY'')'||unistr('\000a')||
-'',
+  p_computation=> 'apex_lang.message(''PAGE_TITLE_ARCHIVES'', to_char(to_date(:P0_ARCHIVES, ''YYYYMM''), ''fmMonth, YYYY''))',
   p_computation_error_message => 'Error on: Computation TITLE',
   p_compute_when => '',
   p_compute_when_type=>'');
@@ -6037,7 +5962,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141214130358'
+ ,p_last_upd_yyyymmddhh24miss => '20141221065733'
   );
 null;
  
@@ -6218,12 +6143,12 @@ wwv_flow_api.create_page_item(
   p_data_type=> 'VARCHAR',
   p_is_required=> false,
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 110,
+  p_item_sequence=> 120,
   p_item_plug_id => 409282767205906764+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'NO',
   p_item_default_type=> 'STATIC_TEXT_WITH_SUBSTITUTIONS',
   p_source_type=> 'ALWAYS_NULL',
-  p_display_as=> 'NATIVE_DISPLAY_ONLY',
+  p_display_as=> 'NATIVE_HIDDEN',
   p_lov_display_null=> 'NO',
   p_lov_translated=> 'N',
   p_cSize=> 30,
@@ -6240,12 +6165,9 @@ wwv_flow_api.create_page_item(
   p_field_template=> 21272493943377828+wwv_flow_api.g_id_offset,
   p_is_persistent=> 'Y',
   p_lov_display_extra=>'YES',
-  p_protection_level => 'I',
+  p_protection_level => 'S',
   p_escape_on_http_output => 'Y',
-  p_restricted_characters => 'US_ONLY',
-  p_attribute_01 => 'N',
-  p_attribute_02 => 'VALUE',
-  p_attribute_04 => 'N',
+  p_attribute_01 => 'Y',
   p_show_quick_picks=>'N',
   p_item_comment => '');
  
@@ -6691,6 +6613,7 @@ wwv_flow_api.create_page_item(
   p_lov_display_extra=>'NO',
   p_protection_level => 'S',
   p_escape_on_http_output => 'N',
+  p_security_scheme => 11634507649441425+ wwv_flow_api.g_id_offset,
   p_help_text=> h,
   p_attribute_01 => '1',
   p_attribute_02 => 'VERTICAL',
@@ -6732,6 +6655,7 @@ wwv_flow_api.create_page_item(
   p_grid_column=> null,
   p_label_alignment=> 'LEFT',
   p_field_alignment=> 'LEFT',
+  p_field_template=> 1003338938911992905+wwv_flow_api.g_id_offset,
   p_is_persistent=> 'Y',
   p_lov_display_extra=>'YES',
   p_protection_level => 'I',
@@ -6757,7 +6681,7 @@ wwv_flow_api.create_page_item(
   p_data_type=> 'VARCHAR',
   p_is_required=> false,
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 120,
+  p_item_sequence=> 110,
   p_item_plug_id => 409282767205906764+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'YES',
   p_item_default_type=> 'STATIC_TEXT_WITH_SUBSTITUTIONS',
@@ -6911,7 +6835,7 @@ wwv_flow_api.create_page_computation(
   p_computation_type=> 'QUERY',
   p_computation_processed=> 'REPLACE_EXISTING',
   p_computation=> 'SELECT a.article_title'||unistr('\000a')||
-'FROM #OWNER#.blog_article a'||unistr('\000a')||
+'FROM #OWNER#.blog_v$article a'||unistr('\000a')||
 'WHERE a.article_id = :P9_ARTICLE'||unistr('\000a')||
 '',
   p_computation_error_message => 'Error on: Computation ARTICLE_TITLE',
@@ -6935,7 +6859,7 @@ wwv_flow_api.create_page_computation(
   p_computation_point=> 'BEFORE_BOX_BODY',
   p_computation_type=> 'PLSQL_EXPRESSION',
   p_computation_processed=> 'REPLACE_EXISTING',
-  p_computation=> 'apex_lang.message(''REGION_TITLE_COMMENT'', :P9_ARTICLE_TITLE)',
+  p_computation=> 'apex_lang.message(''REGION_TITLE_COMMENT'', apex_escape.html(:P9_ARTICLE_TITLE))',
   p_compute_when => '',
   p_compute_when_type=>'');
  
@@ -7388,7 +7312,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141213145647'
+ ,p_last_upd_yyyymmddhh24miss => '20141220094949'
   );
 null;
  
@@ -7989,7 +7913,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141214101823'
+ ,p_last_upd_yyyymmddhh24miss => '20141220112739'
   );
 null;
  
@@ -8404,9 +8328,9 @@ wwv_flow_api.create_page_item(
   p_display_as=> 'NATIVE_HIDDEN',
   p_lov_display_null=> 'NO',
   p_lov_translated=> 'N',
-  p_cSize=> null,
+  p_cSize=> 30,
   p_cMaxlength=> 4000,
-  p_cHeight=> null,
+  p_cHeight=> 1,
   p_new_grid=> false,
   p_begin_on_new_line=> 'YES',
   p_begin_on_new_field=> 'YES',
@@ -8416,7 +8340,11 @@ wwv_flow_api.create_page_item(
   p_label_alignment=> 'RIGHT',
   p_field_alignment=> 'LEFT-CENTER',
   p_is_persistent=> 'Y',
+  p_lov_display_extra=>'YES',
+  p_protection_level => 'N',
+  p_escape_on_http_output => 'Y',
   p_attribute_01 => 'Y',
+  p_show_quick_picks=>'N',
   p_item_comment => '');
  
  
@@ -8496,8 +8424,8 @@ declare
 begin
 p:=p||'#OWNER#.blog_util.download_file('||unistr('\000a')||
 '  p_file_name  => :P11_FILE_NAME,'||unistr('\000a')||
-'  p_user_id    => :G_USER_ID,'||unistr('\000a')||
-'  p_session_id => :APP_SESSION'||unistr('\000a')||
+'  p_session_id => :APP_SESSION,'||unistr('\000a')||
+'  p_user_id    => :G_USER_ID'||unistr('\000a')||
 ');';
 
 wwv_flow_api.create_page_process(
@@ -8568,7 +8496,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141214134841'
+ ,p_last_upd_yyyymmddhh24miss => '20141220095011'
   );
 null;
  
@@ -8623,7 +8551,7 @@ wwv_flow_api.create_flash_chart5(
   p_chart_rendering        =>'FLASH_PREFERRED',
   p_chart_name             =>'chart_22269404799758900',
   p_chart_width            =>700,
-  p_chart_height           =>400,
+  p_chart_height           =>450,
   p_chart_animation        =>'Appear',
   p_display_attr           =>':H:::B::N::V:Y:None:::::::::',
   p_dial_tick_attr         =>'',
@@ -8851,7 +8779,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141213110121'
+ ,p_last_upd_yyyymmddhh24miss => '20141220095021'
   );
 null;
  
@@ -9128,7 +9056,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141213112937'
+ ,p_last_upd_yyyymmddhh24miss => '20141220095030'
   );
 null;
  
@@ -9423,7 +9351,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141214114716'
+ ,p_last_upd_yyyymmddhh24miss => '20141220095042'
   );
 null;
  
@@ -10480,7 +10408,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141214105908'
+ ,p_last_upd_yyyymmddhh24miss => '20141220095052'
   );
 null;
  
@@ -10606,15 +10534,15 @@ end;
 begin
  
 wwv_flow_api.create_page_computation(
-  p_id=> 10227916390753534 + wwv_flow_api.g_id_offset,
+  p_id=> 10898115077855791 + wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_flow_step_id=> 16,
   p_computation_sequence => 20,
-  p_computation_item=> 'G_CANONICAL_HREF',
+  p_computation_item=> 'G_PAGE_TITLE',
   p_computation_point=> 'BEFORE_HEADER',
   p_computation_type=> 'PLSQL_EXPRESSION',
   p_computation_processed=> 'REPLACE_EXISTING',
-  p_computation=> '''f?p='' || :APP_ALIAS || '':ABOUT:0''',
+  p_computation=> 'apex_lang.message(''PAGE_TITLE_ABOUT'')',
   p_compute_when => '',
   p_compute_when_type=>'');
  
@@ -10627,15 +10555,15 @@ end;
 begin
  
 wwv_flow_api.create_page_computation(
-  p_id=> 10898115077855791 + wwv_flow_api.g_id_offset,
+  p_id=> 10227916390753534 + wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_flow_step_id=> 16,
   p_computation_sequence => 30,
-  p_computation_item=> 'G_PAGE_TITLE',
+  p_computation_item=> 'G_CANONICAL_HREF',
   p_computation_point=> 'BEFORE_HEADER',
   p_computation_type=> 'PLSQL_EXPRESSION',
   p_computation_processed=> 'REPLACE_EXISTING',
-  p_computation=> 'apex_lang.message(''PAGE_TITLE_ABOUT'')',
+  p_computation=> '''f?p='' || :APP_ALIAS || '':ABOUT:0''',
   p_compute_when => '',
   p_compute_when_type=>'');
  
@@ -10691,7 +10619,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141214105927'
+ ,p_last_upd_yyyymmddhh24miss => '20141220094749'
   );
 null;
  
@@ -10929,7 +10857,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141214152244'
+ ,p_last_upd_yyyymmddhh24miss => '20141220095111'
   );
 null;
  
@@ -12340,6 +12268,7 @@ wwv_flow_api.create_list (
 '  ,apex_util.prepare_url(''f?p='' || :APP_ID || '':FILES:0:APPLICATION_PROCESS=DOWNLOAD:::P11_FILE_NAME:'' || f.file_name, NULL, ''PUBLIC_BOOKMARK'') AS img_url'||unistr('\000a')||
 'FROM blog_file f'||unistr('\000a')||
 'WHERE f.file_type = ''GALLERY'''||unistr('\000a')||
+'  AND f.active = ''Y'''||unistr('\000a')||
 '',
   p_list_status=> 'PUBLIC',
   p_list_displayed=> 'BY_DEFAULT' );
@@ -12360,8 +12289,8 @@ wwv_flow_api.create_list (
   p_list_type=> 'SQL_QUERY',
   p_list_query=>'SELECT'||unistr('\000a')||
 '  NULL AS link_level'||unistr('\000a')||
-'  ,c.category_name AS link_text'||unistr('\000a')||
-'  ,APEX_UTIL.PREPARE_URL(''f?p='' || :APP_ALIAS || '':READCAT:0::::CATEGORY:'' || c.category_id, NULL, ''PUBLIC_BOOKMARK'') AS target'||unistr('\000a')||
+'  ,apex_escape.html(c.category_name) AS link_text'||unistr('\000a')||
+'  ,apex_util.prepare_url(''f?p='' || :APP_ALIAS || '':READCAT:0::::CATEGORY:'' || c.category_id, NULL, ''PUBLIC_BOOKMARK'') AS target'||unistr('\000a')||
 '  ,CASE WHEN :APP_PAGE_ID = 4 AND :CATEGORY = c.category_id'||unistr('\000a')||
 '   THEN ''YES'''||unistr('\000a')||
 '   ELSE ''NO'''||unistr('\000a')||
@@ -12395,7 +12324,7 @@ wwv_flow_api.create_list (
 '  SELECT /*+ first_rows(5) */'||unistr('\000a')||
 '     ROW_NUMBER() OVER (ORDER BY a.created_on DESC) AS rn'||unistr('\000a')||
 '    ,a.article_title AS link_text'||unistr('\000a')||
-'    ,APEX_UTIL.PREPARE_URL(''f?p='' || :APP_ALIAS || '':READ:0::::ARTICLE:'' || a.article_id, NULL, ''PUBLIC_BOOKMARK'') AS target'||unistr('\000a')||
+'    ,apex_util.prepare_url(''f?p='' || :APP_ALIAS || '':READ:0::::ARTICLE:'' || a.article_id, NULL, ''PUBLIC_BOOKMARK'') AS target'||unistr('\000a')||
 '    ,CASE WHEN :APP_PAGE_ID = 3 AND :ARTICLE = a.article_id'||unistr('\000a')||
 '     THEN ''YES'''||unistr('\000a')||
 '     ELSE ''NO'''||unistr('\000a')||
@@ -12431,7 +12360,7 @@ wwv_flow_api.create_list (
 '  SELECT /*+ first_rows(5) */'||unistr('\000a')||
 '     ROW_NUMBER() OVER (ORDER BY a.top_article DESC) rn'||unistr('\000a')||
 '    ,a.article_title AS link_text'||unistr('\000a')||
-'    ,APEX_UTIL.PREPARE_URL(''f?p='' || :APP_ALIAS || '':READ:0::::ARTICLE:'' || a.article_id, NULL, ''PUBLIC_BOOKMARK'')  AS target'||unistr('\000a')||
+'    ,apex_util.prepare_url(''f?p='' || :APP_ALIAS || '':READ:0::::ARTICLE:'' || a.article_id, NULL, ''PUBLIC_BOOKMARK'')  AS target'||unistr('\000a')||
 '    ,CASE WHEN :APP_PAGE_ID = 3 AND :ARTICLE = a.article_id'||unistr('\000a')||
 '     THEN ''YES'''||unistr('\000a')||
 '     ELSE ''NO'''||unistr('\000a')||
@@ -12467,7 +12396,7 @@ wwv_flow_api.create_list (
 '  SELECT /*+ first_rows(5) */'||unistr('\000a')||
 '     ROW_NUMBER() OVER (ORDER BY a.top_hit DESC) rn'||unistr('\000a')||
 '    ,a.article_title AS link_text'||unistr('\000a')||
-'    ,APEX_UTIL.PREPARE_URL(''f?p='' || :APP_ALIAS || '':READ:0::::ARTICLE:'' || a.article_id, NULL, ''PUBLIC_BOOKMARK'') AS target'||unistr('\000a')||
+'    ,apex_util.prepare_url(''f?p='' || :APP_ALIAS || '':READ:0::::ARTICLE:'' || a.article_id, NULL, ''PUBLIC_BOOKMARK'') AS target'||unistr('\000a')||
 '    ,CASE WHEN :APP_PAGE_ID = 3 AND :ARTICLE = a.article_id'||unistr('\000a')||
 '     THEN ''YES'''||unistr('\000a')||
 '     ELSE ''NO'''||unistr('\000a')||
@@ -13410,7 +13339,7 @@ wwv_flow_api.create_row_template (
   p_flow_id=> wwv_flow.g_flow_id,
   p_row_template_name=> 'Articles',
   p_row_template1=> c1,
-  p_row_template_condition1=> 'NOT APEX_UTIL.PUBLIC_CHECK_AUTHORIZATION(''ALLOW_COMMENT'')',
+  p_row_template_condition1=> 'not apex_authorization.is_authorized(''ALLOW_COMMENT'')',
   p_row_template2=> c2,
   p_row_template_condition2=> '#COMMENT_COUNT# > 0',
   p_row_template3=> c3,
@@ -13436,7 +13365,6 @@ wwv_flow_api.create_row_template (
   p_previous_set_template=>'<a href="#LINK#"><img src="&G_THEME_PATH.prev.gif" alt="#PAGINATION_PREVIOUS_SET#" title="#PAGINATION_PREVIOUS_SET#" /></a>',
   p_theme_id  => 202,
   p_theme_class_id => 10,
-  p_translate_this_template => 'N',
   p_row_template_comment=> '');
 end;
 null;
@@ -14194,7 +14122,7 @@ null;
 end;
 /
 
-prompt  ......Message text_by
+prompt  ......Message text_posted_by
 declare
   h varchar2(32767) := null;
  
@@ -14205,7 +14133,7 @@ h:=h||'by';
 wwv_flow_api.create_message (
   p_id=>10854627391029747 + wwv_flow_api.g_id_offset,
   p_flow_id=>wwv_flow.g_flow_id,
-  p_name=>'TEXT_BY',
+  p_name=>'TEXT_POSTED_BY',
   p_message_language=>'en',
   p_message_text=>h);
 null;
@@ -14257,7 +14185,7 @@ declare
  
 begin
  
-h:=h||'Archives';
+h:=h||'Archives: %0';
 
 wwv_flow_api.create_message (
   p_id=>10855213576051331 + wwv_flow_api.g_id_offset,
@@ -14759,6 +14687,63 @@ wwv_flow_api.create_message (
   p_id=>11240308669671316 + wwv_flow_api.g_id_offset,
   p_flow_id=>wwv_flow.g_flow_id,
   p_name=>'FOLLOWUP_NOTIFY_CHECKBOX',
+  p_message_language=>'en',
+  p_message_text=>h);
+null;
+ 
+end;
+/
+
+prompt  ......Message page_title_category
+declare
+  h varchar2(32767) := null;
+ 
+begin
+ 
+h:=h||'Category: %0';
+
+wwv_flow_api.create_message (
+  p_id=>11619522192952353 + wwv_flow_api.g_id_offset,
+  p_flow_id=>wwv_flow.g_flow_id,
+  p_name=>'PAGE_TITLE_CATEGORY',
+  p_message_language=>'en',
+  p_message_text=>h);
+null;
+ 
+end;
+/
+
+prompt  ......Message region_title_category
+declare
+  h varchar2(32767) := null;
+ 
+begin
+ 
+h:=h||'Category: %0';
+
+wwv_flow_api.create_message (
+  p_id=>11619718310954147 + wwv_flow_api.g_id_offset,
+  p_flow_id=>wwv_flow.g_flow_id,
+  p_name=>'REGION_TITLE_CATEGORY',
+  p_message_language=>'en',
+  p_message_text=>h);
+null;
+ 
+end;
+/
+
+prompt  ......Message page_title_archives
+declare
+  h varchar2(32767) := null;
+ 
+begin
+ 
+h:=h||'Archives: %0';
+
+wwv_flow_api.create_message (
+  p_id=>11629913586245567 + wwv_flow_api.g_id_offset,
+  p_flow_id=>wwv_flow.g_flow_id,
+  p_name=>'PAGE_TITLE_ARCHIVES',
   p_message_language=>'en',
   p_message_text=>h);
 null;
@@ -15762,15 +15747,17 @@ s:=s||'HOR"'||unistr('\000a')||
 '/'||unistr('\000a')||
 'DROP TABLE "BLOG_LONG_TEXT";'||unistr('\000a')||
 '/'||unistr('\000a')||
+'DROP TABLE "BLOG_HTTP410"'||unistr('\000a')||
+'/'||unistr('\000a')||
 'DROP VIEW "BLOG_V$ACTIVITY"'||unistr('\000a')||
 '/    '||unistr('\000a')||
 'DROP VIEW "BLOG_V$ACTIVITY_LOG"'||unistr('\000a')||
 '/    '||unistr('\000a')||
 'DROP VIEW "BLOG_V$ARTICLE"'||unistr('\000a')||
 '/    '||unistr('\000a')||
-'DROP SYNONYM "BLOG_ACTIVITY_LOG"';
+'DROP';
 
-s:=s||''||unistr('\000a')||
+s:=s||' SYNONYM "BLOG_ACTIVITY_LOG"'||unistr('\000a')||
 '/'||unistr('\000a')||
 'DROP SEQUENCE "BLOG_SEQ"'||unistr('\000a')||
 '/    '||unistr('\000a')||
@@ -15790,11 +15777,11 @@ s:=s||''||unistr('\000a')||
 '/    '||unistr('\000a')||
 'DROP PACKAGE BLOG_JOB'||unistr('\000a')||
 '/'||unistr('\000a')||
-'DROP PACKAGE BLOG_PLUGIN'||unistr('\000a')||
-'/'||unistr('\000a')||
-'DROP P';
+'DROP ';
 
-s:=s||'ACKAGE BLOG_LOG'||unistr('\000a')||
+s:=s||'PACKAGE BLOG_PLUGIN'||unistr('\000a')||
+'/'||unistr('\000a')||
+'DROP PACKAGE BLOG_LOG'||unistr('\000a')||
 '/    '||unistr('\000a')||
 'DROP PACKAGE BLOG_UTIL'||unistr('\000a')||
 '/    '||unistr('\000a')||
@@ -15805,7 +15792,17 @@ s:=s||'ACKAGE BLOG_LOG'||unistr('\000a')||
 'DROP FUNCTION BLOG_SGID'||unistr('\000a')||
 '/'||unistr('\000a')||
 'DROP FUNCTION BLOG_PW_HASH'||unistr('\000a')||
-'/';
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'    wwv_flow_api.create_or_remove_file( '||unistr('\000a')||
+'        p_location => ''WORKSPACE'','||unistr('\000a')||
+'        p_name     => ''add-small.png'','||unistr('\000a')||
+'        p_mode     => ''REMOVE'','||unistr('\000a')||
+'        p_type     => ''IMAGE'');'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+''||unistr('\000a')||
+'';
 
 wwv_flow_api.create_install (
   p_id => 10834514095423806 + wwv_flow_api.g_id_offset,
@@ -15941,23 +15938,23 @@ s:=s||' DEFAULT ''Y'' NOT NULL ENABLE,'||unistr('\000a')||
 'PASSWD VARCHAR2(2000 CHAR),'||unistr('\000a')||
 'AUTHOR_NAME VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'BIO VARCHAR2(4000 CHAR),'||unistr('\000a')||
-'AUTHOR_SEQ NUMBER(2,0) NOT NULL ENABLE,'||unistr('\000a')||
+'AUTHOR_SEQ NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
 'EMAIL_NOTIFY VARCHAR2(1) DEFAULT ''Y'' NOT NULL ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_AUTHOR_PK PRIMARY KEY (AUTHOR_ID) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_AUTHOR_UK1 UNIQ';
+'CONSTRAINT BLOG_AUTHOR_UK1 UNI';
 
-s:=s||'UE (EMAIL) ENABLE,'||unistr('\000a')||
+s:=s||'QUE (EMAIL) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_AUTHOR_UK2 UNIQUE (USER_NAME) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_AUTHOR_UK3 UNIQUE (AUTHOR_SEQ) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_AUTHOR_CK1 CHECK (AUTHOR_ID > 0) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_AUTHOR_CK2 CHECK (AUTHOR_SEQ BETWEEN 1 AND 99) ENABLE,'||unistr('\000a')||
+'CONSTRAINT BLOG_AUTHOR_CK2 CHECK (AUTHOR_SEQ > 0) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_AUTHOR_CK3 CHECK (ACTIVE IN(''Y'', ''N'')) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_AUTHOR_CK4 CHECK (EMAIL_NOTIFY IN(''Y'', ''N'')) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
-'CREATE TA';
+'CREATE TABLE  BLOG_CA';
 
-s:=s||'BLE  BLOG_CATEGORY'||unistr('\000a')||
+s:=s||'TEGORY'||unistr('\000a')||
 '(    CATEGORY_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
@@ -15965,21 +15962,21 @@ s:=s||'BLE  BLOG_CATEGORY'||unistr('\000a')||
 'CHANGED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'ACTIVE VARCHAR2(1 CHAR) DEFAULT ''Y'' NOT NULL ENABLE,'||unistr('\000a')||
 'CATEGORY_NAME VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
-'CATEGORY_SEQ NUMBER(4,0) NOT NULL ENABLE,'||unistr('\000a')||
-'';
+'CATEGORY_SEQ NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
+'CONSTRAINT ';
 
-s:=s||'CONSTRAINT BLOG_CATEGORY_PK PRIMARY KEY (CATEGORY_ID) ENABLE,'||unistr('\000a')||
+s:=s||'BLOG_CATEGORY_PK PRIMARY KEY (CATEGORY_ID) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_CATEGORY_UK1 UNIQUE (CATEGORY_NAME) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_CATEGORY_UK2 UNIQUE (CATEGORY_SEQ) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_CATEGORY_CK1 CHECK (CATEGORY_ID > 0) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_CATEGORY_CK2 CHECK (ACTIVE IN(''Y'', ''N'')) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_CATEGORY_CK3 CHECK (CATEGORY_SEQ BETWEEN 1 AND 9999) ENABLE'||unistr('\000a')||
+'CONSTRAINT BLOG_CATEGORY_CK3 CHECK (CATEGORY_SEQ > 0) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
-'CREATE TABLE ';
+'CREATE TABLE  BLOG_ARTICLE'||unistr('\000a')||
+'(    ARTICLE';
 
-s:=s||' BLOG_ARTICLE'||unistr('\000a')||
-'(    ARTICLE_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
+s:=s||'_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
@@ -15987,9 +15984,9 @@ s:=s||' BLOG_ARTICLE'||unistr('\000a')||
 'AUTHOR_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
 'ACTIVE VARCHAR2(1 CHAR) DEFAULT ''N'' NOT NULL ENABLE,'||unistr('\000a')||
 'CATEGORY_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
-'ARTICLE_TITLE V';
+'ARTICLE_TITLE VARCHAR2(256 CHAR) NOT NULL';
 
-s:=s||'ARCHAR2(256 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
+s:=s||' ENABLE,'||unistr('\000a')||
 'ARTICLE_TEXT CLOB,'||unistr('\000a')||
 'DESCRIPTION VARCHAR2(256 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'ARTICLE_LENGTH NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
@@ -15998,10 +15995,10 @@ s:=s||'ARCHAR2(256 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'KEYWORDS VARCHAR2(256 CHAR) NOT NULL,'||unistr('\000a')||
 'HASTAGS VARCHAR2(256 CHAR),'||unistr('\000a')||
 'CONSTRAINT BLOG_ARTICLE_PK PRIMARY KEY (ARTICLE_ID) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_ARTICLE_CK1 CHECK ';
+'CONSTRAINT BLOG_ARTICLE_CK1 CHECK (ARTICLE_ID > 0) ENABLE,'||unistr('\000a')||
+'C';
 
-s:=s||'(ARTICLE_ID > 0) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_ARTICLE_CK2 CHECK (AUTHOR_ID > 0) ENABLE,'||unistr('\000a')||
+s:=s||'ONSTRAINT BLOG_ARTICLE_CK2 CHECK (AUTHOR_ID > 0) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_ARTICLE_CK3 CHECK (CATEGORY_ID > 0) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_ARTICLE_CK4 CHECK (ACTIVE IN(''Y'', ''N'')) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_ARTICLE_CK5 CHECK (ARTICLE_LENGTH >= 0) ENABLE'||unistr('\000a')||
@@ -16009,10 +16006,10 @@ s:=s||'(ARTICLE_ID > 0) ENABLE,'||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE TABLE  BLOG_ARTICLE_LOG'||unistr('\000a')||
 '(    ARTICLE_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
-'VIEW_COUNT NUMBER(38,0) DEFAULT 0 NOT NULL ENABLE';
+'VIEW_COUNT NUMBER(38,0) DEFAULT 0 NOT NULL ENABLE,'||unistr('\000a')||
+'ARTICLE_RATE NUMBER DEFA';
 
-s:=s||','||unistr('\000a')||
-'ARTICLE_RATE NUMBER DEFAULT 0 NOT NULL ENABLE,'||unistr('\000a')||
+s:=s||'ULT 0 NOT NULL ENABLE,'||unistr('\000a')||
 'ARTICLE_RATE_INT NUMBER(1,0) DEFAULT 0 NOT NULL ENABLE,'||unistr('\000a')||
 'RATE_CLICK NUMBER(38,0) DEFAULT 0 NOT NULL ENABLE,'||unistr('\000a')||
 'LAST_VIEW DATE DEFAULT NULL,'||unistr('\000a')||
@@ -16020,9 +16017,9 @@ s:=s||','||unistr('\000a')||
 'CONSTRAINT BLOG_ARTICLE_LOG_PK PRIMARY KEY (ARTICLE_ID) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_ARTICLE_LOG_CK1 CHECK (ARTICLE_ID > 0) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_ARTICLE_LOG_CK2 CHECK (VIEW_COUNT >= 0) ENABLE,'||unistr('\000a')||
-'CONSTRAI';
+'CONSTRAINT BLOG_ARTICLE_LOG_CK3 CH';
 
-s:=s||'NT BLOG_ARTICLE_LOG_CK3 CHECK (ARTICLE_RATE BETWEEN 0 AND 5) ENABLE,'||unistr('\000a')||
+s:=s||'ECK (ARTICLE_RATE BETWEEN 0 AND 5) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_ARTICLE_LOG_CK4 CHECK (ARTICLE_RATE_INT BETWEEN 0 AND 5) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_ARTICLE_LOG_CK5 CHECK (RATE_CLICK >= 0) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
@@ -16032,10 +16029,10 @@ s:=s||'NT BLOG_ARTICLE_LOG_CK3 CHECK (ARTICLE_RATE BETWEEN 0 AND 5) ENABLE,'||un
 'AUTHOR_ID NUMBER(38,0),'||unistr('\000a')||
 'CATEGORY_ID NUMBER(38,0),'||unistr('\000a')||
 'ARTICLE_TITLE VARCHAR2(256 CHAR),'||unistr('\000a')||
-'ARTICLE_TEXT ';
+'ARTICLE_TEXT CLOB,'||unistr('\000a')||
+'CONSTRAINT BLOG_ARTI';
 
-s:=s||'CLOB,'||unistr('\000a')||
-'CONSTRAINT BLOG_ARTICLE_PREVIEW_PK PRIMARY KEY (APEX_SESSION_ID) ENABLE'||unistr('\000a')||
+s:=s||'CLE_PREVIEW_PK PRIMARY KEY (APEX_SESSION_ID) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE TABLE  BLOG_CATEGORY_LOG'||unistr('\000a')||
@@ -16044,9 +16041,9 @@ s:=s||'CLOB,'||unistr('\000a')||
 'LAST_VIEW DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_CATEGORY_LOG_PK PRIMARY KEY (CATEGORY_ID) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_CATEGORY_LOG_CK1 CHECK (CATEGORY_ID > 0) ENABLE,'||unistr('\000a')||
-'CONSTRAIN';
+'CONSTRAINT BLOG_CATEGORY_LOG_CK2 CH';
 
-s:=s||'T BLOG_CATEGORY_LOG_CK2 CHECK (VIEW_COUNT > 0) ENABLE'||unistr('\000a')||
+s:=s||'ECK (VIEW_COUNT > 0) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE TABLE  BLOG_COMMENT'||unistr('\000a')||
@@ -16056,10 +16053,10 @@ s:=s||'T BLOG_CATEGORY_LOG_CK2 CHECK (VIEW_COUNT > 0) ENABLE'||unistr('\000a')||
 'CHANGED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'USER_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
-'APEX_SESSION_ID NUMBER(38,0) NOT NULL ENA';
+'APEX_SESSION_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
+'ARTICLE_ID NUMBER(38,';
 
-s:=s||'BLE,'||unistr('\000a')||
-'ARTICLE_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
+s:=s||'0) NOT NULL ENABLE,'||unistr('\000a')||
 'COMMENT_TEXT VARCHAR2(4000 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'MODERATED VARCHAR2(1 CHAR) DEFAULT ''Y'' NOT NULL ENABLE,'||unistr('\000a')||
 'MODERATED_ON DATE DEFAULT SYSDATE,'||unistr('\000a')||
@@ -16067,37 +16064,37 @@ s:=s||'BLE,'||unistr('\000a')||
 'ACTIVE VARCHAR2(1 CHAR) DEFAULT ''Y'' NOT NULL ENABLE,'||unistr('\000a')||
 'NOTIFY_EMAIL_SENT VARCHAR2(1 CHAR) DEFAULT ''N'' NOT NULL ENABLE,'||unistr('\000a')||
 'NOTIFY_EMAIL_SENT_ON DATE,'||unistr('\000a')||
-'CONSTRAINT BLOG_COMMENT_PK PRIMARY KEY (COMME';
+'CONSTRAINT BLOG_COMMENT_PK PRIMARY KEY (COMMENT_ID) ENABLE,'||unistr('\000a')||
+'CONSTRAINT ';
 
-s:=s||'NT_ID) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_COMMENT_CK1 CHECK (COMMENT_ID > 0) ENABLE,'||unistr('\000a')||
+s:=s||'BLOG_COMMENT_CK1 CHECK (COMMENT_ID > 0) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_COMMENT_CK2 CHECK (USER_ID > 0) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_COMMENT_CK3 CHECK (ARTICLE_ID > 0) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_COMMENT_CK4 CHECK (PARENT_ID > 0) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_COMMENT_CK5 CHECK (ACTIVE IN(''Y'', ''N'')) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_COMMENT_CK6 CHECK (MODERATED IN(''Y'', ''N'')) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_COMMEN';
+'CONSTRAINT BLOG_COMMENT_CK7 CHECK (MODERATED=''N''';
 
-s:=s||'T_CK7 CHECK (MODERATED=''N'' AND MODERATED_ON IS NULL OR MODERATED=''Y'' AND MODERATED_ON IS NOT NULL) ENABLE,'||unistr('\000a')||
+s:=s||' AND MODERATED_ON IS NULL OR MODERATED=''Y'' AND MODERATED_ON IS NOT NULL) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_COMMENT_CK9 CHECK (NOTIFY_EMAIL_SENT=''N'' AND NOTIFY_EMAIL_SENT_ON IS NULL OR NOTIFY_EMAIL_SENT=''Y'' AND NOTIFY_EMAIL_SENT_ON IS NOT NULL) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_COMMENT_CK8 CHECK (NOTIFY_EMAIL_SENT IN(''Y'',''N'')) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE TABLE  BLOG_COMMENT_BLOCK'||unistr('\000a')||
-'(    BLOCK_ID NUMBER(3';
+'(    BLOCK_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
+'CREA';
 
-s:=s||'8,0) NOT NULL ENABLE,'||unistr('\000a')||
-'CREATED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
+s:=s||'TED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'ACTIVE VARCHAR2(1 CHAR) DEFAULT ''Y'' NOT NULL ENABLE,'||unistr('\000a')||
 'BLOCK_TYPE VARCHAR2(30 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'BLOCK_VALUE VARCHAR2(256 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_COMMENT_BLOCK_PK PRIMARY ';
+'CONSTRAINT BLOG_COMMENT_BLOCK_PK PRIMARY KEY (BLOCK_ID) ENABLE,'||unistr('\000a')||
+'CON';
 
-s:=s||'KEY (BLOCK_ID) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_COMMENT_BLOCK_UK1 UNIQUE (BLOCK_VALUE) ENABLE,'||unistr('\000a')||
+s:=s||'STRAINT BLOG_COMMENT_BLOCK_UK1 UNIQUE (BLOCK_VALUE) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_COMMENT_BLOCK_CK1 CHECK (BLOCK_ID > 0) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_COMMENT_BLOCK_CK2 CHECK (ACTIVE IN(''Y'', ''N'')) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_COMMENT_BLOCK_CK3 CHECK (BLOCK_TYPE IN(''EMAIL'', ''IP'', ''USER_AGENT'')) ENABLE'||unistr('\000a')||
@@ -16105,19 +16102,19 @@ s:=s||'KEY (BLOCK_ID) ENABLE,'||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE TABLE  BLOG_COMMENT_NOTIFY'||unistr('\000a')||
 '(    ARTICLE_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
-'USER_';
+'USER_ID NUMBER(38,0) NOT NULL E';
 
-s:=s||'ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
+s:=s||'NABLE,'||unistr('\000a')||
 'CREATED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'FOLLOWUP_NOTIFY VARCHAR2(1 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_COMMENT_NOTIFY_PK PRIMARY KEY (ARTICLE_ID, USER_ID) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_COMMENT_NOTIFY_CK1 CHECK (ARTICLE_I';
+'CONSTRAINT BLOG_COMMENT_NOTIFY_CK1 CHECK (ARTICLE_ID > 0) ENABLE,'||unistr('\000a')||
+'CONSTRAINT ';
 
-s:=s||'D > 0) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_COMMENT_NOTIFY_CK2 CHECK (USER_ID > 0) ENABLE,'||unistr('\000a')||
+s:=s||'BLOG_COMMENT_NOTIFY_CK2 CHECK (USER_ID > 0) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_COMMENT_NOTIFY_CK3 CHECK (FOLLOWUP_NOTIFY IN(''Y'',''N'')) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
@@ -16126,19 +16123,19 @@ s:=s||'D > 0) ENABLE,'||unistr('\000a')||
 'CREATED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
-'CHANGED_BY VARC';
+'CHANGED_BY VARCHAR2(80 CHAR) NOT NULL ENA';
 
-s:=s||'HAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
+s:=s||'BLE,'||unistr('\000a')||
 'PROCESSED VARCHAR2(1 CHAR) DEFAULT ''N'' NOT NULL ENABLE,'||unistr('\000a')||
 'USER_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
 'APEX_SESSION_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
 'MESSAGE VARCHAR2(4000 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_CONTACT_MESSAGE_PK PRIMARY KEY (CONTACT_ID) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_CONTACT_MESSAGE_CK1 CHECK (CONTACT_ID > 0) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_CONTACT_MESSAGE_CK2 CHECK (USER_I';
+'CONSTRAINT BLOG_CONTACT_MESSAGE_CK2 CHECK (USER_ID > 0) ENABLE,'||unistr('\000a')||
+'CONSTRAINT ';
 
-s:=s||'D > 0) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_CONTACT_MESSAGE_CK3 CHECK (PROCESSED IN(''Y'', ''N'')) ENABLE'||unistr('\000a')||
+s:=s||'BLOG_CONTACT_MESSAGE_CK3 CHECK (PROCESSED IN(''Y'', ''N'')) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE TABLE  BLOG_COUNTRY'||unistr('\000a')||
@@ -16147,10 +16144,10 @@ s:=s||'D > 0) ENABLE,'||unistr('\000a')||
 'VISIT_COUNT NUMBER(38,0) DEFAULT 0 NOT NULL ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_COUNTRY_PK PRIMARY KEY (COUNTRY_CODE) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_COUNTRY_CK1 CHECK (VISIT_COUNT >= 0) ENABLE'||unistr('\000a')||
-') ORGA';
+') ORGANIZATION INDEX NOCOMPRESS'||unistr('\000a')||
+'';
 
-s:=s||'NIZATION INDEX NOCOMPRESS'||unistr('\000a')||
-'/'||unistr('\000a')||
+s:=s||'/'||unistr('\000a')||
 'CREATE TABLE  BLOG_FAQ'||unistr('\000a')||
 '(    FAQ_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
@@ -16158,138 +16155,157 @@ s:=s||'NIZATION INDEX NOCOMPRESS'||unistr('\000a')||
 'CHANGED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'ACTIVE VARCHAR2(1 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
-'FAQ_SEQ NUMBER(4,0) NOT NULL ENABLE,'||unistr('\000a')||
-'QUESTION VARCHAR2(4000 CHAR) NOT NULL E';
+'FAQ_SEQ NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
+'QUESTION VARCHAR2(4000 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
+'ANSWER VARCHAR2(40';
 
-s:=s||'NABLE,'||unistr('\000a')||
-'ANSWER VARCHAR2(4000 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
+s:=s||'00 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_FAQ_PK PRIMARY KEY (FAQ_ID) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_FAQ_UK1 UNIQUE (FAQ_SEQ) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_FAQ_CK1 CHECK (FAQ_ID > 0) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_FAQ_CK2 CHECK (ACTIVE IN(''Y'',''N'')) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_FAQ_CK3 CHECK (FAQ_SEQ BETWEEN 1 AND 50) ENABLE'||unistr('\000a')||
+'CONSTRAINT BLOG_FAQ_CK3 CHECK (FAQ_SEQ > 0) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE TABLE  BLOG_FILE'||unistr('\000a')||
 '(    FILE_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
-'CRE';
+'CREATED_ON DATE DEFAULT SYSDATE NOT NULL ';
 
-s:=s||'ATED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
+s:=s||'ENABLE,'||unistr('\000a')||
 'CREATED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'ACTIVE VARCHAR2(1 CHAR) DEFAULT ''Y'' NOT NULL ENABLE,'||unistr('\000a')||
+'--FILE_SEQ NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
 'FILE_NAME VARCHAR2(60 CHAR),'||unistr('\000a')||
 'MIME_TYPE VARCHAR2(256 CHAR),'||unistr('\000a')||
-'FILE_SIZE NUMBER(38,0) DEFAULT 1 NOT NULL ENABLE,'||unistr('\000a')||
+'FILE_SIZE NUMBER(38,0) DEFAULT 0 NOT NULL ENABLE,'||unistr('\000a')||
 'DAD_CHARSET VARCHAR2(256 CHAR),'||unistr('\000a')||
-'FILE_TYPE VARCHAR2(';
+'FILE_TYPE VARCHA';
 
-s:=s||'30 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
+s:=s||'R2(30 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'BLOB_CONTENT BLOB NOT NULL ENABLE,'||unistr('\000a')||
 'DESCRIPTION VARCHAR2(4000 CHAR),'||unistr('\000a')||
 'FILE_ETAG VARCHAR2(50 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'FILE_MODIFIED_SINCE VARCHAR2(30 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_FILE_PK PRIMARY KEY (FILE_ID) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_FILE_UK1 UNIQUE (FILE_NAME) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_FILE_CK1 CHECK (FILE_ID > 0) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_FILE_CK2 CHECK (ACTIVE IN(''Y'',''';
+'--CONSTRAINT BLOG_FILE_UK2 UNIQUE (FILE_SEQ,FILE_TYPE) ENABLE,'||unistr('\000a')||
+'CONSTRAINT BLOG_FILE_CK1 CHECK (FI';
 
-s:=s||'N'')) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_FILE_CK4 CHECK (FILE_SIZE >0) ENABLE,'||unistr('\000a')||
+s:=s||'LE_ID > 0) ENABLE,'||unistr('\000a')||
+'CONSTRAINT BLOG_FILE_CK2 CHECK (ACTIVE IN(''Y'',''N'')) ENABLE,'||unistr('\000a')||
+'CONSTRAINT BLOG_FILE_CK4 CHECK (FILE_SIZE >= 0) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_FILE_CK3 CHECK (FILE_TYPE IN(''IMAGE'',''FILE'',''THEME'',''GALLERY'')) ENABLE'||unistr('\000a')||
+'--,CONSTRAINT BLOG_FILE_CK4 CHECK (FILE_SEQ > 0) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE TABLE  BLOG_FILE_LOG'||unistr('\000a')||
 '(    FILE_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
-'CLICK_COUNT NUMBER(38,0) DEFAULT 0 NOT NULL ENABLE,'||unistr('\000a')||
+'CLICK_COUNT NUMBER(38,0) DEFAULT 0 NOT NULL ENA';
+
+s:=s||'BLE,'||unistr('\000a')||
 'LAST_CLICK DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_FILE_LOG_PK PRIMARY KEY (FILE_ID) ENABLE,'||unistr('\000a')||
-'CONSTRAINT B';
-
-s:=s||'LOG_FILE_LOG_CK1 CHECK (FILE_ID > 0) ENABLE,'||unistr('\000a')||
+'CONSTRAINT BLOG_FILE_LOG_CK1 CHECK (FILE_ID > 0) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_FILE_LOG_CK2 CHECK (CLICK_COUNT >= 0) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE TABLE  BLOG_LONG_TEXT'||unistr('\000a')||
 '(    LONG_TEXT_ID VARCHAR2(30 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
-'CREATED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
+'CREATED_BY VARCHAR2(80 CHAR) NOT NU';
+
+s:=s||'LL ENABLE,'||unistr('\000a')||
 'CHANGED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
-'LONG_TEXT_DESCRIPT';
-
-s:=s||'ION VARCHAR2(256 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
+'LONG_TEXT_DESCRIPTION VARCHAR2(256 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'LONG_TEXT CLOB,'||unistr('\000a')||
 'CONSTRAINT BLOG_LONG_TEXT_PK PRIMARY KEY (LONG_TEXT_ID) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_LONG_TEXT_CK1 CHECK (LONG_TEXT_ID IN(''ABOUT'',''DISCLAIMER'')) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE TABLE  BLOG_PARAM'||unistr('\000a')||
-'(    PARAM_ID VARCHAR2(30 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
+'(    PARAM_ID VARCHAR2(30 CHAR) NOT NULL ENA';
+
+s:=s||'BLE,'||unistr('\000a')||
 'CREATED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
-'CHANGED_ON DATE DEFAULT ';
-
-s:=s||'SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
+'CHANGED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'EDITABLE VARCHAR2(1 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'PARAM_NAME VARCHAR2(60 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'PARAM_VALUE VARCHAR2(4000 CHAR),'||unistr('\000a')||
 'PARAM_HELP VARCHAR2(4000 CHAR),'||unistr('\000a')||
 'PARAM_TYPE VARCHAR2(20 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
-'PARAM_NULLABLE VARCHAR2(1 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
-'PARAM_GROUP VARCHAR2(10 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
-'PARAM_USE_SKILL VARCHAR2(1) DEFAU';
+'PARAM';
 
-s:=s||'LT ''B'' NOT NULL ENABLE,'||unistr('\000a')||
+s:=s||'_NULLABLE VARCHAR2(1 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
+'PARAM_GROUP VARCHAR2(10 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
+'PARAM_USE_SKILL VARCHAR2(1) DEFAULT ''B'' NOT NULL ENABLE,'||unistr('\000a')||
 'PARAM_PARENT VARCHAR2(40 CHAR),'||unistr('\000a')||
 'CONSTRAINT BLOG_PARAM_PK PRIMARY KEY (PARAM_ID) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_PARAM_CK1 CHECK (EDITABLE IN(''Y'', ''N'')) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_PARAM_CK2 CHECK (PARAM_NULLABLE IN(''Y'', ''N'')) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_PARAM_CK3 CHECK (PARAM_TYPE IN(''TEXT'',''TEXTAREA'',''NUMBER'',''YESNO'')) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_PARAM_CK4 CHECK ((PARAM_NULLABLE = ''N'' AND PAR';
+'CONSTRAINT BLOG_PARAM_CK3 CHEC';
 
-s:=s||'AM_VALUE IS NOT NULL) OR (PARAM_NULLABLE = ''Y'')) ENABLE,'||unistr('\000a')||
+s:=s||'K (PARAM_TYPE IN(''TEXT'',''TEXTAREA'',''NUMBER'',''YESNO'')) ENABLE,'||unistr('\000a')||
+'CONSTRAINT BLOG_PARAM_CK4 CHECK ((PARAM_NULLABLE = ''N'' AND PARAM_VALUE IS NOT NULL) OR (PARAM_NULLABLE = ''Y'')) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_PARAM_CK5 CHECK ((PARAM_TYPE = ''YESNO'' AND PARAM_VALUE IS NOT NULL) OR (PARAM_TYPE != ''YESNO'')) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_PARAM_CK6 CHECK ((PARAM_TYPE =''YESNO'' AND PARAM_NULLABLE = ''N'') OR (PARAM_TYPE !=''YESNO'')) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_PARAM_CK7 CHECK (PARAM_GROUP IN(''SEO'', ''UI'', ''EMAIL'', ''LOG'', ''AUTH'', ''RSS'', ''INTERNAL'')) ENA';
+'CONSTRAINT BLOG_PARAM_CK6 CHECK ((PARAM_TYPE =''YESNO'' AND PARAM_NULLABLE = ''N'') OR (PARAM_TYPE !=''Y';
 
-s:=s||'BLE,'||unistr('\000a')||
+s:=s||'ESNO'')) ENABLE,'||unistr('\000a')||
+'CONSTRAINT BLOG_PARAM_CK7 CHECK (PARAM_GROUP IN(''SEO'', ''UI'', ''EMAIL'', ''LOG'', ''AUTH'', ''RSS'', ''INTERNAL'', ''COMMENT'')) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_PARAM_CK8 CHECK (PARAM_USE_SKILL IN(''A'', ''B'')) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
 'COMMENT ON COLUMN BLOG_PARAM.PARAM_TYPE IS ''Values defined in blog admin app PARAM_TYPE list of values'''||unistr('\000a')||
 '/'||unistr('\000a')||
-'COMMENT ON COLUMN BLOG_PARAM.PARAM_GROUP IS ''Values defined in blog admin app PARAM_GROUP list of values'''||unistr('\000a')||
-'/'||unistr('\000a')||
-'COMMENT ON COLUMN BLOG_PARAM.PARAM_USE_SKILL IS ''Values defined in blog admin app PARAM_USE_SKILL list of v';
+'COMMENT ON COLUMN BLOG_PARAM.PARAM_GROUP IS ''Values defined in blog admin app PA';
 
-s:=s||'alues'''||unistr('\000a')||
+s:=s||'RAM_GROUP list of values'''||unistr('\000a')||
+'/'||unistr('\000a')||
+'COMMENT ON COLUMN BLOG_PARAM.PARAM_USE_SKILL IS ''Values defined in blog admin app PARAM_USE_SKILL list of values'''||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE TABLE  BLOG_RESOURCE'||unistr('\000a')||
 '(    LINK_ID NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
 'CREATED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CHANGED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
-'CHANGED_BY VARCHAR2(80 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
-'ACTIVE VARCHAR2(1 CHAR) DEFAULT ''Y'' NOT NULL ENABLE,'||unistr('\000a')||
-'LINK_TYPE VARCHAR2(40 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
-'LINK_TITLE VARCHAR2(256 CHAR) NO';
+'CHANGED_BY VARCHAR2(80 CHAR) NOT NULL ENA';
 
-s:=s||'T NULL ENABLE,'||unistr('\000a')||
+s:=s||'BLE,'||unistr('\000a')||
+'ACTIVE VARCHAR2(1 CHAR) DEFAULT ''Y'' NOT NULL ENABLE,'||unistr('\000a')||
+'LINK_SEQ NUMBER(38,0) NOT NULL ENABLE,'||unistr('\000a')||
+'LINK_TYPE VARCHAR2(40 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
+'LINK_TITLE VARCHAR2(256 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'LINK_TEXT VARCHAR2(4000 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'LINK_URL VARCHAR2(256 CHAR) NOT NULL ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_RESOURCE_PK PRIMARY KEY (LINK_ID) ENABLE,'||unistr('\000a')||
+'CONSTRAINT BLOG_RESOURCE_UK1 UNIQUE (LINK_SEQ, LINK_TYPE) ENA';
+
+s:=s||'BLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_RESOURCE_CK1 CHECK (LINK_ID > 0) ENABLE,'||unistr('\000a')||
 'CONSTRAINT BLOG_RESOURCE_CK2 CHECK (ACTIVE IN(''Y'', ''N'')) ENABLE,'||unistr('\000a')||
-'CONSTRAINT BLOG_RESOURCE_CK3 CHECK (LINK_TYPE IN(''BLOG'',''FAVORITE'',''RESOURCE'')) ENABLE'||unistr('\000a')||
+'CONSTRAINT BLOG_RESOURCE_CK3 CHECK (LINK_TYPE IN(''BLOG'',''FAVORITE'',''RESOURCE'')) ENABLE,'||unistr('\000a')||
+'CONSTRAINT BLOG_RESOURCE_CK4 CHECK (LINK_SEQ > 0) ENABLE'||unistr('\000a')||
+')'||unistr('\000a')||
+'/'||unistr('\000a')||
+''||unistr('\000a')||
+'CREATE TABLE BLOG_HTTP410'||unistr('\000a')||
+'(	DELETED_ID VARCHAR2(256 CHAR) NOT NULL ENABLE, '||unistr('\000a')||
+'ID_SOURCE VARCHAR2(30 CHAR) NOT NULL ENABLE, '||unistr('\000a')||
+'D';
+
+s:=s||'ELETED_ON DATE DEFAULT SYSDATE NOT NULL ENABLE,'||unistr('\000a')||
+'CONSTRAINT BLOG_HTTP410_PK PRIMARY KEY ("DELETED_ID"), '||unistr('\000a')||
+'CONSTRAINT BLOG_HTTP410_CK1 CHECK (ID_SOURCE IN(''ARTICLE'',''GATEGORY'',''FILE'')) ENABLE'||unistr('\000a')||
 ')'||unistr('\000a')||
 '/'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_install_script(
-  p_id => 11224317574059470 + wwv_flow_api.g_id_offset,
+  p_id => 12274030510815939 + wwv_flow_api.g_id_offset,
   p_flow_id => wwv_flow.g_flow_id,
   p_install_id=> 10834514095423806 + wwv_flow_api.g_id_offset,
   p_name => '1 Table',
@@ -16505,19 +16521,114 @@ declare
 begin
 s:=s||'--------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------'||unistr('\000a')||
+'CREATE MATERIALIZED VIEW blog_param_app'||unistr('\000a')||
+'  NOLOGGING'||unistr('\000a')||
+'  BUILD IMMEDIATE'||unistr('\000a')||
+'  USING NO INDEX'||unistr('\000a')||
+'  REFRESH COMPLETE ON DEMAND'||unistr('\000a')||
+'AS'||unistr('\000a')||
+'SELECT a.application_id'||unistr('\000a')||
+'  ,a.item_name AS param_id'||unistr('\000a')||
+'FROM apex_application_items a'||unistr('\000a')||
+'WHERE EXISTS (SELECT 1 FROM blog_param p WHERE p.param_id = a.item_name)'||unistr('\000a')||
+'/';
+
+s:=s||''||unistr('\000a')||
+'ALTER TABLE BLOG_PARAM_APP ADD CONSTRAINT BLOG_PARAM_APP_PK PRIMARY KEY (APPLICATION_ID, PARAM_ID)'||unistr('\000a')||
+'/'||unistr('\000a')||
+'--------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------'||unistr('\000a')||
+'CREATE MATERIALIZED VIEW blog_comment_log'||unistr('\000a')||
+'  NOLOGGING'||unistr('\000a')||
+'  BUILD IMMEDIATE'||unistr('\000a')||
+'  USING NO INDEX'||unistr('\000a')||
+'  REFRESH COMPLETE ON DEMAND'||unistr('\000a')||
+'AS'||unistr('\000a')||
+'SELECT c.article_id,'||unistr('\000a')||
+'  COUNT(1) AS total_comment_co';
+
+s:=s||'unt,'||unistr('\000a')||
+'  SUM(CASE WHEN c.moderated = ''Y'' AND c.active = ''Y'' THEN 1 ELSE 0 END) AS comment_count,'||unistr('\000a')||
+'  MAX(CASE WHEN c.moderated = ''Y'' AND c.active = ''Y'' THEN c.created_on END) AS last_comment,'||unistr('\000a')||
+'  SUM(CASE WHEN c.moderated = ''Y'' THEN 1 ELSE 0 END) AS moderated_comment_count,'||unistr('\000a')||
+'  MAX(CASE WHEN c.moderated = ''Y'' THEN c.created_on END) AS last_moderated_comment,'||unistr('\000a')||
+'  SUM(CASE WHEN c.active = ''Y'' THEN 1 ELSE 0 EN';
+
+s:=s||'D) AS active_comment_count,'||unistr('\000a')||
+'  MAX(CASE WHEN c.active = ''Y'' THEN c.created_on END) AS last_active_comment'||unistr('\000a')||
+'FROM blog_comment c'||unistr('\000a')||
+'GROUP BY c.article_id'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE BLOG_COMMENT_LOG ADD CONSTRAINT BLOG_COMMENT_LOG_PK PRIMARY KEY (ARTICLE_ID)'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE BLOG_COMMENT_LOG MODIFY TOTAL_COMMENT_COUNT NOT NULL'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE BLOG_COMMENT_LOG MODIFY COMMENT_COUNT NOT NULL'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE BLOG_COMMENT_LOG MOD';
+
+s:=s||'IFY MODERATED_COMMENT_COUNT NOT NULL'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE BLOG_COMMENT_LOG MODIFY ACTIVE_COMMENT_COUNT NOT NULL'||unistr('\000a')||
+'/'||unistr('\000a')||
+'--------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------'||unistr('\000a')||
+'CREATE OR REPLACE FORCE VIEW blog_v$article'||unistr('\000a')||
+'AS '||unistr('\000a')||
+'  SELECT a.article_id'||unistr('\000a')||
+'  ,c.category_id'||unistr('\000a')||
+'  ,b.author_id'||unistr('\000a')||
+'  ,b.author_name'||unistr('\000a')||
+'  ,a.article_title'||unistr('\000a')||
+'  ,a.description'||unistr('\000a')||
+'  ,c.categor';
+
+s:=s||'y_name'||unistr('\000a')||
+'  ,a.keywords'||unistr('\000a')||
+'  ,a.hastags'||unistr('\000a')||
+'  ,a.article_text'||unistr('\000a')||
+'  ,a.active'||unistr('\000a')||
+'  ,a.created_on'||unistr('\000a')||
+'  ,a.changed_on'||unistr('\000a')||
+'  ,a.year_month_num'||unistr('\000a')||
+'  ,CASE WHEN d.comment_count IS NULL THEN'||unistr('\000a')||
+'    0'||unistr('\000a')||
+'  ELSE'||unistr('\000a')||
+'    d.comment_count'||unistr('\000a')||
+'  END AS comment_count'||unistr('\000a')||
+'  ,(SELECT apex_lang.message(''TEXT_POSTED_ON'') FROM DUAL) AS created_on_txt'||unistr('\000a')||
+'  ,(SELECT apex_lang.message(''TEXT_POSTED_BY'') FROM DUAL) AS posted_by_txt'||unistr('\000a')||
+'  ,(SELECT apex_lang.message(''TEXT_';
+
+s:=s||'CATEGORY'') FROM DUAL) AS category_txt'||unistr('\000a')||
+'  ,(SELECT apex_lang.message(''TEXT_VIEW_COMMENTS'') FROM DUAL) AS view_comment'||unistr('\000a')||
+'  ,(SELECT apex_lang.message(''TEXT_POST_COMMENT'') FROM DUAL) AS post_comment'||unistr('\000a')||
+'FROM blog_article a'||unistr('\000a')||
+'  JOIN blog_author b ON a.author_id = b.author_id'||unistr('\000a')||
+'  JOIN blog_category c ON a.category_id = c.category_id'||unistr('\000a')||
+'  LEFT JOIN blog_comment_log d ON a.article_id = d.article_id'||unistr('\000a')||
+'WHERE a.active = ''Y';
+
+s:=s||''''||unistr('\000a')||
+'  AND b.active = ''Y'''||unistr('\000a')||
+'  AND c.active = ''Y'''||unistr('\000a')||
+'  AND a.valid_from <= SYSDATE'||unistr('\000a')||
+'WITH READ ONLY CONSTRAINT blog_v$article_ro'||unistr('\000a')||
+'/'||unistr('\000a')||
+'--------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------'||unistr('\000a')||
 'CREATE MATERIALIZED VIEW blog_archive_lov'||unistr('\000a')||
+'  NOLOGGING'||unistr('\000a')||
 '  BUILD IMMEDIATE'||unistr('\000a')||
 '  USING NO INDEX'||unistr('\000a')||
 '  REFRESH COMPLETE ON DEMAND'||unistr('\000a')||
 'AS'||unistr('\000a')||
 'SELECT a.year_month_num'||unistr('\000a')||
-'    ,TRUNC(a.created_on,''MM'') AS year_month'||unistr('\000a')||
-'    ,COUNT(1) AS article_count'||unistr('\000a')||
-'  FROM blog_article a'||unistr('\000a')||
-'  WHERE a.active = ''Y'''||unistr('\000a')||
-'    AND a.valid_from ';
+'    ,TRUN';
 
-s:=s||'<= SYSDATE'||unistr('\000a')||
+s:=s||'C(a.created_on,''MM'') AS year_month'||unistr('\000a')||
+'    ,COUNT(1) AS article_count'||unistr('\000a')||
+'  FROM blog_v$article a'||unistr('\000a')||
 '  GROUP BY a.year_month_num,'||unistr('\000a')||
 '    TRUNC(a.created_on,''MM'')'||unistr('\000a')||
 '/'||unistr('\000a')||
@@ -16527,140 +16638,100 @@ s:=s||'<= SYSDATE'||unistr('\000a')||
 '/'||unistr('\000a')||
 'ALTER TABLE BLOG_ARCHIVE_LOV MODIFY YEAR_MONTH NOT NULL'||unistr('\000a')||
 '/'||unistr('\000a')||
-'ALTER TABLE BLOG_ARCHIVE_LOV MODIFY ARTICLE_COUNT NOT NULL'||unistr('\000a')||
-'/'||unistr('\000a')||
-'---------------------------';
+'ALTER TAB';
 
-s:=s||'-----------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------'||unistr('\000a')||
-'CREATE MATERIALIZED VIEW blog_param_app'||unistr('\000a')||
-'  BUILD IMMEDIATE'||unistr('\000a')||
-'  USING NO INDEX'||unistr('\000a')||
-'  REFRESH COMPLETE ON DEMAND'||unistr('\000a')||
-'AS'||unistr('\000a')||
-'SELECT a.application_id'||unistr('\000a')||
-'  ,a.item_name AS param_id'||unistr('\000a')||
-'FROM apex_application_items a'||unistr('\000a')||
-'WHERE EXISTS (SELECT 1 FROM blog_param p WHERE p.param_id = a.item_name)'||unistr('\000a')||
-'/'||unistr('\000a')||
-'ALTER TABLE BLOG_PARAM_APP ADD CONSTRA';
-
-s:=s||'INT BLOG_PARAM_APP_PK PRIMARY KEY (APPLICATION_ID, PARAM_ID)'||unistr('\000a')||
+s:=s||'LE BLOG_ARCHIVE_LOV MODIFY ARTICLE_COUNT NOT NULL'||unistr('\000a')||
 '/'||unistr('\000a')||
 '--------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------'||unistr('\000a')||
-'CREATE MATERIALIZED VIEW blog_comment_log'||unistr('\000a')||
-'  BUILD IMMEDIATE'||unistr('\000a')||
-'  USING NO INDEX'||unistr('\000a')||
-'  REFRESH COMPLETE ON DEMAND'||unistr('\000a')||
-'AS'||unistr('\000a')||
-'SELECT article_id,'||unistr('\000a')||
-'  COUNT(1) as comment_count,'||unistr('\000a')||
-'  MAX(created_on) as last_comment'||unistr('\000a')||
-'FROM blog_comment'||unistr('\000a')||
-'WH';
-
-s:=s||'ERE moderated = ''Y'''||unistr('\000a')||
-'AND active = ''Y'''||unistr('\000a')||
-'GROUP BY article_id'||unistr('\000a')||
-'/'||unistr('\000a')||
-'ALTER TABLE BLOG_COMMENT_LOG ADD CONSTRAINT BLOG_COMMENT_LOG_PK PRIMARY KEY (ARTICLE_ID)'||unistr('\000a')||
-'/'||unistr('\000a')||
-'ALTER TABLE BLOG_COMMENT_LOG MODIFY COMMENT_COUNT NOT NULL'||unistr('\000a')||
-'/'||unistr('\000a')||
-'ALTER TABLE BLOG_COMMENT_LOG MODIFY LAST_COMMENT NOT NULL'||unistr('\000a')||
-'/'||unistr('\000a')||
-'--------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------'||unistr('\000a')||
-'CRE';
-
-s:=s||'ATE MATERIALIZED VIEW blog_article_top20'||unistr('\000a')||
+'CREATE MATERIALIZED VIEW blog_article_top20'||unistr('\000a')||
+'  NOLOGGING'||unistr('\000a')||
 '  BUILD IMMEDIATE'||unistr('\000a')||
 '  USING NO INDEX'||unistr('\000a')||
 '  REFRESH COMPLETE ON DEMAND'||unistr('\000a')||
 'AS '||unistr('\000a')||
 'WITH qry AS ('||unistr('\000a')||
 '  SELECT /*+ FIRST_ROWS(20) */'||unistr('\000a')||
-'    ROW_NUMBER() OVER(ORDER BY l.view_count DESC) AS top_article,'||unistr('\000a')||
+'    ROW_NUMBER() OVER(ORDER BY l.view_count DESC) AS ';
+
+s:=s||'top_article,'||unistr('\000a')||
 '    a.article_id,'||unistr('\000a')||
 '    a.article_title,'||unistr('\000a')||
 '    l.view_count,'||unistr('\000a')||
 '    l.last_view,'||unistr('\000a')||
 '    a.created_on,'||unistr('\000a')||
 '    SUM(l.view_count) OVER() AS total_views'||unistr('\000a')||
-'  FROM blog_article a'||unistr('\000a')||
-'  JOIN blog_article_lo';
-
-s:=s||'g l'||unistr('\000a')||
+'  FROM blog_v$article a'||unistr('\000a')||
+'  JOIN blog_article_log l'||unistr('\000a')||
 '  ON a.article_id = l.article_id'||unistr('\000a')||
-'  WHERE a.active = ''Y'''||unistr('\000a')||
-'    AND a.valid_from <= SYSDATE'||unistr('\000a')||
-'    AND l.view_count > 0'||unistr('\000a')||
+'  WHERE l.view_count > 0'||unistr('\000a')||
 ')'||unistr('\000a')||
 'SELECT'||unistr('\000a')||
 '  qry.article_id,'||unistr('\000a')||
-'  qry.article_title,'||unistr('\000a')||
+'  apex_escape.html(qry.article_title) AS article_title,'||unistr('\000a')||
 '  qry.view_count,'||unistr('\000a')||
 '  qry.last_view,'||unistr('\000a')||
-'  (qry.view_count / qry.total_views) * 100 AS view_pct,'||unistr('\000a')||
+'  (qry.view_count / qry.t';
+
+s:=s||'otal_views) * 100 AS view_pct,'||unistr('\000a')||
 '  qry.created_on,'||unistr('\000a')||
 '  qry.top_article'||unistr('\000a')||
 'FROM qry'||unistr('\000a')||
 'WHERE qry.top_article <= 20'||unistr('\000a')||
 '/'||unistr('\000a')||
-'ALTER TABLE BLOG_ARTICLE_TOP20 ADD CONSTRAINT BLOG_ARTICLE_TOP20_PK P';
-
-s:=s||'RIMARY KEY (ARTICLE_ID)'||unistr('\000a')||
+'ALTER TABLE BLOG_ARTICLE_TOP20 ADD CONSTRAINT BLOG_ARTICLE_TOP20_PK PRIMARY KEY (ARTICLE_ID)'||unistr('\000a')||
 '/'||unistr('\000a')||
 'ALTER TABLE BLOG_ARTICLE_TOP20 ADD CONSTRAINT BLOG_ARTICLE_TOP20_UK1 UNIQUE (TOP_ARTICLE)'||unistr('\000a')||
 '/'||unistr('\000a')||
-'ALTER TABLE BLOG_ARTICLE_TOP20 MODIFY LAST_VIEW NOT NULL'||unistr('\000a')||
+'ALTER TABLE BLOG_ARTICLE_TOP20 MODIFY ARTICLE_TITLE NOT NULL'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE BLOG_ARTICLE_TOP20 MODIFY LAST_V';
+
+s:=s||'IEW NOT NULL'||unistr('\000a')||
 '/'||unistr('\000a')||
 'ALTER TABLE BLOG_ARTICLE_TOP20 MODIFY VIEW_PCT NOT NULL'||unistr('\000a')||
 '/'||unistr('\000a')||
 'ALTER TABLE BLOG_ARTICLE_TOP20 MODIFY TOP_ARTICLE NOT NULL'||unistr('\000a')||
 '/'||unistr('\000a')||
 '--------------------------------------------------------------'||unistr('\000a')||
-'-----------------------------------------';
-
-s:=s||'---------------------'||unistr('\000a')||
+'--------------------------------------------------------------'||unistr('\000a')||
 'CREATE MATERIALIZED VIEW blog_article_last20'||unistr('\000a')||
+'  NOLOGGING'||unistr('\000a')||
 '  BUILD IMMEDIATE'||unistr('\000a')||
 '  USING NO INDEX'||unistr('\000a')||
 '  REFRESH COMPLETE ON DEMAND'||unistr('\000a')||
 'AS'||unistr('\000a')||
 'WITH qry AS ('||unistr('\000a')||
-'  SELECT /*+ FIRST_ROWS(20) */'||unistr('\000a')||
+'  ';
+
+s:=s||'SELECT /*+ FIRST_ROWS(20) */'||unistr('\000a')||
 '    ROW_NUMBER() OVER (ORDER BY a.created_on DESC) AS rn,'||unistr('\000a')||
 '    a.article_id,'||unistr('\000a')||
-'    APEX_ESCAPE.HTML(a.article_title) AS article_title,'||unistr('\000a')||
-'    a.article_title                   AS rss_title,'||unistr('\000a')||
-'    APEX_ESCAPE.HTML(a.description)  ';
-
-s:=s||' AS description,'||unistr('\000a')||
-'    p.author_name                     AS posted_by,'||unistr('\000a')||
-'    c.category_name,'||unistr('\000a')||
+'    a.article_title,'||unistr('\000a')||
+'    a.description,'||unistr('\000a')||
+'    a.author_name,'||unistr('\000a')||
+'    a.category_name,'||unistr('\000a')||
 '    a.created_on'||unistr('\000a')||
-'  FROM blog_article a'||unistr('\000a')||
-'  JOIN blog_author p'||unistr('\000a')||
-'  ON a.author_id = p.author_id'||unistr('\000a')||
-'  JOIN blog_category c'||unistr('\000a')||
-'  ON a.category_id = c.category_id'||unistr('\000a')||
-'  WHERE a.active   = ''Y'''||unistr('\000a')||
-'    AND a.valid_from <= SYSDATE'||unistr('\000a')||
+'  FROM blog_v$article a'||unistr('\000a')||
 ')'||unistr('\000a')||
 'SELECT'||unistr('\000a')||
-'  article_id,'||unistr('\000a')||
-'  article_title,'||unistr('\000a')||
-'  rss_title,'||unistr('\000a')||
-'  description,'||unistr('\000a')||
-'  posted_by,'||unistr('\000a')||
-'  category_name,'||unistr('\000a')||
-'  crea';
+'  qry.article_id,'||unistr('\000a')||
+'  apex_escape.html(qry.article_title) AS article_title,'||unistr('\000a')||
+'  apex_escape.html(qry.description)   AS description,'||unistr('\000a')||
+'  qry.author_name                    ';
 
-s:=s||'ted_on'||unistr('\000a')||
+s:=s||' AS posted_by,'||unistr('\000a')||
+'  apex_escape.html(qry.category_name) AS category_name,'||unistr('\000a')||
+'  qry.created_on,'||unistr('\000a')||
+'  qry.article_title                   AS rss_title,'||unistr('\000a')||
+'  qry.description                     AS rss_description,'||unistr('\000a')||
+'  qry.category_name                   AS rss_category,'||unistr('\000a')||
+'  to_char(sys_extract_utc(cast(qry.created_on as timestamp)), ''Dy, DD Mon YYYY HH24:MI:SS "GMT"'', ''NLS_DATE_LANGUAGE=ENGLISH'') AS rss_pubdate,'||unistr('\000a')||
+'  q';
+
+s:=s||'ry.article_id || to_char(sys_extract_utc(cast(qry.created_on as timestamp)), ''JHH24MISS'') AS rss_guid'||unistr('\000a')||
 'FROM qry'||unistr('\000a')||
-'WHERE rn <= 20'||unistr('\000a')||
+'WHERE qry.rn <= 20'||unistr('\000a')||
 '/'||unistr('\000a')||
 'ALTER TABLE BLOG_ARTICLE_LAST20 ADD CONSTRAINT BLOG_ARTICLE_LAST20_PK PRIMARY KEY (ARTICLE_ID)'||unistr('\000a')||
 '/'||unistr('\000a')||
@@ -16668,17 +16739,25 @@ s:=s||'ted_on'||unistr('\000a')||
 '/'||unistr('\000a')||
 'ALTER TABLE BLOG_ARTICLE_LAST20 MODIFY DESCRIPTION NOT NULL'||unistr('\000a')||
 '/'||unistr('\000a')||
-'--------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------'||unistr('\000a')||
-'CREATE OR REPLACE ';
+'ALTER TABLE BLOG_ARTICLE_LAST20 MODIFY CATEGO';
 
-s:=s||'FORCE VIEW blog_v$activity_log'||unistr('\000a')||
+s:=s||'RY_NAME NOT NULL'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE BLOG_ARTICLE_LAST20 MODIFY RSS_PUBDATE NOT NULL'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TABLE BLOG_ARTICLE_LAST20 MODIFY RSS_GUID NOT NULL'||unistr('\000a')||
+'/'||unistr('\000a')||
+'--------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------'||unistr('\000a')||
+'CREATE OR REPLACE FORCE VIEW blog_v$activity_log'||unistr('\000a')||
 'AS '||unistr('\000a')||
 '  SELECT'||unistr('\000a')||
 '    activity_date ,'||unistr('\000a')||
 '    activity_type,'||unistr('\000a')||
 '    apex_session_id,'||unistr('\000a')||
-'    ip_address,'||unistr('\000a')||
+'    ip_addre';
+
+s:=s||'ss,'||unistr('\000a')||
 '    related_id,'||unistr('\000a')||
 '    user_id,'||unistr('\000a')||
 '    latitude,'||unistr('\000a')||
@@ -16695,16 +16774,16 @@ s:=s||'FORCE VIEW blog_v$activity_log'||unistr('\000a')||
 'UNION ALL'||unistr('\000a')||
 'SELECT'||unistr('\000a')||
 '    activity_date,'||unistr('\000a')||
-'    activity';
-
-s:=s||'_type,'||unistr('\000a')||
+'    activity_type,'||unistr('\000a')||
 '    apex_session_id,'||unistr('\000a')||
 '    ip_address,'||unistr('\000a')||
 '    related_id,'||unistr('\000a')||
 '    user_id,'||unistr('\000a')||
 '    latitude,'||unistr('\000a')||
 '    longitude,'||unistr('\000a')||
-'    country_code,'||unistr('\000a')||
+'    country_co';
+
+s:=s||'de,'||unistr('\000a')||
 '    country_region,'||unistr('\000a')||
 '    country_city,'||unistr('\000a')||
 '    http_user_agent,'||unistr('\000a')||
@@ -16716,12 +16795,12 @@ s:=s||'_type,'||unistr('\000a')||
 'WITH READ ONLY CONSTRAINT blog_v$activity_log_ro'||unistr('\000a')||
 '/'||unistr('\000a')||
 '--------------------------------------------------------------'||unistr('\000a')||
-'----------';
-
-s:=s||'----------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------'||unistr('\000a')||
 'CREATE OR REPLACE FORCE VIEW blog_v$activity'||unistr('\000a')||
 'AS '||unistr('\000a')||
-'  SELECT l.activity_date'||unistr('\000a')||
+'  SELECT l.act';
+
+s:=s||'ivity_date'||unistr('\000a')||
 '  ,l.activity_type'||unistr('\000a')||
 '  ,n.apex_session_id'||unistr('\000a')||
 '  ,n.ip_address'||unistr('\000a')||
@@ -16738,14 +16817,14 @@ s:=s||'----------------------------------------------------'||unistr('\000a')||
 '  ,n.country_city'||unistr('\000a')||
 '  ,n.http_user_agent'||unistr('\000a')||
 '  ,l.http_referer'||unistr('\000a')||
-'  ,l.se';
-
-s:=s||'arch_type'||unistr('\000a')||
+'  ,l.search_type'||unistr('\000a')||
 '  ,l.search_criteria'||unistr('\000a')||
 '  ,l.additional_info'||unistr('\000a')||
 'FROM blog_v$activity_log l'||unistr('\000a')||
 'JOIN blog_v$activity_log n'||unistr('\000a')||
-'  ON l.apex_session_id = n.apex_session_id'||unistr('\000a')||
+'  ON l.ape';
+
+s:=s||'x_session_id = n.apex_session_id'||unistr('\000a')||
 ' AND n.activity_type = ''NEW_SESSION'''||unistr('\000a')||
 'LEFT JOIN blog_country c '||unistr('\000a')||
 '  ON n.country_code = c.country_code'||unistr('\000a')||
@@ -16753,53 +16832,12 @@ s:=s||'arch_type'||unistr('\000a')||
 '  ON l.user_id = u.user_id'||unistr('\000a')||
 'WITH READ ONLY CONSTRAINT blog_v$activity_ro'||unistr('\000a')||
 '/'||unistr('\000a')||
-'-----------------------------------------------';
-
-s:=s||'---------------'||unistr('\000a')||
 '--------------------------------------------------------------'||unistr('\000a')||
-'CREATE OR REPLACE FORCE VIEW blog_v$article'||unistr('\000a')||
-'AS '||unistr('\000a')||
-'  SELECT'||unistr('\000a')||
-'  a.article_id'||unistr('\000a')||
-'  ,c.category_id'||unistr('\000a')||
-'  ,b.author_id'||unistr('\000a')||
-'  ,a.created_on'||unistr('\000a')||
-'  ,b.author_name'||unistr('\000a')||
-'  ,a.article_title'||unistr('\000a')||
-'  ,a.description'||unistr('\000a')||
-'  ,c.category_name'||unistr('\000a')||
-'  ,a.keywords'||unistr('\000a')||
-'  ,a.article_text'||unistr('\000a')||
-'  ,a.active'||unistr('\000a')||
-'  ,a.year_month_num'||unistr('\000a')||
-'  ,CASE WHEN d.comment_count IS NULL THEN'||unistr('\000a')||
-'    0'||unistr('\000a')||
-'  ELSE'||unistr('\000a')||
-'    d.comm';
-
-s:=s||'ent_count'||unistr('\000a')||
-'  END AS comment_count'||unistr('\000a')||
-'  ,(SELECT apex_lang.message(''TEXT_POSTED_ON'') FROM DUAL) AS created_on_txt'||unistr('\000a')||
-'  ,(SELECT apex_lang.message(''TEXT_BY'') FROM DUAL) AS posted_by_txt'||unistr('\000a')||
-'  ,(SELECT apex_lang.message(''TEXT_CATEGORY'') FROM DUAL) AS category_txt'||unistr('\000a')||
-'  ,(SELECT apex_lang.message(''TEXT_VIEW_COMMENTS'') FROM DUAL) AS view_comment'||unistr('\000a')||
-'  ,(SELECT apex_lang.message(''TEXT_POST_COMMENT'') FROM DUAL) AS post_com';
-
-s:=s||'ment'||unistr('\000a')||
-'FROM blog_article a'||unistr('\000a')||
-'  JOIN blog_author b ON a.author_id = b.author_id'||unistr('\000a')||
-'  JOIN blog_category c ON a.category_id = c.category_id'||unistr('\000a')||
-'  LEFT JOIN blog_comment_log d ON a.article_id = d.article_id'||unistr('\000a')||
-'WHERE a.active = ''Y'''||unistr('\000a')||
-'  AND a.valid_from <= SYSDATE'||unistr('\000a')||
-'WITH READ ONLY CONSTRAINT blog_v$article_ro'||unistr('\000a')||
-'/'||unistr('\000a')||
 '--------------------------------------------------------------'||unistr('\000a')||
-'-----------------------------------------------';
+'CREATE MATERIALIZED VIEW blog_article';
 
-s:=s||'---------------'||unistr('\000a')||
-''||unistr('\000a')||
-'CREATE MATERIALIZED VIEW blog_article_hit20'||unistr('\000a')||
+s:=s||'_hit20'||unistr('\000a')||
+'  NOLOGGING'||unistr('\000a')||
 '  BUILD IMMEDIATE'||unistr('\000a')||
 '  USING NO INDEX'||unistr('\000a')||
 '  REFRESH COMPLETE ON DEMAND'||unistr('\000a')||
@@ -16813,10 +16851,10 @@ s:=s||'---------------'||unistr('\000a')||
 '  GROUP BY l.related_id,TRUNC(l.activity_date)'||unistr('\000a')||
 '), hit AS ('||unistr('\000a')||
 '  SELECT al.article_id,'||unistr('\000a')||
-'    S';
+'    SUM(al.view_count) / COUNT(1) AS hit_ratio'||unistr('\000a')||
+'';
 
-s:=s||'UM(al.view_count) / COUNT(1) AS hit_ratio'||unistr('\000a')||
-'  FROM al'||unistr('\000a')||
+s:=s||'  FROM al'||unistr('\000a')||
 '  GROUP BY al.article_id'||unistr('\000a')||
 '), qry AS ('||unistr('\000a')||
 '  SELECT /*+ FIRST_ROWS(20) */'||unistr('\000a')||
@@ -16824,31 +16862,35 @@ s:=s||'UM(al.view_count) / COUNT(1) AS hit_ratio'||unistr('\000a')||
 '    a.article_id,'||unistr('\000a')||
 '    a.article_title,'||unistr('\000a')||
 '    hit.hit_ratio'||unistr('\000a')||
-'  FROM blog_article a'||unistr('\000a')||
+'  FROM blog_v$article a'||unistr('\000a')||
 '  JOIN hit'||unistr('\000a')||
 '  ON a.article_id = hit.article_id'||unistr('\000a')||
-'  WHERE a.active  = ''Y'''||unistr('\000a')||
-'    AND a.valid_from <= SYSDATE'||unistr('\000a')||
 ')'||unistr('\000a')||
 'SELECT'||unistr('\000a')||
 '  qry.article_id,'||unistr('\000a')||
-'  qry.article_';
-
-s:=s||'title,'||unistr('\000a')||
+'   apex_escape.html(qry.article_title) AS article_title,'||unistr('\000a')||
 '  qry.hit_ratio,'||unistr('\000a')||
 '  qry.rn AS top_hit'||unistr('\000a')||
 'FROM qry'||unistr('\000a')||
-'WHERE qry.rn <= 20'||unistr('\000a')||
+'WHERE q';
+
+s:=s||'ry.rn <= 20'||unistr('\000a')||
 '/'||unistr('\000a')||
 'ALTER TABLE BLOG_ARTICLE_HIT20 ADD CONSTRAINT BLOG_ARTICLE_HIT20_PK PRIMARY KEY (ARTICLE_ID)'||unistr('\000a')||
 '/'||unistr('\000a')||
+'ALTER TABLE BLOG_ARTICLE_HIT20 MODIFY ARTICLE_TITLE NOT NULL'||unistr('\000a')||
+'/'||unistr('\000a')||
 'ALTER TABLE BLOG_ARTICLE_HIT20 MODIFY HIT_RATIO NOT NULL'||unistr('\000a')||
 '/'||unistr('\000a')||
+'ALTER TABLE BLOG_ARTICLE_HIT20 MODIFY TOP_HIT NOT NULL'||unistr('\000a')||
+'/'||unistr('\000a')||
 '--------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------';
+'-------------------------------------------------';
+
+s:=s||'-------------';
 
 wwv_flow_api.create_install_script(
-  p_id => 11220521006814806 + wwv_flow_api.g_id_offset,
+  p_id => 12274224040818913 + wwv_flow_api.g_id_offset,
   p_flow_id => wwv_flow.g_flow_id,
   p_install_id=> 10834514095423806 + wwv_flow_api.g_id_offset,
   p_name => '6 View',
@@ -16914,31 +16956,25 @@ s:=s||'cheme_id IN VARCHAR2,'||unistr('\000a')||
 '    p_condition_expression2   IN VARCHAR2'||unistr('\000a')||
 '  ) RETURN VARCHAR2'||unistr('\000a')||
 '  AS'||unistr('\000a')||
-'    l_retval    VARCHAR2(1);'||unistr('\000a')||
-'    l_entry_id  VARCHAR2(100);'||unistr('\000a')||
+'    l_retval  BOOLEAN;'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
-'    IF apex_plugin_util.is_component_used ('||unistr('\000a')||
-'            p_build_option_id         => p_build_option_id,'||unistr('\000a')||
-'            p_authorization_scheme_id => p_authorizat';
+'    l_retval := apex_plugin_util.is_component_used ('||unistr('\000a')||
+'      p_build_option_id         => p_build_option_id,'||unistr('\000a')||
+'      p_authorization_scheme_id => p_authorization_scheme_id,'||unistr('\000a')||
+'      p_condition_type   ';
 
-s:=s||'ion_scheme_id,'||unistr('\000a')||
-'            p_condition_type          => p_condition_type_code,'||unistr('\000a')||
-'            p_condition_expression1   => p_condition_expression1,'||unistr('\000a')||
-'            p_condition_expression2   => p_condition_expression2'||unistr('\000a')||
-'        )'||unistr('\000a')||
-'      THEN'||unistr('\000a')||
-'        l_retval := ''Y'';'||unistr('\000a')||
-'      ELSE'||unistr('\000a')||
-'        l_retval := ''N'';'||unistr('\000a')||
-'      END IF;'||unistr('\000a')||
-'      RETURN l_retval;'||unistr('\000a')||
-'   END show_entry;'||unistr('\000a')||
-'----------------------------------------------------';
-
-s:=s||'----------------------------'||unistr('\000a')||
+s:=s||'       => p_condition_type_code,'||unistr('\000a')||
+'      p_condition_expression1   => p_condition_expression1,'||unistr('\000a')||
+'      p_condition_expression2   => p_condition_expression2'||unistr('\000a')||
+'    );'||unistr('\000a')||
+'    RETURN apex_debug.tochar(l_retval);'||unistr('\000a')||
+'  END show_entry;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE rss('||unistr('\000a')||
-'    p_app_alias IN VARCHAR2,'||unistr('\000a')||
+'    ';
+
+s:=s||'p_app_alias IN VARCHAR2,'||unistr('\000a')||
 '    p_blog_name IN VARCHAR2,'||unistr('\000a')||
 '    p_base_url  IN VARCHAR2'||unistr('\000a')||
 '  )'||unistr('\000a')||
@@ -16948,50 +16984,48 @@ s:=s||'----------------------------'||unistr('\000a')||
 '    l_rss_desc    VARCHAR2(255);'||unistr('\000a')||
 '    l_rss_url     VARCHAR2(255);'||unistr('\000a')||
 '    l_home_url    VARCHAR2(255);'||unistr('\000a')||
-'    l_article_url VARC';
-
-s:=s||'HAR2(255);'||unistr('\000a')||
+'    l_article_url VARCHAR2(255);'||unistr('\000a')||
 '    l_webmaster   VARCHAR2(255);'||unistr('\000a')||
+'    l_rss_lang    VARCHAR2(5);'||unistr('\000a')||
 ''||unistr('\000a')||
 '    c_version     CONSTANT VARCHAR2(5) := ''2.0'';'||unistr('\000a')||
-'    c_rss_lang    CONSTANT VARCHAR2(5) := ''en'';'||unistr('\000a')||
 ''||unistr('\000a')||
-'    c_date_lang   CONSTANT VARCHAR2(255) := ''NLS_DATE_LANGUAGE=ENGLISH'';'||unistr('\000a')||
-'    c_date_form   CONSTANT VARCHAR2(255) := ''Dy, DD Mon RRRR HH24:MI:SS "+0100"'';'||unistr('\000a')||
-'  BEGIN'||unistr('\000a')||
-''||unistr('\000a')||
-'    l_rss_desc    := blog_util.get_param_value(''RSS_DESCRIPTION'');'||unistr('\000a')||
-'    l_url         := ''f?p=';
+'  BEG';
 
-s:=s||''' || p_app_alias || '':'';'||unistr('\000a')||
-'    l_rss_url     := p_base_url || l_url || ''RSS:0'';'||unistr('\000a')||
-'    l_home_url    := p_base_url || l_url || ''HOME:0'';'||unistr('\000a')||
+s:=s||'IN'||unistr('\000a')||
+''||unistr('\000a')||
+'    l_rss_lang    := apex_application.g_browser_language;'||unistr('\000a')||
+'    l_rss_desc    := blog_util.get_param_value(''RSS_DESCRIPTION'');'||unistr('\000a')||
+'    '||unistr('\000a')||
+'    l_url         := ''f?p='' || p_app_alias || '':'';'||unistr('\000a')||
+'    l_rss_url     := p_base_url || l_url || ''RSS'';'||unistr('\000a')||
+'    l_home_url    := p_base_url || l_url || ''HOME'';'||unistr('\000a')||
 '    l_article_url := l_url || ''READ:0::::ARTICLE:'';'||unistr('\000a')||
 ''||unistr('\000a')||
-'    SELECT xmlelement("rss", xmlattributes(c_version AS "version", ''http://www.w3.org/2005/Atom'' AS "xmlns:atom", ''http://purl.org/dc/elements/1.1/'' AS "xmlns:dc"),'||unistr('\000a')||
-'      xmlelement("channel",'||unistr('\000a')||
-'        xmlelement("at';
+'    SELECT xmlelement("rss", xmlattributes(c_version AS "ve';
 
-s:=s||'om:link", xmlattributes(l_rss_url AS "href", ''self'' AS "rel", ''application/rss+xml'' AS "type")),'||unistr('\000a')||
+s:=s||'rsion", ''http://www.w3.org/2005/Atom'' AS "xmlns:atom", ''http://purl.org/dc/elements/1.1/'' AS "xmlns:dc"),'||unistr('\000a')||
+'      xmlelement("channel",'||unistr('\000a')||
+'        xmlelement("atom:link", xmlattributes(l_rss_url AS "href", ''self'' AS "rel", ''application/rss+xml'' AS "type")),'||unistr('\000a')||
 '        xmlforest('||unistr('\000a')||
 '          p_blog_name AS "title"'||unistr('\000a')||
 '          ,l_home_url AS "link"'||unistr('\000a')||
 '          ,l_rss_desc AS "description"'||unistr('\000a')||
-'          ,c_rss_lang AS "language"'||unistr('\000a')||
+'          ,l_rss_lang AS';
+
+s:=s||' "language"'||unistr('\000a')||
 '        ),'||unistr('\000a')||
 '        xmlagg('||unistr('\000a')||
 '          xmlelement("item",'||unistr('\000a')||
 '            xmlelement("title", l.rss_title),'||unistr('\000a')||
-'            xmlelement("dc:creator", l.pos';
+'            xmlelement("dc:creator", l.posted_by),'||unistr('\000a')||
+'            xmlelement("category", l.rss_category),'||unistr('\000a')||
+'            xmlelement("link", p_base_url || apex_util.prepare_url(l_article_url || l.article_id, NULL, ''PUBLIC_BOOKMARK'')),'||unistr('\000a')||
+'            xmlelement("description", l.rss_description),'||unistr('\000a')||
+'';
 
-s:=s||'ted_by),'||unistr('\000a')||
-'            xmlelement("category", l.category_name),'||unistr('\000a')||
-'            xmlelement("link", p_base_url || APEX_UTIL.PREPARE_URL(l_article_url || l.article_id, NULL, ''PUBLIC_BOOKMARK'')),'||unistr('\000a')||
-'            xmlelement("description", l.description),'||unistr('\000a')||
-'            xmlelement("pubDate", TO_CHAR(l.created_on, c_date_form, c_date_lang)),'||unistr('\000a')||
-'            xmlelement("guid", xmlattributes(''false'' AS "isPermaLink"), l.a';
-
-s:=s||'rticle_id || TO_CHAR(l.created_on, ''JHH24MISS''))'||unistr('\000a')||
+s:=s||'            xmlelement("pubDate", l.rss_pubdate),'||unistr('\000a')||
+'            xmlelement("guid", xmlattributes(''false'' AS "isPermaLink"), l.rss_guid)'||unistr('\000a')||
 '          ) ORDER BY created_on DESC'||unistr('\000a')||
 '        )'||unistr('\000a')||
 '      )'||unistr('\000a')||
@@ -17001,12 +17035,12 @@ s:=s||'rticle_id || TO_CHAR(l.created_on, ''JHH24MISS''))'||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    owa_util.mime_header(''application/rss+xml'', TRUE);'||unistr('\000a')||
 '    wpg_docload.download_file(l_xml);'||unistr('\000a')||
-'    APEX_APPLICATION.STOP_APEX_ENGINE;'||unistr('\000a')||
+'    apex_application.';
+
+s:=s||'stop_apex_engine;'||unistr('\000a')||
 ''||unistr('\000a')||
 '  END rss;'||unistr('\000a')||
-'-------------------------------------------------------';
-
-s:=s||'-------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE sitemap('||unistr('\000a')||
 '    p_app_id    IN NUMBER,'||unistr('\000a')||
@@ -17017,73 +17051,69 @@ s:=s||'-------------------------'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_xml             BLOB;'||unistr('\000a')||
 '    l_article_url     VARCHAR2(255);'||unistr('\000a')||
-'    l_category_url    VARCHAR2(255);'||unistr('\000a')||
+'';
+
+s:=s||'    l_category_url    VARCHAR2(255);'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 ''||unistr('\000a')||
-'    l_article_url   := ''f?p='' || p_app_';
-
-s:=s||'alias || '':READ:0::::ARTICLE:'';'||unistr('\000a')||
+'    l_article_url   := ''f?p='' || p_app_alias || '':READ:0::::ARTICLE:'';'||unistr('\000a')||
 '    l_category_url  := ''f?p='' || p_app_alias || '':READCAT:0::::CATEGORY:'';'||unistr('\000a')||
 ''||unistr('\000a')||
 '    WITH article_cat AS('||unistr('\000a')||
 '      SELECT category_id,'||unistr('\000a')||
 '        MAX(changed_on) AS changed_on'||unistr('\000a')||
-'      FROM blog_article b'||unistr('\000a')||
-'      WHERE b.active = ''Y'''||unistr('\000a')||
-'        AND b.valid_from <= SYSDATE'||unistr('\000a')||
+'      FROM blog_v$article b'||unistr('\000a')||
 '      GROUP BY category_id'||unistr('\000a')||
 '    ), sitemap_query AS ('||unistr('\000a')||
 '      SELECT 1 AS grp,'||unistr('\000a')||
-'        ROW_NUMBER() OVER(ORDER BY e.d';
+'        ROW_NU';
 
-s:=s||'isplay_sequence) AS rnum,'||unistr('\000a')||
-'        APEX_PLUGIN_UTIL.REPLACE_SUBSTITUTIONS(e.entry_target) AS url,'||unistr('\000a')||
+s:=s||'MBER() OVER(ORDER BY e.display_sequence) AS rnum,'||unistr('\000a')||
+'        apex_plugin_util.replace_substitutions(e.entry_target) AS url,'||unistr('\000a')||
 '        (SELECT MAX(changed_on) FROM article_cat) AS lastmod'||unistr('\000a')||
 '      FROM APEX_APPLICATION_LIST_ENTRIES e'||unistr('\000a')||
 '      WHERE e.application_id = p_app_id'||unistr('\000a')||
 '        AND e.list_name      = p_tab_list'||unistr('\000a')||
-'        --AND COALESCE(blog_util.get_param_value(e.authorization_scheme), ''Y'') = ''Y'''||unistr('\000a')||
 '        AND'||unistr('\000a')||
-'          blog_xml.s';
+'          blog_xml.show_entry('||unistr('\000a')||
+'            (SELECT o.build_option_id FROM apex_ap';
 
-s:=s||'how_entry('||unistr('\000a')||
-'            (SELECT o.build_option_id FROM apex_application_build_options o WHERE o.build_option_name = e.build_option),'||unistr('\000a')||
+s:=s||'plication_build_options o WHERE o.build_option_name = e.build_option),'||unistr('\000a')||
 '            e.authorization_scheme_id,'||unistr('\000a')||
 '            e.condition_type_code,'||unistr('\000a')||
 '            e.condition_expression1,'||unistr('\000a')||
 '            e.condition_expression2'||unistr('\000a')||
-'           ) = ''Y'''||unistr('\000a')||
+'           ) = ''true'''||unistr('\000a')||
 '      UNION ALL'||unistr('\000a')||
 '      SELECT 2 AS grp,'||unistr('\000a')||
 '        ROW_NUMBER() OVER(ORDER BY a.created_on) AS rnum,'||unistr('\000a')||
-'     ';
+'        apex_util.prepare_url(l_article_url || a.article_id, NU';
 
-s:=s||'   APEX_UTIL.PREPARE_URL(l_article_url || a.article_id, NULL, ''PUBLIC_BOOKMARK'') AS url,'||unistr('\000a')||
+s:=s||'LL, ''PUBLIC_BOOKMARK'') AS url,'||unistr('\000a')||
 '        a.changed_on AS lastmod'||unistr('\000a')||
-'      FROM blog_article a'||unistr('\000a')||
-'      WHERE a.active = ''Y'''||unistr('\000a')||
-'        AND a.valid_from <= SYSDATE'||unistr('\000a')||
+'      FROM blog_v$article a'||unistr('\000a')||
 '      UNION ALL'||unistr('\000a')||
 '      SELECT 3 AS grp,'||unistr('\000a')||
 '        ROW_NUMBER() OVER(ORDER BY c.category_seq) AS rnum,'||unistr('\000a')||
-'        APEX_UTIL.PREPARE_URL(l_category_url || c.category_id, NULL, ''PUBLIC_BOOKMARK'') AS ';
-
-s:=s||'url,'||unistr('\000a')||
+'        apex_util.prepare_url(l_category_url || c.category_id, NULL, ''PUBLIC_BOOKMARK'') AS url,'||unistr('\000a')||
 '        a.changed_on AS lastmod'||unistr('\000a')||
 '      FROM blog_category c'||unistr('\000a')||
 '      JOIN article_cat a'||unistr('\000a')||
-'        ON c.category_id = a.category_id'||unistr('\000a')||
+'        ON c.category_id = a.c';
+
+s:=s||'ategory_id'||unistr('\000a')||
+'       AND c.active = ''Y'''||unistr('\000a')||
 '    )'||unistr('\000a')||
 '    SELECT XMLElement("urlset", XMLAttributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' AS "xmlns"),'||unistr('\000a')||
 '        ('||unistr('\000a')||
 '          XMLAgg('||unistr('\000a')||
 '              XMLElement("url"'||unistr('\000a')||
 '              ,XMLElement("loc", p_base_url || url)'||unistr('\000a')||
-'              ,XMLElement("lastmod", TO_CHAR(las';
-
-s:=s||'tmod, ''YYYY-MM-DD''))'||unistr('\000a')||
+'              ,XMLElement("lastmod", TO_CHAR(lastmod, ''YYYY-MM-DD''))'||unistr('\000a')||
 '              ,XMLElement("changefreq", ''monthly'')'||unistr('\000a')||
-'              ,XMLElement("priority", ''0.5'')'||unistr('\000a')||
+'              ,XMLEle';
+
+s:=s||'ment("priority", ''0.5'')'||unistr('\000a')||
 '            ) ORDER BY grp,rnum'||unistr('\000a')||
 '          )'||unistr('\000a')||
 '        )'||unistr('\000a')||
@@ -17094,13 +17124,13 @@ s:=s||'tmod, ''YYYY-MM-DD''))'||unistr('\000a')||
 ''||unistr('\000a')||
 '    owa_util.mime_header(''application/xml'', TRUE);'||unistr('\000a')||
 '    wpg_docload.download_file(l_xml);'||unistr('\000a')||
-'    APEX_APPLICATION.STOP_APEX_ENGINE;'||unistr('\000a')||
+'    apex_application.stop_apex_engine;'||unistr('\000a')||
 ''||unistr('\000a')||
-'  END si';
+'  END sitemap;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'-----';
 
-s:=s||'temap;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
+s:=s||'---------------------------------------------------------------------------'||unistr('\000a')||
 'END "BLOG_XML";'||unistr('\000a')||
 '/'||unistr('\000a')||
 ''||unistr('\000a')||
@@ -17110,21 +17140,13 @@ s:=s||'temap;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION init_session ('||unistr('\000a')||
 '    p_app_id          IN NUMBER,'||unistr('\000a')||
-'    p_session_';
-
-s:=s||'id      IN NUMBER'||unistr('\000a')||
+'    p_session_id      IN NUMBER'||unistr('\000a')||
 '  ) RETURN NUMBER;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------';
+
+s:=s||'------------------------'||unistr('\000a')||
 '  FUNCTION get_param_value ('||unistr('\000a')||
 '    p_param_id        IN VARCHAR2'||unistr('\000a')||
-'  ) RETURN VARCHAR2;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  FUNCTION get_article_url('||unistr('\000a')||
-'    p_article_id      IN NUMBER,'||unistr('\000a')||
-'    p_app_alias       IN VARCHAR2,'||unistr('\000a')||
-'    p_base_url       ';
-
-s:=s||' IN VARCHAR2 DEFAULT NULL'||unistr('\000a')||
 '  ) RETURN VARCHAR2;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE set_items_from_param ('||unistr('\000a')||
@@ -17132,11 +17154,11 @@ s:=s||' IN VARCHAR2 DEFAULT NULL'||unistr('\000a')||
 '  );'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE save_comment('||unistr('\000a')||
-'    p_user_id         IN OUT NOCOPY NUMBER,'||unistr('\000a')||
-'    p_apex_session_id IN NUMBER,'||unistr('\000a')||
-'    p_app_alias ';
+'    p_user_id         IN OUT NO';
 
-s:=s||'      IN VARCHAR2,'||unistr('\000a')||
+s:=s||'COPY NUMBER,'||unistr('\000a')||
+'    p_apex_session_id IN NUMBER,'||unistr('\000a')||
+'    p_app_alias       IN VARCHAR2,'||unistr('\000a')||
 '    p_base_url        IN VARCHAR2,'||unistr('\000a')||
 '    p_blog_name       IN VARCHAR2,'||unistr('\000a')||
 '    p_article_id      IN NUMBER,'||unistr('\000a')||
@@ -17147,9 +17169,9 @@ s:=s||'      IN VARCHAR2,'||unistr('\000a')||
 '    p_followup        IN VARCHAR2,'||unistr('\000a')||
 '    p_comment         IN VARCHAR2'||unistr('\000a')||
 '  );'||unistr('\000a')||
-'----------------------------------------------------------------';
+'--';
 
-s:=s||'----------------'||unistr('\000a')||
+s:=s||'------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE save_contact ('||unistr('\000a')||
 '    p_user_id         IN OUT NOCOPY NUMBER,'||unistr('\000a')||
 '    p_apex_session_id IN NUMBER,'||unistr('\000a')||
@@ -17158,74 +17180,92 @@ s:=s||'----------------'||unistr('\000a')||
 '    p_website         IN VARCHAR2,'||unistr('\000a')||
 '    p_comment         IN VARCHAR2'||unistr('\000a')||
 '  );'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PROCEDURE notify_readers ('||unistr('\000a')||
-'    p_comment_id      IN ';
+'-------------------------------------------------------------------------';
 
-s:=s||'NUMBER,'||unistr('\000a')||
+s:=s||'-------'||unistr('\000a')||
+'  PROCEDURE notify_readers ('||unistr('\000a')||
+'    p_comment_id      IN NUMBER,'||unistr('\000a')||
 '    p_user_id         IN NUMBER,'||unistr('\000a')||
 '    p_article_id      IN NUMBER,'||unistr('\000a')||
 '    p_article_title   IN VARCHAR2,'||unistr('\000a')||
 '    p_app_alias       IN VARCHAR2,'||unistr('\000a')||
 '    p_base_url        IN VARCHAR2,'||unistr('\000a')||
-'    p_blog_name       IN VARCHAR2,'||unistr('\000a')||
-'    p_article_url     IN VARCHAR2'||unistr('\000a')||
+'    p_blog_name       IN VARCHAR2'||unistr('\000a')||
 '  );'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE unsubscribe ('||unistr('\000a')||
-'    p_value           IN OUT NOCOPY VARC';
+'    p_value  ';
 
-s:=s||'HAR2,'||unistr('\000a')||
+s:=s||'         IN OUT NOCOPY VARCHAR2,'||unistr('\000a')||
 '    p_user_id         OUT NOCOPY NUMBER,'||unistr('\000a')||
 '    p_article_id      OUT NOCOPY NUMBER'||unistr('\000a')||
 '  );'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE download_file ('||unistr('\000a')||
-'    p_session_id  IN NUMBER,'||unistr('\000a')||
 '    p_file_name   IN VARCHAR2,'||unistr('\000a')||
+'    p_session_id  IN NUMBER,'||unistr('\000a')||
 '    p_user_id     IN VARCHAR2'||unistr('\000a')||
 '  );'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  FUNCTION validate_ema';
+'-----------------------------------------------------------------------------';
 
-s:=s||'il ('||unistr('\000a')||
+s:=s||'---'||unistr('\000a')||
+'  FUNCTION validate_email ('||unistr('\000a')||
 '    p_email           IN VARCHAR2'||unistr('\000a')||
 '  ) RETURN BOOLEAN;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE get_article_page_items ('||unistr('\000a')||
+'    p_article_id    IN VARCHAR2,'||unistr('\000a')||
+'    p_page_title    OUT NOCOPY VARCHAR2,'||unistr('\000a')||
+'    p_region_title  OUT NOCOPY VARCHAR2,'||unistr('\000a')||
+'    p_keywords      OUT NOCOPY VARCHAR2,'||unistr('\000a')||
+'    p_description   OUT NOCOPY VARCHAR2,';
+
+s:=s||''||unistr('\000a')||
+'    p_author_name   OUT NOCOPY VARCHAR2'||unistr('\000a')||
+'  );'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE get_category_page_items ('||unistr('\000a')||
+'    p_category_id   IN VARCHAR2,'||unistr('\000a')||
+'    p_page_title    OUT NOCOPY VARCHAR2,'||unistr('\000a')||
+'    p_region_title  OUT NOCOPY VARCHAR2,'||unistr('\000a')||
+'    p_category_name OUT NOCOPY VARCHAR2'||unistr('\000a')||
+'  );'||unistr('\000a')||
+'---------------------------------------------------------------------------';
+
+s:=s||'-----'||unistr('\000a')||
 'END "BLOG_UTIL";'||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE OR REPLACE PACKAGE BODY  "BLOG_UTIL" '||unistr('\000a')||
 'AS'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'-- Private variables, procedure';
+'-- Private variables, procedures and functions'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'-------------------------------------';
 
-s:=s||'s and functions'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
+s:=s||'-------------------------------------------'||unistr('\000a')||
 '  TYPE t_author IS RECORD ('||unistr('\000a')||
 '    n_author_id     NUMBER(38),'||unistr('\000a')||
 '    v_author_name   VARCHAR2(80),'||unistr('\000a')||
 '    v_email         VARCHAR2(120),'||unistr('\000a')||
-'    v_active        VARCHAR2(1),'||unistr('\000a')||
 '    v_email_notify  VARCHAR2(1)'||unistr('\000a')||
 '  );'||unistr('\000a')||
-'  TYPE t_email  IS RECO';
-
-s:=s||'RD ('||unistr('\000a')||
+'  TYPE t_email  IS RECORD ('||unistr('\000a')||
 '    v_from          VARCHAR2(120),'||unistr('\000a')||
 '    v_subj          VARCHAR2(255),'||unistr('\000a')||
 '    v_body          VARCHAR2(32700)'||unistr('\000a')||
 '  );'||unistr('\000a')||
-'  g_cookie_expires    CONSTANT DATE           := ADD_MONTHS(TRUNC(SYSDATE), 12);'||unistr('\000a')||
-'  g_watche_expires    CONSTANT DATE           := ADD_MONTHS(TRUNC(SYSDATE), -1);'||unistr('\000a')||
-'  g_cookie_name       CONSTANT VARCHAR2(30)   := ''__dbswhblog'';'||unistr('\000a')||
-'  g_cookie_version    CONSTANT VARCHAR2(30)   := ''020100'';';
+'  g_cookie_expires    CONSTANT DATE           := AD';
 
-s:=s||''||unistr('\000a')||
+s:=s||'D_MONTHS(TRUNC(SYSDATE), 12);'||unistr('\000a')||
+'  g_watche_expires    CONSTANT DATE           := ADD_MONTHS(TRUNC(SYSDATE), -1);'||unistr('\000a')||
+'  g_cookie_name       CONSTANT VARCHAR2(30)   := ''__uid'';'||unistr('\000a')||
+'  g_cookie_version    CONSTANT VARCHAR2(30)   := ''1.0'';'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'  FUNCTION get_user_name ('||unistr('\000a')||
+'  FUNCTION ge';
+
+s:=s||'t_user_name ('||unistr('\000a')||
 '    p_user_id IN NUMBER'||unistr('\000a')||
 '  ) RETURN VARCHAR2'||unistr('\000a')||
 '  AS'||unistr('\000a')||
@@ -17236,22 +17276,20 @@ s:=s||''||unistr('\000a')||
 '    FROM blog_comment_user'||unistr('\000a')||
 '    WHERE user_id = p_user_id'||unistr('\000a')||
 '    ;'||unistr('\000a')||
-'    RETURN l_user';
-
-s:=s||'_name;'||unistr('\000a')||
+'    RETURN l_user_name;'||unistr('\000a')||
 '  EXCEPTION WHEN'||unistr('\000a')||
 '    NO_DATA_FOUND OR'||unistr('\000a')||
 '    VALUE_ERROR OR'||unistr('\000a')||
 '    INVALID_NUMBER'||unistr('\000a')||
 '  THEN'||unistr('\000a')||
-'    apex_debug.warn(''blog_util.get_user_name(p_user_id => %s); error: %s'', p_user_id, sqlerrm);'||unistr('\000a')||
+'    apex_debug.warn(''blog_util.get_user_name(p_user_id => %s); error: %s'', COALESCE(to';
+
+s:=s||'_char(p_user_id), ''NULL''), sqlerrm);'||unistr('\000a')||
 '    RETURN NULL;'||unistr('\000a')||
 '  END get_user_name;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'  FUNCTION get';
-
-s:=s||'_article_author('||unistr('\000a')||
+'  FUNCTION get_article_author('||unistr('\000a')||
 '    p_article_id IN NUMBER'||unistr('\000a')||
 '  ) RETURN t_author'||unistr('\000a')||
 '  AS'||unistr('\000a')||
@@ -17259,110 +17297,105 @@ s:=s||'_article_author('||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    SELECT u.author_id,'||unistr('\000a')||
 '      author_name,'||unistr('\000a')||
-'      email,'||unistr('\000a')||
-'      active,'||unistr('\000a')||
-'      email_notify'||unistr('\000a')||
-'      INTO l_author.n_author_id,'||unistr('\000a')||
-'        l_author.v_author_name,'||unistr('\000a')||
-'        l_author.v_email,'||unistr('\000a')||
-'        l_author.v_active,'||unistr('\000a')||
-'        l_author.v_email_notify'||unistr('\000a')||
-'    FROM blog_author u'||unistr('\000a')||
-'    WHERE EXISTS('||unistr('\000a')||
-'      SELECT 1'||unistr('\000a')||
-'    ';
+'     ';
 
-s:=s||'  FROM blog_article a'||unistr('\000a')||
+s:=s||' email,'||unistr('\000a')||
+'      email_notify'||unistr('\000a')||
+'      INTO l_author'||unistr('\000a')||
+'    FROM blog_author u'||unistr('\000a')||
+'    WHERE u.active = ''Y'''||unistr('\000a')||
+'      AND EXISTS('||unistr('\000a')||
+'      SELECT 1'||unistr('\000a')||
+'      FROM blog_v$article a'||unistr('\000a')||
 '      WHERE a.article_id = p_article_id'||unistr('\000a')||
 '      AND a.author_id = u.author_id'||unistr('\000a')||
-'    )'||unistr('\000a')||
-'    ;'||unistr('\000a')||
+'    );'||unistr('\000a')||
 '    RETURN l_author;'||unistr('\000a')||
 '  EXCEPTION WHEN'||unistr('\000a')||
 '    NO_DATA_FOUND OR'||unistr('\000a')||
 '    VALUE_ERROR OR'||unistr('\000a')||
 '    INVALID_NUMBER'||unistr('\000a')||
 '  THEN'||unistr('\000a')||
-'    apex_debug.warn(''blog_util.get_author_record_by_article(p_article_id => %s); error: %s'', p_article_id, sqlerrm);'||unistr('\000a')||
+'    apex_debug.warn(''blog_util.get_author_record_by_artic';
+
+s:=s||'le(p_article_id => %s); error: %s'', coalesce(to_char(p_article_id), ''NULL''), sqlerrm);'||unistr('\000a')||
 '    RETURN NULL;'||unistr('\000a')||
 '  END get_article_author;'||unistr('\000a')||
-'--------------------------';
-
-s:=s||'------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION raw_to_table('||unistr('\000a')||
 '    p_value     IN RAW,'||unistr('\000a')||
 '    p_separator IN VARCHAR2 DEFAULT '':'''||unistr('\000a')||
-'  ) RETURN apex_application_global.vc_arr2'||unistr('\000a')||
+'  ) RETURN apex_app';
+
+s:=s||'lication_global.vc_arr2'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_value VARCHAR2(32700);'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
-'    l_value := UTL_RAW.CAST_TO_VARCHAR2(p_value);'||unistr('\000a')||
-'    l_value := UTL_URL.UNESCAPE(l_value)';
-
-s:=s||';'||unistr('\000a')||
-'    RETURN APEX_UTIL.STRING_TO_TABLE(l_value, COALESCE(p_separator, '':''));'||unistr('\000a')||
+'    l_value := sys.utl_raw.cast_to_varchar2(p_value);'||unistr('\000a')||
+'    l_value := sys.utl_url.unescape(l_value);'||unistr('\000a')||
+'    RETURN apex_util.string_to_table(l_value, COALESCE(p_separator, '':''));'||unistr('\000a')||
 '  END raw_to_table;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
+'----------------------------------------------------------';
+
+s:=s||'----------------------'||unistr('\000a')||
 '  PROCEDURE set_cookie('||unistr('\000a')||
 '    p_user_id IN NUMBER'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
-'    owa_util.mime_header(''text/html'', FALSE);'||unistr('\000a')||
-'    -- The first element in th';
-
-s:=s||'e table is the cookie version'||unistr('\000a')||
+'    sys.owa_util.mime_header(''text/html'', FALSE);'||unistr('\000a')||
+'    -- The first element in the table is the cookie version'||unistr('\000a')||
 '    -- The second element in the table is the user id'||unistr('\000a')||
-'    owa_cookie.send('||unistr('\000a')||
+'    sys.owa_cookie.send('||unistr('\000a')||
 '      name    => blog_util.g_cookie_name,'||unistr('\000a')||
-'      value   => UTL_RAW.CAST_TO_RAW(blog_util.g_cookie_version || '':'' || p_user_id),'||unistr('\000a')||
+'      value   => sys.utl_raw.cast_to_raw(blog_util.g_cookie_version || '':'' || p_u';
+
+s:=s||'ser_id),'||unistr('\000a')||
 '      expires => blog_util.g_cookie_expires'||unistr('\000a')||
 '    );'||unistr('\000a')||
-'    --owa_util.http_header_close;'||unistr('\000a')||
+'    --sys.owa_util.http_header_close;'||unistr('\000a')||
 '  END set_cookie;'||unistr('\000a')||
-'----------------------------------------------------------------';
-
-s:=s||'----------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION get_cookie'||unistr('\000a')||
 '  RETURN NUMBER'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_user_id     NUMBER(38,0);'||unistr('\000a')||
 '    l_cookie_val  VARCHAR2(2000);'||unistr('\000a')||
-'    l_cookie_vals apex_application_global.vc_arr2;'||unistr('\000a')||
-'  BEGIN'||unistr('\000a')||
-'    l_cookie_val := APEX_AUTHENTICATION.GET_LOGIN_USERNAME_COOKIE(blog_util.g_cookie_name);'||unistr('\000a')||
-'    IF l_cookie_val IS NOT NULL THEN'||unistr('\000a')||
-'     ';
+'    l_cookie_';
 
-s:=s||' l_cookie_vals := blog_util.raw_to_table(l_cookie_val);'||unistr('\000a')||
+s:=s||'vals apex_application_global.vc_arr2;'||unistr('\000a')||
+'  BEGIN'||unistr('\000a')||
+'    l_cookie_val := apex_authentication.get_login_username_cookie(blog_util.g_cookie_name);'||unistr('\000a')||
+'    IF l_cookie_val IS NOT NULL THEN'||unistr('\000a')||
+'      l_cookie_vals := blog_util.raw_to_table(l_cookie_val);'||unistr('\000a')||
 '      -- The first element in the table is the cookie version'||unistr('\000a')||
 '      IF l_cookie_vals(1) = blog_util.g_cookie_version THEN'||unistr('\000a')||
-'        -- The second element in the table is the user id'||unistr('\000a')||
-'        l_user_id := TO_NUMBER(l_cookie_vals(2));'||unistr('\000a')||
+'        -- The second element in the table';
+
+s:=s||' is the user id'||unistr('\000a')||
+'        l_user_id := to_number(l_cookie_vals(2));'||unistr('\000a')||
 '      END IF;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
 '    RETURN l_user_id;'||unistr('\000a')||
 '  EXCEPTION WHEN'||unistr('\000a')||
 '    NO_DATA_FOUND OR'||unistr('\000a')||
 '    INVALID_NUMBER OR'||unistr('\000a')||
-'    VA';
-
-s:=s||'LUE_ERROR'||unistr('\000a')||
+'    VALUE_ERROR'||unistr('\000a')||
 '  THEN'||unistr('\000a')||
 '    apex_debug.warn(''blog_util.get_cookie; error: %s'', sqlerrm);'||unistr('\000a')||
 '    RETURN NULL;'||unistr('\000a')||
 '  END get_cookie;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
+'----------------------';
+
+s:=s||'----------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION get_email_message ('||unistr('\000a')||
 '    p_article_title IN VARCHAR2,'||unistr('\000a')||
 '    p_article_url   IN VARCHAR2,'||unistr('\000a')||
-'    p_blog_name     IN V';
-
-s:=s||'ARCHAR2,'||unistr('\000a')||
+'    p_blog_name     IN VARCHAR2,'||unistr('\000a')||
 '    p_author_name   IN VARCHAR2,'||unistr('\000a')||
 '    p_subj          IN VARCHAR2,'||unistr('\000a')||
 '    p_body          IN VARCHAR2'||unistr('\000a')||
@@ -17370,36 +17403,55 @@ s:=s||'ARCHAR2,'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    TYPE tabtype IS TABLE OF VARCHAR2(255) INDEX BY VARCHAR2(40);'||unistr('\000a')||
 '    l_arr   tabtype;'||unistr('\000a')||
-'    l_key   VARCHAR2(40);'||unistr('\000a')||
+'  ';
+
+s:=s||'  l_key   VARCHAR2(40);'||unistr('\000a')||
 '    l_email t_email;'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    l_email.v_subj            := blog_util.get_param_value(p_subj);'||unistr('\000a')||
-'    l_email.v_body            := blog_util.get_param_value(';
-
-s:=s||'p_body);'||unistr('\000a')||
+'    l_email.v_body            := blog_util.get_param_value(p_body);'||unistr('\000a')||
 '    l_arr(''#BLOG_NAME#'')      := p_blog_name;'||unistr('\000a')||
 '    l_arr(''#ARTICLE_TITLE#'')  := p_article_title;'||unistr('\000a')||
 '    l_arr(''#AUTHOR_NAME#'')    := p_author_name;'||unistr('\000a')||
 '    l_arr(''#ARTICLE_URL#'')    := p_article_url;  '||unistr('\000a')||
-'    l_key := l_arr.FIRST;'||unistr('\000a')||
+'    l_key := l_ar';
+
+s:=s||'r.FIRST;'||unistr('\000a')||
 '    -- Substitude message'||unistr('\000a')||
 '    WHILE l_key IS NOT NULL LOOP'||unistr('\000a')||
-'      l_email.v_subj := REGEXP_REPLACE( l_email.v_subj, l_key, l_arr(l_key), 1, 0, ''i'' );'||unistr('\000a')||
-'      l_email.v_body :';
-
-s:=s||'= REGEXP_REPLACE( l_email.v_body, l_key, l_arr(l_key), 1, 0, ''i'' );'||unistr('\000a')||
+'      l_email.v_subj := regexp_replace( l_email.v_subj, l_key, l_arr(l_key), 1, 0, ''i'' );'||unistr('\000a')||
+'      l_email.v_body := regexp_replace( l_email.v_body, l_key, l_arr(l_key), 1, 0, ''i'' );'||unistr('\000a')||
 '      l_key := l_arr.NEXT(l_key);'||unistr('\000a')||
 '    END LOOP;'||unistr('\000a')||
 '    /* Get blog email */'||unistr('\000a')||
 '    l_email.v_from := blog_util.get_param_value(''BLOG_EMAIL'');'||unistr('\000a')||
 '    --'||unistr('\000a')||
-'    RETURN l_email;'||unistr('\000a')||
+'    RETUR';
+
+s:=s||'N l_email;'||unistr('\000a')||
 '  END get_email_message;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'---------------------------------------------------------------';
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  FUNCTION get_article_url('||unistr('\000a')||
+'    p_article_id  IN NUMBER,'||unistr('\000a')||
+'    p_app_alias   IN VARCHAR2,'||unistr('\000a')||
+'    p_base_url    IN VARCHAR2 DEFAULT NULL'||unistr('\000a')||
+'  ) RETURN VARCHAR2'||unistr('\000a')||
+'  AS'||unistr('\000a')||
+'    l_url VARCHAR2(2000);'||unistr('\000a')||
+'  BEGIN'||unistr('\000a')||
+'    l_url :=';
 
-s:=s||'-----------------'||unistr('\000a')||
-'  FUNCTION get_unsubscribe_url ('||unistr('\000a')||
+s:=s||' ''f?p='' || p_app_alias || '':READ:0::::ARTICLE:'' || p_article_id;'||unistr('\000a')||
+'    l_url := apex_util.prepare_url(p_url => l_url, p_checksum_type => ''PUBLIC_BOOKMARK'');'||unistr('\000a')||
+'    l_url := p_base_url || l_url;'||unistr('\000a')||
+'    RETURN l_url;'||unistr('\000a')||
+'  END get_article_url;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  FUNCTI';
+
+s:=s||'ON get_unsubscribe_url ('||unistr('\000a')||
 '    p_user_id     IN NUMBER,'||unistr('\000a')||
 '    p_article_id  IN NUMBER,'||unistr('\000a')||
 '    p_app_alias   IN VARCHAR2,'||unistr('\000a')||
@@ -17411,18 +17463,18 @@ s:=s||'-----------------'||unistr('\000a')||
 '    l_url       VARCHAR2(2000);'||unistr('\000a')||
 '    l_value     VARCHAR2(2000);'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
-'    l_value := UTL_RAW.CAST_TO_RAW(p_user';
+'    l_value := sys.utl_raw.cast_to_raw(p_user_id || '':'' || p_articl';
 
-s:=s||'_id || '':'' || p_article_id);'||unistr('\000a')||
+s:=s||'e_id);'||unistr('\000a')||
 '    l_url   := ''f?p='' || p_app_alias || '':UNSUBSCRIBE:'' || p_session_id || ''::::SUBSCRIBER_ID:'' || l_value;'||unistr('\000a')||
-'    l_url   := APEX_UTIL.PREPARE_URL(p_url => l_url, p_checksum_type => ''PUBLIC_BOOKMARK'');'||unistr('\000a')||
+'    l_url   := apex_util.prepare_url(p_url => l_url, p_checksum_type => ''PUBLIC_BOOKMARK'');'||unistr('\000a')||
 '    l_url   := p_base_url || l_url;'||unistr('\000a')||
 '    RETURN l_url;'||unistr('\000a')||
 '  END get_unsubscribe_url;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'---------';
+'-------------------------------';
 
-s:=s||'-----------------------------------------------------------------------'||unistr('\000a')||
+s:=s||'-------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE save_user_attr('||unistr('\000a')||
 '    p_user_id     OUT NOCOPY NUMBER,'||unistr('\000a')||
 '    p_email       IN VARCHAR2,'||unistr('\000a')||
@@ -17434,11 +17486,11 @@ s:=s||'-----------------------------------------------------------------------'|
 '    BEGIN'||unistr('\000a')||
 '      INSERT INTO blog_comment_user (email, nick_name, website)'||unistr('\000a')||
 '        VALUES (p_email, p_nick_name, p_website)'||unistr('\000a')||
-'      RETURNING user_id INTO p_';
-
-s:=s||'user_id'||unistr('\000a')||
+'      RETURNING user_id INTO p_user_id'||unistr('\000a')||
 '      ;'||unistr('\000a')||
-'    EXCEPTION WHEN DUP_VAL_ON_INDEX THEN'||unistr('\000a')||
+'    EX';
+
+s:=s||'CEPTION WHEN DUP_VAL_ON_INDEX THEN'||unistr('\000a')||
 '      UPDATE blog_comment_user'||unistr('\000a')||
 '        SET nick_name = p_nick_name,'||unistr('\000a')||
 '          website = p_website'||unistr('\000a')||
@@ -17448,9 +17500,9 @@ s:=s||'user_id'||unistr('\000a')||
 '    END;'||unistr('\000a')||
 '  END save_user_attr;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------';
+'------------------------------------------------------------------------------';
 
-s:=s||'------------------------'||unistr('\000a')||
+s:=s||'--'||unistr('\000a')||
 '  PROCEDURE save_notify_user ('||unistr('\000a')||
 '    p_user_id         IN NUMBER,'||unistr('\000a')||
 '    p_article_id      IN NUMBER,'||unistr('\000a')||
@@ -17465,10 +17517,10 @@ s:=s||'------------------------'||unistr('\000a')||
 '        p_followup  AS followup_notify'||unistr('\000a')||
 '      FROM DUAL'||unistr('\000a')||
 '    ) b'||unistr('\000a')||
-'    ON (a.user_id = b.user_id AND a.article_';
+'    ON (a.user_id = b.user_id AND a.article_id = b.article_id)'||unistr('\000a')||
+'   ';
 
-s:=s||'id = b.article_id)'||unistr('\000a')||
-'    WHEN MATCHED THEN'||unistr('\000a')||
+s:=s||' WHEN MATCHED THEN'||unistr('\000a')||
 '      UPDATE SET a.followup_notify = b.followup_notify'||unistr('\000a')||
 '    WHEN NOT MATCHED THEN'||unistr('\000a')||
 '      INSERT (user_id, article_id, followup_notify)'||unistr('\000a')||
@@ -17476,9 +17528,9 @@ s:=s||'id = b.article_id)'||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '  END save_notify_user;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'---------------------------------------------------------';
+'-------------------------------------------------------------------------------';
 
-s:=s||'-----------------------'||unistr('\000a')||
+s:=s||'-'||unistr('\000a')||
 '  PROCEDURE notify_author ('||unistr('\000a')||
 '    p_article_title IN VARCHAR2,'||unistr('\000a')||
 '    p_article_url   IN VARCHAR2,'||unistr('\000a')||
@@ -17492,72 +17544,91 @@ s:=s||'-----------------------'||unistr('\000a')||
 '    /* Get email subject and body to variable */'||unistr('\000a')||
 '    l_email := blog_util.get_email_message('||unistr('\000a')||
 '      p_article_title => p_article_title,'||unistr('\000a')||
-'      p_art';
+'      p_article_url   => p_articl';
 
-s:=s||'icle_url   => p_article_url,'||unistr('\000a')||
+s:=s||'e_url,'||unistr('\000a')||
 '      p_blog_name     => p_blog_name,'||unistr('\000a')||
 '      p_author_name   => p_author_name,'||unistr('\000a')||
 '      p_subj          => ''NEW_COMMENT_EMAIL_SUBJ'','||unistr('\000a')||
 '      p_body          => ''NEW_COMMENT_EMAIL_BODY'''||unistr('\000a')||
 '    );'||unistr('\000a')||
 '    /* Send mail to author */'||unistr('\000a')||
-'    APEX_MAIL.SEND ('||unistr('\000a')||
+'    apex_mail.send ('||unistr('\000a')||
 '      p_from => l_email.v_from,'||unistr('\000a')||
 '      p_to   => p_author_email,'||unistr('\000a')||
 '      p_subj => l_email.v_subj,'||unistr('\000a')||
 '      p_body => l_email.v_body'||unistr('\000a')||
 '    );'||unistr('\000a')||
-'';
+'    /* we do have time';
 
-s:=s||'    /* we do have time wait email sending */'||unistr('\000a')||
+s:=s||' wait email sending */'||unistr('\000a')||
 '    --APEX_MAIL.PUSH_QUEUE;'||unistr('\000a')||
 '  END notify_author;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------  '||unistr('\000a')||
+'  PROCEDURE raise_http_error('||unistr('\000a')||
+'    p_id          IN VARCHAR2,'||unistr('\000a')||
+'    p_error_code  IN NUMBER DEFAULT 404,'||unistr('\000a')||
+'    p_reason      IN VARCHAR2 DEFAULT ''Not Found'''||unistr('\000a')||
+'  )'||unistr('\000a')||
+'  AS'||unistr('\000a')||
+'  B';
+
+s:=s||'EGIN'||unistr('\000a')||
+'    apex_debug.warn(''HTTP %s %s id: %s'', p_error_code, p_reason, coalesce(p_id, ''(NULL)''));'||unistr('\000a')||
+'    sys.owa_util.status_line('||unistr('\000a')||
+'      nstatus       => p_error_code,'||unistr('\000a')||
+'      creason       => p_reason,'||unistr('\000a')||
+'      bclose_header => true'||unistr('\000a')||
+'    );'||unistr('\000a')||
+'    apex_application.stop_apex_engine;'||unistr('\000a')||
+'  END raise_http_error;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
+'------------------------';
+
+s:=s||'--------------------------------------------------------'||unistr('\000a')||
 '-- Global functions and procedures'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'----------------------------';
-
-s:=s||'----------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION init_session ('||unistr('\000a')||
 '    p_app_id      IN NUMBER,'||unistr('\000a')||
 '    p_session_id  IN NUMBER'||unistr('\000a')||
 '  ) RETURN NUMBER'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_user_id     NUMBER(38);'||unistr('\000a')||
-'    l_user_name   VARCHAR2(255);'||unistr('\000a')||
+'    l_user';
+
+s:=s||'_name   VARCHAR2(255);'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    blog_util.set_items_from_param(p_app_id);'||unistr('\000a')||
 '    l_user_id := blog_util.get_cookie;'||unistr('\000a')||
 '    IF l_user_id IS NOT NULL THEN'||unistr('\000a')||
-'      l_user_name := blog_util.get_user_name(l_user';
-
-s:=s||'_id);'||unistr('\000a')||
+'      l_user_name := blog_util.get_user_name(l_user_id);'||unistr('\000a')||
 '      IF l_user_name IS NOT NULL THEN'||unistr('\000a')||
 '        /* Set APP_USER */'||unistr('\000a')||
-'        APEX_CUSTOM_AUTH.SET_USER(UPPER(l_user_name));'||unistr('\000a')||
+'        apex_custom_auth.set_user(upper(l_user_name));'||unistr('\000a')||
 '      ELSE'||unistr('\000a')||
 '        l_user_id := NULL;'||unistr('\000a')||
 '      END IF;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'    IF apex_util.public_check_authorization(''LOGGING_ENABLED'') THEN'||unistr('\000a')||
+'    IF ap';
+
+s:=s||'ex_authorization.is_authorized(''LOGGING_ENABLED'') THEN'||unistr('\000a')||
 '      blog_log.write_activity_log('||unistr('\000a')||
 '        p_user_id       => l_user_id,'||unistr('\000a')||
 '        p_session_id    => p_session_id,'||unistr('\000a')||
-'        p_ip_address    => o';
+'        p_ip_address    => sys.owa_util.get_cgi_env(''REMOTE_ADDR''),'||unistr('\000a')||
+'        p_user_agent    => sys.owa_util.get_cgi_env(''HTTP_USER_AGENT''),'||unistr('\000a')||
+'        p_referer       => sys.owa_util.get_cgi_env(''HTTP_REFERER''),'||unistr('\000a')||
+'        p_activity_typ';
 
-s:=s||'wa_util.get_cgi_env(''REMOTE_ADDR''),'||unistr('\000a')||
-'        p_user_agent    => owa_util.get_cgi_env(''HTTP_USER_AGENT''),'||unistr('\000a')||
-'        p_referer       => owa_util.get_cgi_env(''HTTP_REFERER''),'||unistr('\000a')||
-'        p_activity_type => ''NEW_SESSION'''||unistr('\000a')||
+s:=s||'e => ''NEW_SESSION'''||unistr('\000a')||
 '      );'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
 '    RETURN l_user_id;'||unistr('\000a')||
 '  END init_session;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'----------------------------------------------';
-
-s:=s||'----------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION get_param_value('||unistr('\000a')||
 '    p_param_id IN VARCHAR2'||unistr('\000a')||
 '  ) RETURN VARCHAR2'||unistr('\000a')||
@@ -17566,43 +17637,27 @@ s:=s||'----------------------------------'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    SELECT param_value'||unistr('\000a')||
 '    INTO l_value'||unistr('\000a')||
-'    FROM blog_param'||unistr('\000a')||
+'';
+
+s:=s||'    FROM blog_param'||unistr('\000a')||
 '    WHERE param_id = p_param_id'||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    RETURN l_value;'||unistr('\000a')||
 '  END get_param_value;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'---------------------------';
-
-s:=s||'-----------------------------------------------------'||unistr('\000a')||
-'  FUNCTION get_article_url('||unistr('\000a')||
-'    p_article_id  IN NUMBER,'||unistr('\000a')||
-'    p_app_alias   IN VARCHAR2,'||unistr('\000a')||
-'    p_base_url    IN VARCHAR2 DEFAULT NULL'||unistr('\000a')||
-'  ) RETURN VARCHAR2'||unistr('\000a')||
-'  AS'||unistr('\000a')||
-'    l_url VARCHAR2(2000);'||unistr('\000a')||
-'  BEGIN'||unistr('\000a')||
-'    l_url := ''f?p='' || p_app_alias || '':READ:0::::ARTICLE:'' || p_article_id;'||unistr('\000a')||
-'    l_url := APEX_UTIL.PREPARE_URL(p_url => l_url, p_checksum_type => ''PUBLIC_B';
-
-s:=s||'OOKMARK'');'||unistr('\000a')||
-'    l_url := p_base_url || l_url;'||unistr('\000a')||
-'    RETURN l_url;'||unistr('\000a')||
-'  END get_article_url;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE set_items_from_param('||unistr('\000a')||
 '    p_app_id IN NUMBER'||unistr('\000a')||
 '  ) AS'||unistr('\000a')||
+'  --PRAGMA AUTONOMOUS_TRANSACTION;'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    FOR c1 IN ('||unistr('\000a')||
 '      SELECT'||unistr('\000a')||
-'        p.param_id,'||unistr('\000a')||
-'        p.param_value'||unistr('\000a')||
-'      FRO';
+' ';
 
-s:=s||'M blog_param p'||unistr('\000a')||
+s:=s||'       p.param_id,'||unistr('\000a')||
+'        p.param_value'||unistr('\000a')||
+'      FROM blog_param p'||unistr('\000a')||
 '      WHERE p.param_value IS NOT NULL'||unistr('\000a')||
 '        AND EXISTS('||unistr('\000a')||
 '          SELECT 1'||unistr('\000a')||
@@ -17611,12 +17666,12 @@ s:=s||'M blog_param p'||unistr('\000a')||
 '          AND a.param_id = p.param_id'||unistr('\000a')||
 '        )'||unistr('\000a')||
 '    ) LOOP'||unistr('\000a')||
-'      APEX_UTIL.SET_SESSION_STATE(c1.param_id, c1.param_value);'||unistr('\000a')||
+'      apex_util.set_session_state(c1.param_id, c1.param_value);'||unistr('\000a')||
 '    END LOOP;'||unistr('\000a')||
 '  END set_items_from_param;'||unistr('\000a')||
-'-------------------------------------------------------------------';
+'-----------------';
 
-s:=s||'-------------'||unistr('\000a')||
+s:=s||'---------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE save_comment('||unistr('\000a')||
 '    p_user_id         IN OUT NOCOPY NUMBER,'||unistr('\000a')||
@@ -17625,27 +17680,27 @@ s:=s||'-------------'||unistr('\000a')||
 '    p_base_url        IN VARCHAR2,'||unistr('\000a')||
 '    p_blog_name       IN VARCHAR2,'||unistr('\000a')||
 '    p_article_id      IN NUMBER,'||unistr('\000a')||
-'    p_article_title   IN VARCHAR2,'||unistr('\000a')||
-'    p_email           IN VARC';
+'    p_article_';
 
-s:=s||'HAR2,'||unistr('\000a')||
+s:=s||'title   IN VARCHAR2,'||unistr('\000a')||
+'    p_email           IN VARCHAR2,'||unistr('\000a')||
 '    p_nick_name       IN VARCHAR2,'||unistr('\000a')||
 '    p_website         IN VARCHAR2,'||unistr('\000a')||
 '    p_followup        IN VARCHAR2,'||unistr('\000a')||
 '    p_comment         IN VARCHAR2'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
-'    l_comment_id  NUMBER(38);'||unistr('\000a')||
 '    l_article_url VARCHAR2(4000);'||unistr('\000a')||
+'    l_comment_id  NUMBER(38);'||unistr('\000a')||
 '    l_publish     VARCHAR2(1) := ''N'';'||unistr('\000a')||
 '    l_author      t_author;'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    /* Set APP_USER */'||unistr('\000a')||
-'    APEX_CUSTOM_AUTH.SET_USER(UPPER(p_nick_name));'||unistr('\000a')||
-'    --'||unistr('\000a')||
-'    /* Insert or update use';
+'    apex_custom_auth.set_user(upper';
 
-s:=s||'r */'||unistr('\000a')||
+s:=s||'(p_nick_name));'||unistr('\000a')||
+'    --'||unistr('\000a')||
+'    /* Insert or update user */'||unistr('\000a')||
 '    blog_util.save_user_attr('||unistr('\000a')||
 '      p_user_id     => p_user_id,'||unistr('\000a')||
 '      p_email       => p_email,'||unistr('\000a')||
@@ -17656,25 +17711,25 @@ s:=s||'r */'||unistr('\000a')||
 '    blog_util.save_notify_user('||unistr('\000a')||
 '      p_user_id     => p_user_id,'||unistr('\000a')||
 '      p_article_id  => p_article_id,'||unistr('\000a')||
-'      p_followup    => p_followup'||unistr('\000a')||
-'    );'||unistr('\000a')||
-'    /* Set us';
+'    ';
 
-s:=s||'er id to cookie */'||unistr('\000a')||
+s:=s||'  p_followup    => p_followup'||unistr('\000a')||
+'    );'||unistr('\000a')||
+'    /* Set user id to cookie */'||unistr('\000a')||
 '    blog_util.set_cookie(p_user_id);'||unistr('\000a')||
 '    --'||unistr('\000a')||
 '    /* Should author moderate comment before it is published */'||unistr('\000a')||
-'    IF NOT apex_util.public_check_authorization(''MODERATION_ENABLED'') THEN'||unistr('\000a')||
+'    IF NOT apex_authorization.is_authorized(''MODERATION_ENABLED'') THEN'||unistr('\000a')||
 '      l_publish := ''Y'';'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
 '    --'||unistr('\000a')||
 '    /* Inser comment to table */'||unistr('\000a')||
 '    INSERT INTO blog_comment'||unistr('\000a')||
-'    (user_id, apex_session_id, article_id, comment_text, moderated)'||unistr('\000a')||
-'    VALUES'||unistr('\000a')||
-'    (p_user_id';
+'    (user_id, apex_session_id, article_id, comm';
 
-s:=s||', p_apex_session_id, p_article_id, p_comment , l_publish)'||unistr('\000a')||
+s:=s||'ent_text, moderated)'||unistr('\000a')||
+'    VALUES'||unistr('\000a')||
+'    (p_user_id, p_apex_session_id, p_article_id, p_comment , l_publish)'||unistr('\000a')||
 '    RETURNING comment_id INTO l_comment_id'||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    --'||unistr('\000a')||
@@ -17685,79 +17740,78 @@ s:=s||', p_apex_session_id, p_article_id, p_comment , l_publish)'||unistr('\000a
 '      AND user_id IS NULL'||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    --'||unistr('\000a')||
-'    /* Get article url */'||unistr('\000a')||
-'    l_article_url := blog_util.get_article_url(p_article_id, p_app_alias, p_b';
-
-s:=s||'ase_url);'||unistr('\000a')||
-'    --'||unistr('\000a')||
 '    /* Send email about new comment to readers */'||unistr('\000a')||
-'    IF l_publish = ''Y'' THEN'||unistr('\000a')||
-'      blog_util.notify_readers ('||unistr('\000a')||
-'        p_comment_id    => l_comment_id,'||unistr('\000a')||
-'        p_user_id       => p_user_id,'||unistr('\000a')||
-'        p_article_id    => p_article_id,'||unistr('\000a')||
-'        p_article_title => p_article_title,'||unistr('\000a')||
-'        p_article_url   => l_article_url,'||unistr('\000a')||
-'        p_app_alias     => p_app_alias,'||unistr('\000a')||
-'        p_base_url      =>';
+'    IF ';
 
-s:=s||' p_base_url,'||unistr('\000a')||
-'        p_blog_name     => p_blog_name'||unistr('\000a')||
-'      );'||unistr('\000a')||
+s:=s||'apex_authorization.is_authorized(''NOTIFICATION_EMAIL_ENABLED'') THEN'||unistr('\000a')||
+'      IF l_publish = ''Y'' THEN'||unistr('\000a')||
+'        blog_util.notify_readers ('||unistr('\000a')||
+'          p_comment_id    => l_comment_id,'||unistr('\000a')||
+'          p_user_id       => p_user_id,'||unistr('\000a')||
+'          p_article_id    => p_article_id,'||unistr('\000a')||
+'          p_article_title => p_article_title,'||unistr('\000a')||
+'          p_app_alias     => p_app_alias,'||unistr('\000a')||
+'          p_base_url      => p_base_url,'||unistr('\000a')||
+'          p_';
+
+s:=s||'blog_name     => p_blog_name'||unistr('\000a')||
+'        );'||unistr('\000a')||
+'      END IF;'||unistr('\000a')||
+'    --'||unistr('\000a')||
+'      /* Get author details for notification emails */'||unistr('\000a')||
+'      l_author := blog_util.get_article_author(p_article_id);'||unistr('\000a')||
+'      --'||unistr('\000a')||
+'      /* Send email about new comment to author */'||unistr('\000a')||
+'      /* If we have author email and author is active and like have notifications */'||unistr('\000a')||
+'      IF  l_author.v_email IS NOT NULL AND l_author.v_email_notify = ''Y'''||unistr('\000a')||
+'    ';
+
+s:=s||'  THEN'||unistr('\000a')||
+'        /* Get article url */'||unistr('\000a')||
+'        l_article_url := blog_util.get_article_url(p_article_id, p_app_alias, p_base_url);'||unistr('\000a')||
+'        --'||unistr('\000a')||
+'        blog_util.notify_author ('||unistr('\000a')||
+'          p_article_title => p_article_title,'||unistr('\000a')||
+'          p_article_url   => l_article_url,'||unistr('\000a')||
+'          p_blog_name     => p_blog_name,'||unistr('\000a')||
+'          p_author_name   => l_author.v_author_name,'||unistr('\000a')||
+'          p_author_email  => l_author.v_em';
+
+s:=s||'ail'||unistr('\000a')||
+'        );'||unistr('\000a')||
+'      END IF;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'    --'||unistr('\000a')||
 '    /* Refresh comment log */'||unistr('\000a')||
-'    DBMS_MVIEW.REFRESH(''BLOG_COMMENT_LOG'');'||unistr('\000a')||
-'    --'||unistr('\000a')||
-'    /* Get author details for notification emails */'||unistr('\000a')||
-'    l_author := blog_util.get_article_author(p_article_id);'||unistr('\000a')||
-'    --'||unistr('\000a')||
-'    /* Send email about new comment to author */'||unistr('\000a')||
-'    /* If we have author email and author is active and like have noti';
-
-s:=s||'fications */'||unistr('\000a')||
-'    IF  l_author.v_email IS NOT NULL'||unistr('\000a')||
-'    AND (l_author.v_active = ''Y'' AND l_author.v_email_notify = ''Y'')'||unistr('\000a')||
-'    THEN'||unistr('\000a')||
-'      blog_util.notify_author ('||unistr('\000a')||
-'        p_article_title => p_article_title,'||unistr('\000a')||
-'        p_article_url   => l_article_url,'||unistr('\000a')||
-'        p_blog_name     => p_blog_name,'||unistr('\000a')||
-'        p_author_name   => l_author.v_author_name,'||unistr('\000a')||
-'        p_author_email  => l_author.v_email'||unistr('\000a')||
-'      );'||unistr('\000a')||
-'    END IF;';
-
-s:=s||''||unistr('\000a')||
+'    dbms_mview.refresh(''BLOG_COMMENT_LOG'');'||unistr('\000a')||
 '  END save_comment;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE save_contact('||unistr('\000a')||
 '    p_user_id         IN OUT NOCOPY NUMBER,'||unistr('\000a')||
 '    p_apex_session_id IN NUMBER,'||unistr('\000a')||
-'    p_email           IN VARCHAR2,'||unistr('\000a')||
+'';
+
+s:=s||'    p_email           IN VARCHAR2,'||unistr('\000a')||
 '    p_nick_name       IN VARCHAR2,'||unistr('\000a')||
 '    p_website         IN VARCHAR2,'||unistr('\000a')||
-'    p_com';
-
-s:=s||'ment         IN VARCHAR2'||unistr('\000a')||
+'    p_comment         IN VARCHAR2'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    /* Set APP_USER */'||unistr('\000a')||
-'    APEX_CUSTOM_AUTH.SET_USER(UPPER(p_nick_name));'||unistr('\000a')||
+'    apex_custom_auth.set_user(upper(p_nick_name));'||unistr('\000a')||
 '    /* Insert or update user */'||unistr('\000a')||
 '    blog_util.save_user_attr('||unistr('\000a')||
 '      p_user_id     => p_user_id,'||unistr('\000a')||
 '      p_email       => p_email,'||unistr('\000a')||
 '      p_nick_name   => p_nick_name,'||unistr('\000a')||
-'      p_website     => p_website'||unistr('\000a')||
+'      ';
+
+s:=s||'p_website     => p_website'||unistr('\000a')||
 '    );'||unistr('\000a')||
 '    /* Inser message to table */'||unistr('\000a')||
 '    INSERT INTO blog_contact_message'||unistr('\000a')||
-'    (user_';
-
-s:=s||'id, apex_session_id, message)'||unistr('\000a')||
+'    (user_id, apex_session_id, message)'||unistr('\000a')||
 '    VALUES'||unistr('\000a')||
 '    (p_user_id, p_apex_session_id, p_comment)'||unistr('\000a')||
 '    ;'||unistr('\000a')||
@@ -17765,107 +17819,89 @@ s:=s||'id, apex_session_id, message)'||unistr('\000a')||
 '    blog_util.set_cookie(p_user_id);'||unistr('\000a')||
 '  END save_contact;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PROCEDURE notify_readers ('||unistr('\000a')||
-'    p_comment_id    IN NUM';
+'----------------------';
 
-s:=s||'BER,'||unistr('\000a')||
+s:=s||'----------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE notify_readers ('||unistr('\000a')||
+'    p_comment_id    IN NUMBER,'||unistr('\000a')||
 '    p_user_id       IN NUMBER,'||unistr('\000a')||
 '    p_article_id    IN NUMBER,'||unistr('\000a')||
 '    p_article_title IN VARCHAR2,'||unistr('\000a')||
 '    p_app_alias     IN VARCHAR2,'||unistr('\000a')||
 '    p_base_url      IN VARCHAR2,'||unistr('\000a')||
-'    p_blog_name     IN VARCHAR2,'||unistr('\000a')||
-'    p_article_url   IN VARCHAR2'||unistr('\000a')||
+'    p_blog_name     IN VARCHAR2'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
+'    l_article_url     VARCHAR2(2000);'||unistr('\000a')||
 '    l_unsubscribe_url VARCHAR2(2000);'||unistr('\000a')||
-'    l_user_email      t_email;'||unistr('\000a')||
+'   ';
+
+s:=s||' l_user_email      t_email;'||unistr('\000a')||
 '    l_email           t_email;'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
+'    /* Get article url */'||unistr('\000a')||
+'    l_article_url := blog_util.get_article_url(p_article_id, p_app_alias, p_base_url);'||unistr('\000a')||
 '    /* Get email subject and body to variables */'||unistr('\000a')||
-'  ';
-
-s:=s||'  l_email := blog_util.get_email_message('||unistr('\000a')||
+'    l_email := blog_util.get_email_message('||unistr('\000a')||
 '      p_article_title => p_article_title,'||unistr('\000a')||
-'      p_article_url   => p_article_url,'||unistr('\000a')||
+'      p_article_url   => l_article_url,'||unistr('\000a')||
 '      p_blog_name     => p_blog_name,'||unistr('\000a')||
-'      p_author_name   => ''#AUTHOR_NAME#'','||unistr('\000a')||
+'      ';
+
+s:=s||'p_author_name   => ''#AUTHOR_NAME#'','||unistr('\000a')||
 '      p_subj          => ''FOLLOWUP_EMAIL_SUBJ'','||unistr('\000a')||
 '      p_body          => ''FOLLOWUP_EMAIL_BODY'''||unistr('\000a')||
 '    );'||unistr('\000a')||
 '    /* Loop trough all users that like have notification */'||unistr('\000a')||
 '    FOR c1 IN ('||unistr('\000a')||
-'      SELECT email';
-
-s:=s||','||unistr('\000a')||
+'      SELECT email,'||unistr('\000a')||
 '        nick_name,'||unistr('\000a')||
 '        user_id'||unistr('\000a')||
 '      FROM blog_comment_user u'||unistr('\000a')||
 '      WHERE u.user_id != p_user_id'||unistr('\000a')||
 '        AND u.blocked = ''N'''||unistr('\000a')||
 '        AND EXISTS('||unistr('\000a')||
-'          SELECT 1'||unistr('\000a')||
+'          SELECT ';
+
+s:=s||'1'||unistr('\000a')||
 '          FROM blog_comment_notify n'||unistr('\000a')||
 '          WHERE n.user_id = u.user_id'||unistr('\000a')||
 '          AND n.article_id = p_article_id'||unistr('\000a')||
 '          AND n.followup_notify = ''Y'''||unistr('\000a')||
 '          AND n.changed_on > g_watche_expires'||unistr('\000a')||
 '        )'||unistr('\000a')||
-'        AND EXISTS(';
-
-s:=s||''||unistr('\000a')||
+'        AND EXISTS('||unistr('\000a')||
 '          SELECT 1'||unistr('\000a')||
 '          FROM blog_comment c'||unistr('\000a')||
 '          WHERE c.article_id = p_article_id'||unistr('\000a')||
 '          AND c.comment_id = p_comment_id'||unistr('\000a')||
 '          AND c.active = ''Y'''||unistr('\000a')||
-'          AND c.moderated = ''Y'''||unistr('\000a')||
+'   ';
+
+s:=s||'       AND c.moderated = ''Y'''||unistr('\000a')||
 '          AND c.notify_email_sent = ''N'''||unistr('\000a')||
 '        )'||unistr('\000a')||
 '    ) LOOP'||unistr('\000a')||
 '      /* User specific unsubscribe url */'||unistr('\000a')||
 '      l_unsubscribe_url := blog_util.get_unsubscribe_url('||unistr('\000a')||
 '        p_user_id     => c1.user_id,'||unistr('\000a')||
-'     ';
-
-s:=s||'   p_article_id  => p_article_id,'||unistr('\000a')||
+'        p_article_id  => p_article_id,'||unistr('\000a')||
 '        p_app_alias   => p_app_alias,'||unistr('\000a')||
 '        p_base_url    => p_base_url'||unistr('\000a')||
 '      );'||unistr('\000a')||
 '      /* Make user specific substitutions */'||unistr('\000a')||
-'      l_user_email.v_subj := REGEXP_REPLACE(l_email.v_subj, ''#NICK_NAME#'', c1.nick_name, 1, 0, ''i'');'||unistr('\000a')||
-'      l_user_email.v_body := REGEXP_REPLACE(l_email.v_body, ''#NICK_NAME#'', c1.nick_name, 1, 0, ''i'');'||unistr('\000a')||
-'      l_user_email.v_body := REGEXP_';
+'      ';
 
-s:=s||'REPLACE(l_user_email.v_body, ''#UNSUBSCRIBE_URL#'', l_unsubscribe_url, 1, 0, ''i'');'||unistr('\000a')||
+s:=s||'l_user_email.v_subj := regexp_replace(l_email.v_subj, ''#NICK_NAME#'', c1.nick_name, 1, 0, ''i'');'||unistr('\000a')||
+'      l_user_email.v_body := regexp_replace(l_email.v_body, ''#NICK_NAME#'', c1.nick_name, 1, 0, ''i'');'||unistr('\000a')||
+'      l_user_email.v_body := regexp_replace(l_user_email.v_body, ''#UNSUBSCRIBE_URL#'', l_unsubscribe_url, 1, 0, ''i'');'||unistr('\000a')||
 '      /* Send mail to user */'||unistr('\000a')||
-'      APEX_MAIL.SEND ('||unistr('\000a')||
+'      apex_mail.send ('||unistr('\000a')||
 '        p_from => l_email.v_from,'||unistr('\000a')||
-'        p_to   => c1.email,'||unistr('\000a')||
-'        p_subj => l_user_email.v_subj,'||unistr('\000a')||
-'        p_body => l_user_email.v_body'||unistr('\000a')||
-'      );'||unistr('\000a')||
-'    END LOOP;'||unistr('\000a')||
-'    /* we do have time wait email sending */'||unistr('\000a')||
-'    --APEX_MAIL.PUSH_QUEUE;'||unistr('\000a')||
-'    UPDATE blog_comment'||unistr('\000a')||
-'      S';
-
-s:=s||'ET notify_email_sent = ''Y'''||unistr('\000a')||
-'    WHERE comment_id = p_comment_id'||unistr('\000a')||
-'      AND active = ''Y'''||unistr('\000a')||
-'      AND moderated = ''Y'''||unistr('\000a')||
-'      AND notify_email_sent = ''N'''||unistr('\000a')||
-'    ;'||unistr('\000a')||
-'  END notify_readers;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PROCEDURE unsubscribe('||unistr('\000a')||
-'    p_value       IN OUT NOCOPY VARCHAR';
+'';
 
 wwv_flow_api.create_install_script(
-  p_id => 11220716262817091 + wwv_flow_api.g_id_offset,
+  p_id => 12274420158820772 + wwv_flow_api.g_id_offset,
   p_flow_id => wwv_flow.g_flow_id,
   p_install_id=> 10834514095423806 + wwv_flow_api.g_id_offset,
   p_name => '7 Package',
@@ -17884,164 +17920,194 @@ begin
 declare
     s varchar2(32767) := null;
 begin
-s:=s||'2,'||unistr('\000a')||
+s:=s||'        p_to   => c1.email,'||unistr('\000a')||
+'        p_subj => l_user_email.v_subj,'||unistr('\000a')||
+'        p_body => l_user_email.v_body'||unistr('\000a')||
+'      );'||unistr('\000a')||
+'    END LOOP;'||unistr('\000a')||
+'    /* we do have time wait email sending */'||unistr('\000a')||
+'    --APEX_MAIL.PUSH_QUEUE;'||unistr('\000a')||
+'    UPDATE blog_comment'||unistr('\000a')||
+'      SET notify_email_sent = ''Y'''||unistr('\000a')||
+'    WHERE comment_id = p_comment_id'||unistr('\000a')||
+'      AND active = ''Y'''||unistr('\000a')||
+'      AND moderated = ''Y'''||unistr('\000a')||
+'      AND notify_email_sent = ''N'''||unistr('\000a')||
+'    ;'||unistr('\000a')||
+'  END notify_rea';
+
+s:=s||'ders;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE unsubscribe('||unistr('\000a')||
+'    p_value       IN OUT NOCOPY VARCHAR2,'||unistr('\000a')||
 '    p_user_id     OUT NOCOPY NUMBER,'||unistr('\000a')||
 '    p_article_id  OUT NOCOPY NUMBER'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_user_name   VARCHAR2(255);'||unistr('\000a')||
 '    l_arr       apex_application_global.vc_arr2;'||unistr('\000a')||
-'  BEGIN'||unistr('\000a')||
+' ';
+
+s:=s||' BEGIN'||unistr('\000a')||
 '    l_arr         := blog_util.raw_to_table(p_value);'||unistr('\000a')||
 '    p_value       := NULL;'||unistr('\000a')||
 '    p_user_id     := l_arr(1);'||unistr('\000a')||
 '    p_article_id  := l_arr(2);'||unistr('\000a')||
 '    IF p_user_id IS NOT NULL THEN'||unistr('\000a')||
-'      l_user_name := blog_util.get_user_name(p_u';
-
-s:=s||'ser_id);'||unistr('\000a')||
+'      l_user_name := blog_util.get_user_name(p_user_id);'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
 '    IF p_user_id IS NOT NULL'||unistr('\000a')||
 '    AND l_user_name IS NOT NULL'||unistr('\000a')||
 '    AND p_article_id IS NOT NULL'||unistr('\000a')||
 '    THEN'||unistr('\000a')||
 '      /* Set APP_USER */'||unistr('\000a')||
-'      APEX_CUSTOM_AUTH.SET_USER(UPPER(l_user_name));'||unistr('\000a')||
+'      apex_custom_a';
+
+s:=s||'uth.set_user(upper(l_user_name));'||unistr('\000a')||
 '      blog_util.save_notify_user('||unistr('\000a')||
 '        p_user_id    => p_user_id,'||unistr('\000a')||
 '        p_article_id => p_article_id,'||unistr('\000a')||
 '        p_followup   => ''N'''||unistr('\000a')||
 '      );'||unistr('\000a')||
 '    ELSE'||unistr('\000a')||
-'      p_user_id     := NULL;'||unistr('\000a')||
-'      p_article_';
-
-s:=s||'id  := NULL;'||unistr('\000a')||
+'      blog_util.raise_http_error(p_value);'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
 '  EXCEPTION WHEN'||unistr('\000a')||
 '    NO_DATA_FOUND OR'||unistr('\000a')||
 '    INVALID_NUMBER OR'||unistr('\000a')||
 '    VALUE_ERROR'||unistr('\000a')||
 '  THEN'||unistr('\000a')||
-'    apex_debug.warn(''blog_util.unsubscribe(p_value => %s); error: %s'', p_value, sqlerrm);'||unistr('\000a')||
-'    p_value       := NULL;'||unistr('\000a')||
-'    p_user_id     := NULL;'||unistr('\000a')||
-'    p_article_id  := NULL;'||unistr('\000a')||
+'    blog_util.raise_http_error(p_value);'||unistr('\000a')||
 '  END unsubscribe;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'---------------------';
+'---------------';
 
-s:=s||'-----------------------------------------------------------'||unistr('\000a')||
+s:=s||'-----------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE download_file ('||unistr('\000a')||
-'    p_session_id  IN NUMBER,'||unistr('\000a')||
 '    p_file_name   IN VARCHAR2,'||unistr('\000a')||
+'    p_session_id  IN NUMBER,'||unistr('\000a')||
 '    p_user_id     IN VARCHAR2'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
+'    l_id_source       VARCHAR2(256);'||unistr('\000a')||
 '    l_file_name       VARCHAR2(2000);'||unistr('\000a')||
 '    l_utc             TIMESTAMP;'||unistr('\000a')||
-'    l_file_cached     BOOLEAN;'||unistr('\000a')||
+'    l_file_cached ';
+
+s:=s||'    BOOLEAN;'||unistr('\000a')||
 '    l_file_rowtype    blog_file%ROWTYPE;'||unistr('\000a')||
 '    l_arr             apex_application_global.vc_arr2;'||unistr('\000a')||
-'    c_date_lang';
-
-s:=s||'       CONSTANT VARCHAR2(255) := ''NLS_DATE_LANGUAGE=ENGLISH'';'||unistr('\000a')||
+'    c_date_lang       CONSTANT VARCHAR2(255) := ''NLS_DATE_LANGUAGE=ENGLISH'';'||unistr('\000a')||
 '    c_date_format     CONSTANT VARCHAR2(255) := ''Dy, DD Mon YYYY HH24:MI:SS "GMT"'';'||unistr('\000a')||
 '    SESSION_NOT_VALID EXCEPTION;'||unistr('\000a')||
+'    FILE_NOT_ACTIVE   EXCEPTION;'||unistr('\000a')||
 '    PRAGMA EXCEPTION_INIT(SESSION_NOT_VALID, -20001);'||unistr('\000a')||
-'  BEGIN'||unistr('\000a')||
-'    IF NOT wwv_flow_custom_auth_std.is_session_valid THEN'||unistr('\000a')||
-'      RAISE_APPLICATION_ERROR(-20001, ''Unauthorized access - file will not be retrieved.'');'||unistr('\000a')||
-'    END I';
+'    PRAGMA';
 
-s:=s||'F;'||unistr('\000a')||
+s:=s||' EXCEPTION_INIT(SESSION_NOT_VALID, -20002);'||unistr('\000a')||
+'  BEGIN'||unistr('\000a')||
+'    IF NOT apex_custom_auth.is_session_valid THEN'||unistr('\000a')||
+'      apex_debug.warn(''File download session is not valid: %s'', p_session_id);'||unistr('\000a')||
+'      raise_application_error(-20001, ''Unauthorized access - file will not be retrieved.'');'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
 '    l_file_cached := FALSE;'||unistr('\000a')||
-'    /* APEX request can also contain query string */'||unistr('\000a')||
-'    l_arr := APEX_UTIL.STRING_TO_TABLE(p_file_name, ''?'');'||unistr('\000a')||
+'    l_arr := apex_util.string_to_table(p_file_name, ''?'');'||unistr('\000a')||
 '    l_file_name := l_arr(1);'||unistr('\000a')||
-'    l_utc := SYS_EXTRACT_UTC(SYSTIMESTAMP);'||unistr('\000a')||
+'';
+
+s:=s||'    l_utc := SYS_EXTRACT_UTC(SYSTIMESTAMP);'||unistr('\000a')||
 '    SELECT *'||unistr('\000a')||
 '    INTO l_file_rowtype'||unistr('\000a')||
 '    FROM blog_file'||unistr('\000a')||
 '    WHERE file_name = l_file_name'||unistr('\000a')||
-'      AND active = ''Y'''||unistr('\000a')||
 '    ;'||unistr('\000a')||
-'    sys.owa_util.mime_header(COALESCE (l_file_rowtype.mime_type, ''';
+'    IF NOT l_file_rowtype.active = ''Y'' THEN'||unistr('\000a')||
+'      raise_application_error(-20002, ''File is not available for download.'');'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'    sys.owa_util.mime_header(COALESCE (l_file_rowtype.mime_type, ''application/octet''), FALSE);'||unistr('\000a')||
+'    IF l_file_rowtype.file_type';
 
-s:=s||'application/octet''), FALSE);'||unistr('\000a')||
-'    IF l_file_rowtype.file_type != ''FILE'' THEN'||unistr('\000a')||
+s:=s||' != ''FILE'' THEN'||unistr('\000a')||
 '      /* File type is not FILE, then use cache e.g. for images, css and JavaScript */'||unistr('\000a')||
 '      /* Cache and ETag headers */'||unistr('\000a')||
 '      sys.htp.p(''Cache-Control: public, max-age=31536000'');'||unistr('\000a')||
-'      sys.htp.p(''Date: ''    || TO_CHAR(l_utc, c_date_format, c_date_lang));'||unistr('\000a')||
-'      sys.htp.p(''Expires: '' || TO_CHAR(l_utc + 365, c_date_format, ';
+'      sys.htp.p(''Date: ''    || to_char(l_utc, c_date_format, c_date_lang));'||unistr('\000a')||
+'      sys.htp.p(''Expires: '' || to_char(l_utc + 365, c_date_format, c_date_lang));'||unistr('\000a')||
+'      sys.htp.p(''ETag: "''   || l_file_rowtype';
 
-s:=s||'c_date_lang));'||unistr('\000a')||
-'      sys.htp.p(''ETag: "''   || l_file_rowtype.file_etag || ''"'');'||unistr('\000a')||
+s:=s||'.file_etag || ''"'');'||unistr('\000a')||
 '      /* Check if file is modified after last download */'||unistr('\000a')||
-'      IF (UPPER(TRIM(sys.OWA_UTIL.GET_CGI_ENV(''HTTP_IF_MODIFIED_SINCE''))) = UPPER(l_file_rowtype.file_modified_since))'||unistr('\000a')||
-'      OR (UPPER(TRIM(sys.OWA_UTIL.GET_CGI_ENV(''HTTP_IF_NONE_MATCH'')))  = UPPER(l_file_rowtype.file_etag))'||unistr('\000a')||
+'      IF sys.owa_util.get_cgi_env(''HTTP_IF_MODIFIED_SINCE'') = l_file_rowtype.file_modified_since'||unistr('\000a')||
+'      OR sys.owa_util.get_cgi_env(''HTTP_IF_NONE_MATCH'')  = l_file_rowtype.file_etag'||unistr('\000a')||
 '      THEN'||unistr('\000a')||
-'        owa_util.status_li';
-
-s:=s||'ne('||unistr('\000a')||
+'        sys.owa_util.status_line('||unistr('\000a')||
 '          nstatus       => 304,'||unistr('\000a')||
 '          creason       => ''Not Modified'','||unistr('\000a')||
-'          bclose_header => FALSE'||unistr('\000a')||
+'          bclose_head';
+
+s:=s||'er => FALSE'||unistr('\000a')||
 '        );'||unistr('\000a')||
 '        l_file_cached := TRUE;'||unistr('\000a')||
 '      ELSE'||unistr('\000a')||
 '        sys.htp.p(''Last-Modified : '' || l_file_rowtype.file_modified_since);'||unistr('\000a')||
 '      END IF;'||unistr('\000a')||
 '    ELSE'||unistr('\000a')||
-'      IF apex_util.public_check_authorization(''LOGGING_ENABLED'') THEN'||unistr('\000a')||
+'      IF apex_authorization.is_authorized(''LOGGING_ENABLED'') THEN'||unistr('\000a')||
 '        /* Log file download */'||unistr('\000a')||
-'        blog_log.write_file_log(l';
-
-s:=s||'_file_rowtype.file_id);'||unistr('\000a')||
+'        blog_log.write_file_log(l_file_rowtype.file_id);'||unistr('\000a')||
 '        blog_log.write_activity_log('||unistr('\000a')||
 '          p_user_id       => p_user_id,'||unistr('\000a')||
-'          p_session_id    => p_session_id,'||unistr('\000a')||
+'   ';
+
+s:=s||'       p_session_id    => p_session_id,'||unistr('\000a')||
 '          p_activity_type => ''DOWNLOAD'','||unistr('\000a')||
 '          p_related_id    => l_file_rowtype.file_id'||unistr('\000a')||
 '        );'||unistr('\000a')||
 '      END IF;'||unistr('\000a')||
-'      sys.htp.p(''Content-Disposition: attachment; filename="'' || l_file_name || ''"'');'||unistr('\000a')||
+'      sys.htp.p(''Content-Disposition: attachment; filename="'' || l_file_rowtype.file_name || ''"'');'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
 '    IF NOT l_file_cached THEN'||unistr('\000a')||
-'      sys.';
+'      sys.htp.p(''Content-length: '' || l_file_rowtype.file_size);'||unistr('\000a')||
+'      sys.wpg_docload.download_file(';
 
-s:=s||'htp.p(''Content-length: '' || l_file_rowtype.file_size);'||unistr('\000a')||
-'      sys.wpg_docload.download_file(l_file_rowtype.blob_content);'||unistr('\000a')||
+s:=s||'l_file_rowtype.blob_content);'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
 '    sys.owa_util.http_header_close;'||unistr('\000a')||
 '    apex_application.stop_apex_engine;'||unistr('\000a')||
 '  EXCEPTION WHEN '||unistr('\000a')||
-'    NO_DATA_FOUND OR'||unistr('\000a')||
-'    INVALID_NUMBER OR'||unistr('\000a')||
-'    VALUE_ERROR'||unistr('\000a')||
+'    NO_DATA_FOUND'||unistr('\000a')||
 '  THEN'||unistr('\000a')||
-'    owa_util.status_line('||unistr('\000a')||
-'      nstatus       => 404,'||unistr('\000a')||
-'      creason       => ''Not Found'','||unistr('\000a')||
-'      bclose_heade';
+'    BEGIN'||unistr('\000a')||
+'      SELECT c.id_source'||unistr('\000a')||
+'      INTO l_id_source'||unistr('\000a')||
+'      FROM blog_http410 c'||unistr('\000a')||
+'      WHERE c.deleted_id = l_file_name'||unistr('\000a')||
+'      ;'||unistr('\000a')||
+'      blog_util.raise_http_error(p_file_name, 410, ''Gone'');'||unistr('\000a')||
+'    EXCEPTION WHEN '||unistr('\000a')||
+'      NO_DATA_FOUND'||unistr('\000a')||
+'    THEN'||unistr('\000a')||
+'';
 
-s:=s||'r => true'||unistr('\000a')||
-'    );'||unistr('\000a')||
+s:=s||'      blog_util.raise_http_error(p_file_name);'||unistr('\000a')||
+'    END;'||unistr('\000a')||
+'  WHEN'||unistr('\000a')||
+'    VALUE_ERROR OR'||unistr('\000a')||
+'    INVALID_NUMBER OR'||unistr('\000a')||
+'    FILE_NOT_ACTIVE'||unistr('\000a')||
+'  THEN'||unistr('\000a')||
+'    blog_util.raise_http_error(p_file_name);'||unistr('\000a')||
 '  WHEN SESSION_NOT_VALID'||unistr('\000a')||
 '  THEN'||unistr('\000a')||
-'    owa_util.status_line('||unistr('\000a')||
-'      nstatus       => 403,'||unistr('\000a')||
-'      creason       => ''Forbidden'','||unistr('\000a')||
-'      bclose_header => true'||unistr('\000a')||
-'    );'||unistr('\000a')||
+'    blog_util.raise_http_error(p_file_name, 403, ''Forbidden'');'||unistr('\000a')||
 '  END download_file;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  FUNCTION validate_email('||unistr('\000a')||
-'    p_email     ';
+'---------------------------';
 
-s:=s||'IN VARCHAR2'||unistr('\000a')||
+s:=s||'-----------------------------------------------------'||unistr('\000a')||
+'  FUNCTION validate_email('||unistr('\000a')||
+'    p_email     IN VARCHAR2'||unistr('\000a')||
 '  ) RETURN BOOLEAN'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_is_valid    BOOLEAN := TRUE;'||unistr('\000a')||
@@ -18051,13 +18117,13 @@ s:=s||'IN VARCHAR2'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    IF p_email IS NOT NULL THEN'||unistr('\000a')||
 '      l_dot_pos     := instr(p_email ,''.'');'||unistr('\000a')||
-'      l_at_pos      := instr(p_email ,''@'');'||unistr('\000a')||
+'      l_at_pos      := instr(p_';
+
+s:=s||'email ,''@'');'||unistr('\000a')||
 '      l_str_length  := LENGTH(p_email);'||unistr('\000a')||
 '      IF ('||unistr('\000a')||
 '        (l_dot_pos = 0)'||unistr('\000a')||
-'        O';
-
-s:=s||'R (l_at_pos = 0)'||unistr('\000a')||
+'        OR (l_at_pos = 0)'||unistr('\000a')||
 '        --OR (l_dot_pos = l_at_pos - 1)'||unistr('\000a')||
 '        OR (l_dot_pos = l_at_pos + 1)'||unistr('\000a')||
 '        OR (l_at_pos = 1)'||unistr('\000a')||
@@ -18068,15 +18134,127 @@ s:=s||'R (l_at_pos = 0)'||unistr('\000a')||
 '      THEN'||unistr('\000a')||
 '        l_is_valid := FALSE;'||unistr('\000a')||
 '      END IF;'||unistr('\000a')||
-'      IF l_is_valid THEN'||unistr('\000a')||
-'        l_is_valid := NOT instr(SUBSTR(p_email ,l_at_pos) ,''.'') = 0;'||unistr('\000a')||
-'      END IF;'||unistr('\000a')||
-'  ';
+'      IF l_is';
 
-s:=s||'  END IF;'||unistr('\000a')||
+s:=s||'_valid THEN'||unistr('\000a')||
+'        l_is_valid := NOT instr(substr(p_email ,l_at_pos) ,''.'') = 0;'||unistr('\000a')||
+'      END IF;'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
 '    RETURN l_is_valid;'||unistr('\000a')||
 '  END validate_email;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE get_article_page_items ('||unistr('\000a')||
+'    p_article_id    IN VARCHAR2,'||unistr('\000a')||
+'    p_page_title';
+
+s:=s||'    OUT NOCOPY VARCHAR2,'||unistr('\000a')||
+'    p_region_title  OUT NOCOPY VARCHAR2,'||unistr('\000a')||
+'    p_keywords      OUT NOCOPY VARCHAR2,'||unistr('\000a')||
+'    p_description   OUT NOCOPY VARCHAR2,'||unistr('\000a')||
+'    p_author_name   OUT NOCOPY VARCHAR2'||unistr('\000a')||
+'  ) '||unistr('\000a')||
+'  AS'||unistr('\000a')||
+'    l_article_id    NUMBER;'||unistr('\000a')||
+'    l_category_name VARCHAR2(256);'||unistr('\000a')||
+'    l_id_source     VARCHAR2(256);'||unistr('\000a')||
+'  BEGIN'||unistr('\000a')||
+'    /* Input parameter p_category_id is string because we handle invalid number exception */'||unistr('\000a')||
+'   ';
+
+s:=s||' l_article_id := to_number(p_article_id);'||unistr('\000a')||
+'    SELECT a.article_title,'||unistr('\000a')||
+'      a.category_name,'||unistr('\000a')||
+'      a.keywords,'||unistr('\000a')||
+'      a.description,'||unistr('\000a')||
+'      a.author_name'||unistr('\000a')||
+'    INTO p_page_title,'||unistr('\000a')||
+'      l_category_name,'||unistr('\000a')||
+'      p_keywords,'||unistr('\000a')||
+'      p_description,'||unistr('\000a')||
+'      p_author_name'||unistr('\000a')||
+'    FROM blog_v$article a'||unistr('\000a')||
+'    WHERE a.article_id = l_article_id'||unistr('\000a')||
+'    ;'||unistr('\000a')||
+'    p_region_title  := apex_lang.message(''REGION_TITLE_COMMENTS'');'||unistr('\000a')||
+'    p_';
+
+s:=s||'keywords      := ltrim(trim(BOTH '','' FROM p_keywords) || '','' || l_category_name, '','');'||unistr('\000a')||
+'  EXCEPTION WHEN '||unistr('\000a')||
+'    NO_DATA_FOUND'||unistr('\000a')||
+'  THEN'||unistr('\000a')||
+'    BEGIN'||unistr('\000a')||
+'      SELECT c.id_source'||unistr('\000a')||
+'      INTO l_id_source'||unistr('\000a')||
+'      FROM blog_http410 c'||unistr('\000a')||
+'      WHERE c.deleted_id = p_article_id'||unistr('\000a')||
+'      ;'||unistr('\000a')||
+'      blog_util.raise_http_error(p_article_id,410, ''Gone'');'||unistr('\000a')||
+'    EXCEPTION WHEN '||unistr('\000a')||
+'      NO_DATA_FOUND'||unistr('\000a')||
+'    THEN'||unistr('\000a')||
+'      blog_util.raise_http_er';
+
+s:=s||'ror(p_article_id);'||unistr('\000a')||
+'    END;'||unistr('\000a')||
+'  WHEN'||unistr('\000a')||
+'    INVALID_NUMBER OR'||unistr('\000a')||
+'    VALUE_ERROR'||unistr('\000a')||
+'  THEN'||unistr('\000a')||
+'    blog_util.raise_http_error(p_article_id);'||unistr('\000a')||
+'  END get_article_page_items;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE get_category_page_items ('||unistr('\000a')||
+'    p_category_id   IN VARCHAR2,'||unistr('\000a')||
+'    p_page_';
+
+s:=s||'title    OUT NOCOPY VARCHAR2,'||unistr('\000a')||
+'    p_region_title  OUT NOCOPY VARCHAR2,'||unistr('\000a')||
+'    p_category_name OUT NOCOPY VARCHAR2'||unistr('\000a')||
+'  )'||unistr('\000a')||
+'  AS'||unistr('\000a')||
+'    l_category_id NUMBER;'||unistr('\000a')||
+'    l_id_source   VARCHAR2(256);'||unistr('\000a')||
+'  BEGIN'||unistr('\000a')||
+'    /* Input parameter p_category_id is string because we handle invalid number exception */'||unistr('\000a')||
+'    l_category_id := to_number(p_category_id);'||unistr('\000a')||
+'    SELECT c.category_name'||unistr('\000a')||
+'    INTO p_category_name'||unistr('\000a')||
+'    FROM blog_categor';
+
+s:=s||'y c'||unistr('\000a')||
+'    WHERE c.category_id = l_category_id'||unistr('\000a')||
+'    ;'||unistr('\000a')||
+'    p_page_title    := apex_lang.message(''PAGE_TITLE_CATEGORY'', p_category_name);'||unistr('\000a')||
+'    p_region_title  := apex_lang.message(''REGION_TITLE_CATEGORY'', apex_escape.html(p_category_name));'||unistr('\000a')||
+'    p_category_name := p_category_name;'||unistr('\000a')||
+'  EXCEPTION WHEN '||unistr('\000a')||
+'    NO_DATA_FOUND'||unistr('\000a')||
+'  THEN'||unistr('\000a')||
+'    BEGIN'||unistr('\000a')||
+'      SELECT c.id_source'||unistr('\000a')||
+'      INTO l_id_source'||unistr('\000a')||
+'      FROM blog_http410 c';
+
+s:=s||''||unistr('\000a')||
+'      WHERE c.deleted_id = p_category_id'||unistr('\000a')||
+'      ;'||unistr('\000a')||
+'      blog_util.raise_http_error(p_category_id, 410, ''Gone'');'||unistr('\000a')||
+'    EXCEPTION WHEN '||unistr('\000a')||
+'      NO_DATA_FOUND'||unistr('\000a')||
+'    THEN'||unistr('\000a')||
+'      blog_util.raise_http_error(p_category_id);'||unistr('\000a')||
+'    END;'||unistr('\000a')||
+'  WHEN'||unistr('\000a')||
+'    INVALID_NUMBER OR'||unistr('\000a')||
+'    VALUE_ERROR'||unistr('\000a')||
+'  THEN'||unistr('\000a')||
+'    blog_util.raise_http_error(p_category_id);'||unistr('\000a')||
+'  END get_category_page_items;'||unistr('\000a')||
+'---------------------------------------------------';
+
+s:=s||'-----------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 'END "BLOG_UTIL";'||unistr('\000a')||
 '/'||unistr('\000a')||
@@ -18085,88 +18263,88 @@ s:=s||'  END IF;'||unistr('\000a')||
 'AUTHID DEFINER'||unistr('\000a')||
 'AS'||unistr('\000a')||
 '-------------------------------------------------------------------------------'||unistr('\000a')||
-'  g_formatted_comment V';
-
-s:=s||'ARCHAR2(32700);'||unistr('\000a')||
+'  g_formatted_comment VARCHAR2(32700);'||unistr('\000a')||
 '  g_question_answer   PLS_INTEGER;'||unistr('\000a')||
-'-------------------------------------------------------------------------------'||unistr('\000a')||
+'-------------------------------------------------------';
+
+s:=s||'------------------------'||unistr('\000a')||
 '  FUNCTION render_comment_textarea('||unistr('\000a')||
 '    p_item                IN apex_plugin.t_page_item,'||unistr('\000a')||
 '    p_plugin              IN apex_plugin.t_plugin,'||unistr('\000a')||
 '    p_value               IN VARCHAR2,'||unistr('\000a')||
 '    p_is_readonly         IN BOOLEAN,'||unistr('\000a')||
 '    p_is_printer_friendly IN BOOLEAN'||unistr('\000a')||
-'  ) RETURN ape';
+'  ) RETURN apex_plugin.t_page_item_render_result;'||unistr('\000a')||
+'----------------------------------------------------------------------';
 
-s:=s||'x_plugin.t_page_item_render_result;'||unistr('\000a')||
-'-------------------------------------------------------------------------------'||unistr('\000a')||
+s:=s||'---------'||unistr('\000a')||
 '  FUNCTION validate_comment_textarea('||unistr('\000a')||
 '    p_item   IN apex_plugin.t_page_item,'||unistr('\000a')||
 '    p_plugin IN apex_plugin.t_plugin,'||unistr('\000a')||
 '    p_value  IN VARCHAR2'||unistr('\000a')||
 '  ) RETURN apex_plugin.t_page_item_validation_result;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'  FUNCT';
-
-s:=s||'ION feature_authorization ('||unistr('\000a')||
+'  FUNCTION feature_authorization ('||unistr('\000a')||
 '    p_authorization in apex_plugin.t_authorization,'||unistr('\000a')||
-'    p_plugin        in apex_plugin.t_plugin'||unistr('\000a')||
+'    p_plugin        in ape';
+
+s:=s||'x_plugin.t_plugin'||unistr('\000a')||
 '  ) RETURN apex_plugin.t_authorization_exec_result;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION render_math_question_field('||unistr('\000a')||
 '    p_item                IN apex_plugin.t_page_item,'||unistr('\000a')||
-'    p_plugin              IN apex_plugin.t_plugin,';
-
-s:=s||''||unistr('\000a')||
+'    p_plugin              IN apex_plugin.t_plugin,'||unistr('\000a')||
 '    p_value               IN VARCHAR2,'||unistr('\000a')||
 '    p_is_readonly         IN BOOLEAN,'||unistr('\000a')||
-'    p_is_printer_friendly IN BOOLEAN'||unistr('\000a')||
+'    p_is_printer_friendly IN';
+
+s:=s||' BOOLEAN'||unistr('\000a')||
 '  ) RETURN apex_plugin.t_page_item_render_result;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION ajax_math_question_field('||unistr('\000a')||
 '    p_item   in apex_plugin.t_page_item,'||unistr('\000a')||
 '    p_plugin in apex_plugin.t_plugin'||unistr('\000a')||
-'  ) RETURN apex_plugin.t_page_item_ajax';
-
-s:=s||'_result;'||unistr('\000a')||
+'  ) RETURN apex_plugin.t_page_item_ajax_result;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'  FUNCTION validate_math_question_field('||unistr('\000a')||
+'  FUNCTION valid';
+
+s:=s||'ate_math_question_field('||unistr('\000a')||
 '    p_item   IN apex_plugin.t_page_item,'||unistr('\000a')||
 '    p_plugin IN apex_plugin.t_plugin,'||unistr('\000a')||
 '    p_value  IN VARCHAR2'||unistr('\000a')||
 '  ) RETURN apex_plugin.t_page_item_validation_result;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'  FUNCTION render_modal_confir';
-
-s:=s||'m('||unistr('\000a')||
+'  FUNCTION render_modal_confirm('||unistr('\000a')||
 '    p_dynamic_action IN apex_plugin.t_dynamic_action,'||unistr('\000a')||
 '    p_plugin         IN apex_plugin.t_plugin'||unistr('\000a')||
-'  ) RETURN apex_plugin.t_dynamic_action_render_result;'||unistr('\000a')||
+'  ) ';
+
+s:=s||'RETURN apex_plugin.t_dynamic_action_render_result;'||unistr('\000a')||
 '-------------------------------------------------------------------------------'||unistr('\000a')||
 'END "BLOG_PLUGIN";'||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE OR REPLACE PACKAGE BODY  "BLOG_PLUGIN" '||unistr('\000a')||
 'AS'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'-----------';
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'-- Private variables, procedures and';
 
-s:=s||'---------------------------------------------------------------------'||unistr('\000a')||
-'-- Private variables, procedures and functions'||unistr('\000a')||
+s:=s||' functions'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  g_whitelist_tags        CONSTANT VARCHAR2(200)  := ''<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>'';'||unistr('\000a')||
-'  g_code_open          ';
-
-s:=s||'   CONSTANT VARCHAR2(30)   := ''<code>'';'||unistr('\000a')||
+'  g_code_open             CONSTANT VARCHAR2(30)   := ''<code>'';'||unistr('\000a')||
 '  g_code_close            CONSTANT VARCHAR2(30)   := ''</code>'';'||unistr('\000a')||
-'  g_syntaxhighlight_open  CONSTANT VARCHAR2(100)  := ''<pre class="brush:plain" style="background-color:#eeeeee;padding:2px;">'';'||unistr('\000a')||
+'  ';
+
+s:=s||'g_syntaxhighlight_open  CONSTANT VARCHAR2(100)  := ''<pre class="brush:plain" style="background-color:#eeeeee;padding:2px;">'';'||unistr('\000a')||
 '  g_syntaxhighlight_close CONSTANT VARCHAR2(30)   := ''</pre>'';'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'------------------------';
-
-s:=s||'--------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION format_comment('||unistr('\000a')||
-'    p_comment         IN VARCHAR2,'||unistr('\000a')||
+'    p_comment         ';
+
+s:=s||'IN VARCHAR2,'||unistr('\000a')||
 '    p_whitelist_tags  IN VARCHAR2'||unistr('\000a')||
 '  ) RETURN VARCHAR2'||unistr('\000a')||
 '  AS'||unistr('\000a')||
@@ -18175,65 +18353,65 @@ s:=s||'--------------------------------------------------------'||unistr('\000a'
 '    l_len_s                 NUMBER := 0;'||unistr('\000a')||
 '    l_len_e                 NUMBER := 0;'||unistr('\000a')||
 '    l_count_open            SIMPLE_INTEGER := 0;'||unistr('\000a')||
-' ';
-
-s:=s||'   l_count_close           SIMPLE_INTEGER := 0;'||unistr('\000a')||
+'    l_count_close           SIMPLE_INTEGER := 0;'||unistr('\000a')||
 '    l_start                 SIMPLE_INTEGER := 0;'||unistr('\000a')||
-'    l_end                   SIMPLE_INTEGER := 0;'||unistr('\000a')||
+'    l_end';
+
+s:=s||'                   SIMPLE_INTEGER := 0;'||unistr('\000a')||
 '    l_comment_arr           apex_application_global.vc_arr2;'||unistr('\000a')||
 '    l_code_arr              apex_application_global.vc_arr2;'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    l_len_s := LENGTH(g_code_open);'||unistr('\000a')||
 '    l_len_e := LENGTH(g_code_close);'||unistr('\000a')||
-'    /* Change all hash marks so we can escape those';
-
-s:=s||' later*/'||unistr('\000a')||
+'    /* Change all hash marks so we can escape those later*/'||unistr('\000a')||
 '    l_comment := REPLACE(p_comment, ''#'', ''$@#HASH#@$'');'||unistr('\000a')||
 '    /* escape comment html */'||unistr('\000a')||
-'    l_comment := APEX_ESCAPE.HTML_WHITELIST ('||unistr('\000a')||
+'    l_comme';
+
+s:=s||'nt := APEX_ESCAPE.HTML_WHITELIST ('||unistr('\000a')||
 '      p_html            => l_comment,'||unistr('\000a')||
 '      p_whitelist_tags  => p_whitelist_tags'||unistr('\000a')||
 '    );'||unistr('\000a')||
 '    /* Escape hash to e.g. prevent APEX substitutions */'||unistr('\000a')||
 '    l_comment := REPLACE(l_comment, ''$@#HASH#@$'', ''&#x23;'');'||unistr('\000a')||
 '    /* check code tag count */'||unistr('\000a')||
-'    l_count_open  := ';
-
-s:=s||'regexp_count(l_comment, g_code_open);'||unistr('\000a')||
+'    l_count_open  := regexp_count(l_comment, g_code_open);'||unistr('\000a')||
 '    l_count_close := regexp_count(l_comment, g_code_close);'||unistr('\000a')||
-'    /* Process code tags */'||unistr('\000a')||
+'    /* P';
+
+s:=s||'rocess code tags */'||unistr('\000a')||
 '    IF l_count_open = l_count_close THEN'||unistr('\000a')||
 '      /* Store text inside code tags to array while format rest of message*/'||unistr('\000a')||
 '      FOR i IN 1 .. l_count_open'||unistr('\000a')||
 '      LOOP'||unistr('\000a')||
 '        l_start       := INSTR(l_comment, g_code_open);'||unistr('\000a')||
-'        l_end         := INSTR(l_comment, g_code_close);';
-
-s:=s||''||unistr('\000a')||
+'        l_end         := INSTR(l_comment, g_code_close);'||unistr('\000a')||
 '        l_code_arr(i) := g_syntaxhighlight_open'||unistr('\000a')||
-'                      || SUBSTR(l_comment, l_start  + l_len_s, l_end - l_start - l_len_s)'||unistr('\000a')||
+'                      || SUBSTR(l_comment, l_start  + l_l';
+
+s:=s||'en_s, l_end - l_start - l_len_s)'||unistr('\000a')||
 '                      || g_syntaxhighlight_close;'||unistr('\000a')||
 '        l_comment     := SUBSTR(l_comment, 1, l_start -1)'||unistr('\000a')||
 '                      || chr(10)'||unistr('\000a')||
 '                      || ''$@#'' || i || ''#@$'''||unistr('\000a')||
 '                      || chr(10)'||unistr('\000a')||
-'                      || SUBSTR(l_comment,';
-
-s:=s||' l_end + l_len_e);'||unistr('\000a')||
+'                      || SUBSTR(l_comment, l_end + l_len_e);'||unistr('\000a')||
 '      END LOOP;'||unistr('\000a')||
 '      /* Format message */'||unistr('\000a')||
-'      l_comment_arr := APEX_UTIL.STRING_TO_TABLE(l_comment, chr(10));'||unistr('\000a')||
+'      l_comment_arr := APEX_UTIL.STRING_TO_T';
+
+s:=s||'ABLE(l_comment, chr(10));'||unistr('\000a')||
 '      l_comment := NULL;'||unistr('\000a')||
 '      FOR i IN 1 .. l_comment_arr.COUNT'||unistr('\000a')||
 '      LOOP'||unistr('\000a')||
 '        /* Remove empty lines and do not add extra tags for code */'||unistr('\000a')||
 '        l_temp := TRIM(l_comment_arr(i));'||unistr('\000a')||
 '        IF REGEXP_LIKE(l_temp, ''^\$\@\#[0-9]+\#\@\$$'') THEN'||unistr('\000a')||
-'          l_comment :=';
-
-s:=s||' l_comment || l_temp;'||unistr('\000a')||
+'          l_comment := l_comment || l_temp;'||unistr('\000a')||
 '        ELSIF l_temp IS NOT NULL THEN'||unistr('\000a')||
-'          l_comment := l_comment || ''<p>'' || l_temp || ''</p>'';'||unistr('\000a')||
+'          l_comment := l_comment || ''<p>'' || l';
+
+s:=s||'_temp || ''</p>'';'||unistr('\000a')||
 '        END IF;'||unistr('\000a')||
 '      END LOOP;'||unistr('\000a')||
 '      /* insert code tags back to comment */'||unistr('\000a')||
@@ -18244,19 +18422,19 @@ s:=s||' l_comment || l_temp;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
 '    RETURN l_comment;'||unistr('\000a')||
 '  END format_comment;'||unistr('\000a')||
-'---';
-
-s:=s||'-----------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
+'----------------------------';
+
+s:=s||'----------------------------------------------------'||unistr('\000a')||
 '-- Global procedures and functions'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION render_comment_textarea('||unistr('\000a')||
-'    p_it';
-
-s:=s||'em                IN apex_plugin.t_page_item,'||unistr('\000a')||
+'    p_item                IN apex_plugin.t_page_item,'||unistr('\000a')||
 '    p_plugin              IN apex_plugin.t_plugin,'||unistr('\000a')||
-'    p_value               IN VARCHAR2,'||unistr('\000a')||
+'    p_val';
+
+s:=s||'ue               IN VARCHAR2,'||unistr('\000a')||
 '    p_is_readonly         IN BOOLEAN,'||unistr('\000a')||
 '    p_is_printer_friendly IN BOOLEAN'||unistr('\000a')||
 '  ) RETURN apex_plugin.t_page_item_render_result'||unistr('\000a')||
@@ -18265,23 +18443,23 @@ s:=s||'em                IN apex_plugin.t_page_item,'||unistr('\000a')||
 '    l_code        VARCHAR2(30);'||unistr('\000a')||
 '    l_bold        VARCHAR2(30);'||unistr('\000a')||
 '    l_italics     VARCHAR2(30);'||unistr('\000a')||
-'    l_u';
-
-s:=s||'nderline   VARCHAR2(30);'||unistr('\000a')||
+'    l_underline   VARCHAR2(30);'||unistr('\000a')||
 '    l_styles      VARCHAR2(255);'||unistr('\000a')||
 '    l_formatting  VARCHAR2(10);'||unistr('\000a')||
-'    l_result      apex_plugin.t_page_item_render_result;'||unistr('\000a')||
+'    l_result    ';
+
+s:=s||'  apex_plugin.t_page_item_render_result;'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    l_formatting := COALESCE(p_item.attribute_01, ''Y'');'||unistr('\000a')||
 '    IF p_is_readonly OR p_is_printer_friendly THEN'||unistr('\000a')||
 '      -- emit hidden textarea if necessary'||unistr('\000a')||
 '      apex_plugin_util.print_hidden_if_readonly ('||unistr('\000a')||
 '        p_item_name => p_item.name,'||unistr('\000a')||
-'        p';
-
-s:=s||'_value => p_value,'||unistr('\000a')||
+'        p_value => p_value,'||unistr('\000a')||
 '        p_is_readonly => p_is_readonly,'||unistr('\000a')||
-'        p_is_printer_friendly => p_is_printer_friendly'||unistr('\000a')||
+'        p_is_printer_friendly => p_is_printer_f';
+
+s:=s||'riendly'||unistr('\000a')||
 '      );'||unistr('\000a')||
 '      -- emit display span with the value'||unistr('\000a')||
 '      apex_plugin_util.print_display_only ('||unistr('\000a')||
@@ -18290,52 +18468,52 @@ s:=s||'_value => p_value,'||unistr('\000a')||
 '        p_show_line_breaks => false,'||unistr('\000a')||
 '        p_escape => true,'||unistr('\000a')||
 '        p_attributes => p_item.element_attributes'||unistr('\000a')||
-'      ';
-
-s:=s||');'||unistr('\000a')||
+'      );'||unistr('\000a')||
 '    ELSE'||unistr('\000a')||
 '      -- Because the page item saves state, we have to call get_input_name_for_page_item'||unistr('\000a')||
-'      -- which generates the internal hidden p_arg_names textarea. It will also return the'||unistr('\000a')||
+'     ';
+
+s:=s||' -- which generates the internal hidden p_arg_names textarea. It will also return the'||unistr('\000a')||
 '      -- HTML textarea name which we have to use when we render the HTML input textarea.'||unistr('\000a')||
 '      l_name := apex_plugin.get_input_name_for_page_item(false);'||unistr('\000a')||
 '      '||unistr('\000a')||
 '      l_code      := APEX_LANG.LANG(''Code'');'||unistr('\000a')||
-'  ';
-
-s:=s||'    l_bold      := APEX_LANG.LANG(''Bold'');'||unistr('\000a')||
+'      l_bold      := APEX_LANG.LANG(''Bold'');'||unistr('\000a')||
 '      l_italics   := APEX_LANG.LANG(''Italics'');'||unistr('\000a')||
-'      l_underline := APEX_LANG.LANG(''Underline'');'||unistr('\000a')||
+'      l_underli';
+
+s:=s||'ne := APEX_LANG.LANG(''Underline'');'||unistr('\000a')||
 '      IF l_formatting = ''Y'' THEN'||unistr('\000a')||
 '        sys.htp.p(''<ul class="format-btn">'');'||unistr('\000a')||
 '        sys.htp.p('||unistr('\000a')||
 '          q''[<li><img onclick="addStyleTag(''b'','']'' || p_item.name || q''['');" ]'''||unistr('\000a')||
 '          || ''alt="'' || l_bold  || ''" '''||unistr('\000a')||
-'          || ''title="'' || l_bold  || ''" ''';
-
-s:=s||''||unistr('\000a')||
+'          || ''title="'' || l_bold  || ''" '''||unistr('\000a')||
 '          || ''src="'' || p_plugin.file_prefix || q''[text-bold-20x22.png" /></li>]'''||unistr('\000a')||
 '        );'||unistr('\000a')||
-'        sys.htp.p('||unistr('\000a')||
+'        sys.';
+
+s:=s||'htp.p('||unistr('\000a')||
 '          q''[<li><img onclick="addStyleTag(''i'','']'' || p_item.name || q''['');" ]'''||unistr('\000a')||
 '          || ''alt="'' || l_italics ||''" '''||unistr('\000a')||
 '          || ''title="'' || l_italics ||''" '''||unistr('\000a')||
 '          || ''src="'' || p_plugin.file_prefix || q''[text-italics-20x22.png" /></li>]'''||unistr('\000a')||
 '        );'||unistr('\000a')||
 '        sys.htp.p('||unistr('\000a')||
-'        ';
+'          q''[<li><img onclick="addStyleTag(''u'','']'' || p_item.name || q''['');" ]'''||unistr('\000a')||
+'          || ''alt="'' || l_underlin';
 
-s:=s||'  q''[<li><img onclick="addStyleTag(''u'','']'' || p_item.name || q''['');" ]'''||unistr('\000a')||
-'          || ''alt="'' || l_underline || ''" '''||unistr('\000a')||
+s:=s||'e || ''" '''||unistr('\000a')||
 '          || ''title="'' || l_underline || ''" '''||unistr('\000a')||
 '          || ''src="'' || p_plugin.file_prefix || q''[text-underline-20x22.png" /></li>]'''||unistr('\000a')||
 '        );'||unistr('\000a')||
 '        sys.htp.p('||unistr('\000a')||
 '          q''[<li><img onclick="addStyleTag(''code'','']'' || p_item.name || q''['');" ]'''||unistr('\000a')||
-'          || ''alt="'' || l_code  || '' "';
-
-s:=s||' '''||unistr('\000a')||
+'          || ''alt="'' || l_code  || '' " '''||unistr('\000a')||
 '          || ''title="'' || l_code  || ''" '''||unistr('\000a')||
-'          || ''src="'' || p_plugin.file_prefix || q''[code-20x22.png" /></li>]'''||unistr('\000a')||
+'          || ''src="'' || p_plugin.file_prefix || q''[code-20x22';
+
+s:=s||'.png" /></li>]'''||unistr('\000a')||
 '        );'||unistr('\000a')||
 '        sys.htp.p(''</ul>'');'||unistr('\000a')||
 '        sys.htp.p('||unistr('\000a')||
@@ -18345,11 +18523,11 @@ s:=s||' '''||unistr('\000a')||
 '        );'||unistr('\000a')||
 '      END IF;'||unistr('\000a')||
 '      sys.htp.prn(''<textarea '''||unistr('\000a')||
-'        || apex_plugin_util.get_element_attribute';
-
-s:=s||'s(p_item, l_name, ''textarea'')'||unistr('\000a')||
+'        || apex_plugin_util.get_element_attributes(p_item, l_name, ''textarea'')'||unistr('\000a')||
 '        || ''cols="'' || p_item.element_width ||''" '''||unistr('\000a')||
-'        || ''rows="'' || p_item.element_height ||''" '''||unistr('\000a')||
+'        || ''rows="'' || p_';
+
+s:=s||'item.element_height ||''" '''||unistr('\000a')||
 '        || ''maxlength="'' || p_item.element_max_length || ''">'''||unistr('\000a')||
 '      );'||unistr('\000a')||
 '      apex_plugin_util.print_escaped_value(p_value);'||unistr('\000a')||
@@ -18357,48 +18535,48 @@ s:=s||'s(p_item, l_name, ''textarea'')'||unistr('\000a')||
 '      -- Tell APEX that this textarea is navigable'||unistr('\000a')||
 '      l_result.is_navigable := true;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'    RETURN ';
-
-s:=s||'l_result;'||unistr('\000a')||
+'    RETURN l_result;'||unistr('\000a')||
 '  END render_comment_textarea;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
+'-----------------------------------------------------------------';
+
+s:=s||'---------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION validate_comment_textarea('||unistr('\000a')||
 '    p_item   IN apex_plugin.t_page_item,'||unistr('\000a')||
 '    p_plugin IN apex_plugin.t_plugin,'||unistr('\000a')||
 '    p_value  IN VARCHAR2'||unistr('\000a')||
 '  ) RETURN apex_plugin.t_page_item_validation_result'||unistr('\000a')||
-'  ';
-
-s:=s||'AS'||unistr('\000a')||
+'  AS'||unistr('\000a')||
 '    l_formatting  VARCHAR2(10);'||unistr('\000a')||
 '    l_tmp_item    VARCHAR2(30);'||unistr('\000a')||
 '    l_comment     XMLTYPE;'||unistr('\000a')||
-'    l_is_valid    BOOLEAN;'||unistr('\000a')||
+'    l_is_val';
+
+s:=s||'id    BOOLEAN;'||unistr('\000a')||
 '    l_result      apex_plugin.t_page_item_validation_result;'||unistr('\000a')||
 '    xml_parse_err EXCEPTION;'||unistr('\000a')||
 '    PRAGMA EXCEPTION_INIT (xml_parse_err , -31011);'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    l_formatting := COALESCE(p_item.attribute_01, ''Y'');'||unistr('\000a')||
 '    l_tmp_item := p_item.attribute_02;'||unistr('\000a')||
-'    blog_plugin.g_formatted_commen';
-
-s:=s||'t := p_value;'||unistr('\000a')||
+'    blog_plugin.g_formatted_comment := p_value;'||unistr('\000a')||
 '    /* Remove some ascii codes */'||unistr('\000a')||
 '    FOR i IN 0 .. 31'||unistr('\000a')||
 '    LOOP'||unistr('\000a')||
 '      IF i != 10 THEN'||unistr('\000a')||
-'        blog_plugin.g_formatted_comment := TRIM(REPLACE(blog_plugin.g_formatted_comment, chr(i)));'||unistr('\000a')||
+'      ';
+
+s:=s||'  blog_plugin.g_formatted_comment := TRIM(REPLACE(blog_plugin.g_formatted_comment, chr(i)));'||unistr('\000a')||
 '      END IF;'||unistr('\000a')||
 '    END LOOP;'||unistr('\000a')||
 '    IF blog_plugin.g_formatted_comment IS NULL THEN'||unistr('\000a')||
 '      RETURN NULL;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
 '    IF LENGTH(blog_plugin.g_formatted_comment) >= p_item.element_max_length THEN'||unistr('\000a')||
-'      l_i';
+'      l_is_valid := FALSE;'||unistr('\000a')||
+'      l_result.message := APEX_LANG.MESSAGE(''VALIDATION_COMMENT_LENGTH'', p_item.plain_la';
 
-s:=s||'s_valid := FALSE;'||unistr('\000a')||
-'      l_result.message := APEX_LANG.MESSAGE(''VALIDATION_COMMENT_LENGTH'', p_item.plain_label, p_item.element_max_length);'||unistr('\000a')||
+s:=s||'bel, p_item.element_max_length);'||unistr('\000a')||
 '    ELSE'||unistr('\000a')||
 '      l_is_valid := TRUE;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
@@ -18407,9 +18585,9 @@ s:=s||'s_valid := FALSE;'||unistr('\000a')||
 '      IF l_formatting = ''Y'' THEN'||unistr('\000a')||
 '        blog_plugin.g_formatted_comment := blog_plugin.format_comment(blog_plugin.g_formatted_comment, g_whitelist_tags);'||unistr('\000a')||
 '      ELSE'||unistr('\000a')||
-'';
+'        blog_plugin.g_formatted_comment := blog_plugin.format_comment(blog_plugin.g_formatted_comment, NUL';
 
-s:=s||'        blog_plugin.g_formatted_comment := blog_plugin.format_comment(blog_plugin.g_formatted_comment, NULL);'||unistr('\000a')||
+s:=s||'L);'||unistr('\000a')||
 '      END IF;'||unistr('\000a')||
 '      /* Validate value html tags */'||unistr('\000a')||
 '      BEGIN'||unistr('\000a')||
@@ -18421,34 +18599,34 @@ s:=s||'        blog_plugin.g_formatted_comment := blog_plugin.format_comment(blo
 '      EXCEPTION'||unistr('\000a')||
 '      WHEN xml_parse_err THEN'||unistr('\000a')||
 '        l_is_valid := FALSE;'||unistr('\000a')||
+'        APEX_DEBUG.ERROR(''%s : %s'', dbms_utility.format_error_backtrace, sqlerrm);'||unistr('\000a')||
+'      WHEN OTHERS THEN'||unistr('\000a')||
 '';
 
 s:=s||'        APEX_DEBUG.ERROR(''%s : %s'', dbms_utility.format_error_backtrace, sqlerrm);'||unistr('\000a')||
-'      WHEN OTHERS THEN'||unistr('\000a')||
-'        APEX_DEBUG.ERROR(''%s : %s'', dbms_utility.format_error_backtrace, sqlerrm);'||unistr('\000a')||
 '        l_is_valid := FALSE;'||unistr('\000a')||
 '      END;'||unistr('\000a')||
 '      IF NOT l_is_valid THEN'||unistr('\000a')||
 '        l_is_valid := FALSE;'||unistr('\000a')||
 '        l_result.message := APEX_LANG.MESSAGE(''VALIDATION_COMMENT_FORMAT'', p_item.plain_label);'||unistr('\000a')||
 '      END IF;'||unistr('\000a')||
-'   ';
-
-s:=s||' END IF;'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
 '    RETURN l_result;'||unistr('\000a')||
 '  END validate_comment_textarea;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
+'-------------------------------------------';
+
+s:=s||'-------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION feature_authorization ('||unistr('\000a')||
 '    p_authorization in apex_plugin.t_authorization,'||unistr('\000a')||
 '    p_plugin        in apex_plugin.t_plugin'||unistr('\000a')||
-'  ) RETURN apex_plugin.t_authorization_exec_';
-
-s:=s||'result'||unistr('\000a')||
+'  ) RETURN apex_plugin.t_authorization_exec_result'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_count         NUMBER;'||unistr('\000a')||
 '    l_feature_name  VARCHAR(100);'||unistr('\000a')||
-'    l_result        apex_plugin.t_authorization_exec_result; -- result object to return'||unistr('\000a')||
+'    l_result        apex_plugin.';
+
+s:=s||'t_authorization_exec_result; -- result object to return'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    l_feature_name := p_authorization.attribute_01;'||unistr('\000a')||
 '    SELECT COUNT(1)'||unistr('\000a')||
@@ -18456,23 +18634,23 @@ s:=s||'result'||unistr('\000a')||
 '    FROM blog_param c'||unistr('\000a')||
 '    LEFT JOIN blog_param p ON c.param_parent = p.param_id'||unistr('\000a')||
 '    WHERE c.param_id = l_feature_name'||unistr('\000a')||
-'      AND c.param_value';
-
-s:=s||' = ''Y'' '||unistr('\000a')||
+'      AND c.param_value = ''Y'' '||unistr('\000a')||
 '      AND CASE WHEN p.param_type = ''YESNO'''||unistr('\000a')||
 '      THEN p.param_value ELSE ''Y'' END = ''Y'''||unistr('\000a')||
 '    ;'||unistr('\000a')||
-'    l_result.is_authorized := l_count > 0;'||unistr('\000a')||
+'    l';
+
+s:=s||'_result.is_authorized := l_count > 0;'||unistr('\000a')||
 '    RETURN l_result;'||unistr('\000a')||
 'END feature_authorization;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION render_math_question_field('||unistr('\000a')||
-'    p_i';
-
-s:=s||'tem                IN apex_plugin.t_page_item,'||unistr('\000a')||
+'    p_item                IN apex_plugin.t_page_item,'||unistr('\000a')||
 '    p_plugin              IN apex_plugin.t_plugin,'||unistr('\000a')||
-'    p_value               IN VARCHAR2,'||unistr('\000a')||
+'    p_va';
+
+s:=s||'lue               IN VARCHAR2,'||unistr('\000a')||
 '    p_is_readonly         IN BOOLEAN,'||unistr('\000a')||
 '    p_is_printer_friendly IN BOOLEAN'||unistr('\000a')||
 '  ) RETURN apex_plugin.t_page_item_render_result'||unistr('\000a')||
@@ -18481,10 +18659,10 @@ s:=s||'tem                IN apex_plugin.t_page_item,'||unistr('\000a')||
 '    l_answer_item VARCHAR2(30);'||unistr('\000a')||
 '    l_result      apex_plugin.t_page_item_render_result;'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
-'    l';
+'    l_name        := apex_plugin.get_input_name_for_page_item(false);'||unistr('\000a')||
+'    l_answer_item := p_item.attribute_01;';
 
-s:=s||'_name        := apex_plugin.get_input_name_for_page_item(false);'||unistr('\000a')||
-'    l_answer_item := p_item.attribute_01;'||unistr('\000a')||
+s:=s||''||unistr('\000a')||
 '    '||unistr('\000a')||
 '    IF p_is_readonly OR p_is_printer_friendly THEN'||unistr('\000a')||
 '      -- emit hidden textarea if necessary'||unistr('\000a')||
@@ -18492,12 +18670,12 @@ s:=s||'_name        := apex_plugin.get_input_name_for_page_item(false);'||unistr
 '        p_item_name => p_item.name,'||unistr('\000a')||
 '        p_value => p_value,'||unistr('\000a')||
 '        p_is_readonly => p_is_readonly,'||unistr('\000a')||
-'        p_is_printer_friendly => p_is_pr';
-
-s:=s||'inter_friendly'||unistr('\000a')||
+'        p_is_printer_friendly => p_is_printer_friendly'||unistr('\000a')||
 '      );'||unistr('\000a')||
 '      -- emit display span with the value'||unistr('\000a')||
-'      apex_plugin_util.print_display_only ('||unistr('\000a')||
+'      apex_plugin_util.print_display_onl';
+
+s:=s||'y ('||unistr('\000a')||
 '        p_item_name => p_item.name,'||unistr('\000a')||
 '        p_display_value => p_value,'||unistr('\000a')||
 '        p_show_line_breaks => false,'||unistr('\000a')||
@@ -18506,34 +18684,34 @@ s:=s||'inter_friendly'||unistr('\000a')||
 '      );'||unistr('\000a')||
 '    ELSE'||unistr('\000a')||
 '      sys.htp.p(''<input type="text" '''||unistr('\000a')||
-'        || ''size="'' || p_item.element_width ||''" ';
-
-s:=s||''''||unistr('\000a')||
+'        || ''size="'' || p_item.element_width ||''" '''||unistr('\000a')||
 '        || ''maxlength="'' || p_item.element_max_length || ''" '''||unistr('\000a')||
-'        || apex_plugin_util.get_element_attributes(p_item, l_name, ''text_field'')'||unistr('\000a')||
+'        || apex_plugin_util.get_element_at';
+
+s:=s||'tributes(p_item, l_name, ''text_field'')'||unistr('\000a')||
 '        || ''value="" />'''||unistr('\000a')||
 '      );'||unistr('\000a')||
 '      apex_javascript.add_onload_code ('||unistr('\000a')||
 '        p_code => ''apex.server.plugin("'' || apex_plugin.get_ajax_identifier || ''",{},{'''||unistr('\000a')||
 '        || ''dataType:"html",'''||unistr('\000a')||
 '        || ''success:function(data){'''||unistr('\000a')||
-'        || ''$("#'' || p_ite';
-
-s:=s||'m.name || ''").before(data).siblings("label,br").remove()}'''||unistr('\000a')||
+'        || ''$("#'' || p_item.name || ''").before(data).siblings("label,br").remove()}'''||unistr('\000a')||
 '        || ''});'''||unistr('\000a')||
 '      );'||unistr('\000a')||
-'      -- Tell APEX that this textarea is navigable'||unistr('\000a')||
+'      -- Tell APEX th';
+
+s:=s||'at this textarea is navigable'||unistr('\000a')||
 '      l_result.is_navigable := true;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
 '    RETURN l_result;'||unistr('\000a')||
 '  END render_math_question_field;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'-------------------------------------------------------------------------------';
-
-s:=s||'-'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION ajax_math_question_field('||unistr('\000a')||
 '    p_item   in apex_plugin.t_page_item,'||unistr('\000a')||
-'    p_plugin in apex_plugin.t_plugin'||unistr('\000a')||
+'    p_plugin in apex_plugi';
+
+s:=s||'n.t_plugin'||unistr('\000a')||
 '  ) RETURN apex_plugin.t_page_item_ajax_result'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_tmp         VARCHAR2(255);'||unistr('\000a')||
@@ -18542,23 +18720,23 @@ s:=s||'-'||unistr('\000a')||
 '    l_max_1       PLS_INTEGER := 1;'||unistr('\000a')||
 '    l_min_2       PLS_INTEGER := 1;'||unistr('\000a')||
 '    l_max_2       PLS_INTEGER := 1;'||unistr('\000a')||
-'    l_arr         APEX';
-
-s:=s||'_APPLICATION_GLOBAL.vc_arr2;'||unistr('\000a')||
+'    l_arr         APEX_APPLICATION_GLOBAL.vc_arr2;'||unistr('\000a')||
 '    l_result      apex_plugin.t_page_item_ajax_result;'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
-'    l_answer_item := p_item.attribute_01;'||unistr('\000a')||
+'    l_answer_i';
+
+s:=s||'tem := p_item.attribute_01;'||unistr('\000a')||
 '    l_min_1       := p_item.attribute_02;'||unistr('\000a')||
 '    l_max_1       := p_item.attribute_03;'||unistr('\000a')||
 '    l_min_2       := p_item.attribute_04;'||unistr('\000a')||
 '    l_max_2       := p_item.attribute_05;'||unistr('\000a')||
 '    l_arr(1)      := ROUND(DBMS_RANDOM.VALUE(l_min_1, l_max_1));'||unistr('\000a')||
-'    l_arr(1)      := ROUND(DBMS_R';
-
-s:=s||'ANDOM.VALUE(l_min_2, l_max_2));'||unistr('\000a')||
+'    l_arr(1)      := ROUND(DBMS_RANDOM.VALUE(l_min_2, l_max_2));'||unistr('\000a')||
 '    FOR n IN 1 .. 2'||unistr('\000a')||
 '    LOOP'||unistr('\000a')||
-'      l_arr(n) := ROUND(DBMS_RANDOM.VALUE(1, 40));'||unistr('\000a')||
+'      l_arr(n) := ROUND(DBMS_RANDOM.VALUE(1, ';
+
+s:=s||'40));'||unistr('\000a')||
 '      FOR i IN 1 .. LENGTH(l_arr(n))'||unistr('\000a')||
 '      LOOP'||unistr('\000a')||
 '        l_tmp := l_tmp || ''&#'' || ASCII(SUBSTR(l_arr(n), i, 1));'||unistr('\000a')||
@@ -18568,31 +18746,31 @@ s:=s||'ANDOM.VALUE(l_min_2, l_max_2));'||unistr('\000a')||
 '      END IF;'||unistr('\000a')||
 '    END LOOP;'||unistr('\000a')||
 '    -- Write header for the output.'||unistr('\000a')||
-'    sys.owa';
-
-s:=s||'_util.mime_header(''text/html'', false);'||unistr('\000a')||
+'    sys.owa_util.mime_header(''text/html'', false);'||unistr('\000a')||
 '    sys.htp.p(''Cache-Control: no-cache'');'||unistr('\000a')||
-'    sys.htp.p(''Pragma: no-cache'');'||unistr('\000a')||
+'    sys.htp.p(''Pragma: no';
+
+s:=s||'-cache'');'||unistr('\000a')||
 '    --sys.htp.p(''X-Robots-Tag    noindex,follow'');'||unistr('\000a')||
 '    sys.owa_util.http_header_close;'||unistr('\000a')||
 '    sys.htp.p(''<p>'' || APEX_LANG.MESSAGE(''MSG_MATH_QUESTION'', ''</p><span>'' ||l_tmp || ''&nbsp;&#'' || ASCII(''='') || ''</span>''));'||unistr('\000a')||
 '    /* set correct answer to item session state */'||unistr('\000a')||
-'    apex_util.set_s';
-
-s:=s||'ession_state(l_answer_item, TO_NUMBER(l_arr(1)) + TO_NUMBER(l_arr(2)));'||unistr('\000a')||
+'    apex_util.set_session_state(l_answer_item, TO_NUMBER(l_arr(1)) + TO_NUMBER(l_arr(2)));'||unistr('\000a')||
 '    RETURN l_result;'||unistr('\000a')||
-'  EXCEPTION WHEN OTHERS'||unistr('\000a')||
+'  EXCEPTION W';
+
+s:=s||'HEN OTHERS'||unistr('\000a')||
 '  THEN'||unistr('\000a')||
 '    sys.htp.p(wwv_flow_lang.system_message(''ajax_server_error''));'||unistr('\000a')||
 '    RETURN l_result;'||unistr('\000a')||
 '  END ajax_math_question_field;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'----------------------------------------------------------------------------';
-
-s:=s||'----'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION validate_math_question_field('||unistr('\000a')||
 '    p_item   IN apex_plugin.t_page_item,'||unistr('\000a')||
-'    p_plugin IN apex_plugin.t_plugin,'||unistr('\000a')||
+'    p_plugin IN ape';
+
+s:=s||'x_plugin.t_plugin,'||unistr('\000a')||
 '    p_value  IN VARCHAR2'||unistr('\000a')||
 '  ) RETURN apex_plugin.t_page_item_validation_result'||unistr('\000a')||
 '  AS'||unistr('\000a')||
@@ -18600,14 +18778,14 @@ s:=s||'----'||unistr('\000a')||
 '    l_value       SIMPLE_INTEGER := 0;'||unistr('\000a')||
 '    l_answer      SIMPLE_INTEGER := 0;'||unistr('\000a')||
 '    l_is_valid    BOOLEAN;'||unistr('\000a')||
-'    l_result      apex_plugin.t_page_item_validation_re';
-
-s:=s||'sult;'||unistr('\000a')||
+'    l_result      apex_plugin.t_page_item_validation_result;'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    l_answer_item := p_item.attribute_01;'||unistr('\000a')||
 '    IF p_value IS NULL THEN'||unistr('\000a')||
 '      RETURN NULL;'||unistr('\000a')||
-'    END IF;'||unistr('\000a')||
+'   ';
+
+s:=s||' END IF;'||unistr('\000a')||
 '    BEGIN'||unistr('\000a')||
 '      l_is_valid := TO_NUMBER(p_value) = nv(l_answer_item);'||unistr('\000a')||
 '    EXCEPTION WHEN '||unistr('\000a')||
@@ -18617,43 +18795,43 @@ s:=s||'sult;'||unistr('\000a')||
 '      l_is_valid := FALSE;'||unistr('\000a')||
 '    END;'||unistr('\000a')||
 '    IF NOT l_is_valid THEN'||unistr('\000a')||
-'      l_result.message := APEX_LANG.MESSAGE(''VALIDATION_MATH_QUESTION'', p_item.plain';
-
-s:=s||'_label);'||unistr('\000a')||
+'      l_result.message := APEX_LANG.MESSAGE(''VALIDATION_MATH_QUESTION'', p_item.plain_label);'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
 '    RETURN l_result;'||unistr('\000a')||
 '  END validate_math_question_field;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
+'----------------------------';
+
+s:=s||'----------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION render_modal_confirm('||unistr('\000a')||
 '    p_dynamic_action IN apex_plugin.t_dynamic_action,'||unistr('\000a')||
 '    p_plugin         IN apex_plugin.t_plugin'||unistr('\000a')||
-'  ) RETURN apex_plugin.t_dyn';
-
-s:=s||'amic_action_render_result'||unistr('\000a')||
+'  ) RETURN apex_plugin.t_dynamic_action_render_result'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_result apex_plugin.t_dynamic_action_render_result;'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
-'    apex_javascript.add_inline_code ('||unistr('\000a')||
+'    apex_j';
+
+s:=s||'avascript.add_inline_code ('||unistr('\000a')||
 '      p_code => ''function net_webhop_dbswh_modal_confirm(){'''||unistr('\000a')||
 '        || ''this.affectedElements.data("request",this.triggeringElement.id).dialog({'''||unistr('\000a')||
 '        || ''modal:true,'''||unistr('\000a')||
 '        || ''buttons:{'''||unistr('\000a')||
-'        || ''"'' || APEX_LANG.LANG(''OK'') || ''":function(){$(this).dialog(';
+'        || ''"'' || APEX_LANG.LANG(''OK'') || ''":function(){$(this).dialog("close");apex.submit($(this).data("request"));},'''||unistr('\000a')||
+'        || ''"'' || APEX_LANG.LANG(''Cancel'') || ''":functio';
 
-s:=s||'"close");apex.submit($(this).data("request"));},'''||unistr('\000a')||
-'        || ''"'' || APEX_LANG.LANG(''Cancel'') || ''":function(){$(this).dialog("close")}'''||unistr('\000a')||
+s:=s||'n(){$(this).dialog("close")}'''||unistr('\000a')||
 '        || ''}})}'''||unistr('\000a')||
 '      ,p_key  => ''net.webhop.dbswh.modal_confirm'''||unistr('\000a')||
 '    );'||unistr('\000a')||
 '    l_result.javascript_function := ''net_webhop_dbswh_modal_confirm'';'||unistr('\000a')||
 '    RETURN l_result;'||unistr('\000a')||
 '  END render_modal_confirm;'||unistr('\000a')||
-'----------------------------------------------------------------------';
-
-s:=s||'----------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'END "BLOG_PLUGIN";'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'END "BLOG_PLUG';
+
+s:=s||'IN";'||unistr('\000a')||
 '/'||unistr('\000a')||
 ''||unistr('\000a')||
 'CREATE OR REPLACE PACKAGE  "BLOG_LOG" '||unistr('\000a')||
@@ -18663,126 +18841,13 @@ s:=s||'----------'||unistr('\000a')||
 '  FUNCTION apex_error_handler('||unistr('\000a')||
 '    p_error IN apex_error.t_error'||unistr('\000a')||
 '  ) RETURN apex_error.t_error_result;'||unistr('\000a')||
-'----------------------------------------------';
-
-s:=s||'----------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE write_activity_log('||unistr('\000a')||
 '    p_user_id         IN NUMBER,'||unistr('\000a')||
-'    p_activity_type   IN VARCHAR2,'||unistr('\000a')||
-'    p_session_id      IN NUMBER,'||unistr('\000a')||
-'    p_related_id      IN NUMBER DEFAULT 0,'||unistr('\000a')||
-'    p_ip_address      IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
-'    p_user_agent      IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
-'    p_referer         IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
-'    p_search_type     IN VARCHAR2 DEFAULT NUL';
-
-s:=s||'L,'||unistr('\000a')||
-'    p_search          IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
-'    p_country_code    IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
-'    p_region          IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
-'    p_city            IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
-'    p_latitude        IN NUMBER DEFAULT NULL,'||unistr('\000a')||
-'    p_longitude       IN NUMBER DEFAULT NULL,'||unistr('\000a')||
-'    p_additional_info IN VARCHAR2 DEFAULT NULL'||unistr('\000a')||
-'  );'||unistr('\000a')||
-'-------------------------------------------------------------';
-
-s:=s||'-------------------'||unistr('\000a')||
-'  PROCEDURE write_article_log('||unistr('\000a')||
-'    p_article_id  IN NUMBER'||unistr('\000a')||
-'  );'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PROCEDURE rate_article('||unistr('\000a')||
-'    p_article_id      IN NUMBER,'||unistr('\000a')||
-'    p_article_rate    IN OUT NOCOPY NUMBER'||unistr('\000a')||
-'  );'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PROCEDURE write_category_log('||unistr('\000a')||
-'    p_category_';
-
-s:=s||'id  IN NUMBER'||unistr('\000a')||
-'  );'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PROCEDURE write_file_log('||unistr('\000a')||
-'    p_file_id  IN NUMBER'||unistr('\000a')||
-'  );'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'END "BLOG_LOG";'||unistr('\000a')||
-'/'||unistr('\000a')||
-'CREATE OR REPLACE PACKAGE BODY  "BLOG_LOG" '||unistr('\000a')||
-'AS'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'---------------';
-
-s:=s||'-----------------------------------------------------------------'||unistr('\000a')||
-'  FUNCTION apex_error_handler('||unistr('\000a')||
-'    p_error IN apex_error.t_error'||unistr('\000a')||
-'  ) RETURN apex_error.t_error_result'||unistr('\000a')||
-'  AS'||unistr('\000a')||
-'    l_result          apex_error.t_error_result;'||unistr('\000a')||
-'    l_error           apex_error.t_error;'||unistr('\000a')||
-'    l_reference_id    PLS_INTEGER;'||unistr('\000a')||
-'    l_constraint_name VARCHAR2(255);'||unistr('\000a')||
-'    l_err_msg         VARCHAR2(32700);'||unistr('\000a')||
-'  BEGIN'||unistr('\000a')||
-'    l_result := a';
-
-s:=s||'pex_error.init_error_result ( p_error => p_error );'||unistr('\000a')||
-'    -- If it''s an internal error raised by APEX, like an invalid statement or'||unistr('\000a')||
-'    -- code which can''t be executed, the error text might contain security sensitive'||unistr('\000a')||
-'    -- information. To avoid this security problem we can rewrite the error to'||unistr('\000a')||
-'    -- a generic error message and log the original error message for further'||unistr('\000a')||
-'    -- investigation by the ';
-
-s:=s||'help desk.'||unistr('\000a')||
-'    IF p_error.is_internal_error THEN'||unistr('\000a')||
-'      -- Access Denied errors raised by application or page authorization should'||unistr('\000a')||
-'      -- still show up with the original error message'||unistr('\000a')||
-'      IF NOT p_error.apex_error_code LIKE ''APEX.SESSION_STATE.%'''||unistr('\000a')||
-'      AND NOT p_error.apex_error_code = ''APEX.AUTHORIZATION.ACCESS_DENIED'''||unistr('\000a')||
-'      AND NOT p_error.apex_error_code = ''APEX.PAGE.DUPLICATE_SUBMIT'''||unistr('\000a')||
-'      ';
-
-s:=s||'AND NOT p_error.apex_error_code = ''APEX.SESSION_STATE.RESTRICTED_CHAR.WEB_SAFE'''||unistr('\000a')||
-'      AND NOT p_error.apex_error_code = ''APEX.SESSION_STATE.RESTRICTED_CHAR.US_ONLY'''||unistr('\000a')||
-'      THEN'||unistr('\000a')||
-'        -- log error for example with an autonomous transaction and return'||unistr('\000a')||
-'        -- l_reference_id as reference#'||unistr('\000a')||
-'        -- l_reference_id := log_error ('||unistr('\000a')||
-'        --                       p_error => p_error );'||unistr('\000a')||
-'        --'||unistr('\000a')||
-'  ';
-
-s:=s||'      -- Change the message to the generic error message which doesn''t expose'||unistr('\000a')||
-'        -- any sensitive information.'||unistr('\000a')||
-'        -- log error to application debug information'||unistr('\000a')||
-'        APEX_DEBUG.ERROR('||unistr('\000a')||
-'          ''Error handler: %s %s %s'','||unistr('\000a')||
-'           p_error.apex_error_code,'||unistr('\000a')||
-'           l_result.message,'||unistr('\000a')||
-'           l_result.additional_info'||unistr('\000a')||
-'        );'||unistr('\000a')||
-'        l_result.message := APEX_LANG.MESSAGE(''GENERAL_';
-
-s:=s||'ERROR'');'||unistr('\000a')||
-'        l_result.additional_info := NULL;'||unistr('\000a')||
-'      END IF;'||unistr('\000a')||
-'    ELSE'||unistr('\000a')||
-'      /*'||unistr('\000a')||
-'      -- Show the error as inline error'||unistr('\000a')||
-'      l_result.display_location :='||unistr('\000a')||
-'      CASE'||unistr('\000a')||
-'      WHEN l_result.display_location = apex_error.c_on_error_page THEN'||unistr('\000a')||
-'        apex_error.c_inline_in_notification'||unistr('\000a')||
-'      ELSE'||unistr('\000a')||
-'        l_result.display_location'||unistr('\000a')||
-'      END;'||unistr('\000a')||
-'      */'||unistr('\000a')||
-'      -- If it''s a constraint violation like'||unistr('\000a')||
-'      ';
+'    p_';
 
 wwv_flow_api.append_to_install_script(
-  p_id => 11220716262817091 + wwv_flow_api.g_id_offset,
+  p_id => 12274420158820772 + wwv_flow_api.g_id_offset,
   p_flow_id => wwv_flow.g_flow_id,
   p_script_clob => s);
 end;
@@ -18797,71 +18862,190 @@ begin
 declare
     s varchar2(32767) := null;
 begin
-s:=s||'--'||unistr('\000a')||
+s:=s||'activity_type   IN VARCHAR2,'||unistr('\000a')||
+'    p_session_id      IN NUMBER,'||unistr('\000a')||
+'    p_related_id      IN NUMBER DEFAULT 0,'||unistr('\000a')||
+'    p_ip_address      IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
+'    p_user_agent      IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
+'    p_referer         IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
+'    p_search_type     IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
+'    p_search          IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
+'    p_country_code    IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
+'    p_r';
+
+s:=s||'egion          IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
+'    p_city            IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
+'    p_latitude        IN NUMBER DEFAULT NULL,'||unistr('\000a')||
+'    p_longitude       IN NUMBER DEFAULT NULL,'||unistr('\000a')||
+'    p_additional_info IN VARCHAR2 DEFAULT NULL'||unistr('\000a')||
+'  );'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE write_article_log('||unistr('\000a')||
+'    p_article_id  IN NUMBER'||unistr('\000a')||
+'  );'||unistr('\000a')||
+'----------------------';
+
+s:=s||'----------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE rate_article('||unistr('\000a')||
+'    p_article_id      IN NUMBER,'||unistr('\000a')||
+'    p_article_rate    IN OUT NOCOPY NUMBER'||unistr('\000a')||
+'  );'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE write_category_log('||unistr('\000a')||
+'    p_category_id  IN NUMBER'||unistr('\000a')||
+'  );'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROC';
+
+s:=s||'EDURE write_file_log('||unistr('\000a')||
+'    p_file_id  IN NUMBER'||unistr('\000a')||
+'  );'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'END "BLOG_LOG";'||unistr('\000a')||
+'/'||unistr('\000a')||
+'CREATE OR REPLACE PACKAGE BODY  "BLOG_LOG" '||unistr('\000a')||
+'AS'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  INSERT_NULL_VALUE EXCEPTION;'||unistr('\000a')||
+'  PARENT_';
+
+s:=s||'NOT_FOUND  EXCEPTION;'||unistr('\000a')||
+'  PRAGMA EXCEPTION_INIT(INSERT_NULL_VALUE, -1400);'||unistr('\000a')||
+'  PRAGMA EXCEPTION_INIT(PARENT_NOT_FOUND, -2291);'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  FUNCTION apex_error_handler('||unistr('\000a')||
+'    p_error IN apex_error.t_error'||unistr('\000a')||
+'  ) RETURN apex_error.t_error_result'||unistr('\000a')||
+'  AS'||unistr('\000a')||
+'    l_re';
+
+s:=s||'sult          apex_error.t_error_result;'||unistr('\000a')||
+'    l_error           apex_error.t_error;'||unistr('\000a')||
+'    l_reference_id    PLS_INTEGER;'||unistr('\000a')||
+'    l_constraint_name VARCHAR2(255);'||unistr('\000a')||
+'    l_err_msg         VARCHAR2(32700);'||unistr('\000a')||
+'  BEGIN'||unistr('\000a')||
+'    l_result := apex_error.init_error_result ( p_error => p_error );'||unistr('\000a')||
+'    -- If it''s an internal error raised by APEX, like an invalid statement or'||unistr('\000a')||
+'    -- code which can''t be executed, the error text';
+
+s:=s||' might contain security sensitive'||unistr('\000a')||
+'    -- information. To avoid this security problem we can rewrite the error to'||unistr('\000a')||
+'    -- a generic error message and log the original error message for further'||unistr('\000a')||
+'    -- investigation by the help desk.'||unistr('\000a')||
+'    IF p_error.is_internal_error THEN'||unistr('\000a')||
+'      -- Access Denied errors raised by application or page authorization should'||unistr('\000a')||
+'      -- still show up with the original error mess';
+
+s:=s||'age'||unistr('\000a')||
+'      IF NOT p_error.apex_error_code LIKE ''APEX.SESSION_STATE.%'''||unistr('\000a')||
+'      AND NOT p_error.apex_error_code = ''APEX.AUTHORIZATION.ACCESS_DENIED'''||unistr('\000a')||
+'      AND NOT p_error.apex_error_code = ''APEX.PAGE.DUPLICATE_SUBMIT'''||unistr('\000a')||
+'      AND NOT p_error.apex_error_code = ''APEX.SESSION_STATE.RESTRICTED_CHAR.WEB_SAFE'''||unistr('\000a')||
+'      AND NOT p_error.apex_error_code = ''APEX.SESSION_STATE.RESTRICTED_CHAR.US_ONLY'''||unistr('\000a')||
+'      THEN'||unistr('\000a')||
+'     ';
+
+s:=s||'   -- log error for example with an autonomous transaction and return'||unistr('\000a')||
+'        -- l_reference_id as reference#'||unistr('\000a')||
+'        -- l_reference_id := log_error ('||unistr('\000a')||
+'        --                       p_error => p_error );'||unistr('\000a')||
+'        --'||unistr('\000a')||
+'        -- Change the message to the generic error message which doesn''t expose'||unistr('\000a')||
+'        -- any sensitive information.'||unistr('\000a')||
+'        -- log error to application debug information'||unistr('\000a')||
+'        APE';
+
+s:=s||'X_DEBUG.ERROR('||unistr('\000a')||
+'          ''Error handler: %s %s %s'','||unistr('\000a')||
+'           p_error.apex_error_code,'||unistr('\000a')||
+'           l_result.message,'||unistr('\000a')||
+'           l_result.additional_info'||unistr('\000a')||
+'        );'||unistr('\000a')||
+'        l_result.message := APEX_LANG.MESSAGE(''GENERAL_ERROR'');'||unistr('\000a')||
+'        l_result.additional_info := NULL;'||unistr('\000a')||
+'      END IF;'||unistr('\000a')||
+'    ELSE'||unistr('\000a')||
+'      /*'||unistr('\000a')||
+'      -- Show the error as inline error'||unistr('\000a')||
+'      l_result.display_location :='||unistr('\000a')||
+'      CASE'||unistr('\000a')||
+'      WHEN l';
+
+s:=s||'_result.display_location = apex_error.c_on_error_page THEN'||unistr('\000a')||
+'        apex_error.c_inline_in_notification'||unistr('\000a')||
+'      ELSE'||unistr('\000a')||
+'        l_result.display_location'||unistr('\000a')||
+'      END;'||unistr('\000a')||
+'      */'||unistr('\000a')||
+'      -- If it''s a constraint violation like'||unistr('\000a')||
+'      --'||unistr('\000a')||
 '      --   -) ORA-02292ORA-02291ORA-02290ORA-02091ORA-00001: unique constraint violated'||unistr('\000a')||
 '      --   -) : transaction rolled back (-> can hide a deferred constraint)'||unistr('\000a')||
-'      --   -) : check constraint violated'||unistr('\000a')||
+'      --   -) ';
+
+s:=s||': check constraint violated'||unistr('\000a')||
 '      --   -) : integrity constraint violated - parent key not found'||unistr('\000a')||
 '      --   -) : integrity constraint violated - child record found'||unistr('\000a')||
 '      --'||unistr('\000a')||
-'      -- we try to get a friendly error messag';
-
-s:=s||'e from our constraint lookup configuration.'||unistr('\000a')||
+'      -- we try to get a friendly error message from our constraint lookup configuration.'||unistr('\000a')||
 '      -- If we don''t find the constraint in our lookup table we fallback to'||unistr('\000a')||
 '      -- the original ORA error message.'||unistr('\000a')||
-'      IF p_error.ora_sqlcode IN (-1, -2091, -2290, -2291, -2292) THEN'||unistr('\000a')||
+'      IF p_error.ora';
+
+s:=s||'_sqlcode IN (-1, -2091, -2290, -2291, -2292) THEN'||unistr('\000a')||
 '        l_constraint_name := apex_error.extract_constraint_name ( p_error => p_error );'||unistr('\000a')||
 '        l_err_msg := APEX_LANG.MESSAGE(l_constraint_name);'||unistr('\000a')||
-'        -- not every c';
-
-s:=s||'onstraint has to be in our lookup table'||unistr('\000a')||
+'        -- not every constraint has to be in our lookup table'||unistr('\000a')||
 '        IF NOT l_err_msg = l_constraint_name THEN'||unistr('\000a')||
 '          l_result.message := l_err_msg;'||unistr('\000a')||
 '        END IF;'||unistr('\000a')||
 '      END IF;'||unistr('\000a')||
-'      -- If an ORA error has been raised, for example a raise_application_error(-20xxx, ''...'')'||unistr('\000a')||
-'      -- in a table trigger or in a PL/SQL package called by a process and we'||unistr('\000a')||
-'      -- haven''t found the error in our lookup table, then we just';
+'      -- If an ORA e';
 
-s:=s||' want to see'||unistr('\000a')||
+s:=s||'rror has been raised, for example a raise_application_error(-20xxx, ''...'')'||unistr('\000a')||
+'      -- in a table trigger or in a PL/SQL package called by a process and we'||unistr('\000a')||
+'      -- haven''t found the error in our lookup table, then we just want to see'||unistr('\000a')||
 '      -- the actual error text and not the full error stack with all the ORA error numbers.'||unistr('\000a')||
-'      IF p_error.ora_sqlcode IS NOT NULL AND l_result.message = p_error.message THEN'||unistr('\000a')||
+'      IF p_error.ora_sqlcode IS NOT NULL AND l_result.message = p_error.mess';
+
+s:=s||'age THEN'||unistr('\000a')||
 '        l_result.message := apex_error.get_first_ora_error_text ( p_error => p_error );'||unistr('\000a')||
 '      END IF;'||unistr('\000a')||
 '      -- If no associated page item/tabular form column has been set, we can use'||unistr('\000a')||
-'      -- apex_error.auto_se';
-
-s:=s||'t_associated_item to automatically guess the affected'||unistr('\000a')||
+'      -- apex_error.auto_set_associated_item to automatically guess the affected'||unistr('\000a')||
 '      -- error field by examine the ORA error for constraint names or column names.'||unistr('\000a')||
-'      IF l_result.page_item_name IS NULL AND l_result.column_alias IS NULL THEN'||unistr('\000a')||
+'      IF l_result.page_item_name IS NULL AN';
+
+s:=s||'D l_result.column_alias IS NULL THEN'||unistr('\000a')||
 '        apex_error.auto_set_associated_item ( p_error => p_error, p_error_result => l_result );'||unistr('\000a')||
 '      END IF;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
 '    RETURN l_result;'||unistr('\000a')||
 '  END apex_error_handler;'||unistr('\000a')||
-'-------------';
-
-s:=s||'-------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE write_activity_log('||unistr('\000a')||
-'    p_user_id         IN NUMBER,'||unistr('\000a')||
+'';
+
+s:=s||'    p_user_id         IN NUMBER,'||unistr('\000a')||
 '    p_activity_type   IN VARCHAR2,'||unistr('\000a')||
 '    p_session_id      IN NUMBER,'||unistr('\000a')||
 '    p_related_id      IN NUMBER DEFAULT 0,'||unistr('\000a')||
 '    p_ip_address      IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
-'    p_user_agent      IN VA';
-
-s:=s||'RCHAR2 DEFAULT NULL,'||unistr('\000a')||
+'    p_user_agent      IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
 '    p_referer         IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
 '    p_search_type     IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
 '    p_search          IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
-'    p_country_code    IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
+'    p_country_co';
+
+s:=s||'de    IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
 '    p_region          IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
 '    p_city            IN VARCHAR2 DEFAULT NULL,'||unistr('\000a')||
 '    p_latitude        IN NUMBER DEFAULT NULL,'||unistr('\000a')||
-'    p_longitude       IN NUMBER DEFAULT NULL,';
-
-s:=s||''||unistr('\000a')||
+'    p_longitude       IN NUMBER DEFAULT NULL,'||unistr('\000a')||
 '    p_additional_info IN VARCHAR2 DEFAULT NULL'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
@@ -18869,7 +19053,9 @@ s:=s||''||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    INSERT /*+ append */ INTO blog_activity_log ('||unistr('\000a')||
 '      ACTIVITY_TYPE,'||unistr('\000a')||
-'      APEX_SESSION_ID,'||unistr('\000a')||
+'      APEX';
+
+s:=s||'_SESSION_ID,'||unistr('\000a')||
 '      IP_ADDRESS,'||unistr('\000a')||
 '      RELATED_ID,'||unistr('\000a')||
 '      USER_ID,'||unistr('\000a')||
@@ -18880,9 +19066,7 @@ s:=s||''||unistr('\000a')||
 '      COUNTRY_CITY,'||unistr('\000a')||
 '      HTTP_USER_AGENT,'||unistr('\000a')||
 '      HTTP_REFERER,'||unistr('\000a')||
-'      SEARCH_TYPE';
-
-s:=s||','||unistr('\000a')||
+'      SEARCH_TYPE,'||unistr('\000a')||
 '      SEARCH_CRITERIA,'||unistr('\000a')||
 '      ADDITIONAL_INFO'||unistr('\000a')||
 '    ) VALUES ('||unistr('\000a')||
@@ -18892,7 +19076,9 @@ s:=s||','||unistr('\000a')||
 '      p_related_id,'||unistr('\000a')||
 '      p_user_id,'||unistr('\000a')||
 '      p_latitude,'||unistr('\000a')||
-'      p_longitude,'||unistr('\000a')||
+' ';
+
+s:=s||'     p_longitude,'||unistr('\000a')||
 '      p_country_code,'||unistr('\000a')||
 '      p_region,'||unistr('\000a')||
 '      p_city,'||unistr('\000a')||
@@ -18904,38 +19090,41 @@ s:=s||','||unistr('\000a')||
 '    );'||unistr('\000a')||
 '    COMMIT;'||unistr('\000a')||
 '  END write_activity_log;'||unistr('\000a')||
-'------';
-
-s:=s||'--------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PROCEDURE write_article_log('||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE write_article';
+
+s:=s||'_log('||unistr('\000a')||
 '    p_article_id  IN NUMBER'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    PRAGMA AUTONOMOUS_TRANSACTION;'||unistr('\000a')||
-'    INSERT_NULL_VALUE EXCEPTION;'||unistr('\000a')||
-'    PRAGMA EXCEPTION_INIT(INSERT_NULL_VALUE, -1400);'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    MERGE INTO blog_article_log a'||unistr('\000a')||
-'    USING (SE';
-
-s:=s||'LECT p_article_id AS article_id FROM DUAL) b'||unistr('\000a')||
+'    USING (SELECT p_article_id AS article_id FROM DUAL) b'||unistr('\000a')||
 '    ON (a.article_id = b.article_id)'||unistr('\000a')||
 '    WHEN MATCHED THEN'||unistr('\000a')||
 '    UPDATE SET a.view_count = a.view_count + 1,'||unistr('\000a')||
 '      a.last_view = SYSDATE'||unistr('\000a')||
 '    WHEN NOT MATCHED THEN'||unistr('\000a')||
 '    INSERT (article_id, view_count, last_view)'||unistr('\000a')||
-'    VALUES (b.article_id, 1, SYSDATE)'||unistr('\000a')||
+'    VALUES (b.';
+
+s:=s||'article_id, 1, SYSDATE)'||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    COMMIT;'||unistr('\000a')||
-'  EXCEPTION WHEN INSERT_NULL_VALUE THEN'||unistr('\000a')||
-'    NULL;'||unistr('\000a')||
+'  EXCEPTION WHEN '||unistr('\000a')||
+'  VALUE_ERROR OR'||unistr('\000a')||
+'  INVALID_NUMBER OR'||unistr('\000a')||
+'  PARENT_NOT_FOUND OR'||unistr('\000a')||
+'  INSERT_NULL_VALUE'||unistr('\000a')||
+'  THEN'||unistr('\000a')||
+'      apex_debug.warn(''blog_log.write_article_log(p_article_id => %s); error: %s'', COALESCE(to_char(p_article_id), ''NULL''), sqlerrm);'||unistr('\000a')||
 '  END write_article_log;'||unistr('\000a')||
-'----------------';
-
-s:=s||'----------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------';
+
+s:=s||'------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE rate_article('||unistr('\000a')||
 '    p_article_id    IN NUMBER,'||unistr('\000a')||
 '    p_article_rate  IN OUT NOCOPY NUMBER'||unistr('\000a')||
@@ -18944,9 +19133,9 @@ s:=s||'----------------------------------------------------------------'||unistr
 '  BEGIN'||unistr('\000a')||
 '    UPDATE blog_article_log'||unistr('\000a')||
 '      SET article_rate      = (article_rate * rate_click + p_article_rate) / (rate_click + 1),'||unistr('\000a')||
-'          articl';
+'          article_rate_int  = ROUND( (article_rate * rate_click + p_article_rate) / (rate_click';
 
-s:=s||'e_rate_int  = ROUND( (article_rate * rate_click + p_article_rate) / (rate_click + 1) ),'||unistr('\000a')||
+s:=s||' + 1) ),'||unistr('\000a')||
 '          rate_click        = rate_click + 1,'||unistr('\000a')||
 '          last_rate         = SYSDATE'||unistr('\000a')||
 '    WHERE article_id = p_article_id'||unistr('\000a')||
@@ -18954,65 +19143,71 @@ s:=s||'e_rate_int  = ROUND( (article_rate * rate_click + p_article_rate) / (rate
 '    ;'||unistr('\000a')||
 '  END rate_article;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'----------------------------------';
-
-s:=s||'----------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE write_category_log('||unistr('\000a')||
-'    p_category_id  IN NUMBER'||unistr('\000a')||
+'';
+
+s:=s||'    p_category_id  IN NUMBER'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    PRAGMA AUTONOMOUS_TRANSACTION;'||unistr('\000a')||
-'    INSERT_NULL_VALUE EXCEPTION;'||unistr('\000a')||
-'    PRAGMA EXCEPTION_INIT(INSERT_NULL_VALUE, -1400);'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    MERGE INTO blog_category_log a'||unistr('\000a')||
 '    USING (SELECT p_category_id AS category_id FROM DUAL) b'||unistr('\000a')||
 '    ON (a.category_id = b.category_id)'||unistr('\000a')||
-'    WHEN MATCHED THE';
-
-s:=s||'N'||unistr('\000a')||
+'    WHEN MATCHED THEN'||unistr('\000a')||
 '    UPDATE SET a.view_count = a.view_count + 1,'||unistr('\000a')||
 '      a.last_view = SYSDATE'||unistr('\000a')||
 '    WHEN NOT MATCHED THEN'||unistr('\000a')||
 '    INSERT (category_id, view_count, last_view)'||unistr('\000a')||
-'    VALUES (b.category_id, 1, SYSDATE)'||unistr('\000a')||
+'    VALUES (b';
+
+s:=s||'.category_id, 1, SYSDATE)'||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    COMMIT;'||unistr('\000a')||
-'  EXCEPTION WHEN INSERT_NULL_VALUE THEN'||unistr('\000a')||
-'    NULL;'||unistr('\000a')||
+'  EXCEPTION WHEN'||unistr('\000a')||
+'    VALUE_ERROR OR'||unistr('\000a')||
+'    INVALID_NUMBER OR'||unistr('\000a')||
+'    PARENT_NOT_FOUND OR'||unistr('\000a')||
+'    INSERT_NULL_VALUE'||unistr('\000a')||
+'  THEN'||unistr('\000a')||
+'    apex_debug.warn(''blog_log.write_category_log(p_category_id => %s); error: %s'', COALESCE(to_char(p_category_id), ''NULL''), sqlerrm);'||unistr('\000a')||
 '  END write_category_log;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'----------------------------------';
+'---';
 
-s:=s||'----------------------------------------------'||unistr('\000a')||
+s:=s||'-----------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE write_file_log('||unistr('\000a')||
 '    p_file_id  IN NUMBER'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    PRAGMA AUTONOMOUS_TRANSACTION;'||unistr('\000a')||
-'    INSERT_NULL_VALUE EXCEPTION;'||unistr('\000a')||
-'    PRAGMA EXCEPTION_INIT(INSERT_NULL_VALUE, -1400);'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    MERGE INTO blog_file_log a'||unistr('\000a')||
 '    USING (SELECT p_file_id AS file_id FROM DUAL) b'||unistr('\000a')||
 '    ON (a.file_id = b.file_id)'||unistr('\000a')||
 '    WHEN MATCHED THEN'||unistr('\000a')||
-'    UPDATE SET a.click_cou';
-
-s:=s||'nt = a.click_count + 1,'||unistr('\000a')||
+'    UPDATE SET a.click_count = a.click_count + 1,'||unistr('\000a')||
 '      last_click = SYSDATE'||unistr('\000a')||
-'    WHEN NOT MATCHED THEN'||unistr('\000a')||
+'    ';
+
+s:=s||'WHEN NOT MATCHED THEN'||unistr('\000a')||
 '    INSERT (file_id, click_count, last_click)'||unistr('\000a')||
 '    VALUES (b.file_id, 1, SYSDATE)'||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    COMMIT;'||unistr('\000a')||
-'  EXCEPTION WHEN INSERT_NULL_VALUE THEN'||unistr('\000a')||
-'    NULL;'||unistr('\000a')||
+'  EXCEPTION WHEN'||unistr('\000a')||
+'  VALUE_ERROR OR'||unistr('\000a')||
+'  INVALID_NUMBER OR'||unistr('\000a')||
+'  PARENT_NOT_FOUND OR'||unistr('\000a')||
+'  INSERT_NULL_VALUE'||unistr('\000a')||
+'  THEN'||unistr('\000a')||
+'    apex_debug.warn(''blog_log.write_file_log(p_file_id => %s); error: %s'', COALESCE(to_char(p_file_id), ''NULL''), sqlerrm);'||unistr('\000a')||
 '  END write_file_log;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'-----------------------------------------------------------------------';
+'-------------------------------';
 
-s:=s||'---------'||unistr('\000a')||
+s:=s||'-------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 'END "BLOG_LOG";'||unistr('\000a')||
 '/'||unistr('\000a')||
 ''||unistr('\000a')||
@@ -19022,33 +19217,33 @@ s:=s||'---------'||unistr('\000a')||
 '-------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE rotate_log;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PROCEDURE update_country;'||unistr('\000a')||
-'--------------------';
+'--------';
 
-s:=s||'------------------------------------------------------------'||unistr('\000a')||
+s:=s||'------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE update_country;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE update_activity_logs;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE purge_preview;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
+'----------------------------------------------------------------------------';
+
+s:=s||'----'||unistr('\000a')||
 '  PROCEDURE rotate_log_job('||unistr('\000a')||
 '    p_interval IN PLS_INTEGER DEFAULT NULL'||unistr('\000a')||
 '  );'||unistr('\000a')||
-'----------------------------------------';
-
-s:=s||'----------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE update_country_job ('||unistr('\000a')||
 '    p_drop_only BOOLEAN DEFAULT FALSE'||unistr('\000a')||
 '  );'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE update_activity_logs_job ('||unistr('\000a')||
 '    p_drop_only BOOLEAN DEFAULT FALSE'||unistr('\000a')||
-'  );'||unistr('\000a')||
+'  );';
+
+s:=s||''||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE purge_preview_job('||unistr('\000a')||
-'    p_dr';
-
-s:=s||'op_only BOOLEAN DEFAULT FALSE'||unistr('\000a')||
+'    p_drop_only BOOLEAN DEFAULT FALSE'||unistr('\000a')||
 '  );'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 'END "BLOG_JOB";'||unistr('\000a')||
@@ -19056,46 +19251,46 @@ s:=s||'op_only BOOLEAN DEFAULT FALSE'||unistr('\000a')||
 'CREATE OR REPLACE PACKAGE BODY  "BLOG_JOB" '||unistr('\000a')||
 'AS'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'-- Private variables, procedures and functions'||unistr('\000a')||
-'----------';
+'-----------------';
 
-s:=s||'----------------------------------------------------------------------'||unistr('\000a')||
+s:=s||'---------------------------------------------------------------'||unistr('\000a')||
+'-- Private variables, procedures and functions'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE get_host_ip_info ('||unistr('\000a')||
 '    p_ip            IN VARCHAR2,'||unistr('\000a')||
 '    p_city          OUT NOCOPY VARCHAR2,'||unistr('\000a')||
-'    p_country_code  OUT NOCOPY VARCHAR2'||unistr('\000a')||
+'    p_country_code  OU';
+
+s:=s||'T NOCOPY VARCHAR2'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_clob  CLOB;'||unistr('\000a')||
 '    l_url   CONSTANT VARCHAR2(32000) := ''http://api.hostip.info/'';'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
-' ';
-
-s:=s||'   l_clob := apex_web_service.make_rest_request('||unistr('\000a')||
+'    l_clob := apex_web_service.make_rest_request('||unistr('\000a')||
 '                p_url         => l_url,'||unistr('\000a')||
 '                p_http_method => ''GET'','||unistr('\000a')||
 '                p_parm_name   => apex_util.string_to_table(''ip''),'||unistr('\000a')||
 '                p_parm_value  => apex_util.string_to_table(p_ip)'||unistr('\000a')||
 '              );'||unistr('\000a')||
-'    BEGIN'||unistr('\000a')||
-'      SELECT EXTRACTVALUE(VALUE(t), ''//gml:name'', ''xmlns:gml="http://www.opengis.net/gml"'')  AS city,'||unistr('\000a')||
-'        EXT';
+'  ';
 
-s:=s||'RACTVALUE(VALUE(t), ''//countryAbbrev'', ''xmlns:gml="http://www.opengis.net/gml"'')  AS countryAbbrev'||unistr('\000a')||
+s:=s||'  BEGIN'||unistr('\000a')||
+'      SELECT EXTRACTVALUE(VALUE(t), ''//gml:name'', ''xmlns:gml="http://www.opengis.net/gml"'')  AS city,'||unistr('\000a')||
+'        EXTRACTVALUE(VALUE(t), ''//countryAbbrev'', ''xmlns:gml="http://www.opengis.net/gml"'')  AS countryAbbrev'||unistr('\000a')||
 '      INTO p_city, p_country_code'||unistr('\000a')||
 '      FROM TABLE('||unistr('\000a')||
 '        XMLSEQUENCE('||unistr('\000a')||
 '          XMLTYPE.CREATEXML(l_clob).EXTRACT('||unistr('\000a')||
 '            ''HostipLookupResultSet/gml:featureMember/Hostip'','||unistr('\000a')||
-'            ''xmlns:gml="http://www.opengis.net/gml"'''||unistr('\000a')||
+'';
+
+s:=s||'            ''xmlns:gml="http://www.opengis.net/gml"'''||unistr('\000a')||
 '          )'||unistr('\000a')||
 '        )'||unistr('\000a')||
 '      ) t;'||unistr('\000a')||
-'    EXCEPTION WHEN NO_DATA_FOUND TH';
-
-s:=s||'EN'||unistr('\000a')||
+'    EXCEPTION WHEN NO_DATA_FOUND THEN'||unistr('\000a')||
 '      p_city          := NULL;'||unistr('\000a')||
 '      p_country_code  := NULL;'||unistr('\000a')||
 '    END;'||unistr('\000a')||
@@ -19104,11 +19299,11 @@ s:=s||'EN'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 ''||unistr('\000a')||
-'-- Global functions and procedures'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'---------------------';
+'-- Global functi';
 
-s:=s||'-----------------------------------------------------------'||unistr('\000a')||
+s:=s||'ons and procedures'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE rotate_log'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_new_tbl VARCHAR2(4000);'||unistr('\000a')||
@@ -19118,15 +19313,15 @@ s:=s||'-----------------------------------------------------------'||unistr('\00
 '    SELECT SUBSTR(table_name, -1) AS log_tbl'||unistr('\000a')||
 '    INTO l_log_tbl'||unistr('\000a')||
 '    FROM user_synonyms'||unistr('\000a')||
-'    WHERE synonym_name = ''BLOG_ACTIVITY_LOG'''||unistr('\000a')||
+'    WHERE synonym_name = ''BLOG_ACTIVITY_';
+
+s:=s||'LOG'''||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    '||unistr('\000a')||
 '    IF l_log_tbl = ''1'' THEN'||unistr('\000a')||
 '      l_new_tbl := ''2'';'||unistr('\000a')||
 '    ELSIF l_log_tbl = ''2'' THEN'||unistr('\000a')||
-'      l_new_tbl := ''1''';
-
-s:=s||';'||unistr('\000a')||
+'      l_new_tbl := ''1'';'||unistr('\000a')||
 '    ELSE'||unistr('\000a')||
 '      raise_application_error(-20001, ''Invalid log table.'');'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
@@ -19135,11 +19330,11 @@ s:=s||';'||unistr('\000a')||
 '    '||unistr('\000a')||
 '    EXECUTE IMMEDIATE ''CREATE OR REPLACE SYNONYM BLOG_ACTIVITY_LOG FOR BLOG_ACTIVITY_LOG'' || l_new_tbl;'||unistr('\000a')||
 '  '||unistr('\000a')||
-'  END rotate_log;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'-----------------------------';
+'  END r';
 
-s:=s||'---------------------------------------------------'||unistr('\000a')||
+s:=s||'otate_log;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE update_country'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_city    VARCHAR2(2000);'||unistr('\000a')||
@@ -19149,13 +19344,13 @@ s:=s||'---------------------------------------------------'||unistr('\000a')||
 '  '||unistr('\000a')||
 '    /* Get distinct ip addreses where is no country information. */'||unistr('\000a')||
 '    FOR c1 IN('||unistr('\000a')||
-'      SELECT DISTINCT ip_address'||unistr('\000a')||
+'      SELECT DISTIN';
+
+s:=s||'CT ip_address'||unistr('\000a')||
 '      FROM blog_activity_log'||unistr('\000a')||
 '      WHERE activity_type = ''NEW_SESSION'''||unistr('\000a')||
 '      AND country_code IS NULL'||unistr('\000a')||
-'    )';
-
-s:=s||' LOOP'||unistr('\000a')||
+'    ) LOOP'||unistr('\000a')||
 '    '||unistr('\000a')||
 '      l_count := 0;'||unistr('\000a')||
 '      l_city  := NULL;'||unistr('\000a')||
@@ -19165,13 +19360,13 @@ s:=s||' LOOP'||unistr('\000a')||
 '      BEGIN'||unistr('\000a')||
 '        WITH qry AS ('||unistr('\000a')||
 '          SELECT'||unistr('\000a')||
-'            ROW_NUMBER() OVER(ORDER BY activity_date DESC) AS rn,'||unistr('\000a')||
+'            ROW_NUMBER() OVER(ORDER BY activity_d';
+
+s:=s||'ate DESC) AS rn,'||unistr('\000a')||
 '            country_city,'||unistr('\000a')||
 '            country_code'||unistr('\000a')||
 '          FROM blog_v$activity_log'||unistr('\000a')||
-'          WHERE ac';
-
-s:=s||'tivity_type = ''NEW_SESSION'''||unistr('\000a')||
+'          WHERE activity_type = ''NEW_SESSION'''||unistr('\000a')||
 '          AND ip_address = c1.ip_address'||unistr('\000a')||
 '          AND country_code IS NOT NULL'||unistr('\000a')||
 '        )'||unistr('\000a')||
@@ -19182,12 +19377,12 @@ s:=s||'tivity_type = ''NEW_SESSION'''||unistr('\000a')||
 '        FROM qry'||unistr('\000a')||
 '        WHERE rn = 1'||unistr('\000a')||
 '        ;'||unistr('\000a')||
-'      /* If no previous visit get country info from hostip.info */'||unistr('\000a')||
+'      /* If no previous';
+
+s:=s||' visit get country info from hostip.info */'||unistr('\000a')||
 '      EXCEPTION WHEN NO_DATA_FOUND THEN    '||unistr('\000a')||
 '        get_host_ip_info('||unistr('\000a')||
-'       ';
-
-s:=s||'   p_ip            => c1.ip_address,'||unistr('\000a')||
+'          p_ip            => c1.ip_address,'||unistr('\000a')||
 '          p_city          => l_city,'||unistr('\000a')||
 '          p_country_code  => l_code'||unistr('\000a')||
 '        );'||unistr('\000a')||
@@ -19196,12 +19391,12 @@ s:=s||'   p_ip            => c1.ip_address,'||unistr('\000a')||
 '      l_city  := COALESCE(l_city, ''(unknown city)'');'||unistr('\000a')||
 '      l_code  := COALESCE(l_code, ''XX'');'||unistr('\000a')||
 '      '||unistr('\000a')||
-'      /* Update activity log if country code exists in BLOG_COUNTRY table */'||unistr('\000a')||
+'      /* Update activity log if country';
+
+s:=s||' code exists in BLOG_COUNTRY table */'||unistr('\000a')||
 '      UPDATE blog_activity_log'||unistr('\000a')||
 '      SET country_city  = l_city,'||unistr('\000a')||
-'        country_co';
-
-s:=s||'de    = l_code'||unistr('\000a')||
+'        country_code    = l_code'||unistr('\000a')||
 '      WHERE activity_type = ''NEW_SESSION'''||unistr('\000a')||
 '        AND ip_address  = c1.ip_address'||unistr('\000a')||
 '        AND country_code IS NULL'||unistr('\000a')||
@@ -19211,13 +19406,13 @@ s:=s||'de    = l_code'||unistr('\000a')||
 '          WHERE c.country_code = l_code'||unistr('\000a')||
 '        )'||unistr('\000a')||
 '      ;'||unistr('\000a')||
-'      l_count := SQL%ROWCOUNT;'||unistr('\000a')||
+'      l_count := SQL%';
+
+s:=s||'ROWCOUNT;'||unistr('\000a')||
 '      '||unistr('\000a')||
 '      /* If no rows updated, country code is unknown */'||unistr('\000a')||
 '      IF l_count = 0 THEN'||unistr('\000a')||
-'        l_code := ''XX''';
-
-s:=s||';    '||unistr('\000a')||
+'        l_code := ''XX'';    '||unistr('\000a')||
 '        UPDATE blog_activity_log'||unistr('\000a')||
 '        SET country_city  = l_city,'||unistr('\000a')||
 '          country_code    = l_code'||unistr('\000a')||
@@ -19226,13 +19421,13 @@ s:=s||';    '||unistr('\000a')||
 '          AND country_code IS NULL'||unistr('\000a')||
 '          ;'||unistr('\000a')||
 '        l_count := SQL%ROWCOUNT;'||unistr('\000a')||
-'      END IF;'||unistr('\000a')||
+'   ';
+
+s:=s||'   END IF;'||unistr('\000a')||
 '      '||unistr('\000a')||
 '      /* Update total visitors from country */'||unistr('\000a')||
 '      UPDATE blog_country'||unistr('\000a')||
-'      SET visit_count = visit_';
-
-s:=s||'count + l_count'||unistr('\000a')||
+'      SET visit_count = visit_count + l_count'||unistr('\000a')||
 '      WHERE country_code = l_code'||unistr('\000a')||
 '      ;'||unistr('\000a')||
 '      '||unistr('\000a')||
@@ -19241,37 +19436,37 @@ s:=s||'count + l_count'||unistr('\000a')||
 '  END update_country;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PROCEDURE update_activity_logs'||unistr('\000a')||
+'  PROCEDURE';
+
+s:=s||' update_activity_logs'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    dbms_mview.refresh(''BLOG_ARTICLE_HIT20,BLOG_ARTICLE_TOP20'');'||unistr('\000a')||
-'  END update_activity';
-
-s:=s||'_logs;'||unistr('\000a')||
+'  END update_activity_logs;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE purge_preview'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
-'    /* Delete from blog_article_preview rows where session is expired */'||unistr('\000a')||
+'    /* Delete from blog_article_preview rows where session is expired *';
+
+s:=s||'/'||unistr('\000a')||
 '    DELETE FROM blog_article_preview p'||unistr('\000a')||
 '    WHERE NOT EXISTS ('||unistr('\000a')||
 '      SELECT 1 FROM apex_workspace_sessions s'||unistr('\000a')||
-'      WHERE';
-
-s:=s||' s.apex_session_id = p.apex_session_id'||unistr('\000a')||
+'      WHERE s.apex_session_id = p.apex_session_id'||unistr('\000a')||
 '    );'||unistr('\000a')||
 '  END purge_preview;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE rotate_log_job('||unistr('\000a')||
-'    p_interval IN PLS_INTEGER DEFAULT NULL'||unistr('\000a')||
+'    p_interval IN PLS_';
+
+s:=s||'INTEGER DEFAULT NULL'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_interval        SIMPLE_INTEGER := 0;'||unistr('\000a')||
-'    c_job             CONSTANT VARCHAR2(30) := ''';
-
-s:=s||'BLOG_ROTATE_LOG'';'||unistr('\000a')||
+'    c_job             CONSTANT VARCHAR2(30) := ''BLOG_ROTATE_LOG'';'||unistr('\000a')||
 '    job_not_exists    EXCEPTION;'||unistr('\000a')||
 '    PRAGMA            EXCEPTION_INIT(job_not_exists, -27475);'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
@@ -19282,37 +19477,37 @@ s:=s||'BLOG_ROTATE_LOG'';'||unistr('\000a')||
 '    END;'||unistr('\000a')||
 '    '||unistr('\000a')||
 '    IF p_interval IS NULL THEN'||unistr('\000a')||
-'      l_interval := blog_util.get_param_value(''LOG_ROTATE_DAY'');'||unistr('\000a')||
+'      l_interv';
+
+s:=s||'al := blog_util.get_param_value(''LOG_ROTATE_DAY'');'||unistr('\000a')||
 '    ELSE'||unistr('\000a')||
 '      l_interval := p_interval;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'    IF l_interval';
-
-s:=s||' > 0 THEN'||unistr('\000a')||
+'    IF l_interval > 0 THEN'||unistr('\000a')||
 '      DBMS_SCHEDULER.CREATE_JOB('||unistr('\000a')||
 '        job_name        => c_job,'||unistr('\000a')||
 '        job_type        => ''STORED_PROCEDURE'','||unistr('\000a')||
 '        job_action      => ''blog_job.rotate_log'','||unistr('\000a')||
 '        start_date      => TRUNC(SYSTIMESTAMP),'||unistr('\000a')||
 '        enabled         => TRUE,'||unistr('\000a')||
-'        repeat_interval => ''FREQ=DAILY;INTERVAL='' || l_interval,'||unistr('\000a')||
+'        repeat_interval ';
+
+s:=s||'=> ''FREQ=DAILY;INTERVAL='' || l_interval,'||unistr('\000a')||
 '        comments        => ''Rotate blog activity logs'''||unistr('\000a')||
 '      );'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'  EN';
-
-s:=s||'D rotate_log_job;'||unistr('\000a')||
+'  END rotate_log_job;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE update_country_job ('||unistr('\000a')||
 '    p_drop_only BOOLEAN DEFAULT FALSE'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
-'    c_job                 CONSTANT VARCHAR2(30) := ''BLOG_UPDATE_COUNTRY'';'||unistr('\000a')||
-'    job_not_exists        EXCEPTION;'||unistr('\000a')||
-'    PRAGMA                EXC';
+'    c_job          ';
 
-s:=s||'EPTION_INIT(job_not_exists, -27475);'||unistr('\000a')||
+s:=s||'       CONSTANT VARCHAR2(30) := ''BLOG_UPDATE_COUNTRY'';'||unistr('\000a')||
+'    job_not_exists        EXCEPTION;'||unistr('\000a')||
+'    PRAGMA                EXCEPTION_INIT(job_not_exists, -27475);'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    BEGIN'||unistr('\000a')||
 '      DBMS_SCHEDULER.DROP_JOB(c_job);'||unistr('\000a')||
@@ -19323,22 +19518,22 @@ s:=s||'EPTION_INIT(job_not_exists, -27475);'||unistr('\000a')||
 '    IF NOT p_drop_only THEN'||unistr('\000a')||
 '      dbms_scheduler.create_job('||unistr('\000a')||
 '        job_name        => c_job,'||unistr('\000a')||
-'        job_type        =>''STORED_PROCEDURE'','||unistr('\000a')||
-'        job_action      => ''blog_job.update_country'','||unistr('\000a')||
-'        start_date      => TRUNC(SYSTIMESTAMP, ';
+'        job_type        =>';
 
-s:=s||'''HH''),'||unistr('\000a')||
+s:=s||'''STORED_PROCEDURE'','||unistr('\000a')||
+'        job_action      => ''blog_job.update_country'','||unistr('\000a')||
+'        start_date      => TRUNC(SYSTIMESTAMP, ''HH''),'||unistr('\000a')||
 '        repeat_interval => ''FREQ=MINUTELY;BYMINUTE=5,15,25,35,45,55'','||unistr('\000a')||
 '        enabled         => TRUE,'||unistr('\000a')||
 '        comments        => ''Update blog visitors country'''||unistr('\000a')||
 '      );'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
 '  END update_country_job;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PROCEDURE update_acti';
+'----------------------------------------------------------------';
 
-s:=s||'vity_logs_job ('||unistr('\000a')||
+s:=s||'----------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE update_activity_logs_job ('||unistr('\000a')||
 '    p_drop_only BOOLEAN DEFAULT FALSE'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
@@ -19347,38 +19542,38 @@ s:=s||'vity_logs_job ('||unistr('\000a')||
 '    PRAGMA         EXCEPTION_INIT(job_not_exists, -27475);'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    BEGIN'||unistr('\000a')||
-'      DBMS_SCHEDULER.DROP_JOB(c_job);'||unistr('\000a')||
+'      DBMS_SCHEDULER.DROP_JOB(c_job)';
+
+s:=s||';'||unistr('\000a')||
 '    EXCEPTION WHEN job_not_exists THEN'||unistr('\000a')||
 '      NULL;'||unistr('\000a')||
 '    END;'||unistr('\000a')||
 '    '||unistr('\000a')||
 '    IF NOT p_drop_only THEN'||unistr('\000a')||
-'      dbms_scheduler.creat';
-
-s:=s||'e_job('||unistr('\000a')||
+'      dbms_scheduler.create_job('||unistr('\000a')||
 '        job_name        => c_job,'||unistr('\000a')||
 '        job_type        =>''STORED_PROCEDURE'','||unistr('\000a')||
 '        job_action      => ''blog_job.update_activity_logs'','||unistr('\000a')||
 '        start_date      => TRUNC(SYSTIMESTAMP, ''HH''),'||unistr('\000a')||
 '        repeat_interval => ''FREQ=HOURLY;BYMINUTE=10'','||unistr('\000a')||
-'        enabled         => TRUE,'||unistr('\000a')||
+'        enabled         ';
+
+s:=s||'=> TRUE,'||unistr('\000a')||
 '        comments        => ''Update blog statistic log mviews'''||unistr('\000a')||
 '      );'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'  END update_activity_logs_jo';
-
-s:=s||'b;'||unistr('\000a')||
+'  END update_activity_logs_job;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE purge_preview_job('||unistr('\000a')||
 '    p_drop_only BOOLEAN DEFAULT FALSE'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
-'    c_job           CONSTANT VARCHAR2(30) := ''BLOG_PURGE_PREVIEW'';'||unistr('\000a')||
-'    job_not_exists  EXCEPTION;'||unistr('\000a')||
-'    PRAGMA          EXCEPTION_INIT(job_not_exists, -27475);';
+'    c_job           CONSTANT VARCHAR';
 
-s:=s||''||unistr('\000a')||
+s:=s||'2(30) := ''BLOG_PURGE_PREVIEW'';'||unistr('\000a')||
+'    job_not_exists  EXCEPTION;'||unistr('\000a')||
+'    PRAGMA          EXCEPTION_INIT(job_not_exists, -27475);'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    BEGIN'||unistr('\000a')||
 '      DBMS_SCHEDULER.DROP_JOB(c_job);'||unistr('\000a')||
@@ -19389,81 +19584,88 @@ s:=s||''||unistr('\000a')||
 '      dbms_scheduler.create_job('||unistr('\000a')||
 '        job_name        => c_job,'||unistr('\000a')||
 '        job_type        => ''STORED_PROCEDURE'','||unistr('\000a')||
-'        job_action      => ''blog_job.purge_preview'','||unistr('\000a')||
-'        start_date      => TRUNC(SYSTIMESTAMP, ''HH''),'||unistr('\000a')||
-'        repeat_interval => ''FREQ=D';
+'        job_action  ';
 
-s:=s||'AILY'','||unistr('\000a')||
+s:=s||'    => ''blog_job.purge_preview'','||unistr('\000a')||
+'        start_date      => TRUNC(SYSTIMESTAMP, ''HH''),'||unistr('\000a')||
+'        repeat_interval => ''FREQ=DAILY'','||unistr('\000a')||
 '        enabled         => TRUE,'||unistr('\000a')||
 '        comments        => ''Purge blog article preview table'''||unistr('\000a')||
 '      );'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
 '  END purge_preview_job;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------';
+
+s:=s||'------------------------------'||unistr('\000a')||
 'END "BLOG_JOB";'||unistr('\000a')||
 '/'||unistr('\000a')||
 ''||unistr('\000a')||
 'CREATE OR REPLACE PACKAGE  "BLOG_INSTALL" '||unistr('\000a')||
 'AUTHID DEFINER'||unistr('\000a')||
 'AS'||unistr('\000a')||
-'----------';
-
-s:=s||'----------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  i sys.dbms_sql.varchar2_table;'||unistr('\000a')||
+'  e sys.dbms_sql.varchar2_table;'||unistr('\000a')||
+'  b BLOB;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE update_param_data('||unistr('\000a')||
-'    p_reader_app_id IN NUMBER,'||unistr('\000a')||
-'    p_theme_path    IN VARCHAR2 DEFAULT NULL'||unistr('\000a')||
+'    p_theme_path    ';
+
+s:=s||'IN VARCHAR2 DEFAULT NULL'||unistr('\000a')||
 '  );'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE post_install;'||unistr('\000a')||
-'-----------------------------';
-
-s:=s||'---------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE pre_deinstall;'||unistr('\000a')||
+'--------------------------------------------------------------------------';
+
+s:=s||'------'||unistr('\000a')||
+'  FUNCTION varchar2_to_blob('||unistr('\000a')||
+'    p_varchar2_tab in dbms_sql.varchar2_table'||unistr('\000a')||
+'  ) RETURN BLOB;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 'END "BLOG_INSTALL";'||unistr('\000a')||
 '/'||unistr('\000a')||
 'CREATE OR REPLACE PACKAGE BODY  "BLOG_INSTALL" '||unistr('\000a')||
 'AS'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PRO';
+'------------------------------------------------------------------';
 
-s:=s||'CEDURE update_param_data('||unistr('\000a')||
-'    p_reader_app_id IN NUMBER,'||unistr('\000a')||
+s:=s||'--------------'||unistr('\000a')||
+'  PROCEDURE update_param_data('||unistr('\000a')||
 '    p_theme_path    IN VARCHAR2 DEFAULT NULL'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
-'    l_alias VARCHAR2(2000);'||unistr('\000a')||
+'    l_app_id    NUMBER;'||unistr('\000a')||
+'    l_app_alias VARCHAR2(2000);'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
-'    SELECT alias'||unistr('\000a')||
-'    INTO l_alias'||unistr('\000a')||
+'    SELECT application_id'||unistr('\000a')||
+'    INTO l_app_id'||unistr('\000a')||
+'    FROM apex_application_substitutions'||unistr('\000a')||
+'    WHERE substitution_string = ''SCHEMA_VERSION'''||unistr('\000a')||
+'      AND substitution_value = (select blog_util.get_param_value(''SCHEMA_VERSION'') from dual)'||unistr('\000a')||
+'    ;'||unistr('\000a')||
+'   ';
+
+s:=s||' SELECT alias'||unistr('\000a')||
+'    INTO l_app_alias'||unistr('\000a')||
 '    FROM apex_applications'||unistr('\000a')||
-'    WHERE application_id = p_reader_app_id'||unistr('\000a')||
+'    WHERE application_id = l_app_id'||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    UPDATE blog_param'||unistr('\000a')||
-'    SET param_value = TO_CHAR(p_reader_app_id)'||unistr('\000a')||
+'    SET param_value = TO_CHAR(l_app_id)'||unistr('\000a')||
 '    WHERE param_id  = ''G_BLOG_READER_APP_ID'''||unistr('\000a')||
 '    ;'||unistr('\000a')||
-'    '||unistr('\000a')||
-'    IF p_theme_pat';
-
-s:=s||'h IS NULL THEN'||unistr('\000a')||
-'      UPDATE blog_param'||unistr('\000a')||
-'      SET param_value = ''f?p='' || TO_CHAR(p_reader_app_id) || '':FILES:0:APPLICATION_PROCESS=DOWNLOAD:::P11_FILE_NAME:'''||unistr('\000a')||
-'      WHERE param_id  = ''G_THEME_PATH'''||unistr('\000a')||
-'      ;'||unistr('\000a')||
-'    ELSE'||unistr('\000a')||
-'      UPDATE blog_param'||unistr('\000a')||
-'      SET param_value = p_theme_path'||unistr('\000a')||
-'      WHERE param_id  = ''G_THEME_PATH'''||unistr('\000a')||
-'      ;'||unistr('\000a')||
-'    END IF;'||unistr('\000a')||
 '    UPDATE blog_param'||unistr('\000a')||
-'    SET param_value = ''f?p='' || l_alias || ''';
+'    SET param_value = coalesce(p_theme_path,''f?p='' || TO_CHAR(l_app_id) || '':FILES:0:APPLICATION_PROCESS=DOWNLOAD:::P11_FILE_NAME:'')'||unistr('\000a')||
+'    WHERE param_id  = ''G_THE';
 
-s:=s||':RSS:0'''||unistr('\000a')||
+s:=s||'ME_PATH'''||unistr('\000a')||
+'    ;'||unistr('\000a')||
+'    UPDATE blog_param'||unistr('\000a')||
+'    SET param_value = ''f?p='' || l_app_alias || '':RSS'''||unistr('\000a')||
 '    WHERE param_id  = ''G_RSS_FEED_URL'''||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    UPDATE blog_param'||unistr('\000a')||
@@ -19473,10 +19675,10 @@ s:=s||':RSS:0'''||unistr('\000a')||
 '    blog_install.post_install;'||unistr('\000a')||
 '  END update_param_data;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PROCEDURE pos';
+'-------------';
 
-s:=s||'t_install'||unistr('\000a')||
+s:=s||'-------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE post_install'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    blog_job.update_country_job;'||unistr('\000a')||
@@ -19486,10 +19688,10 @@ s:=s||'t_install'||unistr('\000a')||
 '    dbms_mview.refresh(''BLOG_PARAM_APP'',''C'');'||unistr('\000a')||
 '  END post_install;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PROCEDURE pre_';
+'--------------';
 
-s:=s||'deinstall'||unistr('\000a')||
+s:=s||'------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE pre_deinstall'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    blog_job.update_country_job(TRUE);'||unistr('\000a')||
@@ -19498,23 +19700,49 @@ s:=s||'deinstall'||unistr('\000a')||
 '    blog_job.purge_preview_job(TRUE);'||unistr('\000a')||
 '  END pre_deinstall;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------';
+
+s:=s||'------------------------------------------'||unistr('\000a')||
+'  FUNCTION varchar2_to_blob('||unistr('\000a')||
+'    p_varchar2_tab in dbms_sql.varchar2_table'||unistr('\000a')||
+'  ) RETURN BLOB'||unistr('\000a')||
+'  AS'||unistr('\000a')||
+'    l_blob blob;'||unistr('\000a')||
+'    l_size number;'||unistr('\000a')||
+'  BEGIN'||unistr('\000a')||
+'    dbms_lob.createtemporary(l_blob, true, dbms_lob.session);'||unistr('\000a')||
+'    FOR i IN 1 .. p_varchar2_tab.count'||unistr('\000a')||
+'    LOOP'||unistr('\000a')||
+'      l_size := length(p_varchar2_tab(i)) / 2;'||unistr('\000a')||
+'      dbms_lob.writeappend(l_blob, l_size, hextoraw(p_varcha';
+
+s:=s||'r2_tab(i)));'||unistr('\000a')||
+'    END LOOP;'||unistr('\000a')||
+'    RETURN l_blob;'||unistr('\000a')||
+'  EXCEPTION WHEN OTHERS THEN'||unistr('\000a')||
+'    dbms_lob.close(l_blob);'||unistr('\000a')||
+'    RETURN NULL;'||unistr('\000a')||
+'  END varchar2_to_blob;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-' END "BLOG_INSTALL";'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'END "BLOG_INSTALL";'||unistr('\000a')||
 '/'||unistr('\000a')||
 ''||unistr('\000a')||
-'CREATE OR REPLAC';
-
-s:=s||'E PACKAGE  "BLOG_ADMIN_APP" '||unistr('\000a')||
+'CREATE OR REPLACE PACKAGE  "BLOG_ADMIN_APP" '||unistr('\000a')||
 'AUTHID DEFINER'||unistr('\000a')||
 'AS'||unistr('\000a')||
+'--------';
+
+s:=s||'------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE refresh_article_mview;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION get_collection_name RETURN VARCHAR2;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE print_article_from_collection;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PROCEDURE table_t';
+'---------------------------------------';
 
-s:=s||'o_collection ('||unistr('\000a')||
+s:=s||'-----------------------------------------'||unistr('\000a')||
+'  PROCEDURE table_to_collection ('||unistr('\000a')||
 '    p_table       IN APEX_APPLICATION_GLOBAL.VC_ARR2'||unistr('\000a')||
 '  );'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
@@ -19523,10 +19751,10 @@ s:=s||'o_collection ('||unistr('\000a')||
 '  );'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE save_article_text ('||unistr('\000a')||
-'    p_article_id      IN NUMBER,'||unistr('\000a')||
-'    p_success_message IN OUT NO';
+'   ';
 
-s:=s||'COPY VARCHAR2,'||unistr('\000a')||
+s:=s||' p_article_id      IN NUMBER,'||unistr('\000a')||
+'    p_success_message IN OUT NOCOPY VARCHAR2,'||unistr('\000a')||
 '    p_message         IN VARCHAR DEFAULT ''Action Processed.'''||unistr('\000a')||
 '  );'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
@@ -19535,19 +19763,39 @@ s:=s||'COPY VARCHAR2,'||unistr('\000a')||
 '    p_author_id       IN NUMBER,'||unistr('\000a')||
 '    p_category_id     IN NUMBER,'||unistr('\000a')||
 '    p_article_title   IN VARCHAR2,'||unistr('\000a')||
-'    p_article_text    IN APEX_APPLICATION_GLOBAL.VC_ARR2'||unistr('\000a')||
-'  );'||unistr('\000a')||
-'-------';
+'    p_ar';
 
-s:=s||'-------------------------------------------------------------------------'||unistr('\000a')||
-'  FUNCTION get_next_category_seq RETURN NUMBER;'||unistr('\000a')||
+s:=s||'ticle_text    IN APEX_APPLICATION_GLOBAL.VC_ARR2'||unistr('\000a')||
+'  );'||unistr('\000a')||
+'--------------------------------------------------------------------------------  '||unistr('\000a')||
+'  PROCEDURE create_new_category('||unistr('\000a')||
+'    p_category_name IN VARCHAR2'||unistr('\000a')||
+'  );'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE cleanup_category_sequence;'||unistr('\000a')||
+'-------------------------------------------------------------------------';
+
+s:=s||'-------'||unistr('\000a')||
+'  PROCEDURE cleanup_faq_sequence;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE cleanup_author_sequence;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE cleanup_resource_sequence;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  FUNCTION get_next_category_seq RETURN';
+
+s:=s||' NUMBER;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION get_next_author_seq RETURN NUMBER;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'  FUNCTION get_next_faq_no RETURN NUMBER;'||unistr('\000a')||
-'----------------------------';
+'  FUNCTION get_next_faq_seq RETURN NUMBER;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  FUNCTION get_next_resource_seq ('||unistr('\000a')||
+'    p_link_type IN VARCH';
 
-s:=s||'----------------------------------------------------'||unistr('\000a')||
+s:=s||'AR2'||unistr('\000a')||
+'  ) RETURN NUMBER;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION display_param_value_item ('||unistr('\000a')||
 '    p_param_id        IN VARCHAR2,'||unistr('\000a')||
 '    p_param_type      IN VARCHAR2,'||unistr('\000a')||
@@ -19555,10 +19803,10 @@ s:=s||'----------------------------------------------------'||unistr('\000a')||
 '  ) RETURN BOOLEAN;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION set_param_value_item ('||unistr('\000a')||
-'    p_param_id          IN VARCHAR2,'||unistr('\000a')||
-'    p_yesno             IN VARCHA';
+'    p_param_id     ';
 
-s:=s||'R2,'||unistr('\000a')||
+s:=s||'     IN VARCHAR2,'||unistr('\000a')||
+'    p_yesno             IN VARCHAR2,'||unistr('\000a')||
 '    p_text_null         IN VARCHAR2,'||unistr('\000a')||
 '    p_number_null       IN VARCHAR2,'||unistr('\000a')||
 '    p_number_not_null   IN VARCHAR2,'||unistr('\000a')||
@@ -19568,11 +19816,27 @@ s:=s||'R2,'||unistr('\000a')||
 '  ) RETURN VARCHAR2;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION login('||unistr('\000a')||
-'    p_username IN VARCHAR2,'||unistr('\000a')||
-'    p_password IN VARCHAR2'||unistr('\000a')||
-'';
+'    ';
 
-s:=s||'  ) RETURN BOOLEAN;'||unistr('\000a')||
+wwv_flow_api.append_to_install_script(
+  p_id => 12274420158820772 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_script_clob => s);
+end;
+ 
+ 
+end;
+/
+
+ 
+begin
+ 
+declare
+    s varchar2(32767) := null;
+begin
+s:=s||'p_username IN VARCHAR2,'||unistr('\000a')||
+'    p_password IN VARCHAR2'||unistr('\000a')||
+'  ) RETURN BOOLEAN;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION check_password('||unistr('\000a')||
 '    p_username IN VARCHAR2,'||unistr('\000a')||
@@ -19580,20 +19844,20 @@ s:=s||'  ) RETURN BOOLEAN;'||unistr('\000a')||
 '  ) RETURN BOOLEAN;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE post_login;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'  FUNCTION ';
+'-----------------------------------------';
 
-s:=s||'is_developer RETURN PLS_INTEGER;'||unistr('\000a')||
+s:=s||'---------------------------------------'||unistr('\000a')||
+'  FUNCTION is_developer RETURN PLS_INTEGER;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE get_apex_lang_message ('||unistr('\000a')||
 '    p_application_id        IN NUMBER,'||unistr('\000a')||
 '    p_translation_entry_id  IN NUMBER,'||unistr('\000a')||
 '    p_translatable_message  OUT NOCOPY VARCHAR2,'||unistr('\000a')||
 '    p_language_code         OUT NOCOPY VARCHAR2,'||unistr('\000a')||
-'    p_message_text          OUT NOCOPY VARCHAR2,'||unistr('\000a')||
-'    p_md5                ';
+'    p_message_text     ';
 
-s:=s||'   OUT NOCOPY VARCHAR2'||unistr('\000a')||
+s:=s||'     OUT NOCOPY VARCHAR2,'||unistr('\000a')||
+'    p_md5                   OUT NOCOPY VARCHAR2'||unistr('\000a')||
 '   );'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE upd_apex_lang_message ('||unistr('\000a')||
@@ -19602,10 +19866,10 @@ s:=s||'   OUT NOCOPY VARCHAR2'||unistr('\000a')||
 '    p_translatable_message  IN VARCHAR2,'||unistr('\000a')||
 '    p_language_code         IN VARCHAR2,'||unistr('\000a')||
 '    p_message_text          IN VARCHAR2,'||unistr('\000a')||
-'    p_md5                   IN VARCHAR2,'||unistr('\000a')||
-'    p_succes';
+'  ';
 
-s:=s||'s_message       OUT NOCOPY VARCHAR2'||unistr('\000a')||
+s:=s||'  p_md5                   IN VARCHAR2,'||unistr('\000a')||
+'    p_success_message       OUT NOCOPY VARCHAR2'||unistr('\000a')||
 '   );'||unistr('\000a')||
 '--------------------------------------------------------------------------------  '||unistr('\000a')||
 'END "BLOG_ADMIN_APP";'||unistr('\000a')||
@@ -19614,19 +19878,19 @@ s:=s||'s_message       OUT NOCOPY VARCHAR2'||unistr('\000a')||
 'AS'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  -- Private constants and functions'||unistr('\000a')||
-'  g_article_text_collection CONSTANT VARCHAR2(80) := ''ARTICLE_TEXT_COLLECTION'';'||unistr('\000a')||
-'';
+'  g_article_text_collection C';
 
-s:=s||'--------------------------------------------------------------------------------'||unistr('\000a')||
+s:=s||'ONSTANT VARCHAR2(80) := ''ARTICLE_TEXT_COLLECTION'';'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION build_apex_lang_message_md5 ('||unistr('\000a')||
 '    p_translation_entry_id  IN NUMBER,'||unistr('\000a')||
 '    p_translatable_message  IN VARCHAR2,'||unistr('\000a')||
 '    p_language_code         IN VARCHAR2,'||unistr('\000a')||
-'    p_message_text          IN VARCHAR2,'||unistr('\000a')||
-'    p_col_sep   IN VARCHAR2 DEFAULT';
+'    p_message_text       ';
 
-s:=s||' ''|'''||unistr('\000a')||
+s:=s||'   IN VARCHAR2,'||unistr('\000a')||
+'    p_col_sep   IN VARCHAR2 DEFAULT ''|'''||unistr('\000a')||
 '  ) RETURN VARCHAR2'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
@@ -19638,20 +19902,29 @@ s:=s||' ''|'''||unistr('\000a')||
 '      '''''||unistr('\000a')||
 '    ));'||unistr('\000a')||
 '  END build_apex_lang_message_md5;'||unistr('\000a')||
-'------------------------------------------------------------';
+'---------';
 
-s:=s||'--------------------'||unistr('\000a')||
+s:=s||'-----------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  -- Global procedures and functions'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE refresh_article_mview'||unistr('\000a')||
+'  AS'||unistr('\000a')||
+'  BEGIN'||unistr('\000a')||
+' ';
+
+s:=s||'   dbms_mview.refresh(''BLOG_ARCHIVE_LOV,BLOG_ARTICLE_HIT20,BLOG_ARTICLE_LAST20,BLOG_ARTICLE_TOP20'',''CCCC'');'||unistr('\000a')||
+'  END refresh_article_mview;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  FUNCTION table_to_clob ('||unistr('\000a')||
 '    p_table IN APEX_APPLICATION_GLOBAL.VC_ARR2'||unistr('\000a')||
 '  ) RETURN CLOB'||unistr('\000a')||
 '  AS'||unistr('\000a')||
-'    ';
+'    l_';
 
-s:=s||'l_len   SIMPLE_INTEGER := 0;'||unistr('\000a')||
+s:=s||'len   SIMPLE_INTEGER := 0;'||unistr('\000a')||
 '    l_data  CLOB;'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 ''||unistr('\000a')||
@@ -19672,9 +19945,9 @@ s:=s||'l_len   SIMPLE_INTEGER := 0;'||unistr('\000a')||
 ''||unistr('\000a')||
 '    FOR i IN 1 .. l_len'||unistr('\000a')||
 '    LOOP'||unistr('\000a')||
-'  ';
+'    ';
 
-s:=s||'    dbms_lob.writeappend('||unistr('\000a')||
+s:=s||'  dbms_lob.writeappend('||unistr('\000a')||
 '        lob_loc => l_data,'||unistr('\000a')||
 '        amount  => LENGTH(p_table(i)),'||unistr('\000a')||
 '        buffer  => p_table(i)'||unistr('\000a')||
@@ -19686,9 +19959,9 @@ s:=s||'    dbms_lob.writeappend('||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE print_clob('||unistr('\000a')||
-' ';
+'   ';
 
-s:=s||'   p_clob IN CLOB'||unistr('\000a')||
+s:=s||' p_clob IN CLOB'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_length      SIMPLE_INTEGER := 0;'||unistr('\000a')||
@@ -19703,9 +19976,9 @@ s:=s||'   p_clob IN CLOB'||unistr('\000a')||
 '    l_byte_len  := 30000;'||unistr('\000a')||
 '    --'||unistr('\000a')||
 '    IF l_length < l_byte_len THEN'||unistr('\000a')||
-'      htp.prn';
+'      htp.prn(p';
 
-s:=s||'(p_clob);'||unistr('\000a')||
+s:=s||'_clob);'||unistr('\000a')||
 '    ELSE'||unistr('\000a')||
 '    --'||unistr('\000a')||
 '      WHILE l_offset < l_length AND l_byte_len > 0'||unistr('\000a')||
@@ -19719,9 +19992,9 @@ s:=s||'(p_clob);'||unistr('\000a')||
 '        /* set the start position for the next cut */'||unistr('\000a')||
 '        l_offset := l_offset + l_byte_len;'||unistr('\000a')||
 '        --'||unistr('\000a')||
-'        /* set the end position if less tha';
+'        /* set the end position if less than ';
 
-s:=s||'n 32k */'||unistr('\000a')||
+s:=s||'32k */'||unistr('\000a')||
 '        l_clob_len := l_clob_len - l_byte_len;'||unistr('\000a')||
 '        IF l_clob_len < l_byte_len THEN'||unistr('\000a')||
 '          l_byte_len := l_clob_len;'||unistr('\000a')||
@@ -19732,9 +20005,9 @@ s:=s||'n 32k */'||unistr('\000a')||
 '  END print_clob;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'  FUNCTION get_collection_name RETURN';
+'  FUNCTION get_collection_name RETURN V';
 
-s:=s||' VARCHAR2'||unistr('\000a')||
+s:=s||'ARCHAR2'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    RETURN g_article_text_collection;'||unistr('\000a')||
@@ -19748,9 +20021,9 @@ s:=s||' VARCHAR2'||unistr('\000a')||
 '    SELECT clob001'||unistr('\000a')||
 '    INTO l_clob'||unistr('\000a')||
 '    FROM apex_collections'||unistr('\000a')||
-'    WHERE collection_name = g_article';
+'    WHERE collection_name = g_article_t';
 
-s:=s||'_text_collection'||unistr('\000a')||
+s:=s||'ext_collection'||unistr('\000a')||
 '    AND seq_id = 1'||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    print_clob(l_clob);'||unistr('\000a')||
@@ -19762,9 +20035,9 @@ s:=s||'_text_collection'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
-'    apex_collection.create_or_trunca';
+'    apex_collection.create_or_truncate';
 
-s:=s||'te_collection(g_article_text_collection);'||unistr('\000a')||
+s:=s||'_collection(g_article_text_collection);'||unistr('\000a')||
 '    apex_collection.add_member('||unistr('\000a')||
 '      p_collection_name => g_article_text_collection,'||unistr('\000a')||
 '      p_clob001         => table_to_clob(p_table)'||unistr('\000a')||
@@ -19772,9 +20045,9 @@ s:=s||'te_collection(g_article_text_collection);'||unistr('\000a')||
 '  END table_to_collection;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PROCEDURE article_to_col';
+'  PROCEDURE article_to_colle';
 
-s:=s||'lection ('||unistr('\000a')||
+s:=s||'ction ('||unistr('\000a')||
 '    p_article_id IN NUMBER'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
@@ -19791,25 +20064,9 @@ s:=s||'lection ('||unistr('\000a')||
 '      l_clob := NULL;'||unistr('\000a')||
 '    END;'||unistr('\000a')||
 '    apex_collection.add_member('||unistr('\000a')||
-'      p_collection_name =>';
+'      p_collection_name => g';
 
-wwv_flow_api.append_to_install_script(
-  p_id => 11220716262817091 + wwv_flow_api.g_id_offset,
-  p_flow_id => wwv_flow.g_flow_id,
-  p_script_clob => s);
-end;
- 
- 
-end;
-/
-
- 
-begin
- 
-declare
-    s varchar2(32767) := null;
-begin
-s:=s||' g_article_text_collection,'||unistr('\000a')||
+s:=s||'_article_text_collection,'||unistr('\000a')||
 '      p_clob001 => l_clob'||unistr('\000a')||
 '    );'||unistr('\000a')||
 '  END article_to_collection;'||unistr('\000a')||
@@ -19818,9 +20075,9 @@ s:=s||' g_article_text_collection,'||unistr('\000a')||
 '  PROCEDURE save_article_text ('||unistr('\000a')||
 '    p_article_id      IN NUMBER,'||unistr('\000a')||
 '    p_success_message IN OUT NOCOPY VARCHAR2,'||unistr('\000a')||
-'    p_message         IN VARCHAR DEFA';
+'    p_message         IN VARCHAR DEFAUL';
 
-s:=s||'ULT ''Action Processed.'''||unistr('\000a')||
+s:=s||'T ''Action Processed.'''||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
@@ -19835,9 +20092,9 @@ s:=s||'ULT ''Action Processed.'''||unistr('\000a')||
 '    ON (a.article_id = b.article_id)'||unistr('\000a')||
 '    WHEN MATCHED THEN'||unistr('\000a')||
 '    UPDATE SET a.article_text = b.clob001'||unistr('\000a')||
-'    WHERE dbms_lob.compare(a.article_text, ';
+'    WHERE dbms_lob.compare(a.article_text, b.';
 
-s:=s||'b.clob001) != 0'||unistr('\000a')||
+s:=s||'clob001) != 0'||unistr('\000a')||
 '      OR dbms_lob.compare(a.article_text, b.clob001) IS NULL'||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    IF SQL%ROWCOUNT > 0 THEN'||unistr('\000a')||
@@ -19847,9 +20104,9 @@ s:=s||'b.clob001) != 0'||unistr('\000a')||
 '  END save_article_text;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'  PROCEDURE save_arti';
+'  PROCEDURE save_articl';
 
-s:=s||'cle_preview ('||unistr('\000a')||
+s:=s||'e_preview ('||unistr('\000a')||
 '    p_article_id      IN NUMBER,'||unistr('\000a')||
 '    p_author_id       IN NUMBER,'||unistr('\000a')||
 '    p_category_id     IN NUMBER,'||unistr('\000a')||
@@ -19861,9 +20118,9 @@ s:=s||'cle_preview ('||unistr('\000a')||
 '    /* Hopefully we can someday share collections between applications */'||unistr('\000a')||
 '    blog_admin_app.table_to_collection (p_article_text);'||unistr('\000a')||
 '    MERGE INTO blog_article_preview a'||unistr('\000a')||
-'    USING';
+'    USING (';
 
-s:=s||' ('||unistr('\000a')||
+s:=s||''||unistr('\000a')||
 '      SELECT p_article_id AS article_id,'||unistr('\000a')||
 '        p_author_id       AS author_id,'||unistr('\000a')||
 '        p_category_id     AS category_id,'||unistr('\000a')||
@@ -19875,9 +20132,9 @@ s:=s||' ('||unistr('\000a')||
 '    ) b'||unistr('\000a')||
 '    ON (a.apex_session_id = b.article_id)'||unistr('\000a')||
 '    WHEN MATCHED THEN'||unistr('\000a')||
-'    UPDA';
+'    UPDATE';
 
-s:=s||'TE SET a.article_text = b.article_text,'||unistr('\000a')||
+s:=s||' SET a.article_text = b.article_text,'||unistr('\000a')||
 '      a.author_id             = b.author_id,'||unistr('\000a')||
 '      a.category_id           = b.category_id,'||unistr('\000a')||
 '      a.article_title         = b.article_title'||unistr('\000a')||
@@ -19885,11 +20142,104 @@ s:=s||'TE SET a.article_text = b.article_text,'||unistr('\000a')||
 '    INSERT (apex_session_id, author_id, category_id, article_title, article_text)'||unistr('\000a')||
 '    VALUES (b.article_id, b.author_id, b.category_id, b.article_title, b.article_text)'||unistr('\000a')||
 '    ;'||unistr('\000a')||
-'  END save_article_';
+'  END save_article_pr';
 
-s:=s||'preview;'||unistr('\000a')||
+s:=s||'eview;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE create_new_category('||unistr('\000a')||
+'    p_category_name IN VARCHAR2'||unistr('\000a')||
+'  )'||unistr('\000a')||
+'  AS'||unistr('\000a')||
+'    l_category_id NUMBER;'||unistr('\000a')||
+'  BEGIN'||unistr('\000a')||
+'    INSERT INTO blog_category (category_name, category_seq)'||unistr('\000a')||
+'    VALUES(p_category_name, blog_admin_app.get_next_category_se';
+
+s:=s||'q)'||unistr('\000a')||
+'    RETURNING category_id INTO l_category_id;'||unistr('\000a')||
+'    sys.htp.prn(l_category_id);'||unistr('\000a')||
+'  EXCEPTION WHEN DUP_VAL_ON_INDEX THEN'||unistr('\000a')||
+'    sys.htp.prn(APEX_LANG.MESSAGE(''MSG_CATEGORY_EXISTS''));'||unistr('\000a')||
+'  END create_new_category;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE cleanup_category_seq';
+
+s:=s||'uence'||unistr('\000a')||
+'  AS'||unistr('\000a')||
+'  BEGIN'||unistr('\000a')||
+'    MERGE INTO blog_category a'||unistr('\000a')||
+'    USING ('||unistr('\000a')||
+'      SELECT c.category_id,'||unistr('\000a')||
+'        ROW_NUMBER() OVER(ORDER BY c.category_seq) * 10 AS new_seq'||unistr('\000a')||
+'      FROM blog_category c'||unistr('\000a')||
+'    ) b'||unistr('\000a')||
+'    ON (a.category_id = b.category_id)'||unistr('\000a')||
+'    WHEN MATCHED THEN UPDATE '||unistr('\000a')||
+'    SET a.category_seq = b.new_seq'||unistr('\000a')||
+'    ;'||unistr('\000a')||
+'  END cleanup_category_sequence;'||unistr('\000a')||
+'-----------------------------------------------------------------';
+
+s:=s||'---------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE cleanup_faq_sequence'||unistr('\000a')||
+'  AS'||unistr('\000a')||
+'  BEGIN'||unistr('\000a')||
+'    MERGE INTO blog_faq a'||unistr('\000a')||
+'    USING ('||unistr('\000a')||
+'      SELECT c.faq_id,'||unistr('\000a')||
+'        ROW_NUMBER() OVER(ORDER BY c.faq_seq) * 10 AS new_seq'||unistr('\000a')||
+'      FROM blog_faq c'||unistr('\000a')||
+'    ) b'||unistr('\000a')||
+'    ON (a.faq_id = b.faq_id)'||unistr('\000a')||
+'    WHEN MATCHED THEN UPDATE '||unistr('\000a')||
+'    SET a.faq_seq = b.new_seq'||unistr('\000a')||
+'    ;'||unistr('\000a')||
+'  END cle';
+
+s:=s||'anup_faq_sequence;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE cleanup_author_sequence'||unistr('\000a')||
+'  AS'||unistr('\000a')||
+'  BEGIN'||unistr('\000a')||
+'    MERGE INTO blog_author a'||unistr('\000a')||
+'    USING ('||unistr('\000a')||
+'      SELECT c.author_id,'||unistr('\000a')||
+'        ROW_NUMBER() OVER(ORDER BY c.author_seq) * 10 AS new_seq'||unistr('\000a')||
+'      FROM blog_author c'||unistr('\000a')||
+'    ) b'||unistr('\000a')||
+'    O';
+
+s:=s||'N (a.author_id = b.author_id)'||unistr('\000a')||
+'    WHEN MATCHED THEN UPDATE '||unistr('\000a')||
+'    SET a.author_seq = b.new_seq'||unistr('\000a')||
+'    ;'||unistr('\000a')||
+'  END cleanup_author_sequence;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  PROCEDURE cleanup_resource_sequence'||unistr('\000a')||
+'  AS'||unistr('\000a')||
+'  BEGIN'||unistr('\000a')||
+'    MERGE INTO blog_resource a'||unistr('\000a')||
+'    USING ('||unistr('\000a')||
+'      SELECT c';
+
+s:=s||'.link_id,'||unistr('\000a')||
+'        ROW_NUMBER() OVER(PARTITION BY c.link_type ORDER BY c.link_seq) * 10 AS new_seq'||unistr('\000a')||
+'      FROM blog_resource c'||unistr('\000a')||
+'    ) b'||unistr('\000a')||
+'    ON (a.link_id = b.link_id)'||unistr('\000a')||
+'    WHEN MATCHED THEN UPDATE '||unistr('\000a')||
+'    SET a.link_seq = b.new_seq'||unistr('\000a')||
+'    ;'||unistr('\000a')||
+'  END cleanup_resource_sequence;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'-------------------------------------------------------';
+
+s:=s||'-------------------------'||unistr('\000a')||
 '  FUNCTION get_next_category_seq RETURN NUMBER'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_max  NUMBER;'||unistr('\000a')||
@@ -19899,11 +20249,11 @@ s:=s||'preview;'||unistr('\000a')||
 '    FROM blog_category'||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    RETURN l_max;'||unistr('\000a')||
-'  END get_next_category_se';
+'  END get_next_category_seq;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'-------------------------------------------------------------';
 
-s:=s||'q;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
+s:=s||'-------------------'||unistr('\000a')||
 '  FUNCTION get_next_author_seq RETURN NUMBER'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_max  NUMBER;'||unistr('\000a')||
@@ -19914,24 +20264,41 @@ s:=s||'q;'||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    RETURN l_max;'||unistr('\000a')||
 '  END get_next_author_seq;'||unistr('\000a')||
-'-----------';
-
-s:=s||'---------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'  FUNCTION get_next_faq_no RETURN NUMBER'||unistr('\000a')||
+'---------------------------------------------------------------------------';
+
+s:=s||'-----'||unistr('\000a')||
+'  FUNCTION get_next_faq_seq RETURN NUMBER'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_max  NUMBER;'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
-'    SELECT COALESCE(MAX(faq_seq) + 1, 1)'||unistr('\000a')||
+'    SELECT CEIL(COALESCE(MAX(faq_seq) + 1, 1) / 10) * 10'||unistr('\000a')||
 '    INTO l_max'||unistr('\000a')||
 '    FROM blog_faq'||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    RETURN l_max;'||unistr('\000a')||
-'  END get_next_faq_no;'||unistr('\000a')||
-'-------------------------------------------------------';
-
-s:=s||'-------------------------'||unistr('\000a')||
+'  END get_next_faq_seq;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  FUNCTION get_next_';
+
+s:=s||'resource_seq ('||unistr('\000a')||
+'    p_link_type IN VARCHAR2'||unistr('\000a')||
+'  ) RETURN NUMBER'||unistr('\000a')||
+'  AS'||unistr('\000a')||
+'    l_max  NUMBER;'||unistr('\000a')||
+'  BEGIN'||unistr('\000a')||
+'    SELECT CEIL(COALESCE(MAX(link_seq) + 1, 1) / 10) * 10'||unistr('\000a')||
+'    INTO l_max'||unistr('\000a')||
+'    FROM blog_resource'||unistr('\000a')||
+'    WHERE link_type = p_link_type'||unistr('\000a')||
+'    ;'||unistr('\000a')||
+'    RETURN l_max;'||unistr('\000a')||
+'  END get_next_resource_seq;'||unistr('\000a')||
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'-------------------------------------------';
+
+s:=s||'-------------------------------------'||unistr('\000a')||
 '  FUNCTION display_param_value_item ('||unistr('\000a')||
 '    p_param_id        IN VARCHAR2,'||unistr('\000a')||
 '    p_param_type      IN VARCHAR2,'||unistr('\000a')||
@@ -19944,11 +20311,11 @@ s:=s||'-------------------------'||unistr('\000a')||
 '      SELECT 1'||unistr('\000a')||
 '      INTO l_num'||unistr('\000a')||
 '      FROM blog_param'||unistr('\000a')||
-'      WHERE param_id = p';
-
-s:=s||'_param_id'||unistr('\000a')||
+'      WHERE param_id = p_param_id'||unistr('\000a')||
 '      AND param_type = p_param_type'||unistr('\000a')||
-'      AND param_nullable = p_param_nullable'||unistr('\000a')||
+'      AND param_nullabl';
+
+s:=s||'e = p_param_nullable'||unistr('\000a')||
 '      ;'||unistr('\000a')||
 '    EXCEPTION WHEN NO_DATA_FOUND THEN'||unistr('\000a')||
 '      RETURN FALSE;'||unistr('\000a')||
@@ -19957,11 +20324,11 @@ s:=s||'_param_id'||unistr('\000a')||
 '  END display_param_value_item;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'  FUNCTION set_param_val';
-
-s:=s||'ue_item ('||unistr('\000a')||
+'  FUNCTION set_param_value_item ('||unistr('\000a')||
 '    p_param_id          IN VARCHAR2,'||unistr('\000a')||
-'    p_yesno             IN VARCHAR2,'||unistr('\000a')||
+'    p_yesno           ';
+
+s:=s||'  IN VARCHAR2,'||unistr('\000a')||
 '    p_text_null         IN VARCHAR2,'||unistr('\000a')||
 '    p_number_null       IN VARCHAR2,'||unistr('\000a')||
 '    p_number_not_null   IN VARCHAR2,'||unistr('\000a')||
@@ -19973,11 +20340,11 @@ s:=s||'ue_item ('||unistr('\000a')||
 '    l_value VARCHAR2(32700);'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    SELECT CASE'||unistr('\000a')||
-'      WHEN param_';
-
-s:=s||'type = ''YESNO'' THEN'||unistr('\000a')||
+'      WHEN param_type = ''YESNO'' THEN'||unistr('\000a')||
 '        p_yesno'||unistr('\000a')||
-'      WHEN param_type = ''TEXT'' AND param_nullable = ''Y'' THEN'||unistr('\000a')||
+'      WHEN param_type = ''TEXT'' AN';
+
+s:=s||'D param_nullable = ''Y'' THEN'||unistr('\000a')||
 '        p_text_null'||unistr('\000a')||
 '      WHEN param_type = ''TEXT'' AND param_nullable = ''N'' THEN'||unistr('\000a')||
 '        p_text_not_null'||unistr('\000a')||
@@ -19985,11 +20352,11 @@ s:=s||'type = ''YESNO'' THEN'||unistr('\000a')||
 '        p_number_null'||unistr('\000a')||
 '      WHEN param_type = ''NUMBER'' AND param_nullable = ''N'' THEN'||unistr('\000a')||
 '        p_number_not_null'||unistr('\000a')||
-'      WHEN param_type = ';
-
-s:=s||'''TEXTAREA'' AND param_nullable = ''Y'' THEN'||unistr('\000a')||
+'      WHEN param_type = ''TEXTAREA'' AND param_nullable = ''Y'' THEN'||unistr('\000a')||
 '        p_textarea_null'||unistr('\000a')||
-'      WHEN param_type = ''TEXTAREA'' AND param_nullable = ''N'' THEN'||unistr('\000a')||
+'    ';
+
+s:=s||'  WHEN param_type = ''TEXTAREA'' AND param_nullable = ''N'' THEN'||unistr('\000a')||
 '        p_textarea_not_null'||unistr('\000a')||
 '    END AS param_value'||unistr('\000a')||
 '    INTO l_value'||unistr('\000a')||
@@ -19999,10 +20366,10 @@ s:=s||'''TEXTAREA'' AND param_nullable = ''Y'' THEN'||unistr('\000a')||
 '    RETURN l_value;'||unistr('\000a')||
 '  END set_param_value_item;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'---------------';
+'--------------------------------------------------------------------------------'||unistr('\000a')||
+'  F';
 
-s:=s||'-----------------------------------------------------------------'||unistr('\000a')||
-'  FUNCTION login('||unistr('\000a')||
+s:=s||'UNCTION login('||unistr('\000a')||
 '    p_username IN VARCHAR2,'||unistr('\000a')||
 '    p_password IN VARCHAR2'||unistr('\000a')||
 '  ) RETURN BOOLEAN'||unistr('\000a')||
@@ -20011,10 +20378,10 @@ s:=s||'-----------------------------------------------------------------'||unist
 '    AUTH_UNKNOWN_USER       CONSTANT INTEGER      := 1;'||unistr('\000a')||
 '    AUTH_ACCOUNT_LOCKED     CONSTANT INTEGER      := 2;'||unistr('\000a')||
 '    AUTH_ACCOUNT_EXPIRED    CONSTANT INTEGER      := 3;'||unistr('\000a')||
-'    AUTH_PASS';
+'    AUTH_PASSWORD_INCORRECT CONSTANT INTEGER      := 4;'||unistr('\000a')||
+'    AUTH_PASSWORD_FIRST_US';
 
-s:=s||'WORD_INCORRECT CONSTANT INTEGER      := 4;'||unistr('\000a')||
-'    AUTH_PASSWORD_FIRST_USE CONSTANT INTEGER      := 5;'||unistr('\000a')||
+s:=s||'E CONSTANT INTEGER      := 5;'||unistr('\000a')||
 '    AUTH_ATTEMPTS_EXCEEDED  CONSTANT INTEGER      := 6;'||unistr('\000a')||
 '    AUTH_INTERNAL_ERROR     CONSTANT INTEGER      := 7;'||unistr('\000a')||
 '    l_password              VARCHAR2(4000);'||unistr('\000a')||
@@ -20022,12 +20389,12 @@ s:=s||'WORD_INCORRECT CONSTANT INTEGER      := 4;'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
 '    -- First, check to see if the user is in the user table and have password'||unistr('\000a')||
 '    BEGIN'||unistr('\000a')||
-'     ';
-
-s:=s||' SELECT passwd'||unistr('\000a')||
+'      SELECT passwd'||unistr('\000a')||
 '      INTO l_stored_password'||unistr('\000a')||
 '      FROM blog_author'||unistr('\000a')||
-'      WHERE user_name = p_username'||unistr('\000a')||
+'  ';
+
+s:=s||'    WHERE user_name = p_username'||unistr('\000a')||
 '      AND active = ''Y'''||unistr('\000a')||
 '      AND passwd IS NOT NULL'||unistr('\000a')||
 '      ;'||unistr('\000a')||
@@ -20036,10 +20403,10 @@ s:=s||' SELECT passwd'||unistr('\000a')||
 '      RETURN FALSE;'||unistr('\000a')||
 '    END;'||unistr('\000a')||
 '    -- Apply the custom hash function to the password'||unistr('\000a')||
-'    l_password := blog_pw_hash(p_username, p_password);';
+'    l_password := blog_pw_hash(p_username, p_password);'||unistr('\000a')||
+'    -- Compare them to see if they are the same and return either TR';
 
-s:=s||''||unistr('\000a')||
-'    -- Compare them to see if they are the same and return either TRUE or FALSE'||unistr('\000a')||
+s:=s||'UE or FALSE'||unistr('\000a')||
 '    IF l_password = l_stored_password THEN'||unistr('\000a')||
 '      APEX_UTIL.SET_AUTHENTICATION_RESULT(AUTH_SUCCESS);'||unistr('\000a')||
 '      RETURN TRUE;'||unistr('\000a')||
@@ -20048,9 +20415,9 @@ s:=s||''||unistr('\000a')||
 '    RETURN FALSE;'||unistr('\000a')||
 '  END login;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'----------';
+'-------------------------------------------------------------------------------';
 
-s:=s||'----------------------------------------------------------------------'||unistr('\000a')||
+s:=s||'-'||unistr('\000a')||
 '  FUNCTION check_password ('||unistr('\000a')||
 '    p_username IN VARCHAR2,'||unistr('\000a')||
 '    p_password IN VARCHAR2'||unistr('\000a')||
@@ -20062,12 +20429,12 @@ s:=s||'----------------------------------------------------------------------'||
 '    -- First, check to see if the user is in the user table and have password'||unistr('\000a')||
 '    BEGIN'||unistr('\000a')||
 '      SELECT passwd'||unistr('\000a')||
-'      INTO l_store';
-
-s:=s||'d_password'||unistr('\000a')||
+'      INTO l_stored_password'||unistr('\000a')||
 '      FROM blog_author'||unistr('\000a')||
 '      WHERE user_name = p_username'||unistr('\000a')||
-'      AND active = ''Y'''||unistr('\000a')||
+'';
+
+s:=s||'      AND active = ''Y'''||unistr('\000a')||
 '      AND passwd IS NOT NULL'||unistr('\000a')||
 '      ;'||unistr('\000a')||
 '    EXCEPTION WHEN NO_DATA_FOUND THEN'||unistr('\000a')||
@@ -20076,12 +20443,12 @@ s:=s||'d_password'||unistr('\000a')||
 '    -- Apply the custom hash function to the password'||unistr('\000a')||
 '    l_password := blog_pw_hash(p_username, p_password);'||unistr('\000a')||
 '    -- Compare them to see if they are the same and return either TRUE or FALSE'||unistr('\000a')||
-'    IF l_passw';
-
-s:=s||'ord = l_stored_password THEN'||unistr('\000a')||
+'    IF l_password = l_stored_password THEN'||unistr('\000a')||
 '      RETURN TRUE;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'    RETURN FALSE;'||unistr('\000a')||
+'    RETUR';
+
+s:=s||'N FALSE;'||unistr('\000a')||
 '  END check_password;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
@@ -20091,12 +20458,12 @@ s:=s||'ord = l_stored_password THEN'||unistr('\000a')||
 '    l_author_id NUMBER;'||unistr('\000a')||
 '    l_app_id    NUMBER;'||unistr('\000a')||
 '    l_reader_id NUMBER;'||unistr('\000a')||
-'  BEGIN';
-
-s:=s||''||unistr('\000a')||
+'  BEGIN'||unistr('\000a')||
 '    l_app_user  := v(''APP_USER'');'||unistr('\000a')||
 '    l_app_id    := nv(''APP_ID'');'||unistr('\000a')||
-'    SELECT author_id'||unistr('\000a')||
+' ';
+
+s:=s||'   SELECT author_id'||unistr('\000a')||
 '      INTO l_author_id'||unistr('\000a')||
 '      FROM blog_author'||unistr('\000a')||
 '     WHERE user_name = l_app_user'||unistr('\000a')||
@@ -20105,9 +20472,9 @@ s:=s||''||unistr('\000a')||
 '    ;'||unistr('\000a')||
 '    blog_util.set_items_from_param(l_app_id);'||unistr('\000a')||
 '    apex_util.set_session_state(''G_AUTHOR_ID'', l_author_id);'||unistr('\000a')||
-'    apex_util.set_session_state(''G_DATE_TIME_FORMAT'', COALESCE(ape';
+'    apex_util.set_session_state(''G_DATE_TIME_FORMAT'', COALESCE(apex_util.get_preference(''DATE_TIME_FORMAT'', l_app_user), ''DD Mon YYYY H';
 
-s:=s||'x_util.get_preference(''DATE_TIME_FORMAT'', l_app_user), ''DD Mon YYYY HH24:MI:SS''));'||unistr('\000a')||
+s:=s||'H24:MI:SS''));'||unistr('\000a')||
 '    IF apex_util.get_preference(''SHOW_HELP'', l_app_user) IS NULL THEN'||unistr('\000a')||
 '      apex_util.set_preference('||unistr('\000a')||
 '        p_preference => ''SHOW_HELP'','||unistr('\000a')||
@@ -20118,12 +20485,12 @@ s:=s||'x_util.get_preference(''DATE_TIME_FORMAT'', l_app_user), ''DD Mon YYYY HH
 '    l_reader_id := nv(''G_BLOG_READER_APP_ID'');'||unistr('\000a')||
 '    FOR c1 IN ('||unistr('\000a')||
 '      SELECT alias'||unistr('\000a')||
-'      FROM apex_applic';
-
-s:=s||'ations'||unistr('\000a')||
+'      FROM apex_applications'||unistr('\000a')||
 '      WHERE application_id = l_reader_id'||unistr('\000a')||
 '    ) LOOP'||unistr('\000a')||
-'      apex_util.set_session_state(''G_BLOG_READER_APP_ALIAS'', c1.alias);'||unistr('\000a')||
+'      apex';
+
+s:=s||'_util.set_session_state(''G_BLOG_READER_APP_ALIAS'', c1.alias);'||unistr('\000a')||
 '    END LOOP;'||unistr('\000a')||
 '  END post_login;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
@@ -20131,20 +20498,20 @@ s:=s||'ations'||unistr('\000a')||
 '  FUNCTION is_developer RETURN PLS_INTEGER'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '  BEGIN'||unistr('\000a')||
-'    RETURN CASE WHE';
+'    RETURN CASE WHEN apex_authorization.is_authorized(''IS_DEVELOPER'') THEN 1 ELSE 0 END;';
 
-s:=s||'N apex_util.public_check_authorization(''IS_DEVELOPER'') THEN 1 ELSE 0 END;'||unistr('\000a')||
+s:=s||''||unistr('\000a')||
 '  END ;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE get_apex_lang_message ('||unistr('\000a')||
 '    p_application_id        IN NUMBER,'||unistr('\000a')||
 '    p_translation_entry_id  IN NUMBER,'||unistr('\000a')||
-'    p_translatable_message  OUT NOCOPY VAR';
-
-s:=s||'CHAR2,'||unistr('\000a')||
+'    p_translatable_message  OUT NOCOPY VARCHAR2,'||unistr('\000a')||
 '    p_language_code         OUT NOCOPY VARCHAR2,'||unistr('\000a')||
-'    p_message_text          OUT NOCOPY VARCHAR2,'||unistr('\000a')||
+'    p_message_tex';
+
+s:=s||'t          OUT NOCOPY VARCHAR2,'||unistr('\000a')||
 '    p_md5                   OUT NOCOPY VARCHAR2'||unistr('\000a')||
 '   )'||unistr('\000a')||
 '   AS'||unistr('\000a')||
@@ -20156,11 +20523,11 @@ s:=s||'CHAR2,'||unistr('\000a')||
 '        ,message_text'||unistr('\000a')||
 '      FROM apex_application_translations'||unistr('\000a')||
 '      WHERE application_id = p_application_id'||unistr('\000a')||
-'        AND tra';
-
-s:=s||'nslation_entry_id = p_translation_entry_id'||unistr('\000a')||
+'        AND translation_entry_id = p_translation_entry_id'||unistr('\000a')||
 '    ) LOOP'||unistr('\000a')||
-'      p_translatable_message := c1.translatable_message;'||unistr('\000a')||
+'      p_translatabl';
+
+s:=s||'e_message := c1.translatable_message;'||unistr('\000a')||
 '      p_language_code := c1.language_code;'||unistr('\000a')||
 '      p_message_text := c1.message_text;'||unistr('\000a')||
 '      p_md5 := build_apex_lang_message_md5 ('||unistr('\000a')||
@@ -20170,21 +20537,21 @@ s:=s||'nslation_entry_id = p_translation_entry_id'||unistr('\000a')||
 '          c1.message_text '||unistr('\000a')||
 '      );'||unistr('\000a')||
 '    END LOOP;'||unistr('\000a')||
-'  END get_ap';
+'  END get_apex_lang_message;'||unistr('\000a')||
+'--------------------------------------------------------';
 
-s:=s||'ex_lang_message;'||unistr('\000a')||
-'--------------------------------------------------------------------------------'||unistr('\000a')||
+s:=s||'------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '  PROCEDURE upd_apex_lang_message ('||unistr('\000a')||
 '    p_application_id        IN NUMBER,'||unistr('\000a')||
 '    p_translation_entry_id  IN NUMBER,'||unistr('\000a')||
 '    p_translatable_message  IN VARCHAR2,'||unistr('\000a')||
 '    p_language_code         IN VARCHAR2,'||unistr('\000a')||
-'    p_message_text       ';
-
-s:=s||'   IN VARCHAR2,'||unistr('\000a')||
+'    p_message_text          IN VARCHAR2,'||unistr('\000a')||
 '    p_md5                   IN VARCHAR2,'||unistr('\000a')||
-'    p_success_message       OUT NOCOPY VARCHAR2'||unistr('\000a')||
+'    p_success_me';
+
+s:=s||'ssage       OUT NOCOPY VARCHAR2'||unistr('\000a')||
 '  )'||unistr('\000a')||
 '  AS'||unistr('\000a')||
 '    l_input_md5 varchar2(32676);'||unistr('\000a')||
@@ -20197,11 +20564,11 @@ s:=s||'   IN VARCHAR2,'||unistr('\000a')||
 '        p_message_text '||unistr('\000a')||
 '     );'||unistr('\000a')||
 '    IF p_md5 IS NOT NULL THEN'||unistr('\000a')||
-'      FOR c1';
-
-s:=s||' IN ('||unistr('\000a')||
+'      FOR c1 IN ('||unistr('\000a')||
 '        SELECT translation_entry_id'||unistr('\000a')||
-'          ,translatable_message'||unistr('\000a')||
+'          ,translatable_message';
+
+s:=s||''||unistr('\000a')||
 '          ,language_code'||unistr('\000a')||
 '          ,message_text'||unistr('\000a')||
 '        FROM apex_application_translations'||unistr('\000a')||
@@ -20210,11 +20577,11 @@ s:=s||' IN ('||unistr('\000a')||
 '      ) LOOP'||unistr('\000a')||
 '          l_table_md5 := build_apex_lang_message_md5 ('||unistr('\000a')||
 '              c1.translation_entry_id,'||unistr('\000a')||
-'              c1.tran';
-
-s:=s||'slatable_message,'||unistr('\000a')||
+'              c1.translatable_message,'||unistr('\000a')||
 '              c1.language_code,'||unistr('\000a')||
-'              c1.message_text '||unistr('\000a')||
+'              c1.messag';
+
+s:=s||'e_text '||unistr('\000a')||
 '           );'||unistr('\000a')||
 '      END LOOP;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
@@ -20225,26 +20592,24 @@ s:=s||'slatable_message,'||unistr('\000a')||
 '    AND   l_table_md5 = p_md5'||unistr('\000a')||
 '    AND   l_input_md5 != p_md5'||unistr('\000a')||
 '    THEN'||unistr('\000a')||
-'      ap';
-
-s:=s||'ex_lang.update_message('||unistr('\000a')||
+'      apex_lang.update_message('||unistr('\000a')||
 '        p_id => p_translation_entry_id,'||unistr('\000a')||
-'        p_message_text => p_message_text'||unistr('\000a')||
+'        p';
+
+s:=s||'_message_text => p_message_text'||unistr('\000a')||
 '      );'||unistr('\000a')||
 '      p_success_message := apex_lang.message(''MSG_ACTION_PROCESSED'');'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
 '  END upd_apex_lang_message;'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
 '--------------------------------------------------------------------------------'||unistr('\000a')||
-'END "BLOG_ADM';
-
-s:=s||'IN_APP";'||unistr('\000a')||
+'END "BLOG_ADMIN_APP";'||unistr('\000a')||
 '/'||unistr('\000a')||
 ''||unistr('\000a')||
 '';
 
 wwv_flow_api.append_to_install_script(
-  p_id => 11220716262817091 + wwv_flow_api.g_id_offset,
+  p_id => 12274420158820772 + wwv_flow_api.g_id_offset,
   p_flow_id => wwv_flow.g_flow_id,
   p_script_clob => s);
 end;
@@ -20261,310 +20626,417 @@ declare
     l_clob clob;
     l_length number := 1;
 begin
-s:=s||'CREATE OR REPLACE TRIGGER  "BLOG_RESOURCE_TRG" before'||unistr('\000a')||
+s:=s||'CREATE OR REPLACE TRIGGER blog_resource_trg before'||unistr('\000a')||
 'INSERT OR'||unistr('\000a')||
-'UPDATE ON BLOG_RESOURCE FOR EACH row'||unistr('\000a')||
+'UPDATE ON blog_resource FOR EACH row'||unistr('\000a')||
 'BEGIN'||unistr('\000a')||
 '  IF inserting THEN'||unistr('\000a')||
-'    IF :NEW.LINK_ID IS NULL THEN'||unistr('\000a')||
-'      :NEW.LINK_ID := blog_sgid;'||unistr('\000a')||
+'    IF :NEW.link_id IS NULL THEN'||unistr('\000a')||
+'      :NEW.link_id := blog_sgid;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'    :NEW.created_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
-'    :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    IF :NEW.created_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.created_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'    IF :NEW.changed_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    ';
+
+s:=s||'END IF;'||unistr('\000a')||
 '  END IF;'||unistr('\000a')||
 '  IF updating THEN'||unistr('\000a')||
 '    :NEW.changed_on := SYSDATE;'||unistr('\000a')||
-'    :NEW.changed_by := COALE';
-
-s:=s||'SCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
 '  END IF;'||unistr('\000a')||
 'END;'||unistr('\000a')||
 '/'||unistr('\000a')||
-'ALTER TRIGGER  "BLOG_RESOURCE_TRG" ENABLE'||unistr('\000a')||
+'ALTER TRIGGER blog_resource_trg ENABLE'||unistr('\000a')||
 '/'||unistr('\000a')||
-'CREATE OR REPLACE TRIGGER  "BLOG_PARAM" before'||unistr('\000a')||
+''||unistr('\000a')||
+'CREATE OR REPLACE TRIGGER blog_param_trg before'||unistr('\000a')||
 'INSERT OR'||unistr('\000a')||
-'UPDATE ON "BLOG_PARAM" FOR EACH row'||unistr('\000a')||
+'UPDATE ON blog_param FOR EACH row'||unistr('\000a')||
 'BEGIN'||unistr('\000a')||
 '  IF inserting THEN'||unistr('\000a')||
-'    :NEW.created_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
-'  END IF;'||unistr('\000a')||
-'  :NEW.changed_on := SYSDATE;'||unistr('\000a')||
-'  :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
-'END;'||unistr('\000a')||
-''||unistr('\000a')||
-''||unistr('\000a')||
-'/'||unistr('\000a')||
-'ALTER TRIGGER  "BLOG_PARAM" ENABLE'||unistr('\000a')||
-'/'||unistr('\000a')||
-'CREAT';
-
-s:=s||'E OR REPLACE TRIGGER  "BLOG_LONG_TEXT_TRG" before'||unistr('\000a')||
-'INSERT OR'||unistr('\000a')||
-'UPDATE ON "BLOG_LONG_TEXT" FOR EACH row'||unistr('\000a')||
-'BEGIN'||unistr('\000a')||
-'  IF inserting THEN'||unistr('\000a')||
-'    :NEW.created_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
-'  END IF;'||unistr('\000a')||
-'  :NEW.changed_on := SYSDATE;'||unistr('\000a')||
-'  :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
-'END;'||unistr('\000a')||
-''||unistr('\000a')||
-''||unistr('\000a')||
-'/'||unistr('\000a')||
-'ALTER TRIGGER  "BLOG_LONG_TEXT_TRG" ENABLE'||unistr('\000a')||
-'/'||unistr('\000a')||
-'CREATE OR REPLACE TRIGGER  "BLOG_FILE_TRG" before'||unistr('\000a')||
-'  INSERT OR'||unistr('\000a')||
-'  UPDATE ON BL';
-
-s:=s||'OG_FILE FOR EACH row'||unistr('\000a')||
-'BEGIN'||unistr('\000a')||
-'  IF inserting THEN'||unistr('\000a')||
-'    IF :NEW.FILE_ID IS NULL THEN'||unistr('\000a')||
-'      :NEW.FILE_ID := blog_sgid;'||unistr('\000a')||
-'    END IF;'||unistr('\000a')||
-'    :NEW.created_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
-'  END IF;'||unistr('\000a')||
-'  :NEW.changed_on := SYSDATE;'||unistr('\000a')||
-'  :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
-'  :NEW.file_etag := :NEW.file_id || TO_CHAR(:NEW.changed_on, ''JHH24MISS'');'||unistr('\000a')||
-'  :NEW.file_modified_since := TO_CHAR(SYS_EXTRACT_UTC(CA';
-
-s:=s||'ST(:NEW.changed_on AS TIMESTAMP)), ''FMDy, DD Mon YYYY HH24:MI:SS "GMT"'', ''NLS_DATE_LANGUAGE=ENGLISH'');'||unistr('\000a')||
-'END;'||unistr('\000a')||
-''||unistr('\000a')||
-''||unistr('\000a')||
-'/'||unistr('\000a')||
-'ALTER TRIGGER  "BLOG_FILE_TRG" ENABLE'||unistr('\000a')||
-'/'||unistr('\000a')||
-'CREATE OR REPLACE TRIGGER  "BLOG_FAQ_TRG" before'||unistr('\000a')||
-'  INSERT OR'||unistr('\000a')||
-'  UPDATE ON BLOG_FAQ FOR EACH row'||unistr('\000a')||
-'BEGIN'||unistr('\000a')||
-'  IF inserting THEN'||unistr('\000a')||
-'    IF :NEW.FAQ_ID IS NULL THEN'||unistr('\000a')||
-'      :NEW.FAQ_ID := blog_sgid;'||unistr('\000a')||
-'    END IF;'||unistr('\000a')||
-'   :NEW.created_by := COALESCE(v(''APP_USER''), USER)';
+'    IF :NEW.created_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.created_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    END IF';
 
 s:=s||';'||unistr('\000a')||
+'    IF :NEW.changed_by IS NULL THEN'||unistr('\000a')||
+'     :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
 '  END IF;'||unistr('\000a')||
-'  :NEW.changed_on := SYSDATE;'||unistr('\000a')||
-'  :NEW.changed_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
+'  IF updating THEN'||unistr('\000a')||
+'    :NEW.changed_on := SYSDATE;'||unistr('\000a')||
+'    :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
 'END;'||unistr('\000a')||
-''||unistr('\000a')||
-''||unistr('\000a')||
 '/'||unistr('\000a')||
-'ALTER TRIGGER  "BLOG_FAQ_TRG" ENABLE'||unistr('\000a')||
+'ALTER TRIGGER blog_param_trg ENABLE'||unistr('\000a')||
 '/'||unistr('\000a')||
-'CREATE OR REPLACE TRIGGER  "BLOG_CONTACT_MESSAGE_TRG" before'||unistr('\000a')||
-'  INSERT OR'||unistr('\000a')||
-'  UPDATE ON BLOG_CONTACT_MESSAGE FOR EACH row'||unistr('\000a')||
+''||unistr('\000a')||
+'CREATE OR REPLACE TRIGGER blog_long_text_trg before'||unistr('\000a')||
+'INSERT OR'||unistr('\000a')||
+'UPDATE ON blog_long_text FOR EACH row'||unistr('\000a')||
 'BEGIN'||unistr('\000a')||
 '  IF inserting THEN'||unistr('\000a')||
-'    IF :NEW.CONTACT_ID IS NULL THEN'||unistr('\000a')||
-'      :NEW.CONTACT_ID := blog_sgid;'||unistr('\000a')||
-'    END IF;'||unistr('\000a')||
-'   :NEW.created_by := COALESC';
+'';
 
-s:=s||'E(v(''APP_USER''), USER);'||unistr('\000a')||
+s:=s||'    IF :NEW.created_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.created_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'    IF :NEW.changed_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
 '  END IF;'||unistr('\000a')||
-'  :NEW.changed_on := SYSDATE;'||unistr('\000a')||
-'  :NEW.changed_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
+'  IF updating THEN'||unistr('\000a')||
+'    :NEW.changed_on := SYSDATE;'||unistr('\000a')||
+'    :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
 'END;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TRIGGER blog_long_text_trg ENABLE'||unistr('\000a')||
+'/'||unistr('\000a')||
 ''||unistr('\000a')||
-'/'||unistr('\000a')||
-'ALTER TRIGGER  "BLOG_CONTACT_MESSAGE_TRG" ENABLE'||unistr('\000a')||
-'/'||unistr('\000a')||
-'CREATE OR REPLACE TRIGGER  "BLOG_COMMENT_USER_TRG" before'||unistr('\000a')||
-'  INSERT OR'||unistr('\000a')||
-'  UPDATE ON BLOG_COMMENT_USER FOR EACH row'||unistr('\000a')||
+'CREATE OR REPLACE TR';
+
+s:=s||'IGGER blog_file_trg before'||unistr('\000a')||
+' INSERT OR'||unistr('\000a')||
+' UPDATE OR'||unistr('\000a')||
+' DELETE ON blog_file FOR EACH row'||unistr('\000a')||
 'BEGIN'||unistr('\000a')||
 '  IF inserting THEN'||unistr('\000a')||
-'    IF :NEW.USER_ID IS NULL THEN'||unistr('\000a')||
-'      :NEW.USER_ID := blog_sgid;'||unistr('\000a')||
+'    IF :NEW.file_id IS NULL THEN'||unistr('\000a')||
+'      :NEW.file_id := blog_sgid;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'   :NEW.';
+'    IF :NEW.created_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.created_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'    IF :NEW.changed_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'  END I';
 
-s:=s||'created_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+s:=s||'F;'||unistr('\000a')||
+'  IF updating THEN'||unistr('\000a')||
+'    :NEW.changed_on := SYSDATE;'||unistr('\000a')||
+'    :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
 '  END IF;'||unistr('\000a')||
-'  :NEW.changed_on := SYSDATE;'||unistr('\000a')||
-'  :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
-'  '||unistr('\000a')||
-'  IF :NEW.BLOCKED = ''Y'' THEN'||unistr('\000a')||
-'    IF :NEW.BLOCKED_ON IS NULL THEN'||unistr('\000a')||
-'      :NEW.BLOCKED_ON := SYSDATE;'||unistr('\000a')||
-'    END IF;'||unistr('\000a')||
-'  ELSE '||unistr('\000a')||
-'    :NEW.BLOCKED_ON := NULL;'||unistr('\000a')||
+'  IF deleting THEN'||unistr('\000a')||
+'    INSERT INTO blog_http410(deleted_id, id_source)'||unistr('\000a')||
+'    VALUES (:OLD.file_name, ''FILE'');'||unistr('\000a')||
+'  ELSE'||unistr('\000a')||
+'    :NEW.file_etag := :NEW.file_id || TO_CHAR(SYS_EXTRACT_UTC(CAST(:NEW.changed_on AS TIMESTAMP)), ''JHH24MISS'');'||unistr('\000a')||
+'    :NEW.file_modified_since := TO_CHAR(SYS_EXTRACT_UTC';
+
+s:=s||'(CAST(:NEW.changed_on AS TIMESTAMP)), ''Dy, DD Mon YYYY HH24:MI:SS "GMT"'', ''NLS_DATE_LANGUAGE=ENGLISH'');'||unistr('\000a')||
+'    :NEW.file_size := COALESCE(dbms_lob.getlength(:NEW.blob_content), 0);'||unistr('\000a')||
 '  END IF;'||unistr('\000a')||
-'  '||unistr('\000a')||
 'END;'||unistr('\000a')||
 '/'||unistr('\000a')||
-'ALTER TRIGGER  "BLOG_COMMENT_USER_TRG" ENABLE'||unistr('\000a')||
+'ALTER TRIGGER blog_file_trg ENABLE'||unistr('\000a')||
 '/'||unistr('\000a')||
-'CREATE OR REPLACE TRIGGER  "BLOG_COMMENT_TRG" ';
+''||unistr('\000a')||
+'CREATE OR REPLACE TRIGGER blog_faq_trg before'||unistr('\000a')||
+' INSERT OR'||unistr('\000a')||
+' UPDATE ON blog_faq FOR EACH row'||unistr('\000a')||
+'BEGIN'||unistr('\000a')||
+'  IF inserting THEN'||unistr('\000a')||
+'    IF :NEW.faq_id IS NULL THEN'||unistr('\000a')||
+'      :NEW.faq_id :';
 
-s:=s||'before'||unistr('\000a')||
-'  INSERT OR'||unistr('\000a')||
-'  UPDATE ON BLOG_COMMENT FOR EACH row'||unistr('\000a')||
+s:=s||'= blog_sgid;'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'    IF :NEW.created_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.created_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'    IF :NEW.changed_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.changed_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'  IF updating THEN'||unistr('\000a')||
+'    :NEW.changed_on := SYSDATE;'||unistr('\000a')||
+'    :NEW.changed_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'END;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TRIGGER blog_faq_trg ENABLE'||unistr('\000a')||
+'/';
+
+s:=s||''||unistr('\000a')||
+''||unistr('\000a')||
+'CREATE OR REPLACE TRIGGER blog_contact_message_trg before'||unistr('\000a')||
+' INSERT OR'||unistr('\000a')||
+' UPDATE ON blog_contact_message FOR EACH row'||unistr('\000a')||
+'BEGIN'||unistr('\000a')||
+'  IF inserting THEN'||unistr('\000a')||
+'    IF :NEW.contact_id IS NULL THEN'||unistr('\000a')||
+'      :NEW.contact_id := blog_sgid;'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'    IF :NEW.created_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.created_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'    IF :NEW.changed_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.changed_by := COALESCE(';
+
+s:=s||'v(''APP_USER''), USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'  IF updating THEN'||unistr('\000a')||
+'   :NEW.changed_on := SYSDATE;'||unistr('\000a')||
+'   :NEW.changed_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'END;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TRIGGER blog_contact_message_trg ENABLE'||unistr('\000a')||
+'/'||unistr('\000a')||
+''||unistr('\000a')||
+'CREATE OR REPLACE TRIGGER blog_comment_user_trg before'||unistr('\000a')||
+' INSERT OR'||unistr('\000a')||
+' UPDATE ON blog_comment_user FOR EACH row'||unistr('\000a')||
+'BEGIN'||unistr('\000a')||
+'  IF inserting THEN'||unistr('\000a')||
+'    IF :NEW.user_id IS NULL THEN'||unistr('\000a')||
+'      :NEW.user_id :';
+
+s:=s||'= blog_sgid;'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'    IF :NEW.created_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.created_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'    IF :NEW.changed_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'  IF updating THEN'||unistr('\000a')||
+'   :NEW.changed_on := SYSDATE;'||unistr('\000a')||
+'   :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+''||unistr('\000a')||
+'  IF :NEW.blocked = ''Y'' THEN'||unistr('\000a')||
+'    IF :NEW.block';
+
+s:=s||'ed_on IS NULL THEN'||unistr('\000a')||
+'      :NEW.blocked_on := SYSDATE;'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'  ELSE'||unistr('\000a')||
+'    :NEW.blocked_on := NULL;'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'END;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TRIGGER blog_comment_user_trg ENABLE'||unistr('\000a')||
+'/'||unistr('\000a')||
+''||unistr('\000a')||
+'CREATE OR REPLACE TRIGGER blog_comment_trg before'||unistr('\000a')||
+' INSERT OR'||unistr('\000a')||
+' UPDATE ON blog_comment FOR EACH row'||unistr('\000a')||
 'BEGIN'||unistr('\000a')||
 '  IF inserting THEN'||unistr('\000a')||
 '    IF :NEW.comment_id IS NULL THEN'||unistr('\000a')||
 '      :NEW.comment_id := blog_sgid;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'    :NEW.created_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
-'  END IF;'||unistr('\000a')||
-'  :NEW.changed_on := SYSDATE;'||unistr('\000a')||
-'  :NEW.changed_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
-'  '||unistr('\000a')||
-'  IF :NEW.MODERATED = ''Y'' THEN'||unistr('\000a')||
-'    IF :NEW.MODERATED_ON IS NULL THEN'||unistr('\000a')||
-'      :NEW.MODE';
+'    IF :NEW.created_by IS NU';
 
-s:=s||'RATED_ON := SYSDATE;'||unistr('\000a')||
+s:=s||'LL THEN'||unistr('\000a')||
+'      :NEW.created_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'  ELSE '||unistr('\000a')||
-'    :NEW.MODERATED_ON := NULL;'||unistr('\000a')||
-'  END IF;'||unistr('\000a')||
-'  '||unistr('\000a')||
-'  IF :NEW.NOTIFY_EMAIL_SENT = ''Y'' THEN'||unistr('\000a')||
-'    IF :NEW.NOTIFY_EMAIL_SENT_ON IS NULL THEN'||unistr('\000a')||
-'      :NEW.NOTIFY_EMAIL_SENT_ON := SYSDATE;'||unistr('\000a')||
+'    IF :NEW.changed_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.changed_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'  ELSE '||unistr('\000a')||
-'    :NEW.NOTIFY_EMAIL_SENT_ON := NULL;'||unistr('\000a')||
 '  END IF;'||unistr('\000a')||
-'  '||unistr('\000a')||
+'  IF updating THEN'||unistr('\000a')||
+'   :NEW.changed_on := SYSDATE;'||unistr('\000a')||
+'   :NEW.changed_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+''||unistr('\000a')||
+'  IF :NEW.moderated = ''Y'' THEN'||unistr('\000a')||
+'    IF :NEW.moderated_on IS NULL THEN'||unistr('\000a')||
+'      :NEW.moderated_on := ';
+
+s:=s||'SYSDATE;'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'  ELSE'||unistr('\000a')||
+'    :NEW.moderated_on := NULL;'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'  IF :NEW.notify_email_sent = ''Y'' THEN'||unistr('\000a')||
+'    IF :NEW.notify_email_sent_on IS NULL THEN'||unistr('\000a')||
+'      :NEW.notify_email_sent_on := SYSDATE;'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'  ELSE'||unistr('\000a')||
+'    :NEW.notify_email_sent_on := NULL;'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
 'END;'||unistr('\000a')||
 '/'||unistr('\000a')||
-'ALTER TRIGGER  "BLOG_COMMENT_TRG" ENABLE'||unistr('\000a')||
+'ALTER TRIGGER blog_comment_trg ENABLE'||unistr('\000a')||
 '/'||unistr('\000a')||
-'CREATE OR REPLACE TRIGGER  "BLOG_COMMENT_NOTIFY_TRG" before'||unistr('\000a')||
-'  IN';
+''||unistr('\000a')||
+'CREATE OR REPLACE TRIGGER blog_comment_notify_trg before'||unistr('\000a')||
+' INSERT OR'||unistr('\000a')||
+' UPDATE ON blog_co';
 
-s:=s||'SERT OR'||unistr('\000a')||
-'  UPDATE ON BLOG_COMMENT_NOTIFY FOR EACH row'||unistr('\000a')||
+s:=s||'mment_notify FOR EACH row'||unistr('\000a')||
 'BEGIN'||unistr('\000a')||
 '  IF inserting THEN'||unistr('\000a')||
-'   :NEW.created_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
-'  END IF;'||unistr('\000a')||
-'  :NEW.changed_on := SYSDATE;'||unistr('\000a')||
-'  :NEW.changed_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
-'END;'||unistr('\000a')||
-''||unistr('\000a')||
-''||unistr('\000a')||
-'/'||unistr('\000a')||
-'ALTER TRIGGER  "BLOG_COMMENT_NOTIFY_TRG" ENABLE'||unistr('\000a')||
-'/'||unistr('\000a')||
-'CREATE OR REPLACE TRIGGER  "BLOG_COMMENT_BLOCK_TRG" before'||unistr('\000a')||
-'  INSERT OR'||unistr('\000a')||
-'  UPDATE ON BLOG_COMMENT_BLOCK FOR EACH row'||unistr('\000a')||
-'BE';
-
-s:=s||'GIN'||unistr('\000a')||
-'  IF inserting THEN'||unistr('\000a')||
-'    IF :NEW.BLOCK_ID IS NULL THEN'||unistr('\000a')||
-'      :NEW.BLOCK_ID := blog_sgid;'||unistr('\000a')||
+'    IF :NEW.created_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.created_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'   :NEW.created_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
+'    IF :NEW.changed_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.changed_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'   END IF;'||unistr('\000a')||
+'   IF updating THEN'||unistr('\000a')||
+'    :NEW.changed_on := SYSDATE;'||unistr('\000a')||
+'    :NEW.changed_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
 '  END IF;'||unistr('\000a')||
-'  :NEW.changed_on := SYSDATE;'||unistr('\000a')||
-'  :NEW.changed_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
 'END;'||unistr('\000a')||
-''||unistr('\000a')||
-''||unistr('\000a')||
 '/'||unistr('\000a')||
-'ALTER TRIGGER  "BLOG_COMMENT_BLOCK_TRG" ENABLE'||unistr('\000a')||
+'ALTER ';
+
+s:=s||'TRIGGER blog_comment_notify_trg ENABLE'||unistr('\000a')||
 '/'||unistr('\000a')||
-'CREATE OR REPLACE TRIGGER  "BLOG_CATEGORY_TRG" before'||unistr('\000a')||
+''||unistr('\000a')||
+'CREATE OR REPLACE TRIGGER blog_comment_block_trg before'||unistr('\000a')||
+' INSERT OR'||unistr('\000a')||
+' UPDATE ON blog_comment_block FOR EACH row'||unistr('\000a')||
+'BEGIN'||unistr('\000a')||
+'  IF inserting THEN'||unistr('\000a')||
+'    IF :NEW.block_id IS NULL THEN'||unistr('\000a')||
+'      :NEW.block_id := blog_sgid;'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'    IF :NEW.created_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.created_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'    IF :NEW.changed_by IS NULL THEN'||unistr('\000a')||
+'  ';
+
+s:=s||'    :NEW.changed_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'  IF updating THEN'||unistr('\000a')||
+'    :NEW.changed_on := SYSDATE;'||unistr('\000a')||
+'    :NEW.changed_by := COALESCE(v(''APP_USER''), USER);'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'END;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TRIGGER blog_comment_block_trg ENABLE'||unistr('\000a')||
+'/'||unistr('\000a')||
+''||unistr('\000a')||
+'CREATE OR REPLACE TRIGGER blog_category_trg before'||unistr('\000a')||
 'INSERT OR'||unistr('\000a')||
-'UPDATE ON BLOG_CATEGORY FOR E';
-
-s:=s||'ACH row'||unistr('\000a')||
+'UPDATE OR'||unistr('\000a')||
+'DELETE ON blog_category FOR EACH row'||unistr('\000a')||
 'BEGIN'||unistr('\000a')||
 '  IF inserting THEN'||unistr('\000a')||
-'    IF :NEW.category_id IS NULL THEN'||unistr('\000a')||
+'    IF :NEW.category_';
+
+s:=s||'id IS NULL THEN'||unistr('\000a')||
 '      :NEW.category_id := blog_sgid;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'   :NEW.created_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
-'  END IF;'||unistr('\000a')||
-'  :NEW.changed_on := SYSDATE;'||unistr('\000a')||
-'  :NEW.changed_by := COALESCE(v(''APP_USER''),USER); '||unistr('\000a')||
-'END;'||unistr('\000a')||
-''||unistr('\000a')||
-''||unistr('\000a')||
-'/'||unistr('\000a')||
-'ALTER TRIGGER  "BLOG_CATEGORY_TRG" ENABLE'||unistr('\000a')||
-'/'||unistr('\000a')||
-'CREATE OR REPLACE TRIGGER  "BLOG_AUTHOR_TRG" before'||unistr('\000a')||
-'  INSERT OR'||unistr('\000a')||
-'  UPDATE OR'||unistr('\000a')||
-'  DELET';
-
-s:=s||'E ON BLOG_AUTHOR FOR EACH row'||unistr('\000a')||
-'BEGIN'||unistr('\000a')||
-'  IF inserting THEN'||unistr('\000a')||
-'    IF :NEW.AUTHOR_ID IS NULL THEN'||unistr('\000a')||
-'      -- Author is inserted to users table as blocked.'||unistr('\000a')||
-'      -- Name who post comment can be then queried from one table.'||unistr('\000a')||
-'      -- Also it prevent commenting using author email address.'||unistr('\000a')||
-'      INSERT INTO blog_comment_user (email, nick_name, blocked, blocked_on, user_type)'||unistr('\000a')||
-'      VALUES (:NEW.email, :NEW.autho';
-
-s:=s||'r_name, ''Y'', SYSDATE, ''A'')'||unistr('\000a')||
-'      RETURNING user_id INTO :NEW.author_id'||unistr('\000a')||
-'      ;'||unistr('\000a')||
+'    IF :NEW.created_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.created_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'    :NEW.created_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
-'    :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    IF :NEW.changed_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
 '  END IF;'||unistr('\000a')||
 '  IF updating THEN'||unistr('\000a')||
 '    :NEW.changed_on := SYSDATE;'||unistr('\000a')||
 '    :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
-'    UPDATE blog_comment_user SET'||unistr('\000a')||
-'      nick_name = :NEW.author_name,'||unistr('\000a')||
-'      email     = :N';
-
-s:=s||'EW.email'||unistr('\000a')||
-'    WHERE user_id = :OLD.author_id'||unistr('\000a')||
-'    ;'||unistr('\000a')||
 '  END IF;'||unistr('\000a')||
-'  IF deleting THEN'||unistr('\000a')||
-'    DELETE FROM blog_comment_user'||unistr('\000a')||
-'    WHERE user_id = :OLD.author_id'||unistr('\000a')||
-'    ;'||unistr('\000a')||
+'  IF ';
+
+s:=s||'deleting THEN'||unistr('\000a')||
+'    INSERT INTO blog_http410(deleted_id, id_source)'||unistr('\000a')||
+'    VALUES (to_char(:OLD.category_id), ''ARTICLE'');'||unistr('\000a')||
 '  END IF;'||unistr('\000a')||
 'END;'||unistr('\000a')||
 '/'||unistr('\000a')||
-'ALTER TRIGGER  "BLOG_AUTHOR_TRG" ENABLE'||unistr('\000a')||
+'ALTER TRIGGER blog_category_trg ENABLE'||unistr('\000a')||
 '/'||unistr('\000a')||
-'CREATE OR REPLACE TRIGGER  "BLOG_ARTICLE_TRG" before'||unistr('\000a')||
+''||unistr('\000a')||
+'CREATE OR REPLACE TRIGGER blog_author_trg before'||unistr('\000a')||
+' INSERT OR'||unistr('\000a')||
+' UPDATE OR'||unistr('\000a')||
+' DELETE ON blog_author FOR EACH row'||unistr('\000a')||
+'BEGIN'||unistr('\000a')||
+'  IF inserting THEN'||unistr('\000a')||
+'    IF :NEW.author_id IS NULL THEN'||unistr('\000a')||
+'    -- Author is inserted to users table as blocked.'||unistr('\000a')||
+'   ';
+
+s:=s||' -- Posted by for comments can be then queried from one table.'||unistr('\000a')||
+'    -- Also it prevent commenting using author email address.'||unistr('\000a')||
+'      INSERT INTO blog_comment_user (email, nick_name, blocked, blocked_on, user_type)'||unistr('\000a')||
+'      VALUES (:NEW.email, :NEW.author_name, ''Y'', SYSDATE, ''A'')'||unistr('\000a')||
+'      RETURNING user_id INTO :NEW.author_id;'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'    IF :NEW.created_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.created_by := COALESC';
+
+s:=s||'E(v(''APP_USER''),USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'    IF :NEW.changed_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'  IF updating THEN'||unistr('\000a')||
+'    :NEW.changed_on := SYSDATE;'||unistr('\000a')||
+'    :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    UPDATE blog_comment_user'||unistr('\000a')||
+'    SET nick_name = :NEW.author_name,'||unistr('\000a')||
+'            email = :NEW.email'||unistr('\000a')||
+'    WHERE user_id = :NEW.author_id;'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'  IF';
+
+s:=s||' deleting THEN'||unistr('\000a')||
+'    DELETE FROM blog_comment_user'||unistr('\000a')||
+'    WHERE user_id = :OLD.author_id;'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'END;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'ALTER TRIGGER blog_author_trg ENABLE'||unistr('\000a')||
+'/'||unistr('\000a')||
+''||unistr('\000a')||
+'CREATE OR REPLACE TRIGGER blog_article_trg before'||unistr('\000a')||
 'INSERT OR'||unistr('\000a')||
-'UPDATE ON BLOG_ARTICLE FOR EACH row'||unistr('\000a')||
+'UPDATE OR'||unistr('\000a')||
+'DELETE ON blog_article FOR EACH row'||unistr('\000a')||
 'BEGIN'||unistr('\000a')||
 '  IF inserting THEN'||unistr('\000a')||
 '    IF :NEW.article_id IS NULL THEN'||unistr('\000a')||
-'      :NEW.article_id := b';
-
-s:=s||'log_sgid;'||unistr('\000a')||
+'      :NEW.article_id := blog_sgid;'||unistr('\000a')||
 '    END IF;'||unistr('\000a')||
-'    :NEW.created_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    IF :NEW.created_by IS NULL THEN'||unistr('\000a')||
+'      ';
+
+s:=s||':NEW.created_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
+'    IF :NEW.changed_by IS NULL THEN'||unistr('\000a')||
+'      :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'    END IF;'||unistr('\000a')||
 '  END IF;'||unistr('\000a')||
-'  :NEW.changed_on := SYSDATE;'||unistr('\000a')||
-'  :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
-'  -- Do calculations ready'||unistr('\000a')||
-'  :NEW.year_month_num := TO_NUMBER(TO_CHAR(:NEW.created_on,''YYYYMM''));'||unistr('\000a')||
-'  :NEW.article_length := COALESCE(dbms_lob.getlength(:NEW.article_text), 0);'||unistr('\000a')||
+'  IF updating THEN'||unistr('\000a')||
+'    :NEW.changed_on := SYSDATE;'||unistr('\000a')||
+'    :NEW.changed_by := COALESCE(v(''APP_USER''),USER);'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
+'  IF deleting THEN'||unistr('\000a')||
+'    INSERT INTO blog_http410(deleted_id, id_source)'||unistr('\000a')||
+'    VALUES (to_char(:OLD.article_id), ''AR';
+
+s:=s||'TICLE'');'||unistr('\000a')||
+'  ELSE'||unistr('\000a')||
+'    :NEW.year_month_num := TO_NUMBER(TO_CHAR(:NEW.created_on,''YYYYMM''));'||unistr('\000a')||
+'    :NEW.article_length := COALESCE(dbms_lob.getlength(:NEW.article_text), 0);'||unistr('\000a')||
+'  END IF;'||unistr('\000a')||
 'END;'||unistr('\000a')||
 '/'||unistr('\000a')||
-'ALTER TRIGGER  "BLOG_ARTICLE_TRG" ENABLE'||unistr('\000a')||
+'ALTER TRIGGER blog_article_trg ENABLE'||unistr('\000a')||
 '/'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_install_script(
-  p_id => 10836201657442447 + wwv_flow_api.g_id_offset,
+  p_id => 12274616060822625 + wwv_flow_api.g_id_offset,
   p_flow_id => wwv_flow.g_flow_id,
   p_install_id=> 10834514095423806 + wwv_flow_api.g_id_offset,
   p_name => '8 Trigger',
@@ -20587,21 +21059,21 @@ declare
 begin
 s:=s||'--REM INSERTING into BLOG_PARAM'||unistr('\000a')||
 '--SET DEFINE OFF;'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''ALLOW_COMMENT'',''Y'',''Allow comments'',''Y'',''If set to "<b>Yes</b>", readers can post comments to any article.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_';
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''ALLOW_COMMENT'',''Y'',''Allow comments'',''Y'',''If set to "<b>Yes</b>", readers can post comments to any article.'',''YESNO'',''N'',''COMMENT'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PAR';
 
-s:=s||'VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''BLOG_EMAIL'',''Y'',''Blog email'',''blog@blogexample.org'',''Email address witch is used notification emails from field.'',''TEXT'',''Y'',''EMAIL'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''COMMENT_V';
+s:=s||'AM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''BLOG_EMAIL'',''Y'',''Blog email'',''blog@example.com'',''Email address witch is used notification emails from field.'',''TEXT'',''Y'',''EMAIL'',''NOTIFICATION_EMAIL_ENABLED'',''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SK';
 
-s:=s||'ERIFY_QUESTION'',''Y'',''Show math question'',''Y'',''If set to "<b>Yes</b>", small math question is displayed in comment and contact page. This <b>might</b> prevent bots posting comments to articles.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''FILE_DOWNLOAD_ENABLED'',';
+s:=s||'ILL) values (''COMMENT_VERIFY_QUESTION'',''Y'',''Show math question'',''Y'',''If set to "<b>Yes</b>", small math question is displayed in comment and contact page. This <b>might</b> prevent bots posting comments to articles.'',''YESNO'',''N'',''COMMENT'',''ALLOW_COMMENT'',''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SK';
 
-s:=s||'''Y'',''Allow file download'',''Y'',''If set to "<b>Yes</b>", access to file repository URL for downloads is allowed.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
+s:=s||'ILL) values (''FILE_DOWNLOAD_ENABLED'',''Y'',''Allow file download'',''Y'',''If set to "<b>Yes</b>", access to file repository URL for downloads is allowed.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
 'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''FOLLOWUP_EMAIL_BODY'',''Y'',''Followup email body'',''Hi #NICK_NAME#,'||unistr('\000a')||
 ''||unistr('\000a')||
-'You have chosen to receive follow up not';
+'You';
 
-s:=s||'ification if new comment is posted to article "#ARTICLE_TITLE#".'||unistr('\000a')||
+s:=s||' have chosen to receive follow up notification if new comment is posted to article "#ARTICLE_TITLE#".'||unistr('\000a')||
 'To follow up the article new comment(s), please go to:'||unistr('\000a')||
 '#ARTICLE_URL#'||unistr('\000a')||
 ''||unistr('\000a')||
@@ -20609,114 +21081,117 @@ s:=s||'ification if new comment is posted to article "#ARTICLE_TITLE#".'||unistr
 '#UNSUBSCRIBE_URL#'||unistr('\000a')||
 ''||unistr('\000a')||
 'Best regards,'||unistr('\000a')||
-'#BLOG_NAME#'',''Email message body for readers who have post comment about new comment/author reply on article.'',''TEXTAREA'',''Y'',''EMAIL'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (';
+'#BLOG_NAME#'',''Email message body for readers who have post comment about new comment/author reply on article.'',''TEXTAREA'',''Y'',''EMAIL';
 
-s:=s||'PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''FOLLOWUP_EMAIL_SUBJ'',''Y'',''Followup email subject'',''New comment on #BLOG_NAME# article: #ARTICLE_TITLE#.'',''Email subject for readers who have post comment about new comment/author reply on article.'',''TEXT'',''Y'',''EMAIL'',null,''B'');'||unistr('\000a')||
+s:=s||''',''NOTIFICATION_EMAIL_ENABLED'',''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''FOLLOWUP_EMAIL_SUBJ'',''Y'',''Followup email subject'',''New comment on #BLOG_NAME# article: #ARTICLE_TITLE#.'',''Email subject for readers who have post comment about new comment/author reply on article.'',''TEXT'',''Y'',''';
+
+s:=s||'EMAIL'',''NOTIFICATION_EMAIL_ENABLED'',''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_ARTICLE_ROWS'',''Y'',''Article per pagination'',''3'',''How many articles is shown per pagination e.g. in blog home page.'',''NUMBER'',''N'',''UI'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_';
+
+s:=s||'VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_BASE_URL'',''Y'',''Canonical URL'',''http://vbox-apex/apex/'',''Canonical URL is useful to solve www and non-www duplicate content where two URLs, identical except that one begins with "www" and other does not, point to the same page.'',''TEXT'',''N'',''SEO'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_';
+
+s:=s||'NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_BING_WEBMASTER_META'',''Y'',''Bing webmaster tools verification meta tag'',null,null,''TEXT'',''Y'',''SEO'',null,''A'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_BLOG_DESCRIPTION'',''Y'',''Blog de';
+
+s:=s||'scription'',''Blogging about all stuff'',''Description of blog. Optionally, controlled by preference "<b>Show blog description</b>", this is shown in blog reader.'',''TEXT'',''N'',''UI'',''SHOW_BLOG_DESCRIPTION'',''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_BLOG_NAME'',''Y'',''Blog name'',''My Blog'',''B';
+
+s:=s||'log name displayed in blog reader.'',''TEXT'',''N'',''UI'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_BLOG_READER_APP_ID'',''N'',''Blog reader application id'',''290'',''Used for query blog reader application alias. Only for developers.'',''NUMBER'',''N'',''INTERNAL'',null,''A'');'||unistr('\000a')||
+'Insert into BLOG_PA';
+
+s:=s||'RAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_COMMENT_ROWS'',''Y'',''Comments per pagination'',''10'',''How many comments is shown per pagination e.g. in blog article page.'',''NUMBER'',''N'',''UI'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,P';
+
+s:=s||'ARAM_PARENT,PARAM_USE_SKILL) values (''G_DATE_FORMAT'',''Y'',''Date format'',''fmDD Mon YYYY'',''Blog reader date format used e.g. when article is posted.'',''TEXT'',''N'',''UI'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_GOOGLE_ANALYTICS_JS_CODE'',''Y'',''Google Analytics tracking ID'',null,null,';
+
+s:=s||'''TEXTAREA'',''Y'',''SEO'',null,''A'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_GOOGLE_WEBMASTER_META'',''Y'',''Google webmaster tools verification meta tag'',null,null,''TEXT'',''Y'',''SEO'',null,''A'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE';
+
+s:=s||',PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_RSS_FEED_URL'',''Y'',''RSS feed URL'',''f?p=BLOG:RSS:0'',''Blog RSS feed URL. Default is f?p=&lt;blog application alias&gt;:RSS:0. Tip: You can "burn" blog feed in <a target="balnk" href="http://feedburner.google.com">Feedburner</a> and use burned feed full URL here.'',''TEXT'',''Y'',''RSS'',''RSS_FEED_ENABLED'',''B'');'||unistr('\000a')||
 'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,P';
 
-s:=s||'ARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_ARTICLE_ROWS'',''Y'',''Article per pagination'',''3'',''How many articles is shown per pagination e.g. in blog home page.'',''NUMBER'',''N'',''UI'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) ';
+s:=s||'ARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_THEME_PATH'',''Y'',''Theme location'',''f?p=290:FILES:0:APPLICATION_PROCESS=DOWNLOAD:::P11_FILE_NAME:'',''HTTP server folder where theme is located.'',''TEXT'',''N'',''UI'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM';
 
-s:=s||'values (''G_BASE_URL'',''Y'',''Canonical URL'',''http://vbox-apex/apex/'',''Canonical URL is useful to solve www and non-www duplicate content�where two URLs, identical except that one begins with "www" and other does not, point to the same page.'',''TEXT'',''N'',''SEO'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_';
+s:=s||'_PARENT,PARAM_USE_SKILL) values (''LOGGING_ENABLED'',''Y'',''Log activity'',''Y'',''If set to "<b>Yes</b>", new sessions, article access, category access and users search are logged. Setting this to "<b>No</b>" <u>may</u> increase performance.'',''YESNO'',''N'',''LOG'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_US';
 
-s:=s||'USE_SKILL) values (''G_BING_WEBMASTER_META'',''Y'',''Bing webmaster tools verification meta tag'',null,null,''TEXT'',''Y'',''SEO'',null,''A'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_BLOG_DESCRIPTION'',''Y'',''Blog description'',''Blogging about all stuff'',''Description of blog. Optionally, controlled by';
+s:=s||'E_SKILL) values (''LOG_ROTATE_DAY'',''N'',''Rotate log after days'',''14'',''Logs rotate interval for application logs. Nothing to do with APEX engine logs. In future release this might be controlled by author. Currently only developer can change this attribute and it do affect only when blog is installed. Changing this already installed blog don''''t have any affects.'',''NUMBER'',''N'',''LOG'',''LOGGING_ENABLED'',''';
 
-s:=s||' preference "<b>Show blog description</b>", this is shown in blog reader.'',''TEXT'',''N'',''UI'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_BLOG_NAME'',''Y'',''Blog name'',''My Blog'',''Blog name displayed in blog reader.'',''TEXT'',''N'',''UI'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE';
+s:=s||'A'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''MODERATION_ENABLED'',''Y'',''Moderate comments'',''Y'',''If set to "<b>Yes</b>", all comments must be moderated and approved by blog author(s).'',''YESNO'',''N'',''COMMENT'',''ALLOW_COMMENT'',''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VA';
 
-s:=s||',PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_BLOG_READER_APP_ID'',''N'',''Blog reader application id'',''290'',''Used for query blog reader application alias. Only for developers.'',''NUMBER'',''N'',''INTERNAL'',null,''A'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PAR';
-
-s:=s||'ENT,PARAM_USE_SKILL) values (''G_COMMENT_ROWS'',''Y'',''Comments per pagination'',''10'',''How many comments is shown per pagination e.g. in blog article page.'',''NUMBER'',''N'',''UI'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_DATE_FORMAT'',''Y'',''Date format'',''fmDD Mon YYYY'',''Blog reader date';
-
-s:=s||' format used e.g. when article is posted.'',''TEXT'',''N'',''UI'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_GOOGLE_ANALYTICS_JS_CODE'',''Y'',''Google Analytics tracking ID'',null,null,''TEXTAREA'',''Y'',''SEO'',null,''A'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_H';
-
-s:=s||'ELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_GOOGLE_WEBMASTER_META'',''Y'',''Google webmaster tools verification meta tag'',null,null,''TEXT'',''Y'',''SEO'',null,''A'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''G_RSS_FEED_URL'',''Y'',''RSS feed URL'',''f?p=BLOG:RSS:0'',';
-
-s:=s||'''Blog RSS feed URL. Default is f?p=&lt;blog application alias&gt;:RSS:0. Tip: You can "burn" blog feed in <a target="balnk" href="http://feedburner.google.com">Feedburner</a> and use burned feed full URL here.'',''TEXT'',''Y'',''RSS'',''SHOW_RSS_FEED'',''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values';
-
-s:=s||' (''G_THEME_PATH'',''Y'',''Theme location'',''f?p=290:FILES:0:APPLICATION_PROCESS=DOWNLOAD:::P11_FILE_NAME:'',''HTTP server folder where theme is located.'',''TEXT'',''N'',''UI'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''LOGGING_ENABLED'',''Y'',''Log activity'',''Y'',''If set to "<b>Yes</b>", new sess';
-
-s:=s||'ions, article access, category access and users search are logged. Setting this to "<b>No</b>" <u>may</u> increase performance.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''LOG_ROTATE_DAY'',''N'',''Rotate log after days'',''14'',''Logs rotate interval for application l';
-
-s:=s||'ogs. Nothing to do with APEX engine logs. In future release this might be controlled by author. Currently only developer can change this attribute and it do affect only when blog is installed. Changing this already installed blog don''''t have any affects.'',''NUMBER'',''N'',''INTERNAL'',null,''A'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_G';
-
-s:=s||'ROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''MODERATION_ENABLED'',''Y'',''Comments moderate'',''Y'',''If set to "<b>Yes</b>", all comments must be moderated and approved by blog author(s).'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''NEW_COMMENT_EMAIL_BODY'',''Y'',''Author ';
-
-s:=s||'notify email body'',''Hi #AUTHOR_NAME#,'||unistr('\000a')||
+s:=s||'LUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''NEW_COMMENT_EMAIL_BODY'',''Y'',''Author notify email body'',''Hi #AUTHOR_NAME#,'||unistr('\000a')||
 ''||unistr('\000a')||
 'New comment is posted to article "#ARTICLE_TITLE#".'||unistr('\000a')||
 '#ARTICLE_URL#'||unistr('\000a')||
 ''||unistr('\000a')||
 'Best regards,'||unistr('\000a')||
-'#BLOG_NAME#'',''Email message body for author about new comment on article.'',''TEXTAREA'',''Y'',''EMAIL'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''NEW_COMMENT_EMAIL_';
+'#BLOG_NAME#'',''Email message body for author about new comment on article.'',''TEXTAREA'',''Y'',''EMAIL'',''NOTIFICATION_EMAIL_ENABLED'',''B'');'||unistr('\000a')||
+'Insert into BLOG_PA';
 
-s:=s||'SUBJ'',''Y'',''Author notify email subject'',''New comment on #BLOG_NAME# article: #ARTICLE_TITLE#.'',''Email subject for author about new comment on article.'',''TEXT'',''Y'',''EMAIL'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''RSS_DESCRIPTION'',''Y'',''RSS feed description'',''My Blog most recent ';
+s:=s||'RAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''NEW_COMMENT_EMAIL_SUBJ'',''Y'',''Author notify email subject'',''New comment on #BLOG_NAME# article: #ARTICLE_TITLE#.'',''Email subject for author about new comment on article.'',''TEXT'',''Y'',''EMAIL'',''NOTIFICATION_EMAIL_ENABLED'',''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,';
 
-s:=s||'articles'',''Description for blog RSS feed.'',''TEXT'',''Y'',''RSS'',''SHOW_RSS_FEED'',''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SCHEMA_VERSION'',''N'',''Blog engine version id'',''2.9.0.1'',''Used on future releases for upgrade. Only for developers.'',''TEXT'',''N'',''INTERNAL'',null,''A'');'||unistr('\000a')||
-'Insert into BLOG_';
+s:=s||'PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''NOTIFICATION_EMAIL_ENABLED'',''Y'',''Send notification emails'',''Y'',''If set to "<b>Yes</b>", notification emails are send when new comment is posted. Set to "<b>No</b>" if you do not have SMTP server configured.'',''YESNO'',''N'',''EMAIL'',''ALLOW_COMMENT'',''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITAB';
 
-s:=s||'PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_ABOUT_PAGE'',''Y'',''Show about page/tab'',''Y'',''If set to "<b>Yes</b>", about page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PA';
+s:=s||'LE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''RSS_DESCRIPTION'',''Y'',''RSS feed description'',''My Blog most recent articles'',''Description for blog RSS feed.'',''TEXT'',''Y'',''RSS'',''RSS_FEED_ENABLED'',''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE';
 
-s:=s||'RAM_PARENT,PARAM_USE_SKILL) values (''SHOW_AUTHOR_PAGE'',''Y'',''Show authors tab/page'',''Y'',''If set to "<b>Yes</b>", authors page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_BLOG_DESCRIPTION'',''Y'',''Show blog description'',''Y'',''I';
+s:=s||'_SKILL) values (''RSS_FEED_ENABLED'',''Y'',''Publish RSS feed'',''Y'',''If set to "<b>Yes</b>", RSS fead is published on URL &G_BASE_URL.f?p=&G_BLOG_READER_APP_ALIAS.:RSS. Also RSS feed logo is shown in blog reader global page.'',''YESNO'',''N'',''RSS'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values ';
 
-s:=s||'f set to "<b>Yes</b>", blog description is visible in blog reader pages under blog name.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_BLOG_REPORT'',''Y'',''Show blogroll'',''Y'',''If set "<b>Yes</b>", blogroll list is shown on blog reader resource page.'',''YESNO'',''';
+s:=s||'(''SCHEMA_VERSION'',''N'',''Blog engine version id'',''2.9.0.1'',''Used on future releases for upgrade. Only for developers.'',''TEXT'',''N'',''INTERNAL'',null,''A'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_ABOUT_PAGE'',''Y'',''Show about page/tab'',''Y'',''If set to "<b>Yes</b>", about page can be accesse';
 
-s:=s||'N'',''AUTH'',''SHOW_RESOURCE_PAGE'',''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_CONTACT_PAGE'',''N'',''Show contact form tab/page'',''N'',''If set to "<b>Yes</b>", contact form page can be accessed from blog reader.'||unistr('\000a')||
+s:=s||'d from blog reader.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_AUTHOR_PAGE'',''Y'',''Show authors tab/page'',''Y'',''If set to "<b>Yes</b>", authors page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,P';
+
+s:=s||'ARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_BLOG_DESCRIPTION'',''Y'',''Show blog description'',''Y'',''If set to "<b>Yes</b>", blog description is visible in blog reader pages under blog name.'',''YESNO'',''N'',''UI'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,P';
+
+s:=s||'ARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_BLOG_REPORT'',''Y'',''Show blogroll'',''Y'',''If set "<b>Yes</b>", blogroll list is shown on blog reader resource page.'',''YESNO'',''N'',''AUTH'',''SHOW_RESOURCE_PAGE'',''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_CONTACT_PAGE'',''N'',''Show contact form tab';
+
+s:=s||'/page'',''Y'',''If set to "<b>Yes</b>", contact form page can be accessed from blog reader.'||unistr('\000a')||
 ''||unistr('\000a')||
 '!!! DO NOT USE. FEATURE NOT IMPLEMENTED !!! '',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
-'';
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_DISCLAIMER_PAGE'',''Y'',''Show disclaimer page/tab'',''Y'',''If set to "<b>Yes</b>", ';
 
-s:=s||'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_DISCLAIMER_PAGE'',''Y'',''Show disclaimer page/tab'',''Y'',''If set to "<b>Yes</b>", disclaimer page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TY';
+s:=s||'disclaimer page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_FAQ_PAGE'',''Y'',''Show FAQ tab/page'',''Y'',''If set to "<b>Yes</b>", frequently asked questions (FAQ) page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null,''';
 
-s:=s||'PE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_FAQ_PAGE'',''Y'',''Show FAQ tab/page'',''Y'',''If set to "<b>Yes</b>", frequently asked questions (FAQ) page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_FI';
+s:=s||'B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_FILE_PAGE'',''Y'',''Show files tab/page'',''Y'',''If set to "<b>Yes</b>", files page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',''FILE_DOWNLOAD_ENABLED'',''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,';
 
-s:=s||'LE_PAGE'',''Y'',''Show files tab/page'',''Y'',''If set to "<b>Yes</b>", files page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',''FILE_DOWNLOAD_ENABLED'',''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_FOOTER'',''Y'',''Show footer text'',''Y'',''If set to "<b>Yes</b>", footer text is shown in';
+s:=s||'PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_FOOTER'',''Y'',''Show footer text'',''Y'',''If set to "<b>Yes</b>", footer text is shown in every blog reader page. Foter text is maintained from settings -> messages (BLOG_READER_FOOTER).'',''YESNO'',''N'',''UI'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_';
 
-s:=s||' every blog reader page. Foter text is maintained from settings -> messages (BLOG_READER_FOOTER).'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_PHOTOS_PAGE'',''Y'',''Show photos tab/page'',''Y'',''If set to "<b>Yes</b>", files page can be accessed from blog reader.';
+s:=s||'GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_PHOTOS_PAGE'',''Y'',''Show photos tab/page'',''Y'',''If set to "<b>Yes</b>", files page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_RESOURCE_PAGE'',''Y'',''Show resources page/tab'',''Y';
 
-s:=s||''',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_RESOURCE_PAGE'',''Y'',''Show resources page/tab'',''Y'',''If set to "<b>Yes</b>", resources page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PAR';
+s:=s||''',''If set to "<b>Yes</b>", resources page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_RESOURCE_REPORT'',''Y'',''Show useful links'',''Y'',''If set to "<b>Yes</b>", useful links list is shown on blog reader resource page.'',''YESNO''';
 
-s:=s||'AM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_RESOURCE_REPORT'',''Y'',''Show useful links'',''Y'',''If set to "<b>Yes</b>", useful links list is shown on blog reader resource page.'',''YESNO'',''N'',''AUTH'',''SHOW_RESOURCE_PAGE'',''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARE';
+s:=s||',''N'',''AUTH'',''SHOW_RESOURCE_PAGE'',''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SHOW_VISITOR_PAGE'',''Y'',''Show visitor page/tab'',''Y'',''If set to "<b>Yes</b>", visitors map page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
+'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_N';
 
-s:=s||'NT,PARAM_USE_SKILL) values (''SHOW_RSS_FEED'',''Y'',''Publish RSS feed'',''Y'',''If set to "<b>Yes</b>", RSS fead is published on URL &G_BASE_URL.f?p=&G_BLOG_READER_APP_ALIAS.:RSS. Also RSS feed logo is shown in blog reader global page.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKIL';
-
-s:=s||'L) values (''SHOW_VISITOR_PAGE'',''Y'',''Show visitor page/tab'',''Y'',''If set to "<b>Yes</b>", visitors map page can be accessed from blog reader.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
-'Insert into BLOG_PARAM (PARAM_ID,EDITABLE,PARAM_NAME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SITEMAP_ENABLED'',''Y'',''Publish sitemap'',''Y'',''If set to "<b>Yes</b>", sitemap ';
-
-s:=s||'is published on URL &G_BASE_URL.f?p=&G_BLOG_READER_APP_ALIAS.:SITEMAP.'',''YESNO'',''N'',''AUTH'',null,''B'');'||unistr('\000a')||
+s:=s||'AME,PARAM_VALUE,PARAM_HELP,PARAM_TYPE,PARAM_NULLABLE,PARAM_GROUP,PARAM_PARENT,PARAM_USE_SKILL) values (''SITEMAP_ENABLED'',''Y'',''Publish sitemap'',''Y'',''If set to "<b>Yes</b>", sitemap is published on URL &G_BASE_URL.f?p=&G_BLOG_READER_APP_ALIAS.:SITEMAP.'',''YESNO'',''N'',''SEO'',null,''B'');'||unistr('\000a')||
 '';
 
 wwv_flow_api.create_install_script(
-  p_id => 11220909792820014 + wwv_flow_api.g_id_offset,
+  p_id => 12274811100824954 + wwv_flow_api.g_id_offset,
   p_flow_id => wwv_flow.g_flow_id,
   p_install_id=> 10834514095423806 + wwv_flow_api.g_id_offset,
   p_name => '9 Parameter data',
@@ -21273,6 +21748,2745 @@ wwv_flow_api.create_install_script(
   p_install_id=> 10834514095423806 + wwv_flow_api.g_id_offset,
   p_name => '13 Foreign key',
   p_sequence=> 130,
+  p_script_type=> 'INSTALL',
+  p_script_clob=> s);
+end;
+ 
+ 
+end;
+/
+
+ 
+begin
+ 
+declare
+    s varchar2(32767) := null;
+    l_clob clob;
+    l_length number := 1;
+begin
+s:=s||'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D494844520000000C0000000C080600000056755CE70000001974455874536F6674776172650041646F626520496D616765526561647971C9653C000000C44944415478DA8C525B0E82400CAC84841B704237FCBB07104D0CFF7CF8889E901BF0D1A9B44B5724C630C9A6C0CCF44177D79E2F6D5D'';'||unistr('\000a')||
+'blog_install.i(2) := ''D7C7AAAAE81FC671A461184E74BD3F652B545B7A660648180401755D6';
+
+s:=s||'7DF628C0466E334AAB6F0928224C6141D808B13A7283F6412F3C2C0ACEF6CC918F26DF03696E8FB3E3F87102C16B411DE6AAE100FD1CA2BE1999BA6C96DBA21576049621D703D97D859CDA0421D52F0DB00990DBA41DF432299F6D380B693F9574F3BB3'';'||unistr('\000a')||
+'blog_install.i(3) := ''A3DA52D77D7BBC365F8DB70003009EFAE4113CFD5CBC0000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_ty';
+
+s:=s||'pe,file_type,blob_content)'||unistr('\000a')||
+'values (''add-small.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''2F2A2A0D0A202A2053796E746178486967686C6967687465720D0A202A20687474703A2F2F616C6578676F72626174636865762E636F6D2F53796E746178486967686C6967687465720D0A202A2053796E746178486967686C69676874657220697320646F6E6174696F6E776172652E20496620796F7520617';
+
+s:=s||'265207573696E'';'||unistr('\000a')||
+'blog_install.i(2) := ''672069742C20706C6561736520646F6E6174652E0D0A202A20687474703A2F2F616C6578676F72626174636865762E636F6D2F53796E746178486967686C6967687465722F646F6E6174652E68746D6C0D0A202A0D0A202A204076657273696F6E0D0A202A20332E302E383320284A756C792030322032303130290D0A202A20'';'||unistr('\000a')||
+'blog_install.i(3) := ''0D0A202A2040636F707972696768740D0A202A20436F707972696768742028432920323030342D323';
+
+s:=s||'0313020416C657820476F72626174636865762E0D0A202A0D0A202A20406C6963656E73650D0A202A204475616C206C6963656E73656420756E64657220746865204D495420616E642047504C206C6963656E7365732E0D'';'||unistr('\000a')||
+'blog_install.i(4) := ''0A202A2F0D0A76617220585265674578703B69662858526567457870297468726F77204572726F72282263616E2774206C6F6164205852656745787020747769636520696E207468652073616D65206672616D6522293B2866756E6374696F6E2865297B';
+
+s:=s||'66756E6374696F6E206328652C74297B69662821585265674578702E'';'||unistr('\000a')||
+'blog_install.i(5) := ''6973526567457870286529297468726F7720547970654572726F722822747970652052656745787020657870656374656422293B766172206E3D652E5F787265676578703B72657475726E20653D5852656745787028652E736F757263652C682865292B28747C7C222229292C6E262628652E5F787265676578703D7B736F75'';'||unistr('\000a')||
+'blog_install.i(6) := ''7263653A6E2E736F757263652C636170747572';
+
+s:=s||'654E616D65733A6E2E636170747572654E616D65733F6E2E636170747572654E616D65732E736C6963652830293A6E756C6C7D292C657D66756E6374696F6E20682865297B72657475726E28652E676C6F62616C3F2267223A2222292B28652E69676E6F7265436173653F2269'';'||unistr('\000a')||
+'blog_install.i(7) := ''223A2222292B28652E6D756C74696C696E653F226D223A2222292B28652E657874656E6465643F2278223A2222292B28652E737469636B793F2279223A2222297D66756E6374696F6E207028652C7';
+
+s:=s||'42C6E2C72297B766172206F3D732E6C656E6774682C752C612C663B693D21303B7472797B7768696C65286F2D2D297B663D'';'||unistr('\000a')||
+'blog_install.i(8) := ''735B6F5D3B6966286E26662E73636F706526262821662E747269676765727C7C662E747269676765722E63616C6C28722929297B662E7061747465726E2E6C617374496E6465783D742C613D662E7061747465726E2E657865632865293B696628612626612E696E6465783D3D3D74297B753D7B6F75747075743A662E68616E'';'||unistr('\000a')||
+'blog_install.i(9)';
+
+s:=s||' := ''646C65722E63616C6C28722C612C6E292C6D617463683A617D3B627265616B7D7D7D7D6361746368286C297B7468726F77206C7D66696E616C6C797B693D21317D72657475726E20757D66756E6374696F6E206428652C742C6E297B69662841727261792E70726F746F747970652E696E6465784F662972657475726E20652E'';'||unistr('\000a')||
+'blog_install.i(10) := ''696E6465784F6628742C6E293B666F722876617220723D6E7C7C303B723C652E6C656E6774683B722B2B29696628655B725D3D3D3D7429726';
+
+s:=s||'57475726E20723B72657475726E2D317D585265674578703D66756E6374696F6E28742C72297B76617220733D5B5D2C753D585265674578702E4F5554534944455F434C4153532C'';'||unistr('\000a')||
+'blog_install.i(11) := ''613D302C662C682C642C762C6D3B696628585265674578702E6973526567457870287429297B69662872213D3D65297468726F7720547970654572726F72282263616E277420737570706C7920666C616773207768656E20636F6E737472756374696E67206F6E65205265674578702066726F6';
+
+s:=s||'D20616E6F7468657222293B72'';'||unistr('\000a')||
+'blog_install.i(12) := ''657475726E20632874297D69662869297468726F77204572726F72282263616E27742063616C6C20746865205852656745787020636F6E7374727563746F722077697468696E20746F6B656E20646566696E6974696F6E2066756E6374696F6E7322293B723D727C7C22222C663D7B6861734E616D6564436170747572653A21'';'||unistr('\000a')||
+'blog_install.i(13) := ''312C636170747572654E616D65733A5B5D2C686173466C61673A66756E6374696F6';
+
+s:=s||'E2865297B72657475726E20722E696E6465784F662865293E2D317D2C736574466C61673A66756E6374696F6E2865297B722B3D657D7D3B7768696C6528613C742E6C656E67746829683D7028742C612C752C66292C683F28732E70757368'';'||unistr('\000a')||
+'blog_install.i(14) := ''28682E6F7574707574292C612B3D682E6D617463685B305D2E6C656E6774687C7C31293A28643D6F2E657865632E63616C6C286C5B755D2C742E736C69636528612929293F28732E7075736828645B305D292C612B3D645B305D2E6C6';
+
+s:=s||'56E677468293A28763D742E6368617241742861292C763D3D3D225B223F753D58526567'';'||unistr('\000a')||
+'blog_install.i(15) := ''4578702E494E534944455F434C4153533A763D3D3D225D22262628753D585265674578702E4F5554534944455F434C415353292C732E707573682876292C612B2B293B72657475726E206D3D52656745787028732E6A6F696E282222292C6F2E7265706C6163652E63616C6C28722C6E2C222229292C6D2E5F78726567657870'';'||unistr('\000a')||
+'blog_install.i(16) := ''3D7B736F757263653A742';
+
+s:=s||'C636170747572654E616D65733A662E6861734E616D6564436170747572653F662E636170747572654E616D65733A6E756C6C7D2C6D7D2C585265674578702E76657273696F6E3D22312E352E31222C585265674578702E494E534944455F434C4153533D312C585265674578702E4F555453494445'';'||unistr('\000a')||
+'blog_install.i(17) := ''5F434C4153533D323B76617220743D2F5C24283F3A285C645C643F7C5B242660275D297C7B285B245C775D2B297D292F672C6E3D2F5B5E67696D795D2B7C285B5C735C535D2';
+
+s:=s||'9283F3D5B5C735C535D2A5C31292F672C723D2F5E283F3A5B3F2A2B5D7C7B5C642B283F3A2C5C642A293F7D295C3F3F2F2C693D21312C733D5B5D'';'||unistr('\000a')||
+'blog_install.i(18) := ''2C6F3D7B657865633A5265674578702E70726F746F747970652E657865632C746573743A5265674578702E70726F746F747970652E746573742C6D617463683A537472696E672E70726F746F747970652E6D617463682C7265706C6163653A537472696E672E70726F746F747970652E7265706C6163652C73706C69743A5374''';
+
+s:=s||';'||unistr('\000a')||
+'blog_install.i(19) := ''72696E672E70726F746F747970652E73706C69747D2C753D6F2E657865632E63616C6C282F28293F3F2F2C2222295B315D3D3D3D652C613D66756E6374696F6E28297B76617220653D2F5E2F673B72657475726E206F2E746573742E63616C6C28652C2222292C21652E6C617374496E6465787D28292C663D5265674578702E'';'||unistr('\000a')||
+'blog_install.i(20) := ''70726F746F747970652E737469636B79213D3D652C6C3D7B7D3B6C5B585265674578702E494E534944455F434C415';
+
+s:=s||'3535D3D2F5E283F3A5C5C283F3A5B302D335D5B302D375D7B302C327D7C5B342D375D5B302D375D3F7C785B5C64412D46612D665D7B327D7C755B5C64412D46612D665D7B347D7C635B412D5A612D7A5D7C'';'||unistr('\000a')||
+'blog_install.i(21) := ''5B5C735C535D29292F2C6C5B585265674578702E4F5554534944455F434C4153535D3D2F5E283F3A5C5C283F3A30283F3A5B302D335D5B302D375D7B302C327D7C5B342D375D5B302D375D3F293F7C5B312D395D5C642A7C785B5C64412D46612D665D7B327D7C755B5';
+
+s:=s||'C64412D46612D665D7B347D7C635B412D5A612D7A5D7C'';'||unistr('\000a')||
+'blog_install.i(22) := ''5B5C735C535D297C5C285C3F5B3A3D215D7C5B3F2A2B5D5C3F7C7B5C642B283F3A2C5C642A293F7D5C3F3F292F2C585265674578702E616464546F6B656E3D66756E6374696F6E28652C742C6E2C72297B732E70757368287B7061747465726E3A6328652C2267222B28663F2279223A222229292C68616E646C65723A742C73'';'||unistr('\000a')||
+'blog_install.i(23) := ''636F70653A6E7C7C585265674578702E4F5554534944455';
+
+s:=s||'F434C4153532C747269676765723A727C7C6E756C6C7D297D2C585265674578702E63616368653D66756E6374696F6E28652C74297B766172206E3D652B222F222B28747C7C2222293B72657475726E20585265674578702E63616368655B6E5D7C7C285852656745'';'||unistr('\000a')||
+'blog_install.i(24) := ''78702E63616368655B6E5D3D5852656745787028652C7429297D2C585265674578702E636F70794173476C6F62616C3D66756E6374696F6E2865297B72657475726E206328652C226722297D2C58526567457';
+
+s:=s||'8702E6573636170653D66756E6374696F6E2865297B72657475726E20652E7265706C616365282F5B2D5B5C5D7B'';'||unistr('\000a')||
+'blog_install.i(25) := ''7D28292A2B3F2E2C5C5C5E247C235C735D2F672C225C5C242622297D2C585265674578702E6578656341743D66756E6374696F6E28652C742C6E2C72297B76617220693D6328742C2267222B28722626663F2279223A222229292C733B72657475726E20692E6C617374496E6465783D6E3D6E7C7C302C733D692E6578656328'';'||unistr('\000a')||
+'blog_install.i(26) := ''6';
+
+s:=s||'5292C722626732626732E696E646578213D3D6E262628733D6E756C6C292C742E676C6F62616C262628742E6C617374496E6465783D733F692E6C617374496E6465783A30292C737D2C585265674578702E667265657A65546F6B656E733D66756E6374696F6E28297B585265674578702E616464546F6B656E3D66756E6374'';'||unistr('\000a')||
+'blog_install.i(27) := ''696F6E28297B7468726F77204572726F72282263616E27742072756E20616464546F6B656E20616674657220667265657A65546F6B656E7322297D7';
+
+s:=s||'D2C585265674578702E69735265674578703D66756E6374696F6E2865297B72657475726E204F626A6563742E70726F746F747970652E746F537472696E672E63616C6C28'';'||unistr('\000a')||
+'blog_install.i(28) := ''65293D3D3D225B6F626A656374205265674578705D227D2C585265674578702E697465726174653D66756E6374696F6E28652C742C6E2C72297B76617220693D6328742C226722292C733D2D312C6F3B7768696C65286F3D692E6578656328652929742E676C6F62616C262628742E6C617374496E646';
+
+s:=s||'5783D692E6C61737449'';'||unistr('\000a')||
+'blog_install.i(29) := ''6E646578292C6E2E63616C6C28722C6F2C2B2B732C652C74292C692E6C617374496E6465783D3D3D6F2E696E6465782626692E6C617374496E6465782B2B3B742E676C6F62616C262628742E6C617374496E6465783D30297D2C585265674578702E6D61746368436861696E3D66756E6374696F6E28652C74297B7265747572'';'||unistr('\000a')||
+'blog_install.i(30) := ''6E2066756E6374696F6E206E28652C72297B76617220693D745B725D2E72656765783F745';
+
+s:=s||'B725D3A7B72656765783A745B725D7D2C733D6328692E72656765782C226722292C6F3D5B5D2C753B666F7228753D303B753C652E6C656E6774683B752B2B29585265674578702E6974657261746528655B755D2C732C66756E6374'';'||unistr('\000a')||
+'blog_install.i(31) := ''696F6E2865297B6F2E7075736828692E6261636B7265663F655B692E6261636B7265665D7C7C22223A655B305D297D293B72657475726E20723D3D3D742E6C656E6774682D317C7C216F2E6C656E6774683F6F3A6E286F2C722B31297D285B6';
+
+s:=s||'55D2C30297D2C5265674578702E70726F746F747970652E6170706C793D66756E'';'||unistr('\000a')||
+'blog_install.i(32) := ''6374696F6E28652C74297B72657475726E20746869732E6578656328745B305D297D2C5265674578702E70726F746F747970652E63616C6C3D66756E6374696F6E28652C74297B72657475726E20746869732E657865632874297D2C5265674578702E70726F746F747970652E657865633D66756E6374696F6E2874297B7661'';'||unistr('\000a')||
+'blog_install.i(33) := ''72206E2C722C692C733B7468697';
+
+s:=s||'32E676C6F62616C7C7C28733D746869732E6C617374496E646578292C6E3D6F2E657865632E6170706C7928746869732C617267756D656E7473293B6966286E297B217526266E2E6C656E6774683E31262664286E2C2222293E2D31262628693D52656745787028746869732E736F75726365'';'||unistr('\000a')||
+'blog_install.i(34) := ''2C6F2E7265706C6163652E63616C6C28682874686973292C2267222C222229292C6F2E7265706C6163652E63616C6C2828742B2222292E736C696365286E2E696E646578292C692C6';
+
+s:=s||'6756E6374696F6E28297B666F722876617220743D313B743C617267756D656E74732E6C656E6774682D323B742B2B29617267756D656E74'';'||unistr('\000a')||
+'blog_install.i(35) := ''735B745D3D3D3D652626286E5B745D3D65297D29293B696628746869732E5F787265676578702626746869732E5F787265676578702E636170747572654E616D657329666F722876617220663D313B663C6E2E6C656E6774683B662B2B29723D746869732E5F787265676578702E636170747572654E616D65735B662D315D2C'';'||unistr('\000a')||
+'blog';
+
+s:=s||'_install.i(36) := ''722626286E5B725D3D6E5B665D293B21612626746869732E676C6F62616C2626216E5B305D2E6C656E6774682626746869732E6C617374496E6465783E6E2E696E6465782626746869732E6C617374496E6465782D2D7D72657475726E20746869732E676C6F62616C7C7C28746869732E6C617374496E6465783D73292C6E7D'';'||unistr('\000a')||
+'blog_install.i(37) := ''2C5265674578702E70726F746F747970652E746573743D66756E6374696F6E2865297B76617220742C6E3B72657475726E2';
+
+s:=s||'0746869732E676C6F62616C7C7C286E3D746869732E6C617374496E646578292C743D6F2E657865632E63616C6C28746869732C65292C74262621612626746869732E676C6F62616C262621745B30'';'||unistr('\000a')||
+'blog_install.i(38) := ''5D2E6C656E6774682626746869732E6C617374496E6465783E742E696E6465782626746869732E6C617374496E6465782D2D2C746869732E676C6F62616C7C7C28746869732E6C617374496E6465783D6E292C2121747D2C537472696E672E70726F746F747970652E6D61746';
+
+s:=s||'3683D66756E6374696F6E2865297B5852656745'';'||unistr('\000a')||
+'blog_install.i(39) := ''78702E69735265674578702865297C7C28653D526567457870286529293B696628652E676C6F62616C297B76617220743D6F2E6D617463682E6170706C7928746869732C617267756D656E7473293B72657475726E20652E6C617374496E6465783D302C747D72657475726E20652E657865632874686973297D2C537472696E'';'||unistr('\000a')||
+'blog_install.i(40) := ''672E70726F746F747970652E7265706C6163653D66756E6374696';
+
+s:=s||'F6E28652C6E297B76617220723D585265674578702E69735265674578702865292C692C732C752C613B72657475726E20723F28652E5F78726567657870262628693D652E5F787265676578702E636170747572654E616D6573292C652E676C6F62616C7C7C'';'||unistr('\000a')||
+'blog_install.i(41) := ''28613D652E6C617374496E64657829293A652B3D22222C4F626A6563742E70726F746F747970652E746F537472696E672E63616C6C286E293D3D3D225B6F626A6563742046756E6374696F6E5D223F733D6F2E72657';
+
+s:=s||'06C6163652E63616C6C28746869732B22222C652C66756E6374696F6E28297B69662869297B617267756D'';'||unistr('\000a')||
+'blog_install.i(42) := ''656E74735B305D3D6E657720537472696E6728617267756D656E74735B305D293B666F722876617220743D303B743C692E6C656E6774683B742B2B29695B745D262628617267756D656E74735B305D5B695B745D5D3D617267756D656E74735B742B315D297D72657475726E20722626652E676C6F62616C262628652E6C6173'';'||unistr('\000a')||
+'blog_install.i(43) := ''74496E6';
+
+s:=s||'465783D617267756D656E74735B617267756D656E74732E6C656E6774682D325D2B617267756D656E74735B305D2E6C656E677468292C6E2E6170706C79286E756C6C2C617267756D656E7473297D293A28753D746869732B22222C733D6F2E7265706C6163652E63616C6C28752C652C66756E6374696F6E28297B76'';'||unistr('\000a')||
+'blog_install.i(44) := ''617220653D617267756D656E74733B72657475726E206F2E7265706C6163652E63616C6C286E2B22222C742C66756E6374696F6E28742C6E2C72297B69662';
+
+s:=s||'8216E297B766172206F3D2B723B72657475726E206F3C3D652E6C656E6774682D333F655B6F5D3A286F3D693F6428692C72293A2D312C6F3E2D313F655B6F2B315D'';'||unistr('\000a')||
+'blog_install.i(45) := ''3A74297D737769746368286E297B636173652224223A72657475726E2224223B636173652226223A72657475726E20655B305D3B636173652260223A72657475726E20655B652E6C656E6774682D315D2E736C69636528302C655B652E6C656E6774682D325D293B636173652227223A72657475726E20655B6';
+
+s:=s||'52E6C656E6774'';'||unistr('\000a')||
+'blog_install.i(46) := ''682D315D2E736C69636528655B652E6C656E6774682D325D2B655B305D2E6C656E677468293B64656661756C743A76617220733D22223B6E3D2B6E3B696628216E2972657475726E20743B7768696C65286E3E652E6C656E6774682D3329733D537472696E672E70726F746F747970652E736C6963652E63616C6C286E2C2D31'';'||unistr('\000a')||
+'blog_install.i(47) := ''292B732C6E3D4D6174682E666C6F6F72286E2F3130293B72657475726E286E3F655B6E5D7C7C222';
+
+s:=s||'23A222422292B737D7D297D29292C72262628652E676C6F62616C3F652E6C617374496E6465783D303A652E6C617374496E6465783D61292C737D2C537472696E672E70726F746F747970652E73706C69743D66756E637469'';'||unistr('\000a')||
+'blog_install.i(48) := ''6F6E28742C6E297B69662821585265674578702E69735265674578702874292972657475726E206F2E73706C69742E6170706C7928746869732C617267756D656E7473293B76617220723D746869732B22222C693D5B5D2C733D302C752C613B69662';
+
+s:=s||'86E3D3D3D657C7C2B6E3C30296E3D496E66696E6974793B656C73657B6E'';'||unistr('\000a')||
+'blog_install.i(49) := ''3D4D6174682E666C6F6F72282B6E293B696628216E2972657475726E5B5D7D743D585265674578702E636F70794173476C6F62616C2874293B7768696C6528753D742E65786563287229297B696628742E6C617374496E6465783E73297B692E7075736828722E736C69636528732C752E696E64657829292C752E6C656E6774'';'||unistr('\000a')||
+'blog_install.i(50) := ''683E312626752E696E6465783C722E6C6';
+
+s:=s||'56E677468262641727261792E70726F746F747970652E707573682E6170706C7928692C752E736C696365283129292C613D755B305D2E6C656E6774682C733D742E6C617374496E6465783B696628692E6C656E6774683E3D6E29627265616B7D742E6C617374496E6465783D3D3D75'';'||unistr('\000a')||
+'blog_install.i(51) := ''2E696E6465782626742E6C617374496E6465782B2B7D72657475726E20733D3D3D722E6C656E6774683F28216F2E746573742E63616C6C28742C2222297C7C61292626692E7075736828222';
+
+s:=s||'2293A692E7075736828722E736C696365287329292C692E6C656E6774683E6E3F692E736C69636528302C6E293A697D2C58526567'';'||unistr('\000a')||
+'blog_install.i(52) := ''4578702E616464546F6B656E282F5C285C3F235B5E295D2A5C292F2C66756E6374696F6E2865297B72657475726E206F2E746573742E63616C6C28722C652E696E7075742E736C69636528652E696E6465782B655B305D2E6C656E67746829293F22223A22283F3A29227D292C585265674578702E616464546F6B656E282F5C'';'||unistr('\000a')||
+'blog_insta';
+
+s:=s||'ll.i(53) := ''28283F215C3F292F2C66756E6374696F6E28297B72657475726E20746869732E636170747572654E616D65732E70757368286E756C6C292C2228227D292C585265674578702E616464546F6B656E282F5C285C3F3C285B245C775D2B293E2F2C66756E6374696F6E2865297B72657475726E20746869732E636170747572654E'';'||unistr('\000a')||
+'blog_install.i(54) := ''616D65732E7075736828655B315D292C746869732E6861734E616D6564436170747572653D21302C2228227D292C5852656745787';
+
+s:=s||'02E616464546F6B656E282F5C5C6B3C285B5C77245D2B293E2F2C66756E6374696F6E2865297B76617220743D6428746869732E636170747572654E616D65732C655B315D293B7265747572'';'||unistr('\000a')||
+'blog_install.i(55) := ''6E20743E2D313F225C5C222B28742B31292B2869734E614E28652E696E7075742E63686172417428652E696E6465782B655B305D2E6C656E67746829293F22223A22283F3A2922293A655B305D7D292C585265674578702E616464546F6B656E282F5C5B5C5E3F5D2F2C66756E63746';
+
+s:=s||'96F6E2865297B72657475726E20655B30'';'||unistr('\000a')||
+'blog_install.i(56) := ''5D3D3D3D225B5D223F225C5C625C5C42223A225B5C5C735C5C535D227D292C585265674578702E616464546F6B656E282F5E5C285C3F285B696D73785D2B295C292F2C66756E6374696F6E2865297B72657475726E20746869732E736574466C616728655B315D292C22227D292C585265674578702E616464546F6B656E282F'';'||unistr('\000a')||
+'blog_install.i(57) := ''283F3A5C732B7C232E2A292B2F2C66756E6374696F6E2865297B7265747';
+
+s:=s||'5726E206F2E746573742E63616C6C28722C652E696E7075742E736C69636528652E696E6465782B655B305D2E6C656E67746829293F22223A22283F3A29227D2C585265674578702E4F5554534944455F434C4153532C66756E6374696F6E28297B72'';'||unistr('\000a')||
+'blog_install.i(58) := ''657475726E20746869732E686173466C616728227822297D292C585265674578702E616464546F6B656E282F5C2E2F2C66756E6374696F6E28297B72657475726E225B5C5C735C5C535D227D2C585265674578702E4F55545';
+
+s:=s||'34944455F434C4153532C66756E6374696F6E28297B72657475726E20746869732E686173466C61'';'||unistr('\000a')||
+'blog_install.i(59) := ''6728227322297D297D2928293B696628747970656F662053796E746178486967686C6967687465723D3D22756E646566696E656422297661722053796E746178486967686C6967687465723D66756E6374696F6E28297B66756E6374696F6E207428652C74297B72657475726E20652E636C6173734E616D652E696E6465784F'';'||unistr('\000a')||
+'blog_install.i(60) := ''66287429213D2';
+
+s:=s||'D317D66756E6374696F6E206E28652C6E297B7428652C6E297C7C28652E636C6173734E616D652B3D2220222B6E297D66756E6374696F6E207228652C74297B652E636C6173734E616D653D652E636C6173734E616D652E7265706C61636528742C2222297D66756E6374696F6E20692865297B76617220743D'';'||unistr('\000a')||
+'blog_install.i(61) := ''5B5D3B666F7228766172206E3D303B6E3C652E6C656E6774683B6E2B2B29742E7075736828655B6E5D293B72657475726E20747D66756E6374696F6E20732865297';
+
+s:=s||'B72657475726E20652E73706C6974282F5C723F5C6E2F297D66756E6374696F6E206F2865297B76617220743D22686967686C6967687465725F223B726574'';'||unistr('\000a')||
+'blog_install.i(62) := ''75726E20652E696E6465784F662874293D3D303F653A742B657D66756E6374696F6E20752874297B72657475726E20652E766172732E686967686C696768746572735B6F2874295D7D66756E6374696F6E20612865297B72657475726E20646F63756D656E742E676574456C656D656E7442794964286F286529297D6';
+
+s:=s||'6756E63'';'||unistr('\000a')||
+'blog_install.i(63) := ''74696F6E20662874297B652E766172732E686967686C696768746572735B6F28742E6964295D3D747D66756E6374696F6E206C28652C742C6E297B696628653D3D6E756C6C2972657475726E206E756C6C3B76617220723D6E213D313F652E6368696C644E6F6465733A5B652E706172656E744E6F64655D2C693D7B2223223A'';'||unistr('\000a')||
+'blog_install.i(64) := ''226964222C222E223A22636C6173734E616D65227D5B742E73756273747228302C31295D7C7C226E6F646';
+
+s:=s||'54E616D65222C732C6F3B733D69213D226E6F64654E616D65223F742E7375627374722831293A742E746F55707065724361736528293B69662828655B695D7C7C2222292E696E6465784F66287329213D2D31297265'';'||unistr('\000a')||
+'blog_install.i(65) := ''7475726E20653B666F722876617220753D303B722626753C722E6C656E67746826266F3D3D6E756C6C3B752B2B296F3D6C28725B755D2C742C6E293B72657475726E206F7D66756E6374696F6E206328652C74297B72657475726E206C28652C742C2130297';
+
+s:=s||'D66756E6374696F6E206828652C742C6E297B6E3D4D6174682E6D'';'||unistr('\000a')||
+'blog_install.i(66) := ''6178286E7C7C302C30293B666F722876617220723D6E3B723C652E6C656E6774683B722B2B29696628655B725D3D3D742972657475726E20723B72657475726E2D317D66756E6374696F6E20702865297B72657475726E28657C7C2222292B4D6174682E726F756E64284D6174682E72616E646F6D28292A316536292E746F53'';'||unistr('\000a')||
+'blog_install.i(67) := ''7472696E6728297D66756E6374696F6E2064286';
+
+s:=s||'52C74297B766172206E3D7B7D2C723B666F72287220696E2065296E5B725D3D655B725D3B666F72287220696E2074296E5B725D3D745B725D3B72657475726E206E7D66756E6374696F6E20762865297B76617220743D7B2274727565223A21302C2266616C7365223A21317D'';'||unistr('\000a')||
+'blog_install.i(68) := ''5B655D3B72657475726E20743D3D6E756C6C3F653A747D66756E6374696F6E206D28652C742C6E2C722C69297B76617220733D2873637265656E2E77696474682D6E292F322C6F3D2873637265656';
+
+s:=s||'E2E6865696768742D72292F323B692B3D222C206C6566743D222B732B222C20746F703D222B6F2B222C2077696474683D22'';'||unistr('\000a')||
+'blog_install.i(69) := ''2B6E2B222C206865696768743D222B722C693D692E7265706C616365282F5E2C2F2C2222293B76617220753D77696E646F772E6F70656E28652C742C69293B72657475726E20752E666F63757328292C757D66756E6374696F6E206728652C742C6E2C72297B66756E6374696F6E20692865297B653D657C7C77696E646F772E'';'||unistr('\000a')||
+'blog_install.i(7';
+
+s:=s||'0) := ''6576656E742C652E7461726765747C7C28652E7461726765743D652E737263456C656D656E742C652E70726576656E7444656661756C743D66756E6374696F6E28297B746869732E72657475726E56616C75653D21317D292C6E2E63616C6C28727C7C77696E646F772C65297D652E6174746163684576656E743F652E617474'';'||unistr('\000a')||
+'blog_install.i(71) := ''6163684576656E7428226F6E222B742C69293A652E6164644576656E744C697374656E657228742C692C2131297D66756E6374696F6E207';
+
+s:=s||'92874297B77696E646F772E616C65727428652E636F6E6669672E737472696E67732E616C6572742B74297D66756E6374696F6E206228742C6E297B76617220723D652E766172732E'';'||unistr('\000a')||
+'blog_install.i(72) := ''646973636F7665726564427275736865732C693D6E756C6C3B696628723D3D6E756C6C297B723D7B7D3B666F7228766172207320696E20652E62727573686573297B766172206F3D652E627275736865735B735D2C753D6F2E616C69617365733B696628753D3D6E756C6C29636F6E74696E7';
+
+s:=s||'5653B6F2E62727573684E616D65'';'||unistr('\000a')||
+'blog_install.i(73) := ''3D732E746F4C6F7765724361736528293B666F722876617220613D303B613C752E6C656E6774683B612B2B29725B755B615D5D3D737D652E766172732E646973636F7665726564427275736865733D727D72657475726E20693D652E627275736865735B725B745D5D2C693D3D6E756C6C26266E26267928652E636F6E666967'';'||unistr('\000a')||
+'blog_install.i(74) := ''2E737472696E67732E6E6F42727573682B74292C697D66756E6374696F6E20772';
+
+s:=s||'8652C74297B766172206E3D732865293B666F722876617220723D303B723C6E2E6C656E6774683B722B2B296E5B725D3D74286E5B725D2C72293B72657475726E206E2E6A6F696E28225C725C6E22297D66756E6374696F6E20452865297B72'';'||unistr('\000a')||
+'blog_install.i(75) := ''657475726E20652E7265706C616365282F5E5B205D2A5B5C6E5D2B7C5B5C6E5D2A5B205D2A242F672C2222297D66756E6374696F6E20532865297B76617220742C6E3D7B7D2C723D6E6577205852656745787028225E5C5C5B283F3';
+
+s:=s||'C76616C7565733E282E2A3F29295C5C5D2422292C693D6E65772058526567457870282228'';'||unistr('\000a')||
+'blog_install.i(76) := ''3F3C6E616D653E5B5C5C772D5D2B295C5C732A3A5C5C732A283F3C76616C75653E5B5C5C772D25235D2B7C5C5C5B2E2A3F5C5C5D7C5C222E2A3F5C227C272E2A3F27295C5C732A3B3F222C226722293B7768696C652828743D692E6578656328652929213D6E756C6C297B76617220733D742E76616C75652E7265706C616365'';'||unistr('\000a')||
+'blog_install.i(77) := ''282F5E5B27225D7C5B2';
+
+s:=s||'7225D242F672C2222293B69662873213D6E756C6C2626722E74657374287329297B766172206F3D722E657865632873293B733D6F2E76616C7565732E6C656E6774683E303F6F2E76616C7565732E73706C6974282F5C732A2C5C732A2F293A5B5D7D6E5B742E6E616D655D3D737D72657475726E206E'';'||unistr('\000a')||
+'blog_install.i(78) := ''7D66756E6374696F6E207828742C6E297B72657475726E20743D3D6E756C6C7C7C742E6C656E6774683D3D307C7C743D3D225C6E223F743A28743D742E7265706C6163652';
+
+s:=s||'82F3C2F672C22266C743B22292C743D742E7265706C616365282F207B322C7D2F672C66756E6374696F6E2874297B766172206E3D22223B666F7228'';'||unistr('\000a')||
+'blog_install.i(79) := ''76617220723D303B723C742E6C656E6774682D313B722B2B296E2B3D652E636F6E6669672E73706163653B72657475726E206E2B2220227D292C6E213D6E756C6C262628743D7728742C66756E6374696F6E2865297B696628652E6C656E6774683D3D302972657475726E22223B76617220743D22223B72657475726E20653';
+
+s:=s||'D'';'||unistr('\000a')||
+'blog_install.i(80) := ''652E7265706C616365282F5E28266E6273703B7C20292B2F2C66756E6374696F6E2865297B72657475726E20743D652C22227D292C652E6C656E6774683D3D303F743A742B273C636F646520636C6173733D22272B6E2B27223E272B652B223C2F636F64653E227D29292C74297D66756E6374696F6E205428652C74297B7661'';'||unistr('\000a')||
+'blog_install.i(81) := ''72206E3D652E746F537472696E6728293B7768696C65286E2E6C656E6774683C74296E3D2230222B6E3B7265747';
+
+s:=s||'5726E206E7D66756E6374696F6E204E28652C74297B766172206E3D22223B666F722876617220723D303B723C743B722B2B296E2B3D2220223B72657475726E20652E7265706C616365282F5C742F672C6E29'';'||unistr('\000a')||
+'blog_install.i(82) := ''7D66756E6374696F6E204328652C74297B66756E6374696F6E207528652C742C6E297B72657475726E20652E73756273747228302C74292B692E73756273747228302C6E292B652E73756273747228742B312C652E6C656E677468297D766172206E3D732865292C7';
+
+s:=s||'23D2209222C693D22223B666F7228766172206F3D303B6F'';'||unistr('\000a')||
+'blog_install.i(83) := ''3C35303B6F2B2B29692B3D222020202020202020202020202020202020202020223B72657475726E20653D7728652C66756E6374696F6E2865297B696628652E696E6465784F662872293D3D2D312972657475726E20653B766172206E3D303B7768696C6528286E3D652E696E6465784F6628722929213D2D31297B76617220'';'||unistr('\000a')||
+'blog_install.i(84) := ''693D742D6E25743B653D7528652C6E2C69297D7265747';
+
+s:=s||'5726E20657D292C657D66756E6374696F6E206B2874297B766172206E3D2F3C62725C732A5C2F3F3E7C266C743B62725C732A5C2F3F2667743B2F67693B72657475726E20652E636F6E6669672E626C6F676765724D6F64653D3D31262628743D742E7265706C616365'';'||unistr('\000a')||
+'blog_install.i(85) := ''286E2C225C6E2229292C652E636F6E6669672E73747269704272733D3D31262628743D742E7265706C616365286E2C222229292C747D66756E6374696F6E204C2865297B72657475726E20652E7265706C6';
+
+s:=s||'16365282F5E5C732B7C5C732B242F672C2222297D66756E6374696F6E20412865297B76617220743D73286B286529'';'||unistr('\000a')||
+'blog_install.i(86) := ''292C6E3D6E65772041727261792C723D2F5E5C732A2F2C693D3165333B666F7228766172206F3D303B6F3C742E6C656E6774682626693E303B6F2B2B297B76617220753D745B6F5D3B6966284C2875292E6C656E6774683D3D3029636F6E74696E75653B76617220613D722E657865632875293B696628613D3D6E756C6C2972'';'||unistr('\000a')||
+'blog_install.i(87) := ';
+
+s:=s||'''657475726E20653B693D4D6174682E6D696E28615B305D2E6C656E6774682C69297D696628693E3029666F7228766172206F3D303B6F3C742E6C656E6774683B6F2B2B29745B6F5D3D745B6F5D2E7375627374722869293B72657475726E20742E6A6F696E28225C6E22297D66756E6374696F6E204F28652C74297B72657475'';'||unistr('\000a')||
+'blog_install.i(88) := ''726E20652E696E6465783C742E696E6465783F2D313A652E696E6465783E742E696E6465783F313A652E6C656E6774683C742E6C656E6774683F2';
+
+s:=s||'D313A652E6C656E6774683E742E6C656E6774683F313A307D66756E6374696F6E204D28742C6E297B66756E6374696F6E207228652C74297B72657475726E20655B305D7D76'';'||unistr('\000a')||
+'blog_install.i(89) := ''617220693D302C733D6E756C6C2C6F3D5B5D2C753D6E2E66756E633F6E2E66756E633A723B7768696C652828733D6E2E72656765782E6578656328742929213D6E756C6C297B76617220613D7528732C6E293B747970656F6620613D3D22737472696E6722262628613D5B6E657720652E4D6174636';
+
+s:=s||'828612C732E696E646578'';'||unistr('\000a')||
+'blog_install.i(90) := ''2C6E2E637373295D292C6F3D6F2E636F6E6361742861297D72657475726E206F7D66756E6374696F6E205F2874297B766172206E3D2F282E2A2928282667743B7C266C743B292E2A292F3B72657475726E20742E7265706C61636528652E72656765784C69622E75726C2C66756E6374696F6E2865297B76617220743D22222C'';'||unistr('\000a')||
+'blog_install.i(91) := ''723D6E756C6C3B696628723D6E2E6578656328652929653D725B315D2C743D725B325D3';
+
+s:=s||'B72657475726E273C6120687265663D22272B652B27223E272B652B223C2F613E222B747D297D66756E6374696F6E204428297B76617220653D646F63756D656E742E676574456C656D656E747342795461674E616D65282273637269'';'||unistr('\000a')||
+'blog_install.i(92) := ''707422292C743D5B5D3B666F7228766172206E3D303B6E3C652E6C656E6774683B6E2B2B29655B6E5D2E747970653D3D2273796E746178686967686C696768746572222626742E7075736828655B6E5D293B72657475726E20747D66756E6';
+
+s:=s||'374696F6E20502865297B76617220743D223C215B43444154415B222C6E3D225D5D'';'||unistr('\000a')||
+'blog_install.i(93) := ''3E222C723D4C2865292C693D21312C733D742E6C656E6774682C6F3D6E2E6C656E6774683B722E696E6465784F662874293D3D30262628723D722E737562737472696E672873292C693D2130293B76617220753D722E6C656E6774683B72657475726E20722E696E6465784F66286E293D3D752D6F262628723D722E73756273'';'||unistr('\000a')||
+'blog_install.i(94) := ''7472696E6728302C752D6F292';
+
+s:=s||'C693D2130292C693F723A657D66756E6374696F6E20482865297B76617220743D652E7461726765742C693D6328742C222E73796E746178686967686C69676874657222292C733D6328742C222E636F6E7461696E657222292C6F3D646F63756D656E742E637265617465456C656D656E742822'';'||unistr('\000a')||
+'blog_install.i(95) := ''746578746172656122292C613B69662821737C7C21697C7C6C28732C22746578746172656122292972657475726E3B613D7528692E6964292C6E28692C22736F7572636522293B7';
+
+s:=s||'6617220663D732E6368696C644E6F6465732C683D5B5D3B666F722876617220703D303B703C662E6C656E6774683B702B2B29682E70757368'';'||unistr('\000a')||
+'blog_install.i(96) := ''28665B705D2E696E6E6572546578747C7C665B705D2E74657874436F6E74656E74293B683D682E6A6F696E28225C7222292C683D682E7265706C616365282F5C75303061302F672C222022292C6F2E617070656E644368696C6428646F63756D656E742E637265617465546578744E6F6465286829292C732E617070656E6443'';'||unistr('\000a')||
+'bl';
+
+s:=s||'og_install.i(97) := ''68696C64286F292C6F2E666F63757328292C6F2E73656C65637428292C67286F2C22626C7572222C66756E6374696F6E2865297B6F2E706172656E744E6F64652E72656D6F76654368696C64286F292C7228692C22736F7572636522297D297D747970656F662072657175697265213D22756E646566696E6564222626747970'';'||unistr('\000a')||
+'blog_install.i(98) := ''656F6620585265674578703D3D22756E646566696E656422262628585265674578703D726571756972652822585265674';
+
+s:=s||'5787022292E58526567457870293B76617220653D7B64656661756C74733A7B22636C6173732D6E616D65223A22222C2266697273742D6C696E65223A312C227061642D6C696E652D6E756D62657273'';'||unistr('\000a')||
+'blog_install.i(99) := ''223A21312C686967686C696768743A6E756C6C2C7469746C653A6E756C6C2C22736D6172742D74616273223A21302C227461622D73697A65223A342C6775747465723A21302C746F6F6C6261723A21302C22717569636B2D636F6465223A21302C636F6C6C617073653A213';
+
+s:=s||'12C226175746F2D6C696E6B73223A21302C6C6967'';'||unistr('\000a')||
+'blog_install.i(100) := ''68743A21312C756E696E64656E743A21302C2268746D6C2D736372697074223A21317D2C636F6E6669673A7B73706163653A22266E6273703B222C757365536372697074546167733A21302C626C6F676765724D6F64653A21312C73747269704272733A21312C7461674E616D653A22707265222C737472696E67733A7B6578'';'||unistr('\000a')||
+'blog_install.i(101) := ''70616E64536F757263653A22657870616E6420736F7572636';
+
+s:=s||'5222C68656C703A223F222C616C6572743A2253796E746178486967686C6967687465725C6E5C6E222C6E6F42727573683A2243616E27742066696E6420627275736820666F723A20222C62727573684E6F7448746D6C5363726970743A22427275736820776173'';'||unistr('\000a')||
+'blog_install.i(102) := ''6E277420636F6E6669677572656420666F722068746D6C2D736372697074206F7074696F6E3A20222C61626F75744469616C6F673A224041424F555440227D7D2C766172733A7B646973636F76657265644272';
+
+s:=s||'75736865733A6E756C6C2C686967686C696768746572733A7B7D7D2C627275736865733A7B7D2C72656765784C'';'||unistr('\000a')||
+'blog_install.i(103) := ''69623A7B6D756C74694C696E6543436F6D6D656E74733A2F5C2F5C2A5B5C735C535D2A3F5C2A5C2F2F676D2C73696E676C654C696E6543436F6D6D656E74733A2F5C2F5C2F2E2A242F676D2C73696E676C654C696';
+
+wwv_flow_api.create_install_script(
+  p_id => 12275005924827304 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_install_id=> 10834514095423806 + wwv_flow_api.g_id_offset,
+  p_name => '14 theme files',
+  p_sequence=> 140,
+  p_script_type=> 'INSTALL',
+  p_script_clob=> s);
+end;
+ 
+ 
+end;
+/
+
+ 
+begin
+ 
+declare
+    s varchar2(32767) := null;
+begin
+s:=s||'E655065726C436F6D6D656E74733A2F232E2A242F676D2C646F75626C6551756F746564537472696E673A2F'';'||unistr('\000a')||
+'blog_install.i(104) := ''22285B5E5C5C225C6E5D7C5C5C2E292A222F672C73696E676C6551756F746564537472696E673A2F27285B5E5C5C275C6E5D7C5C5C2E292A272F672C6D756C74694C696E65446F75626C6551756F746564537472696E673A6E65772058526567457870282722285B5E5C5C5C5C225D7C5C5C5C5C2E292A22272C22677322292C'';'||unistr('\000a')||
+'blog_install.i(105) := ''6D7';
+
+s:=s||'56C74694C696E6553696E676C6551756F746564537472696E673A6E65772058526567457870282227285B5E5C5C5C5C275D7C5C5C5C5C2E292A27222C22677322292C786D6C436F6D6D656E74733A2F28266C743B7C3C29212D2D5B5C735C535D2A3F2D2D282667743B7C3E292F676D2C75726C3A2F5C772B3A5C2F5C2F5B'';'||unistr('\000a')||
+'blog_install.i(106) := ''5C772D2E5C2F3F25263D3A403B235D2A2F672C706870536372697074546167733A7B6C6566743A2F28266C743B7C3C295C3F283F3A3D7C706870293F';
+
+s:=s||'2F672C72696768743A2F5C3F282667743B7C3E292F672C656F663A21307D2C617370536372697074546167733A7B6C6566743A2F28266C743B7C3C29253D3F2F672C7269'';'||unistr('\000a')||
+'blog_install.i(107) := ''6768743A2F25282667743B7C3E292F677D2C736372697074536372697074546167733A7B6C6566743A2F28266C743B7C3C295C732A7363726970742E2A3F282667743B7C3E292F67692C72696768743A2F28266C743B7C3C295C2F5C732A7363726970745C732A282667743B7C3E292F67697D7D2C746';
+
+s:=s||'F6F6C6261723A7B6765'';'||unistr('\000a')||
+'blog_install.i(108) := ''7448746D6C3A66756E6374696F6E2874297B66756E6374696F6E207328742C6E297B72657475726E20652E746F6F6C6261722E676574427574746F6E48746D6C28742C6E2C652E636F6E6669672E737472696E67735B6E5D297D766172206E3D273C64697620636C6173733D22746F6F6C626172223E272C723D652E746F6F6C'';'||unistr('\000a')||
+'blog_install.i(109) := ''6261722E6974656D732C693D722E6C6973743B666F7228766172206F3D303B6F3C692E6';
+
+s:=s||'C656E6774683B6F2B2B296E2B3D28725B695B6F5D5D2E67657448746D6C7C7C732928742C695B6F5D293B72657475726E206E2B3D223C2F6469763E222C6E7D2C676574427574746F6E48746D6C3A66756E6374696F6E28652C742C6E'';'||unistr('\000a')||
+'blog_install.i(110) := ''297B72657475726E273C7370616E3E3C6120687265663D22232220636C6173733D22746F6F6C6261725F6974656D20636F6D6D616E645F272B742B2220222B742B27223E272B6E2B223C2F613E3C2F7370616E3E227D2C68616E646C6572';
+
+s:=s||'3A66756E6374696F6E2874297B66756E6374696F6E20692865297B76617220743D6E'';'||unistr('\000a')||
+'blog_install.i(111) := ''65772052656745787028652B225F285C5C772B2922292C6E3D742E657865632872293B72657475726E206E3F6E5B315D3A6E756C6C7D766172206E3D742E7461726765742C723D6E2E636C6173734E616D657C7C22222C733D752863286E2C222E73796E746178686967686C69676874657222292E6964292C6F3D692822636F'';'||unistr('\000a')||
+'blog_install.i(112) := ''6D6D616E6422293B732626';
+
+s:=s||'6F2626652E746F6F6C6261722E6974656D735B6F5D2E657865637574652873292C742E70726576656E7444656661756C7428297D2C6974656D733A7B6C6973743A5B22657870616E64536F75726365222C2268656C70225D2C657870616E64536F757263653A7B67657448746D6C3A66756E637469'';'||unistr('\000a')||
+'blog_install.i(113) := ''6F6E2874297B696628742E676574506172616D2822636F6C6C617073652229213D312972657475726E22223B766172206E3D742E676574506172616D28227469746C6522293';
+
+s:=s||'B72657475726E20652E746F6F6C6261722E676574427574746F6E48746D6C28742C22657870616E64536F75726365222C6E3F6E3A652E636F6E66'';'||unistr('\000a')||
+'blog_install.i(114) := ''69672E737472696E67732E657870616E64536F75726365297D2C657865637574653A66756E6374696F6E2865297B76617220743D6128652E6964293B7228742C22636F6C6C617073656422297D7D2C68656C703A7B657865637574653A66756E6374696F6E2874297B766172206E3D6D2822222C225F626C616E6B222C353030';
+
+s:=s||''';'||unistr('\000a')||
+'blog_install.i(115) := ''2C3235302C227363726F6C6C626172733D3022292C723D6E2E646F63756D656E743B722E777269746528652E636F6E6669672E737472696E67732E61626F75744469616C6F67292C722E636C6F736528292C6E2E666F63757328297D7D7D7D2C66696E64456C656D656E74733A66756E6374696F6E28742C6E297B7661722072'';'||unistr('\000a')||
+'blog_install.i(116) := ''3D6E3F5B6E5D3A6928646F63756D656E742E676574456C656D656E747342795461674E616D6528652E636F6E66';
+
+s:=s||'69672E7461674E616D6529292C733D652E636F6E6669672C6F3D5B5D3B732E75736553637269707454616773262628723D722E636F6E6361742844282929293B696628722E6C656E6774683D3D3D3029726574'';'||unistr('\000a')||
+'blog_install.i(117) := ''75726E206F3B666F722876617220753D303B753C722E6C656E6774683B752B2B297B76617220613D7B7461726765743A725B755D2C706172616D733A6428742C5328725B755D2E636C6173734E616D6529297D3B696628612E706172616D735B226272757368225';
+
+s:=s||'D3D3D6E756C6C29636F6E74696E75653B6F2E707573682861'';'||unistr('\000a')||
+'blog_install.i(118) := ''297D72657475726E206F7D2C686967686C696768743A66756E6374696F6E28742C6E297B76617220723D746869732E66696E64456C656D656E747328742C6E292C693D22696E6E657248544D4C222C733D6E756C6C2C6F3D652E636F6E6669673B696628722E6C656E6774683D3D3D302972657475726E3B666F722876617220'';'||unistr('\000a')||
+'blog_install.i(119) := ''753D303B753C722E6C656E6774683B752B2B297B7';
+
+s:=s||'66172206E3D725B755D2C613D6E2E7461726765742C663D6E2E706172616D732C6C3D662E62727573682C633B6966286C3D3D6E756C6C29636F6E74696E75653B696628665B2268746D6C2D736372697074225D3D3D2274727565227C7C652E64656661756C74735B226874'';'||unistr('\000a')||
+'blog_install.i(120) := ''6D6C2D736372697074225D3D3D3129733D6E657720652E48746D6C536372697074286C292C6C3D2268746D6C736372697074223B656C73657B76617220683D62286C293B696628216829636F6E7469';
+
+s:=s||'6E75653B733D6E657720687D633D615B695D2C6F2E75736553637269707454616773262628633D50286329292C28612E74'';'||unistr('\000a')||
+'blog_install.i(121) := ''69746C657C7C222229213D2222262628662E7469746C653D612E7469746C65292C662E62727573683D6C2C732E696E69742866292C6E3D732E6765744469762863292C28612E69647C7C222229213D22222626286E2E69643D612E6964292C612E706172656E744E6F64652E7265706C6163654368696C64286E2C61297D7D2C'';'||unistr('\000a')||
+'blog_install.i(1';
+
+s:=s||'22) := ''616C6C3A66756E6374696F6E2874297B672877696E646F772C226C6F6164222C66756E6374696F6E28297B652E686967686C696768742874297D297D7D3B72657475726E20652E4D617463683D66756E6374696F6E28652C742C6E297B746869732E76616C75653D652C746869732E696E6465783D742C746869732E6C656E67'';'||unistr('\000a')||
+'blog_install.i(123) := ''74683D652E6C656E6774682C746869732E6373733D6E2C746869732E62727573684E616D653D6E756C6C7D2C652E4D617463682E70726';
+
+s:=s||'F746F747970652E746F537472696E673D66756E6374696F6E28297B72657475726E20746869732E76616C75657D2C652E48746D6C5363726970743D66756E6374696F6E2874297B6675'';'||unistr('\000a')||
+'blog_install.i(124) := ''6E6374696F6E206628652C74297B666F7228766172206E3D303B6E3C652E6C656E6774683B6E2B2B29655B6E5D2E696E6465782B3D747D66756E6374696F6E206C28652C74297B76617220693D652E636F64652C733D5B5D2C6F3D722E72656765784C6973742C753D652E696E6465782B';
+
+s:=s||'652E6C6566742E6C656E6774682C61'';'||unistr('\000a')||
+'blog_install.i(125) := ''3D722E68746D6C5363726970742C6C3B666F722876617220633D303B633C6F2E6C656E6774683B632B2B296C3D4D28692C6F5B635D292C66286C2C75292C733D732E636F6E636174286C293B612E6C656674213D6E756C6C2626652E6C656674213D6E756C6C2626286C3D4D28652E6C6566742C612E6C656674292C66286C2C'';'||unistr('\000a')||
+'blog_install.i(126) := ''652E696E646578292C733D732E636F6E636174286C29292C612E72696768';
+
+s:=s||'74213D6E756C6C2626652E7269676874213D6E756C6C2626286C3D4D28652E72696768742C612E7269676874292C66286C2C652E696E6465782B655B305D2E6C617374496E6465784F6628652E726967687429292C733D732E636F6E636174286C29'';'||unistr('\000a')||
+'blog_install.i(127) := ''293B666F722876617220683D303B683C732E6C656E6774683B682B2B29735B685D2E62727573684E616D653D6E2E62727573684E616D653B72657475726E20737D766172206E3D622874292C722C693D6E657720652E62727';
+
+s:=s||'5736865732E586D6C2C733D6E756C6C2C6F3D746869732C753D226765744469762067657448746D'';'||unistr('\000a')||
+'blog_install.i(128) := ''6C20696E6974222E73706C697428222022293B6966286E3D3D6E756C6C2972657475726E3B723D6E6577206E3B666F722876617220613D303B613C752E6C656E6774683B612B2B292866756E6374696F6E28297B76617220653D755B615D3B6F5B655D3D66756E6374696F6E28297B72657475726E20695B655D2E6170706C79'';'||unistr('\000a')||
+'blog_install.i(129) := ''28692C61726';
+
+s:=s||'7756D656E7473297D7D2928293B696628722E68746D6C5363726970743D3D6E756C6C297B7928652E636F6E6669672E737472696E67732E62727573684E6F7448746D6C5363726970742B74293B72657475726E7D692E72656765784C6973742E70757368287B72656765783A722E68746D6C5363726970742E63'';'||unistr('\000a')||
+'blog_install.i(130) := ''6F64652C66756E633A6C7D297D2C652E486967686C6967687465723D66756E6374696F6E28297B7D2C652E486967686C6967687465722E70726F746F74797065';
+
+s:=s||'3D7B676574506172616D3A66756E6374696F6E28652C74297B766172206E3D746869732E706172616D735B655D3B72657475726E2076286E3D3D6E756C6C3F74'';'||unistr('\000a')||
+'blog_install.i(131) := ''3A6E297D2C6372656174653A66756E6374696F6E2865297B72657475726E20646F63756D656E742E637265617465456C656D656E742865297D2C66696E644D6174636865733A66756E6374696F6E28652C74297B766172206E3D5B5D3B69662865213D6E756C6C29666F722876617220723D303B723C652E6C656';
+
+s:=s||'E6774683B72'';'||unistr('\000a')||
+'blog_install.i(132) := ''2B2B29747970656F6620655B725D3D3D226F626A656374222626286E3D6E2E636F6E636174284D28742C655B725D2929293B72657475726E20746869732E72656D6F76654E65737465644D617463686573286E2E736F7274284F29297D2C72656D6F76654E65737465644D6174636865733A66756E6374696F6E2865297B666F'';'||unistr('\000a')||
+'blog_install.i(133) := ''722876617220743D303B743C652E6C656E6774683B742B2B297B696628655B745D3D3D3D6E756C6';
+
+s:=s||'C29636F6E74696E75653B766172206E3D655B745D2C723D6E2E696E6465782B6E2E6C656E6774683B666F722876617220693D742B313B693C652E6C656E6774682626655B745D213D3D6E756C6C3B692B2B297B7661722073'';'||unistr('\000a')||
+'blog_install.i(134) := ''3D655B695D3B696628733D3D3D6E756C6C29636F6E74696E75653B696628732E696E6465783E7229627265616B3B732E696E6465783D3D6E2E696E6465782626732E6C656E6774683E6E2E6C656E6774683F655B745D3D6E756C6C3A732E696E6465';
+
+s:=s||'783E3D6E2E696E6465782626732E696E6465783C72262628655B695D3D6E'';'||unistr('\000a')||
+'blog_install.i(135) := ''756C6C297D7D72657475726E20657D2C6669677572654F75744C696E654E756D626572733A66756E6374696F6E2865297B76617220743D5B5D2C6E3D7061727365496E7428746869732E676574506172616D282266697273742D6C696E652229293B72657475726E207728652C66756E6374696F6E28652C72297B742E707573'';'||unistr('\000a')||
+'blog_install.i(136) := ''6828722B6E297D292C747D2C69734C';
+
+s:=s||'696E65486967686C6967687465643A66756E6374696F6E2865297B76617220743D746869732E676574506172616D2822686967686C69676874222C5B5D293B72657475726E20747970656F662074213D226F626A656374222626742E707573683D3D6E756C6C262628743D5B745D292C68'';'||unistr('\000a')||
+'blog_install.i(137) := ''28742C652E746F537472696E67282929213D2D317D2C6765744C696E6548746D6C3A66756E6374696F6E28652C742C6E297B76617220723D5B226C696E65222C226E756D626572222B7';
+
+s:=s||'42C22696E646578222B652C22616C74222B287425323D3D303F313A32292E746F537472696E6728295D3B72657475726E20746869732E'';'||unistr('\000a')||
+'blog_install.i(138) := ''69734C696E65486967686C6967687465642874292626722E707573682822686967686C69676874656422292C743D3D302626722E707573682822627265616B22292C273C64697620636C6173733D22272B722E6A6F696E28222022292B27223E272B6E2B223C2F6469763E227D2C6765744C696E654E756D6265727348746D6C'';'||unistr('\000a')||
+'blog_';
+
+s:=s||'install.i(139) := ''3A66756E6374696F6E28742C6E297B76617220723D22222C693D732874292E6C656E6774682C6F3D7061727365496E7428746869732E676574506172616D282266697273742D6C696E652229292C753D746869732E676574506172616D28227061642D6C696E652D6E756D6265727322293B753D3D313F753D286F2B692D3129'';'||unistr('\000a')||
+'blog_install.i(140) := ''2E746F537472696E6728292E6C656E6774683A69734E614E2875293D3D31262628753D30293B666F722876617220613D30';
+
+s:=s||'3B613C693B612B2B297B76617220663D6E3F6E5B615D3A6F2B612C743D663D3D303F652E636F6E6669672E73706163653A5428662C75293B722B3D746869732E6765744C696E6548746D6C28612C66'';'||unistr('\000a')||
+'blog_install.i(141) := ''2C74297D72657475726E20727D2C676574436F64654C696E657348746D6C3A66756E6374696F6E28742C6E297B743D4C2874293B76617220723D732874292C693D746869732E676574506172616D28227061642D6C696E652D6E756D6265727322292C6F3D7061727365496';
+
+s:=s||'E7428746869732E676574506172616D2822666972'';'||unistr('\000a')||
+'blog_install.i(142) := ''73742D6C696E652229292C743D22222C753D746869732E676574506172616D2822627275736822293B666F722876617220613D303B613C722E6C656E6774683B612B2B297B76617220663D725B615D2C6C3D2F5E28266E6273703B7C5C73292B2F2E657865632866292C633D6E756C6C2C683D6E3F6E5B615D3A6F2B613B6C21'';'||unistr('\000a')||
+'blog_install.i(143) := ''3D6E756C6C262628633D6C5B305D2E746F537472696E67282';
+
+s:=s||'92C663D662E73756273747228632E6C656E677468292C633D632E7265706C616365282220222C652E636F6E6669672E737061636529292C663D4C2866292C662E6C656E6774683D3D30262628663D652E636F6E6669672E7370616365292C742B3D746869732E67'';'||unistr('\000a')||
+'blog_install.i(144) := ''65744C696E6548746D6C28612C682C2863213D6E756C6C3F273C636F646520636C6173733D22272B752B2720737061636573223E272B632B223C2F636F64653E223A2222292B66297D72657475726E20747D2C';
+
+s:=s||'6765745469746C6548746D6C3A66756E6374696F6E2865297B72657475726E20653F223C63617074696F6E3E22'';'||unistr('\000a')||
+'blog_install.i(145) := ''2B652B223C2F63617074696F6E3E223A22227D2C6765744D61746368657348746D6C3A66756E6374696F6E28652C74297B66756E6374696F6E20732865297B76617220743D653F652E62727573684E616D657C7C693A693B72657475726E20743F742B2220223A22227D766172206E3D302C723D22222C693D746869732E6765'';'||unistr('\000a')||
+'blog_install.i(146) := ''';
+
+s:=s||'74506172616D28226272757368222C2222293B666F7228766172206F3D303B6F3C742E6C656E6774683B6F2B2B297B76617220753D745B6F5D2C613B696628753D3D3D6E756C6C7C7C752E6C656E6774683D3D3D3029636F6E74696E75653B613D732875292C722B3D7828652E737562737472286E2C752E696E6465782D6E29'';'||unistr('\000a')||
+'blog_install.i(147) := ''2C612B22706C61696E22292B7828752E76616C75652C612B752E637373292C6E3D752E696E6465782B752E6C656E6774682B28752E6F666673657';
+
+s:=s||'47C7C30297D72657475726E20722B3D7828652E737562737472286E292C7328292B22706C61696E22292C727D2C67657448746D6C3A66756E6374696F6E2874297B76617220'';'||unistr('\000a')||
+'blog_install.i(148) := ''6E3D22222C723D5B2273796E746178686967686C696768746572225D2C692C732C753B72657475726E20746869732E676574506172616D28226C6967687422293D3D31262628746869732E706172616D732E746F6F6C6261723D746869732E706172616D732E6775747465723D2131292C636C6173';
+
+s:=s||'734E616D653D2273796E74'';'||unistr('\000a')||
+'blog_install.i(149) := ''6178686967686C696768746572222C746869732E676574506172616D2822636F6C6C6170736522293D3D312626722E707573682822636F6C6C617073656422292C286775747465723D746869732E676574506172616D28226775747465722229293D3D302626722E7075736828226E6F67757474657222292C722E7075736828'';'||unistr('\000a')||
+'blog_install.i(150) := ''746869732E676574506172616D2822636C6173732D6E616D652229292C722E707573';
+
+s:=s||'6828746869732E676574506172616D282262727573682229292C743D452874292E7265706C616365282F5C722F672C222022292C693D746869732E676574506172616D28227461622D73697A6522292C743D746869732E67657450617261'';'||unistr('\000a')||
+'blog_install.i(151) := ''6D2822736D6172742D7461627322293D3D313F4328742C69293A4E28742C69292C746869732E676574506172616D2822756E696E64656E742229262628743D41287429292C677574746572262628753D746869732E6669677572654F7';
+
+s:=s||'5744C696E654E756D62657273287429292C733D746869732E66696E644D617463686573'';'||unistr('\000a')||
+'blog_install.i(152) := ''28746869732E72656765784C6973742C74292C6E3D746869732E6765744D61746368657348746D6C28742C73292C6E3D746869732E676574436F64654C696E657348746D6C286E2C75292C746869732E676574506172616D28226175746F2D6C696E6B7322292626286E3D5F286E29292C747970656F66206E6176696761746F'';'||unistr('\000a')||
+'blog_install.i(153) := ''72213D22756E6465666';
+
+s:=s||'96E65642226266E6176696761746F722E757365724167656E7426266E6176696761746F722E757365724167656E742E6D61746368282F4D5349452F292626722E707573682822696522292C6E3D273C6469762069643D22272B6F28746869732E6964292B272220636C6173733D22272B722E6A6F696E'';'||unistr('\000a')||
+'blog_install.i(154) := ''28222022292B27223E272B28746869732E676574506172616D2822746F6F6C62617222293F652E746F6F6C6261722E67657448746D6C2874686973293A2222292B273C74';
+
+s:=s||'61626C6520626F726465723D2230222063656C6C70616464696E673D2230222063656C6C73706163696E673D2230223E272B746869732E6765745469'';'||unistr('\000a')||
+'blog_install.i(155) := ''746C6548746D6C28746869732E676574506172616D28227469746C652229292B223C74626F64793E222B223C74723E222B286775747465723F273C746420636C6173733D22677574746572223E272B746869732E6765744C696E654E756D6265727348746D6C2874292B223C2F74643E223A2222292B273C746420636C617';
+
+s:=s||'373'';'||unistr('\000a')||
+'blog_install.i(156) := ''3D22636F6465223E272B273C64697620636C6173733D22636F6E7461696E6572223E272B6E2B223C2F6469763E222B223C2F74643E222B223C2F74723E222B223C2F74626F64793E222B223C2F7461626C653E222B223C2F6469763E222C6E7D2C6765744469763A66756E6374696F6E2874297B743D3D3D6E756C6C26262874'';'||unistr('\000a')||
+'blog_install.i(157) := ''3D2222292C746869732E636F64653D743B766172206E3D746869732E637265617465282264697622293B726';
+
+s:=s||'57475726E206E2E696E6E657248544D4C3D746869732E67657448746D6C2874292C746869732E676574506172616D2822746F6F6C6261722229262667286C286E2C222E746F6F6C62617222292C22636C69636B22'';'||unistr('\000a')||
+'blog_install.i(158) := ''2C652E746F6F6C6261722E68616E646C6572292C746869732E676574506172616D2822717569636B2D636F64652229262667286C286E2C222E636F646522292C2264626C636C69636B222C48292C6E7D2C696E69743A66756E6374696F6E2874297B74686973';
+
+s:=s||'2E69643D7028292C662874686973292C746869732E706172616D'';'||unistr('\000a')||
+'blog_install.i(159) := ''733D6428652E64656661756C74732C747C7C7B7D292C746869732E676574506172616D28226C6967687422293D3D31262628746869732E706172616D732E746F6F6C6261723D746869732E706172616D732E6775747465723D2131297D2C6765744B6579776F7264733A66756E6374696F6E2865297B72657475726E20653D65'';'||unistr('\000a')||
+'blog_install.i(160) := ''2E7265706C616365282F5E5C732B7C5C732B24';
+
+s:=s||'2F672C2222292E7265706C616365282F5C732B2F672C227C22292C225C5C62283F3A222B652B22295C5C62227D2C666F7248746D6C5363726970743A66756E6374696F6E2865297B76617220743D7B656E643A652E72696768742E736F757263657D3B652E656F66262628742E'';'||unistr('\000a')||
+'blog_install.i(161) := ''656E643D22283F3A283F3A222B742E656E642B22297C242922292C746869732E68746D6C5363726970743D7B6C6566743A7B72656765783A652E6C6566742C6373733A22736372697074227D2C7';
+
+s:=s||'2696768743A7B72656765783A652E72696768742C6373733A22736372697074227D2C636F64653A6E65772058526567457870'';'||unistr('\000a')||
+'blog_install.i(162) := ''2822283F3C6C6566743E222B652E6C6566742E736F757263652B2229222B22283F3C636F64653E2E2A3F29222B22283F3C72696768743E222B742E656E642B2229222C2273676922297D7D7D2C657D28293B747970656F66206578706F727473213D22756E646566696E6564223F6578706F7274732E53796E74617848696768'';'||unistr('\000a')||
+'blog_install.';
+
+s:=s||'i(163) := ''6C6967687465723D53796E746178486967686C6967687465723A6E756C6C0D0A2F2A207365742064656661756C7473202A2F0D0A53796E746178486967686C6967687465722E64656661756C74735B22746F6F6C626172225D3D66616C73653B0D0A2F2A2073684272757368506C61696E2E6A73202A2F0D0A3B2866756E6374'';'||unistr('\000a')||
+'blog_install.i(164) := ''696F6E28297B53796E746178486967686C6967687465723D53796E746178486967686C696768746572207C7C2028747970656F6620';
+
+s:=s||'7265717569726520213D3D2027756E646566696E6564273F207265717569726528277368436F726527292E53796E746178486967686C696768746572203A206E756C6C293B66756E637469'';'||unistr('\000a')||
+'blog_install.i(165) := ''6F6E20427275736828297B7D3B42727573682E70726F746F747970653D6E65772053796E746178486967686C6967687465722E486967686C69676874657228293B42727573682E616C69617365733D5B2774657874272C27706C61696E275D3B53796E746178486967686C696768746';
+
+s:=s||'5722E627275736865732E506C61696E3D'';'||unistr('\000a')||
+'blog_install.i(166) := ''42727573683B747970656F66286578706F72747329213D27756E646566696E6564273F6578706F7274732E42727573683D42727573683A6E756C6C3B7D2928293B0D0A66756E6374696F6E20696E697443484B456469746F7228297B0D0A20434B454449544F522E7374796C65735365742E616464280D0A2020226465666175'';'||unistr('\000a')||
+'blog_install.i(167) := ''6C74222C5B0D0A2020207B6E616D653A2253796E746178486967686C6';
+
+s:=s||'96768746572222C656C656D656E743A22707265222C7374796C65733A7B226261636B67726F756E642D636F6C6F72223A2223454545454545222C70616464696E673A22327078227D2C617474726962757465733A7B22636C617373223A226272757368'';'||unistr('\000a')||
+'blog_install.i(168) := ''3A706C61696E227D7D2C0D0A2020207B6E616D653A22426C7565205469746C65222C656C656D656E743A226833222C7374796C65733A7B636F6C6F723A22426C7565227D7D2C0D0A2020207B6E616D653A225265642054';
+
+s:=s||'69746C65222C656C656D656E743A226833222C7374796C65733A7B636F6C6F723A22526564227D7D2C'';'||unistr('\000a')||
+'blog_install.i(169) := ''0D0A2020207B6E616D653A224D61726B65723A2059656C6C6F77222C656C656D656E743A227370616E222C7374796C65733A7B226261636B67726F756E642D636F6C6F72223A2259656C6C6F77227D7D2C0D0A2020207B6E616D653A224D61726B65723A20477265656E222C656C656D656E743A227370616E222C7374796C65'';'||unistr('\000a')||
+'blog_install.i(170) := ''733A7B22';
+
+s:=s||'6261636B67726F756E642D636F6C6F72223A224C696D65227D7D2C0D0A2020207B6E616D653A22426967222C656C656D656E743A22626967227D2C7B6E616D653A22536D616C6C222C656C656D656E743A22736D616C6C227D2C0D0A2020207B6E616D653A2254797065777269746572222C656C656D656E743A2274'';'||unistr('\000a')||
+'blog_install.i(171) := ''74227D2C7B6E616D653A22436F6D707574657220436F6465222C656C656D656E743A22636F6465227D2C0D0A2020207B6E616D653A224B6579626F6172642';
+
+s:=s||'0506872617365222C656C656D656E743A226B6264227D2C7B6E616D653A2253616D706C652054657874222C656C656D656E743A2273616D70227D2C0D0A2020207B'';'||unistr('\000a')||
+'blog_install.i(172) := ''6E616D653A225661726961626C65222C656C656D656E743A22766172227D2C0D0A2020207B6E616D653A2244656C657465642054657874222C656C656D656E743A2264656C227D2C0D0A2020207B6E616D653A22496E7365727465642054657874222C656C656D656E743A22696E73227D2C0D0A2020207B6E';
+
+s:=s||'616D653A224369'';'||unistr('\000a')||
+'blog_install.i(173) := ''74656420576F726B222C656C656D656E743A2263697465227D2C0D0A2020207B6E616D653A22496E6C696E652051756F746174696F6E222C656C656D656E743A2271227D2C0D0A2020207B6E616D653A224C616E67756167653A2052544C222C656C656D656E743A227370616E222C617474726962757465733A7B6469723A22'';'||unistr('\000a')||
+'blog_install.i(174) := ''72746C227D7D2C0D0A2020207B6E616D653A224C616E67756167653A204C5452222C656C656D';
+
+s:=s||'656E743A227370616E222C617474726962757465733A7B6469723A226C7472227D7D2C0D0A2020207B6E616D653A22496D616765206F6E204C656674222C656C656D656E743A22696D67222C617474726962757465733A7B7374'';'||unistr('\000a')||
+'blog_install.i(175) := ''796C653A2270616464696E673A203570783B206D617267696E2D72696768743A20357078222C20626F726465723A2232222C616C69676E3A226C656674227D7D2C0D0A2020207B6E616D653A22496D616765206F6E205269676874222C656C656';
+
+s:=s||'D656E743A22696D67222C617474726962757465733A7B7374796C653A227061'';'||unistr('\000a')||
+'blog_install.i(176) := ''6464696E673A203570783B206D617267696E2D6C6566743A20357078222C626F726465723A2232222C616C69676E3A227269676874227D7D2C0D0A2020207B6E616D653A22426F726465726C657373205461626C65222C656C656D656E743A227461626C65222C7374796C65733A7B22626F726465722D7374796C65223A2268'';'||unistr('\000a')||
+'blog_install.i(177) := ''696464656E222C226261636B677';
+
+s:=s||'26F756E642D636F6C6F72223A2223453645364641227D7D2C0D0A2020207B6E616D653A225371756172652042756C6C65746564204C697374222C656C656D656E743A22756C222C7374796C65733A7B226C6973742D7374796C652D74797065223A22737175617265227D7D0D0A20205D0D0A'';'||unistr('\000a')||
+'blog_install.i(178) := ''20293B0D0A20434B454449544F522E636F6E6669672E656E7469746965735F6164646974696F6E616C3D22237832332C237832372C23783246223B0D0A20434B454449544F522E63';
+
+s:=s||'6F6E6669672E666F72636550617374654173506C61696E546578743D21303B0D0A7D0D0A66756E6374696F6E206E65745F776562686F705F'';'||unistr('\000a')||
+'blog_install.i(179) := ''64627377685F6D61785F6974656D5F6C656E67746828297B0D0A20766172206C4D61784C656E67746820203D20746869732E616374696F6E2E61747472696275746530312A312C0D0A20202020206C4D657373616765202020203D20746869732E616374696F6E2E61747472696275746530322C0D0A09206C53746F70537562'';'||unistr('\000a')||
+'bl';
+
+s:=s||'og_install.i(180) := ''6D6974203D2066616C73650D0A09203B0D0A20746869732E6166666563746564456C656D656E74732E656163682866756E6374696F6E2869297B0D0A2020766172206C4C6162656C203D20242E7472696D282428276C6162656C5B666F723D22272B746869732E69642B27225D27292E746578742829293B0D0A202069662824'';'||unistr('\000a')||
+'blog_install.i(181) := ''762874686973292E6C656E6774683E3D6C4D61784C656E677468297B0D0A202020616C657274286C4C6162656C2B6C4';
+
+s:=s||'D657373616765293B0D0A2020206C53746F705375626D69743D747275650D0A20207D0D0A207D293B0D0A206966286C53746F705375626D6974297B0D0A20206576656E742E70726576656E7444656661'';'||unistr('\000a')||
+'blog_install.i(182) := ''756C7428290D0A207D0D0A7D'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''alib.js'',''text/javascript'',''THEME'',blog_inst';
+
+s:=s||'all.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''6469762E636F6D6D656E747B6D61782D77696474683A36303070787D2E636F6D6D656E742D746578747B6261636B67726F756E643A6E6F6E6520726570656174207363726F6C6C2030203020234635463546353B626F726465723A31707820736F6C696420234341434143413B626F726465722D7261646975733A3370782033'';'||unistr('\000a')||
+'blog_install.i(2) := ''707820337078203370783B6D617267696E2D626F74';
+
+s:=s||'746F6D3A3670783B70616464696E673A35707820313070787D2E636F6D6D656E742D7465787420756C7B6D617267696E3A302030203020313570782021696D706F7274616E747D2E636F6D6D656E742D746578742068337B666F6E742D7765696768743A3730303B6D6172'';'||unistr('\000a')||
+'blog_install.i(3) := ''67696E3A302030203570783B70616464696E673A307D2E6468746D6C5375624D656E75327B7A2D696E6465783A393939397D646976237542726561646372756D627320756C206C697B666F6E742D73697';
+
+s:=s||'A653A3134707821696D706F7274616E743B70616464696E673A3021696D706F7274616E747D612E68656C706C616265'';'||unistr('\000a')||
+'blog_install.i(4) := ''6C7B637572736F723A68656C707D612E68656C706C6162656C3A686F7665727B706F736974696F6E3A72656C61746976657D612E68656C706C6162656C3A686F766572206469767B646973706C61793A626C6F636B7D612E68656C706C6162656C206469767B626F782D736861646F773A357078203570782035707820726762'';'||unistr('\000a')||
+'blog_install.i(5) := ';
+
+s:=s||'''6128302C20302C20302C20302E31293B626F726465722D7261646975733A357078203570783B706F736974696F6E3A6162736F6C7574653B6C6566743A31656D3B746F703A31656D3B77686974652D73706163653A6E6F777261703B6261636B67726F756E642D636F6C6F723A234545453B626F726465723A31707820736F6C'';'||unistr('\000a')||
+'blog_install.i(6) := ''696420234343433B636F6C6F723A233333333B666F6E742D7765696768743A3730303B70616464696E673A2E38656D2031656D3B746578742D616C';
+
+s:=s||'69676E3A6C6566743B746578742D6465636F726174696F6E3A6E6F6E653B7A2D696E6465783A393939393B646973706C61793A6E6F6E657D2E6164642D62746E7B6D617267'';'||unistr('\000a')||
+'blog_install.i(7) := ''696E2D6C6566743A3670783B626F726465723A31707820736F6C696420233641394344417D2E6164642D62746E3A686F7665727B626F782D736861646F773A3020302033707820233641394344417D236170657869725F4C4F414445527B6261636B67726F756E642D636F6C6F723A726762612835312';
+
+s:=s||'C2035312C2035312C30'';'||unistr('\000a')||
+'blog_install.i(8) := ''2E33293B6865696768743A313030253B77696474683A313030253B746F703A303B6C6566743A303B706F736974696F6E3A66697865643B7A2D696E6465783A393939393B637572736F723A776169747D236170657869725F4C4F4144455220696D677B6C6566743A3438253B706F736974696F6E3A72656C61746976653B746F'';'||unistr('\000a')||
+'blog_install.i(9) := ''703A3334253B637572736F723A776169747D236170657869725F414354494F4E534D454E552';
+
+s:=s||'06120696D672C236170657869725F464F524D41545F4D454E55206120696D677B646973706C61793A696E6C696E6521696D706F7274616E747D236170657869725F726F6C6C6F7665722E75692D726573697A61626C657B706164'';'||unistr('\000a')||
+'blog_install.i(10) := ''64696E672D72696768743A3870787D236170657869725F726F6C6C6F766572206469762E75692D726573697A61626C652D68616E646C657B6261636B67726F756E643A75726C2822663F703D424C4F473A46494C45533A303A4150504C4943415';
+
+s:=s||'4494F4E5F50524F434553533D444F574E4C4F41443A3A3A5031315F46494C45'';'||unistr('\000a')||
+'blog_install.i(11) := ''5F4E414D453A726573697A652D652E706E672229206E6F2D726570656174207363726F6C6C20302035302520234630463046303B626F726465722D6C6566743A32707820736F6C696420234630463046303B72696768743A307D2E73796E746178686967686C69676874657220612C2E73796E746178686967686C6967687465'';'||unistr('\000a')||
+'blog_install.i(12) := ''72206469762C2E73796E746178686';
+
+s:=s||'967686C69676874657220636F64652C2E73796E746178686967686C696768746572207461626C652C2E73796E746178686967686C696768746572207461626C652074642C2E73796E746178686967686C696768746572207461626C652074722C2E73796E746178686967686C6967687465'';'||unistr('\000a')||
+'blog_install.i(13) := ''72207461626C652074626F64792C2E73796E746178686967686C696768746572207461626C652074686561642C2E73796E746178686967686C696768746572207461626C65206361707';
+
+s:=s||'4696F6E2C2E73796E746178686967686C6967687465722074657874617265617B6261636B67726F756E643A6E6F6E652021696D706F72'';'||unistr('\000a')||
+'blog_install.i(14) := ''74616E743B626F726465723A302021696D706F7274616E743B626F74746F6D3A6175746F2021696D706F7274616E743B666C6F61743A6E6F6E652021696D706F7274616E743B6865696768743A6175746F2021696D706F7274616E743B6C6566743A6175746F2021696D706F7274616E743B6C696E652D6865696768743A312E'';'||unistr('\000a')||
+'blog_i';
+
+s:=s||'nstall.i(15) := ''31656D2021696D706F7274616E743B6D617267696E3A302021696D706F7274616E743B6F75746C696E653A302021696D706F7274616E743B6F766572666C6F773A76697369626C652021696D706F7274616E743B70616464696E673A302021696D706F7274616E743B706F736974696F6E3A7374617469632021696D706F7274'';'||unistr('\000a')||
+'blog_install.i(16) := ''616E743B72696768743A6175746F2021696D706F7274616E743B746578742D616C69676E3A6C6566742021696D706F7274616';
+
+s:=s||'E743B746F703A6175746F2021696D706F7274616E743B766572746963616C2D616C69676E3A626173656C696E652021696D706F7274616E743B77696474683A6175746F2021696D706F7274616E'';'||unistr('\000a')||
+'blog_install.i(17) := ''743B626F782D73697A696E673A636F6E74656E742D626F782021696D706F7274616E743B666F6E742D66616D696C793A22436F6E736F6C6173222C2242697473747265616D20566572612053616E73204D6F6E6F222C22436F7572696572204E6577222C436F75726965722C6D6';
+
+s:=s||'F6E6F73706163652021696D706F7274616E74'';'||unistr('\000a')||
+'blog_install.i(18) := ''3B666F6E742D7765696768743A6E6F726D616C2021696D706F7274616E743B666F6E742D7374796C653A6E6F726D616C2021696D706F7274616E743B666F6E742D73697A653A31656D2021696D706F7274616E743B6D696E2D6865696768743A6175746F2021696D706F7274616E747D2E73796E746178686967686C69676874'';'||unistr('\000a')||
+'blog_install.i(19) := ''65722E736F757263657B6F766572666C6F773A68696464656E20216';
+
+s:=s||'96D706F7274616E747D2E73796E746178686967686C696768746572202E6974616C69637B666F6E742D7374796C653A6974616C69632021696D706F7274616E747D2E73796E746178686967686C696768746572202E6C696E657B77686974652D73706163'';'||unistr('\000a')||
+'blog_install.i(20) := ''653A7072652021696D706F7274616E747D2E73796E746178686967686C696768746572207461626C652074642E636F64652C2E73796E746178686967686C696768746572207461626C657B77696474683A31303025202';
+
+s:=s||'1696D706F7274616E747D2E73796E746178686967686C696768746572207461626C652074642E636F64'';'||unistr('\000a')||
+'blog_install.i(21) := ''65202E636F6E7461696E65727B706F736974696F6E3A72656C61746976652021696D706F7274616E747D2E73796E746178686967686C696768746572207461626C652074642E636F6465202E636F6E7461696E65722074657874617265617B626F782D73697A696E673A626F726465722D626F782021696D706F7274616E743B'';'||unistr('\000a')||
+'blog_install.i(22) := ''706F73697';
+
+s:=s||'4696F6E3A6162736F6C7574652021696D706F7274616E743B6C6566743A302021696D706F7274616E743B746F703A302021696D706F7274616E743B77696474683A313030252021696D706F7274616E743B6865696768743A313030252021696D706F7274616E743B626F726465723A6E6F6E652021696D706F7274'';'||unistr('\000a')||
+'blog_install.i(23) := ''616E743B6261636B67726F756E643A234643464346432021696D706F7274616E743B70616464696E672D6C6566743A31656D2021696D706F7274616E743B6F7';
+
+s:=s||'66572666C6F773A68696464656E2021696D706F7274616E743B77686974652D73706163653A7072652021696D706F7274616E747D2E73796E746178686967686C'';'||unistr('\000a')||
+'blog_install.i(24) := ''696768746572207461626C652074642E677574746572202E6C696E657B746578742D616C69676E3A72696768742021696D706F7274616E743B70616464696E673A30202E35656D20302031656D2021696D706F7274616E747D2E73796E746178686967686C696768746572207461626C652074642E636F6465202';
+
+s:=s||'E6C696E657B'';'||unistr('\000a')||
+'blog_install.i(25) := ''70616464696E673A302031656D2021696D706F7274616E747D2E73796E746178686967686C6967687465722E6E6F6775747465722074642E636F6465202E6C696E652C2E73796E746178686967686C6967687465722E6E6F6775747465722074642E636F6465202E636F6E7461696E65722074657874617265617B7061646469'';'||unistr('\000a')||
+'blog_install.i(26) := ''6E672D6C6566743A302021696D706F7274616E747D2E73796E746178686967686C6967687465722E7';
+
+s:=s||'3686F777B646973706C61793A626C6F636B2021696D706F7274616E747D2E73796E746178686967686C6967687465722E636F6C6C6170736564202E746F6F6C626172207370616E7B646973706C61793A696E6C696E6520'';'||unistr('\000a')||
+'blog_install.i(27) := ''21696D706F7274616E743B6D617267696E2D72696768743A31656D2021696D706F7274616E747D2E73796E';
+
+wwv_flow_api.append_to_install_script(
+  p_id => 12275005924827304 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_script_clob => s);
+end;
+ 
+ 
+end;
+/
+
+ 
+begin
+ 
+declare
+    s varchar2(32767) := null;
+begin
+s:=s||'746178686967686C6967687465722E636F6C6C6170736564202E746F6F6C626172207370616E20617B70616464696E673A302021696D706F7274616E743B646973706C61793A6E6F6E652021696D706F7274616E74'';'||unistr('\000a')||
+'blog_install.i(28) := ''7D2E73796E746178686967686C696768746572202E746F6F6C626172207370616E2E7469746C652C2E73796E746178686967686C6967687465722E636F6C6C6170736564202E746F6F6C626172207370616E20612E657870616E64536F757263657B64697370';
+
+s:=s||'6C61793A696E6C696E652021696D706F7274616E747D2E73796E'';'||unistr('\000a')||
+'blog_install.i(29) := ''746178686967686C6967687465722E69657B666F6E742D73697A653A2E39656D2021696D706F7274616E743B70616464696E673A31707820302031707820302021696D706F7274616E747D2E73796E746178686967686C6967687465722E6965202E746F6F6C6261727B6C696E652D6865696768743A3870782021696D706F72'';'||unistr('\000a')||
+'blog_install.i(30) := ''74616E747D2E73796E746178686967686C696768';
+
+s:=s||'7465722E6965202E746F6F6C62617220617B70616464696E672D746F703A302021696D706F7274616E747D2E73796E746178686967686C6967687465722E7072696E74696E67202E6C696E652E616C7431202E636F6E74656E742C2E73796E746178686967686C6967687465'';'||unistr('\000a')||
+'blog_install.i(31) := ''722E7072696E74696E67202E6C696E652E616C7432202E636F6E74656E742C2E73796E746178686967686C6967687465722E7072696E74696E67202E6C696E652E686967686C696768746564202E6E';
+
+s:=s||'756D6265722C2E73796E746178686967686C6967687465722E7072696E74696E67202E6C696E652E686967686C69676874'';'||unistr('\000a')||
+'blog_install.i(32) := ''65642E616C7431202E636F6E74656E742C2E73796E746178686967686C6967687465722E7072696E74696E67202E6C696E652E686967686C6967687465642E616C7432202E636F6E74656E747B6261636B67726F756E643A6E6F6E652021696D706F7274616E747D2E73796E746178686967686C6967687465722E7072696E74'';'||unistr('\000a')||
+'blog_install.i(33';
+
+s:=s||') := ''696E67202E6C696E65202E6E756D6265727B636F6C6F723A236262622021696D706F7274616E747D2E73796E746178686967686C6967687465722E7072696E74696E67202E746F6F6C6261722C2E73796E746178686967686C696768746572202E746F6F6C62617220612E657870616E64536F757263652C2E73796E74617868'';'||unistr('\000a')||
+'blog_install.i(34) := ''6967686C6967687465722E636F6C6C6170736564207461626C657B646973706C61793A6E6F6E652021696D706F7274616E747D2E73796E74';
+
+s:=s||'6178686967686C6967687465722E7072696E74696E6720617B746578742D6465636F726174696F6E3A6E6F6E652021696D706F7274616E747D2E73796E746178686967686C696768'';'||unistr('\000a')||
+'blog_install.i(35) := ''7465722E7072696E74696E67202E7363726970742C2E73796E746178686967686C696768746572202E626F6C647B666F6E742D7765696768743A626F6C642021696D706F7274616E747D2E73796E746178686967686C696768746572202E6C696E652E616C74322C2E73796E74617868696768';
+
+s:=s||'6C696768746572202E6C696E65'';'||unistr('\000a')||
+'blog_install.i(36) := ''2E616C74317B6261636B67726F756E642D636F6C6F723A234643464346432021696D706F7274616E747D2E73796E746178686967686C696768746572202E6C696E652E686967686C6967687465642E616C74312C2E73796E746178686967686C696768746572202E6C696E652E686967686C6967687465642E616C74327B6261'';'||unistr('\000a')||
+'blog_install.i(37) := ''636B67726F756E642D636F6C6F723A236530653065302021696D706F7274616E74';
+
+s:=s||'7D2E73796E746178686967686C696768746572207461626C652063617074696F6E7B746578742D616C69676E3A6C6566742021696D706F7274616E743B70616464696E673A2E35656D2030202E35656D2031656D2021696D706F7274616E74'';'||unistr('\000a')||
+'blog_install.i(38) := ''3B636F6C6F723A233333332021696D706F7274616E747D2E73796E746178686967686C696768746572202E6775747465727B636F6C6F723A236166616661662021696D706F7274616E747D2E73796E746178686967686C6967687465';
+
+s:=s||'72202E677574746572202E6C696E657B626F726465722D72696768743A33707820736F6C'';'||unistr('\000a')||
+'blog_install.i(39) := ''696420233663653236632021696D706F7274616E747D2E73796E746178686967686C696768746572202E677574746572202E6C696E652E686967686C6967687465647B6261636B67726F756E642D636F6C6F723A233663653236632021696D706F7274616E743B636F6C6F723A234643464346432021696D706F7274616E747D'';'||unistr('\000a')||
+'blog_install.i(40) := ''2E73796E746178686967';
+
+s:=s||'686C6967687465722E7072696E74696E67202E6C696E65202E636F6E74656E747B636F6C6F723A233333332021696D706F7274616E743B626F726465723A6E6F6E652021696D706F7274616E747D2E73796E746178686967686C6967687465722E636F6C6C61707365647B6F766572666C6F773A7669'';'||unistr('\000a')||
+'blog_install.i(41) := ''7369626C652021696D706F7274616E747D2E73796E746178686967686C6967687465722E636F6C6C6170736564202E746F6F6C6261727B70616464696E673A2E31656D202E';
+
+s:=s||'38656D2030202E38656D2021696D706F7274616E743B666F6E742D73697A653A31656D2021696D706F7274616E743B706F736974696F6E3A737461'';'||unistr('\000a')||
+'blog_install.i(42) := ''7469632021696D706F7274616E743B77696474683A6175746F2021696D706F7274616E743B6865696768743A6175746F2021696D706F7274616E743B636F6C6F723A626C75652021696D706F7274616E743B6261636B67726F756E643A234643464346432021696D706F7274616E743B626F726465723A31707820736F6C6964';
+
+s:=s||''';'||unistr('\000a')||
+'blog_install.i(43) := ''20233663653236632021696D706F7274616E747D2E73796E746178686967686C696768746572202E746F6F6C6261727B706F736974696F6E3A6162736F6C7574652021696D706F7274616E743B72696768743A3170782021696D706F7274616E743B746F703A3170782021696D706F7274616E743B77696474683A3131707820'';'||unistr('\000a')||
+'blog_install.i(44) := ''21696D706F7274616E743B6865696768743A313170782021696D706F7274616E743B666F6E742D73697A653A3130';
+
+s:=s||'70782021696D706F7274616E743B7A2D696E6465783A31302021696D706F7274616E743B636F6C6F723A234643464346432021696D706F7274616E743B6261636B67726F756E643A23366365323663202169'';'||unistr('\000a')||
+'blog_install.i(45) := ''6D706F7274616E743B626F726465723A6E6F6E652021696D706F7274616E747D2E73796E746178686967686C696768746572202E746F6F6C62617220617B646973706C61793A626C6F636B2021696D706F7274616E743B746578742D616C69676E3A63656E74657220';
+
+s:=s||'21696D706F7274616E743B746578742D6465636F726174'';'||unistr('\000a')||
+'blog_install.i(46) := ''696F6E3A6E6F6E652021696D706F7274616E743B70616464696E672D746F703A3170782021696D706F7274616E743B636F6C6F723A234643464346432021696D706F7274616E747D2E73796E746178686967686C696768746572202E706C61696E2C2E73796E746178686967686C696768746572202E706C61696E20612C2E73'';'||unistr('\000a')||
+'blog_install.i(47) := ''796E746178686967686C696768746572202E746F6F6C62';
+
+s:=s||'617220613A686F7665722C2E73796E746178686967686C696768746572202E6C696E652E686967686C6967687465642E6E756D6265722C2E73796E746178686967686C6967687465722E7072696E74696E67202E627265616B2C2E73796E746178686967686C696768'';'||unistr('\000a')||
+'blog_install.i(48) := ''7465722E7072696E74696E67202E627265616B20612C2E73796E746178686967686C6967687465722E7072696E74696E67202E706C61696E2C2E73796E746178686967686C6967687465722E7072696E7469';
+
+s:=s||'6E67202E706C61696E20617B636F6C6F723A233333332021696D706F7274616E747D2E73796E746178686967686C'';'||unistr('\000a')||
+'blog_install.i(49) := ''696768746572202E636F6D6D656E74732C2E73796E746178686967686C696768746572202E636F6D6D656E747320612C2E73796E746178686967686C6967687465722E7072696E74696E67202E636F6D6D656E74732C2E73796E746178686967686C6967687465722E7072696E74696E67202E636F6D6D656E747320617B636F'';'||unistr('\000a')||
+'blog_install.i(50) := ''';
+
+s:=s||'6C6F723A233030383230302021696D706F7274616E747D2E73796E746178686967686C696768746572202E737472696E672C2E73796E746178686967686C696768746572202E737472696E6720612C2E73796E746178686967686C6967687465722E636F6C6C6170736564202E746F6F6C62617220612C2E73796E7461786869'';'||unistr('\000a')||
+'blog_install.i(51) := ''67686C6967687465722E7072696E74696E67202E737472696E672C2E73796E746178686967686C6967687465722E7072696E74696E67202E737472';
+
+s:=s||'696E6720617B636F6C6F723A626C75652021696D706F7274616E747D2E73796E746178686967686C696768746572202E7661726961626C652C2E73796E746178686967686C'';'||unistr('\000a')||
+'blog_install.i(52) := ''6967687465722E7072696E74696E67202E7661726961626C657B636F6C6F723A236137302021696D706F7274616E747D2E73796E746178686967686C696768746572202E76616C75652C2E73796E746178686967686C6967687465722E7072696E74696E67202E76616C75657B636F6C6F723A233039';
+
+s:=s||'302021696D706F727461'';'||unistr('\000a')||
+'blog_install.i(53) := ''6E747D2E73796E746178686967686C696768746572202E636F6E7374616E74732C2E73796E746178686967686C6967687465722E7072696E74696E67202E636F6E7374616E74737B636F6C6F723A233036632021696D706F7274616E747D2E73796E746178686967686C696768746572202E7363726970747B666F6E742D7765'';'||unistr('\000a')||
+'blog_install.i(54) := ''696768743A626F6C642021696D706F7274616E743B636F6C6F723A233036392021696D70';
+
+s:=s||'6F7274616E743B6261636B67726F756E642D636F6C6F723A7472616E73706172656E742021696D706F7274616E747D2E73796E746178686967686C696768746572202E636F6C6F72312C2E73796E746178686967686C696768746572'';'||unistr('\000a')||
+'blog_install.i(55) := ''202E636F6C6F723120612C2E73796E746178686967686C696768746572202E70726570726F636573736F722C2E73796E746178686967686C6967687465722E7072696E74696E67202E636F6C6F72312C2E73796E746178686967686C696768';
+
+s:=s||'7465722E7072696E74696E67202E636F6C6F723120612C2E73796E746178686967'';'||unistr('\000a')||
+'blog_install.i(56) := ''686C6967687465722E7072696E74696E67202E70726570726F636573736F727B636F6C6F723A677261792021696D706F7274616E747D2E73796E746178686967686C696768746572202E636F6C6F72322C2E73796E746178686967686C696768746572202E636F6C6F723220612C2E73796E746178686967686C696768746572'';'||unistr('\000a')||
+'blog_install.i(57) := ''202E66756E6374696F6E732C2E';
+
+s:=s||'73796E746178686967686C6967687465722E7072696E74696E67202E636F6C6F72322C2E73796E746178686967686C6967687465722E7072696E74696E67202E636F6C6F723220612C2E73796E746178686967686C6967687465722E7072696E74696E67202E66756E6374696F6E737B636F6C'';'||unistr('\000a')||
+'blog_install.i(58) := ''6F723A236666313439332021696D706F7274616E747D2E73796E746178686967686C696768746572202E636F6C6F72332C2E73796E746178686967686C696768746572202E636F6C';
+
+s:=s||'6F723320612C2E73796E746178686967686C6967687465722E636F6C6C6170736564202E746F6F6C62617220613A686F7665722C2E73796E'';'||unistr('\000a')||
+'blog_install.i(59) := ''746178686967686C6967687465722E7072696E74696E67202E636F6C6F72332C2E73796E746178686967686C6967687465722E7072696E74696E67202E636F6C6F723320617B636F6C6F723A7265642021696D706F7274616E747D2E73796E746178686967686C696768746572202E6B6579776F72642C2E73796E7461786869'';'||unistr('\000a')||
+'blo';
+
+s:=s||'g_install.i(60) := ''67686C6967687465722E7072696E74696E67202E6B6579776F72647B636F6C6F723A233036392021696D706F7274616E743B666F6E742D7765696768743A626F6C642021696D706F7274616E747D2E73796E746178686967686C6967687465727B77696474683A313030252021696D706F7274616E743B6D617267696E3A3165'';'||unistr('\000a')||
+'blog_install.i(61) := ''6D20302031656D20302021696D706F7274616E743B706F736974696F6E3A72656C61746976652021696D706F7274616E74';
+
+s:=s||'3B6F766572666C6F773A6175746F2021696D706F7274616E743B666F6E742D73697A653A31656D2021696D706F7274616E743B6261636B67726F756E642D636F6C6F723A234643464346432021696D'';'||unistr('\000a')||
+'blog_install.i(62) := ''706F7274616E743B6F766572666C6F772D793A68696464656E2021696D706F7274616E743B70616464696E673A337078203021696D706F7274616E747D0D0A'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file ';
+
+s:=s||'(file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''astyle.min.css'',''text/css'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D49484452000000640000006408000000005589CA88000013D749444154181905C15B8263398E2540ED7F933DDD192E9100CE0320AF3CB2EA67CC5EF9C609EBD19BEE56F77C3FCE5355C5D352CC5B2C34762599B418741DFA7CD2CB7029F674F6084669BE7';
+
+s:=s||'5674EE1ABEAA6DA7C69A778A0E40725'';'||unistr('\000a')||
+'blog_install.i(2) := ''16E9A816E05C2BB2F602D8299A27CC2F26F866FDB97CB755847AEF9CC34B951C1F46BB24F3AB498DB9CFCB2AEFA5CBF1D42CDA4F1CCC6E53BDDE5FF72856A6EB5BAB420A7E789E1A2730C79DA5294F656D6592B336B570EA5BC76CCFD12B44E76547A324F17887E0C4875C21684CF429FC7AED0462B1F604A4FC6861F26A56CD'';'||unistr('\000a')||
+'blog_install.i(3) := ''B66A70E6F6BBA7F4A9FD393BC5FEDEFCBC107B26DE89E89E0E36A8F68328DE6';
+
+s:=s||'91C47CE73A4C8C80E45B2B78A9C417CAB7F0FDA834CBB1A429763487664796828745F3F9F368BBE684F149DEF6343FE14B3D774C93841C23FD39D23F62AED1A43E49DA4794825B20D4F56F4E41059CD404ED56BC3ACECE84F6C875A4845059338'';'||unistr('\000a')||
+'blog_install.i(4) := ''51CAE92E9C77330875F08C7CC4925171FADEFA5DC152687CBD1F3985F58727B7E53CF31FE835C569FFB9958B1281B3EB293D833F8DC8550213A9CA68AEA1D6C9E473DCD893437769F0299632693F6932C1C361A9EE02F5EA9C941B';
+
+s:=s||'E1AB749911FF74A6271C7EDA1D99CBEEEFA60EC2DCFC47E5726BD4EF8A667D19AB2B3EBBF7'';'||unistr('\000a')||
+'blog_install.i(5) := ''B7BD8EFA1DAC4A3C6472EAF5B1C9798800BF1D4D996AE1E392B3B2D0F7623EDC8F599CD00723D1CC188E10574CAEAC0F28C0BDF23195E7CBEA8F5DE46B32E5A96065A9275BC953BB18CA7CBECE663584BF5BC473CA6EB080AA7FABDC9B6B21C1D14C2EFC746B35174BCEA8590EA95E4F1A1D6F41AC8D714DE5DFC8593D5F2EE5'';'||unistr('\000a')||
+'blog_install.i(6) := ''3DBC8D37B7C682A1EF5E';
+
+s:=s||'A781CA4F958D6FEF85CB081CA9805F57C13EC173A33F79F7C9175A02585F60AF76CB29E962992EF62CB9409E9EA9E929EB4C57E77C3292CDDC8C78BA5D82F13E3D0CF153671F174A59E1D7B13915F7784D96607C6226FFFE994A30DD563738BBBE5B65B99753000D1ECC83DF706D83B143C6D56CF68A'';'||unistr('\000a')||
+'blog_install.i(7) := ''DA622B6D383E2F66873D9FE6AEE9464A6E2D12B1E3D033C80CC4BE71AE1ED9EBA18395090CB3D465F7F46E7C306181BA9FEA6F6BF3EF7C5CF5DAC987A8BFF5C175A100E1BE3';
+
+s:=s||'BF1AE80AD4169D7D63DA9099DEAF6EF21DC0D88DEC7458E842857AC7FBE75C8AD99C5C8F715A35ECFFAD96F7D61F78F9F411755A2EA485B8462ED'';'||unistr('\000a')||
+'blog_install.i(8) := ''EAF333D5C8A69E839A66EDFEAB1A2C7832B227BA595B59D1932890D4F94F32547A55F081D39ABCF3BE84C27D6134EA1150D775DB2957767ACE96BD3D10D185D93BF27B3C9A32291EB8CAAEE8FAB43FF6ADFD2A15B0947B536BB181B270245A2044D6CEE687C72A7DE62FFB7C8C0A15C2EB941434627F8832CF63795467412BB5'';';
+
+s:=s||''||unistr('\000a')||
+'blog_install.i(9) := ''8D4DBE1E70CE47BB928A2F4E697F3674C1C83A4BBBAAE05D83A0C0899A4CD95C1553F5F8484693D1CDF49E4CF58D24B10BDF95387C9552681CB9765794CEB9CD9A93584FD7A0304634082DFF8CFFD47EEA7CB0515FB16AD27648E499DE9F5C189C59A9B61FFDFA837AE127EB78292EEBF40D7CD3429C4F2E4841545FC313446A'';'||unistr('\000a')||
+'blog_install.i(10) := ''CB180423DBB3A391F0E9B1CE120353516631EAE8BBCC82FEE5F7D60BCA483FEFD5EAC2640B186469D7E6333C75B822E';
+
+s:=s||'1419CDD71CAB9AB34FCDE6BF5DAF8700A89E3C00E37036A09A963D99F3EAF1140C164657FA0FCA7F9BBBB8A0C098500D37B10F7DFCCF33CFDE5CED8222C4297F7D321F7D335F48A9DDB0AF87CC0126B0D'';'||unistr('\000a')||
+'blog_install.i(11) := ''5FBF7BA70F526248FB199371B3EB7C1A58F42A833ADF029A26BF2A4D4D79DE8F56D7C754A8BA3A8E0004A5DE4FC80D7E450C5F73897D527F5D37B757FCBEEF66D7AEDF55DA63B8FDC4D534A3A31581B2356EF720D22C04DF8ECCFBFB6015754FA988BF8EEA39715F3908E';
+
+s:=s||'4C778E7CFB3F93D79A7A3CED5A48EB684BE957BAE18'';'||unistr('\000a')||
+'blog_install.i(12) := ''68960609442DBAB06B6957DC68C351EAB28DDD83684A2726B7F21528839ADE38D598FCB884B7F26280B39F8898E9BD37697FA6B3CE6A3E25C522E69A8E365D256077C47F48553AA7DE825680AF375148BCD1BE9F72A62B54CF1EC1431E6438E1C0AF0F59381897F4B14EAB88EBF09F7D5DB23393A54E5F6AD293B836755FEE9F'';'||unistr('\000a')||
+'blog_install.i(13) := ''CAF7BFF554E1D4C94FE4C35B53DBF52CED7684E0E874D7657';
+
+s:=s||'C947DB24340FF4B69CBC971EC6DCE234D69EF6F16E6E40CC4F1BC6A54D1D2AA9D55D18C37A6BAD266DE99F6AD4AE693CF2F3BF0DEC29F8562AC6D1BBCF8BF752269D59B277B5847E3DB55333A71A75E533064F62FA31168D21B971773C8C15EC39F43EDBEDE28B5'';'||unistr('\000a')||
+'blog_install.i(14) := ''754A85A152641B70576CC81BBD2A7097CA0CB08B9EB58457D62E626A679ABFBD8AA8C4355BE1EC6B31C4DD91EFAE16406EDEE96B8C70D72905C161FBB786FBDD6CAFD8DCFC623C5CE8974E09B591958E3EE7844';
+
+s:=s||'2C58179D3DF5F035AF6C7567E5191E054FED4231A8FB36EEBF6C9E8AEFABD88916D0C36FF418EF3AEFDAAEF60'';'||unistr('\000a')||
+'blog_install.i(15) := ''610A403A05348B00F2F7A9BE61A622C8EA4F77A9D924134E7CB31CB2C1ED932CE2C0C14E99059ECE931FD8A3FDE252A80BD5D5CD269E24B5C1F4793FBCB825E760857F33AE25EC1C7CE59BB1F11317AA2ACD692205696DF1D3E541F9A738B75E7FABF0FCB111CA4D1CB19715E95621D5CDB7BBE3DA6A7457E866212304E02C04'';'||unistr('\000a')||
+'blog_install.i(16) := ''507';
+
+s:=s||'0A5222BDC7170E7B97BAD3F6E3B8B8EF33AAAA9B8C8586A2E1BDCE020251CCD7BF67EF2D686F0837B3CE2AEB23353F599DAF1604BBFB872AC3599A71A40B00BB2F1477A556D5079F9562341FE9505A2BD97DEEBC408D32A8A55DF3829C32D85F047BB36BB3EF6C9F13613CFED0FAE274FB38E185EAAD7CFCED2E92ED3847B'';'||unistr('\000a')||
+'blog_install.i(17) := ''7C96F3F1BC4F8A2D447271FF06BEE790892C386F6D355611ACE326E753B7590D2D88D8C980393EE8BAAF63F3003E9CE502B3D84C53919FB0EC950CB40';
+
+s:=s||'252F3304B9B9C6AABBB4792EE5EAA0F2C4DFAB6BBE226783AA89114AFE446BF2BCB5D6EDF7195FCA8D0FBC7775012C03840D3447EFAA99F43663B5DB33ED1B1A2EBED77'';'||unistr('\000a')||
+'blog_install.i(18) := ''06F7BFE89391732A7706DAD97E0131150D6385CE3011724BAB5AE5AFAED0DA19E6B1FAB7AB4EE91EB14E39D9C9A6BB34644747A2935663374FDADAA37A4D42F2A34A3DEB47AC3890DED97D307BA1FC2E097926A5B6E8DA9BEF8E331FA050ABF9FBCFBA0B2958AEC9555C515D476F10845F05FE5CA6D2B1E';
+
+s:=s||'7935169659C61FCC7'';'||unistr('\000a')||
+'blog_install.i(19) := ''AE7D9ECB1AE5D18409D88E5EA0C63A99AC5046D3D53D2C305AFDA0ACC5C6DB75EAC37C592982BF7E20B202BCDD1F08D6BA292655527F0A4D38A889DD764575C6EC379DD4EA8C0652EA835FAB4AF1040B2988F1EAB3B1F5A9C84B43E728AF757E67F604FF75DDCE7F099CB70A3BF62D9CD93F77897064F8ECCC464C73A63EB86A'';'||unistr('\000a')||
+'blog_install.i(20) := ''6FC6012FDFDDA092AFF1D9D2D65005F59A7A182CBA3A0E741E076AB2EF91431EF6417C7653E';
+
+s:=s||'77810D4964F52A3D8AC5A79D40E2D63498A2BAE573967A211ACA343555970D6080985F23EC10A6FA6B0B6D4DDBEBB0A3C98F4363E5BE9D6FF897A3C659C104883444FDCFD324C8ED7EAD23B47D15116A631707607CD60C05BBB8D'';'||unistr('\000a')||
+'blog_install.i(21) := ''4C2BE37A3339EA39AB2AE8BE181E361B7508E0672B3687FC2CCFABBB2423F843528FCADF5331BAB4AA27C982D815A785F529E76FFEA98E5A7E2F17D93FBB6275F4D3F5FEFCB2472BE48E01A2CCA57CD5A5AA7F5025EB3F1076F8BDBEF4C1537F7';
+
+s:=s||'68BC45F895FD70F7B29EE94B0BD9288A9A902D26E294BA509E95A803BB3B389'';'||unistr('\000a')||
+'blog_install.i(22) := ''4ABF38357548F7062F9F11BA0E014FB0F8019F2A8928F7CEA5113427A44E22B80FEADC37A3FF3851FDD31051E53CD0EC7261EE4B85A1E6643BA33AFC5975944F7DCB90F6A3DA4D1E7FEA5ED84563AA51B8A5E4DBD387288CD86BD5E61DA6C744F54C80E7ECD715FB1BD23B0135957F85F815A55E2792D5227DB398BABD8969A2'';'||unistr('\000a')||
+'blog_install.i(23) := ''6227670633813DDBC3BC204F6FB53';
+
+s:=s||'DD3B08E1ABF56E1F7F5BB33AD390BCBE0595DB64FF1B32B1367F76F224861E9786753A2BED161F7D3D2DF73CABB6B090668E267555F1A5AC01D1DE1C50F4E65652A7641079A3C4BADDF7381D2D4815445865BCFF0204757A6ACF43BEF7116D8F1A763933C1F2E866290FFC8978A7A8DAFB0'';'||unistr('\000a')||
+'blog_install.i(24) := ''BC0D647E37BBA8F198AC807FF45D5EF9CC3B72B276D2A7E86F1D7AF6FE4CB413F47927A2B7623B41EDA206BB54E3025F7C86B92BF586B47589F9CD6432D3C8E1D9ACDE73C48DD89ECF0';
+
+s:=s||'E42B81C6B44C6FF5E7636FA999AA223848AD1F9A80B6719AAD7199D2F3999DBE1C88C0FD4B1D21FA5362F609F2A746D2E66F5ACBFCDFD'';'||unistr('\000a')||
+'blog_install.i(25) := ''D444673F7527073A30BD75DF26BB16D98EA3FA975D91AF53A8D67602E28E4F6147EBAD2CE27FE14610A64BABAA1FE1E9BC3F9E373F13DCC10E5E36811D50DEE7D955BFBBB930BB50DF71EA959E09EF291EE2A2D85B67564CF22F9BBDB429EF7E378811EF71AB326EF97FAA6F65A8FCBD3EB693D5D6839B5DD8026166E5BCF6D0'';'||unistr('\000a')||
+'blog_i';
+
+s:=s||'nstall.i(26) := ''9D38F88A38B8F059975511249E91C7C70A2E9704957BC62965417C203098653026F72200D77DDE5DDFFA960004EBC5CC5ED4EAAA74F912CDBCC91447C172354FF7977AF0AE6052950DD4126486A6878C33EE25BDB539BF88441ACFFA6D0590AFCC0113F5D48DFE62D593A551B34FE76F661D94EE55DE5E68D403EDCA269FDDC2'';'||unistr('\000a')||
+'blog_install.i(27) := ''469A3C9F3E66A98FE570FAD16521C150B2FDE2B10AE3CAB8E1DF4426BBE0CC4935BAF0FFE6E462952BC95AE4C464FD0D5796A';
+
+s:=s||'BB74C383F334990B4A73E424CD4D76DFC8A2F74B54952FD35F8D1B810ECB4B2642253C85BA573D301FB10A9DDF805C569975A4387E2304E8FDFBC50CAA74031F67E45BF61ED668FB752F783BF94'';'||unistr('\000a')||
+'blog_install.i(28) := ''B4E7FD9C7DAE17CEB150172595377B33666EA7059CE7D785D367BB1C75D17571F866E4D2DE51F874BDD49DE3DC76E3DC61493C3846059A4528E3E902D9447D6A4F7F0D484182EF6E5DEF1CD61FFCA618421FCF399A6F3CBA39137E8551E8DE672AFC216BB363503B6BD08E53157';
+
+s:=s||'DBC9FCA049B2DE24DF3B3DB8C2834B1CEB052'';'||unistr('\000a')||
+'blog_install.i(29) := ''7116FEE2BCE7342AB73195EEB3E375B0B31CE20833F59E3EBF1A13996E9FACF8D77A339CC5A341297BE7B8C365D4526DD187D511533C53AA6A6A8FAFA77067EE2B38A3BCF93EA2A828EE42071839EB3F4BDD8826A3F0646E4E771E548C0A9AFA3764FC9D15B9EE62BA157DA2769F3FDDD53F5B0ED4EB66673C0F9DE8EDA9CFA9'';'||unistr('\000a')||
+'blog_install.i(30) := ''EAE5EAE6BC3B03A15B2EE49D77F204839F097E747B20ED1DC83B1FF';
+
+s:=s||'458C76E88526E926AD44F319FFBBAC19ACCFDF3DF6F350AE5D3E26E9937460771D3C5E684B2CF2AE3C8C8A69E68E4AFA1DDAA4DB08EB21FCC7CAB24F51326EEE045C3AD5FE86E7FAA0E13B69A6C7A675447E4270B96D115B9E68381C8344B9A16439DF33B'';'||unistr('\000a')||
+'blog_install.i(31) := ''1F88D3C64C3FCF1B0017D57BD22F7041A83E56D43B9EF469B7FFEA0D80660AA0925DB1E28FCEE90CABABF6B7CC5E4F77312F330CB4DF229D5CDA6FAF711AA7F2854DA29DBB8676B91313F5C85B3B6E3DE86296B32B84B';
+
+s:=s||'D3422F6CFC1272B727B12389FA9EFD1278F54978A50D373E13ED538FD3277EF235F4C577FD84428FAC2'';'||unistr('\000a')||
+'blog_install.i(32) := ''7352CEF5D436AD7477A2DBAAF60F5369260B5415D33F2D026ACAB3DBE5074373AA52F1FAA8BA14F7FCDE46FD312289053FF97CE92479A5EDA231DF21644E6B3E79C890787A6B134D3461F04D233BA57E5CD1AA4FFBB51B0ED4A49CE515C1A95AEA539DBBF9F94C95BA72BA67E323E58576E5780ACB287ACDEC01924A3274122D'';'||unistr('\000a')||
+'blog_install.i(33) := ''78ADCA753';
+
+s:=s||'F1EF19522714A42460F5A0A2BFE185126D165CC15425AAED239257475C11D995199889219FCEED215F4D5909399667AE1C7F142CEEC1AF83370BF03A54FEE357C986A1E7C9867B7EEDE2BD71F2203A8DCCA66947F0437DF4E05C28DA9DE45292C4485E1DFC8172386FB7C8EEAEEFAEFC8895F75AA4E35F6927EF95B'';'||unistr('\000a')||
+'blog_install.i(34) := ''82359F9434A8AEF3F9AD1F02FD2F95BBD9E0EFD3F612A05DCE6F509A695498F3F2E1D3FF41A789FCA55C099E01C9CAF7F91E4C4DAE8FE20431433E9F0DB2F85';
+
+s:=s||'163BAFAF04DC919519EC6D439699B9FCB94B3ADD7F639787FC8966A3C9242F940814FFC1348A3585EB1AA43C5399F30FAF26A45F20BA87039A91CB457ECDC53C6'';'||unistr('\000a')||
+'blog_install.i(35) := ''D7CCC8180B9F17D8D66934B1869F5945727394FB4C227F6DEE41544F8D5DDFE659673785E780F0CEC9343FCF3ABB9AA8AA329EB373E010987E9D8F1CD0C93D77FAE26BD639DDFFEDE87223A14F3AD15FA52282F2DA98F1A02B2054A5E4F361B0295FCC5EF02F18EE7386BBF9324BA7E17BCEB63E9F9A1AFB6E589';
+
+s:=s||'DE35269A223'';'||unistr('\000a')||
+'blog_install.i(36) := ''10C8496DB50FA6DCF85BB0BA74854728E6F931C44E8E62CFB38065D67CFAF55FE34FB146885A3FB5CB2DDA8E74E856EF51B876DE805B8FD8EB71C43BDE8F50AEE846EDBFA79417D05AB54E91123FA47A12E99719EE5D874137B34B81CB930B051067F78D2AAF12F18671CF4450BDC27E5625C5334FDD43369917E541C7E3CE4D'';'||unistr('\000a')||
+'blog_install.i(37) := ''5CA1BC5E5D593ECF49FAB34FEA029B067E499F9CAD2DB4CFBBB2732D51B6A1FA93ABDD1894F667A35';
+
+s:=s||'2F7DB455F8D89FDB3C70FB19262E9759C34888FFDDC69224751554A4079163FF88742667AB819FC99EEAC79A8BA86007CA34A7C92B8BD6E7ADE1688DFB93C7943FD5A0E3F48F813CC93C3D27A122D59BF305BEF554967A9'';'||unistr('\000a')||
+'blog_install.i(38) := ''AE9BBF60C30132B9DA05EE2CF22E4E2AEAFCB163377C41675F01DDAFEAF2E486F386C786FDE68D78E22272DD9A2E55071F555ABBDBB50A2BA4738FDF6CEE0BAEA34DC322A7726E49D8CAE77CFBE9D7D98ACC211B15C1D5C1CAD5EAFC66F32A479E23D4F';
+
+s:=s||'853590CD5B88B003BEDF40433946BD28AEA1DF74E42DC4FE673F64AF2'';'||unistr('\000a')||
+'blog_install.i(39) := ''750A69F9B8E42C04BD8D78FE921EB137B83F1371694A35B59B9D4134391CA81C797E5CAA26C1BEA2947F15D56BA3E971BD28D233C16A9C6E7F70B6A858B9B8EDAA5360D76105B28C5DF1DB0F7F59711DCC2EE54F46779D774610ED225579AA633A3CEDD766BDB73495D97390796BA6F6AFE3206EA1168B3B55535A58F27A7751'';'||unistr('\000a')||
+'blog_install.i(40) := ''0A20070BFE5C6A171F5E4C4E944E513CC15';
+
+s:=s||'B310520F8AAAAFA756C7E00D1E85CC13C79A05DF88B4FE898A7E2A883D9CC74A7861037DF5C64290C23115F776620ADDD5457DD1F677D5F6B5F6C69D42C17BB6AFA03B0EE40295C4AFF506C018904946790E9F363633EF8B739D5B83DB926C3CF4202C623BC3BDCEDFEFF031E5434'';'||unistr('\000a')||
+'blog_install.i(41) := ''1427AB370000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,';
+
+s:=s||'blob_content)'||unistr('\000a')||
+'values (''bg-noise.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D494844520000019000000014080300000094379B84000000FF504C5445FFFFFF58595B59595C58585B58595B59595C58585B58595B58595C59595C646564646665656360656461898A808A806A8A806C91928593866C9B9B8A9B9C8C9D90739E8C68CEC699CECDA4D0B675D1AA57ECE8ADECE9AE''';
+
+s:=s||';'||unistr('\000a')||
+'blog_install.i(2) := ''EEC258EFBA40F9F2AEF9F5B1FAEBA0FAECA0FAF2AEFAF3AEFAF3AFFAF5B1FAF5B2FAF6B2FBBF33FBC23BFBC23CFBC94FFBC950FBCA50FBCD5BFBD671FBD771FBDB7CFBDB7DFBE087FBE088FBE188FBE693FBE694FBECA0FBECA1FCBD2BFCBD2CFCBF33FCBF34FCC034FCC23CFCC33CFCC545FCC645FCC646FCCA50FCCD5BFCCE'';'||unistr('\000a')||
+'blog_install.i(3) := ''5BFCCE5CFCD266FCD771FCD772FCDB7DFCDC7DFCE188FCE694FCE794FDBD2CFDBE2CFDD366FDD3674561C4FC0000000';
+
+s:=s||'E74524E530050509F9F9FBFBFBFBFDFDFDFDFB8B4504300000347494441545885D5596753DB40143C128220BDF7C4726C4BB2416EC4B8515C900BEEE5FFFF96EC3EC9984CBE040137734FD22BFB76CF6F'';'||unistr('\000a')||
+'blog_install.i(4) := ''E6247DB09412DBD9B5ACBD03EB3F6DCFB20EA268DD8CF7ACB97789097387DBF1ECFD6747CC763C381781CEB55D9790CBCC711D8725129A6D4B1091746268B448CC9ADBE17EECBEFC46D885860437F41E75E48AE712A2A7B73D89B6E7C8A2E4387134DA2406CD8DFD78F226';
+
+s:=s||'DC265C115FEE2A2EE245B798ECE6661157523BBCF7'';'||unistr('\000a')||
+'blog_install.i(5) := ''1CF98D70E9DB6A3449CC9A1BEFAB9710D914D0C9A343162A5B00479E36D7F63CAC863579DA78BCEC701959CE0B57BEA54693C4A8B93DA59E7E47E209237AAD79D1EBEF3A3AD1AB58107906F9F845EF41D7B637BF1C47F3F012A3E676D5CEBB54229D486552A9542291429246920102CBC06732C013E9349A29F61319B9324226'';'||unistr('\000a')||
+'blog_install.i(6) := ''035CE1C4D0E891183577423DFE94AC27938D463D596FD49125EB';
+
+s:=s||'F00D140DB83AAB5FC0920DB6C023935C39938DEBA41143A34962D4DC4965D56AD559AD369BCF66F3DA7C8E509BD766E26174D579B536AF022103D0AC3A2334030A16B179B51A47A34762D8DCCA3A99564E2A155CD1C153B093CA14195ABF05AA901471A6958A'';'||unistr('\000a')||
+'blog_install.i(7) := ''9CD39029C4381A1D12B3E6AEA8FDF26432194FC6E5F1A4CCA3CC7A320602CFA2CC64030118C3881C8BE69820BAE5181A3D12C3E656D6A8342A168B2318BC242589C53094465725B4C276C825BD5444BF54BA224F7A7';
+
+s:=s||'1345A2466CD3D52BB5F56C3E16A355CAF8648D6C3ADDDCCA55C03111A2245C3D57A7D77CD434B0C9B5B3D'';'||unistr('\000a')||
+'blog_install.i(8) := ''FAD02BF47BFDFEA0D0EFF7E80ABD419F40AF3018201DB08B836D94851E7C81C8802061E9F5636934490C9ABBAFD48B1F819FCFFB70BEEFE7034902DF0F80110A828075900FF2028604B823FF88394804FD381A2D12B3E60E94DA79DDE95E763A383B1B1FA597DBBA4BA0DB95FAB21BD6E2BBD7ECDB6B3449CC9A9B7FF6BE6DB5'';'||unistr('\000a')||
+'blog_install.i(9) := ''DBED56AB9';
+
+s:=s||'56BB772B95CABC5BCBD09C0D0C8D11D22B60E49444E8716909C580C8D1E896173CBDFEFAF7E66C52E709D6737767EB149B2DBE42C2ACEB217E7670C44EFA4D1203169EEF003D5F38F5F17CDD3D3D3C562B144385D36792D58D3379BE82E908011F6E097F464135FC6D268919835F7426D3FE16E6C3FFAAAF8CFE74F'';'||unistr('\000a')||
+'blog_install.i(10) := ''DA5F9F79857270038EA1D12331666EEB0FE55DE3B9FA3BCBD00000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(bl';
+
+s:=s||'og_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''bt-alt1-l.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D494844520000000F00000014080600000052C76712000001A94944415438CB8D94BB4B034110C6F7FFD14E3B2D6CB44EE785A4F07551248D013B85543E620A25561A8D8D858591A4102C6220A26220C60798';
+
+s:=s||'2242B48988412192406E378C37BBF7D8BB9C62F1E3FB66766777E7D85BE2F707F38A'';'||unistr('\000a')||
+'blog_install.i(2) := ''3FD083914FE9F800807841B45616B45686D3E19AB528970E613719871955AD792D42E4C99AABD8A4F17E0CEBB128284A20F5EF9DDD0B6F2556005BF128F6DA5DF7EDACB468469CC068C13AB63C816BDB3E91B38534A821B5268ABF4F406BA605E83969E8346DAC398626931B7C77A27D1C00421BB69A5E1E93295FEFF0DE09AB'';'||unistr('\000a')||
+'blog_install.i(3) := ''6F0395606F3A722CE5693DC163';
+
+s:=s||'F47817087D5D03072F065E79C9F362565D06F6AC2329AD2EF5E4E43CAA28AE4400A14F0B3615A1EE31334644F143084CBA8FB320C7CE3101FABBD345D0EF7E8AD05200D82D1204EEAD58E444EC1CDBDB8CE055F5117AE3038415853A284A18733E0B0AA8D393E292B0CB51605763E050B79788'';'||unistr('\000a')||
+'blog_install.i(4) := ''45C3F6F56485614068618823C7DC5FD83EB11AE6BD5A3F06CD0FC06FB0FC20D7AFB3117DC779C71FC58BBBB97EE89EF70343CDA1F67145EE8FC6613F3E07EAD484F763E0F504E95FD';
+
+s:=s||'2F47F3E433F938095B0E2B532120000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''bt-alt1-r.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D494844520000019000000014080300000094379B8400000171504C544558';
+
+s:=s||'585B58595B59595C5657595556585556585556585555585454565253555253555051535050535050525051534D4D4F4E4E504F4F51505052545457545557515153565759595A5D595A5C5657595656585E5F61606164'';'||unistr('\000a')||
+'blog_install.i(2) := ''66676A67686A67686B67696B68696B68696C6C6D6F6A6B6E71737570727477797B77787B7A7C7E7A7C7F7B7C7F7B7D7F78797C797A7D898B8E8E9092929496979A9C9D9FA2AAACAFB0B2B4B3B5B8BBBDBFC6C7C9C8CACCCCCDCFCDCED0CDCFD0CDCFD1D6D7D';
+
+s:=s||'8D6D7D9D6D8D9D7D8D9D7D8DAD8D9DBD8DADBD9DADBD9DADCDADB'';'||unistr('\000a')||
+'blog_install.i(3) := ''DCDADCDDDBDCDDDBDDDEDCDDDEDCDDDFDCDEDFDDDEDFDFE0E1DFE0E2DFE1E2E0E1E2E1E2E3E2E3E4E2E3E5E3E3E5E3E4E5E5E6E7E6E6E7E6E7E7E6E7E8E8E8E9E8E9E9E9EAEBEAEAEBEAEBEBEAEBECEBEBECEBECEDECECEDEDEEEEEDEEEFEEEEEFEEEFEFF0F0F1F1F2F2F2F2F2F2F2F3F2F3F3F5F5F5F6F6F6F6F6F7F6F7F7F7'';'||unistr('\000a')||
+'blog_install.i(4) := ''F7F7F8F9F9FAFAFAFBFBFBFBFBFCFBFCFCFCFCFCF';
+
+s:=s||'DFDFDFFFFFF5C95AA700000002F74524E530000000507080B10121B1C575A60616A6A74788E979EA8AFB0B4B6C2D2D3D5D5D5D5D6DDE1E1E3E6E8EDEDEDEDEEEFC730C10F0000023C4944415458C3ED983D8B15411045CFADF6ADBBE2373C11D6455C7113F1031303134131'';'||unistr('\000a')||
+'blog_install.i(5) := ''F6FFFF0B13D7C5ED7B0DFA994F300C1DBC0E8681390387AAA9E9AE92203ADB9D3E3CB15204189732E54A242B929C223295459856A466B1D94403D11EEE1F3D7F7397E39A60499C3C3DFF7A728CC43409';
+
+s:=s||'B9B3BFF8768CC33C09E1C9EB1FC7304C9490B3973FEB18868912F2F8EABB2102BAAAAB88227081291780CB1496223ACB'';'||unistr('\000a')||
+'blog_install.i(6) := ''B015A9596CB6D0D0F30F9F7E2B15A410B9501221AC713A9388B00406A145D89A1473D86CA2A1AB6FBBC42D2361850B22D40B2BA5E042BDC663D117632B5293D86CA2F1FE4BFA484DC5E51A7FAF082C843994AA5B2072458B3056A426B1F1261AEF3EA72B522FE48A0B418250AF2014852008549465182B529EC36693A0E8F5C7'';'||unistr('\000a')||
+'blog_install.i(7) :=';
+
+s:=s||' ''B38CFDBD372CA382DEA08BC31D2EC05417A3E81660AC4A4D61535B68E8D9E59BEBD61B9D466FE040EBD0A2DE7AA903280D20EACA526C456A129BBE85861E5CBDFD45793489A175D028191DE65EFEFFBE9B859B17615A919AC4A66FA271FAE2D5BDDB321A58900B8872E84E648122A294232DC36A454A73D86C1214E9C1E5E5F5'';'||unistr('\000a')||
+'blog_install.i(8) := ''AD126AEC2240285C5D92290B8CC629BC2CB74598D6A4E6B0D94443E5FDC5C5CD9F80849543F7A3A043474950609C2428D7228C1529CF62B381862';
+
+s:=s||'AF5E4FCDEFEE6AF234299C1A1280A45AF940F25EB92976159939AC4660B0D8970FFF1FE4E2B4986C282502E333E0B29A3E4C6D46519961529CF61C3161A6378B7DB9D9ED6CE'';'||unistr('\000a')||
+'blog_install.i(9) := ''F8FF5406511E1B4DA0C5629416A416615A91CA1C36DE42E31F28200090C20819440000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''bt';
+
+s:=s||'-gray-l.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D494844520000000F00000014080600000052C767120000022A49444154384F9D94DB6B134114C6071F7CF29F111FEDA33E36978D49776B6A6B4D6BD4962248D1A45A2862BD14F182E2A3B44544441441F0456DB58860AB05937473BFB48D644D9A6C61B7D090E39CD99DCDB420550FFCF8BE39BB'';'||unistr('\000a')||
+'blog_install.i(2) := ''';
+
+s:=s||'67CFCC64262432365E8D522263576CB5FCF0C879D51F90673A5DEEA0CFE73F202BC709A22841A608813F846118F0239E80274F9FC1D0F048CCE3911459B68AF62C16A35E6FC09D7B0FC0E5F6DEEE92BB9DEE7F55CCE3F1F42CD0198CFF536731AEDF9C824E97E7C87F15174BAB70B23FB4180828FB49B3D904647B9B22789E17'';'||unistr('\000a')||
+'blog_install.i(3) := ''69B55AEC0377EFB3F51F26B8AB8669D2DD352DE5EC1EDB398C85CF5F80FE7C51D2D075D0F54D40E5E05877D466D352736B0B0AC512F4F6F53F22B58';
+
+s:=s||'D0DA8D52CAA36BBBDF84EBDD1807CA108A74283B3A4A269A069BFA0C2D06CB57C3B4FA958CFAAD51A64B2792C9E21EBE59F80ACAD9799EE057E144F5ECF89BE8704B71E29'';'||unistr('\000a')||
+'blog_install.i(4) := ''ADAE3115C71C3187DD5FBD7E0392746C94E4F2056853743CAE8B79A6ED7C99769FB87AAD454FDA4192CEE6209DC9DA709F83141FF3E754B1F3DCFC0228DDC177F492EC236A320D2BC914837B27A75A5EA51E8B53E90C8C5E8C985EAFEF103B9EF1840A9CC40A5544C821B8BB093549A73B891763D0B918';
+
+s:=s||'6201F3B66267EC8453'';'||unistr('\000a')||
+'blog_install.i(5) := ''7E3FF7112E452F1B6E8F7441BCD364E9DB322C2E7DB7404FF94AFD87F94FF0FCC54B98BC718BAD51F2F93BC43F02567C3A7C2ED6E66C2C7C66281E1A082F077B7ADFD28209BABEA3812E654711E737F907B261151E67FE0000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b :';
+
+wwv_flow_api.append_to_install_script(
+  p_id => 12275005924827304 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_script_clob => s);
+end;
+ 
+ 
+end;
+/
+
+ 
+begin
+ 
+declare
+    s varchar2(32767) := null;
+begin
+s:=s||'= blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''bt-gray-r.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D494844520000001E000000140803000000AD757DF60000007B504C54450FF279E0E0E0EAEAEAD5D5D68C8C8EC0C0C1CBCBCBA1A1A26D6D6F727274B9BABCADAEAF';
+
+s:=s||'CFD0D16A6A6C6B6B6D8A8A8C939394BFC0C1AEAFB0979798A4A4A5767678A2A2A38E8E90E9E9E9F5F5F5F0F0F1EBECEDD3D4D6'';'||unistr('\000a')||
+'blog_install.i(2) := ''E7E8E9D5D6D7D7D8D9E4E5E5E0E1E2828283DADBDCFEFEFEDDDEDFF9F9FA777779FFFFFF7D5F44350000000174524E530040E6D866000000874944415418197DC1871282301040C1178ABD77402CB15CFEFF0BA588C04CCE5DAC8F0C0D35E735B036A0E4148391A1E0346614004E155AC0E9B6313C75A708DE7FEC21A9482B69'';'||unistr('\000a')||
+'blog_install.i';
+
+s:=s||'(3) := ''AD0C694D1A69C72E24FB925AD67508C91B52CA7B8E86DB8F88DCFAC6706FC9BD6F16C14BB78CE1A19A58E0AA592F02E0A2D8CC0D85B3D7546C4049BC8686CA0755EF47E002F951050000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''bt-pulldown-gray-bg-r.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blo';
+
+s:=s||'g_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D4948445200000042000000160800000000512015D500000009767041670000004200000016004BDAA3B9000002094944415438CBAD94CF8BD34014C7F3FF6DB5699AA61D2FBBA05684F50708A2AFDE02EAA17890FAE392833D143C05D185789B1EBB742F014FD3AE0B46846EC5F59016BABBF37C'';'||unistr('\000a')||
+'blog_install.i(2) := ''9364A26D4069D7777A33C37CE6BDEFFB26065E388CFF8090FF8EC2A5B30B21D4F2';
+
+s:=s||'F4F527CC4E86DE6213C4FC55E9DA3861E1C176E9E52C414C45B47C29CA3762215610F87E8B55AF0B950D776C567A4B88B00D00ED507210E935EED286CB551AA86C1FFB90448A98409999373E230EB7ABECF2E313430EA03D1003D7CF113E74'';'||unistr('\000a')||
+'blog_install.i(3) := ''421176C02718F822ECCD08E1F729322D262D93D9BB470754C3A52773D2C2756355B0D48808BC84E4D1D283548B3E8C7E6B2171DA2AB3DAAD1DBB613E9DA13404F0ACED0CA18B11105041415C44483C7E6431A7CEAC6773DA307205F4D';
+
+s:=s||'DF4650AAA664AAAF4228578E1795EA011124FEED758C3EE2ED4FAEF081973D27A5444FC'';'||unistr('\000a')||
+'blog_install.i(4) := ''B85363CCEEC80411AE361240982CF501495A68E4E89ECD6A0EB3DE9CAB46E254CE28D60891CB19252A5335AB721EEE5658F566D369585D62E4436DC7F41CE75CE4430D68BE94F5A0AF87FA3D1DEA61B3C2CC075FF61DA751A13AB4B55C652D153CB3569B6B9305A8AD354AAC356E5A57CCD604F1A36274CF8C653F170C2E44BC'';'||unistr('\000a')||
+'blog_install.i(5) := ''6C701C5D35A98663CA70AF5';
+
+s:=s||'2AF6F7D58FB33C39F1DAB0C935494BDAA7977BCFE978AA7CF1F4EB3C9E0BBDB5F37FA5F2C66A88FCEBFA989AC8D90887F1CC98D102BF10B91BEF77C2B5AC5B30000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''closelabel.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_';
+
+s:=s||'install.i(1) := ''89504E470D0A1A0A0000000D49484452000000170000001608030000001CA8F737000001EF504C544500000000000201010102020002020203030104040405050506060406060607070507070709090709090B0A0A080B0B0B0B0B0D1010101111131313151717193737373939393A3A3A3B3B3B3C3C3C3D3D3D3F3F3F404040'';'||unistr('\000a')||
+'blog_install.i(2) := ''4141414242424444444545454646464848484949494A4A4A4B4B4B6A6A6A7272727474747676767979797B7B7B7C7C7C7E7E7E';
+
+s:=s||'7F7F7F8080808181818383838585858686868787878888888A8A8A8B8B8BC4C4C4C6C6C4CBCBCBCBCCC7CCCCCACCCDC8CDCEC9CFCFCFD0D0CED0D0D0D0D1CCD1D1CFD1D1D1D1D2CDD2D2D0D2D2'';'||unistr('\000a')||
+'blog_install.i(3) := ''D2D2D3CED3D3D3D3D4CFD4D4D2D5D5D3D6D7D2D8D8D6D9DAD5DADBD6E1E1E1E2E2E0E2E2E2E2E2E4E3E3E3E4E4E4E4E4E6E5E5E5E5E5E7E6E6E4E6E6E6E6E7E2E7E7E5E7E7E7E7E7E9E8E8E6E8E8E8E8E9E4E9E9E9EAEAE8EAEAEAEAEAECEAEBE6EBEBE9EBEBEBEBEBEDEBECE7ECE';
+
+s:=s||'CEAECECECECECEEECEDE8EDEDEBEDEDEDED'';'||unistr('\000a')||
+'blog_install.i(4) := ''EDEFEDEEE9EEEEECEEEEEEEEEEF0EEEFEAEFEFEDEFEFEFEFF0EBF0F0EEF0F0F0F0F0F2F0F1ECF1F1EFF1F1F1F1F1F3F2F2F0F2F2F2F2F3EEF3F3F1F3F3F3F3F4EFF4F4F4F4F4F6F4F5F0F5F5F3F5F5F5F5F6F1F6F6F6F6F6F8F6F7F2F7F7F5F7F7F7F7F7F9F7F8F3F8F8F8F8F9F4F9F9F9FAFAFAFAFAFCFAFBF6FBFBF9FBFBFB'';'||unistr('\000a')||
+'blog_install.i(5) := ''FCFCFAFCFCFCFCFCFEFDFDFBFEFFFAFFFFFBFFFFFDFFFFFF2323CA7A000';
+
+s:=s||'000097670416700000017000000160017993AFD000001BF49444154181935C1895FD2501C00F0DFCC0EBAECB210746AD9A1164444761F9625D97D52D68AC6C4177BE56A4FF7F4D55E3CC145B8484BCA8A0EF787F6D1E6F70BF3A5CAE4DFB94AE593EF'';'||unistr('\000a')||
+'blog_install.i(6) := ''07AFD568B515C66F5C3DDD77AAB7FFAC2F79E9DC99E34782307DFD51EE75F6AD35E2D3087144A70C53BDB9B9D2D878C65A42A92094A14410FEF4E54A2FB3E688B98810420D6EDCEE09C1E713CFC6B2A65DB02C8B2EC298169D';
+
+s:=s||'AE2698BF3C3935911FD64D932CE186A2CD74EF86E97E73582FE8B645FF43CC31D468334C5CB1D7'';'||unistr('\000a')||
+'blog_install.i(7) := ''AF5CFBD8162A76555C5F8F595145B116F83E001FAC153ABAE76285B9E90D228D093F1886DFC736DE7A98A714024C1392B4091703AB79672B142EC242066BEBBE60A092E74902EA007A7640FE1A64CA88AE4A93C09B2D1F7F49A9CD5ECDEB0AC1C2797D0D00571A60F6CE8BADD2B63A0E0DD0DD064F07EC9451D50CE1DE7F37FB'';'||unistr('\000a')||
+'blog_install.i(8) := ''64F48173533025DA';
+
+s:=s||'013F4F16348E094BBF7F35FA7CE8DB90EA308AE24D3093448AD00459A61144712208EC4299094C54E27319C7381202EF680A518C05F1A97739E19116A826BFB241CE08F595994B07E3ED2062FB6289FD7BE39165D103870EEFE900B97167B8B1AD3D2CFB9AE5EDB2BC2BF40FDD99B89999DE113A00000000'';'||unistr('\000a')||
+'blog_install.i(9) := ''49454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_typ';
+
+s:=s||'e,blob_content)'||unistr('\000a')||
+'values (''code-20x22.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''0000010001001010100001000400280100001600000028000000100000002000000001000400000000008000000000000000000000001000000000000000CF892D0000000000FEFEFE00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001';
+
+s:=s||'100'';'||unistr('\000a')||
+'blog_install.i(2) := ''000000000011100000000000000100022222222200000002222222222000000022000022200000002200000220000000220000222000000022222222000000002222222000000000220000220000000022000022000000002200002200000002222222220000000222222220000010000000000000011100000000000011C003'';'||unistr('\000a')||
+'blog_install.i(3) := ''0000800100000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+
+s:=s||'0000000000000000080010000C0030000'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''favicon.ico'',''image/x-icon'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D4948445200000080000000800806000000C33E61CB0000129A4944415478DAED5D697B14C51A9';
+
+s:=s||'D9F902FF783DFFCE8821864512F484216364522DEC50B82418CB2E81544404420216C09D94842B699105064BB4A8080F22890807A4149880B5E495812203B4926997D4BEAF65BD3D3E9E94CA0BB'';'||unistr('\000a')||
+'blog_install.i(2) := ''AB7AA63B763DCF798490389D3AA7ABDEF7AD53550603C556BBF02F510C9218A432A866D0C400E9204213DB97A96CDF4619D4D698874A6650A9931536405F27479AF4285695E6500F796DD9A3E8C69A31A879E304D49515AF4306A0EFA00FA12F47108299E5202ADCE48724BE61D5';
+
+s:=s||'63A875EB64642E9C8D6CA6793A2802FA14FA'';'||unistr('\000a')||
+'blog_install.i(3) := ''16FA7824218483F86806F5FC0FAF5FFC08BABD3EFA81A4F7E5CF42E6BC19A8272396C5348CDE4C1E7605C39CC543765C10FA7204C81D427F5E00F17EEC1E8205902F40C110AC8042404230F6F8610BA028048AFDB01727FA511202A57E38F8281B0EBB713683971E2806E873E87B8110809B68A5C85F29541E3C84A5E4E5610F'';'||unistr('\000a')||
+'blog_install.i(4) := ''D85FF822EADE118B3A373E8B5A3F1C8BD1B686C1DAA739B4AF63F0911F';
+
+s:=s||'1DEB01D1A8E3E368D4B981C5277E746D1CE7C7A671E83E60338354C033A83B8DC5163F7AD2596C1D8F7A01DB586C1F8FCC801D8009C8BC7302EA0364B0C89C80FA01BB26FA9135115900D92C7226222BC62464CDF5C396C762378BFC49C89EFFAC1F05'';'||unistr('\000a')||
+'blog_install.i(5) := ''7E380A79D8E38773CF73C859C4A27808AE121E4A9FC770C37F8D31C8699C8EECA639C3FA19FA1E38083122ACA44D7E85707EEF61DE68E103F56625A0F68F27A2960F18D2578FD5C92724DF5DC68311C43015394CB386F53B7';
+
+s:=s||'011224EA8A015E8550BDFFA50C4B7AD7B0613AF93AF0CF9000F0BB7694A482184180DAA89024421'';'||unistr('\000a')||
+'blog_install.i(6) := ''F910840887FAF64F26A196554FE9E487897C8F2980BF2277792C3335044FC1C0913065241EF621D880B42468D8C98843F780789DFC8890EF291F82D33433881BE04A10205610057C42F23BD326EBE4AB847C2F0B577930471D3B63E405866CAA1772D8B79626A18E4DCFEBE4AB8C7CEF5E3FDCE5710C4FAF3C683A88162380FA'';'||unistr('\000a')||
+'blog_install.i(7) := ''9102BEF60D9374F';
+
+s:=s||'2554A7EB008460C0CEBC554F8B8544F1FF6B5453E7C0DBED7650A168120454C7D50CAC79577F979BE1EF069877CF819F8FF398C3382EA0482B271D403DF7EFED00FA99E4EBEB6C807C0E7D88D73469A0A52477CFB217DE09777F53C5F9BE4C3673A4B6282CAC6BCD4D01C6A3D7FD8DB0F153E9D7C8D925FEC'';'||unistr('\000a')||
+'blog_install.i(8) := ''7F267BD9CC91468164BE003833077F554F2FEF6A9B7C80A36872D02AE2B00A213BFC73EBF9416F3F01F9B6732588DFBCEDD791A7A99683E3D2E7C85E5D826C67B250FF';
+
+s:=s||'BE14D457FA9A4E3E6DF299678467B6970E8D02023F419481F5990D2BFA90AEEA090520B6F93A1A90FB7A35725C2845D6A3AB515FE11C9D7C12F2E1F728'';'||unistr('\000a')||
+'blog_install.i(9) := ''9C325271282928FA0F0CFF10F9930EFB720510AA0DF4B5214F03238A6FB39065EF7C9D7C29E4C3EFB3FB596433CE0D350DA4722B7EFCC20F983948E77CDB797A02082508F76F55C87E6C35EADF3D4D27FF61E4038AA7872A0C551B02D66D301F72553F0A4E1E2505206CDE1B35C8F1751AB214C4E9E487229FF97DADF92F7';
+
+s:=s||'0FC'';'||unistr('\000a')||
+'blog_install.i(10) := ''02D701CBB921301C8003959B272844FBF6300A20D0065D16E4B9C68C0C4797EAE4F3C987DF9FE98700BFC07580778370C9170C9C34523D88F023D906FBDB90AB2607D98AE275F219F22DD9CCEF5CF222E717185100E0DEA591E7475A00FC51C1FBFB2964DF3BF74F4D3EC05A3CEBE10200DB368D228F5A0410142BFCEF14727E'';'||unistr('\000a')||
+'blog_install.i(11) := ''B9F44F493EC4466071972400920A9F1A05C065112D75C8B12FE94F453E6448D60251029846A5BC6BAF51AF00B';
+
+s:=s||'811E10F6644D89FF4A720BF3F93C98AC40A80466DDF5E538AB4D0065D56E4FDC9889CA684514D7E7F0623807C1102806D5A3416761C1A110027044B1BF27CBD76D492DFB77322DE0A275A00A4AB7A5A1300171F'';'||unistr('\000a')||
+'blog_install.i(12) := ''DCBE805C075E1975E443E95CB400682CE9C2628E669B9B99167EC81D55E4C3021A6C8E7DB800764DA3B29EAF6901044683266634A8481C15E49BB74FC03BA4C509808299C3F2690A725C2CC570FF5285BC776A39686D34F054ADD03CF9BDDB26E0EDF2A204102E2';
+
+s:=s||'78FB5623EB21D7A07B9BE2F43EEDA83C87757BDE2F0D59934'';'||unistr('\000a')||
+'blog_install.i(13) := ''4DBE740144D0C665DBBF00B9CE67E3553E28E5AA265368BB8A3CFB1335493EF0214A00702287DA3C7CF6CF1620F725231AE86A88BC08AC6DC87B6C91E6C8EF496704902B41006A3570C2A28EFB420E5EED8B645CE0FB769DA6C8EFD92241005A71EF3A0EBE8E1778A09A1791B8E0E256CD90DF93361EF5891240769CE6ACDB8E'';'||unistr('\000a')||
+'blog_install.i(14) := ''B204E4F9D188AB79614F15AF966B82FC6E10404E9C4';
+
+s:=s||'80168D8B7EF3EBB25EC42186C3CAD7AF2BB190E450B60346CDAF09C4B0FAB10066F9C5635F9F7373302C8162B8051B463C77BC58483B6B08940A5E4DFDF245200304C8CB6ED5AAEBD09C877FD54786202663A5023F900B378018CCEBD7A9E93CBC3322DF87E3BAC3AF2BB'';'||unistr('\000a')||
+'blog_install.i(15) := ''363202C8122980D1BC51D35D91880952DC6D549DAE2AF2BB3E1927510084E43BBE4A45DEBBB5B8BE0F5E7DD70F65C8F55F06D5D9D8B70FD5BD48FAF6BD552B148F0D3CE7D355437EE706B102C88DA3F2E';
+
+s:=s||'603E162FDFBDE9B35B8D4EBFC626978ADDBFB13717D5FB1E6B222D79185AA201F0B60970401900EFB620510720E6DA9'';'||unistr('\000a')||
+'blog_install.i(16) := ''43EE8B39C879686158ACDB037526453D874E6342C4C9EFFC781CEA152B001A733E8900845E3DEFCF871577EFFA2EA42B36250CDC6F8C38F91DEBC7E195DE870A00CEDAA711F0D112405047B63223C3B92D8AB977BD956F2826026FFDE188928F059029560014A27D08F89474F04281C7559E40DDBDEB3DF22A1AEC6954E4B99D'';'||unistr('\000a')||
+'blog_install.i(17) :';
+
+s:=s||'= ''556B22467EC747D16205104F25D5732B288020F32608616F025D03E781E98A8800CC2D76D3DC8890DFBE4E8A0028E4F9611180D0C54BD3BDAB90087CF7EA22423E1640861801EC8EA752E409AB00026F5877235D03A7422280F828DCE4B7AF8DC6BBBEC409804285CF7D29FC02082AC532393E1503E767D3B1B06837DBBE0561'';'||unistr('\000a')||
+'blog_install.i(18) := ''25BF6D0D23809D220540A3BC0B859D887BF74EADA062E0042328EDECC0D7D91056F2DBD63C2D4E00B07B84466D3FD202E052C73A131503A7E78';
+
+s:=s||'B45D445E03C9B1D36F2DB3E142B80FC782A0B3B6A110067E7FE743AB181D37D6239F5ACA02F675A58C86F5DCD08608758015058D5539300706733C11C147A480D9C9EEF73E926'';'||unistr('\000a')||
+'blog_install.i(19) := ''30BF5485857C40B75801D058D2F55C569700383B3723025203A7EF0FBAE612CB676F2B4E7EEB07520440613D5F950260453070712B9181135CC850DFA756266EAE559CFC96554FE303401F2E8082782A660ED7376978558F6647510D0E032290E9E1731E5C48771438B25A51F25B568D45DDDBC50';
+
+s:=s||'A4021270FACE8B92A9721CF'';'||unistr('\000a')||
+'blog_install.i(20) := ''77B978188DB438F0C60E020327EC50A22648739BA2E4B7AC94208070DAB86041078E66C1A64D77F877F840AD80C4C009A55D5ACD5AB95931F2EFBDCF08609B0801C015EA91F4F079CEACC50733843326F07CB988E0F8D5B914478156C5C8172F80C278551838DD07E7A18186D3E1191598CF70ED4D946DE0A4E97DE83FF88122'';'||unistr('\000a')||
+'blog_install.i(21) := ''E4DFFBF758745F9C0012D475E4FABE44BF10C2B0904462E08423ECA918496FD72A42F';
+
+s:=s||'EDDF72408408D47AE7B0ECD53D6C00941211387C83570DA0E2DA5F61C66530A75F2EFBEF714BABF55AC00547CDE3EECCB57725A709F5E2BDBC049EBFC2367DD49EAE4DF7D57AA00547CDEBEF7B072A301B878F139C2320C9CD6CFDFA1F6'';'||unistr('\000a')||
+'blog_install.i(22) := ''1C9D6953A9927F47B400F62468E6B285816B4794990A5AEA641B38A1B64FA53054B58B2AF977563002481729002DDDB401153D45A6829A1C59064EB8E58C8A087B5BA9927F67F953A84B8C006C5800DABA66C577FC0DEA71012CD5DAF6C';
+
+s:=s||'4CB3270C2B57734DAFDBC7F5223BF5992003478C78E1222F05C3B25CBC069D9FF361D'';'||unistr('\000a')||
+'blog_install.i(23) := ''DBD87707A891DFBC0C04102342004509DABD63470111C09985720C9CDEF6062AD3002DF29B978D415D5B440A40CB172CE13491664078B74E967BD77A7C3395CFEFCAF90715F29B974A1580862F58F2D6A4D31D050E2D9565E01C74929F726ABB78800AF94DEF4811C028B85DCB779D5EF9180A3C72DCBB704136F108D4D34A85'';'||unistr('\000a')||
+'blog_install.i(24) := ''7C2C80342902D0F8D56AB05';
+
+s:=s||'D6C90A2DFC0523E5FB27BB7B7E8352A9FDD9E3E9398FCA6B7C7A04E5102284E509EFC7D8978981E68BE10B4E902FE0C5FF35DCEC39B34490D9C703803B5BAC0AF55B2DCBB3E732BF167F7556610932F49008A91CF100FC7AE8B8DD4E10046DFD157890C9CDE1FE97913CD59B192DDBBF61FC8A701'';'||unistr('\000a')||
+'blog_install.i(25) := ''C7AFE789C9BF9D225200F6E24445C807D385AC13BAC0C97BF623220327AD83A5EDDF644976EFF614904F03030E0B31F9B7539E449DA96205A000F9A4F9393671CA3470BABFDD4';
+
+s:=s||'22725EC6890E5DE857C9EB47564FC9D88FCDB6F89154049225DF20FCDA3569CF19E5E21DBC049CBBBD757FA2FC9EE5D47ED09F2E9E7CB0C22F2'';'||unistr('\000a')||
+'blog_install.i(26) := ''6F491100CD808FEAB22DF8F760D7AF0C03A7E33F740C1BCECB0725BB77FB8E6E22AF075C3E4E44FEAD25720440483E3E8B8FF6526DAD49B6817380422C00255EA9D6EDCECD2F906BFFDE7522F2B100364B1100853C1F523A450C9C324FE0749E49A3F208BD392F4976EFD2880348C8BFF5E693A843B400281DC2A8986DEBC472'';'||unistr('\000a')||
+'';
+
+s:=s||'blog_install.i(27) := ''7906CE82382A9750598E6D966CDD765C218F03DAB6FF4D36F937450BA034914A850F365C28D5E06028B9EE5DCF6FE48E1DE7D59392ADDBFD2732C917864ADE974DFECDC52080A9E20440A3BCEBBB94A79C007E392CDBBD6B3FF621791C626E956CDDEE2E5A429E819C2A924DFECDC54FA08E4D2204E00001A8FCF8D581963AA2'';'||unistr('\000a')||
+'blog_install.i(28) := ''B377694C035DE953255BB7890B513F9F934DFECD64A902205CD819B8AA9C00606329C9D9BB9EC61AF2BCDC9822D9BA0';
+
+s:=s||'D153DA2A9A7E127D9E4DF9024001AD6EDD3CAC500704318C9D9BBF6AA54F2BCFC6C8964DFBEEBE615E292B05CF2C50BA02C91CA92AEF7F0AB8A09C0756A2DD1C1CB16D37CF2051AD8BC21D1B76FFF913C'';'||unistr('\000a')||
+'blog_install.i(29) := ''13904BFE8D37240A80C67ABE5267EEDA4B12880F5E264E456F5D91ECDBEFFFBA98F873E5928F05B051A4006899397C0A78F6E1A6501AA76EC3B12C240DEC5E527DFBE66319E4B5805DC9B2C8BFB1E809D42E5900149C3CC84AF79226FBDE242A47AEBB7E26AF0748DDB4D';
+
+s:=s||'195FF261501C821BF51B200686DDAF88A5E300847B2'';'||unistr('\000a')||
+'blog_install.i(30) := ''D03A6FDF51534A4E86C44D1B9DB40420837CD102B01B6753F7F0D1D8BEE5FDFD14D5CB166C67B2889FA9BB788924DF7EE76E0A02C84C96457EE3C22750F7CE4431027849110327493CE0A93F44FDA68DFE7D2954042065D346DBA619E49F7968A72CF21B173E8E7AB3668E2C80E68D13FC9E40064AB977BDC71649F20780950B'';'||unistr('\000a')||
+'blog_install.i(31) := ''6ED950E422E50A0A02285A2279D306F14AE4893DB2C86F7CF';
+
+s:=s||'D718E5FE09A2F8026F8C38D3563B86F70196314B56E7B4EAE18F15430D89FEFBB7501B9BFD9A2EC45CAB4042071D306B1008EEF9145FE9D77C773FC02D7AC009A4000D5F0976BCB1EE5BEC1699CAEB86F9F5BCF37252057E5727C7E201838C375BB56F7F61864DE'';'||unistr('\000a')||
+'blog_install.i(32) := ''9B82CCE529F848160C630AEA0594BD85D153CAA2E42DD40D60867C8C223FDA364C91BC69A323F74D3F721663B467B3C8F2A30DC0047A1C32596424A35606CD6BA64B261FD0911ACBF10B5CB302A80601A406860';
+
+s:=s||'373E16C7F1C609A1B1EF25572A3A6120732911A38E5A67AA1C86F60D05F38C77F3B3CC371806FE01E049014F8'';'||unistr('\000a')||
+'blog_install.i(33) := ''42EBD6C9BC6960AA4EFE2821FFF6D2711CAFC0314F00492080A8C0171A563DC67DA3C3344B277F14900FE8DA1ACFF10A1CF304106580C6FCA152380DE06CC03445275FE3E4DF5C3296E35330FC571A028DF94B72E01F6EAF8F0E1E0574F2354B7EC382E0B71FB8E50920D9C06FCC17CCF00FF58B1F41969297874681F2589D7C'';'||unistr('\000a')||
+'blog_install.i(34) := ''8D9';
+
+s:=s||'2DFBC6228F5034E815B967CB341D8F8D9007F14B09B5ED6C9D720F90073DEEC91DEFED45002880A8C02809EBC19437501D34C9D7C8D91CFCFFB814B1EF9662EF87BD028C02F0CE1B4B03C5E275F23E4DF5BFD5C1077BCC24FE8B75F2082FA5053813F1E88D3C95739F977DE9F14C49960E8AF373CAC31DF14CDFB81A0E290'';'||unistr('\000a')||
+'blog_install.i(35) := ''CDF40A16814EBE7AC9B794CC1DA9E80388368869CC37AEE4FF60C7CE98E0E9C014A793AFF2611F381390BFD220A5313F5011F861481F8422701867E8E';
+
+s:=s||'4AB30E00B90CF4BF9001506398D5F211C3E1D8079640E7296C4E8E44730CFE7A77A230CFB9506B98D4D0D8344200C0CB110CA662247D1649DFC309677F915BE11023EC4'';'||unistr('\000a')||
+'blog_install.i(36) := ''721765206DFCE9209022F2EB049C104A67227BE1149D7C0557F542110F5C08523DF9C3BED8C030301AF0CBC61C8C4C245A3C1D59F35FD0C927241F9C3C30C707D6F3F980BE0FF1D64B0FF82488209A5F27080488F010FC55C461289D83ACC5B3F07534D682046401E427E07B8A3176C7A37E401E0FB97EF';
+
+s:=s||'40172E2FCC8F6C30C'';'||unistr('\000a')||
+'blog_install.i(37) := ''C8E261571CEAC598867A3379C898867A003B79D8310D5FA2EC472CBE4D13639B1FF703D8CA437A2C3E6BDF8F187CE62E87B4187CFE1E87540136C7E08319FC988AB7670DC3C6A9D8B21D00B8770306CE5080BE863E17047A88E526DAA074632B8666A1F260AD198290078A41872C409F42DF0AD6F3F9E5DD5443381B1B208614'';'||unistr('\000a')||
+'blog_install.i(38) := ''42204E00F3213850C186AC433AA0EFA00F43CCEF41C45309F408C5902CCC1674288ACA61EBF';
+
+s:=s||'96A68ECA890C4AAB23A6039D7418426B62F53D9BEA5FAB6FF1F4C5A89C04540B9590000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''feed-icon-128x128.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D494844520000';
+
+s:=s||'0001000000640802000000C84ECD37000000097048597300001EC200001EC2016ED0753E0000000774494D4507DD0B020808191D0C2FBB0000001D69545874436F6D6D656E7400000000004372656174656420776974682047494D50642E650700000006624B474400FF00FF00FF'';'||unistr('\000a')||
+'blog_install.i(2) := ''A0BDA79300000052494441541857859041128030080337DBE7F92B1F5E3DD951AAF5C01092E500B0ED02022699B474939834013BA80EAE2583CD8F4EE251BC76CDB457FE5EAB6CCE5DEEBCF9D57';
+
+s:=s||'BDC71F8C9D7FEA5AB577F0E9CC949065F70B017F70000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''header-blue.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''47494638396156001200E700000000001414141714141515151616161716161F1313';
+
+s:=s||'2213132A12122F12123012123211123212123511111C1C1C3D10103B11113E10101E1E1E411010421010451010490F0F4710102520204F0F0F252121500F0F321C1C510F0F520F0F530F0F570E0E2F20205B0E0E5C0E0E5F0D0D5D0E0E61'';'||unistr('\000a')||
+'blog_install.i(2) := ''0D0D610E0E660D0D4F17174C1919680D0D6D0C0C700C0C6E0D0D700C0D720C0C730C0C780B0B760C0C7B0B0B7C0B0B820A0B810B0B830B0B860A0A880A0A8A0A0A8C0A0A8D0A0A9009098E0A0A8F0A0A9209099809093434349B0808990';
+
+s:=s||'9099D0808920D0D9F0808A10808A20808A50707A30808960E0EA60808AE0707AF0707'';'||unistr('\000a')||
+'blog_install.i(3) := ''B20707B50606B50707B80606B90606712525BA0606BB06066E2828C20505C305057C2424812222C50505C70505C80505404040CC0404CC0504CF0404D00404D10404D40404D00606D60404D90303D30808E20202E20302E40202E60202E70202EA0202EC0202F401014B4A4AF60101FA0101FB0101FF0000594E4EE91212EA13'';'||unistr('\000a')||
+'blog_install.i(4) := ''13565656794A4A993E3E9E404';
+
+s:=s||'05E5E5E7D5454685E5EDD2C2CE034346A6A6A6D6D6D7272727E7E7E7F7F7FC963638D7D7D858585868686D072728F8F8FD67373C87A7AB28787A391919996969A9A9ACF8686EF7979B79292A59A9ADC8383A4A4A4AAAAAABDA2A2B8ACACF09494B4AEAEB0B0B0CCA5A5CBA8A8F19B9BC9B5B5EA'';'||unistr('\000a')||
+'blog_install.i(5) := ''A7A7C6B8B8DBB1B1C0C0C0EDB4B4E0BABACCCCCCD5D5D5DDD5D5DCDADAE5DDDDE0E0E0E3E3E3E7E7E7F9E0E0EAE9E9F2E6E6FAE4E4F3E8E8ECECECF1EAEAFCE8E8EEEEEEF3ECECFC';
+
+s:=s||'E9E9F5EFEFF5F1F1F5F2F2F4F4F4F5F4F4F5F5F5F8F6F6F7F7F7F8F7F7F8F8F8FEF7F7FBF9F9FEF8F8FCF9F9FCFCFCFDFCFCFEFEFEFFFEFE'';'||unistr('\000a')||
+'blog_install.i(6) := ''FFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'';'||unistr('\000a')||
+'blog';
+
+s:=s||'_install.i(7) := ''0000000000000000000000000021FE15437265617465642077697468205468652047494D50002C00000000560012000008FE00C3241A48B0A0C18308132A5CC8B0E14181D1224A9C2891992D5491144132452B19C58F20438A1C49F2E34092D07E8DF27344C9142F68067DDA05ADA4CD9B384D2622090C13171C459E6C49E326'';'||unistr('\000a')||
+'blog_install.i(8) := ''8E9E4BBE722A5D2AF2A4C866A5B2C0D08144CA183673EED4D9436A19D3AF5F9D860C1668448C1D49A890816307CF1D39846E8';
+
+s:=s||'19D9B532C48572A444CAD2AA64DD63A6FD6A8A24BB8A4DD8F9E2680608143C8132D44E3BC510346D34400113167D6BC593380CF993B53F41C3ADA67CEA0251EA6980942071434803091E2A5CC19'';'||unistr('\000a')||
+'blog_install.i(9) := ''335FAE38BA5C9AB4E98FA87BF3368DD9B7F088AB2782627041848B1B419440A182A54A1427962E9F3E4E7CF86FE29C85D8A7DEFE9D737289AF3840C87002860D1F44942C6162A4C9AAE1BEC37FDF6F1C3FF7F2AAED249230822430810727BC50430E3CFCD0830E7FE0E2DF661291';
+
+s:=s||'571A80151ED75F77017EF40C32B9C4D20A25'';'||unistr('\000a')||
+'blog_install.i(10) := ''212C40C10625ACD0C20C32CCD08528CA14266348763D334B288D1802081F74687080020F58F081082498608524BDCCA8244576F1F2C810121010C09401086000020D4450410A7D74A24B4D4B866917319C84E1C000544E590006792C32C929B01413E69CD1D4688C2CA954828821851CC2C826ACD432CC31CED04967220239A4'';'||unistr('\000a')||
+'blog_install.i(11) := ''E8A28C369A50180101003B'';'||unistr('\000a')||
+'blog_install.b := blog_install.';
+
+s:=s||'varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''hostip-info-86x18.gif'',''image/gif'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D49484452000000020000004A1006000000C12D596600000006624B4744000000000000F943BB7F000000097048597300000048000000480046C96B3E00000009767041670';
+
+s:=s||'00000020000004A00528CBB8D000001534944415438CBD554DD99C3200CF35FB25167E8261DA6E3748F0E146CE37B30'';'||unistr('\000a')||
+'blog_install.i(2) := ''1027770B1C4FF9842C0BA3808FC7EBF5F944C058424444040010113100C4DC2502106666660080844544841960AA087302135A2553474452342241414C603166D3294AD3E1624444F40E6B49EFEE663740B57431536DAD30DC5555533662308EA31CEE2C1980BB596BE5B4BF44CDCC6E3E7A4F60CCA377F7FCCCB674EE0DC69C'';'||unistr('\000a')||
+'blog_install.i(3) := ';
+
+s:=s||'''F6D20020CA99AE01316F5BF181C8BCEFE973DC9CC8BEDFAE324BC659109341B418293A4BFECFC2E7F3FDFE7E6F49BE444A44A4864AB68D99A8CC4364DB2E5317D9F71B90250BD8F7149D495CFBF3B204B11694242F8D886B1CC4DDDDBD587757752F4E555B9B191BD16ECD3D81080069ED3832DA83A17A1C59927EC46C02A34B'';'||unistr('\000a')||
+'blog_install.i(4) := ''6BAA662552AAD9B6F830BB38EDBDF7CB4F78562FE0AC1FC039C2F1EFCFE7628D5044A400447F00F9A0202216C67C368A463AFD01829ADAC3D7E27A';
+
+s:=s||'F10000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''ir-bg.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''2F2A2A0D0A202A2053796E746178486967686C6967687465720D0A202A20687474703A2F2F616C6578676F72626174636865762E636F6D2F5';
+
+s:=s||'3796E746178486967686C6967687465720D0A202A2053796E746178486967686C69676874657220697320646F6E6174696F6E776172652E20496620796F7520617265207573696E'';'||unistr('\000a')||
+'blog_install.i(2) := ''672069742C20706C6561736520646F6E6174652E0D0A202A20687474703A2F2F616C6578676F72626174636865762E636F6D2F53796E746178486967686C6967687465722F646F6E6174652E68746D6C0D0A202A0D0A202A204076657273696F6E0D0A202A20332E302E383320284A756C792030';
+
+s:=s||'322032303130290D0A202A20'';'||unistr('\000a')||
+'blog_install.i(3) := ''0D0A202A2040636F707972696768740D0A202A20436F707972696768742028432920323030342D3230313020416C657820476F72626174636865762E0D0A202A0D0A202A20406C6963656E73650D0A202A204475616C206C6963656E73656420756E64657220746865204D495420616E642047504C206C6963656E7365732E0D'';'||unistr('\000a')||
+'blog_install.i(4) := ''0A202A2F0D0A76617220585265674578703B69662858526567457870297468726F7720';
+
+s:=s||'4572726F72282263616E2774206C6F6164205852656745787020747769636520696E207468652073616D65206672616D6522293B2866756E6374696F6E2865297B66756E6374696F6E206328652C74297B69662821585265674578702E'';'||unistr('\000a')||
+'blog_install.i(5) := ''6973526567457870286529297468726F7720547970654572726F722822747970652052656745787020657870656374656422293B766172206E3D652E5F787265676578703B72657475726E20653D5852656745787028652E736F757263652';
+
+s:=s||'C682865292B28747C7C222229292C6E262628652E5F787265676578703D7B736F75'';'||unistr('\000a')||
+'blog_install.i(6) := ''7263653A6E2E736F757263652C636170747572654E616D65733A6E2E636170747572654E616D65733F6E2E636170747572654E616D65732E736C6963652830293A6E756C6C7D292C657D66756E6374696F6E20682865297B72657475726E28652E676C6F62616C3F2267223A2222292B28652E69676E6F7265436173653F2269'';'||unistr('\000a')||
+'blog_install.i(7) := ''223A2222292B28652E6D756C746';
+
+s:=s||'96C696E653F226D223A2222292B28652E657874656E6465643F2278223A2222292B28652E737469636B793F2279223A2222297D66756E6374696F6E207028652C742C6E2C72297B766172206F3D732E6C656E6774682C752C612C663B693D21303B7472797B7768696C65286F2D2D297B663D'';'||unistr('\000a')||
+'blog_install.i(8) := ''735B6F5D3B6966286E26662E73636F706526262821662E747269676765727C7C662E747269676765722E63616C6C28722929297B662E7061747465726E2E6C617374496E6465783D74';
+
+s:=s||'2C613D662E7061747465726E2E657865632865293B696628612626612E696E6465783D3D3D74297B753D7B6F75747075743A662E68616E'';'||unistr('\000a')||
+'blog_install.i(9) := ''646C65722E63616C6C28722C612C6E292C6D617463683A617D3B627265616B7D7D7D7D6361746368286C297B7468726F77206C7D66696E616C6C797B693D21317D72657475726E20757D66756E6374696F6E206428652C742C6E297B69662841727261792E70726F746F747970652E696E6465784F662972657475726E20652E'';'||unistr('\000a')||
+'blog_i';
+
+s:=s||'nstall.i(10) := ''696E6465784F6628742C6E293B666F722876617220723D6E7C7C303B723C652E6C656E6774683B722B2B29696628655B725D3D3D3D742972657475726E20723B72657475726E2D317D585265674578703D66756E6374696F6E28742C72297B76617220733D5B5D2C753D585265674578702E4F5554534944455F434C4153532C'';'||unistr('\000a')||
+'blog_install.i(11) := ''613D302C662C682C642C762C6D3B696628585265674578702E6973526567457870287429297B69662872213D3D65297468726';
+
+s:=s||'F7720547970654572726F72282263616E277420737570706C7920666C616773207768656E20636F6E737472756374696E67206F6E65205265674578702066726F6D20616E6F7468657222293B72'';'||unistr('\000a')||
+'blog_install.i(12) := ''657475726E20632874297D69662869297468726F77204572726F72282263616E27742063616C6C20746865205852656745787020636F6E7374727563746F722077697468696E20746F6B656E20646566696E6974696F6E2066756E6374696F6E7322293B723D727C7C22222C663';
+
+s:=s||'D7B6861734E616D6564436170747572653A21'';'||unistr('\000a')||
+'blog_install.i(13) := ''312C636170747572654E616D65733A5B5D2C686173466C61673A66756E6374696F6E2865297B72657475726E20722E696E6465784F662865293E2D317D2C736574466C61673A66756E6374696F6E2865297B722B3D657D7D3B7768696C6528613C742E6C656E67746829683D7028742C612C752C66292C683F28732E70757368'';'||unistr('\000a')||
+'blog_install.i(14) := ''28682E6F7574707574292C612B3D682E6D617463685B305D2E6C656';
+
+s:=s||'E6774687C7C31293A28643D6F2E657865632E63616C6C286C5B755D2C742E736C69636528612929293F28732E7075736828645B305D292C612B3D645B305D2E6C656E677468293A28763D742E6368617241742861292C763D3D3D225B223F753D58526567'';'||unistr('\000a')||
+'blog_install.i(15) := ''4578702E494E534944455F434C4153533A763D3D3D225D22262628753D585265674578702E4F5554534944455F434C415353292C732E707573682876292C612B2B293B72657475726E206D3D52656745787028732E6A6';
+
+s:=s||'F696E282222292C6F2E7265706C6163652E63616C6C28722C6E2C222229292C6D2E5F78726567657870'';'||unistr('\000a')||
+'blog_install.i(16) := ''3D7B736F757263653A742C636170747572654E616D65733A662E6861734E616D6564436170747572653F662E636170747572654E616D65733A6E756C6C7D2C6D7D2C585265674578702E76657273696F6E3D22312E352E31222C585265674578702E494E534944455F434C4153533D312C585265674578702E4F555453494445'';'||unistr('\000a')||
+'blog_install.i(17) := ''5F434C415';
+
+s:=s||'3533D323B76617220743D2F5C24283F3A285C645C643F7C5B242660275D297C7B285B245C775D2B297D292F672C6E3D2F5B5E67696D795D2B7C285B5C735C535D29283F3D5B5C735C535D2A5C31292F672C723D2F5E283F3A5B3F2A2B5D7C7B5C642B283F3A2C5C642A293F7D295C3F3F2F2C693D21312C733D5B5D'';'||unistr('\000a')||
+'blog_install.i(18) := ''2C6F3D7B657865633A5265674578702E70726F746F747970652E657865632C746573743A5265674578702E70726F746F747970652E746573742C6D617463683';
+
+s:=s||'A537472696E672E70726F746F747970652E6D617463682C7265706C6163653A537472696E672E70726F746F747970652E7265706C6163652C73706C69743A5374'';'||unistr('\000a')||
+'blog_install.i(19) := ''72696E672E70726F746F747970652E73706C69747D2C753D6F2E657865632E63616C6C282F28293F3F2F2C2222295B315D3D3D3D652C613D66756E6374696F6E28297B76617220653D2F5E2F673B72657475726E206F2E746573742E63616C6C28652C2222292C21652E6C617374496E6465787D28292C663D526';
+
+s:=s||'5674578702E'';'||unistr('\000a')||
+'blog_install.i(20) := ''70726F746F747970652E737469636B79213D3D652C6C3D7B7D3B6C5B585265674578702E494E534944455F434C4153535D3D2F5E283F3A5C5C283F3A5B302D335D5B302D375D7B302C327D7C5B342D375D5B302D375D3F7C785B5C64412D46612D665D7B327D7C755B5C64412D46612D665D7B347D7C635B412D5A612D7A5D7C'';'||unistr('\000a')||
+'blog_install.i(21) := ''5B5C735C535D29292F2C6C5B585265674578702E4F5554534944455F434C4153535D3D2F5E283F3A5';
+
+s:=s||'C5C283F3A30283F3A5B302D335D5B302D375D7B302C327D7C5B342D375D5B302D375D3F293F7C5B312D395D5C642A7C785B5C64412D46612D665D7B327D7C755B5C64412D46612D665D7B347D7C635B412D5A612D7A5D7C'';'||unistr('\000a')||
+'blog_install.i(22) := ''5B5C735C535D297C5C285C3F5B3A3D215D7C5B3F2A2B5D5C3F7C7B5C642B283F3A2C5C642A293F7D5C3F3F292F2C585265674578702E616464546F6B656E3D66756E6374696F6E28652C742C6E2C72297B732E70757368287B7061747465726E3A63286';
+
+s:=s||'52C2267222B28663F2279223A222229292C68616E646C65723A742C73'';'||unistr('\000a')||
+'blog_install.i(23) := ''636F70653A6E7C7C585265674578702E4F5554534944455F434C4153532C747269676765723A727C7C6E756C6C7D297D2C585265674578702E63616368653D66756E6374696F6E28652C74297B766172206E3D652B222F222B28747C7C2222293B72657475726E20585265674578702E63616368655B6E5D7C7C285852656745'';'||unistr('\000a')||
+'blog_install.i(24) := ''78702E63616368655B6E5D3D58526567457';
+
+s:=s||'87028652C7429297D2C585265674578702E636F70794173476C6F62616C3D66756E6374696F6E2865297B72657475726E206328652C226722297D2C585265674578702E6573636170653D66756E6374696F6E2865297B72657475726E20652E7265706C616365282F5B2D5B5C5D7B'';'||unistr('\000a')||
+'blog_install.i(25) := ''7D28292A2B3F2E2C5C5C5E247C235C735D2F672C225C5C242622297D2C585265674578702E6578656341743D66756E6374696F6E28652C742C6E2C72297B76617220693D6328742C2267222B2';
+
+s:=s||'8722626663F2279223A222229292C733B72657475726E20692E6C617374496E6465783D6E3D6E7C7C302C733D692E6578656328'';'||unistr('\000a')||
+'blog_install.i(26) := ''65292C722626732626732E696E646578213D3D6E262628733D6E756C6C292C742E676C6F62616C262628742E6C617374496E6465783D733F692E6C617374496E6465783A30292C737D2C585265674578702E667265657A65546F6B656E733D66756E6374696F6E28297B585265674578702E616464546F6B656E3D66756E6374'';'||unistr('\000a')||
+'blog_install';
+
+s:=s||'.i(27) := ''696F6E28297B7468726F77204572726F72282263616E27742072756E20616464546F6B656E20616674657220667265657A65546F6B656E7322297D7D2C585265674578702E69735265674578703D66756E6374696F6E2865297B72657475726E204F626A6563742E70726F746F7479706';
+
+wwv_flow_api.append_to_install_script(
+  p_id => 12275005924827304 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_script_clob => s);
+end;
+ 
+ 
+end;
+/
+
+ 
+begin
+ 
+declare
+    s varchar2(32767) := null;
+begin
+s:=s||'52E746F537472696E672E63616C6C28'';'||unistr('\000a')||
+'blog_install.i(28) := ''65293D3D3D225B6F626A656374205265674578705D227D2C585265674578702E697465726174653D66756E6374696F6E28652C742C6E2C72297B76617220693D6328742C226722292C733D2D312C6F3B7768696C65286F3D692E6578656328652929742E676C6F62616C262628742E6C617374496E6465783D692E6C61737449'';'||unistr('\000a')||
+'blog_install.i(29) := ''6E646578292C6E2E63616C6C28722C6F2C2B2B732C652C74292C692E6C617';
+
+s:=s||'374496E6465783D3D3D6F2E696E6465782626692E6C617374496E6465782B2B3B742E676C6F62616C262628742E6C617374496E6465783D30297D2C585265674578702E6D61746368436861696E3D66756E6374696F6E28652C74297B7265747572'';'||unistr('\000a')||
+'blog_install.i(30) := ''6E2066756E6374696F6E206E28652C72297B76617220693D745B725D2E72656765783F745B725D3A7B72656765783A745B725D7D2C733D6328692E72656765782C226722292C6F3D5B5D2C753B666F7228753D303B753C652E6';
+
+s:=s||'C656E6774683B752B2B29585265674578702E6974657261746528655B755D2C732C66756E6374'';'||unistr('\000a')||
+'blog_install.i(31) := ''696F6E2865297B6F2E7075736828692E6261636B7265663F655B692E6261636B7265665D7C7C22223A655B305D297D293B72657475726E20723D3D3D742E6C656E6774682D317C7C216F2E6C656E6774683F6F3A6E286F2C722B31297D285B655D2C30297D2C5265674578702E70726F746F747970652E6170706C793D66756E'';'||unistr('\000a')||
+'blog_install.i(32) := ''6374696F6E28652';
+
+s:=s||'C74297B72657475726E20746869732E6578656328745B305D297D2C5265674578702E70726F746F747970652E63616C6C3D66756E6374696F6E28652C74297B72657475726E20746869732E657865632874297D2C5265674578702E70726F746F747970652E657865633D66756E6374696F6E2874297B7661'';'||unistr('\000a')||
+'blog_install.i(33) := ''72206E2C722C692C733B746869732E676C6F62616C7C7C28733D746869732E6C617374496E646578292C6E3D6F2E657865632E6170706C7928746869732C617267756';
+
+s:=s||'D656E7473293B6966286E297B217526266E2E6C656E6774683E31262664286E2C2222293E2D31262628693D52656745787028746869732E736F75726365'';'||unistr('\000a')||
+'blog_install.i(34) := ''2C6F2E7265706C6163652E63616C6C28682874686973292C2267222C222229292C6F2E7265706C6163652E63616C6C2828742B2222292E736C696365286E2E696E646578292C692C66756E6374696F6E28297B666F722876617220743D313B743C617267756D656E74732E6C656E6774682D323B742B2B29617267756D6';
+
+s:=s||'56E74'';'||unistr('\000a')||
+'blog_install.i(35) := ''735B745D3D3D3D652626286E5B745D3D65297D29293B696628746869732E5F787265676578702626746869732E5F787265676578702E636170747572654E616D657329666F722876617220663D313B663C6E2E6C656E6774683B662B2B29723D746869732E5F787265676578702E636170747572654E616D65735B662D315D2C'';'||unistr('\000a')||
+'blog_install.i(36) := ''722626286E5B725D3D6E5B665D293B21612626746869732E676C6F62616C2626216E5B305D2E6C656E67746';
+
+s:=s||'82626746869732E6C617374496E6465783E6E2E696E6465782626746869732E6C617374496E6465782D2D7D72657475726E20746869732E676C6F62616C7C7C28746869732E6C617374496E6465783D73292C6E7D'';'||unistr('\000a')||
+'blog_install.i(37) := ''2C5265674578702E70726F746F747970652E746573743D66756E6374696F6E2865297B76617220742C6E3B72657475726E20746869732E676C6F62616C7C7C286E3D746869732E6C617374496E646578292C743D6F2E657865632E63616C6C28746869732C652';
+
+s:=s||'92C74262621612626746869732E676C6F62616C262621745B30'';'||unistr('\000a')||
+'blog_install.i(38) := ''5D2E6C656E6774682626746869732E6C617374496E6465783E742E696E6465782626746869732E6C617374496E6465782D2D2C746869732E676C6F62616C7C7C28746869732E6C617374496E6465783D6E292C2121747D2C537472696E672E70726F746F747970652E6D617463683D66756E6374696F6E2865297B5852656745'';'||unistr('\000a')||
+'blog_install.i(39) := ''78702E69735265674578702865297C7C28653D526';
+
+s:=s||'567457870286529293B696628652E676C6F62616C297B76617220743D6F2E6D617463682E6170706C7928746869732C617267756D656E7473293B72657475726E20652E6C617374496E6465783D302C747D72657475726E20652E657865632874686973297D2C537472696E'';'||unistr('\000a')||
+'blog_install.i(40) := ''672E70726F746F747970652E7265706C6163653D66756E6374696F6E28652C6E297B76617220723D585265674578702E69735265674578702865292C692C732C752C613B72657475726E20723F28652';
+
+s:=s||'E5F78726567657870262628693D652E5F787265676578702E636170747572654E616D6573292C652E676C6F62616C7C7C'';'||unistr('\000a')||
+'blog_install.i(41) := ''28613D652E6C617374496E64657829293A652B3D22222C4F626A6563742E70726F746F747970652E746F537472696E672E63616C6C286E293D3D3D225B6F626A6563742046756E6374696F6E5D223F733D6F2E7265706C6163652E63616C6C28746869732B22222C652C66756E6374696F6E28297B69662869297B617267756D'';'||unistr('\000a')||
+'blog_install.i(42)';
+
+s:=s||' := ''656E74735B305D3D6E657720537472696E6728617267756D656E74735B305D293B666F722876617220743D303B743C692E6C656E6774683B742B2B29695B745D262628617267756D656E74735B305D5B695B745D5D3D617267756D656E74735B742B315D297D72657475726E20722626652E676C6F62616C262628652E6C6173'';'||unistr('\000a')||
+'blog_install.i(43) := ''74496E6465783D617267756D656E74735B617267756D656E74732E6C656E6774682D325D2B617267756D656E74735B305D2E6C656E6774682';
+
+s:=s||'92C6E2E6170706C79286E756C6C2C617267756D656E7473297D293A28753D746869732B22222C733D6F2E7265706C6163652E63616C6C28752C652C66756E6374696F6E28297B76'';'||unistr('\000a')||
+'blog_install.i(44) := ''617220653D617267756D656E74733B72657475726E206F2E7265706C6163652E63616C6C286E2B22222C742C66756E6374696F6E28742C6E2C72297B696628216E297B766172206F3D2B723B72657475726E206F3C3D652E6C656E6774682D333F655B6F5D3A286F3D693F6428692C72293A2D3';
+
+s:=s||'12C6F3E2D313F655B6F2B315D'';'||unistr('\000a')||
+'blog_install.i(45) := ''3A74297D737769746368286E297B636173652224223A72657475726E2224223B636173652226223A72657475726E20655B305D3B636173652260223A72657475726E20655B652E6C656E6774682D315D2E736C69636528302C655B652E6C656E6774682D325D293B636173652227223A72657475726E20655B652E6C656E6774'';'||unistr('\000a')||
+'blog_install.i(46) := ''682D315D2E736C69636528655B652E6C656E6774682D325D2B655B305D2E6C656E6';
+
+s:=s||'77468293B64656661756C743A76617220733D22223B6E3D2B6E3B696628216E2972657475726E20743B7768696C65286E3E652E6C656E6774682D3329733D537472696E672E70726F746F747970652E736C6963652E63616C6C286E2C2D31'';'||unistr('\000a')||
+'blog_install.i(47) := ''292B732C6E3D4D6174682E666C6F6F72286E2F3130293B72657475726E286E3F655B6E5D7C7C22223A222422292B737D7D297D29292C72262628652E676C6F62616C3F652E6C617374496E6465783D303A652E6C617374496E6465783';
+
+s:=s||'D61292C737D2C537472696E672E70726F746F747970652E73706C69743D66756E637469'';'||unistr('\000a')||
+'blog_install.i(48) := ''6F6E28742C6E297B69662821585265674578702E69735265674578702874292972657475726E206F2E73706C69742E6170706C7928746869732C617267756D656E7473293B76617220723D746869732B22222C693D5B5D2C733D302C752C613B6966286E3D3D3D657C7C2B6E3C30296E3D496E66696E6974793B656C73657B6E'';'||unistr('\000a')||
+'blog_install.i(49) := ''3D4D6174682E666C6F6F7';
+
+s:=s||'2282B6E293B696628216E2972657475726E5B5D7D743D585265674578702E636F70794173476C6F62616C2874293B7768696C6528753D742E65786563287229297B696628742E6C617374496E6465783E73297B692E7075736828722E736C69636528732C752E696E64657829292C752E6C656E6774'';'||unistr('\000a')||
+'blog_install.i(50) := ''683E312626752E696E6465783C722E6C656E677468262641727261792E70726F746F747970652E707573682E6170706C7928692C752E736C696365283129292C613D755B305';
+
+s:=s||'D2E6C656E6774682C733D742E6C617374496E6465783B696628692E6C656E6774683E3D6E29627265616B7D742E6C617374496E6465783D3D3D75'';'||unistr('\000a')||
+'blog_install.i(51) := ''2E696E6465782626742E6C617374496E6465782B2B7D72657475726E20733D3D3D722E6C656E6774683F28216F2E746573742E63616C6C28742C2222297C7C61292626692E70757368282222293A692E7075736828722E736C696365287329292C692E6C656E6774683E6E3F692E736C69636528302C6E293A697D2C58526567''';
+
+s:=s||';'||unistr('\000a')||
+'blog_install.i(52) := ''4578702E616464546F6B656E282F5C285C3F235B5E295D2A5C292F2C66756E6374696F6E2865297B72657475726E206F2E746573742E63616C6C28722C652E696E7075742E736C69636528652E696E6465782B655B305D2E6C656E67746829293F22223A22283F3A29227D292C585265674578702E616464546F6B656E282F5C'';'||unistr('\000a')||
+'blog_install.i(53) := ''28283F215C3F292F2C66756E6374696F6E28297B72657475726E20746869732E636170747572654E616D65732E707';
+
+s:=s||'57368286E756C6C292C2228227D292C585265674578702E616464546F6B656E282F5C285C3F3C285B245C775D2B293E2F2C66756E6374696F6E2865297B72657475726E20746869732E636170747572654E'';'||unistr('\000a')||
+'blog_install.i(54) := ''616D65732E7075736828655B315D292C746869732E6861734E616D6564436170747572653D21302C2228227D292C585265674578702E616464546F6B656E282F5C5C6B3C285B5C77245D2B293E2F2C66756E6374696F6E2865297B76617220743D6428746869732E636';
+
+s:=s||'170747572654E616D65732C655B315D293B7265747572'';'||unistr('\000a')||
+'blog_install.i(55) := ''6E20743E2D313F225C5C222B28742B31292B2869734E614E28652E696E7075742E63686172417428652E696E6465782B655B305D2E6C656E67746829293F22223A22283F3A2922293A655B305D7D292C585265674578702E616464546F6B656E282F5C5B5C5E3F5D2F2C66756E6374696F6E2865297B72657475726E20655B30'';'||unistr('\000a')||
+'blog_install.i(56) := ''5D3D3D3D225B5D223F225C5C625C5C42223A225B5C5C735';
+
+s:=s||'C5C535D227D292C585265674578702E616464546F6B656E282F5E5C285C3F285B696D73785D2B295C292F2C66756E6374696F6E2865297B72657475726E20746869732E736574466C616728655B315D292C22227D292C585265674578702E616464546F6B656E282F'';'||unistr('\000a')||
+'blog_install.i(57) := ''283F3A5C732B7C232E2A292B2F2C66756E6374696F6E2865297B72657475726E206F2E746573742E63616C6C28722C652E696E7075742E736C69636528652E696E6465782B655B305D2E6C656E67746829293';
+
+s:=s||'F22223A22283F3A29227D2C585265674578702E4F5554534944455F434C4153532C66756E6374696F6E28297B72'';'||unistr('\000a')||
+'blog_install.i(58) := ''657475726E20746869732E686173466C616728227822297D292C585265674578702E616464546F6B656E282F5C2E2F2C66756E6374696F6E28297B72657475726E225B5C5C735C5C535D227D2C585265674578702E4F5554534944455F434C4153532C66756E6374696F6E28297B72657475726E20746869732E686173466C61'';'||unistr('\000a')||
+'blog_install.i(59) := ''6';
+
+s:=s||'728227322297D297D2928293B696628747970656F662053796E746178486967686C6967687465723D3D22756E646566696E656422297661722053796E746178486967686C6967687465723D66756E6374696F6E28297B66756E6374696F6E207428652C74297B72657475726E20652E636C6173734E616D652E696E6465784F'';'||unistr('\000a')||
+'blog_install.i(60) := ''66287429213D2D317D66756E6374696F6E206E28652C6E297B7428652C6E297C7C28652E636C6173734E616D652B3D2220222B6E297D66756E63746';
+
+s:=s||'96F6E207228652C74297B652E636C6173734E616D653D652E636C6173734E616D652E7265706C61636528742C2222297D66756E6374696F6E20692865297B76617220743D'';'||unistr('\000a')||
+'blog_install.i(61) := ''5B5D3B666F7228766172206E3D303B6E3C652E6C656E6774683B6E2B2B29742E7075736828655B6E5D293B72657475726E20747D66756E6374696F6E20732865297B72657475726E20652E73706C6974282F5C723F5C6E2F297D66756E6374696F6E206F2865297B76617220743D22686967686C69676';
+
+s:=s||'87465725F223B726574'';'||unistr('\000a')||
+'blog_install.i(62) := ''75726E20652E696E6465784F662874293D3D303F653A742B657D66756E6374696F6E20752874297B72657475726E20652E766172732E686967686C696768746572735B6F2874295D7D66756E6374696F6E20612865297B72657475726E20646F63756D656E742E676574456C656D656E7442794964286F286529297D66756E63'';'||unistr('\000a')||
+'blog_install.i(63) := ''74696F6E20662874297B652E766172732E686967686C696768746572735B6F28742E69642';
+
+s:=s||'95D3D747D66756E6374696F6E206C28652C742C6E297B696628653D3D6E756C6C2972657475726E206E756C6C3B76617220723D6E213D313F652E6368696C644E6F6465733A5B652E706172656E744E6F64655D2C693D7B2223223A'';'||unistr('\000a')||
+'blog_install.i(64) := ''226964222C222E223A22636C6173734E616D65227D5B742E73756273747228302C31295D7C7C226E6F64654E616D65222C732C6F3B733D69213D226E6F64654E616D65223F742E7375627374722831293A742E746F557070657243617365282';
+
+s:=s||'93B69662828655B695D7C7C2222292E696E6465784F66287329213D2D31297265'';'||unistr('\000a')||
+'blog_install.i(65) := ''7475726E20653B666F722876617220753D303B722626753C722E6C656E67746826266F3D3D6E756C6C3B752B2B296F3D6C28725B755D2C742C6E293B72657475726E206F7D66756E6374696F6E206328652C74297B72657475726E206C28652C742C2130297D66756E6374696F6E206828652C742C6E297B6E3D4D6174682E6D'';'||unistr('\000a')||
+'blog_install.i(66) := ''6178286E7C7C302C30293B666F7';
+
+s:=s||'22876617220723D6E3B723C652E6C656E6774683B722B2B29696628655B725D3D3D742972657475726E20723B72657475726E2D317D66756E6374696F6E20702865297B72657475726E28657C7C2222292B4D6174682E726F756E64284D6174682E72616E646F6D28292A316536292E746F53'';'||unistr('\000a')||
+'blog_install.i(67) := ''7472696E6728297D66756E6374696F6E206428652C74297B766172206E3D7B7D2C723B666F72287220696E2065296E5B725D3D655B725D3B666F72287220696E2074296E5B725D3D7';
+
+s:=s||'45B725D3B72657475726E206E7D66756E6374696F6E20762865297B76617220743D7B2274727565223A21302C2266616C7365223A21317D'';'||unistr('\000a')||
+'blog_install.i(68) := ''5B655D3B72657475726E20743D3D6E756C6C3F653A747D66756E6374696F6E206D28652C742C6E2C722C69297B76617220733D2873637265656E2E77696474682D6E292F322C6F3D2873637265656E2E6865696768742D72292F323B692B3D222C206C6566743D222B732B222C20746F703D222B6F2B222C2077696474683D22'';'||unistr('\000a')||
+'blog';
+
+s:=s||'_install.i(69) := ''2B6E2B222C206865696768743D222B722C693D692E7265706C616365282F5E2C2F2C2222293B76617220753D77696E646F772E6F70656E28652C742C69293B72657475726E20752E666F63757328292C757D66756E6374696F6E206728652C742C6E2C72297B66756E6374696F6E20692865297B653D657C7C77696E646F772E'';'||unistr('\000a')||
+'blog_install.i(70) := ''6576656E742C652E7461726765747C7C28652E7461726765743D652E737263456C656D656E742C652E70726576656E74446';
+
+s:=s||'56661756C743D66756E6374696F6E28297B746869732E72657475726E56616C75653D21317D292C6E2E63616C6C28727C7C77696E646F772C65297D652E6174746163684576656E743F652E617474'';'||unistr('\000a')||
+'blog_install.i(71) := ''6163684576656E7428226F6E222B742C69293A652E6164644576656E744C697374656E657228742C692C2131297D66756E6374696F6E20792874297B77696E646F772E616C65727428652E636F6E6669672E737472696E67732E616C6572742B74297D66756E6374696F6E206';
+
+s:=s||'228742C6E297B76617220723D652E766172732E'';'||unistr('\000a')||
+'blog_install.i(72) := ''646973636F7665726564427275736865732C693D6E756C6C3B696628723D3D6E756C6C297B723D7B7D3B666F7228766172207320696E20652E62727573686573297B766172206F3D652E627275736865735B735D2C753D6F2E616C69617365733B696628753D3D6E756C6C29636F6E74696E75653B6F2E62727573684E616D65'';'||unistr('\000a')||
+'blog_install.i(73) := ''3D732E746F4C6F7765724361736528293B666F722876617220613';
+
+s:=s||'D303B613C752E6C656E6774683B612B2B29725B755B615D5D3D737D652E766172732E646973636F7665726564427275736865733D727D72657475726E20693D652E627275736865735B725B745D5D2C693D3D6E756C6C26266E26267928652E636F6E666967'';'||unistr('\000a')||
+'blog_install.i(74) := ''2E737472696E67732E6E6F42727573682B74292C697D66756E6374696F6E207728652C74297B766172206E3D732865293B666F722876617220723D303B723C6E2E6C656E6774683B722B2B296E5B725D3D74286E5B7';
+
+s:=s||'25D2C72293B72657475726E206E2E6A6F696E28225C725C6E22297D66756E6374696F6E20452865297B72'';'||unistr('\000a')||
+'blog_install.i(75) := ''657475726E20652E7265706C616365282F5E5B205D2A5B5C6E5D2B7C5B5C6E5D2A5B205D2A242F672C2222297D66756E6374696F6E20532865297B76617220742C6E3D7B7D2C723D6E6577205852656745787028225E5C5C5B283F3C76616C7565733E282E2A3F29295C5C5D2422292C693D6E65772058526567457870282228'';'||unistr('\000a')||
+'blog_install.i(76) := ''3F3C6E6';
+
+s:=s||'16D653E5B5C5C772D5D2B295C5C732A3A5C5C732A283F3C76616C75653E5B5C5C772D25235D2B7C5C5C5B2E2A3F5C5C5D7C5C222E2A3F5C227C272E2A3F27295C5C732A3B3F222C226722293B7768696C652828743D692E6578656328652929213D6E756C6C297B76617220733D742E76616C75652E7265706C616365'';'||unistr('\000a')||
+'blog_install.i(77) := ''282F5E5B27225D7C5B27225D242F672C2222293B69662873213D6E756C6C2626722E74657374287329297B766172206F3D722E657865632873293B733D6F2';
+
+s:=s||'E76616C7565732E6C656E6774683E303F6F2E76616C7565732E73706C6974282F5C732A2C5C732A2F293A5B5D7D6E5B742E6E616D655D3D737D72657475726E206E'';'||unistr('\000a')||
+'blog_install.i(78) := ''7D66756E6374696F6E207828742C6E297B72657475726E20743D3D6E756C6C7C7C742E6C656E6774683D3D307C7C743D3D225C6E223F743A28743D742E7265706C616365282F3C2F672C22266C743B22292C743D742E7265706C616365282F207B322C7D2F672C66756E6374696F6E2874297B766172206E3D2';
+
+s:=s||'2223B666F7228'';'||unistr('\000a')||
+'blog_install.i(79) := ''76617220723D303B723C742E6C656E6774682D313B722B2B296E2B3D652E636F6E6669672E73706163653B72657475726E206E2B2220227D292C6E213D6E756C6C262628743D7728742C66756E6374696F6E2865297B696628652E6C656E6774683D3D302972657475726E22223B76617220743D22223B72657475726E20653D'';'||unistr('\000a')||
+'blog_install.i(80) := ''652E7265706C616365282F5E28266E6273703B7C20292B2F2C66756E6374696F6E2865297B72657';
+
+s:=s||'475726E20743D652C22227D292C652E6C656E6774683D3D303F743A742B273C636F646520636C6173733D22272B6E2B27223E272B652B223C2F636F64653E227D29292C74297D66756E6374696F6E205428652C74297B7661'';'||unistr('\000a')||
+'blog_install.i(81) := ''72206E3D652E746F537472696E6728293B7768696C65286E2E6C656E6774683C74296E3D2230222B6E3B72657475726E206E7D66756E6374696F6E204E28652C74297B766172206E3D22223B666F722876617220723D303B723C743B722B2B296E2B3';
+
+s:=s||'D2220223B72657475726E20652E7265706C616365282F5C742F672C6E29'';'||unistr('\000a')||
+'blog_install.i(82) := ''7D66756E6374696F6E204328652C74297B66756E6374696F6E207528652C742C6E297B72657475726E20652E73756273747228302C74292B692E73756273747228302C6E292B652E73756273747228742B312C652E6C656E677468297D766172206E3D732865292C723D2209222C693D22223B666F7228766172206F3D303B6F'';'||unistr('\000a')||
+'blog_install.i(83) := ''3C35303B6F2B2B29692B3D22202020202';
+
+s:=s||'0202020202020202020202020202020223B72657475726E20653D7728652C66756E6374696F6E2865297B696628652E696E6465784F662872293D3D2D312972657475726E20653B766172206E3D303B7768696C6528286E3D652E696E6465784F6628722929213D2D31297B76617220'';'||unistr('\000a')||
+'blog_install.i(84) := ''693D742D6E25743B653D7528652C6E2C69297D72657475726E20657D292C657D66756E6374696F6E206B2874297B766172206E3D2F3C62725C732A5C2F3F3E7C266C743B62725C732A5C2F3';
+
+s:=s||'F2667743B2F67693B72657475726E20652E636F6E6669672E626C6F676765724D6F64653D3D31262628743D742E7265706C616365'';'||unistr('\000a')||
+'blog_install.i(85) := ''286E2C225C6E2229292C652E636F6E6669672E73747269704272733D3D31262628743D742E7265706C616365286E2C222229292C747D66756E6374696F6E204C2865297B72657475726E20652E7265706C616365282F5E5C732B7C5C732B242F672C2222297D66756E6374696F6E20412865297B76617220743D73286B286529'';'||unistr('\000a')||
+'blog_insta';
+
+s:=s||'ll.i(86) := ''292C6E3D6E65772041727261792C723D2F5E5C732A2F2C693D3165333B666F7228766172206F3D303B6F3C742E6C656E6774682626693E303B6F2B2B297B76617220753D745B6F5D3B6966284C2875292E6C656E6774683D3D3029636F6E74696E75653B76617220613D722E657865632875293B696628613D3D6E756C6C2972'';'||unistr('\000a')||
+'blog_install.i(87) := ''657475726E20653B693D4D6174682E6D696E28615B305D2E6C656E6774682C69297D696628693E3029666F7228766172206F3D303';
+
+s:=s||'B6F3C742E6C656E6774683B6F2B2B29745B6F5D3D745B6F5D2E7375627374722869293B72657475726E20742E6A6F696E28225C6E22297D66756E6374696F6E204F28652C74297B72657475'';'||unistr('\000a')||
+'blog_install.i(88) := ''726E20652E696E6465783C742E696E6465783F2D313A652E696E6465783E742E696E6465783F313A652E6C656E6774683C742E6C656E6774683F2D313A652E6C656E6774683E742E6C656E6774683F313A307D66756E6374696F6E204D28742C6E297B66756E6374696F6E207228652';
+
+s:=s||'C74297B72657475726E20655B305D7D76'';'||unistr('\000a')||
+'blog_install.i(89) := ''617220693D302C733D6E756C6C2C6F3D5B5D2C753D6E2E66756E633F6E2E66756E633A723B7768696C652828733D6E2E72656765782E6578656328742929213D6E756C6C297B76617220613D7528732C6E293B747970656F6620613D3D22737472696E6722262628613D5B6E657720652E4D6174636828612C732E696E646578'';'||unistr('\000a')||
+'blog_install.i(90) := ''2C6E2E637373295D292C6F3D6F2E636F6E6361742861297D72657475726';
+
+s:=s||'E206F7D66756E6374696F6E205F2874297B766172206E3D2F282E2A2928282667743B7C266C743B292E2A292F3B72657475726E20742E7265706C61636528652E72656765784C69622E75726C2C66756E6374696F6E2865297B76617220743D22222C'';'||unistr('\000a')||
+'blog_install.i(91) := ''723D6E756C6C3B696628723D6E2E6578656328652929653D725B315D2C743D725B325D3B72657475726E273C6120687265663D22272B652B27223E272B652B223C2F613E222B747D297D66756E6374696F6E204428297B766';
+
+s:=s||'17220653D646F63756D656E742E676574456C656D656E747342795461674E616D65282273637269'';'||unistr('\000a')||
+'blog_install.i(92) := ''707422292C743D5B5D3B666F7228766172206E3D303B6E3C652E6C656E6774683B6E2B2B29655B6E5D2E747970653D3D2273796E746178686967686C696768746572222626742E7075736828655B6E5D293B72657475726E20747D66756E6374696F6E20502865297B76617220743D223C215B43444154415B222C6E3D225D5D'';'||unistr('\000a')||
+'blog_install.i(93) := ''3E222C723D4C2';
+
+s:=s||'865292C693D21312C733D742E6C656E6774682C6F3D6E2E6C656E6774683B722E696E6465784F662874293D3D30262628723D722E737562737472696E672873292C693D2130293B76617220753D722E6C656E6774683B72657475726E20722E696E6465784F66286E293D3D752D6F262628723D722E73756273'';'||unistr('\000a')||
+'blog_install.i(94) := ''7472696E6728302C752D6F292C693D2130292C693F723A657D66756E6374696F6E20482865297B76617220743D652E7461726765742C693D6328742C222E73796E7';
+
+s:=s||'46178686967686C69676874657222292C733D6328742C222E636F6E7461696E657222292C6F3D646F63756D656E742E637265617465456C656D656E742822'';'||unistr('\000a')||
+'blog_install.i(95) := ''746578746172656122292C613B69662821737C7C21697C7C6C28732C22746578746172656122292972657475726E3B613D7528692E6964292C6E28692C22736F7572636522293B76617220663D732E6368696C644E6F6465732C683D5B5D3B666F722876617220703D303B703C662E6C656E6774683B702B2B29682E7';
+
+s:=s||'0757368'';'||unistr('\000a')||
+'blog_install.i(96) := ''28665B705D2E696E6E6572546578747C7C665B705D2E74657874436F6E74656E74293B683D682E6A6F696E28225C7222292C683D682E7265706C616365282F5C75303061302F672C222022292C6F2E617070656E644368696C6428646F63756D656E742E637265617465546578744E6F6465286829292C732E617070656E6443'';'||unistr('\000a')||
+'blog_install.i(97) := ''68696C64286F292C6F2E666F63757328292C6F2E73656C65637428292C67286F2C22626C7572222C66756';
+
+s:=s||'E6374696F6E2865297B6F2E706172656E744E6F64652E72656D6F76654368696C64286F292C7228692C22736F7572636522297D297D747970656F662072657175697265213D22756E646566696E6564222626747970'';'||unistr('\000a')||
+'blog_install.i(98) := ''656F6620585265674578703D3D22756E646566696E656422262628585265674578703D7265717569726528225852656745787022292E58526567457870293B76617220653D7B64656661756C74733A7B22636C6173732D6E616D65223A22222C22666972737';
+
+s:=s||'42D6C696E65223A312C227061642D6C696E652D6E756D62657273'';'||unistr('\000a')||
+'blog_install.i(99) := ''223A21312C686967686C696768743A6E756C6C2C7469746C653A6E756C6C2C22736D6172742D74616273223A21302C227461622D73697A65223A342C6775747465723A21302C746F6F6C6261723A21302C22717569636B2D636F6465223A21302C636F6C6C617073653A21312C226175746F2D6C696E6B73223A21302C6C6967'';'||unistr('\000a')||
+'blog_install.i(100) := ''68743A21312C756E696E64656E743A21302C22';
+
+s:=s||'68746D6C2D736372697074223A21317D2C636F6E6669673A7B73706163653A22266E6273703B222C757365536372697074546167733A21302C626C6F676765724D6F64653A21312C73747269704272733A21312C7461674E616D653A22707265222C737472696E67733A7B6578'';'||unistr('\000a')||
+'blog_install.i(101) := ''70616E64536F757263653A22657870616E6420736F75726365222C68656C703A223F222C616C6572743A2253796E746178486967686C6967687465725C6E5C6E222C6E6F42727573683A2243616';
+
+s:=s||'E27742066696E6420627275736820666F723A20222C62727573684E6F7448746D6C5363726970743A22427275736820776173'';'||unistr('\000a')||
+'blog_install.i(102) := ''6E277420636F6E6669677572656420666F722068746D6C2D736372697074206F7074696F6E3A20222C61626F75744469616C6F673A224041424F555440227D7D2C766172733A7B646973636F7665726564427275736865733A6E756C6C2C686967686C696768746572733A7B7D7D2C627275736865733A7B7D2C72656765784C'';'||unistr('\000a')||
+'blog_install.';
+
+s:=s||'i(103) := ''69623A7B6D756C74694C696E6543436F6D6D656E74733A2F5C2F5C2A5B5C735C535D2A3F5C2A5C2F2F676D2C73696E676C654C696E6543436F6D6D656E74733A2F5C2F5C2F2E2A242F676D2C73696E676C654C696E655065726C436F6D6D656E74733A2F232E2A242F676D2C646F75626C6551756F746564537472696E673A2F'';'||unistr('\000a')||
+'blog_install.i(104) := ''22285B5E5C5C225C6E5D7C5C5C2E292A222F672C73696E676C6551756F746564537472696E673A2F27285B5E5C5C275C6E5D7C5C5C';
+
+s:=s||'2E292A272F672C6D756C74694C696E65446F75626C6551756F746564537472696E673A6E65772058526567457870282722285B5E5C5C5C5C225D7C5C5C5C5C2E292A22272C22677322292C'';'||unistr('\000a')||
+'blog_install.i(105) := ''6D756C74694C696E6553696E676C6551756F746564537472696E673A6E65772058526567457870282227285B5E5C5C5C5C275D7C5C5C5C5C2E292A27222C22677322292C786D6C436F6D6D656E74733A2F28266C743B7C3C29212D2D5B5C735C535D2A3F2D2D282667743B7C3E292F6';
+
+s:=s||'76D2C75726C3A2F5C772B3A5C2F5C2F5B'';'||unistr('\000a')||
+'blog_install.i(106) := ''5C772D2E5C2F3F25263D3A403B235D2A2F672C706870536372697074546167733A7B6C6566743A2F28266C743B7C3C295C3F283F3A3D7C706870293F2F672C72696768743A2F5C3F282667743B7C3E292F672C656F663A21307D2C617370536372697074546167733A7B6C6566743A2F28266C743B7C3C29253D3F2F672C7269'';'||unistr('\000a')||
+'blog_install.i(107) := ''6768743A2F25282667743B7C3E292F677D2C736372697074536372697';
+
+s:=s||'074546167733A7B6C6566743A2F28266C743B7C3C295C732A7363726970742E2A3F282667743B7C3E292F67692C72696768743A2F28266C743B7C3C295C2F5C732A7363726970745C732A282667743B7C3E292F67697D7D2C746F6F6C6261723A7B6765'';'||unistr('\000a')||
+'blog_install.i(108) := ''7448746D6C3A66756E6374696F6E2874297B66756E6374696F6E207328742C6E297B72657475726E20652E746F6F6C6261722E676574427574746F6E48746D6C28742C6E2C652E636F6E6669672E737472696E67735B6E';
+
+s:=s||'5D297D766172206E3D273C64697620636C6173733D22746F6F6C626172223E272C723D652E746F6F6C'';'||unistr('\000a')||
+'blog_install.i(109) := ''6261722E6974656D732C693D722E6C6973743B666F7228766172206F3D303B6F3C692E6C656E6774683B6F2B2B296E2B3D28725B695B6F5D5D2E67657448746D6C7C7C732928742C695B6F5D293B72657475726E206E2B3D223C2F6469763E222C6E7D2C676574427574746F6E48746D6C3A66756E6374696F6E28652C742C6E'';'||unistr('\000a')||
+'blog_install.i(110) := ''297B7265';
+
+s:=s||'7475726E273C7370616E3E3C6120687265663D22232220636C6173733D22746F6F6C6261725F6974656D20636F6D6D616E645F272B742B2220222B742B27223E272B6E2B223C2F613E3C2F7370616E3E227D2C68616E646C65723A66756E6374696F6E2874297B66756E6374696F6E20692865297B76617220743D6E'';'||unistr('\000a')||
+'blog_install.i(111) := ''65772052656745787028652B225F285C5C772B2922292C6E3D742E657865632872293B72657475726E206E3F6E5B315D3A6E756C6C7D766172206E3D742E7';
+
+s:=s||'461726765742C723D6E2E636C6173734E616D657C7C22222C733D752863286E2C222E73796E746178686967686C69676874657222292E6964292C6F3D692822636F'';'||unistr('\000a')||
+'blog_install.i(112) := ''6D6D616E6422293B7326266F2626652E746F6F6C6261722E6974656D735B6F5D2E657865637574652873292C742E70726576656E7444656661756C7428297D2C6974656D733A7B6C6973743A5B22657870616E64536F75726365222C2268656C70225D2C657870616E64536F757263653A7B67657448746D6C';
+
+s:=s||'3A66756E637469'';'||unistr('\000a')||
+'blog_install.i(113) := ''6F6E2874297B696628742E676574506172616D2822636F6C6C617073652229213D312972657475726E22223B766172206E3D742E676574506172616D28227469746C6522293B72657475726E20652E746F6F6C6261722E676574427574746F6E48746D6C28742C22657870616E64536F75726365222C6E3F6E3A652E636F6E66'';'||unistr('\000a')||
+'blog_install.i(114) := ''69672E737472696E67732E657870616E64536F75726365297D2C657865637574653A66756E63';
+
+s:=s||'74696F6E2865297B76617220743D6128652E6964293B7228742C22636F6C6C617073656422297D7D2C68656C703A7B657865637574653A66756E6374696F6E2874297B766172206E3D6D2822222C225F626C616E6B222C353030'';'||unistr('\000a')||
+'blog_install.i(115) := ''2C3235302C227363726F6C6C626172733D3022292C723D6E2E646F63756D656E743B722E777269746528652E636F6E6669672E737472696E67732E61626F75744469616C6F67292C722E636C6F736528292C6E2E666F63757328297D7D7D7D2C6';
+
+s:=s||'6696E64456C656D656E74733A66756E6374696F6E28742C6E297B7661722072'';'||unistr('\000a')||
+'blog_install.i(116) := ''3D6E3F5B6E5D3A6928646F63756D656E742E676574456C656D656E747342795461674E616D6528652E636F6E6669672E7461674E616D6529292C733D652E636F6E6669672C6F3D5B5D3B732E75736553637269707454616773262628723D722E636F6E6361742844282929293B696628722E6C656E6774683D3D3D3029726574'';'||unistr('\000a')||
+'blog_install.i(117) := ''75726E206F3B666F72287661722';
+
+s:=s||'0753D303B753C722E6C656E6774683B752B2B297B76617220613D7B7461726765743A725B755D2C706172616D733A6428742C5328725B755D2E636C6173734E616D6529297D3B696628612E706172616D735B226272757368225D3D3D6E756C6C29636F6E74696E75653B6F2E707573682861'';'||unistr('\000a')||
+'blog_install.i(118) := ''297D72657475726E206F7D2C686967686C696768743A66756E6374696F6E28742C6E297B76617220723D746869732E66696E64456C656D656E747328742C6E292C693D22696E6E65';
+
+s:=s||'7248544D4C222C733D6E756C6C2C6F3D652E636F6E6669673B696628722E6C656E6774683D3D3D302972657475726E3B666F722876617220'';'||unistr('\000a')||
+'blog_install.i(119) := ''753D303B753C722E6C656E6774683B752B2B297B766172206E3D725B755D2C613D6E2E7461726765742C663D6E2E706172616D732C6C3D662E62727573682C633B6966286C3D3D6E756C6C29636F6E74696E75653B696628665B2268746D6C2D736372697074225D3D3D2274727565227C7C652E64656661756C74735B226874'';'||unistr('\000a')||
+'bl';
+
+s:=s||'og_install.i(120) := ''6D6C2D736372697074225D3D3D3129733D6E657720652E48746D6C536372697074286C292C6C3D2268746D6C736372697074223B656C73657B76617220683D62286C293B696628216829636F6E74696E75653B733D6E657720687D633D615B695D2C6F2E75736553637269707454616773262628633D50286329292C28612E74'';'||unistr('\000a')||
+'blog_install.i(121) := ''69746C657C7C222229213D2222262628662E7469746C653D612E7469746C65292C662E62727573683D6C2C732E696E6';
+
+s:=s||'9742866292C6E3D732E6765744469762863292C28612E69647C7C222229213D22222626286E2E69643D612E6964292C612E706172656E744E6F64652E7265706C6163654368696C64286E2C61297D7D2C'';'||unistr('\000a')||
+'blog_install.i(122) := ''616C6C3A66756E6374696F6E2874297B672877696E646F772C226C6F6164222C66756E6374696F6E28297B652E686967686C696768742874297D297D7D3B72657475726E20652E4D617463683D66756E6374696F6E28652C742C6E297B746869732E76616C75653D652C';
+
+s:=s||'746869732E696E6465783D742C746869732E6C656E67'';'||unistr('\000a')||
+'blog_install.i(123) := ''74683D652E6C656E6774682C746869732E6373733D6E2C746869732E62727573684E616D653D6E756C6C7D2C652E4D617463682E70726F746F747970652E746F537472696E673D66756E6374696F6E28297B72657475726E20746869732E76616C75657D2C652E48746D6C5363726970743D66756E6374696F6E2874297B6675'';'||unistr('\000a')||
+'blog_install.i(124) := ''6E6374696F6E206628652C74297B666F7228766172206E';
+
+s:=s||'3D303B6E3C652E6C656E6774683B6E2B2B29655B6E5D2E696E6465782B3D747D66756E6374696F6E206C28652C74297B76617220693D652E636F64652C733D5B5D2C6F3D722E72656765784C6973742C753D652E696E6465782B652E6C6566742E6C656E6774682C61'';'||unistr('\000a')||
+'blog_install.i(125) := ''3D722E68746D6C5363726970742C6C3B666F722876617220633D303B633C6F2E6C656E6774683B632B2B296C3D4D28692C6F5B635D292C66286C2C75292C733D732E636F6E636174286C293B612E6C65667';
+
+s:=s||'4213D6E756C6C2626652E6C656674213D6E756C6C2626286C3D4D28652E6C6566742C612E6C656674292C66286C2C'';'||unistr('\000a')||
+'blog_install.i(126) := ''652E696E646578292C733D732E636F6E636174286C29292C612E7269676874213D6E756C6C2626652E7269676874213D6E756C6C2626286C3D4D28652E72696768742C612E7269676874292C66286C2C652E696E6465782B655B305D2E6C617374496E6465784F6628652E726967687429292C733D732E636F6E636174286C29'';'||unistr('\000a')||
+'blog_install.i(127) :';
+
+s:=s||'= ''293B666F722876617220683D303B683C732E6C656E6774683B682B2B29735B685D2E62727573684E616D653D6E2E62727573684E616D653B72657475726E20737D766172206E3D622874292C722C693D6E657720652E627275736865732E586D6C2C733D6E756C6C2C6F3D746869732C753D226765744469762067657448746D'';'||unistr('\000a')||
+'blog_install.i(128) := ''6C20696E6974222E73706C697428222022293B6966286E3D3D6E756C6C2972657475726E3B723D6E6577206E3B666F722876617220613D303B';
+
+s:=s||'613C752E6C656E6774683B612B2B292866756E6374696F6E28297B76617220653D755B615D3B6F5B655D3D66756E6374696F6E28297B72657475726E20695B655D2E6170706C79'';'||unistr('\000a')||
+'blog_install.i(129) := ''28692C617267756D656E7473297D7D2928293B696628722E68746D6C5363726970743D3D6E756C6C297B7928652E636F6E6669672E737472696E67732E62727573684E6F7448746D6C5363726970742B74293B72657475726E7D692E72656765784C6973742E70757368287B72656765783A722';
+
+s:=s||'E68746D6C5363726970742E63'';'||unistr('\000a')||
+'blog_install.i(130) := ''6F64652C66756E633A6C7D297D2C652E486967686C6967687465723D66756E6374696F6E28297B7D2C652E486967686C6967687465722E70726F746F747970653D7B676574506172616D3A66756E6374696F6E28652C74297B766172206E3D746869732E706172616D735B655D3B72657475726E2076286E3D3D6E756C6C3F74'';'||unistr('\000a')||
+'blog_install.i(131) := ''3A6E297D2C6372656174653A66756E6374696F6E2865297B72657475726E20646';
+
+s:=s||'F63756D656E742E637265617465456C656D656E742865297D2C66696E644D6174636865733A66756E6374696F6E28652C74297B766172206E3D5B5D3B69662865213D6E756C6C29666F722876617220723D303B723C652E6C656E6774683B72'';'||unistr('\000a')||
+'blog_install.i(132) := ''2B2B29747970656F6620655B725D3D3D226F626A656374222626286E3D6E2E636F6E636174284D28742C655B725D2929293B72657475726E20746869732E72656D6F76654E65737465644D617463686573286E2E736F7274284F29';
+
+s:=s||'297D2C72656D6F76654E65737465644D6174636865733A66756E6374696F6E2865297B666F'';'||unistr('\000a')||
+'blog_install.i(133) := ''722876617220743D303B743C652E6C656E6774683B742B2B297B696628655B745D3D3D3D6E756C6C29636F6E74696E75653B766172206E3D655B745D2C723D6E2E696E6465782B6E2E6C656E6774683B666F722876617220693D742B313B693C6';
+
+wwv_flow_api.append_to_install_script(
+  p_id => 12275005924827304 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_script_clob => s);
+end;
+ 
+ 
+end;
+/
+
+ 
+begin
+ 
+declare
+    s varchar2(32767) := null;
+begin
+s:=s||'52E6C656E6774682626655B745D213D3D6E756C6C3B692B2B297B7661722073'';'||unistr('\000a')||
+'blog_install.i(134) := ''3D655B695D3B696628733D3D3D6E756C6C29636F6E74696E75653B696628732E696E6465783E7229627265616B3B732E696E6465783D3D6E2E696E6465782626732E6C656E6774683E6E2E6C656E6774683F655B745D3D6E756C6C3A732E696E6465783E3D6E2E696E6465782626732E696E6465783C72262628655B695D3D6E'';'||unistr('\000a')||
+'blog_install.i(135) := ''756C6C297D7D72657475726E206';
+
+s:=s||'57D2C6669677572654F75744C696E654E756D626572733A66756E6374696F6E2865297B76617220743D5B5D2C6E3D7061727365496E7428746869732E676574506172616D282266697273742D6C696E652229293B72657475726E207728652C66756E6374696F6E28652C72297B742E707573'';'||unistr('\000a')||
+'blog_install.i(136) := ''6828722B6E297D292C747D2C69734C696E65486967686C6967687465643A66756E6374696F6E2865297B76617220743D746869732E676574506172616D2822686967686C69676874';
+
+s:=s||'222C5B5D293B72657475726E20747970656F662074213D226F626A656374222626742E707573683D3D6E756C6C262628743D5B745D292C68'';'||unistr('\000a')||
+'blog_install.i(137) := ''28742C652E746F537472696E67282929213D2D317D2C6765744C696E6548746D6C3A66756E6374696F6E28652C742C6E297B76617220723D5B226C696E65222C226E756D626572222B742C22696E646578222B652C22616C74222B287425323D3D303F313A32292E746F537472696E6728295D3B72657475726E20746869732E'';'||unistr('\000a')||
+'bl';
+
+s:=s||'og_install.i(138) := ''69734C696E65486967686C6967687465642874292626722E707573682822686967686C69676874656422292C743D3D302626722E707573682822627265616B22292C273C64697620636C6173733D22272B722E6A6F696E28222022292B27223E272B6E2B223C2F6469763E227D2C6765744C696E654E756D6265727348746D6C'';'||unistr('\000a')||
+'blog_install.i(139) := ''3A66756E6374696F6E28742C6E297B76617220723D22222C693D732874292E6C656E6774682C6F3D7061727365496E7';
+
+s:=s||'428746869732E676574506172616D282266697273742D6C696E652229292C753D746869732E676574506172616D28227061642D6C696E652D6E756D6265727322293B753D3D313F753D286F2B692D3129'';'||unistr('\000a')||
+'blog_install.i(140) := ''2E746F537472696E6728292E6C656E6774683A69734E614E2875293D3D31262628753D30293B666F722876617220613D303B613C693B612B2B297B76617220663D6E3F6E5B615D3A6F2B612C743D663D3D303F652E636F6E6669672E73706163653A5428662C75293B72';
+
+s:=s||'2B3D746869732E6765744C696E6548746D6C28612C66'';'||unistr('\000a')||
+'blog_install.i(141) := ''2C74297D72657475726E20727D2C676574436F64654C696E657348746D6C3A66756E6374696F6E28742C6E297B743D4C2874293B76617220723D732874292C693D746869732E676574506172616D28227061642D6C696E652D6E756D6265727322292C6F3D7061727365496E7428746869732E676574506172616D2822666972'';'||unistr('\000a')||
+'blog_install.i(142) := ''73742D6C696E652229292C743D22222C753D746869732E';
+
+s:=s||'676574506172616D2822627275736822293B666F722876617220613D303B613C722E6C656E6774683B612B2B297B76617220663D725B615D2C6C3D2F5E28266E6273703B7C5C73292B2F2E657865632866292C633D6E756C6C2C683D6E3F6E5B615D3A6F2B613B6C21'';'||unistr('\000a')||
+'blog_install.i(143) := ''3D6E756C6C262628633D6C5B305D2E746F537472696E6728292C663D662E73756273747228632E6C656E677468292C633D632E7265706C616365282220222C652E636F6E6669672E737061636529292C663';
+
+s:=s||'D4C2866292C662E6C656E6774683D3D30262628663D652E636F6E6669672E7370616365292C742B3D746869732E67'';'||unistr('\000a')||
+'blog_install.i(144) := ''65744C696E6548746D6C28612C682C2863213D6E756C6C3F273C636F646520636C6173733D22272B752B2720737061636573223E272B632B223C2F636F64653E223A2222292B66297D72657475726E20747D2C6765745469746C6548746D6C3A66756E6374696F6E2865297B72657475726E20653F223C63617074696F6E3E22'';'||unistr('\000a')||
+'blog_install.i(145) :';
+
+s:=s||'= ''2B652B223C2F63617074696F6E3E223A22227D2C6765744D61746368657348746D6C3A66756E6374696F6E28652C74297B66756E6374696F6E20732865297B76617220743D653F652E62727573684E616D657C7C693A693B72657475726E20743F742B2220223A22227D766172206E3D302C723D22222C693D746869732E6765'';'||unistr('\000a')||
+'blog_install.i(146) := ''74506172616D28226272757368222C2222293B666F7228766172206F3D303B6F3C742E6C656E6774683B6F2B2B297B76617220753D745B6F5D';
+
+s:=s||'2C613B696628753D3D3D6E756C6C7C7C752E6C656E6774683D3D3D3029636F6E74696E75653B613D732875292C722B3D7828652E737562737472286E2C752E696E6465782D6E29'';'||unistr('\000a')||
+'blog_install.i(147) := ''2C612B22706C61696E22292B7828752E76616C75652C612B752E637373292C6E3D752E696E6465782B752E6C656E6774682B28752E6F66667365747C7C30297D72657475726E20722B3D7828652E737562737472286E292C7328292B22706C61696E22292C727D2C67657448746D6C3A66756E6';
+
+s:=s||'374696F6E2874297B76617220'';'||unistr('\000a')||
+'blog_install.i(148) := ''6E3D22222C723D5B2273796E746178686967686C696768746572225D2C692C732C753B72657475726E20746869732E676574506172616D28226C6967687422293D3D31262628746869732E706172616D732E746F6F6C6261723D746869732E706172616D732E6775747465723D2131292C636C6173734E616D653D2273796E74'';'||unistr('\000a')||
+'blog_install.i(149) := ''6178686967686C696768746572222C746869732E676574506172616D2822636F6';
+
+s:=s||'C6C6170736522293D3D312626722E707573682822636F6C6C617073656422292C286775747465723D746869732E676574506172616D28226775747465722229293D3D302626722E7075736828226E6F67757474657222292C722E7075736828'';'||unistr('\000a')||
+'blog_install.i(150) := ''746869732E676574506172616D2822636C6173732D6E616D652229292C722E7075736828746869732E676574506172616D282262727573682229292C743D452874292E7265706C616365282F5C722F672C222022292C693D746869';
+
+s:=s||'732E676574506172616D28227461622D73697A6522292C743D746869732E67657450617261'';'||unistr('\000a')||
+'blog_install.i(151) := ''6D2822736D6172742D7461627322293D3D313F4328742C69293A4E28742C69292C746869732E676574506172616D2822756E696E64656E742229262628743D41287429292C677574746572262628753D746869732E6669677572654F75744C696E654E756D62657273287429292C733D746869732E66696E644D617463686573'';'||unistr('\000a')||
+'blog_install.i(152) := ''28746869732E7265';
+
+s:=s||'6765784C6973742C74292C6E3D746869732E6765744D61746368657348746D6C28742C73292C6E3D746869732E676574436F64654C696E657348746D6C286E2C75292C746869732E676574506172616D28226175746F2D6C696E6B7322292626286E3D5F286E29292C747970656F66206E6176696761746F'';'||unistr('\000a')||
+'blog_install.i(153) := ''72213D22756E646566696E65642226266E6176696761746F722E757365724167656E7426266E6176696761746F722E757365724167656E742E6D61746368282F4D534';
+
+s:=s||'9452F292626722E707573682822696522292C6E3D273C6469762069643D22272B6F28746869732E6964292B272220636C6173733D22272B722E6A6F696E'';'||unistr('\000a')||
+'blog_install.i(154) := ''28222022292B27223E272B28746869732E676574506172616D2822746F6F6C62617222293F652E746F6F6C6261722E67657448746D6C2874686973293A2222292B273C7461626C6520626F726465723D2230222063656C6C70616464696E673D2230222063656C6C73706163696E673D2230223E272B746869732E6765';
+
+s:=s||'745469'';'||unistr('\000a')||
+'blog_install.i(155) := ''746C6548746D6C28746869732E676574506172616D28227469746C652229292B223C74626F64793E222B223C74723E222B286775747465723F273C746420636C6173733D22677574746572223E272B746869732E6765744C696E654E756D6265727348746D6C2874292B223C2F74643E223A2222292B273C746420636C617373'';'||unistr('\000a')||
+'blog_install.i(156) := ''3D22636F6465223E272B273C64697620636C6173733D22636F6E7461696E6572223E272B6E2B223C2F64';
+
+s:=s||'69763E222B223C2F74643E222B223C2F74723E222B223C2F74626F64793E222B223C2F7461626C653E222B223C2F6469763E222C6E7D2C6765744469763A66756E6374696F6E2874297B743D3D3D6E756C6C26262874'';'||unistr('\000a')||
+'blog_install.i(157) := ''3D2222292C746869732E636F64653D743B766172206E3D746869732E637265617465282264697622293B72657475726E206E2E696E6E657248544D4C3D746869732E67657448746D6C2874292C746869732E676574506172616D2822746F6F6C626172222';
+
+s:=s||'9262667286C286E2C222E746F6F6C62617222292C22636C69636B22'';'||unistr('\000a')||
+'blog_install.i(158) := ''2C652E746F6F6C6261722E68616E646C6572292C746869732E676574506172616D2822717569636B2D636F64652229262667286C286E2C222E636F646522292C2264626C636C69636B222C48292C6E7D2C696E69743A66756E6374696F6E2874297B746869732E69643D7028292C662874686973292C746869732E706172616D'';'||unistr('\000a')||
+'blog_install.i(159) := ''733D6428652E64656661756C74732C747C7';
+
+s:=s||'C7B7D292C746869732E676574506172616D28226C6967687422293D3D31262628746869732E706172616D732E746F6F6C6261723D746869732E706172616D732E6775747465723D2131297D2C6765744B6579776F7264733A66756E6374696F6E2865297B72657475726E20653D65'';'||unistr('\000a')||
+'blog_install.i(160) := ''2E7265706C616365282F5E5C732B7C5C732B242F672C2222292E7265706C616365282F5C732B2F672C227C22292C225C5C62283F3A222B652B22295C5C62227D2C666F7248746D6C53637269';
+
+s:=s||'70743A66756E6374696F6E2865297B76617220743D7B656E643A652E72696768742E736F757263657D3B652E656F66262628742E'';'||unistr('\000a')||
+'blog_install.i(161) := ''656E643D22283F3A283F3A222B742E656E642B22297C242922292C746869732E68746D6C5363726970743D7B6C6566743A7B72656765783A652E6C6566742C6373733A22736372697074227D2C72696768743A7B72656765783A652E72696768742C6373733A22736372697074227D2C636F64653A6E65772058526567457870'';'||unistr('\000a')||
+'blog_insta';
+
+s:=s||'ll.i(162) := ''2822283F3C6C6566743E222B652E6C6566742E736F757263652B2229222B22283F3C636F64653E2E2A3F29222B22283F3C72696768743E222B742E656E642B2229222C2273676922297D7D7D2C657D28293B747970656F66206578706F727473213D22756E646566696E6564223F6578706F7274732E53796E74617848696768'';'||unistr('\000a')||
+'blog_install.i(163) := ''6C6967687465723D53796E746178486967686C6967687465723A6E756C6C0D0A2F2A207365742064656661756C7473202A2F0D0';
+
+s:=s||'A53796E746178486967686C6967687465722E64656661756C74735B22746F6F6C626172225D3D66616C73653B0D0A2F2A2073684272757368506C61696E2E6A73202A2F0D0A3B2866756E6374'';'||unistr('\000a')||
+'blog_install.i(164) := ''696F6E28297B53796E746178486967686C6967687465723D53796E746178486967686C696768746572207C7C2028747970656F66207265717569726520213D3D2027756E646566696E6564273F207265717569726528277368436F726527292E53796E746178486967686C696768';
+
+s:=s||'746572203A206E756C6C293B66756E637469'';'||unistr('\000a')||
+'blog_install.i(165) := ''6F6E20427275736828297B7D3B42727573682E70726F746F747970653D6E65772053796E746178486967686C6967687465722E486967686C69676874657228293B42727573682E616C69617365733D5B2774657874272C27706C61696E275D3B53796E746178486967686C6967687465722E627275736865732E506C61696E3D'';'||unistr('\000a')||
+'blog_install.i(166) := ''42727573683B747970656F66286578706F72747329213D27756E64';
+
+s:=s||'6566696E6564273F6578706F7274732E42727573683D42727573683A6E756C6C3B7D2928293B0D0A2F2A0D0A202A206A517565727920706C7567696E3A206669656C6453656C656374696F6E202D2076302E312E31202D206C617374206368616E67653A20'';'||unistr('\000a')||
+'blog_install.i(167) := ''323030362D31322D31360D0A202A20286329203230303620416C6578204272656D203C616C657840307861622E63643E202D20687474703A2F2F626C6F672E307861622E63640D0A202A2F0D0A2866756E6374696F6';
+
+s:=s||'E2863297B632E65616368287B67657453656C656374696F6E3A66756E6374696F6E28297B76617220623D'';'||unistr('\000a')||
+'blog_install.i(168) := ''746869732E6A71756572793F746869735B305D3A746869733B72657475726E282273656C656374696F6E537461727422696E2062262666756E6374696F6E28297B76617220613D622E73656C656374696F6E456E642D622E73656C656374696F6E53746172743B72657475726E7B73746172743A622E73656C656374696F6E53'';'||unistr('\000a')||
+'blog_install.i(169) := ''74617';
+
+s:=s||'2742C656E643A622E73656C656374696F6E456E642C6C656E6774683A612C746578743A622E76616C75652E73756273747228622E73656C656374696F6E53746172742C61297D7D7C7C646F63756D656E742E73656C656374696F6E262666756E6374696F6E28297B622E666F63757328293B76617220613D646F63756D'';'||unistr('\000a')||
+'blog_install.i(170) := ''656E742E73656C656374696F6E2E63726561746552616E676528293B6966286E756C6C3D3D3D612972657475726E7B73746172743A302C656E643A622E';
+
+s:=s||'76616C75652E6C656E6774682C6C656E6774683A307D3B76617220643D622E6372656174655465787452616E676528292C633D642E6475706C696361746528293B642E'';'||unistr('\000a')||
+'blog_install.i(171) := ''6D6F7665546F426F6F6B6D61726B28612E676574426F6F6B6D61726B2829293B632E736574456E64506F696E742822456E64546F5374617274222C64293B72657475726E7B73746172743A632E746578742E6C656E6774682C20656E643A632E746578742E6C656E6774682B612E746578742E6C656E677';
+
+s:=s||'4682C6C656E677468'';'||unistr('\000a')||
+'blog_install.i(172) := ''3A612E746578742E6C656E6774682C746578743A612E746578747D7D7C7C66756E6374696F6E28297B72657475726E206E756C6C7D2928297D2C7265706C61636553656C656374696F6E3A66756E6374696F6E2862297B76617220613D746869732E6A71756572793F746869735B305D3A746869732C643D627C7C22223B7265'';'||unistr('\000a')||
+'blog_install.i(173) := ''7475726E282273656C656374696F6E537461727422696E2061262666756E6374696F6E282';
+
+s:=s||'97B612E76616C75653D612E76616C75652E73756273747228302C612E73656C656374696F6E5374617274292B642B612E76616C75652E73756273747228612E73656C656374696F6E456E642C612E76616C75652E6C656E67746829'';'||unistr('\000a')||
+'blog_install.i(174) := ''3B72657475726E20746869737D7C7C646F63756D656E742E73656C656374696F6E262666756E6374696F6E28297B612E666F63757328293B646F63756D656E742E73656C656374696F6E2E63726561746552616E676528292E746578743D64';
+
+s:=s||'3B72657475726E20746869737D7C7C66756E6374696F6E28297B612E76616C7565'';'||unistr('\000a')||
+'blog_install.i(175) := ''2B3D643B72657475726E20632861297D2928297D7D2C66756E6374696F6E2862297B632E666E5B625D3D746869737D297D29286A5175657279293B0D0A66756E6374696F6E206164645374796C6554616728622C63297B76617220643D223C222B622B223E222C653D223C2F222B622B223E222C613D24282478286329292C66'';'||unistr('\000a')||
+'blog_install.i(176) := ''3D612E67657453656C656374';
+
+s:=s||'696F6E28292E746578743B612E7265706C61636553656C656374696F6E28642B662B65293B612E666F63757328297D3B0D0A2F2A210D0A09536C696D626F782076322E3035202D2054686520756C74696D617465206C69676874776569676874204C69676874626F7820636C6F6E6520666F7220'';'||unistr('\000a')||
+'blog_install.i(177) := ''6A51756572790D0A0928632920323030372D32303133204368726973746F706865204265796C73203C687474703A2F2F7777772E6469676974616C69612E62653E0D0A094D495';
+
+s:=s||'42D7374796C65206C6963656E73652E0D0A2A2F0D0A2866756E6374696F6E2877297B76617220453D772877696E646F77292C752C662C463D2D'';'||unistr('\000a')||
+'blog_install.i(178) := ''312C6E2C782C442C762C792C4C2C722C6D3D2177696E646F772E584D4C48747470526571756573742C733D5B5D2C6C3D646F63756D656E742E646F63756D656E74456C656D656E742C6B3D7B7D2C743D6E657720496D61676528292C4A3D6E657720496D61676528292C482C612C672C702C492C642C472C632C412C4B3B7728'';';
+
+s:=s||''||unistr('\000a')||
+'blog_install.i(179) := ''66756E6374696F6E28297B772822626F647922292E617070656E642877285B483D7728273C6469762069643D226C624F7665726C617922202F3E27292E636C69636B2843295B305D2C613D7728273C6469762069643D226C6243656E74657222202F3E27295B305D2C473D7728273C6469762069643D226C62426F74746F6D43'';'||unistr('\000a')||
+'blog_install.i(180) := ''6F6E7461696E657222202F3E27295B305D5D292E6373732822646973706C6179222C226E6F6E652229293B673D77';
+
+s:=s||'28273C6469762069643D226C62496D61676522202F3E27292E617070656E64546F2861292E617070656E6428703D7728273C646976207374796C653D22706F736974696F6E3A2072656C61746976653B2220'';'||unistr('\000a')||
+'blog_install.i(181) := ''2F3E27292E617070656E64285B493D7728273C612069643D226C62507265764C696E6B2220687265663D222322202F3E27292E636C69636B2842295B305D2C643D7728273C612069643D226C624E6578744C696E6B2220687265663D222322202F3E27292E636C696';
+
+s:=s||'36B2865295B305D5D295B305D295B305D3B633D7728273C'';'||unistr('\000a')||
+'blog_install.i(182) := ''6469762069643D226C62426F74746F6D22202F3E27292E617070656E64546F2847292E617070656E64285B7728273C612069643D226C62436C6F73654C696E6B2220687265663D222322202F3E27292E636C69636B2843295B305D2C413D7728273C6469762069643D226C6243617074696F6E22202F3E27295B305D2C4B3D77'';'||unistr('\000a')||
+'blog_install.i(183) := ''28273C6469762069643D226C624E756D62657222202';
+
+s:=s||'F3E27295B305D2C7728273C646976207374796C653D22636C6561723A20626F74683B22202F3E27295B305D5D295B305D7D293B772E736C696D626F783D66756E6374696F6E284F2C4E2C4D297B753D772E657874656E64287B6C6F6F703A66616C73652C6F7665726C61'';'||unistr('\000a')||
+'blog_install.i(184) := ''794F7061636974793A302E382C6F7665726C6179466164654475726174696F6E3A3430302C726573697A654475726174696F6E3A3430302C726573697A65456173696E673A227377696E67222C696E69';
+
+s:=s||'7469616C57696474683A3235302C696E697469616C4865696768743A3235302C696D616765466164654475726174696F'';'||unistr('\000a')||
+'blog_install.i(185) := ''6E3A3430302C63617074696F6E416E696D6174696F6E4475726174696F6E3A3430302C636F756E746572546578743A22496D616765207B787D206F66207B797D222C636C6F73654B6579733A5B32372C38382C36375D2C70726576696F75734B6579733A5B33372C38305D2C6E6578744B6579733A5B33392C37385D7D2C4D29'';'||unistr('\000a')||
+'blog_install.i(186';
+
+s:=s||') := ''3B696628747970656F66204F3D3D22737472696E6722297B4F3D5B5B4F2C4E5D5D3B4E3D307D793D452E7363726F6C6C546F7028292B28452E68656967687428292F32293B4C3D752E696E697469616C57696474683B723D752E696E697469616C4865696768743B772861292E637373287B746F703A4D6174682E6D61782830'';'||unistr('\000a')||
+'blog_install.i(187) := ''2C792D28722F3229292C77696474683A4C2C6865696768743A722C6D617267696E4C6566743A2D4C2F327D292E73686F7728293B763D6D7';
+
+s:=s||'C7C28482E63757272656E745374796C65262628482E63757272656E745374796C652E706F736974696F6E213D2266697865642229293B69662876297B482E7374796C652E706F7369'';'||unistr('\000a')||
+'blog_install.i(188) := ''74696F6E3D226162736F6C757465227D772848292E63737328226F706163697479222C752E6F7665726C61794F706163697479292E66616465496E28752E6F7665726C6179466164654475726174696F6E293B7A28293B6A2831293B663D4F3B752E6C6F6F703D752E6C6F6F70262628662E';
+
+s:=s||'6C656E6774683E31293B72657475'';'||unistr('\000a')||
+'blog_install.i(189) := ''726E2062284E297D3B772E666E2E736C696D626F783D66756E6374696F6E284D2C502C4F297B503D507C7C66756E6374696F6E2851297B72657475726E5B512E687265662C512E7469746C655D7D3B4F3D4F7C7C66756E6374696F6E28297B72657475726E20747275657D3B766172204E3D746869733B72657475726E204E2E'';'||unistr('\000a')||
+'blog_install.i(190) := ''756E62696E642822636C69636B22292E636C69636B2866756E6374696F6E28';
+
+s:=s||'297B76617220533D746869732C553D302C542C513D302C523B543D772E67726570284E2C66756E6374696F6E28572C56297B72657475726E204F2E63616C6C28532C572C56297D293B666F7228523D542E6C656E6774683B513C523B2B2B51297B'';'||unistr('\000a')||
+'blog_install.i(191) := ''696628545B515D3D3D53297B553D517D545B515D3D5028545B515D2C51297D72657475726E20772E736C696D626F7828542C552C4D297D297D3B66756E6374696F6E207A28297B766172204E3D452E7363726F6C6C4C6566742';
+
+s:=s||'8292C4D3D452E776964746828293B77285B612C475D292E63737328226C656674222C4E2B284D'';'||unistr('\000a')||
+'blog_install.i(192) := ''2F3229293B69662876297B772848292E637373287B6C6566743A4E2C746F703A452E7363726F6C6C546F7028292C77696474683A4D2C6865696768743A452E68656967687428297D297D7D66756E6374696F6E206A284D297B6966284D297B7728226F626A65637422292E616464286D3F2273656C656374223A22656D626564'';'||unistr('\000a')||
+'blog_install.i(193) := ''22292E6561636';
+
+s:=s||'82866756E6374696F6E284F2C50297B735B4F5D3D5B502C502E7374796C652E7669736962696C6974795D3B502E7374796C652E7669736962696C6974793D2268696464656E227D297D656C73657B772E6561636828732C66756E6374696F6E284F2C50297B505B305D2E7374796C652E7669736962696C6974'';'||unistr('\000a')||
+'blog_install.i(194) := ''793D505B315D7D293B733D5B5D7D766172204E3D4D3F2262696E64223A22756E62696E64223B455B4E5D28227363726F6C6C20726573697A65222C7A293B772864';
+
+s:=s||'6F63756D656E74295B4E5D28226B6579646F776E222C6F297D66756E6374696F6E206F284F297B766172204E3D4F2E77686963682C4D3D772E696E41727261'';'||unistr('\000a')||
+'blog_install.i(195) := ''793B72657475726E284D284E2C752E636C6F73654B657973293E3D30293F4328293A284D284E2C752E6E6578744B657973293E3D30293F6528293A284D284E2C752E70726576696F75734B657973293E3D30293F4228293A6E756C6C7D66756E6374696F6E204228297B72657475726E20622878297D66756E63746';
+
+s:=s||'96F6E2065'';'||unistr('\000a')||
+'blog_install.i(196) := ''28297B72657475726E20622844297D66756E6374696F6E2062284D297B6966284D3E3D30297B463D4D3B6E3D665B465D5B305D3B783D28467C7C28752E6C6F6F703F662E6C656E6774683A3029292D313B443D2828462B312925662E6C656E677468297C7C28752E6C6F6F703F303A2D31293B7128293B612E636C6173734E61'';'||unistr('\000a')||
+'blog_install.i(197) := ''6D653D226C624C6F6164696E67223B6B3D6E657720496D61676528293B6B2E6F6E6C6F61643D693B6';
+
+s:=s||'B2E7372633D6E7D72657475726E2066616C73657D66756E6374696F6E206928297B612E636C6173734E616D653D22223B772867292E637373287B6261636B67726F756E64496D6167653A2275726C28222B6E2B2229222C'';'||unistr('\000a')||
+'blog_install.i(198) := ''7669736962696C6974793A2268696464656E222C646973706C61793A22227D293B772870292E7769647468286B2E7769647468293B77285B702C492C645D292E686569676874286B2E686569676874293B772841292E68746D6C28665B465D5B315D7C';
+
+s:=s||'7C2222293B77284B292E68746D6C28282828662E6C656E6774683E3129'';'||unistr('\000a')||
+'blog_install.i(199) := ''2626752E636F756E74657254657874297C7C2222292E7265706C616365282F7B787D2F2C462B31292E7265706C616365282F7B797D2F2C662E6C656E67746829293B696628783E3D30297B742E7372633D665B785D5B305D7D696628443E3D30297B4A2E7372633D665B445D5B305D7D4C3D672E6F666673657457696474683B'';'||unistr('\000a')||
+'blog_install.i(200) := ''723D672E6F6666736574486569676874';
+
+s:=s||'3B766172204D3D4D6174682E6D617828302C792D28722F3229293B696628612E6F6666736574486569676874213D72297B772861292E616E696D617465287B6865696768743A722C746F703A4D7D2C752E726573697A654475726174696F6E2C752E726573697A65456173696E67297D'';'||unistr('\000a')||
+'blog_install.i(201) := ''696628612E6F66667365745769647468213D4C297B772861292E616E696D617465287B77696474683A4C2C6D617267696E4C6566743A2D4C2F327D2C752E726573697A654475726174696';
+
+s:=s||'F6E2C752E726573697A65456173696E67297D772861292E71756575652866756E6374696F6E28297B772847292E637373287B776964'';'||unistr('\000a')||
+'blog_install.i(202) := ''74683A4C2C746F703A4D2B722C6D617267696E4C6566743A2D4C2F322C7669736962696C6974793A2268696464656E222C646973706C61793A22227D293B772867292E637373287B646973706C61793A226E6F6E65222C7669736962696C6974793A22222C6F7061636974793A22227D292E66616465496E28752E696D616765'';'||unistr('\000a')||
+'blog_in';
+
+s:=s||'stall.i(203) := ''466164654475726174696F6E2C68297D297D66756E6374696F6E206828297B696628783E3D30297B772849292E73686F7728297D696628443E3D30297B772864292E73686F7728297D772863292E63737328226D617267696E546F70222C2D632E6F6666736574486569676874292E616E696D617465287B6D617267696E546F'';'||unistr('\000a')||
+'blog_install.i(204) := ''703A307D2C752E63617074696F6E416E696D6174696F6E4475726174696F6E293B472E7374796C652E7669736962696C6974';
+
+s:=s||'793D22227D66756E6374696F6E207128297B6B2E6F6E6C6F61643D6E756C6C3B6B2E7372633D742E7372633D4A2E7372633D6E3B77285B612C672C635D292E73746F702874727565293B77285B49'';'||unistr('\000a')||
+'blog_install.i(205) := ''2C642C672C475D292E6869646528297D66756E6374696F6E204328297B696628463E3D30297B7128293B463D783D443D2D313B772861292E6869646528293B772848292E73746F7028292E666164654F757428752E6F7665726C6179466164654475726174696F6E2C6A297D7';
+
+s:=s||'2657475726E2066616C73657D7D29286A517565'';'||unistr('\000a')||
+'blog_install.i(206) := ''7279293B0D0A2F2A0D0A202A204261736963206A517565727920536C6964657220706C75672D696E20762E312E330D0A202A0D0A202A20687474703A2F2F7777772E62617369632D736C696465722E636F6D0D0A202A0D0A202A20417574686F726564206279204A6F686E20436F62620D0A202A20687474703A2F2F7777772E'';'||unistr('\000a')||
+'blog_install.i(207) := ''6A6F686E636F62622E6E616D650D0A202A20406A6F686E30353';
+
+s:=s||'1340D0A202A0D0A202A20436F7079726967687420323031312C204A6F686E20436F62620D0A202A204C6963656E73653A20474E552047656E6572616C205075626C6963204C6963656E73652C2076657273696F6E2033202847504C2D332E30290D0A202A2068'';'||unistr('\000a')||
+'blog_install.i(208) := ''7474703A2F2F7777772E6F70656E736F757263652E6F72672F6C6963656E7365732F67706C2D332E302E68746D6C0D0A202A0D0A202A2F2866756E6374696F6E2865297B2275736520737472696374223B652E66';
+
+s:=s||'6E2E626A71733D66756E6374696F6E2874297B766172206E3D7B77696474683A3730302C6865696768743A33'';'||unistr('\000a')||
+'blog_install.i(209) := ''30302C616E696D747970653A2266616465222C616E696D6475726174696F6E3A3435302C616E696D73706565643A3465332C6175746F6D617469633A21302C73686F77636F6E74726F6C733A21302C63656E746572636F6E74726F6C733A21302C6E657874746578743A224E657874222C70726576746578743A225072657622'';'||unistr('\000a')||
+'blog_install.i(210) := ''2C';
+
+s:=s||'73686F776D61726B6572733A21302C63656E7465726D61726B6572733A21302C6B6579626F6172646E61763A21302C686F76657270617573653A21302C75736563617074696F6E733A21302C72616E646F6D73746172743A21312C726573706F6E736976653A21317D2C723D652E657874656E64287B7D2C6E2C74292C693D'';'||unistr('\000a')||
+'blog_install.i(211) := ''746869732C733D692E66696E642822756C2E626A717322292C6F3D732E6368696C6472656E28226C6922292C753D6E756C6C2C613D6E756C6C2C663';
+
+s:=s||'D6E756C6C2C6C3D6E756C6C2C633D6E756C6C2C683D6E756C6C2C703D6E756C6C2C643D6E756C6C2C763D7B736C696465636F756E743A6F2E6C656E6774682C616E696D61'';'||unistr('\000a')||
+'blog_install.i(212) := ''74696E673A21312C7061757365643A21312C63757272656E74736C6964653A312C6E657874736C6964653A302C63757272656E74696E6465783A302C6E657874696E6465783A302C696E74657276616C3A6E756C6C7D2C6D3D7B77696474683A6E756C6C2C6865696768743A6E756C6C2C726174696F';
+
+s:=s||'3A6E756C6C7D2C673D7B'';'||unistr('\000a')||
+'blog_install.i(213) := ''6677643A22666F7277617264222C707265763A2270726576696F7573227D2C793D66756E6374696F6E28297B6F2E616464436C6173732822626A71732D736C69646522293B722E726573706F6E736976653F6228293A4528293B696628762E736C696465636F756E743E31297B722E72616E646F6D737461727426264C28293B'';'||unistr('\000a')||
+'blog_install.i(214) := ''722E73686F77636F6E74726F6C7326267828293B722E73686F776D61726B6572732626';
+
+s:=s||'5428293B722E6B6579626F6172646E617626264E28293B722E686F76657270617573652626722E6175746F6D6174696326264328293B722E616E696D747970653D3D3D22736C6964652226265328297D722E75736563617074696F6E73'';'||unistr('\000a')||
+'blog_install.i(215) := ''26266B28293B696628722E616E696D747970653D3D3D22736C69646522262621722E72616E646F6D7374617274297B762E63757272656E74696E6465783D313B762E63757272656E74736C6964653D327D732E73686F7728293B6F2E657';
+
+s:=s||'128762E63757272656E74696E646578292E73686F7728293B722E6175746F6D617469'';'||unistr('\000a')||
+'blog_install.i(216) := ''63262628762E696E74657276616C3D736574496E74657276616C2866756E6374696F6E28297B4F28672E6677642C2131297D2C722E616E696D737065656429297D2C623D66756E6374696F6E28297B6D2E77696474683D692E6F75746572576964746828293B6D2E726174696F3D6D2E77696474682F722E77696474682C6D2E'';'||unistr('\000a')||
+'blog_install.i(217) := ''6865696768743D722E686';
+
+s:=s||'5696768742A6D2E726174696F3B696628722E616E696D747970653D3D3D226661646522297B6F2E637373287B6865696768743A722E6865696768742C77696474683A2231303025227D293B6F2E6368696C6472656E2822696D6722292E637373287B6865696768743A722E6865696768742C776964'';'||unistr('\000a')||
+'blog_install.i(218) := ''74683A2231303025227D293B732E637373287B6865696768743A722E6865696768742C77696474683A2231303025227D293B692E637373287B6865696768743A722E686569';
+
+s:=s||'6768742C226D61782D7769647468223A722E77696474682C706F736974696F6E3A2272656C6174697665227D293B6966286D2E77696474683C722E'';'||unistr('\000a')||
+'blog_install.i(219) := ''7769647468297B6F2E637373287B6865696768743A6D2E6865696768747D293B6F2E6368696C6472656E2822696D6722292E637373287B6865696768743A6D2E6865696768747D293B732E637373287B6865696768743A6D2E6865696768747D293B692E637373287B6865696768743A6D2E6865696768747D297D652877696';
+
+s:=s||'E'';'||unistr('\000a')||
+'blog_install.i(220) := ''646F77292E726573697A652866756E6374696F6E28297B6D2E77696474683D692E6F75746572576964746828293B6D2E726174696F3D6D2E77696474682F722E77696474682C6D2E6865696768743D722E6865696768742A6D2E726174696F3B6F2E637373287B6865696768743A6D2E6865696768747D293B6F2E6368696C64'';'||unistr('\000a')||
+'blog_install.i(221) := ''72656E2822696D6722292E637373287B6865696768743A6D2E6865696768747D293B732E637373287B6865696';
+
+s:=s||'768743A6D2E6865696768747D293B692E637373287B6865696768743A6D2E6865696768747D297D297D696628722E616E696D747970653D3D3D22736C69646522297B6F2E637373287B6865696768743A722E68'';'||unistr('\000a')||
+'blog_install.i(222) := ''65696768742C77696474683A722E77696474687D293B6F2E6368696C6472656E2822696D6722292E637373287B6865696768743A722E6865696768742C77696474683A722E77696474687D293B732E637373287B6865696768743A722E6865696768742C776964';
+
+s:=s||'74683A722E77696474682A722E736C696465636F756E747D29'';'||unistr('\000a')||
+'blog_install.i(223) := ''3B692E637373287B6865696768743A722E6865696768742C226D61782D7769647468223A722E77696474682C706F736974696F6E3A2272656C6174697665227D293B6966286D2E77696474683C722E7769647468297B6F2E637373287B6865696768743A6D2E6865696768747D293B6F2E6368696C6472656E2822696D672229'';'||unistr('\000a')||
+'blog_install.i(224) := ''2E637373287B6865696768743A6D2E6865696768';
+
+s:=s||'747D293B732E637373287B6865696768743A6D2E6865696768747D293B692E637373287B6865696768743A6D2E6865696768747D297D652877696E646F77292E726573697A652866756E6374696F6E28297B6D2E77696474683D692E6F75746572576964746828292C6D2E72'';'||unistr('\000a')||
+'blog_install.i(225) := ''6174696F3D6D2E77696474682F722E77696474682C6D2E6865696768743D722E6865696768742A6D2E726174696F3B6F2E637373287B6865696768743A6D2E6865696768742C77696474683A6D2E7';
+
+s:=s||'7696474687D293B6F2E6368696C6472656E2822696D6722292E637373287B6865696768743A6D2E6865696768742C776964'';'||unistr('\000a')||
+'blog_install.i(226) := ''74683A6D2E77696474687D293B732E637373287B6865696768743A6D2E6865696768742C77696474683A6D2E77696474682A722E736C696465636F756E747D293B692E637373287B6865696768743A6D2E6865696768747D293B682E637373287B6865696768743A6D2E6865696768742C77696474683A6D2E77696474687D29'';'||unistr('\000a')||
+'blog_install.i(';
+
+s:=s||'227) := ''3B772866756E6374696F6E28297B4F2821312C762E63757272656E74736C696465297D2C3230302C22736F6D6520756E6971756520737472696E6722297D297D7D2C773D66756E6374696F6E28297B76617220653D7B7D3B72657475726E2066756E6374696F6E28742C6E2C72297B727C7C28723D22446F6E27742063616C6C'';'||unistr('\000a')||
+'blog_install.i(228) := ''207468697320747769636520776974686F7574206120756E69717565496422293B655B725D2626636C65617254696D656F757428655B';
+
+s:=s||'725D293B655B725D3D73657454696D656F757428742C6E297D7D28292C453D66756E6374696F6E28297B6F2E637373287B6865696768743A722E6865696768742C77696474683A722E77'';'||unistr('\000a')||
+'blog_install.i(229) := ''696474687D293B732E637373287B6865696768743A722E6865696768742C77696474683A722E77696474687D293B692E637373287B6865696768743A722E6865696768742C77696474683A722E77696474682C706F736974696F6E3A2272656C6174697665227D297D2C533D66756E637';
+
+s:=s||'4696F6E28297B703D6F2E6571283029'';'||unistr('\000a')||
+'blog_install.i(230) := ''2E636C6F6E6528293B643D6F2E657128762E736C696465636F756E742D31292E636C6F6E6528293B702E61747472287B22646174612D636C6F6E65223A226C617374222C22646174612D736C696465223A307D292E617070656E64546F2873292E73686F7728293B642E61747472287B22646174612D636C6F6E65223A226669'';'||unistr('\000a')||
+'blog_install.i(231) := ''727374222C22646174612D736C696465223A307D292E70726570656E645';
+
+s:=s||'46F2873292E73686F7728293B6F3D732E6368696C6472656E28226C6922293B762E736C696465636F756E743D6F2E6C656E6774683B683D6528273C64697620636C6173733D22626A71732D77726170706572223E3C2F6469763E27293B696628722E'';'||unistr('\000a')||
+'blog_install.i(232) := ''726573706F6E7369766526266D2E77696474683C722E7769647468297B682E637373287B77696474683A6D2E77696474682C6865696768743A6D2E6865696768742C6F766572666C6F773A2268696464656E222C706F7369';
+
+s:=s||'74696F6E3A2272656C6174697665227D293B732E637373287B77696474683A6D2E77696474682A28'';'||unistr('\000a')||
+'blog_install.i(233) := ''762E736C696465636F756E742B32292C6C6566743A2D6D2E77696474682A762E63757272656E74736C6964657D297D656C73657B682E637373287B77696474683A722E77696474682C6865696768743A722E6865696768742C6F766572666C6F773A2268696464656E222C706F736974696F6E3A2272656C6174697665227D29'';'||unistr('\000a')||
+'blog_install.i(234) := ''3B732E6373';
+
+s:=s||'73287B77696474683A722E77696474682A28762E736C696465636F756E742B32292C6C6566743A2D722E77696474682A762E63757272656E74736C6964657D297D6F2E637373287B22666C6F6174223A226C656674222C706F736974696F6E3A2272656C6174697665222C646973706C61793A226C6973742D6974'';'||unistr('\000a')||
+'blog_install.i(235) := ''656D227D293B682E70726570656E64546F2869293B732E617070656E64546F2868297D2C783D66756E6374696F6E28297B753D6528273C756C20636C6173733';
+
+s:=s||'D22626A71732D636F6E74726F6C73223E3C2F756C3E27293B613D6528273C6C6920636C6173733D22626A71732D6E657874223E3C6120687265663D2223222064'';'||unistr('\000a')||
+'blog_install.i(236) := ''6174612D646972656374696F6E3D22272B672E6677642B27223E272B722E6E657874746578742B223C2F613E3C2F6C693E22293B663D6528273C6C6920636C6173733D22626A71732D70726576223E3C6120687265663D22232220646174612D646972656374696F6E3D22272B672E707265762B27223E272B72';
+
+s:=s||'2E7072657674'';'||unistr('\000a')||
+'blog_install.i(237) := ''6578742B223C2F613E3C2F6C693E22293B752E6F6E2822636C69636B222C2261222C66756E6374696F6E2874297B742E70726576656E7444656661756C7428293B766172206E3D652874686973292E617474722822646174612D646972656374696F6E22293B69662821762E616E696D6174696E67297B6E3D3D3D672E667764'';'||unistr('\000a')||
+'blog_install.i(238) := ''26264F28672E6677642C2131293B6E3D3D3D672E7072657626264F28672E707265762C2131297D';
+
+s:=s||'7D293B662E617070656E64546F2875293B612E617070656E64546F2875293B752E617070656E64546F2869293B696628722E63656E746572636F6E74726F6C73297B752E616464436C6173732822762D63656E746572656422'';'||unistr('\000a')||
+'blog_install.i(239) := ''293B76617220743D28692E68656967687428292D612E6368696C6472656E28226122292E6F757465724865696';
+
+wwv_flow_api.append_to_install_script(
+  p_id => 12275005924827304 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_script_clob => s);
+end;
+ 
+ 
+end;
+/
+
+ 
+begin
+ 
+declare
+    s varchar2(32767) := null;
+begin
+s:=s||'768742829292F322C6E3D742F722E6865696768742A3130302C733D6E2B2225223B612E66696E6428226122292E6373732822746F70222C73293B662E66696E6428226122292E6373732822746F70222C73297D'';'||unistr('\000a')||
+'blog_install.i(240) := ''7D2C543D66756E6374696F6E28297B6C3D6528273C6F6C20636C6173733D22626A71732D6D61726B657273223E3C2F6F6C3E27293B652E65616368286F2C66756E6374696F6E28742C6E297B76617220693D742B312C733D742B313B722E616E696D747970653D';
+
+s:=s||'3D3D22736C69646522262628733D742B32293B766172206F3D'';'||unistr('\000a')||
+'blog_install.i(241) := ''6528273C6C693E3C6120687265663D2223223E272B692B223C2F613E3C2F6C693E22293B693D3D3D762E63757272656E74736C69646526266F2E616464436C61737328226163746976652D6D61726B657222293B6F2E6F6E2822636C69636B222C2261222C66756E6374696F6E2865297B652E70726576656E7444656661756C'';'||unistr('\000a')||
+'blog_install.i(242) := ''7428293B21762E616E696D6174696E672626762E';
+
+s:=s||'63757272656E74736C696465213D3D7326264F2821312C73297D293B6F2E617070656E64546F286C297D293B6C2E617070656E64546F2869293B633D6C2E66696E6428226C6922293B696628722E63656E7465726D61726B657273297B6C2E616464436C6173732822682D63'';'||unistr('\000a')||
+'blog_install.i(243) := ''656E746572656422293B76617220743D28722E77696474682D6C2E77696474682829292F323B6C2E63737328226C656674222C74297D7D2C4E3D66756E6374696F6E28297B6528646F63756D656E7';
+
+s:=s||'4292E6B657975702866756E6374696F6E2865297B69662821762E706175736564297B636C656172496E74657276616C2876'';'||unistr('\000a')||
+'blog_install.i(244) := ''2E696E74657276616C293B762E7061757365643D21307D69662821762E616E696D6174696E6729696628652E6B6579436F64653D3D3D3339297B652E70726576656E7444656661756C7428293B4F28672E6677642C2131297D656C736520696628652E6B6579436F64653D3D3D3337297B652E70726576656E7444656661756C'';'||unistr('\000a')||
+'blog_install.i(';
+
+s:=s||'245) := ''7428293B4F28672E707265762C2131297D696628762E7061757365642626722E6175746F6D61746963297B762E696E74657276616C3D736574496E74657276616C2866756E6374696F6E28297B4F28672E667764297D2C722E616E696D7370656564293B762E7061757365643D21317D7D297D2C433D66756E6374696F6E2829'';'||unistr('\000a')||
+'blog_install.i(246) := ''7B692E686F7665722866756E6374696F6E28297B69662821762E706175736564297B636C656172496E74657276616C28762E696E7465';
+
+s:=s||'7276616C293B762E7061757365643D21307D7D2C66756E6374696F6E28297B696628762E706175736564297B762E696E74657276616C3D736574496E74657276616C2866756E6374696F'';'||unistr('\000a')||
+'blog_install.i(247) := ''6E28297B4F28672E6677642C2131297D2C722E616E696D7370656564293B762E7061757365643D21317D7D297D2C6B3D66756E6374696F6E28297B652E65616368286F2C66756E6374696F6E28742C6E297B76617220723D65286E292E6368696C6472656E2822696D673A66697273742';
+
+s:=s||'D6368696C6422292E61747472282274'';'||unistr('\000a')||
+'blog_install.i(248) := ''69746C6522293B727C7C28723D65286E292E6368696C6472656E28226122292E66696E642822696D673A66697273742D6368696C6422292E6174747228227469746C652229293B69662872297B723D6528273C7020636C6173733D22626A71732D63617074696F6E223E272B722B223C2F703E22293B722E617070656E64546F'';'||unistr('\000a')||
+'blog_install.i(249) := ''2865286E29297D7D297D2C4C3D66756E6374696F6E28297B76617220653';
+
+s:=s||'D4D6174682E666C6F6F72284D6174682E72616E646F6D28292A762E736C696465636F756E74292B313B762E63757272656E74736C6964653D653B762E63757272656E74696E6465783D652D317D2C413D66756E6374696F6E2865297B696628653D3D'';'||unistr('\000a')||
+'blog_install.i(250) := ''3D672E667764296966286F2E657128762E63757272656E74696E646578292E6E65787428292E6C656E677468297B762E6E657874696E6465783D762E63757272656E74696E6465782B313B762E6E657874736C6964653D76';
+
+s:=s||'2E63757272656E74736C6964652B317D656C73657B762E6E657874696E6465783D303B762E6E6578'';'||unistr('\000a')||
+'blog_install.i(251) := ''74736C6964653D317D656C7365206966286F2E657128762E63757272656E74696E646578292E7072657628292E6C656E677468297B762E6E657874696E6465783D762E63757272656E74696E6465782D313B762E6E657874736C6964653D762E63757272656E74736C6964652D317D656C73657B762E6E657874696E6465783D'';'||unistr('\000a')||
+'blog_install.i(252) := ''762E736C69';
+
+s:=s||'6465636F756E742D313B762E6E657874736C6964653D762E736C696465636F756E747D7D2C4F3D66756E6374696F6E28652C74297B69662821762E616E696D6174696E67297B762E616E696D6174696E673D21303B69662874297B762E6E657874736C6964653D743B762E6E657874696E6465783D742D317D656C'';'||unistr('\000a')||
+'blog_install.i(253) := ''736520412865293B696628722E616E696D747970653D3D3D226661646522297B696628722E73686F776D61726B657273297B632E72656D6F7665436C6173732';
+
+s:=s||'8226163746976652D6D61726B657222293B632E657128762E6E657874696E646578292E616464436C61737328226163746976652D6D61726B657222297D6F2E65'';'||unistr('\000a')||
+'blog_install.i(254) := ''7128762E63757272656E74696E646578292E666164654F757428722E616E696D6475726174696F6E293B6F2E657128762E6E657874696E646578292E66616465496E28722E616E696D6475726174696F6E2C66756E6374696F6E28297B762E616E696D6174696E673D21313B762E63757272656E74736C696465';
+
+s:=s||'3D762E6E6578'';'||unistr('\000a')||
+'blog_install.i(255) := ''74736C6964653B762E63757272656E74696E6465783D762E6E657874696E6465787D297D696628722E616E696D747970653D3D3D22736C69646522297B696628722E73686F776D61726B657273297B766172206E3D762E6E657874696E6465782D313B6E3D3D3D762E736C696465636F756E742D323F6E3D303A6E3D3D3D2D31'';'||unistr('\000a')||
+'blog_install.i(256) := ''2626286E3D762E736C696465636F756E742D33293B632E72656D6F7665436C6173732822616374';
+
+s:=s||'6976652D6D61726B657222293B632E6571286E292E616464436C61737328226163746976652D6D61726B657222297D722E726573706F6E7369766526266D2E77696474683C722E77696474683F762E736C6964657769647468'';'||unistr('\000a')||
+'blog_install.i(257) := ''3D6D2E77696474683A762E736C69646577696474683D722E77696474683B732E616E696D617465287B6C6566743A2D762E6E657874696E6465782A762E736C69646577696474687D2C722E616E696D6475726174696F6E2C66756E6374696F6E282';
+
+s:=s||'97B762E63757272656E74736C6964653D762E6E657874736C6964653B762E'';'||unistr('\000a')||
+'blog_install.i(258) := ''63757272656E74696E6465783D762E6E657874696E6465783B6966286F2E657128762E63757272656E74696E646578292E617474722822646174612D636C6F6E6522293D3D3D226C61737422297B732E637373287B6C6566743A2D762E736C69646577696474687D293B762E63757272656E74736C6964653D323B762E637572'';'||unistr('\000a')||
+'blog_install.i(259) := ''72656E74696E6465783D317D656C7';
+
+s:=s||'365206966286F2E657128762E63757272656E74696E646578292E617474722822646174612D636C6F6E6522293D3D3D22666972737422297B732E637373287B6C6566743A2D762E736C69646577696474682A28762E736C696465636F756E742D32297D293B762E63757272656E74736C69'';'||unistr('\000a')||
+'blog_install.i(260) := ''64653D762E736C696465636F756E742D313B762E63757272656E74696E6465783D762E736C696465636F756E742D327D762E616E696D6174696E673D21317D297D7D7D3B7928297D7D';
+
+s:=s||'29286A5175657279293B'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''lib.js'',''text/javascript'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''4749463839611F001F00F50000FFFFFF9A9A9A262626E4E4E4BCBCBCCCCCCCAAAAAAB0B0B0A2A2A2E8E8E8D4D4D4F6F6F6A8A8A8A0A0A0AEAEAE';
+
+s:=s||'D2D2D2DCDCDCD8D8D8B8B8B8707070C6C6C6686868464646484848323232F8F8F8FAFAFA505050363636C4C4C4565656929292E6E6E600000000000000000000000000000000'';'||unistr('\000a')||
+'blog_install.i(2) := ''000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000021FF0B4E45545343415045322E30030100000021F904040A00FF002C000000001F001F000006FF408';
+
+s:=s||'070484C3C080E0480B399'';'||unistr('\000a')||
+'blog_install.i(3) := ''040AC4A874089104AE578060BBAD1C3253E980802D6BB9DC09253C8C18CA6634FA6260031AF0B89C8B09471A007958677B02771151036F0181580705030B00091D1F1E688D0603446483010C0A611A08168665045479009B766B79104256650C207643200C70129379A1B6430A79467007BF510770477050C64305704870ACCD'';'||unistr('\000a')||
+'blog_install.i(4) := ''AB70497092D4000B704ADACD08D8DFDC65080ED2DF03D69D58CCD4CFA70FC4DFC8650F09B';
+
+s:=s||'DD4C1700900B258B48CE1D2250482AA696136BD1AC28ED1275F5314E46A7405D5104559CA3C8AB46D40817A1903688AF287A22A41591A209A8207A5493880D8B87189D2C04A366304BDAC88D04E150F382F25C0FA660489127304EE'';'||unistr('\000a')||
+'blog_install.i(5) := ''D909020021F904050A0020002C100000000F000F0000054E20E2104F029C681AACAB04A52ACB12030CC8B211C1B8DCF0BD150063402D0685830C20105C28360523C06C0A26195BCD6A3DD800140B5750F902106341E1ABF18CA9DFCF7862EE8C';
+
+s:=s||'37E6C49813020021F904050A0021002C160005000900150000065AC09030D488'';'||unistr('\000a')||
+'blog_install.i(6) := ''0C87818061704C260980A8D309018018D38024AAC80612D143F6112D64A18041D6115D6411D1B83C9A10D8ED9C68E76EDF443F7C0213001A1E8101000881020514168115518B07437C1319477617144742180671410021F904050A0021002C100010000F000F00000657408070285C048E47049138401E1DCB61C11920448507'';'||unistr('\000a')||
+'blog_install.i(7) := ''EAE3AAA006125110832A8952005E08';
+
+s:=s||'5183B008D0482B20D1F97804F8F7D13010E6FF78000D1143807F184B86781706898613678E79150719571C1B1301055743410021F904050A0020002C050016001500090000054D60200214609E283000620B0816A2A5A7C204EC28EC82F77509C0625038B470389E72973BBA304B65D319'';'||unistr('\000a')||
+'blog_install.i(8) := ''68182E51265564889026D9698BB032650E95A55802A1990A81C986034038088F202A040021F904050A0020002C000010000F000F0000055020278C63029CE8B9916397A6132B7C2F1AC89';
+
+s:=s||'E5603852C203B404566A1EC0E3EC0A0968991000186A246B98CA081ECA13058A00C186C769C7D35C8E857C4801ED7068476200891A4'';'||unistr('\000a')||
+'blog_install.i(9) := ''8380C483E04084000021F904050A0021002C000005000900150000065A4080D08009198F948B40700C6526CBE5F1108D0A2B55818552C80A108040D6A30140AB1FE126DB1172B209A17C2E4404EEF785D081BF0F84047D0105420F8207420982010A4212820C2000108B7281784D0306774D46110D4D410021F904050A002100'';'||unistr('\000a')||
+'blog_inst';
+
+s:=s||'all.i(10) := ''2C000000000F000F00000656408070482C04261B0E719839540450E812409944AF4BC3E58A2562B85D40A401004785034320508E7A3E9D8490B05E972D080D1152AF53A7127D010C20530982010A53000F82078B00747D05900E82039008820B9041003B'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''loading.gif'',''image/gif'',''THEME'',blog_inst';
+
+s:=s||'all.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D49484452000000100000001008060000001FF3FF61000001244944415438CB9D93BB6A845010867D8A7DA510429E205D20551E214DD2B8E2A5F0526485BC416A1B8B6D045FC15624011115A36021F2C799EC1165D78DBB033F1E86F9FE3997510220ADD066D0E3A0D7A7877B90684DB9B1C8719C'';'||unistr('\000a')||
+'blog_install.i(2) := ''DD20D8B60DCBB258A669C2755DF8BE8F300C19FCF9';
+
+s:=s||'BC61091301238A229C8B291C3AB7F878B9E31C77BE149E19D096AF85F90874D66BE02008C097B8644045DF5FEFAC139DE1791E7D3612DDF434FABE47D775A3C1DE7F6309B82C4BAE3B70D2CC80C0BAAED1340DC47B13BCB39E799DE7398AA2E03A5996FF0CC42BB46D8BAA'';'||unistr('\000a')||
+'blog_install.i(3) := ''AA90A6299224190D84B22CE3EED480EA896383737310C7F151EE00430CE06C120DC38090085555A1280AB6DB2D6F5B743E32984AD7F511FEEF3F3999D4346D15BC68B0165E34B844BFE5251B1B99F6A7E';
+
+s:=s||'20000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''nav_feedback.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D49484452000000100000001008060000001FF3FF61000000F34944415438CBA5934D0B01511486CF4FF';
+
+s:=s||'36B2CAC2C2D6767250B5958D8504A563E56362349D22C94523444F958889458905EF765A666E15CCAD4D39939E7DCB7E6694600C83F48C18354C6E837A740770978DB37BC678F33EEA801'';'||unistr('\000a')||
+'blog_install.i(2) := ''F9C1DD1DAE1FD02ECEB8A30664BB17DCCD791BDC5103D2ED032E3758E18E1AE03436385E61853B9A1B49D516D89D61853B9A1B4996274E75B8C7EA848F70966B2F553792288E083AB333E647F3BE751F7C0EC9B47CAB1B89173C31075951EA6DC16A88FDEAE61510C131B8ACBFBA51BF30';
+
+s:=s||'E3C6FDE686FED480C08D1BF5413FF4'';'||unistr('\000a')||
+'blog_install.i(3) := ''445F414FD480D04D08BD443D053D7B80E627DA977F7FE72777163819DF7E802F0000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''nav_forum.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i';
+
+s:=s||'(1) := ''47494638396118001800E66C00003C74F3F3EFF1F1ECF6F6F3F8F8F6FAFAF9F0F0EBEBEBE5F0F0EAFEFEFEFCFCFCE0DED4D6D0C5FFFFFFF6F6F2F5F5F1F1F1EDF4F4F0F2F2EDF3F3EE000000245683164D7E2E2E2D7492A5E8E5DF888885557DA2EEEDE7F2F2EEF6F6F4FDFDFCF4F4EF6B6B691E1E1EEFEEE8D5DFE84D4D4BFA'';'||unistr('\000a')||
+'blog_install.i(2) := ''FAFAA3AEB4E5E2DBB1B7B6E9E6E0698BA2E5E5E1E8E5DEBFC7CAE7E4DDEBE8E14A7193E6E3DCD5D5D0F3F1EEC4C4C0EEEDE6E4E4DFECEBE';
+
+s:=s||'68A8A88E0DDD4E6E3DD5C5C5BF1F0EABFCEDC989896EBE8E262849E486E90989895F5F5F2E2DFD6DBD7CDEBEAE3F5F4F2EDECE5FBFBFAE4E2D96789A1ECEBE4A9A9A66A6A68ECEBE5'';'||unistr('\000a')||
+'blog_install.i(3) := ''BFCEDBF0EFE9D5D5D163859EEAE7E0EAE8E15B5B599898940F0F0FEDEAE67796A7B6BDBDF0EEEA7B7B791F1F1ED4D4CFF1F0EBF6F4F2F8F8F73D3D3CE4E2DAFEFEFDA6A6A3E4E4E0C7C7C4C0CFDDD5D5D2FFFFFF00000000000000000000000000000000000000000000000000000000000000';
+
+s:=s||'00000000000000000000000000'';'||unistr('\000a')||
+'blog_install.i(4) := ''0000000000000000000000000021F9040100006C002C00000000180018000007FF806C8283848586851815008B8C8D8E00165483181B6A0D9798999A0D241B1882153E09A3A4A5A6A366511582001F1F0AB0B1B2B30A4A6200AC2605BBBCBDBEBB485DB86C006304C7C8C9CAC7345AC3001E1E03D3D4D5D6036140CFD30EDD0E'';'||unistr('\000a')||
+'blog_install.i(5) := ''394EDEE2DE3D30CF0E440FEA0F5E14593C69EBF25255CFEA11F8F82C3F25145F216B';
+
+s:=s||'F24518A1E219BE000813224433840C850B093964301841A1C52921445088389115081013428A9CA1E1C2432C3744DA68F12CA4849712CE9814A1010C4C98495E3CEBD001824F08579ED4F849D427941DCF5E0A58CAB4A953014D643C5B6A'';'||unistr('\000a')||
+'blog_install.i(6) := ''A0AAD5AB580D1C41F1CC0082AF60C38AFD6A65C9331C07D2AA5DCB366D191DC32B2CB828B2A0AEDDBB781718E162415090182718081E4CB830831442980CDAA2E891E34516561C9A4C595020003B'';'||unistr('\000a')||
+'blog_install.b := blog_insta';
+
+s:=s||'ll.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''next.gif'',''image/gif'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D494844520000003F0000002008040000000FD6681A00000009767041670000003F0000002000757A2CD30000010B4944415448C7EDD73D4EC33014C0F1DCA9A77807C80172802C8C3E4';
+
+s:=s||'0D899A31EE01DA02312EC354C2C19187B004FB0FC19FA1AEC141AA9585802FB0D519417FFE2CFC8CDA6D9'';'||unistr('\000a')||
+'blog_install.i(2) := ''34142B4571288A57BEF295AF7C54046198EF1C325F4FE18001412D4711EED0284310FCF5FCE7CB31AF163B20D0214CC081968E806764E406E1969191C3B57C87D011CEF8B478EB0797B45457DBBDCA3B1461BBC2C31661983333F2D05B3531EF2C769619927ECACA4F56F1257EFA629265E2B101B8D4F93D2D934DBCECFC7100'';'||unistr('\000a')||
+'blog_install.i(3) := ''DA6F79B5A';
+
+s:=s||'5A7C9E867E44F9DBB5C786ACFFAE8337D7E1EDB4A96DB8E1012D24713F0C7FCFFDDF3DF79E279117B5E7F8B7FE381C745DCF352FFF795FF437CE12366D903F6076EB333917C2912EE0000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''nextlabel.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog';
+
+s:=s||'_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D494844520000000F0000000F080400000091DF5DC100000009767041670000000F0000000F00631C1313000001054944415418D34DD13F4B5B711406E0F309BB583A084E42C10C821D3450FA412453C8DAE2E09F4B7408924E3A2871B0B43A44E4DE9834F7464388B83C1DEE4F2BCFF49E339DF7'';'||unistr('\000a')||
+'blog_install.i(2) := ''84A80DF5ED69D9D337F43A0D2196BA8E5C29BC285C39D2B594D68F3ACE3C5B989B995B7876A6634184F8E';
+
+s:=s||'1C25CA5D2542573E7BA44FC71A2522A6DDBB1AD4C2AC76E44E6DAD4D4D4936F9AB6529AFA25136DB9BFC993AFB63452BAD711BB26EF3CFA62C3BA8989072DD1766FFCA66153C3CCD8D89D8EC80C3C249FACF96C96D2'';'||unistr('\000a')||
+'blog_install.i(3) := ''40267E3B343232F2C18A55554A23076E84F8EEA742A1F451A9484EEBBBEBD67A72B9529EF4FEB75677BEEFD2506EE8D2FEFBCE6BB7326DBBDA32B76F1FFB07F5717A7F8DC40DD60000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varc';
+
+s:=s||'har2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''next.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D494844520000001200000012080300000061107E65000000AE504C5445FF00008686868E8E8E9191919393939898989A9A9A9B9B9BA5A5A5ABABABB0B0B0B3B3B3B4B4B4B8B8B8BCBCBCBDBDBD';
+
+s:=s||'BFBFBFC0C0C0C1C1C1C2C2C2C3C3C3C5C5C5C6C6C6C7C7C7CBCBCBCCCCCCCDCDCDCECECED0D0D0'';'||unistr('\000a')||
+'blog_install.i(2) := ''D1D1D1D3D3D3D5D5D5D7D7D7D8D8D8D9D9D9DBDBDBDCDCDCDDDDDDDEDEDEE0E0E0E1E1E1E2E2E2E5E5E5E6E6E6E7E7E7E9E9E9EAEAEAECECECEDEDEDEFEFEFF0F0F0F1F1F1F2F2F2F6F6F6F7F7F7FBFBFBFCFCFCFFFFFFA1E214430000000174524E530040E6D86600000001624B47440088051D48000000097048597300000B'';'||unistr('\000a')||
+'blog_install.i(3) := ''1300000B1301009A';
+
+s:=s||'9C180000000774494D4507DD0C01091116B7E482FB000000BB4944415418577590D91282300C45EBBE8BB7B2088A08B853C45DF9FF1F3369758617EFC399E64C266D2AC4BF14599A66978AD87B1294A99F7FC53574A9B61932326A8E99B26100B049A87A6DA401A04839A4DEAF406A00BE1027B02A9FAE06'';'||unistr('\000a')||
+'blog_install.i(4) := ''CDBC8B3D29FF5D969780416D4711938A4ACA96118CB0D65D319B31A3D943AE6791DA35268C96E5D08D1EAB5BA7BE648C10923A48C48F41ADAF01E84523CC17EDAE01A4D';
+
+s:=s||'928B187164D247887DF4F9C43871E24DD95A8A650AAF81E3F83CD1AC0538A67530000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''nextset.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''47494638396118001800E66A00003C74F3F3EFF6F6F3F8F8';
+
+s:=s||'F6FAFAF9EBEBE5F0F0EBF0F0EAFEFEFEF1F1ECFCFCFCE0DED4D6D0C5F6F6F2FFFFFFF5F5F1F4F4F0F1F1EDF3F3EEF2F2ED0F0F0F164D7E2456830000007492A5EEEDE75B5B59F2F2EE557DA26B6B693D3D3CF6F6F4F4F4EFFDFDFCE8E5DF989895FBFBFAFAFAFA1F'';'||unistr('\000a')||
+'blog_install.i(2) := ''1F1EBFCEDB5B5B5AF1F0EA7A7A78D5DFE8EBE8E2486E90F0EEEADBD7CDEAE7E062849EA6A6A3ECEBE5E6E3DCE2E2DDB1B7B64D4D4BE5E2DBBFC7CA698BA2E2E2DEE8E5DE63859EEBEAE3E2DFD6B6BDBD969694F';
+
+s:=s||'1F0EBE0DDD4E4E2D9F3F1EEEBE8E1BFCEDCB5B5B2E5E5E14A71936789A15C5C5BEEEDE6E4E4E0F0EFE9989896'';'||unistr('\000a')||
+'blog_install.i(3) := ''E6E3DDE4E2DAF5F5F2F5F4F2C5C5C1C6C6C3ECEBE4A7A7A3FEFEFD4C4C4A7796A7F6F4F2C0CFDDEDECE5A3AEB4EDEAE6E9E6E0A9A9A6EFEEE8E7E4DDEAE8E1B8B8B52E2E2DF8F8F7ECEBE6FFFFFF0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'';'||unistr('\000a')||
+'blog_install.i(4) := ''00000';
+
+s:=s||'00000000000000000000021F9040100006A002C00000000180018000007FF806A8283848586851816008B8C8D8E00153D83181C5D0E9798999A0E2B1C1882164708A3A4A5A6A3592716820021210AB0B1B2B30A245C00AC2504BBBCBDBEBB542EB86A006803C7C8C9CAC74560C3001F1F02D3D4D5D602422CCFD30DDDDE'';'||unistr('\000a')||
+'blog_install.i(5) := ''DFDD62DE2946CF0D530FE9EAEA664C1414EA4F30CFE910F6F7561D2617375049F763C23CB317A0608011672E7818E1C4A0C10C22064270E881820A871821';
+
+s:=s||'3E030142824709553ABC4381E5E3C7263C9E799CC0B2E504191ADE6940D2D20B99671B3644D8C993E78E205A2EF09C11E519CB0448932A455A23E9151ACF901A984A'';'||unistr('\000a')||
+'blog_install.i(6) := ''B5AA55033E703C3370A0ABD7AF60BB9621F22C4D81B368D3AA3D2B65C8B00A39297E2C984BB7AEDD052F8054101443C9170680030B1ECCC0468B2583B6287AC47851051D87224B161408003B'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (';
+
+s:=s||'file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''prev.gif'',''image/gif'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D494844520000003F0000002008040000000FD6681A00000009767041670000003F0000002000757A2CD3000001214944415448C7ED97B16E83301086FD4E3CCCEDDEFD00ECDED9D979002F1DDAEC593A79ACC2D8813D5B957E1DB8184A28431C0555F2DD80303A7';
+
+s:=s||'FBEDF3F1618768BCA54C6C09E'';'||unistr('\000a')||
+'blog_install.i(2) := ''0BD8150F055FF0055FF02B1110CD9A2340BA171A7A20CE4684488B7048F5078490876F0974588401101C4147ACE23D4173A047A853BDD7AA0C7C04E0A87D085E9F75089178D35F9D900342932BFE5FF8066158C14F820744B7EC81E25B3C1EA70B89080EAF0970C6E200707ACDB69EC527EB593C1621705EC5438BD027BD1E22'';'||unistr('\000a')||
+'blog_install.i(3) := ''FE35C69E475550FC12D22374B41BB6CBC483D3C9E36A8F356ED376D9F838DBFBE9C58';
+
+s:=s||'B33FB6DD92E1B3F3A3F2E8E9DAB0E93FDCA997F17FE930F4E8BBC3C0FFFCE0BAFBFF28DAFE7E1BFB9DC64F9DC28F87F8FDFF517B33295F901738F3EC4F83F3A5D0000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''prevlabel.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog';
+
+s:=s||'_install.i(1) := ''89504E470D0A1A0A0000000D494844520000000F0000000F080400000091DF5DC100000009767041670000000F0000000F00631C1313000001054944415418D34D913D4B03411086F717DA28168295206821681105F18704AB60AB58F87124164162150B8329143545244413E3DDC570446C1EDFDD1D13797887F9B8B99D9D75'';'||unistr('\000a')||
+'blog_install.i(2) := ''B8489706A71C4A0DBAFC65839952E592366FFC486DF955A65879CC114DBE2998904B85FCA67205A17CC29D9299B117EC845BF';
+
+s:=s||'D41E567AE14A646895DC97B19355E70090F7C1ADBEA3DE0CBA247125C853EA3C0A6CAFB2A8E8C9ECE77653E026B6CB0C3D822CF40D754778FA1C8D5BD250D67BCFAEE847B7DE7C9596795658B06'';'||unistr('\000a')||
+'blog_install.i(3) := ''CAEBEC272E783732565864C1A2733F39EE981BED2A92B22479EF3ADE3B6EADAEF92369B0F5F9D6E2CECF68E929FA524BFEBF9D473A1AA442594AE8CC5EEC17EE2D7A7F793EF7D20000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blo';
+
+s:=s||'g_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''prev.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D494844520000001200000012080300000061107E65000000AE504C5445FF00008686868E8E8E9191919393939898989A9A9A9B9B9BA5A5A5ABABABB0B0B0B3B3B3B4B4B4B8B8B8BCBCBCBDBDBDBFBFBFC0C0C0C1C1';
+
+s:=s||'C1C2C2C2C3C3C3C5C5C5C6C6C6C7C7C7CBCBCBCCCCCCCDCDCDCECECED0D0D0'';'||unistr('\000a')||
+'blog_install.i(2) := ''D1D1D1D3D3D3D5D5D5D7D7D7D8D8D8D9D9D9DBDBDBDCDCDCDDDDDDDEDEDEE0E0E0E1E1E1E2E2E2E5E5E5E6E6E6E7E7E7E9E9E9EAEAEAECECECEDEDEDEFEFEFF0F0F0F1F1F1F2F2F2F6F6F6F7F7F7FBFBFBFCFCFCFFFFFFA1E214430000000174524E530040E6D86600000001624B47440088051D48000000097048597300000B'';'||unistr('\000a')||
+'blog_install.i(3) := ''1300000B1301009A9C18000000077449';
+
+s:=s||'4D4507DD0C01091021164216B5000000C04944415418577590D71282400C45636F2806E988881D696283FDFF1F33D91D1C5FBC0F6766CF24996401FEA54AF7FBB4FC11B9B7428AE15C5A1319F4B64D467897860BCCCC5508D864DC72AC5D05DC91F2C8F875E34A205A004F9A61BF45E3'';'||unistr('\000a')||
+'blog_install.i(4) := ''4A504701572AAA84687C0675E0050E38F705E5C48848C590E3A4CFCF0523965560E983DE59882583550110E2BC3B7A880D8394434B5488D3CEEC154BA091F0AE74CE78B80E14227563E2A0A';
+
+s:=s||'ED1145D33797795AD4DA58615DEBE86526659FB5D1F78041AC00A544A670000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''prevset.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D494844520000000900000009080600';
+
+s:=s||'0000E09106100000005D4944415418D363F8FFFF3F03210C61303080703910CFC460A3293206E27740AC04C47781380D5D910B100B424DD88D646228B2A2BB4818247C068AFFA35BC7003561265401033637A5414D62802AEAC0A62814EA26988672544504'';'||unistr('\000a')||
+'blog_install.i(2) := ''30004032A3F60AA0D0100000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_con';
+
+s:=s||'tent)'||unistr('\000a')||
+'values (''required.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D4948445200000007000000640403000000B81C3714000000097048597300000B1300000B1301009A9C180000000774494D4507DE020A0E32394976958800000012504C5445000000000080808080C0C0C0D4D0C8FFFFFF0C0375A40000003A49444154189563600001551717053C848333906010'';'||unistr('\000a')||
+'blog_i';
+
+s:=s||'nstall.i(2) := ''566050601484B2540D9C71E9100112AEA35CEA7371468A00E1480111A1A10A0C4A4A4A0A009A8547EBE8B0F8450000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''resize-e.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E';
+
+s:=s||'470D0A1A0A0000000D4948445200000080000000800806000000C33E61CB0000000774494D4507D80806111F25BC18336100000006624B474400FF00FF00FFA0BDA793000026B14944415478DAED9D779C5C65D9FEBFF773CEF4D992DDEC262164378D40E40D25A16940092891E04B0705292F3FC5504444782348952A'';'||unistr('\000a')||
+'blog_install.i(2) := ''BD28080882145FA4DA4200150503A8900091164A482F5BB27DA79EF3FCFED89229E74CD99D49C19CCF673FBB336766F699735DCF7D5FF7F594236C3FFEA30';
+
+s:=s||'FD97E09B61360FBB19D00DB8FED04D87E6C27C0F6633B01B61FDB09B0FDD84E80CFD87105A80A182B50AD21A4206CC3082004A0A01B68B7A15BA047437B17ACB902'';'||unistr('\000a')||
+'blog_install.i(3) := ''ECED04D8C68E5B61AA0D7B0BEC0C4C61D36F1F80E1F5A2BC5E0C9F0F33100020198960C562D8F138563C3EF0513160A9C087021F6AF8C082D72F800FB61360EB027CA286591A66091C84C898D0A85104478D22505747B0BE9E607D3DFE9123F186C3F93F506B123D3D445B5AE86D6A22D2D4446F7333BD1B36D0';
+
+s:=s||'BB6103A2F55A'';'||unistr('\000a')||
+'blog_install.i(4) := ''E0AF022F0AFCF51CF8743B0136F3713B34587022702A22BB84468DA27AA79DA89E3C99AA8913F1844225FFD202247A7AE858F6091D1F7F4CFBC71FD3BB7E3DC07B681E021EFD1EACDE4E80321D37F6E5EEE3044E0266553434A851336650B7FBEE7872F46C29E305887775D2BA64094D8B16D1BD6A950DBCA8350FC7E0A9FF85'';'||unistr('\000a')||
+'blog_install.i(5) := ''9EED04284D88AFD6F05DE0FBFE11236AEB67CCA06E8F3D08D6D7E7FC2252AA0B51E007459A9A6879F3';
+
+s:=s||'4D9A172F22D6DEDE0CDC6EDAFC6C2E746C27C0D07A7CBD01E702DF0D8D1953B9E381073272DA344429D786CB10BEA494F80A68DBA675C9BF59FBD2DFE85DBFBE03E4A749DBBEE37BD0BC9D00051C7780CF82791A2EAC68'';'||unistr('\000a')||
+'blog_install.i(6) := ''68088E3BF04046ECBCF320523244C00B01BA9417436B4DFBFB1FB0F6E597E85AB5AA47A1AFA9B1B9F978886F2780CB710B1C02FCCC5F5BBBD3C4C30EA37ACA9482402F1670D9CC17A57DE952563E3B9F687BDB52D0679F91E42FDB09900EFC58815BC5E33';
+
+s:=s||'96EECFEFBB3C3FEFB63783C05E57671392165FEB2999FA5F3458464'';'||unistr('\000a')||
+'blog_install.i(7) := ''92757FFF3BEB5F59889DB47E83659F3717D6FDC713E066F89AC083D53BED543B61CE1CFC2346E405DE09F462012FE48B974A1FE81476C4DADA58F5EC7C3A3FF9A4D5469F3AD762FE7F2401EE014F0F5C2F86F1FD862F7F59C6ECBB6F7A63A490DE2FD9E7A534E2B0DC47D33FFFC1DABFFC596B5BDFB03A695F720524FF630870'';'||unistr('\000a')||
+'blog_install.i(8) := ''13342A78CC3F62C47E938F3A8AF09831AEC00F0';
+
+s:=s||'5F4A1867F29F555D2B99FEE5DBB9615BF7B86787BFB6BC9A4FEC65C58F99927C06DB0B70DF36B77D9A56EC29C39183EDF602B0A05BE10D0A5882F295B2814680D5634CAEA050BE8F870E9064BECC34E4FB0E8334B809BE02B063C3D7A9F7DC2E366CD2AB8C7179F1A860E74B9'';'||unistr('\000a')||
+'blog_install.i(9) := ''2F889B585CF7E28BB42C7AA34BB43AEA7F92C9BF7CE608701B7C5DC3430D071DE4AD9F3163104867F0254BEC15037AA122714B86422722B4BCF13AEB5F7A292E22DF3C356E3DF99921C06D70BA18C6';
+
+s:=s||'DDE367CF56359F9B9AF5CF0B01BE602F40862EFC640B823FE819BCFF1E6B5F78C1D2B63EE3D48475DF364F805BE1041179'';'||unistr('\000a')||
+'blog_install.i(10) := ''78D2E1FF6D544D9AE4087CAEFC2E05F47A2950F90F290A0C5720685D1401003A977DC2EA3FFED112F8FAC971EBA96D9600B7C2410A1634CC3EC45B33756A56C84F05DF09F89CE01700BA142C02A5A4174B17CC0DF757B6BFFB0EEBFEFA625C2B75E829D1E48BDB1C016E837D45787E879933ABEAA74F77E8CDE9C04B810A5EA4'';'||unistr('\000a')||
+'blog_install.i(11';
+
+s:=s||') := ''30E12705802D65BC507A88AF4D25C5C63717D3FCDAAB1D0AFB8B27C659B2CD10E076684078A37EFAF4BA319FFF7C16F092A7E6771374C5F470C9604CC165A194E7C2E80298A11DFE6E7EED55DADE7EB35919F61E27F4B276AB27C03DE089097FAD68689839FEB0C33242B964E5ED7C3D5FDCF4408E14E068161500F4961081B9'';'||unistr('\000a')||
+'blog_install.i(12) := ''88A1FB35C49A67E7D3BB66F5DFCD9835EB78B0B66A02DCAEB8DE170ACF9B7CCC31987E7F1A246E024FF2E4F87C64C84A294E5F52866E146D';
+
+s:=s||'5622A43C31F09C1589B0EAB74F93ECEDBDF68468F2E2AD9600B7C31CC3507F9CF0B5AF4970D4285791974BE089388DB46936F646882412F84D939A60008F52D965A303E8C5CE141A'';'||unistr('\000a')||
+'blog_install.i(13) := ''EAB841D2B669ED8D90B02CFC1E93118100CA214CE92248B1290A4064C37AD63E3BDF4673E83762C917B63A02DC0A630C61C9E8BDF71E3972B7DDD24BBB3CB9DE152CE91345CD3D3DC42C6BF0B5A618D48582780D23FB0B480E6D20E5F107E29645534F2F96BD691981CF34A80B851C49908B08';
+
+s:=s||'DAE1E4C0C3F6256FB371D1A2A6'';'||unistr('\000a')||
+'blog_install.i(14) := ''98C79A764A374D5B15017EA6783458577762C3A17350A272F67A7108CD4E514003CD3D3D44931615A34773C0453FE2CDFBEE63C3BF976088A2BE9F04C5823E9CB902E206BEB6A99BB61BBB9DF66D5EBBE15A7AD6AFC76F9AD487428E9FAD8BE8FDA915C2BA05CF126B6D79F8F8A875CA5643803B611686BC387ECE61F86B6ADD'';'||unistr('\000a')||
+'blog_install.i(15) := ''7BBDB890C021CF0BD0D2DB4B6F2249B0A69659575E4578F468EC64927FDE762B6B';
+
+s:=s||'FEF10F9482DA6090A0693ABA81B824092951CF8F2493B4F4F6626BD861DFFD9871EEF751A649CFFAF52CBCFC52A26D6D043D262383C1A1E90074FA731A621B5B59F7DC02AD34071E134DBEBCC509700F78928A252376D96597FA197B3B022D'';'||unistr('\000a')||
+'blog_install.i(16) := ''05183C9955C1C648949E44026F28C441575D435563E3A6EB60DB2CBAFB2E96BFF8170418190810F47AB2602EC4451C6A29D89348D01A89A035341C74307BCC3D7370C22A40E7CA152CBCF46212BDBD84BC1E6A0381824B4067626C7A';
+
+s:=s||'A6F58DD7E9FE70E93BAD517BFA5C486C5102DCA9B8D0130C5D377ECE61288F270B48A748'';'||unistr('\000a')||
+'blog_install.i(17) := ''902F3274C4E374C662183E1FB37E7C35B5FD7303332DD6250FFD8A0F7FFF0C02D4FA0384BDDEAC2F57C8B841B1E9A13B9EA0351A0160D2E147B2EBC9A73AD6A56D1F7DC82B575C8A158B51E5F551EDF7397340E74E0B99CFDBF118EB16CC27118DFCEF7111FBA62D4680FBA026AE64C5A87DF70D578D9F909DEFF381EF70BE27'';'||unistr('\000a')||
+'blog_install.i(18) := ''99A43D16431906FB5F7C';
+
+s:=s||'29A3F7D833671B963EF524EF3EFA30684DB5CF4FA5DF9B13FC422D62379274C4E2B4C7A220C2D4134F66A7A38FCDD9BEA6B716F3AF6BAFC64A26A9F6F9A9F2795D7B7F2E6198E917F42CFB848D8B5EEF109F35FEA876DAB70801EE54EA0A6F287879E3A17310258EE0E7CAF59261D1F6F6832F4AB1EF'';'||unistr('\000a')||
+'blog_install.i(19) := ''79E7336EFF030A6AC7B2E79FE3ED7B7E8EB66D2ABC5E6AFCBEBCBD59725C09B78BD21E8DD1198F234A31ED3B67D238FBAB05B56FCDC297597CEBCDD8B64DADDF4FD8EB7155';
+
+s:=s||'FAB9C461EA39DBB2D9F0FC02AC9EDE4B8F8A26AFDEEC04B813C24AC98ABAE9D36BAA264E4CEFE539EAFDAC14D1CF869865D11E8B83087B7C672E93'';'||unistr('\000a')||
+'blog_install.i(20) := ''0E9D53547B56FFFD65DEB8F566743249D8EBA1C6EFCFED3216319804D01A8BD21D4FA04C933DCE3D9FB1077CB1A8F62D5F309F25F7FC1CB4A6361020E4315D8D9F5CE230F5EFEE659FD0F1F65B2DF1DEE484E3FB96B86F3E02FC5C31CF13085E3F6EF66C44A941700B0DF9C2A68199986DD3D1BF2C7BD7934F61E7638E1B529B';
+
+s:=s||''';'||unistr('\000a')||
+'blog_install.i(21) := ''362C7A837F5E7735562C46C8F4501BF0673990392B0087D768A0B55F901A3E1F7B5D7409F5D3F71A52FB3E7AF271DE7FE80104A13E10C06F1A39AD619D270A68CB62C39F5FC08E44CF3F2292BC65B311E001F0C7947C5A3B6DDAE8C131FE1CE08B4BC8172061DBB425928066A7238F62DA69DF1A9628DDF8FE7BBCFAE3CB4874'';'||unistr('\000a')||
+'blog_install.i(22) := ''7713300CEA02FE4133468A1481B6D6B444A2442D0B4F38CC3E975DC988A99F1B56FBDEFDE57D7CF2CC9308302A18';
+
+s:=s||'C06718592250179002063C829E659FD0F5EE3BEBC2BDC989B320BA590870B7C1D795321E1B77C8ECBE051C2EF5BDB8F47CFAC1B7B4A6236961A36938F8CBCC38E7DC92CCD0ECF87419AF5EF223626D1BF119'';'||unistr('\000a')||
+'blog_install.i(23) := ''8AFA4000A3BF11853A811ACD864884B8A5F18D18C1BE575D47E5F809251800D0BC75FB2DACFCD3F328114605037853CA475D643AB013099AFFF40296651D7F44C47A62B310E05E43E60777D8614EDD9ED3B36BFC3CCE5FEA787C7B32892D3066DFFDD8E7C28BD3EAE8';
+
+s:=s||'E11E3DEBD6F2CA85F388346DC09B420247119871156CDD'';'||unistr('\000a')||
+'blog_install.i(24) := ''077EC2B2098E1AC57ED7DE4070CC0E256B9BB66DDEB8E64AD6BFFA0A8612C6A6EC67A0B3F992230AF43D6A7F7331D1F5EBFEF0DF3DC9C3CB4E805FC028DB90D5A3F6DADB0CD4D765812FAE2920DD9849684DB7D6544D9AC4176FBC05659A94FA88B6B6F2EA8FE6D1B56239A6284607FC984A650599D48749DB6643244AD2B6A9'';'||unistr('\000a')||
+'blog_install.i(25) := ''6C1CCF3ED7DE80BFB6B6E46DB39349169E770E1D1F7D48';
+
+s:=s||'7D2040C034B2C02E24056820D6BC818EC58B1222C9B173BA8B5B855C3401EE519C67FAFDB78C3DF0C0F4D9350E659F64E4FBD4DC6B6BE8D436CAE365AF1F5EC4E87DF7A31C47BCAB8B7F5E7C216D4BDFC710A13EE0C7E7B0C45C80B8B6698A44B1B4A67A97A9';
+
+wwv_flow_api.append_to_install_script(
+  p_id => 12275005924827304 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_script_clob => s);
+end;
+ 
+ 
+end;
+/
+
+ 
+begin
+ 
+declare
+    s varchar2(32767) := null;
+begin
+s:=s||'EC73D5'';'||unistr('\000a')||
+'blog_install.i(26) := ''4FF0545494A55D1BFEF11A8BAFBD122B16634CFFE8A6763187748E54A0FB4216AD2FFF956422F1BDAF75277E5A6602C8E2CAF18D7B56EFBCB363CD9F45800CF053534444430C1B94C19EE75DC08EB30E2ACBC54E4622BC71C525342F5E8412A1DEEFC76FA8344D10B36C9AA2516CAD19397D06332EBF7A7013A9521F6B5EFC13'';'||unistr('\000a')||
+'blog_install.i(27) := ''6FDFF813B46511F678A8F17ADD7B7D8EA8904A8EEE0F3FA077E5AA7F1DD693D8B76C04B81F76B00D593372';
+
+s:=s||'8F3D06C3A25BCFCF07FE40CA8800511BB4C0B433CE62C2E14796E5A2DBC9048BAFFE31EBFEFE124A843ABF8F40FF7072C4B2688EC6D05A33FA802FB1E72597A34C4F59DAB1FCB74FF1EECF6E07ADA9F47AA84EB1AF'';'||unistr('\000a')||
+'blog_install.i(28) := ''B346FFC85D0AA6A681F8C6563A97BCAD1589D1B38B182A2E8A00F7199C2886F1E8E899FBA35286611D0990597A895359D8EF0300BD76DFD7DAF9E4539972D2C965B9F8DAB65972F3F5AC5A30BF6F10A9DF966D8DC7D1C0B8430F63DA0F7E5852319AE6033CFC';
+
+s:=s||'001F3E783F00355E0F15FD24731D0328B0F7F711DCA2EDD585A0'';'||unistr('\000a')||
+'blog_install.i(29) := ''F9C6ECEEF86FCA4400F50B5F75E5B76B77DFD3B1376745800CF0559AD92269EF8B6BE845A3354C38F268763DF3ECF22CDAD39AF7EFBE8B658FFF3AEDE9895F3F91A973CF2ADBFF7CEFCE3B58FED4E3E87EE285FB45AF76C8F9B984DFA6D4A0B32243E7DB6F93E8ECB8677677E28CF2A400433E098F6F9C58D1D0E86AF2888307'';'||unistr('\000a')||
+'blog_install.i(30) := ''400AF832087FF6FB1240777F5C1BFBE5D9ECFEBF';
+
+s:=s||'E5EB8D1F3FF2104BEFBBBB2FEA7CFB0C269F744AD9A2CEBFAFBF9A35CF2F00A0CEEF2368184EEB45D2F27EAE4A2015FA81D76A20BA720591D5AB3E3AA42B31A5E404B8071A4C5356D4EC3A0D6F75555ACFCF05BE645509E22A1CA16F917C0F824653FF85994CBFE40A94D75B'';'||unistr('\000a')||
+'blog_install.i(31) := ''167056FEEE69001A8E38BA3CBA231EE7AD2B2E66C3C297FBC4A7CF8BDF30F2D6FA397BBE6385D047846467075DEFBD8B9934C7CD8A4456979400F71B1C23A29EACDB7B6F9469160C7E7AA520CE6651';
+
+s:=s||'9A90146CA0536B3442CD1E7BB2D7D5D761E69855B3351EC9DE5EDEBCE8025A17BF811218E5F7F5959FF93C7EED0CBE1369'';'||unistr('\000a')||
+'blog_install.i(32) := ''32A3819D48D2B1F80D6CE4E843BAE2CF949400BF34D54586D7736DED9ED3F3F6FEAC1E2ED9613FD513506C8A0E83BD07A10B8D0D54EEBC0B7BDF7033DECAAA6D02FC4447078B2F38878EF7DFC3106194CF87A77FB85CE7B07C5D7BBC436AD02ED1A0F3CD4558C9C4455FE94AFEA4B411C0A31EF285C32757EF32351B48712040'';'||unistr('\000a')||
+'blog_install.i(33';
+
+s:=s||') := ''064904C90EFB698F256B0E8106BA102CAD093736B2D72D77E01F59B755831F6B6EE28DEF9F45CFF24F314518EDF7913977D96DF2A726B7101CB07E3335426A34E859FA01C99EAE070FEE4C9C5652023CE0315EF38FACDDAFA2A131ABE7AB944F518E00F7BD40A50EB7A656060EE4486D589708090D8151A3D9FBD63B08EE386E'';'||unistr('\000a')||
+'blog_install.i(34) := ''AB04BF77D54A169F7B1691756BF12861B4CFEBBC3640E7A9ED9D849F4E9F1B98990206D70FAC5A49BCB5E5D5833AE3334B4A80073DAA2DB4';
+
+s:=s||'C3D8EA407D7D7A0E771073CA017CE7521014E9A3744E9FA745D1A53549046FCD08F6BAF90E2A26EFB45581DFF5D1872C3EF74CE21B5BF129C528AF074324AFAFAF0BA8049C7BBBCE'';'||unistr('\000a')||
+'blog_install.i(35) := ''12901A88356D20BE6EDDC6033BE3B52523C07D50637A546B785C03FE9A11EEA13FCB0B70107D19824F32B442BAA6D8E4246AA05B84386086C24CBFF156AA77DB7DAB00BFFDEDB778EBFCEF92ECEA22A014F53E2F0AF7C11BD7F22FA58F3B89429D61100DBC23351A24DB36125DBD1A5BC547CC';
+
+s:=s||'2A60AE60410478C0CF7865A94F'';'||unistr('\000a')||
+'blog_install.i(36) := ''C38D8D782B2B0741490BFD8E96B0645BC5927DCEB96A90AC94A0E99BF7144730FC3E76BBE606467E7EE61605BFF5D5852CB9F03CAC6894906150E7F520797607CB67F20C20AC1D41CF7609757F190890E8EC20B67A154A198DFBB745569686005EA6195A2D093736E20987B3437FAAD9939AD73388911E09C43D7248FA32F2CC'';'||unistr('\000a')||
+'blog_install.i(37) := ''4AA3478428829826BB5E7239A367CFD922E06F786E3EEFFFF812EC44820A5331D2';
+
+s:=s||'E371ADE3C915FAB5B3D1A3B5CE5B056C2242BF17D0D34D74D54AB462B72FB5C5FF5D12023C68325329B5B0A2713C6620900E9EABE193ADF8958BE2CFAC284036BDD66912A96DD3DDD54D776F373A9964D7EB6EA2F1D46F6D56F0573DF00B3E'';'||unistr('\000a')||
+'blog_install.i(38) := ''F8E179A00C46545731B2A606328774B372BC76347E34EE3381B44E09F52EA55FAA2EB02211A22B5760DBF6CC2F75255F2D09011E36CDAFA2EC05E186460C9F0F1119ECED22A4FD9DCF23500EE00F560FA97E814364D0B12856472776';
+
+s:=s||'771782266A98F41A7D132BA75C741993CE3D7FB380FFE96D37F2F1359783D68C10A85202'';'||unistr('\000a')||
+'blog_install.i(39) := ''22A870055259851A5C16EF6EEC0C667CEDAE15D2AB00EDE82164FED8B128D1952BB1B57CF58B9DB1E74B42805F798D630DF413A186464CAFD7215C671B3CCA71A4308FE8CB480B8355406F0F567B3B3A16CBFA5F3165D0E331416BC69FF93D76BEECAAF2EDFCA8351F5EF12356DC795B9FAFAFA0C241E98BCF8F515D0DC19063'';'||unistr('\000a')||
+'blog_install.i(40) := ''B8CFEEFD3A8FD8738F06';
+
+s:=s||'99A5A29D48105DB50234C7CDEC883F599A08E0358E11F493A1B13B62F87C397BBC380C00653A7D4EE563EA94311110ADB17B7AB03A3B20114FAB2852DF17334D7A0C03B466F2BC4B98F88379E5EDFD375FC7B29F5C0940CD40EF77A9F3C5E345AAAA50C110A410C5AD97934204EDD2D3D3D47F4605D0'';'||unistr('\000a')||
+'blog_install.i(41) := ''1701E2C4D6AE416B7DECCC8EF8532521C0A33E73B6D6F673A11DC66278BDD9BD34156457B74F52D2805369B8E9BCDDDB83D5D10EC964FAB98CCF8E7A3C440D031161CAD537';
+
+s:=s||'30EEB4D3374B0A587DFF3D7CF4A3F3D1B64DB5C0082559193FB5D78B692215554828EC6A07A796826E1A41BB4482D4CFB0E37162EBD6616B66CFEC'';'||unistr('\000a')||
+'blog_install.i(42) := ''88BD50220DC0179452AF04EA470D6EFBA2245BB53B193E2A875DBCA994EC7BB78E44B0BA3AD089C420499CCA4901225E0F71C3444C93CFDD7A17A38F3E8ECD796C78F2313EF8DE5C74224185C0C80CAF1F871E2B1E0F12AE44024197E1DD54A0B3A3415AE9A79D23811D8B126F6EC612F585991B23AF9584008F789926A825FE';
+
+s:=s||''';'||unistr('\000a')||
+'blog_install.i(43) := ''DA5A3C81607AF81F04595C66FDE42383A063B1BE509F4CA411632061A4924D03319F978461A27C3EFEEB9E0719F9E5D95BC603786101EF7EEB24EC6884B0823A25836D742FF134E2F1A02A2AC1E777CCE36EE3FDA924B03348007D136DEDDE5E12ED6D28F4B4BDDBE2EF942605F869146D2CF75454E00D5738287F71053C532B'';'||unistr('\000a')||
+'blog_install.i(44) := ''A8147DA01309ECEE6E477197F9B903CE5ACCEF27691898E130D31EF835D5FB6D5923A8E3D5BFF3CE49C761757512';
+
+s:=s||'101865649320D3D51BCCF75E1F120A23FD93429DF3BECEF6FDB5733AB001ABAB1BABBB0B856ADCAB64461054FB7D469BE1F3E1AB1E91A5FC5546F8CF3A9741069249EC9E14E03388E1442A44FAC0570AEFC8'';'||unistr('\000a')||
+'blog_install.i(45) := ''91ECF6D013544CDB6DABB082BB97BCC53BDF3882444B33FE7E12A81C064F26C0E2F323C110DA345D5FE31409D209D1478244473B7634468F19AB98D59C7FC168C1F5D2FFF98D56416AFC757569422E3347ABCC109F5ADA691BABB70722919CE26E4017A814F0A3FE00';
+
+s:=s||'B6A1F08FDD91DD1E7982E0A4AD6B3028F2D152DEF9FAE1'';'||unistr('\000a')||
+'blog_install.i(46) := ''C456AFC2237D3B661939EA76325D3C005F000906D1038692CE9EF5E3A6FEFB7C024DA2B5156DEBE6BDDB62F5251D0DFC3F9FB15060A6AFAA12C3E3759CE5935D09F413C3B6B1A311742C8A689D460C9527F48B52C402416C258426EDC4B4871FC73776C7AD723838B66615EF1E7F38918F96E211186D08660ED5EF14EE1101AF'';'||unistr('\000a')||
+'blog_install.i(47) := ''1FF1FBFB88902F1D649480C9AE4E6C58B8F7C6D8012525';
+
+s:=s||'C0635EE397229CA63C26DE8A4A77F1971209446BEC58B43FD4EB0C8197BFF76318C4FC01508AF0B4DD98F6ABC7F0D48E646B3E122DCDBC77C211F42C790B438431021E21A7D8D34EC3BC08787D68BF0F11B509E494EAC0CE1085564727B69544C3FD7B6D8C7DBBB411'';'||unistr('\000a')||
+'blog_install.i(48) := ''C0AB7EA894FC4400B3FFD6EB4EE15FA4EF16693A1E1F54F5D9BD5CF2E67E6D1A248321B408D5FBECC7AEBF7C04235CC1B670585D9DBC7FF2B174BEB61003186D28BC0E43BD6E793D75ACDF06F078108F0F6D';
+
+s:=s||'1ACE9A40F7ED266AC7E37DA940336F465BECC69212E0375EE348513C33089C6960787D88527D3DDAB6C1B2C04A82'';'||unistr('\000a')||
+'blog_install.i(49) := ''6DA789BFEC2A401C8DA381739826562884066A0EFE0A53EFBC2FDD5FDF060E3B1AE1C36F9F44DB9F1620FD24F0CB264FBF1012649D1305A689560A06A2826D63C7E3D896D5171534A0F411D35B62BF2F6D0408B283611B6B3215BEB3F22FAC9767460E41C0E325190A2240DD91C730E5C6DB90322DD35A7FCF4FFB366A987B4E'';'||unistr('\000a')||
+'blog_install.i(50) := ''';
+
+s:=s||'79860E12093EF9FE5C9A9F7C0C01EA0D212832B8A8C319F83C24D0EEA960E03509658CD9A7B9677D490900F0B8DFFC40A177C621FFA79B3DE2002E79C59FF6FAB183414460CCC9FFC3A4CBAF81722C0CD19A35375CC5863B6FED5B0F78F6798CFDE165E51944B26D965F7C3EEB7F790F00230D191C404A8D06CE40EB0CD0FB4E'';'||unistr('\000a')||
+'blog_install.i(51) := ''DA19238419EF7F778FD6E87F15DABCA2BEF19301E32E34674A81EA3FF3F95CE11FBF1F1D0C019A71E79C47E379E519D4D196C5EACBE6D1F2C803E8';
+
+s:=s||'FE8A04ADA93DE934C65D7D136218E5193FB8E12A56DF721D5A43AD12AA943B09EC94EAC0EE4F16768E0861A73D2F77EED11AF96EB908703C9ADFA41240B9983FD966917BF8'';'||unistr('\000a')||
+'blog_install.i(52) := ''D7C120F45BCC132FBE9C1DFEDF77CA1492E3ACFCC1D9B4FDE1E9BEB17C2B89006D8689B66D461C7E340DB7DD8D78BC654B39CBAFB8106D6B462861443F096C9D6EE7E64A05B9A240DF7BE5E83D5A23CF948500BFAE60A437613489202A73CA5741F95FB2BDFE6008027EC430D9E9BA9BA83FE6F8F288';
+
+s:=s||'B24884E567FE0F5D2FFD'';'||unistr('\000a')||
+'blog_install.i(53) := ''056C9B11C904DEFED234298A36D3C4B66D2ABE74308DF73E822AD3DE00CDBF7998653F380B3B6951A9845A25E9512015F802A2C08016E8D701B691F0D6EDDAD9B9B12C04E88F02AF09ECE7240055DE3C9FF17CB8027C3E0CAF872977DC4DED57BE5A968B6E75B4F3E9B74EA467D1BF505A539D88E349F125442089B0D130B1B5'';'||unistr('\000a')||
+'blog_install.i(54) := ''2638631FC63FF83846557559DAD3B6E00F7C34F714AC588CB012EA32499015D6B3B5808B';
+
+s:=s||'505C38AD257A40316D299A004F04D55986963BDD855E6E013848128F8954556386424CBDE701AACA34BB37D9DCC4B2538F27FAC1BB185A53198FE201C7398D16C246D3C4D2E0DFE573343EF23466DDA8B2B4AB73E1DF587ACAF1247B'';'||unistr('\000a')||
+'blog_install.i(55) := ''BAD9D1507864532AC88C02B64BEDBF890C83834173776B89DE5B56023C5E498D9930D609E2CD45809CF5BF8078BD484525E1A953D9ED893F9425E4C657AF62D9C9C7125FF129A6B6A9884731B5CE9A7A36389B59C016C54631480A781B27D0';
+
+s:=s||'F0E86FF1ECD8508694D4CB3B871D48CFBBEF30C6C123C80EF7DAE5F9BE34A03531'';'||unistr('\000a')||
+'blog_install.i(56) := ''3BE11BB35B47475B590900F074C07C5AE02847A59FC3004A138022182346805254EF7F20537FF120E2295DBD1FFD68299F9E7A3CC90DEBF1D816E17814D5AFFA07966BB98D436811362A832460D48F62DC23BFC5376597928AD10F4F3E96F6BFFD1913616CFF10B25D601AB09D7480AD9FDCB53556F4AC982111E099A071245A'';'||unistr('\000a')||
+'blog_install.i(57) := ''9E712340BE0A6050181A065255';
+
+s:=s||'852883DAC30E67A75B7E5A9232ACF7ADC52CFFD689581DED78AC24A10CF0DD7A7F2A4135B0510C124A5055D5ECF8E013F8F7D86BF8E05B169F9E7D1A2DBF7D12031863A8C10123ED42021CD240B60ED047EC5AA0FB376C023C0E5E4FC0F391886E289C002E9581C74455568308A3BF790AE3AF'';'||unistr('\000a')||
+'blog_install.i(58) := ''B86658864CF72B2FB3E2CCFF87EEE9C663270944238315875B25220E041D68419B32888AA08221C6DCFB08C199070ECB805A71D17934FFEA5E44C30E83B93F7D58D72E4007A41143';
+
+s:=s||'EB151B5AA29367F5EDAF517E02003C1DF49C6DA07F26432440DAFB3C5E54652522C298B96733EE828B86D4A68EE7E6B3EA0767423C812711'';'||unistr('\000a')||
+'blog_install.i(59) := ''27108F16548AA612C0C9D7E810935E2588E961D4EDBF2074E8E1436ADFDA6B2F63ED4F6F06343B28854F9CF27D1F01D2CABEF45C9F9D26C43EEB734DB19F0FA54D4326C0E310F005CD6502A3DDE6061673E10D9F0FE9DF9471DC859730FA5B6714D59EB6271F63CDC517A06D0B5F3C8EAF1FFCECFF571C0106BE53A752748B42'';'||unistr('\000a')||
+'blo';
+
+s:=s||'g_install.i(60) := ''9462E4B5B75171FC4945B5AFE9AEDB587DF5C568DD374F209016F6332776380B411702ACF3872213272C2F7EA3E8611100E07721739E68AE2F050194F42DA890701851C2F86B6F62E4315F2FA81D2DF7DFCDBAEBAF42B4C6138FE08BC51D04E8F00820025DD247021BA8BDE8C7549D5ED820D2C6C71E62C5F967A1B5A64E84B0'';'||unistr('\000a')||
+'blog_install.i(61) := ''4AF7FE874500CDF9535B22B70C15C36111E07108FB83E60A819A61A580D40BEF0F20E110CA3098F8D37BA9CE35E3576BD6';
+
+s:=s||'DF723DCDFDA37ADE482F6622D6D786AC3188A1A780D4EFD483D0A10C6CADA93EEB3C6A2EB834A766E978EE0F2C3FFD9BD896C548353010A47312A08814D01C559109BB6FA0678B1000E0F741CF5982'';'||unistr('\000a')||
+'blog_install.i(62) := ''BE73C822D0417CA950081D0860783C4CBEFF112A1C66FE6ACB62ED9517B3F1FF1E46043C3D3D9889F82620216F3BB2AB18F7F18DD4C81611A15D0C2CADA93CF134465E792338542FDDAFBCC4A7271E89958853A384AA81514057355F9C08145BCE98D2D27BCF70F01B36011E';
+
+s:=s||'07231034FF29C28CA2CBC01C175E55F4DBC4E10A'';'||unistr('\000a')||
+'blog_install.i(63) := ''263FF06B42BBEF9936CEBEEA87E7D231FFF7A035664F379E813505290470F623C471399BEB34B58C350C038FA3226CEC2741E86B4733EA969FA70D2245DE7C8365DF380CABBB870AA1DFF3DF54B6D92E133C8B2803FF35A529F279017B8B1200E00F01CF3EA2F46B02AA6023280F0144402A2AC1EBC35B5BCBE4871EC7BFD314'';'||unistr('\000a')||
+'blog_install.i(64) := ''EC488495E79C4ED7C2BF211ACCAE2E949528CA92CE6704659682';
+
+s:=s||'992418782E86D0AA0C925A13FCE2C18CB9FB615420406CE97B2CFFC6D788373713A26F11A9ED36C9439312F20B36822CCB967DA7B6F42E1A2E76259B01F1C7B071B768995BD05C801CC4C89A2B5059055E2FBED1639870D7FDACB9FA327A17BF8E681B4F7737'';'||unistr('\000a')||
+'blog_install.i(65) := ''32B87E3033AF8BEB8214C9630681C38E2792BDD219FA762B691145024D60C6BED45F713DAB4F3F81D89A35F8817AD964E192D2FBC911FEC96305DB70D7CE4D91B34B815BC908F05C25359665BE2DC88E050D063991';
+
+s:=s||'C0094811A4AA0A4CCFA695C79685D9D589D8B6F3A2D41C3AA09828E0B413BAD36D679208CD629018189AD5'';'||unistr('\000a')||
+'blog_install.i(66) := ''1A1F50D70FA72EB6F7E7CEFF2BCDB86FF709EDEDED5B150100165498FB6B9BBF898851CC74B0CC852059D14029241C06C344B485D1DD8DD83685CE4CCA373359C46974505C7BBFD3854B8AD08E22A6C187A60A7B70AFA07CF3FB9C6606B984FF0470E0E4A6C8ABA5C2ACE493E0E687CC8B94C8B5854E08C9A7C007F61B7254E6'';'||unistr('\000a')||
+'blog_install.i(67) := ''4256C9';
+
+s:=s||'97FE3FC575138B424900CE5BD5A4FEEDB80790CE5EF25D10F8392684589A79539A22379612AF921340833C17F22E10D1B30B51DA4E53C5D273727AFAC0C5D8C9DA8C228F1648AD08C84182D47C9FB903BA832D914E02874D1D9D1685E49E1236488EF9933644FE5B72DE827A2B2000C0F361EA6DCC450AD95186A1039C'';'||unistr('\000a')||
+'blog_install.i(68) := ''661939AF42768F0259252199FB12B993001722E4EF04DA210AB8AD08DA24FC9CE7FD69808FE3A6B9DFD4355DADA5C6AA4C9BE9C0FC0ADF1443DB0B15D415';
+
+s:=s||'3A2D3C9F11A35CB7A4292E0AB8BD1F9CB7B42BA4F7BB4701B2A20050CCB4F0666DDB5F98DC1CFBB81C38958D0000CF577AF6C5E6452504A1B08521F9D2403151A010'';'||unistr('\000a')||
+'blog_install.i(69) := ''12407144208F06A048E0C90D7E8F05074FD910F967B9302A2B01009E0B995F554A7E27E02D240D6409BE42C4608EF2AD9073B94890ABFCCBA1835C77FF2E6269585CA30F9DBC21FA6239F1293B0100FE14F61E8FE887074950E0B2B1BC51204BE18BE31E05CAE13E459227DC67DEE8520AB86839EFF891B9CF';
+
+s:=s||'5F1EF0453879E2'';'||unistr('\000a')||
+'blog_install.i(70) := ''FAC8E3E5C666B31000E0852AF310B1E52981B02A627308B7509EB951A564A6821412A80C21E7BE3DAD33118672A19CB67B755E0E9E4906DD2DDA3E666253FE1DBEB629020C680243335FA0B6104FA0A08A20572A7025418E7B17B91061F082E551814E77F32A6C83883EC187C86193D6F7BEBEB930D9AC040078BEC2BB8B897E'';'||unistr('\000a')||
+'blog_install.i(71) := ''4E84C6A14781A19120BBB78BFB0DAF1D72BE14D9FBC9E8F1A9E5607A99A8019669CB3E74524BEC';
+
+s:=s||'C3CD89C7662700C0B361EABCE27D40098715BA84BC1C24484B092957C3E9CEE743118159613FE50569DBC2C0FCB8699E5A8E3A7FAB24C08063F8B72A739ED6EA6A0566C1AA3EE35633EE63F7F949800311DC547FBE68A0F309'';'||unistr('\000a')||
+'blog_install.i(72) := ''4287FD02E9BB89FA45939A22B794DAE1DBDA093088C1B361F380A0520F010D6EA920737C5E1570D711C7DBD5E17C87D3D4B42E199E9F645C252926FCEBECBD8053CEAFECD59C30AD29F20FA720F1592080DB3DA5B33AE18F8254CF327C5778457F7B';
+
+s:=s||'C0F2CFB7556CCE5BCFE0745733C929F69C9C3E7131800B29035D40476BAC'';'||unistr('\000a')||
+'blog_install.i(73) := ''38DCFB7CB75C755E6F6F3B39B60476CB205B230124CF0F859CBF336CEEB98B52377B843D0B3778F29320DDD39782557FA6E0970229E07667D08466D1BF13FAFCE3DBA36F17007C21E7F596228094E107404682F1F30AF3E43AA5E619503B1C1240EEDDCB014701E85E0216A86F32F6F9B7A165ADCD4F8E6B89FCBA05AC22C01D'';'||unistr('\000a')||
+'blog_install.i(74) := ''CA4FD908E0069C1A06E82AE5B353FF96';
+
+s:=s||'195E42F3FCDE6F8E429F6E8A8C2A9C04E9D5016E468F03117021C3508D200BD6AFB3F5BD9776457FFD4A8CDE0C906C87BF87F2630F870C5224F0AA0812A802C1CFF9BA06F05D15368F6D30D4E95E61ACEB742D87C91E6EB5BDB3DA771F0328E682E9BE50BFFA134BDF7B7E77F4E98FE3'';'||unistr('\000a')||
+'blog_install.i(75) := ''C40A00B01012D845806F174A0429B2C7AB2100AF8A04DF9110F5E09917F4CC9CEA9123AA902F19822F6FB8774A0919E5A073AD2F459580FDE8C5DAB4FEEBBF13FAF71776C416B66D0AF585';
+
+s:=s||'024981200FF535BA18021403E85048301CE2C89E2615DFF17B0F996C30A742C9EE92720B43675F5FF24EF0CC6DFC885BED6F776BDE'';'||unistr('\000a')||
+'blog_install.i(76) := ''5A9AB4E6DFD16DFFF9F564B26B9820D99BE13D0511400D135055A2F7E67D3CCDA4F2049F397D2753ED55273223284C18C800D9A64F765AC84506870BA47B615993CDA2F713C9458F46928BDF4CD2394C4086F37828EFFD6C1120F3F17E8651FB55BFECB283218D2391860AC58E21A1C1275293DAA32517E00271CDC688D62B3B'';'||unistr('\000a')||
+'blog_inst';
+
+s:=s||'all.i(77) := ''35AB5A6C56ADB1AD15F3E3FA83576256EB16047CB31160AB4E0105EA93B4EF31DE24304119E13A45A05AE9508DA870B86F9536DD9A48BB96EE8DB6DDD36C13F9D4B6BA972789E4A9C9ED610AB6AD3A056C752270A8BE8283D957A899E77837D712FC6C132270AB29038B741529E0F75008E0F67BA8EEDD3651066E5123A80802'';'||unistr('\000a')||
+'blog_install.i(78) := ''5024F8C5FA39C592A150FB769B318236AB155CC0394AD8E30B2540312428346D6C735670D90783CA087A2909504A326CB3834125';
+
+s:=s||'1D0E2E30B40FB7C7CB30C02F0509C833CCBB4D0F07978A1C94A9C7972202943222B03941DE1A09504CDB0A15765B9200C508C6ADF222FFA71C439DD8FB1F7F41B61F9FD1E3FF037B931A9E08'';'||unistr('\000a')||
+'blog_install.i(79) := ''59358F0000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''stop.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'e';
+
+s:=s||'nd;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''2A7B70616464696E673A303B6D617267696E3A307D626F64797B6261636B67726F756E643A75726C2822663F703D424C4F473A46494C45533A303A4150504C49434154494F4E5F50524F434553533D444F574E4C4F41443A3A3A5031315F46494C455F4E414D453A62672D6E6F6973652E706E67222920726570656174207363'';'||unistr('\000a')||
+'blog_install.i(2) := ''726F6C6C2063656E74657220746F7020234545453B666F6E742';
+
+s:=s||'D66616D696C793A417269616C2C48656C7665746963612C47656E6576612C73616E732D73657269663B666F6E742D73697A653A313270783B6C696E652D6865696768743A313870783B636F6C6F723A233333337D696D677B626F726465723A30206E6F6E657D'';'||unistr('\000a')||
+'blog_install.i(3) := ''613A686F7665727B636F6C6F723A233030384542307D627574746F6E2C617B746578742D6465636F726174696F6E3A6E6F6E653B6F75746C696E653A30206E6F6E657D7072657B77686974652D73706163653A7072';
+
+s:=s||'652D777261707D74657874617265612C696E7075742C73656C6563747B6D617267696E3A3270787D746578'';'||unistr('\000a')||
+'blog_install.i(4) := ''74617265612C696E7075745B747970653D2274657874225D2C696E7075745B747970653D2270617373776F7264225D2C73656C6563747B626F726465723A31707820736F6C696420233939393B70616464696E673A3270783B626F726465722D7261646975733A3370787D696E7075745B747970653D22627574746F6E225D7B'';'||unistr('\000a')||
+'blog_install.i(5) := ''70616464';
+
+s:=s||'696E673A30203130707821696D706F7274616E747D73656C656374206F7074696F6E7B70616464696E673A30203570787D696E7075743A666F6375732C73656C6563743A666F6375732C74657874617265613A666F6375737B626F782D736861646F773A3020302033707820233030354542303B626F726465723A31'';'||unistr('\000a')||
+'blog_install.i(6) := ''707820736F6C696420233030354542307D626C6F636B71756F74657B6261636B67726F756E642D636F6C6F723A234641464146413B666F6E742D7374796C653';
+
+s:=s||'A6974616C69633B70616464696E673A3132707820343070787D236865616465722D636F6E7461696E65727B6261636B67726F756E643A75726C2822663F703D42'';'||unistr('\000a')||
+'blog_install.i(7) := ''4C4F473A46494C45533A303A4150504C49434154494F4E5F50524F434553533D444F574E4C4F41443A3A3A5031315F46494C455F4E414D453A6865616465722D626C75652E706E672229207265706561742D78207363726F6C6C2030203020233030354542303B77696474683A313030257D236865616465727B62';
+
+s:=s||'61636B6772'';'||unistr('\000a')||
+'blog_install.i(8) := ''6F756E643A696E68657269743B6865696768743A31303070783B706F736974696F6E3A72656C61746976653B6D617267696E3A30206175746F3B77696474683A39363070787D237469746C657B6D617267696E3A323670782030203020313070783B706F736974696F6E3A6162736F6C7574657D237469746C6520683120617B'';'||unistr('\000a')||
+'blog_install.i(9) := ''636F6C6F723A234641464146413B666F6E742D73697A653A323070783B746578742D736861646F773A31';
+
+s:=s||'70782032707820233333333B6C65747465722D73706163696E673A2D3170787D237469746C6520707B636F6C6F723A234641464146413B666F6E742D73697A653A313470783B6D617267696E2D746F703A3570783B74'';'||unistr('\000a')||
+'blog_install.i(10) := ''6578742D736861646F773A3170782032707820233333337D23777261707B77696474683A39363070783B6D617267696E3A30206175746F20313070783B626F726465722D6C6566743A31707820736F6C696420234343433B626F726465722D72696768743A';
+
+s:=s||'31707820736F6C696420234343433B626F726465722D626F74746F'';'||unistr('\000a')||
+'blog_install.i(11) := ''6D3A31707820736F6C696420234343433B6261636B67726F756E643A234641464146417D2363656E7465727B666C6F61743A6C6566743B77696474683A37303670783B70616464696E673A313070782032347078203230707820313070787D2363656E74657220707B6D617267696E3A35707820307D2363656E746572202E61'';'||unistr('\000a')||
+'blog_install.i(12) := ''727469636C657B626F726465723A3170782073';
+
+s:=s||'6F6C696420234343433B77696474683A36393070783B6261636B67726F756E643A234643464346433B626F726465722D7261646975733A3370783B70616464696E673A3870783B6D617267696E2D626F74746F6D3A323570783B626F782D736861646F773A3370782039707820'';'||unistr('\000a')||
+'blog_install.i(13) := ''31307078202D36707820234242427D2363656E746572202E61727469636C652068337B666F6E742D73697A653A2E39656D3B6D617267696E3A35707820303B70616464696E673A307D2363656E74';
+
+s:=s||'6572202E61727469636C652D7469746C657B6D617267696E3A357078203020323570787D2363656E746572202E6172746963'';'||unistr('\000a')||
+'blog_install.i(14) := ''6C652D7469746C6520683220612C2363656E746572202E61727469636C652D7469746C65206832207370616E7B666F6E742D73697A653A323270783B666F6E742D7765696768743A3730303B6C65747465722D73706163696E673A2D3170787D2363656E746572202E61727469636C652D7469746C652068337B666F6E742D73'';'||unistr('\000a')||
+'blog_install.i(';
+
+s:=s||'15) := ''697A653A2E39656D3B6D617267696E2D746F703A3570783B70616464696E673A307D2363656E746572202E7265706F727473726567696F6E202E726567696F6E626F64792C2363656E746572202E626F726465726C657373726567696F6E202E726567696F6E626F64797B70616464696E673A3130707820307D2363656E7465'';'||unistr('\000a')||
+'blog_install.i(16) := ''72202E7265706F727473726567696F6E202E726567696F6E626F64797B626F726465722D746F703A31707820736F6C696420234343437D';
+
+s:=s||'2363656E746572202E726567696F6E2068322C2363656E746572202E7265706F727473726567696F6E2068322C2363656E746572202E626F726465726C657373726567696F6E206832'';'||unistr('\000a')||
+'blog_install.i(17) := ''7B666F6E742D73697A653A323070783B666F6E742D7765696768743A3230303B6C65747465722D73706163696E673A2D3170783B70616464696E673A313070782030203570787D2363656E746572202E726567696F6E7B6D617267696E2D746F703A313570787D2363656E74657220646976';
+
+s:=s||'2E636F6D6D656E747B6261636B67'';'||unistr('\000a')||
+'blog_install.i(18) := ''726F756E642D636F6C6F723A234635463546353B6261636B67726F756E642D696D6167653A6C696E6561722D6772616469656E7428234643464346432C2023463546354635293B626F726465723A31707820736F6C696420234341434143413B626F726465722D7261646975733A3370782033707820337078203370783B666F'';'||unistr('\000a')||
+'blog_install.i(19) := ''6E742D73697A653A312E32656D3B666F6E742D7765696768743A3730303B6C65';
+
+s:=s||'747465722D73706163696E673A2D3170783B70616464696E673A34707820313070783B77696474683A36363870783B6865696768743A323270783B636C6561723A626F74687D2363656E746572206469762E636F6D6D656E74202E636F6D6D65'';'||unistr('\000a')||
+'blog_install.i(20) := ''6E742D6C696E6B7B636F6C6F723A233030354542303B666C6F61743A72696768747D2363656E74657220646976202E7175657374696F6E2C2363656E746572202E61727469636C652D7469746C65206832207370616E2C617B636F';
+
+s:=s||'6C6F723A233030354542307D2363656E74657220646976202E7175657374696F6E20737061'';'||unistr('\000a')||
+'blog_install.i(21) := ''6E7B666F6E742D73697A653A313670787D2363656E74657220646976202E616E737765727B6D617267696E3A36707820307D2363656E746572206469762E636F6D6D656E74206469762E736F6369616C2D627574746F6E7B666C6F61743A6C6566743B6D617267696E2D72696768743A3870787D23636F6D6D656E7473202E63'';'||unistr('\000a')||
+'blog_install.i(22) := ''6F6D6D656E742D7465';
+
+s:=s||'78747B6261636B67726F756E643A6E6F6E6520726570656174207363726F6C6C2030203020234635463546353B626F726465723A31707820736F6C696420234341434143413B626F726465722D7261646975733A3370782033707820337078203370783B70616464696E673A35707820313070783B6D61'';'||unistr('\000a')||
+'blog_install.i(23) := ''7267696E2D626F74746F6D3A313270783B77696474683A36383670783B626F782D736861646F773A337078203970782031307078202D36707820234242427D23636F6D6D';
+
+s:=s||'656E74732068337B666F6E742D73697A653A2E39656D3B6D617267696E3A302030203570783B70616464696E673A307D2E72696768747B666C6F6174'';'||unistr('\000a')||
+'blog_install.i(24) := ''3A72696768743B77696474683A32313070783B70616464696E673A3570782031307078203230707820307D2E72696768742068327B636F6C6F723A233333333B70616464696E673A31357078203020303B666F6E742D73697A653A313770783B6C65747465722D73706163696E673A2D3170783B666F6E742D776569676874';
+
+s:=s||'3A'';'||unistr('\000a')||
+'blog_install.i(25) := ''3230307D2E726967687420756C7B636F6C6F723A233737373B70616464696E673A35707820357078203020313570783B6C6973742D7374796C652D747970653A7371756172653B6D617267696E3A307D2E726967687420756C206C697B70616464696E672D626F74746F6D3A3570787D2E726967687420617B636F6C6F723A23'';'||unistr('\000a')||
+'blog_install.i(26) := ''3737377D2E7269676874202E726567696F6E2C2363656E746572206469762E636F6D6D656E74202E636F6D6D65';
+
+s:=s||'6E742D6C696E6B20696D677B6D617267696E2D6C6566743A3570787D2E7269676874202E726567696F6E20707B6D617267696E2D746F703A3370787D2E636C6561727B636C6561723A626F74687D2E666F6F74'';'||unistr('\000a')||
+'blog_install.i(27) := ''65727B636C6561723A626F74683B626F726465722D746F703A31707820736F6C696420234343433B70616464696E673A3130707820313570783B746578742D616C69676E3A63656E7465723B666F6E742D73697A653A313170783B6261636B67726F756E643A2345';
+
+s:=s||'45457D236C6F67696E2D6D657373616765737B6865696768'';'||unistr('\000a')||
+'blog_install.i(28) := ''743A31343070787D236C6F67696E2D6D61696E7B646973706C61793A7461626C653B6D617267696E3A6175746F7D2363656E746572202E657272636F6E7461696E65727B6261636B67726F756E643A75726C2822663F703D424C4F473A46494C45533A303A4150504C49434154494F4E5F50524F434553533D444F574E4C4F41'';'||unistr('\000a')||
+'blog_install.i(29) := ''443A3A3A5031315F46494C455F4E414D453A73746F70';
+
+s:=s||'2E706E672229206E6F2D7265706561743B6865696768743A32303070783B70616464696E673A32307078203020302031363470783B766572746963616C2D616C69676E3A6D6964646C653B636F6C6F723A233333333B666F6E742D7765696768743A3730307D2363656E'';'||unistr('\000a')||
+'blog_install.i(30) := ''746572202E4572726F72506167654D6573736167657B636F6C6F723A233333333B666F6E742D7765696768743A3730303B6D617267696E2D6C6566743A31363470787D234D4553534147457B6261636B67';
+
+s:=s||'726F756E643A6E6F6E6520726570656174207363726F6C6C2030203020234635463546353B626F726465723A317078'';'||unistr('\000a')||
+'blog_install.i(31) := ''20736F6C696420234341434143413B626F726465722D7261646975733A3370782033707820337078203370783B636F6C6F723A233333333B666F6E742D7765696768743A3730303B6D617267696E3A357078206175746F3B70616464696E673A3570783B746578742D616C69676E3A63656E7465723B77696474683A36303070'';'||unistr('\000a')||
+'blog_install.i(32) :=';
+
+s:=s||' ''787D627574746F6E7B626F726465723A303B637572736F723A706F696E7465723B666F6E742D7765696768743A3430303B70616464696E673A302031307078203020303B746578742D616C69676E3A63656E7465723B6D617267696E3A30203470783B77696474683A6175746F3B6F766572666C6F773A76697369626C653B6D'';'||unistr('\000a')||
+'blog_install.i(33) := ''617267696E2D746F703A307D627574746F6E207370616E7B706F736974696F6E3A72656C61746976653B646973706C61793A626C6F636B3B7768';
+
+s:=s||'6974652D73706163653A6E6F777261703B666F6E742D73697A653A313370783B70616464696E673A3020347078203020313570787D627574746F6E2E627574746F6E2D616C74'';'||unistr('\000a')||
+'blog_install.i(34) := ''317B6261636B67726F756E643A75726C2822663F703D424C4F473A46494C45533A303A4150504C49434154494F4E5F50524F434553533D444F574E4C4F41443A3A3A5031315F46494C455F4E414D453A62742D616C74312D722E706E672229207269676874206E6F2D7265706561747D627574746F';
+
+s:=s||'6E2E627574746F6E2D616C'';'||unistr('\000a')||
+'blog_install.i(35) := ''7431207370616E7B6865696768743A323070783B6C696E652D6865696768743A323070783B6261636B67726F756E643A75726C2822663F703D424C4F473A46494C45533A303A4150504C49434154494F4E5F50524F434553533D444F574E4C4F41443A3A3A5031315F46494C455F4E414D453A62742D616C74312D6C2E706E67'';'||unistr('\000a')||
+'blog_install.i(36) := ''2229206C656674206E6F2D7265706561743B636F6C6F723A233446344634467D2E6F70';
+
+s:=s||'74696F6E616C6C6162656C7B77686974652D73706163653A6E6F777261703B636F6C6F723A233333333B666F6E742D7765696768743A3730307D2E68656C706C6162656C7B637572736F723A68656C703B77686974652D73706163653A'';'||unistr('\000a')||
+'blog_install.i(37) := ''6E6F777261703B636F6C6F723A233030354542303B666F6E742D7765696768743A3730303B746578742D6465636F726174696F6E3A6E6F6E657D2E68656C706C6162656C3A686F7665727B706F736974696F6E3A72656C61746976657D2E';
+
+s:=s||'68656C706C6162656C3A686F766572206469767B646973706C61793A626C6F636B7D'';'||unistr('\000a')||
+'blog_install.i(38) := ''2E68656C706C6162656C206469767B626F782D736861646F773A3570782035707820357078207267626128302C20302C20302C20302E31293B626F726465722D7261646975733A357078203570783B706F736974696F6E3A6162736F6C7574653B6C6566743A31656D3B746F703A31656D3B6D617267696E2D6C6566743A303B'';'||unistr('\000a')||
+'blog_install.i(39) := ''77686974652D73706163653A';
+
+s:=s||'6E6F777261703B6261636B67726F756E642D636F6C6F723A234545453B626F726465723A31707820736F6C696420234343433B636F6C6F723A233333333B666F6E742D7765696768743A3730303B70616464696E673A2E38656D2031656D3B746578742D616C69676E3A6C6566743B746578742D'';'||unistr('\000a')||
+'blog_install.i(40) := ''6465636F726174696F6E3A6E6F6E653B7A2D696E6465783A393939393B646973706C61793A6E6F6E657D236D656E757B706F736974696F6E3A6162736F6C7574653B626F74746F';
+
+s:=s||'6D3A303B72696768743A307D236D656E7520756C7B6C6973742D7374796C653A6E6F6E653B70616464696E673A303B6D617267696E3A307D23'';'||unistr('\000a')||
+'blog_install.i(41) := ''6D656E75206C697B666C6F61743A6C6566743B6D617267696E3A3020302030203470787D236D656E75206C693A686F7665722C236D656E75206C692E63757272656E747B6261636B67726F756E643A234641464146413B626F726465722D746F702D6C6566742D7261646975733A3470783B626F726465722D746F702D726967'';'||unistr('\000a')||
+'b';
+
+s:=s||'log_install.i(42) := ''68742D7261646975733A3470787D236D656E75206C693A686F76657220612C236D656E75206C692E63757272656E7420612C2E726967687420613A686F7665727B636F6C6F723A233333337D236D656E7520617B636F6C6F723A234641464146413B646973706C61793A626C6F636B3B666F6E742D7765696768743A3730303B'';'||unistr('\000a')||
+'blog_install.i(43) := ''6C696E652D6865696768743A323270783B70616464696E673A30203870787D2E7265736F75726365736D617267696E7B';
+
+s:=s||'6D617267696E2D746F703A343070787D7461626C652E486F72697A6F6E74616C426F726465722074647B70616464696E673A3670783B626F726465722D626F74746F6D3A317078202343434320736F6C'';'||unistr('\000a')||
+'blog_install.i(44) := ''69643B636F6C6F723A233333337D7461626C652E486F72697A6F6E74616C426F726465722074687B70616464696E673A3670783B626F726465722D626F74746F6D3A317078202343434320736F6C69643B636F6C6F723A233333333B666F6E742D73697A653A323070783B';
+
+s:=s||'666F6E742D7765696768743A3230303B6C65747465'';'||unistr('\000a')||
+'blog_install.i(45) := ''722D73706163696E673A2D3170787D7370616E2E6E6F64617461666F756E647B666F6E742D73697A653A313470787D2361727469636C6570616765737B70616464696E673A32707820303B646973706C61793A696E6C696E652D626C6F636B3B6865696768743A333070787D2361727469636C65706167657320627B6261636B'';'||unistr('\000a')||
+'blog_install.i(46) := ''67726F756E643A233030354542303B70616464696E673A3470';
+
+s:=s||'78203770783B636F6C6F723A234641464146413B626F726465722D7261646975733A3370783B6D617267696E3A3270783B646973706C61793A696E6C696E652D626C6F636B3B6865696768743A313470783B77696474683A313470783B6C696E652D6865696768'';'||unistr('\000a')||
+'blog_install.i(47) := ''743A313470783B746578742D616C69676E3A63656E7465727D2361727469636C65706167657320617B626F726465723A31707820736F6C696420233030354542303B70616464696E673A337078203570783B626F';
+
+s:=s||'726465722D7261646975733A3370783B6D617267696E3A3270783B646973706C61793A696E6C696E652D626C'';'||unistr('\000a')||
+'blog_install.i(48) := ''6F636B3B6865696768743A313470783B77696474683A313470783B6C696E652D6865696768743A313470783B746578742D616C69676E3A63656E7465727D74642E706167696E6174696F6E7B6865696768743A333070787D7461626C652E6170657869725F574F524B53484545545F444154417B626F726465722D636F6C6C61'';'||unistr('\000a')||
+'blog_install.i(49) := ''7073';
+
+s:=s||'653A736570617261746521696D706F7274616E747D7461626C652E6170657869725F574F524B53484545545F444154412074687B6261636B67726F756E643A75726C2822663F703D424C4F473A46494C45533A303A4150504C49434154494F4E5F50524F434553533D444F574E4C4F41443A3A3A5031315F46494C455F4E'';'||unistr('\000a')||
+'blog_install.i(50) := ''414D453A69722D62672E706E672229207265706561742D782030203020233334363542303B626F726465722D6C6566743A31707820736F6C6964202341';
+
+s:=s||'41417D7461626C652E6170657869725F574F524B53484545545F44415441207468206469767B637572736F723A706F696E7465727D7461626C652E6170657869725F57'';'||unistr('\000a')||
+'blog_install.i(51) := ''4F524B53484545545F444154412074683A686F7665723A6E6F74282E63757272656E74297B6261636B67726F756E643A75726C2822663F703D424C4F473A46494C45533A303A4150504C49434154494F4E5F50524F434553533D444F574E4C4F41443A3A3A5031315F46494C455F4E414D453A69722D6267';
+
+s:=s||'2E706E6722292072'';'||unistr('\000a')||
+'blog_install.i(52) := ''65706561742D782030202D3432707820233436383743437D7461626C652E6170657869725F574F524B53484545545F444154412074682E63757272656E747B626F726465722D6C6566743A31707820736F6C696420234141413B626F726465722D72696768743A6E6F6E657D7461626C652E6170657869725F574';
+
+wwv_flow_api.append_to_install_script(
+  p_id => 12275005924827304 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_script_clob => s);
+end;
+ 
+ 
+end;
+/
+
+ 
+begin
+ 
+declare
+    s varchar2(32767) := null;
+begin
+s:=s||'F524B534845'';'||unistr('\000a')||
+'blog_install.i(53) := ''45545F444154412074682E63757272656E74206469767B637572736F723A64656661756C747D7461626C652E6170657869725F574F524B53484545545F444154412074647B626F726465722D746F703A6E6F6E6521696D706F7274616E743B626F726465722D626F74746F6D3A31707820736F6C6964202341414121696D706F'';'||unistr('\000a')||
+'blog_install.i(54) := ''7274616E743B6261636B67726F756E642D636F6C6F723A7472616E73706172656E7421696D706F727';
+
+s:=s||'4616E743B70616464696E673A3670787D7461626C652E6170657869725F574F524B53484545545F444154412074722E6576656E3A686F7665722074642C7461626C652E6170657869725F574F524B53484545545F444154'';'||unistr('\000a')||
+'blog_install.i(55) := ''412074722E6F64643A686F7665722074642C7461626C652E6170657869725F574F524B53484545545F444154412074723A686F7665722074647B6261636B67726F756E642D636F6C6F723A7472616E73706172656E7421696D706F7274616E747D74616';
+
+s:=s||'26C652E6170657869725F574F524B53484545545F4441544120747220'';'||unistr('\000a')||
+'blog_install.i(56) := ''7468206469767B746578742D6465636F726174696F6E3A6E6F6E6521696D706F7274616E747D627574746F6E2E6170657869722D676F2D627574746F6E2C627574746F6E2E6170657869722D627574746F6E2C627574746F6E2E627574746F6E2D677261797B6261636B67726F756E643A75726C2822663F703D424C4F473A46'';'||unistr('\000a')||
+'blog_install.i(57) := ''494C45533A303A4150504C49434154494F4';
+
+s:=s||'E5F50524F434553533D444F574E4C4F41443A3A3A5031315F46494C455F4E414D453A62742D677261792D722E706E672229207269676874206E6F2D7265706561747D236170657869725F544F4F4C42415220627574746F6E2E6468746D6C4D656E754F6E2C236170657869725F54'';'||unistr('\000a')||
+'blog_install.i(58) := ''4F4F4C42415220627574746F6E2E6468746D6C4D656E757B6261636B67726F756E643A75726C2822663F703D424C4F473A46494C45533A303A4150504C49434154494F4E5F50524F434553533';
+
+s:=s||'D444F574E4C4F41443A3A3A5031315F46494C455F4E414D453A62742D70756C6C646F776E2D677261792D62672D722E706E6722'';'||unistr('\000a')||
+'blog_install.i(59) := ''29207269676874206E6F2D7265706561743B70616464696E673A302032357078203020307D236170657869725F544F4F4C42415220627574746F6E2E6468746D6C4D656E754F6E207370616E2C236170657869725F544F4F4C42415220627574746F6E2E6468746D6C4D656E75207370616E2C627574746F6E2E617065786972'';'||unistr('\000a')||
+'blog_install';
+
+s:=s||'.i(60) := ''2D676F2D627574746F6E207370616E2C627574746F6E2E6170657869722D627574746F6E207370616E2C627574746F6E2E627574746F6E2D67726179207370616E7B6865696768743A323070783B6C696E652D6865696768743A323070783B6261636B67726F756E643A75726C2822663F703D424C4F473A46494C45533A303A'';'||unistr('\000a')||
+'blog_install.i(61) := ''4150504C49434154494F4E5F50524F434553533D444F574E4C4F41443A3A3A5031315F46494C455F4E414D453A62742D677261792D6';
+
+s:=s||'C2E706E672229206C656674206E6F2D7265706561743B636F6C6F723A233446344634467D236D6F64616C5F4C4F414445522C236170657869725F4C4F414445527B6261636B67726F756E'';'||unistr('\000a')||
+'blog_install.i(62) := ''642D636F6C6F723A726762612835312C2035312C2035312C302E33293B6865696768743A313030253B77696474683A313030253B746F703A303B6C6566743A303B706F736974696F6E3A66697865643B7A2D696E6465783A393939393B637572736F723A776169747D236D6F64616C5F4';
+
+s:=s||'C4F4144455220696D672C2361706578'';'||unistr('\000a')||
+'blog_install.i(63) := ''69725F4C4F4144455220696D677B6C6566743A3438253B706F736974696F6E3A72656C61746976653B746F703A3334253B637572736F723A776169747D236170657869725F726F6C6C6F7665722E75692D726573697A61626C657B70616464696E672D72696768743A3870787D236170657869725F726F6C6C6F766572206469'';'||unistr('\000a')||
+'blog_install.i(64) := ''762E75692D726573697A61626C652D68616E646C657B6261636B67726F756';
+
+s:=s||'E643A75726C2822663F703D424C4F473A46494C45533A303A4150504C49434154494F4E5F50524F434553533D444F574E4C4F41443A3A3A5031315F46494C455F4E414D453A726573697A652D652E706E672229206E6F2D72657065617420736372'';'||unistr('\000a')||
+'blog_install.i(65) := ''6F6C6C20302035302520234630463046303B626F726465722D6C6566743A32707820736F6C696420234630463046303B72696768743A307D236170657869725F444154415F50414E454C207461626C652C7461626C652E486F7';
+
+s:=s||'2697A6F6E74616C426F726465722C2E7265706F727473726567696F6E2C2E626F726465726C65'';'||unistr('\000a')||
+'blog_install.i(66) := ''7373726567696F6E7B77696474683A313030257D756C2E666F726D61742D62746E7B6D617267696E3A303B70616464696E673A33707820303B6865696768743A333270783B6D617267696E2D6C6566743A3370787D756C2E666F726D61742D62746E206C697B646973706C61793A626C6F636B3B666C6F61743A6C6566743B68'';'||unistr('\000a')||
+'blog_install.i(67) := ''65696768743A323';
+
+s:=s||'470783B6C6973742D7374796C653A6E6F6E65206F757473696465206E6F6E653B70616464696E673A34707820303B77696474683A323870787D756C2E666F726D61742D62746E20696D677B626F726465723A31707820736F6C696420234541454145413B77696474683A323070783B6865696768743A3232'';'||unistr('\000a')||
+'blog_install.i(68) := ''70783B637572736F723A706F696E7465727D756C2E666F726D61742D62746E20696D673A6163746976657B626F726465723A32707820736F6C6964202346414641464';
+
+s:=s||'17D6469762E617574686F727B6D617267696E2D626F74746F6D3A353570787D68322E617574686F722D6E616D657B666F6E742D73697A653A323070783B'';'||unistr('\000a')||
+'blog_install.i(69) := ''666F6E742D7765696768743A3230303B6C65747465722D73706163696E673A2D3170783B70616464696E673A313070782030203570783B6D617267696E2D746F703A313570787D6469762E617574686F722D6C6566747B77696474683A31323870787D6469762E617574686F722D72696768747B666C6F61743A7269676';
+
+s:=s||'8743B'';'||unistr('\000a')||
+'blog_install.i(70) := ''70616464696E673A302031357078203020323570783B77696474683A35333870787D2E70726F66696C652D6C696E6B7B666F6E743A3130302520417269616C2C73616E732D73657269663B636F6C6F723A233037383342363B746578742D6465636F726174696F6E3A6E6F6E657D2E70726F66696C652D6C696E6B20696D677B'';'||unistr('\000a')||
+'blog_install.i(71) := ''766572746963616C2D616C69676E3A6D6964646C657D236C624F7665726C61797B706F736974696F6E3A666';
+
+s:=s||'97865643B7A2D696E6465783A393939393B6C6566743A303B746F703A303B77696474683A313030253B6865696768743A313030253B6261636B67726F756E642D636F6C6F723A233030303B637572736F723A706F'';'||unistr('\000a')||
+'blog_install.i(72) := ''696E7465727D236C6243656E7465722C236C62426F74746F6D436F6E7461696E65727B706F736974696F6E3A6162736F6C7574653B7A2D696E6465783A393939393B6F766572666C6F773A68696464656E3B6261636B67726F756E642D636F6C6F723A2346414';
+
+s:=s||'64146417D2E6C624C6F6164696E677B6261636B67726F756E64'';'||unistr('\000a')||
+'blog_install.i(73) := ''3A234641464146412075726C2822663F703D424C4F473A46494C45533A303A4150504C49434154494F4E5F50524F434553533D444F574E4C4F41443A3A3A5031315F46494C455F4E414D453A6C6F6164696E672E6769662229206E6F2D7265706561742063656E7465727D236C62496D6167657B706F736974696F6E3A616273'';'||unistr('\000a')||
+'blog_install.i(74) := ''6F6C7574653B6C6566743A303B746F703A303B626';
+
+s:=s||'F726465723A3130707820736F6C696420234641464146413B6261636B67726F756E642D7265706561743A6E6F2D7265706561747D236C62507265764C696E6B2C236C624E6578744C696E6B7B646973706C61793A626C6F636B3B706F736974696F6E3A6162736F6C757465'';'||unistr('\000a')||
+'blog_install.i(75) := ''3B746F703A303B77696474683A3530253B6F75746C696E653A6E6F6E657D236C62507265764C696E6B3A686F7665727B6261636B67726F756E643A7472616E73706172656E742075726C2822663F703';
+
+s:=s||'D424C4F473A46494C45533A303A4150504C49434154494F4E5F50524F434553533D444F574E4C4F41443A3A3A5031315F'';'||unistr('\000a')||
+'blog_install.i(76) := ''46494C455F4E414D453A707265766C6162656C2E706E672229206E6F2D7265706561742030203135257D236C624E6578744C696E6B3A686F7665727B6261636B67726F756E643A7472616E73706172656E742075726C2822663F703D424C4F473A46494C45533A303A4150504C49434154494F4E5F50524F434553533D444F57'';'||unistr('\000a')||
+'blog_install.i(77)';
+
+s:=s||' := ''4E4C4F41443A3A3A5031315F46494C455F4E414D453A6E6578746C6162656C2E706E672229206E6F2D7265706561742031303025203135257D236C62426F74746F6D7B666F6E742D66616D696C793A56657264616E612C20417269616C2C2047656E6576612C2048656C7665746963612C2073616E732D73657269663B666F6E'';'||unistr('\000a')||
+'blog_install.i(78) := ''742D73697A653A313070783B636F6C6F723A233636363B6C696E652D6865696768743A312E34656D3B746578742D616C69676E3A6C6566743';
+
+s:=s||'B626F726465723A3130707820736F6C696420234641464146413B626F726465722D746F702D7374796C653A6E6F6E657D236C62436C6F73654C696E6B7B646973706C61793A626C'';'||unistr('\000a')||
+'blog_install.i(79) := ''6F636B3B666C6F61743A72696768743B77696474683A363670783B6865696768743A323270783B6261636B67726F756E643A7472616E73706172656E742075726C2822663F703D424C4F473A46494C45533A303A4150504C49434154494F4E5F50524F434553533D444F574E4C4F41443A3A3A5';
+
+s:=s||'031315F46494C455F4E414D45'';'||unistr('\000a')||
+'blog_install.i(80) := ''3A636C6F73656C6162656C2E706E672229206E6F2D7265706561742063656E7465723B6D617267696E3A35707820303B6F75746C696E653A6E6F6E657D236C624E756D6265722C236C6243617074696F6E7B6D617267696E2D72696768743A373170787D236C6243617074696F6E7B666F6E742D7765696768743A3730307D75'';'||unistr('\000a')||
+'blog_install.i(81) := ''6C2E626A71737B706F736974696F6E3A72656C61746976653B6C6973742D7374796';
+
+s:=s||'C653A6E6F6E653B70616464696E673A303B6D617267696E3A303B6F766572666C6F773A68696464656E3B646973706C61793A6E6F6E653B626F726465723A31707820736F6C696420236363633B626F782D736861646F773A337078203970'';'||unistr('\000a')||
+'blog_install.i(82) := ''782031307078202D36707820236262627D6C692E626A71732D736C6964657B706F736974696F6E3A6162736F6C7574653B646973706C61793A6E6F6E657D756C2E626A71732D636F6E74726F6C737B6C6973742D7374796C653A6E6F6';
+
+s:=s||'E653B6D617267696E3A303B70616464696E673A303B7A2D696E6465783A393939397D75'';'||unistr('\000a')||
+'blog_install.i(83) := ''6C2E626A71732D636F6E74726F6C732E762D63656E7465726564206C6920617B706F736974696F6E3A6162736F6C7574657D756C2E626A71732D636F6E74726F6C732E762D63656E7465726564206C692E626A71732D6E65787420612C236C624E6578744C696E6B7B72696768743A307D756C2E626A71732D636F6E74726F6C'';'||unistr('\000a')||
+'blog_install.i(84) := ''732E762D63656E7465726';
+
+s:=s||'564206C692E626A71732D7072657620612C236C62507265764C696E6B7B6C6566743A307D6F6C2E626A71732D6D61726B6572737B6C6973742D7374796C653A6E6F6E653B70616464696E673A303B6D617267696E3A31327078203020303B77696474683A313030257D6F6C2E626A71732D6D61726B'';'||unistr('\000a')||
+'blog_install.i(85) := ''6572732E682D63656E74657265647B746578742D616C69676E3A63656E7465727D6F6C2E626A71732D6D61726B657273206C697B646973706C61793A696E6C696E657D6F6C2';
+
+s:=s||'E626A71732D6D61726B657273206C6920617B626F726465723A31707820736F6C696420233030356562303B626F726465722D7261646975733A33'';'||unistr('\000a')||
+'blog_install.i(86) := ''70783B646973706C61793A696E6C696E652D626C6F636B3B6865696768743A313470783B6C696E652D6865696768743A313470783B6D617267696E3A3270783B70616464696E673A337078203570783B746578742D616C69676E3A63656E7465723B77696474683A313470787D6F6C2E626A71732D6D61726B657273206C6920''';
+
+s:=s||';'||unistr('\000a')||
+'blog_install.i(87) := ''613A686F7665722C2361727469636C65706167657320613A686F7665727B6261636B67726F756E642D636F6C6F723A233030354542303B636F6C6F723A234641464146417D6F6C2E626A71732D6D61726B657273206C692E6163746976652D6D61726B657220617B6261636B67726F756E643A6E6F6E65207265706561742073'';'||unistr('\000a')||
+'blog_install.i(88) := ''63726F6C6C2030203020233030356562303B626F726465722D7261646975733A3370783B636F6C6F723A236661666';
+
+s:=s||'166613B646973706C61793A696E6C696E652D626C6F636B3B6865696768743A313470783B6C696E652D6865696768743A313470783B6D617267696E3A3270783B70616464696E673A347078203770783B74'';'||unistr('\000a')||
+'blog_install.i(89) := ''6578742D616C69676E3A63656E7465723B77696474683A313470787D6469762E626A71732D63617074696F6E7B636F6C6F723A233030303B626F74746F6D3A303B646973706C61793A626C6F636B3B6D617267696E3A303B70616464696E672D6C6566743A32253B706';
+
+s:=s||'F736974696F6E3A6162736F6C7574653B77696474683A'';'||unistr('\000a')||
+'blog_install.i(90) := ''313030253B6261636B67726F756E643A6E6F6E6520726570656174207363726F6C6C203020302072676261283235302C3235302C3235302C302E37297D2E73796E746178686967686C69676874657220612C2E73796E746178686967686C696768746572206469762C2E73796E746178686967686C69676874657220636F6465'';'||unistr('\000a')||
+'blog_install.i(91) := ''2C2E73796E746178686967686C696768746572207461626';
+
+s:=s||'C652C2E73796E746178686967686C696768746572207461626C652074642C2E73796E746178686967686C696768746572207461626C652074722C2E73796E746178686967686C696768746572207461626C652074626F64792C2E73796E746178686967686C696768'';'||unistr('\000a')||
+'blog_install.i(92) := ''746572207461626C652074686561642C2E73796E746178686967686C696768746572207461626C652063617074696F6E2C2E73796E746178686967686C6967687465722074657874617265617B6261636B677';
+
+s:=s||'26F756E643A6E6F6E652021696D706F7274616E743B626F726465723A302021696D706F7274616E743B626F782D'';'||unistr('\000a')||
+'blog_install.i(93) := ''736861646F773A6E6F6E652021696D706F7274616E743B626F74746F6D3A6175746F2021696D706F7274616E743B666C6F61743A6E6F6E652021696D706F7274616E743B6865696768743A6175746F2021696D706F7274616E743B6C6566743A6175746F2021696D706F7274616E743B6C696E652D6865696768743A312E3165'';'||unistr('\000a')||
+'blog_install.i(94) := ''6';
+
+s:=s||'D2021696D706F7274616E743B6D617267696E3A302021696D706F7274616E743B6F75746C696E653A302021696D706F7274616E743B6F766572666C6F773A76697369626C652021696D706F7274616E743B70616464696E673A302021696D706F7274616E743B706F736974696F6E3A7374617469632021696D706F7274616E'';'||unistr('\000a')||
+'blog_install.i(95) := ''743B72696768743A6175746F2021696D706F7274616E743B746578742D616C69676E3A6C6566742021696D706F7274616E743B746F703A6175746F2';
+
+s:=s||'021696D706F7274616E743B766572746963616C2D616C69676E3A626173656C696E652021696D706F7274616E743B77696474683A6175746F2021696D706F7274616E743B'';'||unistr('\000a')||
+'blog_install.i(96) := ''626F782D73697A696E673A636F6E74656E742D626F782021696D706F7274616E743B666F6E742D66616D696C793A22436F6E736F6C6173222C2242697473747265616D20566572612053616E73204D6F6E6F222C22436F7572696572204E6577222C436F75726965722C6D6F6E6F73706163652021696';
+
+s:=s||'D706F7274616E743B66'';'||unistr('\000a')||
+'blog_install.i(97) := ''6F6E742D7765696768743A6E6F726D616C2021696D706F7274616E743B666F6E742D7374796C653A6E6F726D616C2021696D706F7274616E743B666F6E742D73697A653A31656D2021696D706F7274616E743B6D696E2D6865696768743A6175746F2021696D706F7274616E747D2E73796E746178686967686C696768746572'';'||unistr('\000a')||
+'blog_install.i(98) := ''2E736F757263657B6F766572666C6F773A68696464656E2021696D706F7274616E747D2E7';
+
+s:=s||'3796E746178686967686C696768746572202E6974616C69637B666F6E742D7374796C653A6974616C69632021696D706F7274616E747D2E73796E746178686967686C696768746572202E6C696E657B77686974652D73706163653A'';'||unistr('\000a')||
+'blog_install.i(99) := ''7072652021696D706F7274616E747D2E73796E746178686967686C696768746572207461626C652074642E636F64652C2E73796E746178686967686C696768746572207461626C657B77696474683A313030252021696D706F7274616E747D2';
+
+s:=s||'E73796E746178686967686C696768746572207461626C652074642E636F646520'';'||unistr('\000a')||
+'blog_install.i(100) := ''2E636F6E7461696E65727B706F736974696F6E3A72656C61746976652021696D706F7274616E747D2E73796E746178686967686C696768746572207461626C652074642E636F6465202E636F6E7461696E65722074657874617265617B626F782D73697A696E673A626F726465722D626F782021696D706F7274616E743B706F'';'||unistr('\000a')||
+'blog_install.i(101) := ''736974696F6E3A6162736F6C7';
+
+s:=s||'574652021696D706F7274616E743B6C6566743A302021696D706F7274616E743B746F703A302021696D706F7274616E743B77696474683A313030252021696D706F7274616E743B6865696768743A313030252021696D706F7274616E743B626F726465723A6E6F6E652021696D706F7274616E'';'||unistr('\000a')||
+'blog_install.i(102) := ''743B626F782D736861646F773A6E6F6E652021696D706F7274616E743B6261636B67726F756E643A234643464346432021696D706F7274616E743B70616464696E672D6C656674';
+
+s:=s||'3A31656D2021696D706F7274616E743B6F766572666C6F773A68696464656E2021696D706F7274616E743B77686974652D73706163653A7072'';'||unistr('\000a')||
+'blog_install.i(103) := ''652021696D706F7274616E747D2E73796E746178686967686C696768746572207461626C652074642E677574746572202E6C696E657B746578742D616C69676E3A72696768742021696D706F7274616E743B70616464696E673A30202E35656D20302031656D2021696D706F7274616E747D2E73796E746178686967686C6967'';'||unistr('\000a')||
+'';
+
+s:=s||'blog_install.i(104) := ''68746572207461626C652074642E636F6465202E6C696E657B70616464696E673A302031656D2021696D706F7274616E747D2E73796E746178686967686C6967687465722E6E6F6775747465722074642E636F6465202E6C696E652C2E73796E746178686967686C6967687465722E6E6F6775747465722074642E636F646520'';'||unistr('\000a')||
+'blog_install.i(105) := ''2E636F6E7461696E65722074657874617265617B70616464696E672D6C6566743A302021696D706F7274616E743B6';
+
+s:=s||'26F782D736861646F773A6E6F6E652021696D706F7274616E747D2E73796E746178686967686C6967687465722E73686F777B646973706C61793A626C6F636B2021696D706F7274616E747D2E73796E7461'';'||unistr('\000a')||
+'blog_install.i(106) := ''78686967686C6967687465722E636F6C6C6170736564202E746F6F6C626172207370616E7B646973706C61793A696E6C696E652021696D706F7274616E743B6D617267696E2D72696768743A31656D2021696D706F7274616E747D2E73796E746178686967686C6967';
+
+s:=s||'687465722E636F6C6C6170736564202E746F6F6C626172'';'||unistr('\000a')||
+'blog_install.i(107) := ''207370616E20617B70616464696E673A302021696D706F7274616E743B646973706C61793A6E6F6E652021696D706F7274616E747D2E73796E746178686967686C696768746572202E746F6F6C626172207370616E2E7469746C652C2E73796E746178686967686C6967687465722E636F6C6C6170736564202E746F6F6C6261'';'||unistr('\000a')||
+'blog_install.i(108) := ''72207370616E20612E657870616E64536F757263657B';
+
+s:=s||'646973706C61793A696E6C696E652021696D706F7274616E747D2E73796E746178686967686C6967687465722E69657B666F6E742D73697A653A2E39656D2021696D706F7274616E743B70616464696E673A31707820302031707820302021696D706F7274616E747D2E'';'||unistr('\000a')||
+'blog_install.i(109) := ''73796E746178686967686C6967687465722E6965202E746F6F6C6261727B6C696E652D6865696768743A3870782021696D706F7274616E747D2E73796E746178686967686C6967687465722E6965202E7';
+
+s:=s||'46F6F6C62617220617B70616464696E672D746F703A302021696D706F7274616E747D2E73796E746178686967686C69'';'||unistr('\000a')||
+'blog_install.i(110) := ''67687465722E7072696E74696E67202E6C696E652E616C7431202E636F6E74656E742C2E73796E746178686967686C6967687465722E7072696E74696E67202E6C696E652E616C7432202E636F6E74656E742C2E73796E746178686967686C6967687465722E7072696E74696E67202E6C696E652E686967686C696768746564'';'||unistr('\000a')||
+'blog_install.i(111)';
+
+s:=s||' := ''202E6E756D6265722C2E73796E746178686967686C6967687465722E7072696E74696E67202E6C696E652E686967686C6967687465642E616C7431202E636F6E74656E742C2E73796E746178686967686C6967687465722E7072696E74696E67202E6C696E652E686967686C6967687465642E616C7432202E636F6E74656E74'';'||unistr('\000a')||
+'blog_install.i(112) := ''7B6261636B67726F756E643A6E6F6E652021696D706F7274616E747D2E73796E746178686967686C6967687465722E7072696E74696E6720';
+
+s:=s||'2E6C696E65202E6E756D6265727B636F6C6F723A236262622021696D706F7274616E747D2E73796E746178686967686C6967687465722E7072696E74696E67202E746F6F6C626172'';'||unistr('\000a')||
+'blog_install.i(113) := ''2C2E73796E746178686967686C696768746572202E746F6F6C62617220612E657870616E64536F757263652C2E73796E746178686967686C6967687465722E636F6C6C6170736564207461626C657B646973706C61793A6E6F6E652021696D706F7274616E747D2E73796E746178686967686';
+
+s:=s||'C6967687465722E7072696E7469'';'||unistr('\000a')||
+'blog_install.i(114) := ''6E6720617B746578742D6465636F726174696F6E3A6E6F6E652021696D706F7274616E747D2E73796E746178686967686C6967687465722E7072696E74696E67202E7363726970742C2E73796E746178686967686C696768746572202E626F6C647B666F6E742D7765696768743A626F6C642021696D706F7274616E747D2E73'';'||unistr('\000a')||
+'blog_install.i(115) := ''796E746178686967686C696768746572202E6C696E652E616C74322C2E73796';
+
+s:=s||'E746178686967686C696768746572202E6C696E652E616C74317B6261636B67726F756E642D636F6C6F723A234643464346432021696D706F7274616E747D2E73796E746178686967686C696768746572202E6C696E652E686967686C69676874'';'||unistr('\000a')||
+'blog_install.i(116) := ''65642E616C74312C2E73796E746178686967686C696768746572202E6C696E652E686967686C6967687465642E616C74327B6261636B67726F756E642D636F6C6F723A236530653065302021696D706F7274616E747D2E73796E';
+
+s:=s||'746178686967686C696768746572207461626C652063617074696F6E7B746578742D616C6967'';'||unistr('\000a')||
+'blog_install.i(117) := ''6E3A6C6566742021696D706F7274616E743B70616464696E673A2E35656D2030202E35656D2031656D2021696D706F7274616E743B636F6C6F723A233333332021696D706F7274616E747D2E73796E746178686967686C696768746572202E6775747465727B636F6C6F723A236166616661662021696D706F7274616E747D2E'';'||unistr('\000a')||
+'blog_install.i(118) := ''73796E74617868';
+
+s:=s||'6967686C696768746572202E677574746572202E6C696E657B626F726465722D72696768743A33707820736F6C696420233663653236632021696D706F7274616E747D2E73796E746178686967686C696768746572202E677574746572202E6C696E652E686967686C6967687465647B6261636B67726F756E'';'||unistr('\000a')||
+'blog_install.i(119) := ''642D636F6C6F723A233663653236632021696D706F7274616E743B636F6C6F723A234643464346432021696D706F7274616E747D2E73796E746178686967686C696';
+
+s:=s||'7687465722E7072696E74696E67202E6C696E65202E636F6E74656E747B636F6C6F723A233333332021696D706F7274616E743B626F726465723A6E6F6E65'';'||unistr('\000a')||
+'blog_install.i(120) := ''2021696D706F7274616E747D2E73796E746178686967686C6967687465722E636F6C6C61707365647B6F766572666C6F773A76697369626C652021696D706F7274616E747D2E73796E746178686967686C6967687465722E636F6C6C6170736564202E746F6F6C6261727B70616464696E673A2E31656D202E38656D';
+
+s:=s||'2030202E'';'||unistr('\000a')||
+'blog_install.i(121) := ''38656D2021696D706F7274616E743B666F6E742D73697A653A31656D2021696D706F7274616E743B706F736974696F6E3A7374617469632021696D706F7274616E743B77696474683A6175746F2021696D706F7274616E743B6865696768743A6175746F2021696D706F7274616E743B636F6C6F723A626C75652021696D706F'';'||unistr('\000a')||
+'blog_install.i(122) := ''7274616E743B6261636B67726F756E643A234643464346432021696D706F7274616E743B626F726465';
+
+s:=s||'723A31707820736F6C696420233663653236632021696D706F7274616E747D2E73796E746178686967686C696768746572202E746F6F6C6261727B706F736974696F6E3A6162736F6C7574652021696D706F7274616E74'';'||unistr('\000a')||
+'blog_install.i(123) := ''3B72696768743A3170782021696D706F7274616E743B746F703A3170782021696D706F7274616E743B77696474683A313170782021696D706F7274616E743B6865696768743A313170782021696D706F7274616E743B666F6E742D73697A653A3130707';
+
+s:=s||'82021696D706F7274616E743B7A2D696E6465783A31302021696D706F'';'||unistr('\000a')||
+'blog_install.i(124) := ''7274616E743B636F6C6F723A234643464346432021696D706F7274616E743B6261636B67726F756E643A233663653236632021696D706F7274616E743B626F726465723A6E6F6E652021696D706F7274616E747D2E73796E746178686967686C696768746572202E746F6F6C62617220617B646973706C61793A626C6F636B20'';'||unistr('\000a')||
+'blog_install.i(125) := ''21696D706F7274616E743B746578742D6';
+
+s:=s||'16C69676E3A63656E7465722021696D706F7274616E743B746578742D6465636F726174696F6E3A6E6F6E652021696D706F7274616E743B70616464696E672D746F703A3170782021696D706F7274616E743B636F6C6F723A234643464346432021696D706F7274616E747D2E73796E'';'||unistr('\000a')||
+'blog_install.i(126) := ''746178686967686C696768746572202E706C61696E2C2E73796E746178686967686C696768746572202E706C61696E20612C2E73796E746178686967686C696768746572202E746F6F6C62';
+
+s:=s||'617220613A686F7665722C2E73796E746178686967686C696768746572202E6C696E652E686967686C6967687465642E6E756D6265'';'||unistr('\000a')||
+'blog_install.i(127) := ''722C2E73796E746178686967686C6967687465722E7072696E74696E67202E627265616B2C2E73796E746178686967686C6967687465722E7072696E74696E67202E627265616B20612C2E73796E746178686967686C6967687465722E7072696E74696E67202E706C61696E2C2E73796E746178686967686C6967687465722E'';'||unistr('\000a')||
+'blog_ins';
+
+s:=s||'tall.i(128) := ''7072696E74696E67202E706C61696E20617B636F6C6F723A233333332021696D706F7274616E747D2E73796E746178686967686C696768746572202E636F6D6D656E74732C2E73796E746178686967686C696768746572202E636F6D6D656E747320612C2E73796E746178686967686C6967687465722E7072696E74696E6720'';'||unistr('\000a')||
+'blog_install.i(129) := ''2E636F6D6D656E74732C2E73796E746178686967686C6967687465722E7072696E74696E67202E636F6D6D656E747320617B6';
+
+s:=s||'36F6C6F723A233030383230302021696D706F7274616E747D2E73796E746178686967686C696768746572202E737472696E672C2E73796E746178686967686C696768746572202E737472696E67'';'||unistr('\000a')||
+'blog_install.i(130) := ''20612C2E73796E746178686967686C6967687465722E636F6C6C6170736564202E746F6F6C62617220612C2E73796E746178686967686C6967687465722E7072696E74696E67202E737472696E672C2E73796E746178686967686C6967687465722E7072696E74696E67202E73';
+
+s:=s||'7472696E6720617B636F6C6F723A626C756520'';'||unistr('\000a')||
+'blog_install.i(131) := ''21696D706F7274616E747D2E73796E746178686967686C696768746572202E7661726961626C652C2E73796E746178686967686C6967687465722E7072696E74696E67202E7661726961626C657B636F6C6F723A236137302021696D706F7274616E747D2E73796E746178686967686C696768746572202E76616C75652C2E73'';'||unistr('\000a')||
+'blog_install.i(132) := ''796E746178686967686C6967687465722E7072696E74696E6720';
+
+s:=s||'2E76616C75657B636F6C6F723A233039302021696D706F7274616E747D2E73796E746178686967686C696768746572202E636F6E7374616E74732C2E73796E746178686967686C6967687465722E7072696E74696E67202E636F6E7374616E74737B636F6C6F'';'||unistr('\000a')||
+'blog_install.i(133) := ''723A233036632021696D706F7274616E747D2E73796E746178686967686C696768746572202E7363726970747B666F6E742D7765696768743A626F6C642021696D706F7274616E743B636F6C6F723A23303639202';
+
+s:=s||'1696D706F7274616E743B6261636B67726F756E642D636F6C6F723A7472616E73706172656E742021696D70'';'||unistr('\000a')||
+'blog_install.i(134) := ''6F7274616E747D2E73796E746178686967686C696768746572202E636F6C6F72312C2E73796E746178686967686C696768746572202E636F6C6F723120612C2E73796E746178686967686C696768746572202E70726570726F636573736F722C2E73796E746178686967686C6967687465722E7072696E74696E67202E636F6C'';'||unistr('\000a')||
+'blog_install.i(135) := ''6F7';
+
+s:=s||'2312C2E73796E746178686967686C6967687465722E7072696E74696E67202E636F6C6F723120612C2E73796E746178686967686C6967687465722E7072696E74696E67202E70726570726F636573736F727B636F6C6F723A677261792021696D706F7274616E747D2E73796E746178686967686C696768746572202E636F'';'||unistr('\000a')||
+'blog_install.i(136) := ''6C6F72322C2E73796E746178686967686C696768746572202E636F6C6F723220612C2E73796E746178686967686C696768746572202E66756E637469';
+
+s:=s||'6F6E732C2E73796E746178686967686C6967687465722E7072696E74696E67202E636F6C6F72322C2E73796E746178686967686C6967687465722E7072696E74696E6720'';'||unistr('\000a')||
+'blog_install.i(137) := ''2E636F6C6F723220612C2E73796E746178686967686C6967687465722E7072696E74696E67202E66756E6374696F6E737B636F6C6F723A236666313439332021696D706F7274616E747D2E73796E746178686967686C696768746572202E636F6C6F72332C2E73796E746178686967686C69676874657';
+
+s:=s||'2202E636F6C6F723320'';'||unistr('\000a')||
+'blog_install.i(138) := ''612C2E73796E746178686967686C6967687465722E636F6C6C6170736564202E746F6F6C62617220613A686F7665722C2E73796E746178686967686C6967687465722E7072696E74696E67202E636F6C6F72332C2E73796E746178686967686C6967687465722E7072696E74696E67202E636F6C6F723320617B636F6C6F723A'';'||unistr('\000a')||
+'blog_install.i(139) := ''7265642021696D706F7274616E747D2E73796E746178686967686C696768746572202E6';
+
+s:=s||'B6579776F72642C2E73796E746178686967686C6967687465722E7072696E74696E67202E6B6579776F72647B636F6C6F723A233036392021696D706F7274616E743B666F6E742D7765696768743A626F6C642021696D706F7274616E'';'||unistr('\000a')||
+'blog_install.i(140) := ''747D2E73796E746178686967686C6967687465727B77696474683A313030252021696D706F7274616E743B6D617267696E3A31656D20302031656D20302021696D706F7274616E743B706F736974696F6E3A72656C61746976652021696D';
+
+s:=s||'706F7274616E743B6F766572666C6F773A6175746F2021696D706F7274616E743B66'';'||unistr('\000a')||
+'blog_install.i(141) := ''6F6E742D73697A653A31656D2021696D706F7274616E743B6261636B67726F756E642D636F6C6F723A234643464346432021696D706F7274616E743B6F766572666C6F772D793A68696464656E2021696D706F7274616E743B70616464696E673A337078203021696D706F7274616E747D0D0A'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert ';
+
+s:=s||'into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''style.min.css'',''text/css'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D4948445200000014000000160403000000326FA13500000012504C5445D4D0C8F7F7F7EEEEEE80808040404000000014203B360000000976704167000000140000001600910D48530000003149444154089963108401110601062830611';
+
+s:=s||'05082029299AAA1A17066906A101626410558D592E31C'';'||unistr('\000a')||
+'blog_install.i(2) := ''616328306170810300D017209A709B58010000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''text-bold-20x22.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''8';
+
+s:=s||'9504E470D0A1A0A0000000D4948445200000014000000160403000000326FA13500000012504C5445D4D0C8F7F7F7EEEEEE80808040404000000014203B360000000976704167000000140000001600910D485300000033494441540899631084011106010628306110508202D299AAA108D12084A81201661036A66A28796E'';'||unistr('\000a')||
+'blog_install.i(2) := ''8032858DA1C084C1050E00C3731E66F4D347110000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_in';
+
+s:=s||'stall.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''text-italics-20x22.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D4948445200000014000000160403000000326FA13500000012504C5445D4D0C8F7F7F7EEEEEE80808040404000000014203B360000000976704167000000140000001600910D48530000003249444154';
+
+s:=s||'085B6310840111060106283061105082029299AA4A4A4154632A858662B1223414244C84'';'||unistr('\000a')||
+'blog_install.i(2) := ''73848DA1C084C1050E004A8E1FF85E8243830000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''text-underline-20x22.png'',''image/png'',''THEME'',blog_install.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'begin'||unistr('\000a')||
+'blog_install.i := blog_';
+
+s:=s||'install.e;'||unistr('\000a')||
+'blog_install.i(1) := ''89504E470D0A1A0A0000000D49484452000000380000003B080300000019CCB9820000001974455874536F6674776172650041646F626520496D616765526561647971C9653C0000032269545874584D4C3A636F6D2E61646F62652E786D7000000000003C3F787061636B657420626567696E3D22EFBBBF222069643D225735'';'||unistr('\000a')||
+'blog_install.i(2) := ''4D304D7043656869487A7265537A4E54637A6B633964223F3E203C783A786D706D65746120786D6C6E733A';
+
+s:=s||'783D2261646F62653A6E733A6D6574612F2220783A786D70746B3D2241646F626520584D5020436F726520352E302D633036302036312E3133343737372C20323031302F30322F31322D31373A33323A3030202020'';'||unistr('\000a')||
+'blog_install.i(3) := ''2020202020223E203C7264663A52444620786D6C6E733A7264663D22687474703A2F2F7777772E77332E6F72672F313939392F30322F32322D7264662D73796E7461782D6E7323223E203C7264663A4465736372697074696F6E207264663A61626F75743D222';
+
+s:=s||'220786D6C6E733A786D703D22687474703A2F2F6E732E61646F'';'||unistr('\000a')||
+'blog_install.i(4) := ''62652E636F6D2F7861702F312E302F2220786D6C6E733A786D704D4D3D22687474703A2F2F6E732E61646F62652E636F6D2F7861702F312E302F6D6D2F2220786D6C6E733A73745265663D22687474703A2F2F6E732E61646F62652E636F6D2F7861702F312E302F73547970652F5265736F75726365526566232220786D703A'';'||unistr('\000a')||
+'blog_install.i(5) := ''43726561746F72546F6F6C3D2241646F62652050686';
+
+s:=s||'F746F73686F7020435335204D6163696E746F73682220786D704D4D3A496E7374616E636549443D22786D702E6969643A36434546434439453541323331314530383543363842424334463832423439312220786D704D4D3A446F63756D656E7449443D22786D702E6469'';'||unistr('\000a')||
+'blog_install.i(6) := ''643A3643454643443946354132333131453038354336384242433446383242343931223E203C786D704D4D3A4465726976656446726F6D2073745265663A696E7374616E636549443D22786D702E696964';
+
+s:=s||'3A3039323632453735354132323131453038354336384242433446383242343931222073745265663A646F63756D65'';'||unistr('\000a')||
+'blog_install.i(7) := ''6E7449443D22786D702E6469643A3039323632453736354132323131453038354336384242433446383242343931222F3E203C2F7264663A4465736372697074696F6E3E203C2F7264663A5244463E203C2F783A786D706D6574613E203C3F787061636B657420656E643D2272223F3E70B73B1B00000069504C5445FFFFFFFF'';'||unistr('\000a')||
+'blog_install.i(8) := ''';
+
+s:=s||'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF6D01ED710000002274524E53000306090F1215181B242D3336424E'';'||unistr('\000a')||
+'blog_install.i(9) := ''575A5D69788796A5B1BDC9D2DBE4EAF0F6F9FC6279E567000000E14944415448C7ED94C91282400C0583220A02A2ECC8E6FBFF8FF4A0526C3324DCA';
+
+s:=s||'C9A3EA74FAF2B446AC29076E1779DBFC7731BA071E59EF30480A723F58E250000A52DF30E05BE14079198612093780946247CEF81090FAE17BEA6E28B1982DF61062F04B7'';'||unistr('\000a')||
+'blog_install.i(10) := ''C1024E089FE1E76C87F01B7E4E79D47B560E05B9A515532849755E0C0DB1DABB434BC41D7E8E2A84E5F0BC10D686E784B03EFC76';
+
+wwv_flow_api.append_to_install_script(
+  p_id => 12275005924827304 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_script_clob => s);
+end;
+ 
+ 
+end;
+/
+
+ 
+begin
+ 
+declare
+    s varchar2(32767) := null;
+begin
+s:=s||'08AAE1B742500FBF11420A36297B784D0811440C2104BD4CEC838FE7B510D27A4444971A62EA0BD1A9C20E2A9BCED7156EE3A3DBDA85E2957863D1137C72231AD1884634E2FF886F9E85A119'';'||unistr('\000a')||
+'blog_install.i(11) := ''2E25CB620000000049454E44AE426082'';'||unistr('\000a')||
+'blog_install.b := blog_install.varchar2_to_blob(blog_install.i);'||unistr('\000a')||
+'insert into blog_file (file_name,mime_type,file_type,blob_content)'||unistr('\000a')||
+'values (''up-arrow.png'',''image/png'',''THEME'',blog_install';
+
+s:=s||'.b);'||unistr('\000a')||
+'end;'||unistr('\000a')||
+'/'||unistr('\000a')||
+'';
+
+wwv_flow_api.append_to_install_script(
+  p_id => 12275005924827304 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_script_clob => s);
+end;
+ 
+ 
+end;
+/
+
+ 
+begin
+ 
+declare
+    s varchar2(32767) := null;
+    l_clob clob;
+    l_length number := 1;
+begin
+s:=s||'BEGIN'||unistr('\000a')||
+'  blog_install.update_param_data;'||unistr('\000a')||
+'END;'||unistr('\000a')||
+'/';
+
+wwv_flow_api.create_install_script(
+  p_id => 12275200964829611 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_install_id=> 10834514095423806 + wwv_flow_api.g_id_offset,
+  p_name => '15 Post install tasks',
+  p_sequence=> 150,
   p_script_type=> 'INSTALL',
   p_script_clob=> s);
 end;
