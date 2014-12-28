@@ -1,4 +1,5 @@
-create  PROCEDURE blog_prn_theme_files_ins
+create or replace
+PROCEDURE blog_print_theme_file_insert
 AS
   l_counter   SIMPLE_INTEGER := 0;
   l_length    SIMPLE_INTEGER := 0;
@@ -51,5 +52,5 @@ BEGIN
     sys.dbms_output.put_line('end;');
     sys.dbms_output.put_line('/');
   END LOOP;
-END blog_prn_theme_files_ins;
+END blog_print_theme_file_insert;
 /

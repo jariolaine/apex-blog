@@ -1,0 +1,32 @@
+﻿<!-- 
+ * ---------------------------------------- *
+ * Star Rating                              *
+ * HTML, CSS, JavaScript                    *
+ * v1.0                                     *
+ * Matt O'Neill | www.matt-oneill.co.uk     *
+ * ---------------------------------------- *
+ -->
+
+<!-- styles -->
+<style>
+    /* star rating
+    ---------------------------- */
+    .rating { float: left; }
+    .rating > ul { list-style: none; float: left; padding: 0; margin: 0;}
+    .rating > ul > li { float: left; margin-left: 2px; background: url(/src/star-rating.gif) no-repeat; width: 25px; height: 25px; cursor: pointer; }
+    .rating > ul > li:first-child { margin-left: 0; }
+    .rating > ul > li.hover { background-position: -25px; }
+    .rating > ul > li.active { background-position: -50px; }
+    .rating > span.less { cursor: pointer; background: url(/src/star-rating.gif) -75px no-repeat; display: block; float: left; height: 25px; width: 25px;}
+</style>
+
+<!-- mark up -->
+<div class="rating" data-rating-max="5"></div>
+<!-- invoke method -->
+<script src="path/to/external/script.js" type="text/javascript"></script>
+<script type="text/javascript">
+    /* place inside document ready function */
+    $(".rating").starRating({
+        minus: true // step minus button
+    });
+</script>

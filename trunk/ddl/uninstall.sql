@@ -1,5 +1,5 @@
 BEGIN
-    blog_install.pre_deinstall;
+    blog_install.remove_jobs;
 END;
 /
 ALTER TABLE "BLOG_COMMENT" DROP CONSTRAINT "BLOG_COMMENT_FK3"
