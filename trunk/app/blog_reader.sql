@@ -20201,7 +20201,7 @@ s:=s||'                  when ''box_count''    then 55'||unistr('\000a')||
 
 s:=s||'com/docs/reference/plugins/like'||unistr('\000a')||
 '    -- for a documentation of the URL syntax'||unistr('\000a')||
-'    l_url := ''http://www.facebook.com/plugins/like.php?href='';'||unistr('\000a')||
+'    l_url := ''//www.facebook.com/plugins/like.php?href='';'||unistr('\000a')||
 '    '||unistr('\000a')||
 '    -- Generate the "Like" URL based on our URL to Like setting.'||unistr('\000a')||
 '    -- Note: Always use session 0, otherwise Facebook will not be able to get the page.'||unistr('\000a')||
@@ -20320,14 +20320,14 @@ s:=s||'end if;'||unistr('\000a')||
 '    -- Output the Twitter button widget'||unistr('\000a')||
 '    -- See http://twitter.com/about/resources/tweetbutton for syntax'||unistr('\000a')||
 '    sys.htp.prn ('||unistr('\000a')||
-'        ''<a href="http://twitter.com/share" class="twitter-share-button" data-url="''||sys.htf.escape_sc(l_url)||''" ''||'||unistr('\000a')||
+'        ''<a href="//twitter.com/share" class="twitter-share-button" data-url="''||sys.htf.escape_sc(l_url)||''" ''||'||unistr('\000a')||
 '        case when l_tweet_text_type = ''custom'' then ''data-text="''||l_custom_text||''" '' end||'||unistr('\000a')||
 '        ''data-count="''||l_layout_style||';
 
 s:=s||'''" ''||'||unistr('\000a')||
 '        case when l_follow1 is not null then ''data-via="''||l_follow1||''" '' end||'||unistr('\000a')||
 '        case when l_follow2 is not null then ''data-related="''||l_follow2||''" '' end||'||unistr('\000a')||
-'        ''>Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>'' );'||unistr('\000a')||
+'        ''>Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>'' );'||unistr('\000a')||
 ''||unistr('\000a')||
 '    -- Tell APEX that this field is NOT navigable'||unistr('\000a')||
 '    l_result.is_navigable := false;'||unistr('\000a')||

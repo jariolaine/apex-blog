@@ -1717,7 +1717,7 @@ END feature_authorization;
     -- Base URL for the "Like" widget.
     -- See http://developers.facebook.com/docs/reference/plugins/like
     -- for a documentation of the URL syntax
-    l_url := 'http://www.facebook.com/plugins/like.php?href=';
+    l_url := '//www.facebook.com/plugins/like.php?href=';
     
     -- Generate the "Like" URL based on our URL to Like setting.
     -- Note: Always use session 0, otherwise Facebook will not be able to get the page.
@@ -1812,12 +1812,12 @@ END feature_authorization;
     -- Output the Twitter button widget
     -- See http://twitter.com/about/resources/tweetbutton for syntax
     sys.htp.prn (
-        '<a href="http://twitter.com/share" class="twitter-share-button" data-url="'||sys.htf.escape_sc(l_url)||'" '||
+        '<a href="//twitter.com/share" class="twitter-share-button" data-url="'||sys.htf.escape_sc(l_url)||'" '||
         case when l_tweet_text_type = 'custom' then 'data-text="'||l_custom_text||'" ' end||
         'data-count="'||l_layout_style||'" '||
         case when l_follow1 is not null then 'data-via="'||l_follow1||'" ' end||
         case when l_follow2 is not null then 'data-related="'||l_follow2||'" ' end||
-        '>Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>' );
+        '>Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>' );
 
     -- Tell APEX that this field is NOT navigable
     l_result.is_navigable := false;
