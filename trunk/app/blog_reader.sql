@@ -12,7 +12,7 @@ prompt  APPLICATION 290 - Blog Reader
 -- Application Export:
 --   Application:     290
 --   Name:            Blog Reader
---   Date and Time:   10:27 Sunday December 28, 2014
+--   Date and Time:   11:52 Sunday December 28, 2014
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -205,7 +205,7 @@ wwv_flow_api.create_flow(
   p_substitution_string_01 => 'SCHEMA_VERSION',
   p_substitution_value_01  => '2.9.0.1',
   p_last_updated_by => 'LAINFJAR',
-  p_last_upd_yyyymmddhh24miss=> '20141228102710',
+  p_last_upd_yyyymmddhh24miss=> '20141228115203',
   p_ui_type_name => null,
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
@@ -26122,7 +26122,19 @@ prompt  ...application deployment checks
  
 begin
  
-null;
+wwv_flow_api.create_install_check(
+  p_id => 14710815448933594 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_install_id=> 10834514095423806 + wwv_flow_api.g_id_offset,
+  p_name => 'No objects starting with BLOG',
+  p_sequence=> 10,
+  p_check_type=> 'NOT_EXISTS',
+  p_check_condition=> 'select 1'||unistr('\000a')||
+'from user_objects'||unistr('\000a')||
+'where object_name LIKE ''BLOG%''',
+  p_failure_message=> 'Target schema contains one or more object where name starts with BLOG.'||unistr('\000a')||
+'Rename or remove those objects before installing this application.');
+ 
  
 end;
 /

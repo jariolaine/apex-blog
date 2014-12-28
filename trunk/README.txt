@@ -46,6 +46,5 @@ end;
 ~~~~~~
 
 By default blog theme files are served from database.
-It is recommended to place all theme files from folder "server" to web server.
-Then change blog preference "Theme location" to web server virtual folder.
-
+It is recommended copy the files of the directory "server" on the web server.
+Then change from blog admin application preference "Theme location" to relative URL of that directory.
