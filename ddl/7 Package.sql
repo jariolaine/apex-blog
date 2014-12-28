@@ -70,7 +70,7 @@ AS
   BEGIN
 
     l_rss_lang    := apex_application.g_browser_language;
-    l_rss_desc    := blog_util.get_param_value('RSS_DESCRIPTION');
+    l_rss_desc    := apex_plugin_util.replace_substitutions(apex_lang.message('RSS_DESCRIPTION'));
     
     l_url         := 'f?p=' || p_app_alias || ':';
     l_rss_url     := p_base_url || l_url || 'RSS';
@@ -245,9 +245,9 @@ AS
   );
 --------------------------------------------------------------------------------
   PROCEDURE download_file (
-    p_file_name   IN VARCHAR2,
-    p_session_id  IN NUMBER,
-    p_user_id     IN VARCHAR2
+    p_file_name       IN VARCHAR2,
+    p_session_id      IN NUMBER,
+    p_user_id         IN VARCHAR2
   );
 --------------------------------------------------------------------------------
   FUNCTION validate_email (
@@ -255,19 +255,20 @@ AS
   ) RETURN BOOLEAN;
 --------------------------------------------------------------------------------
   PROCEDURE get_article_page_items (
-    p_article_id    IN VARCHAR2,
-    p_page_title    OUT NOCOPY VARCHAR2,
-    p_region_title  OUT NOCOPY VARCHAR2,
-    p_keywords      OUT NOCOPY VARCHAR2,
-    p_description   OUT NOCOPY VARCHAR2,
-    p_author_name   OUT NOCOPY VARCHAR2
+    p_article_id      IN VARCHAR2,
+    p_page_title      OUT NOCOPY VARCHAR2,
+    p_region_title    OUT NOCOPY VARCHAR2,
+    p_keywords        OUT NOCOPY VARCHAR2,
+    p_description     OUT NOCOPY VARCHAR2,
+    p_author_name     OUT NOCOPY VARCHAR2,
+    p_rate            OUT NOCOPY NUMBER
   );
 --------------------------------------------------------------------------------
   PROCEDURE get_category_page_items (
-    p_category_id   IN VARCHAR2,
-    p_page_title    OUT NOCOPY VARCHAR2,
-    p_region_title  OUT NOCOPY VARCHAR2,
-    p_category_name OUT NOCOPY VARCHAR2
+    p_category_id     IN VARCHAR2,
+    p_page_title      OUT NOCOPY VARCHAR2,
+    p_region_title    OUT NOCOPY VARCHAR2,
+    p_category_name   OUT NOCOPY VARCHAR2
   );
 --------------------------------------------------------------------------------
 END "BLOG_UTIL";
@@ -419,8 +420,8 @@ AS
     l_key   VARCHAR2(40);
     l_email t_email;
   BEGIN
-    l_email.v_subj            := blog_util.get_param_value(p_subj);
-    l_email.v_body            := blog_util.get_param_value(p_body);
+    l_email.v_subj            := apex_lang.message(p_subj);
+    l_email.v_body            := apex_lang.message(p_body);
     l_arr('#BLOG_NAME#')      := p_blog_name;
     l_arr('#ARTICLE_TITLE#')  := p_article_title;
     l_arr('#AUTHOR_NAME#')    := p_author_name;
@@ -568,6 +569,25 @@ AS
     );
     apex_application.stop_apex_engine;
   END raise_http_error;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------  
+  PROCEDURE check_http410(
+    p_id  IN VARCHAR2
+  )
+  AS
+    l_count PLS_INTEGER;
+  BEGIN
+    SELECT COUNT(1)
+    INTO l_count
+    FROM blog_http410 c
+    WHERE c.deleted_id = p_id
+    ;
+    blog_util.raise_http_error(p_id, 410, 'Gone');
+  EXCEPTION WHEN 
+    NO_DATA_FOUND
+  THEN
+    blog_util.raise_http_error(p_id);
+  END check_http410;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -860,7 +880,7 @@ AS
     p_article_id  OUT NOCOPY NUMBER
   )
   AS
-    l_user_name   VARCHAR2(255);
+    l_user_name VARCHAR2(255);
     l_arr       apex_application_global.vc_arr2;
   BEGIN
     l_arr         := blog_util.raw_to_table(p_value);
@@ -899,7 +919,6 @@ AS
     p_user_id     IN VARCHAR2
   )
   AS
-    l_id_source       VARCHAR2(256);
     l_file_name       VARCHAR2(2000);
     l_utc             TIMESTAMP;
     l_file_cached     BOOLEAN;
@@ -907,15 +926,17 @@ AS
     l_arr             apex_application_global.vc_arr2;
     c_date_lang       CONSTANT VARCHAR2(255) := 'NLS_DATE_LANGUAGE=ENGLISH';
     c_date_format     CONSTANT VARCHAR2(255) := 'Dy, DD Mon YYYY HH24:MI:SS "GMT"';
-    SESSION_NOT_VALID EXCEPTION;
+    --SESSION_NOT_VALID EXCEPTION;
     FILE_NOT_ACTIVE   EXCEPTION;
-    PRAGMA EXCEPTION_INIT(SESSION_NOT_VALID, -20001);
-    PRAGMA EXCEPTION_INIT(SESSION_NOT_VALID, -20002);
+    --PRAGMA EXCEPTION_INIT(SESSION_NOT_VALID, -20001);
+    PRAGMA EXCEPTION_INIT(FILE_NOT_ACTIVE, -20002);
   BEGIN
+    /*
     IF NOT apex_custom_auth.is_session_valid THEN
       apex_debug.warn('File download session is not valid: %s', p_session_id);
       raise_application_error(-20001, 'Unauthorized access - file will not be retrieved.');
     END IF;
+    */
     l_file_cached := FALSE;
     l_arr := apex_util.string_to_table(p_file_name, '?');
     l_file_name := l_arr(1);
@@ -971,27 +992,13 @@ AS
   EXCEPTION WHEN 
     NO_DATA_FOUND
   THEN
-    BEGIN
-      SELECT c.id_source
-      INTO l_id_source
-      FROM blog_http410 c
-      WHERE c.deleted_id = l_file_name
-      ;
-      blog_util.raise_http_error(p_file_name, 410, 'Gone');
-    EXCEPTION WHEN 
-      NO_DATA_FOUND
-    THEN
-      blog_util.raise_http_error(p_file_name);
-    END;
+    check_http410(l_file_name);
   WHEN
     VALUE_ERROR OR
     INVALID_NUMBER OR
     FILE_NOT_ACTIVE
   THEN
-    blog_util.raise_http_error(p_file_name);
-  WHEN SESSION_NOT_VALID
-  THEN
-    blog_util.raise_http_error(p_file_name, 403, 'Forbidden');
+    blog_util.raise_http_error(l_file_name);
   END download_file;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1035,12 +1042,12 @@ AS
     p_region_title  OUT NOCOPY VARCHAR2,
     p_keywords      OUT NOCOPY VARCHAR2,
     p_description   OUT NOCOPY VARCHAR2,
-    p_author_name   OUT NOCOPY VARCHAR2
+    p_author_name   OUT NOCOPY VARCHAR2,
+    p_rate          OUT NOCOPY NUMBER    
   ) 
   AS
     l_article_id    NUMBER;
     l_category_name VARCHAR2(256);
-    l_id_source     VARCHAR2(256);
   BEGIN
     /* Input parameter p_category_id is string because we handle invalid number exception */
     l_article_id := to_number(p_article_id);
@@ -1048,32 +1055,26 @@ AS
       a.category_name,
       a.keywords,
       a.description,
-      a.author_name
+      a.author_name,
+      l.article_rate_int
     INTO p_page_title,
       l_category_name,
       p_keywords,
       p_description,
-      p_author_name
+      p_author_name,
+      p_rate
     FROM blog_v$article a
+    LEFT JOIN blog_article_log l
+    ON a.article_id = l.article_id
     WHERE a.article_id = l_article_id
     ;
     p_region_title  := apex_lang.message('REGION_TITLE_COMMENTS');
     p_keywords      := ltrim(trim(BOTH ',' FROM p_keywords) || ',' || l_category_name, ',');
+    p_rate          := coalesce(p_rate, 0);
   EXCEPTION WHEN 
     NO_DATA_FOUND
   THEN
-    BEGIN
-      SELECT c.id_source
-      INTO l_id_source
-      FROM blog_http410 c
-      WHERE c.deleted_id = p_article_id
-      ;
-      blog_util.raise_http_error(p_article_id,410, 'Gone');
-    EXCEPTION WHEN 
-      NO_DATA_FOUND
-    THEN
-      blog_util.raise_http_error(p_article_id);
-    END;
+    check_http410(p_article_id);
   WHEN
     INVALID_NUMBER OR
     VALUE_ERROR
@@ -1090,7 +1091,6 @@ AS
   )
   AS
     l_category_id NUMBER;
-    l_id_source   VARCHAR2(256);
   BEGIN
     /* Input parameter p_category_id is string because we handle invalid number exception */
     l_category_id := to_number(p_category_id);
@@ -1105,18 +1105,7 @@ AS
   EXCEPTION WHEN 
     NO_DATA_FOUND
   THEN
-    BEGIN
-      SELECT c.id_source
-      INTO l_id_source
-      FROM blog_http410 c
-      WHERE c.deleted_id = p_category_id
-      ;
-      blog_util.raise_http_error(p_category_id, 410, 'Gone');
-    EXCEPTION WHEN 
-      NO_DATA_FOUND
-    THEN
-      blog_util.raise_http_error(p_category_id);
-    END;
+    check_http410(p_category_id);
   WHEN
     INVALID_NUMBER OR
     VALUE_ERROR
@@ -1173,10 +1162,34 @@ AS
     p_value  IN VARCHAR2
   ) RETURN apex_plugin.t_page_item_validation_result;
 --------------------------------------------------------------------------------
+  FUNCTION render_simple_star_rating (
+    p_item                IN apex_plugin.t_page_item,
+    p_plugin              IN apex_plugin.t_plugin,
+    p_value               IN VARCHAR2,
+    p_is_readonly         IN BOOLEAN,
+    p_is_printer_friendly IN BOOLEAN
+  ) RETURN apex_plugin.t_page_item_render_result;
+--------------------------------------------------------------------------------
   FUNCTION render_modal_confirm(
     p_dynamic_action IN apex_plugin.t_dynamic_action,
     p_plugin         IN apex_plugin.t_plugin
   ) RETURN apex_plugin.t_dynamic_action_render_result;
+-------------------------------------------------------------------------------
+  FUNCTION render_facebook_like_button (
+    p_item                IN apex_plugin.t_page_item,
+    p_plugin              IN apex_plugin.t_plugin,
+    p_value               IN VARCHAR2,
+    p_is_readonly         IN BOOLEAN,
+    p_is_printer_friendly IN BOOLEAN
+  ) RETURN apex_plugin.t_page_item_render_result;
+-------------------------------------------------------------------------------
+  FUNCTION render_twitter_button (
+    p_item                IN apex_plugin.t_page_item,
+    p_plugin              IN apex_plugin.t_plugin,
+    p_value               IN VARCHAR2,
+    p_is_readonly         IN BOOLEAN,
+    p_is_printer_friendly IN BOOLEAN
+  ) RETURN apex_plugin.t_page_item_render_result;
 -------------------------------------------------------------------------------
 END "BLOG_PLUGIN";
 /
@@ -1302,14 +1315,14 @@ AS
       );
     ELSE
       -- Because the page item saves state, we have to call get_input_name_for_page_item
-      -- which generates the internal hidden p_arg_names textarea. It will also return the
+      -- which generates the internal hidden p_arg_names textarea. It will also RETURN the
       -- HTML textarea name which we have to use when we render the HTML input textarea.
       l_name := apex_plugin.get_input_name_for_page_item(false);
       
-      l_code      := APEX_LANG.LANG('Code');
-      l_bold      := APEX_LANG.LANG('Bold');
-      l_italics   := APEX_LANG.LANG('Italics');
-      l_underline := APEX_LANG.LANG('Underline');
+      l_code      := apex_lang.lang('Code');
+      l_bold      := apex_lang.lang('Bold');
+      l_italics   := apex_lang.lang('Italics');
+      l_underline := apex_lang.lang('Underline');
       IF l_formatting = 'Y' THEN
         sys.htp.p('<ul class="format-btn">');
         sys.htp.p(
@@ -1339,7 +1352,7 @@ AS
         sys.htp.p('</ul>');
         sys.htp.p(
           '<div>'
-          || APEX_ESCAPE.HTML (APEX_LANG.MESSAGE('MSG_ALLOWED_HTML_TAGS'))
+          || APEX_ESCAPE.HTML (apex_lang.message('MSG_ALLOWED_HTML_TAGS'))
           || '</div>'
         );
       END IF;
@@ -1387,7 +1400,7 @@ AS
     END IF;
     IF LENGTH(blog_plugin.g_formatted_comment) >= p_item.element_max_length THEN
       l_is_valid := FALSE;
-      l_result.message := APEX_LANG.MESSAGE('VALIDATION_COMMENT_LENGTH', p_item.plain_label, p_item.element_max_length);
+      l_result.message := apex_lang.message('VALIDATION_COMMENT_LENGTH', p_item.plain_label, p_item.element_max_length);
     ELSE
       l_is_valid := TRUE;
     END IF;
@@ -1408,14 +1421,14 @@ AS
       EXCEPTION
       WHEN xml_parse_err THEN
         l_is_valid := FALSE;
-        APEX_DEBUG.ERROR('%s : %s', dbms_utility.format_error_backtrace, sqlerrm);
+        apex_debug.error('%s : %s', sys.dbms_utility.format_error_backtrace, sqlerrm);
       WHEN OTHERS THEN
-        APEX_DEBUG.ERROR('%s : %s', dbms_utility.format_error_backtrace, sqlerrm);
+        apex_debug.error('%s : %s', sys.dbms_utility.format_error_backtrace, sqlerrm);
         l_is_valid := FALSE;
       END;
       IF NOT l_is_valid THEN
         l_is_valid := FALSE;
-        l_result.message := APEX_LANG.MESSAGE('VALIDATION_COMMENT_FORMAT', p_item.plain_label);
+        l_result.message := apex_lang.message('VALIDATION_COMMENT_FORMAT', p_item.plain_label);
       END IF;
     END IF;
     RETURN l_result;
@@ -1429,7 +1442,7 @@ AS
   AS
     l_count         NUMBER;
     l_feature_name  VARCHAR(100);
-    l_result        apex_plugin.t_authorization_exec_result; -- result object to return
+    l_result        apex_plugin.t_authorization_exec_result; -- result object to RETURN
   BEGIN
     l_feature_name := p_authorization.attribute_01;
     SELECT COUNT(1)
@@ -1488,7 +1501,9 @@ END feature_authorization;
         p_code => 'apex.server.plugin("' || apex_plugin.get_ajax_identifier || '",{},{'
         || 'dataType:"html",'
         || 'success:function(data){'
-        || '$("#' || p_item.name || '").before(data).siblings("label,br").remove()}'
+        || '$("'
+        || apex_plugin_util.page_item_names_to_jquery(p_item.name) 
+        || '").before(data).siblings("label,br").remove()}'
         || '});'
       );
       -- Tell APEX that this textarea is navigable
@@ -1509,7 +1524,7 @@ END feature_authorization;
     l_max_1       PLS_INTEGER := 1;
     l_min_2       PLS_INTEGER := 1;
     l_max_2       PLS_INTEGER := 1;
-    l_arr         APEX_APPLICATION_GLOBAL.vc_arr2;
+    l_arr         apex_application_global.vc_arr2;
     l_result      apex_plugin.t_page_item_ajax_result;
   BEGIN
     l_answer_item := p_item.attribute_01;
@@ -1517,11 +1532,11 @@ END feature_authorization;
     l_max_1       := p_item.attribute_03;
     l_min_2       := p_item.attribute_04;
     l_max_2       := p_item.attribute_05;
-    l_arr(1)      := ROUND(DBMS_RANDOM.VALUE(l_min_1, l_max_1));
-    l_arr(1)      := ROUND(DBMS_RANDOM.VALUE(l_min_2, l_max_2));
+    l_arr(1)      := ROUND(sys.dbms_random.VALUE(l_min_1, l_max_1));
+    l_arr(1)      := ROUND(sys.dbms_random.VALUE(l_min_2, l_max_2));
     FOR n IN 1 .. 2
     LOOP
-      l_arr(n) := ROUND(DBMS_RANDOM.VALUE(1, 40));
+      l_arr(n) := ROUND(sys.dbms_random.VALUE(1, 40));
       FOR i IN 1 .. LENGTH(l_arr(n))
       LOOP
         l_tmp := l_tmp || '&#' || ASCII(SUBSTR(l_arr(n), i, 1));
@@ -1536,13 +1551,13 @@ END feature_authorization;
     sys.htp.p('Pragma: no-cache');
     --sys.htp.p('X-Robots-Tag    noindex,follow');
     sys.owa_util.http_header_close;
-    sys.htp.p('<p>' || APEX_LANG.MESSAGE('MSG_MATH_QUESTION', '</p><span>' ||l_tmp || '&nbsp;&#' || ASCII('=') || '</span>'));
+    sys.htp.p('<p>' || apex_lang.message('MSG_MATH_QUESTION', '</p><span>' ||l_tmp || '&nbsp;&#' || ASCII('=') || '</span>'));
     /* set correct answer to item session state */
     apex_util.set_session_state(l_answer_item, TO_NUMBER(l_arr(1)) + TO_NUMBER(l_arr(2)));
     RETURN l_result;
   EXCEPTION WHEN OTHERS
   THEN
-    sys.htp.p(wwv_flow_lang.system_message('ajax_server_error'));
+    sys.htp.prn(wwv_flow_lang.system_message('ajax_server_error'));
     RETURN l_result;
   END ajax_math_question_field;
 --------------------------------------------------------------------------------
@@ -1572,10 +1587,58 @@ END feature_authorization;
       l_is_valid := FALSE;
     END;
     IF NOT l_is_valid THEN
-      l_result.message := APEX_LANG.MESSAGE('VALIDATION_MATH_QUESTION', p_item.plain_label);
+      l_result.message := apex_lang.message('VALIDATION_MATH_QUESTION', p_item.plain_label);
     END IF;
     RETURN l_result;
   END validate_math_question_field;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  FUNCTION render_simple_star_rating (
+    p_item                IN apex_plugin.t_page_item,
+    p_plugin              IN apex_plugin.t_plugin,
+    p_value               IN VARCHAR2,
+    p_is_readonly         IN BOOLEAN,
+    p_is_printer_friendly IN BOOLEAN
+  ) RETURN apex_plugin.t_page_item_render_result
+  AS 
+    l_result apex_plugin.t_page_item_render_result;
+  BEGIN
+    l_result.is_navigable := (p_is_readonly = false and p_is_printer_friendly = false);
+    sys.htp.prn(
+      '<div id="' || p_item.name || '" class="rating" data-val="' || p_value || '">'
+      || '<ul>'
+    );
+    for i in 1 .. 5 loop
+        sys.htp.prn(
+          '<li id="' || p_item.name ||'_' || i || '" title="' || i || '" '
+          || case when l_result.is_navigable then
+            case when i <=  p_value then 'class="active enabled"' else 'class="enabled"' end
+          else
+            case when i <=  p_value then 'class="active"' end
+          end
+          || '/></li>'
+        );
+    end loop;
+    sys.htp.prn('</ul>');
+    if l_result.is_navigable then
+      apex_javascript.add_onload_code (p_code => '$("'
+        || apex_plugin_util.page_item_names_to_jquery(p_item.name) 
+        || '").starRating();'
+      );
+      sys.htp.p(
+        '<div id="' || p_item.name ||'_DIALOG" class="hideMe508">'
+        || apex_lang.message('DIALOG_ARTICLE_RATED')
+        || '</div>'
+      );
+      apex_javascript.add_library (
+        p_name    => 'jquery.ui.button',
+        p_check_to_add_minified    => true,
+        p_directory => apex_application.g_image_prefix || 'libraries/jquery-ui/1.8.22/ui/minified/'
+      );
+    end if;
+    sys.htp.p('</div>');
+    RETURN l_result;
+  END render_simple_star_rating;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   FUNCTION render_modal_confirm(
@@ -1590,14 +1653,177 @@ END feature_authorization;
         || 'this.affectedElements.data("request",this.triggeringElement.id).dialog({'
         || 'modal:true,'
         || 'buttons:{'
-        || '"' || APEX_LANG.LANG('OK') || '":function(){$(this).dialog("close");apex.submit($(this).data("request"));},'
-        || '"' || APEX_LANG.LANG('Cancel') || '":function(){$(this).dialog("close")}'
+        || '"' || apex_lang.lang('OK') || '":function(){$(this).dialog("close");apex.submit($(this).data("request"));},'
+        || '"' || apex_lang.lang('Cancel') || '":function(){$(this).dialog("close")}'
         || '}})}'
       ,p_key  => 'net.webhop.dbswh.modal_confirm'
     );
     l_result.javascript_function := 'net_webhop_dbswh_modal_confirm';
     RETURN l_result;
   END render_modal_confirm;
+--===============================================================================
+-- Renders the Facebook "Like" button widget based on the configuration of the
+-- page item.
+--===============================================================================
+  FUNCTION render_facebook_like_button (
+    p_item                IN apex_plugin.t_page_item,
+    p_plugin              IN apex_plugin.t_plugin,
+    p_value               IN VARCHAR2,
+    p_is_readonly         IN BOOLEAN,
+    p_is_printer_friendly IN BOOLEAN
+  ) RETURN apex_plugin.t_page_item_render_result
+  AS
+    c_host constant varchar2(4000) := apex_util.host_url('SCRIPT');
+    
+    -- It's better to have named variables instead of using the generic ones,
+    -- makes the code more readable.
+    -- We are using the same defaults for the required attributes as in the
+    -- plug-in attribute configuration, because they can still be null.
+    -- Note: Keep them in sync!
+    l_url_to_like  varchar2(20)   := nvl(p_item.attribute_01, 'current_page');
+    l_page_url     varchar2(4000) := p_item.attribute_02;
+    l_custom_url   varchar2(4000) := p_item.attribute_03;
+    l_layout_style varchar2(15)   := nvl(p_item.attribute_04, 'standard');
+    l_show_faces   boolean        := (nvl(p_item.attribute_05, 'Y') = 'Y');
+    l_width        number         := p_item.attribute_06;
+    l_verb         varchar2(15)   := nvl(p_item.attribute_07, 'like');
+    l_font         varchar2(15)   := p_item.attribute_08;
+    l_color_scheme varchar2(15)   := nvl(p_item.attribute_09, 'light');
+    
+    l_url          varchar2(4000);
+    l_height       number;
+    l_result       apex_plugin.t_page_item_render_result;
+  BEGIN
+    -- Don't show the widget if we are running in printer friendly mode
+    if p_is_printer_friendly then
+        RETURN null;
+    end if;
+      
+    -- Get the width and the height depending on the picked layout style
+    if l_width is null then
+        l_width := case l_layout_style
+                     when 'standard'     then 450
+                     when 'button_count' then 90
+                     when 'box_count'    then 55
+                   end;
+    end if;
+    
+    l_height := case l_layout_style
+                  when 'standard'     then case when l_show_faces then 80 else 35 end
+                  when 'button_count' then 20
+                  when 'box_count'    then 65
+                end;
+
+    -- Base URL for the "Like" widget.
+    -- See http://developers.facebook.com/docs/reference/plugins/like
+    -- for a documentation of the URL syntax
+    l_url := 'http://www.facebook.com/plugins/like.php?href=';
+    
+    -- Generate the "Like" URL based on our URL to Like setting.
+    -- Note: Always use session 0, otherwise Facebook will not be able to get the page.
+    l_url := l_url||
+             utl_url.escape (
+                 url => case l_url_to_like
+                          when 'current_page' then c_host||'f?p='||apex_application.g_flow_id||':'||apex_application.g_flow_step_id||':0'
+                          when 'page_url'     then c_host||l_page_url
+                          when 'custom_url'   then replace(l_custom_url, '#HOST#', c_host)
+                          when 'value'        then replace(p_value, '#HOST#', c_host)
+                        end,
+                 escape_reserved_chars => true)||
+             '&amp;';
+
+    -- Add the display options for the "Like" button widget
+    l_url := l_url||
+             'layout='||l_layout_style||'&amp;'||
+             case when l_layout_style = 'standard' then
+                 'show_faces='||case when l_show_faces then 'true' else 'false' end||'&amp;'
+             end||
+             'width='||l_width||'&amp;'||
+             'action='||l_verb||'&amp;'||
+             case when l_font is not null then 'font='||l_font||'&amp;' end||
+             'colorscheme='||l_color_scheme||'&amp;'||
+             'height='||l_height;
+
+    -- Output the Facebook Like button widget
+    sys.htp.prn('<iframe src="'||l_url||'" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:'||l_width||'px; height:'||l_height||'px;" allowTransparency="true"></iframe>');
+
+    -- Tell APEX that this field is NOT navigable
+    l_result.is_navigable := false;
+
+    RETURN l_result;
+  END render_facebook_like_button;
+--===============================================================================
+-- Renders the Twitter button widget based on the configuration of the
+-- page item.
+--===============================================================================
+  FUNCTION render_twitter_button (
+    p_item                IN apex_plugin.t_page_item,
+    p_plugin              IN apex_plugin.t_plugin,
+    p_value               IN VARCHAR2,
+    p_is_readonly         IN BOOLEAN,
+    p_is_printer_friendly IN BOOLEAN
+  ) RETURN apex_plugin.t_page_item_render_result
+  AS
+    c_host constant varchar2(4000) := apex_util.host_url('SCRIPT');
+    
+    -- It's better to have named variables instead of using the generic ones,
+    -- makes the code more readable.
+    -- We are using the same defaults for the required attributes as in the
+    -- plug-in attribute configuration, because they can still be null.
+    -- Note: Keep them in sync!
+    l_url_to_like     varchar2(20)   := nvl(p_item.attribute_01, 'current_page');
+    l_page_url        varchar2(4000) := p_item.attribute_02;
+    l_custom_url      varchar2(4000) := p_item.attribute_03;
+    l_layout_style    varchar2(15)   := nvl(p_item.attribute_04, 'vertical');
+    l_tweet_text_type varchar2(10)   := nvl(p_item.attribute_05, 'page_title');
+    l_custom_text     varchar2(140)  := sys.htf.escape_sc(p_item.attribute_06);
+    l_follow1         varchar2(4000) := sys.htf.escape_sc(p_item.attribute_07);
+    l_follow2         varchar2(4000) := sys.htf.escape_sc(p_item.attribute_08);
+    
+    l_url             varchar2(4000);
+    l_result          apex_plugin.t_page_item_render_result;
+  BEGIN
+    -- Don't show the widget if we are running in printer friendly mode
+    if p_is_printer_friendly then
+        RETURN null;
+    end if;
+    
+    -- Generate the Tweet URL based on our URL setting.
+    -- Note: Always use session 0, otherwise Twitter will always register a different URL.
+    l_url := case l_url_to_like
+               when 'current_page' then c_host||'f?p='||apex_application.g_flow_id||':'||apex_application.g_flow_step_id||':0'
+               when 'page_url'     then c_host||l_page_url
+               when 'custom_url'   then replace(l_custom_url, '#HOST#', c_host)
+               when 'value'        then replace(p_value, '#HOST#', c_host)
+             end;
+
+    -- For a custom text we have to replace the #PAGE_TITLE# placeholder with the correct
+    -- language dependent page title of the current page.
+    if l_tweet_text_type = 'custom' then
+        if instr(l_custom_text, '#PAGE_TITLE') > 0 then
+            select replace(l_custom_text, '#PAGE_TITLE#', apex_application.do_substitutions(page_title, 'ESC'))
+              into l_custom_text
+              from apex_application_pages
+             where application_id = nvl(apex_application.g_translated_flow_id, apex_application.g_flow_id)
+               and page_id        = nvl(apex_application.g_translated_page_id, apex_application.g_flow_step_id);
+        end if;
+    end if;
+
+    -- Output the Twitter button widget
+    -- See http://twitter.com/about/resources/tweetbutton for syntax
+    sys.htp.prn (
+        '<a href="http://twitter.com/share" class="twitter-share-button" data-url="'||sys.htf.escape_sc(l_url)||'" '||
+        case when l_tweet_text_type = 'custom' then 'data-text="'||l_custom_text||'" ' end||
+        'data-count="'||l_layout_style||'" '||
+        case when l_follow1 is not null then 'data-via="'||l_follow1||'" ' end||
+        case when l_follow2 is not null then 'data-related="'||l_follow2||'" ' end||
+        '>Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>' );
+
+    -- Tell APEX that this field is NOT navigable
+    l_result.is_navigable := false;
+
+    RETURN l_result;
+  END render_twitter_button;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 END "BLOG_PLUGIN";
@@ -1630,7 +1856,7 @@ AS
   );
 --------------------------------------------------------------------------------
   PROCEDURE write_article_log(
-    p_article_id  IN NUMBER
+    p_article_id      IN NUMBER
   );
 --------------------------------------------------------------------------------
   PROCEDURE rate_article(
@@ -1639,11 +1865,11 @@ AS
   );
 --------------------------------------------------------------------------------
   PROCEDURE write_category_log(
-    p_category_id  IN NUMBER
+    p_category_id     IN NUMBER
   );
 --------------------------------------------------------------------------------
   PROCEDURE write_file_log(
-    p_file_id  IN NUMBER
+    p_file_id         IN NUMBER
   );
 --------------------------------------------------------------------------------
 END "BLOG_LOG";
@@ -1691,13 +1917,13 @@ AS
         -- Change the message to the generic error message which doesn't expose
         -- any sensitive information.
         -- log error to application debug information
-        APEX_DEBUG.ERROR(
+        apex_debug.error(
           'Error handler: %s %s %s',
            p_error.apex_error_code,
            l_result.message,
            l_result.additional_info
         );
-        l_result.message := APEX_LANG.MESSAGE('GENERAL_ERROR');
+        l_result.message := apex_lang.message('GENERAL_ERROR');
         l_result.additional_info := NULL;
       END IF;
     ELSE
@@ -1724,7 +1950,7 @@ AS
       -- the original ORA error message.
       IF p_error.ora_sqlcode IN (-1, -2091, -2290, -2291, -2292) THEN
         l_constraint_name := apex_error.extract_constraint_name ( p_error => p_error );
-        l_err_msg := APEX_LANG.MESSAGE(l_constraint_name);
+        l_err_msg := apex_lang.message(l_constraint_name);
         -- not every constraint has to be in our lookup table
         IF NOT l_err_msg = l_constraint_name THEN
           l_result.message := l_err_msg;
@@ -1837,6 +2063,7 @@ AS
     p_article_rate  IN OUT NOCOPY NUMBER
   )
   AS
+    l_rate NUMBER;
   BEGIN
     UPDATE blog_article_log
       SET article_rate      = (article_rate * rate_click + p_article_rate) / (rate_click + 1),
@@ -1844,8 +2071,9 @@ AS
           rate_click        = rate_click + 1,
           last_rate         = SYSDATE
     WHERE article_id = p_article_id
-    RETURNING article_rate_int INTO p_article_rate
+    RETURNING article_rate_int INTO l_rate
     ;
+    sys.htp.prn(l_rate);
   END rate_article;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2128,7 +2356,7 @@ AS
     PRAGMA            EXCEPTION_INIT(job_not_exists, -27475);
   BEGIN
     BEGIN
-      DBMS_SCHEDULER.DROP_JOB(c_job);
+      sys.dbms_scheduler.drop_job(c_job);
     EXCEPTION WHEN job_not_exists THEN
       NULL;
     END;
@@ -2139,7 +2367,7 @@ AS
       l_interval := p_interval;
     END IF;
     IF l_interval > 0 THEN
-      DBMS_SCHEDULER.CREATE_JOB(
+      sys.dbms_scheduler.create_job(
         job_name        => c_job,
         job_type        => 'STORED_PROCEDURE',
         job_action      => 'blog_job.rotate_log',
@@ -2161,13 +2389,13 @@ AS
     PRAGMA                EXCEPTION_INIT(job_not_exists, -27475);
   BEGIN
     BEGIN
-      DBMS_SCHEDULER.DROP_JOB(c_job);
+      sys.dbms_scheduler.drop_job(c_job);
     EXCEPTION WHEN job_not_exists THEN
       NULL;
     END;
     
     IF NOT p_drop_only THEN
-      dbms_scheduler.create_job(
+      sys.dbms_scheduler.create_job(
         job_name        => c_job,
         job_type        =>'STORED_PROCEDURE',
         job_action      => 'blog_job.update_country',
@@ -2189,13 +2417,13 @@ AS
     PRAGMA         EXCEPTION_INIT(job_not_exists, -27475);
   BEGIN
     BEGIN
-      DBMS_SCHEDULER.DROP_JOB(c_job);
+      sys.dbms_scheduler.drop_job(c_job);
     EXCEPTION WHEN job_not_exists THEN
       NULL;
     END;
     
     IF NOT p_drop_only THEN
-      dbms_scheduler.create_job(
+      sys.dbms_scheduler.create_job(
         job_name        => c_job,
         job_type        =>'STORED_PROCEDURE',
         job_action      => 'blog_job.update_activity_logs',
@@ -2217,12 +2445,12 @@ AS
     PRAGMA          EXCEPTION_INIT(job_not_exists, -27475);
   BEGIN
     BEGIN
-      DBMS_SCHEDULER.DROP_JOB(c_job);
+      sys.dbms_scheduler.drop_job(c_job);
     EXCEPTION WHEN job_not_exists THEN
       NULL;
     END;
     IF NOT p_drop_only THEN
-      dbms_scheduler.create_job(
+      sys.dbms_scheduler.create_job(
         job_name        => c_job,
         job_type        => 'STORED_PROCEDURE',
         job_action      => 'blog_job.purge_preview',
@@ -2251,12 +2479,12 @@ AS
   );
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  PROCEDURE post_install;
+  PROCEDURE set_jobs;
 --------------------------------------------------------------------------------
-  PROCEDURE pre_deinstall;
+  PROCEDURE remove_jobs;
 --------------------------------------------------------------------------------
   FUNCTION varchar2_to_blob(
-    p_varchar2_tab in dbms_sql.varchar2_table
+    p_varchar2_tab IN sys.dbms_sql.varchar2_table
   ) RETURN BLOB;
 --------------------------------------------------------------------------------
 END "BLOG_INSTALL";
@@ -2271,7 +2499,9 @@ AS
   AS
     l_app_id    NUMBER;
     l_app_alias VARCHAR2(2000);
+    l_base_url  VARCHAR2(2000);
   BEGIN
+    l_base_url := apex_util.host_url('SCRIPT');
     SELECT application_id
     INTO l_app_id
     FROM apex_application_substitutions
@@ -2288,48 +2518,47 @@ AS
     WHERE param_id  = 'G_BLOG_READER_APP_ID'
     ;
     UPDATE blog_param
-    SET param_value = coalesce(p_theme_path,'f?p=' || TO_CHAR(l_app_id) || ':FILES:0:APPLICATION_PROCESS=DOWNLOAD:::P11_FILE_NAME:')
+    SET param_value = coalesce(p_theme_path,'f?p=' || TO_CHAR(l_app_id) || ':DOWNLOAD:0:')
     WHERE param_id  = 'G_THEME_PATH'
     ;
     UPDATE blog_param
-    SET param_value = 'f?p=' || l_app_alias || ':RSS'
+    SET param_value = l_base_url || 'f?p=' || l_app_alias || ':RSS'
     WHERE param_id  = 'G_RSS_FEED_URL'
     ;
     UPDATE blog_param
-    SET param_value = apex_util.host_url('SCRIPT')
+    SET param_value = l_base_url
     WHERE param_id  = 'G_BASE_URL'
     ;
-    blog_install.post_install;
+    dbms_mview.refresh('BLOG_PARAM_APP','C');
   END update_param_data;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  PROCEDURE post_install
+  PROCEDURE set_jobs
   AS
   BEGIN
     blog_job.update_country_job;
     blog_job.rotate_log_job;
     blog_job.update_activity_logs_job;
     blog_job.purge_preview_job;
-    dbms_mview.refresh('BLOG_PARAM_APP','C');
-  END post_install;
+  END set_jobs;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  PROCEDURE pre_deinstall
+  PROCEDURE remove_jobs
   AS
   BEGIN
     blog_job.update_country_job(TRUE);
     blog_job.rotate_log_job(0);
     blog_job.update_activity_logs_job(TRUE);
     blog_job.purge_preview_job(TRUE);
-  END pre_deinstall;
+  END remove_jobs;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   FUNCTION varchar2_to_blob(
-    p_varchar2_tab in dbms_sql.varchar2_table
+    p_varchar2_tab IN sys.dbms_sql.varchar2_table
   ) RETURN BLOB
   AS
-    l_blob blob;
-    l_size number;
+    l_blob BLOB;
+    l_size NUMBER;
   BEGIN
     dbms_lob.createtemporary(l_blob, true, dbms_lob.session);
     FOR i IN 1 .. p_varchar2_tab.count
@@ -2541,16 +2770,16 @@ AS
     l_byte_len  := 30000;
     --
     IF l_length < l_byte_len THEN
-      htp.prn(p_clob);
+      sys.htp.prn(p_clob);
     ELSE
     --
       WHILE l_offset < l_length AND l_byte_len > 0
       LOOP
         /* Get 30k cut */
-        l_temp := dbms_lob.substr(p_clob,l_byte_len,l_offset);
+        l_temp := sys.dbms_lob.substr(p_clob,l_byte_len,l_offset);
         --
         /* Print HTML */
-        htp.prn(l_temp);
+        sys.htp.prn(l_temp);
         --
         /* set the start position for the next cut */
         l_offset := l_offset + l_byte_len;
@@ -2641,8 +2870,8 @@ AS
     ON (a.article_id = b.article_id)
     WHEN MATCHED THEN
     UPDATE SET a.article_text = b.clob001
-    WHERE dbms_lob.compare(a.article_text, b.clob001) != 0
-      OR dbms_lob.compare(a.article_text, b.clob001) IS NULL
+    WHERE sys.dbms_lob.compare(a.article_text, b.clob001) != 0
+      OR sys.dbms_lob.compare(a.article_text, b.clob001) IS NULL
     ;
     IF SQL%ROWCOUNT > 0 THEN
       p_success_message := COALESCE(p_success_message, p_message);
@@ -2697,7 +2926,7 @@ AS
     RETURNING category_id INTO l_category_id;
     sys.htp.prn(l_category_id);
   EXCEPTION WHEN DUP_VAL_ON_INDEX THEN
-    sys.htp.prn(APEX_LANG.MESSAGE('MSG_CATEGORY_EXISTS'));
+    sys.htp.prn(apex_lang.message('MSG_CATEGORY_EXISTS'));
   END create_new_category;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

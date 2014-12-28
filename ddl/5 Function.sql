@@ -1,4 +1,6 @@
-CREATE OR REPLACE FUNCTION  "BLOG_SGID" RETURN NUMBER AS 
+CREATE OR REPLACE FUNCTION  "BLOG_SGID" RETURN NUMBER
+AUTHID DEFINER
+AS
 BEGIN
   RETURN TO_NUMBER(TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS') || LPAD(blog_seq.nextval,4,0));
 END "BLOG_SGID";
@@ -15,14 +17,14 @@ AS
 BEGIN
   l_password  :=
         SUBSTR(l_salt, 8, 13)
-    ||  p_password
+    ||  sys.utl_raw.cast_to_raw(p_password)
     ||  SUBSTR(l_salt, 4, 10)
 	||  SUBSTR(l_salt, 22, 28)
-    ||  p_username
+    ||  sys.utl_raw.cast_to_raw(p_username)
     ||  SUBSTR(l_salt, 18, 26)
   ;
-  l_password := utl_raw.cast_to_raw(l_password);
-  l_password := dbms_obfuscation_toolkit.md5(input_string => l_password);
+  l_password := sys.utl_raw.cast_to_raw(l_password);
+  l_password := sys.dbms_obfuscation_toolkit.md5(input_string => l_password);
   RETURN l_password;
 END "BLOG_PW_HASH";
 /

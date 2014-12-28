@@ -12,7 +12,7 @@ prompt  APPLICATION 291 - Blog Administration
 -- Application Export:
 --   Application:     291
 --   Name:            Blog Administration
---   Date and Time:   13:36 Sunday December 21, 2014
+--   Date and Time:   10:44 Sunday December 28, 2014
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -62,7 +62,7 @@ prompt  APPLICATION 291 - Blog Administration
 --       Shortcuts:              4
 --       Plug-ins:               3
 --     Globalization:
---       Messages:              32
+--       Messages:              31
 --     Reports:
  
  
@@ -208,7 +208,7 @@ wwv_flow_api.create_flow(
   p_error_handling_function=> 'blog_log.apex_error_handler',
   p_default_error_display_loc=> 'INLINE_WITH_FIELD_AND_NOTIFICATION',
   p_last_updated_by => 'LAINFJAR',
-  p_last_upd_yyyymmddhh24miss=> '20141221133600',
+  p_last_upd_yyyymmddhh24miss=> '20141228104420',
   p_ui_type_name => null,
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
@@ -1714,7 +1714,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'Publish new articles or edit existing ones. Report shows also statistic about articles.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141220094052'
+ ,p_last_upd_yyyymmddhh24miss => '20141226143112'
   );
 null;
  
@@ -2746,7 +2746,7 @@ wwv_flow_api.create_worksheet_column(
   p_others_may_view        =>'Y',
   p_column_type            =>'NUMBER',
   p_display_as             =>'TEXT',
-  p_display_text_as        =>'HIDDEN',
+  p_display_text_as        =>'ESCAPE_SC',
   p_heading_alignment      =>'CENTER',
   p_column_alignment       =>'RIGHT',
   p_format_mask            =>'999999999999999999990',
@@ -2784,7 +2784,7 @@ wwv_flow_api.create_worksheet_column(
   p_others_may_view        =>'Y',
   p_column_type            =>'NUMBER',
   p_display_as             =>'TEXT',
-  p_display_text_as        =>'HIDDEN',
+  p_display_text_as        =>'ESCAPE_SC',
   p_heading_alignment      =>'CENTER',
   p_column_alignment       =>'RIGHT',
   p_format_mask            =>'999999999999990D00',
@@ -2822,7 +2822,7 @@ wwv_flow_api.create_worksheet_column(
   p_others_may_view        =>'Y',
   p_column_type            =>'DATE',
   p_display_as             =>'TEXT',
-  p_display_text_as        =>'HIDDEN',
+  p_display_text_as        =>'ESCAPE_SC',
   p_heading_alignment      =>'CENTER',
   p_column_alignment       =>'RIGHT',
   p_format_mask            =>'&G_DATE_TIME_FORMAT.',
@@ -4832,7 +4832,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'Report showing current categories for blog articles. Also shows statistics for category usage in articles. Allows for edit and creation of categories.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141219142647'
+ ,p_last_upd_yyyymmddhh24miss => '20141225120857'
   );
 null;
  
@@ -4860,12 +4860,12 @@ s:=s||'WITH cat_stat AS ('||unistr('\000a')||
 '  ,c.created_by'||unistr('\000a')||
 '  ,c.changed_on'||unistr('\000a')||
 '  ,c.changed_by'||unistr('\000a')||
-'  ,a.article_count'||unistr('\000a')||
-'  ,a.active_article_count'||unistr('\000a')||
-'  ,b.view_count'||unistr('\000a')||
-'';
+'  ,coalesce(a.article_count, 0) AS article_count'||unistr('\000a')||
+'  ,coalesce(';
 
-s:=s||'  ,b.last_view'||unistr('\000a')||
+s:=s||'a.active_article_count, 0 ) AS active_article_count'||unistr('\000a')||
+'  ,coalesce(b.view_count,0 ) AS view_count'||unistr('\000a')||
+'  ,b.last_view'||unistr('\000a')||
 '  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_category c'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_category_log b'||unistr('\000a')||
@@ -4920,12 +4920,12 @@ a1:=a1||'WITH cat_stat AS ('||unistr('\000a')||
 '  ,c.created_by'||unistr('\000a')||
 '  ,c.changed_on'||unistr('\000a')||
 '  ,c.changed_by'||unistr('\000a')||
-'  ,a.article_count'||unistr('\000a')||
-'  ,a.active_article_count'||unistr('\000a')||
-'  ,b.view_count'||unistr('\000a')||
-'';
+'  ,coalesce(a.article_count, 0) AS article_count'||unistr('\000a')||
+'  ,coalesce(';
 
-a1:=a1||'  ,b.last_view'||unistr('\000a')||
+a1:=a1||'a.active_article_count, 0 ) AS active_article_count'||unistr('\000a')||
+'  ,coalesce(b.view_count,0 ) AS view_count'||unistr('\000a')||
+'  ,b.last_view'||unistr('\000a')||
 '  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_category c'||unistr('\000a')||
 'LEFT JOIN #OWNER#.blog_category_log b'||unistr('\000a')||
@@ -6213,7 +6213,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'Report showing current files used in blog articles. Also shows statistics for file usage in articles. Allows for edit and creation of files to be uploaded.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141221131211'
+ ,p_last_upd_yyyymmddhh24miss => '20141224103613'
   );
 null;
  
@@ -6239,14 +6239,14 @@ s:=s||'SELECT'||unistr('\000a')||
 '  ,f.file_type'||unistr('\000a')||
 '  ,f.file_size AS  blob_content'||unistr('\000a')||
 '  ,f.description'||unistr('\000a')||
-'  ,APEX_UTIL.PREPARE_URL(''f?p='''||unistr('\000a')||
+'  ,RTRIM(APEX_UTIL.PREPARE_URL(''f?p='''||unistr('\000a')||
 '   || :G_BLOG_READER_APP_ID'||unistr('\000a')||
-'   || '':FILES:0:APPLICATION_PROCESS=DOWNLOAD:::P11_FILE_NAME:'''||unistr('\000a')||
-'   || f.file_name, NULL, ''PUBLIC_BOOKMARK'') AS link_url';
-
-s:=s||''||unistr('\000a')||
+'   || '':DOWNLOAD:0:'''||unistr('\000a')||
+'   || f.file_name, NULL, ''PUBLIC_BOOKMARK''),'':'') AS link_url'||unistr('\000a')||
 '  ,CASE'||unistr('\000a')||
-'   WHEN f.file_type = ''FILE'' THEN'||unistr('\000a')||
+'   WHEN f.file_type = ';
+
+s:=s||'''FILE'' THEN'||unistr('\000a')||
 '     COALESCE(l.click_count, 0)'||unistr('\000a')||
 '   END AS click_count'||unistr('\000a')||
 '  ,l.last_click'||unistr('\000a')||
@@ -6301,14 +6301,14 @@ a1:=a1||'SELECT'||unistr('\000a')||
 '  ,f.file_type'||unistr('\000a')||
 '  ,f.file_size AS  blob_content'||unistr('\000a')||
 '  ,f.description'||unistr('\000a')||
-'  ,APEX_UTIL.PREPARE_URL(''f?p='''||unistr('\000a')||
+'  ,RTRIM(APEX_UTIL.PREPARE_URL(''f?p='''||unistr('\000a')||
 '   || :G_BLOG_READER_APP_ID'||unistr('\000a')||
-'   || '':FILES:0:APPLICATION_PROCESS=DOWNLOAD:::P11_FILE_NAME:'''||unistr('\000a')||
-'   || f.file_name, NULL, ''PUBLIC_BOOKMARK'') AS link_url';
-
-a1:=a1||''||unistr('\000a')||
+'   || '':DOWNLOAD:0:'''||unistr('\000a')||
+'   || f.file_name, NULL, ''PUBLIC_BOOKMARK''),'':'') AS link_url'||unistr('\000a')||
 '  ,CASE'||unistr('\000a')||
-'   WHEN f.file_type = ''FILE'' THEN'||unistr('\000a')||
+'   WHEN f.file_type = ';
+
+a1:=a1||'''FILE'' THEN'||unistr('\000a')||
 '     COALESCE(l.click_count, 0)'||unistr('\000a')||
 '   END AS click_count'||unistr('\000a')||
 '  ,l.last_click'||unistr('\000a')||
@@ -22605,7 +22605,7 @@ wwv_flow_api.create_page (
 'Manage blog preferences.<br/>'||unistr('\000a')||
 '<b>Please note that changes take affect to new sessions in blog reader application!</b>'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141221070936'
+ ,p_last_upd_yyyymmddhh24miss => '20141224101638'
   );
 null;
  
@@ -22624,7 +22624,12 @@ s:=s||'SELECT c.param_id'||unistr('\000a')||
 '  ,c.changed_by'||unistr('\000a')||
 '  ,c.param_name'||unistr('\000a')||
 '  ,c.param_use_skill'||unistr('\000a')||
-'  ,CASE WHEN c.param_type = ''YESNO'' THEN'||unistr('\000a')||
+'  ,CASE WHEN p.param_type = ''YESNO'' '||unistr('\000a')||
+'    AND c.param_type = ''YESNO'''||unistr('\000a')||
+'    AND p.param_value = ''N'''||unistr('\000a')||
+'   THEN'||unistr('\000a')||
+'    ''No'''||unistr('\000a')||
+'  WHEN c.param_type = ''YESNO'' THEN'||unistr('\000a')||
 '    CASE WHEN c.param_value = ''Y'' THEN'||unistr('\000a')||
 '      ''Yes'''||unistr('\000a')||
 '    ELSE'||unistr('\000a')||
@@ -22633,12 +22638,12 @@ s:=s||'SELECT c.param_id'||unistr('\000a')||
 '  ELSE'||unistr('\000a')||
 '    c.param_value'||unistr('\000a')||
 '  END AS param_value'||unistr('\000a')||
-'  ,apex_plugin_util.replace_substitutions(c.param_help) AS param_help'||unistr('\000a')||
+'  ,apex_';
+
+s:=s||'plugin_util.replace_substitutions(c.param_help) AS param_help'||unistr('\000a')||
 '  ,c.param_group'||unistr('\000a')||
 '  ,c.editable'||unistr('\000a')||
-'  ,c.param_nul';
-
-s:=s||'lable'||unistr('\000a')||
+'  ,c.param_nullable'||unistr('\000a')||
 '  ,c.param_type'||unistr('\000a')||
 '  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_param c'||unistr('\000a')||
@@ -22647,7 +22652,9 @@ s:=s||'lable'||unistr('\000a')||
 'WHERE (c.editable = ''Y'''||unistr('\000a')||
 '  AND c.param_group != ''INTERNAL'''||unistr('\000a')||
 '  AND CASE WHEN p.param_type = ''YESNO'''||unistr('\000a')||
-'  THEN p.param_value'||unistr('\000a')||
+'  THEN';
+
+s:=s||' p.param_value'||unistr('\000a')||
 '  ELSE ''Y'''||unistr('\000a')||
 '  END = ''Y'''||unistr('\000a')||
 ')'||unistr('\000a')||
@@ -22692,7 +22699,12 @@ a1:=a1||'SELECT c.param_id'||unistr('\000a')||
 '  ,c.changed_by'||unistr('\000a')||
 '  ,c.param_name'||unistr('\000a')||
 '  ,c.param_use_skill'||unistr('\000a')||
-'  ,CASE WHEN c.param_type = ''YESNO'' THEN'||unistr('\000a')||
+'  ,CASE WHEN p.param_type = ''YESNO'' '||unistr('\000a')||
+'    AND c.param_type = ''YESNO'''||unistr('\000a')||
+'    AND p.param_value = ''N'''||unistr('\000a')||
+'   THEN'||unistr('\000a')||
+'    ''No'''||unistr('\000a')||
+'  WHEN c.param_type = ''YESNO'' THEN'||unistr('\000a')||
 '    CASE WHEN c.param_value = ''Y'' THEN'||unistr('\000a')||
 '      ''Yes'''||unistr('\000a')||
 '    ELSE'||unistr('\000a')||
@@ -22701,12 +22713,12 @@ a1:=a1||'SELECT c.param_id'||unistr('\000a')||
 '  ELSE'||unistr('\000a')||
 '    c.param_value'||unistr('\000a')||
 '  END AS param_value'||unistr('\000a')||
-'  ,apex_plugin_util.replace_substitutions(c.param_help) AS param_help'||unistr('\000a')||
+'  ,apex_';
+
+a1:=a1||'plugin_util.replace_substitutions(c.param_help) AS param_help'||unistr('\000a')||
 '  ,c.param_group'||unistr('\000a')||
 '  ,c.editable'||unistr('\000a')||
-'  ,c.param_nul';
-
-a1:=a1||'lable'||unistr('\000a')||
+'  ,c.param_nullable'||unistr('\000a')||
 '  ,c.param_type'||unistr('\000a')||
 '  ,(select apex_lang.message(''TITLE_EDIT_LINK'') from dual) AS edit_link_title'||unistr('\000a')||
 'FROM #OWNER#.blog_param c'||unistr('\000a')||
@@ -22715,7 +22727,9 @@ a1:=a1||'lable'||unistr('\000a')||
 'WHERE (c.editable = ''Y'''||unistr('\000a')||
 '  AND c.param_group != ''INTERNAL'''||unistr('\000a')||
 '  AND CASE WHEN p.param_type = ''YESNO'''||unistr('\000a')||
-'  THEN p.param_value'||unistr('\000a')||
+'  THEN';
+
+a1:=a1||' p.param_value'||unistr('\000a')||
 '  ELSE ''Y'''||unistr('\000a')||
 '  END = ''Y'''||unistr('\000a')||
 ')'||unistr('\000a')||
@@ -23424,7 +23438,7 @@ wwv_flow_api.create_page (
  ,p_help_text => 
 'No help is available for this page.'
  ,p_last_updated_by => 'LAINFJAR'
- ,p_last_upd_yyyymmddhh24miss => '20141214142211'
+ ,p_last_upd_yyyymmddhh24miss => '20141228100831'
   );
 null;
  
@@ -23651,7 +23665,7 @@ wwv_flow_api.create_page_item(
   p_security_scheme => 10540013401655949+ wwv_flow_api.g_id_offset,
   p_attribute_01 => 'N',
   p_attribute_02 => 'VALUE',
-  p_attribute_04 => 'N',
+  p_attribute_04 => 'Y',
   p_show_quick_picks=>'N',
   p_item_comment => '');
  
@@ -34269,25 +34283,6 @@ null;
 end;
 /
 
-prompt  ......Message blog_file_uk2
-declare
-  h varchar2(32767) := null;
- 
-begin
- 
-h:=h||'File sequence must be unique.';
-
-wwv_flow_api.create_message (
-  p_id=>11563511657575355 + wwv_flow_api.g_id_offset,
-  p_flow_id=>wwv_flow.g_flow_id,
-  p_name=>'BLOG_FILE_UK2',
-  p_message_language=>'en',
-  p_message_text=>h);
-null;
- 
-end;
-/
-
 prompt  ......Message blog_author_ck2
 declare
   h varchar2(32767) := null;
@@ -34326,13 +34321,32 @@ null;
 end;
 /
 
+prompt  ......Message blog_resource_ck4
+declare
+  h varchar2(32767) := null;
+ 
+begin
+ 
+h:=h||'Sequence must be greater than 0.';
+
+wwv_flow_api.create_message (
+  p_id=>14710423134525648 + wwv_flow_api.g_id_offset,
+  p_flow_id=>wwv_flow.g_flow_id,
+  p_name=>'BLOG_RESOURCE_CK4',
+  p_message_language=>'en',
+  p_message_text=>h);
+null;
+ 
+end;
+/
+
 prompt  ......Message blog_article_fk1
 declare
   h varchar2(32767) := null;
  
 begin
  
-h:=h||'Articles exists for this child record. Remove those first.';
+h:=h||'Articles exists for this author. Remove those first.';
 
 wwv_flow_api.create_message (
   p_id=>37624736329992136 + wwv_flow_api.g_id_offset,
@@ -34351,31 +34365,12 @@ declare
  
 begin
  
-h:=h||'Articles exists for this child record. Remove those first.';
+h:=h||'Articles exists for this category. Remove those first.';
 
 wwv_flow_api.create_message (
   p_id=>37624929644995217 + wwv_flow_api.g_id_offset,
   p_flow_id=>wwv_flow.g_flow_id,
   p_name=>'BLOG_ARTICLE_FK2',
-  p_message_language=>'en',
-  p_message_text=>h);
-null;
- 
-end;
-/
-
-prompt  ......Message blog_author_img_uk1
-declare
-  h varchar2(32767) := null;
- 
-begin
- 
-h:=h||'Image sequence must be unique.';
-
-wwv_flow_api.create_message (
-  p_id=>37625125546997083 + wwv_flow_api.g_id_offset,
-  p_flow_id=>wwv_flow.g_flow_id,
-  p_name=>'BLOG_AUTHOR_IMG_UK1',
   p_message_language=>'en',
   p_message_text=>h);
 null;
@@ -34427,7 +34422,7 @@ declare
  
 begin
  
-h:=h||'Comments exists for this child record. Remove those first.';
+h:=h||'Comments exists for this user. Remove those first.';
 
 wwv_flow_api.create_message (
   p_id=>37625745807002934 + wwv_flow_api.g_id_offset,
