@@ -27,23 +27,34 @@ Change log:
 
 #Installation#
 
-1. Ensure you are running Oracle APEX version 4.2 or higher
-2. Unzip and extract all files
-3. Access your target Workspace
-4. Select the Application Builder
-5. Import and install both applications (blog_reader.sql and blog_admin.sql) to workspace.
+1) Ensure you are running Oracle APEX version 4.2 or higher
+2) Unzip and extract all files
+3) Access your target Workspace
+4) Select the Application Builder
+5) Import and install both applications (blog_reader.sql and blog_admin.sql) to workspace.
    When installing blog_reader.sql, install also supporting objects.
-6. Run blog admin application and login using user/password admin/admin.
+6) Run blog admin application and login using user/password admin/admin.
+
 
 If blog reader application default alias BLOG is reserved in your instance:
-1. Edit blog reader Application Definition and change Application Alias.
-2. Navigate to SQL Workshop > SQL Commands and run:
+1) Edit blog reader Application Definition and change Application Alias.
+2) Navigate to SQL Workshop > SQL Commands and run:
+
 ~~~~~~
 begin
   blog_install.blog_install.update_param_data;
 end;
 /
 ~~~~~~
+3) Run blog admin application and login.
+4) Navigate to Publish > Files
+5) Find file style.min.css and download it to your PC.
+6) Edit file and replace all occurrences of "f?p=BLOG" with "f?p=<app_id>",
+   where <app_id> is your blog reader application id.
+7) In blog admin application edit files record where style.min.css is stored.
+8) Press "Browse" button and select edited CSS file from your PC.
+9) Upload new file by pressing "Apply Changes".
+
 
 By default blog theme files are served from database.
 It is recommended copy the files of the directory "server" on the web server.
