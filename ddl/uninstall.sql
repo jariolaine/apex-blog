@@ -1,5 +1,5 @@
 BEGIN
-    blog_install.remove_jobs;
+    blog_install.blog_install.set_jobs(true);
 END;
 /
 ALTER TABLE "BLOG_COMMENT" DROP CONSTRAINT "BLOG_COMMENT_FK3"

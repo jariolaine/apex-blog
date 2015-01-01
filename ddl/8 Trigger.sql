@@ -283,7 +283,7 @@ BEGIN
   END IF;
   IF deleting THEN
     INSERT INTO blog_http410(deleted_id, id_source)
-    VALUES (to_char(:OLD.category_id), 'ARTICLE');
+    VALUES (to_char(:OLD.category_id), 'CATEGORY');
   END IF;
 END;
 /
@@ -328,7 +328,7 @@ END;
 ALTER TRIGGER blog_author_trg ENABLE
 /
 
-CREATE OR REPLACE TRIGGER blog_article_trg before
+CREATE OR REPLACE TRIGGER blog_article_b_trg before
 INSERT OR
 UPDATE OR
 DELETE ON blog_article FOR EACH row
@@ -357,5 +357,14 @@ BEGIN
   END IF;
 END;
 /
-ALTER TRIGGER blog_article_trg ENABLE
+ALTER TRIGGER blog_article_b_trg ENABLE
+/
+
+CREATE OR REPLACE TRIGGER blog_article_a_trg after
+INSERT ON blog_article FOR EACH row
+BEGIN
+  INSERT INTO blog_article_log(article_id) VALUES(:NEW.article_id);
+END;
+/
+ALTER TRIGGER blog_article_a_trg ENABLE
 /
