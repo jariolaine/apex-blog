@@ -2037,15 +2037,10 @@ AS
   AS
     PRAGMA AUTONOMOUS_TRANSACTION;
   BEGIN
-    MERGE INTO blog_article_log a
-    USING (SELECT p_article_id AS article_id FROM DUAL) b
-    ON (a.article_id = b.article_id)
-    WHEN MATCHED THEN
-    UPDATE SET a.view_count = a.view_count + 1,
-      a.last_view = SYSDATE
-    WHEN NOT MATCHED THEN
-    INSERT (article_id, view_count, last_view)
-    VALUES (b.article_id, 1, SYSDATE)
+    UPDATE blog_article_log
+    SET view_count = view_count + 1,
+        last_view = SYSDATE
+    WHERE article_id = p_article_id
     ;
     COMMIT;
   EXCEPTION WHEN 
@@ -2090,8 +2085,7 @@ AS
     UPDATE SET a.view_count = a.view_count + 1,
       a.last_view = SYSDATE
     WHEN NOT MATCHED THEN
-    INSERT (category_id, view_count, last_view)
-    VALUES (b.category_id, 1, SYSDATE)
+    INSERT (category_id) VALUES (b.category_id)
     ;
     COMMIT;
   EXCEPTION WHEN
@@ -2117,8 +2111,7 @@ AS
     UPDATE SET a.click_count = a.click_count + 1,
       last_click = SYSDATE
     WHEN NOT MATCHED THEN
-    INSERT (file_id, click_count, last_click)
-    VALUES (b.file_id, 1, SYSDATE)
+    INSERT (file_id) VALUES (b.file_id)
     ;
     COMMIT;
   EXCEPTION WHEN
@@ -2147,20 +2140,21 @@ AS
 --------------------------------------------------------------------------------
   PROCEDURE purge_preview;
 --------------------------------------------------------------------------------
-  PROCEDURE rotate_log_job(
+  PROCEDURE rotate_log_job (
+    p_drop_job IN BOOLEAN DEFAULT FALSE,
     p_interval IN PLS_INTEGER DEFAULT NULL
   );
 --------------------------------------------------------------------------------
   PROCEDURE update_country_job (
-    p_drop_only BOOLEAN DEFAULT FALSE
+    p_drop_job IN BOOLEAN DEFAULT FALSE
   );
 --------------------------------------------------------------------------------
   PROCEDURE update_activity_logs_job (
-    p_drop_only BOOLEAN DEFAULT FALSE
+    p_drop_job IN BOOLEAN DEFAULT FALSE
   );
 --------------------------------------------------------------------------------
-  PROCEDURE purge_preview_job(
-    p_drop_only BOOLEAN DEFAULT FALSE
+  PROCEDURE purge_preview_job (
+    p_drop_job IN BOOLEAN DEFAULT FALSE
   );
 --------------------------------------------------------------------------------
 END "BLOG_JOB";
@@ -2347,6 +2341,7 @@ AS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE rotate_log_job(
+    p_drop_job IN BOOLEAN DEFAULT FALSE,
     p_interval IN PLS_INTEGER DEFAULT NULL
   )
   AS
@@ -2361,19 +2356,19 @@ AS
       NULL;
     END;
     
-    IF p_interval IS NULL THEN
+    IF p_interval IS NULL OR p_interval < 1 THEN
       l_interval := blog_util.get_param_value('LOG_ROTATE_DAY');
     ELSE
       l_interval := p_interval;
     END IF;
-    IF l_interval > 0 THEN
+    IF NOT p_drop_job THEN
       sys.dbms_scheduler.create_job(
         job_name        => c_job,
         job_type        => 'STORED_PROCEDURE',
         job_action      => 'blog_job.rotate_log',
         start_date      => TRUNC(SYSTIMESTAMP),
         enabled         => TRUE,
-        repeat_interval => 'FREQ=DAILY;INTERVAL=' || l_interval,
+        repeat_interval => 'FREQ=DAILY;INTERVAL=' || l_interval || ';BYMINUTE=5',
         comments        => 'Rotate blog activity logs'
       );
     END IF;
@@ -2381,7 +2376,7 @@ AS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE update_country_job (
-    p_drop_only BOOLEAN DEFAULT FALSE
+    p_drop_job BOOLEAN DEFAULT FALSE
   )
   AS
     c_job                 CONSTANT VARCHAR2(30) := 'BLOG_UPDATE_COUNTRY';
@@ -2394,13 +2389,13 @@ AS
       NULL;
     END;
     
-    IF NOT p_drop_only THEN
+    IF NOT p_drop_job THEN
       sys.dbms_scheduler.create_job(
         job_name        => c_job,
         job_type        =>'STORED_PROCEDURE',
         job_action      => 'blog_job.update_country',
         start_date      => TRUNC(SYSTIMESTAMP, 'HH'),
-        repeat_interval => 'FREQ=MINUTELY;BYMINUTE=5,15,25,35,45,55',
+        repeat_interval => 'FREQ=MINUTELY;INTERVAL=10',
         enabled         => TRUE,
         comments        => 'Update blog visitors country'
       );
@@ -2409,7 +2404,7 @@ AS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE update_activity_logs_job (
-    p_drop_only BOOLEAN DEFAULT FALSE
+    p_drop_job BOOLEAN DEFAULT FALSE
   )
   AS
     c_job          CONSTANT VARCHAR2(30) := 'BLOG_UPDATE_ACTIVITY_LOGS';
@@ -2422,13 +2417,13 @@ AS
       NULL;
     END;
     
-    IF NOT p_drop_only THEN
+    IF NOT p_drop_job THEN
       sys.dbms_scheduler.create_job(
         job_name        => c_job,
         job_type        =>'STORED_PROCEDURE',
         job_action      => 'blog_job.update_activity_logs',
         start_date      => TRUNC(SYSTIMESTAMP, 'HH'),
-        repeat_interval => 'FREQ=HOURLY;BYMINUTE=10',
+        repeat_interval => 'FREQ=MINUTELY;INTERVAL=15',
         enabled         => TRUE,
         comments        => 'Update blog statistic log mviews'
       );
@@ -2437,7 +2432,7 @@ AS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE purge_preview_job(
-    p_drop_only BOOLEAN DEFAULT FALSE
+    p_drop_job BOOLEAN DEFAULT FALSE
   )
   AS
     c_job           CONSTANT VARCHAR2(30) := 'BLOG_PURGE_PREVIEW';
@@ -2449,12 +2444,12 @@ AS
     EXCEPTION WHEN job_not_exists THEN
       NULL;
     END;
-    IF NOT p_drop_only THEN
+    IF NOT p_drop_job THEN
       sys.dbms_scheduler.create_job(
         job_name        => c_job,
         job_type        => 'STORED_PROCEDURE',
         job_action      => 'blog_job.purge_preview',
-        start_date      => TRUNC(SYSTIMESTAMP, 'HH'),
+        start_date      => TRUNC(SYSTIMESTAMP),
         repeat_interval => 'FREQ=DAILY',
         enabled         => TRUE,
         comments        => 'Purge blog article preview table'
@@ -2478,14 +2473,17 @@ AS
     p_theme_path    IN VARCHAR2 DEFAULT NULL
   );
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE set_jobs;
---------------------------------------------------------------------------------
-  PROCEDURE remove_jobs;
---------------------------------------------------------------------------------
   FUNCTION varchar2_to_blob(
     p_varchar2_tab IN sys.dbms_sql.varchar2_table
   ) RETURN BLOB;
+--------------------------------------------------------------------------------
+  PROCEDURE set_jobs (
+    p_drop_job IN BOOLEAN DEFAULT FALSE
+  );
+--------------------------------------------------------------------------------
+  FUNCTION get_version (
+    p_option  IN VARCHAR2 DEFAULT NULL
+  ) RETURN VARCHAR2;
 --------------------------------------------------------------------------------
 END "BLOG_INSTALL";
 /
@@ -2497,28 +2495,50 @@ AS
     p_theme_path    IN VARCHAR2 DEFAULT NULL
   )
   AS
-    l_app_id    NUMBER;
+    l_reader_id NUMBER;
+    l_admin_id  NUMBER;
     l_app_alias VARCHAR2(2000);
     l_base_url  VARCHAR2(2000);
   BEGIN
     l_base_url := apex_util.host_url('SCRIPT');
-    SELECT application_id
-    INTO l_app_id
-    FROM apex_application_substitutions
-    WHERE substitution_string = 'SCHEMA_VERSION'
-      AND substitution_value = (select blog_util.get_param_value('SCHEMA_VERSION') from dual)
-    ;
+    BEGIN
+      SELECT application_id
+      INTO l_reader_id
+      FROM apex_applications
+      WHERE version = (select blog_util.get_param_value('BLOG_READER_VERSION') from dual)
+      ;
+    EXCEPTION WHEN 
+      NO_DATA_FOUND 
+    THEN
+      raise_application_error(-20001, 'Blog reader application not exists.');
+    END;
+    BEGIN
+      SELECT application_id
+      INTO l_admin_id
+      FROM apex_applications
+      WHERE version = (select blog_util.get_param_value('BLOG_ADMIN_VERSION') from dual)
+      ;
+    EXCEPTION WHEN 
+      NO_DATA_FOUND
+    THEN
+      raise_application_error(-20002, 'Blog admin application not exists.');
+    END;
+    
     SELECT alias
     INTO l_app_alias
     FROM apex_applications
-    WHERE application_id = l_app_id
+    WHERE application_id = l_reader_id
     ;
     UPDATE blog_param
-    SET param_value = TO_CHAR(l_app_id)
+    SET param_value = TO_CHAR(l_reader_id)
     WHERE param_id  = 'G_BLOG_READER_APP_ID'
     ;
     UPDATE blog_param
-    SET param_value = coalesce(p_theme_path,'f?p=' || TO_CHAR(l_app_id) || ':DOWNLOAD:0:')
+    SET param_value = TO_CHAR(l_admin_id)
+    WHERE param_id  = 'BLOG_ADMIN_APP_ID'
+    ;
+    UPDATE blog_param
+    SET param_value = coalesce(p_theme_path,'f?p=' || TO_CHAR(l_reader_id) || ':DOWNLOAD:0:')
     WHERE param_id  = 'G_THEME_PATH'
     ;
     UPDATE blog_param
@@ -2531,26 +2551,6 @@ AS
     ;
     dbms_mview.refresh('BLOG_PARAM_APP','C');
   END update_param_data;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE set_jobs
-  AS
-  BEGIN
-    blog_job.update_country_job;
-    blog_job.rotate_log_job;
-    blog_job.update_activity_logs_job;
-    blog_job.purge_preview_job;
-  END set_jobs;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE remove_jobs
-  AS
-  BEGIN
-    blog_job.update_country_job(TRUE);
-    blog_job.rotate_log_job(0);
-    blog_job.update_activity_logs_job(TRUE);
-    blog_job.purge_preview_job(TRUE);
-  END remove_jobs;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   FUNCTION varchar2_to_blob(
@@ -2571,6 +2571,51 @@ AS
     dbms_lob.close(l_blob);
     RETURN NULL;
   END varchar2_to_blob;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE set_jobs (
+    p_drop_job IN BOOLEAN DEFAULT FALSE
+  )
+  AS
+  BEGIN
+    blog_job.rotate_log_job(p_drop_job);
+    blog_job.purge_preview_job(p_drop_job);
+    blog_job.update_country_job(p_drop_job);
+    blog_job.update_activity_logs_job(p_drop_job);
+  END set_jobs;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  FUNCTION get_version (
+    p_option  IN VARCHAR2 DEFAULT NULL
+  ) RETURN VARCHAR2
+  AS
+    l_version VARCHAR2(256);
+  BEGIN
+    IF p_option = 'READER' THEN
+      BEGIN
+        SELECT s.version
+         INTO l_version
+         FROM apex_applications s
+        WHERE s.application_id = (select blog_util.get_param_value('G_BLOG_READER_APP_ID') from dual)
+        ;
+      EXCEPTION WHEN NO_DATA_FOUND THEN
+        raise_application_error(-20001, 'Blog reader application not exists.');
+      END;
+    ELSIF p_option = 'ADMIN' THEN
+      BEGIN
+        SELECT s.version
+         INTO l_version
+         FROM apex_applications s
+        WHERE s.application_id = (select blog_util.get_param_value('BLOG_ADMIN_APP_ID') from dual)
+        ;
+      EXCEPTION WHEN NO_DATA_FOUND THEN
+        raise_application_error(-20001, 'Blog admin application not exists.');
+      END;
+    ELSE
+      l_version :=  blog_util.get_param_value('BLOG_SCHEMA_VERSION');
+    END IF;
+    RETURN l_version;    
+  END get_version;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 END "BLOG_INSTALL";
@@ -2629,12 +2674,6 @@ AS
   FUNCTION get_next_resource_seq (
     p_link_type IN VARCHAR2
   ) RETURN NUMBER;
---------------------------------------------------------------------------------
-  FUNCTION display_param_value_item (
-    p_param_id        IN VARCHAR2,
-    p_param_type      IN VARCHAR2,
-    p_param_nullable  IN VARCHAR2
-  ) RETURN BOOLEAN;
 --------------------------------------------------------------------------------
   FUNCTION set_param_value_item (
     p_param_id          IN VARCHAR2,
@@ -3043,29 +3082,6 @@ AS
     ;
     RETURN l_max;
   END get_next_resource_seq;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  FUNCTION display_param_value_item (
-    p_param_id        IN VARCHAR2,
-    p_param_type      IN VARCHAR2,
-    p_param_nullable  IN VARCHAR2
-  ) RETURN BOOLEAN
-  AS
-    l_num SIMPLE_INTEGER := 0;
-  BEGIN
-    BEGIN
-      SELECT 1
-      INTO l_num
-      FROM blog_param
-      WHERE param_id = p_param_id
-      AND param_type = p_param_type
-      AND param_nullable = p_param_nullable
-      ;
-    EXCEPTION WHEN NO_DATA_FOUND THEN
-      RETURN FALSE;
-    END;
-    RETURN TRUE;
-  END display_param_value_item;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   FUNCTION set_param_value_item (
