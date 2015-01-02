@@ -1,16 +1,16 @@
-APEX blogging platform
+APEX Blogging Platform
+Version : 2.9.0.2
+Date : 02.01.2015
 http://sourceforge.net/projects/apex-blog/
-
-Date: 07.12.2014
-Dual licensed under the MIT and GPL licenses:
-http://www.opensource.org/licenses/mit-license.php
-http://www.gnu.org/licenses/gpl.html
 
 Requires:
 Oracle Application Express 4.2 or higher
-Oracle Database 11G R2
+Oracle Database 11G R2 or higher
 
-Install Instructions:
+License:
+https://sourceforge.net/p/apex-blog/wiki/License/
+
+Install Instruction:
 https://sourceforge.net/p/apex-blog/wiki/Install%20Instruction/
 
 Change log:
