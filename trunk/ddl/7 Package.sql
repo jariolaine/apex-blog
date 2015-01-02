@@ -64,11 +64,8 @@ AS
     l_article_url VARCHAR2(255);
     l_webmaster   VARCHAR2(255);
     l_rss_lang    VARCHAR2(5);
-
     c_version     CONSTANT VARCHAR2(5) := '2.0';
-
   BEGIN
-
     l_rss_lang    := apex_application.g_browser_language;
     l_rss_desc    := apex_plugin_util.replace_substitutions(apex_lang.message('RSS_DESCRIPTION'));
     
@@ -76,7 +73,6 @@ AS
     l_rss_url     := p_base_url || l_url || 'RSS';
     l_home_url    := p_base_url || l_url || 'HOME';
     l_article_url := l_url || 'READ:0::::ARTICLE:';
-
     SELECT xmlelement("rss", xmlattributes(c_version AS "version", 'http://www.w3.org/2005/Atom' AS "xmlns:atom", 'http://purl.org/dc/elements/1.1/' AS "xmlns:dc"),
       xmlelement("channel",
         xmlelement("atom:link", xmlattributes(l_rss_url AS "href", 'self' AS "rel", 'application/rss+xml' AS "type")),
@@ -105,7 +101,6 @@ AS
     owa_util.mime_header('application/rss+xml', TRUE);
     wpg_docload.download_file(l_xml);
     apex_application.stop_apex_engine;
-
   END rss;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -120,10 +115,8 @@ AS
     l_article_url     VARCHAR2(255);
     l_category_url    VARCHAR2(255);
   BEGIN
-
     l_article_url   := 'f?p=' || p_app_alias || ':READ:0::::ARTICLE:';
     l_category_url  := 'f?p=' || p_app_alias || ':READCAT:0::::CATEGORY:';
-
     WITH article_cat AS(
       SELECT category_id,
         MAX(changed_on) AS changed_on
@@ -176,11 +169,9 @@ AS
     INTO l_xml
     FROM sitemap_query
     ;
-
     owa_util.mime_header('application/xml', TRUE);
     wpg_docload.download_file(l_xml);
     apex_application.stop_apex_engine;
-
   END sitemap;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -261,6 +252,7 @@ AS
     p_keywords        OUT NOCOPY VARCHAR2,
     p_description     OUT NOCOPY VARCHAR2,
     p_author_name     OUT NOCOPY VARCHAR2,
+    p_twitter_follow  OUT NOCOPY VARCHAR2,
     p_rate            OUT NOCOPY NUMBER
   );
 --------------------------------------------------------------------------------
@@ -1037,13 +1029,14 @@ AS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE get_article_page_items (
-    p_article_id    IN VARCHAR2,
-    p_page_title    OUT NOCOPY VARCHAR2,
-    p_region_title  OUT NOCOPY VARCHAR2,
-    p_keywords      OUT NOCOPY VARCHAR2,
-    p_description   OUT NOCOPY VARCHAR2,
-    p_author_name   OUT NOCOPY VARCHAR2,
-    p_rate          OUT NOCOPY NUMBER    
+    p_article_id      IN VARCHAR2,
+    p_page_title      OUT NOCOPY VARCHAR2,
+    p_region_title    OUT NOCOPY VARCHAR2,
+    p_keywords        OUT NOCOPY VARCHAR2,
+    p_description     OUT NOCOPY VARCHAR2,
+    p_author_name     OUT NOCOPY VARCHAR2,
+    p_twitter_follow  OUT NOCOPY VARCHAR2,
+    p_rate            OUT NOCOPY NUMBER    
   ) 
   AS
     l_article_id    NUMBER;
@@ -1056,12 +1049,14 @@ AS
       a.keywords,
       a.description,
       a.author_name,
+      a.author_twitter,
       l.article_rate_int
     INTO p_page_title,
       l_category_name,
       p_keywords,
       p_description,
       p_author_name,
+      p_twitter_follow,
       p_rate
     FROM blog_v$article a
     LEFT JOIN blog_article_log l
@@ -1174,6 +1169,22 @@ AS
     p_dynamic_action IN apex_plugin.t_dynamic_action,
     p_plugin         IN apex_plugin.t_plugin
   ) RETURN apex_plugin.t_dynamic_action_render_result;
+--------------------------------------------------------------------------------
+  FUNCTION render_google_plus_one_button (
+    p_item                IN apex_plugin.t_page_item,
+    p_plugin              IN apex_plugin.t_plugin,
+    p_value               IN VARCHAR2,
+    p_is_readonly         IN BOOLEAN,
+    p_is_printer_friendly IN BOOLEAN
+  ) RETURN apex_plugin.t_page_item_render_result;
+--------------------------------------------------------------------------------
+  FUNCTION render_google_share_button (
+    p_item                IN apex_plugin.t_page_item,
+    p_plugin              IN apex_plugin.t_plugin,
+    p_value               IN VARCHAR2,
+    p_is_readonly         IN BOOLEAN,
+    p_is_printer_friendly IN BOOLEAN
+  ) RETURN apex_plugin.t_page_item_render_result;
 -------------------------------------------------------------------------------
   FUNCTION render_facebook_like_button (
     p_item                IN apex_plugin.t_page_item,
@@ -1603,7 +1614,10 @@ END feature_authorization;
   AS 
     l_result apex_plugin.t_page_item_render_result;
   BEGIN
-    l_result.is_navigable := (p_is_readonly = false and p_is_printer_friendly = false);
+    -- Don't show the widget if we are running in printer friendly mode
+    if p_is_printer_friendly then
+        RETURN null;
+    end if;
     sys.htp.prn(
       '<div id="' || p_item.name || '" class="rating" data-val="' || p_value || '">'
       || '<ul>'
@@ -1620,7 +1634,7 @@ END feature_authorization;
         );
     end loop;
     sys.htp.prn('</ul>');
-    if l_result.is_navigable then
+    if not p_is_readonly then
       apex_javascript.add_onload_code (p_code => '$("'
         || apex_plugin_util.page_item_names_to_jquery(p_item.name) 
         || '").starRating();'
@@ -1630,13 +1644,14 @@ END feature_authorization;
         || apex_lang.message('DIALOG_ARTICLE_RATED')
         || '</div>'
       );
-      apex_javascript.add_library (
-        p_name    => 'jquery.ui.button',
-        p_check_to_add_minified    => true,
-        p_directory => apex_application.g_image_prefix || 'libraries/jquery-ui/1.8.22/ui/minified/'
+      apex_javascript.add_3rd_party_library_file (
+        p_library   => apex_javascript.c_library_jquery_ui,
+        p_file_name => 'jquery.ui.button'
       );
     end if;
     sys.htp.p('</div>');
+    -- Tell APEX that this field is NOT navigable
+    l_result.is_navigable := false;
     RETURN l_result;
   END render_simple_star_rating;
 --------------------------------------------------------------------------------
@@ -1658,13 +1673,141 @@ END feature_authorization;
         || '}})}'
       ,p_key  => 'net.webhop.dbswh.modal_confirm'
     );
+    apex_javascript.add_3rd_party_library_file (
+      p_library   => apex_javascript.c_library_jquery_ui,
+      p_file_name => 'jquery.ui.button'
+    );
     l_result.javascript_function := 'net_webhop_dbswh_modal_confirm';
     RETURN l_result;
   END render_modal_confirm;
---===============================================================================
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  FUNCTION render_google_plus_one_button (
+    p_item                IN apex_plugin.t_page_item,
+    p_plugin              IN apex_plugin.t_plugin,
+    p_value               IN VARCHAR2,
+    p_is_readonly         IN BOOLEAN,
+    p_is_printer_friendly IN BOOLEAN
+  ) RETURN apex_plugin.t_page_item_render_result
+  AS
+    c_host constant varchar2(4000) := apex_util.host_url('SCRIPT');
+    
+    -- It's better to have named variables instead of using the generic ones,
+    -- makes the code more readable.
+    -- We are using the same defaults for the required attributes as in the
+    -- plug-in attribute configuration, because they can still be null.
+    -- Note: Keep them in sync!
+    l_url_to_plus varchar2(20)    := coalesce(p_item.attribute_01, 'current_page');
+    l_page_url    varchar2(4000)  := p_item.attribute_02;
+    l_custom_url  varchar2(4000)  := p_item.attribute_03;
+    l_size        varchar2(20)    := coalesce(p_item.attribute_04, 'standard');
+    l_annotation  varchar2(20)    := coalesce(p_item.attribute_05, 'bubble');
+    l_width       varchar2(256)   := p_item.attribute_06;
+    l_align       varchar2(20)    := coalesce(p_item.attribute_07, 'left');
+    l_expandto    varchar2(100)   := p_item.attribute_08;
+    
+    l_url             varchar2(4000);
+    l_result          apex_plugin.t_page_item_render_result;
+  BEGIN
+    -- Don't show the widget if we are running in printer friendly mode
+    if p_is_printer_friendly then
+        RETURN null;
+    end if;
+    
+    -- Generate the Google +1 URL based on our URL setting.
+    -- Note: Always use session 0, otherwise Google +1 will always register a different URL.
+    l_url := case l_url_to_plus
+               when 'current_page' then c_host || 'f?p=' || apex_application.g_flow_id || ':' || apex_application.g_flow_step_id || ':0'
+               when 'page_url'     then c_host||l_page_url
+               when 'custom_url'   then replace(l_custom_url, '#HOST#', c_host)
+               when 'value'        then replace(p_value, '#HOST#', c_host)
+             end;
+    -- Output the Google +1 button widget
+    -- See https://developers.google.com/+/web/+1button/ for syntax
+    sys.htp.prn (
+      '<script src="https://apis.google.com/js/platform.js" async defer></script>' ||
+      ''
+      || '<div class="g-plusone"'
+      || ' data-href="' || l_url || '"'
+      || ' data-size="' || apex_escape.html_attribute(l_size) || '"'
+      || ' data-annotation="' || apex_escape.html_attribute(l_annotation) || '"'
+      || case when l_annotation = 'inline' then
+          ' data-width="' || apex_escape.html_attribute(l_annotation) || '"'
+         end
+      || ' data-align="' || apex_escape.html_attribute(l_align) || '"'
+      || ' data-expandTo="' || apex_escape.html_attribute(replace(l_expandto, ':', ',')) || '"'
+      || '></div>'
+    );
+    -- Tell APEX that this field is NOT navigable
+    l_result.is_navigable := false;
+    RETURN l_result;
+  END render_google_plus_one_button;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  FUNCTION render_google_share_button (
+    p_item                IN apex_plugin.t_page_item,
+    p_plugin              IN apex_plugin.t_plugin,
+    p_value               IN VARCHAR2,
+    p_is_readonly         IN BOOLEAN,
+    p_is_printer_friendly IN BOOLEAN
+  ) RETURN apex_plugin.t_page_item_render_result
+  AS
+    c_host constant varchar2(4000) := apex_util.host_url('SCRIPT');
+    
+    -- It's better to have named variables instead of using the generic ones,
+    -- makes the code more readable.
+    -- We are using the same defaults for the required attributes as in the
+    -- plug-in attribute configuration, because they can still be null.
+    -- Note: Keep them in sync!
+    l_url_to_plus varchar2(20)    := coalesce(p_item.attribute_01, 'current_page');
+    l_page_url    varchar2(4000)  := p_item.attribute_02;
+    l_custom_url  varchar2(4000)  := p_item.attribute_03;
+    l_annotation  varchar2(20)    := coalesce(p_item.attribute_04, 'bubble');
+    l_width       varchar2(256)   := p_item.attribute_05;
+    l_height      varchar2(256)   := coalesce(p_item.attribute_06, '20');
+    l_align       varchar2(20)    := coalesce(p_item.attribute_07, 'left');
+    l_expandto    varchar2(100)   := p_item.attribute_08;
+    
+    l_url             varchar2(4000);
+    l_result          apex_plugin.t_page_item_render_result;
+  BEGIN
+    -- Don't show the widget if we are running in printer friendly mode
+    if p_is_printer_friendly then
+        RETURN null;
+    end if;
+    
+    -- Generate the Google Share based on our URL setting.
+    -- Note: Always use session 0, otherwise Google Share will always register a different URL.
+    l_url := case l_url_to_plus
+               when 'current_page' then c_host || 'f?p=' || apex_application.g_flow_id || ':' || apex_application.g_flow_step_id || ':0'
+               when 'page_url'     then c_host||l_page_url
+               when 'custom_url'   then replace(l_custom_url, '#HOST#', c_host)
+               when 'value'        then replace(p_value, '#HOST#', c_host)
+             end;
+    -- Output the Google Share button widget
+    -- See https://developers.google.com/+/web/+1button/ for syntax
+    sys.htp.prn (
+      '<script src="https://apis.google.com/js/platform.js" async defer></script>' ||
+      ''
+      || '<div class="g-plus" data-action="share"'
+      || ' data-href="' || l_url || '"'
+      || ' data-annotation="' || apex_escape.html_attribute(l_annotation) || '"'
+      || ' data-width="' || apex_escape.html_attribute(l_annotation) || '"'
+      || ' data-height="' || apex_escape.html_attribute(l_height) || '"'
+      || ' data-align="' || apex_escape.html_attribute(l_align) || '"'
+      || ' data-expandTo="' || apex_escape.html_attribute(replace(l_expandto, ':', ',')) || '"'
+      || '></div>'
+    );
+    -- Tell APEX that this field is NOT navigable
+    l_result.is_navigable := false;
+    RETURN l_result;
+  END render_google_share_button;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--==============================================================================
 -- Renders the Facebook "Like" button widget based on the configuration of the
 -- page item.
---===============================================================================
+--==============================================================================
   FUNCTION render_facebook_like_button (
     p_item                IN apex_plugin.t_page_item,
     p_plugin              IN apex_plugin.t_plugin,
@@ -1713,7 +1856,6 @@ END feature_authorization;
                   when 'button_count' then 20
                   when 'box_count'    then 65
                 end;
-
     -- Base URL for the "Like" widget.
     -- See http://developers.facebook.com/docs/reference/plugins/like
     -- for a documentation of the URL syntax
@@ -1731,7 +1873,6 @@ END feature_authorization;
                         end,
                  escape_reserved_chars => true)||
              '&amp;';
-
     -- Add the display options for the "Like" button widget
     l_url := l_url||
              'layout='||l_layout_style||'&amp;'||
@@ -1743,19 +1884,18 @@ END feature_authorization;
              case when l_font is not null then 'font='||l_font||'&amp;' end||
              'colorscheme='||l_color_scheme||'&amp;'||
              'height='||l_height;
-
     -- Output the Facebook Like button widget
     sys.htp.prn('<iframe src="'||l_url||'" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:'||l_width||'px; height:'||l_height||'px;" allowTransparency="true"></iframe>');
-
     -- Tell APEX that this field is NOT navigable
     l_result.is_navigable := false;
-
     RETURN l_result;
   END render_facebook_like_button;
---===============================================================================
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--==============================================================================
 -- Renders the Twitter button widget based on the configuration of the
 -- page item.
---===============================================================================
+--==============================================================================
   FUNCTION render_twitter_button (
     p_item                IN apex_plugin.t_page_item,
     p_plugin              IN apex_plugin.t_plugin,
@@ -1796,7 +1936,6 @@ END feature_authorization;
                when 'custom_url'   then replace(l_custom_url, '#HOST#', c_host)
                when 'value'        then replace(p_value, '#HOST#', c_host)
              end;
-
     -- For a custom text we have to replace the #PAGE_TITLE# placeholder with the correct
     -- language dependent page title of the current page.
     if l_tweet_text_type = 'custom' then
@@ -1808,7 +1947,6 @@ END feature_authorization;
                and page_id        = nvl(apex_application.g_translated_page_id, apex_application.g_flow_step_id);
         end if;
     end if;
-
     -- Output the Twitter button widget
     -- See http://twitter.com/about/resources/tweetbutton for syntax
     sys.htp.prn (
@@ -1818,10 +1956,8 @@ END feature_authorization;
         case when l_follow1 is not null then 'data-via="'||l_follow1||'" ' end||
         case when l_follow2 is not null then 'data-related="'||l_follow2||'" ' end||
         '>Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>' );
-
     -- Tell APEX that this field is NOT navigable
     l_result.is_navigable := false;
-
     RETURN l_result;
   END render_twitter_button;
 --------------------------------------------------------------------------------
@@ -2201,7 +2337,6 @@ AS
   END get_host_ip_info;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2470,7 +2605,8 @@ AS
   b BLOB;
 --------------------------------------------------------------------------------
   PROCEDURE update_param_data(
-    p_theme_path    IN VARCHAR2 DEFAULT NULL
+    p_theme_path    IN VARCHAR2 DEFAULT NULL,
+    p_upgrade       IN BOOLEAN DEFAULT FALSE
   );
 --------------------------------------------------------------------------------
   FUNCTION varchar2_to_blob(
@@ -2492,7 +2628,8 @@ AS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE update_param_data(
-    p_theme_path    IN VARCHAR2 DEFAULT NULL
+    p_theme_path    IN VARCHAR2 DEFAULT NULL,
+    p_upgrade       IN BOOLEAN DEFAULT FALSE
   )
   AS
     l_reader_id NUMBER;
@@ -2505,7 +2642,9 @@ AS
       SELECT application_id
       INTO l_reader_id
       FROM apex_applications
-      WHERE version = (select blog_util.get_param_value('BLOG_READER_VERSION') from dual)
+      WHERE version = (select blog_util.get_param_value('READER_VERSION') from dual)
+        AND application_group = 'Blog'
+        AND application_name = 'Blog Reader'
       ;
     EXCEPTION WHEN 
       NO_DATA_FOUND 
@@ -2516,7 +2655,9 @@ AS
       SELECT application_id
       INTO l_admin_id
       FROM apex_applications
-      WHERE version = (select blog_util.get_param_value('BLOG_ADMIN_VERSION') from dual)
+      WHERE version = (select blog_util.get_param_value('ADMIN_VERSION') from dual)
+        AND application_group = 'Blog'
+        AND application_name = 'Blog Administration'
       ;
     EXCEPTION WHEN 
       NO_DATA_FOUND
@@ -2535,21 +2676,23 @@ AS
     ;
     UPDATE blog_param
     SET param_value = TO_CHAR(l_admin_id)
-    WHERE param_id  = 'BLOG_ADMIN_APP_ID'
+    WHERE param_id  = 'G_BLOG_ADMIN_APP_ID'
     ;
-    UPDATE blog_param
-    SET param_value = coalesce(p_theme_path,'f?p=' || TO_CHAR(l_reader_id) || ':DOWNLOAD:0:')
-    WHERE param_id  = 'G_THEME_PATH'
-    ;
-    UPDATE blog_param
-    SET param_value = l_base_url || 'f?p=' || l_app_alias || ':RSS'
-    WHERE param_id  = 'G_RSS_FEED_URL'
-    ;
-    UPDATE blog_param
-    SET param_value = l_base_url
-    WHERE param_id  = 'G_BASE_URL'
-    ;
-    dbms_mview.refresh('BLOG_PARAM_APP','C');
+    IF NOT p_upgrade THEN
+      UPDATE blog_param
+      SET param_value = coalesce(p_theme_path,'f?p=' || TO_CHAR(l_reader_id) || ':DOWNLOAD:0:')
+      WHERE param_id  = 'G_THEME_PATH'
+      ;
+      UPDATE blog_param
+      SET param_value = l_base_url || 'f?p=' || l_app_alias || ':RSS'
+      WHERE param_id  = 'G_RSS_FEED_URL'
+      ;
+      UPDATE blog_param
+      SET param_value = l_base_url
+      WHERE param_id  = 'G_BASE_URL'
+      ;
+      dbms_mview.refresh('BLOG_PARAM_APP','C');
+    END IF;
   END update_param_data;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2597,6 +2740,7 @@ AS
          INTO l_version
          FROM apex_applications s
         WHERE s.application_id = (select blog_util.get_param_value('G_BLOG_READER_APP_ID') from dual)
+          AND s.version = (select blog_util.get_param_value('READER_VERSION') from dual)
         ;
       EXCEPTION WHEN NO_DATA_FOUND THEN
         raise_application_error(-20001, 'Blog reader application not exists.');
@@ -2606,13 +2750,14 @@ AS
         SELECT s.version
          INTO l_version
          FROM apex_applications s
-        WHERE s.application_id = (select blog_util.get_param_value('BLOG_ADMIN_APP_ID') from dual)
+        WHERE s.application_id = (select blog_util.get_param_value('G_BLOG_ADMIN_APP_ID') from dual)
+          AND s.version = (select blog_util.get_param_value('ADMIN_VERSION') from dual)
         ;
       EXCEPTION WHEN NO_DATA_FOUND THEN
         raise_application_error(-20001, 'Blog admin application not exists.');
       END;
     ELSE
-      l_version :=  blog_util.get_param_value('BLOG_SCHEMA_VERSION');
+      l_version :=  blog_util.get_param_value('SCHEMA_VERSION');
     END IF;
     RETURN l_version;    
   END get_version;
@@ -2764,22 +2909,18 @@ AS
     l_len   SIMPLE_INTEGER := 0;
     l_data  CLOB;
   BEGIN
-
     l_len := p_table.COUNT;
-
     IF l_len = 0
     OR COALESCE(LENGTH(p_table(1)), 0) = 0
     THEN
       RETURN EMPTY_CLOB();
     END IF;
-
     dbms_lob.createtemporary(
       lob_loc => l_data,
       cache   => TRUE,
       dur     => dbms_lob.session
     );
     dbms_lob.open(l_data, dbms_lob.lob_readwrite);
-
     FOR i IN 1 .. l_len
     LOOP
       dbms_lob.writeappend(
@@ -2915,7 +3056,6 @@ AS
     IF SQL%ROWCOUNT > 0 THEN
       p_success_message := COALESCE(p_success_message, p_message);
     END IF;
-
   END save_article_text;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

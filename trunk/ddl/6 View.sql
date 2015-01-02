@@ -50,6 +50,7 @@ AS
   ,c.category_id
   ,b.author_id
   ,b.author_name
+  ,b.twitter AS author_twitter
   ,a.article_title
   ,a.description
   ,c.category_name
