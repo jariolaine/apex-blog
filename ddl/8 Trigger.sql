@@ -164,7 +164,6 @@ BEGIN
    :NEW.changed_on := SYSDATE;
    :NEW.changed_by := COALESCE(v('APP_USER'),USER);
   END IF;
-
   IF :NEW.blocked = 'Y' THEN
     IF :NEW.blocked_on IS NULL THEN
       :NEW.blocked_on := SYSDATE;
@@ -328,7 +327,7 @@ END;
 ALTER TRIGGER blog_author_trg ENABLE
 /
 
-CREATE OR REPLACE TRIGGER blog_article_b_trg before
+CREATE OR REPLACE TRIGGER blog_article_trg before
 INSERT OR
 UPDATE OR
 DELETE ON blog_article FOR EACH row
@@ -343,6 +342,7 @@ BEGIN
     IF :NEW.changed_by IS NULL THEN
       :NEW.changed_by := COALESCE(v('APP_USER'),USER);
     END IF;
+	:NEW.year_month_num := TO_NUMBER(TO_CHAR(:NEW.created_on,'YYYYMM'));
   END IF;
   IF updating THEN
     :NEW.changed_on := SYSDATE;
@@ -352,12 +352,11 @@ BEGIN
     INSERT INTO blog_http410(deleted_id, id_source)
     VALUES (to_char(:OLD.article_id), 'ARTICLE');
   ELSE
-    :NEW.year_month_num := TO_NUMBER(TO_CHAR(:NEW.created_on,'YYYYMM'));
     :NEW.article_length := COALESCE(dbms_lob.getlength(:NEW.article_text), 0);
   END IF;
 END;
 /
-ALTER TRIGGER blog_article_b_trg ENABLE
+ALTER TRIGGER blog_article_trg ENABLE
 /
 
 CREATE OR REPLACE TRIGGER blog_article_a_trg after
