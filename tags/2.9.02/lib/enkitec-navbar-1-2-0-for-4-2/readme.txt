@@ -1,1 +1,0 @@
-For details on how to use this plug-in visit http://www.enkitec.com/products/plugins.
