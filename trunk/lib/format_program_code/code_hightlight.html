@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="jquery.min.js"></script>
+<style>
+.program-code-wrap {
+    margin: 3px 0;
+    overflow: auto;
+	width: 100%
+}
+.program-code{
+    margin-bottom: 2px;
+    white-space: pre;
+}
+.program-code span.line-number {
+    border-right: 2px solid #6ce26c;
+    color: #afafaf;
+    float: left;
+    margin: 0 1em 0 -1em;
+    text-align: right;
+}
+.program-code code {
+    color: #000000;
+}
+.program-code code, 
+.program-code span.line-number {
+    display: block;
+    font: 12px/14px "Courier New",Courier,Monospace;
+}
+.line-number span {
+    display: block;
+    padding: 0 0.5em 0 1em;
+}
+</style>
+<script>
+(function($){
+$.fn.blogFormatCode=function(){
+ var $lCode=$("<code/>").dblclick(function(){
+  if (this.select) {
+   this.select();
+  }else if (document.selection) {
+   var range = document.body.createTextRange();
+   range.moveToElementText(this);
+   range.select();
+  } else if (window.getSelection) {
+   var range = document.createRange();
+   range.selectNode(this);
+   window.getSelection().addRange(range);
+  }
+ });
+ this.wrapInner($lCode).wrap($("<div/>",{"class":"program-code-wrap"})).append($("<span/>",{"class":"clear"})).each(function(i){
+  var $lLineNumber=$("<span/>",{"class":"line-number"}),
+  lBreaks=$(this).prepend($lLineNumber).html().match(/\n\r?/g),
+  lNum=1;
+  if(lBreaks){lNum=lNum+lBreaks.length;}
+  for (var i=0;i < lNum; i++) {
+   $lLineNumber.append($("<span/>",{"text":i+1}));
+  }
+ })
+ return this;
+}
+})(jQuery);
+$(function(){
+ $("pre.program-code").blogFormatCode()
+});
+</script>
+</head>
+<body>
+<p>Double click will select all code</p>
+<pre class="program-code">
+SELECT ename
+	,empno
+	,deptno
+	,mgr
+FROM emp
+;</pre>
+</body>
+</html>
