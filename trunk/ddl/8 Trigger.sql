@@ -66,8 +66,7 @@ ALTER TRIGGER blog_long_text_trg ENABLE
 
 CREATE OR REPLACE TRIGGER blog_file_trg before
  INSERT OR
- UPDATE OR
- DELETE ON blog_file FOR EACH row
+ UPDATE ON blog_file FOR EACH row
 BEGIN
   IF inserting THEN
     IF :NEW.file_id IS NULL THEN
@@ -84,14 +83,9 @@ BEGIN
     :NEW.changed_on := SYSDATE;
     :NEW.changed_by := COALESCE(v('APP_USER'),USER);
   END IF;
-  IF deleting THEN
-    INSERT INTO blog_http410(deleted_id, id_source)
-    VALUES (:OLD.file_name, 'FILE');
-  ELSE
-    :NEW.file_etag := :NEW.file_id || TO_CHAR(SYS_EXTRACT_UTC(CAST(:NEW.changed_on AS TIMESTAMP)), 'JHH24MISS');
-    :NEW.file_modified_since := TO_CHAR(SYS_EXTRACT_UTC(CAST(:NEW.changed_on AS TIMESTAMP)), 'Dy, DD Mon YYYY HH24:MI:SS "GMT"', 'NLS_DATE_LANGUAGE=ENGLISH');
-    :NEW.file_size := COALESCE(dbms_lob.getlength(:NEW.blob_content), 0);
-  END IF;
+  :NEW.file_etag := :NEW.file_id || TO_CHAR(SYS_EXTRACT_UTC(CAST(:NEW.changed_on AS TIMESTAMP)), 'JHH24MISS');
+  :NEW.file_modified_since := TO_CHAR(SYS_EXTRACT_UTC(CAST(:NEW.changed_on AS TIMESTAMP)), 'Dy, DD Mon YYYY HH24:MI:SS "GMT"', 'NLS_DATE_LANGUAGE=ENGLISH');
+  :NEW.file_size := COALESCE(dbms_lob.getlength(:NEW.blob_content), 0);
 END;
 /
 ALTER TRIGGER blog_file_trg ENABLE
@@ -281,7 +275,7 @@ BEGIN
     :NEW.changed_by := COALESCE(v('APP_USER'),USER);
   END IF;
   IF deleting THEN
-    INSERT INTO blog_http410(deleted_id, id_source)
+    INSERT INTO blog_deleted_id(deleted_id, id_source)
     VALUES (to_char(:OLD.category_id), 'CATEGORY');
   END IF;
 END;
@@ -327,7 +321,7 @@ END;
 ALTER TRIGGER blog_author_trg ENABLE
 /
 
-CREATE OR REPLACE TRIGGER blog_article_trg before
+CREATE OR REPLACE TRIGGER blog_article_b_trg before
 INSERT OR
 UPDATE OR
 DELETE ON blog_article FOR EACH row
@@ -349,14 +343,14 @@ BEGIN
     :NEW.changed_by := COALESCE(v('APP_USER'),USER);
   END IF;
   IF deleting THEN
-    INSERT INTO blog_http410(deleted_id, id_source)
+    INSERT INTO blog_deleted_id(deleted_id, id_source)
     VALUES (to_char(:OLD.article_id), 'ARTICLE');
   ELSE
     :NEW.article_length := COALESCE(dbms_lob.getlength(:NEW.article_text), 0);
   END IF;
 END;
 /
-ALTER TRIGGER blog_article_trg ENABLE
+ALTER TRIGGER blog_article_b_trg ENABLE
 /
 
 CREATE OR REPLACE TRIGGER blog_article_a_trg after
