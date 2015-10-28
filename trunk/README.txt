@@ -1,4 +1,6 @@
 APEX Blogging Platform
+Copyright (c) 2011, Jari Laine
+
 Version : 2.9.0.2
 Date : 02.01.2015
 http://sourceforge.net/projects/apex-blog/
