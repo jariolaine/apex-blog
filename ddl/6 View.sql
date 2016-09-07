@@ -431,8 +431,8 @@ CREATE OR REPLACE FORCE VIEW blog_v$all_comments AS
   ,a.article_title
   ,u.nick_name
   ,u.email
-  ,CASE WHEN a.author_id = u.user_id THEN
-		a.email_notify
+  ,CASE WHEN o.author_id = u.user_id THEN
+		o.email_notify
 	ELSE
 		COALESCE(n.followup_notify, 'N') 
 	END AS followup_notify
@@ -470,8 +470,8 @@ INNER JOIN blog_comment_user u
 LEFT JOIN blog_comment_notify n
   ON c.user_id = n.user_id
  AND c.article_id = n.article_id
-LEFT JOIN blog_author a
-  ON u.user_id = a.author_id
+LEFT JOIN blog_author o
+  ON u.user_id = o.author_id
 WITH READ ONLY CONSTRAINT blog_v$all_comments_ro
 ;
 --------------------------------------------------------------
