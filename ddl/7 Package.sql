@@ -1,3 +1,301 @@
+CREATE OR REPLACE PACKAGE  "BLOG_LOG" 
+AUTHID DEFINER
+AS
+-------------------------------------------------------------------------------
+  FUNCTION apex_error_handler(
+    p_error IN apex_error.t_error
+  ) RETURN apex_error.t_error_result;
+--------------------------------------------------------------------------------
+  PROCEDURE write_activity_log(
+    p_user_id         IN NUMBER,
+    p_activity_type   IN VARCHAR2,
+    p_session_id      IN NUMBER,
+    p_related_id      IN NUMBER DEFAULT 0,
+    p_ip_address      IN VARCHAR2 DEFAULT NULL,
+    p_user_agent      IN VARCHAR2 DEFAULT NULL,
+    p_referer         IN VARCHAR2 DEFAULT NULL,
+    p_search_type     IN VARCHAR2 DEFAULT NULL,
+    p_search          IN VARCHAR2 DEFAULT NULL,
+    p_country_code    IN VARCHAR2 DEFAULT NULL,
+    p_region          IN VARCHAR2 DEFAULT NULL,
+    p_city            IN VARCHAR2 DEFAULT NULL,
+    p_latitude        IN NUMBER DEFAULT NULL,
+    p_longitude       IN NUMBER DEFAULT NULL,
+    p_additional_info IN VARCHAR2 DEFAULT NULL
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE write_article_log(
+    p_article_id      IN NUMBER
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE rate_article(
+    p_article_id      IN NUMBER,
+    p_article_rate    IN OUT NOCOPY NUMBER
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE write_category_log(
+    p_category_id     IN NUMBER
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE write_file_log(
+    p_file_id         IN NUMBER
+  );
+--------------------------------------------------------------------------------
+END "BLOG_LOG";
+/
+CREATE OR REPLACE PACKAGE BODY  "BLOG_LOG" 
+AS
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  INSERT_NULL_VALUE EXCEPTION;
+  PARENT_NOT_FOUND  EXCEPTION;
+  PRAGMA EXCEPTION_INIT(INSERT_NULL_VALUE, -1400);
+  PRAGMA EXCEPTION_INIT(PARENT_NOT_FOUND, -2291);
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  FUNCTION apex_error_handler(
+    p_error IN apex_error.t_error
+  ) RETURN apex_error.t_error_result
+  AS
+    l_result          apex_error.t_error_result;
+    l_error           apex_error.t_error;
+    l_reference_id    PLS_INTEGER;
+    l_constraint_name VARCHAR2(255);
+    l_err_msg         VARCHAR2(32700);
+  BEGIN
+    l_result := apex_error.init_error_result ( p_error => p_error );
+    -- If it's an internal error raised by APEX, like an invalid statement or
+    -- code which can't be executed, the error text might contain security sensitive
+    -- information. To avoid this security problem we can rewrite the error to
+    -- a generic error message and log the original error message for further
+    -- investigation by the help desk.
+    IF p_error.is_internal_error THEN
+      -- Access Denied errors raised by application or page authorization should
+      -- still show up with the original error message
+      IF NOT p_error.apex_error_code LIKE 'APEX.SESSION_STATE.%'
+      AND NOT p_error.apex_error_code = 'APEX.AUTHORIZATION.ACCESS_DENIED'
+      AND NOT p_error.apex_error_code = 'APEX.PAGE.DUPLICATE_SUBMIT'
+      AND NOT p_error.apex_error_code = 'APEX.SESSION_STATE.RESTRICTED_CHAR.WEB_SAFE'
+      AND NOT p_error.apex_error_code = 'APEX.SESSION_STATE.RESTRICTED_CHAR.US_ONLY'
+      THEN
+        -- log error for example with an autonomous transaction and return
+        -- l_reference_id as reference#
+        -- l_reference_id := log_error (
+        --                       p_error => p_error );
+        --
+        -- Change the message to the generic error message which doesn't expose
+        -- any sensitive information.
+        -- log error to application debug information
+        apex_debug.error(
+          'Error handler: %s %s %s',
+           p_error.apex_error_code,
+           l_result.message,
+           l_result.additional_info
+        );
+        l_result.message := apex_lang.message('GENERAL_ERROR');
+        l_result.additional_info := NULL;
+      END IF;
+    ELSE
+      /*
+      -- Show the error as inline error
+      l_result.display_location :=
+      CASE
+      WHEN l_result.display_location = apex_error.c_on_error_page THEN
+        apex_error.c_inline_in_notification
+      ELSE
+        l_result.display_location
+      END;
+      */
+      -- If it's a constraint violation like
+      --
+      --   -) ORA-02292ORA-02291ORA-02290ORA-02091ORA-00001: unique constraint violated
+      --   -) : transaction rolled back (-> can hide a deferred constraint)
+      --   -) : check constraint violated
+      --   -) : integrity constraint violated - parent key not found
+      --   -) : integrity constraint violated - child record found
+      --
+      -- we try to get a friendly error message from our constraint lookup configuration.
+      -- If we don't find the constraint in our lookup table we fallback to
+      -- the original ORA error message.
+      IF p_error.ora_sqlcode IN (-1, -2091, -2290, -2291, -2292) THEN
+        l_constraint_name := apex_error.extract_constraint_name ( p_error => p_error );
+        l_err_msg := apex_lang.message(l_constraint_name);
+        -- not every constraint has to be in our lookup table
+        IF NOT l_err_msg = l_constraint_name THEN
+          l_result.message := l_err_msg;
+        END IF;
+      END IF;
+      -- If an ORA error has been raised, for example a raise_application_error(-20xxx, '...')
+      -- in a table trigger or in a PL/SQL package called by a process and we
+      -- haven't found the error in our lookup table, then we just want to see
+      -- the actual error text and not the full error stack with all the ORA error numbers.
+      IF p_error.ora_sqlcode IS NOT NULL AND l_result.message = p_error.message THEN
+        l_result.message := apex_error.get_first_ora_error_text ( p_error => p_error );
+      END IF;
+      -- If no associated page item/tabular form column has been set, we can use
+      -- apex_error.auto_set_associated_item to automatically guess the affected
+      -- error field by examine the ORA error for constraint names or column names.
+      IF l_result.page_item_name IS NULL AND l_result.column_alias IS NULL THEN
+        apex_error.auto_set_associated_item ( p_error => p_error, p_error_result => l_result );
+      END IF;
+    END IF;
+    RETURN l_result;
+  END apex_error_handler;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE write_activity_log(
+    p_user_id         IN NUMBER,
+    p_activity_type   IN VARCHAR2,
+    p_session_id      IN NUMBER,
+    p_related_id      IN NUMBER DEFAULT 0,
+    p_ip_address      IN VARCHAR2 DEFAULT NULL,
+    p_user_agent      IN VARCHAR2 DEFAULT NULL,
+    p_referer         IN VARCHAR2 DEFAULT NULL,
+    p_search_type     IN VARCHAR2 DEFAULT NULL,
+    p_search          IN VARCHAR2 DEFAULT NULL,
+    p_country_code    IN VARCHAR2 DEFAULT NULL,
+    p_region          IN VARCHAR2 DEFAULT NULL,
+    p_city            IN VARCHAR2 DEFAULT NULL,
+    p_latitude        IN NUMBER DEFAULT NULL,
+    p_longitude       IN NUMBER DEFAULT NULL,
+    p_additional_info IN VARCHAR2 DEFAULT NULL
+  )
+  AS
+    PRAGMA AUTONOMOUS_TRANSACTION;
+  BEGIN
+    INSERT /*+ append */ INTO blog_activity_log (
+      ACTIVITY_TYPE,
+      APEX_SESSION_ID,
+      IP_ADDRESS,
+      RELATED_ID,
+      USER_ID,
+      LATITUDE,
+      LONGITUDE,
+      COUNTRY_CODE,
+      COUNTRY_REGION,
+      COUNTRY_CITY,
+      HTTP_USER_AGENT,
+      HTTP_REFERER,
+      SEARCH_TYPE,
+      SEARCH_CRITERIA,
+      ADDITIONAL_INFO
+    ) VALUES (
+      p_activity_type,
+      p_session_id,
+      p_ip_address,
+      p_related_id,
+      p_user_id,
+      p_latitude,
+      p_longitude,
+      p_country_code,
+      p_region,
+      p_city,
+      p_user_agent,
+      p_referer,
+      p_search_type,
+      p_search,
+      p_additional_info
+    );
+    COMMIT;
+  END write_activity_log;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE write_article_log(
+    p_article_id  IN NUMBER
+  )
+  AS
+    PRAGMA AUTONOMOUS_TRANSACTION;
+  BEGIN
+    UPDATE blog_article_log
+    SET view_count = view_count + 1,
+        last_view = SYSDATE
+    WHERE article_id = p_article_id
+    ;
+    COMMIT;
+  EXCEPTION WHEN 
+  VALUE_ERROR OR
+  INVALID_NUMBER OR
+  PARENT_NOT_FOUND OR
+  INSERT_NULL_VALUE
+  THEN
+      apex_debug.warn('blog_log.write_article_log(p_article_id => %s); error: %s', COALESCE(to_char(p_article_id), 'NULL'), sqlerrm);
+  END write_article_log;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE rate_article(
+    p_article_id    IN NUMBER,
+    p_article_rate  IN OUT NOCOPY NUMBER
+  )
+  AS
+    l_rate NUMBER;
+  BEGIN
+    UPDATE blog_article_log
+      SET article_rate      = (article_rate * rate_click + p_article_rate) / (rate_click + 1),
+          article_rate_int  = ROUND( (article_rate * rate_click + p_article_rate) / (rate_click + 1) ),
+          rate_click        = rate_click + 1,
+          last_rate         = SYSDATE
+    WHERE article_id = p_article_id
+    RETURNING article_rate_int INTO l_rate
+    ;
+    sys.htp.prn(l_rate);
+  END rate_article;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE write_category_log(
+    p_category_id  IN NUMBER
+  )
+  AS
+    PRAGMA AUTONOMOUS_TRANSACTION;
+  BEGIN
+    MERGE INTO blog_category_log a
+    USING (SELECT p_category_id AS category_id FROM DUAL) b
+    ON (a.category_id = b.category_id)
+    WHEN MATCHED THEN
+    UPDATE SET a.view_count = a.view_count + 1,
+      a.last_view = SYSDATE
+    WHEN NOT MATCHED THEN
+    INSERT (category_id) VALUES (b.category_id)
+    ;
+    COMMIT;
+  EXCEPTION WHEN
+    VALUE_ERROR OR
+    INVALID_NUMBER OR
+    PARENT_NOT_FOUND OR
+    INSERT_NULL_VALUE
+  THEN
+    apex_debug.warn('blog_log.write_category_log(p_category_id => %s); error: %s', COALESCE(to_char(p_category_id), 'NULL'), sqlerrm);
+  END write_category_log;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE write_file_log(
+    p_file_id  IN NUMBER
+  )
+  AS
+    PRAGMA AUTONOMOUS_TRANSACTION;
+  BEGIN
+    MERGE INTO blog_file_log a
+    USING (SELECT p_file_id AS file_id FROM DUAL) b
+    ON (a.file_id = b.file_id)
+    WHEN MATCHED THEN
+    UPDATE SET a.click_count = a.click_count + 1,
+      last_click = SYSDATE
+    WHEN NOT MATCHED THEN
+    INSERT (file_id) VALUES (b.file_id)
+    ;
+    COMMIT;
+  EXCEPTION WHEN
+  VALUE_ERROR OR
+  INVALID_NUMBER OR
+  PARENT_NOT_FOUND OR
+  INSERT_NULL_VALUE
+  THEN
+    apex_debug.warn('blog_log.write_file_log(p_file_id => %s); error: %s', COALESCE(to_char(p_file_id), 'NULL'), sqlerrm);
+  END write_file_log;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+END "BLOG_LOG";
+/
+
 CREATE OR REPLACE PACKAGE  "BLOG_XML" 
 AUTHID DEFINER
 AS
@@ -98,6 +396,8 @@ AS
     INTO l_xml
     FROM blog_article_last20 l
     ;
+	sys.htp.flush;
+	sys.htp.init;
     owa_util.mime_header('application/rss+xml', TRUE);
     wpg_docload.download_file(l_xml);
     apex_application.stop_apex_engine;
@@ -169,6 +469,8 @@ AS
     INTO l_xml
     FROM sitemap_query
     ;
+	sys.htp.flush;
+	sys.htp.init;
     owa_util.mime_header('application/xml', TRUE);
     wpg_docload.download_file(l_xml);
     apex_application.stop_apex_engine;
@@ -247,7 +549,6 @@ AS
 --------------------------------------------------------------------------------
   PROCEDURE get_article_page_items (
     p_article_id      IN VARCHAR2,
-    p_blog_name       IN VARCHAR2,
     p_page_title      OUT NOCOPY VARCHAR2,
     p_region_title    OUT NOCOPY VARCHAR2,
     p_keywords        OUT NOCOPY VARCHAR2,
@@ -259,7 +560,6 @@ AS
 --------------------------------------------------------------------------------
   PROCEDURE get_category_page_items (
     p_category_id     IN VARCHAR2,
-    p_blog_name       IN VARCHAR2,
     p_page_title      OUT NOCOPY VARCHAR2,
     p_region_title    OUT NOCOPY VARCHAR2,
     p_category_name   OUT NOCOPY VARCHAR2
@@ -280,7 +580,11 @@ AS
     v_email         VARCHAR2(120),
     v_email_notify  VARCHAR2(1)
   );
-
+  TYPE t_email  IS RECORD (
+    v_from          VARCHAR2(120),
+    v_subj          VARCHAR2(255),
+    v_body          VARCHAR2(32700)
+  );
   g_cookie_expires    CONSTANT DATE           := ADD_MONTHS(TRUNC(SYSDATE), 12);
   g_watche_expires    CONSTANT DATE           := ADD_MONTHS(TRUNC(SYSDATE), -1);
   g_cookie_name       CONSTANT VARCHAR2(30)   := '__uid';
@@ -304,7 +608,7 @@ AS
     VALUE_ERROR OR
     INVALID_NUMBER
   THEN
-    apex_debug.message('blog_util.get_user_name(p_user_id => %s); error: %s', COALESCE(to_char(p_user_id), 'NULL'), sqlerrm);
+    apex_debug.warn('blog_util.get_user_name(p_user_id => %s); error: %s', COALESCE(to_char(p_user_id), 'NULL'), sqlerrm);
     RETURN NULL;
   END get_user_name;
 --------------------------------------------------------------------------------
@@ -334,7 +638,7 @@ AS
     VALUE_ERROR OR
     INVALID_NUMBER
   THEN
-    apex_debug.message('blog_util.get_author_record_by_article(p_article_id => %s); error: %s', coalesce(to_char(p_article_id), 'NULL'), sqlerrm);
+    apex_debug.warn('blog_util.get_author_record_by_article(p_article_id => %s); error: %s', coalesce(to_char(p_article_id), 'NULL'), sqlerrm);
     RETURN NULL;
   END get_article_author;
 --------------------------------------------------------------------------------
@@ -391,9 +695,43 @@ AS
     INVALID_NUMBER OR
     VALUE_ERROR
   THEN
-    apex_debug.message('blog_util.get_cookie; error: %s', sqlerrm);
+    apex_debug.warn('blog_util.get_cookie; error: %s', sqlerrm);
     RETURN NULL;
   END get_cookie;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  FUNCTION get_email_message (
+    p_article_title IN VARCHAR2,
+    p_article_url   IN VARCHAR2,
+    p_blog_name     IN VARCHAR2,
+    p_author_name   IN VARCHAR2,
+    p_subj          IN VARCHAR2,
+    p_body          IN VARCHAR2
+  ) RETURN t_email
+  AS
+    TYPE tabtype IS TABLE OF VARCHAR2(255) INDEX BY VARCHAR2(40);
+    l_arr   tabtype;
+    l_key   VARCHAR2(40);
+    l_email t_email;
+  BEGIN
+    l_email.v_subj            := apex_lang.message(p_subj);
+    l_email.v_body            := apex_lang.message(p_body);
+    l_arr('#BLOG_NAME#')      := p_blog_name;
+    l_arr('#ARTICLE_TITLE#')  := p_article_title;
+    l_arr('#AUTHOR_NAME#')    := p_author_name;
+    l_arr('#ARTICLE_URL#')    := p_article_url;  
+    l_key := l_arr.FIRST;
+    -- Substitude message
+    WHILE l_key IS NOT NULL LOOP
+      l_email.v_subj := regexp_replace( l_email.v_subj, l_key, l_arr(l_key), 1, 0, 'i' );
+      l_email.v_body := regexp_replace( l_email.v_body, l_key, l_arr(l_key), 1, 0, 'i' );
+      l_key := l_arr.NEXT(l_key);
+    END LOOP;
+    /* Get blog email */
+    l_email.v_from := blog_util.get_param_value('BLOG_EMAIL');
+    --
+    RETURN l_email;
+  END get_email_message;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   FUNCTION get_article_url(
@@ -487,16 +825,23 @@ AS
     p_author_email  IN VARCHAR2
   )
   AS
-    l_email VARCHAR2(256);
+    l_email t_email;
   BEGIN
-    /* Get blog email */
-    l_email := blog_util.get_param_value('BLOG_EMAIL');
+    /* Get email subject and body to variable */
+    l_email := blog_util.get_email_message(
+      p_article_title => p_article_title,
+      p_article_url   => p_article_url,
+      p_blog_name     => p_blog_name,
+      p_author_name   => p_author_name,
+      p_subj          => 'NEW_COMMENT_EMAIL_SUBJ',
+      p_body          => 'NEW_COMMENT_EMAIL_BODY'
+    );
     /* Send mail to author */
     apex_mail.send (
-      p_from => l_email,
+      p_from => l_email.v_from,
       p_to   => p_author_email,
-      p_subj => apex_lang.message('NEW_COMMENT_EMAIL_SUBJ', p_blog_name, p_article_title, p_author_name),
-      p_body => apex_lang.message('NEW_COMMENT_EMAIL_BODY', p_blog_name, p_article_title, p_author_name, p_article_url)
+      p_subj => l_email.v_subj,
+      p_body => l_email.v_body
     );
     /* we do have time wait email sending */
     --APEX_MAIL.PUSH_QUEUE;
@@ -510,7 +855,7 @@ AS
   )
   AS
   BEGIN
-    apex_debug.message('HTTP %s %s id: %s', p_error_code, p_reason, coalesce(p_id, '(NULL)'));
+    apex_debug.warn('HTTP %s %s id: %s', p_error_code, p_reason, coalesce(p_id, '(NULL)'));
     sys.owa_util.status_line(
       nstatus       => p_error_code,
       creason       => p_reason,
@@ -520,23 +865,23 @@ AS
   END raise_http_error;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------  
-  PROCEDURE check_deleted_id(
+  PROCEDURE check_http410(
     p_id  IN VARCHAR2
   )
   AS
-    i PLS_INTEGER;
+    l_count PLS_INTEGER;
   BEGIN
-    SELECT 1
-    INTO i
-    FROM blog_deleted_id d
-    WHERE d.deleted_id = p_id
+    SELECT COUNT(1)
+    INTO l_count
+    FROM blog_http410 c
+    WHERE c.deleted_id = p_id
     ;
     blog_util.raise_http_error(p_id, 410, 'Gone');
   EXCEPTION WHEN 
     NO_DATA_FOUND
   THEN
     blog_util.raise_http_error(p_id);
-  END check_deleted_id;
+  END check_http410;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -561,7 +906,6 @@ AS
         l_user_id := NULL;
       END IF;
     END IF;
-    -- IF apex_util.public_check_authorization('LOGGING_ENABLED') THEN
     IF apex_authorization.is_authorized('LOGGING_ENABLED') THEN
       blog_log.write_activity_log(
         p_user_id       => l_user_id,
@@ -654,7 +998,6 @@ AS
     blog_util.set_cookie(p_user_id);
     --
     /* Should author moderate comment before it is published */
-    -- IF NOT apex_util.public_check_authorization('MODERATION_ENABLED') THEN
     IF NOT apex_authorization.is_authorized('MODERATION_ENABLED') THEN
       l_publish := 'Y';
     END IF;
@@ -675,7 +1018,6 @@ AS
     ;
     --
     /* Send email about new comment to readers */
-    -- IF apex_util.public_check_authorization('NOTIFICATION_EMAIL_ENABLED') THEN
     IF apex_authorization.is_authorized('NOTIFICATION_EMAIL_ENABLED') THEN
       IF l_publish = 'Y' THEN
         blog_util.notify_readers (
@@ -755,12 +1097,20 @@ AS
   AS
     l_article_url     VARCHAR2(2000);
     l_unsubscribe_url VARCHAR2(2000);
-    l_email           VARCHAR2(256);
+    l_user_email      t_email;
+    l_email           t_email;
   BEGIN
     /* Get article url */
     l_article_url := blog_util.get_article_url(p_article_id, p_app_alias, p_base_url);
-    /* Get blog email */
-    l_email := blog_util.get_param_value('BLOG_EMAIL');
+    /* Get email subject and body to variables */
+    l_email := blog_util.get_email_message(
+      p_article_title => p_article_title,
+      p_article_url   => l_article_url,
+      p_blog_name     => p_blog_name,
+      p_author_name   => '#AUTHOR_NAME#',
+      p_subj          => 'FOLLOWUP_EMAIL_SUBJ',
+      p_body          => 'FOLLOWUP_EMAIL_BODY'
+    );
     /* Loop trough all users that like have notification */
     FOR c1 IN (
       SELECT email,
@@ -794,12 +1144,16 @@ AS
         p_app_alias   => p_app_alias,
         p_base_url    => p_base_url
       );
+      /* Make user specific substitutions */
+      l_user_email.v_subj := regexp_replace(l_email.v_subj, '#NICK_NAME#', c1.nick_name, 1, 0, 'i');
+      l_user_email.v_body := regexp_replace(l_email.v_body, '#NICK_NAME#', c1.nick_name, 1, 0, 'i');
+      l_user_email.v_body := regexp_replace(l_user_email.v_body, '#UNSUBSCRIBE_URL#', l_unsubscribe_url, 1, 0, 'i');
       /* Send mail to user */
       apex_mail.send (
-        p_from => l_email,
+        p_from => l_email.v_from,
         p_to   => c1.email,
-        p_subj => apex_lang.message('FOLLOWUP_EMAIL_SUBJ', p_blog_name, p_article_title, c1.nick_name),
-        p_body => apex_lang.message('FOLLOWUP_EMAIL_BODY', p_blog_name, p_article_title, c1.nick_name, l_article_url, l_unsubscribe_url)
+        p_subj => l_user_email.v_subj,
+        p_body => l_user_email.v_body
       );
     END LOOP;
     /* we do have time wait email sending */
@@ -873,10 +1227,14 @@ AS
   BEGIN
     /*
     IF NOT apex_custom_auth.is_session_valid THEN
-      apex_debug.message('File download session is not valid: %s', p_session_id);
+      apex_debug.warn('File download session is not valid: %s', p_session_id);
       raise_application_error(-20001, 'Unauthorized access - file will not be retrieved.');
     END IF;
     */
+	
+	sys.htp.flush;
+	sys.htp.init;
+	
     l_file_cached := FALSE;
     l_arr := apex_util.string_to_table(p_file_name, '?');
     l_file_name := l_arr(1);
@@ -911,7 +1269,6 @@ AS
         sys.htp.p('Last-Modified : ' || l_file_rowtype.file_modified_since);
       END IF;
     ELSE
-      -- IF apex_util.public_check_authorization('LOGGING_ENABLED') THEN
       IF apex_authorization.is_authorized('LOGGING_ENABLED') THEN
         /* Log file download */
         blog_log.write_file_log(l_file_rowtype.file_id);
@@ -931,8 +1288,11 @@ AS
     sys.owa_util.http_header_close;
     apex_application.stop_apex_engine;
   EXCEPTION WHEN 
+    NO_DATA_FOUND
+  THEN
+    check_http410(l_file_name);
+  WHEN
     VALUE_ERROR OR
-    NO_DATA_FOUND OR
     INVALID_NUMBER OR
     FILE_NOT_ACTIVE
   THEN
@@ -976,7 +1336,6 @@ AS
 --------------------------------------------------------------------------------
   PROCEDURE get_article_page_items (
     p_article_id      IN VARCHAR2,
-    p_blog_name       IN VARCHAR2,
     p_page_title      OUT NOCOPY VARCHAR2,
     p_region_title    OUT NOCOPY VARCHAR2,
     p_keywords        OUT NOCOPY VARCHAR2,
@@ -1010,14 +1369,13 @@ AS
     ON a.article_id = l.article_id
     WHERE a.article_id = l_article_id
     ;
-    p_page_title    := apex_lang.message('PAGE_TITLE_ARTICLE', p_blog_name, p_page_title);
     p_region_title  := apex_lang.message('REGION_TITLE_COMMENTS');
     p_keywords      := ltrim(trim(BOTH ',' FROM p_keywords) || ',' || l_category_name, ',');
     p_rate          := coalesce(p_rate, 0);
   EXCEPTION WHEN 
     NO_DATA_FOUND
   THEN
-    check_deleted_id(p_article_id);
+    check_http410(p_article_id);
   WHEN
     INVALID_NUMBER OR
     VALUE_ERROR
@@ -1028,7 +1386,6 @@ AS
 --------------------------------------------------------------------------------
   PROCEDURE get_category_page_items (
     p_category_id   IN VARCHAR2,
-    p_blog_name     IN VARCHAR2,
     p_page_title    OUT NOCOPY VARCHAR2,
     p_region_title  OUT NOCOPY VARCHAR2,
     p_category_name OUT NOCOPY VARCHAR2
@@ -1043,13 +1400,13 @@ AS
     FROM blog_category c
     WHERE c.category_id = l_category_id
     ;
-    p_page_title    := apex_lang.message('PAGE_TITLE_CATEGORY', p_blog_name, p_category_name);
+    p_page_title    := apex_lang.message('PAGE_TITLE_CATEGORY', p_category_name);
     p_region_title  := apex_lang.message('REGION_TITLE_CATEGORY', apex_escape.html(p_category_name));
     p_category_name := p_category_name;
   EXCEPTION WHEN 
     NO_DATA_FOUND
   THEN
-    check_deleted_id(p_category_id);
+    check_http410(p_category_id);
   WHEN
     INVALID_NUMBER OR
     VALUE_ERROR
@@ -1613,20 +1970,20 @@ END feature_authorization;
     l_result apex_plugin.t_dynamic_action_render_result;
   BEGIN
     apex_javascript.add_inline_code (
-      p_code => 'function org_blogsite_jaris_modal_confirm(){'
+      p_code => 'function net_webhop_dbswh_modal_confirm(){'
         || 'this.affectedElements.data("request",this.triggeringElement.id).dialog({'
         || 'modal:true,'
         || 'buttons:{'
         || '"' || apex_lang.lang('OK') || '":function(){$(this).dialog("close");apex.submit($(this).data("request"));},'
         || '"' || apex_lang.lang('Cancel') || '":function(){$(this).dialog("close")}'
         || '}})}'
-      ,p_key  => 'org_blogsite_jaris_modal_confirm'
+      ,p_key  => 'net.webhop.dbswh.modal_confirm'
     );
     apex_javascript.add_3rd_party_library_file (
       p_library   => apex_javascript.c_library_jquery_ui,
       p_file_name => 'jquery.ui.button'
     );
-    l_result.javascript_function := 'org_blogsite_jaris_modal_confirm';
+    l_result.javascript_function := 'net_webhop_dbswh_modal_confirm';
     RETURN l_result;
   END render_modal_confirm;
 --------------------------------------------------------------------------------
@@ -1654,8 +2011,9 @@ END feature_authorization;
     l_width       varchar2(256)   := p_item.attribute_06;
     l_align       varchar2(20)    := coalesce(p_item.attribute_07, 'left');
     l_expandto    varchar2(100)   := p_item.attribute_08;
-    l_url         varchar2(4000);
-    l_result      apex_plugin.t_page_item_render_result;
+    
+    l_url             varchar2(4000);
+    l_result          apex_plugin.t_page_item_render_result;
   BEGIN
     -- Don't show the widget if we are running in printer friendly mode
     if p_is_printer_friendly then
@@ -1673,9 +2031,10 @@ END feature_authorization;
     -- Output the Google +1 button widget
     -- See https://developers.google.com/+/web/+1button/ for syntax
     sys.htp.prn (
+      '<script src="https://apis.google.com/js/platform.js" async defer></script>' ||
       ''
       || '<div class="g-plusone"'
-      || ' data-href="' || apex_escape.html_attribute(l_url) || '"'
+      || ' data-href="' || l_url || '"'
       || ' data-size="' || apex_escape.html_attribute(l_size) || '"'
       || ' data-annotation="' || apex_escape.html_attribute(l_annotation) || '"'
       || case when l_annotation = 'inline' then
@@ -1684,11 +2043,6 @@ END feature_authorization;
       || ' data-align="' || apex_escape.html_attribute(l_align) || '"'
       || ' data-expandTo="' || apex_escape.html_attribute(replace(l_expandto, ':', ',')) || '"'
       || '></div>'
-    );
-    apex_javascript.add_library(
-      p_name      => 'platform',
-      p_directory => 'https://apis.google.com/js/',
-      p_key       => 'com.google.apis.platform'
     );
     -- Tell APEX that this field is NOT navigable
     l_result.is_navigable := false;
@@ -1711,14 +2065,14 @@ END feature_authorization;
     -- We are using the same defaults for the required attributes as in the
     -- plug-in attribute configuration, because they can still be null.
     -- Note: Keep them in sync!
-    l_url_to_share  varchar2(20)    := coalesce(p_item.attribute_01, 'current_page');
-    l_page_url      varchar2(4000)  := p_item.attribute_02;
-    l_custom_url    varchar2(4000)  := p_item.attribute_03;
-    l_annotation    varchar2(20)    := coalesce(p_item.attribute_04, 'bubble');
-    l_width         varchar2(256)   := p_item.attribute_05;
-    l_height        varchar2(256)   := coalesce(p_item.attribute_06, '20');
-    l_align         varchar2(20)    := coalesce(p_item.attribute_07, 'left');
-    l_expandto      varchar2(100)   := p_item.attribute_08;
+    l_url_to_plus varchar2(20)    := coalesce(p_item.attribute_01, 'current_page');
+    l_page_url    varchar2(4000)  := p_item.attribute_02;
+    l_custom_url  varchar2(4000)  := p_item.attribute_03;
+    l_annotation  varchar2(20)    := coalesce(p_item.attribute_04, 'bubble');
+    l_width       varchar2(256)   := p_item.attribute_05;
+    l_height      varchar2(256)   := coalesce(p_item.attribute_06, '20');
+    l_align       varchar2(20)    := coalesce(p_item.attribute_07, 'left');
+    l_expandto    varchar2(100)   := p_item.attribute_08;
     
     l_url             varchar2(4000);
     l_result          apex_plugin.t_page_item_render_result;
@@ -1730,29 +2084,25 @@ END feature_authorization;
     
     -- Generate the Google Share based on our URL setting.
     -- Note: Always use session 0, otherwise Google Share will always register a different URL.
-    l_url := case l_url_to_share
+    l_url := case l_url_to_plus
                when 'current_page' then c_host || 'f?p=' || apex_application.g_flow_id || ':' || apex_application.g_flow_step_id || ':0'
-               when 'page_url'     then c_host || l_page_url
+               when 'page_url'     then c_host||l_page_url
                when 'custom_url'   then replace(l_custom_url, '#HOST#', c_host)
                when 'value'        then replace(p_value, '#HOST#', c_host)
              end;
     -- Output the Google Share button widget
-    -- See https://developers.google.com/+/web/share/ for syntax
+    -- See https://developers.google.com/+/web/+1button/ for syntax
     sys.htp.prn (
+      '<script src="https://apis.google.com/js/platform.js" async defer></script>' ||
       ''
       || '<div class="g-plus" data-action="share"'
-      || ' data-href="' || apex_escape.html_attribute(l_url) || '"'
+      || ' data-href="' || l_url || '"'
       || ' data-annotation="' || apex_escape.html_attribute(l_annotation) || '"'
       || ' data-width="' || apex_escape.html_attribute(l_annotation) || '"'
       || ' data-height="' || apex_escape.html_attribute(l_height) || '"'
       || ' data-align="' || apex_escape.html_attribute(l_align) || '"'
       || ' data-expandTo="' || apex_escape.html_attribute(replace(l_expandto, ':', ',')) || '"'
       || '></div>'
-    );
-    apex_javascript.add_library(
-      p_name      => 'platform',
-      p_directory => 'https://apis.google.com/js/',
-      p_key       => 'com.google.apis.platform'
     );
     -- Tell APEX that this field is NOT navigable
     l_result.is_navigable := false;
@@ -1815,7 +2165,7 @@ END feature_authorization;
     -- Base URL for the "Like" widget.
     -- See http://developers.facebook.com/docs/reference/plugins/like
     -- for a documentation of the URL syntax
-    l_url := 'https://www.facebook.com/plugins/like.php?href=';
+    l_url := '//www.facebook.com/plugins/like.php?href=';
     
     -- Generate the "Like" URL based on our URL to Like setting.
     -- Note: Always use session 0, otherwise Facebook will not be able to get the page.
@@ -1841,12 +2191,7 @@ END feature_authorization;
              'colorscheme='||l_color_scheme||'&amp;'||
              'height='||l_height;
     -- Output the Facebook Like button widget
-    sys.htp.prn(
-      '<iframe src="' || l_url || '" '
-      || 'scrolling="no" frameborder="0" '
-      || 'style="border:none; overflow:hidden; width:' || l_width || 'px; height:' || l_height || 'px;" '
-      || 'allowTransparency="true"></iframe>'
-    );
+    sys.htp.prn('<iframe src="'||l_url||'" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:'||l_width||'px; height:'||l_height||'px;" allowTransparency="true"></iframe>');
     -- Tell APEX that this field is NOT navigable
     l_result.is_navigable := false;
     RETURN l_result;
@@ -1911,19 +2256,12 @@ END feature_authorization;
     -- Output the Twitter button widget
     -- See http://twitter.com/about/resources/tweetbutton for syntax
     sys.htp.prn (
-      '<a href="https://twitter.com/share" class="twitter-share-button" data-url="'||sys.htf.escape_sc(l_url)||'" '||
-      case when l_tweet_text_type = 'custom' then 'data-text="'||l_custom_text||'" ' end||
-      'data-count="'||l_layout_style||'" '||
-      case when l_follow1 is not null then 'data-via="'||l_follow1||'" ' end||
-      case when l_follow2 is not null then 'data-related="'||l_follow2||'" ' end||
-      --'>Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>' 
-      '></a>'
-    );
-    apex_javascript.add_library(
-      p_name      => 'widgets',
-      p_directory => 'https://platform.twitter.com/',
-      p_key       => 'com.twitter.platform.widgets'
-    );
+        '<a href="//twitter.com/share" class="twitter-share-button" data-url="'||sys.htf.escape_sc(l_url)||'" '||
+        case when l_tweet_text_type = 'custom' then 'data-text="'||l_custom_text||'" ' end||
+        'data-count="'||l_layout_style||'" '||
+        case when l_follow1 is not null then 'data-via="'||l_follow1||'" ' end||
+        case when l_follow2 is not null then 'data-related="'||l_follow2||'" ' end||
+        '>Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>' );
     -- Tell APEX that this field is NOT navigable
     l_result.is_navigable := false;
     RETURN l_result;
@@ -1933,71 +2271,43 @@ END feature_authorization;
 END "BLOG_PLUGIN";
 /
 
-CREATE OR REPLACE PACKAGE  "BLOG_LOG" 
+CREATE OR REPLACE PACKAGE  "BLOG_JOB" 
 AUTHID DEFINER
 AS
+-------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE rotate_log;
 --------------------------------------------------------------------------------
-  PROCEDURE update_geoip;
+  PROCEDURE update_country;
 --------------------------------------------------------------------------------
   PROCEDURE update_activity_logs;
--------------------------------------------------------------------------------
-  FUNCTION apex_error_handler (
-    p_error           IN apex_error.t_error
-  ) RETURN apex_error.t_error_result;
 --------------------------------------------------------------------------------
-  PROCEDURE write_activity_log (
-    p_user_id         IN NUMBER,
-    p_activity_type   IN VARCHAR2,
-    p_session_id      IN NUMBER,
-    p_related_id      IN NUMBER DEFAULT 0,
-    p_ip_address      IN VARCHAR2 DEFAULT NULL,
-    p_user_agent      IN VARCHAR2 DEFAULT NULL,
-    p_referer         IN VARCHAR2 DEFAULT NULL,
-    p_search_type     IN VARCHAR2 DEFAULT NULL,
-    p_search          IN VARCHAR2 DEFAULT NULL,
-    p_country_code    IN VARCHAR2 DEFAULT NULL,
-    p_region          IN VARCHAR2 DEFAULT NULL,
-    p_city            IN VARCHAR2 DEFAULT NULL,
-    p_latitude        IN NUMBER DEFAULT NULL,
-    p_longitude       IN NUMBER DEFAULT NULL,
-    p_additional_info IN VARCHAR2 DEFAULT NULL
+  PROCEDURE purge_preview;
+--------------------------------------------------------------------------------
+  PROCEDURE rotate_log_job (
+    p_drop_job IN BOOLEAN DEFAULT FALSE,
+    p_interval IN PLS_INTEGER DEFAULT NULL
   );
 --------------------------------------------------------------------------------
-  PROCEDURE write_article_log (
-    p_article_id      IN NUMBER
+  PROCEDURE update_country_job (
+    p_drop_job IN BOOLEAN DEFAULT FALSE
   );
 --------------------------------------------------------------------------------
-  PROCEDURE rate_article (
-    p_article_id      IN NUMBER,
-    p_article_rate    IN OUT NOCOPY NUMBER
+  PROCEDURE update_activity_logs_job (
+    p_drop_job IN BOOLEAN DEFAULT FALSE
   );
 --------------------------------------------------------------------------------
-  PROCEDURE write_category_log (
-    p_category_id     IN NUMBER
+  PROCEDURE purge_preview_job (
+    p_drop_job IN BOOLEAN DEFAULT FALSE
   );
 --------------------------------------------------------------------------------
-  PROCEDURE write_file_log (
-    p_file_id         IN NUMBER
-  );
---------------------------------------------------------------------------------
-  PROCEDURE truncate_activity_log (
-    p_log             IN PLS_INTEGER
-  );
-END "BLOG_LOG";
+END "BLOG_JOB";
 /
-CREATE OR REPLACE PACKAGE BODY  "BLOG_LOG" 
+CREATE OR REPLACE PACKAGE BODY  "BLOG_JOB" 
 AS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private variables, procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  INSERT_NULL_VALUE EXCEPTION;
-  PARENT_NOT_FOUND  EXCEPTION;
-  PRAGMA EXCEPTION_INIT(INSERT_NULL_VALUE, -1400);
-  PRAGMA EXCEPTION_INIT(PARENT_NOT_FOUND, -2291);
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE get_host_ip_info (
@@ -2040,28 +2350,32 @@ AS
 --------------------------------------------------------------------------------
   PROCEDURE rotate_log
   AS
-    l_new_num CHAR(1);
-    l_log_num CHAR(1);
+    l_new_tbl VARCHAR2(4000);
+    l_log_tbl CHAR(1);
   BEGIN
   
     SELECT SUBSTR(table_name, -1) AS log_tbl
-    INTO l_log_num
+    INTO l_log_tbl
     FROM user_synonyms
     WHERE synonym_name = 'BLOG_ACTIVITY_LOG'
     ;
-    IF l_log_num = '1' THEN
-      l_new_num := '2';
-    ELSIF l_log_num = '2' THEN
-      l_new_num := '1';
+    
+    IF l_log_tbl = '1' THEN
+      l_new_tbl := '2';
+    ELSIF l_log_tbl = '2' THEN
+      l_new_tbl := '1';
     ELSE
-      raise_application_error(-20001, 'Invalid log table number.');
+      raise_application_error(-20001, 'Invalid log table.');
     END IF;
-    blog_log.truncate_activity_log(l_new_num);
-    EXECUTE IMMEDIATE 'CREATE OR REPLACE SYNONYM BLOG_ACTIVITY_LOG FOR BLOG_ACTIVITY_LOG' || l_new_num;
+    
+    EXECUTE IMMEDIATE 'TRUNCATE TABLE BLOG_ACTIVITY_LOG' || l_new_tbl;
+    
+    EXECUTE IMMEDIATE 'CREATE OR REPLACE SYNONYM BLOG_ACTIVITY_LOG FOR BLOG_ACTIVITY_LOG' || l_new_tbl;
+  
   END rotate_log;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  PROCEDURE update_geoip
+  PROCEDURE update_country
   AS
     l_city    VARCHAR2(2000);
     l_code    VARCHAR2(2000);
@@ -2101,7 +2415,7 @@ AS
         ;
       /* If no previous visit get country info from hostip.info */
       EXCEPTION WHEN NO_DATA_FOUND THEN    
-        blog_log.get_host_ip_info(
+        get_host_ip_info(
           p_ip            => c1.ip_address,
           p_city          => l_city,
           p_country_code  => l_code
@@ -2147,508 +2461,141 @@ AS
       
     END LOOP;
     
-  END update_geoip;
+  END update_country;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE update_activity_logs
   AS
   BEGIN
-    dbms_mview.refresh('BLOG_ARTICLE_HIT20,BLOG_ARTICLE_TOP20', 'CC');
+    dbms_mview.refresh('BLOG_ARTICLE_HIT20,BLOG_ARTICLE_TOP20');
   END update_activity_logs;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  FUNCTION apex_error_handler(
-    p_error IN apex_error.t_error
-  ) RETURN apex_error.t_error_result
+  PROCEDURE purge_preview
   AS
-    l_result          apex_error.t_error_result;
-    l_error           apex_error.t_error;
-    l_reference_id    PLS_INTEGER;
-    l_constraint_name VARCHAR2(255);
-    l_err_msg         VARCHAR2(32700);
   BEGIN
-    l_result := apex_error.init_error_result ( p_error => p_error );
-    -- If it's an internal error raised by APEX, like an invalid statement or
-    -- code which can't be executed, the error text might contain security sensitive
-    -- information. To avoid this security problem we can rewrite the error to
-    -- a generic error message and log the original error message for further
-    -- investigation by the help desk.
-    IF p_error.is_internal_error THEN
-      -- Access Denied errors raised by application or page authorization should
-      -- still show up with the original error message
-      IF NOT p_error.apex_error_code LIKE 'APEX.SESSION_STATE.%'
-      AND NOT p_error.apex_error_code = 'APEX.AUTHORIZATION.ACCESS_DENIED'
-      AND NOT p_error.apex_error_code = 'APEX.PAGE.DUPLICATE_SUBMIT'
-      AND NOT p_error.apex_error_code = 'APEX.SESSION_STATE.RESTRICTED_CHAR.WEB_SAFE'
-      AND NOT p_error.apex_error_code = 'APEX.SESSION_STATE.RESTRICTED_CHAR.US_ONLY'
-      THEN
-        -- log error for example with an autonomous transaction and return
-        -- l_reference_id as reference#
-        -- l_reference_id := log_error (
-        --                       p_error => p_error );
-        --
-        -- Change the message to the generic error message which doesn't expose
-        -- any sensitive information.
-        -- log error to application debug information
-        apex_debug.error(
-          'Error handler: %s %s %s',
-           p_error.apex_error_code,
-           l_result.message,
-           l_result.additional_info
-        );
-        l_result.message := apex_lang.message('GENERAL_ERROR');
-        l_result.additional_info := NULL;
-      END IF;
-    ELSE
-      /*
-      -- Show the error as inline error
-      l_result.display_location :=
-      CASE
-      WHEN l_result.display_location = apex_error.c_on_error_page THEN
-        apex_error.c_inline_in_notification
-      ELSE
-        l_result.display_location
-      END;
-      */
-      -- If it's a constraint violation like
-      --
-      --   -) ORA-02292ORA-02291ORA-02290ORA-02091ORA-00001: unique constraint violated
-      --   -) : transaction rolled back (-> can hide a deferred constraint)
-      --   -) : check constraint violated
-      --   -) : integrity constraint violated - parent key not found
-      --   -) : integrity constraint violated - child record found
-      --
-      -- we try to get a friendly error message from our constraint lookup configuration.
-      -- If we don't find the constraint in our lookup table we fallback to
-      -- the original ORA error message.
-      IF p_error.ora_sqlcode IN (-1, -2091, -2290, -2291, -2292) THEN
-        l_constraint_name := apex_error.extract_constraint_name ( p_error => p_error );
-        l_err_msg := apex_lang.message(l_constraint_name);
-        -- not every constraint has to be in our lookup table
-        IF NOT l_err_msg = l_constraint_name THEN
-          l_result.message := l_err_msg;
-        END IF;
-      END IF;
-      -- If an ORA error has been raised, for example a raise_application_error(-20xxx, '...')
-      -- in a table trigger or in a PL/SQL package called by a process and we
-      -- haven't found the error in our lookup table, then we just want to see
-      -- the actual error text and not the full error stack with all the ORA error numbers.
-      IF p_error.ora_sqlcode IS NOT NULL AND l_result.message = p_error.message THEN
-        l_result.message := apex_error.get_first_ora_error_text ( p_error => p_error );
-      END IF;
-      -- If no associated page item/tabular form column has been set, we can use
-      -- apex_error.auto_set_associated_item to automatically guess the affected
-      -- error field by examine the ORA error for constraint names or column names.
-      IF l_result.page_item_name IS NULL AND l_result.column_alias IS NULL THEN
-        apex_error.auto_set_associated_item ( p_error => p_error, p_error_result => l_result );
-      END IF;
-    END IF;
-    RETURN l_result;
-  END apex_error_handler;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE write_activity_log(
-    p_user_id         IN NUMBER,
-    p_activity_type   IN VARCHAR2,
-    p_session_id      IN NUMBER,
-    p_related_id      IN NUMBER DEFAULT 0,
-    p_ip_address      IN VARCHAR2 DEFAULT NULL,
-    p_user_agent      IN VARCHAR2 DEFAULT NULL,
-    p_referer         IN VARCHAR2 DEFAULT NULL,
-    p_search_type     IN VARCHAR2 DEFAULT NULL,
-    p_search          IN VARCHAR2 DEFAULT NULL,
-    p_country_code    IN VARCHAR2 DEFAULT NULL,
-    p_region          IN VARCHAR2 DEFAULT NULL,
-    p_city            IN VARCHAR2 DEFAULT NULL,
-    p_latitude        IN NUMBER DEFAULT NULL,
-    p_longitude       IN NUMBER DEFAULT NULL,
-    p_additional_info IN VARCHAR2 DEFAULT NULL
-  )
-  AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
-  BEGIN
-    INSERT /*+ append */ INTO blog_activity_log (
-      ACTIVITY_TYPE,
-      APEX_SESSION_ID,
-      IP_ADDRESS,
-      RELATED_ID,
-      USER_ID,
-      LATITUDE,
-      LONGITUDE,
-      COUNTRY_CODE,
-      COUNTRY_REGION,
-      COUNTRY_CITY,
-      HTTP_USER_AGENT,
-      HTTP_REFERER,
-      SEARCH_TYPE,
-      SEARCH_CRITERIA,
-      ADDITIONAL_INFO
-    ) VALUES (
-      p_activity_type,
-      p_session_id,
-      p_ip_address,
-      p_related_id,
-      p_user_id,
-      p_latitude,
-      p_longitude,
-      p_country_code,
-      p_region,
-      p_city,
-      p_user_agent,
-      p_referer,
-      p_search_type,
-      p_search,
-      p_additional_info
+    /* Delete from blog_article_preview rows where session is expired */
+    DELETE FROM blog_article_preview p
+    WHERE NOT EXISTS (
+      SELECT 1 FROM apex_workspace_sessions s
+      WHERE s.apex_session_id = p.apex_session_id
     );
-    COMMIT;
-  END write_activity_log;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE write_article_log(
-    p_article_id  IN NUMBER
-  )
-  AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
-  BEGIN
-    UPDATE blog_article_log
-    SET view_count = view_count + 1,
-        last_view = SYSDATE
-    WHERE article_id = p_article_id
-    ;
-    COMMIT;
-  EXCEPTION WHEN 
-  VALUE_ERROR OR
-  INVALID_NUMBER OR
-  PARENT_NOT_FOUND OR
-  INSERT_NULL_VALUE
-  THEN
-      apex_debug.warn('blog_log.write_article_log(p_article_id => %s); error: %s', COALESCE(to_char(p_article_id), 'NULL'), sqlerrm);
-  END write_article_log;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE rate_article(
-    p_article_id    IN NUMBER,
-    p_article_rate  IN OUT NOCOPY NUMBER
-  )
-  AS
-    l_rate NUMBER;
-  BEGIN
-    UPDATE blog_article_log
-      SET article_rate      = (article_rate * rate_click + p_article_rate) / (rate_click + 1),
-          article_rate_int  = ROUND( (article_rate * rate_click + p_article_rate) / (rate_click + 1) ),
-          rate_click        = rate_click + 1,
-          last_rate         = SYSDATE
-    WHERE article_id = p_article_id
-    RETURNING article_rate_int INTO l_rate
-    ;
-    sys.htp.prn(l_rate);
-  END rate_article;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE write_category_log(
-    p_category_id  IN NUMBER
-  )
-  AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
-  BEGIN
-    MERGE INTO blog_category_log a
-    USING (SELECT p_category_id AS category_id FROM DUAL) b
-    ON (a.category_id = b.category_id)
-    WHEN MATCHED THEN
-    UPDATE SET a.view_count = a.view_count + 1,
-      a.last_view = SYSDATE
-    WHEN NOT MATCHED THEN
-    INSERT (category_id) VALUES (b.category_id)
-    ;
-    COMMIT;
-  EXCEPTION WHEN
-    VALUE_ERROR OR
-    INVALID_NUMBER OR
-    PARENT_NOT_FOUND OR
-    INSERT_NULL_VALUE
-  THEN
-    apex_debug.warn('blog_log.write_category_log(p_category_id => %s); error: %s', COALESCE(to_char(p_category_id), 'NULL'), sqlerrm);
-  END write_category_log;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE write_file_log(
-    p_file_id  IN NUMBER
-  )
-  AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
-  BEGIN
-    MERGE INTO blog_file_log a
-    USING (SELECT p_file_id AS file_id FROM DUAL) b
-    ON (a.file_id = b.file_id)
-    WHEN MATCHED THEN
-    UPDATE SET a.click_count = a.click_count + 1,
-      last_click = SYSDATE
-    WHEN NOT MATCHED THEN
-    INSERT (file_id) VALUES (b.file_id)
-    ;
-    COMMIT;
-  EXCEPTION WHEN
-  VALUE_ERROR OR
-  INVALID_NUMBER OR
-  PARENT_NOT_FOUND OR
-  INSERT_NULL_VALUE
-  THEN
-    apex_debug.warn('blog_log.write_file_log(p_file_id => %s); error: %s', COALESCE(to_char(p_file_id), 'NULL'), sqlerrm);
-  END write_file_log;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE truncate_activity_log (
-    p_log IN PLS_INTEGER
-  )
-  AS
-  BEGIN
-    if p_log not in(1, 2) then
-      raise_application_error(-20001, 'Invalid log table number.');
-    end if;
-    execute immediate 'truncate table blog_activity_log' || to_char(p_log);
-  end truncate_activity_log;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-END "BLOG_LOG";
-/
-
-CREATE OR REPLACE PACKAGE  "BLOG_JOB" 
-AUTHID DEFINER
-AS
---------------------------------------------------------------------------------
-  PROCEDURE rotate_log_job (
-    p_drop_job  IN BOOLEAN DEFAULT FALSE,
-    p_interval  IN PLS_INTEGER DEFAULT 14,
-    p_enabled   IN BOOLEAN DEFAULT TRUE
-  );
---------------------------------------------------------------------------------
-  PROCEDURE update_geoip_job (
-    p_drop_job  IN BOOLEAN DEFAULT FALSE,
-    p_interval  IN PLS_INTEGER DEFAULT 15,
-    p_enabled   IN BOOLEAN DEFAULT TRUE
-  );
---------------------------------------------------------------------------------
-  PROCEDURE update_activity_logs_job (
-    p_drop_job  IN BOOLEAN DEFAULT FALSE,
-    p_interval  IN PLS_INTEGER DEFAULT 15,
-    p_enabled   IN BOOLEAN DEFAULT TRUE
-  );
---------------------------------------------------------------------------------
-  PROCEDURE purge_preview_job (
-    p_drop_job  IN BOOLEAN DEFAULT FALSE
-  );
---------------------------------------------------------------------------------
-END "BLOG_JOB";
-/
-CREATE OR REPLACE PACKAGE BODY  "BLOG_JOB" 
-AS
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Private variables, procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  c_job_type    constant varchar2(256)  := 'STORED_PROCEDURE';
-  c_attribute   constant varchar2(256)  := 'REPEAT_INTERVAL';
-  c_start_date  constant timestamp      := TRUNC(SYSTIMESTAMP);
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  FUNCTION job_exists (
-    p_job_name IN VARCHAR2
-  ) RETURN BOOLEAN
-  AS
-    l_job_exists  BOOLEAN DEFAULT FALSE;
-  BEGIN
-    for c1 in (
-      select 1
-      from sys.user_scheduler_jobs
-      where job_name = p_job_name
-    ) loop
-      l_job_exists  := true;
-    end loop;
-    return l_job_exists;
-  END job_exists;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE drop_job (
-    p_job_name IN VARCHAR2
-  )
-  AS
-  BEGIN
-    if blog_job.job_exists(p_job_name) then
-      sys.dbms_scheduler.drop_job(p_job_name);
-    end if;
-  END drop_job;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Global functions and procedures
+  END purge_preview;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE rotate_log_job(
-    p_drop_job  IN BOOLEAN DEFAULT FALSE,
-    p_interval  IN PLS_INTEGER DEFAULT 14,
-    p_enabled   IN BOOLEAN DEFAULT TRUE
+    p_drop_job IN BOOLEAN DEFAULT FALSE,
+    p_interval IN PLS_INTEGER DEFAULT NULL
   )
   AS
-    l_job_exists      BOOLEAN DEFAULT FALSE;
-    c_job_name        CONSTANT VARCHAR2(30)   := 'BLOG_ROTATE_LOG_JOB';
-    c_job_action      CONSTANT VARCHAR2(256)  := 'blog_log.rotate_log';
-    c_comments        CONSTANT VARCHAR2(256)  := 'Rotates activity logs';
-    c_repeat_interval CONSTANT VARCHAR2(256)  := 'FREQ=DAILY;INTERVAL=' || p_interval || ';BYMINUTE=2';
+    l_interval        SIMPLE_INTEGER := 0;
+    c_job             CONSTANT VARCHAR2(30) := 'BLOG_ROTATE_LOG';
+    job_not_exists    EXCEPTION;
+    PRAGMA            EXCEPTION_INIT(job_not_exists, -27475);
   BEGIN
-    if p_drop_job then
-      blog_job.drop_job(c_job_name);
-    else
-      l_job_exists      := blog_job.job_exists(c_job_name);
-      if l_job_exists then
-        if p_enabled then
-          sys.dbms_scheduler.enable(c_job_name);
-        else
-          sys.dbms_scheduler.disable(c_job_name);
-        end if;
-      end if;
-      if l_job_exists and p_enabled and p_interval is not null and p_interval > 0
-      then
-        sys.dbms_scheduler.set_attribute(
-          name      => c_job_name,
-          attribute => c_attribute,
-          value     => c_repeat_interval
-        );
-      elsif not l_job_exists and p_interval is not null and p_interval > 0
-      then
-        sys.dbms_scheduler.create_job(
-          job_name        => c_job_name,
-          job_type        => c_job_type,
-          job_action      => c_job_action,
-          repeat_interval => c_repeat_interval,
-          start_date      => c_start_date,
-          enabled         => p_enabled,
-          comments        => c_comments
-        );
-      end if;
-    end if;
+    BEGIN
+      sys.dbms_scheduler.drop_job(c_job);
+    EXCEPTION WHEN job_not_exists THEN
+      NULL;
+    END;
+    
+    IF p_interval IS NULL OR p_interval < 1 THEN
+      l_interval := blog_util.get_param_value('LOG_ROTATE_DAY');
+    ELSE
+      l_interval := p_interval;
+    END IF;
+    IF NOT p_drop_job THEN
+      sys.dbms_scheduler.create_job(
+        job_name        => c_job,
+        job_type        => 'STORED_PROCEDURE',
+        job_action      => 'blog_job.rotate_log',
+        start_date      => TRUNC(SYSTIMESTAMP),
+        enabled         => TRUE,
+        repeat_interval => 'FREQ=DAILY;INTERVAL=' || l_interval || ';BYMINUTE=5',
+        comments        => 'Rotate blog activity logs'
+      );
+    END IF;
   END rotate_log_job;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  PROCEDURE update_geoip_job (
-    p_drop_job  IN BOOLEAN DEFAULT FALSE,
-    p_interval  IN PLS_INTEGER DEFAULT 15,
-    p_enabled   IN BOOLEAN DEFAULT TRUE
+  PROCEDURE update_country_job (
+    p_drop_job BOOLEAN DEFAULT FALSE
   )
   AS
-    l_param_value     CHAR(1);
-    l_job_exists      BOOLEAN DEFAULT FALSE;
-    c_job_name        CONSTANT VARCHAR2(30)   := 'BLOG_UPDATE_GEOIP_JOB';
-    c_job_action      CONSTANT VARCHAR2(256)  := 'blog_log.update_geoip';
-    c_comments        CONSTANT VARCHAR2(256)  := 'Updates activity log IP address location';
-    c_repeat_interval CONSTANT VARCHAR2(256)  := 'FREQ=MINUTELY;INTERVAL=' || p_interval;
+    c_job                 CONSTANT VARCHAR2(30) := 'BLOG_UPDATE_COUNTRY';
+    job_not_exists        EXCEPTION;
+    PRAGMA                EXCEPTION_INIT(job_not_exists, -27475);
   BEGIN
-    if p_drop_job then
-      blog_job.drop_job(c_job_name);
-    else
-      l_job_exists := blog_job.job_exists(c_job_name);
-      if l_job_exists then
-        if p_enabled then
-          sys.dbms_scheduler.enable(c_job_name);
-        else
-          sys.dbms_scheduler.disable(c_job_name);
-        end if;
-        l_param_value := case when p_enabled then 'Y' else 'N' end;
-        update blog_param
-        set param_value = l_param_value
-        where param_id = 'UPDATE_GEOIP_JOB_ENABLED'
-        ;
-      end if;
-      if l_job_exists and p_enabled and p_interval is not null and p_interval > 0
-      then
-        sys.dbms_scheduler.set_attribute(
-          name      => c_job_name,
-          attribute => c_attribute,
-          value     => c_repeat_interval
-        );
-      elsif not l_job_exists and p_interval is not null and p_interval > 0
-      then
-        sys.dbms_scheduler.create_job(
-          job_name        => c_job_name,
-          job_type        => c_job_type,
-          job_action      => c_job_action,
-          repeat_interval => c_repeat_interval,
-          start_date      => c_start_date,
-          enabled         => p_enabled,
-          comments        => c_comments
-        );
-      end if;    
-    end if;
-  END update_geoip_job;
+    BEGIN
+      sys.dbms_scheduler.drop_job(c_job);
+    EXCEPTION WHEN job_not_exists THEN
+      NULL;
+    END;
+    
+    IF NOT p_drop_job THEN
+      sys.dbms_scheduler.create_job(
+        job_name        => c_job,
+        job_type        =>'STORED_PROCEDURE',
+        job_action      => 'blog_job.update_country',
+        start_date      => TRUNC(SYSTIMESTAMP, 'HH'),
+        repeat_interval => 'FREQ=MINUTELY;INTERVAL=10',
+        enabled         => TRUE,
+        comments        => 'Update blog visitors country'
+      );
+    END IF;
+  END update_country_job;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE update_activity_logs_job (
-    p_drop_job  IN BOOLEAN DEFAULT FALSE,
-    p_interval  IN PLS_INTEGER DEFAULT 15,
-    p_enabled   IN BOOLEAN DEFAULT TRUE
+    p_drop_job BOOLEAN DEFAULT FALSE
   )
   AS
-    l_job_exists      BOOLEAN DEFAULT FALSE;
-    c_job_name        CONSTANT VARCHAR2(30)   := 'BLOG_UPDATE_ACTIVITY_LOGS_JOB';
-    c_job_action      CONSTANT VARCHAR2(256)  := 'blog_log.update_activity_logs';
-    c_comments        CONSTANT VARCHAR2(256)  := 'Updates activity statistic logs';
-    c_repeat_interval CONSTANT VARCHAR2(256)  := 'FREQ=MINUTELY;INTERVAL=' || p_interval;
+    c_job          CONSTANT VARCHAR2(30) := 'BLOG_UPDATE_ACTIVITY_LOGS';
+    job_not_exists EXCEPTION;
+    PRAGMA         EXCEPTION_INIT(job_not_exists, -27475);
   BEGIN
-    if p_drop_job then
-      blog_job.drop_job(c_job_name);
-    else
-      l_job_exists := blog_job.job_exists(c_job_name);
-      if l_job_exists then
-        if p_enabled then
-          sys.dbms_scheduler.enable(c_job_name);
-        else
-          sys.dbms_scheduler.disable(c_job_name);
-        end if;
-      end if;
-      if l_job_exists and p_enabled and p_interval is not null and p_interval > 0
-      then
-        sys.dbms_scheduler.set_attribute(
-          name      => c_job_name,
-          attribute => c_attribute,
-          value     => c_repeat_interval
-        );
-      elsif not l_job_exists and p_interval is not null and p_interval > 0
-      then
-        sys.dbms_scheduler.create_job(
-          job_name        => c_job_name,
-          job_type        => c_job_type,
-          job_action      => c_job_action,
-          repeat_interval => c_repeat_interval,
-          start_date      => c_start_date,
-          enabled         => p_enabled,
-          comments        => c_comments
-        );
-      end if;    
-    end if;
+    BEGIN
+      sys.dbms_scheduler.drop_job(c_job);
+    EXCEPTION WHEN job_not_exists THEN
+      NULL;
+    END;
+    
+    IF NOT p_drop_job THEN
+      sys.dbms_scheduler.create_job(
+        job_name        => c_job,
+        job_type        =>'STORED_PROCEDURE',
+        job_action      => 'blog_job.update_activity_logs',
+        start_date      => TRUNC(SYSTIMESTAMP, 'HH'),
+        repeat_interval => 'FREQ=MINUTELY;INTERVAL=15',
+        enabled         => TRUE,
+        comments        => 'Update blog statistic log mviews'
+      );
+    END IF;
   END update_activity_logs_job;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE purge_preview_job(
-    p_drop_job IN BOOLEAN DEFAULT FALSE
+    p_drop_job BOOLEAN DEFAULT FALSE
   )
   AS
-    c_job_name      CONSTANT VARCHAR2(30) := 'BLOG_PURGE_PREVIEW_JOB';
+    c_job           CONSTANT VARCHAR2(30) := 'BLOG_PURGE_PREVIEW';
     job_not_exists  EXCEPTION;
     PRAGMA          EXCEPTION_INIT(job_not_exists, -27475);
   BEGIN
     BEGIN
-      sys.dbms_scheduler.drop_job(c_job_name);
+      sys.dbms_scheduler.drop_job(c_job);
     EXCEPTION WHEN job_not_exists THEN
       NULL;
     END;
     IF NOT p_drop_job THEN
       sys.dbms_scheduler.create_job(
-        job_name        => c_job_name,
-        job_type        => c_job_type,
-        job_action      => 'blog_admin_app.purge_preview',
-        start_date      => c_start_date,
+        job_name        => c_job,
+        job_type        => 'STORED_PROCEDURE',
+        job_action      => 'blog_job.purge_preview',
+        start_date      => TRUNC(SYSTIMESTAMP),
         repeat_interval => 'FREQ=DAILY',
         enabled         => TRUE,
-        comments        => 'Purge expired sessions from article preview table'
+        comments        => 'Purge blog article preview table'
       );
     END IF;
   END purge_preview_job;
@@ -2674,10 +2621,6 @@ AS
     p_varchar2_tab IN sys.dbms_sql.varchar2_table
   ) RETURN BLOB;
 --------------------------------------------------------------------------------
-  PROCEDURE print_file_insert (
-    p_file_type IN VARCHAR2 DEFAULT 'THEME'
-  );
---------------------------------------------------------------------------------
   PROCEDURE set_jobs (
     p_drop_job IN BOOLEAN DEFAULT FALSE
   );
@@ -2685,11 +2628,6 @@ AS
   FUNCTION get_version (
     p_option  IN VARCHAR2 DEFAULT NULL
   ) RETURN VARCHAR2;
---------------------------------------------------------------------------------
-  PROCEDURE copy_apex_lang_messages (
-    p_from  IN NUMBER,
-    p_to    IN NUMBER
-  );
 --------------------------------------------------------------------------------
 END "BLOG_INSTALL";
 /
@@ -2702,41 +2640,41 @@ AS
     p_upgrade       IN BOOLEAN DEFAULT FALSE
   )
   AS
-    l_admin_id      NUMBER;
-    l_reader_id     NUMBER;
-    l_admin_ver     VARCHAR2(256);
-    l_reader_ver    VARCHAR2(256);
-    l_base_url      VARCHAR2(2000);
-    l_reader_alias  VARCHAR2(2000);
-    c_app_group     CONSTANT VARCHAR2(256) := 'Blog';
-    c_admin_name    CONSTANT VARCHAR2(256) := 'Blog Administration';
-    c_reader_name   CONSTANT VARCHAR2(256) := 'Blog Reader';
+    l_reader_id NUMBER;
+    l_admin_id  NUMBER;
+    l_app_alias VARCHAR2(2000);
+    l_base_url  VARCHAR2(2000);
   BEGIN
-    l_base_url    := apex_util.host_url('SCRIPT');
-    l_admin_ver   := blog_util.get_param_value('ADMIN_VERSION');
-    l_reader_ver  := blog_util.get_param_value('READER_VERSION');
+    l_base_url := apex_util.host_url('SCRIPT');
     BEGIN
       SELECT application_id
       INTO l_reader_id
       FROM apex_applications
-      WHERE version = l_reader_ver
-        AND application_group = c_app_group
-        AND application_name = c_reader_name;
-    EXCEPTION WHEN NO_DATA_FOUND THEN
+      WHERE version = (select blog_util.get_param_value('READER_VERSION') from dual)
+        AND application_group = 'Blog'
+        AND application_name = 'Blog Reader'
+      ;
+    EXCEPTION WHEN 
+      NO_DATA_FOUND 
+    THEN
       raise_application_error(-20001, 'Blog reader application not exists.');
     END;
     BEGIN
       SELECT application_id
       INTO l_admin_id
       FROM apex_applications
-      WHERE version = l_admin_ver
-        AND application_group = c_app_group
-        AND application_name = c_admin_name;
-    EXCEPTION WHEN NO_DATA_FOUND THEN
+      WHERE version = (select blog_util.get_param_value('ADMIN_VERSION') from dual)
+        AND application_group = 'Blog'
+        AND application_name = 'Blog Administration'
+      ;
+    EXCEPTION WHEN 
+      NO_DATA_FOUND
+    THEN
       raise_application_error(-20002, 'Blog admin application not exists.');
     END;
+    
     SELECT alias
-    INTO l_reader_alias
+    INTO l_app_alias
     FROM apex_applications
     WHERE application_id = l_reader_id
     ;
@@ -2754,7 +2692,7 @@ AS
       WHERE param_id  = 'G_THEME_PATH'
       ;
       UPDATE blog_param
-      SET param_value = l_base_url || 'f?p=' || l_reader_alias || ':RSS'
+      SET param_value = l_base_url || 'f?p=' || l_app_alias || ':RSS'
       WHERE param_id  = 'G_RSS_FEED_URL'
       ;
       UPDATE blog_param
@@ -2786,64 +2724,6 @@ AS
   END varchar2_to_blob;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  PROCEDURE print_file_insert (
-    p_file_type IN VARCHAR2 DEFAULT 'THEME'
-  )
-  AS
-    l_counter   SIMPLE_INTEGER := 0;
-    l_length    SIMPLE_INTEGER := 0;
-    l_blob_len  SIMPLE_INTEGER := 0;
-    l_offset    SIMPLE_INTEGER := 1;
-    l_byte_len  SIMPLE_INTEGER := 128;
-    l_temp      VARCHAR2(32767);
-  BEGIN
-    FOR c1 IN (
-      select file_name,
-        mime_type,
-        file_type,
-        blob_content
-      from blog_file
-      where file_type = p_file_type
-      order by file_name
-    ) LOOP
-      l_counter   := 1;
-      l_length    := 0;
-      l_blob_len  := 0;
-      l_offset    := 1;
-      l_byte_len  := 128;
-      l_length    := COALESCE(sys.dbms_lob.getlength(c1.blob_content), 0);
-      l_blob_len  := l_length;
-      sys.dbms_output.put_line('begin');
-      sys.dbms_output.put_line('blog_install.i := blog_install.e;');
-      IF l_length < l_byte_len THEN
-        sys.dbms_output.put_line('blog_install.i('||l_counter||') := '
-          || '''' || rawtohex(l_temp) || ''';'
-        );
-      ELSE
-        WHILE l_offset < l_length AND l_byte_len > 0
-        LOOP
-          
-          l_temp := dbms_lob.substr(c1.blob_content,l_byte_len,l_offset);
-          sys.dbms_output.put_line('blog_install.i('||l_counter||') := '
-            || '''' || rawtohex(l_temp) || ''';'
-          );
-          l_offset := l_offset + l_byte_len;
-          l_blob_len := l_blob_len - l_byte_len;
-          IF l_blob_len < l_byte_len THEN
-            l_byte_len := l_blob_len;
-          END IF;
-          l_counter := l_counter  + 1;
-        END LOOP;
-      END IF;
-      sys.dbms_output.put_line('blog_install.b := blog_install.varchar2_to_blob(blog_install.i);');
-      sys.dbms_output.put_line('insert into blog_file (file_name,mime_type,file_type,blob_content)');
-      sys.dbms_output.put_line('values ('''||c1.file_name||''','''||c1.mime_type||''','''||c1.file_type||''',blog_install.b);');
-      sys.dbms_output.put_line('end;');
-      sys.dbms_output.put_line('/');
-    END LOOP;
-  END print_file_insert;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   PROCEDURE set_jobs (
     p_drop_job IN BOOLEAN DEFAULT FALSE
   )
@@ -2851,7 +2731,7 @@ AS
   BEGIN
     blog_job.rotate_log_job(p_drop_job);
     blog_job.purge_preview_job(p_drop_job);
-    blog_job.update_geoip_job(p_drop_job);
+    blog_job.update_country_job(p_drop_job);
     blog_job.update_activity_logs_job(p_drop_job);
   END set_jobs;
 --------------------------------------------------------------------------------
@@ -2860,71 +2740,35 @@ AS
     p_option  IN VARCHAR2 DEFAULT NULL
   ) RETURN VARCHAR2
   AS
-    l_version     VARCHAR2(256);
-    l_stored_id   NUMBER;
-    l_stored_ver  VARCHAR2(256);
+    l_version VARCHAR2(256);
   BEGIN
     IF p_option = 'READER' THEN
       BEGIN
-        l_stored_id   := to_number(blog_util.get_param_value('G_BLOG_READER_APP_ID'));
-        l_stored_ver  := blog_util.get_param_value('READER_VERSION');
         SELECT s.version
          INTO l_version
          FROM apex_applications s
-        WHERE s.application_id = l_stored_id
-          AND s.version = l_stored_ver;
+        WHERE s.application_id = (select blog_util.get_param_value('G_BLOG_READER_APP_ID') from dual)
+          AND s.version = (select blog_util.get_param_value('READER_VERSION') from dual)
+        ;
       EXCEPTION WHEN NO_DATA_FOUND THEN
         raise_application_error(-20001, 'Blog reader application not exists.');
-      WHEN INVALID_NUMBER THEN
-        raise_application_error(-20002, 'Blog reader application not exists.');
       END;
     ELSIF p_option = 'ADMIN' THEN
       BEGIN
-        l_stored_id   := to_number(blog_util.get_param_value('G_BLOG_ADMIN_APP_ID'));
-        l_stored_ver  := blog_util.get_param_value('ADMIN_VERSION');
         SELECT s.version
          INTO l_version
          FROM apex_applications s
-        WHERE s.application_id = l_stored_id
-          AND s.version = l_stored_ver;
+        WHERE s.application_id = (select blog_util.get_param_value('G_BLOG_ADMIN_APP_ID') from dual)
+          AND s.version = (select blog_util.get_param_value('ADMIN_VERSION') from dual)
+        ;
       EXCEPTION WHEN NO_DATA_FOUND THEN
-        raise_application_error(-20003, 'Blog admin application not exists.');
-      WHEN INVALID_NUMBER THEN
-        raise_application_error(-20004, 'Blog admin application not exists.');
+        raise_application_error(-20001, 'Blog admin application not exists.');
       END;
-    ELSIF p_option = 'ALL' THEN
-      l_version := get_version || ':' || get_version('READER') || ':' || get_version('ADMIN');
     ELSE
       l_version :=  blog_util.get_param_value('SCHEMA_VERSION');
     END IF;
     RETURN l_version;    
   END get_version;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE copy_apex_lang_messages (
-    p_from  IN NUMBER,
-    p_to    IN NUMBER
-  )
-  AS
-  BEGIN
-    for c1 in (
-      select t.translation_entry_id
-        ,(
-          select f.message_text
-          from apex_application_translations f
-          where f.application_id = p_from
-            and f.translatable_message = t.translatable_message
-            and f.language_code = t.language_code
-        ) as message_text
-      from apex_application_translations t
-      where application_id = p_to
-    ) loop
-      apex_lang.update_message(
-        p_id => c1.translation_entry_id,
-        p_message_text => c1.message_text
-      );
-    end loop;
-  end copy_apex_lang_messages;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 END "BLOG_INSTALL";
@@ -2984,6 +2828,17 @@ AS
     p_link_type IN VARCHAR2
   ) RETURN NUMBER;
 --------------------------------------------------------------------------------
+  FUNCTION set_param_value_item (
+    p_param_id          IN VARCHAR2,
+    p_yesno             IN VARCHAR2,
+    p_text_null         IN VARCHAR2,
+    p_number_null       IN VARCHAR2,
+    p_number_not_null   IN VARCHAR2,
+    p_text_not_null     IN VARCHAR2,
+    p_textarea_null     IN VARCHAR2,
+    p_textarea_not_null IN VARCHAR2
+  ) RETURN VARCHAR2;
+--------------------------------------------------------------------------------
   FUNCTION login(
     p_username IN VARCHAR2,
     p_password IN VARCHAR2
@@ -3016,39 +2871,13 @@ AS
     p_md5                   IN VARCHAR2,
     p_success_message       OUT NOCOPY VARCHAR2
    );
---------------------------------------------------------------------------------
-  PROCEDURE purge_preview;
---------------------------------------------------------------------------------
-  FUNCTION get_param_value (
-    p_param_id          IN VARCHAR2,
-    p_yesno             IN VARCHAR2,
-    p_text_null         IN VARCHAR2,
-    p_number_null       IN VARCHAR2,
-    p_number_not_null   IN VARCHAR2,
-    p_text_not_null     IN VARCHAR2,
-    p_textarea_null     IN VARCHAR2,
-    p_textarea_not_null IN VARCHAR2
-  ) RETURN VARCHAR2;
---------------------------------------------------------------------------------
-  FUNCTION validate_param_value (
-    p_param_id          IN VARCHAR2,
-    p_item_name         IN VARCHAR2
-  ) RETURN VARCHAR2;
---------------------------------------------------------------------------------
-  PROCEDURE execute_param_process (
-    p_param_id          IN VARCHAR2,
-    p_item_name         IN VARCHAR2
-  );
--------------------------------------------------------------------------------- 
+--------------------------------------------------------------------------------  
 END "BLOG_ADMIN_APP";
 /
 CREATE OR REPLACE PACKAGE BODY  "BLOG_ADMIN_APP" 
 AS
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   -- Private constants and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   g_article_text_collection CONSTANT VARCHAR2(80) := 'ARTICLE_TEXT_COLLECTION';
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3403,6 +3232,43 @@ AS
   END get_next_resource_seq;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  FUNCTION set_param_value_item (
+    p_param_id          IN VARCHAR2,
+    p_yesno             IN VARCHAR2,
+    p_text_null         IN VARCHAR2,
+    p_number_null       IN VARCHAR2,
+    p_number_not_null   IN VARCHAR2,
+    p_text_not_null     IN VARCHAR2,
+    p_textarea_null     IN VARCHAR2,
+    p_textarea_not_null IN VARCHAR2
+  ) RETURN VARCHAR2
+  AS
+    l_value VARCHAR2(32700);
+  BEGIN
+    SELECT CASE
+      WHEN param_type = 'YESNO' THEN
+        p_yesno
+      WHEN param_type = 'TEXT' AND param_nullable = 'Y' THEN
+        p_text_null
+      WHEN param_type = 'TEXT' AND param_nullable = 'N' THEN
+        p_text_not_null
+      WHEN param_type = 'NUMBER' AND param_nullable = 'Y' THEN
+        p_number_null
+      WHEN param_type = 'NUMBER' AND param_nullable = 'N' THEN
+        p_number_not_null
+      WHEN param_type = 'TEXTAREA' AND param_nullable = 'Y' THEN
+        p_textarea_null
+      WHEN param_type = 'TEXTAREA' AND param_nullable = 'N' THEN
+        p_textarea_not_null
+    END AS param_value
+    INTO l_value
+    FROM blog_param
+    WHERE param_id = p_param_id
+    ;
+    RETURN l_value;
+  END set_param_value_item;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   FUNCTION login(
     p_username IN VARCHAR2,
     p_password IN VARCHAR2
@@ -3514,7 +3380,6 @@ AS
   FUNCTION is_developer RETURN PLS_INTEGER
   AS
   BEGIN
-    --RETURN CASE WHEN apex_util.public_check_authorization('IS_DEVELOPER') THEN 1 ELSE 0 END;
     RETURN CASE WHEN apex_authorization.is_authorized('IS_DEVELOPER') THEN 1 ELSE 0 END;
   END ;
 --------------------------------------------------------------------------------
@@ -3602,95 +3467,6 @@ AS
       p_success_message := apex_lang.message('MSG_ACTION_PROCESSED');
     END IF;
   END upd_apex_lang_message;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE purge_preview
-  AS
-  BEGIN
-    /* Delete from blog_article_preview rows where session is expired */
-    DELETE FROM blog_article_preview p
-    WHERE NOT EXISTS (
-      SELECT 1 FROM apex_workspace_sessions s
-      WHERE s.apex_session_id = p.apex_session_id
-    );
-  END purge_preview;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  FUNCTION get_param_value (
-    p_param_id          IN VARCHAR2,
-    p_yesno             IN VARCHAR2,
-    p_text_null         IN VARCHAR2,
-    p_number_null       IN VARCHAR2,
-    p_number_not_null   IN VARCHAR2,
-    p_text_not_null     IN VARCHAR2,
-    p_textarea_null     IN VARCHAR2,
-    p_textarea_not_null IN VARCHAR2
-  ) RETURN VARCHAR2
-  AS
-    l_value VARCHAR2(32700);
-  BEGIN
-    SELECT CASE
-      WHEN param_type = 'YESNO' THEN
-        p_yesno
-      WHEN param_type = 'TEXT' AND param_nullable = 'Y' THEN
-        p_text_null
-      WHEN param_type = 'TEXT' AND param_nullable = 'N' THEN
-        p_text_not_null
-      WHEN param_type = 'NUMBER' AND param_nullable = 'Y' THEN
-        p_number_null
-      WHEN param_type = 'NUMBER' AND param_nullable = 'N' THEN
-        p_number_not_null
-      WHEN param_type = 'TEXTAREA' AND param_nullable = 'Y' THEN
-        replace(p_textarea_null, CHR(13))
-      WHEN param_type = 'TEXTAREA' AND param_nullable = 'N' THEN
-        replace(p_textarea_not_null, CHR(13))
-    END AS param_value
-    INTO l_value
-    FROM blog_param
-    WHERE param_id = p_param_id;
-    RETURN l_value;
-  END get_param_value;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  FUNCTION validate_param_value (
-    p_param_id    IN VARCHAR2,
-    p_item_name   IN VARCHAR2
-  ) RETURN VARCHAR2
-  AS
-    l_result varchar2(32700);
-  BEGIN
-    for c1 IN (
-      select validation_function_body
-      from blog_param
-      where param_id = p_param_id
-        and validation_function_body is not null
-    ) loop
-      l_result := apex_plugin_util.get_plsql_function_result (
-        replace(c1.validation_function_body, ':#ITEM_NAME#', ':' || p_item_name)
-      );
-    end loop;
-    return l_result; 
-  END validate_param_value;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE execute_param_process (
-    p_param_id    IN VARCHAR2,
-    p_item_name   IN VARCHAR2
-  ) AS
-  BEGIN
-    for c1 IN (
-      select after_submit_process_body
-      from blog_param
-      where param_id = p_param_id
-        and after_submit_process_body is not null
-    ) loop
-      apex_plugin_util.execute_plsql_code (
-        replace(c1.after_submit_process_body, ':#ITEM_NAME#', ':' || p_item_name)
-      );
-    end loop;
-    --apex_util.reset_authorizations;
-    apex_authorization.reset_cache;
-  END execute_param_process;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 END "BLOG_ADMIN_APP";

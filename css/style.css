@@ -16,7 +16,7 @@ body {
 img { border: 0 none; }
 
 a { color: #005EB0;}
-a:hover { color: #007ae5; }
+a:hover { color: #008EB0; }
 
 button, a {
 	text-decoration: none;
@@ -587,7 +587,7 @@ button.apexir-go-button span {
     color: #4F4F4F;
 }
 
-.modal_LOADER, #apexir_LOADER {
+#modal_LOADER, #apexir_LOADER {
 	/*
     background-color: #333333;
 	opacity: 0.3;
@@ -606,7 +606,7 @@ button.apexir-go-button span {
 	cursor: wait;
 }
 
-.modal_LOADER img, #apexir_LOADER img {
+#modal_LOADER img, #apexir_LOADER img {
     left: 48%;
     position: relative;
     top: 34%;
@@ -833,7 +833,7 @@ div.bjqs-caption {
 ---------------------------- */
 .rating { margin-top: 4px; }
 .rating > ul { list-style: none; padding: 0; margin: 0;}
-.rating > ul > li { float: left; margin: 0; background: url("star-rating.png") no-repeat; width: 25px; height: 25px; }
+.rating > ul > li { float: left; margin: 0; background: url("star-rating.gif") no-repeat; width: 25px; height: 25px; }
 .rating > ul > li.enabled { cursor: pointer; }
 .rating > ul > li:first-child { margin-left: 0; }
 .rating > ul > li.hover { background-position: -25px; }
