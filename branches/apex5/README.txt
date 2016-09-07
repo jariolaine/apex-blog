@@ -1,12 +1,12 @@
 APEX Blogging Platform
 Copyright (c) 2011, Jari Laine
 
-Version : 2.9.0.2
-Date : 02.01.2015
+Version : 2.9.0.2 (APEX 5)
+Date : 07.09.2016
 http://sourceforge.net/projects/apex-blog/
 
 Requires:
-Oracle Application Express 4.2 or higher
+Oracle Application Express 5.0 or higher
 Oracle Database 11G R2 or higher
 
 License:
