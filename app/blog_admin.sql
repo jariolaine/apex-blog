@@ -1432,7 +1432,7 @@ wwv_flow_api.create_template(
 ,p_theme_id=>26
 ,p_name=>'No Tabs - No Sidebar'
 ,p_is_popup=>false
-,p_css_file_urls=>'&G_THEME_PATH.astyle#MIN#.css?v=#APP_VERSION#'
+,p_css_file_urls=>'&G_THEME_PATH.astyle.min.css?v=#APP_VERSION#'
 ,p_header_template=>wwv_flow_utilities.join(wwv_flow_t_varchar2(
 '<!--[if HTML5]><![endif]-->',
 '<!doctype html>',
