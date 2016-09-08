@@ -3040,6 +3040,11 @@ AS
     p_item_name         IN VARCHAR2
   );
 -------------------------------------------------------------------------------- 
+  PROCEDURE set_password (
+    p_author_id     IN NUMBER,
+    p_new_password  IN VARCHAR2
+  );
+--------------------------------------------------------------------------------
 END "BLOG_ADMIN_APP";
 /
 CREATE OR REPLACE PACKAGE BODY  "BLOG_ADMIN_APP" 
@@ -3416,13 +3421,14 @@ AS
     AUTH_PASSWORD_FIRST_USE CONSTANT INTEGER      := 5;
     AUTH_ATTEMPTS_EXCEEDED  CONSTANT INTEGER      := 6;
     AUTH_INTERNAL_ERROR     CONSTANT INTEGER      := 7;
+    l_author_id             NUMBER;
     l_password              VARCHAR2(4000);
     l_stored_password       VARCHAR2(4000);
   BEGIN
     -- First, check to see if the user is in the user table and have password
     BEGIN
-      SELECT passwd
-      INTO l_stored_password
+      SELECT author_id, passwd
+      INTO l_author_id, l_stored_password
       FROM blog_author
       WHERE user_name = p_username
       AND active = 'Y'
@@ -3433,7 +3439,7 @@ AS
       RETURN FALSE;
     END;
     -- Apply the custom hash function to the password
-    l_password := blog_pw_hash(p_username, p_password);
+    l_password := blog_pw_hash(l_author_id, p_password);
     -- Compare them to see if they are the same and return either TRUE or FALSE
     IF l_password = l_stored_password THEN
       APEX_UTIL.SET_AUTHENTICATION_RESULT(AUTH_SUCCESS);
@@ -3691,6 +3697,31 @@ AS
     --apex_util.reset_authorizations;
     apex_authorization.reset_cache;
   END execute_param_process;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE set_password (
+    p_author_id     IN NUMBER,
+    p_new_password  IN VARCHAR2
+  )
+  AS
+  BEGIN
+    update blog_author
+    set passwd = blog_pw_hash(p_author_id, p_new_password)
+    where author_id = p_author_id
+    ;
+    IF SQL%ROWCOUNT != 1 THEN
+      ROLLBACK;
+      RAISE_APPLICATION_ERROR(-20002, 'Unknown author.');
+      apex_debug.message(
+        'blog_admin_app.set_password(p_author_id => %s, p_new_password => %s); error: %s',
+        coalesce(to_char(p_author_id), 'NULL'),
+        p_new_password,
+        sqlerrm
+      );
+    END IF;
+  END set_password;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 END "BLOG_ADMIN_APP";
