@@ -1,6 +1,16 @@
-CREATE OR REPLACE PACKAGE  "BLOG_XML" 
+CREATE OR REPLACE PACKAGE "BLOG_XML" 
 AUTHID DEFINER
 AS
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--
+--    DESCRIPTION
+--    Procedure and functions for APEX Bloging Platform XML output (sitemap, rss)
+--
+--    MODIFIED   (DD.MM.YYYY)
+--    Jari Laine 06.01.2015 - Created
+--
+--------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   FUNCTION show_entry(
     p_build_option_id         IN VARCHAR2,
@@ -11,22 +21,45 @@ AS
   ) RETURN VARCHAR2;
 --------------------------------------------------------------------------------
   PROCEDURE rss(
-    p_app_alias IN VARCHAR2,
-    p_blog_name IN VARCHAR2,
-    p_base_url  IN VARCHAR2
+    p_app_alias IN VARCHAR2
   );
 --------------------------------------------------------------------------------
   PROCEDURE sitemap(
     p_app_id    IN NUMBER,
     p_app_alias IN VARCHAR2,
-    p_base_url  IN VARCHAR2,
     p_tab_list  IN VARCHAR2
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE sitemapindex(
+    p_app_alias IN VARCHAR2
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE main_sitemap (
+    p_app_id    IN NUMBER,
+    p_app_alias IN VARCHAR2,
+    p_tab_list  IN VARCHAR2
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE article_sitemap (
+    p_app_alias IN VARCHAR2
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE category_sitemap (
+    p_app_alias IN VARCHAR2
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE rss_fb_socialize(
+    p_app_alias IN VARCHAR2
   );
 --------------------------------------------------------------------------------
 END "BLOG_XML";
 /
-CREATE OR REPLACE PACKAGE BODY  "BLOG_XML" 
+CREATE OR REPLACE PACKAGE BODY "BLOG_XML" 
 AS
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  c_rss_version       CONSTANT VARCHAR2(5) := '2.0';
+  c_canonical_url     CONSTANT VARCHAR2(4000) := blog_util.get_param_value('CANONICAL_URL');
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   FUNCTION show_entry(
@@ -38,6 +71,7 @@ AS
   ) RETURN VARCHAR2
   AS
     l_retval  BOOLEAN;
+    PRAGMA AUTONOMOUS_TRANSACTION;
   BEGIN
     l_retval := apex_plugin_util.is_component_used (
       p_build_option_id         => p_build_option_id,
@@ -46,38 +80,37 @@ AS
       p_condition_expression1   => p_condition_expression1,
       p_condition_expression2   => p_condition_expression2
     );
-    RETURN apex_debug.tochar(l_retval);
+    return case when l_retval then 'true' else 'false' end;
   END show_entry;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE rss(
-    p_app_alias IN VARCHAR2,
-    p_blog_name IN VARCHAR2,
-    p_base_url  IN VARCHAR2
+    p_app_alias IN VARCHAR2
   )
   AS
-    l_xml         BLOB;
-    l_url         VARCHAR2(255);
-    l_rss_desc    VARCHAR2(255);
-    l_rss_url     VARCHAR2(255);
-    l_home_url    VARCHAR2(255);
-    l_article_url VARCHAR2(255);
-    l_webmaster   VARCHAR2(255);
-    l_rss_lang    VARCHAR2(5);
-    c_version     CONSTANT VARCHAR2(5) := '2.0';
+    l_xml           BLOB;
+    l_rss_lang      VARCHAR2(5);
+    l_url           VARCHAR2(255);
+    l_rss_desc      VARCHAR2(255);
+    l_rss_url       VARCHAR2(255);
+    l_home_url      VARCHAR2(255);
+    l_article_url   VARCHAR2(255);
+    l_blog_name     VARCHAR2(4000);
   BEGIN
-    l_rss_lang    := apex_application.g_browser_language;
-    l_rss_desc    := apex_plugin_util.replace_substitutions(apex_lang.message('RSS_DESCRIPTION'));
+    l_rss_lang      := apex_application.g_browser_language;
+    l_rss_desc      := apex_plugin_util.replace_substitutions(apex_lang.message('RSS_DESCRIPTION'));
+    l_blog_name     := blog_util.get_param_value('G_BLOG_NAME');
     
-    l_url         := 'f?p=' || p_app_alias || ':';
-    l_rss_url     := p_base_url || l_url || 'RSS';
-    l_home_url    := p_base_url || l_url || 'HOME';
+    l_url           := 'f?p=' || p_app_alias || ':';
+    l_rss_url       := c_canonical_url || l_url || 'HOME:0:APPLICATION_PROCESS=RSS';
+    l_home_url      := c_canonical_url || l_url || 'HOME:0';
     l_article_url := l_url || 'READ:0::::ARTICLE:';
-    SELECT xmlelement("rss", xmlattributes(c_version AS "version", 'http://www.w3.org/2005/Atom' AS "xmlns:atom", 'http://purl.org/dc/elements/1.1/' AS "xmlns:dc"),
+    
+    SELECT xmlelement("rss", xmlattributes(c_rss_version AS "version", 'http://www.w3.org/2005/Atom' AS "xmlns:atom", 'http://purl.org/dc/elements/1.1/' AS "xmlns:dc"),
       xmlelement("channel",
         xmlelement("atom:link", xmlattributes(l_rss_url AS "href", 'self' AS "rel", 'application/rss+xml' AS "type")),
         xmlforest(
-          p_blog_name AS "title"
+          l_blog_name AS "title"
           ,l_home_url AS "link"
           ,l_rss_desc AS "description"
           ,l_rss_lang AS "language"
@@ -87,11 +120,11 @@ AS
             xmlelement("title", l.rss_title),
             xmlelement("dc:creator", l.posted_by),
             xmlelement("category", l.rss_category),
-            xmlelement("link", p_base_url || apex_util.prepare_url(l_article_url || l.article_id, NULL, 'PUBLIC_BOOKMARK')),
+            xmlelement("link", c_canonical_url || apex_util.prepare_url(l_article_url || l.article_id, NULL, 'PUBLIC_BOOKMARK')),
             xmlelement("description", l.rss_description),
             xmlelement("pubDate", l.rss_pubdate),
             xmlelement("guid", xmlattributes('false' AS "isPermaLink"), l.rss_guid)
-          ) ORDER BY created_on DESC
+          ) ORDER BY latest_article_seq
         )
       )
     ).getblobval(nls_charset_id('AL32UTF8'))
@@ -100,33 +133,27 @@ AS
     ;
     owa_util.mime_header('application/rss+xml', TRUE);
     wpg_docload.download_file(l_xml);
-    apex_application.stop_apex_engine;
+    --apex_application.stop_apex_engine;
   END rss;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   PROCEDURE sitemap(
     p_app_id    IN NUMBER,
     p_app_alias IN VARCHAR2,
-    p_base_url  IN VARCHAR2,
     p_tab_list  IN VARCHAR2
   )
   AS
-    l_xml             BLOB;
-    l_article_url     VARCHAR2(255);
-    l_category_url    VARCHAR2(255);
+    l_xml           BLOB;
+    l_article_url   VARCHAR2(255);
+    l_category_url  VARCHAR2(255);
   BEGIN
     l_article_url   := 'f?p=' || p_app_alias || ':READ:0::::ARTICLE:';
     l_category_url  := 'f?p=' || p_app_alias || ':READCAT:0::::CATEGORY:';
-    WITH article_cat AS(
-      SELECT category_id,
-        MAX(changed_on) AS changed_on
-      FROM blog_v$article b
-      GROUP BY category_id
-    ), sitemap_query AS (
-      SELECT 1 AS grp,
-        ROW_NUMBER() OVER(ORDER BY e.display_sequence) AS rnum,
-        apex_plugin_util.replace_substitutions(e.entry_target) AS url,
-        (SELECT MAX(changed_on) FROM article_cat) AS lastmod
+
+    WITH sitemap_query AS (
+      SELECT 1 AS grp
+        ,ROW_NUMBER() OVER(ORDER BY e.display_sequence) AS rnum
+        ,apex_plugin_util.replace_substitutions(e.entry_target) AS loc
       FROM APEX_APPLICATION_LIST_ENTRIES e
       WHERE e.application_id = p_app_id
         AND e.list_name      = p_tab_list
@@ -139,29 +166,21 @@ AS
             e.condition_expression2
            ) = 'true'
       UNION ALL
-      SELECT 2 AS grp,
-        ROW_NUMBER() OVER(ORDER BY a.created_on) AS rnum,
-        apex_util.prepare_url(l_article_url || a.article_id, NULL, 'PUBLIC_BOOKMARK') AS url,
-        a.changed_on AS lastmod
-      FROM blog_v$article a
+      SELECT 2 AS grp
+        ,ROW_NUMBER() OVER(ORDER BY a.created_on) AS rnum
+        ,apex_util.prepare_url(l_article_url || a.article_id, NULL, 'PUBLIC_BOOKMARK') AS loc
+      FROM blog_v$articles a
       UNION ALL
-      SELECT 3 AS grp,
-        ROW_NUMBER() OVER(ORDER BY c.category_seq) AS rnum,
-        apex_util.prepare_url(l_category_url || c.category_id, NULL, 'PUBLIC_BOOKMARK') AS url,
-        a.changed_on AS lastmod
-      FROM blog_category c
-      JOIN article_cat a
-        ON c.category_id = a.category_id
-       AND c.active = 'Y'
+      SELECT 3 AS grp
+        ,ROW_NUMBER() OVER(ORDER BY c.category_seq) AS rnum
+        ,apex_util.prepare_url(l_category_url || c.category_id, NULL, 'PUBLIC_BOOKMARK') AS loc
+      FROM blog_v$categories c
     )
     SELECT XMLElement("urlset", XMLAttributes('http://www.sitemaps.org/schemas/sitemap/0.9' AS "xmlns"),
         (
           XMLAgg(
               XMLElement("url"
-              ,XMLElement("loc", p_base_url || url)
-              ,XMLElement("lastmod", TO_CHAR(lastmod, 'YYYY-MM-DD'))
-              ,XMLElement("changefreq", 'monthly')
-              ,XMLElement("priority", '0.5')
+              ,XMLElement("loc", c_canonical_url || loc)
             ) ORDER BY grp,rnum
           )
         )
@@ -171,14 +190,735 @@ AS
     ;
     owa_util.mime_header('application/xml', TRUE);
     wpg_docload.download_file(l_xml);
-    apex_application.stop_apex_engine;
+    --apex_application.stop_apex_engine;
   END sitemap;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE sitemapindex(
+    p_app_alias IN VARCHAR2
+  )
+  AS
+    l_xml           BLOB;
+    l_main_sitemap_url       VARCHAR2(255);
+    l_article_sitemap_url   VARCHAR2(255);
+    l_category_sitemap_url  VARCHAR2(255);
+    l_url_base CONSTANT VARCHAR2(255) := 'f?p=' || p_app_alias || ':HOME:0:APPLICATION_PROCESS=';
+  BEGIN
+    l_main_sitemap_url      := apex_util.prepare_url(l_url_base || 'MAIN_SITEMAP', NULL, 'PUBLIC_BOOKMARK');
+    l_article_sitemap_url   := apex_util.prepare_url(l_url_base || 'ARTICLE_SITEMAP', NULL, 'PUBLIC_BOOKMARK');
+    l_category_sitemap_url  := apex_util.prepare_url(l_url_base || 'CATEGORY_SITEMAP', NULL, 'PUBLIC_BOOKMARK');
+
+
+    WITH last_modified AS (
+      SELECT max(a.changed_on) AS lastmod
+      FROM blog_v$articles a
+    ), sitemapindex_query AS (
+      SELECT 1 AS grp
+        ,l_main_sitemap_url AS loc
+        ,lastmod
+      FROM last_modified
+      UNION ALL
+        SELECT 2 AS grp
+        ,l_article_sitemap_url AS loc
+        ,lastmod
+      FROM last_modified
+      UNION ALL
+        SELECT 3 AS grp
+        ,l_category_sitemap_url AS loc
+        ,lastmod
+      FROM last_modified
+    )
+    SELECT XMLElement("sitemapindex", XMLAttributes('http://www.sitemaps.org/schemas/sitemap/0.9' AS "xmlns"),
+        (
+          XMLAgg(
+              XMLElement("sitemap"
+              ,XMLElement("loc", c_canonical_url || loc)
+              ,XMLElement("lastmod", TO_CHAR(lastmod, 'YYYY-MM-DD'))
+            ) ORDER BY grp
+          )
+        )
+      ).getblobval(nls_charset_id('AL32UTF8'))
+    INTO l_xml
+    FROM sitemapindex_query
+    ;
+    owa_util.mime_header('application/xml', TRUE);
+    wpg_docload.download_file(l_xml);
+    --apex_application.stop_apex_engine;
+  END sitemapindex;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE main_sitemap (
+    p_app_id    IN NUMBER,
+    p_app_alias IN VARCHAR2,
+    p_tab_list  IN VARCHAR2
+  )
+  AS
+    l_xml BLOB;
+  BEGIN
+
+    WITH sitemap_query AS (
+      SELECT
+         ROW_NUMBER() OVER(ORDER BY e.display_sequence) AS rnum
+        ,apex_util.prepare_url(
+            apex_plugin_util.replace_substitutions(e.entry_target)
+            ,NULL
+            ,'PUBLIC_BOOKMARK'
+         ) AS loc
+      FROM apex_application_list_entries e
+      WHERE e.application_id = p_app_id
+        AND e.list_name      = p_tab_list
+        AND
+          blog_xml.show_entry(
+            (
+              SELECT o.build_option_id 
+              FROM apex_application_build_options o 
+              WHERE o.build_option_name = e.build_option
+            ),
+            e.authorization_scheme_id,
+            e.condition_type_code,
+            e.condition_expression1,
+            e.condition_expression2
+           ) = 'true'
+    )
+    SELECT XMLElement("urlset", XMLAttributes('http://www.sitemaps.org/schemas/sitemap/0.9' AS "xmlns"),
+        (
+          XMLAgg(
+              XMLElement("url"
+              ,XMLElement("loc", c_canonical_url || loc)
+--              ,XMLElement("lastmod", TO_CHAR(lastmod, 'YYYY-MM-DD'))
+--              ,XMLElement("changefreq", 'monthly')
+--              ,XMLElement("priority", '0.5')
+            ) ORDER BY rnum
+          )
+        )
+      ).getblobval(nls_charset_id('AL32UTF8'))
+    INTO l_xml
+    FROM sitemap_query
+    ;
+    owa_util.mime_header('application/xml', TRUE);
+    wpg_docload.download_file(l_xml);
+    --apex_application.stop_apex_engine;
+  END main_sitemap;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE article_sitemap (
+    p_app_alias IN VARCHAR2
+  )
+  AS
+    l_xml           BLOB;
+    l_article_url   VARCHAR2(255);
+  BEGIN
+    l_article_url   := 'f?p=' || p_app_alias || ':READ:0::::ARTICLE:';
+
+    WITH sitemap_query AS (
+      SELECT
+         ROW_NUMBER() OVER(ORDER BY a.created_on) AS rnum
+        ,apex_util.prepare_url(l_article_url || a.article_id, NULL, 'PUBLIC_BOOKMARK') AS loc
+        ,a.changed_on AS lastmod
+      FROM blog_v$articles a
+    )
+    SELECT XMLElement("urlset", XMLAttributes('http://www.sitemaps.org/schemas/sitemap/0.9' AS "xmlns"),
+        (
+          XMLAgg(
+              XMLElement("url"
+              ,XMLElement("loc", c_canonical_url || loc)
+              ,XMLElement("lastmod", TO_CHAR(lastmod, 'YYYY-MM-DD'))
+--              ,XMLElement("changefreq", 'monthly')
+--              ,XMLElement("priority", '0.5')
+            ) ORDER BY rnum
+          )
+        )
+      ).getblobval(nls_charset_id('AL32UTF8'))
+    INTO l_xml
+    FROM sitemap_query
+    ;
+    owa_util.mime_header('application/xml', TRUE);
+    wpg_docload.download_file(l_xml);
+    --apex_application.stop_apex_engine;
+  END article_sitemap;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE category_sitemap (
+    p_app_alias IN VARCHAR2
+  )
+  AS
+    l_xml           BLOB;
+    l_category_url  VARCHAR2(255);
+  BEGIN
+    l_category_url  := 'f?p=' || p_app_alias || ':READCAT:0::::CATEGORY:';
+
+    WITH sitemap_query AS (
+      SELECT
+         ROW_NUMBER() OVER(ORDER BY c.created_on) AS rnum
+        ,apex_util.prepare_url(l_category_url || c.category_id, NULL, 'PUBLIC_BOOKMARK') AS loc
+        ,c.changed_on AS lastmod
+      FROM blog_v$categories c
+    )
+    SELECT XMLElement("urlset", XMLAttributes('http://www.sitemaps.org/schemas/sitemap/0.9' AS "xmlns"),
+        (
+          XMLAgg(
+              XMLElement("url"
+              ,XMLElement("loc", c_canonical_url || loc)
+              ,XMLElement("lastmod", TO_CHAR(lastmod, 'YYYY-MM-DD'))
+--              ,XMLElement("changefreq", 'monthly')
+--              ,XMLElement("priority", '0.5')
+            ) ORDER BY rnum
+          )
+        )
+      ).getblobval(nls_charset_id('AL32UTF8'))
+    INTO l_xml
+    FROM sitemap_query
+    ;
+    owa_util.mime_header('application/xml', TRUE);
+    wpg_docload.download_file(l_xml);
+    --apex_application.stop_apex_engine;
+  END category_sitemap;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE rss_fb_socialize(
+    p_app_alias IN VARCHAR2
+  )
+  AS
+    l_xml           BLOB;
+    l_rss_lang      VARCHAR2(5);
+    l_url           VARCHAR2(255);
+    l_rss_desc      VARCHAR2(255);
+    l_rss_url       VARCHAR2(255);
+    l_home_url      VARCHAR2(255);
+    l_article_url   VARCHAR2(255);
+    l_blog_name     VARCHAR2(4000);
+  BEGIN
+  
+    l_rss_lang      := apex_application.g_browser_language;
+    l_rss_desc      := apex_plugin_util.replace_substitutions(apex_lang.message('RSS_DESCRIPTION'));
+    l_blog_name     := blog_util.get_param_value('G_BLOG_NAME');
+    l_url           := 'f?p=' || p_app_alias || ':';
+    l_rss_url       := c_canonical_url || l_url || 'HOME:0:APPLICATION_PROCESS=TWEET';
+    l_home_url      := c_canonical_url || l_url || 'HOME:0';
+    l_article_url := l_url || 'READ:0::::ARTICLE:';
+    
+    
+    SELECT xmlelement("rss", xmlattributes(c_rss_version AS "version", 'http://www.w3.org/2005/Atom' AS "xmlns:atom", 'http://purl.org/dc/elements/1.1/' AS "xmlns:dc"),
+      xmlelement("channel",
+        xmlelement("atom:link", xmlattributes(l_rss_url AS "href", 'self' AS "rel", 'application/rss+xml' AS "type")),
+        xmlforest(
+          l_blog_name AS "title"
+          ,l_home_url AS "link"
+          ,l_rss_desc AS "description"
+          ,l_rss_lang AS "language"
+        ),
+        xmlagg(
+          xmlelement("item",
+            xmlelement("title", l.rss_title),
+            xmlelement("dc:creator", l.posted_by),
+            (
+              select xmlagg(xmlelement("category", trim(regexp_substr (h.hashtags, '[^,]+', 1, rownum))))
+              from blog_article_last20 h
+              where h.article_id = l.article_id
+              and regexp_substr (h.hashtags, '[^,]+', 1, rownum) is not null
+              connect by level <= length (regexp_replace (h.hashtags, '[^,]+')) + 1
+            ),
+            xmlelement("link", c_canonical_url || apex_util.prepare_url(l_article_url || l.article_id, NULL, 'PUBLIC_BOOKMARK')),
+            xmlelement("description", l.rss_description),
+            xmlelement("pubDate", l.rss_pubdate),
+            xmlelement("guid", xmlattributes('false' AS "isPermaLink"), l.rss_guid)
+          ) ORDER BY latest_article_seq
+        )
+      )
+    ).getblobval(nls_charset_id('AL32UTF8'))
+    INTO l_xml
+    FROM blog_article_last20 l
+    WHERE latest_article_seq = 1
+    ;
+    owa_util.mime_header('application/rss+xml', TRUE);
+    wpg_docload.download_file(l_xml);
+    --apex_application.stop_apex_engine;
+  END rss_fb_socialize;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 END "BLOG_XML";
 /
 
-CREATE OR REPLACE PACKAGE  "BLOG_UTIL" 
+CREATE OR REPLACE PACKAGE "BLOG_LOG" 
+AUTHID DEFINER
+AS
+--------------------------------------------------------------------------------
+  PROCEDURE rotate_log;
+--------------------------------------------------------------------------------
+  PROCEDURE update_geoip;
+--------------------------------------------------------------------------------
+  PROCEDURE update_activity_logs;
+-------------------------------------------------------------------------------
+  FUNCTION apex_error_handler (
+    p_error           IN apex_error.t_error
+  ) RETURN apex_error.t_error_result;
+--------------------------------------------------------------------------------
+  PROCEDURE write_activity_log (
+    p_user_id         IN NUMBER,
+    p_activity_type   IN VARCHAR2,
+    p_session_id      IN NUMBER,
+    p_related_id      IN NUMBER DEFAULT 0,
+    p_ip_address      IN VARCHAR2 DEFAULT NULL,
+    p_user_agent      IN VARCHAR2 DEFAULT NULL,
+    p_referer         IN VARCHAR2 DEFAULT NULL,
+    p_search_type     IN VARCHAR2 DEFAULT NULL,
+    p_search          IN VARCHAR2 DEFAULT NULL,
+    p_country_code    IN VARCHAR2 DEFAULT NULL,
+    p_region          IN VARCHAR2 DEFAULT NULL,
+    p_city            IN VARCHAR2 DEFAULT NULL,
+    p_latitude        IN NUMBER DEFAULT NULL,
+    p_longitude       IN NUMBER DEFAULT NULL,
+    p_additional_info IN VARCHAR2 DEFAULT NULL
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE write_article_log (
+    p_article_id      IN NUMBER
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE rate_article (
+    p_article_id      IN NUMBER,
+    p_article_rate    IN OUT NOCOPY NUMBER
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE write_category_log (
+    p_category_id     IN NUMBER
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE write_file_log (
+    p_file_id         IN NUMBER
+  );
+--------------------------------------------------------------------------------
+  PROCEDURE truncate_activity_log (
+    p_log             IN PLS_INTEGER
+  );
+END "BLOG_LOG";
+/
+CREATE OR REPLACE PACKAGE BODY  "BLOG_LOG" 
+AS
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Private variables, procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  INSERT_NULL_VALUE EXCEPTION;
+  PARENT_NOT_FOUND  EXCEPTION;
+  PRAGMA EXCEPTION_INIT(INSERT_NULL_VALUE, -1400);
+  PRAGMA EXCEPTION_INIT(PARENT_NOT_FOUND, -2291);
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE get_host_ip_info (
+    p_ip            IN VARCHAR2,
+    p_city          OUT NOCOPY VARCHAR2,
+    p_country_code  OUT NOCOPY VARCHAR2
+  )
+  AS
+    l_clob  CLOB;
+    l_url   CONSTANT VARCHAR2(32000) := 'http://api.hostip.info/';
+  BEGIN
+    l_clob := apex_web_service.make_rest_request(
+                p_url         => l_url,
+                p_http_method => 'GET',
+                p_parm_name   => apex_util.string_to_table('ip'),
+                p_parm_value  => apex_util.string_to_table(p_ip)
+              );
+    BEGIN
+      SELECT EXTRACTVALUE(VALUE(t), '//gml:name', 'xmlns:gml="http://www.opengis.net/gml"')  AS city,
+        EXTRACTVALUE(VALUE(t), '//countryAbbrev', 'xmlns:gml="http://www.opengis.net/gml"')  AS countryAbbrev
+      INTO p_city, p_country_code
+      FROM TABLE(
+        XMLSEQUENCE(
+          XMLTYPE.CREATEXML(l_clob).EXTRACT(
+            'HostipLookupResultSet/gml:featureMember/Hostip',
+            'xmlns:gml="http://www.opengis.net/gml"'
+          )
+        )
+      ) t;
+    EXCEPTION WHEN NO_DATA_FOUND THEN
+      p_city          := NULL;
+      p_country_code  := NULL;
+    END;
+ 
+  END get_host_ip_info;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Global functions and procedures
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE rotate_log
+  AS
+    l_new_num CHAR(1);
+    l_log_num CHAR(1);
+  BEGIN
+  
+    SELECT SUBSTR(table_name, -1) AS log_tbl
+    INTO l_log_num
+    FROM user_synonyms
+    WHERE synonym_name = 'BLOG_ACTIVITY_LOG'
+    ;
+    IF l_log_num = '1' THEN
+      l_new_num := '2';
+    ELSIF l_log_num = '2' THEN
+      l_new_num := '1';
+    ELSE
+      raise_application_error(-20001, 'Invalid log table number.');
+    END IF;
+    blog_log.truncate_activity_log(l_new_num);
+    EXECUTE IMMEDIATE 'CREATE OR REPLACE SYNONYM BLOG_ACTIVITY_LOG FOR BLOG_ACTIVITY_LOG' || l_new_num;
+  END rotate_log;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE update_geoip
+  AS
+    l_city    VARCHAR2(2000);
+    l_code    VARCHAR2(2000);
+    l_count   NUMBER;
+  BEGIN
+  
+    /* Get distinct ip addreses where is no country information. */
+    FOR c1 IN(
+      SELECT DISTINCT ip_address
+      FROM blog_activity_log
+      WHERE activity_type = 'NEW_SESSION'
+      AND country_code IS NULL
+    ) LOOP
+    
+      l_count := 0;
+      l_city  := NULL;
+      l_code  := NULL;
+      
+      /* Check from logs if ip address already have country information from previous visit */
+      BEGIN
+        WITH qry AS (
+          SELECT
+            ROW_NUMBER() OVER(ORDER BY activity_date DESC) AS rn,
+            country_city,
+            country_code
+          FROM blog_v$activity_log
+          WHERE activity_type = 'NEW_SESSION'
+          AND ip_address = c1.ip_address
+          AND country_code IS NOT NULL
+        )
+        SELECT
+          country_city,
+          country_code
+        INTO l_city, l_code
+        FROM qry
+        WHERE rn = 1
+        ;
+      /* If no previous visit get country info from hostip.info */
+      EXCEPTION WHEN NO_DATA_FOUND THEN    
+        blog_log.get_host_ip_info(
+          p_ip            => c1.ip_address,
+          p_city          => l_city,
+          p_country_code  => l_code
+        );
+      END;
+      
+      l_city  := COALESCE(l_city, '(unknown city)');
+      l_code  := COALESCE(l_code, 'XX');
+      
+      /* Update activity log if country code exists in BLOG_COUNTRY table */
+      UPDATE blog_activity_log
+      SET country_city  = l_city,
+        country_code    = l_code
+      WHERE activity_type = 'NEW_SESSION'
+        AND ip_address  = c1.ip_address
+        AND country_code IS NULL
+        AND EXISTS (
+          SELECT 1
+          FROM blog_country c
+          WHERE c.country_code = l_code
+        )
+      ;
+      l_count := SQL%ROWCOUNT;
+      
+      /* If no rows updated, country code is unknown */
+      IF l_count = 0 THEN
+        l_code := 'XX';    
+        UPDATE blog_activity_log
+        SET country_city  = l_city,
+          country_code    = l_code
+        WHERE activity_type = 'NEW_SESSION'
+          AND ip_address  = c1.ip_address
+          AND country_code IS NULL
+          ;
+        l_count := SQL%ROWCOUNT;
+      END IF;
+      
+      /* Update total visitors from country */
+      UPDATE blog_country
+      SET visit_count = visit_count + l_count
+      WHERE country_code = l_code
+      ;
+      
+    END LOOP;
+    
+  END update_geoip;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE update_activity_logs
+  AS
+  BEGIN
+    dbms_mview.refresh('BLOG_ARTICLE_HIT20,BLOG_ARTICLE_TOP20', 'CC');
+  END update_activity_logs;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  FUNCTION apex_error_handler(
+    p_error IN apex_error.t_error
+  ) RETURN apex_error.t_error_result
+  AS
+    l_result          apex_error.t_error_result;
+    l_error           apex_error.t_error;
+    l_reference_id    PLS_INTEGER;
+    l_constraint_name VARCHAR2(255);
+    l_err_msg         VARCHAR2(32700);
+  BEGIN
+    l_result := apex_error.init_error_result ( p_error => p_error );
+    -- If it's an internal error raised by APEX, like an invalid statement or
+    -- code which can't be executed, the error text might contain security sensitive
+    -- information. To avoid this security problem we can rewrite the error to
+    -- a generic error message and log the original error message for further
+    -- investigation by the help desk.
+    IF p_error.is_internal_error THEN
+      -- Access Denied errors raised by application or page authorization should
+      -- still show up with the original error message
+      IF NOT p_error.apex_error_code LIKE 'APEX.SESSION_STATE.%'
+      AND NOT p_error.apex_error_code = 'APEX.AUTHORIZATION.ACCESS_DENIED'
+      AND NOT p_error.apex_error_code = 'APEX.PAGE.DUPLICATE_SUBMIT'
+      AND NOT p_error.apex_error_code = 'APEX.SESSION_STATE.RESTRICTED_CHAR.WEB_SAFE'
+      AND NOT p_error.apex_error_code = 'APEX.SESSION_STATE.RESTRICTED_CHAR.US_ONLY'
+      THEN
+        -- log error for example with an autonomous transaction and return
+        -- l_reference_id as reference#
+        -- l_reference_id := log_error (
+        --                       p_error => p_error );
+        --
+        -- Change the message to the generic error message which doesn't expose
+        -- any sensitive information.
+        -- log error to application debug information
+        apex_debug.error(
+          'Error handler: %s %s %s',
+           p_error.apex_error_code,
+           l_result.message,
+           l_result.additional_info
+        );
+        l_result.message := apex_lang.message('GENERAL_ERROR');
+        l_result.additional_info := NULL;
+      END IF;
+    ELSE
+      /*
+      -- Show the error as inline error
+      l_result.display_location :=
+      CASE
+      WHEN l_result.display_location = apex_error.c_on_error_page THEN
+        apex_error.c_inline_in_notification
+      ELSE
+        l_result.display_location
+      END;
+      */
+      -- If it's a constraint violation like
+      --
+      --   -) ORA-02292ORA-02291ORA-02290ORA-02091ORA-00001: unique constraint violated
+      --   -) : transaction rolled back (-> can hide a deferred constraint)
+      --   -) : check constraint violated
+      --   -) : integrity constraint violated - parent key not found
+      --   -) : integrity constraint violated - child record found
+      --
+      -- we try to get a friendly error message from our constraint lookup configuration.
+      -- If we don't find the constraint in our lookup table we fallback to
+      -- the original ORA error message.
+      IF p_error.ora_sqlcode IN (-1, -2091, -2290, -2291, -2292) THEN
+        l_constraint_name := apex_error.extract_constraint_name ( p_error => p_error );
+        l_err_msg := apex_lang.message(l_constraint_name);
+        -- not every constraint has to be in our lookup table
+        IF NOT l_err_msg = l_constraint_name THEN
+          l_result.message := l_err_msg;
+        END IF;
+      END IF;
+      -- If an ORA error has been raised, for example a raise_application_error(-20xxx, '...')
+      -- in a table trigger or in a PL/SQL package called by a process and we
+      -- haven't found the error in our lookup table, then we just want to see
+      -- the actual error text and not the full error stack with all the ORA error numbers.
+      IF p_error.ora_sqlcode IS NOT NULL AND l_result.message = p_error.message THEN
+        l_result.message := apex_error.get_first_ora_error_text ( p_error => p_error );
+      END IF;
+      -- If no associated page item/tabular form column has been set, we can use
+      -- apex_error.auto_set_associated_item to automatically guess the affected
+      -- error field by examine the ORA error for constraint names or column names.
+      IF l_result.page_item_name IS NULL AND l_result.column_alias IS NULL THEN
+        apex_error.auto_set_associated_item ( p_error => p_error, p_error_result => l_result );
+      END IF;
+    END IF;
+    RETURN l_result;
+  END apex_error_handler;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE write_activity_log(
+    p_user_id         IN NUMBER,
+    p_activity_type   IN VARCHAR2,
+    p_session_id      IN NUMBER,
+    p_related_id      IN NUMBER DEFAULT 0,
+    p_ip_address      IN VARCHAR2 DEFAULT NULL,
+    p_user_agent      IN VARCHAR2 DEFAULT NULL,
+    p_referer         IN VARCHAR2 DEFAULT NULL,
+    p_search_type     IN VARCHAR2 DEFAULT NULL,
+    p_search          IN VARCHAR2 DEFAULT NULL,
+    p_country_code    IN VARCHAR2 DEFAULT NULL,
+    p_region          IN VARCHAR2 DEFAULT NULL,
+    p_city            IN VARCHAR2 DEFAULT NULL,
+    p_latitude        IN NUMBER DEFAULT NULL,
+    p_longitude       IN NUMBER DEFAULT NULL,
+    p_additional_info IN VARCHAR2 DEFAULT NULL
+  )
+  AS
+    PRAGMA AUTONOMOUS_TRANSACTION;
+  BEGIN
+    INSERT /*+ append */ INTO blog_activity_log (
+      ACTIVITY_TYPE,
+      APEX_SESSION_ID,
+      IP_ADDRESS,
+      RELATED_ID,
+      USER_ID,
+      LATITUDE,
+      LONGITUDE,
+      COUNTRY_CODE,
+      COUNTRY_REGION,
+      COUNTRY_CITY,
+      HTTP_USER_AGENT,
+      HTTP_REFERER,
+      SEARCH_TYPE,
+      SEARCH_CRITERIA,
+      ADDITIONAL_INFO
+    ) VALUES (
+      p_activity_type,
+      p_session_id,
+      p_ip_address,
+      p_related_id,
+      p_user_id,
+      p_latitude,
+      p_longitude,
+      p_country_code,
+      p_region,
+      p_city,
+      p_user_agent,
+      p_referer,
+      p_search_type,
+      p_search,
+      p_additional_info
+    );
+    COMMIT;
+  END write_activity_log;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE write_article_log(
+    p_article_id  IN NUMBER
+  )
+  AS
+    PRAGMA AUTONOMOUS_TRANSACTION;
+  BEGIN
+    UPDATE blog_article_log
+    SET view_count = view_count + 1,
+        last_view = SYSDATE
+    WHERE article_id = p_article_id
+    ;
+    COMMIT;
+  EXCEPTION WHEN 
+  VALUE_ERROR OR
+  INVALID_NUMBER OR
+  PARENT_NOT_FOUND OR
+  INSERT_NULL_VALUE
+  THEN
+      apex_debug.warn('blog_log.write_article_log(p_article_id => %s); error: %s', COALESCE(to_char(p_article_id), 'NULL'), sqlerrm);
+  END write_article_log;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE rate_article(
+    p_article_id    IN NUMBER,
+    p_article_rate  IN OUT NOCOPY NUMBER
+  )
+  AS
+    l_rate NUMBER;
+  BEGIN
+    UPDATE blog_article_log
+      SET article_rate      = (article_rate * rate_click + p_article_rate) / (rate_click + 1),
+          article_rate_int  = ROUND( (article_rate * rate_click + p_article_rate) / (rate_click + 1) ),
+          rate_click        = rate_click + 1,
+          last_rate         = SYSDATE
+    WHERE article_id = p_article_id
+    RETURNING article_rate_int INTO l_rate
+    ;
+    sys.htp.prn(l_rate);
+  END rate_article;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE write_category_log(
+    p_category_id  IN NUMBER
+  )
+  AS
+    PRAGMA AUTONOMOUS_TRANSACTION;
+  BEGIN
+    MERGE INTO blog_category_log a
+    USING (SELECT p_category_id AS category_id FROM DUAL) b
+    ON (a.category_id = b.category_id)
+    WHEN MATCHED THEN
+    UPDATE SET a.view_count = a.view_count + 1,
+      a.last_view = SYSDATE
+    WHEN NOT MATCHED THEN
+    INSERT (category_id) VALUES (b.category_id)
+    ;
+    COMMIT;
+  EXCEPTION WHEN
+    VALUE_ERROR OR
+    INVALID_NUMBER OR
+    PARENT_NOT_FOUND OR
+    INSERT_NULL_VALUE
+  THEN
+    apex_debug.warn('blog_log.write_category_log(p_category_id => %s); error: %s', COALESCE(to_char(p_category_id), 'NULL'), sqlerrm);
+  END write_category_log;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE write_file_log(
+    p_file_id  IN NUMBER
+  )
+  AS
+    PRAGMA AUTONOMOUS_TRANSACTION;
+  BEGIN
+    MERGE INTO blog_file_log a
+    USING (SELECT p_file_id AS file_id FROM DUAL) b
+    ON (a.file_id = b.file_id)
+    WHEN MATCHED THEN
+    UPDATE SET a.click_count = a.click_count + 1,
+      last_click = SYSDATE
+    WHEN NOT MATCHED THEN
+    INSERT (file_id) VALUES (b.file_id)
+    ;
+    COMMIT;
+  EXCEPTION WHEN
+  VALUE_ERROR OR
+  INVALID_NUMBER OR
+  PARENT_NOT_FOUND OR
+  INSERT_NULL_VALUE
+  THEN
+    apex_debug.warn('blog_log.write_file_log(p_file_id => %s); error: %s', COALESCE(to_char(p_file_id), 'NULL'), sqlerrm);
+  END write_file_log;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  PROCEDURE truncate_activity_log (
+    p_log IN PLS_INTEGER
+  )
+  AS
+  BEGIN
+    if p_log not in(1, 2) then
+      raise_application_error(-20001, 'Invalid log table number.');
+    end if;
+    execute immediate 'truncate table blog_activity_log' || to_char(p_log);
+  end truncate_activity_log;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+END "BLOG_LOG";
+/
+
+CREATE OR REPLACE PACKAGE "BLOG_UTIL" 
 AUTHID DEFINER
 AS
 --------------------------------------------------------------------------------
@@ -1931,485 +2671,6 @@ END feature_authorization;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 END "BLOG_PLUGIN";
-/
-
-CREATE OR REPLACE PACKAGE  "BLOG_LOG" 
-AUTHID DEFINER
-AS
---------------------------------------------------------------------------------
-  PROCEDURE rotate_log;
---------------------------------------------------------------------------------
-  PROCEDURE update_geoip;
---------------------------------------------------------------------------------
-  PROCEDURE update_activity_logs;
--------------------------------------------------------------------------------
-  FUNCTION apex_error_handler (
-    p_error           IN apex_error.t_error
-  ) RETURN apex_error.t_error_result;
---------------------------------------------------------------------------------
-  PROCEDURE write_activity_log (
-    p_user_id         IN NUMBER,
-    p_activity_type   IN VARCHAR2,
-    p_session_id      IN NUMBER,
-    p_related_id      IN NUMBER DEFAULT 0,
-    p_ip_address      IN VARCHAR2 DEFAULT NULL,
-    p_user_agent      IN VARCHAR2 DEFAULT NULL,
-    p_referer         IN VARCHAR2 DEFAULT NULL,
-    p_search_type     IN VARCHAR2 DEFAULT NULL,
-    p_search          IN VARCHAR2 DEFAULT NULL,
-    p_country_code    IN VARCHAR2 DEFAULT NULL,
-    p_region          IN VARCHAR2 DEFAULT NULL,
-    p_city            IN VARCHAR2 DEFAULT NULL,
-    p_latitude        IN NUMBER DEFAULT NULL,
-    p_longitude       IN NUMBER DEFAULT NULL,
-    p_additional_info IN VARCHAR2 DEFAULT NULL
-  );
---------------------------------------------------------------------------------
-  PROCEDURE write_article_log (
-    p_article_id      IN NUMBER
-  );
---------------------------------------------------------------------------------
-  PROCEDURE rate_article (
-    p_article_id      IN NUMBER,
-    p_article_rate    IN OUT NOCOPY NUMBER
-  );
---------------------------------------------------------------------------------
-  PROCEDURE write_category_log (
-    p_category_id     IN NUMBER
-  );
---------------------------------------------------------------------------------
-  PROCEDURE write_file_log (
-    p_file_id         IN NUMBER
-  );
---------------------------------------------------------------------------------
-  PROCEDURE truncate_activity_log (
-    p_log             IN PLS_INTEGER
-  );
-END "BLOG_LOG";
-/
-CREATE OR REPLACE PACKAGE BODY  "BLOG_LOG" 
-AS
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Private variables, procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  INSERT_NULL_VALUE EXCEPTION;
-  PARENT_NOT_FOUND  EXCEPTION;
-  PRAGMA EXCEPTION_INIT(INSERT_NULL_VALUE, -1400);
-  PRAGMA EXCEPTION_INIT(PARENT_NOT_FOUND, -2291);
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE get_host_ip_info (
-    p_ip            IN VARCHAR2,
-    p_city          OUT NOCOPY VARCHAR2,
-    p_country_code  OUT NOCOPY VARCHAR2
-  )
-  AS
-    l_clob  CLOB;
-    l_url   CONSTANT VARCHAR2(32000) := 'http://api.hostip.info/';
-  BEGIN
-    l_clob := apex_web_service.make_rest_request(
-                p_url         => l_url,
-                p_http_method => 'GET',
-                p_parm_name   => apex_util.string_to_table('ip'),
-                p_parm_value  => apex_util.string_to_table(p_ip)
-              );
-    BEGIN
-      SELECT EXTRACTVALUE(VALUE(t), '//gml:name', 'xmlns:gml="http://www.opengis.net/gml"')  AS city,
-        EXTRACTVALUE(VALUE(t), '//countryAbbrev', 'xmlns:gml="http://www.opengis.net/gml"')  AS countryAbbrev
-      INTO p_city, p_country_code
-      FROM TABLE(
-        XMLSEQUENCE(
-          XMLTYPE.CREATEXML(l_clob).EXTRACT(
-            'HostipLookupResultSet/gml:featureMember/Hostip',
-            'xmlns:gml="http://www.opengis.net/gml"'
-          )
-        )
-      ) t;
-    EXCEPTION WHEN NO_DATA_FOUND THEN
-      p_city          := NULL;
-      p_country_code  := NULL;
-    END;
- 
-  END get_host_ip_info;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Global functions and procedures
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE rotate_log
-  AS
-    l_new_num CHAR(1);
-    l_log_num CHAR(1);
-  BEGIN
-  
-    SELECT SUBSTR(table_name, -1) AS log_tbl
-    INTO l_log_num
-    FROM user_synonyms
-    WHERE synonym_name = 'BLOG_ACTIVITY_LOG'
-    ;
-    IF l_log_num = '1' THEN
-      l_new_num := '2';
-    ELSIF l_log_num = '2' THEN
-      l_new_num := '1';
-    ELSE
-      raise_application_error(-20001, 'Invalid log table number.');
-    END IF;
-    blog_log.truncate_activity_log(l_new_num);
-    EXECUTE IMMEDIATE 'CREATE OR REPLACE SYNONYM BLOG_ACTIVITY_LOG FOR BLOG_ACTIVITY_LOG' || l_new_num;
-  END rotate_log;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE update_geoip
-  AS
-    l_city    VARCHAR2(2000);
-    l_code    VARCHAR2(2000);
-    l_count   NUMBER;
-  BEGIN
-  
-    /* Get distinct ip addreses where is no country information. */
-    FOR c1 IN(
-      SELECT DISTINCT ip_address
-      FROM blog_activity_log
-      WHERE activity_type = 'NEW_SESSION'
-      AND country_code IS NULL
-    ) LOOP
-    
-      l_count := 0;
-      l_city  := NULL;
-      l_code  := NULL;
-      
-      /* Check from logs if ip address already have country information from previous visit */
-      BEGIN
-        WITH qry AS (
-          SELECT
-            ROW_NUMBER() OVER(ORDER BY activity_date DESC) AS rn,
-            country_city,
-            country_code
-          FROM blog_v$activity_log
-          WHERE activity_type = 'NEW_SESSION'
-          AND ip_address = c1.ip_address
-          AND country_code IS NOT NULL
-        )
-        SELECT
-          country_city,
-          country_code
-        INTO l_city, l_code
-        FROM qry
-        WHERE rn = 1
-        ;
-      /* If no previous visit get country info from hostip.info */
-      EXCEPTION WHEN NO_DATA_FOUND THEN    
-        blog_log.get_host_ip_info(
-          p_ip            => c1.ip_address,
-          p_city          => l_city,
-          p_country_code  => l_code
-        );
-      END;
-      
-      l_city  := COALESCE(l_city, '(unknown city)');
-      l_code  := COALESCE(l_code, 'XX');
-      
-      /* Update activity log if country code exists in BLOG_COUNTRY table */
-      UPDATE blog_activity_log
-      SET country_city  = l_city,
-        country_code    = l_code
-      WHERE activity_type = 'NEW_SESSION'
-        AND ip_address  = c1.ip_address
-        AND country_code IS NULL
-        AND EXISTS (
-          SELECT 1
-          FROM blog_country c
-          WHERE c.country_code = l_code
-        )
-      ;
-      l_count := SQL%ROWCOUNT;
-      
-      /* If no rows updated, country code is unknown */
-      IF l_count = 0 THEN
-        l_code := 'XX';    
-        UPDATE blog_activity_log
-        SET country_city  = l_city,
-          country_code    = l_code
-        WHERE activity_type = 'NEW_SESSION'
-          AND ip_address  = c1.ip_address
-          AND country_code IS NULL
-          ;
-        l_count := SQL%ROWCOUNT;
-      END IF;
-      
-      /* Update total visitors from country */
-      UPDATE blog_country
-      SET visit_count = visit_count + l_count
-      WHERE country_code = l_code
-      ;
-      
-    END LOOP;
-    
-  END update_geoip;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE update_activity_logs
-  AS
-  BEGIN
-    dbms_mview.refresh('BLOG_ARTICLE_HIT20,BLOG_ARTICLE_TOP20', 'CC');
-  END update_activity_logs;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  FUNCTION apex_error_handler(
-    p_error IN apex_error.t_error
-  ) RETURN apex_error.t_error_result
-  AS
-    l_result          apex_error.t_error_result;
-    l_error           apex_error.t_error;
-    l_reference_id    PLS_INTEGER;
-    l_constraint_name VARCHAR2(255);
-    l_err_msg         VARCHAR2(32700);
-  BEGIN
-    l_result := apex_error.init_error_result ( p_error => p_error );
-    -- If it's an internal error raised by APEX, like an invalid statement or
-    -- code which can't be executed, the error text might contain security sensitive
-    -- information. To avoid this security problem we can rewrite the error to
-    -- a generic error message and log the original error message for further
-    -- investigation by the help desk.
-    IF p_error.is_internal_error THEN
-      -- Access Denied errors raised by application or page authorization should
-      -- still show up with the original error message
-      IF NOT p_error.apex_error_code LIKE 'APEX.SESSION_STATE.%'
-      AND NOT p_error.apex_error_code = 'APEX.AUTHORIZATION.ACCESS_DENIED'
-      AND NOT p_error.apex_error_code = 'APEX.PAGE.DUPLICATE_SUBMIT'
-      AND NOT p_error.apex_error_code = 'APEX.SESSION_STATE.RESTRICTED_CHAR.WEB_SAFE'
-      AND NOT p_error.apex_error_code = 'APEX.SESSION_STATE.RESTRICTED_CHAR.US_ONLY'
-      THEN
-        -- log error for example with an autonomous transaction and return
-        -- l_reference_id as reference#
-        -- l_reference_id := log_error (
-        --                       p_error => p_error );
-        --
-        -- Change the message to the generic error message which doesn't expose
-        -- any sensitive information.
-        -- log error to application debug information
-        apex_debug.error(
-          'Error handler: %s %s %s',
-           p_error.apex_error_code,
-           l_result.message,
-           l_result.additional_info
-        );
-        l_result.message := apex_lang.message('GENERAL_ERROR');
-        l_result.additional_info := NULL;
-      END IF;
-    ELSE
-      /*
-      -- Show the error as inline error
-      l_result.display_location :=
-      CASE
-      WHEN l_result.display_location = apex_error.c_on_error_page THEN
-        apex_error.c_inline_in_notification
-      ELSE
-        l_result.display_location
-      END;
-      */
-      -- If it's a constraint violation like
-      --
-      --   -) ORA-02292ORA-02291ORA-02290ORA-02091ORA-00001: unique constraint violated
-      --   -) : transaction rolled back (-> can hide a deferred constraint)
-      --   -) : check constraint violated
-      --   -) : integrity constraint violated - parent key not found
-      --   -) : integrity constraint violated - child record found
-      --
-      -- we try to get a friendly error message from our constraint lookup configuration.
-      -- If we don't find the constraint in our lookup table we fallback to
-      -- the original ORA error message.
-      IF p_error.ora_sqlcode IN (-1, -2091, -2290, -2291, -2292) THEN
-        l_constraint_name := apex_error.extract_constraint_name ( p_error => p_error );
-        l_err_msg := apex_lang.message(l_constraint_name);
-        -- not every constraint has to be in our lookup table
-        IF NOT l_err_msg = l_constraint_name THEN
-          l_result.message := l_err_msg;
-        END IF;
-      END IF;
-      -- If an ORA error has been raised, for example a raise_application_error(-20xxx, '...')
-      -- in a table trigger or in a PL/SQL package called by a process and we
-      -- haven't found the error in our lookup table, then we just want to see
-      -- the actual error text and not the full error stack with all the ORA error numbers.
-      IF p_error.ora_sqlcode IS NOT NULL AND l_result.message = p_error.message THEN
-        l_result.message := apex_error.get_first_ora_error_text ( p_error => p_error );
-      END IF;
-      -- If no associated page item/tabular form column has been set, we can use
-      -- apex_error.auto_set_associated_item to automatically guess the affected
-      -- error field by examine the ORA error for constraint names or column names.
-      IF l_result.page_item_name IS NULL AND l_result.column_alias IS NULL THEN
-        apex_error.auto_set_associated_item ( p_error => p_error, p_error_result => l_result );
-      END IF;
-    END IF;
-    RETURN l_result;
-  END apex_error_handler;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE write_activity_log(
-    p_user_id         IN NUMBER,
-    p_activity_type   IN VARCHAR2,
-    p_session_id      IN NUMBER,
-    p_related_id      IN NUMBER DEFAULT 0,
-    p_ip_address      IN VARCHAR2 DEFAULT NULL,
-    p_user_agent      IN VARCHAR2 DEFAULT NULL,
-    p_referer         IN VARCHAR2 DEFAULT NULL,
-    p_search_type     IN VARCHAR2 DEFAULT NULL,
-    p_search          IN VARCHAR2 DEFAULT NULL,
-    p_country_code    IN VARCHAR2 DEFAULT NULL,
-    p_region          IN VARCHAR2 DEFAULT NULL,
-    p_city            IN VARCHAR2 DEFAULT NULL,
-    p_latitude        IN NUMBER DEFAULT NULL,
-    p_longitude       IN NUMBER DEFAULT NULL,
-    p_additional_info IN VARCHAR2 DEFAULT NULL
-  )
-  AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
-  BEGIN
-    INSERT /*+ append */ INTO blog_activity_log (
-      ACTIVITY_TYPE,
-      APEX_SESSION_ID,
-      IP_ADDRESS,
-      RELATED_ID,
-      USER_ID,
-      LATITUDE,
-      LONGITUDE,
-      COUNTRY_CODE,
-      COUNTRY_REGION,
-      COUNTRY_CITY,
-      HTTP_USER_AGENT,
-      HTTP_REFERER,
-      SEARCH_TYPE,
-      SEARCH_CRITERIA,
-      ADDITIONAL_INFO
-    ) VALUES (
-      p_activity_type,
-      p_session_id,
-      p_ip_address,
-      p_related_id,
-      p_user_id,
-      p_latitude,
-      p_longitude,
-      p_country_code,
-      p_region,
-      p_city,
-      p_user_agent,
-      p_referer,
-      p_search_type,
-      p_search,
-      p_additional_info
-    );
-    COMMIT;
-  END write_activity_log;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE write_article_log(
-    p_article_id  IN NUMBER
-  )
-  AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
-  BEGIN
-    UPDATE blog_article_log
-    SET view_count = view_count + 1,
-        last_view = SYSDATE
-    WHERE article_id = p_article_id
-    ;
-    COMMIT;
-  EXCEPTION WHEN 
-  VALUE_ERROR OR
-  INVALID_NUMBER OR
-  PARENT_NOT_FOUND OR
-  INSERT_NULL_VALUE
-  THEN
-      apex_debug.warn('blog_log.write_article_log(p_article_id => %s); error: %s', COALESCE(to_char(p_article_id), 'NULL'), sqlerrm);
-  END write_article_log;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE rate_article(
-    p_article_id    IN NUMBER,
-    p_article_rate  IN OUT NOCOPY NUMBER
-  )
-  AS
-    l_rate NUMBER;
-  BEGIN
-    UPDATE blog_article_log
-      SET article_rate      = (article_rate * rate_click + p_article_rate) / (rate_click + 1),
-          article_rate_int  = ROUND( (article_rate * rate_click + p_article_rate) / (rate_click + 1) ),
-          rate_click        = rate_click + 1,
-          last_rate         = SYSDATE
-    WHERE article_id = p_article_id
-    RETURNING article_rate_int INTO l_rate
-    ;
-    sys.htp.prn(l_rate);
-  END rate_article;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE write_category_log(
-    p_category_id  IN NUMBER
-  )
-  AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
-  BEGIN
-    MERGE INTO blog_category_log a
-    USING (SELECT p_category_id AS category_id FROM DUAL) b
-    ON (a.category_id = b.category_id)
-    WHEN MATCHED THEN
-    UPDATE SET a.view_count = a.view_count + 1,
-      a.last_view = SYSDATE
-    WHEN NOT MATCHED THEN
-    INSERT (category_id) VALUES (b.category_id)
-    ;
-    COMMIT;
-  EXCEPTION WHEN
-    VALUE_ERROR OR
-    INVALID_NUMBER OR
-    PARENT_NOT_FOUND OR
-    INSERT_NULL_VALUE
-  THEN
-    apex_debug.warn('blog_log.write_category_log(p_category_id => %s); error: %s', COALESCE(to_char(p_category_id), 'NULL'), sqlerrm);
-  END write_category_log;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE write_file_log(
-    p_file_id  IN NUMBER
-  )
-  AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
-  BEGIN
-    MERGE INTO blog_file_log a
-    USING (SELECT p_file_id AS file_id FROM DUAL) b
-    ON (a.file_id = b.file_id)
-    WHEN MATCHED THEN
-    UPDATE SET a.click_count = a.click_count + 1,
-      last_click = SYSDATE
-    WHEN NOT MATCHED THEN
-    INSERT (file_id) VALUES (b.file_id)
-    ;
-    COMMIT;
-  EXCEPTION WHEN
-  VALUE_ERROR OR
-  INVALID_NUMBER OR
-  PARENT_NOT_FOUND OR
-  INSERT_NULL_VALUE
-  THEN
-    apex_debug.warn('blog_log.write_file_log(p_file_id => %s); error: %s', COALESCE(to_char(p_file_id), 'NULL'), sqlerrm);
-  END write_file_log;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  PROCEDURE truncate_activity_log (
-    p_log IN PLS_INTEGER
-  )
-  AS
-  BEGIN
-    if p_log not in(1, 2) then
-      raise_application_error(-20001, 'Invalid log table number.');
-    end if;
-    execute immediate 'truncate table blog_activity_log' || to_char(p_log);
-  end truncate_activity_log;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-END "BLOG_LOG";
 /
 
 CREATE OR REPLACE PACKAGE  "BLOG_JOB" 
