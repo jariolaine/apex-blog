@@ -508,18 +508,23 @@ WITH READ ONLY CONSTRAINT blog_v$all_categories_ro
 --------------------------------------------------------------
 --------------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW blog_v$categories as
-SELECT c.category_id
-  ,apex_escape.html(c.category_name) AS category_name_esc
+create or replace view blog_v$categories
+as
+select c.category_id
+  ,apex_escape.html(c.category_name) as category_name_esc
   ,c.category_name
   ,c.category_seq
-FROM blog_category c
-WHERE c.active = 'Y'
-AND EXISTS(
-  SELECT 1 
-  FROM blog_article a
-  WHERE a.category_id = c.category_id
-    AND a.active = 'Y'
-)
+  ,min(a.created_on) as created_on
+  ,max(a.changed_on) as changed_on
+from blog_category c
+join blog_article a on a.category_id = c.category_id
+where 1 = 1
+and a.active = 'Y'
+and c.active = 'Y' 
+group by c.category_id
+  ,apex_escape.html(c.category_name)
+  ,c.category_name
+  ,c.category_seq
 WITH READ ONLY CONSTRAINT blog_v$categories_ro
 ;
 --------------------------------------------------------------
