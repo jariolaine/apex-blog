@@ -1885,7 +1885,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(39890152994390238425)
 ,p_name=>'LABEL_RATE_ARTICLE'
-,p_message_text=>'Please rate this articlet. Stars shows current rating for this article.'
+,p_message_text=>'Please rate this article. Stars shows current rating for this article.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(39890160981544721030)
