@@ -15343,7 +15343,7 @@ declare
  
 begin
  
-h:=h||'Please rate this articlet. Stars shows current rating for this article.';
+h:=h||'Please rate this article. Stars shows current rating for this article.';
 
 wwv_flow_api.create_message (
   p_id=>14357331997708702 + wwv_flow_api.g_id_offset,
