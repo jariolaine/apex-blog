@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>jQuery Star Rating Plugin Demos</title>
+<link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="star-rating.js"></script>
+<style>
+/* star rating
+    ---------------------------- */
+
+.rating {
+float: left;
+}
+.rating > ul {
+list-style: none;
+float: left;
+padding: 0;
+margin: 0;
+}
+.rating > ul > li {
+float: left;
+margin-left: 2px;
+background: url(src/star-rating.gif) no-repeat;
+width: 25px;
+height: 25px;
+cursor: pointer;
+}
+.rating > ul > li:first-child {
+margin-left: 0;
+}
+.rating > ul > li.hover {
+background-position: -25px;
+}
+.rating > ul > li.active {
+background-position: -50px;
+}
+.rating > span.less {
+cursor: pointer;
+background: url(src/star-rating.gif) -75px no-repeat;
+display: block;
+float: left;
+height: 25px;
+width: 25px;
+}
+</style>
+</head>
+
+<body>
+<div id="jquery-script-menu">
+<div class="jquery-script-center">
+<ul>
+<li><a href="http://www.jqueryscript.net/other/Lightweight-jQuery-Plugin-For-Star-Rating-Widget-Star-Rating.html">Download This Plugin</a></li>
+<li><a href="http://www.jqueryscript.net/">Back To jQueryScript.Net</a></li>
+</ul>
+<div class="jquery-script-ads"><script type="text/javascript"><!--
+google_ad_client = "ca-pub-2783044520727903";
+/* jQuery_demo */
+google_ad_slot = "2780937993";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script></div>
+<div class="jquery-script-clear"></div>
+</div>
+</div>
+<h1 style="margin-top:150px;">jQuery Star Rating Plugin Demos</h1>
+<div class="rating" data-rating-max="5"></div><br>
+<br>
+<div class="rating" data-rating-max="6"></div><br>
+<br>
+<div class="rating" data-rating-max="7"></div><br>
+<br>
+<div class="rating" data-rating-max="8"></div><br>
+<br>
+<div class="rating" data-rating-max="8"></div><br>
+<br>
+<script type="text/javascript">
+    /* place inside document ready function */
+    $(".rating").starRating({
+        minus: true // step minus button
+    });
+</script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36251023-1']);
+  _gaq.push(['_setDomainName', 'jqueryscript.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+/* change background colors for inactive entries in level 1 */
+#wwvFlowForm .navbar-inner {
+   background-color: #FAFAFA; /* medium color - used if gradients not supported */
+   background-image: linear-gradient(to bottom, #FFFFFF, #F2F2F2); /* (lightest, darkest) - used if gradients supported */
+   /* this starts vendor specific CSS for older browsers, just copy colors down from above */
+   background-image: -moz-linear-gradient(top, #FFFFFF, #F2F2F2);
+   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#FFFFFF), to(#F2F2F2));
+   background-image: -webkit-linear-gradient(top, #FFFFFF, #F2F2F2);
+   background-image: -o-linear-gradient(top, #FFFFFF, #F2F2F2);
+   background-image: linear-gradient(to bottom, #FFFFFF, #F2F2F2);
+   background-repeat: repeat-x;
+   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffFFFFFF', endColorstr='#ffF2F2F2', GradientType=0); /* start colors with "ff" */
+   /* this ends vendor specific CSS for older browsers */
+   border: 1px solid #D4D4D4;
+}
+
+/* change text colors inactive entries in level 1 */
+#wwvFlowForm .navbar .nav > li > a {
+   color: #777777; /* copy this color to the rule set below */
+   text-shadow: 0 1px 0 #FFFFFF;
+}
+
+/* change drop-down arrow color for inactive entries in level 1 */
+#wwvFlowForm .navbar .nav li.dropdown > .dropdown-toggle .caret{
+   border-bottom-color: #777777; /* color should match the text color from previous rule set */
+   border-top-color: #777777; /* color should match the text color from previous rule set */
+}
+
+/*change text colors inactive entries with focus in level 1*/
+#wwvFlowForm .navbar .nav > li > a:focus, #wwvFlowForm  .navbar .nav > li > a:hover {
+   color: #333333; /* copy this color to the rule set below */
+   text-shadow: 0 1px 0 #FFFFFF;
+}
+
+/*change drop-down arrow color for inactive entries with focus in level 1*/
+#wwvFlowForm .navbar .nav li.dropdown > a:hover .caret, #wwvFlowForm .navbar .nav li.dropdown > a:focus .caret {
+   border-bottom-color: #333333; /*color should match the text color from previous rule set*/
+   border-top-color: #333333; /*color should match the text color from previous rule set*/
+}
+
+/* change background and text colors for active AND open entries in level 1 */
+#wwvFlowForm .navbar .nav > .active > a,
+#wwvFlowForm .navbar .nav > .active > a:hover, 
+#wwvFlowForm .navbar .nav > .active > a:focus, 
+#wwvFlowForm .navbar .nav li.dropdown.open > .dropdown-toggle, 
+#wwvFlowForm .navbar .nav li.dropdown.active > .dropdown-toggle, 
+#wwvFlowForm .navbar .nav li.dropdown.open.active > .dropdown-toggle {
+   background-color: #E5E5E5;
+   color: #555555; /* copy this color to the rule set below */
+   text-shadow: 0 1px 0 #FFFFFF; /* try setting to none if the text is blury */
+}
+
+/* change drop-down arrow color for active AND open entries in level 1 */
+#wwvFlowForm .navbar .nav li.dropdown.open > .dropdown-toggle .caret, 
+#wwvFlowForm .navbar .nav li.dropdown.active > .dropdown-toggle .caret, 
+#wwvFlowForm .navbar .nav li.dropdown.open.active > .dropdown-toggle .caret {
+    border-bottom-color: #555555; /* color should match color from previous rule set */
+    border-top-color: #555555; /* color should match color from previous rule set */
+}
+
+/* change vertical divider colors for level 1 */
+#wwvFlowForm .navbar .divider-vertical {
+    border-left: 1px solid #F2F2F2;
+    border-right: 1px solid #FFFFFF;
+}
+
+/* change background and text colors for active AND open entries for levels 2+ */
+#wwvFlowForm .dropdown-menu > li > a:hover, 
+#wwvFlowForm .dropdown-menu > li > a:hover, 
+#wwvFlowForm .dropdown-menu > li > a:focus, 
+#wwvFlowForm .dropdown-submenu:hover > a, 
+#wwvFlowForm .dropdown-submenu:focus > a,
+#wwvFlowForm .dropdown-menu > .active > a, 
+#wwvFlowForm .dropdown-menu > .active > a:hover,
+#wwvFlowForm .dropdown-menu > .active > a:focus{
+   background-color: #0081C2; /*medium color - used if gradients not supported*/
+   background-image: linear-gradient(to bottom, #0088CC, #0077B3); /*(lightest, darkest) - used if gradients supported*/
+   /* this starts vendor specific CSS for older browsers, just copy colors down from above */
+   background-image: -moz-linear-gradient(top, #0088CC, #0077B3);
+   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088CC), to(#0077B3));
+   background-image: -webkit-linear-gradient(top, #0088CC, #0077B3);
+   background-image: -o-linear-gradient(top, #0088CC, #0077B3);
+   background-image: linear-gradient(to bottom, #0088CC, #0077B3);
+   background-repeat: repeat-x;
+   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088CC', endColorstr='#ff0077B3', GradientType=0); /* start colors with "ff" */
+   /* this ends vendor specific CSS for older browsers */
+}
+
+/* change brand color */
+#wwvFlowForm .navbar .brand{
+    color: #777777;
+}
+
+/* change brand hover color */
+#wwvFlowForm .navbar .brand:hover, 
+#wwvFlowForm .navbar .brand:focus{
+    color: #333333;
+}
