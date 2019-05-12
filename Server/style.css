@@ -1,0 +1,208 @@
+/* Universal theme overrides */
+/*
+.t-Header-nav-list{
+  padding-left: 16px;
+}
+*/
+.t-Header-logo{
+  line-height: unset;
+}
+
+.nodatafound{
+  font-size: 1.2rem;
+}
+
+/* Application description */
+span.z-app-desc{
+	font-size: 1.4rem;
+	font-style: oblique;
+  font-weight: normal;
+}
+
+/* Post report */
+.z-post{
+  background-color: #ffffff;
+  margin-bottom: 16px;
+  border: 1px solid rgba(0,0,0,.1);
+  border-radius: 2px;
+  box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
+}
+.z-post.z-post--IR{
+  border-top: none!important;
+  border-right: none!important;
+  border-left: none!important;
+  border-radius: unset!important;
+  box-shadow: none!important;
+}
+.z-post--stack .z-post{
+  margin-bottom: 0!important;
+  border: none!important;
+  border-radius: unset!important;
+  box-shadow: none!important;
+}
+.z-post-container{
+  padding: 16px;
+}
+.z-post-header{
+  clear: both;
+}
+.z-post-header h2{
+  font-size: 1.8em;
+  margin: 0 0 0.2rem;
+}
+.z-post-header h2 a{
+  color: #242424;
+}
+.z-post-header h3{
+  font-size: 1.4rem;
+  font-weight: normal;
+  margin: 0 0 2.8rem;
+}
+.z-post-header h4{
+  font-size: 1.4rem;
+  margin: 0 0 0.2rem;
+}
+.z-post-body img{
+  max-width: 100%;
+  height: auto;
+}
+.z-post-body br{
+  clear: none!important;
+}
+.z-post-footer{
+  width: 100%;
+  clear: both;
+}
+/* Post comments */
+.z-comment-reply{
+  margin-left: 3em;
+}
+
+/* Program code formating */
+pre.program-code,
+pre.z-program-code{
+  counter-reset: line;
+  overflow-x: auto;
+  tab-size: 2;
+  font-size: 1.2rem;
+  font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace !important;
+  color: #333333;
+}
+pre.program-code code,
+pre.z-program-code code{
+  counter-increment: line;
+  tab-size: inherit;
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+pre.program-code code:before,
+pre.z-program-code code:before{
+  content: counter(line);
+  border-right: 3px solid #6ce26c;
+  margin: 0 0.8em 0 0;
+  padding: 0 0.3em 0 0;
+  display: inline-block;
+  text-align: right;
+  width: 2.2em;
+  color: #afafaf;
+  -webkit-user-select: none;
+}
+
+/* right column link lists */
+.z-link-list--no-border li,
+.z-link-list--no-border a:focus{
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Author info */
+.z-author-container{
+  display: table;
+  width: 100%;
+}
+.z-author-left{
+  display: table-cell;
+}
+.z-author-right{
+  display: table-cell;
+  padding-left: 16px;
+  vertical-align: top;
+}
+
+/* Links Report */
+li.z-links-Header{
+  padding: 1.2rem;
+  display: flex;
+  flex-grow: 1;
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 2.4rem;
+  border: 1px solid #e0e0e0;
+  margin-top: 1.2rem;
+}
+li.z-links-Header:first-child{
+  margin-top: 0;
+}
+
+.z-links-URL{
+  display: flex;
+  margin-top: 1.6rem;
+  font-style: oblique;
+}
+
+li.z-links--SideBorders{
+  border-left: 1px solid #e0e0e0;
+  border-right: 1px solid #e0e0e0;
+}
+
+li.z-links--SideBorders:last-child{
+  border-bottom: 1px solid #e0e0e0;
+}
+
+@media only screen and (max-width: 640px){
+
+  /* Post */
+  .z-post{
+    margin-bottom: 8px;
+  }
+  .z-post-container{
+    padding: 8px;
+  }
+  .z-post-header h2{
+    font-size: 1.4em;
+  }
+  .z-post-header h3{
+    font-size: 1.3rem;
+  }
+  .z-post-header h4{
+    font-size: 1.3rem;
+  }
+
+  /* Comments */
+  .z-comment-reply{
+    margin-left: 1.2em;
+  }
+  
+  /* Author info */
+  .z-author-container{
+    display: block;
+  }
+  .z-author-left{
+    display: block;
+    text-align: center;
+  }
+  .z-author-right{
+    display: block;
+  }
+
+}
+
+.z-hidden{
+  display: none;
+  visibility: hidden;
+}
