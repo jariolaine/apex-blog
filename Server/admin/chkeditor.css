@@ -1,4 +1,5 @@
-pre.program-code{
+pre.program-code,
+pre.z-program-code{
   background-color: #eeeeee !important;
   border-left: 3px solid #6ce26c !important;
   padding-left: 0.8em !important;

@@ -1,25 +1,61 @@
-/* Universal theme overrides */
-/*
-.t-Header-nav-list{
-  padding-left: 16px;
+/*********************************
+*  Universal theme overrides
+*********************************/
+/**
+* Remove link button border when focused
+**/
+.t-Button--link:focus:before,
+.t-Button--link:focus:after{
+  outline:none!important;
+  box-shadow:none!important;
 }
-*/
+/**
+* Logo
+**/
 .t-Header-logo{
-  line-height: unset;
+  line-height: 1.8rem;
 }
-
-.nodatafound{
-  font-size: 1.2rem;
+.t-Header-logo-link{
+  display: initial;
 }
-
-/* Application description */
-span.z-app-desc{
+.t-Header-logo-link q{
+  white-space: pre;
 	font-size: 1.4rem;
 	font-style: oblique;
   font-weight: normal;
 }
+.t-Header-logo-link q::before{
+  content: "\A";
+}
 
-/* Post report */
+/*********************************
+*  Custom styles
+*********************************/
+
+/**
+* Author info
+**/
+.z-author-container{
+  display: table;
+  width: 100%;
+}
+.z-author-left{
+  display: table-cell;
+}
+.z-author-right{
+  display: table-cell;
+  padding-left: 16px;
+  vertical-align: top;
+}
+/**
+* Reports
+**/
+.nodatafound{
+  font-size: 1.2rem;
+}
+/**
+* Post report
+**/
 .z-post{
   background-color: #ffffff;
   margin-bottom: 16px;
@@ -27,14 +63,7 @@ span.z-app-desc{
   border-radius: 2px;
   box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
 }
-.z-post.z-post--IR{
-  border-top: none!important;
-  border-right: none!important;
-  border-left: none!important;
-  border-radius: unset!important;
-  box-shadow: none!important;
-}
-.z-post--stack .z-post{
+.z-post--single .z-post{
   margin-bottom: 0!important;
   border: none!important;
   border-radius: unset!important;
@@ -73,12 +102,40 @@ span.z-app-desc{
   width: 100%;
   clear: both;
 }
-/* Post comments */
-.z-comment-reply{
-  margin-left: 3em;
+/**
+* Links Report
+**/
+li.z-links-header{
+  padding: 1.2rem;
+  display: flex;
+  flex-grow: 1;
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 2.4rem;
+  border: 1px solid #e0e0e0;
+  margin-top: 1.2rem;
+}
+li.z-links-header:first-child{
+  margin-top: 0;
+}
+/*
+.z-links-url{
+  display: flex;
+  margin-top: 1.6rem;
+  font-style: oblique;
+}
+*/
+li.z-links-item{
+  border-left: 1px solid #e0e0e0;
+  border-right: 1px solid #e0e0e0;
+}
+li.z-links-item:last-child{
+  border-bottom: 1px solid #e0e0e0;
 }
 
-/* Program code formating */
+/**
+* Program code formating
+**/
 pre.program-code,
 pre.z-program-code{
   counter-reset: line;
@@ -111,8 +168,9 @@ pre.z-program-code code:before{
   color: #afafaf;
   -webkit-user-select: none;
 }
-
-/* right column link lists */
+/**
+* Right column link lists
+**/
 .z-link-list--no-border li,
 .z-link-list--no-border a:focus{
   border: none;
@@ -120,58 +178,12 @@ pre.z-program-code code:before{
   box-shadow: none;
 }
 
-/* Author info */
-.z-author-container{
-  display: table;
-  width: 100%;
-}
-.z-author-left{
-  display: table-cell;
-}
-.z-author-right{
-  display: table-cell;
-  padding-left: 16px;
-  vertical-align: top;
-}
-
-/* Links Report */
-li.z-links-Header{
-  padding: 1.2rem;
-  display: flex;
-  flex-grow: 1;
-  font-size: 1.6rem;
-  font-weight: 500;
-  line-height: 2.4rem;
-  border: 1px solid #e0e0e0;
-  margin-top: 1.2rem;
-}
-li.z-links-Header:first-child{
-  margin-top: 0;
-}
-
-.z-links-URL{
-  display: flex;
-  margin-top: 1.6rem;
-  font-style: oblique;
-}
-
-li.z-links--SideBorders{
-  border-left: 1px solid #e0e0e0;
-  border-right: 1px solid #e0e0e0;
-}
-
-li.z-links--SideBorders:last-child{
-  border-bottom: 1px solid #e0e0e0;
-}
-
 @media only screen and (max-width: 640px){
-
-  /* Post */
+  /**
+  * Post report
+  **/
   .z-post{
     margin-bottom: 8px;
-  }
-  .z-post-container{
-    padding: 8px;
   }
   .z-post-header h2{
     font-size: 1.4em;
@@ -182,13 +194,15 @@ li.z-links--SideBorders:last-child{
   .z-post-header h4{
     font-size: 1.3rem;
   }
-
-  /* Comments */
+  /**
+  * Comments
+  **/
   .z-comment-reply{
     margin-left: 1.2em;
   }
-  
-  /* Author info */
+  /**
+  * Author info
+  **/
   .z-author-container{
     display: block;
   }
@@ -199,7 +213,6 @@ li.z-links--SideBorders:last-child{
   .z-author-right{
     display: block;
   }
-
 }
 
 .z-hidden{

@@ -1,0 +1,147 @@
+/*********************************
+*  Custom styles
+*********************************/
+/**
+* Program code formating
+**/
+pre.program-code,
+pre.z-program-code{
+  counter-reset: line;
+  overflow-x: auto;
+  tab-size: 2;
+  font-size: 1.2rem;
+  font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace !important;
+  color: #333333;
+}
+pre.program-code code,
+pre.z-program-code code{
+  counter-increment: line;
+  tab-size: inherit;
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+pre.program-code code:before,
+pre.z-program-code code:before{
+  content: counter(line);
+  border-right: 3px solid #6ce26c;
+  margin: 0 0.8em 0 0;
+  padding: 0 0.3em 0 0;
+  display: inline-block;
+  text-align: right;
+  width: 2.2em;
+  color: #afafaf;
+  -webkit-user-select: none;
+}
+/**
+* Reports
+**/
+.nodatafound{
+  font-size: 1.2rem;
+}
+/**
+* Post report
+**/
+.z-post{
+  background-color: #ffffff;
+  border-top: 1px solid rgba(0,0,0,.1);
+  box-shadow: 0 4px 8px 4px rgba(0,0,0,.1);
+}
+.z-post:first-child{
+  border-top: none;
+}
+.z-post-container{
+  padding: 16px;
+}
+.z-post-header{
+  clear: both;
+}
+.z-post-header h2{
+  font-size: 1.8em;
+  margin: 0 0 0.2rem;
+}
+.z-post-header h2 a{
+  color: #242424;
+}
+.z-post-header h3{
+  font-size: 1.4rem;
+  font-weight: normal;
+  margin: 0 0 2.8rem;
+}
+.z-post-header h4{
+  font-size: 1.4rem;
+  margin: 0 0 0.2rem;
+}
+.z-post-body img{
+  max-width: 100%;
+  height: auto;
+}
+.z-post-body br{
+  clear: none!important;
+}
+.z-post-footer{
+  width: 100%;
+  clear: both;
+}
+
+/**
+* Rich text editor
+**/
+/* Author info */
+.cke_editable .z-author-container {
+  display: table;
+  width: 100%;
+}
+.cke_editable .z-author-left {
+  display: table-cell;
+}
+.cke_editable .z-author-right {
+  display: table-cell;
+  padding-left: 16px;
+  vertical-align: top;
+}
+/* Program code formating */
+.cke_editable pre.program-code,
+.cke_editable pre.z-program-code{
+  background-color: #eeeeee !important;
+  border-left: 3px solid #6ce26c !important;
+  padding-left: 0.8em !important;
+  overflow-x: auto !important;
+  tab-size: 2 !important;
+  font-size: 12px !important;
+  font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace !important;
+}
+.cke_panel_listItem pre.program-code,
+.cke_panel_listItem pre.z-program-code{
+  background-color: #eeeeee !important;
+  border-left: 3px solid #6ce26c !important;
+  padding-left: 0.8em !important;
+  font-size: 12px !important;
+  font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace !important;
+}
+@media only screen and (max-width: 640px){
+  /**
+  * Post report
+  **/
+  .z-post{
+    margin-bottom: 8px;
+  }
+  .z-post-header h2{
+    font-size: 1.4em;
+  }
+  .z-post-header h3{
+    font-size: 1.3rem;
+  }
+  .z-post-header h4{
+    font-size: 1.3rem;
+  }
+
+}
+
+.z-hidden{
+  display: none;
+  visibility: hidden;
+}
