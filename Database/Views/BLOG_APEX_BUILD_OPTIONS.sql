@@ -1,12 +1,13 @@
 --------------------------------------------------------
---  File created - Friday-January-03-2020   
+--  File created - Friday-January-03-2020
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for View BLOG_APEX_BUILD_OPTIONS
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_040000"."BLOG_APEX_BUILD_OPTIONS" ("BUILD_OPTION_ID", "APPLICATION_ID", "FEATURE_IDENTIFIER", "BUILD_OPTION_NAME", "FEATURE_NAME", "STATUS", "FEATURE_DESC", "LAST_UPDATED", "LAST_UPDATED_BY", "CURRENT_STATUS", "SWITCH_HTML", "CURRENT_STATUS_CSS_CLASS") AS 
-  select build_option_id
+CREATE OR REPLACE FORCE VIEW "BLOG_APEX_BUILD_OPTIONS"
+AS
+select build_option_id
   ,application_id
   ,feature_identifier
   ,build_option_name
@@ -24,14 +25,14 @@
   ) as feature_desc
   ,last_updated_on as last_updated
   ,lower( last_updated_by ) as last_updated_by
-  ,case 
+  ,case
   when build_option_status = 'Include'
     then msg.feature_enabled
   when build_option_status = 'Exclude'
     then msg.feature_disabled
   end as current_status
   ,apex_item.hidden( 1, build_option_id )
-  || apex_item.switch ( 
+  || apex_item.switch (
      p_idx        => 2
     ,p_value      => build_option_status
     ,p_on_value   => 'Include'
@@ -41,7 +42,7 @@
     ,p_item_id    => 'BO_OPT_' || rownum
     ,p_attributes => 'style="white-space:pre;display:inline-flex;"'
     ,p_item_label => (
-      case 
+      case
       when build_option_status = 'Include' then
         apex_lang.message(
            p_name => 'APEX.FEATURE.CONFIG.IS_ENABLED'
@@ -52,10 +53,10 @@
            p_name => 'APEX.FEATURE.CONFIG.IS_DISABLED'
           ,p0 => apex_escape.html( build_option_name )
         )
-      end 
+      end
     )
   ) as switch_html
-  ,case 
+  ,case
   when build_option_status = 'Include'
     then 'u-success-text'
   when build_option_status = 'Exclude'
@@ -68,6 +69,6 @@ cross join (
   from dual
 ) msg
 where 1 = 1
-and build_option_name like 'BLOG\_FEATURE\_%' escape '\' 
+and build_option_name like 'BLOG\_FEATURE\_%' escape '\'
 --'
 ;

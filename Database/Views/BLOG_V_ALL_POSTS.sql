@@ -1,12 +1,13 @@
 --------------------------------------------------------
---  File created - Friday-January-03-2020   
+--  File created - Friday-January-03-2020
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POSTS
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_040000"."BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "VALID_FROM", "YEAR_MONTH", "POST_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS 
-  select
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS"
+AS
+select
    t1.id            as id
   ,t1.category_id   as category_id
   ,t1.blogger_id    as blogger_id
@@ -35,7 +36,7 @@
     where 1 = 1
     and co.post_id  = t1.id
   ) as comments_count
-  ,case 
+  ,case
     when t3.is_active = 0
     then 'BLOGGER_DISABLED'
     when t2.is_active = 0
@@ -45,10 +46,10 @@
     when t1.valid_from > localtimestamp
     then 'SCHEDULED'
     else 'PUBLISHED'
-   end as post_status 
+   end as post_status
 from blog_posts t1
 join blog_categories t2 on t1.category_id = t2.id
 join blog_bloggers t3 on t1.blogger_id = t3.id
-where 1 = 1 
+where 1 = 1
 with read only
 ;

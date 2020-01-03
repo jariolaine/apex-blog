@@ -1,12 +1,13 @@
 --------------------------------------------------------
---  File created - Friday-January-03-2020   
+--  File created - Friday-January-03-2020
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for View BLOG_V_COMMENTS
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_040000"."BLOG_V_COMMENTS" ("COMMENT_ID", "POST_ID", "PARENT_ID", "COMMENT_ON", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "ACTIONS") AS 
-  with q1 as(
+CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS"
+AS
+with q1 as(
   select
      apex_lang.lang( 'Reply' )    as reply_txt
     ,apex_lang.lang( 'Comment' )  as comment_txt

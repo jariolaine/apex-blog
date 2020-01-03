@@ -1,12 +1,13 @@
 --------------------------------------------------------
---  File created - Friday-January-03-2020   
+--  File created - Friday-January-03-2020
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS_LAST10
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_040000"."BLOG_V_POSTS_LAST10" ("POST_ID", "CREATED_ON", "DISPLAY_SEQ", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE", "RSS_TITLE", "RSS_DESC", "RSS_CATEGORY", "PUBDATE") AS 
-  with qry as (
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST10"
+AS
+with qry as (
   select /*+ FIRST_ROWS(10) */
      row_number() over ( order by t1.created_on desc ) as rn
     ,t1.post_id

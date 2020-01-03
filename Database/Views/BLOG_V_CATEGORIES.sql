@@ -1,12 +1,13 @@
 --------------------------------------------------------
---  File created - Friday-January-03-2020   
+--  File created - Friday-January-03-2020
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for View BLOG_V_CATEGORIES
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_040000"."BLOG_V_CATEGORIES" ("CATEGORY_ID", "CREATED_ON", "CATEGORY_TITLE", "DISPLAY_SEQ") AS 
-  select 
+CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES"
+AS
+  select
    t1.id            as category_id
   ,t1.created_on    as created_on
   ,t1.title         as category_title

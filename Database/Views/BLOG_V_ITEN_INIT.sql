@@ -1,12 +1,13 @@
 --------------------------------------------------------
---  File created - Friday-January-03-2020   
+--  File created - Friday-January-03-2020
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for View BLOG_V_ITEN_INIT
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_040000"."BLOG_V_ITEN_INIT" ("APPLICATION_ID", "ITEM_NAME", "ITEM_VALUE") AS 
-  with item as (
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ITEN_INIT"
+AS
+with item as (
   select a.application_id
     ,a.item_name
   from apex_application_items a

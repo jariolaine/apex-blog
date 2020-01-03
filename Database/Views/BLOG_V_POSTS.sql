@@ -1,12 +1,13 @@
 --------------------------------------------------------
---  File created - Friday-January-03-2020   
+--  File created - Friday-January-03-2020
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_040000"."BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "CREATED_ON", "YEAR_MONTH", "COMMENTS_COUNT", "READ_MORE_TXT", "POSTED_ON_TXT", "POSTED_BY_TXT", "CATEGORY_TXT", "TAGS_TXT") AS 
-  select
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS"
+AS
+select
    t1.id              as post_id
   ,t3.id              as category_id
   ,t2.id              as blogger_id
@@ -33,7 +34,7 @@
     from dual
   ) as read_more_txt
   ,(
-    select 
+    select
       apex_lang.lang(
         'Posted on'
       )

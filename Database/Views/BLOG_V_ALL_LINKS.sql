@@ -1,12 +1,13 @@
 --------------------------------------------------------
---  File created - Friday-January-03-2020   
+--  File created - Friday-January-03-2020
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_LINKS
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_040000"."BLOG_V_ALL_LINKS" ("LINK_ID", "GROUP_ID", "IS_ACTIVE", "DISPLAY_SEQ", "GROUP_DISPLAY_SEQ", "LINK_TITLE", "GROUP_TITLE", "LINK_DESC", "LINK_URL") AS 
-  select 
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINKS"
+AS
+select
    t1.id                        as link_id
   ,t2.id                        as group_id
   ,t1.is_active * t2.is_active  as is_active
