@@ -1,6 +1,19 @@
 /*********************************
 *  Custom styles
 *********************************/
+.z-body--no-padding .t-Body-contentInner{
+  padding: 0;
+}
+.z-body--no-padding .t-Tabs--pill{
+  margin-bottom: 0;
+}
+.z-menu-bar--border {
+  border: 1px solid rgba(0,0,0,.1);
+}
+.z-IRR-header--group .a-IRR-header--group{
+  font-size: 1.8rem;
+}
+
 /**
 * Program code formating
 **/
@@ -47,11 +60,10 @@ pre.z-program-code code:before{
 **/
 .z-post{
   background-color: #ffffff;
-  border-top: 1px solid rgba(0,0,0,.1);
-  box-shadow: 0 4px 8px 4px rgba(0,0,0,.1);
-}
-.z-post:first-child{
-  border-top: none;
+  margin-bottom: 16px;
+  border: 1px solid rgba(0,0,0,.1);
+  border-radius: 2px;
+  box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
 }
 .z-post-container{
   padding: 16px;
@@ -85,6 +97,14 @@ pre.z-program-code code:before{
 .z-post-footer{
   width: 100%;
   clear: both;
+}
+/* post report IR specific in admin app */
+.z-post--IR:first-child{
+  border-top: none;
+}
+.z-post--IR{
+  margin-left: 8px;
+  margin-right: 8px
 }
 
 /**
