@@ -254,6 +254,8 @@ var blog = blog || {};
 
       options.disallowedContent = "script; *[on*]";
 
+      options.toolbarCanCollapse = true;
+
       options.contentsCss = options.contentsCss || [];
       options.contentsCss.push(CKEDITOR.getUrl("contents.css"));
 
