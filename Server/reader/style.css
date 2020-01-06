@@ -19,13 +19,10 @@
 * Logo
 **/
 .z-app-logo q{
-  white-space: pre;
+  display: block;
 	font-size: 1.4rem;
 	font-style: oblique;
   font-weight: normal;
-}
-.z-app-logo q::before{
-  content: "\A";
 }
 
 /**
