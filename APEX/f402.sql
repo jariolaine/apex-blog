@@ -27,7 +27,7 @@ prompt APPLICATION 402 - Blog Administration
 -- Application Export:
 --   Application:     402
 --   Name:            Blog Administration
---   Date and Time:   13:52 Monday January 6, 2020
+--   Date and Time:   18:13 Monday January 6, 2020
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -36,13 +36,13 @@ prompt APPLICATION 402 - Blog Administration
 --
 
 -- Application Statistics:
---   Pages:                     21
---     Items:                   51
---     Computations:             6
+--   Pages:                     22
+--     Items:                   52
+--     Computations:             5
 --     Validations:              8
---     Processes:               25
---     Regions:                 44
---     Buttons:                 40
+--     Processes:               27
+--     Regions:                 47
+--     Buttons:                 42
 --     Dynamic Actions:         11
 --   Shared Components:
 --     Logic:
@@ -70,7 +70,7 @@ prompt APPLICATION 402 - Blog Administration
 --       LOVs:                  10
 --       Shortcuts:              2
 --     Globalization:
---       Messages:              39
+--       Messages:              40
 --     Reports:
 --     E-Mail:
 --   Supporting Objects:  Excluded
@@ -124,7 +124,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'Y'
 ,p_error_handling_function=>'#OWNER#.blog_err.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200106134805'
+,p_last_upd_yyyymmddhh24miss=>'20200106181001'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>82
 ,p_ui_type_name => null
@@ -408,7 +408,8 @@ wwv_flow_api.create_list(
 '    ,1 as list_level ',
 '    ,1 as display_seq',
 '    ,1 as can_hide',
-'    ,apex_lang.lang(''Edit Group (%0)'', :P17_LINK_GROUP_NAME) as list_label',
+'--    ,apex_lang.lang(''Edit Group (%0)'', :P17_LINK_GROUP_NAME) as list_label',
+'    ,apex_lang.lang(''Edit Group'') as list_label',
 '    ,apex_page.get_url(',
 '      p_page => ''20''',
 '      ,p_clear_cache => ''20''',
@@ -423,7 +424,8 @@ wwv_flow_api.create_list(
 '    ,1 as list_level ',
 '    ,1 as display_seq',
 '    ,1 as can_hide',
-'    ,apex_lang.lang(''Add Link to Group (%0)'', :P17_LINK_GROUP_NAME) as list_label',
+'--    ,apex_lang.lang(''Add Link to Group (%0)'', :P17_LINK_GROUP_NAME) as list_label',
+'    ,apex_lang.lang(''Add Link'') as list_label',
 '    ,apex_page.get_url(',
 '      p_page => ''18''',
 '      ,p_clear_cache => ''18''',
@@ -10820,6 +10822,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Category exists already. Category names are unique when converted upper case.'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19324753900501668)
+,p_name=>'BLOG_CONFIRM_LINK_GROUP_DELETE'
+,p_message_text=>'You have requested the permanent deletion of link group %0. Following links will be also deleted.'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(9891646056898808)
 ,p_name=>'BLOG_ERR_CATEGORY_EXISTS_IS_DISABLED'
 ,p_message_text=>'Category %0 already exists but has been disabled.'
@@ -11535,7 +11542,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when=>'G_USER_ID'
 ,p_help_text=>'<h3>Editing post</h3>'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200106134805'
+,p_last_upd_yyyymmddhh24miss=>'20200106172556'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -11549,9 +11556,7 @@ wwv_flow_api.create_page_plug(
 ,p_query_type=>'TABLE'
 ,p_query_table=>'BLOG_POSTS'
 ,p_include_rowid_column=>true
-,p_is_editable=>true
-,p_edit_operations=>'i:u:d'
-,p_lost_update_check_type=>'VALUES'
+,p_is_editable=>false
 ,p_plug_source_type=>'NATIVE_FORM'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
@@ -11611,9 +11616,9 @@ wwv_flow_api.create_page_plug(
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(18441525921293012)
-,p_plug_name=>'Version Control'
-,p_region_css_classes=>'z-version-control'
-,p_plug_template=>wwv_flow_api.id(8475523710518195)
+,p_plug_name=>'Changes'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:js-useLocalStorage:t-Region--controlsPosEnd:is-expanded:t-Region--stacked:t-Region--scrollBody'
+,p_plug_template=>wwv_flow_api.id(8485724502518203)
 ,p_plug_display_sequence=>60
 ,p_plug_display_point=>'REGION_POSITION_03'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -11660,7 +11665,7 @@ wwv_flow_api.create_page_button(
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_is_hot=>'Y'
-,p_button_image_alt=>'Save'
+,p_button_image_alt=>'Publish'
 ,p_button_position=>'REGION_TEMPLATE_CREATE'
 ,p_button_condition=>'P12_POST_ID'
 ,p_button_condition_type=>'ITEM_IS_NULL'
@@ -12017,7 +12022,7 @@ wwv_flow_api.create_page_item(
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(18441663346293013)
-,p_name=>'P12_VERSION_COMMENT'
+,p_name=>'P12_CHANGE_NOTE'
 ,p_item_sequence=>20
 ,p_item_plug_id=>wwv_flow_api.id(18441525921293012)
 ,p_prompt=>'Change Notes'
@@ -12054,10 +12059,11 @@ wwv_flow_api.create_page_item(
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(19021152877830235)
-,p_name=>'P12_IS_ACTIVE__DISPLAY'
+,p_name=>'P12_IS_ACTIVE_DISPLAY'
 ,p_is_required=>true
 ,p_item_sequence=>120
 ,p_item_plug_id=>wwv_flow_api.id(8640589331194982)
+,p_use_cache_before_default=>'NO'
 ,p_prompt=>'Status'
 ,p_source=>'P12_IS_ACTIVE'
 ,p_source_type=>'ITEM'
@@ -12068,8 +12074,8 @@ wwv_flow_api.create_page_item(
 ,p_display_when=>'P12_POST_ID'
 ,p_display_when_type=>'ITEM_IS_NOT_NULL'
 ,p_field_template=>wwv_flow_api.id(8548365426518242)
-,p_item_css_classes=>'padding-top-sm'
-,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--stretchInputs:t-Form-fieldContainer--radioButtonGroup'
+,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--stretchInputs:margin-top-sm:t-Form-fieldContainer--radioButtonGroup'
+,p_is_persistent=>'N'
 ,p_lov_display_extra=>'NO'
 ,p_restricted_characters=>'WEB_SAFE'
 ,p_help_text=>'You can create draft and publish post later. Published post can be reverted to draft, meaning it will not be anymore available for readers. This item is available only when editing post.'
@@ -12163,19 +12169,6 @@ wwv_flow_api.create_page_process(
 ,p_process_comment=>'Add new category if not exists and get category id'
 );
 wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(18440733532293004)
-,p_process_sequence=>20
-,p_process_point=>'AFTER_SUBMIT'
-,p_region_id=>wwv_flow_api.id(8640589331194982)
-,p_process_type=>'NATIVE_FORM_DML'
-,p_process_name=>'Process form Properties'
-,p_attribute_01=>'REGION_SOURCE'
-,p_attribute_05=>'Y'
-,p_attribute_06=>'Y'
-,p_attribute_08=>'Y'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-);
-wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(7077714087172775)
 ,p_process_sequence=>30
 ,p_process_point=>'AFTER_SUBMIT'
@@ -12192,8 +12185,21 @@ wwv_flow_api.create_page_process(
 ,p_process_comment=>'Add and or remove tags from post. Run only when post is inserted or updated.'
 );
 wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(7078672625172784)
+ p_id=>wwv_flow_api.id(19355288927963204)
 ,p_process_sequence=>40
+,p_process_point=>'AFTER_SUBMIT'
+,p_region_id=>wwv_flow_api.id(8640589331194982)
+,p_process_type=>'NATIVE_FORM_DML'
+,p_process_name=>'Process Row from BLOG_POSTS'
+,p_attribute_01=>'REGION_SOURCE'
+,p_attribute_05=>'Y'
+,p_attribute_06=>'Y'
+,p_attribute_08=>'Y'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(7078672625172784)
+,p_process_sequence=>50
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Remove unused tags'
@@ -13619,7 +13625,7 @@ wwv_flow_api.create_page(
 ,p_required_role=>'MUST_NOT_BE_PUBLIC_USER'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200105184238'
+,p_last_upd_yyyymmddhh24miss=>'20200106181001'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6849894493100859)
@@ -13809,7 +13815,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_report_alias=>'31109'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'DISPLAY_SEQ:LINK_TITLE:GROUP_TITLE:LINK_URL:IS_ACTIVE:'
+,p_report_columns=>'LINK_TITLE:LINK_URL:IS_ACTIVE:DISPLAY_SEQ:'
 ,p_sort_column_1=>'DISPLAY_SEQ'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'0'
@@ -13822,12 +13828,12 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_sort_direction_5=>'ASC'
 ,p_sort_column_6=>'0'
 ,p_sort_direction_6=>'ASC'
-,p_break_on=>'GROUP_TITLE:0:0:0:0:0'
-,p_break_enabled_on=>'0:0:0:0:0:GROUP_TITLE'
+,p_break_on=>'0:0:0:0:0'
+,p_break_enabled_on=>'0:0:0:0:0'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(18443387847293030)
-,p_plug_name=>'Links'
+,p_plug_name=>'Menu'
 ,p_region_css_classes=>'z-menu-bar--border'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'#DEFAULT#'
@@ -13851,7 +13857,7 @@ wwv_flow_api.create_page_button(
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Reset'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
-,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:RP,RIR::'
+,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:RP,RIR,17::'
 ,p_icon_css_classes=>'fa-undo-alt'
 );
 wwv_flow_api.create_page_item(
@@ -13867,20 +13873,28 @@ wwv_flow_api.create_page_item(
 ,p_name=>'P17_LINK_GROUP_NAME'
 ,p_item_sequence=>20
 ,p_item_plug_id=>wwv_flow_api.id(6849894493100859)
-,p_display_as=>'NATIVE_HIDDEN'
-,p_attribute_01=>'Y'
-);
-wwv_flow_api.create_page_computation(
- p_id=>wwv_flow_api.id(18444424346293041)
-,p_computation_sequence=>10
-,p_computation_item=>'P17_LINK_GROUP_NAME'
-,p_computation_point=>'BEFORE_BOX_BODY'
-,p_computation_type=>'QUERY'
-,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select title',
+,p_use_cache_before_default=>'NO'
+,p_prompt=>'Group'
+,p_source=>'P17_LINK_GROUP_ID'
+,p_source_type=>'ITEM'
+,p_display_as=>'NATIVE_DISPLAY_ONLY'
+,p_named_lov=>'LINK_GROUP_ID'
+,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select title as display_value',
+'  ,link_group_id as return_value',
 'from #OWNER#.blog_v_all_link_groups',
 'where 1 = 1',
-'and link_group_id = :P17_LINK_GROUP_ID'))
+'order by display_seq'))
+,p_display_when=>'P17_LINK_GROUP_ID'
+,p_display_when_type=>'ITEM_IS_NOT_NULL'
+,p_field_template=>wwv_flow_api.id(8548656595518243)
+,p_item_css_classes=>'padding-left-md padding-right-md padding-bottom-none'
+,p_item_template_options=>'#DEFAULT#'
+,p_is_persistent=>'N'
+,p_lov_display_extra=>'YES'
+,p_attribute_01=>'N'
+,p_attribute_02=>'LOV'
+,p_attribute_04=>'Y'
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(9278236349652936)
@@ -13922,7 +13936,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when_type=>'ITEM_IS_NULL'
 ,p_read_only_when=>'G_USER_ID'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200105130520'
+,p_last_upd_yyyymmddhh24miss=>'20200106175209'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6814521408894774)
@@ -14045,7 +14059,10 @@ wwv_flow_api.create_page_item(
 ,p_item_sequence=>50
 ,p_item_plug_id=>wwv_flow_api.id(6836938600100844)
 ,p_item_source_plug_id=>wwv_flow_api.id(6836938600100844)
-,p_item_default=>'#OWNER#.blog_cm.get_link_grp_seq'
+,p_item_default=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#OWNER#.blog_cm.get_link_seq(',
+'  p_link_group_id => :P18_LINK_GROUP_ID',
+')'))
 ,p_item_default_type=>'PLSQL_EXPRESSION'
 ,p_prompt=>'Sequency'
 ,p_source=>'DISPLAY_SEQ'
@@ -14829,7 +14846,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when_type=>'ITEM_IS_NULL'
 ,p_read_only_when=>'G_USER_ID'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200105142157'
+,p_last_upd_yyyymmddhh24miss=>'20200106173018'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25773887524573137)
@@ -14893,18 +14910,15 @@ wwv_flow_api.create_page_button(
 ,p_button_sequence=>30
 ,p_button_plug_id=>wwv_flow_api.id(25773887524573137)
 ,p_button_name=>'DELETE'
-,p_button_action=>'REDIRECT_URL'
+,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Delete'
 ,p_button_position=>'REGION_TEMPLATE_DELETE'
-,p_button_redirect_url=>'javascript:apex.confirm(htmldb_delete_message,''DELETE'');'
-,p_button_execute_validations=>'N'
+,p_button_redirect_url=>'f?p=&APP_ID.:21:&SESSION.::&DEBUG.:RP,21:P21_ID:\&P20_ID.\'
 ,p_button_condition=>'P20_ID'
 ,p_button_condition_type=>'ITEM_IS_NOT_NULL'
 ,p_icon_css_classes=>'fa-trash-o'
-,p_grid_new_grid=>false
-,p_database_action=>'DELETE'
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(18960784634678367)
@@ -14926,25 +14940,16 @@ wwv_flow_api.create_page_button(
 wwv_flow_api.create_page_branch(
  p_id=>wwv_flow_api.id(18444295268293039)
 ,p_branch_name=>'Go To Page 17 New Created'
-,p_branch_action=>'f?p=&APP_ID.:17:&SESSION.::&DEBUG.::P17_LINK_GROUP_ID:&P20_ID.&success_msg=#SUCCESS_MSG#'
+,p_branch_action=>'f?p=&APP_ID.:17:&SESSION.::&DEBUG.:20:P17_LINK_GROUP_ID:&P20_ID.&success_msg=#SUCCESS_MSG#'
 ,p_branch_point=>'AFTER_PROCESSING'
 ,p_branch_type=>'REDIRECT_URL'
 ,p_branch_when_button_id=>wwv_flow_api.id(18961139440678367)
 ,p_branch_sequence=>10
 );
 wwv_flow_api.create_page_branch(
- p_id=>wwv_flow_api.id(18444576035293042)
-,p_branch_name=>'Go To Page 17 Group Deleted'
-,p_branch_action=>'f?p=&APP_ID.:17:&SESSION.::&DEBUG.:17::&success_msg=#SUCCESS_MSG#'
-,p_branch_point=>'AFTER_PROCESSING'
-,p_branch_type=>'REDIRECT_URL'
-,p_branch_when_button_id=>wwv_flow_api.id(18960338133678366)
-,p_branch_sequence=>20
-);
-wwv_flow_api.create_page_branch(
  p_id=>wwv_flow_api.id(18968983317678379)
 ,p_branch_name=>'Go To Page 17'
-,p_branch_action=>'f?p=&APP_ID.:17:&SESSION.::&DEBUG.&success_msg=#SUCCESS_MSG#'
+,p_branch_action=>'f?p=&APP_ID.:17:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
 ,p_branch_point=>'AFTER_PROCESSING'
 ,p_branch_type=>'REDIRECT_URL'
 ,p_branch_sequence=>30
@@ -15015,7 +15020,7 @@ wwv_flow_api.create_page_item(
 ,p_item_sequence=>100
 ,p_item_plug_id=>wwv_flow_api.id(25796304715779207)
 ,p_item_source_plug_id=>wwv_flow_api.id(25796304715779207)
-,p_item_default=>'0'
+,p_item_default=>'1'
 ,p_prompt=>'Status'
 ,p_source=>'IS_ACTIVE'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
@@ -15068,6 +15073,172 @@ wwv_flow_api.create_page_process(
 ,p_region_id=>wwv_flow_api.id(25796304715779207)
 ,p_process_type=>'NATIVE_FORM_INIT'
 ,p_process_name=>'Initialize form Add/Edit Link Group'
+);
+end;
+/
+prompt --application/pages/page_00021
+begin
+wwv_flow_api.create_page(
+ p_id=>21
+,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
+,p_name=>'Confirm Link Group Delete'
+,p_page_mode=>'MODAL'
+,p_step_title=>'Confirm Link Group Delete'
+,p_autocomplete_on_off=>'OFF'
+,p_group_id=>wwv_flow_api.id(4073365241705286)
+,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
+,p_protection_level=>'C'
+,p_last_updated_by=>'LAINFJAR'
+,p_last_upd_yyyymmddhh24miss=>'20200106180115'
+);
+wwv_flow_api.create_report_region(
+ p_id=>wwv_flow_api.id(19303429631329496)
+,p_name=>'Links to Deleted'
+,p_template=>wwv_flow_api.id(8475523710518195)
+,p_display_sequence=>20
+,p_region_template_options=>'#DEFAULT#'
+,p_component_template_options=>'#DEFAULT#:t-Report--stretch:t-Report--staticRowColors:t-Report--rowHighlightOff:t-Report--hideNoPagination'
+,p_display_point=>'BODY'
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select LINK_TITLE,',
+'       LINK_DESC',
+'  from BLOG_V_ALL_LINKS',
+' where group_id = :P21_ID',
+' order by DISPLAY_SEQ'))
+,p_ajax_enabled=>'Y'
+,p_ajax_items_to_submit=>'P21_ID'
+,p_query_row_template=>wwv_flow_api.id(8519378220518224)
+,p_query_num_rows=>10
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_query_no_data_found=>'no data found'
+,p_query_num_rows_type=>'NEXT_PREVIOUS_LINKS'
+,p_query_row_count_max=>500
+,p_pagination_display_position=>'BOTTOM_RIGHT'
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_prn_format=>'PDF'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'Y'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(19305082710329502)
+,p_query_column_id=>1
+,p_column_alias=>'LINK_TITLE'
+,p_column_display_sequence=>1
+,p_column_heading=>'Title'
+,p_use_as_row_header=>'N'
+,p_heading_alignment=>'LEFT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(19305460519329503)
+,p_query_column_id=>2
+,p_column_alias=>'LINK_DESC'
+,p_column_display_sequence=>2
+,p_column_heading=>'Description'
+,p_use_as_row_header=>'N'
+,p_heading_alignment=>'LEFT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_api.create_page_plug(
+ p_id=>wwv_flow_api.id(19336445759715841)
+,p_plug_name=>'Confirm Message'
+,p_region_template_options=>'#DEFAULT#:t-Alert--horizontal:t-Alert--defaultIcons:t-Alert--warning:t-Alert--removeHeading'
+,p_plug_template=>wwv_flow_api.id(8471603023518189)
+,p_plug_display_sequence=>10
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_plug_display_point=>'REGION_POSITION_01'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_plug_header=>'&APP_TEXT$BLOG_CONFIRM_LINK_GROUP_DELETE.'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_api.create_page_plug(
+ p_id=>wwv_flow_api.id(45092328064996858)
+,p_plug_name=>'Buttons'
+,p_region_template_options=>'#DEFAULT#:t-ButtonRegion--slimPadding:t-ButtonRegion--noBorder'
+,p_plug_template=>wwv_flow_api.id(8476383962518195)
+,p_plug_display_sequence=>10
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_plug_display_point=>'REGION_POSITION_03'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_api.create_page_button(
+ p_id=>wwv_flow_api.id(19319505952423724)
+,p_button_sequence=>20
+,p_button_plug_id=>wwv_flow_api.id(45092328064996858)
+,p_button_name=>'DELETE'
+,p_button_action=>'SUBMIT'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_id=>wwv_flow_api.id(8549262062518244)
+,p_button_image_alt=>'Permanent Delete Links'
+,p_button_position=>'REGION_TEMPLATE_NEXT'
+,p_icon_css_classes=>'fa-trash-o'
+,p_database_action=>'DELETE'
+);
+wwv_flow_api.create_page_button(
+ p_id=>wwv_flow_api.id(19318775281423723)
+,p_button_sequence=>10
+,p_button_plug_id=>wwv_flow_api.id(45092328064996858)
+,p_button_name=>'CANCEL'
+,p_button_action=>'REDIRECT_PAGE'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>wwv_flow_api.id(8549262062518244)
+,p_button_image_alt=>'Cancel'
+,p_button_position=>'REGION_TEMPLATE_PREVIOUS'
+,p_button_redirect_url=>'f?p=&APP_ID.:20:&SESSION.::&DEBUG.:RP,21:P20_ID:\&P21_ID.\'
+,p_icon_css_classes=>'fa-chevron-left'
+);
+wwv_flow_api.create_page_branch(
+ p_id=>wwv_flow_api.id(19362911523013749)
+,p_branch_name=>'Go To Page 17 Group Deleted'
+,p_branch_action=>'f?p=&APP_ID.:17:&SESSION.::&DEBUG.:RP,17,20,21,RIR::&success_msg=#SUCCESS_MSG#'
+,p_branch_point=>'AFTER_PROCESSING'
+,p_branch_type=>'REDIRECT_URL'
+,p_branch_sequence=>40
+);
+wwv_flow_api.create_page_item(
+ p_id=>wwv_flow_api.id(19336618980715843)
+,p_name=>'P21_ID'
+,p_item_sequence=>10
+,p_item_plug_id=>wwv_flow_api.id(19336445759715841)
+,p_use_cache_before_default=>'NO'
+,p_source=>'ID'
+,p_source_type=>'DB_COLUMN'
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'N'
+,p_attribute_01=>'Y'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(19355112822963203)
+,p_process_sequence=>10
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_FORM_PROCESS'
+,p_process_name=>'Process form Confirm Link Group Delete'
+,p_attribute_02=>'BLOG_LINK_GROUPS'
+,p_attribute_03=>'P21_ID'
+,p_attribute_04=>'ID'
+,p_attribute_11=>'I:U:D'
+,p_attribute_12=>'Y'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_success_message=>'Action Processed.'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(19336500881715842)
+,p_process_sequence=>10
+,p_process_point=>'BEFORE_HEADER'
+,p_process_type=>'NATIVE_FORM_FETCH'
+,p_process_name=>'Initialize form Confirm Link Group Delete'
+,p_attribute_02=>'BLOG_LINK_GROUPS'
+,p_attribute_03=>'P21_ID'
+,p_attribute_04=>'ID'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 end;
 /
