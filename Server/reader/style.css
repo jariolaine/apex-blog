@@ -9,28 +9,24 @@
   outline:none!important;
   box-shadow:none!important;
 }
-/**
-* Logo
-**/
 .t-Header-logo{
   line-height: 1.8rem;
 }
-.t-Header-logo-link{
-  display: initial;
-}
-.t-Header-logo-link q{
+/*********************************
+*  Custom styles
+*********************************/
+/**
+* Logo
+**/
+.z-app-logo q{
   white-space: pre;
 	font-size: 1.4rem;
 	font-style: oblique;
   font-weight: normal;
 }
-.t-Header-logo-link q::before{
+.z-app-logo q::before{
   content: "\A";
 }
-
-/*********************************
-*  Custom styles
-*********************************/
 
 /**
 * Author info
