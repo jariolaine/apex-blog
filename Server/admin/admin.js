@@ -248,45 +248,43 @@ var blog = blog || {};
     **/
     editorInit: function(options){
 
-      //options.forcePasteAsPlainText=true;
-      options.entities_additional = "#35,#39";
-      options.startupOutlineBlocks = true;
-
-      options.disallowedContent = "script; *[on*]";
-
-      options.toolbarCanCollapse = true;
-
       options.contentsCss = options.contentsCss || [];
       options.contentsCss.push(CKEDITOR.getUrl("contents.css"));
 
-      options.allowedContent = {
-        $1:{
-          // Use the ability to specify elements as an object.
-          elements: CKEDITOR.dtd,
-          attributes: true,
-          styles: true,
-          classes: true
+      var custom = {
+        startupOutlineBlocks: true
+        ,toolbarCanCollapse: true
+        //,forcePasteAsPlainText: true
+        ,entities_additional: "#35,#39"
+        ,disallowedContent: "script; *[on*]"
+        ,allowedContent: {
+          $1:{
+            // Use the ability to specify elements as an object.
+            elements: CKEDITOR.dtd,
+            attributes: true,
+            styles: true,
+            classes: true
+          }
         }
+        ,stylesSet: [
+          {name:"Program Code",element:"pre",attributes:{"class":"program-code"}},
+          {name:"Big",element:"big"},
+          {name:"Small",element:"small"},
+          {name:"Typewriter",element:"tt"},
+          {name:"Computer Code",element:"code"},
+          {name:"Keyboard Phrase",element:"kbd"},
+          {name:"Sample Text",element:"samp"},
+          {name:"Variable",element:"var"},
+          {name:"Deleted Text",element:"del"},
+          {name:"Inserted Text",element:"ins"},
+          {name:"Cited Work",element:"cite"},
+          {name:"Inline Quotation",element:"q"},
+          {name:"Styled image(left)",element:"img",attributes:{"class":"left"}},
+          {name:"Styled image(right)",element:"img",attributes:{"class":"right"}}
+        ]
       };
 
-      options.stylesSet = [
-        {name:"Program Code",element:"pre",attributes:{"class":"program-code"}},
-        {name:"Big",element:"big"},
-        {name:"Small",element:"small"},
-        {name:"Typewriter",element:"tt"},
-        {name:"Computer Code",element:"code"},
-        {name:"Keyboard Phrase",element:"kbd"},
-        {name:"Sample Text",element:"samp"},
-        {name:"Variable",element:"var"},
-        {name:"Deleted Text",element:"del"},
-        {name:"Inserted Text",element:"ins"},
-        {name:"Cited Work",element:"cite"},
-        {name:"Inline Quotation",element:"q"},
-        {name:"Styled image(left)",element:"img",attributes:{"class":"left"}},
-        {name:"Styled image(right)",element:"img",attributes:{"class":"right"}}
-      ];
-
-      return options;
+      return $.extend(options, custom);
     }
   }
 })(apex.jQuery, apex.region, blog);
