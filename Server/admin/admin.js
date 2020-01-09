@@ -251,7 +251,7 @@ var blog = blog || {};
       options.contentsCss = options.contentsCss || [];
       options.contentsCss.push(CKEDITOR.getUrl("contents.css"));
 
-      var custom = {
+      return $.extend(options, {
         startupOutlineBlocks: true
         ,toolbarCanCollapse: true
         //,forcePasteAsPlainText: true
@@ -282,9 +282,7 @@ var blog = blog || {};
           {name:"Styled image(left)",element:"img",attributes:{"class":"left"}},
           {name:"Styled image(right)",element:"img",attributes:{"class":"right"}}
         ]
-      };
-
-      return $.extend(options, custom);
+      });
     }
   }
 })(apex.jQuery, apex.region, blog);
