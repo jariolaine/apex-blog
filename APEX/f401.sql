@@ -27,7 +27,7 @@ prompt APPLICATION 401 - Blog Public Pages
 -- Application Export:
 --   Application:     401
 --   Name:            Blog Public Pages
---   Date and Time:   10:36 Monday January 6, 2020
+--   Date and Time:   19:39 Wednesday January 8, 2020
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -72,8 +72,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --       Messages:               3
 --     Reports:
 --     E-Mail:
---   Supporting Objects:  Included
---     Install scripts:          1
+--   Supporting Objects:  Excluded
 
 prompt --application/delete_application
 begin
@@ -121,9 +120,9 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_err.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200106090726'
+,p_last_upd_yyyymmddhh24miss=>'20200108191109'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>28
+,p_files_version=>29
 ,p_ui_type_name => null
 );
 end;
@@ -140,6 +139,7 @@ wwv_flow_api.create_list_item(
 ,p_list_item_display_sequence=>10
 ,p_list_item_link_text=>'Home'
 ,p_list_item_link_target=>'f?p=&APP_ALIAS.:HOME:&APP_SESSION_VISIBLE.::&DEBUG.:RP::'
+,p_list_text_10=>'HOME'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_api.create_list_item(
@@ -147,15 +147,16 @@ wwv_flow_api.create_list_item(
 ,p_list_item_display_sequence=>20
 ,p_list_item_link_text=>'Links'
 ,p_list_item_link_target=>'f?p=&APP_ALIAS.:LINKS:&APP_SESSION_VISIBLE.::&DEBUG.:RP::'
+,p_list_text_10=>'LINKS'
 ,p_required_patch=>wwv_flow_api.id(6905258727754156)
-,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
-,p_list_item_current_for_pages=>'10'
+,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(7123115257892322)
 ,p_list_item_display_sequence=>30
 ,p_list_item_link_text=>'Files'
 ,p_list_item_link_target=>'f?p=&APP_ALIAS.:FILES:&APP_SESSION_VISIBLE.::&DEBUG.:RIR::'
+,p_list_text_10=>'FILES'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_api.create_list_item(
@@ -163,6 +164,7 @@ wwv_flow_api.create_list_item(
 ,p_list_item_display_sequence=>40
 ,p_list_item_link_text=>'About'
 ,p_list_item_link_target=>'f?p=&APP_ALIAS.:ABOUT:&APP_SESSION_VISIBLE.::&DEBUG.:RP::'
+,p_list_text_10=>'ABOUT'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 end;
@@ -358,7 +360,7 @@ wwv_flow_api.g_varchar2_table(9) := '20206261636B67726F756E642D636F6C6F723A20236
 wwv_flow_api.g_varchar2_table(10) := '6975733A203270783B0A2020626F782D736861646F773A20302032707820347078202D327078207267626128302C302C302C2E303735293B0A7D0A2E7A2D706F73742D2D73696E676C65202E7A2D706F73747B0A20206D617267696E2D626F74746F6D3A';
 wwv_flow_api.g_varchar2_table(11) := '203021696D706F7274616E743B0A2020626F726465723A206E6F6E6521696D706F7274616E743B0A2020626F726465722D7261646975733A20756E73657421696D706F7274616E743B0A2020626F782D736861646F773A206E6F6E6521696D706F727461';
 wwv_flow_api.g_varchar2_table(12) := '6E743B0A7D0A2E7A2D706F73742D636F6E7461696E65727B0A202070616464696E673A20313670783B0A7D0A2E7A2D706F73742D6865616465727B0A2020636C6561723A20626F74683B0A7D0A2E7A2D706F73742D6865616465722068327B0A2020666F';
-wwv_flow_api.g_varchar2_table(13) := '6E742D73697A653A20312E38656D3B0A20206D617267696E3A2030203020302E3272656D3B0A7D0A2E7A2D706F73742D68656164657220683220617B0A2020636F6C6F723A20233234323432343B0A7D0A2E7A2D706F73742D6865616465722068337B0A';
+wwv_flow_api.g_varchar2_table(13) := '6E742D73697A653A20312E36656D3B0A20206D617267696E3A2030203020302E3272656D3B0A7D0A2E7A2D706F73742D68656164657220683220617B0A2020636F6C6F723A20233234323432343B0A7D0A2E7A2D706F73742D6865616465722068337B0A';
 wwv_flow_api.g_varchar2_table(14) := '2020666F6E742D73697A653A20312E3472656D3B0A2020666F6E742D7765696768743A206E6F726D616C3B0A20206D617267696E3A2030203020322E3872656D3B0A7D0A2E7A2D706F73742D6865616465722068347B0A2020666F6E742D73697A653A20';
 wwv_flow_api.g_varchar2_table(15) := '312E3472656D3B0A20206D617267696E3A2030203020302E3272656D3B0A7D0A2E7A2D706F73742D626F647920696D677B0A20206D61782D77696474683A20313030253B0A20206865696768743A206175746F3B0A7D0A2E7A2D706F73742D626F647920';
 wwv_flow_api.g_varchar2_table(16) := '62727B0A2020636C6561723A206E6F6E6521696D706F7274616E743B0A7D0A2E7A2D706F73742D666F6F7465727B0A202077696474683A20313030253B0A2020636C6561723A20626F74683B0A7D0A2F2A2A0A2A204C696E6B73205265706F72740A2A2A';
@@ -12017,11 +12019,6 @@ begin
 null;
 end;
 /
-prompt --application/shared_components/globalization/translations
-begin
-null;
-end;
-/
 prompt --application/shared_components/globalization/messages
 begin
 null;
@@ -12670,7 +12667,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20191118061731'
+,p_last_upd_yyyymmddhh24miss=>'20200106221833'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(7082403673178438)
@@ -12910,12 +12907,27 @@ wwv_flow_api.create_report_region(
 'from #OWNER#.blog_v_posts v1',
 'where 1 = 1',
 'and v1.post_id = :P2_POST_ID',
-'order by v1.created_on'))
+'/*',
+'union all',
+'select t1.id',
+'  ,null as category_id',
+'  ,localtimestamp as created_on',
+'  ,t1.post_title',
+'  ,t1.category_title',
+'  ,t1.body_html',
+'  ,''Category'' as category_txt',
+'from blog_post_preview t1',
+'where 1 = 1',
+'and :REQUEST = ''PREVIEW''',
+'and :APP_SESSION = t1.id',
+'order by created_on',
+'*/'))
 ,p_translate_title=>'N'
 ,p_ajax_enabled=>'Y'
 ,p_query_row_template=>wwv_flow_api.id(6894976353301648)
 ,p_query_num_rows=>1
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_query_row_count_max=>1
 ,p_csv_output=>'N'
 ,p_prn_output=>'N'
 ,p_sort_null=>'L'
@@ -14626,40 +14638,6 @@ wwv_flow_api.create_page_process(
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
 ,p_process_comment=>'If P1001_LAST_NAME'
 );
-end;
-/
-prompt --application/deployment/definition
-begin
-wwv_flow_api.create_install(
- p_id=>wwv_flow_api.id(7029176844799578)
-);
-end;
-/
-prompt --application/deployment/install/install_set_canonical_url
-begin
-wwv_flow_api.create_install_script(
- p_id=>wwv_flow_api.id(4282091256288762)
-,p_install_id=>wwv_flow_api.id(7029176844799578)
-,p_name=>'Set CANONICAL_URL'
-,p_sequence=>10
-,p_script_type=>'INSTALL'
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'update blog_params',
-'set param_value = apex_util.host_url( ''SCRIPT'' )',
-'where 1 = 1',
-'and param_name = ''CANONICAL_URL''',
-'/'))
-);
-end;
-/
-prompt --application/deployment/checks
-begin
-null;
-end;
-/
-prompt --application/deployment/buildoptions
-begin
-null;
 end;
 /
 prompt --application/end_environment
