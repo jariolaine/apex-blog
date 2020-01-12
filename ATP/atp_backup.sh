@@ -4,16 +4,12 @@
 export LD_LIBRARY_PATH=/opt/oracle/client/instantclient_18_5:$LD_LIBRARY_PATH
 export ORACLE_HOME=/opt/oracle/client/instantclient_18_5
 export JAVA_HOME=/opt/oracle/jdk/latest
-#TNS_ADMIN=/opt/oracle/client/instantclient_18_5/network/admin
 export PATH=/opt/oracle/client/instantclient_18_5:$PATH
 export PATH=/opt/oracle/sqlcl/bin:$PATH
 
+# Script home directory
 script_home=$HOME/Development/Blog/ATP
-# Log file
-log="log/backup.log";
-tmp="log/dummy"
-# Download directory
-dl_dir="download";
+
 # Database variables
 db="jladb01"
 db_conn="${db}_low";
@@ -21,12 +17,17 @@ admin_user="admin";
 admin_pass="1024cP!u#1024";
 db_schema="blog_040000";
 dump_name="$(date +%Y%m%d)_${db}_${db_schema}";
-# Object storage variables
-bucket="Database";
-bucket_url="https://objectstorage.eu-frankfurt-1.oraclecloud.com/n/frdt4eogdtjk/b/${bucket}/o/";
 
-# Change to script home directory
-cd ${script_home};
+# Object storage variables
+namespace="frdt4eogdtjk";
+bucket="Database";
+base_url="https://objectstorage.eu-frankfurt-1.oraclecloud.com";
+bucket_url="${base_url}/n/${namespace}/b/${bucket}/o/";
+
+# File variables
+log="${script_home}/log/backup.log";
+tmp="${script_home}/log/dummy"
+dl_dir="${script_home}/download";
 
 # Output some info to initialize log file
 echo "$(date +%d.%m.%Y' '%T)" > ${log};
@@ -46,10 +47,9 @@ then
   exit $?;
 fi;
 
-# Move export to bucket using SQLcl
+# Move export from database directory to object storage bucket
 sql /nolog >> ${log} 2>&1 << EOF
 connect ${admin_user}/${admin_pass}@${db_conn};
--- Place schema export and log files to object storage bucket
 begin
   for c1 in (
     select object_name
@@ -59,8 +59,8 @@ begin
     -- Copy file to bucket
     dbms_cloud.put_object(
       credential_name => 'OBJECT_STORAGE_CRED'
-      ,object_uri => '${bucket_url}' || c1.object_name
       ,directory_name => 'DATA_PUMP_DIR'
+      ,object_uri => '${bucket_url}' || c1.object_name
       ,file_name => c1.object_name
     );
     -- Remove file from data_pump_dir
@@ -76,13 +76,13 @@ then
 fi;
 
 # List objects in bucket and write information to file
-oci os object list -bn ${bucket} > ${tmp} 2>&1;
+oci os object list -bn ${bucket} > ${tmp} 2>> ${log};
 # Exit if error
 if [ $? != 0 ];
 then
   exit $?;
 fi;
-
+cat ${tmp} >> ${log}
 # Check that export file is in bucket. exit if file isn't in bucket
 if ! grep -q "${dump_name}.dmp" ${tmp};
 then
