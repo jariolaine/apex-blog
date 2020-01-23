@@ -8,33 +8,64 @@ export PATH=/opt/oracle/client/instantclient_18_5:$PATH
 export PATH=/opt/oracle/sqlcl/bin:$PATH
 
 # Script home directory
-script_home=$HOME/Development/Blog/ATP
+script_home="$(dirname $(readlink -f $0))";
 
-# Database variables
-db="jladb01"
-db_conn="${db}_low";
-admin_user="admin";
-admin_pass="1024cP!u#1024";
-db_schema="blog_040000";
-dump_name="$(date +%Y%m%d)_${db}_${db_schema}";
+# Get user and password from user input
+read -s -p "Enter user name: " user_name;
+echo "";
+read -s -p "Enter Password: " user_pass;
+echo "";
 
-# Object storage variables
-namespace="frdt4eogdtjk";
-bucket="Database";
-base_url="https://objectstorage.eu-frankfurt-1.oraclecloud.com";
+# Read configuration file
+while IFS=":" read -r var value;
+do
+
+  if [[ $var =~ (^[[:space:]]*#|^$) ]];
+  then
+    continue;
+  fi;
+
+  export "$var"="${value}"
+
+done < ${script_home}/backup.conf
+# Exit if error
+if [ $? != 0 ];
+then
+  exit $?;
+fi;
+
+# Dump name
+dump_name="$(date +%Y%m%d)_${database}_${db_schema}";
+# Object storage URL
 bucket_url="${base_url}/n/${namespace}/b/${bucket}/o/";
-
 # File variables
-log="${script_home}/log/backup.log";
-tmp="${script_home}/log/dummy"
+log_dir="${script_home}/log";
+log="${log_dir}/backup.log";
+tmp="${log_dir}/dummy"
 dl_dir="${script_home}/download";
+
+# Create directories if not exists
+mkdir -p ${log_dir};
+# Exit if error
+if [ $? != 0 ];
+then
+  exit $?;
+fi;
+
+mkdir -p ${dl_dir};
+# Exit if error
+if [ $? != 0 ];
+then
+  exit $?;
+fi;
 
 # Output some info to initialize log file
 echo "$(date +%d.%m.%Y' '%T)" > ${log};
-echo "ATP ${db} backup schema ${db_schema}" >> ${log};
+echo "Exporting database ${database} schema ${db_schema}" | tee -a ${log};
 
 # Export schema
-expdp ${admin_user}/${admin_pass}@${db_conn} \
+#reuse_dumpfiles=yes \
+expdp ${user_name}/${user_pass}@${tnsalias} \
 logtime=all \
 directory=data_pump_dir \
 schemas=${db_schema} \
@@ -49,12 +80,13 @@ fi;
 
 # Move export from database directory to object storage bucket
 sql /nolog >> ${log} 2>&1 << EOF
-connect ${admin_user}/${admin_pass}@${db_conn};
+connect ${user_name}/${user_pass}@${tnsalias};
 begin
   for c1 in (
     select object_name
     from dbms_cloud.list_files('DATA_PUMP_DIR')
     where 1 = 1
+    and object_name like '${dump_name}%'
   ) loop
     -- Copy file to bucket
     dbms_cloud.put_object(
