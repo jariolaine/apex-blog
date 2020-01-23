@@ -26,11 +26,5 @@ begin
 
   :new.file_size := coalesce( dbms_lob.getlength( :new.blob_content ), 0 );
 
-	:new.etag :=
-       to_char( :new.id )
-    || to_char( :new.row_version )
-    || to_char( sys_extract_utc( :new.changed_on ), 'YYYYMMDDHH24MISSFF6' )
-  ;
-
 end;
 /

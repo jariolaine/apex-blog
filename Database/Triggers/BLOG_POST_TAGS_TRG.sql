@@ -2,7 +2,7 @@
 --  DDL for Trigger BLOG_POSTS_TAGS_TRG
 --------------------------------------------------------
 
-CREATE OR REPLACE TRIGGER "BLOG_POSTS_TAGS_TRG"
+CREATE OR REPLACE TRIGGER "BLOG_POST_TAGS_TRG"
 before
 insert or
 update on BLOG_POST_TAGS

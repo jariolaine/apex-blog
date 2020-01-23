@@ -27,7 +27,7 @@ prompt APPLICATION 401 - Blog Public Pages
 -- Application Export:
 --   Application:     401
 --   Name:            Blog Public Pages
---   Date and Time:   10:50 Sunday January 12, 2020
+--   Date and Time:   20:06 Thursday January 23, 2020
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -120,7 +120,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_err.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200110200711'
+,p_last_upd_yyyymmddhh24miss=>'20200113030705'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>29
 ,p_ui_type_name => null
@@ -13317,7 +13317,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8635355820099640)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200108195714'
+,p_last_upd_yyyymmddhh24miss=>'20200113030705'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(10221605832319899)
@@ -13353,6 +13353,7 @@ wwv_flow_api.create_report_region(
 '  and v1.category_id = :P4_CATEGORY_ID',
 'order by v1.created_on desc'))
 ,p_ajax_enabled=>'Y'
+,p_ajax_items_to_submit=>'P4_CATEGORY_ID'
 ,p_query_row_template=>wwv_flow_api.id(6833829938267402)
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_no_data_found=>'no data found'
@@ -13456,10 +13457,9 @@ wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(6913868774677132)
 ,p_name=>'P4_CATEGORY_ID'
 ,p_item_sequence=>10
-,p_item_plug_id=>wwv_flow_api.id(6433141607894071)
+,p_item_plug_id=>wwv_flow_api.id(10221605832319899)
 ,p_use_cache_before_default=>'NO'
 ,p_display_as=>'NATIVE_HIDDEN'
-,p_is_persistent=>'N'
 ,p_restricted_characters=>'US_ONLY'
 ,p_attribute_01=>'Y'
 ,p_item_comment=>'Category ID to filter report'
@@ -13471,7 +13471,6 @@ wwv_flow_api.create_page_item(
 ,p_item_plug_id=>wwv_flow_api.id(6433141607894071)
 ,p_use_cache_before_default=>'NO'
 ,p_display_as=>'NATIVE_HIDDEN'
-,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_attribute_01=>'Y'
 ,p_item_comment=>'Item to hold category name for page title and region title'
