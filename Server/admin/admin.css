@@ -6,12 +6,20 @@
 }
 .z-body--no-padding .t-Tabs--pill{
   margin-bottom: 0;
+  border-left: none;
+  border-right: none
 }
-.z-menu-bar--border {
-  border: 1px solid rgba(0,0,0,.1);
+.z-menu-bar--bottom-border {
+  border-bottom: 1px solid rgba(0,0,0,.1);
 }
-.z-IRR-header--group .a-IRR-header--group{
-  font-size: 1.8rem;
+.z-Alert--only-bottom-border{
+  border-right: none;
+  border-left: none;
+  border-top: none;
+}
+div[data-IR-switch]{
+  white-space: pre;
+  display:inline-flex;
 }
 
 /**
