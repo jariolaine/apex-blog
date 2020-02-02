@@ -27,7 +27,7 @@ prompt APPLICATION 402 - Blog Administration
 -- Application Export:
 --   Application:     402
 --   Name:            Blog Administration
---   Date and Time:   20:06 Thursday January 23, 2020
+--   Date and Time:   20:24 Sunday February 2, 2020
 --   Exported By:     LAINFJAR
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -124,7 +124,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'Y'
 ,p_error_handling_function=>'#OWNER#.blog_err.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200113135742'
+,p_last_upd_yyyymmddhh24miss=>'20200202063910'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>87
 ,p_ui_type_name => null
@@ -11571,7 +11571,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when=>'G_USER_ID'
 ,p_help_text=>'<h3>Editing post</h3>'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200112133320'
+,p_last_upd_yyyymmddhh24miss=>'20200125063337'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -12034,7 +12034,7 @@ wwv_flow_api.create_page_item(
 ,p_field_template=>wwv_flow_api.id(8548656595518243)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
-,p_help_text=>'Enter any comments or notes here. These comments not displayed for public.'
+,p_help_text=>'Enter any comments or notes here. These notes not displayed for public.'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_03=>'N'
@@ -12955,7 +12955,7 @@ wwv_flow_api.create_page(
 ,p_required_role=>'MUST_NOT_BE_PUBLIC_USER'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200112133518'
+,p_last_upd_yyyymmddhh24miss=>'20200125072712'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
@@ -13139,6 +13139,10 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_order=>110
 ,p_column_identifier=>'AB'
 ,p_column_label=>'Reference'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#RELATIVE_PATH#',
+'',
+'<button type="button" title="Copy to Clipboard" aria-label="Copy to Clipboard" class="t-Button t-Button--noLabel t-Button--icon t-Button--link"><span aria-hidden="true" class="t-Icon fa fa-clone"></span></button>'))
 ,p_column_type=>'STRING'
 ,p_heading_alignment=>'LEFT'
 );
@@ -13534,7 +13538,7 @@ wwv_flow_api.create_page(
 ,p_required_role=>'MUST_NOT_BE_PUBLIC_USER'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200113135742'
+,p_last_upd_yyyymmddhh24miss=>'20200202063821'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6849894493100859)
@@ -13684,6 +13688,9 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_order=>110
 ,p_column_identifier=>'R'
 ,p_column_label=>'URL'
+,p_column_link=>'#LINK_URL#'
+,p_column_linktext=>'#LINK_URL#'
+,p_column_link_attr=>'target="_blank"'
 ,p_column_type=>'STRING'
 );
 wwv_flow_api.create_worksheet_column(
@@ -13710,7 +13717,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_report_alias=>'31109'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'TITLE:LINK_DESC:IS_ACTIVE'
+,p_report_columns=>'DISPLAY_SEQ:TITLE:LINK_DESC:IS_ACTIVE:'
 ,p_sort_column_1=>'DISPLAY_SEQ'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'0'
@@ -13866,7 +13873,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when_type=>'ITEM_IS_NULL'
 ,p_read_only_when=>'G_USER_ID'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200112133652'
+,p_last_upd_yyyymmddhh24miss=>'20200202063910'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6814521408894774)
@@ -14096,7 +14103,7 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
-,p_attribute_04=>'TEXT'
+,p_attribute_04=>'URL'
 ,p_attribute_05=>'BOTH'
 );
 wwv_flow_api.create_page_item(

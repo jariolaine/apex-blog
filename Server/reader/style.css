@@ -55,45 +55,40 @@
   border: 1px solid rgba(0,0,0,.1);
   border-radius: 2px;
   box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
-}
-.z-post--single .z-post{
-  margin-bottom: 0!important;
-  border: none!important;
-  border-radius: unset!important;
-  box-shadow: none!important;
-}
-.z-post-container{
   padding: 16px;
 }
-.z-post-header{
+.z-post--header{
   clear: both;
 }
-.z-post-header h2{
+.z-post--header h1{
   font-size: 1.6em;
   margin: 0 0 0.2rem;
 }
-.z-post-header h2 a{
+.z-post--header h1 a{
   color: #242424;
 }
-.z-post-header h3{
+.z-post--header h2{
   font-size: 1.4rem;
-  font-weight: normal;
-  margin: 0 0 2.8rem;
+  margin: 0;
 }
-.z-post-header h4{
+.z-post--header h3{
   font-size: 1.4rem;
   margin: 0 0 0.2rem;
 }
-.z-post-body img{
+.z-post--body p{
+  margin: 1.6rem 0 0;
+}
+.z-post--body img{
   max-width: 100%;
   height: auto;
 }
-.z-post-body br{
+.z-post--body br{
   clear: none!important;
 }
-.z-post-footer{
+.z-post--footer{
   width: 100%;
   clear: both;
+  margin: 2.8rem 0 0;
 }
 /**
 * Links Report
@@ -131,6 +126,7 @@ li.z-links-item:last-child{
 **/
 pre.program-code,
 pre.z-program-code{
+  margin: 0.6rem 0 0;
   counter-reset: line;
   overflow-x: auto;
   tab-size: 2;
@@ -178,13 +174,13 @@ pre.z-program-code code:before{
   .z-post{
     margin-bottom: 8px;
   }
-  .z-post-header h2{
+  .z-post--header h1{
     font-size: 1.4em;
   }
-  .z-post-header h3{
+  .z-post--header h2{
     font-size: 1.3rem;
   }
-  .z-post-header h4{
+  .z-post--header h3{
     font-size: 1.3rem;
   }
   /**
