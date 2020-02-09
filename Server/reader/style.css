@@ -124,7 +124,6 @@ li.z-links-item:last-child{
 /**
 * Program code formating
 **/
-pre.program-code,
 pre.z-program-code{
   margin: 0.6rem 0 0;
   counter-reset: line;
@@ -134,7 +133,6 @@ pre.z-program-code{
   font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace !important;
   color: #333333;
 }
-pre.program-code code,
 pre.z-program-code code{
   counter-increment: line;
   tab-size: inherit;
@@ -145,7 +143,6 @@ pre.z-program-code code{
   padding: 0;
   overflow: visible;
 }
-pre.program-code code:before,
 pre.z-program-code code:before{
   content: counter(line);
   border-right: 3px solid #6ce26c;

@@ -90,11 +90,10 @@
 
 	  /**
 	  * @function formatProgramCode
-		* @version 1
 	  * @example blog.UI.formatProgramCode("pre.program-code");
 	  **/
 	  formatProgramCode: function( p_selector ){
-	    var $Elem = apex.jQuery( p_selector );
+	    var $Elem = $( p_selector );
 
 	    $Elem.html (function( ind, oldHTML ){
 
@@ -135,7 +134,7 @@
 			endTag			= "</" + pTag + ">"
 			selectedTxt = $Item.getSelection().text;
 
-	    $Item.replaceSelection( startTag + selectedTxt  + endTag ).focus()
+	    $Item.focus().replaceSelection( startTag + selectedTxt  + endTag );
 
 	  }
 
