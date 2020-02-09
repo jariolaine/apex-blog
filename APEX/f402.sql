@@ -1,4 +1,3 @@
-prompt --application/set_environment
 set define off verify off feedback off
 whenever sqlerror exit sql.sqlcode rollback
 --------------------------------------------------------------------------------
@@ -27,8 +26,7 @@ prompt APPLICATION 402 - Blog Administration
 -- Application Export:
 --   Application:     402
 --   Name:            Blog Administration
---   Date and Time:   20:24 Sunday February 2, 2020
---   Exported By:     LAINFJAR
+--   Exported By:     BLOG_040000
 --   Flashback:       0
 --   Export Type:     Application Export
 --   Version:         19.1.0.00.15
@@ -1116,11 +1114,6 @@ wwv_flow_api.create_page_group(
 ,p_group_name=>'Posts'
 ,p_group_desc=>'Posts, categories and tags'
 );
-end;
-/
-prompt --application/comments
-begin
-null;
 end;
 /
 prompt --application/shared_components/user_interface/templates/page/master_detail
