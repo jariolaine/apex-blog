@@ -65,41 +65,55 @@ echo "Exporting database ${database} schema ${db_schema}" | tee -a ${log};
 
 # Export schema
 #reuse_dumpfiles=yes \
-expdp ${user_name}/${user_pass}@${tnsalias} \
-logtime=all \
-directory=data_pump_dir \
-schemas=${db_schema} \
-dumpfile=${dump_name} \
-logfile=${dump_name} \
->> ${log} 2>&1;
-# Exit if error
-if [ $? != 0 ];
-then
-  exit $?;
-fi;
+# expdp ${user_name}/${user_pass}@${tnsalias} \
+# logtime=all \
+# directory=data_pump_dir \
+# schemas=${db_schema} \
+# dumpfile=${dump_name} \
+# logfile=${dump_name} \
+# >> ${log} 2>&1;
+# # Exit if error
+# if [ $? != 0 ];
+# then
+#   exit $?;
+# fi;
+#
+# # Move export from database directory to object storage bucket
+# sql /nolog >> ${log} 2>&1 << EOF
+# connect ${user_name}/${user_pass}@${tnsalias};
+# begin
+#   for c1 in (
+#     select object_name
+#     from dbms_cloud.list_files('DATA_PUMP_DIR')
+#     where 1 = 1
+#     and object_name like '${dump_name}%'
+#   ) loop
+#     -- Copy file to bucket
+#     dbms_cloud.put_object(
+#       credential_name => 'OBJECT_STORAGE_CRED'
+#       ,directory_name => 'DATA_PUMP_DIR'
+#       ,object_uri => '${bucket_url}' || c1.object_name
+#       ,file_name => c1.object_name
+#     );
+#     -- Remove file from data_pump_dir
+#     utl_file.fremove( 'DATA_PUMP_DIR', c1.object_name );
+#   end loop;
+# end;
+# /
+# EOF
+# # Exit if error
+# if [ $? != 0 ];
+# then
+#   exit $?;
+# fi;
 
-# Move export from database directory to object storage bucket
 sql /nolog >> ${log} 2>&1 << EOF
-connect ${user_name}/${user_pass}@${tnsalias};
-begin
-  for c1 in (
-    select object_name
-    from dbms_cloud.list_files('DATA_PUMP_DIR')
-    where 1 = 1
-    and object_name like '${dump_name}%'
-  ) loop
-    -- Copy file to bucket
-    dbms_cloud.put_object(
-      credential_name => 'OBJECT_STORAGE_CRED'
-      ,directory_name => 'DATA_PUMP_DIR'
-      ,object_uri => '${bucket_url}' || c1.object_name
-      ,file_name => c1.object_name
-    );
-    -- Remove file from data_pump_dir
-    utl_file.fremove( 'DATA_PUMP_DIR', c1.object_name );
-  end loop;
-end;
-/
+connect ${user_name}[${db_schema}]/${user_pass}@${tnsalias};
+cd ${dl_dir};
+column workspace_id new_value workspaceid;
+select to_char(workspace_id) as workspace_id
+from apex_workspaces;
+apex export -workspaceid &workspaceid. -skipExportDate;
 EOF
 # Exit if error
 if [ $? != 0 ];
