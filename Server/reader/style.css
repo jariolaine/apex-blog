@@ -91,6 +91,31 @@
   margin: 2.8rem 0 0;
 }
 /**
+* Comments
+**/
+.z-comment .t-Comments-body{
+  flex: 1 1 auto;
+  width: 0;
+}
+.z-comment .t-Comments-comment{
+  width: 100%
+}
+.z-comment pre{
+  font-family: inherit;
+  font-style: inherit;
+  font-size: inherit;
+  white-space: pre-wrap;
+}
+.z-comment p,
+.z-comment pre{
+  margin: 1.6rem 0 0;
+}
+.z-comment p:first-child,
+.z-comment pre:first-child,
+.z-comment pre.z-program-code:first-child{
+  margin-top: 0;
+}
+/**
 * Links Report
 **/
 .z-links{
@@ -127,7 +152,7 @@ li.z-links--item:last-child{
 * Program code formating
 **/
 pre.z-program-code{
-  margin: 0.6rem 0 0;
+  margin: 0.8rem 0 0;
   counter-reset: line;
   overflow-x: auto;
   tab-size: 2;
@@ -181,12 +206,6 @@ pre.z-program-code code:before{
   }
   .z-post--header h3{
     font-size: 1.3rem;
-  }
-  /**
-  * Comments
-  **/
-  .z-comment-reply{
-    margin-left: 1.2em;
   }
   /**
   * Author info
