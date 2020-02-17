@@ -122,7 +122,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'Y'
 ,p_error_handling_function=>'#OWNER#.blog_err.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200210153826'
+,p_last_upd_yyyymmddhh24miss=>'20200216120624'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>87
 ,p_ui_type_name => null
@@ -436,7 +436,7 @@ wwv_flow_api.create_list(
 '  ,list_label',
 '  ,list_target',
 '  ,''NO'' as is_current',
-'/*  ',
+'/*',
 '  ,null as link_image',
 '  ,link_image as image_attr',
 '  ,link_image as image_alt',
@@ -12065,7 +12065,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when=>'G_USER_ID'
 ,p_help_text=>'<h3>Editing post</h3>'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200210153436'
+,p_last_upd_yyyymmddhh24miss=>'20200216090555'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -12446,7 +12446,8 @@ wwv_flow_api.create_page_item(
 ,p_attribute_02=>'FIRST_ROWSET'
 ,p_attribute_03=>'Y'
 ,p_attribute_04=>'Y'
-,p_attribute_05=>'N'
+,p_attribute_05=>'Y'
+,p_attribute_06=>'0'
 ,p_attribute_11=>','
 );
 wwv_flow_api.create_page_item(
@@ -13448,7 +13449,7 @@ wwv_flow_api.create_page(
 ,p_required_role=>'MUST_NOT_BE_PUBLIC_USER'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200125072712'
+,p_last_upd_yyyymmddhh24miss=>'20200216120057'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
@@ -13632,10 +13633,6 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_order=>110
 ,p_column_identifier=>'AB'
 ,p_column_label=>'Reference'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#RELATIVE_PATH#',
-'',
-'<button type="button" title="Copy to Clipboard" aria-label="Copy to Clipboard" class="t-Button t-Button--noLabel t-Button--icon t-Button--link"><span aria-hidden="true" class="t-Icon fa fa-clone"></span></button>'))
 ,p_column_type=>'STRING'
 ,p_heading_alignment=>'LEFT'
 );
@@ -14028,7 +14025,7 @@ wwv_flow_api.create_page(
 ,p_required_role=>'MUST_NOT_BE_PUBLIC_USER'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200202063821'
+,p_last_upd_yyyymmddhh24miss=>'20200216120549'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6849894493100859)

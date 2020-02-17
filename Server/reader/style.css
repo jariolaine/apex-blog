@@ -28,17 +28,41 @@
 /**
 * Author info
 **/
+.z-author--card .t-Card{
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.z-author--card .t-Card-titleWrap {
+  min-height: initial;
+  border-bottom: 1px solid rgba(0,0,0,.075);
+  box-shadow: none;
+}
+.z-author--card .t-Card-title {
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 2.4rem;
+}
+.z-author--card .t-Card-wrap{
+  border: none;
+}
+.z-author--card .t-Card-colorFill{
+  background-color: transparent;
+}
 .z-author-container{
-  display: table;
+  display: flex;
+  flex-flow: row;
   width: 100%;
 }
 .z-author-left{
-  display: table-cell;
+  order: 1;
+}
+.z-author-left img{
+  display: block;
 }
 .z-author-right{
-  display: table-cell;
+  order: 2;
   padding-left: 16px;
-  vertical-align: top;
 }
 /**
 * Reports
@@ -98,7 +122,8 @@
   width: 0;
 }
 .z-comment .t-Comments-comment{
-  width: 100%
+  width: 100%;
+  overflow-wrap: break-word;
 }
 .z-comment pre{
   font-family: inherit;
@@ -122,16 +147,24 @@
   background-color: transparent;
 }
 li.z-links--header{
-  padding: 1.2rem;
   display: flex;
   flex-grow: 1;
-  font-size: 1.6rem;
-  font-weight: 500;
-  line-height: 2.4rem;
-  border: 1px solid rgba(0,0,0,.1);
+  border-top: 1px solid rgba(0,0,0,.1);
+  border-left: 1px solid rgba(0,0,0,.1);
+  border-right: 1px solid rgba(0,0,0,.1);
+  border-bottom: none;
+  box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
   margin-top: 16px;
   background-color: transparent;
   border-radius: 2px 2px 0 0;
+}
+li.z-links--header div{
+  width: 100%;
+  padding: 1.2rem;
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 2.4rem;
+  border-bottom: 1px solid rgba(0,0,0,.075);
 }
 li.z-links--header:first-child{
   margin-top: 0;
@@ -139,13 +172,14 @@ li.z-links--header:first-child{
 li.z-links--item{
   border-left: 1px solid rgba(0,0,0,.1);
   border-right: 1px solid rgba(0,0,0,.1);
+  border-bottom: 1px solid rgba(0,0,0,.075);
   background-color: #ffffff;
   border-radius: 0 0 2px 2px;
   box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
 }
 li.z-links--item:last-child{
-  border-bottom: 1px solid rgba(0,0,0,.1);
   margin-bottom: 16px;
+  border-bottom: 1px solid rgba(0,0,0,.1);
 }
 
 /**
@@ -211,14 +245,8 @@ pre.z-program-code code:before{
   * Author info
   **/
   .z-author-container{
-    display: block;
-  }
-  .z-author-left{
-    display: block;
-    text-align: center;
-  }
-  .z-author-right{
-    display: block;
+    flex-flow: column;
+    align-items: center;
   }
 }
 
