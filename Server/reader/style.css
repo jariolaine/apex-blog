@@ -155,7 +155,7 @@ li.z-links--header{
   border-bottom: none;
   box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
   margin-top: 16px;
-  background-color: transparent;
+  background-color: #ffffff;
   border-radius: 2px 2px 0 0;
 }
 li.z-links--header div{

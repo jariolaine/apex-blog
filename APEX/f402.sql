@@ -122,7 +122,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'Y'
 ,p_error_handling_function=>'#OWNER#.blog_err.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200216120624'
+,p_last_upd_yyyymmddhh24miss=>'20200218031151'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>87
 ,p_ui_type_name => null
@@ -16340,7 +16340,7 @@ wwv_flow_api.create_page(
 ,p_dialog_chained=>'N'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200112153706'
+,p_last_upd_yyyymmddhh24miss=>'20200218031151'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8857181938695778)
@@ -16458,7 +16458,10 @@ wwv_flow_api.create_page_item(
 ,p_plugin_init_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'function ( options ) {',
 '  options.contentsCss = ["&APP_IMAGES.admin.css"];',
-'  return blog.admin.editorInit(options);',
+'  options = blog.admin.editorInit(options);',
+'  options.disallowedContent = "";',
+'  options.allowedContent.script = true;',
+'  return options;',
 '}'))
 ,p_attribute_03=>'Y'
 ,p_attribute_05=>'top'
