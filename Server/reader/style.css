@@ -88,9 +88,6 @@
   font-size: 1.6em;
   margin: 0 0 0.2rem;
 }
-.z-post--header h1 a{
-  color: #242424;
-}
 .z-post--header h2{
   font-size: 1.4rem;
   margin: 0;
@@ -186,33 +183,46 @@ li.z-links--item:last-child{
 * Program code formating
 **/
 pre.z-program-code{
-  margin: 0.8rem 0 0;
-  counter-reset: line;
-  overflow-x: auto;
-  tab-size: 2;
-  font-size: 1.2rem;
   font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace !important;
   color: #333333;
+  text-shadow: 0 0 #000000;
+  font-size: 1.2rem;
+  line-height: 1.4;
+  tab-size: 2;
+  margin: 0.8rem 0 0;
+  border-radius: 4px;
+  counter-reset: line;
+  overflow-x: auto;
 }
 pre.z-program-code code{
   counter-increment: line;
   tab-size: inherit;
   font-size: inherit;
   font-family: inherit;
+  line-height: inherit;
   color: inherit;
   margin: 0;
   padding: 0;
   overflow: visible;
 }
+/*
+pre.z-program-code code:first-child:before{
+  padding-top: 4px;
+}
+pre.z-program-code code:last-child:before{
+  padding-bottom: 4px;
+}
+*/
 pre.z-program-code code:before{
   content: counter(line);
-  border-right: 3px solid #6ce26c;
+  /*background-color: #f9f9f9;*/
+  border-right: 2px solid #e0e0e0;
   margin: 0 0.8em 0 0;
   padding: 0 0.3em 0 0;
   display: inline-block;
   text-align: right;
   width: 2.2em;
-  color: #afafaf;
+  color: #939393;
   -webkit-user-select: none;
 }
 /**
