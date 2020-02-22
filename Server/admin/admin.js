@@ -267,7 +267,7 @@ var blog = blog || {};
           }
         }
         ,stylesSet: [
-          {name:"Program Code",element:"pre",attributes:{"class":"program-code"}},
+          {name:"Program Code",element:"pre",attributes:{"class":"z-program-code"}},
           {name:"Big",element:"big"},
           {name:"Small",element:"small"},
           {name:"Typewriter",element:"tt"},

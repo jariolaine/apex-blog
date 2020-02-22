@@ -88,6 +88,9 @@
   font-size: 1.6em;
   margin: 0 0 0.2rem;
 }
+.z-post--header h1 a{
+  color: inherit;
+}
 .z-post--header h2{
   font-size: 1.4rem;
   margin: 0;
@@ -109,7 +112,7 @@
 .z-post--footer{
   width: 100%;
   clear: both;
-  margin: 2.8rem 0 0;
+  margin: 1.2rem 0 0;
 }
 /**
 * Comments
@@ -205,14 +208,6 @@ pre.z-program-code code{
   padding: 0;
   overflow: visible;
 }
-/*
-pre.z-program-code code:first-child:before{
-  padding-top: 4px;
-}
-pre.z-program-code code:last-child:before{
-  padding-bottom: 4px;
-}
-*/
 pre.z-program-code code:before{
   content: counter(line);
   /*background-color: #f9f9f9;*/

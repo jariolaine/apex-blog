@@ -25,36 +25,39 @@ div[data-IR-switch]{
 /**
 * Program code formating
 **/
-pre.program-code,
 pre.z-program-code{
-  counter-reset: line;
-  overflow-x: auto;
-  tab-size: 2;
-  font-size: 1.2rem;
   font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace !important;
   color: #333333;
+  text-shadow: 0 0 #000000;
+  font-size: 1.2rem;
+  line-height: 1.4;
+  tab-size: 2;
+  margin: 0.8rem 0 0;
+  border-radius: 4px;
+  counter-reset: line;
+  overflow-x: auto;
 }
-pre.program-code code,
 pre.z-program-code code{
   counter-increment: line;
   tab-size: inherit;
   font-size: inherit;
   font-family: inherit;
+  line-height: inherit;
   color: inherit;
   margin: 0;
   padding: 0;
   overflow: visible;
 }
-pre.program-code code:before,
 pre.z-program-code code:before{
   content: counter(line);
-  border-right: 3px solid #6ce26c;
+  /*background-color: #f9f9f9;*/
+  border-right: 2px solid #e0e0e0;
   margin: 0 0.8em 0 0;
   padding: 0 0.3em 0 0;
   display: inline-block;
   text-align: right;
   width: 2.2em;
-  color: #afafaf;
+  color: #939393;
   -webkit-user-select: none;
 }
 /**
@@ -72,39 +75,40 @@ pre.z-program-code code:before{
   border: 1px solid rgba(0,0,0,.1);
   border-radius: 2px;
   box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
-}
-.z-post-container{
   padding: 16px;
 }
-.z-post-header{
+.z-post--header{
   clear: both;
 }
-.z-post-header h2{
+.z-post--header h1{
   font-size: 1.6em;
   margin: 0 0 0.2rem;
 }
-.z-post-header h2 a{
-  color: #242424;
+.z-post--header h1 a{
+  color: inherit;
 }
-.z-post-header h3{
+.z-post--header h2{
   font-size: 1.4rem;
-  font-weight: normal;
-  margin: 0 0 2.8rem;
+  margin: 0;
 }
-.z-post-header h4{
+.z-post--header h3{
   font-size: 1.4rem;
   margin: 0 0 0.2rem;
 }
-.z-post-body img{
+.z-post--body p{
+  margin: 1.6rem 0 0;
+}
+.z-post--body img{
   max-width: 100%;
   height: auto;
 }
-.z-post-body br{
+.z-post--body br{
   clear: none!important;
 }
-.z-post-footer{
+.z-post--footer{
   width: 100%;
   clear: both;
+  margin: 1.2rem 0 0;
 }
 /* post report IR specific in admin app */
 .z-post--IR:first-child{
@@ -132,7 +136,6 @@ pre.z-program-code code:before{
   vertical-align: top;
 }
 /* Program code formating */
-.cke_editable pre.program-code,
 .cke_editable pre.z-program-code{
   background-color: #eeeeee !important;
   border-left: 3px solid #6ce26c !important;
@@ -142,7 +145,6 @@ pre.z-program-code code:before{
   font-size: 12px !important;
   font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace !important;
 }
-.cke_panel_listItem pre.program-code,
 .cke_panel_listItem pre.z-program-code{
   background-color: #eeeeee !important;
   border-left: 3px solid #6ce26c !important;
