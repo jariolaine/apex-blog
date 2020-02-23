@@ -122,7 +122,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'Y'
 ,p_error_handling_function=>'#OWNER#.blog_err.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200222055931'
+,p_last_upd_yyyymmddhh24miss=>'20200223080254'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>89
 ,p_ui_type_name => null
@@ -11524,7 +11524,42 @@ end;
 /
 prompt --application/shared_components/globalization/dyntranslations
 begin
-null;
+wwv_flow_api.create_dynamic_translation(
+ p_id=>wwv_flow_api.id(17104002252498177)
+,p_language=>'en'
+,p_from=>'Disabled'
+,p_to=>'Disabled'
+);
+wwv_flow_api.create_dynamic_translation(
+ p_id=>wwv_flow_api.id(17104199513501849)
+,p_language=>'en'
+,p_from=>'Edit Group'
+,p_to=>'Edit Group'
+);
+wwv_flow_api.create_dynamic_translation(
+ p_id=>wwv_flow_api.id(17104268210504866)
+,p_language=>'en'
+,p_from=>'Add Link'
+,p_to=>'Add Link'
+);
+wwv_flow_api.create_dynamic_translation(
+ p_id=>wwv_flow_api.id(17104369868507363)
+,p_language=>'en'
+,p_from=>'Category'
+,p_to=>'Category'
+);
+wwv_flow_api.create_dynamic_translation(
+ p_id=>wwv_flow_api.id(17104494341511257)
+,p_language=>'en'
+,p_from=>'Posts in category'
+,p_to=>'Posts in category'
+);
+wwv_flow_api.create_dynamic_translation(
+ p_id=>wwv_flow_api.id(17104566945514541)
+,p_language=>'en'
+,p_from=>'Select Group'
+,p_to=>'Select Group'
+);
 end;
 /
 prompt --application/shared_components/user_interface/shortcuts/delete_confirm_msg

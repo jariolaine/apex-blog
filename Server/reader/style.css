@@ -208,6 +208,14 @@ pre.z-program-code code{
   padding: 0;
   overflow: visible;
 }
+/*
+pre.z-program-code code:first-child:before{
+  padding-top: 4px;
+}
+pre.z-program-code code:last-child:before{
+  padding-bottom: 4px;
+}
+*/
 pre.z-program-code code:before{
   content: counter(line);
   /*background-color: #f9f9f9;*/
@@ -252,6 +260,9 @@ pre.z-program-code code:before{
   .z-author-container{
     flex-flow: column;
     align-items: center;
+  }
+  .z-author-right{
+    padding: 0;
   }
 }
 
