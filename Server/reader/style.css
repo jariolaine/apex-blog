@@ -135,6 +135,12 @@
 .z-comment pre{
   margin: 1.6rem 0 0;
 }
+.z-comment .t-Comments-comment q{
+  font-style: italic;
+  quotes: "“" "”" "‘" "’";
+  margin-left: 16px;
+  font-weight: lighter;
+}
 .z-comment p:first-child,
 .z-comment pre:first-child,
 .z-comment pre.z-program-code:first-child{
