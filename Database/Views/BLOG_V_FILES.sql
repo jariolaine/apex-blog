@@ -1,13 +1,9 @@
 --------------------------------------------------------
---  File created - Friday-January-03-2020
---------------------------------------------------------
---------------------------------------------------------
 --  DDL for View BLOG_V_FILES
 --------------------------------------------------------
 
-CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES"
-AS
-select t1.id
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_PATH", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC") AS 
+  select t1.id as file_id
   ,t1.created_on
   ,t1.changed_on
   ,t1.is_download

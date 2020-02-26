@@ -249,7 +249,7 @@ var blog = blog || {};
     editorInit: function(options){
 
       options.contentsCss = options.contentsCss || [];
-      options.contentsCss.push(CKEDITOR.getUrl("contents.css"));
+      options.contentsCss.unshift(CKEDITOR.getUrl("contents.css"));
 
       return $.extend(options, {
         startupOutlineBlocks: true

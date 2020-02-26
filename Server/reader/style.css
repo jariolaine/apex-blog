@@ -64,12 +64,14 @@
   order: 2;
   padding-left: 16px;
 }
+
 /**
 * Reports
 **/
 .nodatafound{
   font-size: 1.2rem;
 }
+
 /**
 * Post report
 **/
@@ -114,6 +116,7 @@
   clear: both;
   margin: 1.2rem 0 0;
 }
+
 /**
 * Comments
 **/
@@ -146,6 +149,7 @@
 .z-comment pre.z-program-code:first-child{
   margin-top: 0;
 }
+
 /**
 * Links Report
 **/
@@ -192,14 +196,12 @@ li.z-links--item:last-child{
 * Program code formating
 **/
 pre.z-program-code{
-  font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace !important;
-  color: #333333;
-  text-shadow: 0 0 #000000;
+  font-family: monospace, Consolas, Inconsolata, Courier, "Bitstream Vera Sans Mono","Courier New" !important;
+  color: #292929;
   font-size: 1.2rem;
   line-height: 1.4;
   tab-size: 2;
   margin: 0.8rem 0 0;
-  border-radius: 4px;
   counter-reset: line;
   overflow-x: auto;
 }
@@ -214,26 +216,18 @@ pre.z-program-code code{
   padding: 0;
   overflow: visible;
 }
-/*
-pre.z-program-code code:first-child:before{
-  padding-top: 4px;
-}
-pre.z-program-code code:last-child:before{
-  padding-bottom: 4px;
-}
-*/
 pre.z-program-code code:before{
   content: counter(line);
-  /*background-color: #f9f9f9;*/
-  border-right: 2px solid #e0e0e0;
-  margin: 0 0.8em 0 0;
-  padding: 0 0.3em 0 0;
+  border-right: 2px solid #6ce26c;
+  margin: 0 0.4em 0 0;
+  padding: 0 0.2em 0 0;
   display: inline-block;
   text-align: right;
   width: 2.2em;
   color: #939393;
-  -webkit-user-select: none;
+  user-select: none;
 }
+
 /**
 * Right column link lists
 **/

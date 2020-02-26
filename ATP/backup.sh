@@ -235,7 +235,7 @@ EOF
 
 export_apex(){
   # Use SQLcl to export APEX applications
-  write_log "Exporting all APEX applicatins from workspace ${apexWorkspace}"
+  write_log "Exporting all APEX applications from workspace ${apexWorkspace}"
   sql -S /nolog >> ${logFile} 2>&1 << EOF
   -- NOTE! we use proxy user.
   -- Example grant:

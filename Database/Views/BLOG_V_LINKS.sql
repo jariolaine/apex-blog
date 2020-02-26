@@ -1,13 +1,9 @@
 --------------------------------------------------------
---  File created - Friday-January-03-2020
---------------------------------------------------------
---------------------------------------------------------
 --  DDL for View BLOG_V_LINKS
 --------------------------------------------------------
 
-CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS"
-AS
-select 
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("GROUP_TITLE", "GROUP_DISPLAY_SEQ", "DISPLAY_SEQ", "LINK_TITLE", "LINK_DESC", "LINK_URL") AS 
+  select 
    t2.title           as group_title
   ,t2.display_seq     as group_display_seq
   ,t1.display_seq     as display_seq

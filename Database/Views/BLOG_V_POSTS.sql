@@ -1,13 +1,9 @@
 --------------------------------------------------------
---  File created - Friday-January-03-2020
---------------------------------------------------------
---------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
 
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS"
-AS
-select
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "YEAR_MONTH", "CHANGED_ON", "COMMENTS_COUNT", "READ_MORE_TXT", "POSTED_ON_TXT", "POSTED_BY_TXT", "CATEGORY_TXT", "TAGS_TXT") AS 
+  select
    t1.id              as post_id
   ,t3.id              as category_id
   ,t2.id              as blogger_id
@@ -17,8 +13,9 @@ select
   ,t1.post_desc       as post_desc
   ,t1.first_paragraph as first_paragraph
   ,t1.body_html       as body_html
-  ,t1.created_on      as created_on
+  ,t1.valid_from      as published_on
   ,t1.year_month      as year_month
+  ,t1.changed_on      as changed_on
   ,(
     select count( l1.id )
     from blog_comments l1
@@ -29,12 +26,12 @@ select
   ,(
     select
       apex_lang.lang(
-        'Continue reading'
+        'Continue Reading'
       )
     from dual
   ) as read_more_txt
   ,(
-    select
+    select 
       apex_lang.lang(
         'Posted on'
       )
@@ -65,7 +62,9 @@ from blog_posts       t1
 join blog_bloggers    t2 on t1.blogger_id  = t2.id
 join blog_categories  t3 on t1.category_id = t3.id
 where 1 = 1
+and t1.is_active = 1 
+and t2.is_active = 1
+and t3.is_active = 1
 and t1.valid_from <= localtimestamp
-and t1.is_active * t2.is_active * t3.is_active > 0
 with read only
 ;

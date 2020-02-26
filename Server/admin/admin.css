@@ -26,14 +26,12 @@ div[data-IR-switch]{
 * Program code formating
 **/
 pre.z-program-code{
-  font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace !important;
+  font-family: monospace, Consolas, Inconsolata, Courier, "Bitstream Vera Sans Mono","Courier New" !important;
   color: #333333;
-  text-shadow: 0 0 #000000;
-  font-size: 1.2rem;
+  font-size: 1rem;
   line-height: 1.4;
   tab-size: 2;
   margin: 0.8rem 0 0;
-  border-radius: 4px;
   counter-reset: line;
   overflow-x: auto;
 }
@@ -50,16 +48,16 @@ pre.z-program-code code{
 }
 pre.z-program-code code:before{
   content: counter(line);
-  /*background-color: #f9f9f9;*/
-  border-right: 2px solid #e0e0e0;
+  border-right: 2px solid #6ce26c;
   margin: 0 0.8em 0 0;
   padding: 0 0.3em 0 0;
   display: inline-block;
   text-align: right;
   width: 2.2em;
   color: #939393;
-  -webkit-user-select: none;
+  user-select: none;
 }
+
 /**
 * Reports
 **/
@@ -135,22 +133,21 @@ pre.z-program-code code:before{
   padding-left: 16px;
   vertical-align: top;
 }
-/* Program code formating */
+/* Editor program code */
 .cke_editable pre.z-program-code{
-  background-color: #eeeeee !important;
-  border-left: 3px solid #6ce26c !important;
-  padding-left: 0.8em !important;
-  overflow-x: auto !important;
-  tab-size: 2 !important;
-  font-size: 12px !important;
-  font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace !important;
+  background-color: #eeeeee;
+  border-left: 2px solid #6ce26c!important;
+  padding-left: 0.8em;
+  margin-left: 0;
+  font-size: 12px;
+  white-space: pre;
 }
 .cke_panel_listItem pre.z-program-code{
-  background-color: #eeeeee !important;
-  border-left: 3px solid #6ce26c !important;
-  padding-left: 0.8em !important;
-  font-size: 12px !important;
-  font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace !important;
+  background-color: #eeeeee;
+  border-left: 2px solid #6ce26c;
+  padding-left: 0.8em;
+  margin: 0;
+  font-size: 12px;
 }
 @media only screen and (max-width: 640px){
   /**
