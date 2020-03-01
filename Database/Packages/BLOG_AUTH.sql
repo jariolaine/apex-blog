@@ -136,6 +136,8 @@ as
      where username = p_username
     ;
     return l_id;
+  exception when no_data_found then
+    return null;
   end get_blogger_id;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -189,7 +191,7 @@ as
       where 1 = 1
       and id = p_id 
       and username = p_username
-      and passwd = l_old_passwd
+      --and passwd = l_old_passwd
       and passwd != l_new_passwd
     ) loop
       update blog_bloggers

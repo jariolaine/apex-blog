@@ -66,7 +66,7 @@ as
     -- log error to application debug information
     apex_debug.error(
        p_message => 'Error id: %0 | session: %1 | user: %2 | %3 | %4 | %5 | %6 | %7 | %8 | %9'
-      ,p0 => blog_seq.nextval
+      ,p0 => v('APP_SESSION')
       ,p1 => sys_context( 'APEX$SESSION', 'APP_SESSION' )
       ,p2 => sys_context( 'APEX$SESSION', 'APP_USER' )
       ,p3 => p_error.apex_error_code
@@ -125,7 +125,7 @@ as
 
       -- If it's a constraint violation like
       --
-      --   -) ORA-02292ORA-02291ORA-02290ORA-02091ORA-00001: unique constraint violated
+      --   -) ORA-02292 ORA-02291 ORA-02290 ORA-02091 ORA-00001: unique constraint violated
       --   -) : transaction rolled back (-> can hide a deferred constraint)
       --   -) : check constraint violated
       --   -) : integrity constraint violated - parent key not found

@@ -11,8 +11,6 @@ as
 --    Jari Laine 22.04.2019 - Created
 --
 --  TO DO: (search from body TODO#x)
---    #1 - post publsih date might be blog_post.valid_from 
---         No need convert number first to date. use directly needed date field
 --
 --------------------------------------------------------------------------------
 -------------------------------------------------------------------------------- 
@@ -21,17 +19,23 @@ as
   function get_param_value(
     p_param_name  in varchar2
   ) return varchar2;
+--------------------------------------------------------------------------------  
+  function get_app_id(
+    p_app_name in varchar2
+  ) return varchar2;
 --------------------------------------------------------------------------------
   procedure set_items_from_param(
     p_app_id      in number
   );
 --------------------------------------------------------------------------------
   function get_post_title(
-    p_post_id     in number
+    p_post_id     in number,
+    p_escape      in boolean default false
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_category_title(
-    p_category_id in number
+    p_category_id in number,
+    p_escape      in boolean default false
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_tag(
@@ -90,6 +94,30 @@ as
     raise;
   end get_param_value;
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------  
+  function get_app_id(
+    p_app_name in varchar2
+  ) return varchar2 
+  as
+    l_value varchar2(4000);
+  begin
+    -- fetch and return value from parameter table
+    select item_value
+    into l_value
+    from blog_items_init
+    where 1 = 1
+    and item_name = p_app_name
+    ;
+    return l_value;
+  exception when no_data_found then 
+    apex_debug.error( 'Try fetch param name %s. Parameter not found.', coalesce( p_app_name, 'null' ) );
+    raise_application_error( -20001,  'Parameter not exists.' );
+    raise;
+  when others then
+    apex_debug.error( 'Fetch param name %s.', p_app_name );
+    raise;
+  end get_app_id;
+--------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure set_items_from_param(
     p_app_id in number
@@ -114,7 +142,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_post_title(
-    p_post_id  in number
+    p_post_id     in number,
+    p_escape      in boolean default false
   ) return varchar2
   as
     l_value varchar2(4000);
@@ -127,9 +156,10 @@ as
     ;
     --apex_debug.info( 'Fetch post %s. Title is: %s', p_post_id, l_value );
     -- Espace html and return string
-    return apex_escape.html( l_value );
+    return case when p_escape then apex_escape.html(l_value) else l_value end;
   exception when no_data_found then 
     apex_debug.error( 'Try fetch post id %s. Not found.', coalesce( to_char( p_post_id ), 'null' ) );
+    
     raise_application_error( -20001,  'Post not exists.' );
     raise;
   when others then
@@ -139,7 +169,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_category_title(
-    p_category_id   in number
+    p_category_id   in number,
+    p_escape      in boolean default false
   ) return varchar2
   as
     l_value varchar2(4000);
@@ -152,7 +183,7 @@ as
     ;
     --apex_debug.info( 'Fetch category %s. category name is: %s', p_category_id, l_value );
     -- Espace html and return string
-    return apex_escape.html( l_value );
+    return case when p_escape then apex_escape.html(l_value) else l_value end;
   exception when no_data_found then
     raise_application_error( -20001,  'Category not exists.' );
     raise;
@@ -171,10 +202,9 @@ as
     -- fetch and return tag name
     select t1.tag
     into l_value
-    from blog_tags t1
+    from blog_v_tags t1
     where 1 = 1
-    and t1.is_active = 1
-    and t1.id = p_tag_id
+    and t1.tag_id = p_tag_id
     ;
     --apex_debug.info( 'Fetch tag %s. tag name is: %s', p_tag_id, l_value );
     -- Espace html and return string
@@ -196,21 +226,13 @@ as
   ) return varchar2
   as
   begin
-    --TODO#1
     -- format year month number and return string
-    return apex_escape.html(
+    return case when p_posts_count is not null then 
       to_char( 
-        to_date( 
-          p_year_month
-         ,'YYYYMM'
-        )
-      ,p_date_format
-         || case
-          when p_posts_count is not null
-          then ' "(' || p_posts_count || ')"'
-          end
+        to_date( p_year_month, 'YYYYMM' )
+        ,p_date_format || ' "(' || p_posts_count || ')"'
       )
-    );
+    end;
   end get_year_month;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

@@ -29,12 +29,13 @@ as
   archive_item  constant varchar2(40) := 'P5_YEAR_MONTH';
 
   tag_page      constant varchar2(40) := 'TAG';
-  tag_page_item constant varchar2(40) := 'P6_TAG_ID';
+  tag_item      constant varchar2(40) := 'P6_TAG_ID';
 --------------------------------------------------------------------------------
-  function get_home(
-    p_app_id          in varchar2 default null,
-    p_session         in number   default null,
-    p_app_page_id     in varchar2 default blog_url.home_page
+  function get_tab(
+    p_app_id        in varchar2 default null,
+    p_app_page_id   in varchar2 default blog_url.home_page,
+    p_session       in number   default null,
+    p_debug         in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_post(
@@ -67,7 +68,7 @@ as
     p_app_id      in varchar2 default null,
     p_session         in number   default null,
     p_app_page_id in varchar2 default blog_url.tag_page,
-    p_page_item   in varchar2 default blog_url.tag_page_item
+    p_page_item   in varchar2 default blog_url.tag_item
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure redirect_search(
@@ -100,10 +101,11 @@ CREATE OR REPLACE package body blog_url as
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_home(
+  function get_tab(
     p_app_id        in varchar2 default null,
+    p_app_page_id   in varchar2 default blog_url.home_page,
     p_session       in number   default null,
-    p_app_page_id   in varchar2 default blog_url.home_page
+    p_debug         in varchar2 default 'NO'
   ) return varchar2
   as
   begin
@@ -112,10 +114,12 @@ CREATE OR REPLACE package body blog_url as
       apex_page.get_url(
         p_application => p_app_id
        ,p_page        => p_app_page_id
+       ,p_session     => p_session
+       ,p_debug       => p_debug
        ,p_clear_cache => 'RP'
       );
     
-  end get_home;
+  end get_tab;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_post(
@@ -193,7 +197,7 @@ CREATE OR REPLACE package body blog_url as
     p_app_id      in varchar2 default null,
     p_session     in number   default null,
     p_app_page_id in varchar2 default blog_url.tag_page,
-    p_page_item   in varchar2 default blog_url.tag_page_item
+    p_page_item   in varchar2 default blog_url.tag_item
   ) return varchar2
   as
   begin
