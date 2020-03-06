@@ -118,7 +118,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_err.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200227144908'
+,p_last_upd_yyyymmddhh24miss=>'20200301082841'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>64
 ,p_ui_type_name => null
@@ -523,7 +523,7 @@ wwv_flow_api.create_list_of_values(
 '      p_year_month => l.year_month',
 '   ) as return_value',
 'from #OWNER#.blog_v_archive_lov l',
-'order by l.year_month',
+'order by l.year_month desc',
 ''))
 ,p_source_type=>'SQL'
 ,p_location=>'LOCAL'
@@ -13125,7 +13125,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200227144908'
+,p_last_upd_yyyymmddhh24miss=>'20200301082841'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
@@ -13283,7 +13283,7 @@ wwv_flow_api.create_page_item(
 '      p_year_month => l.year_month',
 '   ) as return_value',
 'from #OWNER#.blog_v_archive_lov l',
-'order by l.year_month',
+'order by l.year_month desc',
 ''))
 ,p_lov_display_null=>'YES'
 ,p_lov_null_text=>'- Select Month -'
