@@ -241,6 +241,8 @@ export_apex(){
   -- Example grant:
   -- alter user admin grant connect through appschema;
   --
+  -- TODO: handle case when there is multiple workspace for database schema
+  --
   conn ${dbUser}[${dbSchema}]/${dbPasswd}@${dbTnsAlias};
   cd ${apexExportDir%/};
   -- Define variable
