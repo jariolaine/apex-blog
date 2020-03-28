@@ -1,4 +1,4 @@
-CREATE OR REPLACE package  "BLOG_UTIL" 
+create or replace package  "BLOG_UTIL"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -9,17 +9,18 @@ as
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 22.04.2019 - Created
+--    Jari Laine 28.03.2020 - Signature 2 of get_year_month function
 --
 --  TO DO: (search from body TODO#x)
 --
 --------------------------------------------------------------------------------
--------------------------------------------------------------------------------- 
+--------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
   function get_param_value(
     p_param_name  in varchar2
   ) return varchar2;
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
   function get_app_id(
     p_app_name in varchar2
   ) return varchar2;
@@ -42,8 +43,16 @@ as
     p_tag_id      in number
   ) return varchar2;
 --------------------------------------------------------------------------------
+  -- Signature 1
   function get_year_month(
     p_year_month  in number,
+    p_posts_count in number default null,
+    p_date_format in varchar2 default 'fmMonth, YYYY'
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  -- Signature 2
+  function get_year_month(
+    p_published   in timestamp with local time zone,
     p_posts_count in number default null,
     p_date_format in varchar2 default 'fmMonth, YYYY'
   ) return varchar2;
@@ -52,28 +61,28 @@ end "BLOG_UTIL";
 /
 
 
-CREATE OR REPLACE package body "BLOG_UTIL" 
+create or replace package body "BLOG_UTIL"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private variables
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_param_value(
     p_param_name in varchar2
-  ) return varchar2 
+  ) return varchar2
   as
     l_value varchar2(4000);
   begin
@@ -85,7 +94,7 @@ as
     ;
     --apex_debug.info( 'Fetch param name %s. Param value is: %s', p_param_name, l_value );
     return l_value;
-  exception when no_data_found then 
+  exception when no_data_found then
     apex_debug.error( 'Try fetch param name %s. Parameter not found.', coalesce( p_param_name, 'null' ) );
     raise_application_error( -20001,  'Parameter not exists.' );
     raise;
@@ -94,10 +103,10 @@ as
     raise;
   end get_param_value;
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
   function get_app_id(
     p_app_name in varchar2
-  ) return varchar2 
+  ) return varchar2
   as
     l_value varchar2(4000);
   begin
@@ -109,7 +118,7 @@ as
     and item_name = p_app_name
     ;
     return l_value;
-  exception when no_data_found then 
+  exception when no_data_found then
     apex_debug.error( 'Try fetch param name %s. Parameter not found.', coalesce( p_app_name, 'null' ) );
     raise_application_error( -20001,  'Parameter not exists.' );
     raise;
@@ -148,7 +157,7 @@ as
   as
     l_value varchar2(4000);
   begin
-    -- fetch and return post title  
+    -- fetch and return post title
     select v1.post_title
     into l_value
     from blog_v_posts v1
@@ -157,9 +166,9 @@ as
     --apex_debug.info( 'Fetch post %s. Title is: %s', p_post_id, l_value );
     -- Espace html and return string
     return case when p_escape then apex_escape.html(l_value) else l_value end;
-  exception when no_data_found then 
+  exception when no_data_found then
     apex_debug.error( 'Try fetch post id %s. Not found.', coalesce( to_char( p_post_id ), 'null' ) );
-    
+
     raise_application_error( -20001,  'Post not exists.' );
     raise;
   when others then
@@ -219,6 +228,7 @@ as
   end get_tag;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  -- Signature 1
   function get_year_month(
     p_year_month  in number,
     p_posts_count in number default null,
@@ -227,10 +237,28 @@ as
   as
   begin
     -- format year month number and return string
-    return case when p_posts_count is not null then 
-      to_char( 
-        to_date( p_year_month, 'YYYYMM' )
-        ,p_date_format || ' "(' || p_posts_count || ')"'
+    return case when p_year_month is not null then
+      to_char(
+         to_date( p_year_month, 'YYYYMM' )
+        ,p_date_format || case when p_posts_count is not null then ' "(' || p_posts_count || ')"' end
+      )
+    end;
+  end get_year_month;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  -- Signature 2
+  function get_year_month(
+    p_published   in timestamp with local time zone,
+    p_posts_count in number default null,
+    p_date_format in varchar2 default 'fmMonth, YYYY'
+  ) return varchar2
+  as
+  begin
+    -- format published date and return string
+    return case when p_published is not null then
+      to_char(
+         p_published
+        ,p_date_format || case when p_posts_count is not null then ' "(' || p_posts_count || ')"' end
       )
     end;
   end get_year_month;
