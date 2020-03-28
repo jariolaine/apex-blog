@@ -51,7 +51,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
 --------------------------------------------------------------------------------
 -- Global functions and procedures
 --------------------------------------------------------------------------------
--------------------------------------------------------------------------------- 
+--------------------------------------------------------------------------------
   procedure create_public_files_module as
   begin
     -- Static files module
@@ -64,7 +64,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
     );
   end create_public_files_module;
 --------------------------------------------------------------------------------
--------------------------------------------------------------------------------- 
+--------------------------------------------------------------------------------
   procedure create_public_xml_module as
   begin
     -- Dynamic XML module
@@ -77,8 +77,8 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
     );
   end create_public_xml_module;
 --------------------------------------------------------------------------------
--------------------------------------------------------------------------------- 
-  procedure add_static_file_template 
+--------------------------------------------------------------------------------
+  procedure add_static_file_template
   as
   begin
     for c1 in(
@@ -105,7 +105,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
           and t3.uri_template = blog_ords.c_ords_tempate_prefix || v1.file_path || ':p_file_name'
         )
       ) loop
-      
+
         ords.define_template(
           p_module_name     => c_public_files_module
           ,p_pattern        => blog_ords.c_ords_tempate_prefix || c2.file_path || ':p_file_name'
@@ -114,7 +114,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
           ,p_etag_query     => null
           ,p_comments       => 'Blog static files module (created by application)'
         );
-    
+
         ords.define_handler(
           p_module_name     => c_public_files_module
           ,p_pattern        => blog_ords.c_ords_tempate_prefix || c2.file_path || ':p_file_name'
@@ -129,20 +129,20 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
             || chr(10) || 'from blog_v_files'
             || chr(10) || 'where 1 = 1'
             || chr(10) || 'and file_name = :p_file_name'
-            || chr(10) || 'and file_path = ''' 
-            || c2.file_path 
+            || chr(10) || 'and file_path = '''
+            || c2.file_path
             || ''''
         );
-        
+
       end loop;
-    end loop;  
+    end loop;
   end add_static_file_template;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure create_xml_module
   as
   begin
-  
+
     ords.define_template(
       p_module_name     => blog_ords.c_public_xml_module
       ,p_pattern        => 'feed/rss'
@@ -160,9 +160,9 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
       ,p_items_per_page => 0
       ,p_mimes_allowed  => ''
       ,p_comments       => 'GET handler for output blog rss feed'
-      ,p_source         => 
-        'begin' || chr(10) 
-        || '  blog_xml.rss(:p_lang);' || chr(10) 
+      ,p_source         =>
+        'begin' || chr(10)
+        || '  blog_xml.rss(:p_lang);' || chr(10)
         || 'end;'
       );
 
@@ -194,9 +194,9 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
       ,p_source_type    => 'plsql/block'
       ,p_mimes_allowed  => ''
       ,p_comments       => null
-      ,p_source         => 
-        'begin' || chr(10) 
-        || '  blog_xml.sitemap_index;' || chr(10) 
+      ,p_source         =>
+        'begin' || chr(10)
+        || '  blog_xml.sitemap_index;' || chr(10)
         || 'end;'
       );
 
@@ -216,9 +216,9 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
       ,p_source_type    => 'plsql/block'
       ,p_mimes_allowed  => ''
       ,p_comments       => null
-      ,p_source         => 
-        'begin' || chr(10) 
-        || '  blog_xml.sitemap_main;' || chr(10) 
+      ,p_source         =>
+        'begin' || chr(10)
+        || '  blog_xml.sitemap_main;' || chr(10)
         || 'end;'
       );
 
@@ -238,12 +238,12 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
       ,p_source_type    => 'plsql/block'
       ,p_mimes_allowed  => ''
       ,p_comments       => null
-      ,p_source         => 
-        'begin' || chr(10) 
-        || '  blog_xml.sitemap_posts;' || chr(10) 
+      ,p_source         =>
+        'begin' || chr(10)
+        || '  blog_xml.sitemap_posts;' || chr(10)
         || 'end;'
       );
-      
+
   end create_xml_module;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
