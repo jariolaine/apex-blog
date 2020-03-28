@@ -67,7 +67,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
 -------------------------------------------------------------------------------- 
   procedure create_public_xml_module as
   begin
-    -- Static files module
+    -- Dynamic XML module
     ords.define_module(
       p_module_name     => blog_ords.c_public_xml_module
       ,p_base_path      => '/public/xml/'
