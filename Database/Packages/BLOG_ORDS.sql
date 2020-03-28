@@ -9,6 +9,8 @@ as
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 09.01.2020 - Created
+--    Jari Laine 28.04.2020 - Added procedure create_public_xml_module
+--    Jari Laine 28.04.2020 - Local constants renamed
 --
 --  TO DO: (search from body TODO#x)
 --
@@ -18,7 +20,9 @@ as
 -- none
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure create_statuc_file_module;
+  procedure create_public_files_module;
+--------------------------------------------------------------------------------
+  procedure create_public_xml_module;
 --------------------------------------------------------------------------------
   procedure add_static_file_template;
 --------------------------------------------------------------------------------
@@ -34,7 +38,8 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   c_owner                   constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
-  c_ords_module_name        constant varchar2(256)  := 'BLOG_APP_FILES';
+  c_public_xml_module       constant varchar2(256)  := 'BLOG_PUBLIC_XML';
+  c_public_files_module     constant varchar2(256)  := 'BLOG_PUBLIC_FILES';
   c_ords_tempate_prefix     constant varchar2(256)  := 'static';
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -47,17 +52,30 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 -------------------------------------------------------------------------------- 
-  procedure create_statuc_file_module as
+  procedure create_public_files_module as
   begin
     -- Static files module
     ords.define_module(
-      p_module_name     => 'BLOG_APP_FILES'
+      p_module_name     => blog_ords.c_public_files_module
       ,p_base_path      => '/public/files/'
       ,p_items_per_page => 25
       ,p_status          => 'PUBLISHED'
       ,p_comments       => 'Blog static content from blog_files table'
     );
-  end create_statuc_file_module;
+  end create_public_files_module;
+--------------------------------------------------------------------------------
+-------------------------------------------------------------------------------- 
+  procedure create_public_xml_module as
+  begin
+    -- Static files module
+    ords.define_module(
+      p_module_name     => blog_ords.c_public_xml_module
+      ,p_base_path      => '/public/xml/'
+      ,p_items_per_page => 25
+      ,p_status          => 'PUBLISHED'
+      ,p_comments       => 'Module to output blog rss feed and sitemap'
+    );
+  end create_public_xml_module;
 --------------------------------------------------------------------------------
 -------------------------------------------------------------------------------- 
   procedure add_static_file_template 
@@ -69,7 +87,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
       join user_ords_modules t2 on t1.id = t2.schema_id
       where 1 = 1
       and t1.parsing_schema = blog_ords.c_owner
-      and t2.name = blog_ords.c_ords_module_name
+      and t2.name = blog_ords.c_public_files_module
     ) loop
       for c2 in(
         select distinct v1.file_path
@@ -83,13 +101,13 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
             and t2.id = t3.module_id
           where 1 = 1
           and t1.parsing_schema = blog_ords.c_owner
-          and t2.name = blog_ords.c_ords_module_name
+          and t2.name = blog_ords.c_public_files_module
           and t3.uri_template = blog_ords.c_ords_tempate_prefix || v1.file_path || ':p_file_name'
         )
       ) loop
       
         ords.define_template(
-          p_module_name     => c_ords_module_name
+          p_module_name     => c_public_files_module
           ,p_pattern        => blog_ords.c_ords_tempate_prefix || c2.file_path || ':p_file_name'
           ,p_priority       => 0
           ,p_etag_type      => 'HASH'
@@ -98,7 +116,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
         );
     
         ords.define_handler(
-          p_module_name     => c_ords_module_name
+          p_module_name     => c_public_files_module
           ,p_pattern        => blog_ords.c_ords_tempate_prefix || c2.file_path || ':p_file_name'
           ,p_method         => 'GET'
           ,p_source_type    => 'resource/lob'
@@ -126,7 +144,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
   begin
   
     ords.define_template(
-      p_module_name     => 'BLOG_APP_XML'
+      p_module_name     => blog_ords.c_public_xml_module
       ,p_pattern        => 'feed/rss'
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
@@ -135,7 +153,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
     );
 
     ords.define_handler(
-      p_module_name     => 'BLOG_APP_XML'
+      p_module_name     => blog_ords.c_public_xml_module
       ,p_pattern        => 'feed/rss'
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
@@ -149,7 +167,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
       );
 
     ords.define_parameter(
-      p_module_name         => 'BLOG_APP_XML'
+      p_module_name         => blog_ords.c_public_xml_module
       ,p_pattern            => 'feed/rss'
       ,p_method             => 'GET'
       ,p_name               => 'p_lang'
@@ -161,7 +179,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
     );
 
     ords.define_template(
-      p_module_name     => 'BLOG_APP_XML'
+      p_module_name     => blog_ords.c_public_xml_module
       ,p_pattern        => 'sitemap/index'
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
@@ -170,7 +188,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
     );
 
     ords.define_handler(
-      p_module_name     => 'BLOG_APP_XML'
+      p_module_name     => blog_ords.c_public_xml_module
       ,p_pattern        => 'sitemap/index'
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
@@ -183,7 +201,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
       );
 
     ords.define_template(
-      p_module_name     => 'BLOG_APP_XML'
+      p_module_name     => blog_ords.c_public_xml_module
       ,p_pattern        => 'sitemap/main'
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
@@ -192,7 +210,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
     );
 
     ords.define_handler(
-      p_module_name     => 'BLOG_APP_XML'
+      p_module_name     => blog_ords.c_public_xml_module
       ,p_pattern        => 'sitemap/main'
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
@@ -205,7 +223,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
       );
 
     ords.define_template(
-      p_module_name     => 'BLOG_APP_XML'
+      p_module_name     => blog_ords.c_public_xml_module
       ,p_pattern        => 'sitemap/posts'
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
@@ -214,7 +232,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
     );
 
     ords.define_handler(
-      p_module_name     => 'BLOG_APP_XML'
+      p_module_name     => blog_ords.c_public_xml_module
       ,p_pattern        => 'sitemap/posts'
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
