@@ -14,26 +14,11 @@ as
 --
 --------------------------------------------------------------------------------
 -------------------------------------------------------------------------------- 
-  home_page     constant varchar2(40) := 'HOME';
 
-  post_page     constant varchar2(40) := 'POST';
-  post_item     constant varchar2(40) := 'P2_POST_ID';
-
-  search_page   constant varchar2(40) := 'SEARCH';
-  search_item   constant varchar2(40) := 'P0_SEARCH';
-
-  category_page constant varchar2(40) := 'CATEGORY';
-  category_item constant varchar2(40) := 'P4_CATEGORY_ID';
-
-  archive_page  constant varchar2(40) := 'ARCHIVE';
-  archive_item  constant varchar2(40) := 'P5_YEAR_MONTH';
-
-  tag_page      constant varchar2(40) := 'TAG';
-  tag_item      constant varchar2(40) := 'P6_TAG_ID';
 --------------------------------------------------------------------------------
   function get_tab(
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_url.home_page,
+    p_app_page_id   in varchar2 default blog_globals.home_page,
     p_session       in number   default null,
     p_debug         in varchar2 default 'NO'
   ) return varchar2;
@@ -42,24 +27,24 @@ as
     p_post_id         in number,
     p_app_id          in varchar2 default null,
     p_session         in number   default null,
-    p_app_page_id     in varchar2 default blog_url.post_page,
-    p_page_item       in varchar2 default blog_url.post_item
+    p_app_page_id     in varchar2 default blog_globals.post_page,
+    p_page_item       in varchar2 default blog_globals.post_item
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_category(
     p_category_id     in number,
     p_app_id          in varchar2 default null,
     p_session         in number   default null,
-    p_app_page_id     in varchar2 default blog_url.category_page,
-    p_page_item       in varchar2 default blog_url.category_item
+    p_app_page_id     in varchar2 default blog_globals.category_page,
+    p_page_item       in varchar2 default blog_globals.category_item
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_archive(
     p_year_month      in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in number   default null,
-    p_app_page_id     in varchar2 default blog_url.archive_page,
-    p_page_item       in varchar2 default blog_url.archive_item,
+    p_app_page_id     in varchar2 default blog_globals.archive_page,
+    p_page_item       in varchar2 default blog_globals.archive_item,
     p_current_page_id in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -67,16 +52,16 @@ as
     p_tag_id      in number,
     p_app_id      in varchar2 default null,
     p_session         in number   default null,
-    p_app_page_id in varchar2 default blog_url.tag_page,
-    p_page_item   in varchar2 default blog_url.tag_item
+    p_app_page_id in varchar2 default blog_globals.tag_page,
+    p_page_item   in varchar2 default blog_globals.tag_item
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure redirect_search(
     p_value           in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in number   default null,
-    p_app_page_id     in varchar2 default blog_url.search_page,
-    p_page_item       in varchar2 default blog_url.search_item
+    p_app_page_id     in varchar2 default blog_globals.search_page,
+    p_page_item       in varchar2 default blog_globals.search_item
   );
 --------------------------------------------------------------------------------
 end "BLOG_URL";
@@ -103,7 +88,7 @@ CREATE OR REPLACE package body blog_url as
 --------------------------------------------------------------------------------
   function get_tab(
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_url.home_page,
+    p_app_page_id   in varchar2 default blog_globals.home_page,
     p_session       in number   default null,
     p_debug         in varchar2 default 'NO'
   ) return varchar2
@@ -126,8 +111,8 @@ CREATE OR REPLACE package body blog_url as
     p_post_id       in number,
     p_app_id        in varchar2 default null,
     p_session       in number   default null,
-    p_app_page_id   in varchar2 default blog_url.post_page,
-    p_page_item     in varchar2 default blog_url.post_item
+    p_app_page_id   in varchar2 default blog_globals.post_page,
+    p_page_item     in varchar2 default blog_globals.post_item
   ) return varchar2
   as
   begin
@@ -149,8 +134,8 @@ CREATE OR REPLACE package body blog_url as
     p_category_id in number,
     p_app_id      in varchar2 default null,
     p_session     in number   default null,
-    p_app_page_id in varchar2 default blog_url.category_page,
-    p_page_item   in varchar2 default blog_url.category_item
+    p_app_page_id in varchar2 default blog_globals.category_page,
+    p_page_item   in varchar2 default blog_globals.category_item
   ) return varchar2
   as
   begin
@@ -170,8 +155,8 @@ CREATE OR REPLACE package body blog_url as
     p_year_month      in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in number   default null,
-    p_app_page_id     in varchar2 default blog_url.archive_page,
-    p_page_item       in varchar2 default blog_url.archive_item,
+    p_app_page_id     in varchar2 default blog_globals.archive_page,
+    p_page_item       in varchar2 default blog_globals.archive_item,
     p_current_page_id in varchar2 default null
   ) return varchar2
   as
@@ -196,8 +181,8 @@ CREATE OR REPLACE package body blog_url as
     p_tag_id      in number,
     p_app_id      in varchar2 default null,
     p_session     in number   default null,
-    p_app_page_id in varchar2 default blog_url.tag_page,
-    p_page_item   in varchar2 default blog_url.tag_item
+    p_app_page_id in varchar2 default blog_globals.tag_page,
+    p_page_item   in varchar2 default blog_globals.tag_item
   ) return varchar2
   as
   begin
@@ -216,8 +201,8 @@ CREATE OR REPLACE package body blog_url as
     p_value           in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in number   default null,
-    p_app_page_id     in varchar2 default blog_url.search_page,
-    p_page_item       in varchar2 default blog_url.search_item
+    p_app_page_id     in varchar2 default blog_globals.search_page,
+    p_page_item       in varchar2 default blog_globals.search_item
   )
   as
   begin

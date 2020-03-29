@@ -34,29 +34,20 @@ end "BLOG_XML";
 /
 
 
-CREATE OR REPLACE package body "BLOG_XML" 
+create or replace package body "BLOG_XML" 
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- Private constants and variables
+-- Private variables and constants
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   
   c_owner                   constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
-  
+
   c_pub_app_id              constant number         := to_number( blog_util.get_app_id( 'G_PUB_APP_ID' ) );
-  
-  c_canonical_url           constant varchar2(4000) := blog_util.get_param_value( 'CANONICAL_URL' );
-  
-  c_ords_module_name        constant varchar2(256)  := 'BLOG_APP_XML';
-  
-  c_feed_template           constant varchar2(256)  := 'feed/rss';
-  c_sitemap_index_template  constant varchar2(256)  := 'sitemap/index';
-  c_sitemap_main_template   constant varchar2(256)  := 'sitemap/main';
-  c_sitemap_posts_template  constant varchar2(256)  := 'sitemap/posts';
-  
+
   c_pub_app_tab_list        constant varchar2(256)  := 'Desktop Navigation Menu';
-  
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -81,9 +72,9 @@ as
       raise_application_error( -20001,  'Configuration not exists.' );
       l_app_alias := null;
     end;
-    
+
     return l_app_alias;
-    
+
   end get_app_alias;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -93,7 +84,7 @@ as
   as
     l_url     varchar2(4000);
   begin
-    
+
     begin
       -- query ORDS metadata to get resource url
       select t1.pattern || t2.uri_prefix || t3.uri_template as url
@@ -104,14 +95,14 @@ as
         and t2.id = t3.module_id
       where 1 = 1
       and t1.parsing_schema = blog_xml.c_owner
-      and t2.name = blog_xml.c_ords_module_name
+      and t2.name = blog_globals.ords_public_xml_module
       and t3.uri_template = p_uri_template
       ;
     exception when no_data_found then
       raise_application_error( -20002,  'Configuration not exists.' );
       l_url := null;
     end;
-    
+
     return l_url;
 
   end get_ords_service;
@@ -126,7 +117,6 @@ as
   as
     l_rss           blob;
     l_last_modifier timestamp with local time zone;
-    l_rss_url       varchar2(255);
     l_rss_desc      varchar2(255);
     l_home_url      varchar2(255);
     l_app_alias     varchar2(255);
@@ -136,22 +126,18 @@ as
 
     -- blog application alias
     l_app_alias     := blog_xml.get_app_alias;
-    
+
     -- blog home page relative urlg_ords_rss_feed;
     l_home_url      := blog_url.get_tab( l_app_alias );
-    
+
     -- blog name
     l_blog_name     := blog_util.get_param_value( 'G_APP_NAME' );
-    
+
     -- rss feed description
     l_rss_desc      := blog_util.get_param_value( 'G_APP_DESC' );
-    
+
     -- blog home page absolute url
-    l_home_url      := blog_xml.c_canonical_url || l_home_url;
-    
-    -- this rss feed url
-    l_rss_url       := blog_xml.get_ords_service( blog_xml.c_feed_template );
-    l_rss_url       := blog_xml.c_canonical_url || l_rss_url;
+    l_home_url      := blog_globals.canonical_url || l_home_url;
 
     -- generate RSS
     select xmlelement(
@@ -166,7 +152,7 @@ as
            "atom:link"
           ,xmlattributes(
              'self'                 as "rel"
-            ,l_rss_url              as "href"
+            ,blog_globals.rss_url   as "href"
             ,'application/rss+xml'  as "type"
           )
         )
@@ -183,7 +169,7 @@ as
             ,xmlelement( "dc:creator",  posts.blogger_name )
             ,xmlelement( "category",    posts.category_title )
             ,xmlelement( "link",
-              blog_xml.c_canonical_url 
+              blog_globals.canonical_url 
               || blog_url.get_post(
                  p_app_id  => l_app_alias
                 ,p_post_id => posts.post_id
@@ -200,12 +186,12 @@ as
     into l_rss
     from blog_v_posts_last20 posts
     ;
-    
+
     owa_util.mime_header('application/rss+xml', false, 'UTF-8' );
 --    owa_util.mime_header('application/xml', false, 'UTF-8' );
     sys.htp.p('cache-control: public, max-age=5400' );
     sys.owa_util.http_header_close;
-    
+
     wpg_docload.download_file(l_rss);
 
   end rss;
@@ -218,13 +204,13 @@ as
     l_posts varchar2(255);
   begin
 
-    l_main := blog_xml.c_canonical_url
+    l_main := blog_globals.canonical_url
       || blog_xml.get_ords_service(
-        blog_xml.c_sitemap_main_template
+        blog_globals.ords_sitemap_main_template
       );
-    l_posts := blog_xml.c_canonical_url
+    l_posts := blog_globals.canonical_url
       || blog_xml.get_ords_service(
-        blog_xml.c_sitemap_posts_template
+        blog_globals.ords_sitemap_posts_template
       );
 
     with si as (
@@ -252,7 +238,7 @@ as
     owa_util.mime_header('application/xml', false, 'UTF-8');
     sys.htp.p('cache-control: public, max-age=5400');
     sys.owa_util.http_header_close;
-    
+
     wpg_docload.download_file(l_xml);
 
   end sitemap_index;
@@ -263,13 +249,13 @@ as
     l_xml blob;
     l_app_alias varchar2(256);
   begin
-  
+
     l_app_alias := blog_xml.get_app_alias;
 
     with sitemap_query as (
       select
          row_number() over(order by li.display_sequence) as rnum
-        ,blog_xml.c_canonical_url || blog_url.get_tab(
+        ,blog_globals.canonical_url || blog_url.get_tab(
            p_app_id  => l_app_alias
           ,p_app_page_id => li.entry_attribute_10
         ) as loc
@@ -301,11 +287,11 @@ as
     into l_xml
     from sitemap_query
     ;
-    
+
     owa_util.mime_header('application/xml', false, 'UTF-8');
     sys.htp.p('cache-control: public, max-age=5400');
     sys.owa_util.http_header_close;
-    
+
     wpg_docload.download_file(l_xml);
 
   end sitemap_main;
@@ -316,14 +302,14 @@ as
     l_xml blob;
     l_app_alias varchar2(256);
   begin
-  
+
     l_app_alias := get_app_alias;
 
     with sitemap_query as (
       select
          posts.published_on
         ,posts.changed_on
-        ,blog_xml.c_canonical_url || blog_url.get_post(
+        ,blog_globals.canonical_url || blog_url.get_post(
            p_app_id  => l_app_alias
           ,p_post_id => posts.post_id
         ) as loc
@@ -345,11 +331,11 @@ as
     into l_xml
     from sitemap_query
     ;
-    
+
     owa_util.mime_header('application/xml', false, 'UTF-8');
     sys.htp.p('cache-control: public, max-age=5400');
     sys.owa_util.http_header_close;
-    
+
     wpg_docload.download_file(l_xml);
 
   end sitemap_posts;

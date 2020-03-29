@@ -9,12 +9,17 @@ as
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 22.04.2019 - Created
+--    Jari Laine 29.04.2020 - New function get_robots_noindex_meta
+--    Jari Laine 29.04.2020 - functions to generate canonical link output robot noindex meta tag if proper link can't be generated
+--    Jari Laine 29.04.2020 - Added apex_debug to functions generating meta and canonical link
 --
 --  TO DO: (search from body TODO#x)
 --
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
 
+--------------------------------------------------------------------------------
+  function get_robots_noindex_meta return varchar2;
 --------------------------------------------------------------------------------
   function get_tag_anchor(
     p_tag_id          in number,
@@ -31,37 +36,37 @@ as
     p_post_id         in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  function get_tab_link_canonical(
+  function get_tab_canonical_link(
     p_app_id          in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_url.home_page
+    p_app_page_id     in varchar2 default blog_globals.home_page
   ) return varchar2;
 --------------------------------------------------------------------------------  
-  function get_post_link_canonical(
+  function get_post_canonical_link(
     p_post_id       in number,
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_url.post_page,
-    p_page_item     in varchar2 default blog_url.post_item
+    p_app_page_id   in varchar2 default blog_globals.post_page,
+    p_page_item     in varchar2 default blog_globals.post_item
   ) return varchar2;
 --------------------------------------------------------------------------------  
-  function get_category_link_canonical(
+  function get_category_canonical_link(
     p_category_id   in number,
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_url.category_page,
-    p_page_item     in varchar2 default blog_url.category_item
+    p_app_page_id   in varchar2 default blog_globals.category_page,
+    p_page_item     in varchar2 default blog_globals.category_item
   ) return varchar2;
 --------------------------------------------------------------------------------  
-  function get_archive_link_canonical(
+  function get_archive_canonical_link(
     p_year_month    in number,
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_url.archive_page,
-    p_page_item     in varchar2 default blog_url.archive_item
+    p_app_page_id   in varchar2 default blog_globals.archive_page,
+    p_page_item     in varchar2 default blog_globals.archive_item
   ) return varchar2;
 --------------------------------------------------------------------------------  
-  function get_tag_link_canonical(
+  function get_tag_canonical_link(
     p_tag_id        in number,
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_url.tag_page,
-    p_page_item     in varchar2 default blog_url.tag_item
+    p_app_page_id   in varchar2 default blog_globals.tag_page,
+    p_page_item     in varchar2 default blog_globals.tag_item
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_rss_anchor(
@@ -79,7 +84,8 @@ as
 --------------------------------------------------------------------------------
   function get_post_tags(
     p_post_id         in number,
-    p_app_id  in varchar2 default null,
+    p_status          in varchar2 default 'INCLUDE',
+    p_app_id          in varchar2 default null,
     p_button          in varchar2 default 'YES'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -95,13 +101,14 @@ CREATE OR REPLACE package body                         "BLOG_HTML"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- Private variables
+-- Private variables and constants
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------  
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
+--------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure get_tag_anchor(
     p_tag_id  in number,
@@ -136,7 +143,15 @@ as
     end if;    
   end get_tag_anchor;
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Global functions and procedures
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_robots_noindex_meta return varchar2
+  as
+  begin
+    return '<meta name="robots" value="noindex" />';
+  end get_robots_noindex_meta;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tag_anchor(
@@ -203,11 +218,16 @@ as
   ) return varchar2
   as
   begin
-    return case when p_desc is not null then
-      '<meta name="description" content="'
-      || apex_escape.html_attribute( p_desc )
-      || '"/>'
-    end;
+    if p_desc is not null then
+      return 
+        '<meta name="description" content="'
+        || apex_escape.html_attribute( p_desc )
+        || '"/>'
+      ;
+    else 
+      apex_debug.warn('Description meta tag not generated.');
+      return ' <!-- no description -->';
+    end if;
   end get_description_meta;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------  
@@ -227,138 +247,161 @@ as
       p_desc => l_post_desc
     );
   exception when no_data_found then
-    return null;
+    apex_debug.warn('No data found to generate description meta tag.');
+    return ' <!-- no description -->';
   end get_post_description_meta;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------  
-  function get_tab_link_canonical(
+  function get_tab_canonical_link(
     p_app_id          in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_url.home_page
+    p_app_page_id     in varchar2 default blog_globals.home_page
   ) return varchar2
   as
   begin
-    return '<link rel="canonical" href="'
-      || blog_util.get_param_value( 'CANONICAL_URL' )
-      || blog_url.get_tab(
-        p_app_id => p_app_id
-        ,p_session => ''
-        ,p_debug => 'NO'
-        ,p_app_page_id => p_app_page_id
-      )
-      || '" />'
+    if p_app_page_id is not null then
+      return
+        '<link rel="canonical" href="'
+        || blog_globals.canonical_url
+        || blog_url.get_tab(
+          p_app_id => p_app_id
+          ,p_session => ''
+          ,p_debug => 'NO'
+          ,p_app_page_id => p_app_page_id
+        )
+        || '" />'
       ;
-  end get_tab_link_canonical;
+    else 
+      apex_debug.warn('Canonical link tag not generated for tab.');
+      return blog_html.get_robots_noindex_meta;
+    end if;
+  end get_tab_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------  
-  function get_post_link_canonical(
+  function get_post_canonical_link(
     p_post_id       in number,
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_url.post_page,
-    p_page_item     in varchar2 default blog_url.post_item
+    p_app_page_id   in varchar2 default blog_globals.post_page,
+    p_page_item     in varchar2 default blog_globals.post_item
   ) return varchar2
   as
   begin
-    return case when p_post_id is not null then
-      '<link rel="canonical" href="'
-      || blog_util.get_param_value( 'CANONICAL_URL' )
-      || blog_url.get_post(
-        p_post_id       => p_post_id
-        ,p_app_id       => p_app_id
-        ,p_session      => ''
-        ,p_app_page_id  => p_app_page_id
-        ,p_page_item    => p_page_item
-      )
-      || '" />'
-    end;
-  end get_post_link_canonical;
+    if p_post_id is not null then
+      return
+        '<link rel="canonical" href="'
+        || blog_globals.canonical_url
+        || blog_url.get_post(
+          p_post_id       => p_post_id
+          ,p_app_id       => p_app_id
+          ,p_session      => ''
+          ,p_app_page_id  => p_app_page_id
+          ,p_page_item    => p_page_item
+        )
+        || '" />'
+      ;
+    else 
+      apex_debug.warn('Canonical link tag not generated for post.');
+      return blog_html.get_robots_noindex_meta;
+    end if;
+  end get_post_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------  
-  function get_category_link_canonical(
+  function get_category_canonical_link(
     p_category_id   in number,
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_url.category_page,
-    p_page_item     in varchar2 default blog_url.category_item
+    p_app_page_id   in varchar2 default blog_globals.category_page,
+    p_page_item     in varchar2 default blog_globals.category_item
   ) return varchar2
   as
   begin
-    return case when p_category_id is not null then
-      '<link rel="canonical" href="'
-      || blog_util.get_param_value( 'CANONICAL_URL' )
-      || blog_url.get_category(
-        p_category_id   => p_category_id
-        ,p_app_id       => p_app_id
-        ,p_session      => ''
-        ,p_app_page_id  => p_app_page_id
-        ,p_page_item    => p_page_item
-      )
-      || '" />'
-    end;
-  end get_category_link_canonical;
+    if p_category_id is not null then
+      return
+        '<link rel="canonical" href="'
+        || blog_globals.canonical_url
+        || blog_url.get_category(
+          p_category_id   => p_category_id
+          ,p_app_id       => p_app_id
+          ,p_session      => ''
+          ,p_app_page_id  => p_app_page_id
+          ,p_page_item    => p_page_item
+        )
+        || '" />'
+      ;
+    else 
+      apex_debug.warn('Canonical link tag not generated for category.');
+      return blog_html.get_robots_noindex_meta;
+    end if;
+  end get_category_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------  
-  function get_archive_link_canonical(
+  function get_archive_canonical_link(
     p_year_month    in number,
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_url.archive_page,
-    p_page_item     in varchar2 default blog_url.archive_item
+    p_app_page_id   in varchar2 default blog_globals.archive_page,
+    p_page_item     in varchar2 default blog_globals.archive_item
   ) return varchar2
   as
   begin
-
-    return case when p_year_month is not null then
-      '<link rel="canonical" href="'
-      || blog_util.get_param_value( 'CANONICAL_URL' )
-      || blog_url.get_archive(
-        p_year_month    => p_year_month
-        ,p_app_id       => p_app_id
-        ,p_session      => ''
-        ,p_app_page_id  => p_app_page_id
-        ,p_page_item    => p_page_item
-      )
-      || '" />'
-    end;
-  end get_archive_link_canonical;
+    if p_year_month is not null then
+      return
+        '<link rel="canonical" href="'
+        || blog_globals.canonical_url
+        || blog_url.get_archive(
+          p_year_month    => p_year_month
+          ,p_app_id       => p_app_id
+          ,p_session      => ''
+          ,p_app_page_id  => p_app_page_id
+          ,p_page_item    => p_page_item
+        )
+        || '" />'
+      ;
+    else 
+      apex_debug.warn('Canonical link tag not generated for archive.');
+      return blog_html.get_robots_noindex_meta;
+    end if;
+  end get_archive_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------  
-  function get_tag_link_canonical(
+  function get_tag_canonical_link(
     p_tag_id        in number,
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_url.tag_page,
-    p_page_item     in varchar2 default blog_url.tag_item
+    p_app_page_id   in varchar2 default blog_globals.tag_page,
+    p_page_item     in varchar2 default blog_globals.tag_item
   ) return varchar2
   as
   begin
-    return case when p_tag_id is not null then
-      '<link rel="canonical" href="'
-      || blog_util.get_param_value( 'CANONICAL_URL' )
-      || blog_url.get_tag(
-        p_tag_id        => p_tag_id
-        ,p_app_id       => p_app_id
-        ,p_session      => ''
-        ,p_app_page_id  => p_app_page_id
-        ,p_page_item    => p_page_item
-      )
-      || '" />'
-    end;
-    
-  end get_tag_link_canonical;
+    if p_tag_id is not null then
+      return
+        '<link rel="canonical" href="'
+        || blog_globals.canonical_url
+        || blog_url.get_tag(
+          p_tag_id        => p_tag_id
+          ,p_app_id       => p_app_id
+          ,p_session      => ''
+          ,p_app_page_id  => p_app_page_id
+          ,p_page_item    => p_page_item
+        )
+        || '" />'
+      ;
+    else 
+      apex_debug.warn('Canonical link tag not generated for tag.');
+      return blog_html.get_robots_noindex_meta;
+    end if;
+  end get_tag_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss_anchor(
     p_app_name in varchar2
   ) return varchar2
   as
-    l_rss_url   varchar2(255);
-    l_rss_title varchar2(255);
+    l_rss_title varchar2(4000);
   begin
   
-    l_rss_url   := blog_util.get_param_value( 'RSS_URL' );
     l_rss_title := apex_lang.message( 'BLOG_RSS_TITLE', p_app_name );
-    
+    --l_rss_title := apex_escape.html_attribute( l_rss_title );
     return '<a href="'
-      || l_rss_url
+      || blog_globals.rss_url
       || '" rel="alternate" type="application/rss+xml" aria-label="'
-      || apex_escape.html( l_rss_title )
+      || l_rss_title
       || '" class="t-Button t-Button--noLabel t-Button--icon t-Button--link">'
       || '<span aria-hidden="true" class="fa fa-rss-square fa-3x fa-lg u-color-8-text"></span>'
       || '</a>'
@@ -371,21 +414,22 @@ as
     p_status   in varchar2 default 'INCLUDE'
   ) return varchar2
   as
-    l_rss_link varchar2(4000);
+    l_rss_title varchar2(4000);
   begin
-  
+    
     if p_status = 'INCLUDE' then    
-      l_rss_link :=
+      l_rss_title := apex_lang.message( 'BLOG_RSS_TITLE', p_app_name );
+      --l_rss_title := apex_escape.html_attribute( l_rss_title );
+      return
         '<link rel="alternate" type="application/rss+xml" href="'
-        || blog_util.get_param_value( 'RSS_URL' )
+        || blog_globals.rss_url
         || '" title="'
-        || apex_lang.message( 'BLOG_RSS_TITLE', p_app_name )
+        || l_rss_title
         || '"/>'
       ;
+    else 
+      return ' ';
     end if;
-    
-    return l_rss_link;
-    
   end get_rss_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -407,44 +451,29 @@ as
 --------------------------------------------------------------------------------
   function get_post_tags(
     p_post_id in number,
+    p_status  in varchar2 default 'INCLUDE',
     p_app_id  in varchar2 default null,
     p_button  in varchar2 default 'YES'
   ) return varchar2
   as
     l_tags varchar2(32700);
   begin
-  
-    -- Loop tags to generate tags links
---    for c1 in(
---      select tag_id
---        ,tag
---      from blog_v_post_tags
---      where 1 = 1
---      and post_id = p_post_id
---      order by display_seq
---    ) loop
---      blog_html.get_tag_anchor(
---         p_tag_id => c1.tag_id
---        ,p_app_id => p_app_id
---        ,p_tag    => c1.tag
---        ,p_button => p_button
---        ,p_tags   => l_tags
---      );
---    end loop;
     
-    select listagg(
-      blog_html.get_tag_anchor(
-         p_tag_id => v1.tag_id
-        ,p_app_id => p_app_id
-        ,p_tag    => v1.tag
-        ,p_button => p_button
-      ), case when p_button != 'YES' then ', ' end)
-    within group(order by v1.display_seq) as tags
-    into l_tags
-    from blog_v_posts_tags v1
-    where 1 = 1
-    and v1.post_id = p_post_id
-    ;
+    if p_status = 'INCLUDE' then
+      select listagg(
+        blog_html.get_tag_anchor(
+           p_tag_id => v1.tag_id
+          ,p_app_id => p_app_id
+          ,p_tag    => v1.tag
+          ,p_button => p_button
+        ), case when p_button != 'YES' then ', ' end)
+      within group(order by v1.display_seq) as tags
+      into l_tags
+      from blog_v_posts_tags v1
+      where 1 = 1
+      and v1.post_id = p_post_id
+      ;
+    end if;
     return l_tags;
 
   end get_post_tags;

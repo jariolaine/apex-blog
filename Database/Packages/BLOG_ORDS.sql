@@ -16,9 +16,10 @@ as
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
 -- Global variables and constants
 -- none
---------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure create_public_files_module;
 --------------------------------------------------------------------------------
@@ -34,13 +35,10 @@ end "BLOG_ORDS";
 
 CREATE OR REPLACE package body "BLOG_ORDS" as
 --------------------------------------------------------------------------------
--- Private constants and variables
+-- Private variables and constants
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  c_owner                   constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
-  c_public_xml_module       constant varchar2(256)  := 'BLOG_PUBLIC_XML';
-  c_public_files_module     constant varchar2(256)  := 'BLOG_PUBLIC_FILES';
-  c_ords_tempate_prefix     constant varchar2(256)  := 'static';
+  c_owner constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -56,7 +54,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
   begin
     -- Static files module
     ords.define_module(
-      p_module_name     => blog_ords.c_public_files_module
+      p_module_name     => blog_globals.ords_public_files_module
       ,p_base_path      => '/public/files/'
       ,p_items_per_page => 25
       ,p_status          => 'PUBLISHED'
@@ -69,7 +67,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
   begin
     -- Dynamic XML module
     ords.define_module(
-      p_module_name     => blog_ords.c_public_xml_module
+      p_module_name     => blog_globals.ords_public_xml_module
       ,p_base_path      => '/public/xml/'
       ,p_items_per_page => 25
       ,p_status          => 'PUBLISHED'
@@ -87,7 +85,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
       join user_ords_modules t2 on t1.id = t2.schema_id
       where 1 = 1
       and t1.parsing_schema = blog_ords.c_owner
-      and t2.name = blog_ords.c_public_files_module
+      and t2.name = blog_globals.ords_public_files_module
     ) loop
       for c2 in(
         select distinct v1.file_path
@@ -101,14 +99,14 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
             and t2.id = t3.module_id
           where 1 = 1
           and t1.parsing_schema = blog_ords.c_owner
-          and t2.name = blog_ords.c_public_files_module
-          and t3.uri_template = blog_ords.c_ords_tempate_prefix || v1.file_path || ':p_file_name'
+          and t2.name = blog_globals.ords_public_files_module
+          and t3.uri_template = blog_globals.ords_public_files_prefix || v1.file_path || ':p_file_name'
         )
       ) loop
 
         ords.define_template(
-          p_module_name     => c_public_files_module
-          ,p_pattern        => blog_ords.c_ords_tempate_prefix || c2.file_path || ':p_file_name'
+          p_module_name     => blog_globals.ords_public_files_module
+          ,p_pattern        => blog_globals.ords_public_files_prefix || c2.file_path || ':p_file_name'
           ,p_priority       => 0
           ,p_etag_type      => 'HASH'
           ,p_etag_query     => null
@@ -116,8 +114,8 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
         );
 
         ords.define_handler(
-          p_module_name     => c_public_files_module
-          ,p_pattern        => blog_ords.c_ords_tempate_prefix || c2.file_path || ':p_file_name'
+          p_module_name     => blog_globals.ords_public_files_module
+          ,p_pattern        => blog_globals.ords_public_files_prefix || c2.file_path || ':p_file_name'
           ,p_method         => 'GET'
           ,p_source_type    => 'resource/lob'
           ,p_items_per_page => 0
@@ -144,8 +142,8 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
   begin
 
     ords.define_template(
-      p_module_name     => blog_ords.c_public_xml_module
-      ,p_pattern        => 'feed/rss'
+      p_module_name     => blog_globals.ords_public_xml_module
+      ,p_pattern        => blog_globals.ords_feed_template
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
       ,p_etag_query     => null
@@ -153,8 +151,8 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
     );
 
     ords.define_handler(
-      p_module_name     => blog_ords.c_public_xml_module
-      ,p_pattern        => 'feed/rss'
+      p_module_name     => blog_globals.ords_public_xml_module
+      ,p_pattern        => blog_globals.ords_feed_template
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
       ,p_items_per_page => 0
@@ -167,8 +165,8 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
       );
 
     ords.define_parameter(
-      p_module_name         => blog_ords.c_public_xml_module
-      ,p_pattern            => 'feed/rss'
+      p_module_name         => blog_globals.ords_public_xml_module
+      ,p_pattern            => blog_globals.ords_feed_template
       ,p_method             => 'GET'
       ,p_name               => 'p_lang'
       ,p_bind_variable_name => 'p_lang'
@@ -179,8 +177,8 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
     );
 
     ords.define_template(
-      p_module_name     => blog_ords.c_public_xml_module
-      ,p_pattern        => 'sitemap/index'
+      p_module_name     => blog_globals.ords_public_xml_module
+      ,p_pattern        => blog_globals.ords_sitemap_index_template
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
       ,p_etag_query     => null
@@ -188,8 +186,8 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
     );
 
     ords.define_handler(
-      p_module_name     => blog_ords.c_public_xml_module
-      ,p_pattern        => 'sitemap/index'
+      p_module_name     => blog_globals.ords_public_xml_module
+      ,p_pattern        => blog_globals.ords_sitemap_index_template
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
       ,p_mimes_allowed  => ''
@@ -201,8 +199,8 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
       );
 
     ords.define_template(
-      p_module_name     => blog_ords.c_public_xml_module
-      ,p_pattern        => 'sitemap/main'
+      p_module_name     => blog_globals.ords_public_xml_module
+      ,p_pattern        => blog_globals.ords_sitemap_main_template
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
       ,p_etag_query     => null
@@ -210,8 +208,8 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
     );
 
     ords.define_handler(
-      p_module_name     => blog_ords.c_public_xml_module
-      ,p_pattern        => 'sitemap/main'
+      p_module_name     => blog_globals.ords_public_xml_module
+      ,p_pattern        => blog_globals.ords_sitemap_main_template
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
       ,p_mimes_allowed  => ''
@@ -223,8 +221,8 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
       );
 
     ords.define_template(
-      p_module_name     => blog_ords.c_public_xml_module
-      ,p_pattern        => 'sitemap/posts'
+      p_module_name     => blog_globals.ords_public_xml_module
+      ,p_pattern        => blog_globals.ords_sitemap_posts_template
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
       ,p_etag_query     => null
@@ -232,8 +230,8 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
     );
 
     ords.define_handler(
-      p_module_name     => blog_ords.c_public_xml_module
-      ,p_pattern        => 'sitemap/posts'
+      p_module_name     => blog_globals.ords_public_xml_module
+      ,p_pattern        => blog_globals.ords_sitemap_posts_template
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
       ,p_mimes_allowed  => ''
