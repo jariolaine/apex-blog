@@ -140,49 +140,52 @@ as
     l_home_url      := blog_globals.canonical_url || l_home_url;
 
     -- generate RSS
-    select xmlelement(
-      "rss", xmlattributes(
-         l_rss_version as "version"
-        ,'http://purl.org/dc/elements/1.1/' as "xmlns:dc"
-        ,'http://www.w3.org/2005/Atom'      as "xmlns:atom"
-      )
-      ,xmlelement(
-        "channel"
+    select xmlserialize( document
+      xmlelement(
+        "rss", xmlattributes(
+           l_rss_version as "version"
+          ,'http://purl.org/dc/elements/1.1/' as "xmlns:dc"
+          ,'http://www.w3.org/2005/Atom'      as "xmlns:atom"
+        )
         ,xmlelement(
-           "atom:link"
-          ,xmlattributes(
-             'self'                 as "rel"
-            ,blog_globals.rss_url   as "href"
-            ,'application/rss+xml'  as "type"
+          "channel"
+          ,xmlelement(
+             "atom:link"
+            ,xmlattributes(
+               'self'                 as "rel"
+              ,blog_globals.rss_url   as "href"
+              ,'application/rss+xml'  as "type"
+            )
+          )
+          ,xmlforest(
+             l_blog_name              as "title"
+            ,l_home_url               as "link"
+            ,l_rss_desc               as "description"
+            ,p_lang                   as "language"
+          )
+          ,xmlagg(
+            xmlelement(
+               "item"
+              ,xmlelement( "title",       posts.post_title )
+              ,xmlelement( "dc:creator",  posts.blogger_name )
+              ,xmlelement( "category",    posts.category_title )
+              ,xmlelement( "link",
+                blog_globals.canonical_url 
+                || blog_url.get_post(
+                   p_app_id  => l_app_alias
+                  ,p_post_id => posts.post_id
+                )
+              )
+              ,xmlelement( "description", posts.post_desc )
+              ,xmlelement( "pubDate",     to_char( sys_extract_utc( posts.published_on ), 'Dy, DD Mon YYYY HH24:MI:SS "GMT"' ) )
+              ,xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id)
+            ) order by posts.published_on desc
           )
         )
-        ,xmlforest(
-           l_blog_name              as "title"
-          ,l_home_url               as "link"
-          ,l_rss_desc               as "description"
-          ,p_lang                   as "language"
-        )
-        ,xmlagg(
-          xmlelement(
-             "item"
-            ,xmlelement( "title",       posts.post_title )
-            ,xmlelement( "dc:creator",  posts.blogger_name )
-            ,xmlelement( "category",    posts.category_title )
-            ,xmlelement( "link",
-              blog_globals.canonical_url 
-              || blog_url.get_post(
-                 p_app_id  => l_app_alias
-                ,p_post_id => posts.post_id
-              )
-            )
-            ,xmlelement( "description", posts.post_desc )
-            ,xmlelement( "pubDate",     to_char( sys_extract_utc( posts.published_on ), 'Dy, DD Mon YYYY HH24:MI:SS "GMT"' ) )
-            ,xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id)
-          ) order by posts.published_on desc
-        )
+      --).getclobval()
+      --).getblobval(nls_charset_id('AL32UTF8'))
       )
-    --).getclobval()
-    ).getblobval(nls_charset_id('AL32UTF8'))
+    as blob encoding 'UTF-8' indent size=2)
     into l_rss
     from blog_v_posts_last20 posts
     ;
@@ -222,7 +225,10 @@ as
         ,l_posts as loc
       from dual
     )
-    select xmlelement("sitemapindex", xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
+    select xmlserialize( document
+      xmlelement(
+        "sitemapindex", 
+        xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
         (
           xmlagg(
               xmlelement("sitemap"
@@ -230,7 +236,8 @@ as
             ) order by grp
           )
         )
-      ).getblobval(nls_charset_id('AL32UTF8'))
+      )
+    as blob encoding 'UTF-8' indent size=2)
     into l_xml
     from si
     ;
@@ -272,7 +279,10 @@ as
         and bo.build_option_status = 'Exclude'
       )
     )
-    select xmlelement("urlset", xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
+    select xmlserialize( document
+      xmlelement(
+        "urlset",
+        xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
         (
           xmlagg(
               xmlelement("url"
@@ -283,7 +293,8 @@ as
             ) order by rnum
           )
         )
-      ).getblobval(nls_charset_id('AL32UTF8'))
+      )
+    as blob encoding 'UTF-8' indent size=2)
     into l_xml
     from sitemap_query
     ;
@@ -316,7 +327,10 @@ as
 --        ,a.changed_on AS lastmod
       from blog_v_posts posts
     )
-    select xmlelement("urlset", xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
+    select xmlserialize( document
+      xmlelement(
+        "urlset", 
+        xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
         (
           xmlagg(
               xmlelement( "url"
@@ -327,7 +341,8 @@ as
               ) order by published_on desc
           )
         )
-      ).getblobval(nls_charset_id('AL32UTF8'))
+      )
+    as blob encoding 'UTF-8' indent size=2)
     into l_xml
     from sitemap_query
     ;

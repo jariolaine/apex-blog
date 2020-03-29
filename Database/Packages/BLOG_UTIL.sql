@@ -95,11 +95,11 @@ as
     --apex_debug.info( 'Fetch param name %s. Param value is: %s', p_param_name, l_value );
     return l_value;
   exception when no_data_found then
-    apex_debug.error( 'Try fetch param name %s. Parameter not found.', coalesce( p_param_name, 'null' ) );
+    apex_debug.error( 'Try fetch param name %s. Parameter not found.', coalesce( p_param_name, '(null)' ) );
     raise_application_error( -20001,  'Parameter not exists.' );
     raise;
   when others then
-    apex_debug.error( 'Fetch param name %s.', p_param_name );
+    apex_debug.error( 'Fetch param name %s.', coalesce( p_param_name, '(null)' ) );
     raise;
   end get_param_value;
 --------------------------------------------------------------------------------
@@ -119,11 +119,11 @@ as
     ;
     return l_value;
   exception when no_data_found then
-    apex_debug.error( 'Try fetch param name %s. Parameter not found.', coalesce( p_app_name, 'null' ) );
+    apex_debug.error( 'Try fetch param name %s. Parameter not found.', coalesce( p_app_name, '(null)' ) );
     raise_application_error( -20001,  'Parameter not exists.' );
     raise;
   when others then
-    apex_debug.error( 'Fetch param name %s.', p_app_name );
+    apex_debug.error( 'Fetch param name %s.', coalesce( p_app_name, '(null)' ) );
     raise;
   end get_app_id;
 --------------------------------------------------------------------------------
@@ -145,7 +145,7 @@ as
       apex_util.set_session_state( c1.item_name, c1.item_value, false );
     end loop;
   exception when others then
-    apex_debug.error( 'Set items from param. p_app_id is %s.', p_app_id );
+    apex_debug.error( 'Set items from param. p_app_id is %s.', coalesce( to_char( p_app_id ), '(null)' ) );
     raise;
   end set_items_from_param;
 --------------------------------------------------------------------------------
@@ -167,18 +167,17 @@ as
     -- Espace html and return string
     return case when p_escape then apex_escape.html(l_value) else l_value end;
   exception when no_data_found then
-    apex_debug.error( 'Try fetch post id %s. Not found.', coalesce( to_char( p_post_id ), 'null' ) );
-
+    apex_debug.error( 'Try fetch post id %s. Not found.', coalesce( to_char( p_post_id ), '(null)' ) );
     raise_application_error( -20001,  'Post not exists.' );
     raise;
   when others then
-    apex_debug.error( 'Unhandled error when fetching post id %s.', p_post_id );
+    apex_debug.error( 'Unhandled error when fetching post id %s.', coalesce( to_char( p_post_id ), '(null)' ) );
     raise;
   end get_post_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_category_title(
-    p_category_id   in number,
+    p_category_id in number,
     p_escape      in boolean default false
   ) return varchar2
   as
@@ -194,10 +193,11 @@ as
     -- Espace html and return string
     return case when p_escape then apex_escape.html(l_value) else l_value end;
   exception when no_data_found then
+    apex_debug.error( 'Try fetch category id %s. Not found.', coalesce( to_char( p_category_id ), '(null)' ) );
     raise_application_error( -20001,  'Category not exists.' );
     raise;
   when others then
-    apex_debug.error( 'Unhandled error when fetching category id %s.', p_category_id );
+    apex_debug.error( 'Unhandled error when fetching category id %s.', coalesce( to_char( p_category_id ), '(null)' ) );
     raise;
   end get_category_title;
 --------------------------------------------------------------------------------
@@ -220,10 +220,10 @@ as
     return apex_escape.html( l_value );
   exception when no_data_found then
     raise_application_error( -20001,  'Tag not exists.' );
-    apex_debug.error( 'Try fetch tag id %s. Tag not found.', coalesce( to_char( p_tag_id ), 'null' ) );
+    apex_debug.error( 'Try fetch tag id %s. Tag not found.', coalesce( to_char( p_tag_id ), '(null)' ) );
     raise;
   when others then
-    apex_debug.error( 'Unhandled error when fetching tag id %s.', coalesce( to_char( p_tag_id ), 'null' ) );
+    apex_debug.error( 'Unhandled error when fetching tag id %s.', coalesce( to_char( p_tag_id ), '(null)' ) );
     raise;
   end get_tag;
 --------------------------------------------------------------------------------
