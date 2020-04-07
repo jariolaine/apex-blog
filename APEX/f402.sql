@@ -90,8 +90,9 @@ wwv_flow_api.create_flow(
 ,p_application_group_comment=>'APEX Blog '
 ,p_page_view_logging=>'YES'
 ,p_page_protection_enabled_y_n=>'Y'
-,p_checksum_salt=>'940BBCB05D041CDAEBD9E4D2893810FEDD26B35DB03388AA6C67BE3D7B5EF05B'
-,p_bookmark_checksum_function=>'SH1'
+,p_checksum_salt=>'B22C496AFD040C7B5F1E21FA4AC20C2D68FA779C3AF68FB8A6F3F4BB268E96B2'
+,p_checksum_salt_last_reset=>'20200329211509'
+,p_bookmark_checksum_function=>'SH512'
 ,p_compatibility_mode=>'19.2'
 ,p_flow_language=>'en'
 ,p_flow_language_derived_from=>'FLOW_PREFERENCE'
@@ -100,13 +101,13 @@ wwv_flow_api.create_flow(
 ,p_flow_image_prefix => nvl(wwv_flow_application_install.get_image_prefix,'https://static.oracle.com/cdn/apex/19.2.0.00.18/')
 ,p_documentation_banner=>'Application created from create application wizard 2019.04.22.'
 ,p_authentication=>'PLUGIN'
-,p_authentication_id=>wwv_flow_api.id(18944598877524415)
+,p_authentication_id=>wwv_flow_api.id(23561479347676510)
 ,p_populate_roles=>'A'
 ,p_application_tab_set=>1
 ,p_logo_type=>'T'
 ,p_logo_text=>'&G_APP_NAME.'
 ,p_app_builder_icon_name=>'app-icon.svg'
-,p_public_user=>'ORDS_PUBLIC_USER'
+,p_public_user=>'APEX_PUBLIC_USER'
 ,p_proxy_server=>nvl(wwv_flow_application_install.get_proxy,'')
 ,p_no_proxy_domains=>nvl(wwv_flow_application_install.get_no_proxy_domains,'')
 ,p_flow_version=>'DD.MM.YYYY'
@@ -116,13 +117,13 @@ wwv_flow_api.create_flow(
 ,p_browser_cache=>'N'
 ,p_browser_frame=>'D'
 ,p_runtime_api_usage=>'T:O'
-,p_security_scheme=>'MUST_NOT_BE_PUBLIC_USER'
+,p_security_scheme=>wwv_flow_api.id(19091457497949889)
 ,p_rejoin_existing_sessions=>'N'
 ,p_csv_encoding=>'Y'
 ,p_auto_time_zone=>'Y'
 ,p_error_handling_function=>'#OWNER#.blog_err.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200308060037'
+,p_last_upd_yyyymmddhh24miss=>'20200331180330'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>106
 ,p_ui_type_name => null
@@ -736,11 +737,11 @@ wwv_flow_api.create_plugin_setting(
 );
 end;
 /
-prompt --application/shared_components/security/authorizations/bloggers
+prompt --application/shared_components/security/authorizations/application_express_bloggers
 begin
 wwv_flow_api.create_security_scheme(
  p_id=>wwv_flow_api.id(19091457497949889)
-,p_name=>'BLOGGERS'
+,p_name=>'Application Express Bloggers'
 ,p_scheme_type=>'NATIVE_IS_IN_GROUP'
 ,p_attribute_01=>'Bloggers'
 ,p_attribute_02=>'W'
@@ -860,8 +861,9 @@ wwv_flow_api.create_flow_computation(
 'from user_ords_schemas t1',
 'join user_ords_modules t2 on t1.id = t2.schema_id',
 'where 1 = 1',
-'and t2.name = ''BLOG_APP_FILES''',
+'and t2.name = ''BLOG_PUBLIC_FILES''',
 ''))
+,p_required_patch=>wwv_flow_api.id(8935943081653812)
 );
 end;
 /
@@ -11552,14 +11554,12 @@ wwv_flow_api.create_authentication(
 );
 end;
 /
-prompt --application/shared_components/security/authentications/apex
+prompt --application/shared_components/security/authentications/application_express
 begin
 wwv_flow_api.create_authentication(
- p_id=>wwv_flow_api.id(18944598877524415)
-,p_name=>'APEX'
+ p_id=>wwv_flow_api.id(23561479347676510)
+,p_name=>'Application Express'
 ,p_scheme_type=>'NATIVE_APEX_ACCOUNTS'
-,p_invalid_session_type=>'LOGIN'
-,p_cookie_name=>'&WORKSPACE_COOKIE.'
 ,p_use_secure_cookie_yn=>'N'
 ,p_ras_mode=>0
 );

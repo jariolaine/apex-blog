@@ -48,7 +48,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --       Navigation:
 --         Lists:                  4
 --       Security:
---         Authentication:         1
+--         Authentication:         2
 --       User Interface:
 --         Themes:                 1
 --         Templates:
@@ -99,7 +99,7 @@ wwv_flow_api.create_flow(
 ,p_flow_image_prefix => nvl(wwv_flow_application_install.get_image_prefix,'https://static.oracle.com/cdn/apex/19.2.0.00.18/')
 ,p_documentation_banner=>'Application created from create application wizard 2019.04.21.'
 ,p_authentication=>'PLUGIN'
-,p_authentication_id=>wwv_flow_api.id(6755941601267361)
+,p_authentication_id=>wwv_flow_api.id(23563845949734140)
 ,p_application_tab_set=>1
 ,p_logo_type=>'C'
 ,p_logo=>'<span class="z-app-logo">&G_APP_NAME.<q>&G_APP_DESC.</q></span>'
@@ -119,7 +119,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_err.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200329175052'
+,p_last_upd_yyyymmddhh24miss=>'20200401223110'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>64
 ,p_ui_type_name => null
@@ -498,10 +498,13 @@ wwv_flow_api.create_flow_computation(
 ,p_computation_sequence=>10
 ,p_computation_item=>'G_SHOW_TAGS_STATUS'
 ,p_computation_point=>'ON_NEW_INSTANCE'
-,p_computation_type=>'STATIC_ASSIGNMENT'
+,p_computation_type=>'PLSQL_EXPRESSION'
 ,p_computation_processed=>'REPLACE_EXISTING'
-,p_computation=>'INCLUDE'
-,p_required_patch=>wwv_flow_api.id(7226943678055745)
+,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex_util.get_build_option_status(',
+'  p_application_id => :APP_ID',
+'  ,p_build_option_name => ''BLOG_FEATURE_TAGS''',
+')'))
 );
 end;
 /
@@ -12903,6 +12906,17 @@ wwv_flow_api.create_authentication(
 );
 end;
 /
+prompt --application/shared_components/security/authentications/no_authentication
+begin
+wwv_flow_api.create_authentication(
+ p_id=>wwv_flow_api.id(23563845949734140)
+,p_name=>'No Authentication'
+,p_scheme_type=>'NATIVE_DAD'
+,p_use_secure_cookie_yn=>'N'
+,p_ras_mode=>0
+);
+end;
+/
 prompt --application/shared_components/plugins/item_type/fi_jaris_comment_textarea
 begin
 wwv_flow_api.create_plugin(
@@ -13130,7 +13144,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200329082139'
+,p_last_upd_yyyymmddhh24miss=>'20200401223110'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
@@ -13255,7 +13269,7 @@ wwv_flow_api.create_page_item(
 ,p_field_template=>wwv_flow_api.id(6854381477267413)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_warn_on_unsaved_changes=>'I'
-,p_restricted_characters=>'US_ONLY'
+,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'TEXT'
