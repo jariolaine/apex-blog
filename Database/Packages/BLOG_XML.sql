@@ -1,4 +1,4 @@
-CREATE OR REPLACE package "BLOG_XML" 
+CREATE OR REPLACE package "BLOG_XML"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -34,17 +34,17 @@ end "BLOG_XML";
 /
 
 
-create or replace package body "BLOG_XML" 
+create or replace package body "BLOG_XML"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private variables and constants
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  
+
   c_owner                   constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
 
-  c_pub_app_id              constant number         := to_number( blog_util.get_app_id( 'G_PUB_APP_ID' ) );
+  c_pub_app_id              constant number         := to_number( blog_util.get_init_param_value( 'G_PUB_APP_ID' ) );
 
   c_pub_app_tab_list        constant varchar2(256)  := 'Desktop Navigation Menu';
 
@@ -59,7 +59,7 @@ as
     l_app_alias varchar2(255);
   begin
 
-    begin    
+    begin
       -- query APEX metadata to get blog puplic application alias
       select t1.alias
       into l_app_alias
@@ -170,7 +170,7 @@ as
               ,xmlelement( "dc:creator",  posts.blogger_name )
               ,xmlelement( "category",    posts.category_title )
               ,xmlelement( "link",
-                blog_globals.canonical_url 
+                blog_globals.canonical_url
                 || blog_url.get_post(
                    p_app_id  => l_app_alias
                   ,p_post_id => posts.post_id
@@ -192,7 +192,7 @@ as
 
     owa_util.mime_header('application/rss+xml', false, 'UTF-8' );
 --    owa_util.mime_header('application/xml', false, 'UTF-8' );
-    sys.htp.p('cache-control: public, max-age=5400' );
+--    sys.htp.p('Cache-Control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file(l_rss);
@@ -227,7 +227,7 @@ as
     )
     select xmlserialize( document
       xmlelement(
-        "sitemapindex", 
+        "sitemapindex",
         xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
         (
           xmlagg(
@@ -243,7 +243,7 @@ as
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p('cache-control: public, max-age=5400');
+--    sys.htp.p('Cache-Control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file(l_xml);
@@ -300,7 +300,7 @@ as
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p('cache-control: public, max-age=5400');
+--    sys.htp.p('Cache-Control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file(l_xml);
@@ -308,7 +308,7 @@ as
   end sitemap_main;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure sitemap_posts 
+  procedure sitemap_posts
   as
     l_xml blob;
     l_app_alias varchar2(256);
@@ -329,7 +329,7 @@ as
     )
     select xmlserialize( document
       xmlelement(
-        "urlset", 
+        "urlset",
         xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
         (
           xmlagg(
@@ -348,7 +348,7 @@ as
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p('cache-control: public, max-age=5400');
+--    sys.htp.p('Cache-Control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file(l_xml);

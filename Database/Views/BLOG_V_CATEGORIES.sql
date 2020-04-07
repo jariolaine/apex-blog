@@ -25,7 +25,7 @@ and exists (
   from blog_posts x1
   where 1 = 1
   and x1.is_active  = 1
-  and x1.valid_from  <= localtimestamp
+  and x1.published_on <= localtimestamp
   and x1.category_id  = t1.id
 )
 with read only

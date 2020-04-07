@@ -2,7 +2,7 @@
 --  DDL for View BLOG_V_ALL_POSTS
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "VALID_FROM", "YEAR_MONTH", "NOTES", "POST_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS 
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "YEAR_MONTH", "NOTES", "POST_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS 
   select
    t1.id            as id
   ,t1.category_id   as category_id
@@ -18,7 +18,7 @@
   ,t1.post_desc     as post_desc
   ,t1.body_html     as body_html
   ,t1.body_length   as body_length
-  ,t1.valid_from    as valid_from
+  ,t1.published_on  as published_on
   ,t1.year_month    as year_month
   ,t1.notes         as notes
   ,(
@@ -40,7 +40,7 @@
     then 'CATEGORY_DISABLED'
     when t1.is_active = 0
     then 'DRAFT'
-    when t1.valid_from > localtimestamp
+    when t1.published_on > localtimestamp
     then 'SCHEDULED'
     else 'PUBLISHED'
    end as post_status 

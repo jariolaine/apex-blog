@@ -13,7 +13,7 @@
   ,t1.post_desc       as post_desc
   ,t1.first_paragraph as first_paragraph
   ,t1.body_html       as body_html
-  ,t1.valid_from      as published_on
+  ,t1.published_on    as published_on
   ,t1.year_month      as year_month
   ,t1.changed_on      as changed_on
   ,(
@@ -65,6 +65,6 @@ where 1 = 1
 and t1.is_active = 1 
 and t2.is_active = 1
 and t3.is_active = 1
-and t1.valid_from <= localtimestamp
+and t1.published_on <= localtimestamp
 with read only
 ;

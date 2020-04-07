@@ -9,19 +9,37 @@
   outline:none!important;
   box-shadow:none!important;
 }
-.t-Header-logo{
-  line-height: 1.8rem;
+/*
+.t-Header .t-Header-nav {
+  box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
+  border-bottom: 1px solid rgba(0,0,0,.075);
 }
+*/
 /*********************************
 *  Custom styles
 *********************************/
+/***
+* Elements
+***/
+blockquote::before{
+  content: open-quote;
+  font-size: 2.2rem;
+}
+blockquote::after{
+  content: close-quote;
+  font-size: 2.2rem;
+}
+blockquote p{
+  display: inline;
+}
+
 /**
 * Logo
 **/
 .z-app-logo q{
   display: block;
-	font-size: 1.4rem;
-	font-style: oblique;
+  font-size: 1.4rem;
+  font-style: oblique;
   font-weight: normal;
 }
 
@@ -95,14 +113,11 @@
 }
 .z-post--header h2{
   font-size: 1.4rem;
-  margin: 0;
+  margin: 0 0 1.8rem;
 }
 .z-post--header h3{
   font-size: 1.4rem;
   margin: 0 0 0.2rem;
-}
-.z-post--body p{
-  margin: 1.6rem 0 0;
 }
 .z-post--body img{
   max-width: 100%;
@@ -133,21 +148,6 @@
   font-style: inherit;
   font-size: inherit;
   white-space: pre-wrap;
-}
-.z-comment p,
-.z-comment pre{
-  margin: 1.6rem 0 0;
-}
-.z-comment .t-Comments-comment q{
-  font-style: italic;
-  quotes: "“" "”" "‘" "’";
-  margin-left: 16px;
-  font-weight: lighter;
-}
-.z-comment p:first-child,
-.z-comment pre:first-child,
-.z-comment pre.z-program-code:first-child{
-  margin-top: 0;
 }
 
 /**
@@ -196,27 +196,24 @@ li.z-links--item:last-child{
 * Program code formating
 **/
 pre.z-program-code{
-  font-family: monospace, Consolas, Inconsolata, Courier, "Bitstream Vera Sans Mono","Courier New" !important;
-  color: #292929;
+  font-family: "Lucida Console", Courier, monospace;
   font-size: 1.2rem;
   line-height: 1.4;
   tab-size: 2;
-  margin: 0.8rem 0 0;
   counter-reset: line;
   overflow-x: auto;
 }
 pre.z-program-code code{
-  counter-increment: line;
-  tab-size: inherit;
-  font-size: inherit;
   font-family: inherit;
+  font-size: inherit;
   line-height: inherit;
-  color: inherit;
+  tab-size: inherit;
+  counter-increment: line;
   margin: 0;
   padding: 0;
   overflow: visible;
 }
-pre.z-program-code code:before{
+pre.z-program-code code::before{
   content: counter(line);
   border-right: 2px solid #6ce26c;
   margin: 0 0.4em 0 0;
