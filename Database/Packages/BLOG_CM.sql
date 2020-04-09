@@ -161,7 +161,7 @@ as
         into p_tag_id
         from blog_v_all_tags
         where 1 = 1
-        and tag = l_value
+        and tag_unique = l_value
         ;
         
       end;

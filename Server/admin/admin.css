@@ -6,16 +6,13 @@
 }
 .z-body--no-padding .t-Tabs--pill{
   margin-bottom: 0;
-  border-left: none;
-  border-right: none
+  border: none
 }
 .z-menu-bar--bottom-border {
   border-bottom: 1px solid rgba(0,0,0,.1);
 }
-.z-Alert--only-bottom-border{
-  border-right: none;
-  border-left: none;
-  border-top: none;
+.z-remove-border{
+  border: none;
 }
 div[data-IR-switch]{
   white-space: pre;

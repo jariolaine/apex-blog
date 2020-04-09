@@ -7,9 +7,9 @@
    t1.id                        as id
   ,t1.row_version               as row_version
   ,t1.created_on                as created_on
-  ,t1.created_by                as created_by
+  ,lower(t1.created_by)         as created_by
   ,t1.changed_on                as changed_on
-  ,t1.changed_by                as changed_by
+  ,lower(t1.changed_by)         as changed_by
   ,t2.id                        as link_group_id
   ,t1.is_active                 as is_active
   ,t2.is_active                 as link_group_is_active
@@ -25,7 +25,7 @@
     then 'fa fa-toggle-on u-hot-text'
   when 0
     then 'fa fa-toggle-off'
-  end as current_status_css_class
+  end                           as current_status_css_class
 from blog_links t1
 join blog_link_groups t2
   on t1.link_group_id = t2.id
