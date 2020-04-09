@@ -15,19 +15,18 @@ as
 
 --------------------------------------------------------------------------------
 
-  ords_public_xml_module      constant varchar2(256)  := 'BLOG_PUBLIC_XML';
-  ords_public_files_module    constant varchar2(256)  := 'BLOG_PUBLIC_FILES';
+  ords_module                 constant varchar2(256)  := 'BLOG_PUBLIC_FILES';
   
-  ords_public_files_prefix    constant varchar2(256)  := 'static';
+  ords_public_files_prefix    constant varchar2(256)  := 'files';
   
   ords_feed_template          constant varchar2(256)  := 'feed/rss';
   ords_sitemap_index_template constant varchar2(256)  := 'sitemap/index';
   ords_sitemap_main_template  constant varchar2(256)  := 'sitemap/main';
   ords_sitemap_posts_template constant varchar2(256)  := 'sitemap/posts';
   
-  rss_url                     constant varchar2(4000) := blog_util.get_param_value( 'RSS_URL' );
+  rss_url                     constant varchar2(4000) := blog_util.get_attribute_value( 'RSS_URL' );
   
-  canonical_url               constant varchar2(4000) := blog_util.get_param_value( 'CANONICAL_URL' );
+  canonical_url               constant varchar2(4000) := blog_util.get_attribute_value( 'CANONICAL_URL' );
   
   home_page                   constant varchar2(40) := 'HOME';
 

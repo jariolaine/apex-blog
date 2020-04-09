@@ -12,8 +12,8 @@
      p_category_id => t1.id
    )                as category_url
   ,(
-    select count(l1.id)
-    from blog_posts l1
+    select count(1)
+    from blog_v_posts l1
     where 1 = 1
     and l1.category_id = t1.id
    )                as posts_count
@@ -22,10 +22,8 @@ where 1 = 1
 and t1.is_active = 1
 and exists (
   select 1
-  from blog_posts x1
+  from blog_v_posts x1
   where 1 = 1
-  and x1.is_active  = 1
-  and x1.published_on <= localtimestamp
   and x1.category_id  = t1.id
 )
 with read only

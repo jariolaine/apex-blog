@@ -2,7 +2,7 @@
 --  DDL for View BLOG_APEX_BUILD_OPTIONS
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_APEX_BUILD_OPTIONS" ("BUILD_OPTION_ID", "APPLICATION_ID", "FEATURE_IDENTIFIER", "BUILD_OPTION_NAME", "FEATURE_NAME", "STATUS", "FEATURE_DESC", "LAST_UPDATED", "LAST_UPDATED_BY", "CURRENT_STATUS", "CURRENT_STATUS_CSS_CLASS", "SWITCH_HTML") AS 
+  CREATE OR REPLACE FORCE VIEW "BLOG_APEX_BUILD_OPTIONS" ("BUILD_OPTION_ID", "APPLICATION_ID", "FEATURE_IDENTIFIER", "BUILD_OPTION_NAME", "FEATURE_NAME", "STATUS", "LAST_UPDATED", "LAST_UPDATED_BY", "CURRENT_STATUS", "CURRENT_STATUS_CSS_CLASS", "SWITCH_HTML") AS 
   with bo as(
   select t1.build_option_id
   ,t1.application_id
@@ -20,9 +20,6 @@
   when build_option_status = 'Exclude'
     then msg.feature_disabled
   end as status
-  ,apex_lang.message(
-    p_name => t1.build_option_name || '_DESC'
-  ) as feature_desc
   ,t1.last_updated_on as last_updated
   ,lower( t1.last_updated_by ) as last_updated_by
   ,case 
@@ -52,7 +49,6 @@ select build_option_id
   ,build_option_name
   ,feature_name
   ,status
-  ,feature_desc
   ,last_updated
   ,last_updated_by
   ,current_status

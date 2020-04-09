@@ -21,36 +21,37 @@ div[data-IR-switch]{
   white-space: pre;
   display:inline-flex;
 }
+input[data-z-switch="true"][value="0"]:checked+label {
+  background-color: #8c8c8c;
+  border-color: #8c8c8c;
+}
 
 /**
 * Program code formating
 **/
 pre.z-program-code{
-  font-family: monospace, Consolas, Inconsolata, Courier, "Bitstream Vera Sans Mono","Courier New" !important;
-  color: #333333;
-  font-size: 1rem;
+  font-family: "Lucida Console", Courier, monospace;
+  font-size: 1.2rem;
   line-height: 1.4;
   tab-size: 2;
-  margin: 0.8rem 0 0;
   counter-reset: line;
   overflow-x: auto;
 }
 pre.z-program-code code{
-  counter-increment: line;
-  tab-size: inherit;
-  font-size: inherit;
   font-family: inherit;
+  font-size: inherit;
   line-height: inherit;
-  color: inherit;
+  tab-size: inherit;
+  counter-increment: line;
   margin: 0;
   padding: 0;
   overflow: visible;
 }
-pre.z-program-code code:before{
+pre.z-program-code code::before{
   content: counter(line);
   border-right: 2px solid #6ce26c;
-  margin: 0 0.8em 0 0;
-  padding: 0 0.3em 0 0;
+  margin: 0 0.4em 0 0;
+  padding: 0 0.2em 0 0;
   display: inline-block;
   text-align: right;
   width: 2.2em;
@@ -87,14 +88,11 @@ pre.z-program-code code:before{
 }
 .z-post--header h2{
   font-size: 1.4rem;
-  margin: 0;
+  margin: 0 0 1.8rem;
 }
 .z-post--header h3{
   font-size: 1.4rem;
   margin: 0 0 0.2rem;
-}
-.z-post--body p{
-  margin: 1.6rem 0 0;
 }
 .z-post--body img{
   max-width: 100%;

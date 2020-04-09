@@ -15,7 +15,7 @@
   from apex_applications t1
   where 1 = 1
   and t1.owner = sys_context('USERENV', 'CURRENT_SCHEMA')
-  and t1.application_group = blog_util.get_param_value( 'APP_GROUP' )
+  and t1.application_group = blog_util.get_attribute_value( 'APP_GROUP' )
 ), items as (
   select ai.application_id
     ,ai.item_name
@@ -41,12 +41,12 @@
 )
 select i.application_id   as application_id
   ,i.item_name            as item_name
-  ,s.param_value          as item_value
+  ,s.attribute_value      as item_value
 from items i
 join blog_settings s
-  on i.item_name = s.param_name
+  on i.item_name = s.attribute_name
 where 1 = 1
-and s.param_value is not null
+and s.attribute_value is not null
 union all
 select items.application_id
   ,apps.item_name

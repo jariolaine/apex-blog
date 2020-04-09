@@ -44,7 +44,7 @@ as
 
   c_owner                   constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
 
-  c_pub_app_id              constant number         := to_number( blog_util.get_init_param_value( 'G_PUB_APP_ID' ) );
+  c_pub_app_id              constant number         := to_number( blog_util.get_item_init_value( 'G_PUB_APP_ID' ) );
 
   c_pub_app_tab_list        constant varchar2(256)  := 'Desktop Navigation Menu';
 
@@ -131,10 +131,10 @@ as
     l_home_url      := blog_url.get_tab( l_app_alias );
 
     -- blog name
-    l_blog_name     := blog_util.get_param_value( 'G_APP_NAME' );
+    l_blog_name     := blog_util.get_attribute_value( 'G_APP_NAME' );
 
     -- rss feed description
-    l_rss_desc      := blog_util.get_param_value( 'G_APP_DESC' );
+    l_rss_desc      := blog_util.get_attribute_value( 'G_APP_DESC' );
 
     -- blog home page absolute url
     l_home_url      := blog_globals.canonical_url || l_home_url;

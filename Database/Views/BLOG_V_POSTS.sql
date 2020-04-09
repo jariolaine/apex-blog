@@ -25,37 +25,27 @@
   ) as comments_count
   ,(
     select
-      apex_lang.lang(
-        'Continue Reading'
-      )
+      apex_lang.message( 'BLOG_READ_MORE_TXT' )
     from dual
   ) as read_more_txt
   ,(
     select 
-      apex_lang.lang(
-        'Posted on'
-      )
+      apex_lang.message( 'BLOG_POSTED_ON_TXT' )
     from dual
   ) as posted_on_txt
   ,(
     select
-      apex_lang.lang(
-        'Posted by'
-      )
+      apex_lang.message( 'BLOG_POSTED_BY_TXT' )
     from dual
   ) as posted_by_txt
   ,(
     select
-      apex_lang.lang(
-        'Category'
-      )
+      apex_lang.message( 'BLOG_CATEGORY_TXT' )
     from dual
   ) as category_txt
   ,(
     select
-      apex_lang.lang(
-        'Tags'
-      )
+      apex_lang.message( 'BLOG_TAGS_TXT' )
     from dual
   ) as tags_txt
 from blog_posts       t1

@@ -78,7 +78,6 @@ as
   -- Called from: admin app pages 12
   procedure add_category(
     p_title       in varchar2,
-    p_hash        in varchar2,
     p_category_id out nocopy number
   );
 --------------------------------------------------------------------------------
@@ -166,24 +165,6 @@ as
     end if;
 
   end add_tag;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function is_changed(
-    p_value in varchar2,
-    p_hash  in varchar2
-  ) return boolean
-  as
-    l_result  boolean;
-    l_hash    varchar2(32700);
-  begin
-    l_result := true;
-    l_hash := apex_util.get_hash(apex_t_varchar2(p_value));
-    if p_hash = l_hash
-    then
-      l_result := false;
-    end if;
-    return l_result;
-  end is_changed;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -475,28 +456,15 @@ as
 --------------------------------------------------------------------------------
   procedure add_category(
     p_title       in varchar2,
-    p_hash        in varchar2,
     p_category_id out nocopy number
   )
   as
     l_seq     number;
     l_title   varchar2(256);
-    l_changed boolean;
   begin
   
     p_category_id := null;
     l_title := trim( p_title );
-    
-    l_changed := blog_cm.is_changed(
-      p_value => p_title
-      ,p_hash => p_hash
-    );
-    apex_debug.info ('Is category changed: %s', apex_debug.tochar(l_changed));
-    
-    -- if value not changed raise dup_val_on_index error and fetch key in exception handler
-    if not l_changed then
-      raise dup_val_on_index;
-    end if;
     
     -- get next sequence value
     l_seq   := blog_cm.get_category_seq;
