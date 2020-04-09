@@ -123,7 +123,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'Y'
 ,p_error_handling_function=>'#OWNER#.blog_err.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200409085346'
+,p_last_upd_yyyymmddhh24miss=>'20200409100243'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>108
 ,p_ui_type_name => null
@@ -13435,7 +13435,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200409084422'
+,p_last_upd_yyyymmddhh24miss=>'20200409095843'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
@@ -13446,29 +13446,29 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select id',
-'  ,row_version',
-'  ,created_on',
-'  ,created_by',
-'  ,changed_on',
-'  ,changed_by',
-'  ,is_active',
-'  ,is_download',
-'  ,file_path',
-'  ,file_name',
+'select v1.id',
+'  ,v1.row_version',
+'  ,v1.created_on',
+'  ,v1.created_by',
+'  ,v1.changed_on',
+'  ,v1.changed_by',
+'  ,v1.is_active',
+'  ,v1.is_download',
+'  ,v1.file_path',
+'  ,v1.file_name',
 '  ,case is_download',
 '  when 1',
-'  then ''f?p=&G_PUB_APP_ID.:FILES:::NO:RIR:IR_FILE_NAME:cascading_popup_lov_apex42.zip''',
-'  else :G_BLOG_STATIC_FILES || file_location ',
+'  then ''f?p='' || :G_PUB_APP_ID || '':FILES:::NO:RIR:IR_FILE_NAME:'' || v1.file_name',
+'  else :G_BLOG_STATIC_FILES || v1.file_location ',
 '  end as relative_path',
-'  ,mime_type',
-'  ,file_size',
-'  ,file_desc',
-'  ,notes',
-'  ,file_size as download',
-'  ,current_status_css_class',
-'  ,download_status_css_class',
-'from blog_v_all_files',
+'  ,v1.mime_type',
+'  ,v1.file_size',
+'  ,v1.file_desc',
+'  ,v1.notes',
+'  ,v1.file_size as download',
+'  ,v1.current_status_css_class',
+'  ,v1.download_status_css_class',
+'from blog_v_all_files v1',
 'where 1 = 1'))
 ,p_plug_source_type=>'NATIVE_IR'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -13773,7 +13773,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200409085346'
+,p_last_upd_yyyymmddhh24miss=>'20200409100243'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6788182287545486)
@@ -13950,7 +13950,7 @@ wwv_flow_api.create_page_item(
 ,p_item_sequence=>80
 ,p_item_plug_id=>wwv_flow_api.id(6788182287545486)
 ,p_item_source_plug_id=>wwv_flow_api.id(6788182287545486)
-,p_prompt=>'Name'
+,p_prompt=>'File'
 ,p_source=>'FILE_NAME'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_DISPLAY_ONLY'
