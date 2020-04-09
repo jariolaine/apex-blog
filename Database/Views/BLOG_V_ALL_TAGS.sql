@@ -2,7 +2,7 @@
 --  DDL for View BLOG_V_ALL_TAGS
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "TAG", "NOTES", "POSTS_COUNT", "ALLOWED_ROW_OPERATION") AS 
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "TAG", "TAG_UNIQUE", "NOTES", "POSTS_COUNT", "ALLOWED_ROW_OPERATION") AS 
   select t1.id      as id
   ,t1.row_version as row_version
   ,t1.created_on  as created_on
@@ -11,6 +11,7 @@
   ,t1.changed_by  as changed_by
   ,t1.is_active   as is_active
   ,t1.tag         as tag
+  ,t1.tag_unique  as tag_unique
   ,t1.notes       as notes
   ,(
     select count(l1.id) 

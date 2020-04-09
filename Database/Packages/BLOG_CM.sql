@@ -10,7 +10,8 @@ as
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 26.04.2019 - Created
 --    Jari Laine 10.01.2020 - Added procedure merge_files and file_upload
---    jari Laine 12.01.2020 - Added function prepare_file_path
+--    Jari Laine 12.01.2020 - Added function prepare_file_path
+--    Jari Laine 09.04.2020 - Handling tags case insensitive
 --
 --  TO DO: (search from body TODO#x)
 --    #1 - check constraint name that raised dup_val_on_index error
@@ -134,19 +135,19 @@ as
     p_tag_id  out nocopy number
   )
   as
-    l_tag_val varchar2(4000);
+    l_value varchar2(256);
   begin
 
     p_tag_id  := null;
-    l_tag_val := trim( p_tag );
+    l_value := trim( p_tag );
 
     -- if tag is not null then insert to table and return id
-    if l_tag_val is not null then
+    if l_value is not null then
 
       begin
 
         insert into blog_tags( is_active, tag )
-        values ( 1, l_tag_val )
+        values ( 1, l_value )
         returning id into p_tag_id
         ;
 
@@ -154,17 +155,40 @@ as
       -- find id for tag in exception handler
       exception when dup_val_on_index then
       -- TODO#1
+        l_value := upper(l_value);
+        
         select id
         into p_tag_id
         from blog_v_all_tags
         where 1 = 1
-        and tag = l_tag_val
+        and tag = l_value
         ;
+        
       end;
 
     end if;
 
   end add_tag;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure cleanup_posts_tags(
+    p_post_id in number,
+    p_tag_tab in blog_t_tags
+  )
+  as
+  begin
+    -- cleanup relationship from tags that aren't belong to post
+    delete 
+    from blog_posts_tags t1
+    where 1 = 1
+    and post_id = p_post_id
+    and not exists(
+      select 1
+      from table( p_tag_tab ) x1
+      where 1 = 1
+      and x1.tag_id = t1.tag_id
+    );
+  end cleanup_posts_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -330,8 +354,9 @@ as
     p_file_path in varchar2
   ) return varchar2
   as
-    l_file_path   varchar2(256);
+    l_file_path varchar2(256);
   begin
+  
     l_file_path := trim(trim (both '/' from p_file_path));
     
     if l_file_path is null then
@@ -460,11 +485,15 @@ as
   )
   as
     l_seq     number;
-    l_title   varchar2(256);
+    l_value   varchar2(512);
   begin
   
     p_category_id := null;
-    l_title := trim( p_title );
+    l_value := trim( p_title );
+    
+    if l_value is null then
+      raise_application_error( -20001,  'Category title must have some value.' );
+    end if;
     
     -- get next sequence value
     l_seq   := blog_cm.get_category_seq;
@@ -473,17 +502,17 @@ as
     -- if unique constraint violation raised, category exists.
     -- then find category id for out parameter in exception handler
     insert into blog_categories ( is_active, display_seq, title )
-    values( 1, l_seq, l_title )
+    values( 1, l_seq, l_value )
     returning id into p_category_id
     ;
   exception when dup_val_on_index then
     -- TODO#1 
-    l_title := upper( l_title );
+    l_value := upper( l_value );
     select v1.id
     into p_category_id
     from blog_v_all_categories v1
     where 1 = 1
-    and v1.title_unique = l_title
+    and v1.title_unique = l_value
     ;
 
   end add_category;
@@ -498,7 +527,7 @@ as
     l_tag_id  number;
     l_arr_cnt number;
     l_tag_arr apex_t_varchar2;
-    l_tag_tab blog_t_tag_ids := blog_t_tag_ids();
+    l_tag_tab blog_t_tags := blog_t_tags();
   begin
 
     -- split tags string to array and loop all values
@@ -552,16 +581,10 @@ as
       end if;
 
     end loop;
-
-    -- cleanup relationship from tags that aren't belong to post
-    delete from blog_posts_tags t1
-    where 1 = 1
-    and post_id = p_post_id
-    and not exists(
-      select 1
-      from table( l_tag_tab ) x1
-      where 1 = 1
-      and x1.tag_id = t1.tag_id
+    
+    cleanup_posts_tags(
+       p_post_id => p_post_id 
+      ,p_tag_tab => l_tag_tab
     );
 
 /*
@@ -577,7 +600,6 @@ as
   procedure remove_unused_tags
   as
   begin
-    -- TODO#3
     -- cleanup tags that aren't linked to any post
     delete from blog_tags t1
     where 1 = 1
