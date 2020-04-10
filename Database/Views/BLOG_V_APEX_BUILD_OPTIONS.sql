@@ -76,4 +76,6 @@ select application_id
     )
   ) as switch_html
 from bo
+where 1 = 1
+with read only
 ;

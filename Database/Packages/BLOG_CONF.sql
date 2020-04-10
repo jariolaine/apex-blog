@@ -17,6 +17,8 @@ as
 --------------------------------------------------------------------------------  
 
 -------------------------------------------------------------------------------- 
+  -- Called from: admin app pages 20011
+  -- not ready
   procedure update_feature_config(
     p_app_id        in number
   );
@@ -25,6 +27,14 @@ as
     p_app_id        in number,
     p_static_id     in varchar2 default null,
     p_build_option  in varchar2 default null
+  );
+--------------------------------------------------------------------------------
+  -- Called from: procedure blog_conf.purge_post_preview_job
+  -- not ready
+  procedure purge_post_preview;
+--------------------------------------------------------------------------------
+  procedure purge_post_preview_job(
+    p_drop_job    in boolean default false
   );
 --------------------------------------------------------------------------------
 end "BLOG_CONF";
@@ -125,6 +135,55 @@ CREATE OR REPLACE package body "BLOG_CONF" as
     end loop;
 
   end purge_region_cache;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure purge_post_preview
+  as
+  begin
+    
+    -- Delete from blog_post_preview rows where session is expired
+    delete from blog_post_preview p
+    where not exists (
+      select 1 
+      from apex_workspace_sessions s
+      where 1 = 1
+      and s.apex_session_id = p.id
+    );
+  end purge_post_preview;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure purge_post_preview_job(
+    p_drop_job in boolean default false
+  )
+  as
+    l_job_name      varchar2(255);
+    job_not_exists  exception;
+    pragma          exception_init(job_not_exists, -27475);
+  begin
+  
+    l_job_name := 'BLOG_PURGE_POST_PREVIEW_JOB';
+    
+    begin
+      sys.dbms_scheduler.drop_job(
+        job_name => l_job_name
+      );
+    exception when job_not_exists then
+      null;
+    end;
+  
+    if not p_drop_job then
+      sys.dbms_scheduler.create_job(
+         job_name        => l_job_name
+        ,job_type        => 'STORED_PROCEDURE'
+        ,job_action      => 'blog_cm.purge_post_preview'
+        ,start_date      => trunc(localtimestamp, 'HH')
+        ,repeat_interval => 'FREQ=DAILY'
+        ,enabled         => true
+        ,comments        => 'Purge expired sessions posts previews'
+      );
+    end if;
+    
+  end purge_post_preview_job;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_CONF";

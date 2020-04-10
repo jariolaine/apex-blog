@@ -95,22 +95,13 @@ as
   procedure remove_unused_tags;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
+  -- Not ready
   procedure save_post_preview(
     p_id            in number,
     p_tags          in varchar2,
     p_post_title      in varchar2,
     p_category_title  in varchar2,
     p_body_html       in clob
-  );
---------------------------------------------------------------------------------
-  -- Called from: 
-  -- not ready
-  procedure purge_post_preview;
---------------------------------------------------------------------------------
-  -- Called from: 
-  -- not ready
-  procedure purge_post_preview_job(
-    p_drop_job    in boolean default false
   );
 --------------------------------------------------------------------------------
 end "BLOG_CM";
@@ -642,54 +633,6 @@ as
     )
     ;
   end save_post_preview;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure purge_post_preview
-  as
-  begin
-    /* Delete from blog_article_preview rows where session is expired */
-    delete from blog_post_preview p
-    where not exists (
-      select 1 
-      from apex_workspace_sessions s
-      where 1 = 1
-      and s.apex_session_id = p.id
-    );
-  end purge_post_preview;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure purge_post_preview_job(
-    p_drop_job in boolean default false
-  )
-  as
-    l_job_name      varchar2(255);
-    job_not_exists  exception;
-    pragma          exception_init(job_not_exists, -27475);
-  begin
-  
-    l_job_name := 'BLOG_PURGE_POST_PREVIEW_JOB';
-    
-    begin
-      sys.dbms_scheduler.drop_job(
-        job_name => l_job_name
-      );
-    exception when job_not_exists then
-      null;
-    end;
-  
-    if not p_drop_job then
-      sys.dbms_scheduler.create_job(
-         job_name        => l_job_name
-        ,job_type        => 'STORED_PROCEDURE'
-        ,job_action      => 'blog_cm.purge_post_preview'
-        ,start_date      => trunc(localtimestamp, 'HH')
-        ,repeat_interval => 'FREQ=DAILY'
-        ,enabled         => true
-        ,comments        => 'Purge expired sessions post previews'
-      );
-    end if;
-    
-  end purge_post_preview_job;
 --------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 end "BLOG_CM";
