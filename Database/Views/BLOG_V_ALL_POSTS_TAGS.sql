@@ -18,5 +18,4 @@
 from blog_tags t1
 join blog_posts_tags t2 on t1.id = t2.tag_id
 where 1 = 1 
-with read only
 ;

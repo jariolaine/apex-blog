@@ -31,5 +31,4 @@
   end                   as allowed_row_operation
 from blog_tags t1
 where 1 = 1 
-with read only
 ;

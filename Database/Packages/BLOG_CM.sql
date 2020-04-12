@@ -66,7 +66,7 @@ as
     p_file_path   in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app page 22 branch condition
+  -- Called from: admin app page 22 Close Dialog condition
   function file_upload(
     p_file_name   in varchar2,
     p_file_path   in varchar2,
@@ -162,9 +162,34 @@ as
   end add_tag;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  procedure add_tag_to_post(
+    p_post_id     in number,
+    p_tag_id      in number,
+    p_display_seq in number
+  )
+  as
+  begin
+    -- insert post id, tag id and display sequency to table.
+    -- use unique constraint violation to skip existing records.
+    insert into blog_posts_tags( is_active, post_id, tag_id, display_seq )
+    values ( 1, p_post_id, p_tag_id, p_display_seq )
+    ;
+  -- TODO#1
+  exception when dup_val_on_index then
+    -- update display sequence if it changed
+    update blog_posts_tags
+    set display_seq = p_display_seq
+    where 1 = 1
+    and post_id = p_post_id
+    and tag_id = p_tag_id
+    and display_seq != p_display_seq
+    ;
+  end add_tag_to_post;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure cleanup_posts_tags(
     p_post_id in number,
-    p_tag_tab in blog_t_tags
+    p_tag_tab in apex_t_number
   )
   as
   begin
@@ -177,7 +202,7 @@ as
       select 1
       from table( p_tag_tab ) x1
       where 1 = 1
-      and x1.tag_id = t1.tag_id
+      and x1.column_value = t1.tag_id
     );
   end cleanup_posts_tags;
 --------------------------------------------------------------------------------
@@ -395,9 +420,11 @@ as
         select t1.id
           ,t2.id as file_id
           ,t2.row_version
-          ,coalesce(t2.is_active, 1) as is_active
-          ,coalesce(t2.is_download, 0) is_download 
+          ,t2.is_active
+          ,t2.is_download
           ,t2.file_desc
+          ,t1.mime_type
+          ,t1.blob_content
         from apex_application_temp_files t1
         left join blog_v_all_files t2 on t2.file_name = l_file_name
           and t2.file_path = l_file_path
@@ -409,14 +436,16 @@ as
         
         apex_collection.add_member(
           p_collection_name => 'BLOG_FILES'
-          ,p_n001 => c1.id
-          ,p_n002 => c1.file_id
-          ,p_n003 => c1.row_version
-          ,p_n004 => c1.is_active
-          ,p_n005 => c1.is_download
-          ,p_c001 => l_file_path
-          ,p_c002 => l_file_name
-          ,p_c003 => c1.file_desc
+          ,p_n001     => c1.id
+          ,p_n002     => c1.file_id
+          ,p_n003     => c1.row_version
+          ,p_n004     => coalesce(c1.is_active, 1)
+          ,p_n005     => coalesce(c1.is_download, 0)
+          ,p_c001     => l_file_path
+          ,p_c002     => l_file_name
+          ,p_c003     => c1.file_desc
+          ,p_c004     => c1.mime_type
+          ,p_blob001  => c1.blob_content
           /*
           ,p_c021 => 'BLOG_STATUS_IS'
           ,p_c022 => 'Enabled'
@@ -434,7 +463,7 @@ as
       blog_cm.merge_files;
     end if;
     
-    return l_file_exists;
+    return not l_file_exists;
     
   end file_upload;
 --------------------------------------------------------------------------------
@@ -515,67 +544,52 @@ as
     p_sep     in varchar2 default ','
   )
   as
-    l_tag_id  number;
-    l_arr_cnt number;
-    l_tag_arr apex_t_varchar2;
-    l_tag_tab blog_t_tags := blog_t_tags();
+    l_tag_id      number;
+    l_display_seq number;
+    l_tag_tab     apex_t_varchar2;
+    l_tag_id_tab  apex_t_number;
   begin
 
-    -- split tags string to array and loop all values
-    l_tag_arr := apex_string.split(
+    -- split tags string to table and loop all values
+    l_tag_tab := apex_string.split(
        p_str => p_tags
       ,p_sep => p_sep
     );
 
-    for i in 1 .. l_tag_arr.count
+    for i in 1 .. l_tag_tab.count
     loop
 
       -- add tag to repository
       l_tag_id := null;
       
       blog_cm.add_tag(
-         p_tag    => l_tag_arr(i)
+         p_tag    => l_tag_tab(i)
         ,p_tag_id => l_tag_id
       );
 
       if l_tag_id is not null then
 
-        -- collect tag id to array.
-        -- array is used at end of procedure 
-        -- to check not existing relationships between tag and posts
-        l_tag_tab.extend;
-        
-        -- get array last index. 
-        -- it is also usedfor tag display sequence
-        l_arr_cnt := l_tag_tab.last;
-        
-        l_tag_tab( l_arr_cnt ) := blog_t_tag_id( l_tag_id );
+        -- collect tag id to table.
+        -- table is used at end of procedure for checking relationships between tags and post
+        apex_string.push( l_tag_id_tab, l_tag_id );
 
-        -- insert post id, tag id and display sequency to table.
-        -- use unique constraint violation to skip existing records.
-        begin
-          insert into blog_posts_tags( is_active, post_id, tag_id, display_seq )
-          values ( 1, p_post_id, l_tag_id, l_arr_cnt )
-          ;
-        exception when dup_val_on_index then
-          -- TODO#1
-          -- update display sequence if it changed
-          update blog_posts_tags
-          set display_seq = l_arr_cnt
-          where 1 = 1
-          and post_id = p_post_id
-          and tag_id = l_tag_id
-          and display_seq != l_arr_cnt
-          ;
-        end;
-
+        -- get table record count for tag display sequence
+        l_display_seq:= l_tag_id_tab.count * 10;
+        
+        -- tag post
+        blog_cm.add_tag_to_post(
+           p_post_id     => p_post_id
+          ,p_tag_id      => l_tag_id
+          ,p_display_seq => l_display_seq
+        );
+        
       end if;
 
     end loop;
     
-    cleanup_posts_tags(
+    blog_cm.cleanup_posts_tags(
        p_post_id => p_post_id 
-      ,p_tag_tab => l_tag_tab
+      ,p_tag_tab => l_tag_id_tab
     );
 
 /*

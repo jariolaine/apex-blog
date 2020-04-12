@@ -2,7 +2,7 @@
 --  DDL for View BLOG_V_ALL_POSTS
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "YEAR_MONTH", "NOTES", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS" ,"CURRENT_STATUS_CSS_CLASS") AS 
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "YEAR_MONTH", "NOTES", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS" ,"POST_STATUS_CSS_CLASS") AS 
   select
    t1.id                as id
   ,t1.category_id       as category_id
@@ -68,10 +68,9 @@
     when t1.published_on > localtimestamp
     then 'fa fa-clock-o'
     else 'fa fa-toggle-on u-hot-text'
-   end                   as current_status_css_class
+   end                   as post_status_css_class
 from blog_posts t1
 join blog_categories t2 on t1.category_id = t2.id
 join blog_bloggers t3 on t1.blogger_id = t3.id
 where 1 = 1 
-with read only
 ;

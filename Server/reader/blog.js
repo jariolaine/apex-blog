@@ -141,3 +141,13 @@
 	};
 
 })(apex.jQuery, blog);
+
+// on page ready
+// hide automatically success message
+apex.jQuery(function() {
+  apex.theme42.util.configAPEXMsgs({
+    autoDismiss: true
+    // duration is optional (Default is 3000 milliseconds)
+    ,duration: 5000
+  });
+});

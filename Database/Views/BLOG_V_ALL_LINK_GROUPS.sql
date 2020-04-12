@@ -22,5 +22,4 @@
    )                    as link_count
 from blog_link_groups t1
 where 1 = 1
-with read only
 ;

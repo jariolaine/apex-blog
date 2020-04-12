@@ -1,20 +1,11 @@
 /*********************************
 *  Custom styles
 *********************************/
-.z-body--no-padding .t-Body-contentInner{
-  padding: 0;
+.z-IR--iconLinks td:first-child {
+  width: 1%;
+  overflow: visible;
 }
-.z-body--no-padding .t-Tabs--pill{
-  margin-bottom: 0;
-  border: none
-}
-.z-menu-bar--bottom-border {
-  border-bottom: 1px solid rgba(0,0,0,.1);
-}
-.z-remove-border{
-  border: none;
-}
-div[data-IR-switch]{
+div[data-z-IR-switch]{
   white-space: pre;
   display:inline-flex;
 }

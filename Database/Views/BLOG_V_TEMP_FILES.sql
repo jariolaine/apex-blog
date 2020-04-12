@@ -2,20 +2,19 @@
 --  DDL for View BLOG_V_TEMP_FILES
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_TEMP_FILES" ("SEQ_ID", "ID", "ROW_VERSION", "IS_ACTIVE", "IS_DOWNLOAD", "FILE_PATH", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_DESC") AS 
-  select t2.seq_id
-  ,t2.n002 as id
-  ,t2.n003 as row_version
-  ,t2.n004 as is_active
-  ,t2.n005 as is_download
-  ,t2.c001 as file_path
-  ,t2.c002 as file_name
-  ,t1.mime_type
-  ,t1.blob_content
-  ,t2.c003 as file_desc
-from apex_application_temp_files t1
-join apex_collections t2 on t1.id = t2.n001
-  and collection_name = 'BLOG_FILES'
-where 1 = 1  
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_TEMP_FILES" ("SEQ_ID", "ID", "ROW_VERSION", "IS_ACTIVE", "IS_DOWNLOAD", "FILE_PATH", "FILE_NAME", "FILE_DESC", "MIME_TYPE", "BLOB_CONTENT") AS 
+  select t1.seq_id
+  ,t1.n002    as id
+  ,t1.n003    as row_version
+  ,t1.n004    as is_active
+  ,t1.n005    as is_download
+  ,t1.c001    as file_path
+  ,t1.c002    as file_name
+  ,t1.c003    as file_desc
+  ,t1.c004    as mime_type
+  ,t1.blob001 as blob_content
+from apex_collections t1
+where 1 = 1
+and collection_name = 'BLOG_FILES'
 with read only
 ;

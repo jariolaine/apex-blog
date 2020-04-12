@@ -182,7 +182,8 @@ as
           || '"'
           || ' class="t-Button'
           || ' t-Button--icon'
-          || ' t-Button--small'
+          || ' t-Button--noUI'
+--          || ' t-Button--small'
 --          || ' t-Button--hot'
 --          || ' t-Button--link'
 --          || ' t-Button--simple'
@@ -440,7 +441,7 @@ as
   begin
     return '<button'
       || ' type="button" title="Search" aria-label="Search"'
-      || ' class="t-Button t-Button--noLabel t-Button--icon t-Button--small t-Button--hot"'
+      || ' class="t-Button t-Button--noLabel t-Button--icon t-Button--hot"'
       || ' onclick="apex.submit({request:'''|| p_request || '''});"'
       || '>'
       || '<span class="t-Icon fa fa-search" aria-hidden="true"></span>'

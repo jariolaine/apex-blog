@@ -44,54 +44,22 @@ blockquote p{
 }
 
 /**
-* Author info
-**/
-.z-author--card .t-Card{
-  margin: 0;
-  padding: 0;
-  width: 100%;
-}
-.z-author--card .t-Card-titleWrap {
-  min-height: initial;
-  border-bottom: 1px solid rgba(0,0,0,.075);
-  box-shadow: none;
-}
-.z-author--card .t-Card-title {
-  font-size: 1.6rem;
-  font-weight: 500;
-  line-height: 2.4rem;
-}
-.z-author--card .t-Card-wrap{
-  border: none;
-}
-.z-author--card .t-Card-colorFill{
-  background-color: transparent;
-}
-.z-author-container{
-  display: flex;
-  flex-flow: row;
-  width: 100%;
-}
-.z-author-left{
-  order: 1;
-}
-.z-author-left img{
-  display: block;
-}
-.z-author-right{
-  order: 2;
-  padding-left: 16px;
-}
-
-/**
-* Reports
+* Classic Reports
 **/
 .nodatafound{
   font-size: 1.2rem;
 }
-
 /**
-* Post report
+* Right column link lists
+**/
+.z-link-list--no-border li,
+.z-link-list--no-border a:focus{
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+/**
+* Post Custom Template
 **/
 .z-post{
   background-color: #ffffff;
@@ -131,7 +99,6 @@ blockquote p{
   clear: both;
   margin: 1.2rem 0 0;
 }
-
 /**
 * Comments
 **/
@@ -149,11 +116,10 @@ blockquote p{
   font-size: inherit;
   white-space: pre-wrap;
 }
-
 /**
-* Links Report
+* Links Media List
 **/
-.z-links{
+.z-report--links{
   background-color: transparent;
 }
 li.z-links--header{
@@ -191,6 +157,54 @@ li.z-links--item:last-child{
   margin-bottom: 16px;
   border-bottom: 1px solid rgba(0,0,0,.1);
 }
+/**
+* Files Media List
+**/
+.z-file-search{
+  border-bottom: 1px solid #e0e0e0;
+}
+.z-report--files .t-MediaList-title {
+  word-break: break-word;
+}
+/**
+* About Card
+**/
+.z-author--card .t-Card{
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.z-author--card .t-Card-titleWrap {
+  min-height: initial;
+  border-bottom: 1px solid rgba(0,0,0,.075);
+  box-shadow: none;
+}
+.z-author--card .t-Card-title {
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 2.4rem;
+}
+.z-author--card .t-Card-wrap{
+  border: none;
+}
+.z-author--card .t-Card-colorFill{
+  background-color: transparent;
+}
+.z-author-container{
+  display: flex;
+  flex-flow: row;
+  width: 100%;
+}
+.z-author-left{
+  order: 1;
+}
+.z-author-left img{
+  display: block;
+}
+.z-author-right{
+  order: 2;
+  padding-left: 16px;
+}
 
 /**
 * Program code formating
@@ -223,16 +237,6 @@ pre.z-program-code code::before{
   width: 2.2em;
   color: #939393;
   user-select: none;
-}
-
-/**
-* Right column link lists
-**/
-.z-link-list--no-border li,
-.z-link-list--no-border a:focus{
-  border: none;
-  outline: none;
-  box-shadow: none;
 }
 
 @media only screen and (max-width: 640px){

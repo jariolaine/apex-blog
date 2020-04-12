@@ -37,5 +37,4 @@
     else apex_lang.lang('Disabled')
    end as category_status
 from blog_categories t1
-with read only
 ;

@@ -59,7 +59,7 @@ select application_id
     ,p_off_value  => 'Exclude'
     ,p_off_label  => feature_disabled
     ,p_item_id    => 'BO_OPT_' || rownum
-    ,p_attributes => 'data-IR-switch="true"'
+    ,p_attributes => 'data-z-IR-switch="true"'
     ,p_item_label => (
       case
       when build_option_status = 'Include' then
