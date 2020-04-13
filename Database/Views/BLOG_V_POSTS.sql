@@ -2,7 +2,7 @@
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "YEAR_MONTH", "CHANGED_ON", "COMMENTS_COUNT", "READ_MORE_TXT", "POSTED_ON_TXT", "POSTED_BY_TXT", "CATEGORY_TXT", "TAGS_TXT") AS 
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "YEAR_MONTH", "CHANGED_ON", "COMMENTS_COUNT") AS 
   select
    t1.id              as post_id
   ,t3.id              as category_id
@@ -23,31 +23,6 @@
     and l1.is_active = 1
     and l1.post_id  = t1.id
   ) as comments_count
-  ,(
-    select
-      apex_lang.message( 'BLOG_READ_MORE_TXT' )
-    from dual
-  ) as read_more_txt
-  ,(
-    select 
-      apex_lang.message( 'BLOG_POSTED_ON_TXT' )
-    from dual
-  ) as posted_on_txt
-  ,(
-    select
-      apex_lang.message( 'BLOG_POSTED_BY_TXT' )
-    from dual
-  ) as posted_by_txt
-  ,(
-    select
-      apex_lang.message( 'BLOG_CATEGORY_TXT' )
-    from dual
-  ) as category_txt
-  ,(
-    select
-      apex_lang.message( 'BLOG_TAGS_TXT' )
-    from dual
-  ) as tags_txt
 from blog_posts       t1
 join blog_bloggers    t2 on t1.blogger_id  = t2.id
 join blog_categories  t3 on t1.category_id = t3.id

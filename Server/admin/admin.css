@@ -13,48 +13,16 @@ input[data-z-switch="true"][value="0"]:checked+label {
   background-color: #8c8c8c;
   border-color: #8c8c8c;
 }
-
-/**
-* Program code formating
-**/
-pre.z-program-code{
-  font-family: "Lucida Console", Courier, monospace;
-  font-size: 1.2rem;
-  line-height: 1.4;
-  tab-size: 2;
-  counter-reset: line;
-  overflow-x: auto;
-}
-pre.z-program-code code{
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  tab-size: inherit;
-  counter-increment: line;
-  margin: 0;
-  padding: 0;
-  overflow: visible;
-}
-pre.z-program-code code::before{
-  content: counter(line);
-  border-right: 2px solid #6ce26c;
-  margin: 0 0.4em 0 0;
-  padding: 0 0.2em 0 0;
-  display: inline-block;
-  text-align: right;
-  width: 2.2em;
-  color: #939393;
-  user-select: none;
-}
-
 /**
 * Reports
 **/
 .nodatafound{
+  text-align: center;
+  color: #262626;
   font-size: 1.2rem;
 }
 /**
-* Post report
+* Posts IR detail view
 **/
 .z-post{
   background-color: #ffffff;
@@ -102,38 +70,37 @@ pre.z-program-code code::before{
   margin-left: 8px;
   margin-right: 8px
 }
-
 /**
-* Rich text editor
+* Program code formating
 **/
-/* Author info */
-.cke_editable .z-author-container {
-  display: table;
-  width: 100%;
+pre.z-program-code{
+  font-family: "Lucida Console", Courier, monospace;
+  font-size: 1.2rem;
+  line-height: 1.4;
+  tab-size: 2;
+  counter-reset: line;
+  overflow-x: auto;
 }
-.cke_editable .z-author-left {
-  display: table-cell;
-}
-.cke_editable .z-author-right {
-  display: table-cell;
-  padding-left: 16px;
-  vertical-align: top;
-}
-/* Editor program code */
-.cke_editable pre.z-program-code{
-  background-color: #eeeeee;
-  border-left: 2px solid #6ce26c!important;
-  padding-left: 0.8em;
-  margin-left: 0;
-  font-size: 12px;
-  white-space: pre;
-}
-.cke_panel_listItem pre.z-program-code{
-  background-color: #eeeeee;
-  border-left: 2px solid #6ce26c;
-  padding-left: 0.8em;
+pre.z-program-code code{
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  tab-size: inherit;
+  counter-increment: line;
   margin: 0;
-  font-size: 12px;
+  padding: 0;
+  overflow: visible;
+}
+pre.z-program-code code::before{
+  content: counter(line);
+  border-right: 2px solid #6ce26c;
+  margin: 0 0.4em 0 0;
+  padding: 0 0.2em 0 0;
+  display: inline-block;
+  text-align: right;
+  width: 2.2em;
+  color: #939393;
+  user-select: none;
 }
 @media only screen and (max-width: 640px){
   /**
@@ -153,7 +120,6 @@ pre.z-program-code code::before{
   }
 
 }
-
 .z-hidden{
   display: none;
   visibility: hidden;

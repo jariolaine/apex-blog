@@ -78,6 +78,7 @@ as
     p_status          in varchar2 default 'INCLUDE'
   ) return varchar2;
 --------------------------------------------------------------------------------
+  -- Not used
   function get_search_button(
     p_request         in varchar2
   ) return varchar2;

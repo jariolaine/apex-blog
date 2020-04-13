@@ -1,13 +1,3 @@
-pre.program-code,
-pre.z-program-code{
-  background-color: #eeeeee !important;
-  border-left: 3px solid #6ce26c !important;
-  padding-left: 0.8em !important;
-  overflow-x: auto !important;
-  tab-size: 2 !important;
-  font-size: 12px !important;
-  font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace !important;
-}
 /* Author info */
 .z-author-container {
   display: table;
@@ -20,4 +10,12 @@ pre.z-program-code{
   display: table-cell;
   padding-left: 16px;
   vertical-align: top;
+}
+/* Editor program code */
+pre.z-program-code{
+  background-color: #eeeeee;
+  border-left: 2px solid #6ce26c!important;
+  padding-left: 0.8em;
+  white-space: pre;
+  font-family: "Lucida Console", Courier, monospace;
 }

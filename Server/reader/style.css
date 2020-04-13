@@ -47,6 +47,8 @@ blockquote p{
 * Classic Reports
 **/
 .nodatafound{
+  text-align: center;
+  color: #262626;
   font-size: 1.2rem;
 }
 /**
@@ -119,52 +121,35 @@ blockquote p{
 /**
 * Links Media List
 **/
-.z-report--links{
-  background-color: transparent;
+.z-report--listStacked li.z-links--header{
+  border-bottom: 1px solid rgba(0,0,0,.075);
 }
-li.z-links--header{
-  display: flex;
-  flex-grow: 1;
-  border-top: 1px solid rgba(0,0,0,.1);
-  border-left: 1px solid rgba(0,0,0,.1);
-  border-right: 1px solid rgba(0,0,0,.1);
-  border-bottom: none;
-  box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
-  margin-top: 16px;
-  background-color: #ffffff;
-  border-radius: 2px 2px 0 0;
-}
-li.z-links--header div{
+.z-report--listStacked div.z-links--title{
   width: 100%;
   padding: 1.2rem;
   font-size: 1.6rem;
   font-weight: 500;
   line-height: 2.4rem;
-  border-bottom: 1px solid rgba(0,0,0,.075);
 }
-li.z-links--header:first-child{
-  margin-top: 0;
-}
-li.z-links--item{
-  border-left: 1px solid rgba(0,0,0,.1);
-  border-right: 1px solid rgba(0,0,0,.1);
-  border-bottom: 1px solid rgba(0,0,0,.075);
-  background-color: #ffffff;
-  border-radius: 0 0 2px 2px;
-  box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
-}
-li.z-links--item:last-child{
-  margin-bottom: 16px;
-  border-bottom: 1px solid rgba(0,0,0,.1);
+.z-report--listStacked .z-nodatafound .t-MediaList-desc{
+  text-align: center;
+  color: #262626;
+  font-size: 1.2rem;
+  line-height: 2rem;
 }
 /**
 * Files Media List
 **/
-.z-file-search{
-  border-bottom: 1px solid #e0e0e0;
+/*
+.z-report--files .t-Region-header{
+  border-color: #e0e0e0;
 }
+*/
 .z-report--files .t-MediaList-title {
   word-break: break-word;
+}
+.z-report--files .nodatafound{
+  padding: 16px 16px 16px 32px;
 }
 /**
 * About Card
@@ -178,6 +163,7 @@ li.z-links--item:last-child{
   min-height: initial;
   border-bottom: 1px solid rgba(0,0,0,.075);
   box-shadow: none;
+  padding: 12px;
 }
 .z-author--card .t-Card-title {
   font-size: 1.6rem;

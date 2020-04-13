@@ -2,7 +2,7 @@
 --  DDL for View BLOG_V_ALL_CATEGORIES
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_CATEGORIES" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "DISPLAY_SEQ", "TITLE", "TITLE_UNIQUE", "NOTES", "POSTS_COUNT", "ALLOWED_ROW_OPERATION", "CATEGORY_STATUS") AS 
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_CATEGORIES" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "DISPLAY_SEQ", "TITLE", "TITLE_UNIQUE", "NOTES", "POSTS_COUNT", "ALLOWED_ROW_OPERATION") AS 
   select 
    t1.id                as id
   ,t1.row_version       as row_version
@@ -31,10 +31,5 @@
     then 'U'
     else 'UD'
   end                   as allowed_row_operation
-  ,case t1.is_active
-    when 1
-    then apex_lang.lang('Enabled')
-    else apex_lang.lang('Disabled')
-   end as category_status
 from blog_categories t1
 ;
