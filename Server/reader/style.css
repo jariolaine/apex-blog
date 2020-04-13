@@ -1,21 +1,4 @@
 /*********************************
-*  Universal theme overrides
-*********************************/
-/**
-* Remove link button border when focused
-**/
-.t-Button--link:focus:before,
-.t-Button--link:focus:after{
-  outline:none!important;
-  box-shadow:none!important;
-}
-/*
-.t-Header .t-Header-nav {
-  box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
-  border-bottom: 1px solid rgba(0,0,0,.075);
-}
-*/
-/*********************************
 *  Custom styles
 *********************************/
 /***
@@ -32,7 +15,6 @@ blockquote::after{
 blockquote p{
   display: inline;
 }
-
 /**
 * Logo
 **/
@@ -42,15 +24,6 @@ blockquote p{
   font-style: oblique;
   font-weight: normal;
 }
-
-/**
-* Classic Reports
-**/
-.nodatafound{
-  text-align: center;
-  color: #262626;
-  font-size: 1.2rem;
-}
 /**
 * Right column link lists
 **/
@@ -59,6 +32,14 @@ blockquote p{
   border: none;
   outline: none;
   box-shadow: none;
+}
+/**
+* Classic Reports
+**/
+.nodatafound{
+  text-align: center;
+  color: #262626;
+  font-size: 1.2rem;
 }
 /**
 * Post Custom Template
@@ -102,7 +83,7 @@ blockquote p{
   margin: 1.2rem 0 0;
 }
 /**
-* Comments
+* Comments Report
 **/
 .z-comment .t-Comments-body{
   flex: 1 1 auto;
@@ -140,11 +121,6 @@ blockquote p{
 /**
 * Files Media List
 **/
-/*
-.z-report--files .t-Region-header{
-  border-color: #e0e0e0;
-}
-*/
 .z-report--files .t-MediaList-title {
   word-break: break-word;
 }
@@ -154,28 +130,31 @@ blockquote p{
 /**
 * About Card
 **/
-.z-author--card .t-Card{
+.z-about--card .t-Card{
   margin: 0;
   padding: 0;
   width: 100%;
 }
-.z-author--card .t-Card-titleWrap {
+.z-about--card .t-Card-titleWrap {
   min-height: initial;
   border-bottom: 1px solid rgba(0,0,0,.075);
   box-shadow: none;
   padding: 12px;
 }
-.z-author--card .t-Card-title {
+.z-about--card .t-Card-title {
   font-size: 1.6rem;
   font-weight: 500;
   line-height: 2.4rem;
 }
-.z-author--card .t-Card-wrap{
+.z-about--card .t-Card-wrap{
   border: none;
 }
-.z-author--card .t-Card-colorFill{
+.z-about--card .t-Card-colorFill{
   background-color: transparent;
 }
+/**
+* About Card content
+**/
 .z-author-container{
   display: flex;
   flex-flow: row;

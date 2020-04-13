@@ -35,7 +35,7 @@ prompt APPLICATION 402 - Blog Administration
 --       Items:                   54
 --       Computations:             6
 --       Validations:              6
---       Processes:               32
+--       Processes:               38
 --       Regions:                 58
 --       Buttons:                 58
 --       Dynamic Actions:         21
@@ -123,7 +123,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'Y'
 ,p_error_handling_function=>'#OWNER#.blog_err.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200413131530'
+,p_last_upd_yyyymmddhh24miss=>'20200413185605'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>132
 ,p_ui_type_name => null
@@ -11449,7 +11449,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19033812989887423)
 ,p_name=>'BLOG_PAR_G_SEARCH_ROWS'
-,p_message_text=>'Rows displayed in search result, categories and tags per report page'
+,p_message_text=>'Rows displayed per report page. Affects search result, categories and tags'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19034096614890228)
@@ -11839,7 +11839,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200413131135'
+,p_last_upd_yyyymmddhh24miss=>'20200413162238'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8596898648797585)
@@ -12328,7 +12328,7 @@ wwv_flow_api.create_page(
 '</ol>',
 ''))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200413125521'
+,p_last_upd_yyyymmddhh24miss=>'20200413181303'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -13009,6 +13009,19 @@ wwv_flow_api.create_page_process(
 '03.01.2020 - commented out because maybe it is good leave tags for future reference'))
 );
 wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(26610837157511893)
+,p_process_sequence=>70
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Purge Public Application Cache'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex_util.cache_purge_by_page(',
+'   p_application => :G_PUB_APP_ID',
+'  ,p_page => 0',
+');'))
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(19356540570963217)
 ,p_process_sequence=>10
 ,p_process_point=>'ON_DEMAND'
@@ -13058,7 +13071,7 @@ wwv_flow_api.create_page(
 ,p_dialog_chained=>'N'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200413125634'
+,p_last_upd_yyyymmddhh24miss=>'20200413181110'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9834087769215232)
@@ -13765,6 +13778,20 @@ wwv_flow_api.create_page_process(
 ,p_attribute_05=>'Y'
 ,p_attribute_06=>'Y'
 ,p_attribute_08=>'Y'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(26610221988508761)
+,p_process_sequence=>20
+,p_process_point=>'AFTER_SUBMIT'
+,p_region_id=>wwv_flow_api.id(15190060145050375)
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Purge Public Application Cache'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex_util.cache_purge_by_page(',
+'   p_application => :G_PUB_APP_ID',
+'  ,p_page => 0',
+');'))
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 end;
@@ -15068,7 +15095,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200413125906'
+,p_last_upd_yyyymmddhh24miss=>'20200413155242'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6814521408894774)
@@ -15364,8 +15391,21 @@ wwv_flow_api.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(24908122539771820)
+ p_id=>wwv_flow_api.id(26581851606331647)
 ,p_process_sequence=>30
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Purge Public Application Cache'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex_util.cache_purge_by_page(',
+'   p_application => :G_PUB_APP_ID',
+'  ,p_page => 10',
+');'))
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(24908122539771820)
+,p_process_sequence=>40
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
 ,p_process_name=>'Close Dialog'
@@ -15403,7 +15443,7 @@ wwv_flow_api.create_page(
 ,p_dialog_chained=>'N'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200413130009'
+,p_last_upd_yyyymmddhh24miss=>'20200413175753'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9879490963762847)
@@ -16037,6 +16077,20 @@ wwv_flow_api.create_page_process(
 ,p_attribute_08=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(26610501873509994)
+,p_process_sequence=>20
+,p_process_point=>'AFTER_SUBMIT'
+,p_region_id=>wwv_flow_api.id(9879490963762847)
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Purge Public Application Cache'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex_util.cache_purge_by_page(',
+'   p_application => :G_PUB_APP_ID',
+'  ,p_page => 0',
+');'))
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
 end;
 /
 prompt --application/pages/page_00020
@@ -16055,7 +16109,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200413130024'
+,p_last_upd_yyyymmddhh24miss=>'20200413155208'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25773887524573137)
@@ -16333,8 +16387,21 @@ wwv_flow_api.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(24907813314771817)
+ p_id=>wwv_flow_api.id(26380941407542602)
 ,p_process_sequence=>30
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Purge Public Application Cache'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex_util.cache_purge_by_page(',
+'   p_application => :G_PUB_APP_ID',
+'  ,p_page => 10',
+');'))
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(24907813314771817)
+,p_process_sequence=>40
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
 ,p_process_name=>'Close Dialog on Update'
@@ -17072,7 +17139,7 @@ wwv_flow_api.create_page(
 ,p_dialog_chained=>'N'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200413130322'
+,p_last_upd_yyyymmddhh24miss=>'20200413163120'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8857181938695778)
@@ -17240,6 +17307,19 @@ wwv_flow_api.create_page_process(
 ,p_attribute_11=>'I:U:D'
 ,p_attribute_12=>'Y'
 ,p_process_error_message=>'Profile Update Failed.'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(26381038521542603)
+,p_process_sequence=>40
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Purge Public Application Cache'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex_util.cache_purge_by_page(',
+'   p_application => :G_PUB_APP_ID',
+'  ,p_page => 12',
+');'))
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 end;
