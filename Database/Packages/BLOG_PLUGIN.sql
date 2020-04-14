@@ -16,8 +16,6 @@ as
 --
 --------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
-  g_formatted_comment varchar2(32700);
--------------------------------------------------------------------------------
   procedure render_formatting_buttons(
     p_item    in apex_plugin.t_item,
     p_plugin  in apex_plugin.t_plugin,
@@ -96,16 +94,16 @@ as
     l_len_e := length(c_code_close);
     
     -- Change all hash marks so we can escape those later
-    l_comment := replace(p_comment, '#', '$@#HASH#@$');
+    l_comment := replace(p_comment, '#', '$##$');
     
     -- escape comment html
     l_comment := apex_escape.html_whitelist (
-      p_html            => l_comment,
-      p_whitelist_tags  => p_whitelist_tags
+       p_html            => l_comment
+      ,p_whitelist_tags  => p_whitelist_tags
     );
     
     -- Escape hash to e.g. prevent APEX substitutions
-    l_comment := replace(l_comment, '$@#HASH#@$', '&#x23;');
+    l_comment := replace(l_comment, '$##$', '&#x23;');
     
     --- check code tag count
     l_count_open  := regexp_count(l_comment, c_code_open);
@@ -119,12 +117,14 @@ as
       loop
         l_start       := instr(l_comment, c_code_open);
         l_end         := instr(l_comment, c_code_close);
+        
         l_code_arr(i) := c_syntaxhighlight_open
                       || substr(l_comment, l_start  + l_len_s, l_end - l_start - l_len_s)
                       || c_syntaxhighlight_close;
+        
         l_comment     := substr(l_comment, 1, l_start -1)
                       || chr(10)
-                      || '$@#' || i || '#@$'
+                      || '#CODE_' || i || '#'
                       || chr(10)
                       || substr(l_comment, l_end + l_len_e);
       end loop;
@@ -140,10 +140,10 @@ as
         l_temp := trim(l_comment_arr(i));
         
         -- do not add extra tags for code
-        if regexp_like(l_temp, '^\$\@\#[0-9]+\#\@\$$') then
+        if regexp_like(l_temp, '^\CODE#\_[0-9]+\#') then
           l_comment := l_comment || '</pre>' || chr(10) || l_temp || chr(10) || '<pre>';
         else
-          l_comment := l_comment || l_temp || chr(10);
+          l_comment := l_comment || trim(l_temp) || chr(10);
         end if;
         
       end loop;
@@ -154,7 +154,7 @@ as
       -- insert code tags back to comment
       for i in 1 .. l_code_arr.count
       loop
-        l_comment := replace(l_comment, '$@#' || i || '#@$', l_code_arr(i));
+        l_comment := replace(l_comment, '#CODE_' || i || '#', l_code_arr(i));
       end loop;
       
     end if;
@@ -299,26 +299,30 @@ as
     p_result in out nocopy apex_plugin.t_item_validation_result 
   )
   as
-    l_comment xmltype;
-    c_whitelist_tags constant varchar2(200)  := '<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>';
+    l_value_item      varchar2(32700);
+    l_comment_temp    varchar2(32700);
+    l_comment_html    xmltype;
+    c_whitelist_tags  constant varchar2(200)  := '<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>';
   begin
     
+    l_value_item := p_item.attribute_01;
+    
     -- get item value
-    blog_plugin.g_formatted_comment := p_param.value;
+    l_comment_temp := p_param.value;
     
     -- Remove unwanted ascii codes
     for i in 0 .. 31
     loop
       if i != 10 then
-        blog_plugin.g_formatted_comment := trim(replace(blog_plugin.g_formatted_comment, chr(i)));
+        l_comment_temp := trim( replace( l_comment_temp, chr(i) ) );
       end if;
     end loop;
-
+    
     -- validate item value length
-    if length(blog_plugin.g_formatted_comment) > p_item.element_max_length then
+    if length(l_comment_temp) > p_item.element_max_length then
 
       p_result.message := apex_lang.message(
-        p_name => p_plugin.attribute_01
+         p_name => p_plugin.attribute_01
         ,p0 => p_item.plain_label
         ,p1 => p_item.element_max_length
       );
@@ -331,16 +335,16 @@ as
     
     if p_result.message is null then
 
-      blog_plugin.g_formatted_comment := blog_plugin.format_comment(
-        p_comment => blog_plugin.g_formatted_comment
+      l_comment_temp := blog_plugin.format_comment(
+         p_comment => l_comment_temp
         ,p_whitelist_tags => c_whitelist_tags
       );
       
       -- Validate value html tags
       begin
-        l_comment := xmltype.createxml(
+        l_comment_html := xmltype.createxml(
             '<root><row>' 
-          || blog_plugin.g_formatted_comment
+          || l_comment_temp
           || '</row></root>'
         );
       exception when others then
@@ -360,6 +364,10 @@ as
       
     end if;
 
+    if p_result.message is null then
+      apex_util.set_session_state( l_value_item, l_comment_temp, false );
+    end if;
+
   end validate_comment_textarea;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -370,12 +378,10 @@ as
     p_result in out nocopy apex_plugin.t_item_render_result
   )
   as
-    l_name        varchar2(30);
-    l_answer_item varchar2(30);
+    l_name varchar2(30);
   begin
     
-    l_name        := apex_plugin.get_input_name_for_page_item(false);
-    l_answer_item := p_item.attribute_01;
+    l_name := apex_plugin.get_input_name_for_page_item(false);
 
     if p_param.is_readonly or p_param.is_printer_friendly then
     
@@ -411,10 +417,8 @@ as
         p_code => 'apex.server.plugin("' || apex_plugin.get_ajax_identifier || '",{},{'
         || 'dataType:"text",'
         || 'success:function(data){'
-        || '$("'
-        || apex_plugin_util.page_item_names_to_jquery(p_item.name) 
-        || q'[_LABEL").html(data)}]'
-        || '});'
+        || '$(".z-question").html(data);'
+        || '}});'
       );
       -- Tell APEX that this textarea is navigable
       p_result.is_navigable := true;
@@ -431,38 +435,33 @@ as
     p_result in out nocopy apex_plugin.t_item_ajax_result
   )
   as
-    l_tmp         varchar2(255);
+    l_tmp         varchar2(4000);
+    l_value_item  varchar2(4000);
     l_min_1       pls_integer := 1;
     l_max_1       pls_integer := 1;
     l_min_2       pls_integer := 1;
     l_max_2       pls_integer := 1;
-    l_arr         apex_application_global.vc_arr2;
+    l_tab         apex_t_number;
   begin
   
     l_min_1       := p_item.attribute_01;
     l_max_1       := p_item.attribute_02;
     l_min_2       := p_item.attribute_03;
     l_max_2       := p_item.attribute_04;
+    l_value_item  := p_item.attribute_05;
     
-    l_arr(1)      := round(sys.dbms_random.value(l_min_1, l_max_1));
-    l_arr(2)      := round(sys.dbms_random.value(l_min_2, l_max_2));
+    apex_string.push(l_tab, round(sys.dbms_random.value(l_min_1, l_max_1)));
+    apex_string.push(l_tab, round(sys.dbms_random.value(l_min_2, l_max_2)));
     
-    -- save question answer to collection
-    apex_collection.create_or_truncate_collection(
-      p_collection_name => 'BLOG_MATH_QUESTION'
-    );
-    apex_collection.add_member(
-      p_collection_name => 'BLOG_MATH_QUESTION'
-      ,p_n001 => to_number(l_arr(1)) + to_number(l_arr(2))
-    );
+    apex_util.set_session_state( l_value_item, to_number(l_tab(1)) + to_number(l_tab(2)), false);
     
     -- change question to HTML entities
     for n in 1 .. 2
     loop
       
-      for i in 1 .. length(l_arr(n))
+      for i in 1 .. length(l_tab(n))
       loop
-        l_tmp := l_tmp || '&#' || ascii(substr(l_arr(n), i, 1));
+        l_tmp := l_tmp || '&#' || ascii(substr(l_tab(n), i, 1));
       end loop;
       if n = 1 then
         l_tmp := l_tmp || '&nbsp;&#' || ascii('+') || '&nbsp;';
@@ -476,7 +475,7 @@ as
     sys.htp.p('Pragma: no-cache');
     sys.owa_util.http_header_close;
     -- Write output
-    sys.htp.prn(l_tmp || '&nbsp;&#' || ascii('=') || '&nbsp;');
+    sys.htp.prn(l_tmp);
     -- set correct answer to item session state
     
   exception when others
@@ -494,44 +493,44 @@ as
     p_result in out nocopy apex_plugin.t_item_validation_result 
   )
   as
-    l_value number;
+    l_answer  number;
+    l_value   number;
+    l_result  boolean;
   begin
     
     if p_param.value is not null then
+    
       begin
-      
-        l_value := to_number(p_param.value);
+    
+        l_value   := nv(p_item.attribute_05);
+        l_answer  := to_number(p_param.value);
+        l_result  := case when l_value = l_answer then true else false end;
         
-        select n001
-        into l_value
-        from apex_collections
-        where 1 = 1
-        and collection_name = 'BLOG_MATH_QUESTION'
-        and n001 = l_value
-        ;
-        
-      exception when
-        value_error or 
-        invalid_number or
-        no_data_found
+      exception when others
       then
-      
-        p_result.message := apex_lang.message(
-          p_name => p_plugin.attribute_01
-          ,p0 => p_item.plain_label
-        );
-      
-        if p_result.message = apex_escape.html(p_plugin.attribute_01) then
-          p_result.message := p_plugin.attribute_01;
-        end if;
-        
-        apex_debug.warn('Incorrect answer was %s', p_param.value);
-        apex_debug.warn('%s : %s', sys.dbms_utility.format_error_backtrace, sqlerrm);
-        
+        l_result := false;
       end;
       
-  end if;    
+    else
+      l_result := false;
+    end if;
     
+    if not l_result then  
+    
+      p_result.message := apex_lang.message(
+        p_name => p_plugin.attribute_01
+        ,p0 => p_item.plain_label
+      );
+    
+      if p_result.message = apex_escape.html(p_plugin.attribute_01) then
+        p_result.message := p_plugin.attribute_01;
+      end if;
+      
+      apex_debug.warn('Incorrect answer was %s', p_param.value);
+      apex_debug.warn('%s : %s', sys.dbms_utility.format_error_backtrace, sqlerrm);
+      
+    end if;
+
   end validate_math_question_field;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

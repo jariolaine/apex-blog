@@ -40,6 +40,8 @@ blockquote p{
   text-align: center;
   color: #262626;
   font-size: 1.2rem;
+  line-height: 2rem;
+  padding: 0;
 }
 /**
 * Post Custom Template
@@ -89,6 +91,7 @@ blockquote p{
   flex: 1 1 auto;
   width: 0;
 }
+/* long URL e.g. */
 .z-comment .t-Comments-comment{
   width: 100%;
   overflow-wrap: break-word;
@@ -113,8 +116,8 @@ blockquote p{
   line-height: 2.4rem;
 }
 .z-report--listStacked .z-nodatafound .t-MediaList-desc{
-  text-align: center;
   color: #262626;
+  text-align: center;
   font-size: 1.2rem;
   line-height: 2rem;
 }
@@ -175,9 +178,10 @@ blockquote p{
 * Program code formating
 **/
 pre.z-program-code{
-  font-family: "Lucida Console", Courier, monospace;
+  /*font-family: "Lucida Console", Courier, monospace;*/
+  font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace;
   font-size: 1.2rem;
-  line-height: 1.4;
+  line-height: 1.4rem;
   tab-size: 2;
   counter-reset: line;
   overflow-x: auto;
