@@ -96,12 +96,6 @@ blockquote p{
   width: 100%;
   overflow-wrap: break-word;
 }
-.z-comment pre{
-  font-family: inherit;
-  font-style: inherit;
-  font-size: inherit;
-  white-space: pre-wrap;
-}
 /**
 * Links Media List
 **/

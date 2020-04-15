@@ -485,18 +485,18 @@ as
     p_tags in varchar2
   ) return varchar2
   as
-    l_tags varchar2(32700);
-    l_tags_array apex_application_global.vc_arr2;
+    l_tags      varchar2(32700);
+    l_tags_tab  apex_t_varchar2;
   begin
   
-    l_tags_array := apex_string.string_to_table( p_tags, ',' );
+    l_tags_tab := apex_string.split( p_tags, ',' );
     -- Loop tags to generate tags links
-    for i in 1 .. l_tags_array.count
+    for i in 1 .. l_tags_tab.count
     loop
       blog_html.get_tag_anchor(
          p_tag_id => null
         ,p_app_id => null
-        ,p_tag    => trim(l_tags_array(i))
+        ,p_tag    => trim(l_tags_tab(i))
         ,p_button => 'YES'
         ,p_tags   => l_tags
       );

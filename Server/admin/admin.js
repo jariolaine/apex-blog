@@ -4,40 +4,11 @@
 var blog = blog || {};
 
 (function($, region, blog) {
+
   /**
   * @module blog.admin
   **/
   blog.admin = {
-    /**
-    * @function formatProgramCode
-    * @summary program code pre tag formatting
-    * @desc use r.g. after refersh dymanic action to format pre.z-program-code elements
-    * @version 1.0
-    * @example blog.admin.formatProgramCode("pre.z.program-code");
-    **/
-    formatProgramCode : function( selector ){
-      var elem$ = $( selector );
-
-      elem$.html (function( ind, oldHTML ){
-
-        var rows = [];
-        rows = oldHTML.split( "\n" );
-
-        if( rows && rows.length ){
-
-          while( rows.length > 0 && rows[rows.length - 1].trim().length === 0 ){
-            rows.pop();
-          }
-
-          if( rows && rows.length ){
-            return "<code>" + rows.join( "</code>\n<code>" ) + "</code>";
-          }
-
-        }
-
-      });
-      return elem$;
-    },
     /**
     * @module blog.admin.categoriesIG
     **/
@@ -289,6 +260,7 @@ var blog = blog || {};
 
 // on page ready
 // hide automatically success message
+/*
 apex.jQuery(function() {
   apex.theme42.util.configAPEXMsgs({
     autoDismiss: true
@@ -296,3 +268,4 @@ apex.jQuery(function() {
     //,duration: 5000
   });
 });
+*/
