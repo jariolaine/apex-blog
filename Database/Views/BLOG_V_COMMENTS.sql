@@ -8,13 +8,12 @@
   ,t1.post_id as post_id
   ,t1.parent_id as parent_id
   ,t1.created_on as created_on
-  ,t2.reader_name as comment_by
+  ,t1.comment_by as comment_by
   ,t1.body_html as comment_body
-  ,apex_string.get_initials(t2.reader_name) as user_icon
-  ,'u-color-' || ora_hash(t2.reader_name, 45) as icon_modifier
+  ,apex_string.get_initials( t1.comment_by ) as user_icon
+  ,'u-color-' || ora_hash( lower( t1.comment_by ), 45) as icon_modifier
 from blog_comments t1
-join blog_readers t2
-  on t1.reader_id = t2.id
 where 1 = 1
+and t1.is_active = 1
 with read only
 ;

@@ -10,62 +10,66 @@ as
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 22.04.2019 - Created
 --    Jari Laine 28.03.2020 - Signature 2 of get_year_month function
+--    Jari Laine 15.04.2020 - function validate_comment
 --
 --  TO DO: (search from body TODO#x)
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-
+  function get_comment_from_variable
+  return varchar2;
+--------------------------------------------------------------------------------
+  function get_comment_source
+  return varchar2;
+--------------------------------------------------------------------------------
+  procedure set_comment_source(
+    p_source          in varchar2
+  );
 --------------------------------------------------------------------------------
   function get_attribute_value(
-    p_attribute_name    in varchar2
+    p_attribute_name  in varchar2
   ) return varchar2 result_cache;
 --------------------------------------------------------------------------------
   function get_item_init_value(
-    p_item_name      in varchar2
+    p_item_name       in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure initialize_items(
-    p_app_id        in number
+    p_app_id          in number
   );
 --------------------------------------------------------------------------------
   function get_post_title(
-    p_post_id       in number,
-    p_escape        in boolean default false
+    p_post_id         in number,
+    p_escape          in boolean default false
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_category_title(
-    p_category_id   in number,
-    p_escape        in boolean default false
+    p_category_id     in number,
+    p_escape          in boolean default false
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_tag(
-    p_tag_id        in number
+    p_tag_id          in number
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Signature 1
   function get_year_month(
-    p_year_month    in number,
-    p_date_format   in varchar2
+    p_year_month      in number,
+    p_date_format     in varchar2
   ) return varchar2 result_cache;
 --------------------------------------------------------------------------------
   -- Signature 2
   function get_year_month(
-    p_archive_date  in timestamp with local time zone,
-    p_date_format   in varchar2,
-    p_posts_count   in number default null
+    p_archive_date    in timestamp with local time zone,
+    p_date_format     in varchar2,
+    p_posts_count     in number default null
   ) return varchar2;
 --------------------------------------------------------------------------------
   function validate_comment(
-    p_comment     in varchar2,
-    p_max_length  in number default 4000
+    p_comment         in varchar2,
+    p_source          in varchar2,
+    p_max_length      in number default 4000
   ) return varchar2;
---------------------------------------------------------------------------------
-  procedure save_comment(
-    p_post_id       in number,
-    p_comment_by    in varchar2,
-    p_email         in varchar2 default null
-  );
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
@@ -78,50 +82,82 @@ as
 -- Private variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  -- For holding validated comment
-  g_comment varchar2(32700);
+  -- Variable hold formatted comment
+  g_comment_source  varchar2(20);
+  g_comment_html    varchar2(32700);
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure format_comment(
-    p_comment         in out nocopy varchar2,
-    p_whitelist_tags  in varchar2
+  procedure remove_ascii(
+    p_string in out nocopy varchar2
   )
   as
-    l_temp            varchar2(32700);
+  begin
+    -- Remove unwanted ascii codes
+    for i in 0 .. 31
+    loop
+      if i != 10 then
+        p_string := trim( replace( p_string, chr(i) ) );
+      end if;
+    end loop;
+  end remove_ascii;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure remove_anchor(
+    p_string in out nocopy varchar2
+  )
+  as
+  begin
+    -- Remove anchor tags
+   p_string := regexp_replace( p_string, '<a[^>]*>(.*?)<\/a>', '', 1, 0, 'i' );
+  end remove_anchor;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure escape_html(
+    p_string in out nocopy varchar2,
+    p_whitelist_tags in varchar2
+  )
+  as
+  begin
+
+    -- Change all hash marks so we can escape those
+    -- after calling apex_escape.html_whitelist
+    -- Escape of hash marks needed to prevent APEX substitutions
+    p_string := replace( p_string, '#', '$HASH$' );
     
-    l_code_row        pls_integer := 0;
+    -- Escape comment html
+    p_string := apex_escape.html_whitelist(
+       p_html            => p_string
+      ,p_whitelist_tags  => p_whitelist_tags
+    );
+    
+    -- Escape hash marks
+    p_string := replace( p_string, '$HASH$', '&#x23;' );
+    
+  end escape_html;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------  
+  procedure build_code_tab(
+    p_comment in out nocopy varchar2,
+    p_code_tab in out nocopy apex_t_varchar2
+  )
+  as
+  
     l_code_open_cnt   pls_integer := 0;
     l_code_close_cnt  pls_integer := 0;
     l_code_start_pos  pls_integer := 0;
     l_code_end_pos    pls_integer := 0;
     
-    l_comment_tab     apex_t_varchar2;
-    l_code_tab        apex_t_varchar2;
-    
     c_code_new_open   constant varchar2(80) := '<pre class="z-program-code">';
     c_code_new_close  constant varchar2(80) := '</pre>';
+    
   begin
-    
-    -- Change all hash marks so we can escape those
-    -- after calling apex_escape.html_whitelist
-    -- Escape of hash marks needed to prevent APEX substitutions
-    p_comment := replace(p_comment, '#', '$HASH$');
-    
-    -- Escape comment html
-    p_comment := apex_escape.html_whitelist(
-       p_html            => p_comment
-      ,p_whitelist_tags  => p_whitelist_tags
-    );
-    
-    -- Escape hash marks
-    p_comment := replace(p_comment, '$HASH$', '&#x23;');
-    
+        
     -- Check code open and close tag count
-    l_code_open_cnt  := regexp_count(p_comment, '\<code\>', 1, 'i');
-    l_code_close_cnt := regexp_count(p_comment, '\<\/code\>', 1, 'i');
+    l_code_open_cnt  := regexp_count( p_comment, '\<code\>', 1, 'i' );
+    l_code_close_cnt := regexp_count( p_comment, '\<\/code\>', 1, 'i' );
     
     -- Process code tags if open and close count match ( pre check is for valid HTML )
     if l_code_open_cnt = l_code_close_cnt
@@ -137,7 +173,7 @@ as
         
         -- Store code tag content to collection and wrap it to pre tag having class
         apex_string.push( 
-           p_table => l_code_tab
+           p_table => p_code_tab
           ,p_value => c_code_new_open
             || substr(p_comment, l_code_start_pos  + 6, l_code_end_pos - l_code_start_pos - 6)
             || c_code_new_close
@@ -152,69 +188,145 @@ as
         ;
         
       end loop;
-      
-      -- Split comment to collection by new line character
-      l_comment_tab := apex_string.split( p_comment, chr(10) );
-      
-      -- Comment is stored to collection
-      -- start building comment with prober html tags
-      p_comment := null;
-      
-      -- Format comment
-      for i in 1 .. l_comment_tab.count
-      loop
-        
-        l_temp := trim(l_comment_tab(i));
-        
-        -- Check if row is code block
-        if regexp_like(l_temp, '^CODE\#[0-9]+$')
-        then
-          -- Get code block row number
-          l_code_row := regexp_substr(l_temp, '[0-9]+');
-          -- Close p tag, insert code block 
-          -- and open p tag again for text
-          p_comment := p_comment
-            || '</p>'
-            || chr(10)
-            || l_code_tab(l_code_row)
-            || chr(10)
-            || '<p>'
-          ;
-          
-        else
-          -- Append text
-          if l_temp is not null
-          then
-            if p_comment is null
-            then
-              p_comment := l_temp;
-            else
-              p_comment := p_comment
-                ||
-                  case 
-                  when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
-                  then '<br />' || chr(10)
-                  end
-                || l_temp
-              ;
-            end if;
-          end if;
-          
-        end if;
-        
-      end loop;
-      
-      -- Wrap comment to p tag.
-      p_comment := '<p>' || p_comment || '</p>';
-      -- There might be empty p, if comment ends code tag, remove that
-      p_comment := replace( p_comment, '<p></p>' );      
-      
+  
     end if;
     
+  end build_code_tab;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure build_comment_html(
+    p_comment in out nocopy varchar2
+  )
+  as  
+    l_temp        varchar2(32700);
+    l_code_row    number;
+    l_code_tab    apex_t_varchar2;
+    l_comment_tab apex_t_varchar2;
+  begin
+  
+    -- Process code tags
+    blog_util.build_code_tab(
+       p_comment => p_comment
+      ,p_code_tab => l_code_tab
+    );
+  
+    -- Split comment to collection by new line character
+    l_comment_tab := apex_string.split( p_comment, chr(10) );
+  
+    -- Comment is stored to collection
+    -- start building comment with prober html tags
+    p_comment := null;
+    
+    -- Format comment
+    for i in 1 .. l_comment_tab.count
+    loop
+      
+      l_temp := trim( l_comment_tab(i) );
+      
+      -- Check if row is code block
+      if regexp_like( l_temp, '^CODE\#[0-9]+$' )
+      then
+        -- Get code block row number
+        l_code_row := regexp_substr( l_temp, '[0-9]+' );
+        -- Close p tag, insert code block 
+        -- and open p tag again for text
+        p_comment := p_comment
+          || '</p>'
+          || chr(10)
+          || l_code_tab(l_code_row)
+          || chr(10)
+          || '<p>'
+        ;
+        
+      else
+        -- Append text if row is not empty
+        if l_temp is not null
+        then
+          -- If we are in first row
+          if p_comment is null
+          then
+            p_comment := l_temp;
+          else
+            -- See if p tag is opened, then insert br for new line
+            p_comment := p_comment
+              ||
+                case 
+                when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
+                then '<br />' || chr(10)
+                end
+              || l_temp
+            ;
+          end if;
+        end if;
+        
+      end if;
+      
+    end loop;
+    
+    -- Wrap comment to p tag.
+    p_comment := '<p>' || p_comment || '</p>';
+    -- There might be empty p, if comment ends code tag, remove that
+    p_comment := replace( p_comment, '<p></p>' );     
+    
+  end build_comment_html;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure format_comment(
+    p_comment         in out nocopy varchar2,
+    p_whitelist_tags  in varchar2
+  )
+  as
+  begin
+    
+    -- Remove unwanted ascii codes
+    blog_util.remove_ascii(
+       p_string => p_comment
+    );
+    -- Remove all anchors
+--    blog_util.remove_anchor(
+--       p_string => p_comment
+--    );
+    -- Escape HTML
+    blog_util.escape_html(
+       p_string => p_comment
+      ,p_whitelist_tags  => p_whitelist_tags 
+    );      
+    -- Build comment HTML
+    blog_util.build_comment_html(
+       p_comment => p_comment
+    ); 
+      
   end format_comment;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_comment_from_variable
+  return varchar2
+  as
+  begin
+    -- Return private variable value
+    return g_comment_html;
+  end get_comment_from_variable;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_comment_source
+  return varchar2
+  as
+  begin
+    -- Return private variable value
+    return g_comment_source;
+  end get_comment_source;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure set_comment_source(
+    p_source in varchar2
+  )
+  as
+  begin
+    g_comment_source := p_source;
+  end set_comment_source;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_attribute_value(
@@ -514,8 +626,9 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function validate_comment(
-    p_comment     in varchar2,
-    p_max_length  in number default 4000
+    p_comment       in varchar2,
+    p_source        in varchar2,
+    p_max_length    in number default 4000
   ) return varchar2
   as
     l_xml               xmltype;
@@ -524,52 +637,45 @@ as
     pragma exception_init( xml_parsing_failed, -31011 );
   begin
     
-    blog_util.g_comment := p_comment;
-    l_whitelist_tags := blog_util.get_attribute_value('COMMENT_WHITE_LIST_TAGS');
+    blog_util.set_comment_source(
+      p_source => p_source
+    );
+    
+    blog_util.g_comment_html := p_comment;
+    
+    l_whitelist_tags := blog_util.get_attribute_value('COMMENT_WHITELIST_TAGS');
     
     blog_util.format_comment(
-       p_comment        => blog_util.g_comment
+       p_comment        => blog_util.g_comment_html
       ,p_whitelist_tags => l_whitelist_tags
     );
     
+    -- Check after formatting we have still something
+--    if blog_util.g_comment_html is null
+--    then
+--      return apex_lang.message( 'BLOG_ERR_COMMENT_HTML' );
+--    end if;
     -- Check length
-    if length(blog_util.g_comment) > p_max_length
+    if length(blog_util.g_comment_html) > p_max_length
     then
+      blog_util.g_comment_html := null;
       return apex_lang.message( 'BLOG_ERR_COMMENT_LENGTH' );
     end if;
-    
     -- Check that there tags are closed and opened properly
     begin
       l_xml := xmltype.createxml(
           '<root><row>' 
-        || blog_util.g_comment
+        || blog_util.g_comment_html
         || '</row></root>'
       );
     exception when xml_parsing_failed then
-      return apex_lang.message( 'BLOG_ERR_COMMENT_HTML' );  
+      blog_util.g_comment_html := null;
+      return apex_lang.message( 'BLOG_ERR_COMMENT_HTML' );
     end;
     
     return null;
     
   end validate_comment;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure save_comment(
-    p_post_id       in number,
-    p_comment_by    in varchar2,
-    p_email         in varchar2 default null
-  )
-  as
-    l_comment         varchar2(32700);
-  begin 
-    
-    insert into blog_comments_test
-    (post_id, comment_by, body_html)
-    values
-    (p_post_id, p_comment_by, blog_util.g_comment)
-    ;
-    
-  end save_comment;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
