@@ -56,9 +56,8 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
-  function get_post_is_active(
-    p_request     in varchar2,
-    p_is_active   in varchar2
+  function request_to_post_status(
+    p_request     in varchar2
   ) return varchar2;  
 --------------------------------------------------------------------------------
   -- Called from: trigger blog_files_trg and procedure blog_cm.file_upload
@@ -147,14 +146,14 @@ as
       exception when dup_val_on_index then
       -- TODO#1
         l_value := upper(l_value);
-        
+
         select id
         into p_tag_id
         from blog_v_all_tags
         where 1 = 1
         and tag_unique = l_value
         ;
-        
+
       end;
 
     end if;
@@ -251,9 +250,8 @@ as
     return l_max;
   end get_link_grp_seq;
 --------------------------------------------------------------------------------
-  function get_post_is_active(
-    p_request     in varchar2,
-    p_is_active   in varchar2
+  function request_to_post_status(
+    p_request     in varchar2
   ) return varchar2
   as
   begin
@@ -262,14 +260,17 @@ as
       then '1'
       when 'CREATE_DRAFT'
       then '0'
-      else 
-        case p_is_active
-        when 'Y'
-        then '1'
-        else '0'
-        end
+      when 'SAVE_DRAFT'
+      then '0'
+      when 'SAVE_AND_PUBLISH'
+      then '1'
+      when 'REVERT_DRAFT'
+      then '0'
+      when 'SAVE'
+      then 1
+      else '0'
     end;
-  end get_post_is_active;
+  end request_to_post_status;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------  
   function get_post_tags(
@@ -372,17 +373,17 @@ as
   as
     l_file_path varchar2(256);
   begin
-  
+
     l_file_path := trim(trim (both '/' from p_file_path));
-    
+
     if l_file_path is null then
       l_file_path := '/';
     else
       l_file_path := '/' || l_file_path || '/';
     end if;
-    
+
     return l_file_path;
-    
+
   end prepare_file_path;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -397,25 +398,25 @@ as
     l_file_path   varchar2(256);
     l_file_name   varchar2(256);
   begin
-  
+
     l_file_exists := false;
 
     l_file_names := apex_string.split (
       p_str => p_file_name
       ,p_sep => ':'
     );
-    
+
     l_file_path := blog_cm.prepare_file_path( p_file_path );
-    
+
     apex_collection.create_or_truncate_collection(
       p_collection_name => 'BLOG_FILES'
     );
-    
+
     for i in 1 .. l_file_names.count
     loop
-    
+
       l_file_name := substr(l_file_names(i), instr(l_file_names(i), '/') + 1);
-      
+
       for c1 in(
         select t1.id
           ,t2.id as file_id
@@ -431,9 +432,9 @@ as
         where 1 = 1
         and t1.name = l_file_names(i)
       ) loop
-        
+
         l_file_exists := case when c1.file_id is not null then true else l_file_exists end;
-        
+
         apex_collection.add_member(
           p_collection_name => 'BLOG_FILES'
           ,p_n001     => c1.id
@@ -455,16 +456,16 @@ as
           ,p_c026 => 'No'
           */
         );
-        
+
       end loop;
     end loop;
-    
+
     if not l_file_exists then
       blog_cm.merge_files;
     end if;
-    
+
     return not l_file_exists;
-    
+
   end file_upload;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -507,14 +508,14 @@ as
     l_seq     number;
     l_value   varchar2(512);
   begin
-  
+
     p_category_id := null;
     l_value := trim( p_title );
-    
+
     if l_value is null then
       raise_application_error( -20001,  'Category title must have some value.' );
     end if;
-    
+
     -- get next sequence value
     l_seq   := blog_cm.get_category_seq;
 
@@ -561,7 +562,7 @@ as
 
       -- add tag to repository
       l_tag_id := null;
-      
+
       blog_cm.add_tag(
          p_tag    => l_tag_tab(i)
         ,p_tag_id => l_tag_id
@@ -575,18 +576,18 @@ as
 
         -- get table record count for tag display sequence
         l_display_seq:= l_tag_id_tab.count * 10;
-        
+
         -- tag post
         blog_cm.add_tag_to_post(
            p_post_id     => p_post_id
           ,p_tag_id      => l_tag_id
           ,p_display_seq => l_display_seq
         );
-        
+
       end if;
 
     end loop;
-    
+
     blog_cm.cleanup_posts_tags(
        p_post_id => p_post_id 
       ,p_tag_tab => l_tag_id_tab
@@ -626,11 +627,11 @@ as
   )
   as
   begin
-  
+
     delete from blog_post_preview
     where id = p_id
     ;
-    
+
     insert into blog_post_preview(
        id
       ,tags

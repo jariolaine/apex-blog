@@ -16,16 +16,6 @@ as
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_comment_from_variable
-  return varchar2;
---------------------------------------------------------------------------------
-  function get_comment_source
-  return varchar2;
---------------------------------------------------------------------------------
-  procedure set_comment_source(
-    p_source          in varchar2
-  );
---------------------------------------------------------------------------------
   function get_attribute_value(
     p_attribute_name  in varchar2
   ) return varchar2 result_cache;
@@ -67,8 +57,8 @@ as
 --------------------------------------------------------------------------------
   function validate_comment(
     p_comment         in varchar2,
-    p_source          in varchar2,
-    p_max_length      in number default 4000
+    p_max_length      in number default 4000,
+    p_set_variable    in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
@@ -88,6 +78,9 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure remove_ascii(
@@ -276,6 +269,7 @@ as
     p_whitelist_tags  in varchar2
   )
   as
+    l_comment varchar2(32700);
   begin
     
     -- Remove unwanted ascii codes
@@ -284,7 +278,7 @@ as
     );
     -- Remove all anchors
 --    blog_util.remove_anchor(
---       p_string => p_comment
+--       p_string => l_comment
 --    );
     -- Escape HTML
     blog_util.escape_html(
@@ -295,38 +289,11 @@ as
     blog_util.build_comment_html(
        p_comment => p_comment
     ); 
-      
+    
   end format_comment;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_comment_from_variable
-  return varchar2
-  as
-  begin
-    -- Return private variable value
-    return g_comment_html;
-  end get_comment_from_variable;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_comment_source
-  return varchar2
-  as
-  begin
-    -- Return private variable value
-    return g_comment_source;
-  end get_comment_source;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure set_comment_source(
-    p_source in varchar2
-  )
-  as
-  begin
-    g_comment_source := p_source;
-  end set_comment_source;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_attribute_value(
@@ -627,53 +594,65 @@ as
 --------------------------------------------------------------------------------
   function validate_comment(
     p_comment       in varchar2,
-    p_source        in varchar2,
-    p_max_length    in number default 4000
+    p_max_length    in number default 4000,
+    p_set_variable  in varchar2 default 'NO'
   ) return varchar2
   as
+  
     l_xml               xmltype;
+    l_error             varchar2(32700);
+    l_comment           varchar2(32700);
     l_whitelist_tags    varchar2(32700);
+    
     xml_parsing_failed  exception;
     pragma exception_init( xml_parsing_failed, -31011 );
+    
   begin
     
-    blog_util.set_comment_source(
-      p_source => p_source
+    l_comment := p_comment;
+
+    -- Fetch allowed HTML tags from settings
+    l_whitelist_tags := blog_util.get_attribute_value(
+      p_attribute_name => 'COMMENT_WHITELIST_TAGS'
     );
-    
-    blog_util.g_comment_html := p_comment;
-    
-    l_whitelist_tags := blog_util.get_attribute_value('COMMENT_WHITELIST_TAGS');
-    
+    -- Format comment
     blog_util.format_comment(
-       p_comment        => blog_util.g_comment_html
+       p_comment        => l_comment
       ,p_whitelist_tags => l_whitelist_tags
     );
-    
-    -- Check after formatting we have still something
---    if blog_util.g_comment_html is null
---    then
---      return apex_lang.message( 'BLOG_ERR_COMMENT_HTML' );
---    end if;
-    -- Check length
-    if length(blog_util.g_comment_html) > p_max_length
+    -- Check formatted comment length
+    if length( l_comment ) > p_max_length
     then
-      blog_util.g_comment_html := null;
-      return apex_lang.message( 'BLOG_ERR_COMMENT_LENGTH' );
+      -- Get error message
+      l_error := apex_lang.message( 'BLOG_ERR_COMMENT_LENGTH' );
+    else
+      -- Check HTML is valid
+      begin
+        l_xml := xmltype.createxml(
+            '<root><row>' 
+          || l_comment
+          || '</row></root>'
+        );
+      exception when xml_parsing_failed then
+        -- Get error message
+        l_error :=  apex_lang.message( 'BLOG_ERR_COMMENT_HTML' );
+      end;
     end if;
-    -- Check that there tags are closed and opened properly
-    begin
-      l_xml := xmltype.createxml(
-          '<root><row>' 
-        || blog_util.g_comment_html
-        || '</row></root>'
-      );
-    exception when xml_parsing_failed then
-      blog_util.g_comment_html := null;
-      return apex_lang.message( 'BLOG_ERR_COMMENT_HTML' );
-    end;
     
-    return null;
+    if l_error is null
+    then
+      -- If validation passed set package vartiable
+      if p_set_variable = 'YES'
+      then
+        blog_globals.set_comment_var(
+           p_html => l_comment
+        ); 
+      end if;
+    end if;
+    
+    -- Return validation result
+    -- If validation fails we return error message stored to variable
+    return l_error;
     
   end validate_comment;
 --------------------------------------------------------------------------------
