@@ -119,59 +119,59 @@ as
     -- after calling apex_escape.html_whitelist
     -- Escape of hash marks needed to prevent APEX substitutions
     p_string := replace( p_string, '#', '$HASH$' );
-    
+
     -- Escape comment html
     p_string := apex_escape.html_whitelist(
        p_html            => p_string
       ,p_whitelist_tags  => p_whitelist_tags
     );
-    
+
     -- Escape hash marks
     p_string := replace( p_string, '$HASH$', '&#x23;' );
-    
+
   end escape_html;
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
   procedure build_code_tab(
     p_comment in out nocopy varchar2,
     p_code_tab in out nocopy apex_t_varchar2
   )
   as
-  
+
     l_code_open_cnt   pls_integer := 0;
     l_code_close_cnt  pls_integer := 0;
     l_code_start_pos  pls_integer := 0;
     l_code_end_pos    pls_integer := 0;
-    
+
     c_code_new_open   constant varchar2(80) := '<pre class="z-program-code">';
     c_code_new_close  constant varchar2(80) := '</pre>';
-    
+
   begin
-        
+
     -- Check code open and close tag count
     l_code_open_cnt  := regexp_count( p_comment, '\<code\>', 1, 'i' );
     l_code_close_cnt := regexp_count( p_comment, '\<\/code\>', 1, 'i' );
-    
+
     -- Process code tags if open and close count match ( pre check is for valid HTML )
     if l_code_open_cnt = l_code_close_cnt
     then
-      
+
       -- Collect content inside code tags to collection
       for i in 1 .. l_code_open_cnt
       loop
-      
+
         -- Get code start and end position
         l_code_start_pos := instr( lower( p_comment ), '<code>' );
         l_code_end_pos := instr( lower( p_comment ), '</code>' );
-        
+
         -- Store code tag content to collection and wrap it to pre tag having class
-        apex_string.push( 
+        apex_string.push(
            p_table => p_code_tab
           ,p_value => c_code_new_open
             || substr(p_comment, l_code_start_pos  + 6, l_code_end_pos - l_code_start_pos - 6)
             || c_code_new_close
         );
-        
+
         -- Substitude handled code tag
         p_comment := rtrim( substr( p_comment, 1, l_code_start_pos - 1 ), chr(10) )
           || chr(10)
@@ -179,49 +179,49 @@ as
           || chr(10)
           || ltrim( substr( p_comment, l_code_end_pos + 7 ), chr(10) )
         ;
-        
+
       end loop;
-  
+
     end if;
-    
+
   end build_code_tab;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure build_comment_html(
     p_comment in out nocopy varchar2
   )
-  as  
+  as
     l_temp        varchar2(32700);
     l_code_row    number;
     l_code_tab    apex_t_varchar2;
     l_comment_tab apex_t_varchar2;
   begin
-  
+
     -- Process code tags
     blog_util.build_code_tab(
        p_comment => p_comment
       ,p_code_tab => l_code_tab
     );
-  
+
     -- Split comment to collection by new line character
     l_comment_tab := apex_string.split( p_comment, chr(10) );
-  
+
     -- Comment is stored to collection
     -- start building comment with prober html tags
     p_comment := null;
-    
+
     -- Format comment
     for i in 1 .. l_comment_tab.count
     loop
-      
+
       l_temp := trim( l_comment_tab(i) );
-      
+
       -- Check if row is code block
       if regexp_like( l_temp, '^CODE\#[0-9]+$' )
       then
         -- Get code block row number
         l_code_row := regexp_substr( l_temp, '[0-9]+' );
-        -- Close p tag, insert code block 
+        -- Close p tag, insert code block
         -- and open p tag again for text
         p_comment := p_comment
           || '</p>'
@@ -230,7 +230,7 @@ as
           || chr(10)
           || '<p>'
         ;
-        
+
       else
         -- Append text if row is not empty
         if l_temp is not null
@@ -243,7 +243,7 @@ as
             -- See if p tag is opened, then insert br for new line
             p_comment := p_comment
               ||
-                case 
+                case
                 when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
                 then '<br />' || chr(10)
                 end
@@ -251,16 +251,16 @@ as
             ;
           end if;
         end if;
-        
+
       end if;
-      
+
     end loop;
-    
+
     -- Wrap comment to p tag.
     p_comment := '<p>' || p_comment || '</p>';
     -- There might be empty p, if comment ends code tag, remove that
-    p_comment := replace( p_comment, '<p></p>' );     
-    
+    p_comment := replace( p_comment, '<p></p>' );
+
   end build_comment_html;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -271,7 +271,7 @@ as
   as
     l_comment varchar2(32700);
   begin
-    
+
     -- Remove unwanted ascii codes
     blog_util.remove_ascii(
        p_string => p_comment
@@ -283,13 +283,13 @@ as
     -- Escape HTML
     blog_util.escape_html(
        p_string => p_comment
-      ,p_whitelist_tags  => p_whitelist_tags 
-    );      
+      ,p_whitelist_tags  => p_whitelist_tags
+    );
     -- Build comment HTML
     blog_util.build_comment_html(
        p_comment => p_comment
-    ); 
-    
+    );
+
   end format_comment;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -319,18 +319,18 @@ as
     from blog_settings
     where attribute_name = p_attribute_name
     ;
-    
+
     apex_debug.info( 'Fetch attribute %s return: %s', p_attribute_name, l_value );
     return l_value;
-    
+
   exception when no_data_found then
     apex_debug.error( 'Not found. Attribute: %s', coalesce( p_attribute_name, '(null)' ) );
     raise;
-    
+
   when others then
     apex_debug.error( 'Unhandled error when fetching attribute: %s', p_attribute_name );
     raise;
-    
+
   end get_attribute_value;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -598,17 +598,17 @@ as
     p_set_variable  in varchar2 default 'NO'
   ) return varchar2
   as
-  
+
     l_xml               xmltype;
     l_error             varchar2(32700);
     l_comment           varchar2(32700);
     l_whitelist_tags    varchar2(32700);
-    
+
     xml_parsing_failed  exception;
     pragma exception_init( xml_parsing_failed, -31011 );
-    
+
   begin
-    
+
     l_comment := p_comment;
 
     -- Fetch allowed HTML tags from settings
@@ -629,7 +629,7 @@ as
       -- Check HTML is valid
       begin
         l_xml := xmltype.createxml(
-            '<root><row>' 
+            '<root><row>'
           || l_comment
           || '</row></root>'
         );
@@ -638,7 +638,7 @@ as
         l_error :=  apex_lang.message( 'BLOG_ERR_COMMENT_HTML' );
       end;
     end if;
-    
+
     if l_error is null
     then
       -- If validation passed set package vartiable
@@ -646,14 +646,14 @@ as
       then
         blog_globals.set_comment_var(
            p_html => l_comment
-        ); 
+        );
       end if;
     end if;
-    
+
     -- Return validation result
     -- If validation fails we return error message stored to variable
     return l_error;
-    
+
   end validate_comment;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

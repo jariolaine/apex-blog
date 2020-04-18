@@ -1,4 +1,4 @@
-CREATE OR REPLACE package  "BLOG_PLUGIN" 
+CREATE OR REPLACE package  "BLOG_PLUGIN"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -33,15 +33,14 @@ as
     p_item    in            apex_plugin.t_item,
     p_plugin  in            apex_plugin.t_plugin,
     p_param   in            apex_plugin.t_item_validation_param,
-    p_result  in out nocopy apex_plugin.t_item_validation_result 
+    p_result  in out nocopy apex_plugin.t_item_validation_result
   );
 --------------------------------------------------------------------------------
 end "BLOG_PLUGIN";
-
 /
 
 
-CREATE OR REPLACE package body  "BLOG_PLUGIN" 
+CREATE OR REPLACE package body  "BLOG_PLUGIN"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -86,7 +85,7 @@ as
     else
 
       sys.htp.p('<input type="text" '
-        || case when p_item.element_width is not null 
+        || case when p_item.element_width is not null
             then'size="' || p_item.element_width ||'" '
            end
         || case when p_item.element_max_length  is not null
@@ -177,7 +176,7 @@ as
     p_item   in            apex_plugin.t_item,
     p_plugin in            apex_plugin.t_plugin,
     p_param  in            apex_plugin.t_item_validation_param,
-    p_result in out nocopy apex_plugin.t_item_validation_result 
+    p_result in out nocopy apex_plugin.t_item_validation_result
   )
   as
     l_answer  number;
@@ -203,7 +202,7 @@ as
       l_result := false;
     end if;
 
-    if not l_result then  
+    if not l_result then
 
       p_result.message := apex_lang.message(
         p_name => p_plugin.attribute_01

@@ -31,10 +31,11 @@ as
   procedure sitemap_posts;
 --------------------------------------------------------------------------------
 end "BLOG_XML";
+
 /
 
 
-create or replace package body "BLOG_XML"
+CREATE OR REPLACE package body "BLOG_XML"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -95,7 +96,7 @@ as
         and t2.id = t3.module_id
       where 1 = 1
       and t1.parsing_schema = blog_xml.c_owner
-      and t2.name = blog_globals.ords_public_xml_module
+      and t2.name = blog_globals.g_ords_public_xml_module
       and t3.uri_template = p_uri_template
       ;
     exception when no_data_found then
@@ -137,7 +138,7 @@ as
     l_rss_desc      := blog_util.get_attribute_value( 'G_APP_DESC' );
 
     -- blog home page absolute url
-    l_home_url      := blog_globals.canonical_url || l_home_url;
+    l_home_url      := blog_globals.g_canonical_url || l_home_url;
 
     -- generate RSS
     select xmlserialize( document
@@ -153,7 +154,7 @@ as
              "atom:link"
             ,xmlattributes(
                'self'                 as "rel"
-              ,blog_globals.rss_url   as "href"
+              ,blog_globals.g_rss_url as "href"
               ,'application/rss+xml'  as "type"
             )
           )
@@ -170,7 +171,7 @@ as
               ,xmlelement( "dc:creator",  posts.blogger_name )
               ,xmlelement( "category",    posts.category_title )
               ,xmlelement( "link",
-                blog_globals.canonical_url
+                blog_globals.g_canonical_url
                 || blog_url.get_post(
                    p_app_id  => l_app_alias
                   ,p_post_id => posts.post_id
@@ -207,13 +208,13 @@ as
     l_posts varchar2(255);
   begin
 
-    l_main := blog_globals.canonical_url
+    l_main := blog_globals.g_canonical_url
       || blog_xml.get_ords_service(
-        blog_globals.ords_sitemap_main_template
+        blog_globals.g_ords_sitemap_main_template
       );
-    l_posts := blog_globals.canonical_url
+    l_posts := blog_globals.g_canonical_url
       || blog_xml.get_ords_service(
-        blog_globals.ords_sitemap_posts_template
+        blog_globals.g_ords_sitemap_posts_template
       );
 
     with si as (
@@ -262,7 +263,7 @@ as
     with sitemap_query as (
       select
          row_number() over(order by li.display_sequence) as rnum
-        ,blog_globals.canonical_url || blog_url.get_tab(
+        ,blog_globals.g_canonical_url || blog_url.get_tab(
            p_app_id  => l_app_alias
           ,p_app_page_id => li.entry_attribute_10
         ) as loc
@@ -320,7 +321,7 @@ as
       select
          posts.published_on
         ,posts.changed_on
-        ,blog_globals.canonical_url || blog_url.get_post(
+        ,blog_globals.g_canonical_url || blog_url.get_post(
            p_app_id  => l_app_alias
           ,p_post_id => posts.post_id
         ) as loc

@@ -13,12 +13,12 @@ as
 --  TO DO: (search from body TODO#x)
 --
 --------------------------------------------------------------------------------
--------------------------------------------------------------------------------- 
+--------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
   function get_tab(
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_globals.home_page,
+    p_app_page_id   in varchar2 default blog_globals.g_home_page,
     p_session       in number   default null,
     p_debug         in varchar2 default 'NO'
   ) return varchar2;
@@ -27,24 +27,24 @@ as
     p_post_id         in number,
     p_app_id          in varchar2 default null,
     p_session         in number   default null,
-    p_app_page_id     in varchar2 default blog_globals.post_page,
-    p_page_item       in varchar2 default blog_globals.post_item
+    p_app_page_id     in varchar2 default blog_globals.g_post_page,
+    p_page_item       in varchar2 default blog_globals.g_post_item
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_category(
     p_category_id     in number,
     p_app_id          in varchar2 default null,
     p_session         in number   default null,
-    p_app_page_id     in varchar2 default blog_globals.category_page,
-    p_page_item       in varchar2 default blog_globals.category_item
+    p_app_page_id     in varchar2 default blog_globals.g_category_page,
+    p_page_item       in varchar2 default blog_globals.g_category_item
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_archive(
     p_year_month      in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in number   default null,
-    p_app_page_id     in varchar2 default blog_globals.archive_page,
-    p_page_item       in varchar2 default blog_globals.archive_item,
+    p_app_page_id     in varchar2 default blog_globals.g_archive_page,
+    p_page_item       in varchar2 default blog_globals.g_archive_item,
     p_current_page_id in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -52,16 +52,16 @@ as
     p_tag_id      in number,
     p_app_id      in varchar2 default null,
     p_session         in number   default null,
-    p_app_page_id in varchar2 default blog_globals.tag_page,
-    p_page_item   in varchar2 default blog_globals.tag_item
+    p_app_page_id in varchar2 default blog_globals.g_tag_page,
+    p_page_item   in varchar2 default blog_globals.g_tag_item
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure redirect_search(
     p_value           in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in number   default null,
-    p_app_page_id     in varchar2 default blog_globals.search_page,
-    p_page_item       in varchar2 default blog_globals.search_item
+    p_app_page_id     in varchar2 default blog_globals.g_search_page,
+    p_page_item       in varchar2 default blog_globals.g_search_item
   );
 --------------------------------------------------------------------------------
 end "BLOG_URL";
@@ -73,28 +73,28 @@ CREATE OR REPLACE package body blog_url as
 --------------------------------------------------------------------------------
 -- Private constants and variables
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tab(
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_globals.home_page,
+    p_app_page_id   in varchar2 default blog_globals.g_home_page,
     p_session       in number   default null,
     p_debug         in varchar2 default 'NO'
   ) return varchar2
   as
   begin
-    
+
     return
       apex_page.get_url(
         p_application => p_app_id
@@ -103,7 +103,7 @@ CREATE OR REPLACE package body blog_url as
        ,p_debug       => p_debug
        ,p_clear_cache => 'RP'
       );
-    
+
   end get_tab;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -111,12 +111,12 @@ CREATE OR REPLACE package body blog_url as
     p_post_id       in number,
     p_app_id        in varchar2 default null,
     p_session       in number   default null,
-    p_app_page_id   in varchar2 default blog_globals.post_page,
-    p_page_item     in varchar2 default blog_globals.post_item
+    p_app_page_id   in varchar2 default blog_globals.g_post_page,
+    p_page_item     in varchar2 default blog_globals.g_post_item
   ) return varchar2
   as
   begin
-    
+
     return
       apex_page.get_url(
         p_application => p_app_id
@@ -126,7 +126,7 @@ CREATE OR REPLACE package body blog_url as
        ,p_values      => p_post_id
        ,p_clear_cache => 'RP'
       );
-    
+
   end get_post;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -134,8 +134,8 @@ CREATE OR REPLACE package body blog_url as
     p_category_id in number,
     p_app_id      in varchar2 default null,
     p_session     in number   default null,
-    p_app_page_id in varchar2 default blog_globals.category_page,
-    p_page_item   in varchar2 default blog_globals.category_item
+    p_app_page_id in varchar2 default blog_globals.g_category_page,
+    p_page_item   in varchar2 default blog_globals.g_category_item
   ) return varchar2
   as
   begin
@@ -155,13 +155,13 @@ CREATE OR REPLACE package body blog_url as
     p_year_month      in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in number   default null,
-    p_app_page_id     in varchar2 default blog_globals.archive_page,
-    p_page_item       in varchar2 default blog_globals.archive_item,
+    p_app_page_id     in varchar2 default blog_globals.g_archive_page,
+    p_page_item       in varchar2 default blog_globals.g_archive_item,
     p_current_page_id in varchar2 default null
   ) return varchar2
   as
   begin
-    return case 
+    return case
       when p_current_page_id = p_app_page_id
       or p_current_page_id is null
       then
@@ -181,8 +181,8 @@ CREATE OR REPLACE package body blog_url as
     p_tag_id      in number,
     p_app_id      in varchar2 default null,
     p_session     in number   default null,
-    p_app_page_id in varchar2 default blog_globals.tag_page,
-    p_page_item   in varchar2 default blog_globals.tag_item
+    p_app_page_id in varchar2 default blog_globals.g_tag_page,
+    p_page_item   in varchar2 default blog_globals.g_tag_item
   ) return varchar2
   as
   begin
@@ -201,13 +201,13 @@ CREATE OR REPLACE package body blog_url as
     p_value           in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in number   default null,
-    p_app_page_id     in varchar2 default blog_globals.search_page,
-    p_page_item       in varchar2 default blog_globals.search_item
+    p_app_page_id     in varchar2 default blog_globals.g_search_page,
+    p_page_item       in varchar2 default blog_globals.g_search_item
   )
   as
   begin
     -- Get page URL and redirect if there there is string to search
-    if p_value is not null then 
+    if p_value is not null then
       apex_util.redirect_url (
         apex_page.get_url(
             p_application => p_app_id

@@ -1,4 +1,4 @@
-CREATE OR REPLACE package "BLOG_CM" 
+CREATE OR REPLACE package "BLOG_CM"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -17,13 +17,18 @@ as
 --    #1 - check constraint name that raised dup_val_on_index error
 --
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
 
--------------------------------------------------------------------------------- 
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 14
   function get_category_seq
   return number;
+--------------------------------------------------------------------------------
+  procedure get_blogger_details(
+    p_username  in varchar2,
+    p_id        out nocopy number,
+    p_name      out nocopy varchar2
+  );
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 18
   function get_link_seq(
@@ -33,7 +38,7 @@ as
   -- Called from: admin app pages 20
   function get_link_grp_seq
   return number;
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
   -- Called from: admin app pages 12
   function get_post_tags(
     p_post_id     in number,
@@ -45,11 +50,6 @@ as
     p_category_id in number
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 17
-  function get_link_group_title(
-    p_link_group_id in number
-  ) return varchar2;
---------------------------------------------------------------------------------
   -- Called from: trigger blog_posts_trg
   function get_first_paragraph(
     p_body_html   in varchar2
@@ -58,7 +58,7 @@ as
   -- Called from: admin app pages 12
   function request_to_post_status(
     p_request     in varchar2
-  ) return varchar2;  
+  ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: trigger blog_files_trg and procedure blog_cm.file_upload
   function prepare_file_path(
@@ -71,6 +71,10 @@ as
     p_file_path   in varchar2,
     p_unzip       in varchar2
   ) return boolean;
+--------------------------------------------------------------------------------
+  function remove_whitespace(
+    p_string      in varchar2
+  ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app page 23 and procedure blog_cm.file_upload
   procedure merge_files;
@@ -104,22 +108,23 @@ as
   );
 --------------------------------------------------------------------------------
 end "BLOG_CM";
+
 /
 
 
-CREATE OR REPLACE package body "BLOG_CM" 
+CREATE OR REPLACE package body "BLOG_CM"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private variables and constants
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
   procedure add_tag(
     p_tag     in varchar2,
     p_tag_id  out nocopy number
@@ -193,7 +198,7 @@ as
   as
   begin
     -- cleanup relationship from tags that aren't belong to post
-    delete 
+    delete
     from blog_posts_tags t1
     where 1 = 1
     and post_id = p_post_id
@@ -204,6 +209,44 @@ as
       and x1.column_value = t1.tag_id
     );
   end cleanup_posts_tags;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure add_blogger(
+    p_username  in varchar2,
+    p_id        out nocopy number,
+    p_name      out nocopy varchar2
+  )
+  as
+    l_max   number;
+    l_name  varchar2(256);
+  begin
+
+    -- If blogger is new add to blog_bloggers table
+    if apex_util.current_user_in_group( 'Bloggers' )
+    then
+    
+      select ceil(coalesce(max(display_seq) + 1, 1) / 10) * 10
+      into l_max
+      from blog_bloggers
+      ;
+
+      select first_name
+      into l_name
+      from apex_workspace_apex_users
+      where 1  =1
+      and user_name = p_username
+      ;
+
+      insert into blog_bloggers
+      ( apex_username, is_active, display_seq, blogger_name )
+      values
+      ( p_username, 1, l_max, l_name )
+      returning id, blogger_name into p_id, p_name
+      ;
+
+    end if;
+
+  end add_blogger;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -220,6 +263,30 @@ as
     ;
     return l_max;
   end get_category_seq;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure get_blogger_details(
+    p_username  in varchar2,
+    p_id        out nocopy number,
+    p_name      out nocopy varchar2
+  )
+  as
+  begin
+    -- get blogger id and name
+    select id
+      ,blogger_name
+    into p_id, p_name
+    from blog_bloggers
+    where apex_username = p_username
+    ;
+  exception when no_data_found
+  then
+    blog_cm.add_blogger(
+       p_username => p_username
+      ,p_id => p_id
+      ,p_name => p_name
+    );
+  end get_blogger_details;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_link_seq(
@@ -250,16 +317,17 @@ as
     return l_max;
   end get_link_grp_seq;
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   function request_to_post_status(
     p_request     in varchar2
   ) return varchar2
   as
   begin
     return case p_request
-      when 'CREATE'
-      then '1'
       when 'CREATE_DRAFT'
       then '0'
+      when 'CREATE'
+      then '1'
       when 'SAVE_DRAFT'
       then '0'
       when 'SAVE_AND_PUBLISH'
@@ -272,7 +340,7 @@ as
     end;
   end request_to_post_status;
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
   function get_post_tags(
     p_post_id in number,
     p_sep     in varchar2 default ','
@@ -291,7 +359,7 @@ as
     return null;
   when others then
     raise;
-  end get_post_tags;  
+  end get_post_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_category_title(
@@ -315,27 +383,6 @@ as
   end get_category_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_link_group_title(
-    p_link_group_id in number
-  ) return varchar2
-  as
-    l_title varchar2(4000);
-  begin
-    -- fetch and return category name
-    select t1.title
-    into l_title
-    from blog_v_all_link_groups t1
-    where t1.id = p_link_group_id
-    ;
-    -- return string
-    return l_title;
-  exception when no_data_found then
-    return null;
-  when others then
-    raise;
-  end get_link_group_title;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
   function get_first_paragraph(
     p_body_html in varchar2
   ) return varchar2
@@ -350,7 +397,8 @@ as
     l_first_p_end   := instr( p_body_html, '</p>' );
 
     if l_first_p_start = 0 or l_first_p_end = 0 then
-      raise_application_error( -20001,  'Post must have at least one paragraph.' );
+      --Post must have at least one paragraph
+      raise_application_error( -20001,  apex_lang.message( 'BLOG_ERR_POST_NO_PARAGRAPH' ) );
     end if;
 
     l_first_p_start := l_first_p_start - 1;
@@ -366,7 +414,7 @@ as
 
   end get_first_paragraph;
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
   function prepare_file_path(
     p_file_path in varchar2
   ) return varchar2
@@ -469,6 +517,15 @@ as
   end file_upload;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function remove_whitespace(
+    p_string      in varchar2
+  ) return varchar2
+  as
+  begin
+    return regexp_replace( p_string, '\s+', ' ' );
+  end remove_whitespace;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure merge_files
   as
   begin
@@ -476,7 +533,7 @@ as
     using blog_v_temp_files v1
     on (t1.id = v1.id)
   when matched then
-    update set 
+    update set
       t1.blob_content = v1.blob_content
   when not matched then
     insert (
@@ -513,7 +570,8 @@ as
     l_value := trim( p_title );
 
     if l_value is null then
-      raise_application_error( -20001,  'Category title must have some value.' );
+      -- Category title must have some value
+      raise_application_error( -20002,  apex_lang.message( 'BLOG_ERR_POST_NO_CATEGORY_TITLE' ) );
     end if;
 
     -- get next sequence value
@@ -527,7 +585,7 @@ as
     returning id into p_category_id
     ;
   exception when dup_val_on_index then
-    -- TODO#1 
+    -- TODO#1
     l_value := upper( l_value );
     select v1.id
     into p_category_id
@@ -589,7 +647,7 @@ as
     end loop;
 
     blog_cm.cleanup_posts_tags(
-       p_post_id => p_post_id 
+       p_post_id => p_post_id
       ,p_tag_tab => l_tag_id_tab
     );
 

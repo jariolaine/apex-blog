@@ -21,25 +21,26 @@ as
   ) return apex_error.t_error_result;
 --------------------------------------------------------------------------------
 end "BLOG_ERR";
+
 /
 
 
-CREATE OR REPLACE package body "BLOG_ERR" 
+CREATE OR REPLACE package body "BLOG_ERR"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private variables and constants
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -58,7 +59,7 @@ as
 
     -- This function must be used to ensure initialization is compatible
     -- with future changes to t_error_result.
-    l_result := 
+    l_result :=
       apex_error.init_error_result(
         p_error => p_error
       );
@@ -115,7 +116,7 @@ as
       -- Note: If you have created manual tabular forms (using the package
       --       apex_item/htmldb_item in the SQL statement) you should still
       --       use "On error page" on that pages to avoid loosing entered data
-      
+
       l_result.display_location := case
         when l_result.display_location = apex_error.c_on_error_page
         then apex_error.c_inline_in_notification
@@ -156,12 +157,12 @@ as
       -- in a table trigger or in a PL/SQL package called by a process and we
       -- haven't found the error in our lookup table, then we just want to see
       -- the actual error text and not the full error stack with all the ORA error numbers.
-      if p_error.ora_sqlcode is not null 
+      if p_error.ora_sqlcode is not null
       and l_result.message = p_error.message
       then
 
         l_result.message :=
-          apex_error.get_first_ora_error_text ( 
+          apex_error.get_first_ora_error_text (
             p_error => p_error
           );
 
@@ -188,4 +189,5 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_ERR";
+
 /

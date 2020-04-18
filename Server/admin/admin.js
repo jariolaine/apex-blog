@@ -211,6 +211,47 @@ var blog = blog || {};
         });
       }
     },
+      /**
+      * @module blog.admin.configIG
+      **/
+    configIG : {
+      /**
+      * @function initRegion
+      * @summary configuration IG region initialization code
+      * @desc put blog.admin.configIG.initRegion in region Advanced: JavaScript Initialization Code
+      * @version 1.0tags
+      **/
+      initRegion: function(options) {
+
+        var toolbarData = $.apex.interactiveGrid.copyDefaultToolbar();
+
+        toolbarData.toolbarRemove("save");
+
+        options.toolbarData = toolbarData;
+
+        return options;
+      },
+      /**
+      * @function initOnPageLoad
+      * @summary configuration IG page initialization code
+      * @desc put blog.admin.configIG.initOnPageLoad in page JavaScript: Function and Global Variable Declaration
+      * @version 1.0
+      **/
+      initOnPageLoad: function(options){
+
+        $(function(){
+
+          apex.actions.add([
+            {
+              name: options.btnSave
+              ,action: function() {
+                region(options.regionID).call("getActions").invoke("save");
+              }
+            }
+          ]);
+        });
+      }
+    },
     /**
     * @function editorInit
     * @summary editor item initialization code
@@ -257,15 +298,3 @@ var blog = blog || {};
     }
   }
 })(apex.jQuery, apex.region, blog);
-
-// on page ready
-// hide automatically success message
-/*
-apex.jQuery(function() {
-  apex.theme42.util.configAPEXMsgs({
-    autoDismiss: true
-    // duration is optional (Default is 3000 milliseconds)
-    //,duration: 5000
-  });
-});
-*/
