@@ -2,7 +2,7 @@
 --  DDL for View BLOG_APEX_BUILD_OPTIONS
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_APEX_BUILD_OPTIONS" ("APPLICATION_ID", "BUILD_OPTION_ID", "BUILD_OPTION_NAME", "FEATURE_NAME", "STATUS", "LAST_UPDATED", "LAST_UPDATED_BY", "SWITCH_HTML") AS
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_APEX_BUILD_OPTIONS" ("APPLICATION_ID", "BUILD_OPTION_ID", "BUILD_OPTION_NAME", "BUILD_OPTION_STATUS", "FEATURE_NAME", "STATUS", "LAST_UPDATED", "LAST_UPDATED_BY", "SWITCH_HTML") AS
   with bo as(
   select t1.application_id
   ,t1.build_option_status
@@ -46,6 +46,7 @@ and build_option_name like 'BLOG\_FEATURE\_%' escape '\'
 select application_id
   ,build_option_id
   ,build_option_name
+  ,build_option_status
   ,feature_name
   ,status
   ,last_updated
