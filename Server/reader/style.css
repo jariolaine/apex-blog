@@ -193,11 +193,12 @@ pre.z-program-code code{
 pre.z-program-code code::before{
   content: counter(line);
   border-right: 2px solid #6ce26c;
+  background-color: rgba(0,0,0,.035);
   margin: 0 0.4em 0 0;
-  padding: 0 0.2em 0 0;
+  padding: 0 0.4em 0 0;
   display: inline-block;
   text-align: right;
-  width: 2.2em;
+  width: 2.4em;
   color: #939393;
   user-select: none;
 }

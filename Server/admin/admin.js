@@ -241,6 +241,8 @@ var blog = blog || {};
 
         $(function(){
 
+          region(options.regionID).widget().interactiveGrid("getActions").set("edit", true);
+
           apex.actions.add([
             {
               name: options.btnSave
