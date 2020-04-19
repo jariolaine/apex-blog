@@ -2,8 +2,8 @@
 --  DDL for View BLOG_V_POSTS_TAGS
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_TAGS" ("POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG") AS 
-  select t2.post_id  as post_id 
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_TAGS" ("POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG") AS
+  select t2.post_id  as post_id
   ,t2.tag_id       as tag_id
   ,t2.display_seq  as display_seq
   ,t1.tag          as tag

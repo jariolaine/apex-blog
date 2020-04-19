@@ -2,7 +2,7 @@
 --  DDL for View BLOG_V_ALL_POSTS
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "YEAR_MONTH", "NOTES", "PUBLISHED_DISPLAY", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS 
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "YEAR_MONTH", "NOTES", "PUBLISHED_DISPLAY", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS
   select
    t1.id                as id
   ,t1.category_id       as category_id
@@ -24,7 +24,7 @@
   ,case t1.is_active * t2.is_active * t3.is_active
     when 1
     then t1.published_on
-   end                  as published_display 
+   end                  as published_display
   ,(
     select listagg( tags.tag, ', ' )  within group(order by tags.display_seq) as tags
     from blog_v_all_posts_tags tags
@@ -51,7 +51,7 @@
     where 1 = 1
     and co.post_id  = t1.id
   )                     as comments_count
-  ,case 
+  ,case
     when t3.is_active = 0
     then 'BLOGGER_DISABLED'
     when t2.is_active = 0
@@ -61,9 +61,9 @@
     when t1.published_on > localtimestamp
     then 'SCHEDULED'
     else 'PUBLISHED'
-   end                  as post_status 
+   end                  as post_status
 from blog_posts t1
 join blog_categories t2 on t1.category_id = t2.id
 join blog_bloggers t3 on t1.blogger_id = t3.id
-where 1 = 1 
+where 1 = 1
 ;

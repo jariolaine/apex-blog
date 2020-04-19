@@ -2,7 +2,7 @@
 --  DDL for View BLOG_V_LINK_GROUPS
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_LINK_GROUPS" ( "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ") AS 
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_LINK_GROUPS" ( "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ") AS
   select t1.id        as group_id
   ,t1.title           as group_title
   ,t1.display_seq     as group_display_seq
