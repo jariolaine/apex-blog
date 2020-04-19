@@ -173,12 +173,15 @@ blockquote p{
 **/
 pre.z-program-code{
   /*font-family: "Lucida Console", Courier, monospace;*/
+  color: #000000;
+  text-shadow: 0 0 #242424;
   font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace;
   font-size: 1.2rem;
   line-height: 1.4rem;
   tab-size: 2;
   counter-reset: line;
   overflow-x: auto;
+  display: block;
 }
 pre.z-program-code code{
   font-family: inherit;
@@ -193,7 +196,9 @@ pre.z-program-code code{
 pre.z-program-code code::before{
   content: counter(line);
   border-right: 2px solid #6ce26c;
-  background-color: rgba(0,0,0,.035);
+  border-left: 1px solid rgba(0,0,0,.075);
+  border-top: 1px solid rgba(0,0,0,.075);
+  background-color: rgba(0,0,0,.025);
   margin: 0 0.4em 0 0;
   padding: 0 0.4em 0 0;
   display: inline-block;
@@ -201,6 +206,12 @@ pre.z-program-code code::before{
   width: 2.4em;
   color: #939393;
   user-select: none;
+}
+pre.z-program-code code:last-child:before{
+  border-bottom: 1px solid rgba(0,0,0,.075);
+}
+pre.z-program-code code:nth-child(odd):before{
+  background-color: rgba(0,0,0,.065);
 }
 
 @media only screen and (max-width: 640px){

@@ -15,8 +15,8 @@ begin
     :new.created_on   := localtimestamp;
     :new.created_by   := coalesce(
        sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+      ,sys_context( 'USERENV', 'PROXY_USER' )
+      ,sys_context( 'USERENV', 'SESSION_USER' )
     );
   elsif updating then
     :new.row_version  := :old.row_version + 1;
@@ -25,8 +25,8 @@ begin
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
      sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+    ,sys_context( 'USERENV', 'PROXY_USER' )
+    ,sys_context( 'USERENV', 'SESSION_USER' )
   );
 
 end;

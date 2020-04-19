@@ -21,15 +21,14 @@
   ,t1.notes                     as notes
   ,t1.link_url                  as link_url
   ,case t2.is_active
-  when 1
-  then case t1.is_active
-    when 1
-      then 'ENABLED'
-    when 0
-      then 'DISABLED'
-    end
-  else 'GROUP_DISABLED'
-  end                           as link_status
+   when 1
+   then case t1.is_active
+     when 1
+     then 'ENABLED'
+     else 'DISABLED'
+     end
+   else 'GROUP_DISABLED'
+   end                          as link_status
 from blog_links t1
 join blog_link_groups t2
   on t1.link_group_id = t2.id
