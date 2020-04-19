@@ -1,4 +1,4 @@
-CREATE OR REPLACE package  "BLOG_URL" 
+CREATE OR REPLACE package  "BLOG_URL"
 authid definer
 as
 --------------------------------------------------------------------------------

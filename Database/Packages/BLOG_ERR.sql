@@ -1,4 +1,4 @@
-CREATE OR REPLACE package  "BLOG_ERR" 
+CREATE OR REPLACE package  "BLOG_ERR"
 authid definer
 as
 --------------------------------------------------------------------------------

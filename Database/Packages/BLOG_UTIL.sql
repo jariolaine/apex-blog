@@ -62,6 +62,7 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
+
 /
 
 
@@ -624,7 +625,7 @@ as
     if length( l_comment ) > p_max_length
     then
       -- Get error message
-      l_error := apex_lang.message( 'BLOG_ERR_COMMENT_LENGTH' );
+      l_error := apex_lang.message( 'BLOG_VALIDATION_ERR_COMMENT_LENGTH' );
     else
       -- Check HTML is valid
       begin
@@ -635,7 +636,7 @@ as
         );
       exception when xml_parsing_failed then
         -- Get error message
-        l_error :=  apex_lang.message( 'BLOG_ERR_COMMENT_HTML' );
+        l_error :=  apex_lang.message( 'BLOG_VALIDATION_ERR_COMMENT_HTML' );
       end;
     end if;
 

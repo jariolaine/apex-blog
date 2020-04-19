@@ -91,8 +91,10 @@ as
       select t1.pattern || t2.uri_prefix || t3.uri_template as url
       into l_url
       from user_ords_schemas t1
-      join user_ords_modules t2 on t1.id = t2.schema_id
-      join user_ords_templates t3 on t1.id = t3.schema_id
+      join user_ords_modules t2
+        on t1.id = t2.schema_id
+      join user_ords_templates t3
+        on t1.id = t3.schema_id
         and t2.id = t3.module_id
       where 1 = 1
       and t1.parsing_schema = blog_xml.c_owner

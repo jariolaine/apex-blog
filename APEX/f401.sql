@@ -121,7 +121,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200418210136'
+,p_last_upd_yyyymmddhh24miss=>'20200419071751'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>85
 ,p_ui_type_name => null
@@ -12720,16 +12720,6 @@ end;
 /
 begin
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(26884343793378938)
-,p_name=>'BLOG_ERR_COMMENT_HTML'
-,p_message_text=>'Check that allowed HTML tags are entered properly.'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(26897874228793079)
-,p_name=>'BLOG_ERR_COMMENT_LENGTH'
-,p_message_text=>'Comment is too long.'
-);
-wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(7036756648298659)
 ,p_name=>'BLOG_GENERIC_ERROR'
 ,p_message_text=>'Ooops... We are sorry! Unexpected internal error have occurred.'
@@ -12768,6 +12758,16 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(24587228624778564)
 ,p_name=>'BLOG_TXT_TAGS'
 ,p_message_text=>'Tags'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(26884343793378938)
+,p_name=>'BLOG_VALIDATION_ERR_COMMENT_HTML'
+,p_message_text=>'Check that allowed HTML tags are entered properly.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(26897874228793079)
+,p_name=>'BLOG_VALIDATION_ERR_COMMENT_LENGTH'
+,p_message_text=>'Comment is too long.'
 );
 end;
 /
@@ -15612,7 +15612,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200417053433'
+,p_last_upd_yyyymmddhh24miss=>'20200419071129'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -15850,7 +15850,7 @@ wwv_flow_api.create_page_validation(
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_util.validate_comment(',
 '   p_comment => :P1001_COMMENT',
-'  ,p_set_variable => :BLOG_COMMENT_VAR',
+'  ,p_set_variable => ''YES''',
 ');'))
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
 ,p_associated_item=>wwv_flow_api.id(6289109968551661)

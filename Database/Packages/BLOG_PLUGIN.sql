@@ -37,6 +37,7 @@ as
   );
 --------------------------------------------------------------------------------
 end "BLOG_PLUGIN";
+
 /
 
 
@@ -47,7 +48,23 @@ as
 -- Private variables, procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function to_html_entities(
+    p_number in number,
+    p_format in varchar2
+  ) return varchar2
+  as
+    l_string varchar2(4000);
+    l_result varchar2(4000);
+  begin
 
+    l_string := to_char( p_number, p_format );
+    for i in 1 .. length( l_string )
+    loop
+      l_result := l_result || '&#' || ascii( substr( l_string, i, 1 ) );
+    end loop;
+    return l_result;
+
+  end to_html_entities;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global procedures and functions
@@ -122,39 +139,38 @@ as
     p_result in out nocopy apex_plugin.t_item_ajax_result
   )
   as
-    l_data         varchar2(4000);
-    l_value_item  varchar2(4000);
-    l_min_1       pls_integer := 1;
-    l_max_1       pls_integer := 1;
-    l_min_2       pls_integer := 1;
-    l_max_2       pls_integer := 1;
-    l_tab         apex_t_number;
+    l_err   varchar2(4000);
+    l_data  varchar2(4000);
+    l_min   number;
+    l_max   number;
+    l_num_1 number;
+    l_num_2 number;
+    l_tab   apex_t_varchar2;
+
+    l_num_format constant varchar2(256) := 'fm999999999999999';
+
   begin
 
-    l_min_1       := p_item.attribute_01;
-    l_max_1       := p_item.attribute_02;
-    l_min_2       := p_item.attribute_03;
-    l_max_2       := p_item.attribute_04;
-    l_value_item  := p_item.attribute_05;
+    l_min   := to_number( p_item.attribute_01 );
+    l_max   := to_number( p_item.attribute_02 );
+    l_num_1 := round( sys.dbms_random.value( l_min, l_max ) );
 
-    apex_string.push(l_tab, round(sys.dbms_random.value(l_min_1, l_max_1)));
-    apex_string.push(l_tab, round(sys.dbms_random.value(l_min_2, l_max_2)));
+    l_min   := to_number( p_item.attribute_03 );
+    l_max   := to_number( p_item.attribute_04 );
+    l_num_2 := round( sys.dbms_random.value( l_min, l_max ) );
 
-    apex_util.set_session_state( l_value_item, to_number(l_tab(1)) + to_number(l_tab(2)), false);
+    l_data  := '<span class="z-question">';
+    l_data  := l_data || blog_plugin.to_html_entities( l_num_1, l_num_format );
+    l_data  := l_data || '&nbsp;&#' || ascii('+') || '&nbsp;';
+    l_data  := l_data || blog_plugin.to_html_entities( l_num_2, l_num_format );
+    l_data  := l_data || '&#' || ascii('?');
+    l_data  := l_data || '</span>';
 
-    -- change question to HTML entities
-    for n in 1 .. 2
-    loop
-
-      for i in 1 .. length(l_tab(n))
-      loop
-        l_data := l_data || '&#' || ascii(substr(l_tab(n), i, 1));
-      end loop;
-      if n = 1 then
-        l_data := l_data || '&nbsp;&#' || ascii('+') || '&nbsp;';
-      end if;
-
-    end loop;
+    apex_util.set_session_state(
+       p_name   => p_item.attribute_05
+      ,p_value  => to_char( l_num_1 + l_num_2 , l_num_format )
+      ,p_commit => false
+    );
 
     -- Write header for the output
     sys.owa_util.mime_header('text/plain', false);
@@ -162,12 +178,23 @@ as
     sys.htp.p('Pragma: no-cache');
     sys.owa_util.http_header_close;
     -- Write output
-    sys.htp.prn('<span class="z-question">' || l_data || '?</span>');
+    sys.htp.prn( l_data );
     -- set correct answer to item session state
 
   exception when others
   then
-    sys.htp.prn(p_plugin.attribute_02);
+
+    l_err := apex_lang.message(
+      p_name => p_plugin.attribute_02
+      ,p0 => p_item.plain_label
+    );
+
+    if l_err = apex_escape.html( p_plugin.attribute_02 )
+    then
+      l_err := apex_escape.html( l_err );
+    end if;
+
+    sys.htp.prn( l_err );
 
   end ajax_math_question_field;
 --------------------------------------------------------------------------------
@@ -179,24 +206,18 @@ as
     p_result in out nocopy apex_plugin.t_item_validation_result
   )
   as
-    l_answer  number;
-    l_value   number;
+    l_answer  varchar2(4000);
+    l_value   varchar2(4000);
     l_result  boolean;
   begin
 
     if p_param.value is not null then
 
-      begin
+      l_value   := v(p_item.attribute_05);
+      l_answer  := p_param.value;
 
-        l_value   := nv(p_item.attribute_05);
-        l_answer  := to_number(p_param.value);
-        -- Check if answer correct
-        l_result  := case when l_value = l_answer then true else false end;
-
-      exception when others
-      then
-        l_result := false;
-      end;
+      -- Check is answer correct
+      l_result  := case when l_value = l_answer then true else false end;
 
     else
       l_result := false;

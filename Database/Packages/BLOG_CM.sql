@@ -94,7 +94,6 @@ as
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
   -- obsolete
-  -- page process is commented out
   procedure remove_unused_tags;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
@@ -108,7 +107,6 @@ as
   );
 --------------------------------------------------------------------------------
 end "BLOG_CM";
-
 /
 
 
@@ -224,7 +222,7 @@ as
     -- If blogger is new add to blog_bloggers table
     if apex_util.current_user_in_group( 'Bloggers' )
     then
-    
+
       select ceil(coalesce(max(display_seq) + 1, 1) / 10) * 10
       into l_max
       from blog_bloggers

@@ -27,10 +27,9 @@ as
 --------------------------------------------------------------------------------
   procedure add_file_template;
 --------------------------------------------------------------------------------
-  procedure create_xml_template;
+  procedure create_xml_templates;
 --------------------------------------------------------------------------------
 end "BLOG_ORDS";
-
 /
 
 
@@ -61,7 +60,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
       p_module_name     => blog_globals.g_ords_module
       ,p_base_path      => '/pub/'
       ,p_items_per_page => 25
-      ,p_status          => 'PUBLISHED'
+      ,p_status         => 'PUBLISHED'
       ,p_comments       => 'Blog static content from blog_files table'
     );
   end create_module;

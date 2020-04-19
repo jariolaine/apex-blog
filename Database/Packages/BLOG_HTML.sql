@@ -1,4 +1,4 @@
-CREATE OR REPLACE package "BLOG_HTML" 
+CREATE OR REPLACE package "BLOG_HTML"
 authid definer
 as
 --------------------------------------------------------------------------------
