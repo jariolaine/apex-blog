@@ -65,7 +65,7 @@ prompt APPLICATION 402 - Blog Administration Area
 --         LOVs:                  11
 --         Shortcuts:              2
 --       Globalization:
---         Messages:              39
+--         Messages:              40
 --       Reports:
 --       E-Mail:
 --     Supporting Objects:  Excluded
@@ -125,7 +125,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_ADMIN_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200419172631'
+,p_last_upd_yyyymmddhh24miss=>'20200422200430'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>163
 ,p_ui_type_name => null
@@ -186,6 +186,7 @@ wwv_flow_api.create_list_item(
 ,p_list_item_link_text=>'Settings'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20010:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-gear'
+,p_security_scheme=>wwv_flow_api.id(27208175547779514)
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'30000'
 );
@@ -11415,6 +11416,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Links page'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(27923224953053769)
+,p_name=>'BLOG_FEATURE_POST_PAGINATION'
+,p_message_text=>'Next and previous buttons for single post'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(8674860180948215)
 ,p_name=>'BLOG_FEATURE_RIGHT_COLUMN'
 ,p_message_text=>'Right side column'
@@ -17084,7 +17090,7 @@ wwv_flow_api.create_page(
 ,p_autocomplete_on_off=>'OFF'
 ,p_page_template_options=>'#DEFAULT#'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200419172631'
+,p_last_upd_yyyymmddhh24miss=>'20200422140925'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27412346667552217)
@@ -17125,7 +17131,7 @@ wwv_flow_api.create_worksheet(
 ,p_show_detail_link=>'C'
 ,p_download_formats=>'CSV:HTML:EMAIL:XLS:PDF:RTF'
 ,p_detail_link=>'f?p=&APP_ID.:30:&SESSION.::&DEBUG.:RP::'
-,p_detail_link_text=>'<span role="img" aria-label="Edit" class="t-Icon fa fa-pencil"></span>'
+,p_detail_link_text=>'<span role="img" aria-label="Edit" class="t-Icon fa fa-envelope-o"></span>'
 ,p_detail_link_attr=>'class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
 ,p_owner=>'LAINFJAR'
 ,p_internal_uid=>27412486259552217
@@ -17393,17 +17399,18 @@ wwv_flow_api.create_page(
 ,p_step_title=>'Process Succeeded'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8928435152589675)
-,p_step_template=>wwv_flow_api.id(8456403392518180)
-,p_page_template_options=>'#DEFAULT#'
+,p_step_template=>wwv_flow_api.id(8454173643518178)
+,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200418050406'
+,p_last_upd_yyyymmddhh24miss=>'20200422191909'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(19256943246964354)
 ,p_plug_name=>'Process Suceeded'
-,p_region_css_classes=>'margin-auto u-textCenter u-bold'
-,p_region_template_options=>'#DEFAULT#:t-Alert--wizard:t-Alert--defaultIcons:t-Alert--success:t-Alert--removeHeading:margin-left-lg:margin-right-lg'
+,p_region_css_classes=>'u-textCenter u-bold'
+,p_icon_css_classes=>'fa-check-circle'
+,p_region_template_options=>'#DEFAULT#:t-Alert--wizard:t-Alert--customIcons:t-Alert--success:t-Alert--removeHeading'
 ,p_plug_template=>wwv_flow_api.id(8471603023518189)
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'BODY'
@@ -17421,6 +17428,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_point=>'REGION_POSITION_03'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_required_patch=>wwv_flow_api.id(24687280101070827)
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'TEXT'
 ,p_attribute_03=>'Y'

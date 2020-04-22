@@ -79,10 +79,19 @@ blockquote p{
 .z-post--body br{
   clear: none!important;
 }
+.z-post--tags{
+  width: 100%;
+  clear: both;
+  margin: 2rem 0 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.075)
+}
 .z-post--footer{
   width: 100%;
   clear: both;
   margin: 1.2rem 0 0;
+}
+.z-post--single .z-post{
+  margin-bottom: 0!important;
 }
 /**
 * Comments Report
@@ -174,7 +183,7 @@ blockquote p{
 pre.z-program-code{
   /*font-family: "Lucida Console", Courier, monospace;*/
   color: #000000;
-  text-shadow: 0 0 #242424;
+  /*text-shadow: 0 0 #242424;*/
   font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace;
   font-size: 1.2rem;
   line-height: 1.4rem;

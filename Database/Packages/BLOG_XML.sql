@@ -98,7 +98,7 @@ as
         and t2.id = t3.module_id
       where 1 = 1
       and t1.parsing_schema = blog_xml.c_owner
-      and t2.name = blog_globals.g_ords_public_xml_module
+      and t2.name = blog_globals.g_ords_module
       and t3.uri_template = p_uri_template
       ;
     exception when no_data_found then

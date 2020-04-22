@@ -30,12 +30,19 @@ as
 --------------------------------------------------------------------------------
   function get_post_title(
     p_post_id         in number,
-    p_escape          in boolean default false
+    p_escape          in boolean
   ) return varchar2;
+--------------------------------------------------------------------------------
+  procedure get_post_title(
+    p_post_id         in number,
+    p_title           out nocopy varchar2,
+    p_next_id         out nocopy varchar2,
+    p_prev_id         out nocopy varchar2
+  );
 --------------------------------------------------------------------------------
   function get_category_title(
     p_category_id     in number,
-    p_escape          in boolean default false
+    p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_tag(
@@ -62,7 +69,6 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
-
 /
 
 
@@ -409,7 +415,7 @@ as
 --------------------------------------------------------------------------------
   function get_post_title(
     p_post_id     in number,
-    p_escape      in boolean default false
+    p_escape      in boolean
   ) return varchar2
   as
     l_value varchar2(4000);
@@ -445,9 +451,63 @@ as
   end get_post_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  procedure get_post_title(
+    p_post_id         in number,
+    p_title           out nocopy varchar2,
+    p_next_id         out nocopy varchar2,
+    p_prev_id         out nocopy varchar2
+  )
+  as
+    l_title   varchar2(4000);
+    l_next_id number;
+    l_prev_id number;
+  begin
+
+    apex_debug.enter(
+      'blog_util.get_post_title'
+      ,'p_post_id'
+      ,p_post_id
+    );
+
+    if p_post_id is null then
+      raise no_data_found;
+    end if;
+
+    select q1.post_title
+      ,q1.next_id
+      ,q1.prev_id
+    into l_title, l_next_id, l_prev_id
+    from (
+      select /*+ db_name(blog_post$inner) */
+         v1.post_id
+        ,v1.post_title
+        ,lag( v1.post_id ) over(order by v1.published_on desc) as next_id
+        ,lead( v1.post_id ) over(order by v1.published_on desc) as prev_id
+      from blog_v_posts v1
+      where 1 = 1
+    ) q1
+    where 1 = 1
+    and q1.post_id = p_post_id
+    ;
+
+    p_title   := apex_escape.html( l_title );
+    p_next_id := to_char( l_next_id, 'fm9999999999999999999999999999999999999' );
+    p_prev_id := to_char( l_prev_id, 'fm9999999999999999999999999999999999999' );
+
+    apex_debug.info( 'Fetch post: %s title: %s next_id: %s prev_id: %s', p_post_id, p_title, p_next_id, p_prev_id );
+
+  exception when no_data_found then
+    apex_debug.error( 'Not found. Post: %s', coalesce( to_char( p_post_id ), '(null)' ) );
+    raise;
+  when others then
+    apex_debug.error( 'Unhandled error when fetching post: %s', to_char( p_post_id ) );
+    raise;
+  end get_post_title;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   function get_category_title(
     p_category_id in number,
-    p_escape      in boolean default false
+    p_escape      in boolean
   ) return varchar2
   as
     l_value varchar2(4000);
