@@ -1,11 +1,14 @@
 --------------------------------------------------------
---  DDL for Trigger BLOG_READ_COMMENTS_TRG
+--  File created - Saturday-April-25-2020
+--------------------------------------------------------
+--------------------------------------------------------
+--  DDL for Trigger BLOG_COMMENT_FLAGS_TRG
 --------------------------------------------------------
 
-  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_READ_COMMENTS_TRG"
+  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_COMMENT_FLAGS_TRG"
 before
 insert or
-update on blog_read_comments
+update on blog_comment_flags
 for each row
 begin
 
@@ -15,8 +18,8 @@ begin
     :new.created_on   := localtimestamp;
     :new.created_by   := coalesce(
        sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
 
   elsif updating then
@@ -26,11 +29,11 @@ begin
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
      sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
 
 /
-ALTER TRIGGER "BLOG_READ_COMMENTS_TRG" ENABLE;
+ALTER TRIGGER "BLOG_COMMENT_FLAGS_TRG" ENABLE;

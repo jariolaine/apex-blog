@@ -2,9 +2,10 @@
 --  DDL for Trigger BLOG_LINK_GROUPS_TRG
 --------------------------------------------------------
 
-  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_LINK_GROUPS_TRG" before
+  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_LINK_GROUPS_TRG"
+before
 insert or
-update on BLOG_LINK_GROUPS
+update on blog_link_groups
 for each row
 begin
 

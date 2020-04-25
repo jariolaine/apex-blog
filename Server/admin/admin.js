@@ -26,16 +26,17 @@ var blog = blog || {};
         toolbarData.toolbarRemove("save");
         toolbarData.toolbarRemove("selection-add-row");
 
-        options.toolbarData = toolbarData;
+        options = $.extend({
+          toolbarData: toolbarData,
+          defaultModelOptions: {
+            sequenceField: blog.admin.categoriesIG.options.sequenceField,
+            sequenceStep: blog.admin.categoriesIG.options.sequenceStep
+          },
+          defaultGridViewOptions: {
+            reorderColumns: false
+          }
+        }, options);
 
-        options.defaultModelOptions = {
-          sequenceField: blog.admin.categoriesIG.options.sequenceField
-          ,sequenceStep: blog.admin.categoriesIG.options.sequenceStep
-        };
-
-        options.defaultGridViewOptions = {
-          reorderColumns: false
-        }
         return options;
       },
       /**
@@ -45,11 +46,16 @@ var blog = blog || {};
       * @version 1.0
       **/
       initHandleColumn: function(options) {
-        options.defaultGridColumnOptions = {
-          virtual: true
-          ,noHeaderActivate: true
-        }
+
+        options = $.extend({
+          defaultGridColumnOptions: {
+            virtual: true,
+            noHeaderActivate: true
+          }
+        }, options);
+
         return options;
+
       },
       /**
       * @function initLinkColumn
@@ -58,10 +64,15 @@ var blog = blog || {};
       * @version 1.0
       **/
       initLinkColumn: function(options) {
-        options.defaultGridColumnOptions = {
-          noHeaderActivate: true
-        }
+
+        options = $.extend({
+          defaultGridColumnOptions: {
+            noHeaderActivate: true
+          }
+        }, options);
+
         return options;
+
       },
       /**
       * @function initOnPageLoad
@@ -165,12 +176,15 @@ var blog = blog || {};
         toolbarData.toolbarRemove("save");
         toolbarData.toolbarRemove("selection-add-row");
 
-        options.toolbarData = toolbarData;
+        options = $.extend({
+          toolbarData: toolbarData,
+          defaultGridViewOptions: {
+            reorderColumns: false
+          }
+        }, options);
 
-        options.defaultGridViewOptions = {
-          reorderColumns: false
-        }
         return options;
+
       },
       /**
       * @function initLinkColumn
@@ -179,10 +193,15 @@ var blog = blog || {};
       * @version 1.0
       **/
       initLinkColumn: function(options) {
-        options.defaultGridColumnOptions = {
-          noHeaderActivate: true
-        }
+
+        options = $.extend({
+          defaultGridColumnOptions: {
+            noHeaderActivate: true
+          }
+        }, options);
+
         return options;
+
       },
       /**
       * @function initOnPageLoad
@@ -208,12 +227,13 @@ var blog = blog || {};
               }
             }
           ]);
+
         });
       }
     },
-      /**
-      * @module blog.admin.configIG
-      **/
+    /**
+    * @module blog.admin.configIG
+    **/
     configIG : {
       /**
       * @function initRegion
@@ -227,9 +247,33 @@ var blog = blog || {};
 
         toolbarData.toolbarRemove("save");
 
-        options.toolbarData = toolbarData;
+        options = $.extend({
+          toolbarData: toolbarData,
+          reportSettingsArea: false,
+          defaultGridViewOptions: {
+            reorderColumns: false,
+            footer: false
+          }
+        }, options);
 
         return options;
+      },
+      /**
+      * @function initColumn
+      * @summary IG columns initialization code
+      * @desc put blog.admin.configIG.initColumn in column Advanced: JavaScript Initialization Code
+      * @version 1.0
+      **/
+      initColumn: function(options){
+
+        options = $.extend({
+          defaultGridColumnOptions: {
+            noHeaderActivate: true
+          }
+        }, options);
+
+        return options;
+
       },
       /**
       * @function initOnPageLoad
@@ -238,10 +282,7 @@ var blog = blog || {};
       * @version 1.0
       **/
       initOnPageLoad: function(options){
-
         $(function(){
-
-          region(options.regionID).widget().interactiveGrid("getActions").set("edit", true);
 
           apex.actions.add([
             {
@@ -251,6 +292,7 @@ var blog = blog || {};
               }
             }
           ]);
+
         });
       }
     },

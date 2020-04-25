@@ -29,6 +29,8 @@ as
 --------------------------------------------------------------------------------
   procedure create_xml_templates;
 --------------------------------------------------------------------------------
+  function get_file_path_prefix return varchar2;
+--------------------------------------------------------------------------------  
 end "BLOG_ORDS";
 /
 
@@ -235,6 +237,22 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
       );
 
   end create_xml_templates;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_file_path_prefix return varchar2
+  as
+    l_url varchar2(4000);
+  begin
+    select t1.pattern || t2.uri_prefix || blog_globals.g_ords_public_files_prefix as url
+    into l_url
+    from user_ords_schemas t1
+    join user_ords_modules t2 on t1.id = t2.schema_id
+    where 1 = 1
+    and t1.parsing_schema = blog_globals.g_owner
+    and t2.name = blog_globals.g_ords_module
+    ;
+    return l_url;
+  end get_file_path_prefix;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_ORDS";

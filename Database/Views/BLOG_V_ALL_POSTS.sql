@@ -27,20 +27,20 @@
    end                  as published_display
   ,(
     select listagg( tags.tag, ', ' )  within group(order by tags.display_seq) as tags
-    from blog_v_all_posts_tags tags
+    from blog_v_all_post_tags tags
     where 1 = 1
     and tags.post_id = t1.id
   )                     as post_tags
   ,(
     select listagg( tags.tag, ', ' )  within group(order by tags.display_seq) as tags
-    from blog_v_all_posts_tags tags
+    from blog_v_all_post_tags tags
     where 1 = 1
     and tags.post_id = t1.id
     and tags.is_active = 1
   )                     as visible_tags
   ,(
     select listagg( tags.tag, ', ' )  within group(order by tags.display_seq) as tags
-    from blog_v_all_posts_tags tags
+    from blog_v_all_post_tags tags
     where 1 = 1
     and tags.post_id = t1.id
     and tags.is_active = 0

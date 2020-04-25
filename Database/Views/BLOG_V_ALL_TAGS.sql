@@ -15,14 +15,14 @@
   ,t1.notes             as notes
   ,(
     select count(l1.id)
-    from blog_posts_tags l1
+    from blog_post_tags l1
     where 1 = 1
     and l1.tag_id = t1.id
    )                    as posts_count
   ,case
     when exists(
       select 1
-      from blog_posts_tags l2
+      from blog_post_tags l2
       where 1 = 1
       and l2.tag_id = t1.id
     )

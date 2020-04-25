@@ -173,13 +173,13 @@ as
   begin
     -- insert post id, tag id and display sequency to table.
     -- use unique constraint violation to skip existing records.
-    insert into blog_posts_tags( is_active, post_id, tag_id, display_seq )
+    insert into blog_post_tags( is_active, post_id, tag_id, display_seq )
     values ( 1, p_post_id, p_tag_id, p_display_seq )
     ;
   -- TODO#1
   exception when dup_val_on_index then
     -- update display sequence if it changed
-    update blog_posts_tags
+    update blog_post_tags
     set display_seq = p_display_seq
     where 1 = 1
     and post_id = p_post_id
@@ -189,7 +189,7 @@ as
   end add_tag_to_post;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure cleanup_posts_tags(
+  procedure cleanup_post_tags(
     p_post_id in number,
     p_tag_tab in apex_t_number
   )
@@ -197,7 +197,7 @@ as
   begin
     -- cleanup relationship from tags that aren't belong to post
     delete
-    from blog_posts_tags t1
+    from blog_post_tags t1
     where 1 = 1
     and post_id = p_post_id
     and not exists(
@@ -206,7 +206,7 @@ as
       where 1 = 1
       and x1.column_value = t1.tag_id
     );
-  end cleanup_posts_tags;
+  end cleanup_post_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure add_blogger(
@@ -217,6 +217,7 @@ as
   as
     l_max   number;
     l_name  varchar2(256);
+    l_email varchar2(256);
   begin
 
     -- If blogger is new add to blog_bloggers table
@@ -228,17 +229,18 @@ as
       from blog_bloggers
       ;
 
-      select first_name
-      into l_name
-      from apex_workspace_apex_users
+      select email
+        ,v1.first_name || ' ' || v1.last_name as full_name
+      into l_email, l_name
+      from apex_workspace_apex_users v1
       where 1  =1
-      and user_name = p_username
+      and v1.user_name = p_username
       ;
 
       insert into blog_bloggers
-      ( apex_username, is_active, display_seq, blogger_name )
+      ( apex_username, is_active, display_seq, blogger_name, email )
       values
-      ( p_username, 1, l_max, l_name )
+      ( p_username, 1, l_max, l_name, l_email )
       returning id, blogger_name into p_id, p_name
       ;
 
@@ -348,7 +350,7 @@ as
   begin
     select listagg( v1.tag, p_sep) within group( order by v1.display_seq ) as tags
     into l_tags
-    from blog_v_all_posts_tags v1
+    from blog_v_all_post_tags v1
     where 1 = 1
     and v1.post_id = p_post_id
     ;
@@ -644,7 +646,7 @@ as
 
     end loop;
 
-    blog_cm.cleanup_posts_tags(
+    blog_cm.cleanup_post_tags(
        p_post_id => p_post_id
       ,p_tag_tab => l_tag_id_tab
     );
@@ -667,7 +669,7 @@ as
     where 1 = 1
     and not exists(
       select 1
-      from blog_v_all_posts_tags x1
+      from blog_v_all_post_tags x1
       where 1 = 1
       and x1.tag_id = t1.id
     );

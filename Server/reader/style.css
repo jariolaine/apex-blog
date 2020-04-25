@@ -48,11 +48,14 @@ blockquote p{
 **/
 .z-post{
   background-color: #ffffff;
-  margin-bottom: 16px;
+  margin-bottom: 32px;
   border: 1px solid rgba(0,0,0,.1);
   border-radius: 2px;
   box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
   padding: 16px;
+}
+.z-post:last-child {
+  margin-bottom: 16px;
 }
 .z-post--header{
   clear: both;
@@ -229,6 +232,7 @@ pre.z-program-code code:nth-child(odd):before{
   **/
   .z-post{
     padding: 12px;
+    margin-bottom: 16px;
   }
   .z-post--header h1{
     font-size: 1.4em;

@@ -64,21 +64,21 @@ as
       );
 
     -- log error to application debug information
-    apex_debug.error(
-       p_message => 'Error id: %0 | session: %1 | user: %2 | %3 | %4 | %5 | %6 | %7 | %8 | %9'
-      ,p0 => v('APP_SESSION')
-      ,p1 => sys_context( 'APEX$SESSION', 'APP_SESSION' )
-      ,p2 => sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,p3 => p_error.apex_error_code
-      ,p4 => l_result.message
-      ,p5 => l_result.additional_info
-      ,p6 => p_error.ora_sqlcode
-      ,p7 => p_error.ora_sqlerrm
-      ,p8 => sqlcode
-      ,p9 => apex_error.extract_constraint_name(
-            p_error => p_error
-          )
-    );
+--    apex_debug.error(
+--       p_message => 'Error id: %0 | session: %1 | user: %2 | %3 | %4 | %5 | %6 | %7 | %8 | %9'
+--      ,p0 => v('APP_SESSION')
+--      ,p1 => sys_context( 'APEX$SESSION', 'APP_SESSION' )
+--      ,p2 => sys_context( 'APEX$SESSION', 'APP_USER' )
+--      ,p3 => p_error.apex_error_code
+--      ,p4 => l_result.message
+--      ,p5 => l_result.additional_info
+--      ,p6 => p_error.ora_sqlcode
+--      ,p7 => p_error.ora_sqlerrm
+--      ,p8 => sqlcode
+--      ,p9 => apex_error.extract_constraint_name(
+--            p_error => p_error
+--          )
+--    );
 
     -- If it's an internal error raised by APEX, like an invalid statement or
     -- code which can't be executed, the error text might contain security sensitive
@@ -104,7 +104,6 @@ as
 
         -- Change the message to the generic error message which doesn't expose
         -- any sensitive information.
-
         l_result.message := apex_lang.message(l_genereric_error);
         l_result.additional_info := null;
 
@@ -112,10 +111,6 @@ as
 
     else
       -- Always show the error as inline error
-      -- Note: If you have created manual tabular forms (using the package
-      --       apex_item/htmldb_item in the SQL statement) you should still
-      --       use "On error page" on that pages to avoid loosing entered data
-
       l_result.display_location := case
         when l_result.display_location = apex_error.c_on_error_page
         then apex_error.c_inline_in_notification

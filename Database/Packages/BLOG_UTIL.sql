@@ -33,9 +33,8 @@ as
     p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
-  procedure get_post_title(
+  procedure get_post_pagination(
     p_post_id         in number,
-    p_title           out nocopy varchar2,
     p_newer_id        out nocopy varchar2,
     p_older_id        out nocopy varchar2
   );
@@ -116,7 +115,7 @@ as
   as
   begin
     -- Remove anchor tags
-   p_string := regexp_replace( p_string, '<a[^>]*>(.*?)<\/a>', '', 1, 0, 'i' );
+    p_string := regexp_replace( p_string, '<a[^>]*>(.*?)<\/a>', '', 1, 0, 'i' );
   end remove_anchor;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -130,7 +129,7 @@ as
     -- Change all hash marks so we can escape those
     -- after calling apex_escape.html_whitelist
     -- Escape of hash marks needed to prevent APEX substitutions
-    p_string := replace( p_string, '#', '$HASH$' );
+    p_string := replace( p_string, '#', '#HashMark#' );
 
     -- Escape comment html
     p_string := apex_escape.html_whitelist(
@@ -139,7 +138,7 @@ as
     );
 
     -- Escape hash marks
-    p_string := replace( p_string, '$HASH$', '&#x23;' );
+    p_string := replace( p_string, '#HashMark#', '&#x23;' );
 
   end escape_html;
 --------------------------------------------------------------------------------
@@ -154,9 +153,6 @@ as
     l_code_close_cnt  pls_integer := 0;
     l_code_start_pos  pls_integer := 0;
     l_code_end_pos    pls_integer := 0;
-
-    c_code_new_open   constant varchar2(80) := '<pre class="z-program-code">';
-    c_code_new_close  constant varchar2(80) := '</pre>';
 
   begin
 
@@ -179,9 +175,9 @@ as
         -- Store code tag content to collection and wrap it to pre tag having class
         apex_string.push(
            p_table => p_code_tab
-          ,p_value => c_code_new_open
+          ,p_value => '<pre class="' || blog_globals.g_code_css_class || '">'
             || substr(p_comment, l_code_start_pos  + 6, l_code_end_pos - l_code_start_pos - 6)
-            || c_code_new_close
+            || '</pre>'
         );
 
         -- Substitude handled code tag
@@ -456,20 +452,18 @@ as
   end get_post_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure get_post_title(
+  procedure get_post_pagination(
     p_post_id         in number,
-    p_title           out nocopy varchar2,
     p_newer_id        out nocopy varchar2,
     p_older_id        out nocopy varchar2
   )
   as
-    l_title     varchar2(4000);
     l_newer_id  number;
     l_older_id  number;
   begin
 
     apex_debug.enter(
-      'blog_util.get_post_title'
+      'blog_util.pagination'
       ,'p_post_id'
       ,p_post_id
     );
@@ -478,14 +472,13 @@ as
       raise no_data_found;
     end if;
 
-    select q1.post_title
-      ,q1.newer_id
+    select
+       q1.newer_id
       ,q1.older_id
-    into l_title, l_newer_id, l_older_id
+    into l_newer_id, l_older_id
     from (
       select /*+ qb_name(blog_v_posts$inner) */
          v1.post_id
-        ,v1.post_title
         ,lag( v1.post_id ) over(order by v1.published_on desc) as newer_id
         ,lead( v1.post_id ) over(order by v1.published_on desc) as older_id
       from blog_v_posts v1
@@ -495,11 +488,10 @@ as
     and q1.post_id = p_post_id
     ;
 
-    p_title     := l_title;
     p_newer_id  := to_char( l_newer_id, 'fm9999999999999999999999999999999999999' );
     p_older_id  := to_char( l_older_id, 'fm9999999999999999999999999999999999999' );
 
-    apex_debug.info( 'Fetch post: %s title: %s next_id: %s prev_id: %s', p_post_id, p_title, p_newer_id, p_older_id );
+    apex_debug.info( 'Fetch post: %s next_id: %s prev_id: %s', p_post_id, p_newer_id, p_older_id );
 
   exception when no_data_found then
     apex_debug.error( 'Not found. Post: %s', coalesce( to_char( p_post_id ), '(null)' ) );
@@ -507,7 +499,7 @@ as
   when others then
     apex_debug.error( 'Unhandled error when fetching post: %s', to_char( p_post_id ) );
     raise;
-  end get_post_title;
+  end get_post_pagination;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_category_title(

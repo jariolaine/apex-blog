@@ -22,76 +22,75 @@ as
   function get_robots_noindex_meta return varchar2;
 --------------------------------------------------------------------------------
   function get_tag_anchor(
-    p_tag_id          in number,
-    p_app_id          in varchar2,
-    p_tag             in varchar2,
-    p_button          in varchar2
+    p_tag_id  in number,
+    p_app_id  in varchar2,
+    p_tag     in varchar2,
+    p_button  in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_description_meta(
-    p_desc            in varchar2
+    p_desc in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_post_description_meta(
-    p_post_id         in varchar2
+    p_post_id in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_tab_canonical_link(
-    p_app_id          in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_globals.g_home_page
+    p_app_id      in varchar2 default null,
+    p_app_page_id in varchar2 default blog_globals.g_home_page
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_post_canonical_link(
-    p_post_id       in number,
-    p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_globals.g_post_page,
-    p_page_item     in varchar2 default blog_globals.g_post_item
+    p_post_id     in number,
+    p_app_id      in varchar2 default null,
+    p_app_page_id in varchar2 default blog_globals.g_post_page,
+    p_page_item   in varchar2 default blog_globals.g_post_item
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_category_canonical_link(
-    p_category_id   in number,
-    p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_globals.g_category_page,
-    p_page_item     in varchar2 default blog_globals.g_category_item
+    p_category_id in number,
+    p_app_id      in varchar2 default null,
+    p_app_page_id in varchar2 default blog_globals.g_category_page,
+    p_page_item   in varchar2 default blog_globals.g_category_item
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_archive_canonical_link(
-    p_year_month    in number,
-    p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_globals.g_archive_page,
-    p_page_item     in varchar2 default blog_globals.g_archive_item
+    p_year_month  in number,
+    p_app_id      in varchar2 default null,
+    p_app_page_id in varchar2 default blog_globals.g_archive_page,
+    p_page_item   in varchar2 default blog_globals.g_archive_item
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_tag_canonical_link(
-    p_tag_id        in number,
-    p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_globals.g_tag_page,
-    p_page_item     in varchar2 default blog_globals.g_tag_item
+    p_tag_id      in number,
+    p_app_id      in varchar2 default null,
+    p_app_page_id in varchar2 default blog_globals.g_tag_page,
+    p_page_item   in varchar2 default blog_globals.g_tag_item
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_rss_anchor(
-    p_app_name        in varchar2
+    p_app_name  in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_rss_link(
-    p_app_name        in varchar2,
-    p_status          in varchar2 default 'INCLUDE'
+    p_app_name            in varchar2,
+    p_build_option_status in varchar2 default 'INCLUDE'
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Not used
   function get_search_button(
-    p_request         in varchar2
+    p_request in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_post_tags(
-    p_post_id         in number,
-    p_status          in varchar2 default 'INCLUDE',
-    p_app_id          in varchar2 default null,
-    p_button          in varchar2 default 'YES'
+    p_post_id in number,
+    p_app_id  in varchar2 default null,
+    p_button  in varchar2 default 'YES'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_preview_tags(
-    p_tags            in varchar2
+    p_tags  in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_HTML";
@@ -412,14 +411,14 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss_link(
-    p_app_name in varchar2,
-    p_status   in varchar2 default 'INCLUDE'
+    p_app_name            in varchar2,
+    p_build_option_status in varchar2 default 'INCLUDE'
   ) return varchar2
   as
     l_rss_title varchar2(4000);
   begin
 
-    if p_status = 'INCLUDE' then
+    if p_build_option_status = 'INCLUDE' then
       l_rss_title := apex_lang.message( 'BLOG_RSS_TITLE', p_app_name );
       --l_rss_title := apex_escape.html_attribute( l_rss_title );
       return
@@ -453,7 +452,6 @@ as
 --------------------------------------------------------------------------------
   function get_post_tags(
     p_post_id in number,
-    p_status  in varchar2 default 'INCLUDE',
     p_app_id  in varchar2 default null,
     p_button  in varchar2 default 'YES'
   ) return varchar2
@@ -461,21 +459,19 @@ as
     l_tags varchar2(32700);
   begin
 
-    if p_status = 'INCLUDE' then
-      select listagg(
-        blog_html.get_tag_anchor(
-           p_tag_id => v1.tag_id
-          ,p_app_id => p_app_id
-          ,p_tag    => v1.tag
-          ,p_button => p_button
-        ), case when p_button != 'YES' then ', ' end)
-      within group(order by v1.display_seq) as tags
-      into l_tags
-      from blog_v_posts_tags v1
-      where 1 = 1
-      and v1.post_id = p_post_id
-      ;
-    end if;
+    select listagg(
+      blog_html.get_tag_anchor(
+         p_tag_id => v1.tag_id
+        ,p_app_id => p_app_id
+        ,p_tag    => v1.tag
+        ,p_button => p_button
+      ), case when p_button != 'YES' then ', ' end)
+    within group(order by v1.display_seq) as tags
+    into l_tags
+    from blog_v_post_tags v1
+    where 1 = 1
+    and v1.post_id = p_post_id
+    ;
     return l_tags;
 
   end get_post_tags;

@@ -210,13 +210,13 @@ CREATE OR REPLACE package body blog_url as
     if p_value is not null then
       apex_util.redirect_url (
         apex_page.get_url(
-            p_application => p_app_id
-           ,p_page        => p_app_page_id
-           ,p_session     => p_session
-           ,p_items       => p_page_item
-           ,p_values      => p_value
-           ,p_clear_cache => 'RP'
-         )
+           p_application => p_app_id
+          ,p_page        => p_app_page_id
+          ,p_session     => p_session
+          ,p_clear_cache => 'RP'
+          ,p_items       => p_page_item
+          ,p_values      => p_value
+        )
       );
     end if;
   end redirect_search;
