@@ -2,8 +2,7 @@
 --  DDL for Trigger BLOG_SETTINGS_TRG
 --------------------------------------------------------
 
-  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_SETTINGS_TRG"
-before
+  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_SETTINGS_TRG" before
 insert or
 update on blog_settings
 for each row
@@ -15,8 +14,8 @@ begin
     :new.created_on   := localtimestamp;
     :new.created_by   := coalesce(
        sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV', 'PROXY_USER' )
-      ,sys_context( 'USERENV', 'SESSION_USER' )
+      ,sys_context('USERENV','PROXY_USER')
+      ,sys_context('USERENV','SESSION_USER')
     );
 
   elsif updating then
@@ -26,8 +25,8 @@ begin
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
      sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV', 'PROXY_USER' )
-    ,sys_context( 'USERENV', 'SESSION_USER' )
+    ,sys_context('USERENV','PROXY_USER')
+    ,sys_context('USERENV','SESSION_USER')
   );
 
 end;

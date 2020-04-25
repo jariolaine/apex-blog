@@ -98,7 +98,7 @@ wwv_flow_api.create_flow(
 ,p_flow_language_derived_from=>'FLOW_PREFERENCE'
 ,p_allow_feedback_yn=>'Y'
 ,p_direction_right_to_left=>'N'
-,p_flow_image_prefix => nvl(wwv_flow_application_install.get_image_prefix,'')
+,p_flow_image_prefix => nvl(wwv_flow_application_install.get_image_prefix,'https://static.oracle.com/cdn/apex/19.2.0.00.18/')
 ,p_documentation_banner=>'Application created from create application wizard 2019.04.22.'
 ,p_authentication=>'PLUGIN'
 ,p_authentication_id=>wwv_flow_api.id(24462639138097628)
@@ -125,7 +125,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_ADMIN_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200422200430'
+,p_last_upd_yyyymmddhh24miss=>'20200425050141'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>163
 ,p_ui_type_name => null
@@ -11418,7 +11418,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27923224953053769)
 ,p_name=>'BLOG_FEATURE_POST_PAGINATION'
-,p_message_text=>'Next and previous buttons for single post'
+,p_message_text=>'Pagination buttons for single post'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(8674860180948215)

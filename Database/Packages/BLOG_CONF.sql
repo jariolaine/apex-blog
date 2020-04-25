@@ -33,7 +33,7 @@ as
   -- Called from: procedure blog_conf.purge_post_preview_job
   -- not ready
   procedure purge_post_preview;
---------------------------------------------------------------------------------
+---------------------------- ----------------------------------------------------
   procedure purge_post_preview_job(
     p_drop_job    in boolean default false
   );
@@ -148,7 +148,7 @@ CREATE OR REPLACE package body "BLOG_CONF" as
     pragma          exception_init(job_not_exists, -27475);
   begin
 
-    l_job_name := 'BLOG_PURGE_POST_PREVIEW_JOB';
+    l_job_name := 'BLOG_JOB_PURGE_POST_PREVIEW';
 
     begin
       sys.dbms_scheduler.drop_job(
@@ -162,7 +162,7 @@ CREATE OR REPLACE package body "BLOG_CONF" as
       sys.dbms_scheduler.create_job(
          job_name        => l_job_name
         ,job_type        => 'STORED_PROCEDURE'
-        ,job_action      => 'blog_cm.purge_post_preview'
+        ,job_action      => 'blog_conf.purge_post_preview'
         ,start_date      => trunc(localtimestamp, 'HH')
         ,repeat_interval => 'FREQ=DAILY'
         ,enabled         => true

@@ -17,8 +17,8 @@ begin
     :new.created_by   := coalesce(
        :new.created_by
       ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV', 'PROXY_USER' )
-      ,sys_context( 'USERENV', 'SESSION_USER' )
+      ,sys_context('USERENV','PROXY_USER')
+      ,sys_context('USERENV','SESSION_USER')
     );
 
   elsif updating then
@@ -32,8 +32,8 @@ begin
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
      sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV', 'PROXY_USER' )
-    ,sys_context( 'USERENV', 'SESSION_USER' )
+    ,sys_context('USERENV','PROXY_USER')
+    ,sys_context('USERENV','SESSION_USER')
   );
 
 end;

@@ -31,7 +31,6 @@ as
   procedure sitemap_posts;
 --------------------------------------------------------------------------------
 end "BLOG_XML";
-
 /
 
 
@@ -43,10 +42,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
-  c_owner                   constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
-
   c_pub_app_id              constant number         := to_number( blog_util.get_item_init_value( 'G_PUB_APP_ID' ) );
-
   c_pub_app_tab_list        constant varchar2(256)  := 'Desktop Navigation Menu';
 
 --------------------------------------------------------------------------------
@@ -66,7 +62,7 @@ as
       into l_app_alias
       from apex_applications t1
       where 1 = 1
-      and t1.owner = blog_xml.c_owner
+      and t1.owner = blog_globals.g_owner
       and t1.application_id = blog_xml.c_pub_app_id
       ;
     exception when no_data_found then
@@ -97,7 +93,7 @@ as
         on t1.id = t3.schema_id
         and t2.id = t3.module_id
       where 1 = 1
-      and t1.parsing_schema = blog_xml.c_owner
+      and t1.parsing_schema = blog_globals.g_owner
       and t2.name = blog_globals.g_ords_module
       and t3.uri_template = p_uri_template
       ;

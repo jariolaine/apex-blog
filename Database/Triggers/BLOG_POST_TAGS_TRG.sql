@@ -2,10 +2,9 @@
 --  DDL for Trigger BLOG_POST_TAGS_TRG
 --------------------------------------------------------
 
-  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_TAGS_TRG"
-before
+  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_TAGS_TRG" before
 insert or
-update on blog_posts_tags
+update on "BLOG_POSTS_TAGS"
 for each row
 begin
 
@@ -15,8 +14,8 @@ begin
     :new.created_on   := localtimestamp;
     :new.created_by   := coalesce(
        sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV', 'PROXY_USER' )
-      ,sys_context( 'USERENV', 'SESSION_USER' )
+      ,sys_context('USERENV','PROXY_USER')
+      ,sys_context('USERENV','SESSION_USER')
     );
   elsif updating then
     :new.row_version  := :old.row_version + 1;
@@ -25,8 +24,8 @@ begin
   :new.changed_on   := localtimestamp;
   :new.changed_by   := coalesce(
      sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV', 'PROXY_USER' )
-    ,sys_context( 'USERENV', 'SESSION_USER' )
+    ,sys_context('USERENV','PROXY_USER')
+    ,sys_context('USERENV','SESSION_USER')
   );
 
 end;

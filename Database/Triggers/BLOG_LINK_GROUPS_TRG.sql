@@ -2,10 +2,9 @@
 --  DDL for Trigger BLOG_LINK_GROUPS_TRG
 --------------------------------------------------------
 
-  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_LINK_GROUPS_TRG"
-before
+  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_LINK_GROUPS_TRG" before
 insert or
-update on blog_link_groups
+update on BLOG_LINK_GROUPS
 for each row
 begin
 
@@ -16,8 +15,8 @@ begin
     :new.created_by   := coalesce(
        :new.created_by
       ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV', 'PROXY_USER' )
-      ,sys_context( 'USERENV', 'SESSION_USER' )
+      ,sys_context('USERENV','PROXY_USER')
+      ,sys_context('USERENV','SESSION_USER')
     );
   elsif updating then
     :new.row_version  := :old.row_version + 1;
@@ -26,8 +25,8 @@ begin
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
        sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV', 'PROXY_USER' )
-      ,sys_context( 'USERENV', 'SESSION_USER' )
+      ,sys_context('USERENV','PROXY_USER')
+      ,sys_context('USERENV','SESSION_USER')
     );
 
 end;

@@ -1,11 +1,11 @@
 --------------------------------------------------------
---  DDL for Trigger BLOG_BLOGGERS_TRG
+--  DDL for Trigger BLOG_READ_COMMENTS_TRG
 --------------------------------------------------------
 
-  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_BLOGGERS_TRG"
+  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_READ_COMMENTS_TRG"
 before
 insert or
-update on blog_bloggers
+update on blog_read_comments
 for each row
 begin
 
@@ -20,7 +20,7 @@ begin
     );
 
   elsif updating then
-    :new.row_version := :old.row_version + 1;
+    :new.row_version  := :old.row_version + 1;
   end if;
 
   :new.changed_on := localtimestamp;
@@ -31,5 +31,6 @@ begin
   );
 
 end;
+
 /
-ALTER TRIGGER "BLOG_BLOGGERS_TRG" ENABLE;
+ALTER TRIGGER "BLOG_READ_COMMENTS_TRG" ENABLE;

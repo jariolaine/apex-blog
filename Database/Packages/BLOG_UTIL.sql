@@ -36,8 +36,8 @@ as
   procedure get_post_title(
     p_post_id         in number,
     p_title           out nocopy varchar2,
-    p_next_id         out nocopy varchar2,
-    p_prev_id         out nocopy varchar2
+    p_newer_id        out nocopy varchar2,
+    p_older_id        out nocopy varchar2
   );
 --------------------------------------------------------------------------------
   function get_category_title(
@@ -68,6 +68,12 @@ as
     p_set_variable    in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
+  function get_comment_var return varchar2;
+--------------------------------------------------------------------------------
+  procedure set_comment_var(
+    p_html in varchar2
+  );
+--------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
 
@@ -80,7 +86,6 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   -- Variable hold formatted comment
-  g_comment_source  varchar2(20);
   g_comment_html    varchar2(32700);
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -454,13 +459,13 @@ as
   procedure get_post_title(
     p_post_id         in number,
     p_title           out nocopy varchar2,
-    p_next_id         out nocopy varchar2,
-    p_prev_id         out nocopy varchar2
+    p_newer_id        out nocopy varchar2,
+    p_older_id        out nocopy varchar2
   )
   as
-    l_title   varchar2(4000);
-    l_next_id number;
-    l_prev_id number;
+    l_title     varchar2(4000);
+    l_newer_id  number;
+    l_older_id  number;
   begin
 
     apex_debug.enter(
@@ -474,15 +479,15 @@ as
     end if;
 
     select q1.post_title
-      ,q1.next_id
-      ,q1.prev_id
-    into l_title, l_next_id, l_prev_id
+      ,q1.newer_id
+      ,q1.older_id
+    into l_title, l_newer_id, l_older_id
     from (
-      select /*+ db_name(blog_post$inner) */
+      select /*+ qb_name(blog_v_posts$inner) */
          v1.post_id
         ,v1.post_title
-        ,lag( v1.post_id ) over(order by v1.published_on desc) as next_id
-        ,lead( v1.post_id ) over(order by v1.published_on desc) as prev_id
+        ,lag( v1.post_id ) over(order by v1.published_on desc) as newer_id
+        ,lead( v1.post_id ) over(order by v1.published_on desc) as older_id
       from blog_v_posts v1
       where 1 = 1
     ) q1
@@ -490,11 +495,11 @@ as
     and q1.post_id = p_post_id
     ;
 
-    p_title   := apex_escape.html( l_title );
-    p_next_id := to_char( l_next_id, 'fm9999999999999999999999999999999999999' );
-    p_prev_id := to_char( l_prev_id, 'fm9999999999999999999999999999999999999' );
+    p_title     := l_title;
+    p_newer_id  := to_char( l_newer_id, 'fm9999999999999999999999999999999999999' );
+    p_older_id  := to_char( l_older_id, 'fm9999999999999999999999999999999999999' );
 
-    apex_debug.info( 'Fetch post: %s title: %s next_id: %s prev_id: %s', p_post_id, p_title, p_next_id, p_prev_id );
+    apex_debug.info( 'Fetch post: %s title: %s next_id: %s prev_id: %s', p_post_id, p_title, p_newer_id, p_older_id );
 
   exception when no_data_found then
     apex_debug.error( 'Not found. Post: %s', coalesce( to_char( p_post_id ), '(null)' ) );
@@ -705,7 +710,7 @@ as
       -- If validation passed set package vartiable
       if p_set_variable = 'YES'
       then
-        blog_globals.set_comment_var(
+        blog_util.set_comment_var(
            p_html => l_comment
         );
       end if;
@@ -716,6 +721,23 @@ as
     return l_error;
 
   end validate_comment;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_comment_var
+  return varchar2
+  as
+  begin
+    return g_comment_html;
+  end get_comment_var;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure set_comment_var(
+    p_html in varchar2
+  )
+  as
+  begin
+    g_comment_html := p_html;
+  end set_comment_var;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
