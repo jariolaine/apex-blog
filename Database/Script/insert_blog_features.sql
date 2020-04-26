@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  File created - Saturday-April-25-2020   
+--  File created - Saturday-April-25-2020
 --------------------------------------------------------
 REM INSERTING into BLOG_040000.BLOG_FEATURES
 SET DEFINE OFF;

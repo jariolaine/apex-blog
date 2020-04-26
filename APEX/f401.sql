@@ -120,7 +120,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200425204627'
+,p_last_upd_yyyymmddhh24miss=>'20200425220658'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>89
 ,p_ui_type_name => null
@@ -11296,7 +11296,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200425204612'
+,p_last_upd_yyyymmddhh24miss=>'20200425212457'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
@@ -11480,6 +11480,7 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_lov_display_extra=>'NO'
 ,p_protection_level=>'I'
+,p_restricted_characters=>'WEB_SAFE'
 ,p_attribute_01=>'REDIRECT_URL'
 );
 wwv_flow_api.create_page_da_event(
@@ -12411,7 +12412,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8635355820099640)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200425163745'
+,p_last_upd_yyyymmddhh24miss=>'20200425220553'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(10221605832319899)
@@ -12430,13 +12431,13 @@ wwv_flow_api.create_report_region(
 'select',
 '  #OWNER#.blog_url.get_post(',
 '     p_post_id => v1.post_id',
-'  )                   as search_link',
-'  ,v1.post_title      as search_title',
-'  ,v1.post_desc       as search_desc',
-'  ,txt.posted_by_txt  as label_01',
-'  ,v1.blogger_name    as value_01',
-'  ,txt.posted_on_txt  as label_02',
-'  ,v1.published_on    as value_02',
+'  )                     as search_link',
+'  ,v1.post_title        as search_title',
+'  ,v1.post_desc         as search_desc',
+'  ,txt.posted_by_txt    as label_01',
+'  ,v1.blogger_name      as value_01',
+'  ,txt.posted_on_txt    as label_02',
+'  ,v1.published_on      as value_02',
 '  ,case when ',
 '     apex_util.savekey_vc2(',
 '       p_val => #OWNER#.blog_html.get_post_tags(',
@@ -12445,10 +12446,10 @@ wwv_flow_api.create_report_region(
 '       ) ',
 '     ) is not null',
 '   then txt.tags_txt        ',
-'   end as label_03',
+'   end                  as label_03',
 '  ,apex_util.keyval_vc2 as value_03',
-'  ,null             as label_04',
-'  ,null             as value_04',
+'  ,null                 as label_04',
+'  ,null                 as value_04',
 'from #OWNER#.blog_v_posts v1',
 'cross join(',
 '  select apex_lang.message(''BLOG_TXT_TAGS'') as tags_txt',
@@ -12635,7 +12636,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8670890848739263)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200425163821'
+,p_last_upd_yyyymmddhh24miss=>'20200425220658'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(10238910547824257)
@@ -12654,15 +12655,15 @@ wwv_flow_api.create_report_region(
 'select v1.category_id',
 '  ,#OWNER#.blog_url.get_post(',
 '     p_post_id => v1.post_id',
-'   )                  as search_link',
-'  ,v1.post_title      as search_title',
-'  ,v1.post_desc       as search_desc',
-'  ,txt.category_txt   as label_01',
-'  ,v1.category_title  as value_01',
-'  ,txt.posted_by_txt  as label_02',
-'  ,v1.blogger_name    as value_02',
-'  ,txt.posted_on_txt  as label_03',
-'  ,v1.published_on    as value_03',
+'   )                   as search_link',
+'  ,v1.post_title       as search_title',
+'  ,v1.post_desc        as search_desc',
+'  ,txt.category_txt    as label_01',
+'  ,v1.category_title   as value_01',
+'  ,txt.posted_by_txt   as label_02',
+'  ,v1.blogger_name     as value_02',
+'  ,txt.posted_on_txt   as label_03',
+'  ,v1.published_on     as value_03',
 '  ,case when ',
 '     apex_util.savekey_vc2(',
 '       p_val => #OWNER#.blog_html.get_post_tags(',
@@ -12671,7 +12672,7 @@ wwv_flow_api.create_report_region(
 '       ) ',
 '     ) is not null',
 '   then txt.tags_txt        ',
-'   end as label_04',
+'   end                  as label_04',
 '  ,apex_util.keyval_vc2 as value_04',
 'from #OWNER#.blog_v_posts v1',
 'cross join(',

@@ -51,7 +51,7 @@ as
   g_tag_item                    constant varchar2(40) := 'P6_TAG_ID';
 
   -- Comments
-  g_code_css_class              constant varchar2(80) := 'z-program-code';
+  g_code_css_class              constant varchar2(40) := 'z-program-code';
 
 -------------------------------------------------------------------------------
 END "BLOG_GLOBALS";
