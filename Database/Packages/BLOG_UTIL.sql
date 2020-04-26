@@ -11,6 +11,9 @@ as
 --    Jari Laine 22.04.2019 - Created
 --    Jari Laine 28.03.2020 - Signature 2 of get_year_month function
 --    Jari Laine 15.04.2020 - function validate_comment
+--    Jari Laine 26.04.2020 - Changed validate_comment us apex_util.savekey_vc2
+--                            and removed custom functions that was doing same thing
+--
 --
 --  TO DO: (search from body TODO#x)
 --
@@ -67,12 +70,6 @@ as
     p_set_variable    in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
-  function get_comment_var return varchar2;
---------------------------------------------------------------------------------
-  procedure set_comment_var(
-    p_html in varchar2
-  );
---------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
 
@@ -84,8 +81,7 @@ as
 -- Private variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  -- Variable hold formatted comment
-  g_comment_html    varchar2(32700);
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -120,8 +116,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure escape_html(
-    p_string in out nocopy varchar2,
-    p_whitelist_tags in varchar2
+    p_string          in out nocopy varchar2,
+    p_whitelist_tags  in varchar2
   )
   as
   begin
@@ -144,48 +140,46 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure build_code_tab(
-    p_comment in out nocopy varchar2,
-    p_code_tab in out nocopy apex_t_varchar2
+    p_comment   in out nocopy varchar2,
+    p_code_tab  in out nocopy apex_t_varchar2
   )
   as
 
-    l_code_open_cnt   pls_integer := 0;
-    l_code_close_cnt  pls_integer := 0;
-    l_code_start_pos  pls_integer := 0;
-    l_code_end_pos    pls_integer := 0;
+    l_code_cnt  pls_integer := 0;
+    l_start_pos pls_integer := 0;
+    l_end_pos   pls_integer := 0;
 
   begin
 
-    -- Check code open and close tag count
-    l_code_open_cnt  := regexp_count( p_comment, '\<code\>', 1, 'i' );
-    l_code_close_cnt := regexp_count( p_comment, '\<\/code\>', 1, 'i' );
+    -- Check code open tag count
+    l_code_cnt := regexp_count( p_comment, '\<code\>', 1, 'i' );
 
     -- Process code tags if open and close count match ( pre check is for valid HTML )
-    if l_code_open_cnt = l_code_close_cnt
+    if l_code_cnt = regexp_count( p_comment, '\<\/code\>', 1, 'i' )
     then
 
       -- Collect content inside code tags to collection
-      for i in 1 .. l_code_open_cnt
+      for i in 1 .. l_code_cnt
       loop
 
         -- Get code start and end position
-        l_code_start_pos := instr( lower( p_comment ), '<code>' );
-        l_code_end_pos := instr( lower( p_comment ), '</code>' );
+        l_start_pos := instr( lower( p_comment ), '<code>' );
+        l_end_pos := instr( lower( p_comment ), '</code>' );
 
         -- Store code tag content to collection and wrap it to pre tag having class
         apex_string.push(
            p_table => p_code_tab
           ,p_value => '<pre class="' || blog_globals.g_code_css_class || '">'
-            || substr(p_comment, l_code_start_pos  + 6, l_code_end_pos - l_code_start_pos - 6)
+            || substr(p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6)
             || '</pre>'
         );
 
         -- Substitude handled code tag
-        p_comment := rtrim( substr( p_comment, 1, l_code_start_pos - 1 ), chr(10) )
+        p_comment := rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )
           || chr(10)
           || 'CODE#' || i
           || chr(10)
-          || ltrim( substr( p_comment, l_code_end_pos + 7 ), chr(10) )
+          || ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )
         ;
 
       end loop;
@@ -331,13 +325,27 @@ as
     apex_debug.info( 'Fetch attribute %s return: %s', p_attribute_name, l_value );
     return l_value;
 
-  exception when no_data_found then
-    apex_debug.error( 'Not found. Attribute: %s', coalesce( p_attribute_name, '(null)' ) );
-    raise;
+    exception when no_data_found
+    then
 
-  when others then
-    apex_debug.error( 'Unhandled error when fetching attribute: %s', p_attribute_name );
-    raise;
+      apex_debug.error(
+         p_message => 'No data found. %s( %s => %s )'
+        ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+        ,p1 => 'p_attribute_name'
+        ,p2 => coalesce( p_attribute_name, '(null)' )
+      );
+      raise;
+
+    when others
+    then
+
+      apex_debug.error(
+         p_message => 'Unhandled error. %s( %s => %s )'
+        ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+        ,p1 => 'p_attribute_name'
+        ,p2 => coalesce( p_attribute_name, '(null)' )
+      );
+      raise;
 
   end get_attribute_value;
 --------------------------------------------------------------------------------
@@ -368,12 +376,29 @@ as
     ;
     apex_debug.info( 'Fetc item %s return: %s', p_item_name, l_value );
     return l_value;
-  exception when no_data_found then
-    apex_debug.error( 'Not found. Item: %s', coalesce( p_item_name, '(null)' ) );
+
+  exception when no_data_found
+  then
+
+    apex_debug.error(
+       p_message => 'No data found. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_attribute_name'
+      ,p2 => coalesce( p_item_name, '(null)' )
+    );
     raise;
-  when others then
-    apex_debug.error( 'Unhandled error when fetching item: %s', p_item_name );
+
+  when others
+  then
+
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_attribute_name'
+      ,p2 => coalesce( p_item_name, '(null)' )
+    );
     raise;
+
   end get_item_init_value;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -401,16 +426,32 @@ as
       from blog_items_init i
       where i.application_id = p_app_id
     ) loop
+
       apex_debug.info( 'Initialize application id: %s item: %s value: %s', p_app_id, c1.item_name, c1.item_value );
       apex_util.set_session_state( c1.item_name, c1.item_value, false );
+
     end loop;
 
   exception when no_data_found then
-    apex_debug.error( 'Not found. Application: %s', coalesce( p_app_id, '(null)' ) );
+
+    apex_debug.error(
+       p_message => 'No data found. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_app_id'
+      ,p2 => coalesce( to_char( p_app_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+    );
     raise;
+
   when others then
-    apex_debug.error( 'Unhandled error when initialize application: %s', to_char( p_app_id ) );
+
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_app_id'
+      ,p2 => coalesce( to_char( p_app_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+    );
     raise;
+
   end initialize_items;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -442,13 +483,38 @@ as
     ;
     apex_debug.info( 'Fetch post: %s return: %s', p_post_id, l_value );
     -- Espace html and return string
-    return case when p_escape then apex_escape.html(l_value) else l_value end;
-  exception when no_data_found then
-    apex_debug.error( 'Not found. Post: %s', coalesce( to_char( p_post_id ), '(null)' ) );
+    return case when p_escape
+      then apex_escape.html(l_value)
+      else l_value
+      end
+    ;
+
+  exception when no_data_found
+  then
+
+    apex_debug.error(
+       p_message => 'No data found. %s( %s => %s, %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_post_id'
+      ,p2 => coalesce( to_char( p_post_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p3 => 'p_escape'
+      ,p4 => apex_debug.tochar( p_escape )
+    );
     raise;
-  when others then
-    apex_debug.error( 'Unhandled error when fetching post: %s', to_char( p_post_id ) );
+
+  when others
+  then
+
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s, %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_post_id'
+      ,p2 => coalesce( to_char( p_post_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p3 => 'p_escape'
+      ,p4 => apex_debug.tochar( p_escape )
+    );
     raise;
+
   end get_post_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -493,12 +559,36 @@ as
 
     apex_debug.info( 'Fetch post: %s next_id: %s prev_id: %s', p_post_id, p_newer_id, p_older_id );
 
-  exception when no_data_found then
-    apex_debug.error( 'Not found. Post: %s', coalesce( to_char( p_post_id ), '(null)' ) );
+  exception when no_data_found
+  then
+
+    apex_debug.error(
+       p_message => 'No data found. %s( %s => %s, %s => %s, %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_post_id'
+      ,p2 => coalesce( to_char( p_post_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p3 => 'p_newer_id'
+      ,p4 => p_newer_id
+      ,p5 => 'p_older_id'
+      ,p6 => p_older_id
+    );
     raise;
-  when others then
-    apex_debug.error( 'Unhandled error when fetching post: %s', to_char( p_post_id ) );
+
+  when others
+  then
+
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s, %s => %s, %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_post_id'
+      ,p2 => coalesce( to_char( p_post_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p3 => 'p_newer_id'
+      ,p4 => p_newer_id
+      ,p5 => 'p_older_id'
+      ,p6 => p_older_id
+    );
     raise;
+
   end get_post_pagination;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -530,12 +620,33 @@ as
     ;
     apex_debug.info( 'Fetch category: %s return: %s', p_category_id, l_value );
     -- Espace html and return string
-    return case when p_escape then apex_escape.html(l_value) else l_value end;
+    return case when p_escape
+      then apex_escape.html(l_value)
+      else l_value
+      end
+    ;
+
   exception when no_data_found then
-    apex_debug.error( 'Not found. Category: %s', coalesce( to_char( p_category_id ), '(null)' ) );
+
+    apex_debug.error(
+       p_message => 'No data found. %s( %s => %s, %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_category_id'
+      ,p2 => coalesce( to_char( p_category_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p3 => 'p_escape'
+      ,p4 => apex_debug.tochar( p_escape )
+    );
     raise;
+
   when others then
-    apex_debug.error( 'Unhandled error when fetching category: %s', to_char( p_category_id ) );
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s, %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_category_id'
+      ,p2 => coalesce( to_char( p_category_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p3 => 'p_escape'
+      ,p4 => apex_debug.tochar( p_escape )
+    );
     raise;
   end get_category_title;
 --------------------------------------------------------------------------------
@@ -567,12 +678,28 @@ as
     apex_debug.info( 'Fetch tag: %s return: %s', p_tag_id, l_value );
     -- Espace html and return string
     return apex_escape.html( l_value );
-  exception when no_data_found then
-    apex_debug.error( 'Not found. Tag: %s', coalesce( to_char( p_tag_id ), '(null)' ) );
+  exception when no_data_found
+  then
+
+    apex_debug.error(
+       p_message => 'No data found. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_tag_id'
+      ,p2 => coalesce( to_char( p_tag_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+    );
     raise;
-  when others then
-    apex_debug.error( 'Unhandled error when fetching tag: %s', to_char( p_tag_id ) );
+
+  when others
+  then
+
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_tag_id'
+      ,p2 => coalesce( to_char( p_tag_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+    );
     raise;
+
   end get_tag;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -611,12 +738,32 @@ as
     apex_debug.info( 'Fetch archive %s return: %s', p_year_month, l_value );
     return l_value;
 
-  exception when no_data_found then
-    apex_debug.error( 'Not found. Archive: %s', coalesce( to_char( p_year_month ), '(null)' ) );
+  exception when no_data_found
+  then
+
+    apex_debug.error(
+       p_message => 'No data found. %s( %s => %s, %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_year_month'
+      ,p2 => coalesce( to_char( p_year_month, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p3 => 'p_date_format'
+      ,p4 => p_date_format
+    );
     raise;
-  when others then
-    apex_debug.error( 'Unhandled error when fetching archive: %s', to_char( p_year_month ) );
+
+  when others
+  then
+
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s, %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_year_month'
+      ,p2 => coalesce( to_char( p_year_month, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p3 => 'p_date_format'
+      ,p4 => p_date_format
+    );
     raise;
+
   end get_year_month;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -702,8 +849,8 @@ as
       -- If validation passed set package vartiable
       if p_set_variable = 'YES'
       then
-        blog_util.set_comment_var(
-           p_html => l_comment
+        l_comment := apex_util.savekey_vc2(
+           p_val => l_comment
         );
       end if;
     end if;
@@ -713,23 +860,6 @@ as
     return l_error;
 
   end validate_comment;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_comment_var
-  return varchar2
-  as
-  begin
-    return g_comment_html;
-  end get_comment_var;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure set_comment_var(
-    p_html in varchar2
-  )
-  as
-  begin
-    g_comment_html := p_html;
-  end set_comment_var;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";

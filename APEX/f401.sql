@@ -120,7 +120,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200425220658'
+,p_last_upd_yyyymmddhh24miss=>'20200426141008'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>89
 ,p_ui_type_name => null
@@ -11524,7 +11524,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200425101432'
+,p_last_upd_yyyymmddhh24miss=>'20200426080345'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6432040642894060)
@@ -11541,16 +11541,16 @@ wwv_flow_api.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select --+ qb_name(blog_v_posts$home)',
-'  v1.post_id',
-'  ,v1.category_id',
-'  ,v1.post_title',
-'  ,v1.category_title',
-'  ,v1.published_on',
+'select ',
+'   v1.post_id         as post_id',
+'  ,v1.category_id     as category_id',
+'  ,v1.post_title      as post_title',
+'  ,v1.category_title  as category_title',
+'  ,v1.published_on    as published_on',
 '  ,v1.first_paragraph as body_html',
-'  ,txt.read_more_txt',
-'  ,txt.category_txt',
-'  ,null as tags_html',
+'  ,txt.read_more_txt  as read_more_txt',
+'  ,txt.category_txt   as category_txt',
+'  ,null               as tags_html',
 'from #OWNER#.blog_v_posts v1',
 'cross join(',
 '  select --+ qb_name(dual$apex_lang)',
@@ -11596,7 +11596,7 @@ wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(3760957181646113)
 ,p_query_column_id=>3
 ,p_column_alias=>'POST_TITLE'
-,p_column_display_sequence=>4
+,p_column_display_sequence=>3
 ,p_column_heading=>'Post Title'
 ,p_use_as_row_header=>'N'
 ,p_column_link=>'f?p=&APP_ID.:POST:&SESSION.::&DEBUG.:RP:P2_POST_ID:#POST_ID#'
@@ -11608,7 +11608,7 @@ wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(3761060172646114)
 ,p_query_column_id=>4
 ,p_column_alias=>'CATEGORY_TITLE'
-,p_column_display_sequence=>5
+,p_column_display_sequence=>4
 ,p_column_heading=>'Category Title'
 ,p_use_as_row_header=>'N'
 ,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.:RP:P4_CATEGORY_ID:#CATEGORY_ID#'
@@ -11620,7 +11620,7 @@ wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(27993285417607138)
 ,p_query_column_id=>5
 ,p_column_alias=>'PUBLISHED_ON'
-,p_column_display_sequence=>3
+,p_column_display_sequence=>5
 ,p_column_heading=>'Published On'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'&G_POST_TITLE_DATE_FORMAT.'
@@ -11661,7 +11661,7 @@ wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(20710906917895803)
 ,p_query_column_id=>9
 ,p_column_alias=>'TAGS_HTML'
-,p_column_display_sequence=>7
+,p_column_display_sequence=>10
 ,p_hidden_column=>'Y'
 ,p_derived_column=>'N'
 );
@@ -11695,146 +11695,19 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200425171431'
-);
-wwv_flow_api.create_report_region(
- p_id=>wwv_flow_api.id(9653988616337837)
-,p_name=>'Post Container'
-,p_template=>wwv_flow_api.id(6781372168267375)
-,p_display_sequence=>10
-,p_region_sub_css_classes=>'z-post--single'
-,p_region_template_options=>'#DEFAULT#'
-,p_component_template_options=>'#DEFAULT#'
-,p_grid_column_span=>9
-,p_display_column=>1
-,p_display_point=>'BODY'
-,p_item_display_point=>'BELOW'
-,p_source_type=>'NATIVE_SQL_REPORT'
-,p_query_type=>'SQL'
-,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select --+ qb_name(blog_v_posts$post)',
-'   v1.post_id',
-'  ,v1.category_id',
-'  ,v1.published_on',
-'  ,v1.post_title',
-'  ,v1.category_title',
-'  ,v1.body_html',
-'  ,txt.category_txt',
-'  ,null as read_more_txt',
-'  ,#OWNER#.blog_html.get_post_tags(',
-'    p_post_id => v1.post_id',
-'  ) as tags_html',
-'from #OWNER#.blog_v_posts v1',
-'cross join(',
-'  select --+ qb_name(dual$apex_lang)',
-'    apex_lang.message(''BLOG_TXT_CATEGORY'') as category_txt',
-'  from dual',
-') txt',
-'where 1 = 1',
-'and v1.post_id = :P2_POST_ID',
-''))
-,p_translate_title=>'N'
-,p_query_row_template=>wwv_flow_api.id(6894976353301648)
-,p_query_num_rows=>1
-,p_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
-,p_query_row_count_max=>1
-,p_csv_output=>'N'
-,p_prn_output=>'N'
-,p_sort_null=>'L'
-,p_plug_query_strip_html=>'N'
-,p_comment=>'Report to display only one post'
-);
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(3762522324646129)
-,p_query_column_id=>1
-,p_column_alias=>'POST_ID'
-,p_column_display_sequence=>1
-,p_hidden_column=>'Y'
-,p_derived_column=>'N'
-);
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(7081847339178433)
-,p_query_column_id=>2
-,p_column_alias=>'CATEGORY_ID'
-,p_column_display_sequence=>2
-,p_hidden_column=>'Y'
-,p_derived_column=>'N'
-);
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(27993118245607137)
-,p_query_column_id=>3
-,p_column_alias=>'PUBLISHED_ON'
-,p_column_display_sequence=>3
-,p_column_heading=>'Published On'
-,p_use_as_row_header=>'N'
-,p_column_format=>'&G_POST_TITLE_DATE_FORMAT.'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(3762641236646130)
-,p_query_column_id=>4
-,p_column_alias=>'POST_TITLE'
-,p_column_display_sequence=>4
-,p_hidden_column=>'Y'
-,p_derived_column=>'N'
-);
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(3762796274646131)
-,p_query_column_id=>5
-,p_column_alias=>'CATEGORY_TITLE'
-,p_column_display_sequence=>5
-,p_column_heading=>'Category Title'
-,p_use_as_row_header=>'N'
-,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.:RP:P4_CATEGORY_ID:#CATEGORY_ID#'
-,p_column_linktext=>'#CATEGORY_TITLE#'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(27990621426607112)
-,p_query_column_id=>6
-,p_column_alias=>'BODY_HTML'
-,p_column_display_sequence=>7
-,p_hidden_column=>'Y'
-,p_display_as=>'WITHOUT_MODIFICATION'
-,p_derived_column=>'N'
-);
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(6974337263420210)
-,p_query_column_id=>7
-,p_column_alias=>'CATEGORY_TXT'
-,p_column_display_sequence=>6
-,p_hidden_column=>'Y'
-,p_derived_column=>'N'
-);
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(20710843102895802)
-,p_query_column_id=>8
-,p_column_alias=>'READ_MORE_TXT'
-,p_column_display_sequence=>8
-,p_hidden_column=>'Y'
-,p_derived_column=>'N'
-);
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(27990703148607113)
-,p_query_column_id=>9
-,p_column_alias=>'TAGS_HTML'
-,p_column_display_sequence=>9
-,p_hidden_column=>'Y'
-,p_display_as=>'WITHOUT_MODIFICATION'
-,p_derived_column=>'N'
+,p_last_upd_yyyymmddhh24miss=>'20200426140926'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
 ,p_name=>'Comments'
 ,p_region_name=>'comments'
-,p_parent_plug_id=>wwv_flow_api.id(9653988616337837)
 ,p_template=>wwv_flow_api.id(6802870362267386)
 ,p_display_sequence=>20
 ,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody:margin-top-lg'
 ,p_component_template_options=>'#DEFAULT#:t-Comments--basic:t-Comments--iconsRounded:t-Report--hideNoPagination'
+,p_new_grid_row=>false
+,p_grid_column_span=>9
+,p_display_column=>1
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -11972,6 +11845,135 @@ wwv_flow_api.create_report_columns(
 ,p_column_alias=>'ATTRIBUTE_4'
 ,p_column_display_sequence=>11
 ,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_api.create_report_region(
+ p_id=>wwv_flow_api.id(9653988616337837)
+,p_name=>'Post Container'
+,p_template=>wwv_flow_api.id(6781372168267375)
+,p_display_sequence=>10
+,p_region_sub_css_classes=>'z-post--single'
+,p_region_template_options=>'#DEFAULT#'
+,p_component_template_options=>'#DEFAULT#'
+,p_grid_column_span=>9
+,p_display_column=>1
+,p_display_point=>'BODY'
+,p_item_display_point=>'BELOW'
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select',
+'   v1.post_id        as post_id',
+'  ,v1.category_id    as category_id',
+'  ,v1.post_title     as post_title',
+'  ,v1.category_title as category_title',
+'  ,v1.published_on   as published_on',
+'  ,v1.body_html      as body_html',
+'  ,null              as read_more_txt',
+'  ,txt.category_txt  as category_txt',
+'  ,#OWNER#.blog_html.get_post_tags(',
+'    p_post_id => v1.post_id',
+'  )                  as tags_html',
+'from #OWNER#.blog_v_posts v1',
+'cross join(',
+'  select --+ qb_name(dual$apex_lang)',
+'    apex_lang.message(''BLOG_TXT_CATEGORY'') as category_txt',
+'  from dual',
+') txt',
+'where 1 = 1',
+'and v1.post_id = :P2_POST_ID',
+''))
+,p_translate_title=>'N'
+,p_query_row_template=>wwv_flow_api.id(6894976353301648)
+,p_query_num_rows=>1
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
+,p_query_row_count_max=>1
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+,p_comment=>'Report to display only one post'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(3762522324646129)
+,p_query_column_id=>1
+,p_column_alias=>'POST_ID'
+,p_column_display_sequence=>1
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(7081847339178433)
+,p_query_column_id=>2
+,p_column_alias=>'CATEGORY_ID'
+,p_column_display_sequence=>2
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(3762641236646130)
+,p_query_column_id=>3
+,p_column_alias=>'POST_TITLE'
+,p_column_display_sequence=>3
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(3762796274646131)
+,p_query_column_id=>4
+,p_column_alias=>'CATEGORY_TITLE'
+,p_column_display_sequence=>4
+,p_column_heading=>'Category Title'
+,p_use_as_row_header=>'N'
+,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.:RP:P4_CATEGORY_ID:#CATEGORY_ID#'
+,p_column_linktext=>'#CATEGORY_TITLE#'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(27993118245607137)
+,p_query_column_id=>5
+,p_column_alias=>'PUBLISHED_ON'
+,p_column_display_sequence=>5
+,p_column_heading=>'Published On'
+,p_use_as_row_header=>'N'
+,p_column_format=>'&G_POST_TITLE_DATE_FORMAT.'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(27990621426607112)
+,p_query_column_id=>6
+,p_column_alias=>'BODY_HTML'
+,p_column_display_sequence=>6
+,p_hidden_column=>'Y'
+,p_display_as=>'WITHOUT_MODIFICATION'
+,p_derived_column=>'N'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(20710843102895802)
+,p_query_column_id=>7
+,p_column_alias=>'READ_MORE_TXT'
+,p_column_display_sequence=>7
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(6974337263420210)
+,p_query_column_id=>8
+,p_column_alias=>'CATEGORY_TXT'
+,p_column_display_sequence=>8
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(27990703148607113)
+,p_query_column_id=>9
+,p_column_alias=>'TAGS_HTML'
+,p_column_display_sequence=>9
+,p_hidden_column=>'Y'
+,p_display_as=>'WITHOUT_MODIFICATION'
 ,p_derived_column=>'N'
 );
 wwv_flow_api.create_page_plug(
@@ -12123,7 +12125,8 @@ wwv_flow_api.create_page_da_action(
 ,p_action_sequence=>10
 ,p_execute_on_page_init=>'N'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_attribute_01=>'blog.UI.formatProgramCode($(this.triggeringElement).find("pre.z-program-code"));'
+,p_affected_elements_type=>'TRIGGERING_ELEMENT'
+,p_attribute_01=>'blog.UI.formatProgramCode(this.affectedElements.find("pre.z-program-code"));'
 ,p_da_action_comment=>'Format comments program code when paginated.'
 );
 wwv_flow_api.create_page_da_event(
@@ -12154,7 +12157,6 @@ wwv_flow_api.create_page_da_action(
 ,p_execute_on_page_init=>'N'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog.UI.formatProgramCode($(this.triggeringElement).find("pre.z-program-code"));',
 'apex.message.showPageSuccess(this.data.successMessage.text);',
 ''))
 );
@@ -12192,7 +12194,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8667733481689180)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200425163706'
+,p_last_upd_yyyymmddhh24miss=>'20200426080906'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6979825819516521)
@@ -12208,18 +12210,18 @@ wwv_flow_api.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.category_id',
+'select v1.category_id  as category_id',
 '  ,#OWNER#.blog_url.get_post(',
 '     p_post_id => v1.post_id',
-'   )                  as search_link',
-'  ,v1.post_title      as search_title',
-'  ,v1.post_desc       as search_desc',
-'  ,txt.category_txt   as label_01',
-'  ,v1.category_title  as value_01',
-'  ,txt.posted_by_txt  as label_02',
-'  ,v1.blogger_name    as value_02',
-'  ,txt.posted_on_txt  as label_03',
-'  ,v1.published_on    as value_03',
+'   )                   as search_link',
+'  ,v1.post_title       as search_title',
+'  ,v1.post_desc        as search_desc',
+'  ,txt.category_txt    as label_01',
+'  ,v1.category_title   as value_01',
+'  ,txt.posted_by_txt   as label_02',
+'  ,v1.blogger_name     as value_02',
+'  ,txt.posted_on_txt   as label_03',
+'  ,v1.published_on     as value_03',
 '  ,case when ',
 '     apex_util.savekey_vc2(',
 '       p_val => #OWNER#.blog_html.get_post_tags(',
@@ -12228,14 +12230,14 @@ wwv_flow_api.create_report_region(
 '       ) ',
 '     ) is not null',
 '   then txt.tags_txt        ',
-'   end as label_04',
+'   end                 as label_04',
 '  ,apex_util.keyval_vc2 as value_04',
 'from #OWNER#.blog_v_posts v1',
 'cross join(',
-'  select apex_lang.message(''BLOG_TXT_CATEGORY'') as category_txt',
-'    ,apex_lang.message(''BLOG_TXT_TAGS'') as tags_txt',
-'    ,apex_lang.message(''BLOG_TXT_POSTED_BY'') as posted_by_txt',
-'    ,apex_lang.message(''BLOG_TXT_POSTED_ON'') as posted_on_txt',
+'  select apex_lang.message(''BLOG_TXT_CATEGORY'')  as category_txt',
+'    ,apex_lang.message(''BLOG_TXT_TAGS'')          as tags_txt',
+'    ,apex_lang.message(''BLOG_TXT_POSTED_BY'')     as posted_by_txt',
+'    ,apex_lang.message(''BLOG_TXT_POSTED_ON'')     as posted_on_txt',
 '  from dual',
 ') txt',
 'where 1 = 1',
@@ -12412,7 +12414,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8635355820099640)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200425220553'
+,p_last_upd_yyyymmddhh24miss=>'20200426080804'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(10221605832319899)
@@ -12452,7 +12454,7 @@ wwv_flow_api.create_report_region(
 '  ,null                 as value_04',
 'from #OWNER#.blog_v_posts v1',
 'cross join(',
-'  select apex_lang.message(''BLOG_TXT_TAGS'') as tags_txt',
+'  select apex_lang.message(''BLOG_TXT_TAGS'')  as tags_txt',
 '    ,apex_lang.message(''BLOG_TXT_POSTED_BY'') as posted_by_txt',
 '    ,apex_lang.message(''BLOG_TXT_POSTED_ON'') as posted_on_txt',
 '  from dual',
@@ -12636,7 +12638,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8670890848739263)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200425220658'
+,p_last_upd_yyyymmddhh24miss=>'20200426080743'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(10238910547824257)
@@ -12652,7 +12654,7 @@ wwv_flow_api.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.category_id',
+'select v1.category_id  as category_id',
 '  ,#OWNER#.blog_url.get_post(',
 '     p_post_id => v1.post_id',
 '   )                   as search_link',
@@ -12676,10 +12678,10 @@ wwv_flow_api.create_report_region(
 '  ,apex_util.keyval_vc2 as value_04',
 'from #OWNER#.blog_v_posts v1',
 'cross join(',
-'  select apex_lang.message(''BLOG_TXT_CATEGORY'') as category_txt',
-'    ,apex_lang.message(''BLOG_TXT_TAGS'') as tags_txt',
-'    ,apex_lang.message(''BLOG_TXT_POSTED_BY'') as posted_by_txt',
-'    ,apex_lang.message(''BLOG_TXT_POSTED_ON'') as posted_on_txt',
+'  select apex_lang.message(''BLOG_TXT_CATEGORY'')  as category_txt',
+'    ,apex_lang.message(''BLOG_TXT_TAGS'')          as tags_txt',
+'    ,apex_lang.message(''BLOG_TXT_POSTED_BY'')     as posted_by_txt',
+'    ,apex_lang.message(''BLOG_TXT_POSTED_ON'')     as posted_on_txt',
 '  from dual',
 ') txt',
 'where 1 = 1',
@@ -12883,7 +12885,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200425184929'
+,p_last_upd_yyyymmddhh24miss=>'20200426080710'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(13706719753736206)
@@ -12899,29 +12901,29 @@ wwv_flow_api.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.category_id',
+'select v1.category_id  as category_id',
 '  ,#OWNER#.blog_url.get_post(',
 '     p_post_id => v1.post_id',
-'   )                  as search_link',
-'  ,v1.post_title      as search_title',
-'  ,v1.post_desc       as search_desc',
-'  ,txt.category_txt   as label_01',
-'  ,v1.category_title  as value_01',
-'  ,txt.posted_by_txt  as label_02',
-'  ,v1.blogger_name    as value_02',
-'  ,txt.posted_on_txt  as label_03',
-'  ,v1.published_on    as value_03',
-'  ,txt.tags_txt       as label_04',
+'   )                   as search_link',
+'  ,v1.post_title       as search_title',
+'  ,v1.post_desc        as search_desc',
+'  ,txt.category_txt    as label_01',
+'  ,v1.category_title   as value_01',
+'  ,txt.posted_by_txt   as label_02',
+'  ,v1.blogger_name     as value_02',
+'  ,txt.posted_on_txt   as label_03',
+'  ,v1.published_on     as value_03',
+'  ,txt.tags_txt        as label_04',
 '  ,#OWNER#.blog_html.get_post_tags(',
 '    p_post_id => v1.post_id',
 '    ,p_button => ''NO''',
-'   )                  as value_04',
+'   )                   as value_04',
 'from #OWNER#.blog_v_posts v1',
 'cross join(',
-'  select apex_lang.message(''BLOG_TXT_CATEGORY'') as category_txt',
-'    ,apex_lang.message(''BLOG_TXT_TAGS'') as tags_txt',
-'    ,apex_lang.message(''BLOG_TXT_POSTED_BY'') as posted_by_txt',
-'    ,apex_lang.message(''BLOG_TXT_POSTED_ON'') as posted_on_txt',
+'  select apex_lang.message(''BLOG_TXT_CATEGORY'')  as category_txt',
+'    ,apex_lang.message(''BLOG_TXT_TAGS'')          as tags_txt',
+'    ,apex_lang.message(''BLOG_TXT_POSTED_BY'')     as posted_by_txt',
+'    ,apex_lang.message(''BLOG_TXT_POSTED_ON'')     as posted_on_txt',
 '  from dual',
 ') txt',
 'where 1 = 1',

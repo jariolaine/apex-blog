@@ -19,9 +19,9 @@ begin
       ,sys_context( 'USERENV','SESSION_USER' )
     );
 
-    if blog_util.get_comment_var is not null
+    if apex_util.keyval_vc2 is not null
     then
-      :new.body_html := blog_util.get_comment_var;
+      :new.body_html := apex_util.keyval_vc2;
     end if;
 
   elsif updating then

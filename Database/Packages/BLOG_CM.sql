@@ -21,59 +21,57 @@ as
 
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 14
-  function get_category_seq
-  return number;
+  function get_category_seq return number;
 --------------------------------------------------------------------------------
   procedure get_blogger_details(
-    p_username  in varchar2,
-    p_id        out nocopy number,
-    p_name      out nocopy varchar2
+    p_username        in varchar2,
+    p_id              out nocopy number,
+    p_name            out nocopy varchar2
   );
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 18
   function get_link_seq(
-    p_link_group_id in number
+    p_link_group_id   in number
   ) return number;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 20
-  function get_link_grp_seq
-  return number;
+  function get_link_grp_seq return number;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
   function get_post_tags(
-    p_post_id     in number,
-    p_sep         in varchar2 default ','
+    p_post_id         in number,
+    p_sep             in varchar2 default ','
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
   function get_category_title(
-    p_category_id in number
+    p_category_id     in number
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: trigger blog_posts_trg
   function get_first_paragraph(
-    p_body_html   in varchar2
+    p_body_html       in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
   function request_to_post_status(
-    p_request     in varchar2
+    p_request         in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: trigger blog_files_trg and procedure blog_cm.file_upload
   function prepare_file_path(
-    p_file_path   in varchar2
+    p_file_path       in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app page 22 Close Dialog condition
   function file_upload(
-    p_file_name   in varchar2,
-    p_file_path   in varchar2,
-    p_unzip       in varchar2
+    p_file_name       in varchar2,
+    p_file_path       in varchar2,
+    p_unzip           in varchar2
   ) return boolean;
 --------------------------------------------------------------------------------
   function remove_whitespace(
-    p_string      in varchar2
+    p_string          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app page 23 and procedure blog_cm.file_upload
@@ -81,15 +79,15 @@ as
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
   procedure add_category(
-    p_title       in varchar2,
-    p_category_id out nocopy number
+    p_title           in varchar2,
+    p_category_id     out nocopy number
   );
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
   procedure add_post_tags(
-    p_post_id     in number,
-    p_tags        in varchar2,
-    p_sep         in varchar2 default ','
+    p_post_id         in number,
+    p_tags            in varchar2,
+    p_sep             in varchar2 default ','
   );
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
@@ -99,12 +97,24 @@ as
   -- Called from: admin app pages 12
   -- Not ready
   procedure save_post_preview(
-    p_id            in number,
-    p_tags          in varchar2,
+    p_id              in number,
+    p_tags            in varchar2,
     p_post_title      in varchar2,
     p_category_title  in varchar2,
     p_body_html       in clob
   );
+--------------------------------------------------------------------------------
+  function is_integer(
+    p_value           in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  function is_url(
+    p_value           in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  function is_date_format(
+    p_value           in varchar2
+  ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_CM";
 /
@@ -466,14 +476,14 @@ as
       l_file_name := substr(l_file_names(i), instr(l_file_names(i), '/') + 1);
 
       for c1 in(
-        select t1.id
-          ,t2.id as file_id
-          ,t2.row_version
-          ,t2.is_active
-          ,t2.is_download
-          ,t2.file_desc
-          ,t1.mime_type
-          ,t1.blob_content
+        select t1.id        as id
+          ,t2.id            as file_id
+          ,t2.row_version   as row_version
+          ,t2.is_active     as is_active
+          ,t2.is_download   as is_download
+          ,t2.file_desc     as file_desc
+          ,t1.mime_type     as mime_type
+          ,t1.blob_content  as blob_content
         from apex_application_temp_files t1
         left join blog_v_all_files t2 on t2.file_name = l_file_name
           and t2.file_path = l_file_path
@@ -481,10 +491,15 @@ as
         and t1.name = l_file_names(i)
       ) loop
 
-        l_file_exists := case when c1.file_id is not null then true else l_file_exists end;
+        l_file_exists := case
+          when c1.file_id is not null
+          then true
+          else l_file_exists
+          end
+        ;
 
         apex_collection.add_member(
-          p_collection_name => 'BLOG_FILES'
+           p_collection_name => 'BLOG_FILES'
           ,p_n001     => c1.id
           ,p_n002     => c1.file_id
           ,p_n003     => c1.row_version
@@ -495,14 +510,6 @@ as
           ,p_c003     => c1.file_desc
           ,p_c004     => c1.mime_type
           ,p_blob001  => c1.blob_content
-          /*
-          ,p_c021 => 'BLOG_STATUS_IS'
-          ,p_c022 => 'Enabled'
-          ,p_c023 => 'Disabled'
-          ,p_c024 => 'BLOG_IS_PUBLIC_FILE'
-          ,p_c025 => 'Yes'
-          ,p_c026 => 'No'
-          */
         );
 
       end loop;
@@ -537,7 +544,7 @@ as
       t1.blob_content = v1.blob_content
   when not matched then
     insert (
-      is_active
+       is_active
       ,is_download
       ,file_path
       ,file_name
@@ -546,7 +553,7 @@ as
       ,file_desc
     )
     values (
-      v1.is_active
+       v1.is_active
       ,v1.is_download
       ,v1.file_path
       ,v1.file_name
@@ -706,6 +713,70 @@ as
     )
     ;
   end save_post_preview;
+  --------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------
+    function is_integer(
+      p_value in varchar2
+    ) return varchar2
+    as
+      l_result varchar2(4000);
+    begin
+
+      l_result := apex_lang.message('BLOG_VALIDATION_ERR_IS_INTEGER');
+
+      if round( to_number( p_value ) ) between 1 and 100
+      then
+        l_result := null;
+
+      end if;
+      return l_result;
+
+    exception when invalid_number
+    or value_error
+    then
+      return l_result;
+    end is_integer;
+  --------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------
+    function is_url(
+      p_value in varchar2
+    ) return varchar2
+    as
+      l_result varchar2(4000);
+    begin
+
+      if not regexp_like(p_value, '^https?\:\/\/.*$')
+      then
+        l_result := apex_lang.message('BLOG_VALIDATION_ERR_IS_URL');
+      end if;
+
+      return l_result;
+
+    end is_url;
+  --------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------
+    function is_date_format(
+      p_value in varchar2
+    ) return varchar2
+    as
+      l_result            varchar2(4000);
+      invalid_date_format exception;
+      pragma              exception_init(invalid_date_format, -1821);
+    begin
+
+      l_result := apex_lang.message('BLOG_VALIDATION_ERR_IS_DATE_FORMAT');
+
+      if to_char( systimestamp, p_value) = to_char( systimestamp, p_value )
+      then
+        l_result := null;
+      end if;
+
+      return l_result;
+
+    exception when invalid_date_format
+    then
+      return l_result;
+    end is_date_format;
 --------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 end "BLOG_CM";
