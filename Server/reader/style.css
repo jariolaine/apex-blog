@@ -24,6 +24,10 @@ blockquote p{
   font-style: oblique;
   font-weight: normal;
 }
+.z-app-desc{
+  display: block;
+  white-space: normal;
+}
 /**
 * Right column link lists
 **/
@@ -185,9 +189,8 @@ blockquote p{
 **/
 pre.z-program-code{
   /*font-family: "Lucida Console", Courier, monospace;*/
-  color: #000000;
-  /*text-shadow: 0 0 #242424;*/
   font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace;
+  color: #000000;
   font-size: 1.2rem;
   line-height: 1.4rem;
   tab-size: 2;
@@ -226,7 +229,15 @@ pre.z-program-code code:nth-child(odd):before{
   background-color: rgba(0,0,0,.065);
 }
 
+@media only screen and (max-width: 768px){
+  .z-app-desc{
+    font-size: 1.4rem;
+  }
+}
 @media only screen and (max-width: 640px){
+  .z-app-desc{
+    font-size: 1.6rem;
+  }
   /**
   * Post report
   **/
@@ -254,7 +265,6 @@ pre.z-program-code code:nth-child(odd):before{
     padding: 0;
   }
 }
-
 .z-hidden{
   display: none;
   visibility: hidden;
