@@ -18,12 +18,14 @@ blockquote p{
 /**
 * Logo
 **/
+/*
 .z-app-logo q{
   display: block;
   font-size: 1.4rem;
   font-style: oblique;
   font-weight: normal;
 }
+*/
 .z-app-desc{
   display: block;
   white-space: normal;
@@ -48,11 +50,11 @@ blockquote p{
   padding: 0;
 }
 /**
-* Post Custom Template
+* Post Custom Template Report
 **/
 .z-post{
   background-color: #ffffff;
-  margin-bottom: 32px;
+  margin-bottom: 3.2rem;
   border: 1px solid rgba(0,0,0,.1);
   border-radius: 2px;
   box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
@@ -67,9 +69,6 @@ blockquote p{
 .z-post--header h1{
   font-size: 1.6em;
   margin: 0 0 0.2rem;
-}
-.z-post--header h1 a{
-  color: inherit;
 }
 .z-post--header h2{
   font-size: 1.4rem;
@@ -113,12 +112,26 @@ blockquote p{
   overflow-wrap: break-word;
 }
 /**
-* Links Media List
+* Archives Serach Result Report
 **/
-.z-report--listStacked li.z-links--header{
+.z-report--listStacked .t-SearchResults-item{
+  padding: 0 1.6rem;
+}
+.z-report--listStacked .z-archives--header{
+  border-top: 1px solid rgba(0,0,0,.075);
+  border-bottom: 1px solid rgba(0,0,0,.075);
+  margin-bottom: 1.6rem;
+}
+.z-report--listStacked li.z-archives--header:first-child{
+  border-top: none;
+}
+/**
+* Links Media List Report
+**/
+.z-report--listStacked .z-links--header{
   border-bottom: 1px solid rgba(0,0,0,.075);
 }
-.z-report--listStacked div.z-links--title{
+.z-report--listStacked .z-links--title{
   width: 100%;
   padding: 1.2rem;
   font-size: 1.6rem;
@@ -132,7 +145,7 @@ blockquote p{
   line-height: 2rem;
 }
 /**
-* Files Media List
+* Files Media List Report
 **/
 .z-report--files .t-MediaList-title {
   word-break: break-word;
@@ -210,25 +223,28 @@ pre.z-program-code code{
 }
 pre.z-program-code code::before{
   content: counter(line);
+  user-select: none;
   border-right: 2px solid #6ce26c;
   border-left: 1px solid rgba(0,0,0,.075);
-  border-top: 1px solid rgba(0,0,0,.075);
+  /*border-top: 1px solid rgba(0,0,0,.075);*/
   background-color: rgba(0,0,0,.025);
   margin: 0 0.4em 0 0;
   padding: 0 0.4em 0 0;
   display: inline-block;
   text-align: right;
   width: 2.4em;
-  color: #939393;
-  user-select: none;
+  color: #333333;
+  font-size: 0.9rem;
+  vertical-align: middle;
 }
+/*
 pre.z-program-code code:last-child:before{
   border-bottom: 1px solid rgba(0,0,0,.075);
 }
 pre.z-program-code code:nth-child(odd):before{
   background-color: rgba(0,0,0,.065);
 }
-
+*/
 @media only screen and (max-width: 768px){
   .z-app-desc{
     font-size: 1.4rem;
@@ -242,8 +258,7 @@ pre.z-program-code code:nth-child(odd):before{
   * Post report
   **/
   .z-post{
-    padding: 12px;
-    margin-bottom: 16px;
+    padding: 1.2rem;
   }
   .z-post--header h1{
     font-size: 1.4em;
