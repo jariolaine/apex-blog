@@ -2,7 +2,7 @@
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "ARCHIVE_DATE", "CHANGED_ON", "COMMENTS_COUNT") AS
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "CHANGED_ON", "COMMENTS_COUNT") AS
   select
    t1.id                  as post_id
   ,t3.id                  as category_id
@@ -17,9 +17,6 @@
   ,t1.archive_year_month  as archive_year_month
   ,t1.archive_year        as archive_year
   ,t3.display_seq         as category_seq
-  ,trunc(
-    t1.published_on, 'MM'
-   )                      as archive_date
   ,t1.changed_on          as changed_on
   ,(
     select count( l1.id )

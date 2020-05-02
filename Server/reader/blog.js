@@ -24,10 +24,10 @@
 	  * @function formatProgramCode
 	  * @example blog.UI.formatProgramCode("pre.program-code");
 	  **/
-	  formatProgramCode: function( p_selector ){
-	    var $Elem = $( p_selector );
+	  formatProgramCode: function( selector ){
+	    var elem$ = $( selector );
 
-	    $Elem.html (function( ind, oldHTML ){
+	    elem$.html( function( ind, oldHTML ){
 
 	      var lrows = [];
 	      lrows = oldHTML.split( "\n" );
@@ -47,6 +47,24 @@
 	    });
 
 	  },
+    /**
+	  * @function setListCurrentItem
+	  * @example blog.UI.setListCurrentItem({ affectedElements: this.affectedElements, item: "PX_ITEM" });
+	  **/
+    setListCurrentItem: function(options){
+
+      options = $.extend({
+        class: "is-current"
+      }, options);
+
+      options.affectedElements.find("li").filter(function(){
+        return $v_CheckValueAgainst(
+           options.item
+          ,$(this).children("a").data("id")
+        );
+      }).addClass(options.class);
+
+    }
 
 	};
 

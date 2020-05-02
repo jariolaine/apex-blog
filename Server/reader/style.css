@@ -33,8 +33,9 @@ blockquote p{
 /**
 * Right column link lists
 **/
-.z-link-list--no-border li,
-.z-link-list--no-border a:focus{
+
+.z-link--no-border,
+.z-link--no-border a:focus{
   border: none;
   outline: none;
   box-shadow: none;
@@ -137,11 +138,11 @@ blockquote p{
 /**
 * Files Media List Report
 **/
-.z-report--files .t-MediaList-title {
-  word-break: break-word;
+.z-MediaList .nodatafound{
+  padding: 16px;
 }
-.z-report--files .nodatafound{
-  padding: 16px 16px 16px 32px;
+.z-MediaList--files .t-MediaList-title {
+  word-break: break-word;
 }
 /**
 * About Card
