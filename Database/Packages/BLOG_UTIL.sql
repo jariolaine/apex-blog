@@ -730,9 +730,9 @@ as
       ,p_date_format  => p_date_format
     )
     into l_value
-    from blog_v_archive_lov
+    from blog_v_archive_year_month
     where 1 = 1
-    and year_month = p_year_month
+    and archive_year_month = p_year_month
     ;
 
     apex_debug.info( 'Fetch archive %s return: %s', p_year_month, l_value );

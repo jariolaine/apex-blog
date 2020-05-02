@@ -56,7 +56,7 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_archive_canonical_link(
-    p_year_month  in number,
+    p_archive_id  in number,
     p_app_id      in varchar2 default null,
     p_app_page_id in varchar2 default blog_globals.g_archive_page,
     p_page_item   in varchar2 default blog_globals.g_archive_item
@@ -314,40 +314,37 @@ as
   ) return varchar2
   as
   begin
-    if p_category_id is not null then
-      return
-        '<link rel="canonical" href="'
-        || blog_globals.g_canonical_url
-        || blog_url.get_category(
-          p_category_id   => p_category_id
-          ,p_app_id       => p_app_id
-          ,p_session      => ''
-          ,p_app_page_id  => p_app_page_id
-          ,p_page_item    => p_page_item
-        )
-        || '" />'
-      ;
-    else
-      apex_debug.warn('Canonical link tag not generated for category.');
-      return blog_html.get_robots_noindex_meta;
-    end if;
+    
+    return
+      '<link rel="canonical" href="'
+      || blog_globals.g_canonical_url
+      || blog_url.get_category(
+        p_category_id   => p_category_id
+        ,p_app_id       => p_app_id
+        ,p_session      => ''
+        ,p_app_page_id  => p_app_page_id
+        ,p_page_item    => p_page_item
+      )
+      || '" />'
+    ;
+
   end get_category_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_archive_canonical_link(
-    p_year_month    in number,
+    p_archive_id    in number,
     p_app_id        in varchar2 default null,
     p_app_page_id   in varchar2 default blog_globals.g_archive_page,
     p_page_item     in varchar2 default blog_globals.g_archive_item
   ) return varchar2
   as
   begin
-    if p_year_month is not null then
+
       return
         '<link rel="canonical" href="'
         || blog_globals.g_canonical_url
         || blog_url.get_archive(
-          p_year_month    => p_year_month
+          p_archive_id    => p_archive_id
           ,p_app_id       => p_app_id
           ,p_session      => ''
           ,p_app_page_id  => p_app_page_id
@@ -355,10 +352,7 @@ as
         )
         || '" />'
       ;
-    else
-      apex_debug.warn('Canonical link tag not generated for archive.');
-      return blog_html.get_robots_noindex_meta;
-    end if;
+
   end get_archive_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

@@ -49,6 +49,10 @@ blockquote p{
   line-height: 2rem;
   padding: 0;
 }
+.pagination{
+  text-align: right;
+  width: 100%;
+}
 /**
 * Post Custom Template Report
 **/
@@ -100,45 +104,31 @@ blockquote p{
   margin-bottom: 0!important;
 }
 /**
-* Comments Report
+* Archives and Categoriws Serach Result Report
 **/
-.z-comment .t-Comments-body{
-  flex: 1 1 auto;
-  width: 0;
+.z-listStacked--Report ul{
+  padding: 1.6rem;
 }
-/* long URL e.g. */
-.z-comment .t-Comments-comment{
-  width: 100%;
-  overflow-wrap: break-word;
-}
-/**
-* Archives Serach Result Report
-**/
-.z-report--listStacked .t-SearchResults-item{
-  padding: 0 1.6rem;
-}
-.z-report--listStacked .z-archives--header{
+.z-listStacked--Header{
   border-top: 1px solid rgba(0,0,0,.075);
   border-bottom: 1px solid rgba(0,0,0,.075);
-  margin-bottom: 1.6rem;
-}
-.z-report--listStacked li.z-archives--header:first-child{
-  border-top: none;
-}
-/**
-* Links Media List Report
-**/
-.z-report--listStacked .z-links--header{
-  border-bottom: 1px solid rgba(0,0,0,.075);
-}
-.z-report--listStacked .z-links--title{
-  width: 100%;
   padding: 1.2rem;
+  margin: 0;
   font-size: 1.6rem;
   font-weight: 500;
   line-height: 2.4rem;
 }
-.z-report--listStacked .z-nodatafound .t-MediaList-desc{
+.z-listStacked--Header:nth-child(2){
+  border-top: none;
+}
+.z-listStacked--Report ul:first-child{
+  display: none;
+  visibility: hidden;
+}
+/**
+* Links Media List Report
+**/
+.z-noDataFound .t-MediaList-desc{
   color: #262626;
   text-align: center;
   font-size: 1.2rem;
@@ -196,7 +186,18 @@ blockquote p{
   order: 2;
   padding-left: 16px;
 }
-
+/**
+* Comments Report
+**/
+.z-comment .t-Comments-body{
+  flex: 1 1 auto;
+  width: 0;
+}
+/* long URL e.g. */
+.z-comment .t-Comments-comment{
+  width: 100%;
+  overflow-wrap: break-word;
+}
 /**
 * Program code formating
 **/
@@ -204,12 +205,19 @@ pre.z-program-code{
   /*font-family: "Lucida Console", Courier, monospace;*/
   font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace;
   color: #000000;
-  font-size: 1.2rem;
-  line-height: 1.4rem;
+  font-size: 1.1rem;
+  /*line-height: 1.4rem;*/
   tab-size: 2;
   counter-reset: line;
   overflow-x: auto;
-  display: block;
+  border: 1px solid rgba(0,0,0,.075);
+  /*background-color: rgba(0,0,0,0.015);*/
+  border-radius: 0.2rem;
+  /*
+  display: flex;
+  flex-direction: column;
+  */
+  /*display: block;*/
 }
 pre.z-program-code code{
   font-family: inherit;
@@ -226,23 +234,25 @@ pre.z-program-code code::before{
   user-select: none;
   border-right: 2px solid #6ce26c;
   border-left: 1px solid rgba(0,0,0,.075);
-  /*border-top: 1px solid rgba(0,0,0,.075);*/
-  background-color: rgba(0,0,0,.025);
-  margin: 0 0.4em 0 0;
-  padding: 0 0.4em 0 0;
+  border-top: 1px solid rgba(0,0,0,.075);
+  background-color: rgba(0,0,0,.045);
+  margin: 0 0.4rem 0 0;
+  padding: 0 0.4rem 0 0;
   display: inline-block;
   text-align: right;
   width: 2.4em;
-  color: #333333;
-  font-size: 0.9rem;
-  vertical-align: middle;
+  color: #393939;
+  /*font-size: 0.9rem;*/
+}
+pre.z-program-code code:first-child:before{
+  border-top: none;
+}
+pre.z-program-code code:nth-child(odd):before{
+  background-color: rgba(0,0,0,.065);
 }
 /*
 pre.z-program-code code:last-child:before{
   border-bottom: 1px solid rgba(0,0,0,.075);
-}
-pre.z-program-code code:nth-child(odd):before{
-  background-color: rgba(0,0,0,.065);
 }
 */
 @media only screen and (max-width: 768px){

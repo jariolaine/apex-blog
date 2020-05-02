@@ -41,11 +41,11 @@ as
   g_search_page                 constant varchar2(40) := 'SEARCH';
   g_search_item                 constant varchar2(40) := 'P0_SEARCH';
 
-  g_category_page               constant varchar2(40) := 'CATEGORY';
-  g_category_item               constant varchar2(40) := 'P4_CATEGORY_ID';
+  g_category_page               constant varchar2(40) := 'CATEGORIES';
+  g_category_item               constant varchar2(40) := 'P14_CATEGORY_ID';
 
-  g_archive_page                constant varchar2(40) := 'ARCHIVE';
-  g_archive_item                constant varchar2(40) := 'P5_YEAR_MONTH';
+  g_archive_page                constant varchar2(40) := 'ARCHIVES';
+  g_archive_item                constant varchar2(40) := 'P15_ARCHIVE_ID';
 
   g_tag_page                    constant varchar2(40) := 'TAG';
   g_tag_item                    constant varchar2(40) := 'P6_TAG_ID';

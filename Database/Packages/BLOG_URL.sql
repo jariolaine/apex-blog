@@ -40,7 +40,7 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_archive(
-    p_year_month      in varchar2,
+    p_archive_id      in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in number   default null,
     p_app_page_id     in varchar2 default blog_globals.g_archive_page,
@@ -139,20 +139,22 @@ CREATE OR REPLACE package body blog_url as
   ) return varchar2
   as
   begin
+
     return
       apex_page.get_url(
         p_application => p_app_id
        ,p_page        => p_app_page_id
        ,p_session     => p_session
-       ,p_items       => p_page_item
+       ,p_items       => case when p_category_id is not null then p_page_item end
        ,p_values      => p_category_id
        ,p_clear_cache => 'RP'
       );
+
   end get_category;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_archive(
-    p_year_month      in varchar2,
+    p_archive_id      in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in number   default null,
     p_app_page_id     in varchar2 default blog_globals.g_archive_page,
@@ -161,7 +163,9 @@ CREATE OR REPLACE package body blog_url as
   ) return varchar2
   as
   begin
-    return case
+
+    return
+      case
       when p_current_page_id = p_app_page_id
       or p_current_page_id is null
       then
@@ -169,11 +173,12 @@ CREATE OR REPLACE package body blog_url as
            p_application => p_app_id
           ,p_page        => p_app_page_id
           ,p_session     => p_session
-          ,p_items       => p_page_item
-          ,p_values      => p_year_month
+          ,p_items       => case when p_archive_id is not null then p_page_item end
+          ,p_values      => p_archive_id
           ,p_clear_cache => 'RP'
         )
       end;
+
   end get_archive;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -186,7 +191,9 @@ CREATE OR REPLACE package body blog_url as
   ) return varchar2
   as
   begin
-    return apex_page.get_url(
+
+    return
+      apex_page.get_url(
          p_application => p_app_id
         ,p_page        => p_app_page_id
         ,p_session     => p_session
@@ -194,6 +201,7 @@ CREATE OR REPLACE package body blog_url as
         ,p_values      => p_tag_id
         ,p_clear_cache => 'RP'
       );
+
   end get_tag;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

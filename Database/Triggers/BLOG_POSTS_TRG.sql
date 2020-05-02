@@ -29,8 +29,6 @@ begin
   :new.published_on := coalesce( :new.published_on, localtimestamp );
 
   :new.first_paragraph  := blog_cm.get_first_paragraph( :new.body_html );
-  :new.year_month       := to_number( to_char( :new.published_on, 'YYYYMM' ));
-  :new.body_length      := coalesce( sys.dbms_lob.getlength( :new.body_html ), 0 );
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
