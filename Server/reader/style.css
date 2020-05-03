@@ -1,9 +1,6 @@
-/*********************************
-*  Custom styles
-*********************************/
-/***
+/**************************************
 * Elements
-***/
+**************************************/
 blockquote::before{
   content: open-quote;
   font-size: 2.2rem;
@@ -15,34 +12,31 @@ blockquote::after{
 blockquote p{
   display: inline;
 }
-/**
+
+/**************************************
 * Logo
-**/
-/*
-.z-app-logo q{
-  display: block;
-  font-size: 1.4rem;
-  font-style: oblique;
-  font-weight: normal;
+**************************************/
+.z-app-logo{
+  display: flex;
+  flex-direction: column;
 }
-*/
 .z-app-desc{
-  display: block;
   white-space: normal;
 }
-/**
-* Right column link lists
-**/
 
+/**************************************
+* Right column link lists
+**************************************/
 .z-link--no-border,
 .z-link--no-border a:focus{
   border: none;
   outline: none;
   box-shadow: none;
 }
-/**
-* Classic Reports
-**/
+
+/**************************************
+* Classic reports
+**************************************/
 .nodatafound{
   text-align: center;
   color: #262626;
@@ -54,9 +48,10 @@ blockquote p{
   text-align: right;
   width: 100%;
 }
-/**
-* Post Custom Template Report
-**/
+
+/**************************************
+* Post custom template report
+**************************************/
 .z-post{
   background-color: #ffffff;
   margin-bottom: 3.2rem;
@@ -66,7 +61,7 @@ blockquote p{
   padding: 16px;
 }
 .z-post:last-child {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 .z-post--header{
   clear: both;
@@ -101,17 +96,18 @@ blockquote p{
   clear: both;
   margin: 1.2rem 0 0;
 }
-.z-post--single .z-post{
+.z-post--no-margin .z-post{
   margin-bottom: 0!important;
 }
-/**
-* Archives and Categoriws Serach Result Report
-**/
+
+/**************************************
+* Archives, categories and links
+**************************************/
 .z-listStacked--Report ul{
   padding: 1.6rem;
 }
 .z-listStacked--Header{
-  border-top: 1px solid rgba(0,0,0,.075);
+  border-top: 1px solid rgba(0,0,0,.1);
   border-bottom: 1px solid rgba(0,0,0,.075);
   padding: 1.2rem;
   margin: 0;
@@ -126,99 +122,106 @@ blockquote p{
   display: none;
   visibility: hidden;
 }
-/**
-* Links Media List Report
-**/
+
+/**************************************
+* Links media list report
+**************************************/
+/*.z-MediaList{
+  border-color: #e0e0e0;
+}*/
 .z-noDataFound .t-MediaList-desc{
   color: #262626;
   text-align: center;
   font-size: 1.2rem;
   line-height: 2rem;
 }
-/**
-* Files Media List Report
-**/
+
+/**************************************
+* Files media list report
+**************************************/
 .z-MediaList .nodatafound{
   padding: 16px;
 }
 .z-MediaList--files .t-MediaList-title {
   word-break: break-word;
 }
-/**
-* About Card
-**/
-.z-about--card .t-Card{
-  margin: 0;
-  padding: 0;
-  width: 100%;
+
+/**************************************
+* General custom report
+**************************************/
+.z-Content .z-Content--Row{
+  border: 1px solid rgba(0,0,0,.1);
+  border-radius: 2px;
+  box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
+  margin-bottom: 3.2rem;
 }
-.z-about--card .t-Card-titleWrap {
-  min-height: initial;
+.z-Content--Row{
+  background-color: #ffffff;
+}
+.z-Content--Title{
   border-bottom: 1px solid rgba(0,0,0,.075);
-  box-shadow: none;
-  padding: 12px;
-}
-.z-about--card .t-Card-title {
+  padding: 1.2rem;
+  margin: 0;
   font-size: 1.6rem;
   font-weight: 500;
   line-height: 2.4rem;
 }
-.z-about--card .t-Card-wrap{
-  border: none;
+.z-Content--Stacked .z-Content--Title{
+  border-top: 1px solid rgba(0,0,0,.075);
 }
-.z-about--card .t-Card-colorFill{
-  background-color: transparent;
+.z-Content--Stacked .z-Content--Row:first-child .z-Content--Title{
+  border-top: none;
 }
-/**
-* About Card content
-**/
+.z-Content--Body{
+  padding: 1.6rem;
+}
+
+/**************************************
+* About content
+**************************************/
 .z-author-container{
   display: flex;
-  flex-flow: row;
-  width: 100%;
 }
 .z-author-left{
   order: 1;
-}
-.z-author-left img{
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 .z-author-right{
   order: 2;
   padding-left: 16px;
 }
-/**
-* Comments Report
-**/
+.z-author-badges{
+  display: flex;
+  flex-direction: column;
+}
+.z-author-badges > *{
+  margin: 8px 0;
+}
+
+/**************************************
+* Comments report
+**************************************/
 .z-comment .t-Comments-body{
-  flex: 1 1 auto;
   width: 0;
 }
 /* long URL e.g. */
 .z-comment .t-Comments-comment{
-  width: 100%;
   overflow-wrap: break-word;
 }
-/**
-* Program code formating
-**/
+
+/**************************************
+* Program code formatting
+**************************************/
 pre.z-program-code{
-  /*font-family: "Lucida Console", Courier, monospace;*/
   font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace;
   color: #000000;
   font-size: 1.1rem;
-  /*line-height: 1.4rem;*/
   tab-size: 2;
   counter-reset: line;
   overflow-x: auto;
   border: 1px solid rgba(0,0,0,.075);
-  /*background-color: rgba(0,0,0,0.015);*/
   border-radius: 0.2rem;
-  /*
-  display: flex;
-  flex-direction: column;
-  */
-  /*display: block;*/
 }
 pre.z-program-code code{
   font-family: inherit;
@@ -243,7 +246,6 @@ pre.z-program-code code::before{
   text-align: right;
   width: 2.4em;
   color: #393939;
-  /*font-size: 0.9rem;*/
 }
 pre.z-program-code code:first-child:before{
   border-top: none;
@@ -251,11 +253,10 @@ pre.z-program-code code:first-child:before{
 pre.z-program-code code:nth-child(odd):before{
   background-color: rgba(0,0,0,.065);
 }
-/*
-pre.z-program-code code:last-child:before{
-  border-bottom: 1px solid rgba(0,0,0,.075);
-}
-*/
+
+/**************************************
+* Media query
+**************************************/
 @media only screen and (max-width: 768px){
   .z-app-desc{
     font-size: 1.4rem;
@@ -265,9 +266,9 @@ pre.z-program-code code:last-child:before{
   .z-app-desc{
     font-size: 1.6rem;
   }
-  /**
-  * Post report
-  **/
+  /**************************************
+  * Post custom report template
+  **************************************/
   .z-post{
     padding: 1.2rem;
   }
@@ -280,17 +281,24 @@ pre.z-program-code code:last-child:before{
   .z-post--header h3{
     font-size: 1.3rem;
   }
-  /**
+
+  /**************************************
   * Author info
-  **/
+  **************************************/
   .z-author-container{
     flex-flow: column;
     align-items: center;
   }
   .z-author-right{
+    margin-top: 8px;
     padding: 0;
   }
+  .z-author-badges{
+    align-items: center;
+  }
+
 }
+
 .z-hidden{
   display: none;
   visibility: hidden;
