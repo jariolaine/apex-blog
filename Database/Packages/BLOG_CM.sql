@@ -47,6 +47,10 @@ as
   function get_category_title(
     p_category_id     in number
   ) return varchar2;
+  --------------------------------------------------------------------------------
+    function get_post_title(
+      p_post_id       in number
+    ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: trigger blog_posts_trg
   function get_first_paragraph(
@@ -391,6 +395,27 @@ as
   when others then
     raise;
   end get_category_title;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_post_title(
+    p_post_id in number
+  ) return varchar2
+  as
+    l_title varchar2(4000);
+  begin
+    -- fetch and return category name
+    select t1.title
+    into l_title
+    from blog_v_all_posts t1
+    where t1.id = p_post_id
+    ;
+    -- return string
+    return l_title;
+  exception when no_data_found then
+    return null;
+  when others then
+    raise;
+  end get_post_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_first_paragraph(

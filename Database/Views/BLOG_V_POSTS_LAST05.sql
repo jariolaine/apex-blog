@@ -2,9 +2,9 @@
 --  DDL for View BLOG_V_POSTS_LAST05
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST05" ("POST_ID", "DISPLAY_SEQ", "POST_TITLE", "POST_URL") AS
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST05" ("POST_ID", "PUBLISHED_ON", "POST_TITLE", "POST_URL") AS
   select v1.post_id                             as post_id
-  ,v1.display_seq                               as display_seq
+  ,v1.published_on                              as published_on
   ,apex_escape.html( v1.post_title )            as post_title
   ,blog_url.get_post( p_post_id => v1.post_id ) as post_url
 from blog_v_posts_last20 v1

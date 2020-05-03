@@ -124,7 +124,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200502200732'
+,p_last_upd_yyyymmddhh24miss=>'20200503070046'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>89
 ,p_ui_type_name => null
@@ -258,7 +258,7 @@ wwv_flow_api.create_list(
 '  ,null                 as attribute1',
 '   -- add category id to data attribute',
 '   -- we can use it in dynamic action to set current list item',
-'  ,''data-id="''',
+'  ,''data-blog-content-id="''',
 '   || v1.category_id',
 '   || ''"''               as attribute2',
 '  ,''z-link--no-border''  as attribute3',
@@ -290,12 +290,12 @@ wwv_flow_api.create_list(
 '  ,null                 as attribute1',
 '   -- add post id to data attribute',
 '   -- we can use it in dynamic action to set current list item',
-'  ,''data-id="''',
+'  ,''data-blog-content-id="''',
 '   || v1.post_id',
 '   || ''"''               as attribute2',
 '  ,''z-link--no-border''  as attribute3',
 'from #OWNER#.blog_v_posts_last05 v1',
-'order by v1.display_seq',
+'order by v1.published_on desc',
 ''))
 ,p_list_status=>'PUBLIC'
 ,p_required_patch=>wwv_flow_api.id(8677319562925389)
@@ -324,7 +324,7 @@ wwv_flow_api.create_list(
 '  ,null                 as attribute1',
 '   -- add archive id to data attribute',
 '   -- we can use it in dynamic action to set current list item',
-'  ,''data-id="''',
+'  ,''data-blog-content-id="''',
 '   || v1.archive_year',
 '   || ''"''               as attribute2',
 '  ,''z-link--no-border''  as attribute3',
@@ -13491,7 +13491,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200502200732'
+,p_last_upd_yyyymmddhh24miss=>'20200503064346'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -13963,8 +13963,8 @@ wwv_flow_api.create_page_da_action(
 ,p_affected_region_id=>wwv_flow_api.id(6913618929677129)
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog.UI.setListCurrentItem({',
-'  affectedElements: this.affectedElements,',
-'  item: "P2_POST_ID"',
+'   affectedElements: this.affectedElements',
+'  ,pageItem: "P2_POST_ID"',
 '});',
 ''))
 ,p_da_action_comment=>'List anchors have data attribute where is post id. If that match item P2_POST_ID value set is-current class to list'
@@ -14475,7 +14475,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(6905258727754156)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200502155513'
+,p_last_upd_yyyymmddhh24miss=>'20200503063324'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25312381302124218)
@@ -14816,9 +14816,7 @@ wwv_flow_api.create_page_da_action(
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_affected_elements_type=>'TRIGGERING_ELEMENT'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'var ul$ = this.affectedElements.find( "ul" ).filter(function(){',
-'  return $( this ).hasClass( "z-hidden" );',
-'});',
+'var ul$ = this.affectedElements.find( "ul:first" );',
 'ul$.siblings( "ul" ).addClass( ul$.attr( "class" ) ).removeClass( "z-hidden" );'))
 );
 end;
@@ -15212,7 +15210,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8635355820099640)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200502200611'
+,p_last_upd_yyyymmddhh24miss=>'20200503064314'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(40117793173805532)
@@ -15433,10 +15431,10 @@ wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(30119771997698124)
 ,p_name=>'Set is Current'
 ,p_event_sequence=>10
-,p_condition_element=>'P14_CATEGORY_ID'
-,p_triggering_condition_type=>'NOT_NULL'
 ,p_bind_type=>'bind'
 ,p_bind_event_type=>'ready'
+,p_display_when_type=>'ITEM_IS_NOT_NULL'
+,p_display_when_cond=>'P14_CATEGORY_ID'
 ,p_da_event_comment=>'Because categories list in global page is cached, we set is-current class here'
 );
 wwv_flow_api.create_page_da_action(
@@ -15450,8 +15448,8 @@ wwv_flow_api.create_page_da_action(
 ,p_affected_region_id=>wwv_flow_api.id(6913532952677128)
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog.UI.setListCurrentItem({',
-'  affectedElements: this.affectedElements,',
-'  item: "P14_CATEGORY_ID"',
+'   affectedElements: this.affectedElements',
+'  ,pageItem: "P14_CATEGORY_ID"',
 '});'))
 ,p_da_action_comment=>'List anchors have data attribute where is category id. If that match to item P14_CATEGORY_ID value set is-current class to list'
 );
@@ -15473,10 +15471,8 @@ wwv_flow_api.create_page_da_action(
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_affected_elements_type=>'TRIGGERING_ELEMENT'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'var ul$ = this.affectedElements.find("ul").filter(function(){',
-'  return $(this).attr("class");',
-'});',
-'ul$.siblings("ul").addClass( ul$.attr("class") );'))
+'var ul$ = this.affectedElements.find( "ul:first" );',
+'ul$.siblings( "ul" ).addClass( ul$.attr( "class" ) );'))
 );
 end;
 /
@@ -15496,7 +15492,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8670890848739263)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200502200716'
+,p_last_upd_yyyymmddhh24miss=>'20200503064249'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(58686289966142463)
@@ -15729,10 +15725,10 @@ wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(28587504616643034)
 ,p_name=>'Set is Current'
 ,p_event_sequence=>10
-,p_condition_element=>'P15_ARCHIVE_ID'
-,p_triggering_condition_type=>'NOT_NULL'
 ,p_bind_type=>'bind'
 ,p_bind_event_type=>'ready'
+,p_display_when_type=>'ITEM_IS_NOT_NULL'
+,p_display_when_cond=>'P15_ARCHIVE_ID'
 ,p_da_event_comment=>'Because archives list in global page is cached, we set is-current class here'
 );
 wwv_flow_api.create_page_da_action(
@@ -15746,8 +15742,8 @@ wwv_flow_api.create_page_da_action(
 ,p_affected_region_id=>wwv_flow_api.id(28587492454643033)
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog.UI.setListCurrentItem({',
-'  affectedElements: this.affectedElements,',
-'  item: "P15_ARCHIVE_ID"',
+'   affectedElements: this.affectedElements',
+'  ,pageItem: "P15_ARCHIVE_ID"',
 '});',
 ''))
 ,p_da_action_comment=>'List anchors have data attribute where is archive id. If that match to item P15_ARCHIVE_ID value set is-current class to list'
@@ -15770,10 +15766,9 @@ wwv_flow_api.create_page_da_action(
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_affected_elements_type=>'TRIGGERING_ELEMENT'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'var ul$ = this.affectedElements.find("ul").filter(function(){',
-'  return $(this).attr("class");',
-'});',
-'ul$.siblings("ul").addClass( ul$.attr("class") );'))
+'var ul$ = this.affectedElements.find( "ul:first" );',
+'ul$.siblings( "ul" ).addClass( ul$.attr( "class" ) );',
+''))
 );
 end;
 /

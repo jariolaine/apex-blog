@@ -49,20 +49,27 @@
 	  },
     /**
 	  * @function setListCurrentItem
-	  * @example blog.UI.setListCurrentItem({ affectedElements: this.affectedElements, item: "PX_ITEM" });
+	  * @example blog.UI.setListCurrentItem({ affectedElements: this.affectedElements, pageItem: "PX_ITEM" });
 	  **/
     setListCurrentItem: function(options){
 
       options = $.extend({
-        class: "is-current"
-      }, options);
+        currentClass: "is-current",
+        dataAttrName: "blog-content-id"
+      }, options );
 
-      options.affectedElements.find("li").filter(function(){
-        return $v_CheckValueAgainst(
-           options.item
-          ,$(this).children("a").data("id")
-        );
-      }).addClass(options.class);
+      options.affectedElements.find( "li" ).filter( function(){
+        var dataValue = $(this).children( "a" ).data( options.dataAttrName ),
+            result = false
+        ;
+        if( dataValue ){
+          result = $v_CheckValueAgainst(
+             options.pageItem
+            ,dataValue
+          );
+        }
+        return result;
+      }).addClass( options.currentClass );
 
     }
 
