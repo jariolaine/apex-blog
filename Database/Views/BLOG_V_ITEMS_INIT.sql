@@ -2,7 +2,7 @@
 --  DDL for View BLOG_V_ITEM_INIT
 --------------------------------------------------------
 
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_ITEM_INIT" ("APPLICATION_ID", "ITEM_NAME", "ITEM_VALUE") AS
+  CREATE OR REPLACE FORCE VIEW "BLOG_V_ITEMS_INIT" ("APPLICATION_ID", "ITEM_NAME", "ITEM_VALUE") AS
   with apps as (
   select t1.application_id
     ,t1.substitution_string as item_name

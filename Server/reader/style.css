@@ -189,14 +189,14 @@ blockquote p{
 }
 .z-author-right{
   order: 2;
-  padding-left: 16px;
+  padding: 0 0 0 16px;
 }
 .z-author-badges{
   display: flex;
   flex-direction: column;
 }
 .z-author-badges > *{
-  margin: 8px 0;
+  margin: 10px 0;
 }
 
 /**************************************
@@ -258,14 +258,21 @@ pre.z-program-code code:nth-child(odd):before{
 * Media query
 **************************************/
 @media only screen and (max-width: 768px){
+  /**************************************
+  * Logo
+  **************************************/
   .z-app-desc{
     font-size: 1.4rem;
   }
 }
 @media only screen and (max-width: 640px){
+  /**************************************
+  * Logo
+  **************************************/
   .z-app-desc{
     font-size: 1.6rem;
   }
+
   /**************************************
   * Post custom report template
   **************************************/
@@ -286,14 +293,14 @@ pre.z-program-code code:nth-child(odd):before{
   * Author info
   **************************************/
   .z-author-container{
-    flex-flow: column;
+    flex-direction: column;
     align-items: center;
   }
   .z-author-right{
-    margin-top: 8px;
-    padding: 0;
+    padding: 16px 0;
   }
   .z-author-badges{
+    padding: 16px 0;
     align-items: center;
   }
 
