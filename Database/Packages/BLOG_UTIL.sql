@@ -14,9 +14,6 @@ as
 --    Jari Laine 26.04.2020 - Changed validate_comment us apex_util.savekey_vc2
 --                            and removed custom functions that was doing same thing
 --
---
---  TO DO: (search from body TODO#x)
---
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_attribute_value(
@@ -28,36 +25,38 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure initialize_items(
-    p_app_id          in number
+    p_app_id          in varchar2
   );
 --------------------------------------------------------------------------------
   function get_post_title(
-    p_post_id         in number,
+    p_post_id         in varchar2,
     p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure get_post_pagination(
-    p_post_id         in number,
+    p_post_id         in varchar2,
     p_newer_id        out nocopy varchar2,
     p_older_id        out nocopy varchar2
   );
 --------------------------------------------------------------------------------
   function get_category_title(
-    p_category_id     in number,
+    p_category_id     in varchar2,
     p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_tag(
-    p_tag_id          in number
+    p_tag_id          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Signature 1
+  -- obsolete / not used
   function get_year_month(
-    p_year_month      in number,
+    p_year_month      in varchar2,
     p_date_format     in varchar2
   ) return varchar2 result_cache;
 --------------------------------------------------------------------------------
   -- Signature 2
+  -- obsolete / not used
   function get_year_month(
     p_archive_date    in timestamp with local time zone,
     p_date_format     in varchar2,
@@ -95,7 +94,7 @@ as
   )
   as
   begin
-    -- Remove unwanted ascii codes
+    -- remove unwanted ascii codes
     for i in 0 .. 31
     loop
       if i != 10 then
@@ -110,7 +109,7 @@ as
   )
   as
   begin
-    -- Remove anchor tags
+    -- remove anchor tags
     p_string := regexp_replace( p_string, '<a[^>]*>(.*?)<\/a>', '', 1, 0, 'i' );
   end remove_anchor;
 --------------------------------------------------------------------------------
@@ -122,18 +121,18 @@ as
   as
   begin
 
-    -- Change all hash marks so we can escape those
+    -- change all hash marks so we can escape those
     -- after calling apex_escape.html_whitelist
-    -- Escape of hash marks needed to prevent APEX substitutions
+    -- escape of hash marks needed to prevent APEX substitutions
     p_string := replace( p_string, '#', '#HashMark#' );
 
-    -- Escape comment html
+    -- escape comment html
     p_string := apex_escape.html_whitelist(
        p_html            => p_string
       ,p_whitelist_tags  => p_whitelist_tags
     );
 
-    -- Escape hash marks
+    -- escape hash marks
     p_string := replace( p_string, '#HashMark#', '&#x23;' );
 
   end escape_html;
@@ -151,22 +150,22 @@ as
 
   begin
 
-    -- Check code open tag count
+    -- check code open tag count
     l_code_cnt := regexp_count( p_comment, '\<code\>', 1, 'i' );
 
-    -- Process code tags if open and close count match ( pre check is for valid HTML )
+    -- process code tags if open and close count match ( pre check is for valid HTML )
     if l_code_cnt = regexp_count( p_comment, '\<\/code\>', 1, 'i' )
     then
 
-      -- Collect content inside code tags to collection
+      -- collect content inside code tags to collection
       for i in 1 .. l_code_cnt
       loop
 
-        -- Get code start and end position
+        -- get code start and end position
         l_start_pos := instr( lower( p_comment ), '<code>' );
         l_end_pos := instr( lower( p_comment ), '</code>' );
 
-        -- Store code tag content to collection and wrap it to pre tag having class
+        -- store code tag content to collection and wrap it to pre tag having class
         apex_string.push(
            p_table => p_code_tab
           ,p_value => '<pre class="' || blog_globals.g_code_css_class || '">'
@@ -174,7 +173,7 @@ as
             || '</pre>'
         );
 
-        -- Substitude handled code tag
+        -- substitude handled code tag
         p_comment := rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )
           || chr(10)
           || 'CODE#' || i
@@ -199,16 +198,16 @@ as
     l_comment_tab apex_t_varchar2;
   begin
 
-    -- Process code tags
+    -- process code tags
     blog_util.build_code_tab(
        p_comment => p_comment
       ,p_code_tab => l_code_tab
     );
 
-    -- Split comment to collection by new line character
+    -- split comment to collection by new line character
     l_comment_tab := apex_string.split( p_comment, chr(10) );
 
-    -- Comment is stored to collection
+    -- comment is stored to collection
     -- start building comment with prober html tags
     p_comment := null;
 
@@ -218,12 +217,12 @@ as
 
       l_temp := trim( l_comment_tab(i) );
 
-      -- Check if row is code block
+      -- check if row is code block
       if regexp_like( l_temp, '^CODE\#[0-9]+$' )
       then
-        -- Get code block row number
+        -- get code block row number
         l_code_row := regexp_substr( l_temp, '[0-9]+' );
-        -- Close p tag, insert code block
+        -- close p tag, insert code block
         -- and open p tag again for text
         p_comment := p_comment
           || '</p>'
@@ -234,15 +233,15 @@ as
         ;
 
       else
-        -- Append text if row is not empty
+        -- append text if row is not empty
         if l_temp is not null
         then
-          -- If we are in first row
+          -- if we are in first row
           if p_comment is null
           then
             p_comment := l_temp;
           else
-            -- See if p tag is opened, then insert br for new line
+            -- check if p tag is opened, then insert br for new line
             p_comment := p_comment
               ||
                 case
@@ -258,9 +257,9 @@ as
 
     end loop;
 
-    -- Wrap comment to p tag.
+    -- wrap comment to p tag.
     p_comment := '<p>' || p_comment || '</p>';
-    -- There might be empty p, if comment ends code tag, remove that
+    -- there might be empty p, if comment ends code tag, remove that
     p_comment := replace( p_comment, '<p></p>' );
 
   end build_comment_html;
@@ -274,20 +273,20 @@ as
     l_comment varchar2(32700);
   begin
 
-    -- Remove unwanted ascii codes
+    -- remove unwanted ascii codes
     blog_util.remove_ascii(
        p_string => p_comment
     );
-    -- Remove all anchors
+    -- remove all anchors
 --    blog_util.remove_anchor(
 --       p_string => l_comment
 --    );
-    -- Escape HTML
+    -- escape HTML
     blog_util.escape_html(
        p_string => p_comment
       ,p_whitelist_tags  => p_whitelist_tags
     );
-    -- Build comment HTML
+    -- build comment HTML
     blog_util.build_comment_html(
        p_comment => p_comment
     );
@@ -403,9 +402,10 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure initialize_items(
-    p_app_id in number
+    p_app_id in varchar2
   )
   as
+    l_app_id number;
   begin
 
     apex_debug.enter(
@@ -418,13 +418,14 @@ as
       raise no_data_found;
     end if;
 
+    l_app_id := to_number( p_app_id );
     -- loop materialized view and set items values
     for c1 in (
       select
         i.item_name,
         i.item_value
       from blog_items_init i
-      where i.application_id = p_app_id
+      where i.application_id = l_app_id
     ) loop
 
       apex_debug.info( 'Initialize application id: %s item: %s value: %s', p_app_id, c1.item_name, c1.item_value );
@@ -438,7 +439,7 @@ as
        p_message => 'No data found. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_app_id'
-      ,p2 => coalesce( to_char( p_app_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p2 => coalesce( p_app_id, '(null)' )
     );
     raise;
 
@@ -448,7 +449,7 @@ as
        p_message => 'Unhandled error. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_app_id'
-      ,p2 => coalesce( to_char( p_app_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p2 => coalesce( p_app_id, '(null)' )
     );
     raise;
 
@@ -456,11 +457,12 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_post_title(
-    p_post_id     in number,
+    p_post_id     in varchar2,
     p_escape      in boolean
   ) return varchar2
   as
-    l_value varchar2(4000);
+    l_value   varchar2(4000);
+    l_post_id number;
   begin
 
     apex_debug.enter(
@@ -475,14 +477,16 @@ as
       raise no_data_found;
     end if;
 
+    l_post_id := to_number( p_post_id );
+
     -- fetch and return post title
     select v1.post_title
     into l_value
     from blog_v_posts v1
-    where v1.post_id = p_post_id
+    where v1.post_id = l_post_id
     ;
     apex_debug.info( 'Fetch post: %s return: %s', p_post_id, l_value );
-    -- Espace html and return string
+    -- espace html and return string
     return case when p_escape
       then apex_escape.html(l_value)
       else l_value
@@ -496,7 +500,7 @@ as
        p_message => 'No data found. %s( %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_post_id'
-      ,p2 => coalesce( to_char( p_post_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p2 => coalesce( p_post_id, '(null)' )
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
@@ -509,7 +513,7 @@ as
        p_message => 'Unhandled error. %s( %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_post_id'
-      ,p2 => coalesce( to_char( p_post_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p2 => coalesce( p_post_id, '(null)' )
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
@@ -519,11 +523,12 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure get_post_pagination(
-    p_post_id         in number,
+    p_post_id         in varchar2,
     p_newer_id        out nocopy varchar2,
     p_older_id        out nocopy varchar2
   )
   as
+    l_post_id   number;
     l_newer_id  number;
     l_older_id  number;
   begin
@@ -538,6 +543,8 @@ as
       raise no_data_found;
     end if;
 
+    l_post_id := to_number( p_post_id );
+
     select
        q1.newer_id
       ,q1.older_id
@@ -551,11 +558,11 @@ as
       where 1 = 1
     ) q1
     where 1 = 1
-    and q1.post_id = p_post_id
+    and q1.post_id = l_post_id
     ;
 
-    p_newer_id  := to_char( l_newer_id, 'fm9999999999999999999999999999999999999' );
-    p_older_id  := to_char( l_older_id, 'fm9999999999999999999999999999999999999' );
+    p_newer_id  := to_char( l_newer_id, blog_globals.g_number_format );
+    p_older_id  := to_char( l_older_id, blog_globals.g_number_format );
 
     apex_debug.info( 'Fetch post: %s next_id: %s prev_id: %s', p_post_id, p_newer_id, p_older_id );
 
@@ -566,7 +573,7 @@ as
        p_message => 'No data found. %s( %s => %s, %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_post_id'
-      ,p2 => coalesce( to_char( p_post_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p2 => coalesce( p_post_id, '(null)' )
       ,p3 => 'p_newer_id'
       ,p4 => p_newer_id
       ,p5 => 'p_older_id'
@@ -581,7 +588,7 @@ as
        p_message => 'Unhandled error. %s( %s => %s, %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_post_id'
-      ,p2 => coalesce( to_char( p_post_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p2 => coalesce( p_post_id, '(null)' )
       ,p3 => 'p_newer_id'
       ,p4 => p_newer_id
       ,p5 => 'p_older_id'
@@ -593,11 +600,12 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_category_title(
-    p_category_id in number,
+    p_category_id in varchar2,
     p_escape      in boolean
   ) return varchar2
   as
-    l_value varchar2(4000);
+    l_category_id number;
+    l_title       varchar2(4000);
   begin
 
     apex_debug.enter(
@@ -612,17 +620,19 @@ as
       raise no_data_found;
     end if;
 
+    l_category_id := to_number( p_category_id );
+
     -- fetch and return category name
     select v1.category_title
-    into l_value
+    into l_title
     from blog_v_categories v1
-    where v1.category_id = p_category_id
+    where v1.category_id = l_category_id
     ;
-    apex_debug.info( 'Fetch category: %s return: %s', p_category_id, l_value );
-    -- Espace html and return string
+    apex_debug.info( 'Fetch category: %s return: %s', p_category_id, l_title );
+    -- espace html and return string
     return case when p_escape
-      then apex_escape.html(l_value)
-      else l_value
+      then apex_escape.html(l_title)
+      else l_title
       end
     ;
 
@@ -632,7 +642,7 @@ as
        p_message => 'No data found. %s( %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_category_id'
-      ,p2 => coalesce( to_char( p_category_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p2 => coalesce( p_category_id, '(null)' )
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
@@ -643,7 +653,7 @@ as
        p_message => 'Unhandled error. %s( %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_category_id'
-      ,p2 => coalesce( to_char( p_category_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p2 => coalesce( p_category_id, '(null)' )
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
@@ -652,10 +662,11 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tag(
-    p_tag_id in number
+    p_tag_id in varchar2
   ) return varchar2
   as
-    l_value varchar2(4000);
+    l_tag_id  number;
+    l_value   varchar2(4000);
   begin
 
     apex_debug.enter(
@@ -668,15 +679,17 @@ as
       raise no_data_found;
     end if;
 
+    l_tag_id := to_number( p_tag_id );
+
     -- fetch and return tag name
     select t1.tag
     into l_value
     from blog_v_tags t1
     where 1 = 1
-    and t1.tag_id = p_tag_id
+    and t1.tag_id = l_tag_id
     ;
     apex_debug.info( 'Fetch tag: %s return: %s', p_tag_id, l_value );
-    -- Espace html and return string
+    -- espace html and return string
     return apex_escape.html( l_value );
   exception when no_data_found
   then
@@ -685,7 +698,7 @@ as
        p_message => 'No data found. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_tag_id'
-      ,p2 => coalesce( to_char( p_tag_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p2 => coalesce( p_tag_id, '(null)' )
     );
     raise;
 
@@ -696,7 +709,7 @@ as
        p_message => 'Unhandled error. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_tag_id'
-      ,p2 => coalesce( to_char( p_tag_id, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p2 => coalesce( p_tag_id, '(null)' )
     );
     raise;
 
@@ -705,11 +718,12 @@ as
 --------------------------------------------------------------------------------
   -- Signature 1
   function get_year_month(
-    p_year_month  in number,
+    p_year_month  in varchar2,
     p_date_format in varchar2
   ) return varchar2 result_cache
   as
-    l_value varchar2(256);
+    l_year_month  number;
+    l_value       varchar2(256);
   begin
 
     apex_debug.enter(
@@ -724,6 +738,7 @@ as
       raise no_data_found;
     end if;
 
+    l_year_month := to_number( p_year_month );
     -- query that passed year month number actually exists
     select blog_util.get_year_month(
        p_archive_date => archive_date
@@ -732,7 +747,7 @@ as
     into l_value
     from blog_v_archive_year_month
     where 1 = 1
-    and archive_year_month = p_year_month
+    and archive_year_month = l_year_month
     ;
 
     apex_debug.info( 'Fetch archive %s return: %s', p_year_month, l_value );
@@ -745,7 +760,7 @@ as
        p_message => 'No data found. %s( %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_year_month'
-      ,p2 => coalesce( to_char( p_year_month, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p2 => coalesce( p_year_month, '(null)' )
       ,p3 => 'p_date_format'
       ,p4 => p_date_format
     );
@@ -758,7 +773,7 @@ as
        p_message => 'Unhandled error. %s( %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_year_month'
-      ,p2 => coalesce( to_char( p_year_month, 'fm9999999999999999999999999999999999999' ), '(null)' )
+      ,p2 => coalesce( p_year_month, '(null)' )
       ,p3 => 'p_date_format'
       ,p4 => p_date_format
     );
@@ -816,22 +831,22 @@ as
 
     l_comment := p_comment;
 
-    -- Fetch allowed HTML tags from settings
+    -- fetch allowed HTML tags from settings
     l_whitelist_tags := blog_util.get_attribute_value(
       p_attribute_name => 'COMMENT_WHITELIST_TAGS'
     );
-    -- Format comment
+    -- format comment
     blog_util.format_comment(
        p_comment        => l_comment
       ,p_whitelist_tags => l_whitelist_tags
     );
-    -- Check formatted comment length
+    -- check formatted comment length
     if length( l_comment ) > p_max_length
     then
-      -- Get error message
+      -- get error message
       l_error := apex_lang.message( 'BLOG_VALIDATION_ERR_COMMENT_LENGTH' );
     else
-      -- Check HTML is valid
+      -- check HTML is valid
       begin
         l_xml := xmltype.createxml(
             '<root><row>'
@@ -839,14 +854,14 @@ as
           || '</row></root>'
         );
       exception when xml_parsing_failed then
-        -- Get error message
+        -- get error message
         l_error :=  apex_lang.message( 'BLOG_VALIDATION_ERR_COMMENT_HTML' );
       end;
     end if;
 
     if l_error is null
     then
-      -- If validation passed set package vartiable
+      -- if validation passed set package vartiable
       if p_set_variable = 'YES'
       then
         l_comment := apex_util.savekey_vc2(
@@ -855,8 +870,8 @@ as
       end if;
     end if;
 
-    -- Return validation result
-    -- If validation fails we return error message stored to variable
+    -- return validation result
+    -- if validation fails we return error message stored to variable
     return l_error;
 
   end validate_comment;

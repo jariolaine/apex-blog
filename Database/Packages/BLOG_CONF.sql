@@ -10,9 +10,7 @@ as
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 23.04.2019 - Created
 --    Jari Laine 26.04.2019 - Procedure purge_region_cache
---    Jari Laine 18.04.2020 - Removed obsoleted procedures update_feature_config and purge_region_cache
---
---  TO DO: (search from body TODO#x)
+--    Jari Laine 18.04.2020 - Removed obsoleted procedures
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

@@ -18,6 +18,8 @@ as
 
   g_owner                       constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
 
+  g_number_format               constant varchar2(40)   := 'fm9999999999999999999999999999999999999';
+
   -- ORDS
   g_ords_module                 constant varchar2(256)  := 'BLOG_PUBLIC_FILES';
 
@@ -33,25 +35,28 @@ as
   g_canonical_url               constant varchar2(4000) := rtrim( blog_util.get_attribute_value( 'CANONICAL_URL' ), '/' ) || '/';
 
   -- URL
-  g_home_page                   constant varchar2(40) := 'HOME';
+  g_home_page                   constant varchar2(40)   := 'HOME';
 
-  g_post_page                   constant varchar2(40) := 'POST';
-  g_post_item                   constant varchar2(40) := 'P2_POST_ID';
+  g_post_page                   constant varchar2(40)   := 'POST';
+  g_post_item                   constant varchar2(40)   := 'P2_POST_ID';
 
-  g_search_page                 constant varchar2(40) := 'SEARCH';
-  g_search_item                 constant varchar2(40) := 'P0_SEARCH';
+  g_search_page                 constant varchar2(40)   := 'SEARCH';
+  g_search_item                 constant varchar2(40)   := 'P0_SEARCH';
 
-  g_category_page               constant varchar2(40) := 'CATEGORIES';
-  g_category_item               constant varchar2(40) := 'P14_CATEGORY_ID';
+  g_category_page               constant varchar2(40)   := 'CATEGORIES';
+  g_category_item               constant varchar2(40)   := 'P14_CATEGORY_ID';
 
-  g_archive_page                constant varchar2(40) := 'ARCHIVES';
-  g_archive_item                constant varchar2(40) := 'P15_ARCHIVE_ID';
+  g_archive_page                constant varchar2(40)   := 'ARCHIVES';
+  g_archive_item                constant varchar2(40)   := 'P15_ARCHIVE_ID';
 
-  g_tag_page                    constant varchar2(40) := 'TAG';
-  g_tag_item                    constant varchar2(40) := 'P6_TAG_ID';
+  g_tag_page                    constant varchar2(40)   := 'TAG';
+  g_tag_item                    constant varchar2(40)   := 'P6_TAG_ID';
 
   -- Comments
-  g_code_css_class              constant varchar2(40) := 'z-program-code';
+  g_code_css_class              constant varchar2(40)   := 'z-program-code';
+
+  -- XML
+  g_pub_app_tab_list            constant varchar2(256)  := 'Desktop Navigation Menu';
 
 -------------------------------------------------------------------------------
 END "BLOG_GLOBALS";

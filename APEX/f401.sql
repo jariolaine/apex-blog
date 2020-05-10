@@ -38,7 +38,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --       Processes:               10
 --       Regions:                 26
 --       Buttons:                  6
---       Dynamic Actions:         12
+--       Dynamic Actions:          9
 --     Shared Components:
 --       Logic:
 --         Items:                  6
@@ -83,7 +83,7 @@ wwv_flow_api.create_flow(
  p_id=>wwv_flow.g_flow_id
 ,p_owner=>nvl(wwv_flow_application_install.get_schema,'BLOG_040000')
 ,p_name=>nvl(wwv_flow_application_install.get_application_name,'Blog Public Pages')
-,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'BLOG_040000')
+,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'BLOG')
 ,p_application_group=>3742713376965422
 ,p_application_group_name=>'BLOG_040000'
 ,p_application_group_comment=>'APEX Blog '
@@ -124,7 +124,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200505191342'
+,p_last_upd_yyyymmddhh24miss=>'20200509191947'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>89
 ,p_ui_type_name => null
@@ -12677,7 +12677,7 @@ wwv_flow_api.create_build_option(
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(7122597691878829)
-,p_build_option_name=>'Development not Ready'
+,p_build_option_name=>'Not Ready'
 ,p_build_option_status=>'EXCLUDE'
 ,p_default_on_export=>'EXCLUDE'
 ,p_build_option_comment=>'Objects need development'
@@ -12901,6 +12901,7 @@ wwv_flow_api.create_shortcut(
  p_id=>wwv_flow_api.id(4293491733566665)
 ,p_shortcut_name=>'BLOG_RSS_LINK'
 ,p_shortcut_type=>'FUNCTION_BODY'
+,p_comments=>'Used in page 1 page html header'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_rss_link(',
 '   p_app_name => :G_APP_NAME',
@@ -12918,6 +12919,7 @@ wwv_flow_api.create_shortcut(
  p_id=>wwv_flow_api.id(7037777593887739)
 ,p_shortcut_name=>'BLOG_META_ROBOTS_NOINDEX'
 ,p_shortcut_type=>'FUNCTION_BODY'
+,p_comments=>'Used in page 3, 1001 and 9999 page html header'
 ,p_shortcut=>'return #OWNER#.blog_html.get_robots_noindex_meta;'
 );
 end;
@@ -12928,6 +12930,7 @@ wwv_flow_api.create_shortcut(
  p_id=>wwv_flow_api.id(7038895780985689)
 ,p_shortcut_name=>'BLOG_RSS_ANCHOR'
 ,p_shortcut_type=>'FUNCTION_BODY'
+,p_comments=>'Used in global page (page 0) region'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_rss_anchor(',
 '  p_app_name => :G_APP_NAME',
@@ -12941,6 +12944,7 @@ wwv_flow_api.create_shortcut(
  p_id=>wwv_flow_api.id(14606629384151086)
 ,p_shortcut_name=>'BLOG_META_HOME_DESCRIPTION'
 ,p_shortcut_type=>'FUNCTION_BODY'
+,p_comments=>'Used in page 1 page html header'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_description_meta(',
 '  p_desc => :G_APP_DESC',
@@ -12954,6 +12958,7 @@ wwv_flow_api.create_shortcut(
  p_id=>wwv_flow_api.id(14609528802278469)
 ,p_shortcut_name=>'BLOG_META_POST_DESCRIPTION'
 ,p_shortcut_type=>'FUNCTION_BODY'
+,p_comments=>'Used in page 2 page html header'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_post_description_meta(',
 '  p_post_id => :P2_POST_ID',
@@ -12967,6 +12972,7 @@ wwv_flow_api.create_shortcut(
  p_id=>wwv_flow_api.id(14610353218419017)
 ,p_shortcut_name=>'BLOG_CANONICAL_LINK_POST'
 ,p_shortcut_type=>'FUNCTION_BODY'
+,p_comments=>'Used in page 2 page html header'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_post_canonical_link(',
 '  p_post_id => :P2_POST_ID',
@@ -12981,6 +12987,7 @@ wwv_flow_api.create_shortcut(
  p_id=>wwv_flow_api.id(14613389629557078)
 ,p_shortcut_name=>'BLOG_CANONICAL_LINK_CATEGORY'
 ,p_shortcut_type=>'FUNCTION_BODY'
+,p_comments=>'Used in page 14 page html header'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_category_canonical_link(',
 '  p_category_id => :P14_CATEGORY_ID',
@@ -12995,6 +13002,7 @@ wwv_flow_api.create_shortcut(
  p_id=>wwv_flow_api.id(14614320549586252)
 ,p_shortcut_name=>'BLOG_CANONICAL_LINK_TAG'
 ,p_shortcut_type=>'FUNCTION_BODY'
+,p_comments=>'Used in page 6 page html header'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_tag_canonical_link(',
 '  p_tag_id => :P6_TAG_ID',
@@ -13009,6 +13017,7 @@ wwv_flow_api.create_shortcut(
  p_id=>wwv_flow_api.id(14616166855626773)
 ,p_shortcut_name=>'BLOG_CANONICAL_LINK_ARCHIVE'
 ,p_shortcut_type=>'FUNCTION_BODY'
+,p_comments=>'Used in page 15 page html header'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_archive_canonical_link(',
 '  p_archive_id => :P15_ARCHIVE_ID',
@@ -13023,6 +13032,7 @@ wwv_flow_api.create_shortcut(
  p_id=>wwv_flow_api.id(20324623827351948)
 ,p_shortcut_name=>'BLOG_CANONICAL_LINK_TAB'
 ,p_shortcut_type=>'FUNCTION_BODY'
+,p_comments=>'Used in pages 1, 10, 11 and 12 page html header'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_tab_canonical_link(',
 '  p_app_page_id => :APP_PAGE_ALIAS',
@@ -13037,6 +13047,7 @@ wwv_flow_api.create_shortcut(
  p_id=>wwv_flow_api.id(26770919227599230)
 ,p_shortcut_name=>'BLOG_HTML_SEARCH_BUTTON'
 ,p_shortcut_type=>'FUNCTION_BODY'
+,p_comments=>'Not used at moment'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_search_button(',
 '  p_request => ''#CURRENT_ITEM_NAME#''',
@@ -14553,7 +14564,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(6905258727754156)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200503200935'
+,p_last_upd_yyyymmddhh24miss=>'20200509191947'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25312381302124218)
@@ -14875,28 +14886,6 @@ wwv_flow_api.create_page_da_action(
 ,p_action_sequence=>20
 ,p_execute_on_page_init=>'N'
 ,p_action=>'NATIVE_CANCEL_EVENT'
-);
-wwv_flow_api.create_page_da_event(
- p_id=>wwv_flow_api.id(28587712783643036)
-,p_name=>'Set List Class'
-,p_event_sequence=>30
-,p_triggering_element_type=>'REGION'
-,p_triggering_region_id=>wwv_flow_api.id(6899425042645290)
-,p_bind_type=>'bind'
-,p_bind_event_type=>'apexafterrefresh'
-,p_required_patch=>wwv_flow_api.id(27920818779089933)
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(28587896503643037)
-,p_event_id=>wwv_flow_api.id(28587712783643036)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'Y'
-,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_affected_elements_type=>'TRIGGERING_ELEMENT'
-,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'var ul$ = this.affectedElements.find( "ul:first" );',
-'ul$.siblings( "ul" ).addClass( ul$.attr( "class" ) ).removeClass( "z-hidden" );'))
 );
 end;
 /
@@ -15226,7 +15215,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8635355820099640)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200503162623'
+,p_last_upd_yyyymmddhh24miss=>'20200509191933'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(40117793173805532)
@@ -15469,28 +15458,6 @@ wwv_flow_api.create_page_da_action(
 '});'))
 ,p_da_action_comment=>'List anchors have data attribute where is category id. If that match to item P14_CATEGORY_ID value set is-current class to list'
 );
-wwv_flow_api.create_page_da_event(
- p_id=>wwv_flow_api.id(28587982134643038)
-,p_name=>'Set List Class'
-,p_event_sequence=>20
-,p_triggering_element_type=>'REGION'
-,p_triggering_region_id=>wwv_flow_api.id(40117793173805532)
-,p_bind_type=>'bind'
-,p_bind_event_type=>'apexafterrefresh'
-,p_required_patch=>wwv_flow_api.id(27920818779089933)
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(28588083679643039)
-,p_event_id=>wwv_flow_api.id(28587982134643038)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'Y'
-,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_affected_elements_type=>'TRIGGERING_ELEMENT'
-,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'var ul$ = this.affectedElements.find( "ul:first" );',
-'ul$.siblings( "ul" ).addClass( ul$.attr( "class" ) );'))
-);
 end;
 /
 prompt --application/pages/page_00015
@@ -15509,7 +15476,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8670890848739263)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200503162648'
+,p_last_upd_yyyymmddhh24miss=>'20200509191923'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(58686289966142463)
@@ -15764,29 +15731,6 @@ wwv_flow_api.create_page_da_action(
 '});',
 ''))
 ,p_da_action_comment=>'List anchors have data attribute where is archive id. If that match to item P15_ARCHIVE_ID value set is-current class to list'
-);
-wwv_flow_api.create_page_da_event(
- p_id=>wwv_flow_api.id(30157353389729123)
-,p_name=>'Set List Class'
-,p_event_sequence=>20
-,p_triggering_element_type=>'REGION'
-,p_triggering_region_id=>wwv_flow_api.id(58686289966142463)
-,p_bind_type=>'bind'
-,p_bind_event_type=>'apexafterrefresh'
-,p_required_patch=>wwv_flow_api.id(27920818779089933)
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(30157757745729122)
-,p_event_id=>wwv_flow_api.id(30157353389729123)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'Y'
-,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_affected_elements_type=>'TRIGGERING_ELEMENT'
-,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'var ul$ = this.affectedElements.find( "ul:first" );',
-'ul$.siblings( "ul" ).addClass( ul$.attr( "class" ) );',
-''))
 );
 end;
 /
@@ -16144,11 +16088,12 @@ wwv_flow_api.create_page(
 ,p_first_item=>'AUTO_FIRST_ITEM'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8700188054171688)
+,p_html_page_header=>'"BLOG_META_ROBOTS_NOINDEX"'
 ,p_step_template=>wwv_flow_api.id(6761688085267365)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200419154210'
+,p_last_upd_yyyymmddhh24miss=>'20200509072822'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(35972740955622136)

@@ -12,8 +12,6 @@ as
 --    Jari Laine 28.04.2020 - Added procedure create_public_xml_module
 --    Jari Laine 28.04.2020 - Local constants renamed
 --
---  TO DO: (search from body TODO#x)
---
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 

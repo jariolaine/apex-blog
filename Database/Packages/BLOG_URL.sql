@@ -10,8 +10,6 @@ as
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 22.04.2019 - Created
 --
---  TO DO: (search from body TODO#x)
---
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
@@ -19,14 +17,22 @@ as
   function get_tab(
     p_app_id        in varchar2 default null,
     p_app_page_id   in varchar2 default blog_globals.g_home_page,
-    p_session       in number   default null,
+    p_session       in varchar2 default null,
     p_debug         in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_post(
     p_post_id         in number,
     p_app_id          in varchar2 default null,
-    p_session         in number   default null,
+    p_session         in varchar2 default null,
+    p_app_page_id     in varchar2 default blog_globals.g_post_page,
+    p_page_item       in varchar2 default blog_globals.g_post_item
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  function get_post(
+    p_post_id         in varchar2,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null,
     p_app_page_id     in varchar2 default blog_globals.g_post_page,
     p_page_item       in varchar2 default blog_globals.g_post_item
   ) return varchar2;
@@ -34,32 +40,49 @@ as
   function get_category(
     p_category_id     in number,
     p_app_id          in varchar2 default null,
-    p_session         in number   default null,
+    p_session         in varchar2 default null,
+    p_app_page_id     in varchar2 default blog_globals.g_category_page,
+    p_page_item       in varchar2 default blog_globals.g_category_item
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  function get_category(
+    p_category_id     in varchar2,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null,
     p_app_page_id     in varchar2 default blog_globals.g_category_page,
     p_page_item       in varchar2 default blog_globals.g_category_item
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_archive(
+    p_archive_id      in number,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null,
+    p_app_page_id     in varchar2 default blog_globals.g_archive_page,
+    p_page_item       in varchar2 default blog_globals.g_archive_item,
+    p_current_page_id in varchar2 default null
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  function get_archive(
     p_archive_id      in varchar2,
     p_app_id          in varchar2 default null,
-    p_session         in number   default null,
+    p_session         in varchar2 default null,
     p_app_page_id     in varchar2 default blog_globals.g_archive_page,
     p_page_item       in varchar2 default blog_globals.g_archive_item,
     p_current_page_id in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_tag(
-    p_tag_id      in number,
-    p_app_id      in varchar2 default null,
-    p_session         in number   default null,
-    p_app_page_id in varchar2 default blog_globals.g_tag_page,
-    p_page_item   in varchar2 default blog_globals.g_tag_item
+    p_tag_id          in number,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null,
+    p_app_page_id     in varchar2 default blog_globals.g_tag_page,
+    p_page_item       in varchar2 default blog_globals.g_tag_item
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure redirect_search(
     p_value           in varchar2,
     p_app_id          in varchar2 default null,
-    p_session         in number   default null,
+    p_session         in varchar2 default null,
     p_app_page_id     in varchar2 default blog_globals.g_search_page,
     p_page_item       in varchar2 default blog_globals.g_search_item
   );
@@ -89,7 +112,7 @@ CREATE OR REPLACE package body blog_url as
   function get_tab(
     p_app_id        in varchar2 default null,
     p_app_page_id   in varchar2 default blog_globals.g_home_page,
-    p_session       in number   default null,
+    p_session       in varchar2 default null,
     p_debug         in varchar2 default 'NO'
   ) return varchar2
   as
@@ -110,7 +133,31 @@ CREATE OR REPLACE package body blog_url as
   function get_post(
     p_post_id       in number,
     p_app_id        in varchar2 default null,
-    p_session       in number   default null,
+    p_session       in varchar2 default null,
+    p_app_page_id   in varchar2 default blog_globals.g_post_page,
+    p_page_item     in varchar2 default blog_globals.g_post_item
+  ) return varchar2
+  as
+    l_post_id varchar2(256);
+  begin
+
+    l_post_id := to_char( p_post_id, blog_globals.g_number_format );
+    return
+      blog_url.get_post(
+         p_post_id      => l_post_id
+        ,p_app_id       => p_app_id
+        ,p_session      => p_session
+        ,p_app_page_id  => p_app_page_id
+        ,p_page_item    => p_page_item
+      );
+
+  end get_post;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_post(
+    p_post_id       in varchar2,
+    p_app_id        in varchar2 default null,
+    p_session       in varchar2 default null,
     p_app_page_id   in varchar2 default blog_globals.g_post_page,
     p_page_item     in varchar2 default blog_globals.g_post_item
   ) return varchar2
@@ -133,7 +180,31 @@ CREATE OR REPLACE package body blog_url as
   function get_category(
     p_category_id in number,
     p_app_id      in varchar2 default null,
-    p_session     in number   default null,
+    p_session     in varchar2 default null,
+    p_app_page_id in varchar2 default blog_globals.g_category_page,
+    p_page_item   in varchar2 default blog_globals.g_category_item
+  ) return varchar2
+  as
+    l_category_id varchar2(256);
+  begin
+
+    l_category_id := to_char( p_category_id, blog_globals.g_number_format );
+    return
+      blog_url.get_category(
+         p_category_id  => l_category_id
+        ,p_app_id       => p_app_id
+        ,p_session      => p_session
+        ,p_app_page_id  => p_app_page_id
+        ,p_page_item    => p_page_item
+      );
+
+  end get_category;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_category(
+    p_category_id in varchar2,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
     p_app_page_id in varchar2 default blog_globals.g_category_page,
     p_page_item   in varchar2 default blog_globals.g_category_item
   ) return varchar2
@@ -154,9 +225,34 @@ CREATE OR REPLACE package body blog_url as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_archive(
+    p_archive_id      in number,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null,
+    p_app_page_id     in varchar2 default blog_globals.g_archive_page,
+    p_page_item       in varchar2 default blog_globals.g_archive_item,
+    p_current_page_id in varchar2 default null
+  ) return varchar2
+  as
+    l_archive_id varchar2(256);
+  begin
+
+    l_archive_id := to_char( p_archive_id, blog_globals.g_number_format );
+    return
+      blog_url.get_archive(
+         p_archive_id   => l_archive_id
+        ,p_app_id       => p_app_id
+        ,p_session      => p_session
+        ,p_app_page_id  => p_app_page_id
+        ,p_page_item    => p_page_item
+      );
+
+  end get_archive;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_archive(
     p_archive_id      in varchar2,
     p_app_id          in varchar2 default null,
-    p_session         in number   default null,
+    p_session         in varchar2 default null,
     p_app_page_id     in varchar2 default blog_globals.g_archive_page,
     p_page_item       in varchar2 default blog_globals.g_archive_item,
     p_current_page_id in varchar2 default null
@@ -185,7 +281,7 @@ CREATE OR REPLACE package body blog_url as
   function get_tag(
     p_tag_id      in number,
     p_app_id      in varchar2 default null,
-    p_session     in number   default null,
+    p_session     in varchar2 default null,
     p_app_page_id in varchar2 default blog_globals.g_tag_page,
     p_page_item   in varchar2 default blog_globals.g_tag_item
   ) return varchar2
@@ -206,15 +302,15 @@ CREATE OR REPLACE package body blog_url as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure redirect_search(
-    p_value           in varchar2,
-    p_app_id          in varchar2 default null,
-    p_session         in number   default null,
-    p_app_page_id     in varchar2 default blog_globals.g_search_page,
-    p_page_item       in varchar2 default blog_globals.g_search_item
+    p_value         in varchar2,
+    p_app_id        in varchar2 default null,
+    p_session       in varchar2 default null,
+    p_app_page_id   in varchar2 default blog_globals.g_search_page,
+    p_page_item     in varchar2 default blog_globals.g_search_item
   )
   as
   begin
-    -- Get page URL and redirect if there there is string to search
+    -- Get search page URL and redirect if there there is string for search
     if p_value is not null then
       apex_util.redirect_url (
         apex_page.get_url(

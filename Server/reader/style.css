@@ -12,6 +12,10 @@ blockquote::after{
 blockquote p{
   display: inline;
 }
+input[data-z-switch="true"][value="0"]:checked+label{
+  background-color: #8c8c8c;
+  border-color: #8c8c8c;
+}
 
 /**************************************
 * Logo
@@ -34,6 +38,25 @@ blockquote p{
   box-shadow: none;
 }
 
+/**************************************
+* Interactive Report
+**************************************/
+.z-IR--iconLinks td:first-child {
+  width: 1%;
+  overflow: visible;
+}
+
+/**************************************
+* Interactive Grid
+**************************************/
+.z-config-ig .a-IG-header {
+  display: none;
+  visibility: hidden;
+}
+.z-config-ig span.a-GV-breakLabel {
+  display: none;
+  visibility: hidden;
+}
 /**************************************
 * Classic reports
 **************************************/
@@ -98,6 +121,10 @@ blockquote p{
 }
 .z-post--no-margin .z-post{
   margin-bottom: 0!important;
+}
+/* IR specific */
+.z-post--IR{
+  margin: 32px 16px
 }
 
 /**************************************
@@ -208,6 +235,11 @@ blockquote p{
 /* long URL e.g. */
 .z-comment .t-Comments-comment{
   overflow-wrap: break-word;
+}
+.z-comment--footer {
+  margin-top: 3.2rem;
+  padding: 1.6rem 0;
+  border-top: 1px solid rgba(0,0,0,0.1);
 }
 
 /**************************************

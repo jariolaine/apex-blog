@@ -11,8 +11,6 @@ as
 --    Jari Laine 22.04.2019 - Created
 --    Jari Laine 03.01.2020 - Comments to package specs
 --
---  TO DO: (search from body TODO#x)
---
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure render_math_question_field(
@@ -145,9 +143,6 @@ as
     l_num_1 number;
     l_num_2 number;
     l_tab   apex_t_varchar2;
-
-    l_num_format constant varchar2(256) := 'fm999999999999999';
-
   begin
 
     l_min   := to_number( p_item.attribute_01 );
@@ -159,15 +154,15 @@ as
     l_num_2 := round( sys.dbms_random.value( l_min, l_max ) );
 
     l_data  := '<span class="z-question">';
-    l_data  := l_data || blog_plugin.to_html_entities( l_num_1, l_num_format );
+    l_data  := l_data || blog_plugin.to_html_entities( l_num_1, blog_globals.g_number_format );
     l_data  := l_data || '&nbsp;&#' || ascii('+') || '&nbsp;';
-    l_data  := l_data || blog_plugin.to_html_entities( l_num_2, l_num_format );
+    l_data  := l_data || blog_plugin.to_html_entities( l_num_2, blog_globals.g_number_format );
     l_data  := l_data || '&#' || ascii('?');
     l_data  := l_data || '</span>';
 
     apex_util.set_session_state(
        p_name   => p_item.attribute_05
-      ,p_value  => to_char( l_num_1 + l_num_2 , l_num_format )
+      ,p_value  => to_char( l_num_1 + l_num_2 , blog_globals.g_number_format )
       ,p_commit => false
     );
 
@@ -187,11 +182,6 @@ as
       p_name => p_plugin.attribute_02
       ,p0 => p_item.plain_label
     );
-
-    if l_err = apex_escape.html( p_plugin.attribute_02 )
-    then
-      l_err := apex_escape.html( l_err );
-    end if;
 
     sys.htp.prn( l_err );
 

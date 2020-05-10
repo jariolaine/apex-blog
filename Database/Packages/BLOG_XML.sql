@@ -12,8 +12,6 @@ as
 --    Jari Laine 08.01.2020 - Removed categories sitemap
 --    Jari Laine 08.01.2020 - Modified use ORDS and blog version 4
 --
---  TO DO: (search from body TODO#x)
---
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global variables and constants
@@ -41,10 +39,7 @@ as
 -- Private variables and constants
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-
-  c_pub_app_id              constant number         := to_number( blog_util.get_item_init_value( 'G_PUB_APP_ID' ) );
-  c_pub_app_tab_list        constant varchar2(256)  := 'Desktop Navigation Menu';
-
+  c_pub_app_id  constant number := to_number( blog_util.get_item_init_value( 'G_PUB_APP_ID' ) );
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -62,8 +57,8 @@ as
       into l_app_alias
       from apex_applications t1
       where 1 = 1
-      and t1.owner = blog_globals.g_owner
-      and t1.application_id = blog_xml.c_pub_app_id
+        and t1.owner = blog_globals.g_owner
+        and t1.application_id = blog_xml.c_pub_app_id
       ;
     exception when no_data_found then
       raise_application_error( -20001,  'Configuration not exists.' );
@@ -93,9 +88,9 @@ as
         on t1.id = t3.schema_id
         and t2.id = t3.module_id
       where 1 = 1
-      and t1.parsing_schema = blog_globals.g_owner
-      and t2.name = blog_globals.g_ords_module
-      and t3.uri_template = p_uri_template
+        and t1.parsing_schema = blog_globals.g_owner
+        and t2.name = blog_globals.g_ords_module
+        and t3.uri_template = p_uri_template
       ;
     exception when no_data_found then
       raise_application_error( -20002,  'Configuration not exists.' );
@@ -124,19 +119,19 @@ as
   begin
 
     -- blog application alias
-    l_app_alias     := blog_xml.get_app_alias;
+    l_app_alias := blog_xml.get_app_alias;
 
     -- blog home page relative urlg_ords_rss_feed;
-    l_home_url      := blog_url.get_tab( l_app_alias );
+    l_home_url  := blog_url.get_tab( l_app_alias );
 
     -- blog name
-    l_blog_name     := blog_util.get_attribute_value( 'G_APP_NAME' );
+    l_blog_name := blog_util.get_attribute_value( 'G_APP_NAME' );
 
     -- rss feed description
-    l_rss_desc      := blog_util.get_attribute_value( 'G_APP_DESC' );
+    l_rss_desc  := blog_util.get_attribute_value( 'G_APP_DESC' );
 
     -- blog home page absolute url
-    l_home_url      := blog_globals.g_canonical_url || l_home_url;
+    l_home_url  := blog_globals.g_canonical_url || l_home_url;
 
     -- generate RSS
     select xmlserialize( document
@@ -191,7 +186,7 @@ as
 
     owa_util.mime_header('application/rss+xml', false, 'UTF-8' );
 --    owa_util.mime_header('application/xml', false, 'UTF-8' );
---    sys.htp.p('Cache-Control: max-age=3600, public' );
+    sys.htp.p('Cache-Control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file(l_rss);
@@ -242,7 +237,7 @@ as
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
---    sys.htp.p('Cache-Control: max-age=3600, public' );
+    sys.htp.p('Cache-Control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file(l_xml);
@@ -267,15 +262,15 @@ as
         ) as loc
       from apex_application_list_entries li
       where 1 = 1
-      and li.list_name = blog_xml.c_pub_app_tab_list
-      and li.application_id = blog_xml.c_pub_app_id
+        and li.list_name = blog_globals.g_pub_app_tab_list
+        and li.application_id = blog_xml.c_pub_app_id
       and not exists(
         select 1
         from apex_application_build_options bo
         where 1 = 1
-        and bo.application_id = blog_xml.c_pub_app_id
-        and bo.build_option_name = li.build_option
-        and bo.build_option_status = 'Exclude'
+          and bo.application_id = blog_xml.c_pub_app_id
+          and bo.build_option_name = li.build_option
+          and bo.build_option_status = 'Exclude'
       )
     )
     select xmlserialize( document
@@ -299,7 +294,7 @@ as
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
---    sys.htp.p('Cache-Control: max-age=3600, public' );
+    sys.htp.p('Cache-Control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file(l_xml);
@@ -347,7 +342,7 @@ as
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
---    sys.htp.p('Cache-Control: max-age=3600, public' );
+    sys.htp.p('Cache-Control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file(l_xml);

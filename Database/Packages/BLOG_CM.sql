@@ -13,48 +13,54 @@ as
 --    Jari Laine 12.01.2020 - Added function prepare_file_path
 --    Jari Laine 09.04.2020 - Handling tags case insensitive
 --
---  TO DO: (search from body TODO#x)
---    #1 - check constraint name that raised dup_val_on_index error
+--  TO DO:
+--    #1  check constraint name that raised dup_val_on_index error
+--    #2  group name is hard coded to procedure add_blogger
+--        some reason didn't manage use apex_authorization.is_authorized
+--        seems user session isn't entablished before process point After Authentication runs
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 14
-  function get_category_seq return number;
---------------------------------------------------------------------------------
   procedure get_blogger_details(
+    p_app_id          in varchar2,
     p_username        in varchar2,
     p_id              out nocopy number,
     p_name            out nocopy varchar2
   );
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 18
-  function get_link_seq(
-    p_link_group_id   in number
-  ) return number;
+  -- Called from: admin app pages 14
+  function get_category_seq return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 20
-  function get_link_grp_seq return number;
+  function get_link_grp_seq return varchar2;
+--------------------------------------------------------------------------------
+  -- Called from: admin app pages 18
+  function get_link_seq(
+    p_link_group_id   in varchar2
+  ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
   function get_post_tags(
-    p_post_id         in number,
+    p_post_id         in varchar2,
     p_sep             in varchar2 default ','
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
   function get_category_title(
-    p_category_id     in number
+    p_category_id      in varchar2
   ) return varchar2;
-  --------------------------------------------------------------------------------
-    function get_post_title(
-      p_post_id       in number
-    ) return varchar2;
+--------------------------------------------------------------------------------
+  -- obsolete / not used
+  function get_post_title(
+    p_post_id         in varchar2
+  ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: trigger blog_posts_trg
   function get_first_paragraph(
-    p_body_html       in varchar2
+    p_body_html       in varchar2,
+    p_err_mesg        in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
@@ -84,40 +90,51 @@ as
   -- Called from: admin app pages 12
   procedure add_category(
     p_title           in varchar2,
+    p_err_mesg        in varchar2,
     p_category_id     out nocopy number
   );
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
   procedure add_post_tags(
-    p_post_id         in number,
+    p_post_id         in varchar2,
     p_tags            in varchar2,
     p_sep             in varchar2 default ','
   );
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 12
-  -- obsolete
+  -- obsolete / not used
   procedure remove_unused_tags;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
   -- Not ready
   procedure save_post_preview(
-    p_id              in number,
+    p_id              in varchar2,
     p_tags            in varchar2,
     p_post_title      in varchar2,
     p_category_title  in varchar2,
     p_body_html       in clob
   );
 --------------------------------------------------------------------------------
+  -- Called from: admin app pages 20012
   function is_integer(
-    p_value           in varchar2
+    p_value           in varchar2,
+    p_err_mesg        in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
+  -- Called from: admin app pages 20012
   function is_url(
-    p_value           in varchar2
+    p_value           in varchar2,
+    p_err_mesg        in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
+  -- Called from: admin app pages 20012
   function is_date_format(
-    p_value           in varchar2
+    p_value           in varchar2,
+    p_err_mesg        in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  -- Called from: admin app pages 32
+  function get_comment_post_id(
+    p_comment_id      in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_CM";
@@ -160,8 +177,9 @@ as
 
       -- if unique constraint violation, tag exists.
       -- find id for tag in exception handler
+      -- TO DO see item 1 from package specs
       exception when dup_val_on_index then
-      -- TODO#1
+
         l_value := upper(l_value);
 
         select id
@@ -185,13 +203,16 @@ as
   )
   as
   begin
+
     -- insert post id, tag id and display sequency to table.
     -- use unique constraint violation to skip existing records.
     insert into blog_post_tags( is_active, post_id, tag_id, display_seq )
     values ( 1, p_post_id, p_tag_id, p_display_seq )
     ;
-  -- TODO#1
+
+  -- TO DO see item 1 from package specs
   exception when dup_val_on_index then
+
     -- update display sequence if it changed
     update blog_post_tags
     set display_seq = p_display_seq
@@ -200,6 +221,7 @@ as
     and tag_id = p_tag_id
     and display_seq != p_display_seq
     ;
+
   end add_tag_to_post;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -209,7 +231,7 @@ as
   )
   as
   begin
-    -- cleanup relationship from tags that aren't belong to post
+    -- cleanup relationship from tags that aren't belong to post anymore
     delete
     from blog_post_tags t1
     where 1 = 1
@@ -224,25 +246,31 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure add_blogger(
+    p_app_id    in varchar2,
     p_username  in varchar2,
     p_id        out nocopy number,
     p_name      out nocopy varchar2
   )
   as
     l_max   number;
+    l_autz  varchar2(256);
     l_name  varchar2(256);
     l_email varchar2(256);
   begin
 
-    -- If blogger is new add to blog_bloggers table
+    -- check if user is in specific group
+    -- if authorized add user to blog_bloggers table
+    -- TO DO see item 2 from package specs
     if apex_util.current_user_in_group( 'Bloggers' )
     then
 
+      -- Fetch net display_seq
       select ceil(coalesce(max(display_seq) + 1, 1) / 10) * 10
       into l_max
       from blog_bloggers
       ;
 
+      -- Fetch user information from APEX users
       select email
         ,v1.first_name || ' ' || v1.last_name as full_name
       into l_email, l_name
@@ -251,6 +279,7 @@ as
       and v1.user_name = p_username
       ;
 
+      -- Add new blogger
       insert into blog_bloggers
       ( apex_username, is_active, display_seq, blogger_name, email )
       values
@@ -266,27 +295,15 @@ as
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_category_seq
-  return number
-  as
-    l_max number;
-  begin
-    select ceil(coalesce(max(display_seq) + 1, 1) / 10) * 10
-    into l_max
-    from blog_v_all_categories
-    ;
-    return l_max;
-  end get_category_seq;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   procedure get_blogger_details(
+    p_app_id    in varchar2,
     p_username  in varchar2,
     p_id        out nocopy number,
     p_name      out nocopy varchar2
   )
   as
   begin
-    -- get blogger id and name
+    -- Fetch blogger id and name
     select id
       ,blogger_name
     into p_id, p_name
@@ -295,41 +312,87 @@ as
     ;
   exception when no_data_found
   then
+    -- if blogger details not found
+    -- check if user is authorized use blog
+    -- if authorized add user to blog_bloggers table
     blog_cm.add_blogger(
-       p_username => p_username
+       p_app_id => p_app_id
+      ,p_username => p_username
       ,p_id => p_id
       ,p_name => p_name
     );
   end get_blogger_details;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_link_seq(
-    p_link_group_id in number
-  ) return number
+  function get_category_seq
+  return varchar2
   as
-    l_max number;
+    l_max     number;
+    l_result  varchar2(256);
   begin
-    select ceil(coalesce(max(display_seq) + 1, 1) / 10) * 10
+    -- Fetch and return next category display sequence
+    select max( v1.display_seq ) as display_seq
     into l_max
-    from blog_v_all_links
-    where 1 = 1
-    and link_group_id = p_link_group_id
+    from blog_v_all_categories v1
     ;
-    return l_max;
-  end get_link_seq;
+
+    l_result := to_char(
+      ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10
+      ,blog_globals.g_number_format
+    );
+
+    return l_result;
+
+  end get_category_seq;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_link_grp_seq
-  return number
+  return varchar2
   as
-    l_max number;
+    l_max     number;
+    l_result  varchar2(256);
   begin
-    select ceil(coalesce(max(display_seq) + 1, 1) / 10) * 10
+    -- Fetch and return next link group display sequence
+    select max( v1.display_seq ) as display_seq
     into l_max
-    from blog_v_all_link_groups
+    from blog_v_all_link_groups v1
     ;
-    return l_max;
+    l_result := to_char(
+      ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10
+      ,blog_globals.g_number_format
+    );
+
+    return l_result;
+
   end get_link_grp_seq;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_link_seq(
+    p_link_group_id in varchar2
+  ) return varchar2
+  as
+    l_result        varchar2(256);
+    l_link_group_id number;
+    l_max           number;
+  begin
+
+    l_link_group_id := to_number( p_link_group_id );
+    -- Fetch and return next link display sequence
+    select max( v1.display_seq) as display_seq
+    into l_max
+    from blog_v_all_links v1
+    where 1 = 1
+    and link_group_id = l_link_group_id
+    ;
+
+    l_result := to_char(
+      ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10
+      ,blog_globals.g_number_format
+    );
+
+    return l_result;
+
+  end get_link_seq;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function request_to_post_status(
@@ -337,6 +400,10 @@ as
   ) return varchar2
   as
   begin
+    -- One reason for this function is that APEX 19.2 as bug in switch.
+    -- Switch not allow return value zero (0)
+
+    -- Conver APEX request to post status (blog_posts.is_active)
     return case p_request
       when 'CREATE_DRAFT'
       then '0'
@@ -352,23 +419,30 @@ as
       then 1
       else '0'
     end;
+
   end request_to_post_status;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_post_tags(
-    p_post_id in number,
+    p_post_id in varchar2,
     p_sep     in varchar2 default ','
   ) return varchar2
   as
-    l_tags varchar2(32700);
+    l_post_id number;
+    l_tags    varchar2(32700);
   begin
+
+    l_post_id := to_number( p_post_id );
+
+    -- Fetch and return comma separated is of post tags
     select listagg( v1.tag, p_sep) within group( order by v1.display_seq ) as tags
     into l_tags
     from blog_v_all_post_tags v1
     where 1 = 1
-    and v1.post_id = p_post_id
+    and v1.post_id = l_post_id
     ;
     return l_tags;
+
   exception when no_data_found then
     return null;
   when others then
@@ -377,19 +451,23 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_category_title(
-    p_category_id in number
+    p_category_id in varchar2
   ) return varchar2
   as
-    l_title varchar2(4000);
+    l_category_id number;
+    l_title       varchar2(4000);
   begin
+
+    l_category_id := to_number( p_category_id );
+
     -- fetch and return category name
     select t1.title
     into l_title
     from blog_v_all_categories t1
-    where t1.id = p_category_id
+    where t1.id = l_category_id
     ;
-    -- return string
     return l_title;
+
   exception when no_data_found then
     return null;
   when others then
@@ -397,20 +475,25 @@ as
   end get_category_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  -- Function is obsolete / not used
   function get_post_title(
-    p_post_id in number
+    p_post_id in varchar2
   ) return varchar2
   as
-    l_title varchar2(4000);
+    l_post_id number;
+    l_title   varchar2(4000);
   begin
-    -- fetch and return category name
+
+    l_post_id := to_number( p_post_id );
+
+    -- fetch and return post title
     select t1.title
     into l_title
     from blog_v_all_posts t1
-    where t1.id = p_post_id
+    where t1.id = l_post_id
     ;
-    -- return string
     return l_title;
+
   exception when no_data_found then
     return null;
   when others then
@@ -419,9 +502,11 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_first_paragraph(
-    p_body_html in varchar2
+    p_body_html in varchar2,
+    p_err_mesg  in varchar2 default null
   ) return varchar2
   as
+    l_err_mesg      varchar2(32700);
     l_first_p       varchar2(32700);
     l_first_p_start number;
     l_first_p_end   number;
@@ -433,7 +518,16 @@ as
 
     if l_first_p_start = 0 or l_first_p_end = 0 then
       --Post must have at least one paragraph
-      raise_application_error( -20001,  apex_lang.message( 'BLOG_ERR_POST_NO_PARAGRAPH' ) );
+
+      -- Prepare error message
+      l_err_mesg := apex_lang.message( coalesce( p_err_mesg, 'BLOG_ERR_POST_NO_PARAGRAPH' ) );
+
+      if l_err_mesg = apex_escape.html( p_err_mesg )
+      then
+        l_err_mesg := p_err_mesg;
+      end if;
+
+      raise_application_error( -20001,  l_err_mesg );
     end if;
 
     l_first_p_start := l_first_p_start - 1;
@@ -482,8 +576,11 @@ as
     l_file_name   varchar2(256);
   begin
 
+    -- Unzip functionality is not implemented
+
     l_file_exists := false;
 
+    -- Get file names
     l_file_names := apex_string.split (
       p_str => p_file_name
       ,p_sep => ':'
@@ -495,6 +592,8 @@ as
       p_collection_name => 'BLOG_FILES'
     );
 
+    -- Store uploaded files to apex_collection
+    -- If files exists, we prompt user to confirm file overwrite
     for i in 1 .. l_file_names.count
     loop
 
@@ -540,6 +639,7 @@ as
       end loop;
     end loop;
 
+    -- If non of files exists before inset files to blog_files
     if not l_file_exists then
       blog_cm.merge_files;
     end if;
@@ -561,41 +661,45 @@ as
   procedure merge_files
   as
   begin
-    merge into blog_files t1
-    using blog_v_temp_files v1
+
+    -- Insert new files and overwrite existing
+    merge into blog_files t1 using blog_v_temp_files v1
     on (t1.id = v1.id)
-  when matched then
-    update set
-      t1.blob_content = v1.blob_content
-  when not matched then
-    insert (
-       is_active
-      ,is_download
-      ,file_path
-      ,file_name
-      ,mime_type
-      ,blob_content
-      ,file_desc
-    )
-    values (
-       v1.is_active
-      ,v1.is_download
-      ,v1.file_path
-      ,v1.file_name
-      ,v1.mime_type
-      ,v1.blob_content
-      ,v1.file_desc
-    );
+    when matched then
+      update
+        set t1.blob_content = v1.blob_content
+    when not matched then
+      insert (
+         is_active
+        ,is_download
+        ,file_path
+        ,file_name
+        ,mime_type
+        ,blob_content
+        ,file_desc
+      )
+      values (
+         v1.is_active
+        ,v1.is_download
+        ,v1.file_path
+        ,v1.file_name
+        ,v1.mime_type
+        ,v1.blob_content
+        ,v1.file_desc
+      );
+
   end merge_files;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure add_category(
     p_title       in varchar2,
+    p_err_mesg    in varchar2,
     p_category_id out nocopy number
   )
   as
-    l_seq     number;
-    l_value   varchar2(512);
+    l_seq       number;
+    l_value     varchar2(512);
+    l_err_mesg  varchar2(32700);
   begin
 
     p_category_id := null;
@@ -603,7 +707,17 @@ as
 
     if l_value is null then
       -- Category title must have some value
-      raise_application_error( -20002,  apex_lang.message( 'BLOG_ERR_POST_NO_CATEGORY_TITLE' ) );
+
+      -- Prepare error message
+      l_err_mesg := apex_lang.message( p_err_mesg );
+
+      if l_err_mesg = apex_escape.html( p_err_mesg )
+      then
+        l_err_mesg := p_err_mesg;
+      end if;
+
+      raise_application_error( -20002,  l_err_mesg );
+
     end if;
 
     -- get next sequence value
@@ -616,8 +730,10 @@ as
     values( 1, l_seq, l_value )
     returning id into p_category_id
     ;
+
+  -- TO DO see item 1 from package specs
   exception when dup_val_on_index then
-    -- TODO#1
+    -- If category already exists, just fetch id
     l_value := upper( l_value );
     select v1.id
     into p_category_id
@@ -630,16 +746,19 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure add_post_tags(
-    p_post_id in number,
+    p_post_id in varchar2,
     p_tags    in varchar2,
     p_sep     in varchar2 default ','
   )
   as
+    l_post_id     number;
     l_tag_id      number;
     l_display_seq number;
     l_tag_tab     apex_t_varchar2;
     l_tag_id_tab  apex_t_number;
   begin
+
+    l_post_id := to_number( p_post_id );
 
     -- split tags string to table and loop all values
     l_tag_tab := apex_string.split(
@@ -669,7 +788,7 @@ as
 
         -- tag post
         blog_cm.add_tag_to_post(
-           p_post_id     => p_post_id
+           p_post_id     => l_post_id
           ,p_tag_id      => l_tag_id
           ,p_display_seq => l_display_seq
         );
@@ -679,10 +798,9 @@ as
     end loop;
 
     blog_cm.cleanup_post_tags(
-       p_post_id => p_post_id
+       p_post_id => l_post_id
       ,p_tag_tab => l_tag_id_tab
     );
-
 /*
     -- if any relationship was removed, remove unused tags
     if sql%rowcount > 0 then
@@ -693,6 +811,7 @@ as
   end add_post_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  -- This function is obsolete / not used
   procedure remove_unused_tags
   as
   begin
@@ -709,7 +828,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure save_post_preview(
-    p_id              in number,
+    p_id              in varchar2,
     p_tags            in varchar2,
     p_post_title      in varchar2,
     p_category_title  in varchar2,
@@ -741,67 +860,111 @@ as
   --------------------------------------------------------------------------------
   --------------------------------------------------------------------------------
     function is_integer(
-      p_value in varchar2
+      p_value     in varchar2,
+      p_err_mesg  in varchar2
     ) return varchar2
     as
-      l_result varchar2(4000);
+      l_err_mesg varchar2(32700);
     begin
-
-      l_result := apex_lang.message('BLOG_VALIDATION_ERR_IS_INTEGER');
 
       if round( to_number( p_value ) ) between 1 and 100
       then
-        l_result := null;
-
+        l_err_mesg := null;
       end if;
-      return l_result;
+
+      return l_err_mesg;
 
     exception when invalid_number
     or value_error
     then
-      return l_result;
+      -- Prepare validation error message
+      l_err_mesg := apex_lang.message( p_err_mesg );
+
+      if l_err_mesg = apex_escape.html( p_err_mesg )
+      then
+        l_err_mesg := p_err_mesg;
+      end if;
+
+      return l_err_mesg;
+
     end is_integer;
   --------------------------------------------------------------------------------
   --------------------------------------------------------------------------------
     function is_url(
-      p_value in varchar2
+      p_value     in varchar2,
+      p_err_mesg  in varchar2
     ) return varchar2
     as
-      l_result varchar2(4000);
+      l_err_mesg varchar2(32700);
     begin
 
       if not regexp_like(p_value, '^https?\:\/\/.*$')
       then
-        l_result := apex_lang.message('BLOG_VALIDATION_ERR_IS_URL');
+        -- Prepare validation error message
+        l_err_mesg := apex_lang.message( p_err_mesg );
+
+        if l_err_mesg = apex_escape.html( p_err_mesg )
+        then
+          l_err_mesg := p_err_mesg;
+        end if;
       end if;
 
-      return l_result;
+      return l_err_mesg;
 
     end is_url;
   --------------------------------------------------------------------------------
   --------------------------------------------------------------------------------
     function is_date_format(
-      p_value in varchar2
+      p_value     in varchar2,
+      p_err_mesg  in varchar2
     ) return varchar2
     as
-      l_result            varchar2(4000);
+      l_err_mesg          varchar2(32700);
       invalid_date_format exception;
       pragma              exception_init(invalid_date_format, -1821);
     begin
 
-      l_result := apex_lang.message('BLOG_VALIDATION_ERR_IS_DATE_FORMAT');
-
       if to_char( systimestamp, p_value) = to_char( systimestamp, p_value )
       then
-        l_result := null;
+        l_err_mesg := null;
       end if;
 
-      return l_result;
+      return l_err_mesg;
 
     exception when invalid_date_format
     then
-      return l_result;
+      -- Prepare validation error message
+      l_err_mesg := apex_lang.message( p_err_mesg );
+
+      if l_err_mesg = apex_escape.html( p_err_mesg )
+      then
+        l_err_mesg := p_err_mesg;
+      end if;
+      return l_err_mesg;
     end is_date_format;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_comment_post_id(
+    p_comment_id in varchar2
+  ) return varchar2
+  as
+    l_comment_id  number;
+    l_post_id     number;
+  begin
+
+    l_comment_id := to_number( p_comment_id );
+
+    -- Fetch and return comma separated is of post tags
+    select v1.post_id
+    into l_post_id
+    from blog_v_all_comments v1
+    where 1 = 1
+    and v1.id = l_comment_id
+    ;
+
+    return to_char(l_post_id, blog_globals.g_number_format );
+
+  end get_comment_post_id;
 --------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 end "BLOG_CM";
