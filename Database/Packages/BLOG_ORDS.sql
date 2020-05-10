@@ -92,13 +92,13 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
           where 1 = 1
           and t1.parsing_schema = blog_globals.g_owner
           and t2.name = blog_globals.g_ords_module
-          and t3.uri_template = blog_globals.g_ords_public_files_prefix || v1.file_path || ':p_file_name'
+          and t3.uri_template = blog_globals.g_ords_public_files || v1.file_path || ':p_file_name'
         )
       ) loop
 
         ords.define_template(
           p_module_name     => blog_globals.g_ords_module
-          ,p_pattern        => blog_globals.g_ords_public_files_prefix || c2.file_path || ':p_file_name'
+          ,p_pattern        => blog_globals.g_ords_public_files || c2.file_path || ':p_file_name'
           ,p_priority       => 0
           ,p_etag_type      => 'HASH'
           ,p_etag_query     => null
@@ -107,7 +107,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
 
         ords.define_handler(
           p_module_name     => blog_globals.g_ords_module
-          ,p_pattern        => blog_globals.g_ords_public_files_prefix || c2.file_path || ':p_file_name'
+          ,p_pattern        => blog_globals.g_ords_public_files || c2.file_path || ':p_file_name'
           ,p_method         => 'GET'
           ,p_source_type    => 'resource/lob'
           ,p_items_per_page => 0
@@ -135,7 +135,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
 
     ords.define_template(
       p_module_name     => blog_globals.g_ords_module
-      ,p_pattern        => blog_globals.g_ords_feed_template
+      ,p_pattern        => blog_globals.g_ords_rss_feed
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
       ,p_etag_query     => null
@@ -144,7 +144,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
 
     ords.define_handler(
       p_module_name     => blog_globals.g_ords_module
-      ,p_pattern        => blog_globals.g_ords_feed_template
+      ,p_pattern        => blog_globals.g_ords_rss_feed
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
       ,p_items_per_page => 0
@@ -158,7 +158,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
 
     ords.define_parameter(
       p_module_name         => blog_globals.g_ords_module
-      ,p_pattern            => blog_globals.g_ords_feed_template
+      ,p_pattern            => blog_globals.g_ords_rss_feed
       ,p_method             => 'GET'
       ,p_name               => 'p_lang'
       ,p_bind_variable_name => 'p_lang'
@@ -170,7 +170,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
 
     ords.define_template(
       p_module_name     => blog_globals.g_ords_module
-      ,p_pattern        => blog_globals.g_ords_sitemap_index_template
+      ,p_pattern        => blog_globals.g_ords_sitemap_index
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
       ,p_etag_query     => null
@@ -179,7 +179,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
 
     ords.define_handler(
       p_module_name     => blog_globals.g_ords_module
-      ,p_pattern        => blog_globals.g_ords_sitemap_index_template
+      ,p_pattern        => blog_globals.g_ords_sitemap_index
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
       ,p_mimes_allowed  => ''
@@ -192,7 +192,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
 
     ords.define_template(
       p_module_name     => blog_globals.g_ords_module
-      ,p_pattern        => blog_globals.g_ords_sitemap_main_template
+      ,p_pattern        => blog_globals.g_ords_sitemap_main
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
       ,p_etag_query     => null
@@ -201,7 +201,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
 
     ords.define_handler(
       p_module_name     => blog_globals.g_ords_module
-      ,p_pattern        => blog_globals.g_ords_sitemap_main_template
+      ,p_pattern        => blog_globals.g_ords_sitemap_main
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
       ,p_mimes_allowed  => ''
@@ -214,7 +214,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
 
     ords.define_template(
       p_module_name     => blog_globals.g_ords_module
-      ,p_pattern        => blog_globals.g_ords_sitemap_posts_template
+      ,p_pattern        => blog_globals.g_ords_sitemap_posts
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
       ,p_etag_query     => null
@@ -223,7 +223,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
 
     ords.define_handler(
       p_module_name     => blog_globals.g_ords_module
-      ,p_pattern        => blog_globals.g_ords_sitemap_posts_template
+      ,p_pattern        => blog_globals.g_ords_sitemap_posts
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
       ,p_mimes_allowed  => ''
@@ -241,7 +241,7 @@ CREATE OR REPLACE package body "BLOG_ORDS" as
   as
     l_url varchar2(4000);
   begin
-    select t1.pattern || t2.uri_prefix || blog_globals.g_ords_public_files_prefix as url
+    select t1.pattern || t2.uri_prefix || blog_globals.g_ords_public_files as url
     into l_url
     from user_ords_schemas t1
     join user_ords_modules t2 on t1.id = t2.schema_id

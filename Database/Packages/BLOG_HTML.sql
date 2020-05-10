@@ -12,6 +12,7 @@ as
 --    Jari Laine 29.04.2020 - New function get_robots_noindex_meta
 --    Jari Laine 29.04.2020 - functions to generate canonical link output robot noindex meta tag if proper link can't be generated
 --    Jari Laine 29.04.2020 - Added apex_debug to functions generating meta and canonical link
+--    Jari Laine 10.05.2020 - Utilize blog_url functions p_canonical
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -280,12 +281,12 @@ as
     if p_app_page_id is not null then
       return
         '<link rel="canonical" href="'
-        || blog_globals.g_canonical_url
         || blog_url.get_tab(
           p_app_id => p_app_id
           ,p_session => ''
           ,p_debug => 'NO'
           ,p_app_page_id => p_app_page_id
+          ,p_canonical => 'YES'
         )
         || '" />'
       ;
@@ -309,13 +310,13 @@ as
     if p_post_id is not null then
       return
         '<link rel="canonical" href="'
-        || blog_globals.g_canonical_url
         || blog_url.get_post(
           p_post_id       => p_post_id
           ,p_app_id       => p_app_id
           ,p_session      => ''
           ,p_app_page_id  => p_app_page_id
           ,p_page_item    => p_page_item
+          ,p_canonical => 'YES'
         )
         || '" />'
       ;
@@ -337,13 +338,13 @@ as
     -- generate canonical link for category
     return
       '<link rel="canonical" href="'
-      || blog_globals.g_canonical_url
       || blog_url.get_category(
         p_category_id   => p_category_id
         ,p_app_id       => p_app_id
         ,p_session      => ''
         ,p_app_page_id  => p_app_page_id
         ,p_page_item    => p_page_item
+        ,p_canonical => 'YES'
       )
       || '" />'
     ;
@@ -362,13 +363,13 @@ as
       -- generate canonical link for archives
       return
         '<link rel="canonical" href="'
-        || blog_globals.g_canonical_url
         || blog_url.get_archive(
           p_archive_id    => p_archive_id
           ,p_app_id       => p_app_id
           ,p_session      => ''
           ,p_app_page_id  => p_app_page_id
           ,p_page_item    => p_page_item
+          ,p_canonical => 'YES'
         )
         || '" />'
       ;
@@ -388,13 +389,13 @@ as
     if p_tag_id is not null then
       return
         '<link rel="canonical" href="'
-        || blog_globals.g_canonical_url
         || blog_url.get_tag(
           p_tag_id        => p_tag_id
           ,p_app_id       => p_app_id
           ,p_session      => ''
           ,p_app_page_id  => p_app_page_id
           ,p_page_item    => p_page_item
+          ,p_canonical    => 'YES'
         )
         || '" />'
       ;

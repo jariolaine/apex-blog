@@ -11,6 +11,7 @@ as
 --    Jari Laine 07.05.2019 - Created
 --    Jari Laine 08.01.2020 - Removed categories sitemap
 --    Jari Laine 08.01.2020 - Modified use ORDS and blog version 4
+--    Jari Laine 09.04.2020 - Utilize blog_url functions parameter p_canonical
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -122,16 +123,16 @@ as
     l_app_alias := blog_xml.get_app_alias;
 
     -- blog home page relative urlg_ords_rss_feed;
-    l_home_url  := blog_url.get_tab( l_app_alias );
+    l_home_url  := blog_url.get_tab(
+       p_app_id => l_app_alias
+      ,p_canonical => 'YES'
+    );
 
     -- blog name
     l_blog_name := blog_util.get_attribute_value( 'G_APP_NAME' );
 
     -- rss feed description
     l_rss_desc  := blog_util.get_attribute_value( 'G_APP_DESC' );
-
-    -- blog home page absolute url
-    l_home_url  := blog_globals.g_canonical_url || l_home_url;
 
     -- generate RSS
     select xmlserialize( document
@@ -163,12 +164,11 @@ as
               ,xmlelement( "title",       posts.post_title )
               ,xmlelement( "dc:creator",  posts.blogger_name )
               ,xmlelement( "category",    posts.category_title )
-              ,xmlelement( "link",
-                blog_globals.g_canonical_url
-                || blog_url.get_post(
-                   p_app_id  => l_app_alias
-                  ,p_post_id => posts.post_id
-                )
+              ,xmlelement( "link",        blog_url.get_post(
+                                             p_app_id     => l_app_alias
+                                            ,p_post_id    => posts.post_id
+                                            ,p_canonical  => 'YES'
+                                          )
               )
               ,xmlelement( "description", posts.post_desc )
               ,xmlelement( "pubDate",     to_char( sys_extract_utc( posts.published_on ), 'Dy, DD Mon YYYY HH24:MI:SS "GMT"' ) )
@@ -203,11 +203,11 @@ as
 
     l_main := blog_globals.g_canonical_url
       || blog_xml.get_ords_service(
-        blog_globals.g_ords_sitemap_main_template
+        blog_globals.g_ords_sitemap_main
       );
     l_posts := blog_globals.g_canonical_url
       || blog_xml.get_ords_service(
-        blog_globals.g_ords_sitemap_posts_template
+        blog_globals.g_ords_sitemap_posts
       );
 
     with si as (
@@ -256,9 +256,10 @@ as
     with sitemap_query as (
       select
          row_number() over(order by li.display_sequence) as rnum
-        ,blog_globals.g_canonical_url || blog_url.get_tab(
+        ,blog_url.get_tab(
            p_app_id  => l_app_alias
           ,p_app_page_id => li.entry_attribute_10
+          ,p_canonical => 'YES'
         ) as loc
       from apex_application_list_entries li
       where 1 = 1
@@ -314,9 +315,10 @@ as
       select
          posts.published_on
         ,posts.changed_on
-        ,blog_globals.g_canonical_url || blog_url.get_post(
-           p_app_id  => l_app_alias
-          ,p_post_id => posts.post_id
+        ,blog_url.get_post(
+           p_app_id     => l_app_alias
+          ,p_post_id    => posts.post_id
+          ,p_canonical  => 'YES'
         ) as loc
 --        ,a.changed_on AS lastmod
       from blog_v_posts posts

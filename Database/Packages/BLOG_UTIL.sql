@@ -13,6 +13,12 @@ as
 --    Jari Laine 15.04.2020 - function validate_comment
 --    Jari Laine 26.04.2020 - Changed validate_comment us apex_util.savekey_vc2
 --                            and removed custom functions that was doing same thing
+--    Jari Laine 08.05.2020 - Functions get_year_month are obsolete
+--                            application changed to group archives by year
+--    Jari Laine 10.05.2020 - Procedure new_comment_notify to notify blogger about new comments
+--
+--  TO DO:
+--    #1  comment HTML validation could improved
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -68,6 +74,12 @@ as
     p_max_length      in number default 4000,
     p_set_variable    in varchar2 default 'NO'
   ) return varchar2;
+--------------------------------------------------------------------------------
+  procedure new_comment_notify(
+    p_post_id         in varchar2,
+    p_app_name        in varchar2,
+    p_email_template  in varchar2
+  );
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
@@ -550,7 +562,7 @@ as
       ,q1.older_id
     into l_newer_id, l_older_id
     from (
-      select /*+ qb_name(blog_v_posts$inner) */
+      select
          v1.post_id
         ,lag( v1.post_id ) over(order by v1.published_on desc) as newer_id
         ,lead( v1.post_id ) over(order by v1.published_on desc) as older_id
@@ -847,6 +859,7 @@ as
       l_error := apex_lang.message( 'BLOG_VALIDATION_ERR_COMMENT_LENGTH' );
     else
       -- check HTML is valid
+      -- TO DO see item 1 from package specs
       begin
         l_xml := xmltype.createxml(
             '<root><row>'
@@ -875,6 +888,55 @@ as
     return l_error;
 
   end validate_comment;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure new_comment_notify(
+    p_post_id         in varchar2,
+    p_app_name        in varchar2,
+    p_email_template  in varchar2
+  )
+  as
+    l_post_id   number;
+    l_app_email varchar2(4000);
+  begin
+
+    -- fetch application email address
+    l_app_email := blog_util.get_attribute_value('APP_EMAIL');
+
+    -- send notify email if application email address is set
+    if l_app_email is not null
+    then
+
+      l_post_id   := to_number( p_post_id );
+
+      -- get values for APEX email template
+      for c1 in(
+        select v1.blogger_email
+          ,json_object (
+             'APP_NAME'     value p_app_name
+            ,'BLOGGER_NAME' value v1.blogger_name
+            ,'POST_TITLE'   value v1.title
+            ,'POST_LINK'    value blog_url.get_post(
+                                     p_post_id => v1.id
+                                    ,p_canonical => 'YES'
+                                  )
+          ) as placeholders
+        from blog_v_all_posts v1
+        where 1 = 1
+        and v1.id = l_post_id
+      ) loop
+        -- send notify email
+        apex_mail.send (
+           p_to                 => c1.blogger_email
+          ,p_from               => l_app_email
+          ,p_template_static_id => p_email_template
+          ,p_placeholders       => c1.placeholders
+        );
+      end loop;
+
+    end if;
+
+  end new_comment_notify;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";

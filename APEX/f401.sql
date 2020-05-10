@@ -35,7 +35,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --       Items:                   25
 --       Computations:             2
 --       Validations:              1
---       Processes:               10
+--       Processes:               11
 --       Regions:                 26
 --       Buttons:                  6
 --       Dynamic Actions:          9
@@ -67,6 +67,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --         Messages:              10
 --       Reports:
 --       E-Mail:
+--         Templates:              1
 --     Supporting Objects:  Excluded
 --   Version:         19.2.0.00.18
 --   Instance ID:     9502710254078678
@@ -124,7 +125,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200509191947'
+,p_last_upd_yyyymmddhh24miss=>'20200510081739'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>89
 ,p_ui_type_name => null
@@ -169,7 +170,7 @@ wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(6898961639645288)
 ,p_list_item_display_sequence=>40
 ,p_list_item_link_text=>'Links'
-,p_list_item_link_target=>'f?p=&APP_ID.:LINKS:&SESSION.::&DEBUG.::::'
+,p_list_item_link_target=>'f?p=&APP_ID.:LINKS:&SESSION.::&DEBUG.:RP:::'
 ,p_list_item_icon=>'fa-link'
 ,p_list_text_10=>'LINKS'
 ,p_required_patch=>wwv_flow_api.id(6905258727754156)
@@ -179,7 +180,7 @@ wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(7123115257892322)
 ,p_list_item_display_sequence=>50
 ,p_list_item_link_text=>'Files'
-,p_list_item_link_target=>'f?p=&APP_ID.:FILES:&SESSION.::&DEBUG.::::'
+,p_list_item_link_target=>'f?p=&APP_ID.:FILES:&SESSION.::&DEBUG.:RP:::'
 ,p_list_item_icon=>'fa-file-o'
 ,p_list_text_10=>'FILES'
 ,p_required_patch=>wwv_flow_api.id(24626889314854172)
@@ -189,7 +190,7 @@ wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(7123379023897277)
 ,p_list_item_display_sequence=>60
 ,p_list_item_link_text=>'About'
-,p_list_item_link_target=>'f?p=&APP_ID.:ABOUT:&SESSION.::&DEBUG.::::'
+,p_list_item_link_target=>'f?p=&APP_ID.:ABOUT:&SESSION.::&DEBUG.:RP:::'
 ,p_list_item_icon=>'fa-user'
 ,p_list_text_10=>'ABOUT'
 ,p_list_item_current_type=>'TARGET_PAGE'
@@ -13055,6 +13056,33 @@ wwv_flow_api.create_shortcut(
 );
 end;
 /
+prompt --application/shared_components/email/templates/blog_new_comment_notify
+begin
+wwv_flow_api.create_email_template(
+ p_id=>wwv_flow_api.id(31484344164259065)
+,p_name=>'Blog new comment notification'
+,p_static_id=>'BLOG_NEW_COMMENT_NOTIFY'
+,p_subject=>'New comment: #POST_TITLE#'
+,p_html_body=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'New comment is posted to your post <a href="#POST_LINK#">#POST_TITLE#</a>.',
+'',
+''))
+,p_html_header=>'<b>Hello #BLOGGER_NAME#,</b>'
+,p_html_footer=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Regards,<br>',
+'#APP_NAME#'))
+,p_text_template=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Hello #BLOGGER_NAME#,',
+'',
+'New comment is posted to your post #POST_TITLE#.',
+'See post from below link:',
+'#POST_LINK#',
+'',
+'Regards,',
+'#APP_NAME#'))
+);
+end;
+/
 prompt --application/shared_components/security/authentications/no_authentication
 begin
 wwv_flow_api.create_authentication(
@@ -13580,7 +13608,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200503205621'
+,p_last_upd_yyyymmddhh24miss=>'20200510064707'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -15760,7 +15788,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200505190516'
+,p_last_upd_yyyymmddhh24miss=>'20200510063514'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -15879,6 +15907,7 @@ wwv_flow_api.create_page_item(
 ,p_field_template=>wwv_flow_api.id(6855004103267413)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_warn_on_unsaved_changes=>'I'
+,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
@@ -16040,14 +16069,29 @@ wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26970862080257336)
 ,p_process_sequence=>30
 ,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Send notify email'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#OWNER#.blog_util.new_comment_notify(',
+'   p_post_id         => :P1001_POST_ID',
+'  ,p_app_name        => :G_APP_NAME',
+'  ,p_email_template  => ''BLOG_NEW_COMMENT_NOTIFY''',
+');'))
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_comment=>'Not working on APEX 19.2'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(31247931198982919)
+,p_process_sequence=>40
+,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_SESSION_STATE'
-,p_process_name=>'Clear Items Session State'
+,p_process_name=>'Clear items'
 ,p_attribute_01=>'CLEAR_CACHE_CURRENT_PAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26385226571542645)
-,p_process_sequence=>40
+,p_process_sequence=>50
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
 ,p_process_name=>'Close Dialog'

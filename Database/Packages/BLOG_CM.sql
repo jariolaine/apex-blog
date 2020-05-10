@@ -12,12 +12,15 @@ as
 --    Jari Laine 10.01.2020 - Added procedure merge_files and file_upload
 --    Jari Laine 12.01.2020 - Added function prepare_file_path
 --    Jari Laine 09.04.2020 - Handling tags case insensitive
+--    Jari Laine 09.05.2020 - Procedures and functions number input parameters changed to varchar2
+--    Jari Laine 09.05.2020 - New functions get_comment_post_id and is_email
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
 --    #2  group name is hard coded to procedure add_blogger
 --        some reason didn't manage use apex_authorization.is_authorized
 --        seems user session isn't entablished before process point After Authentication runs
+--    #3  email validation could improved
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -128,6 +131,12 @@ as
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 20012
   function is_date_format(
+    p_value           in varchar2,
+    p_err_mesg        in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  -- Called from: admin app pages 20012
+  function is_email(
     p_value           in varchar2,
     p_err_mesg        in varchar2
   ) return varchar2;
@@ -857,25 +866,48 @@ as
     )
     ;
   end save_post_preview;
-  --------------------------------------------------------------------------------
-  --------------------------------------------------------------------------------
-    function is_integer(
-      p_value     in varchar2,
-      p_err_mesg  in varchar2
-    ) return varchar2
-    as
-      l_err_mesg varchar2(32700);
-    begin
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function is_integer(
+    p_value     in varchar2,
+    p_err_mesg  in varchar2
+  ) return varchar2
+  as
+    l_err_mesg varchar2(32700);
+  begin
 
-      if round( to_number( p_value ) ) between 1 and 100
-      then
-        l_err_mesg := null;
-      end if;
+    if round( to_number( p_value ) ) between 1 and 100
+    then
+      l_err_mesg := null;
+    end if;
 
-      return l_err_mesg;
+    return l_err_mesg;
 
-    exception when invalid_number
-    or value_error
+  exception when invalid_number
+  or value_error
+  then
+    -- Prepare validation error message
+    l_err_mesg := apex_lang.message( p_err_mesg );
+
+    if l_err_mesg = apex_escape.html( p_err_mesg )
+    then
+      l_err_mesg := p_err_mesg;
+    end if;
+
+    return l_err_mesg;
+
+  end is_integer;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function is_url(
+    p_value     in varchar2,
+    p_err_mesg  in varchar2
+  ) return varchar2
+  as
+    l_err_mesg varchar2(32700);
+  begin
+
+    if not regexp_like(p_value, '^https?\:\/\/.*$')
     then
       -- Prepare validation error message
       l_err_mesg := apex_lang.message( p_err_mesg );
@@ -884,54 +916,53 @@ as
       then
         l_err_mesg := p_err_mesg;
       end if;
+    end if;
 
-      return l_err_mesg;
+    return l_err_mesg;
 
-    end is_integer;
-  --------------------------------------------------------------------------------
-  --------------------------------------------------------------------------------
-    function is_url(
-      p_value     in varchar2,
-      p_err_mesg  in varchar2
-    ) return varchar2
-    as
-      l_err_mesg varchar2(32700);
-    begin
+  end is_url;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function is_date_format(
+    p_value     in varchar2,
+    p_err_mesg  in varchar2
+  ) return varchar2
+  as
+    l_err_mesg          varchar2(32700);
+    invalid_date_format exception;
+    pragma              exception_init(invalid_date_format, -1821);
+  begin
 
-      if not regexp_like(p_value, '^https?\:\/\/.*$')
-      then
-        -- Prepare validation error message
-        l_err_mesg := apex_lang.message( p_err_mesg );
+    if to_char( systimestamp, p_value) = to_char( systimestamp, p_value )
+    then
+      l_err_mesg := null;
+    end if;
 
-        if l_err_mesg = apex_escape.html( p_err_mesg )
-        then
-          l_err_mesg := p_err_mesg;
-        end if;
-      end if;
+    return l_err_mesg;
 
-      return l_err_mesg;
+  exception when invalid_date_format
+  then
+    -- Prepare validation error message
+    l_err_mesg := apex_lang.message( p_err_mesg );
 
-    end is_url;
-  --------------------------------------------------------------------------------
-  --------------------------------------------------------------------------------
-    function is_date_format(
-      p_value     in varchar2,
-      p_err_mesg  in varchar2
-    ) return varchar2
-    as
-      l_err_mesg          varchar2(32700);
-      invalid_date_format exception;
-      pragma              exception_init(invalid_date_format, -1821);
-    begin
-
-      if to_char( systimestamp, p_value) = to_char( systimestamp, p_value )
-      then
-        l_err_mesg := null;
-      end if;
-
-      return l_err_mesg;
-
-    exception when invalid_date_format
+    if l_err_mesg = apex_escape.html( p_err_mesg )
+    then
+      l_err_mesg := p_err_mesg;
+    end if;
+    return l_err_mesg;
+  end is_date_format;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function is_email(
+    p_value     in varchar2,
+    p_err_mesg  in varchar2
+  ) return varchar2
+  as
+    l_err_mesg varchar2(32700);
+  begin
+    -- TO DO see item 3 from package specs
+    -- do some basic check for email address
+    if not regexp_like(p_value, '^.*\@.*\..*$')
     then
       -- Prepare validation error message
       l_err_mesg := apex_lang.message( p_err_mesg );
@@ -940,8 +971,11 @@ as
       then
         l_err_mesg := p_err_mesg;
       end if;
-      return l_err_mesg;
-    end is_date_format;
+    end if;
+
+    return l_err_mesg;
+
+  end is_email;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_comment_post_id(
