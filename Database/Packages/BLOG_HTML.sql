@@ -282,11 +282,9 @@ as
       return
         '<link rel="canonical" href="'
         || blog_url.get_tab(
-          p_app_id => p_app_id
-          ,p_session => ''
-          ,p_debug => 'NO'
-          ,p_app_page_id => p_app_page_id
-          ,p_canonical => 'YES'
+           p_app_id       => p_app_id
+          ,p_app_page_id  => p_app_page_id
+          ,p_canonical    => 'YES'
         )
         || '" />'
       ;

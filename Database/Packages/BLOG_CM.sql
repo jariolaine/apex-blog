@@ -13,7 +13,8 @@ as
 --    Jari Laine 12.01.2020 - Added function prepare_file_path
 --    Jari Laine 09.04.2020 - Handling tags case insensitive
 --    Jari Laine 09.05.2020 - Procedures and functions number input parameters changed to varchar2
---    Jari Laine 09.05.2020 - New functions get_comment_post_id and is_email
+--                            New functions get_comment_post_id and is_email
+--    Jari Laine 10.05.2020 - Procedure send_reply_notify to send notify on reply to comment
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -145,6 +146,14 @@ as
   function get_comment_post_id(
     p_comment_id      in varchar2
   ) return varchar2;
+--------------------------------------------------------------------------------
+  -- Called from: admin app pages 33
+  procedure send_reply_notify(
+    p_app_id          in varchar2,
+    p_app_name        in varchar2,
+    p_post_id         in varchar2,
+    p_email_template  in varchar2
+  );
 --------------------------------------------------------------------------------
 end "BLOG_CM";
 /
@@ -312,7 +321,7 @@ as
   )
   as
   begin
-    -- Fetch blogger id and name
+    -- fetch blogger id and name
     select id
       ,blogger_name
     into p_id, p_name
@@ -339,12 +348,12 @@ as
     l_max     number;
     l_result  varchar2(256);
   begin
-    -- Fetch and return next category display sequence
+    -- fetch max category display sequence
     select max( v1.display_seq ) as display_seq
     into l_max
     from blog_v_all_categories v1
     ;
-
+    -- return next category display sequence
     l_result := to_char(
       ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10
       ,blog_globals.g_number_format
@@ -361,11 +370,13 @@ as
     l_max     number;
     l_result  varchar2(256);
   begin
-    -- Fetch and return next link group display sequence
+
+    -- fetch max link group display sequence
     select max( v1.display_seq ) as display_seq
     into l_max
     from blog_v_all_link_groups v1
     ;
+    -- return next link group display sequence
     l_result := to_char(
       ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10
       ,blog_globals.g_number_format
@@ -386,14 +397,15 @@ as
   begin
 
     l_link_group_id := to_number( p_link_group_id );
-    -- Fetch and return next link display sequence
-    select max( v1.display_seq) as display_seq
+
+    -- fetch max link display sequence
+    select max( v1.display_seq ) as display_seq
     into l_max
     from blog_v_all_links v1
     where 1 = 1
     and link_group_id = l_link_group_id
     ;
-
+    -- return next link display sequence
     l_result := to_char(
       ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10
       ,blog_globals.g_number_format
@@ -409,10 +421,10 @@ as
   ) return varchar2
   as
   begin
-    -- One reason for this function is that APEX 19.2 as bug in switch.
-    -- Switch not allow return value zero (0)
+    -- one reason for this function is that APEX 19.2 as bug in switch.
+    -- switch not allow return value zero (0)
 
-    -- Conver APEX request to post status (blog_posts.is_active)
+    -- conver APEX request to post status (blog_posts.is_active)
     return case p_request
       when 'CREATE_DRAFT'
       then '0'
@@ -425,7 +437,7 @@ as
       when 'REVERT_DRAFT'
       then '0'
       when 'SAVE'
-      then 1
+      then '1'
       else '0'
     end;
 
@@ -443,7 +455,7 @@ as
 
     l_post_id := to_number( p_post_id );
 
-    -- Fetch and return comma separated is of post tags
+    -- fetch and return comma separated is of post tags
     select listagg( v1.tag, p_sep) within group( order by v1.display_seq ) as tags
     into l_tags
     from blog_v_all_post_tags v1
@@ -525,9 +537,8 @@ as
     l_first_p_start := instr( p_body_html, '<p>' );
     l_first_p_end   := instr( p_body_html, '</p>' );
 
+    --post must have at least one paragraph
     if l_first_p_start = 0 or l_first_p_end = 0 then
-      --Post must have at least one paragraph
-
       -- Prepare error message
       l_err_mesg := apex_lang.message( coalesce( p_err_mesg, 'BLOG_ERR_POST_NO_PARAGRAPH' ) );
 
@@ -585,7 +596,7 @@ as
     l_file_name   varchar2(256);
   begin
 
-    -- Unzip functionality is not implemented
+    -- unzip functionality is not implemented
 
     l_file_exists := false;
 
@@ -601,8 +612,8 @@ as
       p_collection_name => 'BLOG_FILES'
     );
 
-    -- Store uploaded files to apex_collection
-    -- If files exists, we prompt user to confirm file overwrite
+    -- store uploaded files to apex_collection
+    -- if files exists, we prompt user to confirm file overwrite
     for i in 1 .. l_file_names.count
     loop
 
@@ -648,7 +659,7 @@ as
       end loop;
     end loop;
 
-    -- If non of files exists before inset files to blog_files
+    -- if non of files exists, insert files to blog_files
     if not l_file_exists then
       blog_cm.merge_files;
     end if;
@@ -663,6 +674,7 @@ as
   ) return varchar2
   as
   begin
+    -- remove whitespace characters from string
     return regexp_replace( p_string, '\s+', ' ' );
   end remove_whitespace;
 --------------------------------------------------------------------------------
@@ -671,7 +683,7 @@ as
   as
   begin
 
-    -- Insert new files and overwrite existing
+    -- insert new files and overwrite existing
     merge into blog_files t1 using blog_v_temp_files v1
     on (t1.id = v1.id)
     when matched then
@@ -714,10 +726,9 @@ as
     p_category_id := null;
     l_value := trim( p_title );
 
+    -- category title must have some value
     if l_value is null then
-      -- Category title must have some value
-
-      -- Prepare error message
+      -- prepare error message
       l_err_mesg := apex_lang.message( p_err_mesg );
 
       if l_err_mesg = apex_escape.html( p_err_mesg )
@@ -742,7 +753,7 @@ as
 
   -- TO DO see item 1 from package specs
   exception when dup_val_on_index then
-    -- If category already exists, just fetch id
+    -- if category already exists, just fetch id
     l_value := upper( l_value );
     select v1.id
     into p_category_id
@@ -836,6 +847,7 @@ as
   end remove_unused_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  -- this procedure is not used / not ready
   procedure save_post_preview(
     p_id              in varchar2,
     p_tags            in varchar2,
@@ -876,6 +888,14 @@ as
     l_err_mesg varchar2(32700);
   begin
 
+    -- prepare validation error message
+    l_err_mesg := apex_lang.message( p_err_mesg );
+
+    if l_err_mesg = apex_escape.html( p_err_mesg )
+    then
+      l_err_mesg := p_err_mesg;
+    end if;
+
     if round( to_number( p_value ) ) between 1 and 100
     then
       l_err_mesg := null;
@@ -886,16 +906,7 @@ as
   exception when invalid_number
   or value_error
   then
-    -- Prepare validation error message
-    l_err_mesg := apex_lang.message( p_err_mesg );
-
-    if l_err_mesg = apex_escape.html( p_err_mesg )
-    then
-      l_err_mesg := p_err_mesg;
-    end if;
-
     return l_err_mesg;
-
   end is_integer;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -909,13 +920,15 @@ as
 
     if not regexp_like(p_value, '^https?\:\/\/.*$')
     then
-      -- Prepare validation error message
+      -- prepare validation error message
       l_err_mesg := apex_lang.message( p_err_mesg );
 
       if l_err_mesg = apex_escape.html( p_err_mesg )
       then
         l_err_mesg := p_err_mesg;
       end if;
+    else
+      l_err_mesg := null;
     end if;
 
     return l_err_mesg;
@@ -933,7 +946,15 @@ as
     pragma              exception_init(invalid_date_format, -1821);
   begin
 
-    if to_char( systimestamp, p_value) = to_char( systimestamp, p_value )
+    -- prepare validation error message
+    l_err_mesg := apex_lang.message( p_err_mesg );
+
+    if l_err_mesg = apex_escape.html( p_err_mesg )
+    then
+      l_err_mesg := p_err_mesg;
+    end if;
+
+    if to_char( systimestamp, p_value ) = to_char( systimestamp, p_value )
     then
       l_err_mesg := null;
     end if;
@@ -942,13 +963,6 @@ as
 
   exception when invalid_date_format
   then
-    -- Prepare validation error message
-    l_err_mesg := apex_lang.message( p_err_mesg );
-
-    if l_err_mesg = apex_escape.html( p_err_mesg )
-    then
-      l_err_mesg := p_err_mesg;
-    end if;
     return l_err_mesg;
   end is_date_format;
 --------------------------------------------------------------------------------
@@ -971,6 +985,8 @@ as
       then
         l_err_mesg := p_err_mesg;
       end if;
+    else
+      l_err_mesg := null;
     end if;
 
     return l_err_mesg;
@@ -988,7 +1004,7 @@ as
 
     l_comment_id := to_number( p_comment_id );
 
-    -- Fetch and return comma separated is of post tags
+    -- fetch and return post id for comment
     select v1.post_id
     into l_post_id
     from blog_v_all_comments v1
@@ -999,6 +1015,64 @@ as
     return to_char(l_post_id, blog_globals.g_number_format );
 
   end get_comment_post_id;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure send_reply_notify(
+    p_app_id          in varchar2,
+    p_app_name        in varchar2,
+    p_post_id         in varchar2,
+    p_email_template  in varchar2
+  )
+  as
+    l_post_id   number;
+    l_app_email varchar2(4000);
+  begin
+
+    l_post_id := to_number( p_post_id );
+
+    -- fetch application email address
+    l_app_email := blog_util.get_attribute_value('APP_EMAIL');
+
+    -- send notify users that have subscribed to replies to comment
+    for c1 in(
+      select t2.email
+      ,json_object (
+         'APP_NAME'         value p_app_name
+        ,'POST_TITLE'       value v1.title
+        ,'POST_LINK'        value
+            blog_url.get_post(
+               p_app_id     => p_app_id
+              ,p_post_id    => v1.id
+              ,p_canonical  => 'YES'
+            )
+        ,'UNSUBSCRIBE_LINK' value
+            blog_url.get_unsubscribe(
+               p_app_id          => p_app_id
+              ,p_post_id         => p_post_id
+              ,p_subscription_id => t1.id
+            )
+       ) as placeholders
+      from blog_comment_subs t1
+      join blog_comment_subs_email t2
+        on t1.email_id = t2.id
+      join blog_v_all_posts v1
+        on t1.post_id = v1.id
+      where 1 = 1
+        -- send notification if subscription is created less than month ago
+        and t1.created_on >= add_months( localtimestamp, -1 )
+        and v1.id = l_post_id
+    ) loop
+
+      apex_mail.send (
+         p_from => l_app_email
+        ,p_to   => c1.email
+        ,p_template_static_id => p_email_template
+        ,p_placeholders => c1.placeholders
+      );
+
+    end loop;
+
+  end send_reply_notify;
 --------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 end "BLOG_CM";

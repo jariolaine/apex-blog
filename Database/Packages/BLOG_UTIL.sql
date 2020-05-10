@@ -16,6 +16,8 @@ as
 --    Jari Laine 08.05.2020 - Functions get_year_month are obsolete
 --                            application changed to group archives by year
 --    Jari Laine 10.05.2020 - Procedure new_comment_notify to notify blogger about new comments
+--                            Procedure subscribe to subscribe comment reply
+--                            Procedure unsubscribe for unsubscribe comment reply
 --
 --  TO DO:
 --    #1  comment HTML validation could improved
@@ -81,6 +83,15 @@ as
     p_email_template  in varchar2
   );
 --------------------------------------------------------------------------------
+  procedure subscribe(
+    p_post_id         in varchar2,
+    p_email           in varchar2
+  );
+--------------------------------------------------------------------------------
+  procedure unsubscribe(
+    p_subscription_id in varchar2
+  );
+--------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
 
@@ -96,9 +107,6 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure remove_ascii(
@@ -127,8 +135,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure escape_html(
-    p_string          in out nocopy varchar2,
-    p_whitelist_tags  in varchar2
+    p_string in out nocopy varchar2
   )
   as
   begin
@@ -141,7 +148,7 @@ as
     -- escape comment html
     p_string := apex_escape.html_whitelist(
        p_html            => p_string
-      ,p_whitelist_tags  => p_whitelist_tags
+      ,p_whitelist_tags  => blog_globals.g_whitelist_tags
     );
 
     -- escape hash marks
@@ -278,8 +285,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure format_comment(
-    p_comment         in out nocopy varchar2,
-    p_whitelist_tags  in varchar2
+    p_comment in out nocopy varchar2
   )
   as
     l_comment varchar2(32700);
@@ -296,7 +302,6 @@ as
     -- escape HTML
     blog_util.escape_html(
        p_string => p_comment
-      ,p_whitelist_tags  => p_whitelist_tags
     );
     -- build comment HTML
     blog_util.build_comment_html(
@@ -831,10 +836,9 @@ as
   ) return varchar2
   as
 
-    l_xml               xmltype;
-    l_error             varchar2(32700);
-    l_comment           varchar2(32700);
-    l_whitelist_tags    varchar2(32700);
+    l_xml     xmltype;
+    l_error   varchar2(32700);
+    l_comment varchar2(32700);
 
     xml_parsing_failed  exception;
     pragma exception_init( xml_parsing_failed, -31011 );
@@ -843,14 +847,9 @@ as
 
     l_comment := p_comment;
 
-    -- fetch allowed HTML tags from settings
-    l_whitelist_tags := blog_util.get_attribute_value(
-      p_attribute_name => 'COMMENT_WHITELIST_TAGS'
-    );
     -- format comment
     blog_util.format_comment(
-       p_comment        => l_comment
-      ,p_whitelist_tags => l_whitelist_tags
+       p_comment => l_comment
     );
     -- check formatted comment length
     if length( l_comment ) > p_max_length
@@ -903,40 +902,101 @@ as
     -- fetch application email address
     l_app_email := blog_util.get_attribute_value('APP_EMAIL');
 
-    -- send notify email if application email address is set
-    if l_app_email is not null
-    then
+    l_post_id   := to_number( p_post_id );
 
-      l_post_id   := to_number( p_post_id );
-
-      -- get values for APEX email template
-      for c1 in(
-        select v1.blogger_email
-          ,json_object (
-             'APP_NAME'     value p_app_name
-            ,'BLOGGER_NAME' value v1.blogger_name
-            ,'POST_TITLE'   value v1.title
-            ,'POST_LINK'    value blog_url.get_post(
-                                     p_post_id => v1.id
-                                    ,p_canonical => 'YES'
-                                  )
-          ) as placeholders
-        from blog_v_all_posts v1
-        where 1 = 1
-        and v1.id = l_post_id
-      ) loop
-        -- send notify email
-        apex_mail.send (
-           p_to                 => c1.blogger_email
-          ,p_from               => l_app_email
-          ,p_template_static_id => p_email_template
-          ,p_placeholders       => c1.placeholders
-        );
-      end loop;
-
-    end if;
+    -- get values for APEX email template
+    -- send notify email if blog email address is set
+    -- and blogger has set email
+    for c1 in(
+      select v1.blogger_email
+        ,json_object (
+           'APP_NAME'     value p_app_name
+          ,'BLOGGER_NAME' value v1.blogger_name
+          ,'POST_TITLE'   value v1.title
+          ,'POST_LINK'    value
+              blog_url.get_post(
+                 p_post_id => v1.id
+                ,p_canonical => 'YES'
+              )
+        ) as placeholders
+      from blog_v_all_posts v1
+      where 1 = 1
+      and v1.id = l_post_id
+      and v1.blogger_email is not null
+      and l_app_email is not null
+    ) loop
+      -- send notify email
+      apex_mail.send (
+         p_to                 => c1.blogger_email
+        ,p_from               => l_app_email
+        ,p_template_static_id => p_email_template
+        ,p_placeholders       => c1.placeholders
+      );
+    end loop;
 
   end new_comment_notify;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure subscribe(
+    p_post_id in varchar2,
+    p_email   in varchar2
+  )
+  as
+    l_email     varchar2(256);
+    l_post_id   number;
+    l_email_id  number;
+  begin
+
+    l_email   := trim( lower( p_email ) );
+    l_post_id := to_number( p_post_id );
+
+    -- subscribe user to get notify on reply to comment
+    if p_email is not null
+    and p_post_id is not null
+    then
+      -- store email address and return id
+      begin
+        insert into
+          blog_comment_subs_email( email, is_active )
+        values ( l_email, 1 )
+        returning id into l_email_id
+        ;
+      -- if email address already exists, fetch id
+      exception when dup_val_on_index
+      then
+        select id
+        into l_email_id
+        from blog_comment_subs_email
+        where 1 = 1
+        and email_unique = l_email
+        ;
+      end;
+      -- store post to email link
+      insert into
+        blog_comment_subs( post_id, email_id )
+      values
+        ( p_post_id, l_email_id )
+      ;
+    end if;
+  -- if subscription already exists, do nothing
+  exception when dup_val_on_index
+  then
+    null;
+  end subscribe;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure unsubscribe(
+    p_subscription_id in varchar2
+  )
+  as
+  begin
+    -- remove user subscribtion to get notify from replies
+    delete
+      from blog_comment_subs
+    where 1 = 1
+    and id = p_subscription_id
+    ;
+  end unsubscribe;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";

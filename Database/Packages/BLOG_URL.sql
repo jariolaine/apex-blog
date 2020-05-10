@@ -14,6 +14,7 @@ as
 --                            Functions that are also used in query
 --                            another signature with varchar2 input and return values created for APEX
 --    Jari Laine 09.05.2020 - Added parameter p_canonical to functions returning URL
+--    Jari Laine 10.05.2020 - New function get_unsubscribe
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -23,7 +24,6 @@ as
     p_app_id          in varchar2 default null,
     p_app_page_id     in varchar2 default blog_globals.g_home_page,
     p_session         in varchar2 default null,
-    p_debug           in varchar2 default 'NO',
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -90,6 +90,12 @@ as
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
+  function get_unsubscribe(
+    p_app_id          in varchar2,
+    p_post_id         in varchar2,
+    p_subscription_id in number
+  ) return varchar2;
+--------------------------------------------------------------------------------
   procedure redirect_search(
     p_value           in varchar2,
     p_app_id          in varchar2 default null,
@@ -124,7 +130,6 @@ CREATE OR REPLACE package body blog_url as
     p_app_id        in varchar2 default null,
     p_app_page_id   in varchar2 default blog_globals.g_home_page,
     p_session       in varchar2 default null,
-    p_debug         in varchar2 default 'NO',
     p_canonical     in varchar2 default 'NO'
   ) return varchar2
   as
@@ -140,7 +145,6 @@ CREATE OR REPLACE package body blog_url as
         p_application => p_app_id
        ,p_page        => p_app_page_id
        ,p_session     => p_session
-       ,p_debug       => p_debug
        ,p_clear_cache => 'RP'
        --,p_plain_url   => true
       );
@@ -190,9 +194,7 @@ CREATE OR REPLACE package body blog_url as
     -- apex_page.get_url don't have parameter p_plain_url
     if p_canonical = 'YES'
     then
-      l_url :=
-        blog_globals.g_canonical_url
-        || 'f?p='
+      l_url := 'f?p='
         || coalesce( p_app_id, v( 'APP_ID' ) )
         || ':'
         || p_app_page_id
@@ -205,6 +207,8 @@ CREATE OR REPLACE package body blog_url as
       ;
 
       l_url :=
+        blog_globals.g_canonical_url
+        ||
         apex_util.prepare_url(
            p_url => l_url
           ,p_plain_url => true
@@ -372,6 +376,48 @@ CREATE OR REPLACE package body blog_url as
     ;
 
   end get_tag;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_unsubscribe(
+    p_app_id          in varchar2,
+    p_post_id         in varchar2,
+    p_subscription_id in number
+  ) return varchar2
+  as
+    l_url     varchar2(4000);
+    l_subs_id varchar2(256);
+  begin
+
+    l_subs_id := to_char( p_subscription_id, blog_globals.g_number_format );
+    -- workaround because APEX 19.2
+    -- apex_page.get_url don't have parameter p_plain_url
+    l_url := 'f?p='
+      || p_app_id
+      || ':'
+      || blog_globals.g_post_page
+      || ':::NO:RP:'
+      || blog_globals.g_post_item
+      || ','
+      || blog_globals.g_unsubscribe_item
+      || ':'
+      || p_post_id
+      || ','
+      || p_subscription_id
+    ;
+
+    l_url :=
+      blog_globals.g_canonical_url
+      ||
+      apex_util.prepare_url(
+         p_url => l_url
+        ,p_checksum_type => 'PUBLIC_BOOKMARK'
+        ,p_plain_url => true
+      )
+    ;
+
+    return l_url;
+
+  end get_unsubscribe;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure redirect_search(

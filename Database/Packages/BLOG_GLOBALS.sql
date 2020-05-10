@@ -9,7 +9,8 @@ as
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 29.03.2020 - Created
---    Jari Laine 16.04.2020 - Variables for commenting
+--    Jari Laine 16.04.2020 - Constants for comment program code css class
+--    Jari Laine 10.05.2020 - Added constant g_unsubscribe_item
 --
 --  TO DO:
 --    #1  Package contains hard coded values
@@ -36,13 +37,15 @@ as
 
   g_rss_url             constant varchar2(4000) := blog_util.get_attribute_value( 'RSS_URL' );
 
-  g_canonical_url       constant varchar2(4000) := rtrim( blog_util.get_attribute_value( 'CANONICAL_URL' ), '/' ) || '/';
+  g_canonical_url       constant varchar2(4000) := blog_util.get_attribute_value( 'CANONICAL_URL' );
 
   -- URL
   g_home_page           constant varchar2(40)   := 'HOME';
 
   g_post_page           constant varchar2(40)   := 'POST';
   g_post_item           constant varchar2(40)   := 'P2_POST_ID';
+
+  g_unsubscribe_item    constant varchar2(40)   := 'P2_SUBSCRIPTION_ID';
 
   g_search_page         constant varchar2(40)   := 'SEARCH';
   g_search_item         constant varchar2(40)   := 'P0_SEARCH';
@@ -56,11 +59,12 @@ as
   g_tag_page            constant varchar2(40)   := 'TAG';
   g_tag_item            constant varchar2(40)   := 'P6_TAG_ID';
 
-  -- Comments
-  g_code_css_class      constant varchar2(40)   := 'z-program-code';
-
   -- XML
   g_pub_app_tab_list    constant varchar2(256)  := 'Desktop Navigation Menu';
+
+  -- comments
+  g_whitelist_tags      constant varchar2(256)  := '<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>';
+  g_code_css_class      constant varchar2(256)  := 'z-program-code';
 
 -------------------------------------------------------------------------------
 END "BLOG_GLOBALS";
