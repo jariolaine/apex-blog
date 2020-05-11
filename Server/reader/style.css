@@ -151,19 +151,6 @@ input[data-z-switch="true"][value="0"]:checked+label{
 }
 
 /**************************************
-* Links media list report
-**************************************/
-/*.z-MediaList{
-  border-color: #e0e0e0;
-}*/
-.z-noDataFound .t-MediaList-desc{
-  color: #262626;
-  text-align: center;
-  font-size: 1.2rem;
-  line-height: 2rem;
-}
-
-/**************************************
 * Files media list report
 **************************************/
 .z-MediaList .nodatafound{
@@ -171,6 +158,16 @@ input[data-z-switch="true"][value="0"]:checked+label{
 }
 .z-MediaList--files .t-MediaList-title {
   word-break: break-word;
+}
+
+/**************************************
+* Links media list report
+**************************************/
+.z-noDataFound .t-MediaList-desc{
+  color: #262626;
+  text-align: center;
+  font-size: 1.2rem;
+  line-height: 2rem;
 }
 
 /**************************************
@@ -246,7 +243,7 @@ input[data-z-switch="true"][value="0"]:checked+label{
 * Program code formatting
 **************************************/
 pre.z-program-code{
-  font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace;
+  font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Bitstream Vera Sans Mono,Courier New,monospace;
   color: #000000;
   font-size: 1.1rem;
   tab-size: 2;
@@ -287,6 +284,17 @@ pre.z-program-code code:nth-child(odd):before{
 }
 
 /**************************************
+* Region
+**************************************/
+.z-app-footer {
+  margin-left: 8.2rem;
+}
+
+.z-app-footer--links {
+  padding: 1rem 0 2rem 0;
+}
+
+/**************************************
 * Media query
 **************************************/
 @media only screen and (max-width: 768px){
@@ -305,6 +313,13 @@ pre.z-program-code code:nth-child(odd):before{
     font-size: 1.6rem;
   }
 
+  /**************************************
+  * Region
+  **************************************/
+  .z-app-footer{
+    margin: 0;
+  }
+  
   /**************************************
   * Post custom report template
   **************************************/

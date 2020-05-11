@@ -5,7 +5,7 @@ as
 --------------------------------------------------------------------------------
 --
 --  DESCRIPTION
---    Functions and procedures for APEX plugins
+--    Procedures and functions for APEX plugins
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 22.04.2019 - Created
@@ -38,11 +38,11 @@ end "BLOG_PLUGIN";
 /
 
 
-CREATE OR REPLACE package body  "BLOG_PLUGIN"
+CREATE OR REPLACE package body "BLOG_PLUGIN"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- Private variables and constants
+-- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- none
@@ -160,15 +160,15 @@ as
     l_num_2 := round( sys.dbms_random.value( l_min, l_max ) );
 
     l_data  := '<span class="z-question">';
-    l_data  := l_data || blog_plugin.to_html_entities( l_num_1, blog_globals.g_number_format );
+    l_data  := l_data || to_html_entities( l_num_1, blog_util.g_number_format );
     l_data  := l_data || '&nbsp;&#' || ascii('+') || '&nbsp;';
-    l_data  := l_data || blog_plugin.to_html_entities( l_num_2, blog_globals.g_number_format );
+    l_data  := l_data || to_html_entities( l_num_2, blog_util.g_number_format );
     l_data  := l_data || '&#' || ascii('?');
     l_data  := l_data || '</span>';
 
     apex_util.set_session_state(
        p_name   => p_item.attribute_05
-      ,p_value  => to_char( l_num_1 + l_num_2 , blog_globals.g_number_format )
+      ,p_value  => to_char( l_num_1 + l_num_2 , blog_util.g_number_format )
       ,p_commit => false
     );
 

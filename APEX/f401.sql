@@ -32,11 +32,11 @@ prompt APPLICATION 401 - Blog Public Pages
 --   Flashback:       0
 --   Export Type:     Application Export
 --     Pages:                     12
---       Items:                   27
---       Computations:             4
+--       Items:                   28
+--       Computations:             6
 --       Validations:              1
---       Processes:               13
---       Regions:                 28
+--       Processes:               14
+--       Regions:                 27
 --       Buttons:                  6
 --       Dynamic Actions:          9
 --     Shared Components:
@@ -61,7 +61,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --           Button:               3
 --           Report:              13
 --         LOVs:                   1
---         Shortcuts:             11
+--         Shortcuts:             12
 --         Plug-ins:               1
 --       Globalization:
 --         Messages:              10
@@ -121,11 +121,11 @@ wwv_flow_api.create_flow(
 ,p_rejoin_existing_sessions=>'P'
 ,p_csv_encoding=>'Y'
 ,p_auto_time_zone=>'N'
-,p_error_handling_function=>'#OWNER#.blog_err.apex_error_handler'
+,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200510203148'
+,p_last_upd_yyyymmddhh24miss=>'20200511215400'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>89
 ,p_ui_type_name => null
@@ -242,7 +242,9 @@ wwv_flow_api.create_list(
 'select',
 '   1                    as link_level',
 '  ,v1.category_title    as link_text',
-'  ,v1.category_url      as target_url',
+'  ,blog_url.get_category(',
+'     p_category_id => v1.category_id',
+'   )                    as target_url',
 '   -- list is cached so we can''t use is_current attribute',
 '  ,''NO''                 as is_current',
 '  ,null                 as image',
@@ -274,7 +276,9 @@ wwv_flow_api.create_list(
 'select',
 '   1                    as link_level',
 '  ,v1.post_title        as link_text',
-'  ,v1.post_url          as target_url',
+'  ,blog_url.get_post( ',
+'     p_post_id => v1.post_id',
+'   )                    as target_url',
 '   -- list is cached so we can''t use is_current attribute',
 '  ,''NO''                 as is_current',
 '  ,null                 as image',
@@ -287,7 +291,9 @@ wwv_flow_api.create_list(
 '   || v1.post_id',
 '   || ''"''               as attribute2',
 '  ,''z-link--no-border''  as attribute3',
-'from #OWNER#.blog_v_posts_last05 v1',
+'from #OWNER#.blog_v_posts_last20 v1',
+'where 1 = 1',
+'and v1.display_seq <= 5',
 'order by v1.published_on desc',
 ''))
 ,p_list_status=>'PUBLIC'
@@ -308,7 +314,9 @@ wwv_flow_api.create_list(
 '    || '' (''',
 '    || v1.post_count',
 '    || '')''              as link_text',
-'  ,v1.archive_url       as target_url',
+'  ,blog_url.get_archive(',
+'     p_archive_id => v1.archive_year',
+'   )                    as target_url',
 '   -- list is cached so we can''t use is_current attribute',
 '  ,''NO''                 as is_current',
 '  ,null                 as image',
@@ -4983,7 +4991,7 @@ wwv_flow_api.create_theme(
 ,p_default_popup_transition=>'NONE'
 ,p_default_navbar_list_template=>wwv_flow_api.id(6848359906267410)
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_theme_file_prefix(42),'#IMAGE_PREFIX#themes/theme_42/1.4/')
-,p_files_version=>201
+,p_files_version=>204
 ,p_icon_library=>'FONTAPEX'
 ,p_javascript_file_urls=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#IMAGE_PREFIX#libraries/apex/#MIN_DIRECTORY#widget.stickyWidget#MIN#.js?v=#APEX_VERSION#',
@@ -5062,32 +5070,36 @@ wwv_flow_api.create_theme_style(
 ,p_is_accessible=>true
 ,p_theme_roller_input_file_urls=>'#THEME_IMAGES#less/theme/Vita.less'
 ,p_theme_roller_config=>'{"customCSS":"/**************************************\n* Elements\n**************************************/\nblockquote::before{\n  content: open-quote;\n  font-size: 2.2rem;\n}\nblockquote::after{\n  content: close-quote;\n  font-size: 2.2rem;\n}\nbl'
-||'ockquote p{\n  display: inline;\n}\n\n/**************************************\n* Logo\n**************************************/\n.z-app-logo{\n  display: flex;\n  flex-direction: column;\n}\n.z-app-desc{\n  white-space: normal;\n}\n\n/****************'
-||'**********************\n* Right column link lists\n**************************************/\n.z-link--no-border,\n.z-link--no-border a:focus{\n  border: none;\n  outline: none;\n  box-shadow: none;\n}\n\n/**************************************\n* Clas'
-||'sic reports\n**************************************/\n.nodatafound{\n  text-align: center;\n  color: #262626;\n  font-size: 1.2rem;\n  line-height: 2rem;\n  padding: 0;\n}\n.pagination{\n  text-align: right;\n  width: 100%;\n}\n\n/*******************'
-||'*******************\n* Post custom template report\n**************************************/\n.z-post{\n  background-color: #ffffff;\n  margin-bottom: 3.2rem;\n  border: 1px solid rgba(0,0,0,.1);\n  border-radius: 2px;\n  box-shadow: 0 2px 4px -2px rg'
-||'ba(0,0,0,.075);\n  padding: 16px;\n}\n.z-post:last-child {\n  margin-bottom: 12px;\n}\n.z-post--header{\n  clear: both;\n}\n.z-post--header h1{\n  font-size: 1.6em;\n  margin: 0 0 0.2rem;\n}\n.z-post--header h2{\n  font-size: 1.4rem;\n  margin: 0 0 1'
-||'.8rem;\n}\n.z-post--header h3{\n  font-size: 1.4rem;\n  margin: 0 0 0.2rem;\n}\n.z-post--body img{\n  max-width: 100%;\n  height: auto;\n}\n.z-post--body br{\n  clear: none!important;\n}\n.z-post--tags{\n  width: 100%;\n  clear: both;\n  margin: 2rem'
-||' 0 0;\n  border-top: 1px solid rgba(0, 0, 0, 0.075)\n}\n.z-post--footer{\n  width: 100%;\n  clear: both;\n  margin: 1.2rem 0 0;\n}\n.z-post--no-margin .z-post{\n  margin-bottom: 0!important;\n}\n\n/**************************************\n* Archives, '
-||'categories and links\n**************************************/\n.z-listStacked--Report ul{\n  padding: 1.6rem;\n}\n.z-listStacked--Header{\n  border-top: 1px solid rgba(0,0,0,.1);\n  border-bottom: 1px solid rgba(0,0,0,.075);\n  padding: 1.2rem;\n  ma'
-||'rgin: 0;\n  font-size: 1.6rem;\n  font-weight: 500;\n  line-height: 2.4rem;\n}\n.z-listStacked--Header:nth-child(2){\n  border-top: none;\n}\n.z-listStacked--Report ul:first-child{\n  display: none;\n  visibility: hidden;\n}\n\n/*********************'
-||'*****************\n* Links media list report\n**************************************/\n/*.z-MediaList{\n  border-color: #e0e0e0;\n}*/\n.z-noDataFound .t-MediaList-desc{\n  color: #262626;\n  text-align: center;\n  font-size: 1.2rem;\n  line-height: 2'
-||'rem;\n}\n\n/**************************************\n* Files media list report\n**************************************/\n.z-MediaList .nodatafound{\n  padding: 16px;\n}\n.z-MediaList--files .t-MediaList-title {\n  word-break: break-word;\n}\n\n/******'
-||'********************************\n* General custom report\n**************************************/\n.z-Content .z-Content--Row{\n  border: 1px solid rgba(0,0,0,.1);\n  border-radius: 2px;\n  box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);\n  margin-bott'
-||'om: 3.2rem;\n}\n.z-Content--Row{\n  background-color: #ffffff;\n}\n.z-Content--Title{\n  border-bottom: 1px solid rgba(0,0,0,.075);\n  padding: 1.2rem;\n  margin: 0;\n  font-size: 1.6rem;\n  font-weight: 500;\n  line-height: 2.4rem;\n}\n.z-Content--S'
-||'tacked .z-Content--Title{\n  border-top: 1px solid rgba(0,0,0,.075);\n}\n.z-Content--Stacked .z-Content--Row:first-child .z-Content--Title{\n  border-top: none;\n}\n.z-Content--Body{\n  padding: 1.6rem;\n}\n\n/**************************************\n'
-||'* About content\n**************************************/\n.z-author-container{\n  display: flex;\n}\n.z-author-left{\n  order: 1;\n  display: flex;\n  flex-direction: column;\n}\n.z-author-right{\n  order: 2;\n  padding: 0 0 0 16px;\n}\n.z-author-bad'
-||'ges{\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n}\n.z-author-badges > *{\n  margin: 10px 0;\n}\n\n/**************************************\n* Comments report\n**************************************/\n.z-comment .t-Commen'
-||'ts-body{\n  width: 0;\n}\n/* long URL e.g. */\n.z-comment .t-Comments-comment{\n  overflow-wrap: break-word;\n}\n\n/**************************************\n* Program code formatting\n**************************************/\npre.z-program-code{\n  fon'
-||'t-family: \"Consolas\",\"Bitstream Vera Sans Mono\",\"Courier New\",Courier,monospace;\n  color: #000000;\n  font-size: 1.1rem;\n  tab-size: 2;\n  counter-reset: line;\n  overflow-x: auto;\n  border: 1px solid rgba(0,0,0,.075);\n  border-radius: 0.2r'
-||'em;\n}\npre.z-program-code code{\n  font-family: inherit;\n  font-size: inherit;\n  line-height: inherit;\n  tab-size: inherit;\n  counter-increment: line;\n  margin: 0;\n  padding: 0;\n  overflow: visible;\n}\npre.z-program-code code::before{\n  con'
-||'tent: counter(line);\n  user-select: none;\n  border-right: 2px solid #6ce26c;\n  border-left: 1px solid rgba(0,0,0,.075);\n  border-top: 1px solid rgba(0,0,0,.075);\n  background-color: rgba(0,0,0,.045);\n  margin: 0 0.4rem 0 0;\n  padding: 0 0.4rem'
-||' 0 0;\n  display: inline-block;\n  text-align: right;\n  width: 2.4em;\n  color: #393939;\n}\npre.z-program-code code:first-child:before{\n  border-top: none;\n}\npre.z-program-code code:nth-child(odd):before{\n  background-color: rgba(0,0,0,.065);\n'
-||'}\n\n/**************************************\n* Media query\n**************************************/\n@media only screen and (max-width: 768px){\n  /**************************************\n  * Logo\n  **************************************/\n  .z-app'
-||'-desc{\n    font-size: 1.4rem;\n  }\n}\n@media only screen and (max-width: 640px){\n  /**************************************\n  * Logo\n  **************************************/\n  .z-app-desc{\n    font-size: 1.6rem;\n  }\n\n  /********************'
-||'******************\n  * Post custom report template\n  **************************************/\n  .z-post{\n    padding: 1.2rem;\n  }\n  .z-post--header h1{\n    font-size: 1.4em;\n  }\n  .z-post--header h2{\n    font-size: 1.3rem;\n  }\n  .z-post--h'
-||'eader h3{\n    font-size: 1.3rem;\n  }\n\n  /**************************************\n  * Author info\n  **************************************/\n  .z-author-container{\n    flex-direction: column;\n    align-items: center;\n  }\n  .z-author-right{\n '
-||'   padding: 16px 0;\n  }\n  .z-author-badges{\n    padding: 16px 0;\n    align-items: center;\n  }\n\n}\n\n.z-hidden{\n  display: none;\n  visibility: hidden;\n}\n","vars":{"@Head-Height":"80px","@g_Body-Content-Max-Width":"100%"}}'
+||'ockquote p{\n  display: inline;\n}\ninput[data-z-switch=\"true\"][value=\"0\"]:checked+label{\n  background-color: #8c8c8c;\n  border-color: #8c8c8c;\n}\n\n/**************************************\n* Logo\n**************************************/\n.z-a'
+||'pp-logo{\n  display: flex;\n  flex-direction: column;\n}\n.z-app-desc{\n  white-space: normal;\n}\n\n/**************************************\n* Right column link lists\n**************************************/\n.z-link--no-border,\n.z-link--no-border '
+||'a:focus{\n  border: none;\n  outline: none;\n  box-shadow: none;\n}\n\n/**************************************\n* Interactive Report\n**************************************/\n.z-IR--iconLinks td:first-child {\n  width: 1%;\n  overflow: visible;\n}\n\'
+||'n/**************************************\n* Interactive Grid\n**************************************/\n.z-config-ig .a-IG-header {\n  display: none;\n  visibility: hidden;\n}\n.z-config-ig span.a-GV-breakLabel {\n  display: none;\n  visibility: hidde'
+||'n;\n}\n/**************************************\n* Classic reports\n**************************************/\n.nodatafound{\n  text-align: center;\n  color: #262626;\n  font-size: 1.2rem;\n  line-height: 2rem;\n  padding: 0;\n}\n.pagination{\n  text-al'
+||'ign: right;\n  width: 100%;\n}\n\n/**************************************\n* Post custom template report\n**************************************/\n.z-post{\n  background-color: #ffffff;\n  margin-bottom: 3.2rem;\n  border: 1px solid rgba(0,0,0,.1);\n'
+||'  border-radius: 2px;\n  box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);\n  padding: 16px;\n}\n.z-post:last-child {\n  margin-bottom: 12px;\n}\n.z-post--header{\n  clear: both;\n}\n.z-post--header h1{\n  font-size: 1.6em;\n  margin: 0 0 0.2rem;\n}\n.z-p'
+||'ost--header h2{\n  font-size: 1.4rem;\n  margin: 0 0 1.8rem;\n}\n.z-post--header h3{\n  font-size: 1.4rem;\n  margin: 0 0 0.2rem;\n}\n.z-post--body img{\n  max-width: 100%;\n  height: auto;\n}\n.z-post--body br{\n  clear: none!important;\n}\n.z-post-'
+||'-tags{\n  width: 100%;\n  clear: both;\n  margin: 2rem 0 0;\n  border-top: 1px solid rgba(0, 0, 0, 0.075)\n}\n.z-post--footer{\n  width: 100%;\n  clear: both;\n  margin: 1.2rem 0 0;\n}\n.z-post--no-margin .z-post{\n  margin-bottom: 0!important;\n}\n/'
+||'* IR specific */\n.z-post--IR{\n  margin: 32px 16px\n}\n\n/**************************************\n* Archives, categories and links\n**************************************/\n.z-listStacked--Report ul{\n  padding: 1.6rem;\n}\n.z-listStacked--Header{\n'
+||'  border-top: 1px solid rgba(0,0,0,.1);\n  border-bottom: 1px solid rgba(0,0,0,.075);\n  padding: 1.2rem;\n  margin: 0;\n  font-size: 1.6rem;\n  font-weight: 500;\n  line-height: 2.4rem;\n}\n.z-listStacked--Header:nth-child(2){\n  border-top: none;\n'
+||'}\n.z-listStacked--Report ul:first-child{\n  display: none;\n  visibility: hidden;\n}\n\n/**************************************\n* Files media list report\n**************************************/\n.z-MediaList .nodatafound{\n  padding: 16px;\n}\n.z-'
+||'MediaList--files .t-MediaList-title {\n  word-break: break-word;\n}\n\n/**************************************\n* Links media list report\n**************************************/\n.z-noDataFound .t-MediaList-desc{\n  color: #262626;\n  text-align: ce'
+||'nter;\n  font-size: 1.2rem;\n  line-height: 2rem;\n}\n\n/**************************************\n* General custom report\n**************************************/\n.z-Content .z-Content--Row{\n  border: 1px solid rgba(0,0,0,.1);\n  border-radius: 2px;'
+||'\n  box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);\n  margin-bottom: 3.2rem;\n}\n.z-Content--Row{\n  background-color: #ffffff;\n}\n.z-Content--Title{\n  border-bottom: 1px solid rgba(0,0,0,.075);\n  padding: 1.2rem;\n  margin: 0;\n  font-size: 1.6rem;'
+||'\n  font-weight: 500;\n  line-height: 2.4rem;\n}\n.z-Content--Stacked .z-Content--Title{\n  border-top: 1px solid rgba(0,0,0,.075);\n}\n.z-Content--Stacked .z-Content--Row:first-child .z-Content--Title{\n  border-top: none;\n}\n.z-Content--Body{\n  p'
+||'adding: 1.6rem;\n}\n\n/**************************************\n* About content\n**************************************/\n.z-author-container{\n  display: flex;\n}\n.z-author-left{\n  order: 1;\n  display: flex;\n  flex-direction: column;\n}\n.z-autho'
+||'r-right{\n  order: 2;\n  padding: 0 0 0 16px;\n}\n.z-author-badges{\n  display: flex;\n  flex-direction: column;\n}\n.z-author-badges > *{\n  margin: 10px 0;\n}\n\n/**************************************\n* Comments report\n**************************'
+||'************/\n.z-comment .t-Comments-body{\n  width: 0;\n}\n/* long URL e.g. */\n.z-comment .t-Comments-comment{\n  overflow-wrap: break-word;\n}\n.z-comment--footer {\n  margin-top: 3.2rem;\n  padding: 1.6rem 0;\n  border-top: 1px solid rgba(0,0,0,'
+||'0.1);\n}\n\n/**************************************\n* Program code formatting\n**************************************/\npre.z-program-code{\n  font-family: SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Bitstream Vera Sans Mono,Courier New,mon'
+||'ospace;\n  color: #000000;\n  font-size: 1.1rem;\n  tab-size: 2;\n  counter-reset: line;\n  overflow-x: auto;\n  border: 1px solid rgba(0,0,0,.075);\n  border-radius: 0.2rem;\n}\npre.z-program-code code{\n  font-family: inherit;\n  font-size: inherit'
+||';\n  line-height: inherit;\n  tab-size: inherit;\n  counter-increment: line;\n  margin: 0;\n  padding: 0;\n  overflow: visible;\n}\npre.z-program-code code::before{\n  content: counter(line);\n  user-select: none;\n  border-right: 2px solid #6ce26c;\'
+||'n  border-left: 1px solid rgba(0,0,0,.075);\n  border-top: 1px solid rgba(0,0,0,.075);\n  background-color: rgba(0,0,0,.045);\n  margin: 0 0.4rem 0 0;\n  padding: 0 0.4rem 0 0;\n  display: inline-block;\n  text-align: right;\n  width: 2.4em;\n  color'
+||': #393939;\n}\npre.z-program-code code:first-child:before{\n  border-top: none;\n}\npre.z-program-code code:nth-child(odd):before{\n  background-color: rgba(0,0,0,.065);\n}\n\n/**************************************\n* Region\n***********************'
+||'***************/\n.z-app-footer {\n  margin-left: 8.2rem;\n}\n\n.z-app-footer--links {\n  padding: 1rem 0 2rem 0;\n}\n\n/**************************************\n* Media query\n**************************************/\n@media only screen and (max-width'
+||': 768px){\n  /**************************************\n  * Logo\n  **************************************/\n  .z-app-desc{\n    font-size: 1.4rem;\n  }\n}\n@media only screen and (max-width: 640px){\n  /**************************************\n  * Logo'
+||'\n  **************************************/\n  .z-app-desc{\n    font-size: 1.6rem;\n  }\n\n  /**************************************\n  * Region\n  **************************************/\n  .z-app-footer{\n    margin: 0;\n  }\n  \n  /**************'
+||'************************\n  * Post custom report template\n  **************************************/\n  .z-post{\n    padding: 1.2rem;\n  }\n  .z-post--header h1{\n    font-size: 1.4em;\n  }\n  .z-post--header h2{\n    font-size: 1.3rem;\n  }\n  .z-p'
+||'ost--header h3{\n    font-size: 1.3rem;\n  }\n\n  /**************************************\n  * Author info\n  **************************************/\n  .z-author-container{\n    flex-direction: column;\n    align-items: center;\n  }\n  .z-author-rig'
+||'ht{\n    padding: 16px 0;\n  }\n  .z-author-badges{\n    padding: 16px 0;\n    align-items: center;\n  }\n\n}\n\n.z-hidden{\n  display: none;\n  visibility: hidden;\n}\n","vars":{"@Head-Height":"80px","@g_Body-Content-Max-Width":"100%"}}'
 ,p_theme_roller_output_file_url=>'#THEME_DB_IMAGES#29260245208887509.css'
 ,p_theme_roller_read_only=>false
 );
@@ -6797,70 +6809,81 @@ wwv_flow_api.g_varchar2_table(1694) := '0D0A2E752D636F6C6F722D7472616E7370617265
 wwv_flow_api.g_varchar2_table(1695) := '6174696F6E204578707265737320352E30205468656D6520526F6C6C657220437573746F6D20435353200D0A202A0D0A202A2F0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A20456C';
 wwv_flow_api.g_varchar2_table(1696) := '656D656E74730D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A626C6F636B71756F74653A3A6265666F72657B0D0A2020636F6E74656E743A206F70656E2D71756F74653B0D0A2020666F6E74';
 wwv_flow_api.g_varchar2_table(1697) := '2D73697A653A20322E3272656D3B0D0A7D0D0A626C6F636B71756F74653A3A61667465727B0D0A2020636F6E74656E743A20636C6F73652D71756F74653B0D0A2020666F6E742D73697A653A20322E3272656D3B0D0A7D0D0A626C6F636B71756F746520';
-wwv_flow_api.g_varchar2_table(1698) := '707B0D0A2020646973706C61793A20696E6C696E653B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A204C6F676F0D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(1699) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2E7A2D6170702D6C6F676F7B0D0A2020646973706C61793A20666C65783B0D0A2020666C65782D646972656374696F6E3A20636F6C756D6E3B0D0A7D0D0A2E7A2D6170702D646573637B0D0A2020776869';
-wwv_flow_api.g_varchar2_table(1700) := '74652D73706163653A206E6F726D616C3B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A20526967687420636F6C756D6E206C696E6B206C697374730D0A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(1701) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2E7A2D6C696E6B2D2D6E6F2D626F726465722C0D0A2E7A2D6C696E6B2D2D6E6F2D626F7264657220613A666F6375737B0D0A2020626F726465723A206E6F6E653B0D0A';
-wwv_flow_api.g_varchar2_table(1702) := '20206F75746C696E653A206E6F6E653B0D0A2020626F782D736861646F773A206E6F6E653B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A20436C6173736963207265706F72';
-wwv_flow_api.g_varchar2_table(1703) := '74730D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2E6E6F64617461666F756E647B0D0A2020746578742D616C69676E3A2063656E7465723B0D0A2020636F6C6F723A20233236323632363B';
-wwv_flow_api.g_varchar2_table(1704) := '0D0A2020666F6E742D73697A653A20312E3272656D3B0D0A20206C696E652D6865696768743A203272656D3B0D0A202070616464696E673A20303B0D0A7D0D0A2E706167696E6174696F6E7B0D0A2020746578742D616C69676E3A2072696768743B0D0A';
-wwv_flow_api.g_varchar2_table(1705) := '202077696474683A20313030253B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A20506F737420637573746F6D2074656D706C617465207265706F72740D0A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(1706) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2E7A2D706F73747B0D0A20206261636B67726F756E642D636F6C6F723A20236666666666663B0D0A20206D617267696E2D626F74746F6D3A20332E3272656D3B0D0A';
-wwv_flow_api.g_varchar2_table(1707) := '2020626F726465723A2031707820736F6C6964207267626128302C302C302C2E31293B0D0A2020626F726465722D7261646975733A203270783B0D0A2020626F782D736861646F773A20302032707820347078202D327078207267626128302C302C302C';
-wwv_flow_api.g_varchar2_table(1708) := '2E303735293B0D0A202070616464696E673A20313670783B0D0A7D0D0A2E7A2D706F73743A6C6173742D6368696C64207B0D0A20206D617267696E2D626F74746F6D3A20313270783B0D0A7D0D0A2E7A2D706F73742D2D6865616465727B0D0A2020636C';
-wwv_flow_api.g_varchar2_table(1709) := '6561723A20626F74683B0D0A7D0D0A2E7A2D706F73742D2D6865616465722068317B0D0A2020666F6E742D73697A653A20312E36656D3B0D0A20206D617267696E3A2030203020302E3272656D3B0D0A7D0D0A2E7A2D706F73742D2D6865616465722068';
-wwv_flow_api.g_varchar2_table(1710) := '327B0D0A2020666F6E742D73697A653A20312E3472656D3B0D0A20206D617267696E3A2030203020312E3872656D3B0D0A7D0D0A2E7A2D706F73742D2D6865616465722068337B0D0A2020666F6E742D73697A653A20312E3472656D3B0D0A20206D6172';
-wwv_flow_api.g_varchar2_table(1711) := '67696E3A2030203020302E3272656D3B0D0A7D0D0A2E7A2D706F73742D2D626F647920696D677B0D0A20206D61782D77696474683A20313030253B0D0A20206865696768743A206175746F3B0D0A7D0D0A2E7A2D706F73742D2D626F64792062727B0D0A';
-wwv_flow_api.g_varchar2_table(1712) := '2020636C6561723A206E6F6E6521696D706F7274616E743B0D0A7D0D0A2E7A2D706F73742D2D746167737B0D0A202077696474683A20313030253B0D0A2020636C6561723A20626F74683B0D0A20206D617267696E3A203272656D203020303B0D0A2020';
-wwv_flow_api.g_varchar2_table(1713) := '626F726465722D746F703A2031707820736F6C6964207267626128302C20302C20302C20302E303735290D0A7D0D0A2E7A2D706F73742D2D666F6F7465727B0D0A202077696474683A20313030253B0D0A2020636C6561723A20626F74683B0D0A20206D';
-wwv_flow_api.g_varchar2_table(1714) := '617267696E3A20312E3272656D203020303B0D0A7D0D0A2E7A2D706F73742D2D6E6F2D6D617267696E202E7A2D706F73747B0D0A20206D617267696E2D626F74746F6D3A203021696D706F7274616E743B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(1715) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A2041726368697665732C2063617465676F7269657320616E64206C696E6B730D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(1716) := '2A2F0D0A2E7A2D6C697374537461636B65642D2D5265706F727420756C7B0D0A202070616464696E673A20312E3672656D3B0D0A7D0D0A2E7A2D6C697374537461636B65642D2D4865616465727B0D0A2020626F726465722D746F703A2031707820736F';
-wwv_flow_api.g_varchar2_table(1717) := '6C6964207267626128302C302C302C2E31293B0D0A2020626F726465722D626F74746F6D3A2031707820736F6C6964207267626128302C302C302C2E303735293B0D0A202070616464696E673A20312E3272656D3B0D0A20206D617267696E3A20303B0D';
-wwv_flow_api.g_varchar2_table(1718) := '0A2020666F6E742D73697A653A20312E3672656D3B0D0A2020666F6E742D7765696768743A203530303B0D0A20206C696E652D6865696768743A20322E3472656D3B0D0A7D0D0A2E7A2D6C697374537461636B65642D2D4865616465723A6E74682D6368';
-wwv_flow_api.g_varchar2_table(1719) := '696C642832297B0D0A2020626F726465722D746F703A206E6F6E653B0D0A7D0D0A2E7A2D6C697374537461636B65642D2D5265706F727420756C3A66697273742D6368696C647B0D0A2020646973706C61793A206E6F6E653B0D0A20207669736962696C';
-wwv_flow_api.g_varchar2_table(1720) := '6974793A2068696464656E3B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A204C696E6B73206D65646961206C697374207265706F72740D0A2A2A2A2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(1721) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2F2A2E7A2D4D656469614C6973747B0D0A2020626F726465722D636F6C6F723A20236530653065303B0D0A7D2A2F0D0A2E7A2D6E6F44617461466F756E64202E742D4D656469614C';
-wwv_flow_api.g_varchar2_table(1722) := '6973742D646573637B0D0A2020636F6C6F723A20233236323632363B0D0A2020746578742D616C69676E3A2063656E7465723B0D0A2020666F6E742D73697A653A20312E3272656D3B0D0A20206C696E652D6865696768743A203272656D3B0D0A7D0D0A';
-wwv_flow_api.g_varchar2_table(1723) := '0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A2046696C6573206D65646961206C697374207265706F72740D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(1724) := '2A2A2A2A2A2A2A2A2F0D0A2E7A2D4D656469614C697374202E6E6F64617461666F756E647B0D0A202070616464696E673A20313670783B0D0A7D0D0A2E7A2D4D656469614C6973742D2D66696C6573202E742D4D656469614C6973742D7469746C65207B';
-wwv_flow_api.g_varchar2_table(1725) := '0D0A2020776F72642D627265616B3A20627265616B2D776F72643B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A2047656E6572616C20637573746F6D207265706F72740D0A';
-wwv_flow_api.g_varchar2_table(1726) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2E7A2D436F6E74656E74202E7A2D436F6E74656E742D2D526F777B0D0A2020626F726465723A2031707820736F6C6964207267626128302C302C30';
-wwv_flow_api.g_varchar2_table(1727) := '2C2E31293B0D0A2020626F726465722D7261646975733A203270783B0D0A2020626F782D736861646F773A20302032707820347078202D327078207267626128302C302C302C2E303735293B0D0A20206D617267696E2D626F74746F6D3A20332E327265';
-wwv_flow_api.g_varchar2_table(1728) := '6D3B0D0A7D0D0A2E7A2D436F6E74656E742D2D526F777B0D0A20206261636B67726F756E642D636F6C6F723A20236666666666663B0D0A7D0D0A2E7A2D436F6E74656E742D2D5469746C657B0D0A2020626F726465722D626F74746F6D3A203170782073';
-wwv_flow_api.g_varchar2_table(1729) := '6F6C6964207267626128302C302C302C2E303735293B0D0A202070616464696E673A20312E3272656D3B0D0A20206D617267696E3A20303B0D0A2020666F6E742D73697A653A20312E3672656D3B0D0A2020666F6E742D7765696768743A203530303B0D';
-wwv_flow_api.g_varchar2_table(1730) := '0A20206C696E652D6865696768743A20322E3472656D3B0D0A7D0D0A2E7A2D436F6E74656E742D2D537461636B6564202E7A2D436F6E74656E742D2D5469746C657B0D0A2020626F726465722D746F703A2031707820736F6C6964207267626128302C30';
-wwv_flow_api.g_varchar2_table(1731) := '2C302C2E303735293B0D0A7D0D0A2E7A2D436F6E74656E742D2D537461636B6564202E7A2D436F6E74656E742D2D526F773A66697273742D6368696C64202E7A2D436F6E74656E742D2D5469746C657B0D0A2020626F726465722D746F703A206E6F6E65';
-wwv_flow_api.g_varchar2_table(1732) := '3B0D0A7D0D0A2E7A2D436F6E74656E742D2D426F64797B0D0A202070616464696E673A20312E3672656D3B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A2041626F75742063';
-wwv_flow_api.g_varchar2_table(1733) := '6F6E74656E740D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2E7A2D617574686F722D636F6E7461696E65727B0D0A2020646973706C61793A20666C65783B0D0A7D0D0A2E7A2D617574686F';
-wwv_flow_api.g_varchar2_table(1734) := '722D6C6566747B0D0A20206F726465723A20313B0D0A2020646973706C61793A20666C65783B0D0A2020666C65782D646972656374696F6E3A20636F6C756D6E3B0D0A7D0D0A2E7A2D617574686F722D72696768747B0D0A20206F726465723A20323B0D';
-wwv_flow_api.g_varchar2_table(1735) := '0A202070616464696E673A20302030203020313670783B0D0A7D0D0A2E7A2D617574686F722D6261646765737B0D0A2020646973706C61793A20666C65783B0D0A2020666C65782D646972656374696F6E3A20636F6C756D6E3B0D0A2020616C69676E2D';
-wwv_flow_api.g_varchar2_table(1736) := '6974656D733A20666C65782D73746172743B0D0A7D0D0A2E7A2D617574686F722D626164676573203E202A7B0D0A20206D617267696E3A203130707820303B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(1737) := '2A2A2A2A2A2A2A2A2A0D0A2A20436F6D6D656E7473207265706F72740D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D626F64797B0D';
-wwv_flow_api.g_varchar2_table(1738) := '0A202077696474683A20303B0D0A7D0D0A2F2A206C6F6E672055524C20652E672E202A2F0D0A2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D636F6D6D656E747B0D0A20206F766572666C6F772D777261703A20627265616B2D776F72643B0D';
-wwv_flow_api.g_varchar2_table(1739) := '0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A2050726F6772616D20636F646520666F726D617474696E670D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(1740) := '2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A7072652E7A2D70726F6772616D2D636F64657B0D0A2020666F6E742D66616D696C793A2022436F6E736F6C6173222C2242697473747265616D20566572612053616E73204D6F6E6F222C22436F7572696572204E65';
-wwv_flow_api.g_varchar2_table(1741) := '77222C436F75726965722C6D6F6E6F73706163653B0D0A2020636F6C6F723A20233030303030303B0D0A2020666F6E742D73697A653A20312E3172656D3B0D0A20207461622D73697A653A20323B0D0A2020636F756E7465722D72657365743A206C696E';
-wwv_flow_api.g_varchar2_table(1742) := '653B0D0A20206F766572666C6F772D783A206175746F3B0D0A2020626F726465723A2031707820736F6C6964207267626128302C302C302C2E303735293B0D0A2020626F726465722D7261646975733A20302E3272656D3B0D0A7D0D0A7072652E7A2D70';
-wwv_flow_api.g_varchar2_table(1743) := '726F6772616D2D636F646520636F64657B0D0A2020666F6E742D66616D696C793A20696E68657269743B0D0A2020666F6E742D73697A653A20696E68657269743B0D0A20206C696E652D6865696768743A20696E68657269743B0D0A20207461622D7369';
-wwv_flow_api.g_varchar2_table(1744) := '7A653A20696E68657269743B0D0A2020636F756E7465722D696E6372656D656E743A206C696E653B0D0A20206D617267696E3A20303B0D0A202070616464696E673A20303B0D0A20206F766572666C6F773A2076697369626C653B0D0A7D0D0A7072652E';
-wwv_flow_api.g_varchar2_table(1745) := '7A2D70726F6772616D2D636F646520636F64653A3A6265666F72657B0D0A2020636F6E74656E743A20636F756E746572286C696E65293B0D0A2020757365722D73656C6563743A206E6F6E653B0D0A2020626F726465722D72696768743A203270782073';
-wwv_flow_api.g_varchar2_table(1746) := '6F6C696420233663653236633B0D0A2020626F726465722D6C6566743A2031707820736F6C6964207267626128302C302C302C2E303735293B0D0A2020626F726465722D746F703A2031707820736F6C6964207267626128302C302C302C2E303735293B';
-wwv_flow_api.g_varchar2_table(1747) := '0D0A20206261636B67726F756E642D636F6C6F723A207267626128302C302C302C2E303435293B0D0A20206D617267696E3A203020302E3472656D203020303B0D0A202070616464696E673A203020302E3472656D203020303B0D0A2020646973706C61';
-wwv_flow_api.g_varchar2_table(1748) := '793A20696E6C696E652D626C6F636B3B0D0A2020746578742D616C69676E3A2072696768743B0D0A202077696474683A20322E34656D3B0D0A2020636F6C6F723A20233339333933393B0D0A7D0D0A7072652E7A2D70726F6772616D2D636F646520636F';
-wwv_flow_api.g_varchar2_table(1749) := '64653A66697273742D6368696C643A6265666F72657B0D0A2020626F726465722D746F703A206E6F6E653B0D0A7D0D0A7072652E7A2D70726F6772616D2D636F646520636F64653A6E74682D6368696C64286F6464293A6265666F72657B0D0A20206261';
-wwv_flow_api.g_varchar2_table(1750) := '636B67726F756E642D636F6C6F723A207267626128302C302C302C2E303635293B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A204D656469612071756572790D0A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(1751) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A406D65646961206F6E6C792073637265656E20616E6420286D61782D77696474683A203736387078297B0D0A20202F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(1752) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A20202A204C6F676F0D0A20202A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A20202E7A2D6170702D646573637B0D0A20202020666F6E';
-wwv_flow_api.g_varchar2_table(1753) := '742D73697A653A20312E3472656D3B0D0A20207D0D0A7D0D0A406D65646961206F6E6C792073637265656E20616E6420286D61782D77696474683A203634307078297B0D0A20202F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(1754) := '2A2A2A2A2A2A2A2A2A2A0D0A20202A204C6F676F0D0A20202A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A20202E7A2D6170702D646573637B0D0A20202020666F6E742D73697A653A20312E3672';
-wwv_flow_api.g_varchar2_table(1755) := '656D3B0D0A20207D0D0A0D0A20202F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A20202A20506F737420637573746F6D207265706F72742074656D706C6174650D0A20202A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(1756) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A20202E7A2D706F73747B0D0A2020202070616464696E673A20312E3272656D3B0D0A20207D0D0A20202E7A2D706F73742D2D6865616465722068317B0D0A20202020666F6E';
-wwv_flow_api.g_varchar2_table(1757) := '742D73697A653A20312E34656D3B0D0A20207D0D0A20202E7A2D706F73742D2D6865616465722068327B0D0A20202020666F6E742D73697A653A20312E3372656D3B0D0A20207D0D0A20202E7A2D706F73742D2D6865616465722068337B0D0A20202020';
-wwv_flow_api.g_varchar2_table(1758) := '666F6E742D73697A653A20312E3372656D3B0D0A20207D0D0A0D0A20202F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A20202A20417574686F7220696E666F0D0A20202A2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(1759) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A20202E7A2D617574686F722D636F6E7461696E65727B0D0A20202020666C65782D646972656374696F6E3A20636F6C756D6E3B0D0A20202020616C69676E2D6974656D733A20';
-wwv_flow_api.g_varchar2_table(1760) := '63656E7465723B0D0A20207D0D0A20202E7A2D617574686F722D72696768747B0D0A2020202070616464696E673A203136707820303B0D0A20207D0D0A20202E7A2D617574686F722D6261646765737B0D0A2020202070616464696E673A203136707820';
-wwv_flow_api.g_varchar2_table(1761) := '303B0D0A20202020616C69676E2D6974656D733A2063656E7465723B0D0A20207D0D0A0D0A7D0D0A0D0A2E7A2D68696464656E7B0D0A2020646973706C61793A206E6F6E653B0D0A20207669736962696C6974793A2068696464656E3B0D0A7D0D0A';
+wwv_flow_api.g_varchar2_table(1698) := '707B0D0A2020646973706C61793A20696E6C696E653B0D0A7D0D0A696E7075745B646174612D7A2D7377697463683D2274727565225D5B76616C75653D2230225D3A636865636B65642B6C6162656C7B0D0A20206261636B67726F756E642D636F6C6F72';
+wwv_flow_api.g_varchar2_table(1699) := '3A20233863386338633B0D0A2020626F726465722D636F6C6F723A20233863386338633B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A204C6F676F0D0A2A2A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(1700) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2E7A2D6170702D6C6F676F7B0D0A2020646973706C61793A20666C65783B0D0A2020666C65782D646972656374696F6E3A20636F6C756D6E3B0D0A7D0D0A2E7A2D6170';
+wwv_flow_api.g_varchar2_table(1701) := '702D646573637B0D0A202077686974652D73706163653A206E6F726D616C3B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A20526967687420636F6C756D6E206C696E6B206C';
+wwv_flow_api.g_varchar2_table(1702) := '697374730D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2E7A2D6C696E6B2D2D6E6F2D626F726465722C0D0A2E7A2D6C696E6B2D2D6E6F2D626F7264657220613A666F6375737B0D0A202062';
+wwv_flow_api.g_varchar2_table(1703) := '6F726465723A206E6F6E653B0D0A20206F75746C696E653A206E6F6E653B0D0A2020626F782D736861646F773A206E6F6E653B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A';
+wwv_flow_api.g_varchar2_table(1704) := '20496E746572616374697665205265706F72740D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2E7A2D49522D2D69636F6E4C696E6B732074643A66697273742D6368696C64207B0D0A202077';
+wwv_flow_api.g_varchar2_table(1705) := '696474683A2031253B0D0A20206F766572666C6F773A2076697369626C653B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A20496E74657261637469766520477269640D0A2A';
+wwv_flow_api.g_varchar2_table(1706) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2E7A2D636F6E6669672D6967202E612D49472D686561646572207B0D0A2020646973706C61793A206E6F6E653B0D0A20207669736962696C6974793A';
+wwv_flow_api.g_varchar2_table(1707) := '2068696464656E3B0D0A7D0D0A2E7A2D636F6E6669672D6967207370616E2E612D47562D627265616B4C6162656C207B0D0A2020646973706C61793A206E6F6E653B0D0A20207669736962696C6974793A2068696464656E3B0D0A7D0D0A2F2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(1708) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A20436C6173736963207265706F7274730D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2E6E6F6461';
+wwv_flow_api.g_varchar2_table(1709) := '7461666F756E647B0D0A2020746578742D616C69676E3A2063656E7465723B0D0A2020636F6C6F723A20233236323632363B0D0A2020666F6E742D73697A653A20312E3272656D3B0D0A20206C696E652D6865696768743A203272656D3B0D0A20207061';
+wwv_flow_api.g_varchar2_table(1710) := '6464696E673A20303B0D0A7D0D0A2E706167696E6174696F6E7B0D0A2020746578742D616C69676E3A2072696768743B0D0A202077696474683A20313030253B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(1711) := '2A2A2A2A2A2A2A2A2A2A0D0A2A20506F737420637573746F6D2074656D706C617465207265706F72740D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2E7A2D706F73747B0D0A20206261636B';
+wwv_flow_api.g_varchar2_table(1712) := '67726F756E642D636F6C6F723A20236666666666663B0D0A20206D617267696E2D626F74746F6D3A20332E3272656D3B0D0A2020626F726465723A2031707820736F6C6964207267626128302C302C302C2E31293B0D0A2020626F726465722D72616469';
+wwv_flow_api.g_varchar2_table(1713) := '75733A203270783B0D0A2020626F782D736861646F773A20302032707820347078202D327078207267626128302C302C302C2E303735293B0D0A202070616464696E673A20313670783B0D0A7D0D0A2E7A2D706F73743A6C6173742D6368696C64207B0D';
+wwv_flow_api.g_varchar2_table(1714) := '0A20206D617267696E2D626F74746F6D3A20313270783B0D0A7D0D0A2E7A2D706F73742D2D6865616465727B0D0A2020636C6561723A20626F74683B0D0A7D0D0A2E7A2D706F73742D2D6865616465722068317B0D0A2020666F6E742D73697A653A2031';
+wwv_flow_api.g_varchar2_table(1715) := '2E36656D3B0D0A20206D617267696E3A2030203020302E3272656D3B0D0A7D0D0A2E7A2D706F73742D2D6865616465722068327B0D0A2020666F6E742D73697A653A20312E3472656D3B0D0A20206D617267696E3A2030203020312E3872656D3B0D0A7D';
+wwv_flow_api.g_varchar2_table(1716) := '0D0A2E7A2D706F73742D2D6865616465722068337B0D0A2020666F6E742D73697A653A20312E3472656D3B0D0A20206D617267696E3A2030203020302E3272656D3B0D0A7D0D0A2E7A2D706F73742D2D626F647920696D677B0D0A20206D61782D776964';
+wwv_flow_api.g_varchar2_table(1717) := '74683A20313030253B0D0A20206865696768743A206175746F3B0D0A7D0D0A2E7A2D706F73742D2D626F64792062727B0D0A2020636C6561723A206E6F6E6521696D706F7274616E743B0D0A7D0D0A2E7A2D706F73742D2D746167737B0D0A2020776964';
+wwv_flow_api.g_varchar2_table(1718) := '74683A20313030253B0D0A2020636C6561723A20626F74683B0D0A20206D617267696E3A203272656D203020303B0D0A2020626F726465722D746F703A2031707820736F6C6964207267626128302C20302C20302C20302E303735290D0A7D0D0A2E7A2D';
+wwv_flow_api.g_varchar2_table(1719) := '706F73742D2D666F6F7465727B0D0A202077696474683A20313030253B0D0A2020636C6561723A20626F74683B0D0A20206D617267696E3A20312E3272656D203020303B0D0A7D0D0A2E7A2D706F73742D2D6E6F2D6D617267696E202E7A2D706F73747B';
+wwv_flow_api.g_varchar2_table(1720) := '0D0A20206D617267696E2D626F74746F6D3A203021696D706F7274616E743B0D0A7D0D0A2F2A204952207370656369666963202A2F0D0A2E7A2D706F73742D2D49527B0D0A20206D617267696E3A203332707820313670780D0A7D0D0A0D0A2F2A2A2A2A';
+wwv_flow_api.g_varchar2_table(1721) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A2041726368697665732C2063617465676F7269657320616E64206C696E6B730D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(1722) := '2A2A2A2A2A2A2A2A2F0D0A2E7A2D6C697374537461636B65642D2D5265706F727420756C7B0D0A202070616464696E673A20312E3672656D3B0D0A7D0D0A2E7A2D6C697374537461636B65642D2D4865616465727B0D0A2020626F726465722D746F703A';
+wwv_flow_api.g_varchar2_table(1723) := '2031707820736F6C6964207267626128302C302C302C2E31293B0D0A2020626F726465722D626F74746F6D3A2031707820736F6C6964207267626128302C302C302C2E303735293B0D0A202070616464696E673A20312E3272656D3B0D0A20206D617267';
+wwv_flow_api.g_varchar2_table(1724) := '696E3A20303B0D0A2020666F6E742D73697A653A20312E3672656D3B0D0A2020666F6E742D7765696768743A203530303B0D0A20206C696E652D6865696768743A20322E3472656D3B0D0A7D0D0A2E7A2D6C697374537461636B65642D2D486561646572';
+wwv_flow_api.g_varchar2_table(1725) := '3A6E74682D6368696C642832297B0D0A2020626F726465722D746F703A206E6F6E653B0D0A7D0D0A2E7A2D6C697374537461636B65642D2D5265706F727420756C3A66697273742D6368696C647B0D0A2020646973706C61793A206E6F6E653B0D0A2020';
+wwv_flow_api.g_varchar2_table(1726) := '7669736962696C6974793A2068696464656E3B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A2046696C6573206D65646961206C697374207265706F72740D0A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(1727) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2E7A2D4D656469614C697374202E6E6F64617461666F756E647B0D0A202070616464696E673A20313670783B0D0A7D0D0A2E7A2D4D656469614C6973742D2D6669';
+wwv_flow_api.g_varchar2_table(1728) := '6C6573202E742D4D656469614C6973742D7469746C65207B0D0A2020776F72642D627265616B3A20627265616B2D776F72643B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A';
+wwv_flow_api.g_varchar2_table(1729) := '204C696E6B73206D65646961206C697374207265706F72740D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A2E7A2D6E6F44617461466F756E64202E742D4D656469614C6973742D646573637B';
+wwv_flow_api.g_varchar2_table(1730) := '0D0A2020636F6C6F723A20233236323632363B0D0A2020746578742D616C69676E3A2063656E7465723B0D0A2020666F6E742D73697A653A20312E3272656D3B0D0A20206C696E652D6865696768743A203272656D3B0D0A7D0D0A0D0A2F2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(1731) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A2047656E6572616C20637573746F6D207265706F72740D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A';
+wwv_flow_api.g_varchar2_table(1732) := '2E7A2D436F6E74656E74202E7A2D436F6E74656E742D2D526F777B0D0A2020626F726465723A2031707820736F6C6964207267626128302C302C302C2E31293B0D0A2020626F726465722D7261646975733A203270783B0D0A2020626F782D736861646F';
+wwv_flow_api.g_varchar2_table(1733) := '773A20302032707820347078202D327078207267626128302C302C302C2E303735293B0D0A20206D617267696E2D626F74746F6D3A20332E3272656D3B0D0A7D0D0A2E7A2D436F6E74656E742D2D526F777B0D0A20206261636B67726F756E642D636F6C';
+wwv_flow_api.g_varchar2_table(1734) := '6F723A20236666666666663B0D0A7D0D0A2E7A2D436F6E74656E742D2D5469746C657B0D0A2020626F726465722D626F74746F6D3A2031707820736F6C6964207267626128302C302C302C2E303735293B0D0A202070616464696E673A20312E3272656D';
+wwv_flow_api.g_varchar2_table(1735) := '3B0D0A20206D617267696E3A20303B0D0A2020666F6E742D73697A653A20312E3672656D3B0D0A2020666F6E742D7765696768743A203530303B0D0A20206C696E652D6865696768743A20322E3472656D3B0D0A7D0D0A2E7A2D436F6E74656E742D2D53';
+wwv_flow_api.g_varchar2_table(1736) := '7461636B6564202E7A2D436F6E74656E742D2D5469746C657B0D0A2020626F726465722D746F703A2031707820736F6C6964207267626128302C302C302C2E303735293B0D0A7D0D0A2E7A2D436F6E74656E742D2D537461636B6564202E7A2D436F6E74';
+wwv_flow_api.g_varchar2_table(1737) := '656E742D2D526F773A66697273742D6368696C64202E7A2D436F6E74656E742D2D5469746C657B0D0A2020626F726465722D746F703A206E6F6E653B0D0A7D0D0A2E7A2D436F6E74656E742D2D426F64797B0D0A202070616464696E673A20312E367265';
+wwv_flow_api.g_varchar2_table(1738) := '6D3B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A2041626F757420636F6E74656E740D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(1739) := '2A2A2A2A2A2F0D0A2E7A2D617574686F722D636F6E7461696E65727B0D0A2020646973706C61793A20666C65783B0D0A7D0D0A2E7A2D617574686F722D6C6566747B0D0A20206F726465723A20313B0D0A2020646973706C61793A20666C65783B0D0A20';
+wwv_flow_api.g_varchar2_table(1740) := '20666C65782D646972656374696F6E3A20636F6C756D6E3B0D0A7D0D0A2E7A2D617574686F722D72696768747B0D0A20206F726465723A20323B0D0A202070616464696E673A20302030203020313670783B0D0A7D0D0A2E7A2D617574686F722D626164';
+wwv_flow_api.g_varchar2_table(1741) := '6765737B0D0A2020646973706C61793A20666C65783B0D0A2020666C65782D646972656374696F6E3A20636F6C756D6E3B0D0A7D0D0A2E7A2D617574686F722D626164676573203E202A7B0D0A20206D617267696E3A203130707820303B0D0A7D0D0A0D';
+wwv_flow_api.g_varchar2_table(1742) := '0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A20436F6D6D656E7473207265706F72740D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F';
+wwv_flow_api.g_varchar2_table(1743) := '0D0A2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D626F64797B0D0A202077696474683A20303B0D0A7D0D0A2F2A206C6F6E672055524C20652E672E202A2F0D0A2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D636F6D6D656E747B';
+wwv_flow_api.g_varchar2_table(1744) := '0D0A20206F766572666C6F772D777261703A20627265616B2D776F72643B0D0A7D0D0A2E7A2D636F6D6D656E742D2D666F6F746572207B0D0A20206D617267696E2D746F703A20332E3272656D3B0D0A202070616464696E673A20312E3672656D20303B';
+wwv_flow_api.g_varchar2_table(1745) := '0D0A2020626F726465722D746F703A2031707820736F6C6964207267626128302C302C302C302E31293B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A2050726F6772616D20';
+wwv_flow_api.g_varchar2_table(1746) := '636F646520666F726D617474696E670D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A7072652E7A2D70726F6772616D2D636F64657B0D0A2020666F6E742D66616D696C793A2053464D6F6E6F';
+wwv_flow_api.g_varchar2_table(1747) := '2D526567756C61722C4D656E6C6F2C4D6F6E61636F2C436F6E736F6C61732C4C696265726174696F6E204D6F6E6F2C42697473747265616D20566572612053616E73204D6F6E6F2C436F7572696572204E65772C6D6F6E6F73706163653B0D0A2020636F';
+wwv_flow_api.g_varchar2_table(1748) := '6C6F723A20233030303030303B0D0A2020666F6E742D73697A653A20312E3172656D3B0D0A20207461622D73697A653A20323B0D0A2020636F756E7465722D72657365743A206C696E653B0D0A20206F766572666C6F772D783A206175746F3B0D0A2020';
+wwv_flow_api.g_varchar2_table(1749) := '626F726465723A2031707820736F6C6964207267626128302C302C302C2E303735293B0D0A2020626F726465722D7261646975733A20302E3272656D3B0D0A7D0D0A7072652E7A2D70726F6772616D2D636F646520636F64657B0D0A2020666F6E742D66';
+wwv_flow_api.g_varchar2_table(1750) := '616D696C793A20696E68657269743B0D0A2020666F6E742D73697A653A20696E68657269743B0D0A20206C696E652D6865696768743A20696E68657269743B0D0A20207461622D73697A653A20696E68657269743B0D0A2020636F756E7465722D696E63';
+wwv_flow_api.g_varchar2_table(1751) := '72656D656E743A206C696E653B0D0A20206D617267696E3A20303B0D0A202070616464696E673A20303B0D0A20206F766572666C6F773A2076697369626C653B0D0A7D0D0A7072652E7A2D70726F6772616D2D636F646520636F64653A3A6265666F7265';
+wwv_flow_api.g_varchar2_table(1752) := '7B0D0A2020636F6E74656E743A20636F756E746572286C696E65293B0D0A2020757365722D73656C6563743A206E6F6E653B0D0A2020626F726465722D72696768743A2032707820736F6C696420233663653236633B0D0A2020626F726465722D6C6566';
+wwv_flow_api.g_varchar2_table(1753) := '743A2031707820736F6C6964207267626128302C302C302C2E303735293B0D0A2020626F726465722D746F703A2031707820736F6C6964207267626128302C302C302C2E303735293B0D0A20206261636B67726F756E642D636F6C6F723A207267626128';
+wwv_flow_api.g_varchar2_table(1754) := '302C302C302C2E303435293B0D0A20206D617267696E3A203020302E3472656D203020303B0D0A202070616464696E673A203020302E3472656D203020303B0D0A2020646973706C61793A20696E6C696E652D626C6F636B3B0D0A2020746578742D616C';
+wwv_flow_api.g_varchar2_table(1755) := '69676E3A2072696768743B0D0A202077696474683A20322E34656D3B0D0A2020636F6C6F723A20233339333933393B0D0A7D0D0A7072652E7A2D70726F6772616D2D636F646520636F64653A66697273742D6368696C643A6265666F72657B0D0A202062';
+wwv_flow_api.g_varchar2_table(1756) := '6F726465722D746F703A206E6F6E653B0D0A7D0D0A7072652E7A2D70726F6772616D2D636F646520636F64653A6E74682D6368696C64286F6464293A6265666F72657B0D0A20206261636B67726F756E642D636F6C6F723A207267626128302C302C302C';
+wwv_flow_api.g_varchar2_table(1757) := '2E303635293B0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A20526567696F6E0D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(1758) := '2A2A2F0D0A2E7A2D6170702D666F6F746572207B0D0A20206D617267696E2D6C6566743A20382E3272656D3B0D0A7D0D0A0D0A2E7A2D6170702D666F6F7465722D2D6C696E6B73207B0D0A202070616464696E673A203172656D2030203272656D20303B';
+wwv_flow_api.g_varchar2_table(1759) := '0D0A7D0D0A0D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A2A204D656469612071756572790D0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(1760) := '2A2F0D0A406D65646961206F6E6C792073637265656E20616E6420286D61782D77696474683A203736387078297B0D0A20202F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A20202A204C6F676F0D';
+wwv_flow_api.g_varchar2_table(1761) := '0A20202A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A20202E7A2D6170702D646573637B0D0A20202020666F6E742D73697A653A20312E3472656D3B0D0A20207D0D0A7D0D0A406D65646961206F';
+wwv_flow_api.g_varchar2_table(1762) := '6E6C792073637265656E20616E6420286D61782D77696474683A203634307078297B0D0A20202F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A20202A204C6F676F0D0A20202A2A2A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(1763) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A20202E7A2D6170702D646573637B0D0A20202020666F6E742D73697A653A20312E3672656D3B0D0A20207D0D0A0D0A20202F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(1764) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A20202A20526567696F6E0D0A20202A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A20202E7A2D6170702D666F6F7465727B0D0A202020206D';
+wwv_flow_api.g_varchar2_table(1765) := '617267696E3A20303B0D0A20207D0D0A20200D0A20202F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A20202A20506F737420637573746F6D207265706F72742074656D706C6174650D0A20202A2A';
+wwv_flow_api.g_varchar2_table(1766) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A20202E7A2D706F73747B0D0A2020202070616464696E673A20312E3272656D3B0D0A20207D0D0A20202E7A2D706F73742D2D6865616465722068317B0D';
+wwv_flow_api.g_varchar2_table(1767) := '0A20202020666F6E742D73697A653A20312E34656D3B0D0A20207D0D0A20202E7A2D706F73742D2D6865616465722068327B0D0A20202020666F6E742D73697A653A20312E3372656D3B0D0A20207D0D0A20202E7A2D706F73742D2D6865616465722068';
+wwv_flow_api.g_varchar2_table(1768) := '337B0D0A20202020666F6E742D73697A653A20312E3372656D3B0D0A20207D0D0A0D0A20202F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0D0A20202A20417574686F7220696E666F0D0A20202A2A2A';
+wwv_flow_api.g_varchar2_table(1769) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0D0A20202E7A2D617574686F722D636F6E7461696E65727B0D0A20202020666C65782D646972656374696F6E3A20636F6C756D6E3B0D0A20202020616C69676E';
+wwv_flow_api.g_varchar2_table(1770) := '2D6974656D733A2063656E7465723B0D0A20207D0D0A20202E7A2D617574686F722D72696768747B0D0A2020202070616464696E673A203136707820303B0D0A20207D0D0A20202E7A2D617574686F722D6261646765737B0D0A2020202070616464696E';
+wwv_flow_api.g_varchar2_table(1771) := '673A203136707820303B0D0A20202020616C69676E2D6974656D733A2063656E7465723B0D0A20207D0D0A0D0A7D0D0A0D0A2E7A2D68696464656E7B0D0A2020646973706C61793A206E6F6E653B0D0A20207669736962696C6974793A2068696464656E';
+wwv_flow_api.g_varchar2_table(1772) := '3B0D0A7D0D0A';
 null;
 end;
 /
@@ -13074,6 +13097,22 @@ wwv_flow_api.create_shortcut(
 );
 end;
 /
+prompt --application/shared_components/user_interface/shortcuts/blog_copyright
+begin
+wwv_flow_api.create_shortcut(
+ p_id=>wwv_flow_api.id(31662470886947023)
+,p_shortcut_name=>'BLOG_COPYRIGHT'
+,p_shortcut_type=>'FUNCTION_BODY'
+,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'return ',
+'''<small>&copy; Copyright ''',
+'|| to_char( localtimestamp, ''YYYY'' )',
+'|| '', <a href="https://github.com/jariolaine">Jari Laine</a></small>''',
+';',
+''))
+);
+end;
+/
 prompt --application/shared_components/email/templates/blog_new_comment_notify
 begin
 wwv_flow_api.create_email_template(
@@ -13282,7 +13321,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200510195238'
+,p_last_upd_yyyymmddhh24miss=>'20200511214937'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
@@ -13290,7 +13329,7 @@ wwv_flow_api.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
 ,p_plug_template=>wwv_flow_api.id(6802870362267386)
 ,p_plug_display_sequence=>30
-,p_plug_display_point=>'REGION_POSITION_05'
+,p_plug_display_point=>'BEFORE_FOOTER'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'NEVER'
@@ -13403,34 +13442,23 @@ wwv_flow_api.create_page_plug(
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(31250153901982941)
-,p_plug_name=>'License'
+,p_plug_name=>'Copyright'
 ,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_api.id(6781372168267375)
-,p_plug_display_sequence=>10
-,p_include_in_reg_disp_sel_yn=>'Y'
-,p_plug_grid_column_span=>5
-,p_plug_grid_column_css_classes=>'margin-bottom-sm'
-,p_plug_display_point=>'REGION_POSITION_05'
-,p_plug_source=>'Created by <a href="https://github.com/jariolaine">Jari Laine</a>'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
-,p_plug_comment=>'Removing or altering this region violates license'
-);
-wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(31250287600982942)
-,p_plug_name=>'Links'
-,p_region_template_options=>'#DEFAULT#'
-,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(6781372168267375)
 ,p_plug_display_sequence=>20
-,p_include_in_reg_disp_sel_yn=>'Y'
-,p_plug_new_grid_row=>false
 ,p_plug_display_point=>'REGION_POSITION_05'
-,p_list_id=>wwv_flow_api.id(31530391355020722)
-,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>wwv_flow_api.id(6848359906267410)
+,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<div class="z-app-footer">',
+'"BLOG_COPYRIGHT"',
+'<div class="z-app-footer--links">',
+'<a href="#">Privacy Policy</a>',
+'</div>',
+'</div>'))
+,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'Y'
+,p_attribute_02=>'HTML'
+,p_plug_comment=>'Removing or altering this region violates license'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(6433577571894075)
@@ -13655,7 +13683,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200510202636'
+,p_last_upd_yyyymmddhh24miss=>'20200511200324'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -14167,7 +14195,7 @@ wwv_flow_api.create_page_process(
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Remove subscription'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_util.unsubscribe(',
+'#OWNER#.blog_comm.unsubscribe(',
 '  p_subscription_id => :P2_SUBSCRIPTION_ID',
 ');'))
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
@@ -15875,7 +15903,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200510172451'
+,p_last_upd_yyyymmddhh24miss=>'20200511200308'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -15901,7 +15929,9 @@ wwv_flow_api.create_page_plug(
 ,p_query_table=>'BLOG_COMMENTS'
 ,p_query_where=>':P1001_ID is null'
 ,p_include_rowid_column=>false
-,p_is_editable=>false
+,p_is_editable=>true
+,p_edit_operations=>'i'
+,p_lost_update_check_type=>'VALUES'
 ,p_plug_source_type=>'NATIVE_FORM'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -15933,14 +15963,6 @@ wwv_flow_api.create_page_button(
 ,p_button_position=>'REGION_TEMPLATE_NEXT'
 ,p_icon_css_classes=>'fa-send-o'
 ,p_database_action=>'INSERT'
-);
-wwv_flow_api.create_page_branch(
- p_id=>wwv_flow_api.id(27991328110607119)
-,p_branch_name=>'Go To Page 2'
-,p_branch_action=>'f?p=&APP_ALIAS.:2:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
-,p_branch_point=>'AFTER_PROCESSING'
-,p_branch_type=>'REDIRECT_URL'
-,p_branch_sequence=>10
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(6283829025551657)
@@ -16030,7 +16052,7 @@ wwv_flow_api.create_page_item(
 ,p_prompt=>'Comment'
 ,p_display_as=>'NATIVE_TEXTAREA'
 ,p_cSize=>30
-,p_cMaxlength=>2000
+,p_cMaxlength=>16000
 ,p_cHeight=>5
 ,p_field_template=>wwv_flow_api.id(6855004103267413)
 ,p_item_css_classes=>'padding-top-none'
@@ -16042,11 +16064,12 @@ wwv_flow_api.create_page_item(
 ,p_attribute_02=>'N'
 ,p_attribute_03=>'N'
 ,p_attribute_04=>'BOTH'
+,p_item_comment=>'Item visible to user for entering comment.'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(6290415932551662)
 ,p_name=>'P1001_QUESTION'
-,p_item_sequence=>90
+,p_item_sequence=>100
 ,p_item_plug_id=>wwv_flow_api.id(147769743184406827)
 ,p_use_cache_before_default=>'NO'
 ,p_prompt=>'Answer to'
@@ -16107,19 +16130,56 @@ wwv_flow_api.create_page_item(
 ,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
 ,p_attribute_01=>'Y'
 );
+wwv_flow_api.create_page_item(
+ p_id=>wwv_flow_api.id(31617298354094008)
+,p_name=>'P1001_COMMENT_HTML'
+,p_source_data_type=>'VARCHAR2'
+,p_item_sequence=>90
+,p_item_plug_id=>wwv_flow_api.id(147769743184406827)
+,p_item_source_plug_id=>wwv_flow_api.id(147769743184406827)
+,p_source=>'BODY_HTML'
+,p_source_type=>'REGION_SOURCE_COLUMN'
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'N'
+,p_protection_level=>'I'
+,p_attribute_01=>'Y'
+,p_item_comment=>'This item is used by automatic form processing process. After submit computation stores formatted comment here.'
+);
+wwv_flow_api.create_page_computation(
+ p_id=>wwv_flow_api.id(31616932627094005)
+,p_computation_sequence=>10
+,p_computation_item=>'P1001_COMMENT_HTML'
+,p_computation_type=>'PLSQL_EXPRESSION'
+,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#OWNER#.blog_comm.format_comment(',
+'  p_comment => :P1001_COMMENT',
+')',
+''))
+,p_computation_comment=>'Format comment and store result to item that is used automatic form processing process'
+);
+wwv_flow_api.create_page_computation(
+ p_id=>wwv_flow_api.id(31617467994094010)
+,p_computation_sequence=>20
+,p_computation_item=>'P1001_IS_ACTIVE'
+,p_computation_type=>'STATIC_ASSIGNMENT'
+,p_computation=>'0'
+,p_required_patch=>wwv_flow_api.id(28281277020489892)
+,p_computation_comment=>'If comments need to be moderated, set is_active value to zero (0)'
+);
 wwv_flow_api.create_page_validation(
  p_id=>wwv_flow_api.id(26384992359542642)
-,p_validation_name=>'Validate and Format Comment'
+,p_validation_name=>'Validate Comment'
 ,p_validation_sequence=>20
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return #OWNER#.blog_util.validate_comment(',
-'   p_comment => :P1001_COMMENT',
-'  ,p_set_variable => ''YES''',
+'return #OWNER#.blog_comm.validate_comment(',
+'   p_comment         => :P1001_COMMENT_HTML',
+'  ,p_length_err_mesg => ''BLOG_VALIDATION_ERR_COMMENT_LENGTH''',
+'  ,p_parse_err_mesg  => ''BLOG_VALIDATION_ERR_COMMENT_HTML''',
 ');'))
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
 ,p_associated_item=>wwv_flow_api.id(6289109968551661)
 ,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
-,p_validation_comment=>'Function formats and validate comment. Formatted comment is stored to package private variable. Database trigger picks data from variable when inserting data to table'
+,p_validation_comment=>'Validate formatted comment length and HTML'
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(2754144221851926)
@@ -16140,7 +16200,7 @@ wwv_flow_api.create_page_da_action(
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26968482248257312)
-,p_process_sequence=>10
+,p_process_sequence=>20
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_region_id=>wwv_flow_api.id(147769743184406827)
 ,p_process_type=>'NATIVE_FORM_DML'
@@ -16151,36 +16211,38 @@ wwv_flow_api.create_page_process(
 ,p_attribute_08=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_api.id(6283414650551656)
+,p_process_comment=>'Save comment'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26970862080257336)
 ,p_process_sequence=>30
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Sent notify email to blogger'
+,p_process_name=>'Notify Blogger'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_util.new_comment_notify(',
+'#OWNER#.blog_comm.new_comment_notify(',
 '   p_post_id         => :P1001_POST_ID',
 '  ,p_app_name        => :G_APP_NAME',
 '  ,p_email_template  => ''BLOG_NEW_COMMENT_NOTIFY''',
 ');'))
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_comment=>'Not working on APEX 19.2'
+,p_process_comment=>'Notify blogger about new comment for post'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(31248826734982928)
 ,p_process_sequence=>40
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Subscribe to comment reply'
+,p_process_name=>'Subscribe User'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_util.subscribe(',
+'#OWNER#.blog_comm.subscribe(',
 '   p_post_id  => :P1001_POST_ID',
 '  ,p_email    => :P1001_EMAIL',
 ');'))
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'P1001_EMAIL'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
+,p_process_comment=>'Save user email for notification for replies to comment'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(31247931198982919)
@@ -16190,15 +16252,29 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'Clear items'
 ,p_attribute_01=>'CLEAR_CACHE_CURRENT_PAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_comment=>'At least question answer item saves session state to disk. Clear all page items session state.'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26385226571542645)
 ,p_process_sequence=>60
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'Close Dialog'
+,p_process_name=>'No Need to Moderate'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_success_message=>'Thanks for commenting.'
+,p_required_patch=>-wwv_flow_api.id(28281277020489892)
+,p_process_comment=>'Comments need to be moderated'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(31617539210094011)
+,p_process_sequence=>70
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_CLOSE_WINDOW'
+,p_process_name=>'Need to Moderate'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_success_message=>'Thanks for commenting. Your comment will be published after author has review it.'
+,p_required_patch=>wwv_flow_api.id(7073708623458378)
+,p_process_comment=>'Comments not need to be moderated'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26385626116542649)
@@ -16214,7 +16290,7 @@ wwv_flow_api.create_page_process(
 ,p_process_sequence=>10
 ,p_process_point=>'ON_SUBMIT_BEFORE_COMPUTATION'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'Close Dialog if Hidden Item not null'
+,p_process_name=>'If Hidden Item not Null'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'P1001_LAST_NAME'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'

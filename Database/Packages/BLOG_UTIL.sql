@@ -18,11 +18,60 @@ as
 --    Jari Laine 10.05.2020 - Procedure new_comment_notify to notify blogger about new comments
 --                            Procedure subscribe to subscribe comment reply
 --                            Procedure unsubscribe for unsubscribe comment reply
+--    Jari Laine 11.05.2020 - Procedures and functions relating comments moved to package blog_comm
 --
 --  TO DO:
---    #1  comment HTML validation could improved
+--    #1  Package contains hard coded values
+--        e.g. public application tabs should be converted to dynamic list
 --
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Global constants
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+  g_owner               constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
+
+  g_number_format       constant varchar2(40)   := 'fm9999999999999999999999999999999999999';
+
+  -- ORDS
+  g_ords_module         constant varchar2(256)  := 'BLOG_PUBLIC_FILES';
+
+  g_ords_public_files   constant varchar2(256)  := 'files';
+
+  g_ords_rss_feed       constant varchar2(256)  := 'feed/rss';
+  g_ords_sitemap_index  constant varchar2(256)  := 'sitemap/index';
+  g_ords_sitemap_main   constant varchar2(256)  := 'sitemap/main';
+  g_ords_sitemap_posts  constant varchar2(256)  := 'sitemap/posts';
+
+  -- URL
+  g_home_page           constant varchar2(40)   := 'HOME';
+
+  g_post_page           constant varchar2(40)   := 'POST';
+  g_post_item           constant varchar2(40)   := 'P2_POST_ID';
+
+  g_unsubscribe_item    constant varchar2(40)   := 'P2_SUBSCRIPTION_ID';
+
+  g_search_page         constant varchar2(40)   := 'SEARCH';
+  g_search_item         constant varchar2(40)   := 'P0_SEARCH';
+
+  g_category_page       constant varchar2(40)   := 'CATEGORIES';
+  g_category_item       constant varchar2(40)   := 'P14_CATEGORY_ID';
+
+  g_archive_page        constant varchar2(40)   := 'ARCHIVES';
+  g_archive_item        constant varchar2(40)   := 'P15_ARCHIVE_ID';
+
+  g_tag_page            constant varchar2(40)   := 'TAG';
+  g_tag_item            constant varchar2(40)   := 'P6_TAG_ID';
+
+  -- XML
+  g_pub_app_tab_list    constant varchar2(256)  := 'Desktop Navigation Menu';
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function apex_error_handler (
+    p_error           in apex_error.t_error
+  ) return apex_error.t_error_result;
 --------------------------------------------------------------------------------
   function get_attribute_value(
     p_attribute_name  in varchar2
@@ -71,27 +120,6 @@ as
     p_posts_count     in number default null
   ) return varchar2;
 --------------------------------------------------------------------------------
-  function validate_comment(
-    p_comment         in varchar2,
-    p_max_length      in number default 4000,
-    p_set_variable    in varchar2 default 'NO'
-  ) return varchar2;
---------------------------------------------------------------------------------
-  procedure new_comment_notify(
-    p_post_id         in varchar2,
-    p_app_name        in varchar2,
-    p_email_template  in varchar2
-  );
---------------------------------------------------------------------------------
-  procedure subscribe(
-    p_post_id         in varchar2,
-    p_email           in varchar2
-  );
---------------------------------------------------------------------------------
-  procedure unsubscribe(
-    p_subscription_id in varchar2
-  );
---------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
 
@@ -100,7 +128,7 @@ CREATE OR REPLACE package body "BLOG_UTIL"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- Private variables
+-- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- none
@@ -109,209 +137,117 @@ as
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure remove_ascii(
-    p_string in out nocopy varchar2
-  )
+-- none
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Global functions and procedures
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function apex_error_handler(
+    p_error in apex_error.t_error
+  ) return apex_error.t_error_result
   as
+    l_genereric_error constant varchar2(255) := 'BLOG_GENERIC_ERROR';
+
+    l_result          apex_error.t_error_result;
+    l_reference_id    pls_integer;
+    l_constraint_name varchar2(255);
+    l_err_msg         varchar2(32700);
+
   begin
-    -- remove unwanted ascii codes
-    for i in 0 .. 31
-    loop
-      if i != 10 then
-        p_string := trim( replace( p_string, chr(i) ) );
+
+    -- This function must be used to ensure initialization is compatible
+    -- with future changes to t_error_result.
+    l_result :=
+      apex_error.init_error_result(
+        p_error => p_error
+      );
+
+    -- If it's an internal error raised by APEX, like an invalid statement or
+    -- code which can't be executed, the error text might contain security sensitive
+    -- information. To avoid this security problem we can rewrite the error to
+    -- a generic error message and log the original error message for further
+    -- investigation by the help desk.
+    if p_error.is_internal_error then
+
+      if not p_error.is_common_runtime_error then
+        -- Change the message to the generic error message which doesn't expose
+        -- any sensitive information.
+        l_result.message := apex_lang.message(l_genereric_error);
+        l_result.additional_info := null;
       end if;
-    end loop;
-  end remove_ascii;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure remove_anchor(
-    p_string in out nocopy varchar2
-  )
-  as
-  begin
-    -- remove anchor tags
-    p_string := regexp_replace( p_string, '<a[^>]*>(.*?)<\/a>', '', 1, 0, 'i' );
-  end remove_anchor;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure escape_html(
-    p_string in out nocopy varchar2
-  )
-  as
-  begin
 
-    -- change all hash marks so we can escape those
-    -- after calling apex_escape.html_whitelist
-    -- escape of hash marks needed to prevent APEX substitutions
-    p_string := replace( p_string, '#', '#HashMark#' );
+    else
+      -- Always show the error as inline error
+      l_result.display_location := case
+        when l_result.display_location = apex_error.c_on_error_page
+        then apex_error.c_inline_in_notification
+        else l_result.display_location
+        end
+      ;
 
-    -- escape comment html
-    p_string := apex_escape.html_whitelist(
-       p_html            => p_string
-      ,p_whitelist_tags  => blog_globals.g_whitelist_tags
-    );
+      -- If it's a constraint violation like
+      --
+      --   -) ORA-02292 ORA-02291 ORA-02290 ORA-02091 ORA-00001: unique constraint violated
+      --   -) : transaction rolled back (-> can hide a deferred constraint)
+      --   -) : check constraint violated
+      --   -) : integrity constraint violated - parent key not found
+      --   -) : integrity constraint violated - child record found
+      --
+      -- we try to get a friendly error message from our constraint lookup configuration.
+      -- If we don't find the constraint in our lookup table we fallback to
+      -- the original ORA error message.
 
-    -- escape hash marks
-    p_string := replace( p_string, '#HashMark#', '&#x23;' );
+      if p_error.ora_sqlcode in (-1, -2091, -2290, -2291, -2292) then
 
-  end escape_html;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure build_code_tab(
-    p_comment   in out nocopy varchar2,
-    p_code_tab  in out nocopy apex_t_varchar2
-  )
-  as
+        l_constraint_name :=
+          apex_error.extract_constraint_name(
+            p_error => p_error
+          );
 
-    l_code_cnt  pls_integer := 0;
-    l_start_pos pls_integer := 0;
-    l_end_pos   pls_integer := 0;
+        l_err_msg := apex_lang.message(l_constraint_name);
 
-  begin
-
-    -- check code open tag count
-    l_code_cnt := regexp_count( p_comment, '\<code\>', 1, 'i' );
-
-    -- process code tags if open and close count match ( pre check is for valid HTML )
-    if l_code_cnt = regexp_count( p_comment, '\<\/code\>', 1, 'i' )
-    then
-
-      -- collect content inside code tags to collection
-      for i in 1 .. l_code_cnt
-      loop
-
-        -- get code start and end position
-        l_start_pos := instr( lower( p_comment ), '<code>' );
-        l_end_pos := instr( lower( p_comment ), '</code>' );
-
-        -- store code tag content to collection and wrap it to pre tag having class
-        apex_string.push(
-           p_table => p_code_tab
-          ,p_value => '<pre class="' || blog_globals.g_code_css_class || '">'
-            || substr(p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6)
-            || '</pre>'
-        );
-
-        -- substitude handled code tag
-        p_comment := rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )
-          || chr(10)
-          || 'CODE#' || i
-          || chr(10)
-          || ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )
-        ;
-
-      end loop;
-
-    end if;
-
-  end build_code_tab;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure build_comment_html(
-    p_comment in out nocopy varchar2
-  )
-  as
-    l_temp        varchar2(32700);
-    l_code_row    number;
-    l_code_tab    apex_t_varchar2;
-    l_comment_tab apex_t_varchar2;
-  begin
-
-    -- process code tags
-    blog_util.build_code_tab(
-       p_comment => p_comment
-      ,p_code_tab => l_code_tab
-    );
-
-    -- split comment to collection by new line character
-    l_comment_tab := apex_string.split( p_comment, chr(10) );
-
-    -- comment is stored to collection
-    -- start building comment with prober html tags
-    p_comment := null;
-
-    -- Format comment
-    for i in 1 .. l_comment_tab.count
-    loop
-
-      l_temp := trim( l_comment_tab(i) );
-
-      -- check if row is code block
-      if regexp_like( l_temp, '^CODE\#[0-9]+$' )
-      then
-        -- get code block row number
-        l_code_row := regexp_substr( l_temp, '[0-9]+' );
-        -- close p tag, insert code block
-        -- and open p tag again for text
-        p_comment := p_comment
-          || '</p>'
-          || chr(10)
-          || l_code_tab(l_code_row)
-          || chr(10)
-          || '<p>'
-        ;
-
-      else
-        -- append text if row is not empty
-        if l_temp is not null
-        then
-          -- if we are in first row
-          if p_comment is null
-          then
-            p_comment := l_temp;
-          else
-            -- check if p tag is opened, then insert br for new line
-            p_comment := p_comment
-              ||
-                case
-                when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
-                then '<br />' || chr(10)
-                end
-              || l_temp
-            ;
-          end if;
+        -- not every constraint has to be in our lookup table
+        if not l_err_msg = l_constraint_name then
+          l_result.message := l_err_msg;
+          l_result.additional_info := null;
         end if;
 
       end if;
 
-    end loop;
+      -- If an ORA error has been raised, for example a raise_application_error(-20xxx, '...')
+      -- in a table trigger or in a PL/SQL package called by a process and we
+      -- haven't found the error in our lookup table, then we just want to see
+      -- the actual error text and not the full error stack with all the ORA error numbers.
+      if p_error.ora_sqlcode is not null
+      and l_result.message = p_error.message
+      then
 
-    -- wrap comment to p tag.
-    p_comment := '<p>' || p_comment || '</p>';
-    -- there might be empty p, if comment ends code tag, remove that
-    p_comment := replace( p_comment, '<p></p>' );
+        l_result.message :=
+          apex_error.get_first_ora_error_text (
+            p_error => p_error
+          );
 
-  end build_comment_html;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure format_comment(
-    p_comment in out nocopy varchar2
-  )
-  as
-    l_comment varchar2(32700);
-  begin
+      end if;
 
-    -- remove unwanted ascii codes
-    blog_util.remove_ascii(
-       p_string => p_comment
-    );
-    -- remove all anchors
---    blog_util.remove_anchor(
---       p_string => l_comment
---    );
-    -- escape HTML
-    blog_util.escape_html(
-       p_string => p_comment
-    );
-    -- build comment HTML
-    blog_util.build_comment_html(
-       p_comment => p_comment
-    );
+      -- If no associated page item/tabular form column has been set, we can use
+      -- apex_error.auto_set_associated_item to automatically guess the affected
+      -- error field by examine the ORA error for constraint names or column names.
+      if l_result.page_item_name is null
+      and l_result.column_alias is null then
 
-  end format_comment;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Global functions and procedures
+        apex_error.auto_set_associated_item (
+           p_error => p_error
+          ,p_error_result => l_result
+        );
+
+      end if;
+
+    end if;
+
+    return l_result;
+
+  end apex_error_handler;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_attribute_value(
@@ -578,8 +514,8 @@ as
     and q1.post_id = l_post_id
     ;
 
-    p_newer_id  := to_char( l_newer_id, blog_globals.g_number_format );
-    p_older_id  := to_char( l_older_id, blog_globals.g_number_format );
+    p_newer_id  := to_char( l_newer_id, g_number_format );
+    p_older_id  := to_char( l_older_id, g_number_format );
 
     apex_debug.info( 'Fetch post: %s next_id: %s prev_id: %s', p_post_id, p_newer_id, p_older_id );
 
@@ -757,7 +693,7 @@ as
 
     l_year_month := to_number( p_year_month );
     -- query that passed year month number actually exists
-    select blog_util.get_year_month(
+    select get_year_month(
        p_archive_date => archive_date
       ,p_date_format  => p_date_format
     )
@@ -820,183 +756,19 @@ as
     );
 
     -- format archive date and return string
-    return case when p_archive_date is not null then
-      to_char(
-         p_archive_date
-        ,p_date_format || case when p_posts_count is not null then ' "(' || p_posts_count || ')"' end
-      )
+    return
+      case when p_archive_date is not null
+      then
+        to_char(
+           p_archive_date
+          ,p_date_format
+          ||
+          case when p_posts_count is not null
+          then ' "(' || p_posts_count || ')"'
+          end
+        )
     end;
   end get_year_month;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function validate_comment(
-    p_comment       in varchar2,
-    p_max_length    in number default 4000,
-    p_set_variable  in varchar2 default 'NO'
-  ) return varchar2
-  as
-
-    l_xml     xmltype;
-    l_error   varchar2(32700);
-    l_comment varchar2(32700);
-
-    xml_parsing_failed  exception;
-    pragma exception_init( xml_parsing_failed, -31011 );
-
-  begin
-
-    l_comment := p_comment;
-
-    -- format comment
-    blog_util.format_comment(
-       p_comment => l_comment
-    );
-    -- check formatted comment length
-    if length( l_comment ) > p_max_length
-    then
-      -- get error message
-      l_error := apex_lang.message( 'BLOG_VALIDATION_ERR_COMMENT_LENGTH' );
-    else
-      -- check HTML is valid
-      -- TO DO see item 1 from package specs
-      begin
-        l_xml := xmltype.createxml(
-            '<root><row>'
-          || l_comment
-          || '</row></root>'
-        );
-      exception when xml_parsing_failed then
-        -- get error message
-        l_error :=  apex_lang.message( 'BLOG_VALIDATION_ERR_COMMENT_HTML' );
-      end;
-    end if;
-
-    if l_error is null
-    then
-      -- if validation passed set package vartiable
-      if p_set_variable = 'YES'
-      then
-        l_comment := apex_util.savekey_vc2(
-           p_val => l_comment
-        );
-      end if;
-    end if;
-
-    -- return validation result
-    -- if validation fails we return error message stored to variable
-    return l_error;
-
-  end validate_comment;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure new_comment_notify(
-    p_post_id         in varchar2,
-    p_app_name        in varchar2,
-    p_email_template  in varchar2
-  )
-  as
-    l_post_id   number;
-    l_app_email varchar2(4000);
-  begin
-
-    -- fetch application email address
-    l_app_email := blog_util.get_attribute_value('APP_EMAIL');
-
-    l_post_id   := to_number( p_post_id );
-
-    -- get values for APEX email template
-    -- send notify email if blog email address is set
-    -- and blogger has set email
-    for c1 in(
-      select v1.blogger_email
-        ,json_object (
-           'APP_NAME'     value p_app_name
-          ,'BLOGGER_NAME' value v1.blogger_name
-          ,'POST_TITLE'   value v1.title
-          ,'POST_LINK'    value
-              blog_url.get_post(
-                 p_post_id => v1.id
-                ,p_canonical => 'YES'
-              )
-        ) as placeholders
-      from blog_v_all_posts v1
-      where 1 = 1
-      and v1.id = l_post_id
-      and v1.blogger_email is not null
-      and l_app_email is not null
-    ) loop
-      -- send notify email
-      apex_mail.send (
-         p_to                 => c1.blogger_email
-        ,p_from               => l_app_email
-        ,p_template_static_id => p_email_template
-        ,p_placeholders       => c1.placeholders
-      );
-    end loop;
-
-  end new_comment_notify;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure subscribe(
-    p_post_id in varchar2,
-    p_email   in varchar2
-  )
-  as
-    l_email     varchar2(256);
-    l_post_id   number;
-    l_email_id  number;
-  begin
-
-    l_email   := trim( lower( p_email ) );
-    l_post_id := to_number( p_post_id );
-
-    -- subscribe user to get notify on reply to comment
-    if p_email is not null
-    and p_post_id is not null
-    then
-      -- store email address and return id
-      begin
-        insert into
-          blog_comment_subs_email( email, is_active )
-        values ( l_email, 1 )
-        returning id into l_email_id
-        ;
-      -- if email address already exists, fetch id
-      exception when dup_val_on_index
-      then
-        select id
-        into l_email_id
-        from blog_comment_subs_email
-        where 1 = 1
-        and email_unique = l_email
-        ;
-      end;
-      -- store post to email link
-      insert into
-        blog_comment_subs( post_id, email_id )
-      values
-        ( p_post_id, l_email_id )
-      ;
-    end if;
-  -- if subscription already exists, do nothing
-  exception when dup_val_on_index
-  then
-    null;
-  end subscribe;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure unsubscribe(
-    p_subscription_id in varchar2
-  )
-  as
-  begin
-    -- remove user subscribtion to get notify from replies
-    delete
-      from blog_comment_subs
-    where 1 = 1
-    and id = p_subscription_id
-    ;
-  end unsubscribe;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";

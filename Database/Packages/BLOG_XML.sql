@@ -5,7 +5,7 @@ as
 --------------------------------------------------------------------------------
 --
 --  DESCRIPTION
---    Procedure and functions to generate RSS feed and sitemap
+--    Procedure and functions to generate e.g. RSS feed and sitemap
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 07.05.2019 - Created
@@ -33,7 +33,7 @@ CREATE OR REPLACE package body "BLOG_XML"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- Private variables and constants
+-- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   c_pub_app_id  constant number := to_number( blog_util.get_item_init_value( 'G_PUB_APP_ID' ) );
@@ -54,8 +54,8 @@ as
       into l_app_alias
       from apex_applications t1
       where 1 = 1
-        and t1.owner = blog_globals.g_owner
-        and t1.application_id = blog_xml.c_pub_app_id
+        and t1.owner = blog_util.g_owner
+        and t1.application_id = c_pub_app_id
       ;
     exception when no_data_found then
       raise_application_error( -20001,  'Configuration not exists.' );
@@ -85,8 +85,8 @@ as
         on t1.id = t3.schema_id
         and t2.id = t3.module_id
       where 1 = 1
-        and t1.parsing_schema = blog_globals.g_owner
-        and t2.name = blog_globals.g_ords_module
+        and t1.parsing_schema = blog_util.g_owner
+        and t2.name = blog_util.g_ords_module
         and t3.uri_template = p_uri_template
       ;
     exception when no_data_found then
@@ -108,15 +108,18 @@ as
   as
     l_rss           blob;
     l_last_modifier timestamp with local time zone;
-    l_rss_desc      varchar2(255);
-    l_home_url      varchar2(255);
-    l_app_alias     varchar2(255);
+    l_rss_url       varchar2(4000);
+    l_rss_desc      varchar2(4000);
+    l_home_url      varchar2(4000);
+    l_app_alias     varchar2(4000);
     l_blog_name     varchar2(4000);
     l_rss_version   constant varchar2(5) := '2.0';
   begin
 
+    l_rss_url := blog_util.get_attribute_value( 'RSS_URL' );
+
     -- blog application alias
-    l_app_alias := blog_xml.get_app_alias;
+    l_app_alias := get_app_alias;
 
     -- blog home page relative urlg_ords_rss_feed;
     l_home_url  := blog_url.get_tab(
@@ -144,7 +147,7 @@ as
              "atom:link"
             ,xmlattributes(
                'self'                 as "rel"
-              ,blog_globals.g_rss_url as "href"
+              ,l_rss_url as "href"
               ,'application/rss+xml'  as "type"
             )
           )
@@ -192,18 +195,21 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_index
   as
-    l_xml blob;
-    l_main varchar2(255);
+    l_xml   blob;
+    l_url   varchar2(4000);
+    l_main  varchar2(255);
     l_posts varchar2(255);
   begin
 
-    l_main := blog_globals.g_canonical_url
-      || blog_xml.get_ords_service(
-        blog_globals.g_ords_sitemap_main
+    l_url :=  blog_util.get_attribute_value( 'CANONICAL_URL' );
+
+    l_main := l_url
+      || get_ords_service(
+        blog_util.g_ords_sitemap_main
       );
-    l_posts := blog_globals.g_canonical_url
-      || blog_xml.get_ords_service(
-        blog_globals.g_ords_sitemap_posts
+    l_posts := l_url
+      || get_ords_service(
+        blog_util.g_ords_sitemap_posts
       );
 
     with si as (
@@ -247,7 +253,7 @@ as
     l_app_alias varchar2(256);
   begin
 
-    l_app_alias := blog_xml.get_app_alias;
+    l_app_alias := get_app_alias;
 
     with sitemap_query as (
       select
@@ -259,13 +265,13 @@ as
         ) as loc
       from apex_application_list_entries li
       where 1 = 1
-        and li.list_name = blog_globals.g_pub_app_tab_list
-        and li.application_id = blog_xml.c_pub_app_id
+        and li.list_name = blog_util.g_pub_app_tab_list
+        and li.application_id = c_pub_app_id
       and not exists(
         select 1
         from apex_application_build_options bo
         where 1 = 1
-          and bo.application_id = blog_xml.c_pub_app_id
+          and bo.application_id = c_pub_app_id
           and bo.build_option_name = li.build_option
           and bo.build_option_status = 'Exclude'
       )

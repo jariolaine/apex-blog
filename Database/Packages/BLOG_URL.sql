@@ -20,7 +20,7 @@ as
 --------------------------------------------------------------------------------
   function get_tab(
     p_app_id          in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_globals.g_home_page,
+    p_app_page_id     in varchar2 default blog_util.g_home_page,
     p_session         in varchar2 default null,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
@@ -29,8 +29,8 @@ as
     p_post_id         in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_globals.g_post_page,
-    p_page_item       in varchar2 default blog_globals.g_post_item,
+    p_app_page_id     in varchar2 default blog_util.g_post_page,
+    p_page_item       in varchar2 default blog_util.g_post_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -38,8 +38,8 @@ as
     p_post_id         in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_globals.g_post_page,
-    p_page_item       in varchar2 default blog_globals.g_post_item,
+    p_app_page_id     in varchar2 default blog_util.g_post_page,
+    p_page_item       in varchar2 default blog_util.g_post_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -47,8 +47,8 @@ as
     p_category_id     in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_globals.g_category_page,
-    p_page_item       in varchar2 default blog_globals.g_category_item,
+    p_app_page_id     in varchar2 default blog_util.g_category_page,
+    p_page_item       in varchar2 default blog_util.g_category_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -56,8 +56,8 @@ as
     p_category_id     in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_globals.g_category_page,
-    p_page_item       in varchar2 default blog_globals.g_category_item,
+    p_app_page_id     in varchar2 default blog_util.g_category_page,
+    p_page_item       in varchar2 default blog_util.g_category_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -65,8 +65,8 @@ as
     p_archive_id      in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_globals.g_archive_page,
-    p_page_item       in varchar2 default blog_globals.g_archive_item,
+    p_app_page_id     in varchar2 default blog_util.g_archive_page,
+    p_page_item       in varchar2 default blog_util.g_archive_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -74,8 +74,8 @@ as
     p_archive_id      in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_globals.g_archive_page,
-    p_page_item       in varchar2 default blog_globals.g_archive_item,
+    p_app_page_id     in varchar2 default blog_util.g_archive_page,
+    p_page_item       in varchar2 default blog_util.g_archive_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -83,8 +83,8 @@ as
     p_tag_id          in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_globals.g_tag_page,
-    p_page_item       in varchar2 default blog_globals.g_tag_item,
+    p_app_page_id     in varchar2 default blog_util.g_tag_page,
+    p_page_item       in varchar2 default blog_util.g_tag_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -98,15 +98,16 @@ as
     p_value           in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_globals.g_search_page,
-    p_page_item       in varchar2 default blog_globals.g_search_item
+    p_app_page_id     in varchar2 default blog_util.g_search_page,
+    p_page_item       in varchar2 default blog_util.g_search_item
   );
 --------------------------------------------------------------------------------
 end "BLOG_URL";
 /
 
 
-CREATE OR REPLACE package body blog_url as
+CREATE OR REPLACE package body "BLOG_URL"
+as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private constants and variables
@@ -126,7 +127,7 @@ CREATE OR REPLACE package body blog_url as
 --------------------------------------------------------------------------------
   function get_tab(
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_globals.g_home_page,
+    p_app_page_id   in varchar2 default blog_util.g_home_page,
     p_session       in varchar2 default null,
     p_canonical     in varchar2 default 'NO'
   ) return varchar2
@@ -136,7 +137,7 @@ CREATE OR REPLACE package body blog_url as
     return
       case p_canonical
       when 'YES'
-      then blog_globals.g_canonical_url
+      then blog_util.get_attribute_value( 'CANONICAL_URL' )
       end
       ||
       apex_page.get_url(
@@ -154,17 +155,17 @@ CREATE OR REPLACE package body blog_url as
     p_post_id       in number,
     p_app_id        in varchar2 default null,
     p_session       in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_globals.g_post_page,
-    p_page_item     in varchar2 default blog_globals.g_post_item,
+    p_app_page_id   in varchar2 default blog_util.g_post_page,
+    p_page_item     in varchar2 default blog_util.g_post_item,
     p_canonical     in varchar2 default 'NO'
   ) return varchar2
   as
     l_post_id varchar2(256);
   begin
 
-    l_post_id := to_char( p_post_id, blog_globals.g_number_format );
+    l_post_id := to_char( p_post_id, blog_util.g_number_format );
     return
-      blog_url.get_post(
+      get_post(
          p_post_id      => l_post_id
         ,p_app_id       => p_app_id
         ,p_session      => p_session
@@ -180,8 +181,8 @@ CREATE OR REPLACE package body blog_url as
     p_post_id       in varchar2,
     p_app_id        in varchar2 default null,
     p_session       in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_globals.g_post_page,
-    p_page_item     in varchar2 default blog_globals.g_post_item,
+    p_app_page_id   in varchar2 default blog_util.g_post_page,
+    p_page_item     in varchar2 default blog_util.g_post_item,
     p_canonical     in varchar2 default 'NO'
   ) return varchar2
   as
@@ -205,13 +206,12 @@ CREATE OR REPLACE package body blog_url as
       ;
 
       l_url :=
-        blog_globals.g_canonical_url
-        ||
         apex_util.prepare_url(
            p_url => l_url
           ,p_plain_url => true
-        )
-      ;
+        );
+
+      l_url := blog_util.get_attribute_value( 'CANONICAL_URL' ) || l_url;
 
     else
       l_url :=
@@ -236,17 +236,17 @@ CREATE OR REPLACE package body blog_url as
     p_category_id in number,
     p_app_id      in varchar2 default null,
     p_session     in varchar2 default null,
-    p_app_page_id in varchar2 default blog_globals.g_category_page,
-    p_page_item   in varchar2 default blog_globals.g_category_item,
+    p_app_page_id in varchar2 default blog_util.g_category_page,
+    p_page_item   in varchar2 default blog_util.g_category_item,
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
     l_category_id varchar2(256);
   begin
 
-    l_category_id := to_char( p_category_id, blog_globals.g_number_format );
+    l_category_id := to_char( p_category_id, blog_util.g_number_format );
     return
-      blog_url.get_category(
+      get_category(
          p_category_id  => l_category_id
         ,p_app_id       => p_app_id
         ,p_session      => p_session
@@ -262,8 +262,8 @@ CREATE OR REPLACE package body blog_url as
     p_category_id in varchar2,
     p_app_id      in varchar2 default null,
     p_session     in varchar2 default null,
-    p_app_page_id in varchar2 default blog_globals.g_category_page,
-    p_page_item   in varchar2 default blog_globals.g_category_item,
+    p_app_page_id in varchar2 default blog_util.g_category_page,
+    p_page_item   in varchar2 default blog_util.g_category_item,
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
@@ -272,7 +272,7 @@ CREATE OR REPLACE package body blog_url as
     return
       case p_canonical
       when 'YES'
-      then blog_globals.g_canonical_url
+      then blog_util.get_attribute_value( 'CANONICAL_URL' )
       end
       ||
       apex_page.get_url(
@@ -292,17 +292,17 @@ CREATE OR REPLACE package body blog_url as
     p_archive_id      in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_globals.g_archive_page,
-    p_page_item       in varchar2 default blog_globals.g_archive_item,
+    p_app_page_id     in varchar2 default blog_util.g_archive_page,
+    p_page_item       in varchar2 default blog_util.g_archive_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2
   as
     l_archive_id varchar2(256);
   begin
 
-    l_archive_id := to_char( p_archive_id, blog_globals.g_number_format );
+    l_archive_id := to_char( p_archive_id, blog_util.g_number_format );
     return
-      blog_url.get_archive(
+      get_archive(
          p_archive_id   => l_archive_id
         ,p_app_id       => p_app_id
         ,p_session      => p_session
@@ -318,8 +318,8 @@ CREATE OR REPLACE package body blog_url as
     p_archive_id      in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_globals.g_archive_page,
-    p_page_item       in varchar2 default blog_globals.g_archive_item,
+    p_app_page_id     in varchar2 default blog_util.g_archive_page,
+    p_page_item       in varchar2 default blog_util.g_archive_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2
   as
@@ -328,7 +328,7 @@ CREATE OR REPLACE package body blog_url as
     return
       case p_canonical
       when 'YES'
-      then blog_globals.g_canonical_url
+      then blog_util.get_attribute_value( 'CANONICAL_URL' )
       end
       ||
       apex_page.get_url(
@@ -349,8 +349,8 @@ CREATE OR REPLACE package body blog_url as
     p_tag_id      in number,
     p_app_id      in varchar2 default null,
     p_session     in varchar2 default null,--,p_plain_url   => true
-    p_app_page_id in varchar2 default blog_globals.g_tag_page,
-    p_page_item   in varchar2 default blog_globals.g_tag_item,
+    p_app_page_id in varchar2 default blog_util.g_tag_page,
+    p_page_item   in varchar2 default blog_util.g_tag_item,
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
@@ -359,7 +359,7 @@ CREATE OR REPLACE package body blog_url as
     return
       case p_canonical
       when 'YES'
-      then blog_globals.g_canonical_url
+      then blog_util.get_attribute_value( 'CANONICAL_URL' )
       end
       ||
       apex_page.get_url(
@@ -386,17 +386,17 @@ CREATE OR REPLACE package body blog_url as
     l_subs_id varchar2(256);
   begin
 
-    l_subs_id := to_char( p_subscription_id, blog_globals.g_number_format );
+    l_subs_id := to_char( p_subscription_id, blog_util.g_number_format );
     -- workaround because APEX 19.2
     -- apex_page.get_url don't have parameter p_plain_url
     l_url := 'f?p='
       || p_app_id
       || ':'
-      || blog_globals.g_post_page
+      || blog_util.g_post_page
       || ':::NO:RP:'
-      || blog_globals.g_post_item
+      || blog_util.g_post_item
       || ','
-      || blog_globals.g_unsubscribe_item
+      || blog_util.g_unsubscribe_item
       || ':'
       || p_post_id
       || ','
@@ -404,16 +404,13 @@ CREATE OR REPLACE package body blog_url as
     ;
 
     l_url :=
-      blog_globals.g_canonical_url
-      ||
       apex_util.prepare_url(
          p_url => l_url
         ,p_checksum_type => 'PUBLIC_BOOKMARK'
         ,p_plain_url => true
-      )
-    ;
+      );
 
-    return l_url;
+    return blog_util.get_attribute_value( 'CANONICAL_URL' ) || l_url;
 
   end get_unsubscribe;
 --------------------------------------------------------------------------------
@@ -422,8 +419,8 @@ CREATE OR REPLACE package body blog_url as
     p_value         in varchar2,
     p_app_id        in varchar2 default null,
     p_session       in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_globals.g_search_page,
-    p_page_item     in varchar2 default blog_globals.g_search_item
+    p_app_page_id   in varchar2 default blog_util.g_search_page,
+    p_page_item     in varchar2 default blog_util.g_search_item
   )
   as
   begin

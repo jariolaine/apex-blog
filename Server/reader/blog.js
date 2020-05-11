@@ -11,7 +11,7 @@
     apex.theme42.util.configAPEXMsgs({
       autoDismiss: true
       // duration is optional (Default is 3000 milliseconds)
-      ,duration: 5000
+      ,duration: 10000
     });
   });
 

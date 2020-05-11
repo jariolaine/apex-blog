@@ -106,14 +106,22 @@ as
   -- obsolete / not used
   procedure remove_unused_tags;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 12
-  -- Not ready
+  -- this procedure is not used / not ready
   procedure save_post_preview(
     p_id              in varchar2,
     p_tags            in varchar2,
     p_post_title      in varchar2,
     p_category_title  in varchar2,
     p_body_html       in clob
+  );
+--------------------------------------------------------------------------------
+  -- Called from: procedure blog_conf.purge_post_preview_job
+  -- this procedure is not used / not ready
+  procedure purge_post_preview;
+---------------------------- ----------------------------------------------------
+  -- this procedure is not used / not ready
+  procedure purge_post_preview_job(
+    p_drop_job    in boolean default false
   );
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 20012
@@ -161,7 +169,7 @@ CREATE OR REPLACE package body "BLOG_CM"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- Private variables and constants
+-- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- none
@@ -331,7 +339,7 @@ as
     -- if blogger details not found
     -- check if user is authorized use blog
     -- if authorized add user to blog_bloggers table
-    blog_cm.add_blogger(
+    add_blogger(
        p_app_id => p_app_id
       ,p_username => p_username
       ,p_id => p_id
@@ -354,7 +362,7 @@ as
     -- return next category display sequence
     l_result := to_char(
       ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10
-      ,blog_globals.g_number_format
+      ,blog_util.g_number_format
     );
 
     return l_result;
@@ -377,7 +385,7 @@ as
     -- return next link group display sequence
     l_result := to_char(
       ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10
-      ,blog_globals.g_number_format
+      ,blog_util.g_number_format
     );
 
     return l_result;
@@ -406,7 +414,7 @@ as
     -- return next link display sequence
     l_result := to_char(
       ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10
-      ,blog_globals.g_number_format
+      ,blog_util.g_number_format
     );
 
     return l_result;
@@ -604,7 +612,7 @@ as
       ,p_sep => ':'
     );
 
-    l_file_path := blog_cm.prepare_file_path( p_file_path );
+    l_file_path := prepare_file_path( p_file_path );
 
     apex_collection.create_or_truncate_collection(
       p_collection_name => 'BLOG_FILES'
@@ -659,7 +667,7 @@ as
 
     -- if non of files exists, insert files to blog_files
     if not l_file_exists then
-      blog_cm.merge_files;
+      merge_files;
     end if;
 
     return not l_file_exists;
@@ -739,7 +747,7 @@ as
     end if;
 
     -- get next sequence value
-    l_seq   := blog_cm.get_category_seq;
+    l_seq   := get_category_seq;
 
     -- try insert category and return id for out parameter.
     -- if unique constraint violation raised, category exists.
@@ -790,7 +798,7 @@ as
       -- add tag to repository
       l_tag_id := null;
 
-      blog_cm.add_tag(
+      add_tag(
          p_tag    => l_tag_tab(i)
         ,p_tag_id => l_tag_id
       );
@@ -805,7 +813,7 @@ as
         l_display_seq:= l_tag_id_tab.count * 10;
 
         -- tag post
-        blog_cm.add_tag_to_post(
+        add_tag_to_post(
            p_post_id     => l_post_id
           ,p_tag_id      => l_tag_id
           ,p_display_seq => l_display_seq
@@ -815,14 +823,14 @@ as
 
     end loop;
 
-    blog_cm.cleanup_post_tags(
+    cleanup_post_tags(
        p_post_id => l_post_id
       ,p_tag_tab => l_tag_id_tab
     );
 /*
     -- if any relationship was removed, remove unused tags
     if sql%rowcount > 0 then
-      blog_cm.remove_unused_tags;
+      remove_unused_tags;
     end if;
 */
 
@@ -876,6 +884,57 @@ as
     )
     ;
   end save_post_preview;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  -- this procedure is not used / not ready
+  procedure purge_post_preview
+  as
+  begin
+
+    -- Delete from blog_post_preview rows where session is expired
+    delete from blog_post_preview p
+    where not exists (
+      select 1
+      from apex_workspace_sessions s
+      where 1 = 1
+      and s.apex_session_id = p.id
+    );
+  end purge_post_preview;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  -- this procedure is not used / not ready
+  procedure purge_post_preview_job(
+    p_drop_job in boolean default false
+  )
+  as
+    l_job_name      varchar2(255);
+    job_not_exists  exception;
+    pragma          exception_init(job_not_exists, -27475);
+  begin
+
+    l_job_name := 'BLOG_JOB_PURGE_POST_PREVIEW';
+
+    begin
+      sys.dbms_scheduler.drop_job(
+        job_name => l_job_name
+      );
+    exception when job_not_exists then
+      null;
+    end;
+
+    if not p_drop_job then
+      sys.dbms_scheduler.create_job(
+         job_name        => l_job_name
+        ,job_type        => 'STORED_PROCEDURE'
+        ,job_action      => 'blog_conf.purge_post_preview'
+        ,start_date      => trunc(localtimestamp, 'HH')
+        ,repeat_interval => 'FREQ=DAILY'
+        ,enabled         => true
+        ,comments        => 'Purge expired sessions posts previews'
+      );
+    end if;
+
+  end purge_post_preview_job;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function is_integer(
@@ -1010,7 +1069,7 @@ as
     and v1.id = l_comment_id
     ;
 
-    return to_char(l_post_id, blog_globals.g_number_format );
+    return to_char(l_post_id, blog_util.g_number_format );
 
   end get_comment_post_id;
 --------------------------------------------------------------------------------

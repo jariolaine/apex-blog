@@ -31,12 +31,12 @@ prompt APPLICATION 402 - Blog Administration Area
 --   Exported By:     BLOG_040000
 --   Flashback:       0
 --   Export Type:     Application Export
---     Pages:                     30
+--     Pages:                     29
 --       Items:                   63
 --       Computations:             5
 --       Validations:              8
 --       Processes:               46
---       Regions:                 66
+--       Regions:                 65
 --       Buttons:                 68
 --       Dynamic Actions:         32
 --     Shared Components:
@@ -44,12 +44,12 @@ prompt APPLICATION 402 - Blog Administration Area
 --         Items:                  9
 --         Processes:              2
 --         Computations:           5
---         Build Options:          5
+--         Build Options:          4
 --       Navigation:
---         Lists:                  6
+--         Lists:                  4
 --       Security:
 --         Authentication:         1
---         Authorization:          2
+--         Authorization:          1
 --       User Interface:
 --         Themes:                 1
 --         Templates:
@@ -122,11 +122,11 @@ wwv_flow_api.create_flow(
 ,p_rejoin_existing_sessions=>'N'
 ,p_csv_encoding=>'Y'
 ,p_auto_time_zone=>'Y'
-,p_error_handling_function=>'#OWNER#.blog_err.apex_error_handler'
+,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_substitution_string_01=>'G_ADMIN_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200510201104'
+,p_last_upd_yyyymmddhh24miss=>'20200511201546'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>179
 ,p_ui_type_name => null
@@ -198,7 +198,6 @@ wwv_flow_api.create_list_item(
 ,p_list_item_link_text=>'Settings'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20010:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-gear'
-,p_security_scheme=>wwv_flow_api.id(27208175547779514)
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 end;
@@ -315,7 +314,6 @@ wwv_flow_api.create_list_item(
 ,p_list_item_link_target=>'f?p=&APP_ID.:20012:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-layout-header-sidebar-right'
 ,p_list_text_01=>'Setup blog title, blog Description and other basic settings'
-,p_security_scheme=>wwv_flow_api.id(27208175547779514)
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_api.create_list_item(
@@ -325,60 +323,16 @@ wwv_flow_api.create_list_item(
 ,p_list_item_link_target=>'f?p=&APP_ID.:20011:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-gears'
 ,p_list_text_01=>'Enable or disable application features'
-,p_security_scheme=>wwv_flow_api.id(27208175547779514)
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
-end;
-/
-prompt --application/shared_components/navigation/lists/job_reporting
-begin
-wwv_flow_api.create_list(
- p_id=>wwv_flow_api.id(24902968937683502)
-,p_name=>'Job Reporting'
-,p_list_status=>'PUBLIC'
-,p_required_patch=>wwv_flow_api.id(24862703445683382)
-);
 wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(24903316979683503)
-,p_list_item_display_sequence=>10
+ p_id=>wwv_flow_api.id(56557596783562478)
+,p_list_item_display_sequence=>30
 ,p_list_item_link_text=>'Job Reporting'
 ,p_list_item_link_target=>'f?p=&APP_ID.:30010:&SESSION.::&DEBUG.:30010:::'
 ,p_list_item_icon=>'fa-user-chart'
 ,p_list_text_01=>'View status and run details of jobs supporting this application'
-,p_list_item_current_type=>'TARGET_PAGE'
-);
-end;
-/
-prompt --application/shared_components/navigation/lists/comment_wizard
-begin
-wwv_flow_api.create_list(
- p_id=>wwv_flow_api.id(30458542118488032)
-,p_name=>'Comment Wizard'
-,p_list_status=>'PUBLIC'
-);
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(30458705192488024)
-,p_list_item_display_sequence=>10
-,p_list_item_link_text=>'View Comment'
-,p_list_item_link_target=>'f?p=&APP_ID.:31:&SESSION.:'
-,p_list_item_current_type=>'TARGET_PAGE'
-);
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(30459172255488023)
-,p_list_item_display_sequence=>20
-,p_list_item_link_text=>'Edit Comment'
-,p_list_item_link_target=>'f?p=&APP_ID.:32:&SESSION.::&DEBUG.::::'
-,p_list_item_disp_cond_type=>'CURRENT_PAGE_NOT_EQUAL_CONDITION'
-,p_list_item_disp_condition=>'33'
-,p_list_item_current_type=>'TARGET_PAGE'
-);
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(30459553063488023)
-,p_list_item_display_sequence=>30
-,p_list_item_link_text=>'Reply to Comment'
-,p_list_item_link_target=>'f?p=&APP_ID.:33:&SESSION.::&DEBUG.::::'
-,p_list_item_disp_cond_type=>'CURRENT_PAGE_NOT_EQUAL_CONDITION'
-,p_list_item_disp_condition=>'32'
+,p_required_patch=>wwv_flow_api.id(8935943081653812)
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 end;
@@ -633,19 +587,6 @@ wwv_flow_api.create_plugin_setting(
 ,p_plugin=>'NATIVE_STAR_RATING'
 ,p_attribute_01=>'fa-star'
 ,p_attribute_04=>'#VALUE#'
-);
-end;
-/
-prompt --application/shared_components/security/authorizations/administrator
-begin
-wwv_flow_api.create_security_scheme(
- p_id=>wwv_flow_api.id(27208175547779514)
-,p_name=>'Administrator'
-,p_scheme_type=>'NATIVE_IS_IN_GROUP'
-,p_attribute_01=>'Blog Administrators'
-,p_attribute_02=>'W'
-,p_error_message=>'You are not authorized for this action.'
-,p_caching=>'BY_USER_BY_SESSION'
 );
 end;
 /
@@ -11308,13 +11249,6 @@ wwv_flow_api.create_build_option(
 ,p_default_on_export=>'INCLUDE'
 ,p_build_option_comment=>'Objects that need to reviewed and changed in future.'
 );
-wwv_flow_api.create_build_option(
- p_id=>wwv_flow_api.id(24862703445683382)
-,p_build_option_name=>'Feature: Job Reporting'
-,p_build_option_status=>'INCLUDE'
-,p_feature_identifier=>'APPLICATION_JOB_REPORTING'
-,p_build_option_comment=>'Includes a report on database jobs, with the ability to drill down on a specific job to see additional details.'
-);
 end;
 /
 prompt --application/shared_components/globalization/messages
@@ -14022,7 +13956,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200506190608'
+,p_last_upd_yyyymmddhh24miss=>'20200511162811'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
@@ -14261,8 +14195,8 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_identifier=>'AO'
 ,p_column_label=>'Copy URL'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<button title="#BTN_COPY_URL#" aria-label="#BTN_COPY_URL_LABEL#" type="button" class="t-Button t-Button--noLabel t-Button--withIcon t-Button--small" onclick="void(0);" data-clipboard-source="#RELATIVE_PATH#">',
-'  <span class="a-Icon icon-copy" aria-hidden="true"></span>',
+'<button title="#BTN_COPY_URL#" aria-label="#BTN_COPY_URL_LABEL#" type="button" class="t-Button t-Button--noLabel t-Button--icon t-Button--noUI" onclick="void(0);" data-clipboard-source="#RELATIVE_PATH#">',
+'  <span class="t-Icon fa fa-clone" aria-hidden="true"></span>',
 '</button>'))
 ,p_column_type=>'STRING'
 ,p_column_alignment=>'CENTER'
@@ -17910,7 +17844,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200510070250'
+,p_last_upd_yyyymmddhh24miss=>'20200511181328'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(30223667782039964)
@@ -18061,6 +17995,7 @@ wwv_flow_api.create_page_item(
 ,p_lov_display_extra=>'NO'
 ,p_protection_level=>'S'
 ,p_restricted_characters=>'US_ONLY'
+,p_required_patch=>wwv_flow_api.id(24687510906079791)
 ,p_attribute_01=>'2'
 ,p_attribute_02=>'NONE'
 );
@@ -18899,7 +18834,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200422191909'
+,p_last_upd_yyyymmddhh24miss=>'20200511181546'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(19256943246964354)
@@ -18924,7 +18859,6 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_point=>'REGION_POSITION_03'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_required_patch=>wwv_flow_api.id(24687280101070827)
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'TEXT'
 ,p_attribute_03=>'Y'
@@ -18933,11 +18867,11 @@ wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(24794075099170242)
 ,p_button_sequence=>40
 ,p_button_plug_id=>wwv_flow_api.id(19257888570965927)
-,p_button_name=>'OK'
+,p_button_name=>'CLOSE'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
-,p_button_image_alt=>'Ok'
+,p_button_image_alt=>'Close'
 ,p_button_position=>'REGION_TEMPLATE_NEXT'
 ,p_button_execute_validations=>'N'
 ,p_warn_on_unsaved_changes=>null
@@ -19590,10 +19524,9 @@ wwv_flow_api.create_page(
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8574375481518289)
 ,p_page_template_options=>'#DEFAULT#'
-,p_required_role=>wwv_flow_api.id(27208175547779514)
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200502185851'
+,p_last_upd_yyyymmddhh24miss=>'20200511180601'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(51691560566605050)
@@ -19641,10 +19574,9 @@ wwv_flow_api.create_page(
 '});'))
 ,p_step_template=>wwv_flow_api.id(8456403392518180)
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
-,p_required_role=>wwv_flow_api.id(27208175547779514)
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200510090656'
+,p_last_upd_yyyymmddhh24miss=>'20200511180702'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27063074415689131)
@@ -20143,10 +20075,9 @@ wwv_flow_api.create_page(
 '});'))
 ,p_step_template=>wwv_flow_api.id(8456403392518180)
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
-,p_required_role=>wwv_flow_api.id(27208175547779514)
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200510135456'
+,p_last_upd_yyyymmddhh24miss=>'20200511180708'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -20767,42 +20698,6 @@ wwv_flow_api.create_page_process(
 );
 end;
 /
-prompt --application/pages/page_30000
-begin
-wwv_flow_api.create_page(
- p_id=>30000
-,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
-,p_name=>'Administration'
-,p_alias=>'ADMIN'
-,p_step_title=>'Administration'
-,p_autocomplete_on_off=>'OFF'
-,p_group_id=>wwv_flow_api.id(8574375481518289)
-,p_page_template_options=>'#DEFAULT#'
-,p_deep_linking=>'N'
-,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<p>The administration page allows application owners (Administrators) to configure the application and maintain common data used across the application.',
-'By selecting one of the available settings, administrators can potentially change how the application is displayed and/or features available to the end users.</p>',
-'<p>Access to this page should be limited to Administrators only.</p>'))
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200426194623'
-);
-wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(24903608489683503)
-,p_plug_name=>'Job Reporting'
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
-,p_component_template_options=>'#DEFAULT#:u-colors'
-,p_escape_on_http_output=>'Y'
-,p_plug_template=>wwv_flow_api.id(8496813422518209)
-,p_plug_display_sequence=>10
-,p_plug_display_point=>'BODY'
-,p_list_id=>wwv_flow_api.id(24902968937683502)
-,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>wwv_flow_api.id(8538547318518236)
-,p_plug_query_num_rows=>15
-,p_required_patch=>wwv_flow_api.id(24862703445683382)
-);
-end;
-/
 prompt --application/pages/page_30010
 begin
 wwv_flow_api.create_page(
@@ -20814,10 +20709,10 @@ wwv_flow_api.create_page(
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8574375481518289)
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
-,p_required_patch=>wwv_flow_api.id(24862703445683382)
+,p_required_patch=>wwv_flow_api.id(8935943081653812)
 ,p_help_text=>'<p>This report includes all the jobs selected to be monitored by this application.  More details of each job can be viewed by clicking on the job name.</p>'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200426194623'
+,p_last_upd_yyyymmddhh24miss=>'20200511180741'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(24873986309683431)
@@ -21618,10 +21513,10 @@ wwv_flow_api.create_page(
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8574375481518289)
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
-,p_required_patch=>wwv_flow_api.id(24862703445683382)
+,p_required_patch=>wwv_flow_api.id(8935943081653812)
 ,p_help_text=>'<p>This report includes the run details about the jobs selected to be monitored by this application.</p>'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200426194623'
+,p_last_upd_yyyymmddhh24miss=>'20200511180751'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(24862635181683382)
