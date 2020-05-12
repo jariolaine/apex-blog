@@ -15,6 +15,7 @@ as
 --    Jari Laine 09.05.2020 - Procedures and functions number input parameters changed to varchar2
 --                            New functions get_comment_post_id and is_email
 --    Jari Laine 10.05.2020 - Procedure send_reply_notify to send notify on reply to comment
+--    Jari Laine 12.05.2020 - Removed function prepare_file_path
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -70,16 +71,9 @@ as
     p_request         in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: trigger blog_files_trg and procedure blog_cm.file_upload
-  function prepare_file_path(
-    p_file_path       in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
   -- Called from: admin app page 22 Close Dialog condition
   function file_upload(
-    p_file_name       in varchar2,
-    p_file_path       in varchar2,
-    p_unzip           in varchar2
+    p_file_name       in varchar2
   ) return boolean;
 --------------------------------------------------------------------------------
   function remove_whitespace(
@@ -570,39 +564,14 @@ as
   end get_first_paragraph;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function prepare_file_path(
-    p_file_path in varchar2
-  ) return varchar2
-  as
-    l_file_path varchar2(256);
-  begin
-
-    l_file_path := trim(trim (both '/' from p_file_path));
-
-    if l_file_path is null then
-      l_file_path := '/';
-    else
-      l_file_path := '/' || l_file_path || '/';
-    end if;
-
-    return l_file_path;
-
-  end prepare_file_path;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   function file_upload(
-    p_file_name   in varchar2,
-    p_file_path   in varchar2,
-    p_unzip       in varchar2
+    p_file_name   in varchar2
   ) return boolean
   as
     l_file_exists boolean;
     l_file_names  apex_t_varchar2;
-    l_file_path   varchar2(256);
     l_file_name   varchar2(256);
   begin
-
-    -- unzip functionality is not implemented
 
     l_file_exists := false;
 
@@ -611,8 +580,6 @@ as
       p_str => p_file_name
       ,p_sep => ':'
     );
-
-    l_file_path := prepare_file_path( p_file_path );
 
     apex_collection.create_or_truncate_collection(
       p_collection_name => 'BLOG_FILES'
@@ -636,7 +603,6 @@ as
           ,t1.blob_content  as blob_content
         from apex_application_temp_files t1
         left join blog_v_all_files t2 on t2.file_name = l_file_name
-          and t2.file_path = l_file_path
         where 1 = 1
         and t1.name = l_file_names(i)
       ) loop
@@ -655,10 +621,9 @@ as
           ,p_n003     => c1.row_version
           ,p_n004     => coalesce(c1.is_active, 1)
           ,p_n005     => coalesce(c1.is_download, 0)
-          ,p_c001     => l_file_path
-          ,p_c002     => l_file_name
-          ,p_c003     => c1.file_desc
-          ,p_c004     => c1.mime_type
+          ,p_c001     => l_file_name
+          ,p_c002     => c1.file_desc
+          ,p_c003     => c1.mime_type
           ,p_blob001  => c1.blob_content
         );
 
@@ -699,7 +664,6 @@ as
       insert (
          is_active
         ,is_download
-        ,file_path
         ,file_name
         ,mime_type
         ,blob_content
@@ -708,7 +672,6 @@ as
       values (
          v1.is_active
         ,v1.is_download
-        ,v1.file_path
         ,v1.file_name
         ,v1.mime_type
         ,v1.blob_content

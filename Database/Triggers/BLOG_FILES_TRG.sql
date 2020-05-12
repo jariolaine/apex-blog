@@ -24,8 +24,6 @@ begin
     :new.row_version  := :old.row_version + 1;
   end if;
 
-  :new.file_path := blog_cm.prepare_file_path(:new.file_path);
-
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
      sys_context( 'APEX$SESSION', 'APP_USER' )

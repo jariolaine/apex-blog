@@ -85,7 +85,7 @@ as
     p_build_option_status in varchar2 default 'INCLUDE'
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- obsolete / Not used
+  -- This function is obsolete / Not used
   function get_search_button(
     p_request             in varchar2
   ) return varchar2;
@@ -406,20 +406,33 @@ as
     p_app_name in varchar2
   ) return varchar2
   as
+    l_rss_url varchar2(4000);
     l_rss_title varchar2(4000);
   begin
 
     -- generate RSS anchor
     l_rss_title := apex_lang.message( 'BLOG_RSS_TITLE', p_app_name );
-    --l_rss_title := apex_escape.html_attribute( l_rss_title );
-    return '<a href="'
-      || blog_util.get_attribute_value( 'RSS_URL' )
-      || '" rel="alternate" type="application/rss+xml" aria-label="'
-      || l_rss_title
-      || '" class="t-Button t-Button--noLabel t-Button--icon t-Button--link">'
-      || '<span aria-hidden="true" class="fa fa-rss-square fa-3x fa-lg u-color-8-text"></span>'
-      || '</a>'
-    ;
+
+    l_rss_url := blog_util.get_attribute_value( 'RSS_URL' );
+
+    if l_rss_url is not null
+    then
+      l_rss_url :=
+        '<a href="'
+        || l_rss_url
+        || '" rel="alternate" type="application/rss+xml" aria-label="'
+        || l_rss_title
+        || '" class="t-Button t-Button--noLabel t-Button--icon t-Button--link">'
+        || '<span aria-hidden="true" class="fa fa-rss-square fa-3x fa-lg u-color-8-text"></span>'
+        || '</a>'
+      ;
+    else
+      apex_debug.warn('RSS URL is empty. RSS anchor not generated.');
+      l_rss_url := '<small>RSS url is not set</small>';
+    end if;
+
+    return l_rss_url;
+
   end get_rss_anchor;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -428,25 +441,39 @@ as
     p_build_option_status in varchar2 default 'INCLUDE'
   ) return varchar2
   as
+    l_rss_url varchar2(4000);
     l_rss_title varchar2(4000);
   begin
     -- generate link for rss
-    if p_build_option_status = 'INCLUDE' then
+
+    l_rss_url := blog_util.get_attribute_value( 'RSS_URL' );
+
+    if p_build_option_status = 'INCLUDE'
+    and l_rss_url is not null
+    then
       l_rss_title := apex_lang.message( 'BLOG_RSS_TITLE', p_app_name );
       --l_rss_title := apex_escape.html_attribute( l_rss_title );
-      return
+      l_rss_url :=
         '<link rel="alternate" type="application/rss+xml" href="'
-        || blog_util.get_attribute_value( 'RSS_URL' )
+        || l_rss_url
         || '" title="'
         || l_rss_title
         || '"/>'
       ;
     else
-      return '<!-- no feed link -->';
+      if l_rss_url is null
+      then
+        apex_debug.warn('RSS  URL is empty. RSS link for header not generated.');
+      end if;
+      l_rss_url := '<!-- no feed link -->';
     end if;
+
+    return l_rss_url;
+
   end get_rss_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  -- This function is obsolete / Not used
   function get_search_button(
     p_request in varchar2
   ) return varchar2

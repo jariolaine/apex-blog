@@ -66,64 +66,33 @@ as
   procedure add_file_template
   as
   begin
-    for c1 in(
-      select 1 as rn
-      from user_ords_schemas t1
-      join user_ords_modules t2 on t1.id = t2.schema_id
-      where 1 = 1
-      and t1.parsing_schema = blog_util.g_owner
-      and t2.name = blog_util.g_ords_module
-    ) loop
-      for c2 in(
-        select distinct v1.file_path
-        from blog_v_all_files v1
-        where 1 = 1
-        and not exists(
-          select 1
-          from user_ords_schemas t1
-          join user_ords_modules t2
-            on t1.id = t2.schema_id
-          join user_ords_templates t3
-            on t1.id = t3.schema_id
-            and t2.id = t3.module_id
-          where 1 = 1
-          and t1.parsing_schema = blog_util.g_owner
-          and t2.name = blog_util.g_ords_module
-          and t3.uri_template = blog_util.g_ords_public_files || v1.file_path || ':p_file_name'
-        )
-      ) loop
 
-        ords.define_template(
-          p_module_name     => blog_util.g_ords_module
-          ,p_pattern        => blog_util.g_ords_public_files || c2.file_path || ':p_file_name'
-          ,p_priority       => 0
-          ,p_etag_type      => 'HASH'
-          ,p_etag_query     => null
-          ,p_comments       => 'Blog static files module (created by application)'
-        );
+    ords.define_template(
+      p_module_name     => blog_util.g_ords_module
+      ,p_pattern        => blog_util.g_ords_public_files || ':p_file_name'
+      ,p_priority       => 0
+      ,p_etag_type      => 'HASH'
+      ,p_etag_query     => null
+      ,p_comments       => 'Blog static files module (created by application)'
+    );
 
-        ords.define_handler(
-          p_module_name     => blog_util.g_ords_module
-          ,p_pattern        => blog_util.g_ords_public_files || c2.file_path || ':p_file_name'
-          ,p_method         => 'GET'
-          ,p_source_type    => 'resource/lob'
-          ,p_items_per_page => 0
-          ,p_mimes_allowed  => ''
-          ,p_comments       => 'Blog static files handler (created by application)'
-          ,p_source         =>
-            'select v1.mime_type'
-            || chr(10) || '  ,v1.blob_content'
-            || chr(10) || 'from blog_v_files v1'
-            || chr(10) || 'where 1 = 1'
-            || chr(10) || 'and v1.is_download = 0'
-            || chr(10) || 'and v1.file_name = :p_file_name'
-            || chr(10) || 'and v1.file_path = '''
-            || c2.file_path
-            || ''''
-        );
+    ords.define_handler(
+      p_module_name     => blog_util.g_ords_module
+      ,p_pattern        => blog_util.g_ords_public_files || ':p_file_name'
+      ,p_method         => 'GET'
+      ,p_source_type    => 'resource/lob'
+      ,p_items_per_page => 0
+      ,p_mimes_allowed  => ''
+      ,p_comments       => 'Blog static files handler (created by application)'
+      ,p_source         =>
+        'select v1.mime_type'
+        || chr(10) || '  ,v1.blob_content'
+        || chr(10) || 'from blog_v_files v1'
+        || chr(10) || 'where 1 = 1'
+        || chr(10) || 'and v1.is_download = 0'
+        || chr(10) || 'and v1.file_name = :p_file_name'
+    );
 
-      end loop;
-    end loop;
   end add_file_template;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -238,7 +207,9 @@ as
   as
     l_url varchar2(4000);
   begin
-    select t1.pattern || t2.uri_prefix || blog_util.g_ords_public_files as url
+    select t1.pattern
+      || t2.uri_prefix
+      || blog_util.g_ords_public_files as url
     into l_url
     from user_ords_schemas t1
     join user_ords_modules t2 on t1.id = t2.schema_id

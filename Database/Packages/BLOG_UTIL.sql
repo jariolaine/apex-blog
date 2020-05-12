@@ -37,7 +37,7 @@ as
   -- ORDS
   g_ords_module         constant varchar2(256)  := 'BLOG_PUBLIC_FILES';
 
-  g_ords_public_files   constant varchar2(256)  := 'files';
+  g_ords_public_files   constant varchar2(256)  := 'files/';
 
   g_ords_rss_feed       constant varchar2(256)  := 'feed/rss';
   g_ords_sitemap_index  constant varchar2(256)  := 'sitemap/index';
