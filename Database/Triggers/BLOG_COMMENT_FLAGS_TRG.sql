@@ -1,11 +1,10 @@
 --------------------------------------------------------
---  DDL for Trigger BLOG_READERS_TRG
+--  DDL for Trigger BLOG_COMMENT_FLAGS_TRG
 --------------------------------------------------------
-
-  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_READERS_TRG"
+CREATE OR REPLACE TRIGGER "BLOG_COMMENT_FLAGS_TRG" 
 before
 insert or
-update on blog_readers
+update on blog_comment_flags
 for each row
 begin
 
@@ -15,8 +14,8 @@ begin
     :new.created_on   := localtimestamp;
     :new.created_by   := coalesce(
        sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
 
   elsif updating then
@@ -26,10 +25,9 @@ begin
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
      sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
 /
-ALTER TRIGGER "BLOG_READERS_TRG" ENABLE;

@@ -1,8 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_CATEGORIES
 --------------------------------------------------------
-
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_CATEGORIES" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "DISPLAY_SEQ", "TITLE", "TITLE_UNIQUE", "NOTES", "POSTS_COUNT", "ALLOWED_ROW_OPERATION") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_CATEGORIES" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "DISPLAY_SEQ", "TITLE", "TITLE_UNIQUE", "NOTES", "POSTS_COUNT", "ALLOWED_ROW_OPERATION") AS
   select
    t1.id                as id
   ,t1.row_version       as row_version
@@ -32,4 +31,4 @@
     else 'UD'
   end                   as allowed_row_operation
 from blog_categories t1
-;
+/

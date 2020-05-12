@@ -1,8 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_TEMP_FILES
 --------------------------------------------------------
-
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_TEMP_FILES" ("SEQ_ID", "ID", "ROW_VERSION", "IS_ACTIVE", "IS_DOWNLOAD", "FILE_PATH", "FILE_NAME", "FILE_DESC", "MIME_TYPE", "BLOB_CONTENT") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_TEMP_FILES" ("SEQ_ID", "ID", "ROW_VERSION", "IS_ACTIVE", "IS_DOWNLOAD", "FILE_PATH", "FILE_NAME", "FILE_DESC", "MIME_TYPE", "BLOB_CONTENT") AS
   select t1.seq_id
   ,t1.n002    as id
   ,t1.n003    as row_version
@@ -17,4 +16,4 @@ from apex_collections t1
 where 1 = 1
 and collection_name = 'BLOG_FILES'
 with read only
-;
+/

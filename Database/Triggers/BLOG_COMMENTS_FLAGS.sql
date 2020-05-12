@@ -4,8 +4,7 @@
 --------------------------------------------------------
 --  DDL for Trigger BLOG_COMMENT_FLAGS_TRG
 --------------------------------------------------------
-
-  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_COMMENT_FLAGS_TRG"
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_COMMENT_FLAGS_TRG"
 before
 insert or
 update on blog_comment_flags
@@ -36,4 +35,3 @@ begin
 end;
 
 /
-ALTER TRIGGER "BLOG_COMMENT_FLAGS_TRG" ENABLE;

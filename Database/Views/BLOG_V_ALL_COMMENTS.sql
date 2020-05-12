@@ -1,8 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_COMMENTS
 --------------------------------------------------------
-
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "PARENT_ID", "POST_TITLE", "BODY_HTML", "COMMENT_BY", "USER_ICON", "ICON_MODIFIER")  AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "PARENT_ID", "POST_TITLE", "BODY_HTML", "COMMENT_BY", "USER_ICON", "ICON_MODIFIER")  AS
   select
    t1.id            as id
   ,t1.row_version   as row_version
@@ -25,4 +24,4 @@
   ,'u-color-' || ora_hash( lower( t1.comment_by ), 45) as icon_modifier
 from blog_comments t1
 where 1 = 1
-;
+/

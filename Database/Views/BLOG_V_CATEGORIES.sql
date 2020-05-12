@@ -1,8 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_CATEGORIES
 --------------------------------------------------------
-
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CREATED_ON", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CREATED_ON", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT") AS
   select
    t1.id            as category_id
   ,t1.created_on    as created_on
@@ -24,4 +23,4 @@ and exists (
   and x1.category_id  = t1.id
 )
 with read only
-;
+/

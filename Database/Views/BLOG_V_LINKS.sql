@@ -1,8 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_LINKS
 --------------------------------------------------------
-
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ", "DISPLAY_SEQ", "LINK_TITLE", "LINK_DESC", "LINK_URL") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ", "DISPLAY_SEQ", "LINK_TITLE", "LINK_DESC", "LINK_URL") AS
   select t1.id        as link_id
   ,t2.id              as group_id
   ,t2.title           as group_title
@@ -17,4 +16,4 @@ join blog_link_groups t2
 where 1 = 1
 and t1.is_active * t2.is_active > 0
 with read only
-;
+/

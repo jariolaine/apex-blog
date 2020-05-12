@@ -1,8 +1,7 @@
 --------------------------------------------------------
 --  DDL for Trigger BLOG_COMMENT_SUBS_EMAIL_TRG
 --------------------------------------------------------
-
-  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_COMMENT_SUBS_EMAIL_TRG" 
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_COMMENT_SUBS_EMAIL_TRG"
 before
 insert or
 update on blog_comment_subs_email
@@ -32,4 +31,3 @@ begin
 
 end;
 /
-ALTER TRIGGER "BLOG_COMMENT_SUBS_EMAIL_TRG" ENABLE;

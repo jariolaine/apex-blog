@@ -1,8 +1,7 @@
 --------------------------------------------------------
 --  DDL for Trigger BLOG_FILES_TRG
 --------------------------------------------------------
-
-  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_FILES_TRG"
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_FILES_TRG"
 before
 insert or
 update on blog_files
@@ -27,8 +26,6 @@ begin
 
   :new.file_path := blog_cm.prepare_file_path(:new.file_path);
 
-  :new.file_size := coalesce( dbms_lob.getlength( :new.blob_content ), 0 );
-
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
      sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -38,4 +35,3 @@ begin
 
 end;
 /
-ALTER TRIGGER "BLOG_FILES_TRG" ENABLE;

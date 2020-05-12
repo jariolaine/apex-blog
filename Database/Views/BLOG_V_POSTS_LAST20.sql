@@ -1,8 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS_LAST20
 --------------------------------------------------------
-
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "PUBLISHED_ON", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "PUBLISHED_ON", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE") AS
   with qry as (
   select
      row_number() over ( order by t1.published_on desc ) as rn
@@ -25,4 +24,4 @@ from qry
 where 1 = 1
 and qry.rn <= 20
 with read only
-;
+/

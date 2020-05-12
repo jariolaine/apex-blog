@@ -1,8 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_REP_POST_BY_STATUS
 --------------------------------------------------------
-
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_REP_POST_BY_STATUS" ("APPLICATION_ID", "NUM_POSTS", "POST_STATUS") DEFAULT COLLATION "USING_NLS_COMP"  AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_REP_POST_BY_STATUS" ("APPLICATION_ID", "NUM_POSTS", "POST_STATUS") DEFAULT COLLATION "USING_NLS_COMP"  AS
   with apex_lov as(
   select v1.application_id
     ,v1.return_value
@@ -27,4 +26,4 @@ select q2.application_id
 from blog_data q1
 join apex_lov q2 on q1.post_status = q2.return_value
 with read only
-;
+/

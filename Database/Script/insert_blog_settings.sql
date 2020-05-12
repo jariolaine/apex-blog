@@ -11,12 +11,7 @@ insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,grou
 
 -- Modify on export
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('100','0','G_APP_NAME','STRING','BLOG_PAR_GROUP_GENERAL','My Blog',null);
-insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('110','0','G_APP_DESC','STRING','BLOG_PAR_GROUP_GENERAL','About almost everything',null);
+insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('110','0','G_APP_DESC','STRING','BLOG_PAR_GROUP_GENERAL','About Almost Everything',null);
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('120','1','APP_EMAIL','EMAIL','BLOG_PAR_GROUP_GENERAL',null,null);
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('190','0','CANONICAL_URL','URL','BLOG_PAR_GROUP_SEO',apex_util.host_url( 'APEX_PATH' ),'trim( rtrim( :ATTRIBUTE_VALUE, ''/'' ) ) || ''/''');
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('200','1','RSS_URL','URL','BLOG_PAR_GROUP_SEO',null,null);
-
-begin
-  dbms_mview.refresh('BLOG_ITEMS_INIT', 'C');
-end;
-/

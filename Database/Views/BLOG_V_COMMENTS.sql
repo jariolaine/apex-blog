@@ -1,8 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_COMMENTS
 --------------------------------------------------------
-
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "IS_ACTIVE", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "USER_ICON", "ICON_MODIFIER") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "IS_ACTIVE", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "USER_ICON", "ICON_MODIFIER") AS
   select
    t1.id as comment_id
   ,t1.is_active
@@ -17,4 +16,4 @@ from blog_comments t1
 where 1 = 1
 and t1.is_active = 1
 with read only
-;
+/

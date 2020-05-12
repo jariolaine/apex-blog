@@ -1,8 +1,7 @@
 --------------------------------------------------------
 --  DDL for Trigger BLOG_CATEGORIES_TRG
 --------------------------------------------------------
-
-  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_CATEGORIES_TRG"
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_CATEGORIES_TRG"
 before
 insert or
 update on blog_categories
@@ -31,4 +30,3 @@ begin
 
 end;
 /
-ALTER TRIGGER "BLOG_CATEGORIES_TRG" ENABLE;

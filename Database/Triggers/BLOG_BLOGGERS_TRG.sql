@@ -1,8 +1,7 @@
 --------------------------------------------------------
 --  DDL for Trigger BLOG_BLOGGERS_TRG
 --------------------------------------------------------
-
-  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_BLOGGERS_TRG"
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_BLOGGERS_TRG"
 before
 insert or
 update on blog_bloggers
@@ -32,4 +31,3 @@ begin
 
 end;
 /
-ALTER TRIGGER "BLOG_BLOGGERS_TRG" ENABLE;

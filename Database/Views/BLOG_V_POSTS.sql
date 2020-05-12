@@ -1,8 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
-
-  CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "CHANGED_ON", "COMMENTS_COUNT") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "CHANGED_ON", "COMMENTS_COUNT") AS
   select
    t1.id                  as post_id
   ,t3.id                  as category_id
@@ -34,4 +33,4 @@ and t2.is_active = 1
 and t3.is_active = 1
 and t1.published_on <= localtimestamp
 with read only
-;
+/

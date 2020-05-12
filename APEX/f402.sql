@@ -65,7 +65,7 @@ prompt APPLICATION 402 - Blog Administration Area
 --         LOVs:                   9
 --         Shortcuts:              2
 --       Globalization:
---         Messages:              57
+--         Messages:              56
 --       Reports:
 --       E-Mail:
 --         Templates:              1
@@ -126,7 +126,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_ADMIN_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200511201546'
+,p_last_upd_yyyymmddhh24miss=>'20200512155441'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>179
 ,p_ui_type_name => null
@@ -11491,11 +11491,6 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19059158261254628)
 ,p_name=>'BLOG_PAR_RSS_URL'
 ,p_message_text=>'RSS feed URL'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(24937663485667742)
-,p_name=>'BLOG_POSTS_CK4'
-,p_message_text=>'Published date must equal or greater when post is first time saved. You can leave Published on blank to use current date and time. '
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(7002883853109006)

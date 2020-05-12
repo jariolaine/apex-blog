@@ -1,8 +1,7 @@
 --------------------------------------------------------
 --  DDL for Trigger BLOG_POST_TAGS_TRG
 --------------------------------------------------------
-
-  CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_TAGS_TRG"
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_TAGS_TRG"
 before
 insert or
 update on blog_post_tags
@@ -31,4 +30,3 @@ begin
 
 end;
 /
-ALTER TRIGGER "BLOG_POST_TAGS_TRG" ENABLE;
