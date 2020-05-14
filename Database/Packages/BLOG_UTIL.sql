@@ -55,7 +55,7 @@ as
   g_search_page         constant varchar2(40)   := 'SEARCH';
   g_search_item         constant varchar2(40)   := 'P0_SEARCH';
 
-  g_category_page       constant varchar2(40)   := 'CATEGORIES';
+  g_category_page       constant varchar2(40)   := 'CATEGORY';
   g_category_item       constant varchar2(40)   := 'P14_CATEGORY_ID';
 
   g_archive_page        constant varchar2(40)   := 'ARCHIVES';

@@ -286,12 +286,8 @@ pre.z-program-code code:nth-child(odd):before{
 /**************************************
 * Region
 **************************************/
-.z-app-footer {
-  margin-left: 8.2rem;
-}
-
-.z-app-footer--links {
-  padding: 1rem 0 2rem 0;
+.z-app-source {
+  padding: .6rem 0;
 }
 
 /**************************************
@@ -313,13 +309,6 @@ pre.z-program-code code:nth-child(odd):before{
     font-size: 1.6rem;
   }
 
-  /**************************************
-  * Region
-  **************************************/
-  .z-app-footer{
-    margin: 0;
-  }
-  
   /**************************************
   * Post custom report template
   **************************************/
