@@ -62,7 +62,7 @@ prompt APPLICATION 402 - Blog Administration Area
 --           Breadcrumb:           1
 --           Button:               3
 --           Report:              11
---         LOVs:                   9
+--         LOVs:                   8
 --         Shortcuts:              2
 --       Globalization:
 --         Messages:              57
@@ -128,9 +128,9 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_ADMIN_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200514194132'
+,p_last_upd_yyyymmddhh24miss=>'20200516040406'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>182
+,p_files_version=>184
 ,p_ui_type_name => null
 );
 end;
@@ -923,28 +923,6 @@ wwv_flow_api.create_list_of_values_cols(
 ,p_heading=>'Status'
 ,p_display_sequence=>30
 ,p_data_type=>'VARCHAR2'
-);
-end;
-/
-prompt --application/shared_components/user_interface/lovs/file_path
-begin
-wwv_flow_api.create_list_of_values(
- p_id=>wwv_flow_api.id(18427252831591916)
-,p_lov_name=>'FILE_PATH'
-,p_lov_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select distinct ',
-'   file_path as display_value',
-'  ,file_path as return_value',
-'from blog_v_all_files',
-'where 1 = 1',
-'and file_path != ''/''',
-'order by 1'))
-,p_source_type=>'SQL'
-,p_location=>'LOCAL'
-,p_return_column_name=>'RETURN_VALUE'
-,p_display_column_name=>'DISPLAY_VALUE'
-,p_group_sort_direction=>'ASC'
-,p_default_sort_direction=>'ASC'
 );
 end;
 /
@@ -21944,15 +21922,18 @@ wwv_flow_api.create_install(
 ,p_upgrade_failure_message=>'Installation of database objects and seed data has failed.'
 ,p_deinstall_success_message=>'Deinstallation complete.'
 ,p_deinstall_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'alter table blog_comment_subs drop constraint blog_comment_subs_fk1;',
-'alter table blog_comment_subs drop constraint blog_comment_subs_fk2;',
-'alter table blog_post_tags drop constraint blog_post_tags_fk2;',
-'alter table blog_post_tags drop constraint blog_post_tags_fk1;',
+'-- drop foregein keys',
+'alter table blog_comment_flags drop constraint blog_comment_flags_fk1;',
 'alter table blog_posts drop constraint blog_posts_fk2;',
 'alter table blog_posts drop constraint blog_posts_fk1;',
+'alter table blog_post_tags drop constraint blog_post_tags_fk2;',
+'alter table blog_post_tags drop constraint blog_post_tags_fk1;',
 'alter table blog_comments drop constraint blog_comments_fk1;',
 'alter table blog_comments drop constraint blog_comments_fk2;',
 'alter table blog_links drop constraint blog_links_fk1;',
+'alter table blog_comment_subs drop constraint blog_comment_subs_fk1;',
+'alter table blog_comment_subs drop constraint blog_comment_subs_fk2;',
+'-- drop packages',
 'drop package blog_cm;',
 'drop package blog_comm;',
 'drop package blog_html;',
@@ -21961,33 +21942,15 @@ wwv_flow_api.create_install(
 'drop package blog_url;',
 'drop package blog_util;',
 'drop package blog_xml;',
-'drop view blog_v_all_categories;',
-'drop view blog_v_all_comments;',
-'drop view blog_v_all_features;',
-'drop view blog_v_all_files;',
-'drop view blog_v_all_links;',
-'drop view blog_v_all_link_groups;',
-'drop view blog_v_all_posts;',
-'drop view blog_v_all_post_tags;',
-'drop view blog_v_all_settings;',
-'drop view blog_v_all_tags;',
-'drop view blog_v_archive_year;',
-'drop view blog_v_archive_year_month;',
-'drop view blog_v_categories;',
-'drop view blog_v_comments;',
-'drop view blog_v_files;',
-'drop view blog_v_links;',
-'drop view blog_v_link_groups;',
-'drop view blog_v_posts;',
-'drop view blog_v_posts_last20;',
-'drop view blog_v_post_tags;',
-'drop view blog_v_rep_post_by_status;',
-'drop view blog_v_tags;',
-'drop view blog_v_temp_files;',
+'-- drop sequences',
+'drop sequence blog_seq;',
+'-- drop materialized views',
 'drop materialized view blog_items_init;',
+'-- drop tables',
 'drop table blog_bloggers;',
 'drop table blog_categories;',
 'drop table blog_comments;',
+'drop table blog_comment_flags;',
 'drop table blog_comment_subs;',
 'drop table blog_comment_subs_email;',
 'drop table blog_features;',
@@ -22000,7 +21963,29 @@ wwv_flow_api.create_install(
 'drop table blog_post_tags;',
 'drop table blog_settings;',
 'drop table blog_tags;',
-'drop sequence blog_seq;',
+'-- drop views',
+'drop view blog_v_all_categories;',
+'drop view blog_v_all_comments;',
+'drop view blog_v_all_features;',
+'drop view blog_v_all_files;',
+'drop view blog_v_all_links;',
+'drop view blog_v_all_link_groups;',
+'drop view blog_v_all_posts;',
+'drop view blog_v_all_post_tags;',
+'drop view blog_v_all_settings;',
+'drop view blog_v_all_tags;',
+'drop view blog_v_archive_year;',
+'drop view blog_v_categories;',
+'drop view blog_v_comments;',
+'drop view blog_v_files;',
+'drop view blog_v_links;',
+'drop view blog_v_link_groups;',
+'drop view blog_v_posts;',
+'drop view blog_v_posts_last20;',
+'drop view blog_v_post_tags;',
+'drop view blog_v_rep_post_by_status;',
+'drop view blog_v_tags;',
+'drop view blog_v_temp_files;',
 ''))
 ,p_required_free_kb=>100
 ,p_required_sys_privs=>'CREATE MATERIALIZED VIEW:CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
@@ -22080,6 +22065,22 @@ wwv_flow_api.create_install_script(
 '  constraint blog_comments_pk primary key( id ),',
 '  constraint blog_comment_ck2 check( is_active in( 0 , 1 ) ),',
 '  constraint blog_comment_ck1 check( row_version > 0 )',
+')',
+'/',
+'--------------------------------------------------------',
+'--  DDL for Table BLOG_COMMENT_FLAGS',
+'--------------------------------------------------------',
+'create table blog_comment_flags (',
+'  id number( 38, 0 ) not null,',
+'  row_version number( 38, 0 ) not null,',
+'  created_on timestamp( 6 ) with local time zone not null,',
+'  created_by varchar2( 256 char ) not null,',
+'  changed_on timestamp( 6 ) with local time zone not null,',
+'  changed_by varchar2( 256 char ) not null,',
+'  comment_id number( 38, 0 ) not null,',
+'  flag varchar2( 256 char ) not null,',
+'  constraint blog_comment_flags_pk primary key( id ),',
+'  constraint blog_comment_flags_ck1 check( row_version > 0 )',
 ')',
 '/',
 '--------------------------------------------------------',
@@ -22361,40 +22362,40 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  DDL for Foreign Keys',
 '--------------------------------------------------------',
-'alter table blog_comment_subs add constraint blog_comment_subs_fk1 foreign key( post_id )',
-'	 references blog_posts( id ) on delete cascade',
+'alter table blog_posts add constraint blog_posts_fk2 foreign key ( category_id )',
+'  references blog_categories ( id ) enable',
 '/',
 '',
-'alter table blog_comment_subs add constraint blog_comment_subs_fk2 foreign key( email_id )',
-'	 references blog_comment_subs_email( id ) on delete cascade',
+'alter table blog_posts add constraint blog_posts_fk1 foreign key ( blogger_id )',
+'  references blog_bloggers ( id ) enable',
 '/',
 '',
-'alter table blog_post_tags add constraint blog_post_tags_fk2 foreign key( tag_id )',
-'	 references blog_tags( id )',
+'alter table blog_post_tags add constraint blog_post_tags_fk2 foreign key ( tag_id )',
+'  references blog_tags ( id ) enable',
 '/',
 '',
-'alter table blog_post_tags add constraint blog_post_tags_fk1 foreign key( post_id )',
-'	 references blog_posts( id ) on delete cascade',
+'alter table blog_post_tags add constraint blog_post_tags_fk1 foreign key ( post_id )',
+'  references blog_posts ( id ) on delete cascade enable',
 '/',
 '',
-'alter table blog_posts add constraint blog_posts_fk2 foreign key( category_id )',
-'	 references blog_categories( id )',
+'alter table blog_comments add constraint blog_comments_fk1 foreign key ( post_id )',
+'  references blog_posts ( id ) on delete cascade enable',
 '/',
 '',
-'alter table blog_posts add constraint blog_posts_fk1 foreign key( blogger_id )',
-'	 references blog_bloggers( id )',
+'alter table blog_comment_subs add constraint blog_comment_subs_fk1 foreign key ( post_id )',
+'  references blog_posts ( id ) on delete cascade enable',
 '/',
 '',
-'alter table blog_comments add constraint blog_comments_fk1 foreign key( post_id )',
-'	 references blog_posts( id ) on delete cascade',
+'alter table blog_comments add constraint blog_comments_fk2 foreign key ( parent_id )',
+'  references blog_comments ( id ) on delete set null enable',
 '/',
 '',
-'alter table blog_comments add constraint blog_comments_fk2 foreign key( parent_id )',
-'	 references blog_comments( id ) on delete set null',
+'alter table blog_links add constraint blog_links_fk1 foreign key ( link_group_id )',
+'  references blog_link_groups ( id ) on delete cascade enable',
 '/',
 '',
-'alter table blog_links add constraint blog_links_fk1 foreign key( link_group_id )',
-'	 references blog_link_groups( id ) on delete cascade',
+'alter table blog_comment_subs add constraint blog_comment_subs_fk2 foreign key ( email_id )',
+'  references blog_comment_subs_email ( id ) on delete cascade enable',
 '/',
 ''))
 );
@@ -22894,19 +22895,6 @@ wwv_flow_api.create_install_script(
 'with read only',
 '/',
 '--------------------------------------------------------',
-'--  DDL for View BLOG_V_ARCHIVE_YEAR_MONTH',
-'--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ARCHIVE_YEAR_MONTH" ("ARCHIVE_YEAR_MONTH", "ARCHIVE_DATE", "POST_COUNT") AS',
-'select t1.archive_year_month      as archive_year_month',
-'  ,trunc( t1.published_on, ''MM'' ) as archive_date',
-'  ,count( t1.post_id )            as post_count',
-'from blog_v_posts t1',
-'where 1 = 1',
-'group by t1.archive_year_month',
-'  ,trunc( t1.published_on, ''MM'' )',
-'with read only',
-'/',
-'--------------------------------------------------------',
 '--  DDL for View BLOG_V_CATEGORIES',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CREATED_ON", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT") AS',
@@ -23106,21 +23094,6 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------------------------------',
 '  function get_tag(',
 '    p_tag_id          in varchar2',
-'  ) return varchar2;',
-'--------------------------------------------------------------------------------',
-'  -- Signature 1',
-'  -- obsolete / not used',
-'  function get_year_month(',
-'    p_year_month      in varchar2,',
-'    p_date_format     in varchar2',
-'  ) return varchar2 result_cache;',
-'--------------------------------------------------------------------------------',
-'  -- Signature 2',
-'  -- obsolete / not used',
-'  function get_year_month(',
-'    p_archive_date    in timestamp with local time zone,',
-'    p_date_format     in varchar2,',
-'    p_posts_count     in number default null',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 'end "BLOG_UTIL";',
@@ -23672,108 +23645,6 @@ wwv_flow_api.create_install_script(
 '  end get_tag;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  -- Signature 1',
-'  function get_year_month(',
-'    p_year_month  in varchar2,',
-'    p_date_format in varchar2',
-'  ) return varchar2 result_cache',
-'  as',
-'    l_year_month  number;',
-'    l_value       varchar2(256);',
-'  begin',
-'',
-'    apex_debug.enter(',
-'      ''blog_util.get_year_month''',
-'      ,''p_year_month''',
-'      ,p_year_month',
-'      ,''p_date_format''',
-'      ,p_date_format',
-'    );',
-'',
-'    if p_year_month is null then',
-'      raise no_data_found;',
-'    end if;',
-'',
-'    l_year_month := to_number( p_year_month );',
-'    -- query that passed year month number actually exists',
-'    select get_year_month(',
-'       p_archive_date => archive_date',
-'      ,p_date_format  => p_date_format',
-'    )',
-'    into l_value',
-'    from blog_v_archive_year_month',
-'    where 1 = 1',
-'    and archive_year_month = l_year_month',
-'    ;',
-'',
-'    apex_debug.info( ''Fetch archive %s return: %s'', p_year_month, l_value );',
-'    return l_value;',
-'',
-'  exception when no_data_found',
-'  then',
-'',
-'    apex_debug.error(',
-'       p_message => ''No data found. %s( %s => %s, %s => %s )''',
-'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => ''p_year_month''',
-'      ,p2 => coalesce( p_year_month, ''(null)'' )',
-'      ,p3 => ''p_date_format''',
-'      ,p4 => p_date_format',
-'    );',
-'    raise;',
-'',
-'  when others',
-'  then',
-'',
-'    apex_debug.error(',
-'       p_message => ''Unhandled error. %s( %s => %s, %s => %s )''',
-'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => ''p_year_month''',
-'      ,p2 => coalesce( p_year_month, ''(null)'' )',
-'      ,p3 => ''p_date_format''',
-'      ,p4 => p_date_format',
-'    );',
-'    raise;',
-'',
-'  end get_year_month;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  -- Signature 2',
-'  function get_year_month(',
-'    p_archive_date  in timestamp with local time zone,',
-'    p_date_format   in varchar2,',
-'    p_posts_count   in number default null',
-'  ) return varchar2',
-'  as',
-'    l_value varchar2(256);',
-'  begin',
-'',
-'    apex_debug.enter(',
-'      ''blog_util.get_year_month''',
-'      ,''p_archive_date''',
-'      ,p_archive_date',
-'      ,''p_date_format''',
-'      ,p_date_format',
-'      ,''p_posts_count''',
-'      ,p_posts_count',
-'    );',
-'',
-'    -- format archive date and return string',
-'    return',
-'      case when p_archive_date is not null',
-'      then',
-'        to_char(',
-'           p_archive_date',
-'          ,p_date_format',
-'          ||',
-'          case when p_posts_count is not null',
-'          then '' "('' || p_posts_count || '')"''',
-'          end',
-'        )',
-'    end;',
-'  end get_year_month;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
 'end "BLOG_UTIL";',
 '/',
 'CREATE OR REPLACE package  "BLOG_URL"',
@@ -23886,15 +23757,7 @@ wwv_flow_api.create_install_script(
 '',
 'CREATE OR REPLACE package body "BLOG_URL"',
 'as',
-'--------------------------------'))
-);
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(31707961227716890)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Private constants and variables',
 '--------------------------------------------------------------------------------',
@@ -23980,7 +23843,15 @@ wwv_flow_api.append_to_install_script(
 '    if p_canonical = ''YES''',
 '    then',
 '      l_url := ''f?p=''',
-'        || coalesce( p_app_id, v( ''APP_ID'' ) )',
+'        || coalesce( p_'))
+);
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(31707961227716890)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'app_id, v( ''APP_ID'' ) )',
 '        || '':''',
 '        || p_app_page_id',
 '        || '':''',
@@ -24738,16 +24609,7 @@ wwv_flow_api.append_to_install_script(
 '        ,p_tag    => v1.tag',
 '        ,p_button => p_button',
 '      ), case when p_button != ''YES'' then '', '' end)',
-'    within group(order by v1.display_'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(31707961227716890)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'seq) as tags',
+'    within group(order by v1.display_seq) as tags',
 '    into l_tags',
 '    from blog_v_post_tags v1',
 '    where 1 = 1',
@@ -24834,7 +24696,16 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  -- Called from: admin app pages 12',
 '  function get_post_tags(',
-'    p_post_id         in varchar2,',
+'    p_pos'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(31707961227716890)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'t_id         in varchar2,',
 '    p_sep             in varchar2 default '',''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
@@ -25704,16 +25575,7 @@ wwv_flow_api.append_to_install_script(
 '      l_err_mesg := p_err_mesg;',
 '    end if;',
 '',
-'    if round( to_number( p_value ) ) between 1 an'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(31707961227716890)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'d 100',
+'    if round( to_number( p_value ) ) between 1 and 100',
 '    then',
 '      l_err_mesg := null;',
 '    end if;',
@@ -25834,7 +25696,16 @@ wwv_flow_api.append_to_install_script(
 '  end get_comment_post_id;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure send_reply_notify(',
+'  procedure send_repl'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(31707961227716890)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'y_notify(',
 '    p_app_id          in varchar2,',
 '    p_app_name        in varchar2,',
 '    p_post_id         in varchar2,',
@@ -26347,7 +26218,6 @@ wwv_flow_api.append_to_install_script(
 '  as',
 '    l_url varchar2(4000);',
 '  begin',
-'  ',
 '    select t1.pattern',
 '      || t2.uri_prefix',
 '      || blog_util.g_ords_public_files as url',
@@ -26359,7 +26229,6 @@ wwv_flow_api.append_to_install_script(
 '    and t2.name = blog_util.g_ords_module',
 '    ;',
 '    return l_url;',
-'',
 '  end get_file_path_prefix;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -26576,16 +26445,7 @@ wwv_flow_api.append_to_install_script(
 '      );',
 '    l_posts := l_url',
 '      || get_ords_service(',
-'        blog_util.'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(31707961227716890)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'g_ords_sitemap_posts',
+'        blog_util.g_ords_sitemap_posts',
 '      );',
 '',
 '    with si as (',
@@ -26704,6 +26564,15 @@ wwv_flow_api.append_to_install_script(
 '    select xmlserialize( document',
 '      xmlelement(',
 '        "urlset",',
+''))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(31707961227716890)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '        xmlattributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns"),',
 '        (',
 '          xmlagg(',
@@ -27308,6 +27177,39 @@ wwv_flow_api.create_install_script(
 'end;',
 '/',
 '--------------------------------------------------------',
+'--  DDL for Trigger BLOG_COMMENT_FLAGS_TRG',
+'--------------------------------------------------------',
+'CREATE OR REPLACE TRIGGER "BLOG_COMMENT_FLAGS_TRG" ',
+'before',
+'insert or',
+'update on blog_comment_flags',
+'for each row',
+'begin',
+'',
+'  if inserting then',
+'    :new.id           := coalesce( :new.id, blog_seq.nextval );',
+'    :new.row_version  := coalesce( :new.row_version, 1 );',
+'    :new.created_on   := localtimestamp;',
+'    :new.created_by   := coalesce(',
+'       sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
+'    );',
+'',
+'  elsif updating then',
+'    :new.row_version  := :old.row_version + 1;',
+'  end if;',
+'',
+'  :new.changed_on := localtimestamp;',
+'  :new.changed_by := coalesce(',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
+'  );',
+'',
+'end;',
+'/',
+'--------------------------------------------------------',
 '--  DDL for Trigger BLOG_COMMENT_SUBS_EMAIL_TRG',
 '--------------------------------------------------------',
 'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_COMMENT_SUBS_EMAIL_TRG"',
@@ -27615,12 +27517,12 @@ wwv_flow_api.create_install_script(
 );
 end;
 /
-prompt --application/deployment/install/install_configuration_data
+prompt --application/deployment/install/install_met_adata
 begin
 wwv_flow_api.create_install_script(
  p_id=>wwv_flow_api.id(31708826557645262)
 ,p_install_id=>wwv_flow_api.id(31706870664802069)
-,p_name=>'Configuration Data'
+,p_name=>'Met adata'
 ,p_sequence=>60
 ,p_script_type=>'INSTALL'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -27638,22 +27540,6 @@ wwv_flow_api.create_install_script(
 'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_ABOUT'',''BLOG_FEATURE_GROUP_PAGE'',''1'',''110'',null);',
 'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_SEARCH_LINKS'',''BLOG_FEATURE_GROUP_SEARCH'',''1'',''120'',null);',
 'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_SEARCH_FILES'',''BLOG_FEATURE_GROUP_SEARCH'',''1'',''130'',null);',
-'',
-'',
-'REM INSERTING into BLOG_SETTINGS',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''10'',''0'',''APP_GROUP'',''STRING'',''INTERNAL'',''BLOG_040000'',null);',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''140'',''0'',''G_DATE_FORMAT'',''DATE_FORMAT'',''BLOG_PAR_GROUP_UI'',''fmDD Mon YYYY'',null);',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''150'',''0'',''G_POST_TITLE_DATE_FORMAT'',''DATE_FORMAT'',''BLOG_PAR_GROUP_UI'',''fmDay"," Month DD"," YYYY'',null);',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''160'',''0'',''G_ARCHIVE_DATE_FORMAT'',''DATE_FORMAT'',''BLOG_PAR_GROUP_UI'',''fmMonth, YYYY'',null);',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''160'',''0'',''P1_REPORT_ROWS'',''INTEGER'',''BLOG_PAR_GROUP_REPORTS'',''10'',null);',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''170'',''0'',''P2_REPORT_ROWS'',''INTEGER'',''BLOG_PAR_GROUP_REPORTS'',''10'',null);',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''180'',''0'',''G_SEARCH_ROWS'',''INTEGER'',''BLOG_PAR_GROUP_REPORTS'',''10'',null);',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''100'',''0'',''G_APP_NAME'',''STRING'',''BLOG_PAR_GROUP_GENERAL'',''My Blog'',null);',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''110'',''0'',''G_APP_DESC'',''STRING'',''BLOG_PAR_GROUP_GENERAL'',''About Almost Everything'',null);',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''120'',''1'',''APP_EMAIL'',''EMAIL'',''BLOG_PAR_GROUP_GENERAL'',null,null);',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''190'',''0'',''CANONICAL_URL'',''URL'',''BLOG_PAR_GROUP_SEO'',apex_util.host_url( ''APEX_PATH'' ),''trim( rtrim( :ATTRIBUTE_VALUE, ''''/'
-||''''' ) ) || ''''/'''''');',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''200'',''1'',''RSS_URL'',''URL'',''BLOG_PAR_GROUP_SEO'',null,null);',
 '',
 'REM INSERTING into BLOG_SETTINGS',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''10'',''0'',''APP_GROUP'',''STRING'',''INTERNAL'',''BLOG_040000'',null);',

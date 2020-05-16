@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-create or replace package  "BLOG_UTIL"
-=======
 CREATE OR REPLACE package  "BLOG_UTIL"
->>>>>>> Development
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -14,8 +10,6 @@ as
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 22.04.2019 - Created
 --    Jari Laine 28.03.2020 - Signature 2 of get_year_month function
-<<<<<<< HEAD
-=======
 --    Jari Laine 15.04.2020 - function validate_comment
 --    Jari Laine 26.04.2020 - Changed validate_comment us apex_util.savekey_vc2
 --                            and removed custom functions that was doing same thing
@@ -25,7 +19,6 @@ as
 --                            Procedure subscribe to subscribe comment reply
 --                            Procedure unsubscribe for unsubscribe comment reply
 --    Jari Laine 11.05.2020 - Procedures and functions relating comments moved to package blog_comm
->>>>>>> Development
 --
 --  TO DO:
 --    #1  Package contains hard coded values
@@ -33,16 +26,6 @@ as
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-<<<<<<< HEAD
-
---------------------------------------------------------------------------------
-  function get_param_value(
-    p_param_name  in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
-  function get_app_id(
-    p_app_name in varchar2
-=======
 -- Global constants
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -96,7 +79,6 @@ as
 --------------------------------------------------------------------------------
   function get_item_init_value(
     p_item_name       in varchar2
->>>>>>> Development
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure initialize_items(
@@ -123,73 +105,29 @@ as
     p_tag_id          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Signature 1
-<<<<<<< HEAD
-=======
-  -- obsolete / not used
-  function get_year_month(
-    p_year_month      in varchar2,
-    p_date_format     in varchar2
-  ) return varchar2 result_cache;
---------------------------------------------------------------------------------
-  -- Signature 2
-  -- obsolete / not used
->>>>>>> Development
-  function get_year_month(
-    p_archive_date    in timestamp with local time zone,
-    p_date_format     in varchar2,
-    p_posts_count     in number default null
-  ) return varchar2;
---------------------------------------------------------------------------------
-  -- Signature 2
-  function get_year_month(
-    p_published   in timestamp with local time zone,
-    p_posts_count in number default null,
-    p_date_format in varchar2 default 'fmMonth, YYYY'
-  ) return varchar2;
---------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
 
 
-<<<<<<< HEAD
-create or replace package body "BLOG_UTIL"
-=======
 CREATE OR REPLACE package body "BLOG_UTIL"
->>>>>>> Development
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-<<<<<<< HEAD
-
-=======
 -- none
->>>>>>> Development
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
 --------------------------------------------------------------------------------
-<<<<<<< HEAD
---------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------
-=======
 --------------------------------------------------------------------------------
 -- none
 --------------------------------------------------------------------------------
->>>>>>> Development
 --------------------------------------------------------------------------------
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-<<<<<<< HEAD
-  function get_param_value(
-    p_param_name in varchar2
-  ) return varchar2
-=======
   function apex_error_handler(
     p_error in apex_error.t_error
   ) return apex_error.t_error_result
@@ -300,7 +238,6 @@ as
   function get_attribute_value(
     p_attribute_name in varchar2
   ) return varchar2 result_cache
->>>>>>> Development
   as
     l_value varchar2(4000);
   begin
@@ -324,20 +261,6 @@ as
 
     apex_debug.info( 'Fetch attribute %s return: %s', p_attribute_name, l_value );
     return l_value;
-<<<<<<< HEAD
-  exception when no_data_found then
-    apex_debug.error( 'Try fetch param name %s. Parameter not found.', coalesce( p_param_name, 'null' ) );
-    raise_application_error( -20001,  'Parameter not exists.' );
-    raise;
-  when others then
-    apex_debug.error( 'Fetch param name %s.', p_param_name );
-    raise;
-  end get_param_value;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_app_id(
-    p_app_name in varchar2
-=======
 
     exception when no_data_found
     then
@@ -366,7 +289,6 @@ as
 --------------------------------------------------------------------------------
   function get_item_init_value(
     p_item_name in varchar2
->>>>>>> Development
   ) return varchar2
   as
     l_value varchar2(4000);
@@ -391,11 +313,6 @@ as
     ;
     apex_debug.info( 'Fetc item %s return: %s', p_item_name, l_value );
     return l_value;
-<<<<<<< HEAD
-  exception when no_data_found then
-    apex_debug.error( 'Try fetch param name %s. Parameter not found.', coalesce( p_app_name, 'null' ) );
-    raise_application_error( -20001,  'Parameter not exists.' );
-=======
 
   exception when no_data_found
   then
@@ -406,7 +323,6 @@ as
       ,p1 => 'p_attribute_name'
       ,p2 => coalesce( p_item_name, '(null)' )
     );
->>>>>>> Development
     raise;
 
   when others
@@ -486,8 +402,6 @@ as
     l_value   varchar2(4000);
     l_post_id number;
   begin
-<<<<<<< HEAD
-=======
 
     apex_debug.enter(
       'blog_util.get_post_title'
@@ -503,22 +417,12 @@ as
 
     l_post_id := to_number( p_post_id );
 
->>>>>>> Development
     -- fetch and return post title
     select v1.post_title
     into l_value
     from blog_v_posts v1
     where v1.post_id = l_post_id
     ;
-<<<<<<< HEAD
-    --apex_debug.info( 'Fetch post %s. Title is: %s', p_post_id, l_value );
-    -- Espace html and return string
-    return case when p_escape then apex_escape.html(l_value) else l_value end;
-  exception when no_data_found then
-    apex_debug.error( 'Try fetch post id %s. Not found.', coalesce( to_char( p_post_id ), 'null' ) );
-
-    raise_application_error( -20001,  'Post not exists.' );
-=======
     apex_debug.info( 'Fetch post: %s return: %s', p_post_id, l_value );
     -- espace html and return string
     return case when p_escape
@@ -538,7 +442,6 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
->>>>>>> Development
     raise;
 
   when others
@@ -749,135 +652,6 @@ as
     raise;
 
   end get_tag;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  -- Signature 1
-  function get_year_month(
-    p_year_month  in varchar2,
-    p_date_format in varchar2
-  ) return varchar2 result_cache
-  as
-    l_year_month  number;
-    l_value       varchar2(256);
-  begin
-
-    apex_debug.enter(
-      'blog_util.get_year_month'
-      ,'p_year_month'
-      ,p_year_month
-      ,'p_date_format'
-      ,p_date_format
-    );
-
-    if p_year_month is null then
-      raise no_data_found;
-    end if;
-
-    l_year_month := to_number( p_year_month );
-    -- query that passed year month number actually exists
-    select get_year_month(
-       p_archive_date => archive_date
-      ,p_date_format  => p_date_format
-    )
-    into l_value
-    from blog_v_archive_year_month
-    where 1 = 1
-    and archive_year_month = l_year_month
-    ;
-
-    apex_debug.info( 'Fetch archive %s return: %s', p_year_month, l_value );
-    return l_value;
-
-  exception when no_data_found
-  then
-
-    apex_debug.error(
-       p_message => 'No data found. %s( %s => %s, %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_year_month'
-      ,p2 => coalesce( p_year_month, '(null)' )
-      ,p3 => 'p_date_format'
-      ,p4 => p_date_format
-    );
-    raise;
-
-  when others
-  then
-
-    apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s, %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_year_month'
-      ,p2 => coalesce( p_year_month, '(null)' )
-      ,p3 => 'p_date_format'
-      ,p4 => p_date_format
-    );
-    raise;
-
-  end get_year_month;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  -- Signature 2
-  function get_year_month(
-    p_archive_date  in timestamp with local time zone,
-    p_date_format   in varchar2,
-    p_posts_count   in number default null
-  ) return varchar2
-  as
-    l_value varchar2(256);
-  begin
-<<<<<<< HEAD
-    -- format year month number and return string
-    return case when p_year_month is not null then
-      to_char(
-         to_date( p_year_month, 'YYYYMM' )
-        ,p_date_format || case when p_posts_count is not null then ' "(' || p_posts_count || ')"' end
-      )
-    end;
-  end get_year_month;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  -- Signature 2
-  function get_year_month(
-    p_published   in timestamp with local time zone,
-    p_posts_count in number default null,
-    p_date_format in varchar2 default 'fmMonth, YYYY'
-  ) return varchar2
-  as
-  begin
-    -- format published date and return string
-    return case when p_published is not null then
-      to_char(
-         p_published
-        ,p_date_format || case when p_posts_count is not null then ' "(' || p_posts_count || ')"' end
-      )
-=======
-
-    apex_debug.enter(
-      'blog_util.get_year_month'
-      ,'p_archive_date'
-      ,p_archive_date
-      ,'p_date_format'
-      ,p_date_format
-      ,'p_posts_count'
-      ,p_posts_count
-    );
-
-    -- format archive date and return string
-    return
-      case when p_archive_date is not null
-      then
-        to_char(
-           p_archive_date
-          ,p_date_format
-          ||
-          case when p_posts_count is not null
-          then ' "(' || p_posts_count || ')"'
-          end
-        )
->>>>>>> Development
-    end;
-  end get_year_month;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";

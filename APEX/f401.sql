@@ -31,16 +31,6 @@ prompt APPLICATION 401 - Blog Public Pages
 --   Exported By:     BLOG_040000
 --   Flashback:       0
 --   Export Type:     Application Export
-<<<<<<< HEAD
---     Pages:                     11
---       Items:                   19
---       Computations:             4
---       Validations:              2
---       Processes:                1
---       Regions:                 20
---       Buttons:                  3
---       Dynamic Actions:          3
-=======
 --     Pages:                     12
 --       Items:                   28
 --       Computations:             6
@@ -49,7 +39,6 @@ prompt APPLICATION 401 - Blog Public Pages
 --       Regions:                 28
 --       Buttons:                  6
 --       Dynamic Actions:          9
->>>>>>> Development
 --     Shared Components:
 --       Logic:
 --         Items:                  6
@@ -72,7 +61,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --           Button:               3
 --           Report:              13
 --         LOVs:                   1
---         Shortcuts:             12
+--         Shortcuts:             11
 --         Plug-ins:               1
 --       Globalization:
 --         Messages:              11
@@ -136,13 +125,9 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-<<<<<<< HEAD
-,p_last_upd_yyyymmddhh24miss=>'20200328071156'
-=======
-,p_last_upd_yyyymmddhh24miss=>'20200514194307'
->>>>>>> Development
+,p_last_upd_yyyymmddhh24miss=>'20200516034233'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>92
+,p_files_version=>94
 ,p_ui_type_name => null
 );
 end;
@@ -256,15 +241,6 @@ wwv_flow_api.create_list(
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-<<<<<<< HEAD
-'   null              as link_level',
-'  ,v1.category_title as link_text',
-'  ,v1.category_url   as target_url',
-'  ,case when :APP_PAGE_ID = 4 and :P4_CATEGORY_ID = v1.category_id',
-'     then ''YES''',
-'     else ''NO''',
-'   end as is_current',
-=======
 '   1                    as link_level',
 '  ,v1.category_title    as link_text',
 '  ,blog_url.get_category(',
@@ -282,7 +258,6 @@ wwv_flow_api.create_list(
 '   || v1.category_id',
 '   || ''"''               as attribute2',
 '  ,''z-link--no-border''  as attribute3',
->>>>>>> Development
 'from #OWNER#.blog_v_categories v1',
 'where 1 = 1',
 'order by v1.display_seq',
@@ -299,17 +274,6 @@ wwv_flow_api.create_list(
 ,p_name=>'Latest Posts'
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
-<<<<<<< HEAD
-'select null      as link_level',
-'  ,v1.post_title as link_text',
-'  ,v1.post_url   as target_url',
-'  ,case when :APP_PAGE_ID = 2 and :P2_POST_ID = v1.post_id',
-'     then''YES''',
-'     else ''NO''',
-'   end as is_current',
-'from #OWNER#.blog_v_posts_last05 v1',
-'order by v1.display_seq'))
-=======
 'select',
 '   1                    as link_level',
 '  ,v1.post_title        as link_text',
@@ -379,7 +343,6 @@ begin
 wwv_flow_api.create_list(
  p_id=>wwv_flow_api.id(31530391355020722)
 ,p_name=>'Footer Links'
->>>>>>> Development
 ,p_list_status=>'PUBLIC'
 );
 wwv_flow_api.create_list_item(
@@ -702,35 +665,6 @@ begin
 null;
 end;
 /
-<<<<<<< HEAD
-prompt --application/shared_components/user_interface/lovs/blog_archive_lov
-begin
-wwv_flow_api.create_list_of_values(
- p_id=>wwv_flow_api.id(6913317691576071)
-,p_lov_name=>'BLOG_ARCHIVE_LOV'
-,p_lov_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select',
-'   #OWNER#.blog_util.get_year_month(',
-'      p_published   => lov.published_on',
-'     ,p_posts_count => lov.posts_count',
-'   ) as display_value',
-'  ,#OWNER#.blog_url.get_archive(',
-'      p_year_month => lov.year_month',
-'   ) as return_value',
-'from #OWNER#.blog_v_archive_lov lov',
-'order by lov.published_on desc',
-''))
-,p_source_type=>'SQL'
-,p_location=>'LOCAL'
-,p_return_column_name=>'RETURN_VALUE'
-,p_display_column_name=>'DISPLAY_VALUE'
-,p_group_sort_direction=>'ASC'
-,p_default_sort_direction=>'DESC'
-);
-end;
-/
-=======
->>>>>>> Development
 prompt --application/shared_components/user_interface/lovs/login_remember_username
 begin
 wwv_flow_api.create_list_of_values(
@@ -13281,20 +13215,6 @@ wwv_flow_api.create_shortcut(
 );
 end;
 /
-prompt --application/shared_components/user_interface/shortcuts/blog_source
-begin
-wwv_flow_api.create_shortcut(
- p_id=>wwv_flow_api.id(31662470886947023)
-,p_shortcut_name=>'BLOG_SOURCE'
-,p_shortcut_type=>'FUNCTION_BODY'
-,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return ''<div class="z-app-source">',
-'  <small><a href="https://github.com/jariolaine/apex-blog">APEX Blog</a></small>',
-'</div>'';',
-''))
-);
-end;
-/
 prompt --application/shared_components/email/templates/blog_new_comment_notify
 begin
 wwv_flow_api.create_email_template(
@@ -13473,11 +13393,7 @@ wwv_flow_api.create_user_interface(
 ,p_is_default=>true
 ,p_theme_id=>42
 ,p_home_url=>'f?p=&APP_ID.:HOME:&SESSION.::&DEBUG.:RP'
-<<<<<<< HEAD
-,p_login_url=>'f?p=&G_ADMIN_APP_ID.:LOGIN_DESKTOP:&SESSION.::&DEBUG.:::'
-=======
 ,p_login_url=>'f?p=&APP_ID.:LOGIN:&SESSION.'
->>>>>>> Development
 ,p_theme_style_by_user_pref=>false
 ,p_global_page_id=>0
 ,p_navigation_list_id=>wwv_flow_api.id(6756817335267362)
@@ -13508,11 +13424,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-<<<<<<< HEAD
-,p_last_upd_yyyymmddhh24miss=>'20200328051731'
-=======
-,p_last_upd_yyyymmddhh24miss=>'20200514164830'
->>>>>>> Development
+,p_last_upd_yyyymmddhh24miss=>'20200516030129'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
@@ -13638,7 +13550,10 @@ wwv_flow_api.create_page_plug(
 ,p_plug_template=>wwv_flow_api.id(6781372168267375)
 ,p_plug_display_sequence=>20
 ,p_plug_display_point=>'REGION_POSITION_05'
-,p_plug_source=>'"BLOG_SOURCE"'
+,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<div class="z-app-source">',
+'  <a href="https://github.com/jariolaine/apex-blog"><small>APEX Blog</small></a>',
+'</div>'))
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'Y'
@@ -13668,49 +13583,6 @@ wwv_flow_api.create_page_item(
 ,p_attribute_04=>'SEARCH'
 ,p_attribute_05=>'BOTH'
 );
-<<<<<<< HEAD
-wwv_flow_api.create_page_item(
- p_id=>wwv_flow_api.id(6913364163677127)
-,p_name=>'P0_ARCHIVES'
-,p_item_sequence=>10
-,p_item_plug_id=>wwv_flow_api.id(6433709308894076)
-,p_use_cache_before_default=>'NO'
-,p_prompt=>'Archives'
-,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_url.get_archive(',
-'   p_year_month      => :P5_YEAR_MONTH',
-'  ,p_current_page_id => :APP_PAGE_ALIAS',
-')'))
-,p_source_type=>'FUNCTION'
-,p_display_as=>'NATIVE_SELECT_LIST'
-,p_named_lov=>'BLOG_ARCHIVE_LOV'
-,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select',
-'   #OWNER#.blog_util.get_year_month(',
-'      p_published   => lov.published_on',
-'     ,p_posts_count => lov.posts_count',
-'   ) as display_value',
-'  ,#OWNER#.blog_url.get_archive(',
-'      p_year_month => lov.year_month',
-'   ) as return_value',
-'from #OWNER#.blog_v_archive_lov lov',
-'order by lov.published_on desc',
-''))
-,p_lov_display_null=>'YES'
-,p_lov_null_text=>'- Select Month -'
-,p_lov_null_value=>'f?p=&APP_ID.:HOME:&APP_SESSION_VISIBLE.::&DEBUG.:::'
-,p_cHeight=>1
-,p_grid_label_column_span=>0
-,p_field_template=>wwv_flow_api.id(6854381477267413)
-,p_item_template_options=>'#DEFAULT#'
-,p_warn_on_unsaved_changes=>'I'
-,p_is_persistent=>'N'
-,p_lov_display_extra=>'NO'
-,p_protection_level=>'I'
-,p_attribute_01=>'REDIRECT_URL'
-);
-=======
->>>>>>> Development
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(7052827756664737)
 ,p_name=>'Scroll Top'
@@ -13750,11 +13622,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-<<<<<<< HEAD
-,p_last_upd_yyyymmddhh24miss=>'20200318163301'
-=======
 ,p_last_upd_yyyymmddhh24miss=>'20200512043320'
->>>>>>> Development
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6432040642894060)
@@ -13915,23 +13783,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-<<<<<<< HEAD
-,p_last_upd_yyyymmddhh24miss=>'20200318163129'
-);
-wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(7082403673178438)
-,p_plug_name=>'Container'
-,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_api.id(6781539027267375)
-,p_plug_display_sequence=>30
-,p_plug_display_point=>'BODY'
-,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
-=======
 ,p_last_upd_yyyymmddhh24miss=>'20200514160533'
->>>>>>> Development
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -14113,10 +13965,7 @@ wwv_flow_api.create_report_region(
 'where 1 = 1',
 'and v1.post_id = :P2_POST_ID',
 ''))
-<<<<<<< HEAD
-=======
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
->>>>>>> Development
 ,p_translate_title=>'N'
 ,p_query_row_template=>wwv_flow_api.id(6894976353301648)
 ,p_query_num_rows=>1
@@ -16033,8 +15882,6 @@ wwv_flow_api.create_report_columns(
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
-<<<<<<< HEAD
-=======
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(29626633977985358)
 ,p_query_column_id=>10
@@ -16131,7 +15978,6 @@ wwv_flow_api.create_page_da_action(
 ''))
 ,p_da_action_comment=>'List anchors have data attribute where is archive id. If that match to item P15_ARCHIVE_ID value set is-current class to list'
 );
->>>>>>> Development
 end;
 /
 prompt --application/pages/page_01001
