@@ -16,6 +16,8 @@ as
 --                            New functions get_comment_post_id and is_email
 --    Jari Laine 10.05.2020 - Procedure send_reply_notify to send notify on reply to comment
 --    Jari Laine 12.05.2020 - Removed function prepare_file_path
+--    Jari Laine 17.05.2020 - Removed parameter p_err_mesg from function get_first_paragraph,
+--                            function is called now from APEX application conputation
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -60,10 +62,9 @@ as
     p_post_id         in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: trigger blog_posts_trg
+  -- Called from: admin app pages 12
   function get_first_paragraph(
-    p_body_html       in varchar2,
-    p_err_mesg        in varchar2 default null
+    p_body_html       in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
@@ -523,11 +524,9 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_first_paragraph(
-    p_body_html in varchar2,
-    p_err_mesg  in varchar2 default null
+    p_body_html in varchar2
   ) return varchar2
   as
-    l_err_mesg      varchar2(32700);
     l_first_p       varchar2(32700);
     l_first_p_start number;
     l_first_p_end   number;
@@ -538,26 +537,18 @@ as
     l_first_p_end   := instr( p_body_html, '</p>' );
 
     --post must have at least one paragraph
-    if l_first_p_start = 0 or l_first_p_end = 0 then
-      -- Prepare error message
-      l_err_mesg := apex_lang.message( coalesce( p_err_mesg, 'BLOG_ERR_POST_NO_PARAGRAPH' ) );
+    if l_first_p_start > 0 and l_first_p_end > 0 then
 
-      if l_err_mesg = apex_escape.html( p_err_mesg )
-      then
-        l_err_mesg := p_err_mesg;
-      end if;
+      l_first_p_start := l_first_p_start - 1;
+      l_first_p_end   := l_first_p_end + 3;
 
-      raise_application_error( -20001,  l_err_mesg );
+      -- get first paragraph
+      l_first_p := substr( p_body_html, l_first_p_start, l_first_p_end );
+
+      -- remove whitespace
+      l_first_p := replace( regexp_replace( l_first_p, '\s+', ' ' ), '  ', ' ' );
+
     end if;
-
-    l_first_p_start := l_first_p_start - 1;
-    l_first_p_end   := l_first_p_end + 3;
-
-    -- get first paragraph
-    l_first_p := substr( p_body_html, l_first_p_start, l_first_p_end );
-
-    -- remove whitespace
-    l_first_p := replace( regexp_replace( l_first_p, '\s+', ' ' ), '  ', ' ' );
 
     return l_first_p;
 

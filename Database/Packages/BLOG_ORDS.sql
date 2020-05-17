@@ -10,7 +10,9 @@ as
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 09.01.2020 - Created
 --    Jari Laine 28.04.2020 - Added procedure create_public_xml_module
---    Jari Laine 28.04.2020 - Local constants renamed
+--                            Local constants renamed
+--    Jari Laine 17.05.2020 - Add get_ords_service function.
+--                            Originaly function was in blog_xml package
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -25,6 +27,10 @@ as
   procedure create_sitemap_templates;
 --------------------------------------------------------------------------------
   function get_file_path_prefix return varchar2;
+--------------------------------------------------------------------------------
+  function get_ords_service(
+    p_uri_template in varchar2
+  ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_ORDS";
 /
@@ -213,9 +219,7 @@ as
   as
     l_url varchar2(4000);
   begin
-    select t1.pattern
-      || t2.uri_prefix
-      || blog_util.g_ords_public_files as url
+    select t1.pattern || t2.uri_prefix as url
     into l_url
     from user_ords_schemas t1
     join user_ords_modules t2 on t1.id = t2.schema_id
@@ -223,8 +227,40 @@ as
     and t1.parsing_schema = blog_util.g_owner
     and t2.name = blog_util.g_ords_module
     ;
-    return l_url;
+    return l_url || blog_util.g_ords_public_files;
   end get_file_path_prefix;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_ords_service(
+    p_uri_template in varchar2
+  ) return varchar2
+  as
+    l_url     varchar2(4000);
+  begin
+
+    begin
+      -- query ORDS metadata to get resource url
+      select t1.pattern || t2.uri_prefix || t3.uri_template as url
+      into l_url
+      from user_ords_schemas t1
+      join user_ords_modules t2
+        on t1.id = t2.schema_id
+      join user_ords_templates t3
+        on t1.id = t3.schema_id
+        and t2.id = t3.module_id
+      where 1 = 1
+        and t1.parsing_schema = blog_util.g_owner
+        and t2.name = blog_util.g_ords_module
+        and t3.uri_template = p_uri_template
+      ;
+    exception when no_data_found then
+      raise_application_error( -20002,  'Configuration not exists.' );
+      l_url := null;
+    end;
+
+    return l_url;
+
+  end get_ords_service;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_ORDS";
