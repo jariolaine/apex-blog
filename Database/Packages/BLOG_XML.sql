@@ -12,6 +12,9 @@ as
 --    Jari Laine 08.01.2020 - Removed categories sitemap
 --    Jari Laine 08.01.2020 - Modified use ORDS and blog version 4
 --    Jari Laine 09.04.2020 - Utilize blog_url functions parameter p_canonical
+--    Jari Laine 17.05.2020 - Removed private function get_app_alias
+--                            and constant c_pub_app_id
+--                            Moved private function get_ords_service to blog_ords package
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -36,67 +39,13 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  c_pub_app_id  constant number := to_number( blog_util.get_item_init_value( 'G_PUB_APP_ID' ) );
+-- none
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_app_alias
-  return varchar2
-  as
-    l_app_alias varchar2(255);
-  begin
-
-    begin
-      -- query APEX metadata to get blog puplic application alias
-      select t1.alias
-      into l_app_alias
-      from apex_applications t1
-      where 1 = 1
-        and t1.owner = blog_util.g_owner
-        and t1.application_id = c_pub_app_id
-      ;
-    exception when no_data_found then
-      raise_application_error( -20001,  'Configuration not exists.' );
-      l_app_alias := null;
-    end;
-
-    return l_app_alias;
-
-  end get_app_alias;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_ords_service(
-    p_uri_template in varchar2
-  ) return varchar2
-  as
-    l_url     varchar2(4000);
-  begin
-
-    begin
-      -- query ORDS metadata to get resource url
-      select t1.pattern || t2.uri_prefix || t3.uri_template as url
-      into l_url
-      from user_ords_schemas t1
-      join user_ords_modules t2
-        on t1.id = t2.schema_id
-      join user_ords_templates t3
-        on t1.id = t3.schema_id
-        and t2.id = t3.module_id
-      where 1 = 1
-        and t1.parsing_schema = blog_util.g_owner
-        and t2.name = blog_util.g_ords_module
-        and t3.uri_template = p_uri_template
-      ;
-    exception when no_data_found then
-      raise_application_error( -20002,  'Configuration not exists.' );
-      l_url := null;
-    end;
-
-    return l_url;
-
-  end get_ords_service;
+-- none
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -111,27 +60,25 @@ as
     l_rss_url       varchar2(4000);
     l_rss_desc      varchar2(4000);
     l_home_url      varchar2(4000);
-    l_app_alias     varchar2(4000);
+    l_app_id        varchar2(4000);
     l_blog_name     varchar2(4000);
     l_rss_version   constant varchar2(5) := '2.0';
   begin
 
-    l_rss_url := blog_util.get_attribute_value( 'RSS_URL' );
-
-    -- blog application alias
-    l_app_alias := get_app_alias;
-
-    -- blog home page relative urlg_ords_rss_feed;
-    l_home_url  := blog_url.get_tab(
-       p_app_id => l_app_alias
-      ,p_canonical => 'YES'
-    );
-
+    -- RSS feed URL
+    l_rss_url   := blog_util.get_attribute_value( 'RSS_URL' );
     -- blog name
     l_blog_name := blog_util.get_attribute_value( 'G_APP_NAME' );
-
     -- rss feed description
     l_rss_desc  := blog_util.get_attribute_value( 'G_APP_DESC' );
+    -- blog application id
+    l_app_id    := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
+
+    -- blog home page absulute URL
+    l_home_url  := blog_url.get_tab(
+       p_app_id => l_app_id
+      ,p_canonical => 'YES'
+    );
 
     -- generate RSS
     select xmlserialize( document
@@ -147,7 +94,7 @@ as
              "atom:link"
             ,xmlattributes(
                'self'                 as "rel"
-              ,l_rss_url as "href"
+              ,l_rss_url              as "href"
               ,'application/rss+xml'  as "type"
             )
           )
@@ -164,7 +111,7 @@ as
               ,xmlelement( "dc:creator",  posts.blogger_name )
               ,xmlelement( "category",    posts.category_title )
               ,xmlelement( "link",        blog_url.get_post(
-                                             p_app_id     => l_app_alias
+                                             p_app_id     => l_app_id
                                             ,p_post_id    => posts.post_id
                                             ,p_canonical  => 'YES'
                                           )
@@ -204,11 +151,11 @@ as
     l_url :=  blog_util.get_attribute_value( 'CANONICAL_URL' );
 
     l_main := l_url
-      || get_ords_service(
+      || blog_ords.get_ords_service(
         blog_util.g_ords_sitemap_main
       );
     l_posts := l_url
-      || get_ords_service(
+      || blog_ords.get_ords_service(
         blog_util.g_ords_sitemap_posts
       );
 
@@ -249,29 +196,32 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_main
   as
-    l_xml blob;
-    l_app_alias varchar2(256);
+    l_xml     blob;
+    l_app_id  varchar2(256);
+    l_pub_id  number;
   begin
 
-    l_app_alias := get_app_alias;
+    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
+    l_pub_id := to_number( l_app_id );
+
 
     with sitemap_query as (
       select
          row_number() over(order by li.display_sequence) as rnum
         ,blog_url.get_tab(
-           p_app_id  => l_app_alias
+           p_app_id  => l_app_id
           ,p_app_page_id => li.entry_attribute_10
           ,p_canonical => 'YES'
         ) as loc
       from apex_application_list_entries li
       where 1 = 1
         and li.list_name = blog_util.g_pub_app_tab_list
-        and li.application_id = c_pub_app_id
+        and li.application_id = l_pub_id
       and not exists(
         select 1
         from apex_application_build_options bo
         where 1 = 1
-          and bo.application_id = c_pub_app_id
+          and bo.application_id = l_pub_id
           and bo.build_option_name = li.build_option
           and bo.build_option_status = 'Exclude'
       )
@@ -307,18 +257,18 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_posts
   as
-    l_xml blob;
-    l_app_alias varchar2(256);
+    l_xml     blob;
+    l_app_id  varchar2(256);
   begin
 
-    l_app_alias := get_app_alias;
+    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
 
     with sitemap_query as (
       select
          posts.published_on
         ,posts.changed_on
         ,blog_url.get_post(
-           p_app_id     => l_app_alias
+           p_app_id     => l_app_id
           ,p_post_id    => posts.post_id
           ,p_canonical  => 'YES'
         ) as loc

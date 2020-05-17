@@ -10,8 +10,9 @@ as
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 22.04.2019 - Created
 --    Jari Laine 29.04.2020 - New function get_robots_noindex_meta
---    Jari Laine 29.04.2020 - functions to generate canonical link output robot noindex meta tag if proper link can't be generated
---    Jari Laine 29.04.2020 - Added apex_debug to functions generating meta and canonical link
+--                            Functions to generate canonical link outputs robot noindex meta tag
+--                            if proper link can't be generated
+--                            Added apex_debug to functions generating meta and canonical link
 --    Jari Laine 10.05.2020 - Utilize blog_url functions p_canonical
 --
 --------------------------------------------------------------------------------

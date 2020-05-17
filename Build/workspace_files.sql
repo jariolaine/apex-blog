@@ -1,24 +1,4 @@
-prompt --application/set_environment
-set define off verify off feedback off
-whenever sqlerror exit sql.sqlcode rollback
---------------------------------------------------------------------------------
---
--- ORACLE Application Express (APEX) export file
---
--- You should run the script connected to SQL*Plus as the Oracle user
--- APEX_190200 or as the owner (parsing schema) of the application.
---
--- NOTE: Calls to apex_application_install override the defaults below.
---
---------------------------------------------------------------------------------
-begin
-wwv_flow_api.import_begin (
- p_version_yyyy_mm_dd=>'2019.10.04'
-,p_default_workspace_id=>18303204396897713
-);
-end;
-/
-prompt --workspace/static/files/blog_js
+-- workspace/static/files/blog040000_blog_js
 begin
 wwv_flow_api.g_varchar2_table := wwv_flow_api.empty_varchar2_table;
 wwv_flow_api.g_varchar2_table(1) := '202F2A2A0A202A20406E616D65737061636520626C6F670A202A2A2F0A2076617220626C6F67203D20626C6F67207C7C207B7D3B0A0A2866756E6374696F6E28242C20626C6F6729207B0A0A20202F2F206F6E20706167652072656164790A20202F2F20';
@@ -40,15 +20,15 @@ wwv_flow_api.g_varchar2_table(16) := '3D2024765F436865636B56616C7565416761696E73
 wwv_flow_api.g_varchar2_table(17) := '202020202020202072657475726E20726573756C743B0A2020202020207D292E616464436C61737328206F7074696F6E732E63757272656E74436C61737320293B0A0A202020207D0A0A097D3B0A0A7D2928617065782E6A51756572792C20626C6F6729';
 wwv_flow_api.g_varchar2_table(18) := '3B0A';
 wwv_flow_api.create_workspace_static_file(
- p_id=>wwv_flow_api.id(33306857437050023)
-,p_file_name=>'blog.js'
+ p_id=>wwv_flow_api.id(33408572114314949)
+,p_file_name=>'blog040000/blog.js'
 ,p_mime_type=>'application/javascript'
 ,p_file_charset=>'utf-8'
 ,p_file_content => wwv_flow_api.varchar2_to_blob(wwv_flow_api.g_varchar2_table)
 );
 end;
 /
-prompt --workspace/static/files/style_css
+-- workspace/static/files/blog040000_style_css
 begin
 wwv_flow_api.g_varchar2_table := wwv_flow_api.empty_varchar2_table;
 wwv_flow_api.g_varchar2_table(1) := '2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20456C656D656E74730A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A626C6F636B71756F74';
@@ -123,18 +103,11 @@ wwv_flow_api.g_varchar2_table(69) := '6F7220696E666F0A20202A2A2A2A2A2A2A2A2A2A2A
 wwv_flow_api.g_varchar2_table(70) := '0A20202020616C69676E2D6974656D733A2063656E7465723B0A20207D0A20202E7A2D617574686F722D72696768747B0A2020202070616464696E673A203136707820303B0A20207D0A20202E7A2D617574686F722D6261646765737B0A202020207061';
 wwv_flow_api.g_varchar2_table(71) := '6464696E673A203136707820303B0A20202020616C69676E2D6974656D733A2063656E7465723B0A20207D0A0A7D0A0A2E7A2D68696464656E7B0A2020646973706C61793A206E6F6E653B0A20207669736962696C6974793A2068696464656E3B0A7D0A';
 wwv_flow_api.create_workspace_static_file(
- p_id=>wwv_flow_api.id(33307043604050024)
-,p_file_name=>'style.css'
+ p_id=>wwv_flow_api.id(33408730253314950)
+,p_file_name=>'blog040000/style.css'
 ,p_mime_type=>'text/css'
 ,p_file_charset=>'utf-8'
 ,p_file_content => wwv_flow_api.varchar2_to_blob(wwv_flow_api.g_varchar2_table)
 );
 end;
 /
-begin
-wwv_flow_api.import_end(p_auto_install_sup_obj => nvl(wwv_flow_application_install.get_auto_install_sup_obj, true), p_is_component_import => true);
-commit;
-end;
-/
-set verify on feedback on define on
-prompt  ...done

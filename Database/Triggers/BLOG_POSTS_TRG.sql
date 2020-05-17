@@ -24,10 +24,7 @@ begin
     :new.row_version  := :old.row_version + 1;
   end if;
 
-
   :new.published_on := coalesce( :new.published_on, localtimestamp );
-
-  :new.first_paragraph  := blog_cm.get_first_paragraph( :new.body_html );
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(

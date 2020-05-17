@@ -13,7 +13,7 @@ as
 --                            number return value and number input parameters changed to varchar2.
 --                            Functions that are also used in query
 --                            another signature with varchar2 input and return values created for APEX
---    Jari Laine 09.05.2020 - Added parameter p_canonical to functions returning URL
+--                            Added parameter p_canonical to functions returning URL
 --    Jari Laine 10.05.2020 - New function get_unsubscribe
 --
 --------------------------------------------------------------------------------

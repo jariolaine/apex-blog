@@ -966,6 +966,7 @@ as
 --    Jari Laine 11.05.2020 - Procedures and functions relating comments moved to package blog_comm
 --    Jari Laine 17.05.2020 - Added out parameters p_older_title and p_newer_title to procedure get_post_pagination
 --                            Materialized view blog_items_init changed to view
+--                            Removed function get_item_init_value
 --
 --  TO DO:
 --    #1  Package contains hard coded values
@@ -1023,10 +1024,6 @@ as
   function get_attribute_value(
     p_attribute_name  in varchar2
   ) return varchar2 result_cache;
---------------------------------------------------------------------------------
-  function get_item_init_value(
-    p_item_name       in varchar2
-  ) return varchar2;
 --------------------------------------------------------------------------------
   procedure initialize_items(
     p_app_id          in varchar2
@@ -1234,58 +1231,6 @@ as
       raise;
 
   end get_attribute_value;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_item_init_value(
-    p_item_name in varchar2
-  ) return varchar2
-  as
-    l_value varchar2(4000);
-  begin
-
-    apex_debug.enter(
-      'blog_util.get_item_init_value'
-      ,'p_item_name'
-      ,p_item_name
-    );
-
-    if p_item_name is null then
-      raise no_data_found;
-    end if;
-
-    -- fetch and return value from settings table
-    select item_value
-    into l_value
-    from blog_v_init_items
-    where 1 = 1
-    and item_name = p_item_name
-    ;
-    apex_debug.info( 'Fetc item %s return: %s', p_item_name, l_value );
-    return l_value;
-
-  exception when no_data_found
-  then
-
-    apex_debug.error(
-       p_message => 'No data found. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_attribute_name'
-      ,p2 => coalesce( p_item_name, '(null)' )
-    );
-    raise;
-
-  when others
-  then
-
-    apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_attribute_name'
-      ,p2 => coalesce( p_item_name, '(null)' )
-    );
-    raise;
-
-  end get_item_init_value;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure initialize_items(
@@ -1623,7 +1568,9 @@ as
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 09.01.2020 - Created
 --    Jari Laine 28.04.2020 - Added procedure create_public_xml_module
---    Jari Laine 28.04.2020 - Local constants renamed
+--                            Local constants renamed
+--    Jari Laine 17.05.2020 - Add get_ords_service function.
+--                            Originaly function was in blog_xml package
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1638,6 +1585,10 @@ as
   procedure create_sitemap_templates;
 --------------------------------------------------------------------------------
   function get_file_path_prefix return varchar2;
+--------------------------------------------------------------------------------
+  function get_ords_service(
+    p_uri_template in varchar2
+  ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_ORDS";
 /
@@ -1826,9 +1777,7 @@ as
   as
     l_url varchar2(4000);
   begin
-    select t1.pattern
-      || t2.uri_prefix
-      || blog_util.g_ords_public_files as url
+    select t1.pattern || t2.uri_prefix as url
     into l_url
     from user_ords_schemas t1
     join user_ords_modules t2 on t1.id = t2.schema_id
@@ -1836,8 +1785,40 @@ as
     and t1.parsing_schema = blog_util.g_owner
     and t2.name = blog_util.g_ords_module
     ;
-    return l_url;
+    return l_url || blog_util.g_ords_public_files;
   end get_file_path_prefix;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_ords_service(
+    p_uri_template in varchar2
+  ) return varchar2
+  as
+    l_url     varchar2(4000);
+  begin
+
+    begin
+      -- query ORDS metadata to get resource url
+      select t1.pattern || t2.uri_prefix || t3.uri_template as url
+      into l_url
+      from user_ords_schemas t1
+      join user_ords_modules t2
+        on t1.id = t2.schema_id
+      join user_ords_templates t3
+        on t1.id = t3.schema_id
+        and t2.id = t3.module_id
+      where 1 = 1
+        and t1.parsing_schema = blog_util.g_owner
+        and t2.name = blog_util.g_ords_module
+        and t3.uri_template = p_uri_template
+      ;
+    exception when no_data_found then
+      raise_application_error( -20002,  'Configuration not exists.' );
+      l_url := null;
+    end;
+
+    return l_url;
+
+  end get_ords_service;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_ORDS";
@@ -2095,7 +2076,7 @@ as
 --                            number return value and number input parameters changed to varchar2.
 --                            Functions that are also used in query
 --                            another signature with varchar2 input and return values created for APEX
---    Jari Laine 09.05.2020 - Added parameter p_canonical to functions returning URL
+--                            Added parameter p_canonical to functions returning URL
 --    Jari Laine 10.05.2020 - New function get_unsubscribe
 --
 --------------------------------------------------------------------------------
@@ -2543,6 +2524,8 @@ as
 --                            New functions get_comment_post_id and is_email
 --    Jari Laine 10.05.2020 - Procedure send_reply_notify to send notify on reply to comment
 --    Jari Laine 12.05.2020 - Removed function prepare_file_path
+--    Jari Laine 17.05.2020 - Removed parameter p_err_mesg from function get_first_paragraph,
+--                            function is called now from APEX application conputation
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -2587,10 +2570,9 @@ as
     p_post_id         in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: trigger blog_posts_trg
+  -- Called from: admin app pages 12
   function get_first_paragraph(
-    p_body_html       in varchar2,
-    p_err_mesg        in varchar2 default null
+    p_body_html       in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
@@ -3050,11 +3032,9 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_first_paragraph(
-    p_body_html in varchar2,
-    p_err_mesg  in varchar2 default null
+    p_body_html in varchar2
   ) return varchar2
   as
-    l_err_mesg      varchar2(32700);
     l_first_p       varchar2(32700);
     l_first_p_start number;
     l_first_p_end   number;
@@ -3065,26 +3045,18 @@ as
     l_first_p_end   := instr( p_body_html, '</p>' );
 
     --post must have at least one paragraph
-    if l_first_p_start = 0 or l_first_p_end = 0 then
-      -- Prepare error message
-      l_err_mesg := apex_lang.message( coalesce( p_err_mesg, 'BLOG_ERR_POST_NO_PARAGRAPH' ) );
+    if l_first_p_start > 0 and l_first_p_end > 0 then
 
-      if l_err_mesg = apex_escape.html( p_err_mesg )
-      then
-        l_err_mesg := p_err_mesg;
-      end if;
+      l_first_p_start := l_first_p_start - 1;
+      l_first_p_end   := l_first_p_end + 3;
 
-      raise_application_error( -20001,  l_err_mesg );
+      -- get first paragraph
+      l_first_p := substr( p_body_html, l_first_p_start, l_first_p_end );
+
+      -- remove whitespace
+      l_first_p := replace( regexp_replace( l_first_p, '\s+', ' ' ), '  ', ' ' );
+
     end if;
-
-    l_first_p_start := l_first_p_start - 1;
-    l_first_p_end   := l_first_p_end + 3;
-
-    -- get first paragraph
-    l_first_p := substr( p_body_html, l_first_p_start, l_first_p_end );
-
-    -- remove whitespace
-    l_first_p := replace( regexp_replace( l_first_p, '\s+', ' ' ), '  ', ' ' );
 
     return l_first_p;
 
@@ -4077,8 +4049,9 @@ as
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 22.04.2019 - Created
 --    Jari Laine 29.04.2020 - New function get_robots_noindex_meta
---    Jari Laine 29.04.2020 - functions to generate canonical link output robot noindex meta tag if proper link can't be generated
---    Jari Laine 29.04.2020 - Added apex_debug to functions generating meta and canonical link
+--                            Functions to generate canonical link outputs robot noindex meta tag
+--                            if proper link can't be generated
+--                            Added apex_debug to functions generating meta and canonical link
 --    Jari Laine 10.05.2020 - Utilize blog_url functions p_canonical
 --
 --------------------------------------------------------------------------------
@@ -4627,6 +4600,9 @@ as
 --    Jari Laine 08.01.2020 - Removed categories sitemap
 --    Jari Laine 08.01.2020 - Modified use ORDS and blog version 4
 --    Jari Laine 09.04.2020 - Utilize blog_url functions parameter p_canonical
+--    Jari Laine 17.05.2020 - Removed private function get_app_alias
+--                            and constant c_pub_app_id
+--                            Moved private function get_ords_service to blog_ords package
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4651,67 +4627,13 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  c_pub_app_id  constant number := to_number( blog_util.get_item_init_value( 'G_PUB_APP_ID' ) );
+-- none
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_app_alias
-  return varchar2
-  as
-    l_app_alias varchar2(255);
-  begin
-
-    begin
-      -- query APEX metadata to get blog puplic application alias
-      select t1.alias
-      into l_app_alias
-      from apex_applications t1
-      where 1 = 1
-        and t1.owner = blog_util.g_owner
-        and t1.application_id = c_pub_app_id
-      ;
-    exception when no_data_found then
-      raise_application_error( -20001,  'Configuration not exists.' );
-      l_app_alias := null;
-    end;
-
-    return l_app_alias;
-
-  end get_app_alias;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_ords_service(
-    p_uri_template in varchar2
-  ) return varchar2
-  as
-    l_url     varchar2(4000);
-  begin
-
-    begin
-      -- query ORDS metadata to get resource url
-      select t1.pattern || t2.uri_prefix || t3.uri_template as url
-      into l_url
-      from user_ords_schemas t1
-      join user_ords_modules t2
-        on t1.id = t2.schema_id
-      join user_ords_templates t3
-        on t1.id = t3.schema_id
-        and t2.id = t3.module_id
-      where 1 = 1
-        and t1.parsing_schema = blog_util.g_owner
-        and t2.name = blog_util.g_ords_module
-        and t3.uri_template = p_uri_template
-      ;
-    exception when no_data_found then
-      raise_application_error( -20002,  'Configuration not exists.' );
-      l_url := null;
-    end;
-
-    return l_url;
-
-  end get_ords_service;
+-- none
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -4726,27 +4648,25 @@ as
     l_rss_url       varchar2(4000);
     l_rss_desc      varchar2(4000);
     l_home_url      varchar2(4000);
-    l_app_alias     varchar2(4000);
+    l_app_id        varchar2(4000);
     l_blog_name     varchar2(4000);
     l_rss_version   constant varchar2(5) := '2.0';
   begin
 
-    l_rss_url := blog_util.get_attribute_value( 'RSS_URL' );
-
-    -- blog application alias
-    l_app_alias := get_app_alias;
-
-    -- blog home page relative urlg_ords_rss_feed;
-    l_home_url  := blog_url.get_tab(
-       p_app_id => l_app_alias
-      ,p_canonical => 'YES'
-    );
-
+    -- RSS feed URL
+    l_rss_url   := blog_util.get_attribute_value( 'RSS_URL' );
     -- blog name
     l_blog_name := blog_util.get_attribute_value( 'G_APP_NAME' );
-
     -- rss feed description
     l_rss_desc  := blog_util.get_attribute_value( 'G_APP_DESC' );
+    -- blog application id
+    l_app_id    := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
+
+    -- blog home page absulute URL
+    l_home_url  := blog_url.get_tab(
+       p_app_id => l_app_id
+      ,p_canonical => 'YES'
+    );
 
     -- generate RSS
     select xmlserialize( document
@@ -4762,7 +4682,7 @@ as
              "atom:link"
             ,xmlattributes(
                'self'                 as "rel"
-              ,l_rss_url as "href"
+              ,l_rss_url              as "href"
               ,'application/rss+xml'  as "type"
             )
           )
@@ -4779,7 +4699,7 @@ as
               ,xmlelement( "dc:creator",  posts.blogger_name )
               ,xmlelement( "category",    posts.category_title )
               ,xmlelement( "link",        blog_url.get_post(
-                                             p_app_id     => l_app_alias
+                                             p_app_id     => l_app_id
                                             ,p_post_id    => posts.post_id
                                             ,p_canonical  => 'YES'
                                           )
@@ -4819,11 +4739,11 @@ as
     l_url :=  blog_util.get_attribute_value( 'CANONICAL_URL' );
 
     l_main := l_url
-      || get_ords_service(
+      || blog_ords.get_ords_service(
         blog_util.g_ords_sitemap_main
       );
     l_posts := l_url
-      || get_ords_service(
+      || blog_ords.get_ords_service(
         blog_util.g_ords_sitemap_posts
       );
 
@@ -4864,29 +4784,32 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_main
   as
-    l_xml blob;
-    l_app_alias varchar2(256);
+    l_xml     blob;
+    l_app_id  varchar2(256);
+    l_pub_id  number;
   begin
 
-    l_app_alias := get_app_alias;
+    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
+    l_pub_id := to_number( l_app_id );
+
 
     with sitemap_query as (
       select
          row_number() over(order by li.display_sequence) as rnum
         ,blog_url.get_tab(
-           p_app_id  => l_app_alias
+           p_app_id  => l_app_id
           ,p_app_page_id => li.entry_attribute_10
           ,p_canonical => 'YES'
         ) as loc
       from apex_application_list_entries li
       where 1 = 1
         and li.list_name = blog_util.g_pub_app_tab_list
-        and li.application_id = c_pub_app_id
+        and li.application_id = l_pub_id
       and not exists(
         select 1
         from apex_application_build_options bo
         where 1 = 1
-          and bo.application_id = c_pub_app_id
+          and bo.application_id = l_pub_id
           and bo.build_option_name = li.build_option
           and bo.build_option_status = 'Exclude'
       )
@@ -4922,18 +4845,18 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_posts
   as
-    l_xml blob;
-    l_app_alias varchar2(256);
+    l_xml     blob;
+    l_app_id  varchar2(256);
   begin
 
-    l_app_alias := get_app_alias;
+    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
 
     with sitemap_query as (
       select
          posts.published_on
         ,posts.changed_on
         ,blog_url.get_post(
-           p_app_id     => l_app_alias
+           p_app_id     => l_app_id
           ,p_post_id    => posts.post_id
           ,p_canonical  => 'YES'
         ) as loc
@@ -5294,10 +5217,7 @@ begin
     :new.row_version  := :old.row_version + 1;
   end if;
 
-
   :new.published_on := coalesce( :new.published_on, localtimestamp );
-
-  :new.first_paragraph  := blog_cm.get_first_paragraph( :new.body_html );
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(

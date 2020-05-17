@@ -21,6 +21,7 @@ as
 --    Jari Laine 11.05.2020 - Procedures and functions relating comments moved to package blog_comm
 --    Jari Laine 17.05.2020 - Added out parameters p_older_title and p_newer_title to procedure get_post_pagination
 --                            Materialized view blog_items_init changed to view
+--                            Removed function get_item_init_value
 --
 --  TO DO:
 --    #1  Package contains hard coded values
@@ -78,10 +79,6 @@ as
   function get_attribute_value(
     p_attribute_name  in varchar2
   ) return varchar2 result_cache;
---------------------------------------------------------------------------------
-  function get_item_init_value(
-    p_item_name       in varchar2
-  ) return varchar2;
 --------------------------------------------------------------------------------
   procedure initialize_items(
     p_app_id          in varchar2
@@ -289,58 +286,6 @@ as
       raise;
 
   end get_attribute_value;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_item_init_value(
-    p_item_name in varchar2
-  ) return varchar2
-  as
-    l_value varchar2(4000);
-  begin
-
-    apex_debug.enter(
-      'blog_util.get_item_init_value'
-      ,'p_item_name'
-      ,p_item_name
-    );
-
-    if p_item_name is null then
-      raise no_data_found;
-    end if;
-
-    -- fetch and return value from settings table
-    select item_value
-    into l_value
-    from blog_v_init_items
-    where 1 = 1
-    and item_name = p_item_name
-    ;
-    apex_debug.info( 'Fetc item %s return: %s', p_item_name, l_value );
-    return l_value;
-
-  exception when no_data_found
-  then
-
-    apex_debug.error(
-       p_message => 'No data found. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_attribute_name'
-      ,p2 => coalesce( p_item_name, '(null)' )
-    );
-    raise;
-
-  when others
-  then
-
-    apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_attribute_name'
-      ,p2 => coalesce( p_item_name, '(null)' )
-    );
-    raise;
-
-  end get_item_init_value;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure initialize_items(
