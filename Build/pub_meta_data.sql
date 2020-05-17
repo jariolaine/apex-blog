@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  Inserting into BLOG_SETTINGS
 --------------------------------------------------------
-insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value) values ('30','0','G_PUB_APP_ID','STRING','INTERNAL',to_char(apex_application_install.get_application_id, blog_util.g_number_format));
+insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value) values ('30','0','G_PUB_APP_ID','STRING','INTERNAL',to_char(apex_application_install.get_application_id, 'fm99999999999999999999999999999999999999'));
 
 --------------------------------------------------------
 --  Inserting into BLOG_INIT_ITEMS

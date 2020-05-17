@@ -964,6 +964,8 @@ as
 --                            Procedure subscribe to subscribe comment reply
 --                            Procedure unsubscribe for unsubscribe comment reply
 --    Jari Laine 11.05.2020 - Procedures and functions relating comments moved to package blog_comm
+--    Jari Laine 17.05.2020 - Added out parameters p_older_title and p_newer_title to procedure get_post_pagination
+--                            Materialized view blog_items_init changed to view
 --
 --  TO DO:
 --    #1  Package contains hard coded values
@@ -977,7 +979,7 @@ as
 
   g_owner               constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
 
-  g_number_format       constant varchar2(40)   := 'fm9999999999999999999999999999999999999';
+  g_number_format       constant varchar2(40)   := 'fm99999999999999999999999999999999999999';
 
   -- ORDS
   g_ords_module         constant varchar2(256)  := 'BLOG_PUBLIC_FILES';
@@ -1038,7 +1040,9 @@ as
   procedure get_post_pagination(
     p_post_id         in varchar2,
     p_newer_id        out nocopy varchar2,
-    p_older_id        out nocopy varchar2
+    p_newer_title     out nocopy varchar2,
+    p_older_id        out nocopy varchar2,
+    p_older_title     out nocopy varchar2
   );
 --------------------------------------------------------------------------------
   function get_category_title(
@@ -1408,12 +1412,16 @@ as
   procedure get_post_pagination(
     p_post_id         in varchar2,
     p_newer_id        out nocopy varchar2,
-    p_older_id        out nocopy varchar2
+    p_newer_title     out nocopy varchar2,
+    p_older_id        out nocopy varchar2,
+    p_older_title     out nocopy varchar2
   )
   as
-    l_post_id   number;
-    l_newer_id  number;
-    l_older_id  number;
+    l_post_id     number;
+    l_newer_id    number;
+    l_newer_title varchar2(512);
+    l_older_id    number;
+    l_older_title varchar2(512);
   begin
 
     apex_debug.enter(
@@ -1430,13 +1438,17 @@ as
 
     select
        q1.newer_id
+      ,q1.newer_title
       ,q1.older_id
-    into l_newer_id, l_older_id
+      ,q1.older_title
+    into l_newer_id, l_newer_title, l_older_id, l_older_title
     from (
       select
          v1.post_id
         ,lag( v1.post_id ) over(order by v1.published_on desc) as newer_id
+        ,lag( v1.post_title ) over(order by v1.published_on desc) as newer_title
         ,lead( v1.post_id ) over(order by v1.published_on desc) as older_id
+        ,lead( v1.post_title ) over(order by v1.published_on desc) as older_title
       from blog_v_posts v1
       where 1 = 1
     ) q1
@@ -1445,7 +1457,9 @@ as
     ;
 
     p_newer_id  := to_char( l_newer_id, g_number_format );
+    p_newer_title := l_newer_title;
     p_older_id  := to_char( l_older_id, g_number_format );
+    p_older_title := l_older_title;
 
     apex_debug.info( 'Fetch post: %s next_id: %s prev_id: %s', p_post_id, p_newer_id, p_older_id );
 
@@ -1453,14 +1467,10 @@ as
   then
 
     apex_debug.error(
-       p_message => 'No data found. %s( %s => %s, %s => %s, %s => %s )'
+       p_message => 'No data found. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_post_id'
       ,p2 => coalesce( p_post_id, '(null)' )
-      ,p3 => 'p_newer_id'
-      ,p4 => p_newer_id
-      ,p5 => 'p_older_id'
-      ,p6 => p_older_id
     );
     raise;
 
