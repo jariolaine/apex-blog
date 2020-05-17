@@ -18,6 +18,21 @@ input[data-z-switch="true"][value="0"]:checked+label{
 }
 
 /**************************************
+* Modifiers
+**************************************/
+.z-text-wrap{
+  white-space: pre-wrap;
+}
+/**************************************
+* Colors
+**************************************/
+.z-aliceblue{
+  color: #f1f6fa!important;
+}
+.z-normal{
+  color: #000000!important;
+}
+/**************************************
 * Logo
 **************************************/
 .z-app-logo{
@@ -31,13 +46,14 @@ input[data-z-switch="true"][value="0"]:checked+label{
 /**************************************
 * Right column link lists
 **************************************/
+/*
 .z-link--no-border,
 .z-link--no-border a:focus{
   border: none;
   outline: none;
   box-shadow: none;
 }
-
+*/
 /**************************************
 * Interactive Report
 **************************************/
@@ -287,28 +303,13 @@ pre.z-program-code code:nth-child(odd):before{
 * Region
 **************************************/
 .z-app-source {
-  padding: .6rem 0;
+  padding: 0.4rem 0;
 }
 
 /**************************************
 * Media query
 **************************************/
-@media only screen and (max-width: 768px){
-  /**************************************
-  * Logo
-  **************************************/
-  .z-app-desc{
-    font-size: 1.4rem;
-  }
-}
 @media only screen and (max-width: 640px){
-  /**************************************
-  * Logo
-  **************************************/
-  .z-app-desc{
-    font-size: 1.6rem;
-  }
-
   /**************************************
   * Post custom report template
   **************************************/

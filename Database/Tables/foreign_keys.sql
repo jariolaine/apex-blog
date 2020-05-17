@@ -1,40 +1,35 @@
+--------------------------------------------------------
+--  DDL for Foreign Keys
+--------------------------------------------------------
+ALTER TABLE BLOG_COMMENTS ADD CONSTRAINT BLOG_COMMENTS_FK1 FOREIGN KEY (POST_ID)
+  REFERENCES BLOG_POSTS (ID) ON DELETE CASCADE ENABLE;
 
-alter table blog_comments add constraint blog_comments_fk1 foreign key (post_id)
-  references blog_posts (id) on delete cascade enable
-/
+ALTER TABLE BLOG_COMMENTS ADD CONSTRAINT BLOG_COMMENTS_FK2 FOREIGN KEY (PARENT_ID)
+  REFERENCES BLOG_COMMENTS (ID) ON DELETE SET NULL ENABLE;
 
-alter table blog_comments add constraint blog_comments_fk2 foreign key (parent_id)
-  references blog_comments (id) on delete set null enable
-/
+ALTER TABLE BLOG_COMMENT_FLAGS ADD CONSTRAINT BLOG_COMMENT_FLAGS_FK1 FOREIGN KEY (COMMENT_ID)
+  REFERENCES BLOG_COMMENTS (ID) ON DELETE CASCADE ENABLE;
 
-alter table blog_comment_flags add constraint blog_comment_flags_fk1 foreign key (comment_id)
-  references blog_comments (id) on delete cascade enable
-/
+ALTER TABLE BLOG_COMMENT_SUBS ADD CONSTRAINT BLOG_COMMENT_SUBS_FK1 FOREIGN KEY (POST_ID)
+  REFERENCES BLOG_POSTS (ID) ON DELETE CASCADE ENABLE;
 
-alter table blog_comment_subs add constraint blog_comment_subs_fk1 foreign key (post_id)
-  references blog_posts (id) on delete cascade enable
-/
+ALTER TABLE BLOG_COMMENT_SUBS ADD CONSTRAINT BLOG_COMMENT_SUBS_FK2 FOREIGN KEY (EMAIL_ID)
+  REFERENCES BLOG_COMMENT_SUBS_EMAIL (ID) ON DELETE CASCADE ENABLE;
 
-alter table blog_comment_subs add constraint blog_comment_subs_fk2 foreign key (email_id)
-  references blog_comment_subs_email (id) on delete cascade enable
-/
+ALTER TABLE BLOG_INIT_ITEMS ADD CONSTRAINT BLOG_INIT_ITEMS_FK1 FOREIGN KEY (ITEM_NAME)
+  REFERENCES BLOG_SETTINGS (ATTRIBUTE_NAME) ENABLE;
 
-alter table blog_links add constraint blog_links_fk1 foreign key (link_group_id)
-  references blog_link_groups (id) on delete cascade enable
-/
+ALTER TABLE BLOG_LINKS ADD CONSTRAINT BLOG_LINKS_FK1 FOREIGN KEY (LINK_GROUP_ID)
+  REFERENCES BLOG_LINK_GROUPS (ID) ON DELETE CASCADE ENABLE;
 
-alter table blog_posts add constraint blog_posts_fk1 foreign key (blogger_id)
-  references blog_bloggers (id) enable
-/
+ALTER TABLE BLOG_POSTS ADD CONSTRAINT BLOG_POSTS_FK1 FOREIGN KEY (BLOGGER_ID)
+  REFERENCES BLOG_BLOGGERS (ID) ENABLE;
 
-alter table blog_posts add constraint blog_posts_fk2 foreign key (category_id)
-  references blog_categories (id) enable
-/
+ALTER TABLE BLOG_POSTS ADD CONSTRAINT BLOG_POSTS_FK2 FOREIGN KEY (CATEGORY_ID)
+  REFERENCES BLOG_CATEGORIES (ID) ENABLE;
 
-alter table blog_post_tags add constraint blog_post_tags_fk1 foreign key (post_id)
-  references blog_posts (id) on delete cascade enable
-/
+ALTER TABLE BLOG_POST_TAGS ADD CONSTRAINT BLOG_POST_TAGS_FK1 FOREIGN KEY (POST_ID)
+  REFERENCES BLOG_POSTS (ID) ON DELETE CASCADE ENABLE;
 
-alter table blog_post_tags add constraint blog_post_tags_fk2 foreign key (tag_id)
-  references blog_tags (id) enable
-/
+ALTER TABLE BLOG_POST_TAGS ADD CONSTRAINT BLOG_POST_TAGS_FK2 FOREIGN KEY (TAG_ID)
+  REFERENCES BLOG_TAGS (ID) ENABLE;
