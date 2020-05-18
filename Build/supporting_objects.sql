@@ -967,6 +967,7 @@ as
 --    Jari Laine 17.05.2020 - Added out parameters p_older_title and p_newer_title to procedure get_post_pagination
 --                            Materialized view blog_items_init changed to view
 --                            Removed function get_item_init_value
+--    Jari Laine 18.05.2020 - Moved ORDS specific global constants
 --
 --  TO DO:
 --    #1  Package contains hard coded values
@@ -981,16 +982,6 @@ as
   g_owner               constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
 
   g_number_format       constant varchar2(40)   := 'fm99999999999999999999999999999999999999';
-
-  -- ORDS
-  g_ords_module         constant varchar2(256)  := 'BLOG_PUBLIC_FILES';
-
-  g_ords_public_files   constant varchar2(256)  := 'files/';
-
-  g_ords_rss_feed       constant varchar2(256)  := 'feed/rss';
-  g_ords_sitemap_index  constant varchar2(256)  := 'sitemap/index';
-  g_ords_sitemap_main   constant varchar2(256)  := 'sitemap/main';
-  g_ords_sitemap_posts  constant varchar2(256)  := 'sitemap/posts';
 
   -- URL
   g_home_page           constant varchar2(40)   := 'HOME';
@@ -1567,10 +1558,17 @@ as
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 09.01.2020 - Created
---    Jari Laine 28.04.2020 - Added procedure create_public_xml_module
+--    Jari Laine 28.03.2020 - Added procedure create_public_xml_module
 --                            Local constants renamed
+--    Jari Laine 09.04.2020 - Package reorganized and removed e.g.
+--                            procedures create_public_xml_module and create_public_files_module
 --    Jari Laine 17.05.2020 - Add get_ords_service function.
 --                            Originaly function was in blog_xml package
+--    Jari Laine 18.05.2020 - Add private constant c_module_name
+--                            Removed function get_file_path_prefix
+--                            Removed ORDS specific constants from package blog_util
+--                            Removed function get_ords_service
+--                            Added function get_module_path
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1584,10 +1582,8 @@ as
 --------------------------------------------------------------------------------
   procedure create_sitemap_templates;
 --------------------------------------------------------------------------------
-  function get_file_path_prefix return varchar2;
---------------------------------------------------------------------------------
-  function get_ords_service(
-    p_uri_template in varchar2
+  function get_module_path(
+    p_canonical     in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_ORDS";
@@ -1601,7 +1597,7 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- none
+  c_module_name constant varchar2(256)  := 'BLOG_PUBLIC_FILES';
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -1628,7 +1624,7 @@ as
     ;
     -- Static files module
     ords.define_module(
-      p_module_name     => blog_util.g_ords_module
+      p_module_name     => c_module_name
       ,p_base_path      => l_base_path
       ,p_items_per_page => 25
       ,p_status         => 'PUBLISHED'
@@ -1642,8 +1638,8 @@ as
   begin
 
     ords.define_template(
-      p_module_name     => blog_util.g_ords_module
-      ,p_pattern        => blog_util.g_ords_public_files || ':p_file_name'
+      p_module_name     => c_module_name
+      ,p_pattern        => 'files/:p_file_name'
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
       ,p_etag_query     => null
@@ -1651,8 +1647,8 @@ as
     );
 
     ords.define_handler(
-      p_module_name     => blog_util.g_ords_module
-      ,p_pattern        => blog_util.g_ords_public_files || ':p_file_name'
+      p_module_name     => c_module_name
+      ,p_pattern        => 'files/:p_file_name'
       ,p_method         => 'GET'
       ,p_source_type    => 'resource/lob'
       ,p_items_per_page => 0
@@ -1675,8 +1671,8 @@ as
   begin
 
     ords.define_template(
-      p_module_name     => blog_util.g_ords_module
-      ,p_pattern        => blog_util.g_ords_rss_feed
+      p_module_name     => c_module_name
+      ,p_pattern        => 'feed/rss'
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
       ,p_etag_query     => null
@@ -1684,8 +1680,8 @@ as
     );
 
     ords.define_handler(
-      p_module_name     => blog_util.g_ords_module
-      ,p_pattern        => blog_util.g_ords_rss_feed
+      p_module_name     => c_module_name
+      ,p_pattern        => 'feed/rss'
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
       ,p_items_per_page => 0
@@ -1695,7 +1691,7 @@ as
         'begin' || chr(10)
         || '  blog_xml.rss(:p_lang);' || chr(10)
         || 'end;'
-      );
+    );
 
   end create_rss_template;
 --------------------------------------------------------------------------------
@@ -1704,18 +1700,18 @@ as
   as
   begin
 
-      ords.define_template(
-        p_module_name     => blog_util.g_ords_module
-        ,p_pattern        => blog_util.g_ords_sitemap_index
-        ,p_priority       => 0
-        ,p_etag_type      => 'HASH'
-        ,p_etag_query     => null
-        ,p_comments       => 'Blog sitemap index'
-      );
+    ords.define_template(
+      p_module_name     => c_module_name
+      ,p_pattern        => 'sitemap/index'
+      ,p_priority       => 0
+      ,p_etag_type      => 'HASH'
+      ,p_etag_query     => null
+      ,p_comments       => 'Blog sitemap index'
+    );
 
     ords.define_handler(
-      p_module_name     => blog_util.g_ords_module
-      ,p_pattern        => blog_util.g_ords_sitemap_index
+      p_module_name     => c_module_name
+      ,p_pattern        => 'sitemap/index'
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
       ,p_mimes_allowed  => ''
@@ -1724,11 +1720,11 @@ as
         'begin' || chr(10)
         || '  blog_xml.sitemap_index;' || chr(10)
         || 'end;'
-      );
+    );
 
     ords.define_template(
-      p_module_name     => blog_util.g_ords_module
-      ,p_pattern        => blog_util.g_ords_sitemap_main
+      p_module_name     => c_module_name
+      ,p_pattern        => 'sitemap/main'
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
       ,p_etag_query     => null
@@ -1736,8 +1732,8 @@ as
     );
 
     ords.define_handler(
-      p_module_name     => blog_util.g_ords_module
-      ,p_pattern        => blog_util.g_ords_sitemap_main
+      p_module_name     => c_module_name
+      ,p_pattern        => 'sitemap/main'
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
       ,p_mimes_allowed  => ''
@@ -1746,11 +1742,11 @@ as
         'begin' || chr(10)
         || '  blog_xml.sitemap_main;' || chr(10)
         || 'end;'
-      );
+    );
 
     ords.define_template(
-      p_module_name     => blog_util.g_ords_module
-      ,p_pattern        => blog_util.g_ords_sitemap_posts
+      p_module_name     => c_module_name
+      ,p_pattern        => 'sitemap/posts'
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
       ,p_etag_query     => null
@@ -1758,8 +1754,8 @@ as
     );
 
     ords.define_handler(
-      p_module_name     => blog_util.g_ords_module
-      ,p_pattern        => blog_util.g_ords_sitemap_posts
+      p_module_name     => c_module_name
+      ,p_pattern        => 'sitemap/posts'
       ,p_method         => 'GET'
       ,p_source_type    => 'plsql/block'
       ,p_mimes_allowed  => ''
@@ -1773,24 +1769,8 @@ as
   end create_sitemap_templates;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_file_path_prefix return varchar2
-  as
-    l_url varchar2(4000);
-  begin
-    select t1.pattern || t2.uri_prefix as url
-    into l_url
-    from user_ords_schemas t1
-    join user_ords_modules t2 on t1.id = t2.schema_id
-    where 1 = 1
-    and t1.parsing_schema = blog_util.g_owner
-    and t2.name = blog_util.g_ords_module
-    ;
-    return l_url || blog_util.g_ords_public_files;
-  end get_file_path_prefix;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_ords_service(
-    p_uri_template in varchar2
+  function get_module_path(
+    p_canonical     in varchar2 default 'NO'
   ) return varchar2
   as
     l_url     varchar2(4000);
@@ -1798,27 +1778,30 @@ as
 
     begin
       -- query ORDS metadata to get resource url
-      select t1.pattern || t2.uri_prefix || t3.uri_template as url
+      select t1.pattern || t2.uri_prefix as url
       into l_url
       from user_ords_schemas t1
       join user_ords_modules t2
         on t1.id = t2.schema_id
-      join user_ords_templates t3
-        on t1.id = t3.schema_id
-        and t2.id = t3.module_id
       where 1 = 1
         and t1.parsing_schema = blog_util.g_owner
-        and t2.name = blog_util.g_ords_module
-        and t3.uri_template = p_uri_template
+        and t2.name = c_module_name
       ;
     exception when no_data_found then
       raise_application_error( -20002,  'Configuration not exists.' );
       l_url := null;
     end;
 
+    if p_canonical = 'YES'
+    then
+      l_url := blog_util.get_attribute_value( 'CANONICAL_URL' )
+        || l_url
+      ;
+    end if;
+
     return l_url;
 
-  end get_ords_service;
+  end get_module_path;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_ORDS";
@@ -4739,13 +4722,14 @@ as
     l_url :=  blog_util.get_attribute_value( 'CANONICAL_URL' );
 
     l_main := l_url
-      || blog_ords.get_ords_service(
-        blog_util.g_ords_sitemap_main
-      );
+      || blog_ords.get_module_path
+      || 'sitemap/main'
+    ;
+
     l_posts := l_url
-      || blog_ords.get_ords_service(
-        blog_util.g_ords_sitemap_posts
-      );
+      || blog_ords.get_module_path
+      || 'sitemap/posts'
+    ;
 
     with si as (
       select 1 as grp

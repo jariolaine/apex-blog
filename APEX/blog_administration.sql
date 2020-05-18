@@ -65,7 +65,7 @@ prompt APPLICATION 402 - Blog Administration
 --         LOVs:                   8
 --         Shortcuts:              2
 --       Globalization:
---         Messages:              56
+--         Messages:              57
 --       Reports:
 --       E-Mail:
 --         Templates:              1
@@ -128,7 +128,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_ADMIN_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200518161641'
+,p_last_upd_yyyymmddhh24miss=>'20200518194243'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>186
 ,p_ui_type_name => null
@@ -704,7 +704,7 @@ wwv_flow_api.create_flow_computation(
 ,p_computation_point=>'AFTER_LOGIN'
 ,p_computation_type=>'PLSQL_EXPRESSION'
 ,p_computation_processed=>'REPLACE_EXISTING'
-,p_computation=>'#OWNER#.blog_ords.get_file_path_prefix'
+,p_computation=>'#OWNER#.blog_ords.get_module_path || ''files/'''
 );
 wwv_flow_api.create_flow_computation(
  p_id=>wwv_flow_api.id(8959846931541340)
@@ -11368,6 +11368,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Search from posts'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(33704880398366885)
+,p_name=>'BLOG_FEATURE_SUBSCRIBE_COMMENTS'
+,p_message_text=>'Sent email notification of new comments'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(31903383999893435)
 ,p_name=>'BLOG_FILES_UK1'
 ,p_message_text=>'File with same name already exists.'
@@ -18047,7 +18052,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200513171828'
+,p_last_upd_yyyymmddhh24miss=>'20200518173708'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(30429034900753113)
@@ -18456,6 +18461,13 @@ wwv_flow_api.create_page_process(
 '  ,p_email_template  => ''BLOG_REPLY_TO_COMMENT_NOTIFY''',
 ');'))
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_when=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex_util.get_build_option_status(',
+'   p_application_id    => :G_PUB_APP_ID',
+'  ,p_build_option_name => ''BLOG_FEATURE_SUBSCRIBE_COMMENTS''',
+') = ''INCLUDE''',
+''))
+,p_process_when_type=>'PLSQL_EXPRESSION'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(30247977225830741)
@@ -22894,6 +22906,7 @@ wwv_flow_api.append_to_install_script(
 '--    Jari Laine 17.05.2020 - Added out parameters p_older_title and p_newer_title to procedure get_post_pagination',
 '--                            Materialized view blog_items_init changed to view',
 '--                            Removed function get_item_init_value',
+'--    Jari Laine 18.05.2020 - Moved ORDS specific global constants',
 '--',
 '--  TO DO:',
 '--    #1  Package contains hard coded values',
@@ -22908,16 +22921,6 @@ wwv_flow_api.append_to_install_script(
 '  g_owner               constant varchar2(4000) := sys_context( ''USERENV'', ''CURRENT_SCHEMA'' );',
 '',
 '  g_number_format       constant varchar2(40)   := ''fm99999999999999999999999999999999999999'';',
-'',
-'  -- ORDS',
-'  g_ords_module         constant varchar2(256)  := ''BLOG_PUBLIC_FILES'';',
-'',
-'  g_ords_public_files   constant varchar2(256)  := ''files/'';',
-'',
-'  g_ords_rss_feed       constant varchar2(256)  := ''feed/rss'';',
-'  g_ords_sitemap_index  constant varchar2(256)  := ''sitemap/index'';',
-'  g_ords_sitemap_main   constant varchar2(256)  := ''sitemap/main'';',
-'  g_ords_sitemap_posts  constant varchar2(256)  := ''sitemap/posts'';',
 '',
 '  -- URL',
 '  g_home_page           constant varchar2(40)   := ''HOME'';',
@@ -23494,10 +23497,17 @@ wwv_flow_api.append_to_install_script(
 '--',
 '--  MODIFIED (DD.MM.YYYY)',
 '--    Jari Laine 09.01.2020 - Created',
-'--    Jari Laine 28.04.2020 - Added procedure create_public_xml_module',
+'--    Jari Laine 28.03.2020 - Added procedure create_public_xml_module',
 '--                            Local constants renamed',
+'--    Jari Laine 09.04.2020 - Package reorganized and removed e.g.',
+'--                            procedures create_public_xml_module and create_public_files_module',
 '--    Jari Laine 17.05.2020 - Add get_ords_service function.',
 '--                            Originaly function was in blog_xml package',
+'--    Jari Laine 18.05.2020 - Add private constant c_module_name',
+'--                            Removed function get_file_path_prefix',
+'--                            Removed ORDS specific constants from package blog_util',
+'--                            Removed function get_ords_service',
+'--                            Added function get_module_path',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -23511,10 +23521,8 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  procedure create_sitemap_templates;',
 '--------------------------------------------------------------------------------',
-'  function get_file_path_prefix return varchar2;',
-'--------------------------------------------------------------------------------',
-'  function get_ords_service(',
-'    p_uri_template in varchar2',
+'  function get_module_path(',
+'    p_canonical     in varchar2 default ''NO''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 'end "BLOG_ORDS";',
@@ -23528,9 +23536,8 @@ wwv_flow_api.append_to_install_script(
 '-- Private constants and variables',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'-- none',
-'--------------------------------------------------------------------------------',
-'---------------------------------------------'))
+'  c_module_name constant varchar2(256)  := ''BLOG_PUBLIC_FILES'';',
+'------------------------------'))
 );
 end;
 /
@@ -23538,7 +23545,8 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------------------------------',
+'--------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -23563,7 +23571,7 @@ wwv_flow_api.append_to_install_script(
 '    ;',
 '    -- Static files module',
 '    ords.define_module(',
-'      p_module_name     => blog_util.g_ords_module',
+'      p_module_name     => c_module_name',
 '      ,p_base_path      => l_base_path',
 '      ,p_items_per_page => 25',
 '      ,p_status         => ''PUBLISHED''',
@@ -23577,8 +23585,8 @@ wwv_flow_api.append_to_install_script(
 '  begin',
 '',
 '    ords.define_template(',
-'      p_module_name     => blog_util.g_ords_module',
-'      ,p_pattern        => blog_util.g_ords_public_files || '':p_file_name''',
+'      p_module_name     => c_module_name',
+'      ,p_pattern        => ''files/:p_file_name''',
 '      ,p_priority       => 0',
 '      ,p_etag_type      => ''HASH''',
 '      ,p_etag_query     => null',
@@ -23586,8 +23594,8 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    ords.define_handler(',
-'      p_module_name     => blog_util.g_ords_module',
-'      ,p_pattern        => blog_util.g_ords_public_files || '':p_file_name''',
+'      p_module_name     => c_module_name',
+'      ,p_pattern        => ''files/:p_file_name''',
 '      ,p_method         => ''GET''',
 '      ,p_source_type    => ''resource/lob''',
 '      ,p_items_per_page => 0',
@@ -23610,8 +23618,8 @@ wwv_flow_api.append_to_install_script(
 '  begin',
 '',
 '    ords.define_template(',
-'      p_module_name     => blog_util.g_ords_module',
-'      ,p_pattern        => blog_util.g_ords_rss_feed',
+'      p_module_name     => c_module_name',
+'      ,p_pattern        => ''feed/rss''',
 '      ,p_priority       => 0',
 '      ,p_etag_type      => ''HASH''',
 '      ,p_etag_query     => null',
@@ -23619,8 +23627,8 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    ords.define_handler(',
-'      p_module_name     => blog_util.g_ords_module',
-'      ,p_pattern        => blog_util.g_ords_rss_feed',
+'      p_module_name     => c_module_name',
+'      ,p_pattern        => ''feed/rss''',
 '      ,p_method         => ''GET''',
 '      ,p_source_type    => ''plsql/block''',
 '      ,p_items_per_page => 0',
@@ -23630,7 +23638,7 @@ wwv_flow_api.append_to_install_script(
 '        ''begin'' || chr(10)',
 '        || ''  blog_xml.rss(:p_lang);'' || chr(10)',
 '        || ''end;''',
-'      );',
+'    );',
 '',
 '  end create_rss_template;',
 '--------------------------------------------------------------------------------',
@@ -23639,18 +23647,18 @@ wwv_flow_api.append_to_install_script(
 '  as',
 '  begin',
 '',
-'      ords.define_template(',
-'        p_module_name     => blog_util.g_ords_module',
-'        ,p_pattern        => blog_util.g_ords_sitemap_index',
-'        ,p_priority       => 0',
-'        ,p_etag_type      => ''HASH''',
-'        ,p_etag_query     => null',
-'        ,p_comments       => ''Blog sitemap index''',
-'      );',
+'    ords.define_template(',
+'      p_module_name     => c_module_name',
+'      ,p_pattern        => ''sitemap/index''',
+'      ,p_priority       => 0',
+'      ,p_etag_type      => ''HASH''',
+'      ,p_etag_query     => null',
+'      ,p_comments       => ''Blog sitemap index''',
+'    );',
 '',
 '    ords.define_handler(',
-'      p_module_name     => blog_util.g_ords_module',
-'      ,p_pattern        => blog_util.g_ords_sitemap_index',
+'      p_module_name     => c_module_name',
+'      ,p_pattern        => ''sitemap/index''',
 '      ,p_method         => ''GET''',
 '      ,p_source_type    => ''plsql/block''',
 '      ,p_mimes_allowed  => ''''',
@@ -23659,11 +23667,11 @@ wwv_flow_api.append_to_install_script(
 '        ''begin'' || chr(10)',
 '        || ''  blog_xml.sitemap_index;'' || chr(10)',
 '        || ''end;''',
-'      );',
+'    );',
 '',
 '    ords.define_template(',
-'      p_module_name     => blog_util.g_ords_module',
-'      ,p_pattern        => blog_util.g_ords_sitemap_main',
+'      p_module_name     => c_module_name',
+'      ,p_pattern        => ''sitemap/main''',
 '      ,p_priority       => 0',
 '      ,p_etag_type      => ''HASH''',
 '      ,p_etag_query     => null',
@@ -23671,8 +23679,8 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    ords.define_handler(',
-'      p_module_name     => blog_util.g_ords_module',
-'      ,p_pattern        => blog_util.g_ords_sitemap_main',
+'      p_module_name     => c_module_name',
+'      ,p_pattern        => ''sitemap/main''',
 '      ,p_method         => ''GET''',
 '      ,p_source_type    => ''plsql/block''',
 '      ,p_mimes_allowed  => ''''',
@@ -23681,11 +23689,11 @@ wwv_flow_api.append_to_install_script(
 '        ''begin'' || chr(10)',
 '        || ''  blog_xml.sitemap_main;'' || chr(10)',
 '        || ''end;''',
-'      );',
+'    );',
 '',
 '    ords.define_template(',
-'      p_module_name     => blog_util.g_ords_module',
-'      ,p_pattern        => blog_util.g_ords_sitemap_posts',
+'      p_module_name     => c_module_name',
+'      ,p_pattern        => ''sitemap/posts''',
 '      ,p_priority       => 0',
 '      ,p_etag_type      => ''HASH''',
 '      ,p_etag_query     => null',
@@ -23693,8 +23701,8 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    ords.define_handler(',
-'      p_module_name     => blog_util.g_ords_module',
-'      ,p_pattern        => blog_util.g_ords_sitemap_posts',
+'      p_module_name     => c_module_name',
+'      ,p_pattern        => ''sitemap/posts''',
 '      ,p_method         => ''GET''',
 '      ,p_source_type    => ''plsql/block''',
 '      ,p_mimes_allowed  => ''''',
@@ -23708,24 +23716,8 @@ wwv_flow_api.append_to_install_script(
 '  end create_sitemap_templates;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  function get_file_path_prefix return varchar2',
-'  as',
-'    l_url varchar2(4000);',
-'  begin',
-'    select t1.pattern || t2.uri_prefix as url',
-'    into l_url',
-'    from user_ords_schemas t1',
-'    join user_ords_modules t2 on t1.id = t2.schema_id',
-'    where 1 = 1',
-'    and t1.parsing_schema = blog_util.g_owner',
-'    and t2.name = blog_util.g_ords_module',
-'    ;',
-'    return l_url || blog_util.g_ords_public_files;',
-'  end get_file_path_prefix;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function get_ords_service(',
-'    p_uri_template in varchar2',
+'  function get_module_path(',
+'    p_canonical     in varchar2 default ''NO''',
 '  ) return varchar2',
 '  as',
 '    l_url     varchar2(4000);',
@@ -23733,27 +23725,30 @@ wwv_flow_api.append_to_install_script(
 '',
 '    begin',
 '      -- query ORDS metadata to get resource url',
-'      select t1.pattern || t2.uri_prefix || t3.uri_template as url',
+'      select t1.pattern || t2.uri_prefix as url',
 '      into l_url',
 '      from user_ords_schemas t1',
 '      join user_ords_modules t2',
 '        on t1.id = t2.schema_id',
-'      join user_ords_templates t3',
-'        on t1.id = t3.schema_id',
-'        and t2.id = t3.module_id',
 '      where 1 = 1',
 '        and t1.parsing_schema = blog_util.g_owner',
-'        and t2.name = blog_util.g_ords_module',
-'        and t3.uri_template = p_uri_template',
+'        and t2.name = c_module_name',
 '      ;',
 '    exception when no_data_found then',
 '      raise_application_error( -20002,  ''Configuration not exists.'' );',
 '      l_url := null;',
 '    end;',
 '',
+'    if p_canonical = ''YES''',
+'    then',
+'      l_url := blog_util.get_attribute_value( ''CANONICAL_URL'' )',
+'        || l_url',
+'      ;',
+'    end if;',
+'',
 '    return l_url;',
 '',
-'  end get_ords_service;',
+'  end get_module_path;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 'end "BLOG_ORDS";',
@@ -24349,16 +24344,7 @@ wwv_flow_api.append_to_install_script(
 '    p_session     in varchar2 default null,--,p_plain_url   => true',
 '    p_app_page_id in varchar2 default blog_util.g_tag_page,',
 '    p_page_item   in varchar2 default blog_util.g_tag_item,',
-'    p_canoni'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'cal   in varchar2 default ''NO''',
+'    p_canonical   in varchar2 default ''NO''',
 '  ) return varchar2',
 '  as',
 '  begin',
@@ -24387,7 +24373,16 @@ wwv_flow_api.append_to_install_script(
 '    p_app_id          in varchar2,',
 '    p_post_id         in varchar2,',
 '    p_subscription_id in number',
-'  ) return varchar2',
+'  ) retur'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'n varchar2',
 '  as',
 '    l_url     varchar2(4000);',
 '    l_subs_id varchar2(256);',
@@ -25309,16 +25304,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  -- this procedure is not used / not ready',
-'  p'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'rocedure purge_post_preview_job(',
+'  procedure purge_post_preview_job(',
 '    p_drop_job in boolean default false',
 '  )',
 '  as',
@@ -25345,7 +25331,16 @@ wwv_flow_api.append_to_install_script(
 '        ,start_date      => trunc(localtimestamp, ''HH'')',
 '        ,repeat_interval => ''FREQ=DAILY''',
 '        ,enabled         => true',
-'        ,comments        => ''Purge expired sessions posts previews''',
+'        ,comments        => ''Purge expired sessio'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ns posts previews''',
 '      );',
 '    end if;',
 '',
@@ -26230,16 +26225,7 @@ wwv_flow_api.append_to_install_script(
 '    if p_desc is not null then',
 '      return',
 '        ''<meta name="description" content="''',
-'        || apex_escape.html_attri'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'bute( p_desc )',
+'        || apex_escape.html_attribute( p_desc )',
 '        || ''"/>''',
 '      ;',
 '    else',
@@ -26266,7 +26252,16 @@ wwv_flow_api.append_to_install_script(
 '      p_desc => l_post_desc',
 '    );',
 '  exception when no_data_found then',
-'    apex_debug.warn( ''No data found to generate description meta tag for post id %s'', p_post_id );',
+'    apex_debug.warn( ''No data found to genera'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'te description meta tag for post id %s'', p_post_id );',
 '    return '' <!-- no description -->'';',
 '  end get_post_description_meta;',
 '--------------------------------------------------------------------------------',
@@ -26701,13 +26696,14 @@ wwv_flow_api.append_to_install_script(
 '    l_url :=  blog_util.get_attribute_value( ''CANONICAL_URL'' );',
 '',
 '    l_main := l_url',
-'      || blog_ords.get_ords_service(',
-'        blog_util.g_ords_sitemap_main',
-'      );',
+'      || blog_ords.get_module_path',
+'      || ''sitemap/main''',
+'    ;',
+'',
 '    l_posts := l_url',
-'      || blog_ords.get_ords_service(',
-'        blog_util.g_ords_sitemap_posts',
-'      );',
+'      || blog_ords.get_module_path',
+'      || ''sitemap/posts''',
+'    ;',
 '',
 '    with si as (',
 '      select 1 as grp',
@@ -27155,16 +27151,7 @@ wwv_flow_api.append_to_install_script(
 '/',
 '--------------------------------------------------------',
 '--  DDL for Trigger BLOG_POSTS_TRG',
-'----------'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----------------------------------------------',
+'--------------------------------------------------------',
 'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_TRG"',
 'before',
 'insert or',
@@ -27192,7 +27179,16 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'       sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'       sys_context( ''APEX$SE'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'SSION'', ''APP_USER'' )',
 '      ,sys_context( ''USERENV'',''PROXY_USER'' )',
 '      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
@@ -27351,17 +27347,18 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_ALLOW_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',''1'',''10'',null);',
 'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_MODERATE_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',''1'',''20'',null);',
-'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_POST_PAGINATION'',''BLOG_FEATURE_GROUP_POST'',''0'',''30'',null);',
-'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_SEARCH_POSTS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''1'',''40'',null);',
-'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_CATEGORY'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''1'',''50'',null);',
-'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_LATEST_POSTS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''1'',''60'',null);',
+'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) valueS (''BLOG_FEATURE_SUBSCRIBE_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',''1'',''30'',null);',
+'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_POST_PAGINATION'',''BLOG_FEATURE_GROUP_POST'',''0'',''40'',null);',
+'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_SEARCH_POSTS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''1'',''50'',null);',
+'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_CATEGORY'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''1'',''60'',null);',
+'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_LATEST_POSTS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''1'',''70'',null);',
 'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_ARCHIVE'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''1'',''70'',null);',
-'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_RSS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''1'',''80'',null);',
-'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_LINKS'',''BLOG_FEATURE_GROUP_PAGE'',''1'',''90'',null);',
-'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_FILES'',''BLOG_FEATURE_GROUP_PAGE'',''1'',''100'',null);',
-'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_ABOUT'',''BLOG_FEATURE_GROUP_PAGE'',''1'',''110'',null);',
-'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_SEARCH_LINKS'',''BLOG_FEATURE_GROUP_SEARCH'',''1'',''120'',null);',
-'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_SEARCH_FILES'',''BLOG_FEATURE_GROUP_SEARCH'',''1'',''130'',null);',
+'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_RSS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''1'',''90'',null);',
+'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_LINKS'',''BLOG_FEATURE_GROUP_PAGE'',''1'',''100'',null);',
+'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_FILES'',''BLOG_FEATURE_GROUP_PAGE'',''1'',''110'',null);',
+'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_ABOUT'',''BLOG_FEATURE_GROUP_PAGE'',''1'',''120'',null);',
+'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_SEARCH_LINKS'',''BLOG_FEATURE_GROUP_SEARCH'',''1'',''130'',null);',
+'insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values (''BLOG_FEATURE_SEARCH_FILES'',''BLOG_FEATURE_GROUP_SEARCH'',''1'',''140'',null);',
 '',
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
@@ -27381,8 +27378,8 @@ wwv_flow_api.create_install_script(
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''100'',''0'',''G_APP_NAME'',''STRING'',''BLOG_PAR_GROUP_GENERAL'',''My Blog'',null);',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''110'',''0'',''G_APP_DESC'',''STRING'',''BLOG_PAR_GROUP_GENERAL'',''About Almost Everything'',null);',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''120'',''1'',''APP_EMAIL'',''EMAIL'',''BLOG_PAR_GROUP_GENERAL'',null,null);',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''190'',''0'',''CANONICAL_URL'',''URL'',''BLOG_PAR_GROUP_SEO'',apex_util.host_url( ''APEX_PATH'' ),''trim( rtrim( :ATTRIBUTE_VALUE, ''''/'
-||''''' ) ) || ''''/'''''');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''190'',''0'',''CANONICAL_URL'',''URL'',''BLOG_PAR_GROUP_SEO'',apex_util.host_url( ''SCRIPT'' ),''trim( rtrim( :ATTRIBUTE_VALUE, ''''/'''' '
+||') ) || ''''/'''''');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''200'',''1'',''RSS_URL'',''URL'',''BLOG_PAR_GROUP_SEO'',null,null);',
 '',
 '--------------------------------------------------------',
@@ -27396,9 +27393,7 @@ wwv_flow_api.create_install_script(
 '  on ai.item_name = s.attribute_name',
 'where 1 = 1',
 'and ai.application_id = apex_application_install.get_application_id',
-'',
 '  union all',
-'',
 'select pi.application_id  as application_id',
 '  ,pi.item_name           as item_namee',
 'from apex_application_page_items pi',
@@ -27411,12 +27406,26 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  Create ORDS module',
 '--------------------------------------------------------',
+'declare',
+'  l_rss_url varchar2(32700);',
 'begin',
+'',
 '  -- Create ORDS module',
 '  blog_ords.create_module;',
 '  blog_ords.add_files_template;',
 '  blog_ords.create_rss_template;',
 '  blog_ords.create_sitemap_templates;',
+'',
+'  -- get RSS feed URL',
+'  l_rss_url := blog_ords.get_module_path( ''YES'') || ''feed/rss'';',
+'',
+'  -- update RSS feed URL to settings',
+'  update blog_settings',
+'    set attribute_value = l_rss_url',
+'    where 1 = 1',
+'      and attribute_name = ''RSS_URL''',
+'  ;',
+'',
 'end;',
 '/',
 ''))

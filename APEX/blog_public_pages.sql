@@ -43,7 +43,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --       Logic:
 --         Items:                  6
 --         Processes:              2
---         Build Options:         15
+--         Build Options:         16
 --       Navigation:
 --         Lists:                  6
 --       Security:
@@ -126,7 +126,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200518160400'
+,p_last_upd_yyyymmddhh24miss=>'20200518173933'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>98
 ,p_ui_type_name => null
@@ -10991,6 +10991,14 @@ wwv_flow_api.create_build_option(
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Show/hide about page'
 );
+wwv_flow_api.create_build_option(
+ p_id=>wwv_flow_api.id(33703543205326403)
+,p_build_option_name=>'BLOG_FEATURE_SUBSCRIBE_COMMENTS'
+,p_build_option_status=>'INCLUDE'
+,p_default_on_export=>'INCLUDE'
+,p_on_upgrade_keep_status=>true
+,p_build_option_comment=>'Enable / disable the ability to subscribe to email notification of new comments'
+);
 end;
 /
 prompt --application/shared_components/globalization/messages
@@ -14091,7 +14099,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200513175227'
+,p_last_upd_yyyymmddhh24miss=>'20200518172441'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -14239,6 +14247,7 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
+,p_required_patch=>wwv_flow_api.id(33703543205326403)
 ,p_inline_help_text=>'Provide your email address if you wish receive followup notification when new reply is posted. <br />Your email address will not be published or shared.'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
@@ -14444,6 +14453,7 @@ wwv_flow_api.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'P1001_EMAIL'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
+,p_required_patch=>wwv_flow_api.id(33703543205326403)
 ,p_process_comment=>'Save user email for notification for replies to comment'
 );
 wwv_flow_api.create_page_process(

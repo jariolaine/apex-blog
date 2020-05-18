@@ -151,13 +151,14 @@ as
     l_url :=  blog_util.get_attribute_value( 'CANONICAL_URL' );
 
     l_main := l_url
-      || blog_ords.get_ords_service(
-        blog_util.g_ords_sitemap_main
-      );
+      || blog_ords.get_module_path
+      || 'sitemap/main'
+    ;
+
     l_posts := l_url
-      || blog_ords.get_ords_service(
-        blog_util.g_ords_sitemap_posts
-      );
+      || blog_ords.get_module_path
+      || 'sitemap/posts'
+    ;
 
     with si as (
       select 1 as grp

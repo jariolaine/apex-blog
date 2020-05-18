@@ -22,6 +22,7 @@ as
 --    Jari Laine 17.05.2020 - Added out parameters p_older_title and p_newer_title to procedure get_post_pagination
 --                            Materialized view blog_items_init changed to view
 --                            Removed function get_item_init_value
+--    Jari Laine 18.05.2020 - Moved ORDS specific global constants
 --
 --  TO DO:
 --    #1  Package contains hard coded values
@@ -36,16 +37,6 @@ as
   g_owner               constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
 
   g_number_format       constant varchar2(40)   := 'fm99999999999999999999999999999999999999';
-
-  -- ORDS
-  g_ords_module         constant varchar2(256)  := 'BLOG_PUBLIC_FILES';
-
-  g_ords_public_files   constant varchar2(256)  := 'files/';
-
-  g_ords_rss_feed       constant varchar2(256)  := 'feed/rss';
-  g_ords_sitemap_index  constant varchar2(256)  := 'sitemap/index';
-  g_ords_sitemap_main   constant varchar2(256)  := 'sitemap/main';
-  g_ords_sitemap_posts  constant varchar2(256)  := 'sitemap/posts';
 
   -- URL
   g_home_page           constant varchar2(40)   := 'HOME';
