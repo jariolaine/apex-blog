@@ -85,7 +85,7 @@ as
 
     ords.define_template(
       p_module_name     => blog_util.g_ords_module
-      ,p_pattern        => blog_util.g_ords_public_files
+      ,p_pattern        => blog_util.g_ords_public_files || ':p_file_name'
       ,p_priority       => 0
       ,p_etag_type      => 'HASH'
       ,p_etag_query     => null
@@ -94,7 +94,7 @@ as
 
     ords.define_handler(
       p_module_name     => blog_util.g_ords_module
-      ,p_pattern        => blog_util.g_ords_public_files
+      ,p_pattern        => blog_util.g_ords_public_files || ':p_file_name'
       ,p_method         => 'GET'
       ,p_source_type    => 'resource/lob'
       ,p_items_per_page => 0
@@ -106,7 +106,7 @@ as
         || chr(10) || 'from blog_v_files v1'
         || chr(10) || 'where 1 = 1'
         || chr(10) || 'and v1.is_download = 0'
-        || chr(10) || 'and v1.file_name = :name'
+        || chr(10) || 'and v1.file_name = :p_file_name'
     );
 
   end add_files_template;

@@ -27,6 +27,7 @@ insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,grou
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('180','0','G_SEARCH_ROWS','INTEGER','BLOG_PAR_GROUP_REPORTS','10',null);
 
 -- Modify on export
+insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('20','0','G_PUB_APP_ID','STRING','INTERNAL',0,null);
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('30','0','G_ADMIN_APP_ID','STRING','INTERNAL',to_char(apex_application_install.get_application_id, 'fm99999999999999999999999999999999999999'),null);
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('100','0','G_APP_NAME','STRING','BLOG_PAR_GROUP_GENERAL','My Blog',null);
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('110','0','G_APP_DESC','STRING','BLOG_PAR_GROUP_GENERAL','About Almost Everything',null);
