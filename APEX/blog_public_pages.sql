@@ -126,7 +126,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200518152200'
+,p_last_upd_yyyymmddhh24miss=>'20200518160400'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>98
 ,p_ui_type_name => null
@@ -14723,10 +14723,13 @@ wwv_flow_api.create_install_script(
 ,p_script_type=>'INSTALL'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',
-'--  Inserting into BLOG_SETTINGS',
+'--  Update BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value) values (''30'',''0'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',to_char(apex_application_install.get_application_id, ''fm99999999999999999999999999999999999999'
-||'''));',
+'update blog_settings',
+'  set attribute_value = to_char(apex_application_install.get_application_id, ''fm99999999999999999999999999999999999999'')',
+'  where 1 = 1',
+'  and attribute_name = ''G_PUB_APP_ID''',
+';',
 '',
 '--------------------------------------------------------',
 '--  Inserting into BLOG_INIT_ITEMS',

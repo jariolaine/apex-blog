@@ -128,7 +128,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_ADMIN_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200518152924'
+,p_last_upd_yyyymmddhh24miss=>'20200518161641'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>186
 ,p_ui_type_name => null
@@ -21901,15 +21901,6 @@ wwv_flow_api.create_install(
 'drop view blog_v_rep_post_by_status;',
 'drop view blog_v_tags;',
 'drop view blog_v_temp_files;',
-'--------------------------------------------------------',
-'--  Drop ORDS module',
-'--------------------------------------------------------',
-'begin',
-'ords.delete_module(',
-'p_module_name => ''BLOG_PUBLIC_FILES''',
-')',
-'end',
-'/',
 ''))
 ,p_required_free_kb=>100
 ,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
@@ -27384,6 +27375,7 @@ wwv_flow_api.create_install_script(
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''180'',''0'',''G_SEARCH_ROWS'',''INTEGER'',''BLOG_PAR_GROUP_REPORTS'',''10'',null);',
 '',
 '-- Modify on export',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''20'',''0'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',0,null);',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''30'',''0'',''G_ADMIN_APP_ID'',''STRING'',''INTERNAL'',to_char(apex_application_install.get_application_id, ''fm99999999999999999999'
 ||'999999999999999999''),null);',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''100'',''0'',''G_APP_NAME'',''STRING'',''BLOG_PAR_GROUP_GENERAL'',''My Blog'',null);',

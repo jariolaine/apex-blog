@@ -1,7 +1,11 @@
 --------------------------------------------------------
---  Inserting into BLOG_SETTINGS
+--  Update BLOG_SETTINGS
 --------------------------------------------------------
-insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value) values ('30','0','G_PUB_APP_ID','STRING','INTERNAL',to_char(apex_application_install.get_application_id, 'fm99999999999999999999999999999999999999'));
+update blog_settings
+  set attribute_value = to_char(apex_application_install.get_application_id, 'fm99999999999999999999999999999999999999')
+  where 1 = 1
+  and attribute_name = 'G_PUB_APP_ID'
+;
 
 --------------------------------------------------------
 --  Inserting into BLOG_INIT_ITEMS
