@@ -126,7 +126,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200518113918'
+,p_last_upd_yyyymmddhh24miss=>'20200518152200'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>98
 ,p_ui_type_name => null
@@ -11683,7 +11683,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200517090607'
+,p_last_upd_yyyymmddhh24miss=>'20200518152021'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6432040642894060)
@@ -11768,7 +11768,7 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>4
 ,p_column_heading=>'Category Title'
 ,p_use_as_row_header=>'N'
-,p_column_link=>'f?p=&APP_ID.:CATEGORIES:&SESSION.::&DEBUG.:RP:P14_CATEGORY_ID:#CATEGORY_ID#'
+,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.:RP:P14_CATEGORY_ID:#CATEGORY_ID#'
 ,p_column_linktext=>'#CATEGORY_TITLE#'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -11843,7 +11843,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200517201241'
+,p_last_upd_yyyymmddhh24miss=>'20200518152044'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -12069,7 +12069,7 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>4
 ,p_column_heading=>'Category Title'
 ,p_use_as_row_header=>'N'
-,p_column_link=>'f?p=&APP_ID.:CATEGORIES:&SESSION.::&DEBUG.:RP:P14_CATEGORY_ID:#CATEGORY_ID#'
+,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.:RP:P14_CATEGORY_ID:#CATEGORY_ID#'
 ,p_column_linktext=>'#CATEGORY_TITLE#'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -12409,7 +12409,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8667733481689180)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200512042501'
+,p_last_upd_yyyymmddhh24miss=>'20200518152122'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6979825819516521)
@@ -12540,7 +12540,7 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>6
 ,p_column_heading=>'Value 01'
 ,p_use_as_row_header=>'N'
-,p_column_link=>'f?p=&APP_ID.:CATEGORIES:&SESSION.::&DEBUG.:RP:P14_CATEGORY_ID:#CATEGORY_ID#'
+,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.:RP:P14_CATEGORY_ID:#CATEGORY_ID#'
 ,p_column_linktext=>'#VALUE_01#'
 ,p_heading_alignment=>'LEFT'
 ,p_derived_column=>'N'
@@ -12629,7 +12629,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200514160653'
+,p_last_upd_yyyymmddhh24miss=>'20200518152138'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(13706719753736206)
@@ -12756,7 +12756,7 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>6
 ,p_column_heading=>'Value 01'
 ,p_use_as_row_header=>'N'
-,p_column_link=>'f?p=&APP_ID.:CATEGORIES:&SESSION.::&DEBUG.:RP:P14_CATEGORY_ID:#CATEGORY_ID#'
+,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.:RP:P14_CATEGORY_ID:#CATEGORY_ID#'
 ,p_column_linktext=>'#VALUE_01#'
 ,p_heading_alignment=>'LEFT'
 ,p_derived_column=>'N'
@@ -13795,7 +13795,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8670890848739263)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200512042808'
+,p_last_upd_yyyymmddhh24miss=>'20200518152200'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(58686289966142463)
@@ -13939,7 +13939,7 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>7
 ,p_column_heading=>'Value 01'
 ,p_use_as_row_header=>'N'
-,p_column_link=>'f?p=&APP_ID.:CATEGORIES:&SESSION.::&DEBUG.:RP:P14_CATEGORY_ID:#CATEGORY_ID#'
+,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.:RP:P14_CATEGORY_ID:#CATEGORY_ID#'
 ,p_column_linktext=>'#VALUE_01#'
 ,p_heading_alignment=>'LEFT'
 ,p_derived_column=>'N'

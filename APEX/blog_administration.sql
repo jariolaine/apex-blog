@@ -128,7 +128,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_ADMIN_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200518143714'
+,p_last_upd_yyyymmddhh24miss=>'20200518152924'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>186
 ,p_ui_type_name => null
@@ -21901,6 +21901,15 @@ wwv_flow_api.create_install(
 'drop view blog_v_rep_post_by_status;',
 'drop view blog_v_tags;',
 'drop view blog_v_temp_files;',
+'--------------------------------------------------------',
+'--  Drop ORDS module',
+'--------------------------------------------------------',
+'begin',
+'ords.delete_module(',
+'p_module_name => ''BLOG_PUBLIC_FILES''',
+')',
+'end',
+'/',
 ''))
 ,p_required_free_kb=>100
 ,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
@@ -23578,7 +23587,7 @@ wwv_flow_api.append_to_install_script(
 '',
 '    ords.define_template(',
 '      p_module_name     => blog_util.g_ords_module',
-'      ,p_pattern        => blog_util.g_ords_public_files',
+'      ,p_pattern        => blog_util.g_ords_public_files || '':p_file_name''',
 '      ,p_priority       => 0',
 '      ,p_etag_type      => ''HASH''',
 '      ,p_etag_query     => null',
@@ -23587,7 +23596,7 @@ wwv_flow_api.append_to_install_script(
 '',
 '    ords.define_handler(',
 '      p_module_name     => blog_util.g_ords_module',
-'      ,p_pattern        => blog_util.g_ords_public_files',
+'      ,p_pattern        => blog_util.g_ords_public_files || '':p_file_name''',
 '      ,p_method         => ''GET''',
 '      ,p_source_type    => ''resource/lob''',
 '      ,p_items_per_page => 0',
@@ -23599,7 +23608,7 @@ wwv_flow_api.append_to_install_script(
 '        || chr(10) || ''from blog_v_files v1''',
 '        || chr(10) || ''where 1 = 1''',
 '        || chr(10) || ''and v1.is_download = 0''',
-'        || chr(10) || ''and v1.file_name = :name''',
+'        || chr(10) || ''and v1.file_name = :p_file_name''',
 '    );',
 '',
 '  end add_files_template;',
@@ -24349,8 +24358,7 @@ wwv_flow_api.append_to_install_script(
 '    p_session     in varchar2 default null,--,p_plain_url   => true',
 '    p_app_page_id in varchar2 default blog_util.g_tag_page,',
 '    p_page_item   in varchar2 default blog_util.g_tag_item,',
-'    p_canonical   in varchar2 default ''NO''',
-'  ) return '))
+'    p_canoni'))
 );
 null;
 end;
@@ -24359,7 +24367,8 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'varchar2',
+'cal   in varchar2 default ''NO''',
+'  ) return varchar2',
 '  as',
 '  begin',
 '',
@@ -25309,8 +25318,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  -- this procedure is not used / not ready',
-'  procedure purge_post_preview_job(',
-'    p_dro'))
+'  p'))
 );
 null;
 end;
@@ -25319,7 +25327,8 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'p_job in boolean default false',
+'rocedure purge_post_preview_job(',
+'    p_drop_job in boolean default false',
 '  )',
 '  as',
 '    l_job_name      varchar2(255);',
@@ -26230,10 +26239,7 @@ wwv_flow_api.append_to_install_script(
 '    if p_desc is not null then',
 '      return',
 '        ''<meta name="description" content="''',
-'        || apex_escape.html_attribute( p_desc )',
-'        || ''"/>''',
-'      ;',
-''))
+'        || apex_escape.html_attri'))
 );
 null;
 end;
@@ -26242,6 +26248,9 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'bute( p_desc )',
+'        || ''"/>''',
+'      ;',
 '    else',
 '      apex_debug.warn(''Description meta tag not generated.'');',
 '      return '' <!-- no description -->'';',
@@ -27155,7 +27164,7 @@ wwv_flow_api.append_to_install_script(
 '/',
 '--------------------------------------------------------',
 '--  DDL for Trigger BLOG_POSTS_TRG',
-'-----------------------------------------------------'))
+'----------'))
 );
 null;
 end;
@@ -27164,7 +27173,7 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'---',
+'----------------------------------------------',
 'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_TRG"',
 'before',
 'insert or',

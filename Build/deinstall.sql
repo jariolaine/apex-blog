@@ -63,3 +63,12 @@ drop view blog_v_post_tags;
 drop view blog_v_rep_post_by_status;
 drop view blog_v_tags;
 drop view blog_v_temp_files;
+--------------------------------------------------------
+--  Drop ORDS module
+--------------------------------------------------------
+begin
+ords.delete_module(
+p_module_name => 'BLOG_PUBLIC_FILES'
+)
+end
+/
