@@ -100,7 +100,7 @@ input[data-z-switch="true"][value="0"]:checked+label{
   padding: 16px;
 }
 .z-post:last-child {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 .z-post--header{
   clear: both;
