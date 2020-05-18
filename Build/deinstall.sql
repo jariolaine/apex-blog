@@ -1,3 +1,6 @@
+--------------------------------------------------------
+--  Drop Foreign Keys
+--------------------------------------------------------
 alter table blog_comments drop constraint blog_comments_fk1;
 alter table blog_comments drop constraint blog_comments_fk2;
 alter table blog_comment_flags drop constraint blog_comment_flags_fk1;
@@ -9,6 +12,9 @@ alter table blog_posts drop constraint blog_posts_fk1;
 alter table blog_posts drop constraint blog_posts_fk2;
 alter table blog_post_tags drop constraint blog_post_tags_fk1;
 alter table blog_post_tags drop constraint blog_post_tags_fk2;
+--------------------------------------------------------
+--  Drop objects
+--------------------------------------------------------
 drop package blog_cm;
 drop package blog_comm;
 drop package blog_html;
