@@ -4,8 +4,13 @@ Blog application built with Oracle Application Express (APEX).
 
 ## Install
 
-1. Ensure you are running Oracle APEX version 19.2 or higher
-2. Ensure target schema associated to your workspace has following privileges:
+### System Requirements
+* Oracle database version 18c or higher
+* Oracle Application Express version 19.2 or higher
+* Oracle REST Data Service version 19.2 or higher
+
+### Needed Privileges
+Ensure target schema associated to your APEX workspace has following privileges:
 * CREATE INDEXTYPE
 * CREATE PROCEDURE
 * CREATE SEQUENCE
@@ -14,11 +19,14 @@ Blog application built with Oracle Application Express (APEX).
 * CREATE VIEW
 * CREATE JOB
 
-3. Access your target Workspace
-4. Select the Application Builder
-5. Import and install admin_app.sql and select install supporting objects.
-6. Import and install reader_app.sql and select install supporting objects.
-7. Create group "Bloggers" to workspace and add APEX users to group. See [Using Groups to Manage Application Express Users](https://docs.oracle.com/en/database/oracle/application-express/19.2/aeadm/managing-users-in-a-workspace.html#GUID-0FD7B406-8A83-40C0-A3E7-EF19BBDEA5A4)
+### Import Applications
+1. Access your target APEX workspace
+2. Select the Application Builder
+3. Import and install *blog_administration.sql* and select install supporting objects.
+4. Import and install *blog_public_pages.sql* and select install supporting objects.
+
+### Post Install
+Create group "Bloggers" to workspace and add APEX users to group. See [Using Groups to Manage Application Express Users](https://docs.oracle.com/en/database/oracle/application-express/19.2/aeadm/managing-users-in-a-workspace.html#GUID-0FD7B406-8A83-40C0-A3E7-EF19BBDEA5A4)
 
 # License
 
