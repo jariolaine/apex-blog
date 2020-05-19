@@ -14,6 +14,7 @@ as
 --                            if proper link can't be generated
 --                            Added apex_debug to functions generating meta and canonical link
 --    Jari Laine 10.05.2020 - Utilize blog_url functions p_canonical
+--    Jari Laine 19.05.2020 - Removed obsolete function get_search_button
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -46,33 +47,25 @@ as
   -- called from pub app shortcut BLOG_CANONICAL_LINK_POST
   function get_post_canonical_link(
     p_post_id             in varchar2,
-    p_app_id              in varchar2 default null,
-    p_app_page_id         in varchar2 default blog_util.g_post_page,
-    p_page_item           in varchar2 default blog_util.g_post_item
+    p_app_id              in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- called from pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
   function get_category_canonical_link(
     p_category_id         in varchar2,
-    p_app_id              in varchar2 default null,
-    p_app_page_id         in varchar2 default blog_util.g_category_page,
-    p_page_item           in varchar2 default blog_util.g_category_item
+    p_app_id              in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- called from pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
   function get_archive_canonical_link(
     p_archive_id          in varchar2,
-    p_app_id              in varchar2 default null,
-    p_app_page_id         in varchar2 default blog_util.g_archive_page,
-    p_page_item           in varchar2 default blog_util.g_archive_item
+    p_app_id              in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- called from pub app shortcut BLOG_CANONICAL_LINK_TAG
   function get_tag_canonical_link(
     p_tag_id              in varchar2,
-    p_app_id              in varchar2 default null,
-    p_app_page_id         in varchar2 default blog_util.g_tag_page,
-    p_page_item           in varchar2 default blog_util.g_tag_item
+    p_app_id              in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- called from pub app shortcut BLOG_RSS_ANCHOR
@@ -84,11 +77,6 @@ as
   function get_rss_link(
     p_app_name            in varchar2,
     p_build_option_status in varchar2 default 'INCLUDE'
-  ) return varchar2;
---------------------------------------------------------------------------------
-  -- This function is obsolete / Not used
-  function get_search_button(
-    p_request             in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- called from pub app classic report on pages 2, 3, 6, 14, 15
@@ -233,18 +221,21 @@ as
     p_desc in varchar2
   ) return varchar2
   as
+    l_html varchar2(32700);
   begin
     -- generate description meta tag
     if p_desc is not null then
-      return
+      l_html :=
         '<meta name="description" content="'
         || apex_escape.html_attribute( p_desc )
         || '"/>'
       ;
     else
       apex_debug.warn('Description meta tag not generated.');
-      return ' <!-- no description -->';
     end if;
+
+    return l_html;
+
   end get_description_meta;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -266,7 +257,7 @@ as
     );
   exception when no_data_found then
     apex_debug.warn( 'No data found to generate description meta tag for post id %s', p_post_id );
-    return ' <!-- no description -->';
+    return null;
   end get_post_description_meta;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -275,10 +266,11 @@ as
     p_app_id          in varchar2 default null
   ) return varchar2
   as
+    l_html varchar2(32700);
   begin
     -- generate canonical link for tab
     if p_app_page_id is not null then
-      return
+      l_html :=
         '<link rel="canonical" href="'
         || blog_url.get_tab(
            p_app_id       => p_app_id
@@ -288,97 +280,109 @@ as
         || '" />'
       ;
     else
-      -- if p_app_page_id not defined generate meta tag
+      -- if p_app_page_id is not defined then generate
+      -- robots no index meta tag
       apex_debug.warn( 'Canonical link tag not generated for tab.');
-      return get_robots_noindex_meta;
+      l_html := get_robots_noindex_meta;
     end if;
+
+    return l_html;
+
   end get_tab_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_post_canonical_link(
     p_post_id       in varchar2,
-    p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_util.g_post_page,
-    p_page_item     in varchar2 default blog_util.g_post_item
+    p_app_id        in varchar2 default null
   ) return varchar2
   as
+    l_html varchar2(32700);
   begin
     -- generate canonical link for post
     if p_post_id is not null then
-      return
+      l_html :=
         '<link rel="canonical" href="'
         || blog_url.get_post(
-          p_post_id       => p_post_id
+           p_post_id      => p_post_id
           ,p_app_id       => p_app_id
           ,p_session      => ''
-          ,p_app_page_id  => p_app_page_id
-          ,p_page_item    => p_page_item
           ,p_canonical => 'YES'
         )
         || '" />'
       ;
     else
       apex_debug.warn('Canonical link tag not generated for post.');
-      return get_robots_noindex_meta;
+      l_html := get_robots_noindex_meta;
     end if;
+
+    return l_html;
+
   end get_post_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_category_canonical_link(
     p_category_id   in varchar2,
-    p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_util.g_category_page,
-    p_page_item     in varchar2 default blog_util.g_category_item
+    p_app_id        in varchar2 default null
   ) return varchar2
   as
+    l_html varchar2(32700);
   begin
     -- generate canonical link for category
-    return
-      '<link rel="canonical" href="'
-      || blog_url.get_category(
-        p_category_id   => p_category_id
-        ,p_app_id       => p_app_id
-        ,p_session      => ''
-        ,p_app_page_id  => p_app_page_id
-        ,p_page_item    => p_page_item
-        ,p_canonical => 'YES'
-      )
-      || '" />'
-    ;
+    if p_category_id is not null
+    then
+      l_html :=
+        '<link rel="canonical" href="'
+        || blog_url.get_category(
+           p_category_id  => p_category_id
+          ,p_app_id       => p_app_id
+          ,p_session      => ''
+          ,p_canonical => 'YES'
+        )
+        || '" />'
+      ;
+    else
+      apex_debug.warn( 'Canonical link tag not generated for category.');
+      l_html := get_robots_noindex_meta;
+    end if;
+
+    return l_html;
 
   end get_category_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_archive_canonical_link(
     p_archive_id    in varchar2,
-    p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_util.g_archive_page,
-    p_page_item     in varchar2 default blog_util.g_archive_item
+    p_app_id        in varchar2 default null
   ) return varchar2
   as
+    l_html varchar2(32700);
   begin
       -- generate canonical link for archives
-      return
+    if p_archive_id is not null
+    then
+      l_html :=
         '<link rel="canonical" href="'
         || blog_url.get_archive(
-          p_archive_id    => p_archive_id
+           p_archive_id   => p_archive_id
           ,p_app_id       => p_app_id
           ,p_session      => ''
-          ,p_app_page_id  => p_app_page_id
-          ,p_page_item    => p_page_item
           ,p_canonical => 'YES'
         )
         || '" />'
       ;
+    else
+      apex_debug.warn( 'Canonical link tag not generated for archive.');
+      l_html := get_robots_noindex_meta;
+    end if;
+
+    return l_html;
 
   end get_archive_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tag_canonical_link(
     p_tag_id        in varchar2,
-    p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_util.g_tag_page,
-    p_page_item     in varchar2 default blog_util.g_tag_item
+    p_app_id        in varchar2 default null
   ) return varchar2
   as
   begin
@@ -387,11 +391,9 @@ as
       return
         '<link rel="canonical" href="'
         || blog_url.get_tag(
-          p_tag_id        => p_tag_id
+           p_tag_id       => p_tag_id
           ,p_app_id       => p_app_id
           ,p_session      => ''
-          ,p_app_page_id  => p_app_page_id
-          ,p_page_item    => p_page_item
           ,p_canonical    => 'YES'
         )
         || '" />'
@@ -472,24 +474,6 @@ as
     return l_rss_url;
 
   end get_rss_link;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  -- This function is obsolete / Not used
-  function get_search_button(
-    p_request in varchar2
-  ) return varchar2
-  as
-  begin
-    -- generate button HTML
-    return '<button'
-      || ' type="button" title="Search" aria-label="Search"'
-      || ' class="t-Button t-Button--noLabel t-Button--icon t-Button--hot"'
-      || ' onclick="apex.submit({request:'''|| p_request || '''});"'
-      || '>'
-      || '<span class="t-Icon fa fa-search" aria-hidden="true"></span>'
-      || '</button>'
-      ;
-  end get_search_button;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_post_tags(
