@@ -14,6 +14,7 @@ as
 --                            if proper link can't be generated
 --                            Added apex_debug to functions generating meta and canonical link
 --    Jari Laine 10.05.2020 - Utilize blog_url functions p_canonical
+--    Jari Laine 19.05.2020 - Removed obsolete function get_search_button
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -76,11 +77,6 @@ as
   function get_rss_link(
     p_app_name            in varchar2,
     p_build_option_status in varchar2 default 'INCLUDE'
-  ) return varchar2;
---------------------------------------------------------------------------------
-  -- This function is obsolete / Not used
-  function get_search_button(
-    p_request             in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- called from pub app classic report on pages 2, 3, 6, 14, 15
@@ -478,24 +474,6 @@ as
     return l_rss_url;
 
   end get_rss_link;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  -- This function is obsolete / Not used
-  function get_search_button(
-    p_request in varchar2
-  ) return varchar2
-  as
-  begin
-    -- generate button HTML
-    return '<button'
-      || ' type="button" title="Search" aria-label="Search"'
-      || ' class="t-Button t-Button--noLabel t-Button--icon t-Button--hot"'
-      || ' onclick="apex.submit({request:'''|| p_request || '''});"'
-      || '>'
-      || '<span class="t-Icon fa fa-search" aria-hidden="true"></span>'
-      || '</button>'
-      ;
-  end get_search_button;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_post_tags(

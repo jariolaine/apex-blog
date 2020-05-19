@@ -61,7 +61,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --           Button:               3
 --           Report:              13
 --         LOVs:                   1
---         Shortcuts:             11
+--         Shortcuts:             10
 --         Plug-ins:               1
 --       Globalization:
 --         Messages:              11
@@ -126,7 +126,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200519140153'
+,p_last_upd_yyyymmddhh24miss=>'20200519182300'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>98
 ,p_ui_type_name => null
@@ -11268,21 +11268,6 @@ wwv_flow_api.create_shortcut(
 );
 end;
 /
-prompt --application/shared_components/user_interface/shortcuts/blog_html_search_button
-begin
-wwv_flow_api.create_shortcut(
- p_id=>wwv_flow_api.id(26770919227599230)
-,p_shortcut_name=>'BLOG_HTML_SEARCH_BUTTON'
-,p_shortcut_type=>'FUNCTION_BODY'
-,p_build_option=>wwv_flow_api.id(27920818779089933)
-,p_comments=>'Not used at moment'
-,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return #OWNER#.blog_html.get_search_button(',
-'  p_request => ''#CURRENT_ITEM_NAME#''',
-');'))
-);
-end;
-/
 prompt --application/shared_components/email/templates/blog_new_comment_notify
 begin
 wwv_flow_api.create_email_template(
@@ -11494,7 +11479,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200517201147'
+,p_last_upd_yyyymmddhh24miss=>'20200519164856'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)

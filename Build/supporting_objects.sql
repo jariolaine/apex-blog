@@ -2456,6 +2456,7 @@ as
 --    Jari Laine 12.05.2020 - Removed function prepare_file_path
 --    Jari Laine 17.05.2020 - Removed parameter p_err_mesg from function get_first_paragraph,
 --                            function is called now from APEX application conputation
+--    Jari Laine 19.05.2020 - Removed obsolete function get_post_title
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -2495,11 +2496,6 @@ as
     p_category_id      in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- obsolete / not used
-  function get_post_title(
-    p_post_id         in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
   -- Called from: admin app pages 12
   function get_first_paragraph(
     p_body_html       in varchar2
@@ -2536,7 +2532,7 @@ as
     p_sep             in varchar2 default ','
   );
 --------------------------------------------------------------------------------
-  -- obsolete / not used
+  -- This procedure is not used currently
   procedure remove_unused_tags;
 --------------------------------------------------------------------------------
   -- this procedure is not used / not ready
@@ -2935,32 +2931,6 @@ as
   end get_category_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  -- Function is obsolete / not used
-  function get_post_title(
-    p_post_id in varchar2
-  ) return varchar2
-  as
-    l_post_id number;
-    l_title   varchar2(4000);
-  begin
-
-    l_post_id := to_number( p_post_id );
-
-    -- fetch and return post title
-    select t1.title
-    into l_title
-    from blog_v_all_posts t1
-    where t1.id = l_post_id
-    ;
-    return l_title;
-
-  exception when no_data_found then
-    return null;
-  when others then
-    raise;
-  end get_post_title;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   function get_first_paragraph(
     p_body_html in varchar2
   ) return varchar2
@@ -3229,7 +3199,7 @@ as
   end add_post_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  -- This function is obsolete / not used
+  -- This procedure is not used currently
   procedure remove_unused_tags
   as
   begin
@@ -3983,6 +3953,7 @@ as
 --                            if proper link can't be generated
 --                            Added apex_debug to functions generating meta and canonical link
 --    Jari Laine 10.05.2020 - Utilize blog_url functions p_canonical
+--    Jari Laine 19.05.2020 - Removed obsolete function get_search_button
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4045,11 +4016,6 @@ as
   function get_rss_link(
     p_app_name            in varchar2,
     p_build_option_status in varchar2 default 'INCLUDE'
-  ) return varchar2;
---------------------------------------------------------------------------------
-  -- This function is obsolete / Not used
-  function get_search_button(
-    p_request             in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- called from pub app classic report on pages 2, 3, 6, 14, 15
@@ -4447,24 +4413,6 @@ as
     return l_rss_url;
 
   end get_rss_link;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  -- This function is obsolete / Not used
-  function get_search_button(
-    p_request in varchar2
-  ) return varchar2
-  as
-  begin
-    -- generate button HTML
-    return '<button'
-      || ' type="button" title="Search" aria-label="Search"'
-      || ' class="t-Button t-Button--noLabel t-Button--icon t-Button--hot"'
-      || ' onclick="apex.submit({request:'''|| p_request || '''});"'
-      || '>'
-      || '<span class="t-Icon fa fa-search" aria-hidden="true"></span>'
-      || '</button>'
-      ;
-  end get_search_button;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_post_tags(
