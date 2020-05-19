@@ -224,7 +224,8 @@ as
     p_canonical     in varchar2 default 'NO'
   ) return varchar2
   as
-    l_url     varchar2(4000);
+    l_url   varchar2(4000);
+    c_owner constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
   begin
 
     begin
@@ -235,11 +236,11 @@ as
       join user_ords_modules t2
         on t1.id = t2.schema_id
       where 1 = 1
-        and t1.parsing_schema = blog_util.g_owner
+        and t1.parsing_schema = c_owner
         and t2.name = c_module_name
       ;
     exception when no_data_found then
-      raise_application_error( -20002,  'Configuration not exists.' );
+      raise_application_error( -20001,  'Configuration not exists.' );
       l_url := null;
     end;
 

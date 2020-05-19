@@ -968,10 +968,11 @@ as
 --                            Materialized view blog_items_init changed to view
 --                            Removed function get_item_init_value
 --    Jari Laine 18.05.2020 - Moved ORDS specific global constants
---
---  TO DO:
---    #1  Package contains hard coded values
---        e.g. public application tabs should be converted to dynamic list
+--    Jari Laine 19.05.2020 - Changed apex_debug to warn in no_data_found exception handlers
+--                            Changed apex_error_handler honor error display position when
+--                            ORA error is between -20999 and 20901
+--                            Changed procedure get_post_pagination to raises ORA -20901 when no data found
+--    Jari Laine 19.05.2020   Removed global constants
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -979,32 +980,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
-  g_owner               constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
-
-  g_number_format       constant varchar2(40)   := 'fm99999999999999999999999999999999999999';
-
-  -- URL
-  g_home_page           constant varchar2(40)   := 'HOME';
-
-  g_post_page           constant varchar2(40)   := 'POST';
-  g_post_item           constant varchar2(40)   := 'P2_POST_ID';
-
-  g_unsubscribe_item    constant varchar2(40)   := 'P2_SUBSCRIPTION_ID';
-
-  g_search_page         constant varchar2(40)   := 'SEARCH';
-  g_search_item         constant varchar2(40)   := 'P0_SEARCH';
-
-  g_category_page       constant varchar2(40)   := 'CATEGORY';
-  g_category_item       constant varchar2(40)   := 'P14_CATEGORY_ID';
-
-  g_archive_page        constant varchar2(40)   := 'ARCHIVES';
-  g_archive_item        constant varchar2(40)   := 'P15_ARCHIVE_ID';
-
-  g_tag_page            constant varchar2(40)   := 'TAG';
-  g_tag_item            constant varchar2(40)   := 'P6_TAG_ID';
-
-  -- XML
-  g_pub_app_tab_list    constant varchar2(256)  := 'Desktop Navigation Menu';
+  g_number_format constant varchar2(40)   := 'fm99999999999999999999999999999999999999';
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1027,6 +1003,7 @@ as
 --------------------------------------------------------------------------------
   procedure get_post_pagination(
     p_post_id         in varchar2,
+    p_post_title      out nocopy varchar2,
     p_newer_id        out nocopy varchar2,
     p_newer_title     out nocopy varchar2,
     p_older_id        out nocopy varchar2,
@@ -1100,13 +1077,18 @@ as
       end if;
 
     else
-      -- Always show the error as inline error
-      l_result.display_location := case
-        when l_result.display_location = apex_error.c_on_error_page
-        then apex_error.c_inline_in_notification
-        else l_result.display_location
-        end
-      ;
+
+      -- Don't change display position for specific ORA eror codes
+      if not p_error.ora_sqlcode between -20999 and -20901
+      then
+        -- Always show the error as inline error
+        l_result.display_location := case
+          when l_result.display_location = apex_error.c_on_error_page
+          then apex_error.c_inline_in_notification
+          else l_result.display_location
+          end
+       ;
+      end if;
 
       -- If it's a constraint violation like
       --
@@ -1144,12 +1126,11 @@ as
       if p_error.ora_sqlcode is not null
       and l_result.message = p_error.message
       then
-
         l_result.message :=
           apex_error.get_first_ora_error_text (
             p_error => p_error
           );
-
+        l_result.additional_info := null;
       end if;
 
       -- If no associated page item/tabular form column has been set, we can use
@@ -1202,7 +1183,7 @@ as
     exception when no_data_found
     then
 
-      apex_debug.error(
+      apex_debug.warn(
          p_message => 'No data found. %s( %s => %s )'
         ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
         ,p1 => 'p_attribute_name'
@@ -1258,7 +1239,7 @@ as
 
   exception when no_data_found then
 
-    apex_debug.error(
+    apex_debug.warn(
        p_message => 'No data found. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_app_id'
@@ -1319,7 +1300,7 @@ as
   exception when no_data_found
   then
 
-    apex_debug.error(
+    apex_debug.warn(
        p_message => 'No data found. %s( %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_post_id'
@@ -1347,6 +1328,7 @@ as
 --------------------------------------------------------------------------------
   procedure get_post_pagination(
     p_post_id         in varchar2,
+    p_post_title      out nocopy varchar2,
     p_newer_id        out nocopy varchar2,
     p_newer_title     out nocopy varchar2,
     p_older_id        out nocopy varchar2,
@@ -1354,6 +1336,7 @@ as
   )
   as
     l_post_id     number;
+    l_post_title  varchar2(512);
     l_newer_id    number;
     l_newer_title varchar2(512);
     l_older_id    number;
@@ -1372,15 +1355,16 @@ as
 
     l_post_id := to_number( p_post_id );
 
-    select
-       q1.newer_id
+    select q1.post_title
+      ,q1.newer_id
       ,q1.newer_title
       ,q1.older_id
       ,q1.older_title
-    into l_newer_id, l_newer_title, l_older_id, l_older_title
+    into l_post_title, l_newer_id, l_newer_title, l_older_id, l_older_title
     from (
       select
          v1.post_id
+        ,v1.post_title
         ,lag( v1.post_id ) over(order by v1.published_on desc) as newer_id
         ,lag( v1.post_title ) over(order by v1.published_on desc) as newer_title
         ,lead( v1.post_id ) over(order by v1.published_on desc) as older_id
@@ -1392,9 +1376,10 @@ as
     and q1.post_id = l_post_id
     ;
 
-    p_newer_id  := to_char( l_newer_id, g_number_format );
+    p_post_title  := l_post_title;
+    p_newer_id    := to_char( l_newer_id, g_number_format );
     p_newer_title := l_newer_title;
-    p_older_id  := to_char( l_older_id, g_number_format );
+    p_older_id    := to_char( l_older_id, g_number_format );
     p_older_title := l_older_title;
 
     apex_debug.info( 'Fetch post: %s next_id: %s prev_id: %s', p_post_id, p_newer_id, p_older_id );
@@ -1402,13 +1387,16 @@ as
   exception when no_data_found
   then
 
-    apex_debug.error(
+    apex_debug.warn(
        p_message => 'No data found. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_post_id'
       ,p2 => coalesce( p_post_id, '(null)' )
     );
-    raise;
+
+    --raise;
+    -- We wan't show errors between -20999 and -20901 in error page
+    raise_application_error(-20901, 'Post not found.');
 
   when others
   then
@@ -1467,7 +1455,7 @@ as
 
   exception when no_data_found then
 
-    apex_debug.error(
+    apex_debug.warn(
        p_message => 'No data found. %s( %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_category_id'
@@ -1523,7 +1511,7 @@ as
   exception when no_data_found
   then
 
-    apex_debug.error(
+    apex_debug.warn(
        p_message => 'No data found. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_tag_id'
@@ -1773,7 +1761,8 @@ as
     p_canonical     in varchar2 default 'NO'
   ) return varchar2
   as
-    l_url     varchar2(4000);
+    l_url   varchar2(4000);
+    c_owner constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
   begin
 
     begin
@@ -1784,11 +1773,11 @@ as
       join user_ords_modules t2
         on t1.id = t2.schema_id
       where 1 = 1
-        and t1.parsing_schema = blog_util.g_owner
+        and t1.parsing_schema = c_owner
         and t2.name = c_module_name
       ;
     exception when no_data_found then
-      raise_application_error( -20002,  'Configuration not exists.' );
+      raise_application_error( -20001,  'Configuration not exists.' );
       l_url := null;
     end;
 
@@ -2061,12 +2050,14 @@ as
 --                            another signature with varchar2 input and return values created for APEX
 --                            Added parameter p_canonical to functions returning URL
 --    Jari Laine 10.05.2020 - New function get_unsubscribe
+--    Jari Laine 19.05.2020 - Changed page and items name to "hard coded" values
+--                            and removed global constants from blog_util package
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tab(
     p_app_id          in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_util.g_home_page,
+    p_app_page_id     in varchar2 default 'HOME',
     p_session         in varchar2 default null,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
@@ -2075,8 +2066,6 @@ as
     p_post_id         in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_util.g_post_page,
-    p_page_item       in varchar2 default blog_util.g_post_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -2084,8 +2073,6 @@ as
     p_post_id         in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_util.g_post_page,
-    p_page_item       in varchar2 default blog_util.g_post_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -2093,8 +2080,6 @@ as
     p_category_id     in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_util.g_category_page,
-    p_page_item       in varchar2 default blog_util.g_category_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -2102,8 +2087,6 @@ as
     p_category_id     in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_util.g_category_page,
-    p_page_item       in varchar2 default blog_util.g_category_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -2111,8 +2094,6 @@ as
     p_archive_id      in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_util.g_archive_page,
-    p_page_item       in varchar2 default blog_util.g_archive_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -2120,8 +2101,6 @@ as
     p_archive_id      in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_util.g_archive_page,
-    p_page_item       in varchar2 default blog_util.g_archive_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -2129,8 +2108,6 @@ as
     p_tag_id          in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_util.g_tag_page,
-    p_page_item       in varchar2 default blog_util.g_tag_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -2143,9 +2120,7 @@ as
   procedure redirect_search(
     p_value           in varchar2,
     p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_util.g_search_page,
-    p_page_item       in varchar2 default blog_util.g_search_item
+    p_session         in varchar2 default null
   );
 --------------------------------------------------------------------------------
 end "BLOG_URL";
@@ -2173,7 +2148,7 @@ as
 --------------------------------------------------------------------------------
   function get_tab(
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_util.g_home_page,
+    p_app_page_id   in varchar2 default 'HOME',
     p_session       in varchar2 default null,
     p_canonical     in varchar2 default 'NO'
   ) return varchar2
@@ -2201,8 +2176,6 @@ as
     p_post_id       in number,
     p_app_id        in varchar2 default null,
     p_session       in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_util.g_post_page,
-    p_page_item     in varchar2 default blog_util.g_post_item,
     p_canonical     in varchar2 default 'NO'
   ) return varchar2
   as
@@ -2215,8 +2188,6 @@ as
          p_post_id      => l_post_id
         ,p_app_id       => p_app_id
         ,p_session      => p_session
-        ,p_app_page_id  => p_app_page_id
-        ,p_page_item    => p_page_item
         ,p_canonical    => p_canonical
       );
 
@@ -2227,8 +2198,6 @@ as
     p_post_id       in varchar2,
     p_app_id        in varchar2 default null,
     p_session       in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_util.g_post_page,
-    p_page_item     in varchar2 default blog_util.g_post_item,
     p_canonical     in varchar2 default 'NO'
   ) return varchar2
   as
@@ -2241,12 +2210,8 @@ as
     then
       l_url := 'f?p='
         || coalesce( p_app_id, v( 'APP_ID' ) )
-        || ':'
-        || p_app_page_id
-        || ':'
-        || p_session
-        || '::NO:RP:'
-        || p_page_item
+        || ':POST:::NO:RP:'
+        || 'P2_POST_ID'
         || ':'
         || p_post_id
       ;
@@ -2263,10 +2228,10 @@ as
       l_url :=
         apex_page.get_url(
           p_application => p_app_id
-         ,p_page        => p_app_page_id
+         ,p_page        => 'POST'
          ,p_session     => p_session
          ,p_clear_cache => 'RP'
-         ,p_items       => p_page_item
+         ,p_items       => 'P2_POST_ID'
          ,p_values      => p_post_id
          --,p_plain_url   => true
         )
@@ -2282,8 +2247,6 @@ as
     p_category_id in number,
     p_app_id      in varchar2 default null,
     p_session     in varchar2 default null,
-    p_app_page_id in varchar2 default blog_util.g_category_page,
-    p_page_item   in varchar2 default blog_util.g_category_item,
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
@@ -2296,8 +2259,6 @@ as
          p_category_id  => l_category_id
         ,p_app_id       => p_app_id
         ,p_session      => p_session
-        ,p_app_page_id  => p_app_page_id
-        ,p_page_item    => p_page_item
         ,p_canonical    => p_canonical
       );
 
@@ -2308,8 +2269,6 @@ as
     p_category_id in varchar2,
     p_app_id      in varchar2 default null,
     p_session     in varchar2 default null,
-    p_app_page_id in varchar2 default blog_util.g_category_page,
-    p_page_item   in varchar2 default blog_util.g_category_item,
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
@@ -2323,10 +2282,10 @@ as
       ||
       apex_page.get_url(
         p_application => p_app_id
-       ,p_page        => p_app_page_id
+       ,p_page        => 'CATEGORY'
        ,p_session     => p_session
        ,p_clear_cache => 'RP'
-       ,p_items       => case when p_category_id is not null then p_page_item end
+       ,p_items       => 'P14_CATEGORY_ID'
        ,p_values      => p_category_id
        --,p_plain_url   => true
       );
@@ -2338,8 +2297,6 @@ as
     p_archive_id      in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_util.g_archive_page,
-    p_page_item       in varchar2 default blog_util.g_archive_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2
   as
@@ -2352,8 +2309,6 @@ as
          p_archive_id   => l_archive_id
         ,p_app_id       => p_app_id
         ,p_session      => p_session
-        ,p_app_page_id  => p_app_page_id
-        ,p_page_item    => p_page_item
         ,p_canonical    => p_canonical
       );
 
@@ -2364,8 +2319,6 @@ as
     p_archive_id      in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_app_page_id     in varchar2 default blog_util.g_archive_page,
-    p_page_item       in varchar2 default blog_util.g_archive_item,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2
   as
@@ -2379,10 +2332,10 @@ as
       ||
       apex_page.get_url(
          p_application => p_app_id
-        ,p_page        => p_app_page_id
+        ,p_page        => 'ARCHIVES'
         ,p_session     => p_session
         ,p_clear_cache => 'RP'
-        ,p_items       => case when p_archive_id is not null then p_page_item end
+        ,p_items       => 'P15_ARCHIVE_ID'
         ,p_values      => p_archive_id
         --,p_plain_url   => true
       )
@@ -2394,9 +2347,7 @@ as
   function get_tag(
     p_tag_id      in number,
     p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,--,p_plain_url   => true
-    p_app_page_id in varchar2 default blog_util.g_tag_page,
-    p_page_item   in varchar2 default blog_util.g_tag_item,
+    p_session     in varchar2 default null,
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
@@ -2410,10 +2361,10 @@ as
       ||
       apex_page.get_url(
          p_application => p_app_id
-        ,p_page        => p_app_page_id
+        ,p_page        => 'TAG'
         ,p_session     => p_session
         ,p_clear_cache => 'RP'
-        ,p_items       => p_page_item
+        ,p_items       => 'P6_TAG_ID'
         ,p_values      => p_tag_id
         --,p_plain_url   => true
       )
@@ -2437,12 +2388,10 @@ as
     -- apex_page.get_url don't have parameter p_plain_url
     l_url := 'f?p='
       || p_app_id
-      || ':'
-      || blog_util.g_post_page
-      || ':::NO:RP:'
-      || blog_util.g_post_item
+      || ':POST:::NO:RP:'
+      || 'P2_POST_ID'
       || ','
-      || blog_util.g_unsubscribe_item
+      || 'P2_SUBSCRIPTION_ID'
       || ':'
       || p_post_id
       || ','
@@ -2464,9 +2413,7 @@ as
   procedure redirect_search(
     p_value         in varchar2,
     p_app_id        in varchar2 default null,
-    p_session       in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_util.g_search_page,
-    p_page_item     in varchar2 default blog_util.g_search_item
+    p_session       in varchar2 default null
   )
   as
   begin
@@ -2475,10 +2422,10 @@ as
       apex_util.redirect_url (
         apex_page.get_url(
            p_application => p_app_id
-          ,p_page        => p_app_page_id
+          ,p_page        => 'SEARCH'
           ,p_session     => p_session
           ,p_clear_cache => 'RP'
-          ,p_items       => p_page_item
+          ,p_items       => 'P0_SEARCH'
           ,p_values      => p_value
           --,p_plain_url   => true
         )
@@ -4068,33 +4015,25 @@ as
   -- called from pub app shortcut BLOG_CANONICAL_LINK_POST
   function get_post_canonical_link(
     p_post_id             in varchar2,
-    p_app_id              in varchar2 default null,
-    p_app_page_id         in varchar2 default blog_util.g_post_page,
-    p_page_item           in varchar2 default blog_util.g_post_item
+    p_app_id              in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- called from pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
   function get_category_canonical_link(
     p_category_id         in varchar2,
-    p_app_id              in varchar2 default null,
-    p_app_page_id         in varchar2 default blog_util.g_category_page,
-    p_page_item           in varchar2 default blog_util.g_category_item
+    p_app_id              in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- called from pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
   function get_archive_canonical_link(
     p_archive_id          in varchar2,
-    p_app_id              in varchar2 default null,
-    p_app_page_id         in varchar2 default blog_util.g_archive_page,
-    p_page_item           in varchar2 default blog_util.g_archive_item
+    p_app_id              in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- called from pub app shortcut BLOG_CANONICAL_LINK_TAG
   function get_tag_canonical_link(
     p_tag_id              in varchar2,
-    p_app_id              in varchar2 default null,
-    p_app_page_id         in varchar2 default blog_util.g_tag_page,
-    p_page_item           in varchar2 default blog_util.g_tag_item
+    p_app_id              in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- called from pub app shortcut BLOG_RSS_ANCHOR
@@ -4255,18 +4194,21 @@ as
     p_desc in varchar2
   ) return varchar2
   as
+    l_html varchar2(32700);
   begin
     -- generate description meta tag
     if p_desc is not null then
-      return
+      l_html :=
         '<meta name="description" content="'
         || apex_escape.html_attribute( p_desc )
         || '"/>'
       ;
     else
       apex_debug.warn('Description meta tag not generated.');
-      return ' <!-- no description -->';
     end if;
+
+    return l_html;
+
   end get_description_meta;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4288,7 +4230,7 @@ as
     );
   exception when no_data_found then
     apex_debug.warn( 'No data found to generate description meta tag for post id %s', p_post_id );
-    return ' <!-- no description -->';
+    return null;
   end get_post_description_meta;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4297,10 +4239,11 @@ as
     p_app_id          in varchar2 default null
   ) return varchar2
   as
+    l_html varchar2(32700);
   begin
     -- generate canonical link for tab
     if p_app_page_id is not null then
-      return
+      l_html :=
         '<link rel="canonical" href="'
         || blog_url.get_tab(
            p_app_id       => p_app_id
@@ -4310,97 +4253,109 @@ as
         || '" />'
       ;
     else
-      -- if p_app_page_id not defined generate meta tag
+      -- if p_app_page_id is not defined then generate
+      -- robots no index meta tag
       apex_debug.warn( 'Canonical link tag not generated for tab.');
-      return get_robots_noindex_meta;
+      l_html := get_robots_noindex_meta;
     end if;
+
+    return l_html;
+
   end get_tab_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_post_canonical_link(
     p_post_id       in varchar2,
-    p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_util.g_post_page,
-    p_page_item     in varchar2 default blog_util.g_post_item
+    p_app_id        in varchar2 default null
   ) return varchar2
   as
+    l_html varchar2(32700);
   begin
     -- generate canonical link for post
     if p_post_id is not null then
-      return
+      l_html :=
         '<link rel="canonical" href="'
         || blog_url.get_post(
-          p_post_id       => p_post_id
+           p_post_id      => p_post_id
           ,p_app_id       => p_app_id
           ,p_session      => ''
-          ,p_app_page_id  => p_app_page_id
-          ,p_page_item    => p_page_item
           ,p_canonical => 'YES'
         )
         || '" />'
       ;
     else
       apex_debug.warn('Canonical link tag not generated for post.');
-      return get_robots_noindex_meta;
+      l_html := get_robots_noindex_meta;
     end if;
+
+    return l_html;
+
   end get_post_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_category_canonical_link(
     p_category_id   in varchar2,
-    p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_util.g_category_page,
-    p_page_item     in varchar2 default blog_util.g_category_item
+    p_app_id        in varchar2 default null
   ) return varchar2
   as
+    l_html varchar2(32700);
   begin
     -- generate canonical link for category
-    return
-      '<link rel="canonical" href="'
-      || blog_url.get_category(
-        p_category_id   => p_category_id
-        ,p_app_id       => p_app_id
-        ,p_session      => ''
-        ,p_app_page_id  => p_app_page_id
-        ,p_page_item    => p_page_item
-        ,p_canonical => 'YES'
-      )
-      || '" />'
-    ;
+    if p_category_id is not null
+    then
+      l_html :=
+        '<link rel="canonical" href="'
+        || blog_url.get_category(
+           p_category_id  => p_category_id
+          ,p_app_id       => p_app_id
+          ,p_session      => ''
+          ,p_canonical => 'YES'
+        )
+        || '" />'
+      ;
+    else
+      apex_debug.warn( 'Canonical link tag not generated for category.');
+      l_html := get_robots_noindex_meta;
+    end if;
+
+    return l_html;
 
   end get_category_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_archive_canonical_link(
     p_archive_id    in varchar2,
-    p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_util.g_archive_page,
-    p_page_item     in varchar2 default blog_util.g_archive_item
+    p_app_id        in varchar2 default null
   ) return varchar2
   as
+    l_html varchar2(32700);
   begin
       -- generate canonical link for archives
-      return
+    if p_archive_id is not null
+    then
+      l_html :=
         '<link rel="canonical" href="'
         || blog_url.get_archive(
-          p_archive_id    => p_archive_id
+           p_archive_id   => p_archive_id
           ,p_app_id       => p_app_id
           ,p_session      => ''
-          ,p_app_page_id  => p_app_page_id
-          ,p_page_item    => p_page_item
           ,p_canonical => 'YES'
         )
         || '" />'
       ;
+    else
+      apex_debug.warn( 'Canonical link tag not generated for archive.');
+      l_html := get_robots_noindex_meta;
+    end if;
+
+    return l_html;
 
   end get_archive_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tag_canonical_link(
     p_tag_id        in varchar2,
-    p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default blog_util.g_tag_page,
-    p_page_item     in varchar2 default blog_util.g_tag_item
+    p_app_id        in varchar2 default null
   ) return varchar2
   as
   begin
@@ -4409,11 +4364,9 @@ as
       return
         '<link rel="canonical" href="'
         || blog_url.get_tag(
-          p_tag_id        => p_tag_id
+           p_tag_id       => p_tag_id
           ,p_app_id       => p_app_id
           ,p_session      => ''
-          ,p_app_page_id  => p_app_page_id
-          ,p_page_item    => p_page_item
           ,p_canonical    => 'YES'
         )
         || '" />'
@@ -4627,7 +4580,6 @@ as
   )
   as
     l_rss           blob;
-    l_last_modifier timestamp with local time zone;
     l_rss_url       varchar2(4000);
     l_rss_desc      varchar2(4000);
     l_home_url      varchar2(4000);
@@ -4644,7 +4596,6 @@ as
     l_rss_desc  := blog_util.get_attribute_value( 'G_APP_DESC' );
     -- blog application id
     l_app_id    := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
-
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
        p_app_id => l_app_id
@@ -4664,16 +4615,16 @@ as
           ,xmlelement(
              "atom:link"
             ,xmlattributes(
-               'self'                 as "rel"
-              ,l_rss_url              as "href"
-              ,'application/rss+xml'  as "type"
+               'self'                         as "rel"
+              ,l_rss_url                      as "href"
+              ,'application/rss+xml'          as "type"
             )
           )
           ,xmlforest(
-             l_blog_name              as "title"
-            ,l_home_url               as "link"
-            ,l_rss_desc               as "description"
-            ,p_lang                   as "language"
+             l_blog_name                      as "title"
+            ,l_home_url                       as "link"
+            ,l_rss_desc                       as "description"
+            ,p_lang                           as "language"
           )
           ,xmlagg(
             xmlelement(
@@ -4688,8 +4639,8 @@ as
                                           )
               )
               ,xmlelement( "description", posts.post_desc )
-              ,xmlelement( "pubDate",     to_char( sys_extract_utc( posts.published_on ), 'Dy, DD Mon YYYY HH24:MI:SS "GMT"' ) )
-              ,xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id)
+              ,xmlelement( "pubDate", to_char( sys_extract_utc( posts.published_on ), 'Dy, DD Mon YYYY HH24:MI:SS "GMT"' ) )
+              ,xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id )
             ) order by posts.published_on desc
           )
         )
@@ -4701,9 +4652,9 @@ as
     from blog_v_posts_last20 posts
     ;
 
-    owa_util.mime_header('application/rss+xml', false, 'UTF-8' );
+    owa_util.mime_header( 'application/rss+xml', false, 'UTF-8' );
 --    owa_util.mime_header('application/xml', false, 'UTF-8' );
-    sys.htp.p('Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'Cache-Control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file(l_rss);
@@ -4776,28 +4727,6 @@ as
     l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
     l_pub_id := to_number( l_app_id );
 
-
-    with sitemap_query as (
-      select
-         row_number() over(order by li.display_sequence) as rnum
-        ,blog_url.get_tab(
-           p_app_id  => l_app_id
-          ,p_app_page_id => li.entry_attribute_10
-          ,p_canonical => 'YES'
-        ) as loc
-      from apex_application_list_entries li
-      where 1 = 1
-        and li.list_name = blog_util.g_pub_app_tab_list
-        and li.application_id = l_pub_id
-      and not exists(
-        select 1
-        from apex_application_build_options bo
-        where 1 = 1
-          and bo.application_id = l_pub_id
-          and bo.build_option_name = li.build_option
-          and bo.build_option_status = 'Exclude'
-      )
-    )
     select xmlserialize( document
       xmlelement(
         "urlset",
@@ -4805,18 +4734,33 @@ as
         (
           xmlagg(
               xmlelement("url"
-              ,xmlelement("loc", loc)
---              ,XMLElement("lastmod", TO_CHAR(sysdate, 'YYYY-MM-DD'))
---              ,XMLElement("changefreq", 'monthly')
---              ,XMLElement("priority", '0.5')
-            ) order by rnum
+              ,xmlelement("loc",  blog_url.get_tab(
+                                     p_app_id  => l_app_id
+                                    ,p_app_page_id => li.entry_attribute_10
+                                    ,p_canonical => 'YES'
+                                  )
+              )
+--            ,XMLElement( "lastmod", to_char( sysdate, 'YYYY-MM-DD' ) )
+--            ,XMLElement( "changefreq", 'monthly' )
+--            ,XMLElement( "priority", '0.5' )
+            )
           )
         )
       )
     as blob encoding 'UTF-8' indent size=2)
     into l_xml
-    from sitemap_query
-    ;
+    from apex_application_list_entries li
+    where 1 = 1
+      and li.list_name = 'Desktop Navigation Menu'
+      and li.application_id = l_pub_id
+    and not exists(
+      select 1
+      from apex_application_build_options bo
+      where 1 = 1
+        and bo.application_id = l_pub_id
+        and bo.build_option_name = li.build_option
+        and bo.build_option_status = 'Exclude'
+    );
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
     sys.htp.p('Cache-Control: max-age=3600, public' );
@@ -4835,18 +4779,6 @@ as
 
     l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
 
-    with sitemap_query as (
-      select
-         posts.published_on
-        ,posts.changed_on
-        ,blog_url.get_post(
-           p_app_id     => l_app_id
-          ,p_post_id    => posts.post_id
-          ,p_canonical  => 'YES'
-        ) as loc
---        ,a.changed_on AS lastmod
-      from blog_v_posts posts
-    )
     select xmlserialize( document
       xmlelement(
         "urlset",
@@ -4854,17 +4786,22 @@ as
         (
           xmlagg(
               xmlelement( "url"
-                ,xmlelement( "loc", loc )
-                ,XMLElement( "lastmod", to_char( sys_extract_utc( changed_on ), 'YYYY-MM-DD"T"HH24:MI:SS"+00:00""' ) )
+                ,xmlelement( "loc", blog_url.get_post(
+                                       p_app_id     => l_app_id
+                                      ,p_post_id    => posts.post_id
+                                      ,p_canonical  => 'YES'
+                                    )
+                )
+                ,XMLElement( "lastmod", to_char( sys_extract_utc( posts.changed_on ), 'YYYY-MM-DD"T"HH24:MI:SS"+00:00""' ) )
 --              ,XMLElement("changefreq", 'monthly')
 --              ,XMLElement("priority", '0.5')
-              ) order by published_on desc
+              ) order by posts.published_on desc
           )
         )
       )
     as blob encoding 'UTF-8' indent size=2)
     into l_xml
-    from sitemap_query
+    from blog_v_posts posts
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');

@@ -23,10 +23,11 @@ as
 --                            Materialized view blog_items_init changed to view
 --                            Removed function get_item_init_value
 --    Jari Laine 18.05.2020 - Moved ORDS specific global constants
---
---  TO DO:
---    #1  Package contains hard coded values
---        e.g. public application tabs should be converted to dynamic list
+--    Jari Laine 19.05.2020 - Changed apex_debug to warn in no_data_found exception handlers
+--                            Changed apex_error_handler honor error display position when
+--                            ORA error is between -20999 and 20901
+--                            Changed procedure get_post_pagination to raises ORA -20901 when no data found
+--    Jari Laine 19.05.2020   Removed global constants
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -34,32 +35,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
-  g_owner               constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
-
-  g_number_format       constant varchar2(40)   := 'fm99999999999999999999999999999999999999';
-
-  -- URL
-  g_home_page           constant varchar2(40)   := 'HOME';
-
-  g_post_page           constant varchar2(40)   := 'POST';
-  g_post_item           constant varchar2(40)   := 'P2_POST_ID';
-
-  g_unsubscribe_item    constant varchar2(40)   := 'P2_SUBSCRIPTION_ID';
-
-  g_search_page         constant varchar2(40)   := 'SEARCH';
-  g_search_item         constant varchar2(40)   := 'P0_SEARCH';
-
-  g_category_page       constant varchar2(40)   := 'CATEGORY';
-  g_category_item       constant varchar2(40)   := 'P14_CATEGORY_ID';
-
-  g_archive_page        constant varchar2(40)   := 'ARCHIVES';
-  g_archive_item        constant varchar2(40)   := 'P15_ARCHIVE_ID';
-
-  g_tag_page            constant varchar2(40)   := 'TAG';
-  g_tag_item            constant varchar2(40)   := 'P6_TAG_ID';
-
-  -- XML
-  g_pub_app_tab_list    constant varchar2(256)  := 'Desktop Navigation Menu';
+  g_number_format constant varchar2(40)   := 'fm99999999999999999999999999999999999999';
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -82,6 +58,7 @@ as
 --------------------------------------------------------------------------------
   procedure get_post_pagination(
     p_post_id         in varchar2,
+    p_post_title      out nocopy varchar2,
     p_newer_id        out nocopy varchar2,
     p_newer_title     out nocopy varchar2,
     p_older_id        out nocopy varchar2,
@@ -155,13 +132,18 @@ as
       end if;
 
     else
-      -- Always show the error as inline error
-      l_result.display_location := case
-        when l_result.display_location = apex_error.c_on_error_page
-        then apex_error.c_inline_in_notification
-        else l_result.display_location
-        end
-      ;
+
+      -- Don't change display position for specific ORA eror codes
+      if not p_error.ora_sqlcode between -20999 and -20901
+      then
+        -- Always show the error as inline error
+        l_result.display_location := case
+          when l_result.display_location = apex_error.c_on_error_page
+          then apex_error.c_inline_in_notification
+          else l_result.display_location
+          end
+       ;
+      end if;
 
       -- If it's a constraint violation like
       --
@@ -199,12 +181,11 @@ as
       if p_error.ora_sqlcode is not null
       and l_result.message = p_error.message
       then
-
         l_result.message :=
           apex_error.get_first_ora_error_text (
             p_error => p_error
           );
-
+        l_result.additional_info := null;
       end if;
 
       -- If no associated page item/tabular form column has been set, we can use
@@ -257,7 +238,7 @@ as
     exception when no_data_found
     then
 
-      apex_debug.error(
+      apex_debug.warn(
          p_message => 'No data found. %s( %s => %s )'
         ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
         ,p1 => 'p_attribute_name'
@@ -313,7 +294,7 @@ as
 
   exception when no_data_found then
 
-    apex_debug.error(
+    apex_debug.warn(
        p_message => 'No data found. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_app_id'
@@ -374,7 +355,7 @@ as
   exception when no_data_found
   then
 
-    apex_debug.error(
+    apex_debug.warn(
        p_message => 'No data found. %s( %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_post_id'
@@ -402,6 +383,7 @@ as
 --------------------------------------------------------------------------------
   procedure get_post_pagination(
     p_post_id         in varchar2,
+    p_post_title      out nocopy varchar2,
     p_newer_id        out nocopy varchar2,
     p_newer_title     out nocopy varchar2,
     p_older_id        out nocopy varchar2,
@@ -409,6 +391,7 @@ as
   )
   as
     l_post_id     number;
+    l_post_title  varchar2(512);
     l_newer_id    number;
     l_newer_title varchar2(512);
     l_older_id    number;
@@ -427,15 +410,16 @@ as
 
     l_post_id := to_number( p_post_id );
 
-    select
-       q1.newer_id
+    select q1.post_title
+      ,q1.newer_id
       ,q1.newer_title
       ,q1.older_id
       ,q1.older_title
-    into l_newer_id, l_newer_title, l_older_id, l_older_title
+    into l_post_title, l_newer_id, l_newer_title, l_older_id, l_older_title
     from (
       select
          v1.post_id
+        ,v1.post_title
         ,lag( v1.post_id ) over(order by v1.published_on desc) as newer_id
         ,lag( v1.post_title ) over(order by v1.published_on desc) as newer_title
         ,lead( v1.post_id ) over(order by v1.published_on desc) as older_id
@@ -447,9 +431,10 @@ as
     and q1.post_id = l_post_id
     ;
 
-    p_newer_id  := to_char( l_newer_id, g_number_format );
+    p_post_title  := l_post_title;
+    p_newer_id    := to_char( l_newer_id, g_number_format );
     p_newer_title := l_newer_title;
-    p_older_id  := to_char( l_older_id, g_number_format );
+    p_older_id    := to_char( l_older_id, g_number_format );
     p_older_title := l_older_title;
 
     apex_debug.info( 'Fetch post: %s next_id: %s prev_id: %s', p_post_id, p_newer_id, p_older_id );
@@ -457,13 +442,16 @@ as
   exception when no_data_found
   then
 
-    apex_debug.error(
+    apex_debug.warn(
        p_message => 'No data found. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_post_id'
       ,p2 => coalesce( p_post_id, '(null)' )
     );
-    raise;
+
+    --raise;
+    -- We wan't show errors between -20999 and -20901 in error page
+    raise_application_error(-20901, 'Post not found.');
 
   when others
   then
@@ -522,7 +510,7 @@ as
 
   exception when no_data_found then
 
-    apex_debug.error(
+    apex_debug.warn(
        p_message => 'No data found. %s( %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_category_id'
@@ -578,7 +566,7 @@ as
   exception when no_data_found
   then
 
-    apex_debug.error(
+    apex_debug.warn(
        p_message => 'No data found. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_tag_id'

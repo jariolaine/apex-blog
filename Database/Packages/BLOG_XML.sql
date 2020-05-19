@@ -56,7 +56,6 @@ as
   )
   as
     l_rss           blob;
-    l_last_modifier timestamp with local time zone;
     l_rss_url       varchar2(4000);
     l_rss_desc      varchar2(4000);
     l_home_url      varchar2(4000);
@@ -73,7 +72,6 @@ as
     l_rss_desc  := blog_util.get_attribute_value( 'G_APP_DESC' );
     -- blog application id
     l_app_id    := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
-
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
        p_app_id => l_app_id
@@ -93,16 +91,16 @@ as
           ,xmlelement(
              "atom:link"
             ,xmlattributes(
-               'self'                 as "rel"
-              ,l_rss_url              as "href"
-              ,'application/rss+xml'  as "type"
+               'self'                         as "rel"
+              ,l_rss_url                      as "href"
+              ,'application/rss+xml'          as "type"
             )
           )
           ,xmlforest(
-             l_blog_name              as "title"
-            ,l_home_url               as "link"
-            ,l_rss_desc               as "description"
-            ,p_lang                   as "language"
+             l_blog_name                      as "title"
+            ,l_home_url                       as "link"
+            ,l_rss_desc                       as "description"
+            ,p_lang                           as "language"
           )
           ,xmlagg(
             xmlelement(
@@ -117,8 +115,8 @@ as
                                           )
               )
               ,xmlelement( "description", posts.post_desc )
-              ,xmlelement( "pubDate",     to_char( sys_extract_utc( posts.published_on ), 'Dy, DD Mon YYYY HH24:MI:SS "GMT"' ) )
-              ,xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id)
+              ,xmlelement( "pubDate", to_char( sys_extract_utc( posts.published_on ), 'Dy, DD Mon YYYY HH24:MI:SS "GMT"' ) )
+              ,xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id )
             ) order by posts.published_on desc
           )
         )
@@ -130,9 +128,9 @@ as
     from blog_v_posts_last20 posts
     ;
 
-    owa_util.mime_header('application/rss+xml', false, 'UTF-8' );
+    owa_util.mime_header( 'application/rss+xml', false, 'UTF-8' );
 --    owa_util.mime_header('application/xml', false, 'UTF-8' );
-    sys.htp.p('Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'Cache-Control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file(l_rss);
@@ -205,28 +203,6 @@ as
     l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
     l_pub_id := to_number( l_app_id );
 
-
-    with sitemap_query as (
-      select
-         row_number() over(order by li.display_sequence) as rnum
-        ,blog_url.get_tab(
-           p_app_id  => l_app_id
-          ,p_app_page_id => li.entry_attribute_10
-          ,p_canonical => 'YES'
-        ) as loc
-      from apex_application_list_entries li
-      where 1 = 1
-        and li.list_name = blog_util.g_pub_app_tab_list
-        and li.application_id = l_pub_id
-      and not exists(
-        select 1
-        from apex_application_build_options bo
-        where 1 = 1
-          and bo.application_id = l_pub_id
-          and bo.build_option_name = li.build_option
-          and bo.build_option_status = 'Exclude'
-      )
-    )
     select xmlserialize( document
       xmlelement(
         "urlset",
@@ -234,18 +210,33 @@ as
         (
           xmlagg(
               xmlelement("url"
-              ,xmlelement("loc", loc)
---              ,XMLElement("lastmod", TO_CHAR(sysdate, 'YYYY-MM-DD'))
---              ,XMLElement("changefreq", 'monthly')
---              ,XMLElement("priority", '0.5')
-            ) order by rnum
+              ,xmlelement("loc",  blog_url.get_tab(
+                                     p_app_id  => l_app_id
+                                    ,p_app_page_id => li.entry_attribute_10
+                                    ,p_canonical => 'YES'
+                                  )
+              )
+--            ,XMLElement( "lastmod", to_char( sysdate, 'YYYY-MM-DD' ) )
+--            ,XMLElement( "changefreq", 'monthly' )
+--            ,XMLElement( "priority", '0.5' )
+            )
           )
         )
       )
     as blob encoding 'UTF-8' indent size=2)
     into l_xml
-    from sitemap_query
-    ;
+    from apex_application_list_entries li
+    where 1 = 1
+      and li.list_name = 'Desktop Navigation Menu'
+      and li.application_id = l_pub_id
+    and not exists(
+      select 1
+      from apex_application_build_options bo
+      where 1 = 1
+        and bo.application_id = l_pub_id
+        and bo.build_option_name = li.build_option
+        and bo.build_option_status = 'Exclude'
+    );
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
     sys.htp.p('Cache-Control: max-age=3600, public' );
@@ -264,18 +255,6 @@ as
 
     l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
 
-    with sitemap_query as (
-      select
-         posts.published_on
-        ,posts.changed_on
-        ,blog_url.get_post(
-           p_app_id     => l_app_id
-          ,p_post_id    => posts.post_id
-          ,p_canonical  => 'YES'
-        ) as loc
---        ,a.changed_on AS lastmod
-      from blog_v_posts posts
-    )
     select xmlserialize( document
       xmlelement(
         "urlset",
@@ -283,17 +262,22 @@ as
         (
           xmlagg(
               xmlelement( "url"
-                ,xmlelement( "loc", loc )
-                ,XMLElement( "lastmod", to_char( sys_extract_utc( changed_on ), 'YYYY-MM-DD"T"HH24:MI:SS"+00:00""' ) )
+                ,xmlelement( "loc", blog_url.get_post(
+                                       p_app_id     => l_app_id
+                                      ,p_post_id    => posts.post_id
+                                      ,p_canonical  => 'YES'
+                                    )
+                )
+                ,XMLElement( "lastmod", to_char( sys_extract_utc( posts.changed_on ), 'YYYY-MM-DD"T"HH24:MI:SS"+00:00""' ) )
 --              ,XMLElement("changefreq", 'monthly')
 --              ,XMLElement("priority", '0.5')
-              ) order by published_on desc
+              ) order by posts.published_on desc
           )
         )
       )
     as blob encoding 'UTF-8' indent size=2)
     into l_xml
-    from sitemap_query
+    from blog_v_posts posts
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');

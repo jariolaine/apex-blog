@@ -81,7 +81,7 @@ input[data-z-switch="true"][value="0"]:checked+label{
   color: #262626;
   font-size: 1.2rem;
   line-height: 2rem;
-  padding: 0;
+  padding: 2.2rem;
 }
 .pagination{
   text-align: right;
