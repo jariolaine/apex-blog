@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_REP_POST_BY_STATUS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_REP_POST_BY_STATUS" ("APPLICATION_ID", "NUM_POSTS", "POST_STATUS") DEFAULT COLLATION "USING_NLS_COMP"  AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_REP_POST_BY_STATUS" ("APPLICATION_ID", "NUM_POSTS", "POST_STATUS") AS
   with apex_lov as(
   select v1.application_id
     ,v1.return_value
