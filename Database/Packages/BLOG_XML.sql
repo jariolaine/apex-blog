@@ -15,6 +15,7 @@ as
 --    Jari Laine 17.05.2020 - Removed private function get_app_alias
 --                            and constant c_pub_app_id
 --                            Moved private function get_ords_service to blog_ords package
+--    Jari Laine 23.05.2020 - Changed procedure sitemap_main to use table blog_pages
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -74,7 +75,8 @@ as
     l_app_id    := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
-       p_app_id => l_app_id
+       p_app_page_id => 'HOME'
+      ,p_app_id => l_app_id
       ,p_canonical => 'YES'
     );
 
@@ -212,31 +214,31 @@ as
               xmlelement("url"
               ,xmlelement("loc",  blog_url.get_tab(
                                      p_app_id  => l_app_id
-                                    ,p_app_page_id => li.entry_attribute_10
+                                    ,p_app_page_id => t1.page_alias
                                     ,p_canonical => 'YES'
                                   )
               )
 --            ,XMLElement( "lastmod", to_char( sysdate, 'YYYY-MM-DD' ) )
 --            ,XMLElement( "changefreq", 'monthly' )
 --            ,XMLElement( "priority", '0.5' )
-            )
+            ) order by t1.display_seq
           )
         )
       )
     as blob encoding 'UTF-8' indent size=2)
     into l_xml
-    from apex_application_list_entries li
+    from blog_pages t1
     where 1 = 1
-      and li.list_name = 'Desktop Navigation Menu'
-      and li.application_id = l_pub_id
-    and not exists(
-      select 1
-      from apex_application_build_options bo
-      where 1 = 1
-        and bo.application_id = l_pub_id
-        and bo.build_option_name = li.build_option
-        and bo.build_option_status = 'Exclude'
-    );
+      and t1.page_type = 'TAB'
+      and not exists(
+        select 1
+        from apex_application_build_options bo
+        where 1 = 1
+          and bo.application_id = l_pub_id
+          and bo.build_option_name = t1.build_option
+          and bo.build_option_status = 'Exclude'
+      )
+    ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
     sys.htp.p('Cache-Control: max-age=3600, public' );

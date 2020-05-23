@@ -126,75 +126,18 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200519182300'
+,p_last_upd_yyyymmddhh24miss=>'20200523081455'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>98
 ,p_ui_type_name => null
 );
 end;
 /
-prompt --application/shared_components/navigation/lists/desktop_navigation_menu
-begin
-wwv_flow_api.create_list(
- p_id=>wwv_flow_api.id(6756817335267362)
-,p_name=>'Desktop Navigation Menu'
-,p_list_status=>'PUBLIC'
-);
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(6887418881267440)
-,p_list_item_display_sequence=>10
-,p_list_item_link_text=>'Home'
-,p_list_item_link_target=>'f?p=&APP_ID.:HOME:&SESSION.::&DEBUG.:RP:::'
-,p_list_item_icon=>'fa-home'
-,p_list_text_10=>'HOME'
-,p_list_item_current_type=>'TARGET_PAGE'
-);
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(29579946734356024)
-,p_list_item_display_sequence=>30
-,p_list_item_link_text=>'Archives'
-,p_list_item_link_target=>'f?p=&APP_ID.:ARCHIVES:&SESSION.::&DEBUG.:RP:::'
-,p_list_item_icon=>'fa-archive'
-,p_list_text_10=>'ARCHIVES'
-,p_required_patch=>wwv_flow_api.id(27920818779089933)
-,p_list_item_current_type=>'TARGET_PAGE'
-);
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(6898961639645288)
-,p_list_item_display_sequence=>40
-,p_list_item_link_text=>'Links'
-,p_list_item_link_target=>'f?p=&APP_ID.:LINKS:&SESSION.::&DEBUG.:RP:::'
-,p_list_item_icon=>'fa-link'
-,p_list_text_10=>'LINKS'
-,p_required_patch=>wwv_flow_api.id(6905258727754156)
-,p_list_item_current_type=>'TARGET_PAGE'
-);
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(7123115257892322)
-,p_list_item_display_sequence=>50
-,p_list_item_link_text=>'Files'
-,p_list_item_link_target=>'f?p=&APP_ID.:FILES:&SESSION.::&DEBUG.:RP:::'
-,p_list_item_icon=>'fa-file-o'
-,p_list_text_10=>'FILES'
-,p_required_patch=>wwv_flow_api.id(24626889314854172)
-,p_list_item_current_type=>'TARGET_PAGE'
-);
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(7123379023897277)
-,p_list_item_display_sequence=>60
-,p_list_item_link_text=>'About'
-,p_list_item_link_target=>'f?p=&APP_ID.:ABOUT:&SESSION.::&DEBUG.:RP:::'
-,p_list_item_icon=>'fa-user'
-,p_list_text_10=>'ABOUT'
-,p_list_item_current_type=>'TARGET_PAGE'
-);
-end;
-/
-prompt --application/shared_components/navigation/lists/desktop_navigation_bar
+prompt --application/shared_components/navigation/lists/navigation_bar
 begin
 wwv_flow_api.create_list(
  p_id=>wwv_flow_api.id(6876779235267426)
-,p_name=>'Desktop Navigation Bar'
+,p_name=>'Navigation Bar'
 ,p_list_status=>'PUBLIC'
 ,p_required_patch=>wwv_flow_api.id(27920818779089933)
 );
@@ -358,6 +301,41 @@ wwv_flow_api.create_list_item(
 ,p_list_item_link_target=>'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-exclamation-circle-o'
 ,p_list_item_current_type=>'TARGET_PAGE'
+);
+end;
+/
+prompt --application/shared_components/navigation/lists/navigation_menu
+begin
+wwv_flow_api.create_list(
+ p_id=>wwv_flow_api.id(34303351556032323)
+,p_name=>'Navigation Menu'
+,p_list_type=>'SQL_QUERY'
+,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select',
+'   1                    as link_level',
+'  ,t1.page_title        as link_text',
+'  ,blog_url.get_tab(',
+'     p_app_page_id => t1.page_alias',
+'   )                    as target_url',
+'  ,case',
+'    when t1.page_alias = :APP_PAGE_ALIAS',
+'    then ''YES''',
+'    else ''NO''',
+'  end                   as is_current',
+'from #OWNER#.blog_pages t1',
+'where 1 = 1',
+'and t1.page_type = ''TAB''',
+'and not case when t1.build_option is null',
+'then ''INCLUDE''',
+'else apex_util.get_build_option_status(',
+'   p_application_id    => :APP_ID',
+'  ,p_build_option_name => t1.build_option',
+')',
+'end = ''EXCLUDE''',
+'order by t1.display_seq',
+''))
+,p_list_status=>'PUBLIC'
+,p_required_patch=>wwv_flow_api.id(8635355820099640)
 );
 end;
 /
@@ -11449,7 +11427,7 @@ wwv_flow_api.create_user_interface(
 ,p_login_url=>'f?p=&APP_ID.:LOGIN:&SESSION.'
 ,p_theme_style_by_user_pref=>false
 ,p_global_page_id=>0
-,p_navigation_list_id=>wwv_flow_api.id(6756817335267362)
+,p_navigation_list_id=>wwv_flow_api.id(34303351556032323)
 ,p_navigation_list_position=>'TOP'
 ,p_navigation_list_template_id=>wwv_flow_api.id(6850610093267411)
 ,p_nav_list_template_options=>'#DEFAULT#:js-tabLike'
@@ -13207,7 +13185,7 @@ wwv_flow_api.create_page(
  p_id=>11
 ,p_user_interface_id=>wwv_flow_api.id(6877050287267426)
 ,p_name=>'File Repository'
-,p_alias=>'FILES'
+,p_alias=>'REPOSITORY'
 ,p_step_title=>'Files | &G_APP_NAME.'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
@@ -13217,7 +13195,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(24626889314854172)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200502144151'
+,p_last_upd_yyyymmddhh24miss=>'20200523074031'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25312085512124215)

@@ -17,12 +17,13 @@ as
 --    Jari Laine 10.05.2020 - New function get_unsubscribe
 --    Jari Laine 19.05.2020 - Changed page and items name to "hard coded" values
 --                            and removed global constants from blog_util package
+--    Jari Laine 23.05.2020 - Removed default from function get_tab parameter p_app_page_id
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tab(
+    p_app_page_id     in varchar2,
     p_app_id          in varchar2 default null,
-    p_app_page_id     in varchar2 default 'HOME',
     p_session         in varchar2 default null,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
@@ -112,8 +113,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tab(
+    p_app_page_id   in varchar2,
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default 'HOME',
     p_session       in varchar2 default null,
     p_canonical     in varchar2 default 'NO'
   ) return varchar2

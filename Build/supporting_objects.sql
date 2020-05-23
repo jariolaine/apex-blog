@@ -221,6 +221,29 @@ create table blog_link_groups(
 )
 /
 --------------------------------------------------------
+--  DDL for Table BLOG_PAGES
+--------------------------------------------------------
+create table blog_pages(
+  id number( 38, 0 ) not null,
+  row_version number( 38, 0 ) not null,
+  created_on timestamp( 6 ) with local time zone not null,
+  created_by varchar2( 256 char ) not null,
+  changed_on timestamp( 6 ) with local time zone not null,
+  changed_by varchar2( 256 char ) not null,
+  is_active number( 1, 0 ) not null,
+  display_seq number( 10, 0 ) not null,
+  page_title varchar2( 256 char ) not null,
+  page_alias varchar2( 256 char ) not null,
+  page_type varchar2( 256 char ) not null,
+  build_option varchar2( 256 char ),
+  constraint blog_pages_pk primary key( id ),
+  constraint blog_pages_uk1 unique( page_alias  ),
+  constraint blog_pages_ck1 check( row_version > 0 ),
+  constraint blog_pages_ck2 check( is_active in( 0, 1 ) ),
+  constraint blog_pages_ck3 check( display_seq > 0 )
+)
+/
+--------------------------------------------------------
 --  DDL for Table BLOG_POSTS
 --------------------------------------------------------
 create table  blog_posts(
@@ -539,7 +562,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POSTS_TAGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POST_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG") DEFAULT COLLATION "USING_NLS_COMP" AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POST_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG") AS
   select
    t2.id                        as id
   ,t2.row_version               as row_version
@@ -917,7 +940,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_REP_POST_BY_STATUS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_REP_POST_BY_STATUS" ("APPLICATION_ID", "NUM_POSTS", "POST_STATUS") DEFAULT COLLATION "USING_NLS_COMP"  AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_REP_POST_BY_STATUS" ("APPLICATION_ID", "NUM_POSTS", "POST_STATUS") AS
   with apex_lov as(
   select v1.application_id
     ,v1.return_value
@@ -2052,12 +2075,13 @@ as
 --    Jari Laine 10.05.2020 - New function get_unsubscribe
 --    Jari Laine 19.05.2020 - Changed page and items name to "hard coded" values
 --                            and removed global constants from blog_util package
+--    Jari Laine 23.05.2020 - Removed default from function get_tab parameter p_app_page_id
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tab(
+    p_app_page_id     in varchar2,
     p_app_id          in varchar2 default null,
-    p_app_page_id     in varchar2 default 'HOME',
     p_session         in varchar2 default null,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
@@ -2147,8 +2171,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tab(
+    p_app_page_id   in varchar2,
     p_app_id        in varchar2 default null,
-    p_app_page_id   in varchar2 default 'HOME',
     p_session       in varchar2 default null,
     p_canonical     in varchar2 default 'NO'
   ) return varchar2
@@ -4487,6 +4511,7 @@ as
 --    Jari Laine 17.05.2020 - Removed private function get_app_alias
 --                            and constant c_pub_app_id
 --                            Moved private function get_ords_service to blog_ords package
+--    Jari Laine 23.05.2020 - Changed procedure sitemap_main to use table blog_pages
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4546,7 +4571,8 @@ as
     l_app_id    := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
-       p_app_id => l_app_id
+       p_app_page_id => 'HOME'
+      ,p_app_id => l_app_id
       ,p_canonical => 'YES'
     );
 
@@ -4684,31 +4710,31 @@ as
               xmlelement("url"
               ,xmlelement("loc",  blog_url.get_tab(
                                      p_app_id  => l_app_id
-                                    ,p_app_page_id => li.entry_attribute_10
+                                    ,p_app_page_id => t1.page_alias
                                     ,p_canonical => 'YES'
                                   )
               )
 --            ,XMLElement( "lastmod", to_char( sysdate, 'YYYY-MM-DD' ) )
 --            ,XMLElement( "changefreq", 'monthly' )
 --            ,XMLElement( "priority", '0.5' )
-            )
+            ) order by t1.display_seq
           )
         )
       )
     as blob encoding 'UTF-8' indent size=2)
     into l_xml
-    from apex_application_list_entries li
+    from blog_pages t1
     where 1 = 1
-      and li.list_name = 'Desktop Navigation Menu'
-      and li.application_id = l_pub_id
-    and not exists(
-      select 1
-      from apex_application_build_options bo
-      where 1 = 1
-        and bo.application_id = l_pub_id
-        and bo.build_option_name = li.build_option
-        and bo.build_option_status = 'Exclude'
-    );
+      and t1.page_type = 'TAB'
+      and not exists(
+        select 1
+        from apex_application_build_options bo
+        where 1 = 1
+          and bo.application_id = l_pub_id
+          and bo.build_option_name = t1.build_option
+          and bo.build_option_status = 'Exclude'
+      )
+    ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
     sys.htp.p('Cache-Control: max-age=3600, public' );
@@ -5057,6 +5083,41 @@ begin
       ,sys_context('USERENV','PROXY_USER')
       ,sys_context('USERENV','SESSION_USER')
     );
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_FILES_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_PAGES_TRG"
+before
+insert or
+update on blog_pages
+for each row
+begin
+
+  if inserting then
+
+    :new.id           := coalesce( :new.id, blog_seq.nextval );
+    :new.row_version  := coalesce( :new.row_version, 1 );
+    :new.created_on   := localtimestamp;
+    :new.created_by   := coalesce(
+       :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context('USERENV','PROXY_USER')
+      ,sys_context('USERENV','SESSION_USER')
+    );
+
+  elsif updating then
+    :new.row_version  := :old.row_version + 1;
+  end if;
+
+  :new.changed_on := localtimestamp;
+  :new.changed_by := coalesce(
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context('USERENV','PROXY_USER')
+    ,sys_context('USERENV','SESSION_USER')
+  );
 
 end;
 /

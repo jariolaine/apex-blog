@@ -1,6 +1,14 @@
 --------------------------------------------------------
 --  Inserting into BLOG_FEATURES
 --------------------------------------------------------
+insert into blog_pages (is_active,display_seq,page_title,page_alias,build_option,page_type) values ('1','10','Home','HOME',null,'TAB');
+insert into blog_pages (is_active,display_seq,page_title,page_alias,build_option,page_type) values ('1','20','Links','LINKS','BLOG_FEATURE_LINKS','TAB');
+insert into blog_pages (is_active,display_seq,page_title,page_alias,build_option,page_type) values ('1','30','Files','REPOSITORY','BLOG_FEATURE_FILES','TAB');
+insert into blog_pages (is_active,display_seq,page_title,page_alias,build_option,page_type) values ('1','40','About','ABOUT','BLOG_FEATURE_ABOUT','TAB');
+
+--------------------------------------------------------
+--  Inserting into BLOG_FEATURES
+--------------------------------------------------------
 insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values ('BLOG_FEATURE_ALLOW_COMMENTS','BLOG_FEATURE_GROUP_COMMENTS','1','10',null);
 insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values ('BLOG_FEATURE_MODERATE_COMMENTS','BLOG_FEATURE_GROUP_COMMENTS','1','20',null);
 insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) valueS ('BLOG_FEATURE_SUBSCRIBE_COMMENTS','BLOG_FEATURE_GROUP_COMMENTS','1','30',null);
