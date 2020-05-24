@@ -988,8 +988,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure run_settings_post_expression(
-    p_id              in number,
-    p_value           in out nocopy varchar2
+    p_id    in number,
+    p_value in out nocopy varchar2
   )
   as
     l_exp varchar2(32700);
@@ -999,10 +999,11 @@ as
     p_value := trim( p_value );
 
     -- fetch post exporession
-    select post_expression
+    select v1.post_expression
     into l_exp
     from blog_v_all_settings v1
     where 1 = 1
+      and v1.post_expression is not null
       and v1.id = p_id
     ;
     -- get expression result
@@ -1017,17 +1018,18 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure run_feature_post_expression(
-    p_id              in number
+    p_id  in number
   )
   as
     l_plsql varchar2(32700);
   begin
 
     -- fetch post exporession
-    select post_expression
+    select v1.post_expression
     into l_plsql
     from blog_v_all_features v1
     where 1 = 1
+      and v1.post_expression is not null
       and v1.feature_id = p_id
     ;
     -- run expression

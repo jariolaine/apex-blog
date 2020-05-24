@@ -128,7 +128,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_ADMIN_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524175518'
+,p_last_upd_yyyymmddhh24miss=>'20200524182157'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>195
 ,p_ui_type_name => null
@@ -25330,8 +25330,8 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure run_settings_post_expression(',
-'    p_id              in number,',
-'    p_value           in out nocopy varchar2',
+'    p_id    in number,',
+'    p_value in out nocopy varchar2',
 '  )',
 '  as',
 '    l_exp varchar2(32700);',
@@ -25341,10 +25341,11 @@ wwv_flow_api.append_to_install_script(
 '    p_value := trim( p_value );',
 '',
 '    -- fetch post exporession',
-'    select post_expression',
+'    select v1.post_expression',
 '    into l_exp',
 '    from blog_v_all_settings v1',
 '    where 1 = 1',
+'      and v1.post_expression is not null',
 '      and v1.id = p_id',
 '    ;',
 '    -- get expression result',
@@ -25359,17 +25360,18 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure run_feature_post_expression(',
-'    p_id              in number',
+'    p_id  in number',
 '  )',
 '  as',
 '    l_plsql varchar2(32700);',
 '  begin',
 '',
 '    -- fetch post exporession',
-'    select post_expression',
+'    select v1.post_expression',
 '    into l_plsql',
 '    from blog_v_all_features v1',
 '    where 1 = 1',
+'      and v1.post_expression is not null',
 '      and v1.feature_id = p_id',
 '    ;',
 '    -- run expression',
@@ -26201,8 +26203,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function get_post_canonical_link(',
-'    p_post_id       in varchar2,',
-'    p_app_id        in varchar2'))
+'    p_p'))
 );
 null;
 end;
@@ -26211,7 +26212,8 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' default null',
+'ost_id       in varchar2,',
+'    p_app_id        in varchar2 default null',
 '  ) return varchar2',
 '  as',
 '    l_html varchar2(32700);',
@@ -27135,8 +27137,7 @@ wwv_flow_api.append_to_install_script(
 '  if inserting then',
 '',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
-'    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimes'))
+'    :new.row_version  := coalesce( :'))
 );
 null;
 end;
@@ -27145,7 +27146,8 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'tamp;',
+'new.row_version, 1 );',
+'    :new.created_on   := localtimestamp;',
 '    :new.created_by   := coalesce(',
 '       :new.created_by',
 '      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
