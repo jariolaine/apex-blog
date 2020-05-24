@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  DDL for Trigger BLOG_FILES_TRG
+--  DDL for Trigger BLOG_PAGES_TRG
 --------------------------------------------------------
 CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_PAGES_TRG"
 before

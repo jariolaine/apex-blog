@@ -4,6 +4,7 @@
 create table blog_init_items(
   application_id number(38,0) not null,
   item_name varchar2(256 char) not null,
+  notes varchar2(4000 char),
   constraint blog_init__items_pk primary key( application_id, item_name )
 )
 /
