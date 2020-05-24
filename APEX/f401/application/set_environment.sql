@@ -68,8 +68,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --       Reports:
 --       E-Mail:
 --         Templates:              1
---     Supporting Objects:  Included (auto-install)
---       Install scripts:          1
+--     Supporting Objects:  Excluded
 --   Version:         19.2.0.00.18
 --   Instance ID:     9502710254078678
 --

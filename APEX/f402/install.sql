@@ -137,10 +137,4 @@ prompt --install
 @application/pages/page_20012.sql
 @application/pages/page_30010.sql
 @application/pages/page_30011.sql
-@application/deployment/definition.sql
-@application/deployment/install/install_database_objects.sql
-@application/deployment/install/install_meta_data.sql
-@application/deployment/install/install_workspace_files.sql
-@application/deployment/checks.sql
-@application/deployment/buildoptions.sql
 @application/end_environment.sql
