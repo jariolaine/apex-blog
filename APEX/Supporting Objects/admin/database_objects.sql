@@ -507,8 +507,9 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_FEATURES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("APPLICATION_ID", "BUILD_OPTION_ID", "ALLOWED_ROW_OPERATION", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS_ACTIVE") AS
-  select t1.application_id      as application_id
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("FEATURE_ID", "APPLICATION_ID", "BUILD_OPTION_ID", "ALLOWED_ROW_OPERATION", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS_ACTIVE", "POST_EXPRESSION") AS
+  select t2.id                  as feature_id
+  ,t1.application_id            as application_id
   ,t1.build_option_id           as build_option_id
   ,'U'                          as allowed_row_operation
   ,t2.display_seq               as display_seq
@@ -522,6 +523,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("APPLICATION_ID", "BUILD_OPT
   ,t1.last_updated_on           as last_updated_on
   ,lower( t1.last_updated_by )  as last_updated_by
   ,t2.is_active                 as is_active
+  ,t2.post_expression           as post_expression
 from apex_application_build_options t1
 join blog_features t2
   on t1.build_option_name = t2.build_option_name
@@ -1636,11 +1638,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure create_module(
+    p_app_id    in number,
     p_base_path in varchar2 default null
-  );
---------------------------------------------------------------------------------
-  procedure create_templates(
-    p_app_id in number
   );
 --------------------------------------------------------------------------------
   function get_module_path(
@@ -1663,55 +1662,6 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- none
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Global procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure create_module(
-    p_base_path in varchar2 default null
-  )
-  as
-    l_base_path varchar2(256);
-  begin
-
-    begin
-      -- query ORDS metadata to get resource url
-      select t2.uri_prefix as url
-      into l_base_path
-      from user_ords_schemas t1
-      join user_ords_modules t2
-        on t1.id = t2.schema_id
-      where 1 = 1
-        and t1.parsing_schema = c_owner
-        and t2.name = c_module_name
-      ;
-    exception when no_data_found then
-      l_base_path := null;
-    end;
-
-    l_base_path :=
-      case when p_base_path is not null
-      then p_base_path
-      else
-        case when l_base_path is not null
-        then l_base_path
-        else sys.dbms_random.string('l', 6)
-        end
-      end
-    ;
-    -- Static files module
-    ords.define_module(
-      p_module_name     => c_module_name
-      ,p_base_path      => l_base_path
-      ,p_items_per_page => 25
-      ,p_status         => 'PUBLISHED'
-      ,p_comments       => 'Blog static content from blog_files table and dynamic XML'
-    );
-  end create_module;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure create_templates(
@@ -1761,6 +1711,58 @@ as
     end loop;
 
   end create_templates;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Global procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure create_module(
+    p_app_id    in number,
+    p_base_path in varchar2 default null
+  )
+  as
+    l_base_path varchar2(256);
+  begin
+
+    begin
+      -- query ORDS metadata to get resource url
+      select t2.uri_prefix as url
+      into l_base_path
+      from user_ords_schemas t1
+      join user_ords_modules t2
+        on t1.id = t2.schema_id
+      where 1 = 1
+        and t1.parsing_schema = c_owner
+        and t2.name = c_module_name
+      ;
+    exception when no_data_found then
+      l_base_path := null;
+    end;
+
+    l_base_path :=
+      case when p_base_path is not null
+      then p_base_path
+      else
+        case when l_base_path is not null
+        then l_base_path
+        else sys.dbms_random.string('l', 6)
+        end
+      end
+    ;
+    -- Static files module
+    ords.define_module(
+      p_module_name     => c_module_name
+      ,p_base_path      => l_base_path
+      ,p_items_per_page => 25
+      ,p_status         => 'PUBLISHED'
+      ,p_comments       => 'Blog static content from blog_files table and dynamic XML'
+    );
+
+    create_templates(
+      p_app_id => p_app_id
+    );
+
+  end create_module;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_module_path(
@@ -2357,7 +2359,10 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
+    l_tag_id varchar2(256);
   begin
+
+    l_tag_id := to_char( p_tag_id, blog_util.g_number_format );
 
     return
       case p_canonical
@@ -2371,7 +2376,7 @@ as
         ,p_session     => p_session
         ,p_clear_cache => 'RP'
         ,p_items       => 'P6_TAG_ID'
-        ,p_values      => p_tag_id
+        ,p_values      => l_tag_id
         --,p_plain_url   => true
       )
     ;
@@ -2463,6 +2468,7 @@ as
 --    Jari Laine 17.05.2020 - Removed parameter p_err_mesg from function get_first_paragraph,
 --                            function is called now from APEX application conputation
 --    Jari Laine 19.05.2020 - Removed obsolete function get_post_title
+--    Jari Laine 24.05.2020 - Added procedures run_settings_post_expression and run_feature_post_expression
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -2582,6 +2588,17 @@ as
     p_value           in varchar2,
     p_err_mesg        in varchar2
   ) return varchar2;
+--------------------------------------------------------------------------------
+  -- Called from: admin app pages 20012
+  procedure run_settings_post_expression(
+    p_id              in number,
+    p_value           in out nocopy varchar2
+  );
+--------------------------------------------------------------------------------
+  -- Called from: admin app pages 20011
+  procedure run_feature_post_expression(
+    p_id              in number
+  );
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 32
   function get_comment_post_id(
@@ -3417,6 +3434,60 @@ as
     return l_err_mesg;
 
   end is_email;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure run_settings_post_expression(
+    p_id              in number,
+    p_value           in out nocopy varchar2
+  )
+  as
+    l_exp varchar2(32700);
+  begin
+
+    -- trim value
+    p_value := trim( p_value );
+
+    -- fetch post exporession
+    select post_expression
+    into l_exp
+    from blog_v_all_settings v1
+    where 1 = 1
+      and v1.id = p_id
+    ;
+    -- get expression result
+    p_value := apex_plugin_util.get_plsql_expression_result(
+      p_plsql_expression => l_exp
+    );
+
+  exception when no_data_found
+  then
+    null;
+  end run_settings_post_expression;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure run_feature_post_expression(
+    p_id              in number
+  )
+  as
+    l_plsql varchar2(32700);
+  begin
+
+    -- fetch post exporession
+    select post_expression
+    into l_plsql
+    from blog_v_all_features v1
+    where 1 = 1
+      and v1.feature_id = p_id
+    ;
+    -- run expression
+    apex_plugin_util.execute_plsql_code(
+      p_plsql_code => l_plsql
+    );
+
+  exception when no_data_found
+  then
+    null;
+  end run_feature_post_expression;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_comment_post_id(
@@ -4510,6 +4581,10 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_categories;
 --------------------------------------------------------------------------------
+  procedure sitemap_archives;
+--------------------------------------------------------------------------------
+  procedure sitemap_tags;
+--------------------------------------------------------------------------------
 end "BLOG_XML";
 /
 
@@ -4796,6 +4871,84 @@ as
     wpg_docload.download_file( l_xml );
 
   end sitemap_categories;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure sitemap_archives
+  as
+    l_xml     blob;
+    l_app_id  varchar2(256);
+  begin
+
+    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
+
+    select xmlserialize( document
+      xmlelement(
+        "urlset",
+        xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
+        (
+          xmlagg(
+            xmlelement( "url"
+              ,xmlelement( "loc", blog_url.get_archive(
+                                     p_app_id     => l_app_id
+                                    ,p_archive_id => arc.archive_year
+                                    ,p_canonical  => 'YES'
+                                  )
+              )
+            ) order by arc.archive_year desc
+          )
+        )
+      )
+    as blob encoding 'UTF-8' indent size=2)
+    into l_xml
+    from blog_v_archive_year arc
+    ;
+
+    owa_util.mime_header('application/xml', false, 'UTF-8');
+    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.owa_util.http_header_close;
+
+    wpg_docload.download_file( l_xml );
+
+  end sitemap_archives;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure sitemap_tags
+  as
+    l_xml     blob;
+    l_app_id  varchar2(256);
+  begin
+
+    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
+
+    select xmlserialize( document
+      xmlelement(
+        "urlset",
+        xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
+        (
+          xmlagg(
+            xmlelement( "url"
+              ,xmlelement( "loc", blog_url.get_tag(
+                                     p_app_id     => l_app_id
+                                    ,p_tag_id     => tags.tag_id
+                                    ,p_canonical  => 'YES'
+                                  )
+              )
+            )
+          )
+        )
+      )
+    as blob encoding 'UTF-8' indent size=2)
+    into l_xml
+    from blog_v_tags tags
+    ;
+
+    owa_util.mime_header('application/xml', false, 'UTF-8');
+    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.owa_util.http_header_close;
+
+    wpg_docload.download_file( l_xml );
+
+  end sitemap_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_XML";

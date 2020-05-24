@@ -19,6 +19,7 @@ as
 --    Jari Laine 17.05.2020 - Removed parameter p_err_mesg from function get_first_paragraph,
 --                            function is called now from APEX application conputation
 --    Jari Laine 19.05.2020 - Removed obsolete function get_post_title
+--    Jari Laine 24.05.2020 - Added procedures run_settings_post_expression and run_feature_post_expression
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -138,6 +139,17 @@ as
     p_value           in varchar2,
     p_err_mesg        in varchar2
   ) return varchar2;
+--------------------------------------------------------------------------------
+  -- Called from: admin app pages 20012
+  procedure run_settings_post_expression(
+    p_id              in number,
+    p_value           in out nocopy varchar2
+  );
+--------------------------------------------------------------------------------
+  -- Called from: admin app pages 20011
+  procedure run_feature_post_expression(
+    p_id              in number
+  );
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 32
   function get_comment_post_id(
@@ -973,6 +985,60 @@ as
     return l_err_mesg;
 
   end is_email;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure run_settings_post_expression(
+    p_id              in number,
+    p_value           in out nocopy varchar2
+  )
+  as
+    l_exp varchar2(32700);
+  begin
+
+    -- trim value
+    p_value := trim( p_value );
+
+    -- fetch post exporession
+    select post_expression
+    into l_exp
+    from blog_v_all_settings v1
+    where 1 = 1
+      and v1.id = p_id
+    ;
+    -- get expression result
+    p_value := apex_plugin_util.get_plsql_expression_result(
+      p_plsql_expression => l_exp
+    );
+
+  exception when no_data_found
+  then
+    null;
+  end run_settings_post_expression;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure run_feature_post_expression(
+    p_id              in number
+  )
+  as
+    l_plsql varchar2(32700);
+  begin
+
+    -- fetch post exporession
+    select post_expression
+    into l_plsql
+    from blog_v_all_features v1
+    where 1 = 1
+      and v1.feature_id = p_id
+    ;
+    -- run expression
+    apex_plugin_util.execute_plsql_code(
+      p_plsql_code => l_plsql
+    );
+
+  exception when no_data_found
+  then
+    null;
+  end run_feature_post_expression;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_comment_post_id(

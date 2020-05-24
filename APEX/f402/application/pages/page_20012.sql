@@ -18,7 +18,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524081540'
+,p_last_upd_yyyymmddhh24miss=>'20200524171844'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -36,7 +36,6 @@ wwv_flow_api.create_page_plug(
 '  ,v1.row_version       as row_version',
 '  ,v1.is_nullable       as is_nullable',
 '  ,v1.data_type         as data_type',
-'  ,v1.post_expression   as post_expression',
 '  ,v1.display_seq       as display_seq',
 '  ,v1.attribute_desc    as attribute_name',
 '  ,v1.attribute_value   as attribute_value',
@@ -262,22 +261,6 @@ wwv_flow_api.create_region_column(
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
 );
-wwv_flow_api.create_region_column(
- p_id=>wwv_flow_api.id(31248517613982925)
-,p_name=>'POST_EXPRESSION'
-,p_source_type=>'DB_COLUMN'
-,p_source_expression=>'POST_EXPRESSION'
-,p_data_type=>'VARCHAR2'
-,p_is_query_only=>false
-,p_item_type=>'NATIVE_HIDDEN'
-,p_display_sequence=>70
-,p_attribute_01=>'Y'
-,p_use_as_row_header=>false
-,p_enable_sort_group=>false
-,p_is_primary_key=>false
-,p_duplicate_value=>true
-,p_include_in_export=>false
-);
 wwv_flow_api.create_interactive_grid(
  p_id=>wwv_flow_api.id(27273553203075414)
 ,p_internal_uid=>27273553203075414
@@ -413,14 +396,6 @@ wwv_flow_api.create_ig_report_column(
 ,p_break_is_enabled=>true
 ,p_break_sort_direction=>'ASC'
 ,p_break_sort_nulls=>'LAST'
-);
-wwv_flow_api.create_ig_report_column(
- p_id=>wwv_flow_api.id(31502629727548843)
-,p_view_id=>wwv_flow_api.id(27305179764698519)
-,p_display_seq=>11
-,p_column_id=>wwv_flow_api.id(31248517613982925)
-,p_is_visible=>true
-,p_is_frozen=>false
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(80220063138113444)
@@ -593,16 +568,6 @@ wwv_flow_api.create_page_da_action(
 ,p_wait_for_result=>'Y'
 );
 wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(31248780098982927)
-,p_process_sequence=>10
-,p_process_point=>'AFTER_SUBMIT'
-,p_region_id=>wwv_flow_api.id(27272383079075402)
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Trim attribute value'
-,p_process_sql_clob=>':ATTRIBUTE_VALUE := trim(:ATTRIBUTE_VALUE);'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-);
-wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(31248479488982924)
 ,p_process_sequence=>20
 ,p_process_point=>'AFTER_SUBMIT'
@@ -610,14 +575,11 @@ wwv_flow_api.create_page_process(
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Run post expression'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-':ATTRIBUTE_VALUE := apex_plugin_util.get_plsql_expression_result(',
-'    p_plsql_expression => :POST_EXPRESSION',
-');',
-''))
+'#OWNER#.blog_cm.run_settings_post_expression(',
+'   p_id    => :ID',
+'  ,p_value => :ATTRIBUTE_VALUE',
+');'))
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when=>'POST_EXPRESSION'
-,p_process_when_type=>'ITEM_IS_NOT_NULL'
-,p_exec_cond_for_each_row=>'Y'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(27274503365075424)

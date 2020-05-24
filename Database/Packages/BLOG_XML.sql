@@ -32,6 +32,10 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_categories;
 --------------------------------------------------------------------------------
+  procedure sitemap_archives;
+--------------------------------------------------------------------------------
+  procedure sitemap_tags;
+--------------------------------------------------------------------------------
 end "BLOG_XML";
 /
 
@@ -318,6 +322,84 @@ as
     wpg_docload.download_file( l_xml );
 
   end sitemap_categories;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure sitemap_archives
+  as
+    l_xml     blob;
+    l_app_id  varchar2(256);
+  begin
+
+    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
+
+    select xmlserialize( document
+      xmlelement(
+        "urlset",
+        xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
+        (
+          xmlagg(
+            xmlelement( "url"
+              ,xmlelement( "loc", blog_url.get_archive(
+                                     p_app_id     => l_app_id
+                                    ,p_archive_id => arc.archive_year
+                                    ,p_canonical  => 'YES'
+                                  )
+              )
+            ) order by arc.archive_year desc
+          )
+        )
+      )
+    as blob encoding 'UTF-8' indent size=2)
+    into l_xml
+    from blog_v_archive_year arc
+    ;
+
+    owa_util.mime_header('application/xml', false, 'UTF-8');
+    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.owa_util.http_header_close;
+
+    wpg_docload.download_file( l_xml );
+
+  end sitemap_archives;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure sitemap_tags
+  as
+    l_xml     blob;
+    l_app_id  varchar2(256);
+  begin
+
+    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
+
+    select xmlserialize( document
+      xmlelement(
+        "urlset",
+        xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
+        (
+          xmlagg(
+            xmlelement( "url"
+              ,xmlelement( "loc", blog_url.get_tag(
+                                     p_app_id     => l_app_id
+                                    ,p_tag_id     => tags.tag_id
+                                    ,p_canonical  => 'YES'
+                                  )
+              )
+            )
+          )
+        )
+      )
+    as blob encoding 'UTF-8' indent size=2)
+    into l_xml
+    from blog_v_tags tags
+    ;
+
+    owa_util.mime_header('application/xml', false, 'UTF-8');
+    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.owa_util.http_header_close;
+
+    wpg_docload.download_file( l_xml );
+
+  end sitemap_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_XML";

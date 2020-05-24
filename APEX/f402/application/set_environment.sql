@@ -35,7 +35,7 @@ prompt APPLICATION 402 - Blog Administration
 --       Items:                   62
 --       Computations:             6
 --       Validations:              9
---       Processes:               46
+--       Processes:               45
 --       Regions:                 65
 --       Buttons:                 68
 --       Dynamic Actions:         32

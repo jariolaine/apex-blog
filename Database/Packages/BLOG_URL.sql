@@ -317,7 +317,10 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
+    l_tag_id varchar2(256);
   begin
+
+    l_tag_id := to_char( p_tag_id, blog_util.g_number_format );
 
     return
       case p_canonical
@@ -331,7 +334,7 @@ as
         ,p_session     => p_session
         ,p_clear_cache => 'RP'
         ,p_items       => 'P6_TAG_ID'
-        ,p_values      => p_tag_id
+        ,p_values      => l_tag_id
         --,p_plain_url   => true
       )
     ;

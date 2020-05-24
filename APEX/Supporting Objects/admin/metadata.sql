@@ -4,6 +4,18 @@
 Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values ('1','feed/rss','GET','plsql/block','begin
   blog_xml.rss(:p_lang);
 end;','BLOG_FEATURE_RSS','Blog rss feed','RSS');
+Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values ('1','share/:p_file_name','GET','resource/lob','select v1.mime_type
+  ,v1.blob_content
+from blog_v_files v1
+where 1 = 1
+  and v1.is_download = 0
+  and v1.file_name = :p_file_name',null,'Blog static files','FILES');
+Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values ('1','sitemap/archives','GET','plsql/block','begin
+  blog_xml.sitemap_archives;
+end;','BLOG_FEATURE_ARCHIVE','Blog archives sitemap','SITEMAP');
+Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values ('1','sitemap/categories','GET','plsql/block','begin
+  blog_xml.sitemap_categories;
+end;','BLOG_FEATURE_CATEGORY','Blog categories sitemap','SITEMAP');
 Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values ('1','sitemap/index','GET','plsql/block','begin
   blog_xml.sitemap_index;
 end;',null,'Blog sitemap index','SITEMAP');
@@ -13,15 +25,9 @@ end;',null,'Blog main pages sitemap','SITEMAP');
 Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values ('1','sitemap/posts','GET','plsql/block','begin
   blog_xml.sitemap_posts;
 end;',null,'Blog posts sitemap','SITEMAP');
-Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values ('1','sitemap/categories','GET','plsql/block','begin
-  blog_xml.sitemap_categories;
-end;','BLOG_FEATURE_CATEGORY','Blog categories sitemap','SITEMAP');
-Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values ('1','share/:p_file_name','GET','resource/lob','select v1.mime_type
-  ,v1.blob_content
-from blog_v_files v1
-where 1 = 1
-  and v1.is_download = 0
-  and v1.file_name = :p_file_name',null,'Blog static files','FILES');
+Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values ('1','sitemap/tags','GET','plsql/block','begin
+  blog_xml.sitemap_tags;
+end;',null,'Blog tags sitemap','SITEMAP');
 
 --------------------------------------------------------
 --  Inserting into BLOG_PAGES
@@ -34,20 +40,32 @@ insert into blog_pages (is_active,display_seq,page_title,page_alias,build_option
 --------------------------------------------------------
 --  Inserting into BLOG_FEATURES
 --------------------------------------------------------
-insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values ('BLOG_FEATURE_ALLOW_COMMENTS','BLOG_FEATURE_GROUP_COMMENTS','1','10',null);
-insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values ('BLOG_FEATURE_MODERATE_COMMENTS','BLOG_FEATURE_GROUP_COMMENTS','1','20',null);
-insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) valueS ('BLOG_FEATURE_SUBSCRIBE_COMMENTS','BLOG_FEATURE_GROUP_COMMENTS','1','30',null);
-insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values ('BLOG_FEATURE_POST_PAGINATION','BLOG_FEATURE_GROUP_POST','0','40',null);
-insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values ('BLOG_FEATURE_SEARCH_POSTS','BLOG_FEATURE_GROUP_RIGHT_COLUMN','1','50',null);
-insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values ('BLOG_FEATURE_CATEGORY','BLOG_FEATURE_GROUP_RIGHT_COLUMN','1','60',null);
-insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values ('BLOG_FEATURE_LATEST_POSTS','BLOG_FEATURE_GROUP_RIGHT_COLUMN','1','70',null);
-insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values ('BLOG_FEATURE_ARCHIVE','BLOG_FEATURE_GROUP_RIGHT_COLUMN','1','70',null);
-insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values ('BLOG_FEATURE_RSS','BLOG_FEATURE_GROUP_RIGHT_COLUMN','1','90',null);
-insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values ('BLOG_FEATURE_LINKS','BLOG_FEATURE_GROUP_PAGE','1','100',null);
-insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values ('BLOG_FEATURE_FILES','BLOG_FEATURE_GROUP_PAGE','1','110',null);
-insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values ('BLOG_FEATURE_ABOUT','BLOG_FEATURE_GROUP_PAGE','1','120',null);
-insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values ('BLOG_FEATURE_SEARCH_LINKS','BLOG_FEATURE_GROUP_SEARCH','1','130',null);
-insert into blog_features (build_option_name,build_option_group,is_active,display_seq,notes) values ('BLOG_FEATURE_SEARCH_FILES','BLOG_FEATURE_GROUP_SEARCH','1','140',null);
+Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values ('1','10','BLOG_FEATURE_ALLOW_COMMENTS','BLOG_FEATURE_GROUP_COMMENTS',null,null);
+Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values ('1','20','BLOG_FEATURE_MODERATE_COMMENTS','BLOG_FEATURE_GROUP_COMMENTS',null,null);
+Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values ('1','30','BLOG_FEATURE_SUBSCRIBE_COMMENTS','BLOG_FEATURE_GROUP_COMMENTS',null,null);
+Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values ('0','40','BLOG_FEATURE_POST_PAGINATION','BLOG_FEATURE_GROUP_POST',null,null);
+Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values ('1','50','BLOG_FEATURE_SEARCH_POSTS','BLOG_FEATURE_GROUP_RIGHT_COLUMN',null,null);
+Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values ('1','60','BLOG_FEATURE_CATEGORY','BLOG_FEATURE_GROUP_RIGHT_COLUMN','begin
+  blog_ords.create_module(
+    p_app_id => :G_PUB_APP_ID
+  );
+end;',null);
+Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values ('1','70','BLOG_FEATURE_LATEST_POSTS','BLOG_FEATURE_GROUP_RIGHT_COLUMN',null,null);
+Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values ('1','70','BLOG_FEATURE_ARCHIVE','BLOG_FEATURE_GROUP_RIGHT_COLUMN','begin
+  blog_ords.create_module(
+    p_app_id => :G_PUB_APP_ID
+  );
+end;',null);
+Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values ('1','90','BLOG_FEATURE_RSS','BLOG_FEATURE_GROUP_RIGHT_COLUMN','begin
+  blog_ords.create_module(
+    p_app_id => :G_PUB_APP_ID
+  );
+end;',null);
+Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values ('1','100','BLOG_FEATURE_LINKS','BLOG_FEATURE_GROUP_PAGE',null,null);
+Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values ('1','110','BLOG_FEATURE_FILES','BLOG_FEATURE_GROUP_PAGE',null,null);
+Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values ('1','120','BLOG_FEATURE_ABOUT','BLOG_FEATURE_GROUP_PAGE',null,null);
+Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values ('1','130','BLOG_FEATURE_SEARCH_LINKS','BLOG_FEATURE_GROUP_SEARCH',null,null);
+Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values ('1','140','BLOG_FEATURE_SEARCH_FILES','BLOG_FEATURE_GROUP_SEARCH',null,null);
 
 --------------------------------------------------------
 --  Inserting into BLOG_SETTINGS
@@ -100,13 +118,12 @@ declare
 begin
 
   -- Create ORDS module
-  blog_ords.create_module;
-  blog_ords.create_templates(
+  blog_ords.create_module(
     p_app_id => apex_application_install.get_application_id
   );
 
   -- get RSS feed URL
-  l_rss_url := blog_ords.get_module_path( 'YES') || 'feed/rss';
+  l_rss_url := blog_ords.get_module_path( 'YES' ) || 'feed/rss';
 
   -- update RSS feed URL to settings
   update blog_settings

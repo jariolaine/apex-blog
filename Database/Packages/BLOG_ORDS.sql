@@ -26,11 +26,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure create_module(
+    p_app_id    in number,
     p_base_path in varchar2 default null
-  );
---------------------------------------------------------------------------------
-  procedure create_templates(
-    p_app_id in number
   );
 --------------------------------------------------------------------------------
   function get_module_path(
@@ -53,55 +50,6 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- none
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Global procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure create_module(
-    p_base_path in varchar2 default null
-  )
-  as
-    l_base_path varchar2(256);
-  begin
-
-    begin
-      -- query ORDS metadata to get resource url
-      select t2.uri_prefix as url
-      into l_base_path
-      from user_ords_schemas t1
-      join user_ords_modules t2
-        on t1.id = t2.schema_id
-      where 1 = 1
-        and t1.parsing_schema = c_owner
-        and t2.name = c_module_name
-      ;
-    exception when no_data_found then
-      l_base_path := null;
-    end;
-
-    l_base_path :=
-      case when p_base_path is not null
-      then p_base_path
-      else
-        case when l_base_path is not null
-        then l_base_path
-        else sys.dbms_random.string('l', 6)
-        end
-      end
-    ;
-    -- Static files module
-    ords.define_module(
-      p_module_name     => c_module_name
-      ,p_base_path      => l_base_path
-      ,p_items_per_page => 25
-      ,p_status         => 'PUBLISHED'
-      ,p_comments       => 'Blog static content from blog_files table and dynamic XML'
-    );
-  end create_module;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure create_templates(
@@ -151,6 +99,58 @@ as
     end loop;
 
   end create_templates;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Global procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure create_module(
+    p_app_id    in number,
+    p_base_path in varchar2 default null
+  )
+  as
+    l_base_path varchar2(256);
+  begin
+
+    begin
+      -- query ORDS metadata to get resource url
+      select t2.uri_prefix as url
+      into l_base_path
+      from user_ords_schemas t1
+      join user_ords_modules t2
+        on t1.id = t2.schema_id
+      where 1 = 1
+        and t1.parsing_schema = c_owner
+        and t2.name = c_module_name
+      ;
+    exception when no_data_found then
+      l_base_path := null;
+    end;
+
+    l_base_path :=
+      case when p_base_path is not null
+      then p_base_path
+      else
+        case when l_base_path is not null
+        then l_base_path
+        else sys.dbms_random.string('l', 6)
+        end
+      end
+    ;
+    -- Static files module
+    ords.define_module(
+      p_module_name     => c_module_name
+      ,p_base_path      => l_base_path
+      ,p_items_per_page => 25
+      ,p_status         => 'PUBLISHED'
+      ,p_comments       => 'Blog static content from blog_files table and dynamic XML'
+    );
+
+    create_templates(
+      p_app_id => p_app_id
+    );
+
+  end create_module;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_module_path(
