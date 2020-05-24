@@ -217,6 +217,28 @@ as
         || 'end;'
       );
 
+    ords.define_template(
+      p_module_name     => c_module_name
+      ,p_pattern        => 'sitemap/categories'
+      ,p_priority       => 0
+      ,p_etag_type      => 'HASH'
+      ,p_etag_query     => null
+      ,p_comments       => 'Blog posts sitemap'
+    );
+
+    ords.define_handler(
+      p_module_name     => c_module_name
+      ,p_pattern        => 'sitemap/categories'
+      ,p_method         => 'GET'
+      ,p_source_type    => 'plsql/block'
+      ,p_mimes_allowed  => ''
+      ,p_comments       => 'Blog posts sitemap'
+      ,p_source         =>
+        'begin' || chr(10)
+        || '  blog_xml.sitemap_categories;' || chr(10)
+        || 'end;'
+    );
+
   end create_sitemap_templates;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
