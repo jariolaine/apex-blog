@@ -142,60 +142,43 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_index
   as
-    l_xml         blob;
-    l_url         varchar2(4000);
-    l_main        varchar2(4000);
-    l_posts       varchar2(4000);
-    l_categories  varchar2(4000);
+    l_xml     blob;
+    l_app_id  number;
+    l_url     varchar2(4000);
   begin
 
-    l_url :=  blog_util.get_attribute_value( 'CANONICAL_URL' );
+    l_app_id := to_number( blog_util.get_attribute_value ( 'G_PUB_APP_ID' ) );
 
-    l_main := l_url
-      || blog_ords.get_module_path
-      || 'sitemap/main'
-    ;
+    l_url := blog_ords.get_module_path(
+      p_canonical => 'YES'
+    );
 
-    l_posts := l_url
-      || blog_ords.get_module_path
-      || 'sitemap/posts'
-    ;
-
-    l_categories := l_url
-      || blog_ords.get_module_path
-      || 'sitemap/categories'
-    ;
-
-
-    with si as (
-      select 1 as grp
-        ,l_main as loc
-      from dual
-      union all
-        select 2 as grp
-        ,l_posts as loc
-      from dual
-      union all
-        select 3 as grp
-        ,l_categories as loc
-      from dual
-    )
     select xmlserialize( document
       xmlelement(
         "sitemapindex",
         xmlattributes( 'http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns" ),
         (
           xmlagg(
-              xmlelement( "sitemap"
-              ,xmlelement( "loc", loc )
-            ) order by grp
+            xmlelement( "sitemap"
+              ,xmlelement( "loc", l_url || t1.uri_template )
+            )
           )
         )
       )
     as blob encoding 'UTF-8' indent size=2)
     into l_xml
-    from si
-    ;
+    from blog_ords_templates t1
+    where 1 = 1
+    and t1.is_active = 1
+    and t1.template_group = 'SITEMAP'
+    and not exists(
+      select 1
+      from apex_application_build_options bo
+      where 1 = 1
+      and bo.application_id = l_app_id
+      and bo.build_option_status = 'Exclude'
+      and bo.build_option_name = t1.build_option
+    );
 
     owa_util.mime_header( 'application/xml', false, 'UTF-8' );
     sys.htp.p( 'Cache-Control: max-age=3600, public' );
@@ -230,13 +213,14 @@ as
                                 )
               )
             ) order by t1.display_seq
-          ) 
+          )
         )
       )
     as blob encoding 'UTF-8' indent size=2)
     into l_xml
     from blog_pages t1
     where 1 = 1
+      and t1.is_active = 1
       and t1.page_type = 'TAB'
       and not exists(
         select 1

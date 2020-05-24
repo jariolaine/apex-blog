@@ -126,7 +126,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200523081455'
+,p_last_upd_yyyymmddhh24miss=>'20200524121854'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>98
 ,p_ui_type_name => null
@@ -324,6 +324,7 @@ wwv_flow_api.create_list(
 '  end                   as is_current',
 'from #OWNER#.blog_pages t1',
 'where 1 = 1',
+'and t1.is_active = 1',
 'and t1.page_type = ''TAB''',
 'and not case when t1.build_option is null',
 'then ''INCLUDE''',
@@ -14672,12 +14673,12 @@ wwv_flow_api.create_install(
 );
 end;
 /
-prompt --application/deployment/install/install_meta_data
+prompt --application/deployment/install/install_metadata
 begin
 wwv_flow_api.create_install_script(
  p_id=>wwv_flow_api.id(32997033167621897)
 ,p_install_id=>wwv_flow_api.id(20741295540297154)
-,p_name=>'Meta data'
+,p_name=>'Metadata'
 ,p_sequence=>10
 ,p_script_type=>'INSTALL'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -14693,18 +14694,18 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_INIT_ITEMS',
 '--------------------------------------------------------',
-'insert into blog_init_items',
-'select ai.application_id  as application_id',
+'insert into blog_init_items(is_active, application_id, item_name)',
+'select 1 as is_active',
+'  ,ai.application_id  as application_id',
 '  ,ai.item_name           as item_name',
 'from apex_application_items ai',
 'join blog_settings s',
 '  on ai.item_name = s.attribute_name',
 'where 1 = 1',
 'and ai.application_id = apex_application_install.get_application_id',
-'',
 '  union all',
-'',
-'select pi.application_id  as application_id',
+'select 1 as is_active',
+'  ,pi.application_id  as application_id',
 '  ,pi.item_name           as item_namee',
 'from apex_application_page_items pi',
 'join blog_settings s',

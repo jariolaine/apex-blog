@@ -3,7 +3,7 @@ begin
 wwv_flow_api.create_page(
  p_id=>20
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
-,p_name=>'Add / Edit Link Group'
+,p_name=>'Add/Edit Link Group'
 ,p_alias=>'LINK-GROUP'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Link Collection Properties'
@@ -14,7 +14,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200513172625'
+,p_last_upd_yyyymmddhh24miss=>'20200524072911'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25773887524573137)

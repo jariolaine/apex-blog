@@ -1,5 +1,30 @@
 --------------------------------------------------------
---  Inserting into BLOG_FEATURES
+--  Inserting into BLOG_ORDS_TEMPLATES
+--------------------------------------------------------
+Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values ('1','feed/rss','GET','plsql/block','begin
+  blog_xml.rss(:p_lang);
+end;','BLOG_FEATURE_RSS','Blog rss feed','RSS');
+Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values ('1','sitemap/index','GET','plsql/block','begin
+  blog_xml.sitemap_index;
+end;',null,'Blog sitemap index','SITEMAP');
+Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values ('1','sitemap/main','GET','plsql/block','begin
+  blog_xml.sitemap_main;
+end;',null,'Blog main pages sitemap','SITEMAP');
+Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values ('1','sitemap/posts','GET','plsql/block','begin
+  blog_xml.sitemap_posts;
+end;',null,'Blog posts sitemap','SITEMAP');
+Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values ('1','sitemap/categories','GET','plsql/block','begin
+  blog_xml.sitemap_categories;
+end;','BLOG_FEATURE_CATEGORY','Blog categories sitemap','SITEMAP');
+Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values ('1','share/:p_file_name','GET','resource/lob','select v1.mime_type
+  ,v1.blob_content
+from blog_v_files v1
+where 1 = 1
+  and v1.is_download = 0
+  and v1.file_name = :p_file_name',null,'Blog static files','FILES');
+
+--------------------------------------------------------
+--  Inserting into BLOG_PAGES
 --------------------------------------------------------
 insert into blog_pages (is_active,display_seq,page_title,page_alias,build_option,page_type) values ('1','10','Home','HOME',null,'TAB');
 insert into blog_pages (is_active,display_seq,page_title,page_alias,build_option,page_type) values ('1','20','Links','LINKS','BLOG_FEATURE_LINKS','TAB');
@@ -47,8 +72,9 @@ insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,grou
 --------------------------------------------------------
 --  Inserting into BLOG_INIT_ITEMS
 --------------------------------------------------------
-insert into blog_init_items
-select ai.application_id  as application_id
+insert into blog_init_items(is_active, application_id, item_name)
+select 1 as is_active
+  ,ai.application_id  as application_id
   ,ai.item_name           as item_name
 from apex_application_items ai
 join blog_settings s
@@ -56,7 +82,8 @@ join blog_settings s
 where 1 = 1
 and ai.application_id = apex_application_install.get_application_id
   union all
-select pi.application_id  as application_id
+select 1 as is_active
+  ,pi.application_id  as application_id
   ,pi.item_name           as item_namee
 from apex_application_page_items pi
 join blog_settings s
@@ -74,9 +101,9 @@ begin
 
   -- Create ORDS module
   blog_ords.create_module;
-  blog_ords.add_files_template;
-  blog_ords.create_rss_template;
-  blog_ords.create_sitemap_templates;
+  blog_ords.create_templates(
+    p_app_id => apex_application_install.get_application_id
+  );
 
   -- get RSS feed URL
   l_rss_url := blog_ords.get_module_path( 'YES') || 'feed/rss';

@@ -10,18 +10,18 @@ update blog_settings
 --------------------------------------------------------
 --  Inserting into BLOG_INIT_ITEMS
 --------------------------------------------------------
-insert into blog_init_items
-select ai.application_id  as application_id
+insert into blog_init_items(is_active, application_id, item_name)
+select 1 as is_active
+  ,ai.application_id  as application_id
   ,ai.item_name           as item_name
 from apex_application_items ai
 join blog_settings s
   on ai.item_name = s.attribute_name
 where 1 = 1
 and ai.application_id = apex_application_install.get_application_id
-
   union all
-
-select pi.application_id  as application_id
+select 1 as is_active
+  ,pi.application_id  as application_id
   ,pi.item_name           as item_namee
 from apex_application_page_items pi
 join blog_settings s

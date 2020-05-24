@@ -18,6 +18,7 @@ wwv_flow_api.create_list(
 '  end                   as is_current',
 'from #OWNER#.blog_pages t1',
 'where 1 = 1',
+'and t1.is_active = 1',
 'and t1.page_type = ''TAB''',
 'and not case when t1.build_option is null',
 'then ''INCLUDE''',

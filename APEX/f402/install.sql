@@ -9,7 +9,6 @@ prompt --install
 @application/shared_components/files/app_icon_svg.sql
 @application/shared_components/files/app_icon_css.sql
 @application/shared_components/files/admin_js.sql
-@application/shared_components/files/admin_css.sql
 @application/shared_components/files/chkeditor_css.sql
 @application/plugin_settings.sql
 @application/shared_components/security/authorizations/bloggers.sql

@@ -23,6 +23,7 @@ create table  blog_bloggers(
 	apex_username varchar2(  256 char ) not null,
 	email varchar2( 256 char ),
 	blogger_desc varchar2( 4000 char ),
+  notes varchar2(4000 char),
   constraint blog_bloggers_pk primary key( id ),
   constraint blog_bloggers_uk1 unique( apex_username ),
   constraint blog_bloggers_ck1 check( row_version > 0 ),
@@ -85,6 +86,7 @@ create table blog_comment_flags (
   changed_by varchar2( 256 char ) not null,
   comment_id number( 38, 0 ) not null,
   flag varchar2( 256 char ) not null,
+  notes varchar2(4000 char),
   constraint blog_comment_flags_pk primary key( id ),
   constraint blog_comment_flags_ck1 check( row_version > 0 )
 )
@@ -101,6 +103,7 @@ create table blog_comment_subs(
   changed_by varchar2( 256 char ) not null,
   post_id number( 38, 0 ) not null,
   email_id number( 38, 0 ) not null,
+  notes varchar2(4000 char),
   constraint blog_comment_subs_pk primary key( id ),
   constraint blog_comment_subs_uk1 unique( post_id, email_id ),
   constraint blog_comment_subs_ck1 check( row_version > 0 )
@@ -118,6 +121,7 @@ create table blog_comment_subs_email(
   changed_by varchar2( 256 char ) not null,
   is_active number( 1, 0 ) not null,
   email varchar2( 256 char ) not null,
+  notes varchar2(4000 char),
   email_unique varchar2( 256 char ) as ( lower( trim( email ) ) ) virtual not null,
   constraint blog_comment_subs_email_pk primary key( id ),
   constraint blog_comment_subs_email_uk1 unique( email_unique ),
@@ -129,14 +133,23 @@ create table blog_comment_subs_email(
 --  DDL for Table BLOG_FEATURES
 --------------------------------------------------------
 create table blog_features(
-  build_option_name varchar2( 255 char ) not null,
-  build_option_group varchar2( 255 char ) not null,
+  id number( 38, 0 ) not null,
+  row_version number( 38, 0 ) not null,
+  created_on timestamp( 6 ) with local time zone not null,
+  created_by varchar2( 256 char ) not null,
+  changed_on timestamp( 6 ) with local time zone not null,
+  changed_by varchar2( 256 char ) not null,
   is_active number( 1, 0 ) not null,
   display_seq number( 10, 0 ) not null,
+  build_option_name varchar2( 255 char ) not null,
+  build_option_group varchar2( 255 char ) not null,
+  post_expression varchar2( 4000 char ),
   notes varchar2( 4000 char ),
-  constraint blog_features_pk primary key( build_option_name ),
-  constraint blog_features_ck1 check( display_seq > 0 ),
-  constraint blog_features_ck2 check( is_active in( 0, 1 ) )
+  constraint blog_features_pk primary key( id ),
+  constraint blog_features_uk1 unique( build_option_name ),
+  constraint blog_features_ck1 check( row_version > 0 ),
+  constraint blog_features_ck2 check( display_seq > 0 ),
+  constraint blog_features_ck3 check( is_active in( 0, 1 ) )
 )
 /
 --------------------------------------------------------
@@ -169,9 +182,20 @@ create table blog_files (
 --  DDL for Table BLOG_INIT_ITEMS
 --------------------------------------------------------
 create table blog_init_items(
+  id number( 38, 0 ) not null,
+  row_version number( 38, 0 ) not null,
+  created_on timestamp( 6 ) with local time zone not null,
+  created_by varchar2( 256 char ) not null,
+  changed_on timestamp( 6 ) with local time zone not null,
+  changed_by varchar2( 256 char ) not null,
+  is_active number( 1, 0 ) not null,
   application_id number(38,0) not null,
   item_name varchar2(256 char) not null,
-  constraint blog_init__items_pk primary key( application_id, item_name )
+  notes varchar2(4000 char),
+  constraint blog_init_items_pk primary key( id ),
+  constraint blog_init_items_uk1 unique( application_id, item_name ),
+  constraint blog_init_items_ck1 check( row_version > 0 ),
+  constraint blog_init_items_ck2 check( is_active in( 0, 1 ) )
 )
 /
 --------------------------------------------------------
@@ -223,6 +247,30 @@ create table blog_link_groups(
 --------------------------------------------------------
 --  DDL for Table BLOG_PAGES
 --------------------------------------------------------
+create table blog_ords_templates(
+  id number( 38, 0 ) not null,
+  row_version number( 38, 0 ) not null,
+  created_on timestamp( 6 ) with local time zone not null,
+  created_by varchar2( 256 char ) not null,
+  changed_on timestamp( 6 ) with local time zone not null,
+  changed_by varchar2( 256 char ) not null,
+  is_active number( 1, 0 ) not null,
+  template_group varchar2( 256 char ) not null,
+  uri_template varchar2( 256 char ) not null,
+  http_method varchar2( 256 char ) not null,
+  source_type  varchar2( 256 char ) not null,
+  handler_source varchar2( 256 char ) not null,
+  build_option varchar2( 256 char ),
+  notes varchar2(4000 char),
+  constraint blog_ords_templates_pk primary key( id ),
+  constraint blog_ords_templates_uk1 unique( uri_template  ),
+  constraint blog_ords_templates_ck1 check( row_version > 0 ),
+  constraint blog_ords_templates_ck2 check( is_active in( 0, 1 ) )
+)
+/
+--------------------------------------------------------
+--  DDL for Table BLOG_PAGES
+--------------------------------------------------------
 create table blog_pages(
   id number( 38, 0 ) not null,
   row_version number( 38, 0 ) not null,
@@ -236,6 +284,7 @@ create table blog_pages(
   page_alias varchar2( 256 char ) not null,
   page_type varchar2( 256 char ) not null,
   build_option varchar2( 256 char ),
+  notes varchar2(4000 char),
   constraint blog_pages_pk primary key( id ),
   constraint blog_pages_uk1 unique( page_alias  ),
   constraint blog_pages_ck1 check( row_version > 0 ),
@@ -327,6 +376,7 @@ create table blog_settings(
   group_name varchar2( 64 char ) not null,
   attribute_value varchar2( 4000 char ),
   post_expression varchar2( 4000 char ),
+  notes varchar2(4000 char),
   constraint blog_settings_pk primary key( id ),
   constraint blog_settings_uk1 unique( attribute_name ),
   constraint blog_settings_ck1 check( row_version > 0 ),
@@ -1580,6 +1630,8 @@ as
 --                            Removed ORDS specific constants from package blog_util
 --                            Removed function get_ords_service
 --                            Added function get_module_path
+--    Jari Laine 24.04.2020 - Combined all template creation to one procedure because
+--                            templates metadata is stored to blog_ords_tempates
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1587,11 +1639,9 @@ as
     p_base_path in varchar2 default null
   );
 --------------------------------------------------------------------------------
-  procedure add_files_template;
---------------------------------------------------------------------------------
-  procedure create_rss_template;
---------------------------------------------------------------------------------
-  procedure create_sitemap_templates;
+  procedure create_templates(
+    p_app_id in number
+  );
 --------------------------------------------------------------------------------
   function get_module_path(
     p_canonical     in varchar2 default 'NO'
@@ -1608,6 +1658,7 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  c_owner       constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
   c_module_name constant varchar2(256)  := 'BLOG_PUBLIC_FILES';
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1627,10 +1678,29 @@ as
     l_base_path varchar2(256);
   begin
 
+    begin
+      -- query ORDS metadata to get resource url
+      select t2.uri_prefix as url
+      into l_base_path
+      from user_ords_schemas t1
+      join user_ords_modules t2
+        on t1.id = t2.schema_id
+      where 1 = 1
+        and t1.parsing_schema = c_owner
+        and t2.name = c_module_name
+      ;
+    exception when no_data_found then
+      l_base_path := null;
+    end;
+
     l_base_path :=
-      case when p_base_path is null
-      then sys.dbms_random.string('l', 12)
-      else p_base_path
+      case when p_base_path is not null
+      then p_base_path
+      else
+        case when l_base_path is not null
+        then l_base_path
+        else sys.dbms_random.string('l', 6)
+        end
       end
     ;
     -- Static files module
@@ -1644,162 +1714,53 @@ as
   end create_module;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure add_files_template
+  procedure create_templates(
+    p_app_id in number
+  )
   as
   begin
 
-    ords.define_template(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'files/:p_file_name'
-      ,p_priority       => 0
-      ,p_etag_type      => 'HASH'
-      ,p_etag_query     => null
-      ,p_comments       => 'Blog static files'
-    );
+    for c1 in(
+      select uri_template
+       ,http_method
+       ,source_type
+       ,handler_source
+       ,notes
+      from blog_ords_templates t1
+      where 1 = 1
+      and is_active = 1
+      and not exists(
+        select 1
+        from apex_application_build_options bo
+        where 1 = 1
+        and bo.application_id = p_app_id
+        and bo.build_option_status = 'Exclude'
+        and bo.build_option_name = t1.build_option
+      )
+    ) loop
 
-    ords.define_handler(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'files/:p_file_name'
-      ,p_method         => 'GET'
-      ,p_source_type    => 'resource/lob'
-      ,p_items_per_page => 0
-      ,p_mimes_allowed  => ''
-      ,p_comments       => 'Blog static files'
-      ,p_source         =>
-        'select v1.mime_type'
-        || chr(10) || '  ,v1.blob_content'
-        || chr(10) || 'from blog_v_files v1'
-        || chr(10) || 'where 1 = 1'
-        || chr(10) || 'and v1.is_download = 0'
-        || chr(10) || 'and v1.file_name = :p_file_name'
-    );
-
-  end add_files_template;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure create_rss_template
-  as
-  begin
-
-    ords.define_template(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'feed/rss'
-      ,p_priority       => 0
-      ,p_etag_type      => 'HASH'
-      ,p_etag_query     => null
-      ,p_comments       => 'Blog rss feed'
-    );
-
-    ords.define_handler(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'feed/rss'
-      ,p_method         => 'GET'
-      ,p_source_type    => 'plsql/block'
-      ,p_items_per_page => 0
-      ,p_mimes_allowed  => ''
-      ,p_comments       => 'Blog rss feed'
-      ,p_source         =>
-        'begin' || chr(10)
-        || '  blog_xml.rss(:p_lang);' || chr(10)
-        || 'end;'
-    );
-
-  end create_rss_template;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure create_sitemap_templates
-  as
-  begin
-
-    ords.define_template(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'sitemap/index'
-      ,p_priority       => 0
-      ,p_etag_type      => 'HASH'
-      ,p_etag_query     => null
-      ,p_comments       => 'Blog sitemap index'
-    );
-
-    ords.define_handler(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'sitemap/index'
-      ,p_method         => 'GET'
-      ,p_source_type    => 'plsql/block'
-      ,p_mimes_allowed  => ''
-      ,p_comments       => null
-      ,p_source         =>
-        'begin' || chr(10)
-        || '  blog_xml.sitemap_index;' || chr(10)
-        || 'end;'
-    );
-
-    ords.define_template(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'sitemap/main'
-      ,p_priority       => 0
-      ,p_etag_type      => 'HASH'
-      ,p_etag_query     => null
-      ,p_comments       => 'Blog sitemap index'
-    );
-
-    ords.define_handler(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'sitemap/main'
-      ,p_method         => 'GET'
-      ,p_source_type    => 'plsql/block'
-      ,p_mimes_allowed  => ''
-      ,p_comments       => null
-      ,p_source         =>
-        'begin' || chr(10)
-        || '  blog_xml.sitemap_main;' || chr(10)
-        || 'end;'
-    );
-
-    ords.define_template(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'sitemap/posts'
-      ,p_priority       => 0
-      ,p_etag_type      => 'HASH'
-      ,p_etag_query     => null
-      ,p_comments       => 'Blog posts sitemap'
-    );
-
-    ords.define_handler(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'sitemap/posts'
-      ,p_method         => 'GET'
-      ,p_source_type    => 'plsql/block'
-      ,p_mimes_allowed  => ''
-      ,p_comments       => 'Blog posts sitemap'
-      ,p_source         =>
-        'begin' || chr(10)
-        || '  blog_xml.sitemap_posts;' || chr(10)
-        || 'end;'
+      ords.define_template(
+        p_module_name     => c_module_name
+        ,p_pattern        => c1.uri_template
+        ,p_priority       => 0
+        ,p_etag_type      => 'HASH'
+        ,p_etag_query     => null
+        ,p_comments       => c1.notes
       );
 
-    ords.define_template(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'sitemap/categories'
-      ,p_priority       => 0
-      ,p_etag_type      => 'HASH'
-      ,p_etag_query     => null
-      ,p_comments       => 'Blog posts sitemap'
-    );
+      ords.define_handler(
+        p_module_name     => c_module_name
+        ,p_pattern        => c1.uri_template
+        ,p_method         => c1.http_method
+        ,p_source_type    => c1.source_type
+        ,p_mimes_allowed  => null
+        ,p_comments       => c1.notes
+        ,p_source         => c1.handler_source
+      );
 
-    ords.define_handler(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'sitemap/categories'
-      ,p_method         => 'GET'
-      ,p_source_type    => 'plsql/block'
-      ,p_mimes_allowed  => ''
-      ,p_comments       => 'Blog posts sitemap'
-      ,p_source         =>
-        'begin' || chr(10)
-        || '  blog_xml.sitemap_categories;' || chr(10)
-        || 'end;'
-    );
+    end loop;
 
-  end create_sitemap_templates;
+  end create_templates;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_module_path(
@@ -1807,7 +1768,6 @@ as
   ) return varchar2
   as
     l_url   varchar2(4000);
-    c_owner constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
   begin
 
     begin
@@ -4660,60 +4620,43 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_index
   as
-    l_xml         blob;
-    l_url         varchar2(4000);
-    l_main        varchar2(4000);
-    l_posts       varchar2(4000);
-    l_categories  varchar2(4000);
+    l_xml     blob;
+    l_app_id  number;
+    l_url     varchar2(4000);
   begin
 
-    l_url :=  blog_util.get_attribute_value( 'CANONICAL_URL' );
+    l_app_id := to_number( blog_util.get_attribute_value ( 'G_PUB_APP_ID' ) );
 
-    l_main := l_url
-      || blog_ords.get_module_path
-      || 'sitemap/main'
-    ;
+    l_url := blog_ords.get_module_path(
+      p_canonical => 'YES'
+    );
 
-    l_posts := l_url
-      || blog_ords.get_module_path
-      || 'sitemap/posts'
-    ;
-
-    l_categories := l_url
-      || blog_ords.get_module_path
-      || 'sitemap/categories'
-    ;
-
-
-    with si as (
-      select 1 as grp
-        ,l_main as loc
-      from dual
-      union all
-        select 2 as grp
-        ,l_posts as loc
-      from dual
-      union all
-        select 3 as grp
-        ,l_categories as loc
-      from dual
-    )
     select xmlserialize( document
       xmlelement(
         "sitemapindex",
         xmlattributes( 'http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns" ),
         (
           xmlagg(
-              xmlelement( "sitemap"
-              ,xmlelement( "loc", loc )
-            ) order by grp
+            xmlelement( "sitemap"
+              ,xmlelement( "loc", l_url || t1.uri_template )
+            )
           )
         )
       )
     as blob encoding 'UTF-8' indent size=2)
     into l_xml
-    from si
-    ;
+    from blog_ords_templates t1
+    where 1 = 1
+    and t1.is_active = 1
+    and t1.template_group = 'SITEMAP'
+    and not exists(
+      select 1
+      from apex_application_build_options bo
+      where 1 = 1
+      and bo.application_id = l_app_id
+      and bo.build_option_status = 'Exclude'
+      and bo.build_option_name = t1.build_option
+    );
 
     owa_util.mime_header( 'application/xml', false, 'UTF-8' );
     sys.htp.p( 'Cache-Control: max-age=3600, public' );
@@ -4748,13 +4691,14 @@ as
                                 )
               )
             ) order by t1.display_seq
-          ) 
+          )
         )
       )
     as blob encoding 'UTF-8' indent size=2)
     into l_xml
     from blog_pages t1
     where 1 = 1
+      and t1.is_active = 1
       and t1.page_type = 'TAB'
       and not exists(
         select 1
@@ -5054,12 +4998,82 @@ begin
 end;
 /
 --------------------------------------------------------
+--  DDL for Trigger BLOG_FEATURES_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_FEATURES_TRG"
+before
+insert or
+update on blog_features
+for each row
+begin
+
+  if inserting then
+
+    :new.id           := coalesce( :new.id, blog_seq.nextval );
+    :new.row_version  := coalesce( :new.row_version, 1 );
+    :new.created_on   := localtimestamp;
+    :new.created_by   := coalesce(
+       :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context('USERENV','PROXY_USER')
+      ,sys_context('USERENV','SESSION_USER')
+    );
+
+  elsif updating then
+    :new.row_version  := :old.row_version + 1;
+  end if;
+
+  :new.changed_on := localtimestamp;
+  :new.changed_by := coalesce(
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context('USERENV','PROXY_USER')
+    ,sys_context('USERENV','SESSION_USER')
+  );
+
+end;
+/
+--------------------------------------------------------
 --  DDL for Trigger BLOG_FILES_TRG
 --------------------------------------------------------
 CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_FILES_TRG"
 before
 insert or
 update on blog_files
+for each row
+begin
+
+  if inserting then
+
+    :new.id           := coalesce( :new.id, blog_seq.nextval );
+    :new.row_version  := coalesce( :new.row_version, 1 );
+    :new.created_on   := localtimestamp;
+    :new.created_by   := coalesce(
+       :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context('USERENV','PROXY_USER')
+      ,sys_context('USERENV','SESSION_USER')
+    );
+
+  elsif updating then
+    :new.row_version  := :old.row_version + 1;
+  end if;
+
+  :new.changed_on := localtimestamp;
+  :new.changed_by := coalesce(
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context('USERENV','PROXY_USER')
+    ,sys_context('USERENV','SESSION_USER')
+  );
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_INIT_ITEMS_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_INIT_ITEMS_TRG"
+before
+insert or
+update on blog_init_items
 for each row
 begin
 
@@ -5154,7 +5168,42 @@ begin
 end;
 /
 --------------------------------------------------------
---  DDL for Trigger BLOG_FILES_TRG
+--  DDL for Trigger BLOG_ORDS_TEMPLATES_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_ORDS_TEMPLATES_TRG"
+before
+insert or
+update on blog_ords_templates
+for each row
+begin
+
+  if inserting then
+
+    :new.id           := coalesce( :new.id, blog_seq.nextval );
+    :new.row_version  := coalesce( :new.row_version, 1 );
+    :new.created_on   := localtimestamp;
+    :new.created_by   := coalesce(
+       :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context('USERENV','PROXY_USER')
+      ,sys_context('USERENV','SESSION_USER')
+    );
+
+  elsif updating then
+    :new.row_version  := :old.row_version + 1;
+  end if;
+
+  :new.changed_on := localtimestamp;
+  :new.changed_by := coalesce(
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context('USERENV','PROXY_USER')
+    ,sys_context('USERENV','SESSION_USER')
+  );
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_PAGES_TRG
 --------------------------------------------------------
 CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_PAGES_TRG"
 before
