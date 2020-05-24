@@ -1777,6 +1777,28 @@ as
         || 'end;'
       );
 
+    ords.define_template(
+      p_module_name     => c_module_name
+      ,p_pattern        => 'sitemap/categories'
+      ,p_priority       => 0
+      ,p_etag_type      => 'HASH'
+      ,p_etag_query     => null
+      ,p_comments       => 'Blog posts sitemap'
+    );
+
+    ords.define_handler(
+      p_module_name     => c_module_name
+      ,p_pattern        => 'sitemap/categories'
+      ,p_method         => 'GET'
+      ,p_source_type    => 'plsql/block'
+      ,p_mimes_allowed  => ''
+      ,p_comments       => 'Blog posts sitemap'
+      ,p_source         =>
+        'begin' || chr(10)
+        || '  blog_xml.sitemap_categories;' || chr(10)
+        || 'end;'
+    );
+
   end create_sitemap_templates;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4512,6 +4534,7 @@ as
 --                            and constant c_pub_app_id
 --                            Moved private function get_ords_service to blog_ords package
 --    Jari Laine 23.05.2020 - Changed procedure sitemap_main to use table blog_pages
+--                            New procedure sitemap_categories
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4524,6 +4547,8 @@ as
   procedure sitemap_main;
 --------------------------------------------------------------------------------
   procedure sitemap_posts;
+--------------------------------------------------------------------------------
+  procedure sitemap_categories;
 --------------------------------------------------------------------------------
 end "BLOG_XML";
 /
@@ -4553,10 +4578,10 @@ as
   )
   as
     l_rss           blob;
+    l_app_id        varchar2(256);
     l_rss_url       varchar2(4000);
     l_rss_desc      varchar2(4000);
     l_home_url      varchar2(4000);
-    l_app_id        varchar2(4000);
     l_blog_name     varchar2(4000);
     l_rss_version   constant varchar2(5) := '2.0';
   begin
@@ -4618,8 +4643,6 @@ as
             ) order by posts.published_on desc
           )
         )
-      --).getclobval()
-      --).getblobval(nls_charset_id('AL32UTF8'))
       )
     as blob encoding 'UTF-8' indent size=2)
     into l_rss
@@ -4627,21 +4650,21 @@ as
     ;
 
     owa_util.mime_header( 'application/rss+xml', false, 'UTF-8' );
---    owa_util.mime_header('application/xml', false, 'UTF-8' );
     sys.htp.p( 'Cache-Control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
-    wpg_docload.download_file(l_rss);
+    wpg_docload.download_file( l_rss );
 
   end rss;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure sitemap_index
   as
-    l_xml   blob;
-    l_url   varchar2(4000);
-    l_main  varchar2(255);
-    l_posts varchar2(255);
+    l_xml         blob;
+    l_url         varchar2(4000);
+    l_main        varchar2(4000);
+    l_posts       varchar2(4000);
+    l_categories  varchar2(4000);
   begin
 
     l_url :=  blog_util.get_attribute_value( 'CANONICAL_URL' );
@@ -4656,6 +4679,12 @@ as
       || 'sitemap/posts'
     ;
 
+    l_categories := l_url
+      || blog_ords.get_module_path
+      || 'sitemap/categories'
+    ;
+
+
     with si as (
       select 1 as grp
         ,l_main as loc
@@ -4664,15 +4693,19 @@ as
         select 2 as grp
         ,l_posts as loc
       from dual
+      union all
+        select 3 as grp
+        ,l_categories as loc
+      from dual
     )
     select xmlserialize( document
       xmlelement(
         "sitemapindex",
-        xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
+        xmlattributes( 'http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns" ),
         (
           xmlagg(
-              xmlelement("sitemap"
-              ,xmlelement("loc", loc )
+              xmlelement( "sitemap"
+              ,xmlelement( "loc", loc )
             ) order by grp
           )
         )
@@ -4682,11 +4715,11 @@ as
     from si
     ;
 
-    owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p('Cache-Control: max-age=3600, public' );
+    owa_util.mime_header( 'application/xml', false, 'UTF-8' );
+    sys.htp.p( 'Cache-Control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
-    wpg_docload.download_file(l_xml);
+    wpg_docload.download_file( l_xml );
 
   end sitemap_index;
 --------------------------------------------------------------------------------
@@ -4704,21 +4737,18 @@ as
     select xmlserialize( document
       xmlelement(
         "urlset",
-        xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
+        xmlattributes( 'http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns" ),
         (
           xmlagg(
-              xmlelement("url"
-              ,xmlelement("loc",  blog_url.get_tab(
-                                     p_app_id  => l_app_id
-                                    ,p_app_page_id => t1.page_alias
-                                    ,p_canonical => 'YES'
-                                  )
+            xmlelement( "url"
+              ,xmlelement( "loc",  blog_url.get_tab(
+                                   p_app_id  => l_app_id
+                                  ,p_app_page_id => t1.page_alias
+                                  ,p_canonical => 'YES'
+                                )
               )
---            ,XMLElement( "lastmod", to_char( sysdate, 'YYYY-MM-DD' ) )
---            ,XMLElement( "changefreq", 'monthly' )
---            ,XMLElement( "priority", '0.5' )
             ) order by t1.display_seq
-          )
+          ) 
         )
       )
     as blob encoding 'UTF-8' indent size=2)
@@ -4736,11 +4766,11 @@ as
       )
     ;
 
-    owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p('Cache-Control: max-age=3600, public' );
+    owa_util.mime_header( 'application/xml', false, 'UTF-8' );
+    sys.htp.p( 'Cache-Control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
-    wpg_docload.download_file(l_xml);
+    wpg_docload.download_file( l_xml );
 
   end sitemap_main;
 --------------------------------------------------------------------------------
@@ -4759,17 +4789,15 @@ as
         xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
         (
           xmlagg(
-              xmlelement( "url"
-                ,xmlelement( "loc", blog_url.get_post(
-                                       p_app_id     => l_app_id
-                                      ,p_post_id    => posts.post_id
-                                      ,p_canonical  => 'YES'
-                                    )
-                )
-                ,XMLElement( "lastmod", to_char( sys_extract_utc( posts.changed_on ), 'YYYY-MM-DD"T"HH24:MI:SS"+00:00""' ) )
---              ,XMLElement("changefreq", 'monthly')
---              ,XMLElement("priority", '0.5')
-              ) order by posts.published_on desc
+            xmlelement( "url"
+              ,xmlelement( "loc", blog_url.get_post(
+                                     p_app_id     => l_app_id
+                                    ,p_post_id    => posts.post_id
+                                    ,p_canonical  => 'YES'
+                                  )
+              )
+              ,XMLElement( "lastmod", to_char( sys_extract_utc( posts.changed_on ), 'YYYY-MM-DD"T"HH24:MI:SS"+00:00""' ) )
+            ) order by posts.published_on desc
           )
         )
       )
@@ -4785,6 +4813,45 @@ as
     wpg_docload.download_file(l_xml);
 
   end sitemap_posts;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure sitemap_categories
+  as
+    l_xml     blob;
+    l_app_id  varchar2(256);
+  begin
+
+    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
+
+    select xmlserialize( document
+      xmlelement(
+        "urlset",
+        xmlattributes('http://www.sitemaps.org/schemas/sitemap/0.9' as "xmlns"),
+        (
+          xmlagg(
+            xmlelement( "url"
+              ,xmlelement( "loc", blog_url.get_category(
+                                     p_app_id       => l_app_id
+                                    ,p_category_id  => cat.category_id
+                                    ,p_canonical    => 'YES'
+                                  )
+              )
+            ) order by cat.display_seq desc
+          )
+        )
+      )
+    as blob encoding 'UTF-8' indent size=2)
+    into l_xml
+    from blog_v_categories cat
+    ;
+
+    owa_util.mime_header('application/xml', false, 'UTF-8');
+    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.owa_util.http_header_close;
+
+    wpg_docload.download_file( l_xml );
+
+  end sitemap_categories;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_XML";

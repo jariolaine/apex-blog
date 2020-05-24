@@ -1,0 +1,29 @@
+prompt --application/user_interfaces
+begin
+wwv_flow_api.create_user_interface(
+ p_id=>wwv_flow_api.id(8571044485518264)
+,p_ui_type_name=>'DESKTOP'
+,p_display_name=>'Desktop'
+,p_display_seq=>10
+,p_use_auto_detect=>false
+,p_is_default=>true
+,p_theme_id=>42
+,p_home_url=>'f?p=&APP_ID.:HOME:&SESSION.'
+,p_login_url=>'f?p=&APP_ID.:LOGIN:&SESSION.'
+,p_theme_style_by_user_pref=>true
+,p_global_page_id=>0
+,p_navigation_list_id=>wwv_flow_api.id(8450775247518171)
+,p_navigation_list_position=>'SIDE'
+,p_navigation_list_template_id=>wwv_flow_api.id(8542581297518238)
+,p_nav_list_template_options=>'#DEFAULT#:js-defaultCollapsed:js-navCollapsed--default:t-TreeNav--styleB'
+,p_css_file_urls=>'#WORKSPACE_IMAGES#blog040000/style.css?version=#APP_VERSION#'
+,p_javascript_file_urls=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#WORKSPACE_IMAGES#blog040000/blog.js?version=#APP_VERSION#',
+'#APP_IMAGES#admin.js?version=#APP_VERSION#'))
+,p_nav_bar_type=>'LIST'
+,p_nav_bar_list_id=>wwv_flow_api.id(8570714984518262)
+,p_nav_bar_list_template_id=>wwv_flow_api.id(8542379958518238)
+,p_nav_bar_template_options=>'#DEFAULT#'
+);
+end;
+/

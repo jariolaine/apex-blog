@@ -128,7 +128,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_ADMIN_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200523084241'
+,p_last_upd_yyyymmddhh24miss=>'20200524063944'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>186
 ,p_ui_type_name => null
@@ -21829,6 +21829,7 @@ wwv_flow_api.create_install(
 'drop table blog_init_items;',
 'drop table blog_links;',
 'drop table blog_link_groups;',
+'drop table blog_pages;',
 'drop table blog_posts;',
 'drop table blog_post_preview;',
 'drop table blog_post_tags;',
@@ -23667,6 +23668,28 @@ wwv_flow_api.append_to_install_script(
 '        || ''end;''',
 '      );',
 '',
+'    ords.define_template(',
+'      p_module_name     => c_module_name',
+'      ,p_pattern        => ''sitemap/categories''',
+'      ,p_priority       => 0',
+'      ,p_etag_type      => ''HASH''',
+'      ,p_etag_query     => null',
+'      ,p_comments       => ''Blog posts sitemap''',
+'    );',
+'',
+'    ords.define_handler(',
+'      p_module_name     => c_module_name',
+'      ,p_pattern        => ''sitemap/categories''',
+'      ,p_method         => ''GET''',
+'      ,p_source_type    => ''plsql/block''',
+'      ,p_mimes_allowed  => ''''',
+'      ,p_comments       => ''Blog posts sitemap''',
+'      ,p_source         =>',
+'        ''begin'' || chr(10)',
+'        || ''  blog_xml.sitemap_categories;'' || chr(10)',
+'        || ''end;''',
+'    );',
+'',
 '  end create_sitemap_templates;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -24322,7 +24345,16 @@ wwv_flow_api.append_to_install_script(
 '    return blog_util.get_attribute_value( ''CANONICAL_URL'' ) || l_url;',
 '',
 '  end get_unsubscribe;',
-'--------------------------------------------------------------------------------',
+'-----------'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'---------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure redirect_search(',
 '    p_value         in varchar2,',
@@ -24339,16 +24371,7 @@ wwv_flow_api.append_to_install_script(
 '          ,p_page        => ''SEARCH''',
 '          ,p_session     => p_session',
 '          ,p_clear_cache => ''RP''',
-'          ,p_items       => ''P0_SEARCH'''))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'          ,p_items       => ''P0_SEARCH''',
 '          ,p_values      => p_value',
 '          --,p_plain_url   => true',
 '        )',
@@ -25279,7 +25302,16 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function is_date_format(',
-'    p_value     in varchar2,',
+' '))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'   p_value     in varchar2,',
 '    p_err_mesg  in varchar2',
 '  ) return varchar2',
 '  as',
@@ -25306,16 +25338,7 @@ wwv_flow_api.append_to_install_script(
 '  exception when invalid_date_format',
 '  then',
 '    return l_err_mesg;',
-'  end is_date_for'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'mat;',
+'  end is_date_format;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function is_email(',
@@ -26202,7 +26225,16 @@ wwv_flow_api.append_to_install_script(
 '    if p_category_id is not null',
 '    then',
 '      l_html :=',
-'        ''<link rel="canonical" href="''',
+'        ''<l'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ink rel="canonical" href="''',
 '        || blog_url.get_category(',
 '           p_category_id  => p_category_id',
 '          ,p_app_id       => p_app_id',
@@ -26222,16 +26254,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function get_archive_canonical_link(',
-'    p_archive_id    in varchar2,'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'    p_archive_id    in varchar2,',
 '    p_app_id        in varchar2 default null',
 '  ) return varchar2',
 '  as',
@@ -26429,6 +26452,7 @@ wwv_flow_api.append_to_install_script(
 '--                            and constant c_pub_app_id',
 '--                            Moved private function get_ords_service to blog_ords package',
 '--    Jari Laine 23.05.2020 - Changed procedure sitemap_main to use table blog_pages',
+'--                            New procedure sitemap_categories',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -26441,6 +26465,8 @@ wwv_flow_api.append_to_install_script(
 '  procedure sitemap_main;',
 '--------------------------------------------------------------------------------',
 '  procedure sitemap_posts;',
+'--------------------------------------------------------------------------------',
+'  procedure sitemap_categories;',
 '--------------------------------------------------------------------------------',
 'end "BLOG_XML";',
 '/',
@@ -26470,10 +26496,10 @@ wwv_flow_api.append_to_install_script(
 '  )',
 '  as',
 '    l_rss           blob;',
+'    l_app_id        varchar2(256);',
 '    l_rss_url       varchar2(4000);',
 '    l_rss_desc      varchar2(4000);',
 '    l_home_url      varchar2(4000);',
-'    l_app_id        varchar2(4000);',
 '    l_blog_name     varchar2(4000);',
 '    l_rss_version   constant varchar2(5) := ''2.0'';',
 '  begin',
@@ -26535,8 +26561,6 @@ wwv_flow_api.append_to_install_script(
 '            ) order by posts.published_on desc',
 '          )',
 '        )',
-'      --).getclobval()',
-'      --).getblobval(nls_charset_id(''AL32UTF8''))',
 '      )',
 '    as blob encoding ''UTF-8'' indent size=2)',
 '    into l_rss',
@@ -26544,21 +26568,21 @@ wwv_flow_api.append_to_install_script(
 '    ;',
 '',
 '    owa_util.mime_header( ''application/rss+xml'', false, ''UTF-8'' );',
-'--    owa_util.mime_header(''application/xml'', false, ''UTF-8'' );',
 '    sys.htp.p( ''Cache-Control: max-age=3600, public'' );',
 '    sys.owa_util.http_header_close;',
 '',
-'    wpg_docload.download_file(l_rss);',
+'    wpg_docload.download_file( l_rss );',
 '',
 '  end rss;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure sitemap_index',
 '  as',
-'    l_xml   blob;',
-'    l_url   varchar2(4000);',
-'    l_main  varchar2(255);',
-'    l_posts varchar2(255);',
+'    l_xml         blob;',
+'    l_url         varchar2(4000);',
+'    l_main        varchar2(4000);',
+'    l_posts       varchar2(4000);',
+'    l_categories  varchar2(4000);',
 '  begin',
 '',
 '    l_url :=  blog_util.get_attribute_value( ''CANONICAL_URL'' );',
@@ -26573,6 +26597,12 @@ wwv_flow_api.append_to_install_script(
 '      || ''sitemap/posts''',
 '    ;',
 '',
+'    l_categories := l_url',
+'      || blog_ords.get_module_path',
+'      || ''sitemap/categories''',
+'    ;',
+'',
+'',
 '    with si as (',
 '      select 1 as grp',
 '        ,l_main as loc',
@@ -26581,15 +26611,19 @@ wwv_flow_api.append_to_install_script(
 '        select 2 as grp',
 '        ,l_posts as loc',
 '      from dual',
+'      union all',
+'        select 3 as grp',
+'        ,l_categories as loc',
+'      from dual',
 '    )',
 '    select xmlserialize( document',
 '      xmlelement(',
 '        "sitemapindex",',
-'        xmlattributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns"),',
+'        xmlattributes( ''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns" ),',
 '        (',
 '          xmlagg(',
-'              xmlelement("sitemap"',
-'              ,xmlelement("loc", loc )',
+'              xmlelement( "sitemap"',
+'              ,xmlelement( "loc", loc )',
 '            ) order by grp',
 '          )',
 '        )',
@@ -26599,11 +26633,11 @@ wwv_flow_api.append_to_install_script(
 '    from si',
 '    ;',
 '',
-'    owa_util.mime_header(''application/xml'', false, ''UTF-8'');',
-'    sys.htp.p(''Cache-Control: max-age=3600, public'' );',
+'    owa_util.mime_header( ''application/xml'', false, ''UTF-8'' );',
+'    sys.htp.p( ''Cache-Control: max-age=3600, public'' );',
 '    sys.owa_util.http_header_close;',
 '',
-'    wpg_docload.download_file(l_xml);',
+'    wpg_docload.download_file( l_xml );',
 '',
 '  end sitemap_index;',
 '--------------------------------------------------------------------------------',
@@ -26621,21 +26655,18 @@ wwv_flow_api.append_to_install_script(
 '    select xmlserialize( document',
 '      xmlelement(',
 '        "urlset",',
-'        xmlattributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns"),',
+'        xmlattributes( ''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns" ),',
 '        (',
 '          xmlagg(',
-'              xmlelement("url"',
-'              ,xmlelement("loc",  blog_url.get_tab(',
-'                                     p_app_id  => l_app_id',
-'                                    ,p_app_page_id => t1.page_alias',
-'                                    ,p_canonical => ''YES''',
-'                                  )',
+'            xmlelement( "url"',
+'              ,xmlelement( "loc",  blog_url.get_tab(',
+'                                   p_app_id  => l_app_id',
+'                                  ,p_app_page_id => t1.page_alias',
+'                                  ,p_canonical => ''YES''',
+'                                )',
 '              )',
-'--            ,XMLElement( "lastmod", to_char( sysdate, ''YYYY-MM-DD'' ) )',
-'--            ,XMLElement( "changefreq", ''monthly'' )',
-'--            ,XMLElement( "priority", ''0.5'' )',
 '            ) order by t1.display_seq',
-'          )',
+'          ) ',
 '        )',
 '      )',
 '    as blob encoding ''UTF-8'' indent size=2)',
@@ -26653,11 +26684,11 @@ wwv_flow_api.append_to_install_script(
 '      )',
 '    ;',
 '',
-'    owa_util.mime_header(''application/xml'', false, ''UTF-8'');',
-'    sys.htp.p(''Cache-Control: max-age=3600, public'' );',
+'    owa_util.mime_header( ''application/xml'', false, ''UTF-8'' );',
+'    sys.htp.p( ''Cache-Control: max-age=3600, public'' );',
 '    sys.owa_util.http_header_close;',
 '',
-'    wpg_docload.download_file(l_xml);',
+'    wpg_docload.download_file( l_xml );',
 '',
 '  end sitemap_main;',
 '--------------------------------------------------------------------------------',
@@ -26676,17 +26707,15 @@ wwv_flow_api.append_to_install_script(
 '        xmlattributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns"),',
 '        (',
 '          xmlagg(',
-'              xmlelement( "url"',
-'                ,xmlelement( "loc", blog_url.get_post(',
-'                                       p_app_id     => l_app_id',
-'                                      ,p_post_id    => posts.post_id',
-'                                      ,p_canonical  => ''YES''',
-'                                    )',
-'                )',
-'                ,XMLElement( "lastmod", to_char( sys_extract_utc( posts.changed_on ), ''YYYY-MM-DD"T"HH24:MI:SS"+00:00""'' ) )',
-'--              ,XMLElement("changefreq", ''monthly'')',
-'--              ,XMLElement("priority", ''0.5'')',
-'              ) order by posts.published_on desc',
+'            xmlelement( "url"',
+'              ,xmlelement( "loc", blog_url.get_post(',
+'                                     p_app_id     => l_app_id',
+'                                    ,p_post_id    => posts.post_id',
+'                                    ,p_canonical  => ''YES''',
+'                                  )',
+'              )',
+'              ,XMLElement( "lastmod", to_char( sys_extract_utc( posts.changed_on ), ''YYYY-MM-DD"T"HH24:MI:SS"+00:00""'' ) )',
+'            ) order by posts.published_on desc',
 '          )',
 '        )',
 '      )',
@@ -26702,6 +26731,45 @@ wwv_flow_api.append_to_install_script(
 '    wpg_docload.download_file(l_xml);',
 '',
 '  end sitemap_posts;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  procedure sitemap_categories',
+'  as',
+'    l_xml     blob;',
+'    l_app_id  varchar2(256);',
+'  begin',
+'',
+'    l_app_id := blog_util.get_attribute_value( ''G_PUB_APP_ID'' );',
+'',
+'    select xmlserialize( document',
+'      xmlelement(',
+'        "urlset",',
+'        xmlattributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns"),',
+'        (',
+'          xmlagg(',
+'            xmlelement( "url"',
+'              ,xmlelement( "loc", blog_url.get_category(',
+'                                     p_app_id       => l_app_id',
+'                                    ,p_category_id  => cat.category_id',
+'                                    ,p_canonical    => ''YES''',
+'                                  )',
+'              )',
+'            ) order by cat.display_seq desc',
+'          )',
+'        )',
+'      )',
+'    as blob encoding ''UTF-8'' indent size=2)',
+'    into l_xml',
+'    from blog_v_categories cat',
+'    ;',
+'',
+'    owa_util.mime_header(''application/xml'', false, ''UTF-8'');',
+'    sys.htp.p( ''Cache-Control: max-age=3600, public'' );',
+'    sys.owa_util.http_header_close;',
+'',
+'    wpg_docload.download_file( l_xml );',
+'',
+'  end sitemap_categories;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 'end "BLOG_XML";',
@@ -27108,7 +27176,16 @@ wwv_flow_api.append_to_install_script(
 'end;',
 '/',
 '--------------------------------------------------------',
-'--  DDL for Trigger BLOG_SETTINGS_TRG',
+'--  DDL'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+' for Trigger BLOG_SETTINGS_TRG',
 '--------------------------------------------------------',
 'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_SETTINGS_TRG"',
 'before',
@@ -27175,16 +27252,7 @@ wwv_flow_api.append_to_install_script(
 '/',
 '--------------------------------------------------------',
 '--  DDL for Foreign Keys',
-'----------------------------------------'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----------------',
+'--------------------------------------------------------',
 'ALTER TABLE BLOG_COMMENTS ADD CONSTRAINT BLOG_COMMENTS_FK1 FOREIGN KEY (POST_ID)',
 '  REFERENCES BLOG_POSTS (ID) ON DELETE CASCADE ENABLE;',
 '',

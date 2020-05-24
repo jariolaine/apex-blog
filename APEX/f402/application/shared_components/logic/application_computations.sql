@@ -1,0 +1,53 @@
+prompt --application/shared_components/logic/application_computations
+begin
+wwv_flow_api.create_flow_computation(
+ p_id=>wwv_flow_api.id(20114712727625957)
+,p_computation_sequence=>10
+,p_computation_item=>'G_BLOG_STATIC_FILES'
+,p_computation_point=>'AFTER_LOGIN'
+,p_computation_type=>'PLSQL_EXPRESSION'
+,p_computation_processed=>'REPLACE_EXISTING'
+,p_computation=>'#OWNER#.blog_ords.get_module_path || ''files/'''
+);
+wwv_flow_api.create_flow_computation(
+ p_id=>wwv_flow_api.id(8959846931541340)
+,p_computation_sequence=>20
+,p_computation_item=>'G_USER_DATE_TIME_FORMAT'
+,p_computation_point=>'AFTER_LOGIN'
+,p_computation_type=>'SET_ITEM_EQUAL_THIS_PREFERENCE'
+,p_computation_processed=>'REPLACE_EXISTING'
+,p_computation=>'BLOG_DISPLAY_DATE_FORMAT'
+);
+wwv_flow_api.create_flow_computation(
+ p_id=>wwv_flow_api.id(28465031431932653)
+,p_computation_sequence=>30
+,p_computation_item=>'G_USER_DATE_TIME_FORMAT'
+,p_computation_point=>'AFTER_LOGIN'
+,p_computation_type=>'STATIC_ASSIGNMENT'
+,p_computation_processed=>'REPLACE_EXISTING'
+,p_computation=>'SINCE'
+,p_compute_when=>'G_USER_DATE_TIME_FORMAT'
+,p_compute_when_type=>'ITEM_IS_NULL'
+);
+wwv_flow_api.create_flow_computation(
+ p_id=>wwv_flow_api.id(19068228071884603)
+,p_computation_sequence=>40
+,p_computation_item=>'G_USER_INPUT_DATE_TIME_FORMAT'
+,p_computation_point=>'AFTER_LOGIN'
+,p_computation_type=>'SET_ITEM_EQUAL_THIS_PREFERENCE'
+,p_computation_processed=>'REPLACE_EXISTING'
+,p_computation=>'BLOG_INPUT_DATE_FORMAT'
+);
+wwv_flow_api.create_flow_computation(
+ p_id=>wwv_flow_api.id(28465412265925289)
+,p_computation_sequence=>50
+,p_computation_item=>'G_USER_INPUT_DATE_TIME_FORMAT'
+,p_computation_point=>'AFTER_LOGIN'
+,p_computation_type=>'STATIC_ASSIGNMENT'
+,p_computation_processed=>'REPLACE_EXISTING'
+,p_computation=>'DD.MM.YYYY HH24:MI'
+,p_compute_when=>'G_USER_INPUT_DATE_TIME_FORMAT'
+,p_compute_when_type=>'ITEM_IS_NULL'
+);
+end;
+/

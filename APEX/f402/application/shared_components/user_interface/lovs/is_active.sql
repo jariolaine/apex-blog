@@ -1,0 +1,22 @@
+prompt --application/shared_components/user_interface/lovs/is_active
+begin
+wwv_flow_api.create_list_of_values(
+ p_id=>wwv_flow_api.id(8819403626737334)
+,p_lov_name=>'IS_ACTIVE'
+,p_lov_query=>'.'||wwv_flow_api.id(8819403626737334)||'.'
+,p_location=>'STATIC'
+);
+wwv_flow_api.create_static_lov_data(
+ p_id=>wwv_flow_api.id(8820136575737336)
+,p_lov_disp_sequence=>10
+,p_lov_disp_value=>'Disabled'
+,p_lov_return_value=>'0'
+);
+wwv_flow_api.create_static_lov_data(
+ p_id=>wwv_flow_api.id(8819764758737336)
+,p_lov_disp_sequence=>20
+,p_lov_disp_value=>'Enabled'
+,p_lov_return_value=>'1'
+);
+end;
+/
