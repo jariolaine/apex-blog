@@ -8,7 +8,6 @@ wwv_flow_api.create_shortcut(
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_tag_canonical_link(',
 '  p_tag_id => :P6_TAG_ID',
-'--  ,p_app_id => :APP_ALIAS',
 ');'))
 );
 end;

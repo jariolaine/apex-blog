@@ -42,13 +42,12 @@ wwv_flow_api.create_row_template(
 '</article>'))
 ,p_row_template_before_rows=>'<div class="z-posts #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_posts" data-region-id="#REGION_STATIC_ID#">'
 ,p_row_template_after_rows=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'</div>',
 '<div class="z-posts-pagination">',
 '  <table class="t-Report-pagination t-Report-pagination--bottom" role="presentation">',
 '    #PAGINATION#',
 '  </table>  ',
 '</div>',
-''))
+'</div>'))
 ,p_row_template_type=>'NAMED_COLUMNS'
 ,p_row_template_display_cond1=>'NOT_CONDITIONAL'
 ,p_row_template_display_cond2=>'NOT_CONDITIONAL'

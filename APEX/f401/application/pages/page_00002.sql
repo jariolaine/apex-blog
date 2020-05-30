@@ -15,7 +15,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200519135449'
+,p_last_upd_yyyymmddhh24miss=>'20200530082620'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -174,7 +174,7 @@ wwv_flow_api.create_report_region(
 ,p_template=>wwv_flow_api.id(6781372168267375)
 ,p_display_sequence=>10
 ,p_region_template_options=>'#DEFAULT#'
-,p_component_template_options=>'#DEFAULT#'
+,p_component_template_options=>'#DEFAULT#:z-post--no-margin:t-Report--hideNoPagination'
 ,p_grid_column_span=>9
 ,p_display_column=>1
 ,p_display_point=>'BODY'
@@ -291,7 +291,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_name=>'Pagination'
 ,p_parent_plug_id=>wwv_flow_api.id(9653988616337837)
 ,p_region_css_classes=>'u-textCenter1'
-,p_region_template_options=>'#DEFAULT#:t-Region--removeHeader:t-Region--scrollBody'
+,p_region_template_options=>'#DEFAULT#:t-Region--removeHeader:t-Region--scrollBody:margin-top-md'
 ,p_plug_template=>wwv_flow_api.id(6802870362267386)
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'BODY'

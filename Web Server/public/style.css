@@ -99,9 +99,6 @@ input[data-z-switch="true"][value="0"]:checked+label{
   box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
   padding: 16px;
 }
-.z-post:last-child {
-  margin-bottom: 16px;
-}
 .z-post--header{
   clear: both;
 }
@@ -138,11 +135,26 @@ input[data-z-switch="true"][value="0"]:checked+label{
 .z-post--no-margin .z-post{
   margin-bottom: 0!important;
 }
+.z-post--margin-medium .z-post{
+  margin-bottom: 1.6rem!important;
+}
+.z-post--margin-small .z-post{
+  margin-bottom: 0.8rem!important;
+}
 /* IR specific */
 .z-post--IR{
   margin: 32px 16px
 }
-
+.z-posts-pagination{
+border: 1px solid rgba(0,0,0,.1);
+  box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
+  border-radius: 2px;
+  padding: 0.4rem;
+}
+.t-Report--hideNoPagination .z-posts-pagination{
+  display: none;
+  visibility: hidden;
+}
 /**************************************
 * Archives, categories and links
 **************************************/

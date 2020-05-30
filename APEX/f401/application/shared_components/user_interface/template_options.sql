@@ -4784,13 +4784,36 @@ wwv_flow_api.create_template_option(
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.create_template_option(
- p_id=>wwv_flow_api.id(30671973981019596)
+ p_id=>wwv_flow_api.id(35908431214731517)
 ,p_theme_id=>42
-,p_name=>'REMOVE_MARGIN'
-,p_display_name=>'Remove Margin'
-,p_display_sequence=>1
+,p_name=>'NO_MARGIN'
+,p_display_name=>'No Margin'
+,p_display_sequence=>30
 ,p_report_template_id=>wwv_flow_api.id(6894976353301648)
 ,p_css_classes=>'z-post--no-margin'
+,p_group_id=>wwv_flow_api.id(14871717519305334)
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(35908784357736441)
+,p_theme_id=>42
+,p_name=>'MEDIUM_MARGIN'
+,p_display_name=>'Medium Margin'
+,p_display_sequence=>10
+,p_report_template_id=>wwv_flow_api.id(6894976353301648)
+,p_css_classes=>'z-post--margin-medium'
+,p_group_id=>wwv_flow_api.id(14871717519305334)
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(35909076701739894)
+,p_theme_id=>42
+,p_name=>'SMALL_MARGIN'
+,p_display_name=>'Small Margin'
+,p_display_sequence=>20
+,p_report_template_id=>wwv_flow_api.id(6894976353301648)
+,p_css_classes=>'z-post--margin-small'
+,p_group_id=>wwv_flow_api.id(14871717519305334)
 ,p_template_types=>'REPORT'
 );
 end;

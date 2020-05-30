@@ -8,7 +8,6 @@ wwv_flow_api.create_shortcut(
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_archive_canonical_link(',
 '  p_archive_id => :P15_ARCHIVE_ID',
-'--  ,p_app_id => :APP_ALIAS',
 ');'))
 );
 end;
