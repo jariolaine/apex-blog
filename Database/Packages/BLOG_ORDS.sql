@@ -20,18 +20,15 @@ as
 --                            Removed ORDS specific constants from package blog_util
 --                            Removed function get_ords_service
 --                            Added function get_module_path
+--    Jari Laine 24.04.2020 - Combined all template creation to one procedure because
+--                            templates metadata is stored to blog_ords_tempates
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure create_module(
+    p_app_id    in number,
     p_base_path in varchar2 default null
   );
---------------------------------------------------------------------------------
-  procedure add_files_template;
---------------------------------------------------------------------------------
-  procedure create_rss_template;
---------------------------------------------------------------------------------
-  procedure create_sitemap_templates;
 --------------------------------------------------------------------------------
   function get_module_path(
     p_canonical     in varchar2 default 'NO'
@@ -48,29 +45,96 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  c_owner       constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
   c_module_name constant varchar2(256)  := 'BLOG_PUBLIC_FILES';
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- none
+  procedure create_templates(
+    p_app_id in number
+  )
+  as
+  begin
+
+    for c1 in(
+      select uri_template
+       ,http_method
+       ,source_type
+       ,handler_source
+       ,notes
+      from blog_ords_templates t1
+      where 1 = 1
+      and is_active = 1
+      and not exists(
+        select 1
+        from apex_application_build_options bo
+        where 1 = 1
+        and bo.application_id = p_app_id
+        and bo.build_option_status = 'Exclude'
+        and bo.build_option_name = t1.build_option
+      )
+    ) loop
+
+      ords.define_template(
+        p_module_name     => c_module_name
+        ,p_pattern        => c1.uri_template
+        ,p_priority       => 0
+        ,p_etag_type      => 'HASH'
+        ,p_etag_query     => null
+        ,p_comments       => c1.notes
+      );
+
+      ords.define_handler(
+        p_module_name     => c_module_name
+        ,p_pattern        => c1.uri_template
+        ,p_method         => c1.http_method
+        ,p_source_type    => c1.source_type
+        ,p_mimes_allowed  => null
+        ,p_comments       => c1.notes
+        ,p_source         => c1.handler_source
+      );
+
+    end loop;
+
+  end create_templates;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure create_module(
+    p_app_id    in number,
     p_base_path in varchar2 default null
   )
   as
     l_base_path varchar2(256);
   begin
 
+    begin
+      -- query ORDS metadata to get resource url
+      select t2.uri_prefix as url
+      into l_base_path
+      from user_ords_schemas t1
+      join user_ords_modules t2
+        on t1.id = t2.schema_id
+      where 1 = 1
+        and t1.parsing_schema = c_owner
+        and t2.name = c_module_name
+      ;
+    exception when no_data_found then
+      l_base_path := null;
+    end;
+
     l_base_path :=
-      case when p_base_path is null
-      then sys.dbms_random.string('l', 12)
-      else p_base_path
+      case when p_base_path is not null
+      then p_base_path
+      else
+        case when l_base_path is not null
+        then l_base_path
+        else sys.dbms_random.string('l', 6)
+        end
       end
     ;
     -- Static files module
@@ -81,143 +145,12 @@ as
       ,p_status         => 'PUBLISHED'
       ,p_comments       => 'Blog static content from blog_files table and dynamic XML'
     );
+
+    create_templates(
+      p_app_id => p_app_id
+    );
+
   end create_module;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure add_files_template
-  as
-  begin
-
-    ords.define_template(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'files/:p_file_name'
-      ,p_priority       => 0
-      ,p_etag_type      => 'HASH'
-      ,p_etag_query     => null
-      ,p_comments       => 'Blog static files'
-    );
-
-    ords.define_handler(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'files/:p_file_name'
-      ,p_method         => 'GET'
-      ,p_source_type    => 'resource/lob'
-      ,p_items_per_page => 0
-      ,p_mimes_allowed  => ''
-      ,p_comments       => 'Blog static files'
-      ,p_source         =>
-        'select v1.mime_type'
-        || chr(10) || '  ,v1.blob_content'
-        || chr(10) || 'from blog_v_files v1'
-        || chr(10) || 'where 1 = 1'
-        || chr(10) || 'and v1.is_download = 0'
-        || chr(10) || 'and v1.file_name = :p_file_name'
-    );
-
-  end add_files_template;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure create_rss_template
-  as
-  begin
-
-    ords.define_template(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'feed/rss'
-      ,p_priority       => 0
-      ,p_etag_type      => 'HASH'
-      ,p_etag_query     => null
-      ,p_comments       => 'Blog rss feed'
-    );
-
-    ords.define_handler(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'feed/rss'
-      ,p_method         => 'GET'
-      ,p_source_type    => 'plsql/block'
-      ,p_items_per_page => 0
-      ,p_mimes_allowed  => ''
-      ,p_comments       => 'Blog rss feed'
-      ,p_source         =>
-        'begin' || chr(10)
-        || '  blog_xml.rss(:p_lang);' || chr(10)
-        || 'end;'
-    );
-
-  end create_rss_template;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure create_sitemap_templates
-  as
-  begin
-
-    ords.define_template(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'sitemap/index'
-      ,p_priority       => 0
-      ,p_etag_type      => 'HASH'
-      ,p_etag_query     => null
-      ,p_comments       => 'Blog sitemap index'
-    );
-
-    ords.define_handler(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'sitemap/index'
-      ,p_method         => 'GET'
-      ,p_source_type    => 'plsql/block'
-      ,p_mimes_allowed  => ''
-      ,p_comments       => null
-      ,p_source         =>
-        'begin' || chr(10)
-        || '  blog_xml.sitemap_index;' || chr(10)
-        || 'end;'
-    );
-
-    ords.define_template(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'sitemap/main'
-      ,p_priority       => 0
-      ,p_etag_type      => 'HASH'
-      ,p_etag_query     => null
-      ,p_comments       => 'Blog sitemap index'
-    );
-
-    ords.define_handler(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'sitemap/main'
-      ,p_method         => 'GET'
-      ,p_source_type    => 'plsql/block'
-      ,p_mimes_allowed  => ''
-      ,p_comments       => null
-      ,p_source         =>
-        'begin' || chr(10)
-        || '  blog_xml.sitemap_main;' || chr(10)
-        || 'end;'
-    );
-
-    ords.define_template(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'sitemap/posts'
-      ,p_priority       => 0
-      ,p_etag_type      => 'HASH'
-      ,p_etag_query     => null
-      ,p_comments       => 'Blog posts sitemap'
-    );
-
-    ords.define_handler(
-      p_module_name     => c_module_name
-      ,p_pattern        => 'sitemap/posts'
-      ,p_method         => 'GET'
-      ,p_source_type    => 'plsql/block'
-      ,p_mimes_allowed  => ''
-      ,p_comments       => 'Blog posts sitemap'
-      ,p_source         =>
-        'begin' || chr(10)
-        || '  blog_xml.sitemap_posts;' || chr(10)
-        || 'end;'
-      );
-
-  end create_sitemap_templates;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_module_path(
@@ -225,7 +158,6 @@ as
   ) return varchar2
   as
     l_url   varchar2(4000);
-    c_owner constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
   begin
 
     begin

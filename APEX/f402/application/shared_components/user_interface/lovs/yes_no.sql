@@ -1,0 +1,22 @@
+prompt --application/shared_components/user_interface/lovs/yes_no
+begin
+wwv_flow_api.create_list_of_values(
+ p_id=>wwv_flow_api.id(6747712589074152)
+,p_lov_name=>'YES_NO'
+,p_lov_query=>'.'||wwv_flow_api.id(6747712589074152)||'.'
+,p_location=>'STATIC'
+);
+wwv_flow_api.create_static_lov_data(
+ p_id=>wwv_flow_api.id(6747996088074154)
+,p_lov_disp_sequence=>10
+,p_lov_disp_value=>'No'
+,p_lov_return_value=>'0'
+);
+wwv_flow_api.create_static_lov_data(
+ p_id=>wwv_flow_api.id(6748404936074154)
+,p_lov_disp_sequence=>20
+,p_lov_disp_value=>'Yes'
+,p_lov_return_value=>'1'
+);
+end;
+/

@@ -10,6 +10,7 @@ create table blog_comment_subs_email(
   changed_by varchar2( 256 char ) not null,
   is_active number( 1, 0 ) not null,
   email varchar2( 256 char ) not null,
+  notes varchar2(4000 char),
   email_unique varchar2( 256 char ) as ( lower( trim( email ) ) ) virtual not null,
   constraint blog_comment_subs_email_pk primary key( id ),
   constraint blog_comment_subs_email_uk1 unique( email_unique ),

@@ -19,6 +19,10 @@ as
 --    Jari Laine 17.05.2020 - Removed parameter p_err_mesg from function get_first_paragraph,
 --                            function is called now from APEX application conputation
 --    Jari Laine 19.05.2020 - Removed obsolete function get_post_title
+--    Jari Laine 24.05.2020 - Added procedures:
+--                            run_settings_post_expression
+--                            run_feature_post_expression
+--                            update_feature
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -55,7 +59,7 @@ as
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
   function get_category_title(
-    p_category_id      in varchar2
+    p_category_id     in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 12
@@ -112,7 +116,7 @@ as
 ---------------------------- ----------------------------------------------------
   -- this procedure is not used / not ready
   procedure purge_post_preview_job(
-    p_drop_job    in boolean default false
+    p_drop_job        in boolean default false
   );
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 20012
@@ -138,6 +142,20 @@ as
     p_value           in varchar2,
     p_err_mesg        in varchar2
   ) return varchar2;
+--------------------------------------------------------------------------------
+  -- Called from: admin app pages 20012
+  procedure run_settings_post_expression(
+    p_id              in number,
+    p_value           in out nocopy varchar2
+  );
+--------------------------------------------------------------------------------
+  -- Called from: admin app pages 20011
+  procedure update_feature(
+    p_app_id          in number,
+    p_feature_id      in number,
+    p_build_option_id in number,
+    p_build_status    in varchar2
+  );
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 32
   function get_comment_post_id(
@@ -279,7 +297,7 @@ as
     if apex_util.current_user_in_group( 'Bloggers' )
     then
 
-      -- Fetch net display_seq
+      -- Fetch next display_seq
       select ceil(coalesce(max(display_seq) + 1, 1) / 10) * 10
       into l_max
       from blog_bloggers
@@ -305,6 +323,32 @@ as
     end if;
 
   end add_blogger;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure run_feature_post_expression(
+    p_id  in number
+  )
+  as
+    l_plsql varchar2(32700);
+  begin
+
+    -- fetch post exporession
+    select v1.post_expression
+    into l_plsql
+    from blog_v_all_features v1
+    where 1 = 1
+      and v1.post_expression is not null
+      and v1.feature_id = p_id
+    ;
+    -- run expression
+    apex_plugin_util.execute_plsql_code(
+      p_plsql_code => l_plsql
+    );
+
+  exception when no_data_found
+  then
+    null;
+  end run_feature_post_expression;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -414,7 +458,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function request_to_post_status(
-    p_request     in varchar2
+    p_request in varchar2
   ) return varchar2
   as
   begin
@@ -526,7 +570,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function file_upload(
-    p_file_name   in varchar2
+    p_file_name in varchar2
   ) return boolean
   as
     l_file_exists boolean;
@@ -602,7 +646,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function remove_whitespace(
-    p_string      in varchar2
+    p_string  in varchar2
   ) return varchar2
   as
   begin
@@ -973,6 +1017,60 @@ as
     return l_err_mesg;
 
   end is_email;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure run_settings_post_expression(
+    p_id    in number,
+    p_value in out nocopy varchar2
+  )
+  as
+    l_exp varchar2(32700);
+  begin
+
+    -- trim value
+    p_value := trim( p_value );
+
+    -- fetch post exporession
+    select v1.post_expression
+    into l_exp
+    from blog_v_all_settings v1
+    where 1 = 1
+      and v1.post_expression is not null
+      and v1.id = p_id
+    ;
+    -- get expression result
+    p_value := apex_plugin_util.get_plsql_expression_result(
+      p_plsql_expression => l_exp
+    );
+
+  exception when no_data_found
+  then
+    null;
+  end run_settings_post_expression;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure update_feature(
+    p_app_id          in number,
+    p_feature_id      in number,
+    p_build_option_id in number,
+    p_build_status    in varchar2
+  )
+  as
+  begin
+
+    -- update build option value
+    apex_util.set_build_option_status(
+       p_application_id => p_app_id
+      ,p_id => p_build_option_id
+      ,p_build_status => upper( p_build_status )
+    );
+
+    -- run post expression
+    run_feature_post_expression(
+      p_id => p_feature_id
+    );
+
+  end update_feature;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_comment_post_id(

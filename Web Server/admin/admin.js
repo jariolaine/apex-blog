@@ -308,9 +308,12 @@ var blog = blog || {};
       options.contentsCss.unshift(CKEDITOR.getUrl("contents.css"));
 
       return $.extend(options, {
-        startupOutlineBlocks: true
+         startupOutlineBlocks: true
         ,toolbarCanCollapse: true
-        //,forcePasteAsPlainText: true
+        ,forcePasteAsPlainText: true
+        //,autoParagraph: false
+        //,enterMode: CKEDITOR.ENTER_BR
+        //,shiftEnterMode: CKEDITOR.ENTER_P
         ,entities_additional: "#35,#39"
         ,disallowedContent: "script; *[on*]"
         ,allowedContent: {
@@ -324,6 +327,7 @@ var blog = blog || {};
         }
         ,stylesSet: [
           {name:"Program Code",element:"pre",attributes:{"class":"z-program-code"}},
+
           {name:"Big",element:"big"},
           {name:"Small",element:"small"},
           {name:"Typewriter",element:"tt"},

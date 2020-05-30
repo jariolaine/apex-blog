@@ -15,6 +15,7 @@ create table blog_settings(
   group_name varchar2( 64 char ) not null,
   attribute_value varchar2( 4000 char ),
   post_expression varchar2( 4000 char ),
+  notes varchar2(4000 char),
   constraint blog_settings_pk primary key( id ),
   constraint blog_settings_uk1 unique( attribute_name ),
   constraint blog_settings_ck1 check( row_version > 0 ),

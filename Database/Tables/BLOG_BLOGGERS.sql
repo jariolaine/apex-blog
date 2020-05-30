@@ -14,6 +14,7 @@ create table  blog_bloggers(
 	apex_username varchar2(  256 char ) not null,
 	email varchar2( 256 char ),
 	blogger_desc varchar2( 4000 char ),
+  notes varchar2(4000 char),
   constraint blog_bloggers_pk primary key( id ),
   constraint blog_bloggers_uk1 unique( apex_username ),
   constraint blog_bloggers_ck1 check( row_version > 0 ),
