@@ -18,7 +18,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524174158'
+,p_last_upd_yyyymmddhh24miss=>'20200524193913'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27063074415689131)
@@ -509,24 +509,21 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'Features - Save Interactive Grid Data'
 ,p_attribute_01=>'PLSQL_CODE'
 ,p_attribute_04=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'if :APEX$ROW_STATUS = ''U''',
-'then',
-'  -- update build option value',
-'  apex_util.set_build_option_status(',
-'     p_application_id => :APPLICATION_ID',
-'    ,p_id => :BUILD_OPTION_ID',
-'    ,p_build_status => upper(:STATUS)',
-'  );',
-'  ',
-'  -- run post expression',
-'  #OWNER#.blog_cm.run_feature_post_expression(',
-'    p_id => :FEATURE_ID',
-'  );',
-'  ',
-'end if;'))
-,p_attribute_05=>'Y'
+'#OWNER#.blog_cm.update_feature(',
+'   p_app_id          => :APPLICATION_ID',
+'  ,p_feature_id      => :FEATURE_ID',
+'  ,p_build_option_id => :BUILD_OPTION_ID',
+'  ,p_build_status    => :STATUS',
+');',
+''))
+,p_attribute_05=>'N'
 ,p_attribute_06=>'N'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_when=>'APEX$ROW_STATUS'
+,p_process_when_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
+,p_process_when2=>'U'
+,p_exec_cond_for_each_row=>'Y'
+,p_process_comment=>'Update build option value and run post expression'
 );
 end;
 /

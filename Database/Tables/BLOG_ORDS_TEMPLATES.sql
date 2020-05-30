@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  DDL for Table BLOG_PAGES
+--  DDL for Table BLOG_ORDS_TEMPLATES
 --------------------------------------------------------
 create table blog_ords_templates(
   id number( 38, 0 ) not null,
@@ -9,6 +9,7 @@ create table blog_ords_templates(
   changed_on timestamp( 6 ) with local time zone not null,
   changed_by varchar2( 256 char ) not null,
   is_active number( 1, 0 ) not null,
+  display_seq number(10,0) not null,
   template_group varchar2( 256 char ) not null,
   uri_template varchar2( 256 char ) not null,
   http_method varchar2( 256 char ) not null,
@@ -19,6 +20,7 @@ create table blog_ords_templates(
   constraint blog_ords_templates_pk primary key( id ),
   constraint blog_ords_templates_uk1 unique( uri_template  ),
   constraint blog_ords_templates_ck1 check( row_version > 0 ),
-  constraint blog_ords_templates_ck2 check( is_active in( 0, 1 ) )
+  constraint blog_ords_templates_ck2 check( is_active in( 0, 1 ) ),
+  constraint blog_ords_templates_ck3 check( display_seq > 0 )
 )
 /

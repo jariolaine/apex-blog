@@ -16,7 +16,10 @@ as
 --                            and constant c_pub_app_id
 --                            Moved private function get_ords_service to blog_ords package
 --    Jari Laine 23.05.2020 - Changed procedure sitemap_main to use table blog_pages
---                            New procedure sitemap_categories
+--                            New procedures:
+--                              sitemap_categories
+--                              sitemap_archives
+--                              sitemap_atags
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -165,7 +168,7 @@ as
           xmlagg(
             xmlelement( "sitemap"
               ,xmlelement( "loc", l_url || t1.uri_template )
-            )
+            ) order by t1.display_seq
           )
         )
       )

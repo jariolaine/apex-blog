@@ -128,7 +128,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_ADMIN_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524182157'
+,p_last_upd_yyyymmddhh24miss=>'20200530061729'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>195
 ,p_ui_type_name => null
@@ -19483,7 +19483,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524174158'
+,p_last_upd_yyyymmddhh24miss=>'20200524193913'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27063074415689131)
@@ -19974,24 +19974,21 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'Features - Save Interactive Grid Data'
 ,p_attribute_01=>'PLSQL_CODE'
 ,p_attribute_04=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'if :APEX$ROW_STATUS = ''U''',
-'then',
-'  -- update build option value',
-'  apex_util.set_build_option_status(',
-'     p_application_id => :APPLICATION_ID',
-'    ,p_id => :BUILD_OPTION_ID',
-'    ,p_build_status => upper(:STATUS)',
-'  );',
-'  ',
-'  -- run post expression',
-'  #OWNER#.blog_cm.run_feature_post_expression(',
-'    p_id => :FEATURE_ID',
-'  );',
-'  ',
-'end if;'))
-,p_attribute_05=>'Y'
+'#OWNER#.blog_cm.update_feature(',
+'   p_app_id          => :APPLICATION_ID',
+'  ,p_feature_id      => :FEATURE_ID',
+'  ,p_build_option_id => :BUILD_OPTION_ID',
+'  ,p_build_status    => :STATUS',
+');',
+''))
+,p_attribute_05=>'N'
 ,p_attribute_06=>'N'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_when=>'APEX$ROW_STATUS'
+,p_process_when_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
+,p_process_when2=>'U'
+,p_exec_cond_for_each_row=>'Y'
+,p_process_comment=>'Update build option value and run post expression'
 );
 end;
 /
@@ -22102,7 +22099,7 @@ wwv_flow_api.create_install_script(
 ')',
 '/',
 '--------------------------------------------------------',
-'--  DDL for Table BLOG_PAGES',
+'--  DDL for Table BLOG_ORDS_TEMPLATES',
 '--------------------------------------------------------',
 'create table blog_ords_templates(',
 '  id number( 38, 0 ) not null,',
@@ -22112,6 +22109,7 @@ wwv_flow_api.create_install_script(
 '  changed_on timestamp( 6 ) with local time zone not null,',
 '  changed_by varchar2( 256 char ) not null,',
 '  is_active number( 1, 0 ) not null,',
+'  display_seq number(10,0) not null,',
 '  template_group varchar2( 256 char ) not null,',
 '  uri_template varchar2( 256 char ) not null,',
 '  http_method varchar2( 256 char ) not null,',
@@ -22122,7 +22120,8 @@ wwv_flow_api.create_install_script(
 '  constraint blog_ords_templates_pk primary key( id ),',
 '  constraint blog_ords_templates_uk1 unique( uri_template  ),',
 '  constraint blog_ords_templates_ck1 check( row_version > 0 ),',
-'  constraint blog_ords_templates_ck2 check( is_active in( 0, 1 ) )',
+'  constraint blog_ords_templates_ck2 check( is_active in( 0, 1 ) ),',
+'  constraint blog_ords_templates_ck3 check( display_seq > 0 )',
 ')',
 '/',
 '--------------------------------------------------------',
@@ -22573,17 +22572,17 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_FILES',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC") AS',
-'  select t1.id as file_id',
-'  ,t1.created_on',
-'  ,t1.changed_on',
-'  ,t1.is_download',
-'  ,t1.file_name'))
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FI'))
 );
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'LE_DESC") AS',
+'  select t1.id as file_id',
+'  ,t1.created_on',
+'  ,t1.changed_on',
+'  ,t1.is_download',
+'  ,t1.file_name',
 '  ,t1.mime_type',
 '  ,t1.blob_content',
 '  ,t1.file_size',
@@ -23454,9 +23453,7 @@ wwv_flow_api.append_to_install_script(
 '  then',
 '',
 '    apex_debug.warn(',
-'       p_message => ''No data found. %s( %s => %s )''',
-'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => ''p_tag_id'))
+'       p_message => ''No data found. %s( %s => '))
 );
 end;
 /
@@ -23464,7 +23461,9 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'''',
+'%s )''',
+'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'      ,p1 => ''p_tag_id''',
 '      ,p2 => coalesce( p_tag_id, ''(null)'' )',
 '    );',
 '    raise;',
@@ -24316,9 +24315,7 @@ wwv_flow_api.append_to_install_script(
 '          --,p_plain_url   => true',
 '        )',
 '      );',
-'    end if;',
-'  end redirect_search;',
-'--------------------------------------------------------------------------------'))
+'    en'))
 );
 null;
 end;
@@ -24327,7 +24324,9 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'d if;',
+'  end redirect_search;',
+'--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 'end "BLOG_URL";',
 '/',
@@ -24352,7 +24351,10 @@ wwv_flow_api.append_to_install_script(
 '--    Jari Laine 17.05.2020 - Removed parameter p_err_mesg from function get_first_paragraph,',
 '--                            function is called now from APEX application conputation',
 '--    Jari Laine 19.05.2020 - Removed obsolete function get_post_title',
-'--    Jari Laine 24.05.2020 - Added procedures run_settings_post_expression and run_feature_post_expression',
+'--    Jari Laine 24.05.2020 - Added procedures:',
+'--                            run_settings_post_expression',
+'--                            run_feature_post_expression',
+'--                            update_feature',
 '--',
 '--  TO DO:',
 '--    #1  check constraint name that raised dup_val_on_index error',
@@ -24389,7 +24391,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  -- Called from: admin app pages 12',
 '  function get_category_title(',
-'    p_category_id      in varchar2',
+'    p_category_id     in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '  -- Called from: admin app pages 12',
@@ -24446,7 +24448,7 @@ wwv_flow_api.append_to_install_script(
 '---------------------------- ----------------------------------------------------',
 '  -- this procedure is not used / not ready',
 '  procedure purge_post_preview_job(',
-'    p_drop_job    in boolean default false',
+'    p_drop_job        in boolean default false',
 '  );',
 '--------------------------------------------------------------------------------',
 '  -- Called from: admin app pages 20012',
@@ -24480,8 +24482,11 @@ wwv_flow_api.append_to_install_script(
 '  );',
 '--------------------------------------------------------------------------------',
 '  -- Called from: admin app pages 20011',
-'  procedure run_feature_post_expression(',
-'    p_id              in number',
+'  procedure update_feature(',
+'    p_app_id          in number,',
+'    p_feature_id      in number,',
+'    p_build_option_id in number,',
+'    p_build_status    in varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
 '  -- Called from: admin app pages 32',
@@ -24624,7 +24629,7 @@ wwv_flow_api.append_to_install_script(
 '    if apex_util.current_user_in_group( ''Bloggers'' )',
 '    then',
 '',
-'      -- Fetch net display_seq',
+'      -- Fetch next display_seq',
 '      select ceil(coalesce(max(display_seq) + 1, 1) / 10) * 10',
 '      into l_max',
 '      from blog_bloggers',
@@ -24650,6 +24655,32 @@ wwv_flow_api.append_to_install_script(
 '    end if;',
 '',
 '  end add_blogger;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  procedure run_feature_post_expression(',
+'    p_id  in number',
+'  )',
+'  as',
+'    l_plsql varchar2(32700);',
+'  begin',
+'',
+'    -- fetch post exporession',
+'    select v1.post_expression',
+'    into l_plsql',
+'    from blog_v_all_features v1',
+'    where 1 = 1',
+'      and v1.post_expression is not null',
+'      and v1.feature_id = p_id',
+'    ;',
+'    -- run expression',
+'    apex_plugin_util.execute_plsql_code(',
+'      p_plsql_code => l_plsql',
+'    );',
+'',
+'  exception when no_data_found',
+'  then',
+'    null;',
+'  end run_feature_post_expression;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Global functions and procedures',
@@ -24759,7 +24790,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function request_to_post_status(',
-'    p_request     in varchar2',
+'    p_request in varchar2',
 '  ) return varchar2',
 '  as',
 '  begin',
@@ -24871,7 +24902,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function file_upload(',
-'    p_file_name   in varchar2',
+'    p_file_name in varchar2',
 '  ) return boolean',
 '  as',
 '    l_file_exists boolean;',
@@ -24947,7 +24978,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function remove_whitespace(',
-'    p_string      in varchar2',
+'    p_string  in varchar2',
 '  ) return varchar2',
 '  as',
 '  begin',
@@ -25238,7 +25269,16 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  function is_url(',
 '    p_value     in varchar2,',
-'    p_err_mesg  in varchar2',
+'    p_err_mesg  '))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'in varchar2',
 '  ) return varchar2',
 '  as',
 '    l_err_mesg varchar2(32700);',
@@ -25274,15 +25314,6 @@ wwv_flow_api.append_to_install_script(
 '',
 '    -- prepare validation error message',
 '    l_err_mesg := apex_lang.message( p_err_mesg );',
-''))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '',
 '    if l_err_mesg = apex_escape.html( p_err_mesg )',
 '    then',
@@ -25359,30 +25390,28 @@ wwv_flow_api.append_to_install_script(
 '  end run_settings_post_expression;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure run_feature_post_expression(',
-'    p_id  in number',
+'  procedure update_feature(',
+'    p_app_id          in number,',
+'    p_feature_id      in number,',
+'    p_build_option_id in number,',
+'    p_build_status    in varchar2',
 '  )',
 '  as',
-'    l_plsql varchar2(32700);',
 '  begin',
 '',
-'    -- fetch post exporession',
-'    select v1.post_expression',
-'    into l_plsql',
-'    from blog_v_all_features v1',
-'    where 1 = 1',
-'      and v1.post_expression is not null',
-'      and v1.feature_id = p_id',
-'    ;',
-'    -- run expression',
-'    apex_plugin_util.execute_plsql_code(',
-'      p_plsql_code => l_plsql',
+'    -- update build option value',
+'    apex_util.set_build_option_status(',
+'       p_application_id => p_app_id',
+'      ,p_id => p_build_option_id',
+'      ,p_build_status => upper( p_build_status )',
 '    );',
 '',
-'  exception when no_data_found',
-'  then',
-'    null;',
-'  end run_feature_post_expression;',
+'    -- run post expression',
+'    run_feature_post_expression(',
+'      p_id => p_feature_id',
+'    );',
+'',
+'  end update_feature;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function get_comment_post_id(',
@@ -26172,7 +26201,16 @@ wwv_flow_api.append_to_install_script(
 '  end get_post_description_meta;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  function get_tab_canonical_link(',
+'  function get_ta'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'b_canonical_link(',
 '    p_app_page_id     in varchar2,',
 '    p_app_id          in varchar2 default null',
 '  ) return varchar2',
@@ -26203,16 +26241,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function get_post_canonical_link(',
-'    p_p'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ost_id       in varchar2,',
+'    p_post_id       in varchar2,',
 '    p_app_id        in varchar2 default null',
 '  ) return varchar2',
 '  as',
@@ -26469,7 +26498,10 @@ wwv_flow_api.append_to_install_script(
 '--                            and constant c_pub_app_id',
 '--                            Moved private function get_ords_service to blog_ords package',
 '--    Jari Laine 23.05.2020 - Changed procedure sitemap_main to use table blog_pages',
-'--                            New procedure sitemap_categories',
+'--                            New procedures:',
+'--                              sitemap_categories',
+'--                              sitemap_archives',
+'--                              sitemap_atags',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -26618,7 +26650,7 @@ wwv_flow_api.append_to_install_script(
 '          xmlagg(',
 '            xmlelement( "sitemap"',
 '              ,xmlelement( "loc", l_url || t1.uri_template )',
-'            )',
+'            ) order by t1.display_seq',
 '          )',
 '        )',
 '      )',
@@ -27096,7 +27128,16 @@ wwv_flow_api.append_to_install_script(
 'before',
 'insert or',
 'update on blog_files',
-'for each row',
+'f'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'or each row',
 'begin',
 '',
 '  if inserting then',
@@ -27137,16 +27178,7 @@ wwv_flow_api.append_to_install_script(
 '  if inserting then',
 '',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
-'    :new.row_version  := coalesce( :'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'new.row_version, 1 );',
+'    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := localtimestamp;',
 '    :new.created_by   := coalesce(',
 '       :new.created_by',
@@ -27490,33 +27522,44 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_ORDS_TEMPLATES',
 '--------------------------------------------------------',
-'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values (''1'',''feed/rss'',''GET'',''plsql/block'',''begin',
-'  blog_xml.rss(:p_lang);',
-'end;'',''BLOG_FEATURE_RSS'',''Blog rss feed'',''RSS'');',
-'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values (''1'',''share/:p_file_name'',''GET'',''resource/lob'',''select v1.mime_type',
-'  ,v1.blob_content',
-'from blog_v_files v1',
-'where 1 = 1',
-'  and v1.is_download = 0',
-'  and v1.file_name = :p_file_name'',null,''Blog static files'',''FILES'');',
-'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values (''1'',''sitemap/archives'',''GET'',''plsql/block'',''begin',
-'  blog_xml.sitemap_archives;',
-'end;'',''BLOG_FEATURE_ARCHIVE'',''Blog archives sitemap'',''SITEMAP'');',
-'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values (''1'',''sitemap/categories'',''GET'',''plsql/block'',''begin',
-'  blog_xml.sitemap_categories;',
-'end;'',''BLOG_FEATURE_CATEGORY'',''Blog categories sitemap'',''SITEMAP'');',
-'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values (''1'',''sitemap/index'',''GET'',''plsql/block'',''begin',
-'  blog_xml.sitemap_index;',
-'end;'',null,''Blog sitemap index'',''SITEMAP'');',
-'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values (''1'',''sitemap/main'',''GET'',''plsql/block'',''begin',
-'  blog_xml.sitemap_main;',
-'end;'',null,''Blog main pages sitemap'',''SITEMAP'');',
-'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values (''1'',''sitemap/posts'',''GET'',''plsql/block'',''begin',
-'  blog_xml.sitemap_posts;',
-'end;'',null,''Blog posts sitemap'',''SITEMAP'');',
-'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,HANDLER_SOURCE,BUILD_OPTION,NOTES,TEMPLATE_GROUP) values (''1'',''sitemap/tags'',''GET'',''plsql/block'',''begin',
-'  blog_xml.sitemap_tags;',
-'end;'',null,''Blog tags sitemap'',''SITEMAP'');',
+'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,DISPLAY_SEQ,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,BUILD_OPTION,NOTES,TEMPLATE_GROUP,HANDLER_SOURCE) values (''1'',''10'',''feed/rss'',''GET'',''plsql/block'',''BLOG_FEATURE_RSS'',''Blog rss feed'',''RSS'',''begin''',
+'|| chr(10) || ''  blog_xml.rss(:p_lang);''',
+'|| chr(10) || ''end;''',
+');',
+'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,DISPLAY_SEQ,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,BUILD_OPTION,NOTES,TEMPLATE_GROUP,HANDLER_SOURCE) values (''1'',''20'',''sitemap/index'',''GET'',''plsql/block'',null,''Blog sitemap index'',''SITEMAP_INDEX'',''begin''',
+'|| chr(10) || ''  blog_xml.sitemap_index;''',
+'|| chr(10) || ''end;''',
+');',
+'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,DISPLAY_SEQ,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,BUILD_OPTION,NOTES,TEMPLATE_GROUP,HANDLER_SOURCE) values (''1'',''30'',''sitemap/main'',''GET'',''plsql/block'',null,''Blog main pages sitemap'',''SITEMAP'',''begin''',
+'|| chr(10) || ''  blog_xml.sitemap_main;''',
+'|| chr(10) || ''end;''',
+');',
+'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,DISPLAY_SEQ,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,BUILD_OPTION,NOTES,TEMPLATE_GROUP,HANDLER_SOURCE) values (''1'',''40'',''sitemap/posts'',''GET'',''plsql/block'',null,''Blog posts sitemap'',''SITEMAP'',''begin''',
+'|| chr(10) || ''  blog_xml.sitemap_posts;''',
+'|| chr(10) || ''end;''',
+');',
+'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,DISPLAY_SEQ,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,BUILD_OPTION,NOTES,TEMPLATE_GROUP,HANDLER_SOURCE) values (''1'',''50'',''sitemap/categories'',''GET'',''plsql/block'',''BLOG_FEATURE_CATEGORY'',''Blog categories sitemap'','
+||'''SITEMAP'',''begin''',
+'|| chr(10) || ''  blog_xml.sitemap_categories;''',
+'|| chr(10) || ''end;''',
+');',
+'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,DISPLAY_SEQ,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,BUILD_OPTION,NOTES,TEMPLATE_GROUP,HANDLER_SOURCE) values (''1'',''80'',''share/:p_file_name'',''GET'',''resource/lob'',null,''Blog static files'',''FILES'',''select v1.mime_'
+||'type''',
+'|| chr(10) || ''  ,v1.blob_content''',
+'|| chr(10) || ''from blog_v_files v1''',
+'|| chr(10) || ''where 1 = 1''',
+'|| chr(10) || ''  and v1.is_download = 0''',
+'|| chr(10) || ''  and v1.file_name = :p_file_name''',
+');',
+'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,DISPLAY_SEQ,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,BUILD_OPTION,NOTES,TEMPLATE_GROUP,HANDLER_SOURCE) values (''1'',''60'',''sitemap/archives'',''GET'',''plsql/block'',''BLOG_FEATURE_ARCHIVE'',''Blog archives sitemap'',''SITE'
+||'MAP'',''begin''',
+'|| chr(10) || ''  blog_xml.sitemap_archives;''',
+'|| chr(10) || ''end;''',
+');',
+'Insert into BLOG_ORDS_TEMPLATES (IS_ACTIVE,DISPLAY_SEQ,URI_TEMPLATE,HTTP_METHOD,SOURCE_TYPE,BUILD_OPTION,NOTES,TEMPLATE_GROUP,HANDLER_SOURCE) values (''1'',''70'',''sitemap/tags'',''GET'',''plsql/block'',null,''Blog tags sitemap'',''SITEMAP'',''begin''',
+'|| chr(10) || ''  blog_xml.sitemap_tags;''',
+'|| chr(10) || ''end;''',
+');',
 '',
 '--------------------------------------------------------',
 '--  Inserting into BLOG_PAGES',
@@ -27529,32 +27572,29 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_FEATURES',
 '--------------------------------------------------------',
-'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values (''1'',''10'',''BLOG_FEATURE_ALLOW_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',null,null);',
-'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values (''1'',''20'',''BLOG_FEATURE_MODERATE_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',null,null);',
-'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values (''1'',''30'',''BLOG_FEATURE_SUBSCRIBE_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',null,null);',
-'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values (''0'',''40'',''BLOG_FEATURE_POST_PAGINATION'',''BLOG_FEATURE_GROUP_POST'',null,null);',
-'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values (''1'',''50'',''BLOG_FEATURE_SEARCH_POSTS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null);',
-'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values (''1'',''60'',''BLOG_FEATURE_CATEGORY'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''begin',
-'  blog_ords.create_module(',
-'    p_app_id => :G_PUB_APP_ID',
-'  );',
-'end;'',null);',
-'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values (''1'',''70'',''BLOG_FEATURE_LATEST_POSTS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null);',
-'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values (''1'',''70'',''BLOG_FEATURE_ARCHIVE'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''begin',
-'  blog_ords.create_module(',
-'    p_app_id => :G_PUB_APP_ID',
-'  );',
-'end;'',null);',
-'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values (''1'',''90'',''BLOG_FEATURE_RSS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''begin',
-'  blog_ords.create_module(',
-'    p_app_id => :G_PUB_APP_ID',
-'  );',
-'end;'',null);',
-'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values (''1'',''100'',''BLOG_FEATURE_LINKS'',''BLOG_FEATURE_GROUP_PAGE'',null,null);',
-'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values (''1'',''110'',''BLOG_FEATURE_FILES'',''BLOG_FEATURE_GROUP_PAGE'',null,null);',
-'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values (''1'',''120'',''BLOG_FEATURE_ABOUT'',''BLOG_FEATURE_GROUP_PAGE'',null,null);',
-'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values (''1'',''130'',''BLOG_FEATURE_SEARCH_LINKS'',''BLOG_FEATURE_GROUP_SEARCH'',null,null);',
-'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,POST_EXPRESSION,NOTES) values (''1'',''140'',''BLOG_FEATURE_SEARCH_FILES'',''BLOG_FEATURE_GROUP_SEARCH'',null,null);',
+'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,NOTES,POST_EXPRESSION) values (''1'',''10'',''BLOG_FEATURE_ALLOW_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',null,null);',
+'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,NOTES,POST_EXPRESSION) values (''1'',''20'',''BLOG_FEATURE_MODERATE_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',null,null);',
+'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,NOTES,POST_EXPRESSION) values (''1'',''30'',''BLOG_FEATURE_SUBSCRIBE_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',null,null);',
+'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,NOTES,POST_EXPRESSION) values (''0'',''40'',''BLOG_FEATURE_POST_PAGINATION'',''BLOG_FEATURE_GROUP_POST'',null,null);',
+'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,NOTES,POST_EXPRESSION) values (''1'',''50'',''BLOG_FEATURE_SEARCH_POSTS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null);',
+'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,NOTES,POST_EXPRESSION) values (''1'',''60'',''BLOG_FEATURE_CATEGORY'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,''blog_ords.create_module(''',
+'|| chr(10) || ''  p_app_id => :G_PUB_APP_ID''',
+'|| chr(10) || '');''',
+');',
+'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,NOTES,POST_EXPRESSION) values (''1'',''70'',''BLOG_FEATURE_LATEST_POSTS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null);',
+'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,NOTES,POST_EXPRESSION) values (''1'',''70'',''BLOG_FEATURE_ARCHIVE'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,''blog_ords.create_module(''',
+'|| chr(10) || ''  p_app_id => :G_PUB_APP_ID''',
+'|| chr(10) || '');''',
+');',
+'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,NOTES,POST_EXPRESSION) values (''1'',''90'',''BLOG_FEATURE_RSS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,''blog_ords.create_module(''',
+'|| chr(10) || ''  p_app_id => :G_PUB_APP_ID''',
+'|| chr(10) || '');''',
+');',
+'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,NOTES,POST_EXPRESSION) values (''1'',''100'',''BLOG_FEATURE_LINKS'',''BLOG_FEATURE_GROUP_PAGE'',null,null);',
+'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,NOTES,POST_EXPRESSION) values (''1'',''110'',''BLOG_FEATURE_FILES'',''BLOG_FEATURE_GROUP_PAGE'',null,null);',
+'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,NOTES,POST_EXPRESSION) values (''1'',''120'',''BLOG_FEATURE_ABOUT'',''BLOG_FEATURE_GROUP_PAGE'',null,null);',
+'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,NOTES,POST_EXPRESSION) values (''1'',''130'',''BLOG_FEATURE_SEARCH_LINKS'',''BLOG_FEATURE_GROUP_SEARCH'',null,null);',
+'Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_GROUP,NOTES,POST_EXPRESSION) values (''1'',''140'',''BLOG_FEATURE_SEARCH_FILES'',''BLOG_FEATURE_GROUP_SEARCH'',null,null);',
 '',
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
