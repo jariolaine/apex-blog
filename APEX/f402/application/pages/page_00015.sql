@@ -11,7 +11,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200513172452'
+,p_last_upd_yyyymmddhh24miss=>'20200531072120'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
@@ -32,7 +32,7 @@ wwv_flow_api.create_page_plug(
 '  ,case is_download',
 '    when 1',
 '    then apex_page.get_url(',
-'      p_application  => :G_PUB_APP_ID ',
+'      p_application  => :G_PUB_APP_ID',
 '      ,p_page        => ''FILES''',
 '      ,p_session     => null',
 '      ,p_debug       => ''NO''',
@@ -308,7 +308,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(24910787972771846)
 ,p_button_name=>'UPLOAD_FILE'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--noUI:t-Button--iconLeft:t-Button--pillEnd'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft:t-Button--pillEnd'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Upload File(s)'

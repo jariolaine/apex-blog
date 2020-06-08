@@ -26,7 +26,7 @@ input[data-z-switch="true"][value="0"]:checked+label{
 /**************************************
 * Colors
 **************************************/
-.z-aliceblue{
+.z-aliceBlue{
   color: #f1f6fa!important;
 }
 .z-normal{
@@ -43,17 +43,6 @@ input[data-z-switch="true"][value="0"]:checked+label{
   white-space: normal;
 }
 
-/**************************************
-* Right column link lists
-**************************************/
-/*
-.z-link--no-border,
-.z-link--no-border a:focus{
-  border: none;
-  outline: none;
-  box-shadow: none;
-}
-*/
 /**************************************
 * Interactive Report
 **************************************/
@@ -132,29 +121,31 @@ input[data-z-switch="true"][value="0"]:checked+label{
   clear: both;
   margin: 1.2rem 0 0;
 }
-.z-post--no-margin .z-post{
+.z-post--noMargin .z-post{
   margin-bottom: 0!important;
 }
-.z-post--margin-medium .z-post{
+.z-post--mediumMargin .z-post{
   margin-bottom: 1.6rem!important;
 }
-.z-post--margin-small .z-post{
+.z-post--smallMargin .z-post{
   margin-bottom: 0.8rem!important;
 }
 /* IR specific */
 .z-post--IR{
   margin: 32px 16px
 }
-.z-posts-pagination{
-border: 1px solid rgba(0,0,0,.1);
+.z-posts--paginationBorder .z-posts--pagination{
+  background-color: #ffffff;
+  border: 1px solid rgba(0,0,0,.1);
   box-shadow: 0 2px 4px -2px rgba(0,0,0,.075);
   border-radius: 2px;
   padding: 0.4rem;
 }
-.t-Report--hideNoPagination .z-posts-pagination{
-  display: none;
-  visibility: hidden;
+.z-posts--paginationHidden .z-posts--pagination{
+  display: none!important
+  visibility: hidden!important;
 }
+
 /**************************************
 * Archives, categories and links
 **************************************/
@@ -218,14 +209,14 @@ border: 1px solid rgba(0,0,0,.1);
   font-weight: 500;
   line-height: 2.4rem;
 }
+.z-Content--Body{
+  padding: 1.6rem;
+}
 .z-Content--Stacked .z-Content--Title{
   border-top: 1px solid rgba(0,0,0,.075);
 }
 .z-Content--Stacked .z-Content--Row:first-child .z-Content--Title{
   border-top: none;
-}
-.z-Content--Body{
-  padding: 1.6rem;
 }
 
 /**************************************
@@ -356,6 +347,6 @@ pre.z-program-code code:nth-child(odd):before{
 }
 
 .z-hidden{
-  display: none;
-  visibility: hidden;
+  display: none!important;
+  visibility: hidden!important;
 }

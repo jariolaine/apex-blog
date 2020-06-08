@@ -105,6 +105,7 @@ prompt --install
 @application/shared_components/user_interface/shortcuts/blog_canonical_link_tag.sql
 @application/shared_components/user_interface/shortcuts/blog_canonical_link_archive.sql
 @application/shared_components/user_interface/shortcuts/blog_canonical_link_tab.sql
+@application/shared_components/user_interface/shortcuts/test_shortcut.sql
 @application/shared_components/email/templates/blog_new_comment_notify.sql
 @application/shared_components/security/authentications/no_authentication.sql
 @application/shared_components/security/authentications/application_express_authentication.sql

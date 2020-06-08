@@ -11,7 +11,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200509112110'
+,p_last_upd_yyyymmddhh24miss=>'20200531100009'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(55991739715660967)
@@ -49,7 +49,9 @@ wwv_flow_api.create_report_region(
 '  ,apex_lang.message(',
 '    p_name => ''BLOG_TXT_STATUS''',
 '   )                as attribute_1',
-'  ,v1.is_active     as attribute_2',
+'  ,apex_util.savekey_vc2(',
+'    p_val => v1.is_active',
+'   )                as attribute_2',
 '  ,v1.changed_on    as attribute_3',
 '  ,v1.changed_by    as attribute_4',
 '  ,apex_lang.message(',
@@ -287,6 +289,8 @@ wwv_flow_api.create_page_button(
 ,p_button_image_alt=>'Reply'
 ,p_button_position=>'REGION_TEMPLATE_NEXT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:33:&SESSION.::&DEBUG.:RP:P33_COMMENT_ID:&P31_COMMENT_ID.'
+,p_button_condition=>'apex_util.keyval_vc2 = 1'
+,p_button_condition_type=>'PLSQL_EXPRESSION'
 ,p_icon_css_classes=>'fa-reply'
 );
 wwv_flow_api.create_page_item(

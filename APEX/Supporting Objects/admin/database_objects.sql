@@ -5003,22 +5003,26 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on := localtimestamp;
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5036,21 +5040,26 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on   := localtimestamp;
-  :new.changed_by   := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_by := coalesce(
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5068,22 +5077,26 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV','PROXY_USER' )
-      ,sys_context( 'USERENV','SESSION_USER' )
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on := localtimestamp;
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV','PROXY_USER' )
-    ,sys_context( 'USERENV','SESSION_USER' )
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5091,7 +5104,7 @@ end;
 --------------------------------------------------------
 --  DDL for Trigger BLOG_COMMENT_FLAGS_TRG
 --------------------------------------------------------
-CREATE OR REPLACE TRIGGER "BLOG_COMMENT_FLAGS_TRG" 
+CREATE OR REPLACE TRIGGER "BLOG_COMMENT_FLAGS_TRG"
 before
 insert or
 update on blog_comment_flags
@@ -5101,22 +5114,26 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV','PROXY_USER' )
-      ,sys_context( 'USERENV','SESSION_USER' )
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on := localtimestamp;
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV','PROXY_USER' )
-    ,sys_context( 'USERENV','SESSION_USER' )
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5134,22 +5151,26 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV','PROXY_USER' )
-      ,sys_context( 'USERENV','SESSION_USER' )
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on := localtimestamp;
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV','PROXY_USER' )
-    ,sys_context( 'USERENV','SESSION_USER' )
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5167,22 +5188,26 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV','PROXY_USER' )
-      ,sys_context( 'USERENV','SESSION_USER' )
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on := localtimestamp;
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV','PROXY_USER' )
-    ,sys_context( 'USERENV','SESSION_USER' )
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5198,26 +5223,28 @@ for each row
 begin
 
   if inserting then
-
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on := localtimestamp;
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5233,26 +5260,28 @@ for each row
 begin
 
   if inserting then
-
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on := localtimestamp;
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5268,26 +5297,28 @@ for each row
 begin
 
   if inserting then
-
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on := localtimestamp;
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5305,21 +5336,26 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on := localtimestamp;
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5337,23 +5373,27 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on := localtimestamp;
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
   :new.changed_by := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
-    );
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
+  );
 
 end;
 /
@@ -5368,26 +5408,28 @@ for each row
 begin
 
   if inserting then
-
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on := localtimestamp;
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5403,26 +5445,28 @@ for each row
 begin
 
   if inserting then
-
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on := localtimestamp;
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5438,29 +5482,29 @@ for each row
 begin
 
   if inserting then
-    :new.id := coalesce( :new.id,
-      to_number( to_char( sys_extract_utc( systimestamp ), 'YYYYMMDDHH24MISSFF6' ) )
-    );
+    :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV','PROXY_USER' )
-      ,sys_context( 'USERENV','SESSION_USER' )
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.published_on := coalesce( :new.published_on, localtimestamp );
-
-  :new.changed_on := localtimestamp;
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
   :new.changed_by := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV','PROXY_USER' )
-      ,sys_context( 'USERENV','SESSION_USER' )
-    );
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
+  );
 
 end;
 /
@@ -5477,21 +5521,26 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on   := localtimestamp;
-  :new.changed_by   := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_by := coalesce(
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5509,22 +5558,26 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on := localtimestamp;
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5542,22 +5595,26 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
   end if;
 
-  :new.changed_on := localtimestamp;
+  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;

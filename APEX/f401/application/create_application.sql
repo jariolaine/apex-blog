@@ -7,7 +7,7 @@ wwv_flow_api.create_flow(
 ,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'BLOG')
 ,p_application_group=>3742713376965422
 ,p_application_group_name=>'BLOG_040000'
-,p_application_group_comment=>'APEX Blog '
+,p_application_group_comment=>'APEX Blog'
 ,p_page_view_logging=>'YES'
 ,p_page_protection_enabled_y_n=>'Y'
 ,p_checksum_salt=>'A62184636C79274387CBB6C9840762CA531D62DEA8CD2BD8BA55E607E36A7AF2'
@@ -45,7 +45,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200530084851'
+,p_last_upd_yyyymmddhh24miss=>'20200607124426'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>98
 ,p_ui_type_name => null

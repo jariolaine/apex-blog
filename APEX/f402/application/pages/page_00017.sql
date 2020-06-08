@@ -30,7 +30,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200509090926'
+,p_last_upd_yyyymmddhh24miss=>'20200531090027'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6849894493100859)
@@ -43,9 +43,20 @@ wwv_flow_api.create_page_plug(
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select v1.id      as id',
+'  ,v1.changed_on  as created_on',
+'  ,v1.changed_by  as created_by',
 '  ,v1.changed_on  as changed_on',
 '  ,v1.changed_by  as changed_by',
-'  ,v1.is_active   as is_active',
+'  ,v1.link_status as link_status',
+'  ,case v1.link_status',
+'    when ''GROUP_DISABLED''',
+'    then ''fa-stop-circle-o u-danger-text''',
+'    when ''DISABLED''',
+'    then ''fa-minus-circle-o u-danger-text''',
+'    when ''ENABLED''',
+'    then ''fa-check-circle-o u-success-text''',
+'    else ''fa-question-circle-o''',
+'   end            as link_status_icon',
 '  ,v1.display_seq as display_seq',
 '  ,v1.title       as title',
 '  ,v1.link_desc   as link_desc',
@@ -92,9 +103,28 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_text_as=>'HIDDEN'
 );
 wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(31618992606094025)
+,p_db_column_name=>'CREATED_ON'
+,p_display_order=>20
+,p_column_identifier=>'AY'
+,p_column_label=>'Created'
+,p_column_type=>'DATE'
+,p_column_alignment=>'CENTER'
+,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
+,p_tz_dependent=>'Y'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(31619047211094026)
+,p_db_column_name=>'CREATED_BY'
+,p_display_order=>30
+,p_column_identifier=>'AZ'
+,p_column_label=>'Created By'
+,p_column_type=>'STRING'
+);
+wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(18444999722293046)
 ,p_db_column_name=>'CHANGED_ON'
-,p_display_order=>50
+,p_display_order=>40
 ,p_column_identifier=>'AI'
 ,p_column_label=>'Changed'
 ,p_column_type=>'DATE'
@@ -105,36 +135,49 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(18445036864293047)
 ,p_db_column_name=>'CHANGED_BY'
-,p_display_order=>60
+,p_display_order=>50
 ,p_column_identifier=>'AJ'
 ,p_column_label=>'Changed By'
 ,p_column_type=>'STRING'
 );
 wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(28585187003643010)
-,p_db_column_name=>'IS_ACTIVE'
-,p_display_order=>70
-,p_column_identifier=>'AV'
-,p_column_label=>'Status'
-,p_column_type=>'NUMBER'
-,p_display_text_as=>'LOV_ESCAPE_SC'
-,p_column_alignment=>'CENTER'
-,p_rpt_named_lov=>wwv_flow_api.id(8819403626737334)
-,p_rpt_show_filter_lov=>'1'
-);
-wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3882035677180137)
 ,p_db_column_name=>'DISPLAY_SEQ'
-,p_display_order=>80
+,p_display_order=>70
 ,p_column_identifier=>'O'
 ,p_column_label=>'Sequence'
 ,p_column_type=>'NUMBER'
 ,p_column_alignment=>'RIGHT'
 );
 wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(31619295245094028)
+,p_db_column_name=>'LINK_STATUS'
+,p_display_order=>80
+,p_column_identifier=>'BA'
+,p_column_label=>'Status'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<span aria-hidden="true" title="#LINK_STATUS#" class="fa #LINK_STATUS_ICON#"></span>',
+'<span class="u-VisuallyHidden">#LINK_STATUS#</span>',
+''))
+,p_column_type=>'STRING'
+,p_display_text_as=>'LOV_ESCAPE_SC'
+,p_column_alignment=>'CENTER'
+,p_rpt_named_lov=>wwv_flow_api.id(36215367226602541)
+,p_rpt_show_filter_lov=>'1'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(31619389927094029)
+,p_db_column_name=>'LINK_STATUS_ICON'
+,p_display_order=>90
+,p_column_identifier=>'BB'
+,p_column_label=>'Link Status Icon'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN'
+);
+wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(19359713146963249)
 ,p_db_column_name=>'TITLE'
-,p_display_order=>90
+,p_display_order=>100
 ,p_column_identifier=>'AN'
 ,p_column_label=>'Title'
 ,p_column_type=>'STRING'
@@ -142,7 +185,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3882275772180139)
 ,p_db_column_name=>'LINK_DESC'
-,p_display_order=>100
+,p_display_order=>110
 ,p_column_identifier=>'Q'
 ,p_column_label=>'Description'
 ,p_column_type=>'STRING'
@@ -150,7 +193,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3882359433180140)
 ,p_db_column_name=>'LINK_URL'
-,p_display_order=>110
+,p_display_order=>120
 ,p_column_identifier=>'R'
 ,p_column_label=>'URL'
 ,p_column_link=>'#LINK_URL#'
@@ -161,7 +204,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(22958590684076042)
 ,p_db_column_name=>'NOTES'
-,p_display_order=>120
+,p_display_order=>130
 ,p_column_identifier=>'AQ'
 ,p_column_label=>'Notes'
 ,p_column_type=>'STRING'
@@ -169,7 +212,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(31246617470982906)
 ,p_db_column_name=>'BTN_TITLE_EDIT'
-,p_display_order=>130
+,p_display_order=>140
 ,p_column_identifier=>'AX'
 ,p_column_label=>'Btn Title Edit'
 ,p_column_type=>'STRING'
@@ -184,7 +227,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_view_mode=>'REPORT'
-,p_report_columns=>'TITLE:LINK_DESC::IS_ACTIVE:BTN_TITLE_EDIT'
+,p_report_columns=>'TITLE:LINK_DESC::LINK_STATUS:LINK_STATUS_ICON'
 ,p_sort_column_1=>'DISPLAY_SEQ'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'0'
@@ -207,21 +250,30 @@ wwv_flow_api.create_report_region(
 ,p_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
-,p_component_template_options=>'#DEFAULT#:t-Report--hideNoPagination:t-ContentRow--hideSelection:t-ContentRow--hideIcon:t-ContentRow--hideActions'
+,p_component_template_options=>'#DEFAULT#:t-Report--hideNoPagination:t-ContentRow--hideSelection:t-ContentRow--hideMisc'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.id as id',
-'  ,null          as item_classes',
-'  ,display_seq   as selection',
-'  ,null          as icon_class',
-'  ,null          as icon_html',
-'  ,v1.title      as title',
-'  ,v1.notes      as description',
-'  ,v1.is_active  as misc',
-'  ,null          as actions',
+'select v1.id       as id',
+'  ,null            as item_classes',
+'  ,display_seq     as selection',
+'  ,case v1.is_active',
+'  when 1',
+'    then ''fa fa-check-circle-o u-success-text''',
+'    else ''fa fa-minus-circle-o u-danger-text''',
+'   end             as icon_class',
+'  ,null            as icon_html',
+'  ,v1.title        as title',
+'  ,v1.notes        as description',
+'  ,v1.is_active    as misc',
+'  ,null            as actions',
+'  ,btn.title_edit  as btn_title_edit',
 'from blog_v_all_link_groups v1',
+'cross join (',
+'  select apex_lang.message(''BLOG_BTN_TITLE_EDIT'') as title_edit',
+'  from dual',
+') btn',
 'where 1 = 1',
 'and v1.id = :P17_LINK_GROUP_ID'))
 ,p_display_when_condition=>'P17_LINK_GROUP_ID'
@@ -285,6 +337,7 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>6
 ,p_column_heading=>'Icon Html'
 ,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="u-VisuallyHidden">#MISC#</span>'
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -333,11 +386,19 @@ wwv_flow_api.create_report_columns(
 ,p_column_heading=>'Actions'
 ,p_use_as_row_header=>'N'
 ,p_column_link=>'f?p=&APP_ID.:20:&SESSION.::&DEBUG.:RP,20:P20_ID:#ID#'
-,p_column_linktext=>'<span class="t-Icon fa fa-edit" aria-hidden="true"></span>Edit'
-,p_column_link_attr=>' class="t-Button t-Button--icon t-Button--noUI t-Button--iconLeft"'
+,p_column_linktext=>'<span class="t-Icon fa fa-edit" aria-hidden="true"></span>#BTN_TITLE_EDIT#'
+,p_column_link_attr=>' class="t-Button t-Button--small t-Button--icon t-Button--iconLeft"'
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(31619148468094027)
+,p_query_column_id=>10
+,p_column_alias=>'BTN_TITLE_EDIT'
+,p_column_display_sequence=>10
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(28585474513643013)
@@ -366,22 +427,16 @@ wwv_flow_api.create_report_region(
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select v1.id',
 '  ,null as link_class',
-'  ,apex_page.get_url( p_items => ''P17_LINK_GROUP_ID'', p_values => v1.id ) as link',
+'  ,apex_page.get_url(',
+'     p_items => ''P17_LINK_GROUP_ID''',
+'    ,p_values => v1.id',
+'   )    as link',
 '  ,null as link_attr',
-'  ,case is_active',
-'   when 1',
-'   then ''fa fa-check''',
-'   else ''fa fa-ban''',
-'   end as icon_class',
-'  ,case is_active',
-'   when 1',
-'   then ''u-hot''',
-'   else ''u-danger''',
-'   end as icon_color_class',
+'  ,null as icon_class',
+'  ,null as icon_color_class',
 '  ,case when coalesce( to_number( :P17_LINK_GROUP_ID ), 0 ) = id',
 '   then ''is-active'' ',
-'   else '' ''',
-'  end as list_class',
+'   end  as list_class',
 '  ,substr( v1.title, 1, 50) || ( case when length( v1.title ) > 50 then ''...'' end ) as list_title',
 '  ,null as list_text',
 '  ,null as list_badge',
@@ -535,11 +590,11 @@ wwv_flow_api.create_page_plug(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(24908291637771821)
-,p_button_sequence=>20
+,p_button_sequence=>10
 ,p_button_plug_id=>wwv_flow_api.id(6849894493100859)
 ,p_button_name=>'CREATE_LINK'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--noUI:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--small:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'New Link'
 ,p_button_position=>'REGION_TEMPLATE_EDIT'
@@ -553,12 +608,13 @@ wwv_flow_api.create_page_button(
 ,p_button_name=>'EDIT_GROUP'
 ,p_button_static_id=>'edit_master_btn'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--noUI:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--small:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Edit'
 ,p_button_position=>'REGION_TEMPLATE_EDIT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:20:&SESSION.::&DEBUG.:RP,20:P20_ID:&P17_LINK_GROUP_ID.'
 ,p_icon_css_classes=>'fa-pencil-square-o'
+,p_required_patch=>wwv_flow_api.id(24687280101070827)
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(25129089948406507)
@@ -566,7 +622,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(50093168854497120)
 ,p_button_name=>'RESET_PAGE'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--noUI:t-Button--iconLeft:t-Button--pillStart'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Reset'
 ,p_button_position=>'REGION_TEMPLATE_NEXT'
@@ -579,7 +635,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(50093168854497120)
 ,p_button_name=>'CREATE_GROUP'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--noUI:t-Button--iconLeft:t-Button--pillEnd'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'New Collection'
@@ -589,11 +645,11 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(7185644806716235)
-,p_button_sequence=>30
+,p_button_sequence=>20
 ,p_button_plug_id=>wwv_flow_api.id(6849894493100859)
 ,p_button_name=>'RESET_REPORT'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--small:t-Button--noUI:t-Button--iconLeft:t-Button--pillStart'
+,p_button_template_options=>'#DEFAULT#:t-Button--small:t-Button--noUI:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
