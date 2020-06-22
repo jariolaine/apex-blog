@@ -25,7 +25,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
