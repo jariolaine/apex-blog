@@ -47,7 +47,7 @@ create table blog_settings(
   constraint blog_settings_ck14 check(
     data_type != 'INTEGER' or
     data_type = 'INTEGER' and
-    round( to_number( attribute_value ) ) between 1 and 100
+    round( to_number( attribute_value ) ) = to_number( attribute_value )
   ),
   constraint blog_settings_ck15 check(
     data_type != 'URL' or
