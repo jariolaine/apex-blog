@@ -410,7 +410,7 @@ create table blog_settings(
   constraint blog_settings_ck14 check(
     data_type != 'INTEGER' or
     data_type = 'INTEGER' and
-    round( to_number( attribute_value ) ) between 1 and 100
+    round( to_number( attribute_value ) ) = to_number( attribute_value )
   ),
   constraint blog_settings_ck15 check(
     data_type != 'URL' or
@@ -1257,27 +1257,27 @@ as
     apex_debug.info( 'Fetch attribute %s return: %s', p_attribute_name, l_value );
     return l_value;
 
-    exception when no_data_found
-    then
+  exception when no_data_found
+  then
 
-      apex_debug.warn(
-         p_message => 'No data found. %s( %s => %s )'
-        ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-        ,p1 => 'p_attribute_name'
-        ,p2 => coalesce( p_attribute_name, '(null)' )
-      );
-      raise;
+    apex_debug.warn(
+       p_message => 'No data found. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_attribute_name'
+      ,p2 => coalesce( p_attribute_name, '(null)' )
+    );
+    raise;
 
-    when others
-    then
+  when others
+  then
 
-      apex_debug.error(
-         p_message => 'Unhandled error. %s( %s => %s )'
-        ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-        ,p1 => 'p_attribute_name'
-        ,p2 => coalesce( p_attribute_name, '(null)' )
-      );
-      raise;
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_attribute_name'
+      ,p2 => coalesce( p_attribute_name, '(null)' )
+    );
+    raise;
 
   end get_attribute_value;
 --------------------------------------------------------------------------------
@@ -1471,8 +1471,8 @@ as
       ,p2 => coalesce( p_post_id, '(null)' )
     );
 
-    --raise;
-    -- We wan't show errors between -20999 and -20901 in error page
+    -- We wan't show errors between -20999 and -20901 on APEX error page
+    -- see function apex_error_handler
     raise_application_error(-20901, 'Post not found.');
 
   when others
@@ -2474,6 +2474,8 @@ as
 --                            run_settings_post_expression
 --                            run_feature_post_expression
 --                            update_feature
+--    Jari Laine 22.06.2020 - Bug fix to function is_integer
+--                            Added parameters p_min and p_max to function is_integer
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -2491,34 +2493,34 @@ as
     p_name            out nocopy varchar2
   );
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 14
+  -- Called from: admin app page 14
   function get_category_seq return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 20
+  -- Called from: admin app page 20
   function get_link_grp_seq return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 18
+  -- Called from: admin app page 18
   function get_link_seq(
     p_link_group_id   in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 12
+  -- Called from: admin app page 12
   function get_post_tags(
     p_post_id         in varchar2,
     p_sep             in varchar2 default ','
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 12
+  -- Called from: admin app page 12
   function get_category_title(
     p_category_id     in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 12
+  -- Called from: admin app page 12
   function get_first_paragraph(
     p_body_html       in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 12
+  -- Called from: admin app page 12
   function request_to_post_status(
     p_request         in varchar2
   ) return varchar2;
@@ -2528,6 +2530,7 @@ as
     p_file_name       in varchar2
   ) return boolean;
 --------------------------------------------------------------------------------
+  -- Called from: admin app page 12 and procedudre blog_cm.get_first_paragraph
   function remove_whitespace(
     p_string          in varchar2
   ) return varchar2;
@@ -2535,14 +2538,14 @@ as
   -- Called from: admin app page 23 and procedure blog_cm.file_upload
   procedure merge_files;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 12
+  -- Called from: admin app page 12
   procedure add_category(
     p_title           in varchar2,
     p_err_mesg        in varchar2,
     p_category_id     out nocopy number
   );
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 12
+  -- Called from: admin app page 12
   procedure add_post_tags(
     p_post_id         in varchar2,
     p_tags            in varchar2,
@@ -2573,6 +2576,8 @@ as
   -- Called from: admin app pages 20012
   function is_integer(
     p_value           in varchar2,
+    p_min             in number,
+    p_max             in number,
     p_err_mesg        in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -2636,6 +2641,15 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function next_seq(
+    p_max in number
+  ) return number
+  as
+  begin
+    return ceil( coalesce( p_max + 1, 1 ) / 10 ) * 10;
+  end next_seq;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure add_tag(
@@ -2749,17 +2763,19 @@ as
     then
 
       -- Fetch next display_seq
-      select ceil(coalesce(max(display_seq) + 1, 1) / 10) * 10
+      select max(display_seq) as display_seq
       into l_max
       from blog_bloggers
       ;
+
+      l_max := next_seq( l_max );
 
       -- Fetch user information from APEX users
       select email
         ,v1.first_name || ' ' || v1.last_name as full_name
       into l_email, l_name
       from apex_workspace_apex_users v1
-      where 1  =1
+      where 1 = 1
       and v1.user_name = p_username
       ;
 
@@ -2847,7 +2863,7 @@ as
     ;
     -- return next category display sequence
     l_result := to_char(
-      ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10
+       next_seq( l_max )
       ,blog_util.g_number_format
     );
 
@@ -2870,7 +2886,7 @@ as
     ;
     -- return next link group display sequence
     l_result := to_char(
-      ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10
+       next_seq( l_max )
       ,blog_util.g_number_format
     );
 
@@ -2899,7 +2915,7 @@ as
     ;
     -- return next link display sequence
     l_result := to_char(
-      ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10
+       next_seq( l_max )
       ,blog_util.g_number_format
     );
 
@@ -2958,8 +2974,6 @@ as
 
   exception when no_data_found then
     return null;
-  when others then
-    raise;
   end get_post_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2983,8 +2997,6 @@ as
 
   exception when no_data_found then
     return null;
-  when others then
-    raise;
   end get_category_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3011,7 +3023,7 @@ as
       l_first_p := substr( p_body_html, l_first_p_start, l_first_p_end );
 
       -- remove whitespace
-      l_first_p := replace( regexp_replace( l_first_p, '\s+', ' ' ), '  ', ' ' );
+      l_first_p := remove_whitespace( l_first_p );
 
     end if;
 
@@ -3102,7 +3114,7 @@ as
   as
   begin
     -- remove whitespace characters from string
-    return regexp_replace( p_string, '\s+', ' ' );
+    return replace( regexp_replace( p_string, '\s+', ' ' ), '  ', ' ' );
   end remove_whitespace;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3283,10 +3295,11 @@ as
   as
   begin
 
+    -- delete from blog_post_preview if there is row for session
     delete from blog_post_preview
     where id = p_id
     ;
-
+    -- insert preview data
     insert into blog_post_preview(
        id
       ,tags
@@ -3310,7 +3323,7 @@ as
   as
   begin
 
-    -- Delete from blog_post_preview rows where session is expired
+    -- delete from blog_post_preview rows where session is expired
     delete from blog_post_preview p
     where not exists (
       select 1
@@ -3330,9 +3343,9 @@ as
     job_not_exists  exception;
     pragma          exception_init(job_not_exists, -27475);
   begin
-
+    -- set job name
     l_job_name := 'BLOG_JOB_PURGE_POST_PREVIEW';
-
+    -- drop job if exists
     begin
       sys.dbms_scheduler.drop_job(
         job_name => l_job_name
@@ -3340,13 +3353,14 @@ as
     exception when job_not_exists then
       null;
     end;
-
+    -- if job is not just dropped
+    -- create new job
     if not p_drop_job then
       sys.dbms_scheduler.create_job(
          job_name        => l_job_name
         ,job_type        => 'STORED_PROCEDURE'
         ,job_action      => 'blog_conf.purge_post_preview'
-        ,start_date      => trunc(localtimestamp, 'HH')
+        ,start_date      => trunc( localtimestamp, 'HH')
         ,repeat_interval => 'FREQ=DAILY'
         ,enabled         => true
         ,comments        => 'Purge expired sessions posts previews'
@@ -3358,30 +3372,39 @@ as
 --------------------------------------------------------------------------------
   function is_integer(
     p_value     in varchar2,
+    p_min       in number,
+    p_max       in number,
     p_err_mesg  in varchar2
   ) return varchar2
   as
-    l_err_mesg varchar2(32700);
+    l_value     number;
+    l_err_mesg  varchar2(32700);
   begin
 
     -- prepare validation error message
-    l_err_mesg := apex_lang.message( p_err_mesg );
+    l_err_mesg := apex_lang.message( p_err_mesg, p_min, p_max );
 
     if l_err_mesg = apex_escape.html( p_err_mesg )
     then
       l_err_mesg := p_err_mesg;
     end if;
 
-    if round( to_number( p_value ) ) between 1 and 100
+    l_value := to_number( p_value );
+    -- check value is integer and between range
+    if round( l_value ) = l_value
+    and l_value between p_min and p_max
     then
+      -- if validation passes, clear error meassage
       l_err_mesg := null;
     end if;
 
     return l_err_mesg;
 
-  exception when invalid_number
+  exception
+  when invalid_number
   or value_error
   then
+    -- return error message
     return l_err_mesg;
   end is_integer;
 --------------------------------------------------------------------------------
@@ -3396,7 +3419,7 @@ as
 
     if not regexp_like(p_value, '^https?\:\/\/.*$')
     then
-      -- prepare validation error message
+      -- if validation fails prepare error message
       l_err_mesg := apex_lang.message( p_err_mesg );
 
       if l_err_mesg = apex_escape.html( p_err_mesg )
@@ -3404,6 +3427,7 @@ as
         l_err_mesg := p_err_mesg;
       end if;
     else
+      -- if validation passes, clear error meassage
       l_err_mesg := null;
     end if;
 
@@ -3430,15 +3454,19 @@ as
       l_err_mesg := p_err_mesg;
     end if;
 
-    if to_char( systimestamp, p_value ) = to_char( systimestamp, p_value )
+    -- try convert timestamp to string
+    if to_char( systimestamp, p_value ) is not null
     then
+      -- if validation passes, clear error meassage
       l_err_mesg := null;
     end if;
 
     return l_err_mesg;
 
-  exception when invalid_date_format
+  exception
+  when invalid_date_format
   then
+    -- return error message
     return l_err_mesg;
   end is_date_format;
 --------------------------------------------------------------------------------
@@ -3451,10 +3479,11 @@ as
     l_err_mesg varchar2(32700);
   begin
     -- TO DO see item 3 from package specs
+
     -- do some basic check for email address
     if not regexp_like(p_value, '^.*\@.*\..*$')
     then
-      -- Prepare validation error message
+      -- if validation fails prepare error message
       l_err_mesg := apex_lang.message( p_err_mesg );
 
       if l_err_mesg = apex_escape.html( p_err_mesg )
@@ -3462,6 +3491,7 @@ as
         l_err_mesg := p_err_mesg;
       end if;
     else
+      -- if validation passes, clear error meassage
       l_err_mesg := null;
     end if;
 
@@ -3554,14 +3584,20 @@ as
     p_email_template  in varchar2
   )
   as
-    l_post_id   number;
-    l_app_email varchar2(4000);
+    l_post_id       number;
+    l_watch_months  number;
+    l_app_email     varchar2(4000);
   begin
 
     l_post_id := to_number( p_post_id );
 
     -- fetch application email address
-    l_app_email := blog_util.get_attribute_value('APP_EMAIL');
+    l_app_email := blog_util.get_attribute_value( 'APP_EMAIL' );
+    -- fetch comment watch expires
+    l_watch_months := to_number(
+        blog_util.get_attribute_value( 'COMMENT_WATCH_MONTHS' )
+      ) * -1
+    ;
 
     -- send notify users that have subscribed to replies to comment
     for c1 in(
@@ -3589,7 +3625,7 @@ as
         on t1.post_id = v1.id
       where 1 = 1
         -- send notification if subscription is created less than month ago
-        and t1.created_on >= add_months( localtimestamp, -1 )
+        and t1.created_on >= add_months( localtimestamp, l_watch_months )
         and v1.id = l_post_id
     ) loop
 
@@ -5017,7 +5053,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5054,7 +5090,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5091,7 +5127,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5128,7 +5164,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5165,7 +5201,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5202,7 +5238,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5239,7 +5275,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5276,7 +5312,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5313,7 +5349,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5350,7 +5386,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5387,7 +5423,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5424,7 +5460,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5461,7 +5497,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5498,7 +5534,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5535,7 +5571,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5572,7 +5608,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
@@ -5609,7 +5645,7 @@ begin
     );
   end if;
 
-  :new.changed_on := coalesce( localtimestamp, :new.changed_on );
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
   :new.changed_by := coalesce(
       :new.changed_by
     , sys_context( 'APEX$SESSION', 'APP_USER' )
