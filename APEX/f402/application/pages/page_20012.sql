@@ -18,7 +18,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524171844'
+,p_last_upd_yyyymmddhh24miss=>'20200623054437'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -398,6 +398,19 @@ wwv_flow_api.create_ig_report_column(
 ,p_break_sort_nulls=>'LAST'
 );
 wwv_flow_api.create_page_plug(
+ p_id=>wwv_flow_api.id(36998038204037736)
+,p_plug_name=>'Information'
+,p_region_template_options=>'#DEFAULT#:t-Alert--colorBG:t-Alert--horizontal:t-Alert--defaultIcons:t-Alert--warning:t-Alert--accessibleHeading:margin-bottom-none'
+,p_plug_template=>wwv_flow_api.id(8471603023518189)
+,p_plug_display_sequence=>10
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_plug_display_point=>'REGION_POSITION_01'
+,p_plug_source=>'&APP_TEXT$BLOG_MSG_BASIC_SETTINGS_INFO.'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(80220063138113444)
 ,p_plug_name=>'Buttons'
 ,p_region_template_options=>'#DEFAULT#:t-ButtonRegion--slimPadding'
@@ -462,6 +475,8 @@ wwv_flow_api.create_page_validation(
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_cm.is_integer(',
 '   p_value => :ATTRIBUTE_VALUE',
+'  ,p_min => 1',
+'  ,p_max => 50',
 '  ,p_err_mesg => ''BLOG_VALIDATION_ERR_IS_INTEGER''',
 ');'))
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'

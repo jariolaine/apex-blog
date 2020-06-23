@@ -41,7 +41,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --       Dynamic Actions:          9
 --     Shared Components:
 --       Logic:
---         Items:                  6
+--         Items:                  7
 --         Processes:              2
 --         Build Options:         16
 --       Navigation:
@@ -126,7 +126,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200607124426'
+,p_last_upd_yyyymmddhh24miss=>'20200621181306'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>98
 ,p_ui_type_name => null
@@ -236,7 +236,7 @@ wwv_flow_api.create_list(
 '   || ''"''               as attribute2',
 'from #OWNER#.blog_v_posts_last20 v1',
 'where 1 = 1',
-'and v1.display_seq <= 5',
+'and v1.display_seq <= :G_LATEST_POSTS',
 'order by v1.published_on desc',
 ''))
 ,p_list_status=>'PUBLIC'
@@ -486,13 +486,19 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(24541154547469283)
 ,p_name=>'G_ARCHIVE_DATE_FORMAT'
 ,p_protection_level=>'I'
-,p_item_comment=>'Archive date format. Used e.g. in archive select list and archive report region header.'
+,p_item_comment=>'Archive date format. Used e.g. archive report.'
 );
 wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(6966958999192709)
 ,p_name=>'G_DATE_FORMAT'
 ,p_protection_level=>'I'
 ,p_item_comment=>'Date format used e.g. on reports'
+);
+wwv_flow_api.create_flow_item(
+ p_id=>wwv_flow_api.id(40620483198781581)
+,p_name=>'G_LATEST_POSTS'
+,p_protection_level=>'I'
+,p_item_comment=>'Latest post display count'
 );
 wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(7029499271806601)

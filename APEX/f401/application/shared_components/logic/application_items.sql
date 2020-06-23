@@ -16,13 +16,19 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(24541154547469283)
 ,p_name=>'G_ARCHIVE_DATE_FORMAT'
 ,p_protection_level=>'I'
-,p_item_comment=>'Archive date format. Used e.g. in archive select list and archive report region header.'
+,p_item_comment=>'Archive date format. Used e.g. archive report.'
 );
 wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(6966958999192709)
 ,p_name=>'G_DATE_FORMAT'
 ,p_protection_level=>'I'
 ,p_item_comment=>'Date format used e.g. on reports'
+);
+wwv_flow_api.create_flow_item(
+ p_id=>wwv_flow_api.id(40620483198781581)
+,p_name=>'G_LATEST_POSTS'
+,p_protection_level=>'I'
+,p_item_comment=>'Latest post display count'
 );
 wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(7029499271806601)

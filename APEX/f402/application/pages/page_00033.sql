@@ -12,11 +12,11 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200518173708'
+,p_last_upd_yyyymmddhh24miss=>'20200618062452'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(30429034900753113)
-,p_name=>'Comment to which you reply'
+,p_name=>'Comment'
 ,p_template=>wwv_flow_api.id(8496813422518209)
 ,p_display_sequence=>30
 ,p_include_in_reg_disp_sel_yn=>'Y'

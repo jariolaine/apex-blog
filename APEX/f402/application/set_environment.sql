@@ -36,7 +36,7 @@ prompt APPLICATION 402 - Blog Administration
 --       Computations:             7
 --       Validations:              9
 --       Processes:               45
---       Regions:                 65
+--       Regions:                 66
 --       Buttons:                 68
 --       Dynamic Actions:         32
 --     Shared Components:
@@ -65,7 +65,7 @@ prompt APPLICATION 402 - Blog Administration
 --         LOVs:                   9
 --         Shortcuts:              2
 --       Globalization:
---         Messages:              58
+--         Messages:              60
 --       Reports:
 --       E-Mail:
 --         Templates:              1

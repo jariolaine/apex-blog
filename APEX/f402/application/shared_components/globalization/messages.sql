@@ -150,6 +150,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Link collection with same name already exists.'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(40637327457556920)
+,p_name=>'BLOG_MSG_BASIC_SETTINGS_INFO'
+,p_message_text=>'Changes to settings only take effect for new sessions in the public application.'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(25114336930810124)
 ,p_name=>'BLOG_MSG_NO_DATA_FOUND'
 ,p_message_text=>'No Records Found'
@@ -220,6 +225,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Date format'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(40622046631847902)
+,p_name=>'BLOG_PAR_G_LATEST_POSTS'
+,p_message_text=>'The number of posts in latest post list'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19032802687865238)
 ,p_name=>'BLOG_PAR_G_POST_TITLE_DATE_FORMAT'
 ,p_message_text=>'Posts header date format'
@@ -282,7 +292,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348168323345190)
 ,p_name=>'BLOG_VALIDATION_ERR_IS_INTEGER'
-,p_message_text=>'Value must be integer between 1 and 100.'
+,p_message_text=>'Value must be integer between %0 and %1.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348379677347133)

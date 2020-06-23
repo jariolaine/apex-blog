@@ -11,7 +11,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200531100009'
+,p_last_upd_yyyymmddhh24miss=>'20200618063700'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(55991739715660967)
@@ -29,37 +29,30 @@ wwv_flow_api.create_page_plug(
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(61042110568461228)
 ,p_name=>'Comment'
-,p_template=>wwv_flow_api.id(8475374748518195)
+,p_template=>wwv_flow_api.id(8496813422518209)
 ,p_display_sequence=>10
 ,p_region_sub_css_classes=>'z-hidden'
-,p_region_template_options=>'#DEFAULT#'
+,p_region_template_options=>'#DEFAULT#:t-Region--hideHeader:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Comments--basic'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.post_title',
-'  ,null             as actions',
-'  ,v1.comment_by    as user_name',
-'  ,v1.body_html     as comment_text',
-'  ,v1.created_on    as comment_date',
-'  ,v1.user_icon     as user_icon',
-'  ,v1.icon_modifier as icon_modifier',
-'  ,''z-comment''      as comment_modifiers',
-'  ,apex_lang.message(',
-'    p_name => ''BLOG_TXT_STATUS''',
-'   )                as attribute_1',
+'select v1.post_title as post_title',
+'  ,null              as actions',
+'  ,v1.comment_by     as user_name',
+'  ,v1.body_html      as comment_text',
+'  ,v1.created_on     as comment_date',
+'  ,v1.user_icon      as user_icon',
+'  ,v1.icon_modifier  as icon_modifier',
+'  ,''z-comment''       as comment_modifiers',
+'  ,null              as attribute_1',
+'  ,null              as attribute_2',
+'  ,null              as attribute_3',
+'  ,null              as attribute_4',
 '  ,apex_util.savekey_vc2(',
 '    p_val => v1.is_active',
-'   )                as attribute_2',
-'  ,v1.changed_on    as attribute_3',
-'  ,v1.changed_by    as attribute_4',
-'  ,apex_lang.message(',
-'    p_name => ''BLOG_TXT_CHANGED_ON''',
-'   )                as changed_on',
-'  ,apex_lang.message(',
-'    p_name => ''BLOG_TXT_CHANGED_BY''',
-'   )                as changed_by',
+'   )                as is_active',
 'from #OWNER#.blog_v_all_comments v1',
 'where 1 = 1',
 'and v1.id = :P31_COMMENT_ID'))
@@ -175,9 +168,6 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>9
 ,p_column_heading=>'Attribute 1'
 ,p_use_as_row_header=>'N'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<div class="z-comment--footer">',
-'  <div><span class="u-bold">#ATTRIBUTE_1#:&nbsp;</span><span>'))
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -190,8 +180,6 @@ wwv_flow_api.create_report_columns(
 ,p_column_heading=>'Attribute 2'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
-,p_display_as=>'TEXT_FROM_LOV_ESC'
-,p_named_lov=>wwv_flow_api.id(8819403626737334)
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -203,12 +191,6 @@ wwv_flow_api.create_report_columns(
 ,p_column_heading=>'Attribute 3'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'&G_USER_DATE_TIME_FORMAT.'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'</span>',
-'  </div>',
-'  <div>',
-'    <span class="u-bold">#CHANGED_ON#:&nbsp</span><span>#ATTRIBUTE_3#</span>',
-'  </div>'))
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -220,49 +202,20 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>12
 ,p_column_heading=>'Attribute 4'
 ,p_use_as_row_header=>'N'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'  <div>',
-'    <span class="u-bold">#CHANGED_BY#:&nbsp</span><span>#ATTRIBUTE_4#</span>',
-'  </div>',
-'</div>'))
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(31247448819982914)
+ p_id=>wwv_flow_api.id(36997867635037734)
 ,p_query_column_id=>13
-,p_column_alias=>'CHANGED_ON'
+,p_column_alias=>'IS_ACTIVE'
 ,p_column_display_sequence=>13
-,p_column_heading=>'Changed On'
+,p_column_heading=>'Is Active'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
-);
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(31247537947982915)
-,p_query_column_id=>14
-,p_column_alias=>'CHANGED_BY'
-,p_column_display_sequence=>14
-,p_column_heading=>'Changed By'
-,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_api.create_page_button(
- p_id=>wwv_flow_api.id(30219741701087823)
-,p_button_sequence=>20
-,p_button_plug_id=>wwv_flow_api.id(55991739715660967)
-,p_button_name=>'EDIT'
-,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
-,p_button_template_id=>wwv_flow_api.id(8549262062518244)
-,p_button_image_alt=>'Edit'
-,p_button_position=>'REGION_TEMPLATE_CHANGE'
-,p_button_redirect_url=>'f?p=&APP_ID.:32:&SESSION.::&DEBUG.:RP:P32_ID:&P31_COMMENT_ID.'
-,p_icon_css_classes=>'fa-edit'
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(30218199861087825)
@@ -276,6 +229,19 @@ wwv_flow_api.create_page_button(
 ,p_button_position=>'REGION_TEMPLATE_CLOSE'
 ,p_warn_on_unsaved_changes=>null
 ,p_icon_css_classes=>'fa-remove'
+);
+wwv_flow_api.create_page_button(
+ p_id=>wwv_flow_api.id(30219741701087823)
+,p_button_sequence=>20
+,p_button_plug_id=>wwv_flow_api.id(55991739715660967)
+,p_button_name=>'EDIT'
+,p_button_action=>'REDIRECT_PAGE'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_id=>wwv_flow_api.id(8549262062518244)
+,p_button_image_alt=>'Edit'
+,p_button_position=>'REGION_TEMPLATE_NEXT'
+,p_button_redirect_url=>'f?p=&APP_ID.:32:&SESSION.::&DEBUG.:RP:P32_ID:&P31_COMMENT_ID.'
+,p_icon_css_classes=>'fa-edit'
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(30218586803087824)

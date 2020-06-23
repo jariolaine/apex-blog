@@ -36,7 +36,7 @@ prompt APPLICATION 402 - Blog Administration
 --       Computations:             7
 --       Validations:              9
 --       Processes:               45
---       Regions:                 65
+--       Regions:                 66
 --       Buttons:                 68
 --       Dynamic Actions:         32
 --     Shared Components:
@@ -65,7 +65,7 @@ prompt APPLICATION 402 - Blog Administration
 --         LOVs:                   9
 --         Shortcuts:              2
 --       Globalization:
---         Messages:              58
+--         Messages:              60
 --       Reports:
 --       E-Mail:
 --         Templates:              1
@@ -128,7 +128,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_ADMIN_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200608171656'
+,p_last_upd_yyyymmddhh24miss=>'20200623065656'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>195
 ,p_ui_type_name => null
@@ -11397,6 +11397,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Link collection with same name already exists.'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(40637327457556920)
+,p_name=>'BLOG_MSG_BASIC_SETTINGS_INFO'
+,p_message_text=>'Changes to settings only take effect for new sessions in the public application.'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(25114336930810124)
 ,p_name=>'BLOG_MSG_NO_DATA_FOUND'
 ,p_message_text=>'No Records Found'
@@ -11467,6 +11472,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Date format'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(40622046631847902)
+,p_name=>'BLOG_PAR_G_LATEST_POSTS'
+,p_message_text=>'The number of posts in latest post list'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19032802687865238)
 ,p_name=>'BLOG_PAR_G_POST_TITLE_DATE_FORMAT'
 ,p_message_text=>'Posts header date format'
@@ -11529,7 +11539,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348168323345190)
 ,p_name=>'BLOG_VALIDATION_ERR_IS_INTEGER'
-,p_message_text=>'Value must be integer between 1 and 100.'
+,p_message_text=>'Value must be integer between %0 and %1.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348379677347133)
@@ -17518,7 +17528,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200531100009'
+,p_last_upd_yyyymmddhh24miss=>'20200618063700'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(55991739715660967)
@@ -17536,37 +17546,30 @@ wwv_flow_api.create_page_plug(
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(61042110568461228)
 ,p_name=>'Comment'
-,p_template=>wwv_flow_api.id(8475374748518195)
+,p_template=>wwv_flow_api.id(8496813422518209)
 ,p_display_sequence=>10
 ,p_region_sub_css_classes=>'z-hidden'
-,p_region_template_options=>'#DEFAULT#'
+,p_region_template_options=>'#DEFAULT#:t-Region--hideHeader:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Comments--basic'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.post_title',
-'  ,null             as actions',
-'  ,v1.comment_by    as user_name',
-'  ,v1.body_html     as comment_text',
-'  ,v1.created_on    as comment_date',
-'  ,v1.user_icon     as user_icon',
-'  ,v1.icon_modifier as icon_modifier',
-'  ,''z-comment''      as comment_modifiers',
-'  ,apex_lang.message(',
-'    p_name => ''BLOG_TXT_STATUS''',
-'   )                as attribute_1',
+'select v1.post_title as post_title',
+'  ,null              as actions',
+'  ,v1.comment_by     as user_name',
+'  ,v1.body_html      as comment_text',
+'  ,v1.created_on     as comment_date',
+'  ,v1.user_icon      as user_icon',
+'  ,v1.icon_modifier  as icon_modifier',
+'  ,''z-comment''       as comment_modifiers',
+'  ,null              as attribute_1',
+'  ,null              as attribute_2',
+'  ,null              as attribute_3',
+'  ,null              as attribute_4',
 '  ,apex_util.savekey_vc2(',
 '    p_val => v1.is_active',
-'   )                as attribute_2',
-'  ,v1.changed_on    as attribute_3',
-'  ,v1.changed_by    as attribute_4',
-'  ,apex_lang.message(',
-'    p_name => ''BLOG_TXT_CHANGED_ON''',
-'   )                as changed_on',
-'  ,apex_lang.message(',
-'    p_name => ''BLOG_TXT_CHANGED_BY''',
-'   )                as changed_by',
+'   )                as is_active',
 'from #OWNER#.blog_v_all_comments v1',
 'where 1 = 1',
 'and v1.id = :P31_COMMENT_ID'))
@@ -17682,9 +17685,6 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>9
 ,p_column_heading=>'Attribute 1'
 ,p_use_as_row_header=>'N'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<div class="z-comment--footer">',
-'  <div><span class="u-bold">#ATTRIBUTE_1#:&nbsp;</span><span>'))
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -17697,8 +17697,6 @@ wwv_flow_api.create_report_columns(
 ,p_column_heading=>'Attribute 2'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
-,p_display_as=>'TEXT_FROM_LOV_ESC'
-,p_named_lov=>wwv_flow_api.id(8819403626737334)
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -17710,12 +17708,6 @@ wwv_flow_api.create_report_columns(
 ,p_column_heading=>'Attribute 3'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'&G_USER_DATE_TIME_FORMAT.'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'</span>',
-'  </div>',
-'  <div>',
-'    <span class="u-bold">#CHANGED_ON#:&nbsp</span><span>#ATTRIBUTE_3#</span>',
-'  </div>'))
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -17727,49 +17719,20 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>12
 ,p_column_heading=>'Attribute 4'
 ,p_use_as_row_header=>'N'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'  <div>',
-'    <span class="u-bold">#CHANGED_BY#:&nbsp</span><span>#ATTRIBUTE_4#</span>',
-'  </div>',
-'</div>'))
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(31247448819982914)
+ p_id=>wwv_flow_api.id(36997867635037734)
 ,p_query_column_id=>13
-,p_column_alias=>'CHANGED_ON'
+,p_column_alias=>'IS_ACTIVE'
 ,p_column_display_sequence=>13
-,p_column_heading=>'Changed On'
+,p_column_heading=>'Is Active'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
-);
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(31247537947982915)
-,p_query_column_id=>14
-,p_column_alias=>'CHANGED_BY'
-,p_column_display_sequence=>14
-,p_column_heading=>'Changed By'
-,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_api.create_page_button(
- p_id=>wwv_flow_api.id(30219741701087823)
-,p_button_sequence=>20
-,p_button_plug_id=>wwv_flow_api.id(55991739715660967)
-,p_button_name=>'EDIT'
-,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
-,p_button_template_id=>wwv_flow_api.id(8549262062518244)
-,p_button_image_alt=>'Edit'
-,p_button_position=>'REGION_TEMPLATE_CHANGE'
-,p_button_redirect_url=>'f?p=&APP_ID.:32:&SESSION.::&DEBUG.:RP:P32_ID:&P31_COMMENT_ID.'
-,p_icon_css_classes=>'fa-edit'
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(30218199861087825)
@@ -17783,6 +17746,19 @@ wwv_flow_api.create_page_button(
 ,p_button_position=>'REGION_TEMPLATE_CLOSE'
 ,p_warn_on_unsaved_changes=>null
 ,p_icon_css_classes=>'fa-remove'
+);
+wwv_flow_api.create_page_button(
+ p_id=>wwv_flow_api.id(30219741701087823)
+,p_button_sequence=>20
+,p_button_plug_id=>wwv_flow_api.id(55991739715660967)
+,p_button_name=>'EDIT'
+,p_button_action=>'REDIRECT_PAGE'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_id=>wwv_flow_api.id(8549262062518244)
+,p_button_image_alt=>'Edit'
+,p_button_position=>'REGION_TEMPLATE_NEXT'
+,p_button_redirect_url=>'f?p=&APP_ID.:32:&SESSION.::&DEBUG.:RP:P32_ID:&P31_COMMENT_ID.'
+,p_icon_css_classes=>'fa-edit'
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(30218586803087824)
@@ -18110,11 +18086,11 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200518173708'
+,p_last_upd_yyyymmddhh24miss=>'20200618062452'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(30429034900753113)
-,p_name=>'Comment to which you reply'
+,p_name=>'Comment'
 ,p_template=>wwv_flow_api.id(8496813422518209)
 ,p_display_sequence=>30
 ,p_include_in_reg_disp_sel_yn=>'Y'
@@ -20137,7 +20113,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524171844'
+,p_last_upd_yyyymmddhh24miss=>'20200623054437'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -20517,6 +20493,19 @@ wwv_flow_api.create_ig_report_column(
 ,p_break_sort_nulls=>'LAST'
 );
 wwv_flow_api.create_page_plug(
+ p_id=>wwv_flow_api.id(36998038204037736)
+,p_plug_name=>'Information'
+,p_region_template_options=>'#DEFAULT#:t-Alert--colorBG:t-Alert--horizontal:t-Alert--defaultIcons:t-Alert--warning:t-Alert--accessibleHeading:margin-bottom-none'
+,p_plug_template=>wwv_flow_api.id(8471603023518189)
+,p_plug_display_sequence=>10
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_plug_display_point=>'REGION_POSITION_01'
+,p_plug_source=>'&APP_TEXT$BLOG_MSG_BASIC_SETTINGS_INFO.'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(80220063138113444)
 ,p_plug_name=>'Buttons'
 ,p_region_template_options=>'#DEFAULT#:t-ButtonRegion--slimPadding'
@@ -20581,6 +20570,8 @@ wwv_flow_api.create_page_validation(
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_cm.is_integer(',
 '   p_value => :ATTRIBUTE_VALUE',
+'  ,p_min => 1',
+'  ,p_max => 50',
 '  ,p_err_mesg => ''BLOG_VALIDATION_ERR_IS_INTEGER''',
 ');'))
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -22389,7 +22380,7 @@ wwv_flow_api.create_install_script(
 '  constraint blog_settings_ck14 check(',
 '    data_type != ''INTEGER'' or',
 '    data_type = ''INTEGER'' and',
-'    round( to_number( attribute_value ) ) between 1 and 100',
+'    round( to_number( attribute_value ) ) = to_number( attribute_value )',
 '  ),',
 '  constraint blog_settings_ck15 check(',
 '    data_type != ''URL'' or',
@@ -22697,12 +22688,12 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_FILES',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FI'))
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_'))
 );
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'LE_DESC") AS',
+'CHARSET", "FILE_DESC") AS',
 '  select t1.id as file_id',
 '  ,t1.created_on',
 '  ,t1.changed_on',
@@ -23246,27 +23237,27 @@ wwv_flow_api.append_to_install_script(
 '    apex_debug.info( ''Fetch attribute %s return: %s'', p_attribute_name, l_value );',
 '    return l_value;',
 '',
-'    exception when no_data_found',
-'    then',
+'  exception when no_data_found',
+'  then',
 '',
-'      apex_debug.warn(',
-'         p_message => ''No data found. %s( %s => %s )''',
-'        ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'        ,p1 => ''p_attribute_name''',
-'        ,p2 => coalesce( p_attribute_name, ''(null)'' )',
-'      );',
-'      raise;',
+'    apex_debug.warn(',
+'       p_message => ''No data found. %s( %s => %s )''',
+'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'      ,p1 => ''p_attribute_name''',
+'      ,p2 => coalesce( p_attribute_name, ''(null)'' )',
+'    );',
+'    raise;',
 '',
-'    when others',
-'    then',
+'  when others',
+'  then',
 '',
-'      apex_debug.error(',
-'         p_message => ''Unhandled error. %s( %s => %s )''',
-'        ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'        ,p1 => ''p_attribute_name''',
-'        ,p2 => coalesce( p_attribute_name, ''(null)'' )',
-'      );',
-'      raise;',
+'    apex_debug.error(',
+'       p_message => ''Unhandled error. %s( %s => %s )''',
+'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'      ,p1 => ''p_attribute_name''',
+'      ,p2 => coalesce( p_attribute_name, ''(null)'' )',
+'    );',
+'    raise;',
 '',
 '  end get_attribute_value;',
 '--------------------------------------------------------------------------------',
@@ -23460,8 +23451,8 @@ wwv_flow_api.append_to_install_script(
 '      ,p2 => coalesce( p_post_id, ''(null)'' )',
 '    );',
 '',
-'    --raise;',
-'    -- We wan''t show errors between -20999 and -20901 in error page',
+'    -- We wan''t show errors between -20999 and -20901 on APEX error page',
+'    -- see function apex_error_handler',
 '    raise_application_error(-20901, ''Post not found.'');',
 '',
 '  when others',
@@ -23578,7 +23569,7 @@ wwv_flow_api.append_to_install_script(
 '  then',
 '',
 '    apex_debug.warn(',
-'       p_message => ''No data found. %s( %s => '))
+'       p_message => ''No data found. %s'))
 );
 end;
 /
@@ -23586,7 +23577,7 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'%s )''',
+'( %s => %s )''',
 '      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
 '      ,p1 => ''p_tag_id''',
 '      ,p2 => coalesce( p_tag_id, ''(null)'' )',
@@ -24439,8 +24430,7 @@ wwv_flow_api.append_to_install_script(
 '          ,p_values      => p_value',
 '          --,p_plain_url   => true',
 '        )',
-'      );',
-'    en'))
+'      );'))
 );
 null;
 end;
@@ -24449,7 +24439,8 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'d if;',
+'',
+'    end if;',
 '  end redirect_search;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -24480,6 +24471,8 @@ wwv_flow_api.append_to_install_script(
 '--                            run_settings_post_expression',
 '--                            run_feature_post_expression',
 '--                            update_feature',
+'--    Jari Laine 22.06.2020 - Bug fix to function is_integer',
+'--                            Added parameters p_min and p_max to function is_integer',
 '--',
 '--  TO DO:',
 '--    #1  check constraint name that raised dup_val_on_index error',
@@ -24497,34 +24490,34 @@ wwv_flow_api.append_to_install_script(
 '    p_name            out nocopy varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 14',
+'  -- Called from: admin app page 14',
 '  function get_category_seq return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 20',
+'  -- Called from: admin app page 20',
 '  function get_link_grp_seq return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 18',
+'  -- Called from: admin app page 18',
 '  function get_link_seq(',
 '    p_link_group_id   in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 12',
+'  -- Called from: admin app page 12',
 '  function get_post_tags(',
 '    p_post_id         in varchar2,',
 '    p_sep             in varchar2 default '',''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 12',
+'  -- Called from: admin app page 12',
 '  function get_category_title(',
 '    p_category_id     in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 12',
+'  -- Called from: admin app page 12',
 '  function get_first_paragraph(',
 '    p_body_html       in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 12',
+'  -- Called from: admin app page 12',
 '  function request_to_post_status(',
 '    p_request         in varchar2',
 '  ) return varchar2;',
@@ -24534,6 +24527,7 @@ wwv_flow_api.append_to_install_script(
 '    p_file_name       in varchar2',
 '  ) return boolean;',
 '--------------------------------------------------------------------------------',
+'  -- Called from: admin app page 12 and procedudre blog_cm.get_first_paragraph',
 '  function remove_whitespace(',
 '    p_string          in varchar2',
 '  ) return varchar2;',
@@ -24541,14 +24535,14 @@ wwv_flow_api.append_to_install_script(
 '  -- Called from: admin app page 23 and procedure blog_cm.file_upload',
 '  procedure merge_files;',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 12',
+'  -- Called from: admin app page 12',
 '  procedure add_category(',
 '    p_title           in varchar2,',
 '    p_err_mesg        in varchar2,',
 '    p_category_id     out nocopy number',
 '  );',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 12',
+'  -- Called from: admin app page 12',
 '  procedure add_post_tags(',
 '    p_post_id         in varchar2,',
 '    p_tags            in varchar2,',
@@ -24579,6 +24573,8 @@ wwv_flow_api.append_to_install_script(
 '  -- Called from: admin app pages 20012',
 '  function is_integer(',
 '    p_value           in varchar2,',
+'    p_min             in number,',
+'    p_max             in number,',
 '    p_err_mesg        in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
@@ -24642,6 +24638,15 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  function next_seq(',
+'    p_max in number',
+'  ) return number',
+'  as',
+'  begin',
+'    return ceil( coalesce( p_max + 1, 1 ) / 10 ) * 10;',
+'  end next_seq;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure add_tag(',
@@ -24755,17 +24760,19 @@ wwv_flow_api.append_to_install_script(
 '    then',
 '',
 '      -- Fetch next display_seq',
-'      select ceil(coalesce(max(display_seq) + 1, 1) / 10) * 10',
+'      select max(display_seq) as display_seq',
 '      into l_max',
 '      from blog_bloggers',
 '      ;',
+'',
+'      l_max := next_seq( l_max );',
 '',
 '      -- Fetch user information from APEX users',
 '      select email',
 '        ,v1.first_name || '' '' || v1.last_name as full_name',
 '      into l_email, l_name',
 '      from apex_workspace_apex_users v1',
-'      where 1  =1',
+'      where 1 = 1',
 '      and v1.user_name = p_username',
 '      ;',
 '',
@@ -24853,7 +24860,7 @@ wwv_flow_api.append_to_install_script(
 '    ;',
 '    -- return next category display sequence',
 '    l_result := to_char(',
-'      ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10',
+'       next_seq( l_max )',
 '      ,blog_util.g_number_format',
 '    );',
 '',
@@ -24876,7 +24883,7 @@ wwv_flow_api.append_to_install_script(
 '    ;',
 '    -- return next link group display sequence',
 '    l_result := to_char(',
-'      ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10',
+'       next_seq( l_max )',
 '      ,blog_util.g_number_format',
 '    );',
 '',
@@ -24905,7 +24912,7 @@ wwv_flow_api.append_to_install_script(
 '    ;',
 '    -- return next link display sequence',
 '    l_result := to_char(',
-'      ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10',
+'       next_seq( l_max )',
 '      ,blog_util.g_number_format',
 '    );',
 '',
@@ -24964,8 +24971,6 @@ wwv_flow_api.append_to_install_script(
 '',
 '  exception when no_data_found then',
 '    return null;',
-'  when others then',
-'    raise;',
 '  end get_post_tags;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -24989,8 +24994,6 @@ wwv_flow_api.append_to_install_script(
 '',
 '  exception when no_data_found then',
 '    return null;',
-'  when others then',
-'    raise;',
 '  end get_category_title;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -25017,7 +25020,7 @@ wwv_flow_api.append_to_install_script(
 '      l_first_p := substr( p_body_html, l_first_p_start, l_first_p_end );',
 '',
 '      -- remove whitespace',
-'      l_first_p := replace( regexp_replace( l_first_p, ''\s+'', '' '' ), ''  '', '' '' );',
+'      l_first_p := remove_whitespace( l_first_p );',
 '',
 '    end if;',
 '',
@@ -25108,7 +25111,7 @@ wwv_flow_api.append_to_install_script(
 '  as',
 '  begin',
 '    -- remove whitespace characters from string',
-'    return regexp_replace( p_string, ''\s+'', '' '' );',
+'    return replace( regexp_replace( p_string, ''\s+'', '' '' ), ''  '', '' '' );',
 '  end remove_whitespace;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -25289,10 +25292,11 @@ wwv_flow_api.append_to_install_script(
 '  as',
 '  begin',
 '',
+'    -- delete from blog_post_preview if there is row for session',
 '    delete from blog_post_preview',
 '    where id = p_id',
 '    ;',
-'',
+'    -- insert preview data',
 '    insert into blog_post_preview(',
 '       id',
 '      ,tags',
@@ -25316,7 +25320,7 @@ wwv_flow_api.append_to_install_script(
 '  as',
 '  begin',
 '',
-'    -- Delete from blog_post_preview rows where session is expired',
+'    -- delete from blog_post_preview rows where session is expired',
 '    delete from blog_post_preview p',
 '    where not exists (',
 '      select 1',
@@ -25336,9 +25340,9 @@ wwv_flow_api.append_to_install_script(
 '    job_not_exists  exception;',
 '    pragma          exception_init(job_not_exists, -27475);',
 '  begin',
-'',
+'    -- set job name',
 '    l_job_name := ''BLOG_JOB_PURGE_POST_PREVIEW'';',
-'',
+'    -- drop job if exists',
 '    begin',
 '      sys.dbms_scheduler.drop_job(',
 '        job_name => l_job_name',
@@ -25346,13 +25350,14 @@ wwv_flow_api.append_to_install_script(
 '    exception when job_not_exists then',
 '      null;',
 '    end;',
-'',
+'    -- if job is not just dropped',
+'    -- create new job',
 '    if not p_drop_job then',
 '      sys.dbms_scheduler.create_job(',
 '         job_name        => l_job_name',
 '        ,job_type        => ''STORED_PROCEDURE''',
 '        ,job_action      => ''blog_conf.purge_post_preview''',
-'        ,start_date      => trunc(localtimestamp, ''HH'')',
+'        ,start_date      => trunc( localtimestamp, ''HH'')',
 '        ,repeat_interval => ''FREQ=DAILY''',
 '        ,enabled         => true',
 '        ,comments        => ''Purge expired sessions posts previews''',
@@ -25364,37 +25369,10 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  function is_integer(',
 '    p_value     in varchar2,',
+'    p_min       in number,',
+'    p_max       in number,',
 '    p_err_mesg  in varchar2',
-'  ) return varchar2',
-'  as',
-'    l_err_mesg varchar2(32700);',
-'  begin',
-'',
-'    -- prepare validation error message',
-'    l_err_mesg := apex_lang.message( p_err_mesg );',
-'',
-'    if l_err_mesg = apex_escape.html( p_err_mesg )',
-'    then',
-'      l_err_mesg := p_err_mesg;',
-'    end if;',
-'',
-'    if round( to_number( p_value ) ) between 1 and 100',
-'    then',
-'      l_err_mesg := null;',
-'    end if;',
-'',
-'    return l_err_mesg;',
-'',
-'  exception when invalid_number',
-'  or value_error',
-'  then',
-'    return l_err_mesg;',
-'  end is_integer;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function is_url(',
-'    p_value     in varchar2,',
-'    p_err_mesg  '))
+'  ) retur'))
 );
 null;
 end;
@@ -25403,7 +25381,43 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'in varchar2',
+'n varchar2',
+'  as',
+'    l_value     number;',
+'    l_err_mesg  varchar2(32700);',
+'  begin',
+'',
+'    -- prepare validation error message',
+'    l_err_mesg := apex_lang.message( p_err_mesg, p_min, p_max );',
+'',
+'    if l_err_mesg = apex_escape.html( p_err_mesg )',
+'    then',
+'      l_err_mesg := p_err_mesg;',
+'    end if;',
+'',
+'    l_value := to_number( p_value );',
+'    -- check value is integer and between range',
+'    if round( l_value ) = l_value',
+'    and l_value between p_min and p_max',
+'    then',
+'      -- if validation passes, clear error meassage',
+'      l_err_mesg := null;',
+'    end if;',
+'',
+'    return l_err_mesg;',
+'',
+'  exception',
+'  when invalid_number',
+'  or value_error',
+'  then',
+'    -- return error message',
+'    return l_err_mesg;',
+'  end is_integer;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  function is_url(',
+'    p_value     in varchar2,',
+'    p_err_mesg  in varchar2',
 '  ) return varchar2',
 '  as',
 '    l_err_mesg varchar2(32700);',
@@ -25411,7 +25425,7 @@ wwv_flow_api.append_to_install_script(
 '',
 '    if not regexp_like(p_value, ''^https?\:\/\/.*$'')',
 '    then',
-'      -- prepare validation error message',
+'      -- if validation fails prepare error message',
 '      l_err_mesg := apex_lang.message( p_err_mesg );',
 '',
 '      if l_err_mesg = apex_escape.html( p_err_mesg )',
@@ -25419,6 +25433,7 @@ wwv_flow_api.append_to_install_script(
 '        l_err_mesg := p_err_mesg;',
 '      end if;',
 '    else',
+'      -- if validation passes, clear error meassage',
 '      l_err_mesg := null;',
 '    end if;',
 '',
@@ -25445,15 +25460,19 @@ wwv_flow_api.append_to_install_script(
 '      l_err_mesg := p_err_mesg;',
 '    end if;',
 '',
-'    if to_char( systimestamp, p_value ) = to_char( systimestamp, p_value )',
+'    -- try convert timestamp to string',
+'    if to_char( systimestamp, p_value ) is not null',
 '    then',
+'      -- if validation passes, clear error meassage',
 '      l_err_mesg := null;',
 '    end if;',
 '',
 '    return l_err_mesg;',
 '',
-'  exception when invalid_date_format',
+'  exception',
+'  when invalid_date_format',
 '  then',
+'    -- return error message',
 '    return l_err_mesg;',
 '  end is_date_format;',
 '--------------------------------------------------------------------------------',
@@ -25466,10 +25485,11 @@ wwv_flow_api.append_to_install_script(
 '    l_err_mesg varchar2(32700);',
 '  begin',
 '    -- TO DO see item 3 from package specs',
+'',
 '    -- do some basic check for email address',
 '    if not regexp_like(p_value, ''^.*\@.*\..*$'')',
 '    then',
-'      -- Prepare validation error message',
+'      -- if validation fails prepare error message',
 '      l_err_mesg := apex_lang.message( p_err_mesg );',
 '',
 '      if l_err_mesg = apex_escape.html( p_err_mesg )',
@@ -25477,6 +25497,7 @@ wwv_flow_api.append_to_install_script(
 '        l_err_mesg := p_err_mesg;',
 '      end if;',
 '    else',
+'      -- if validation passes, clear error meassage',
 '      l_err_mesg := null;',
 '    end if;',
 '',
@@ -25569,14 +25590,20 @@ wwv_flow_api.append_to_install_script(
 '    p_email_template  in varchar2',
 '  )',
 '  as',
-'    l_post_id   number;',
-'    l_app_email varchar2(4000);',
+'    l_post_id       number;',
+'    l_watch_months  number;',
+'    l_app_email     varchar2(4000);',
 '  begin',
 '',
 '    l_post_id := to_number( p_post_id );',
 '',
 '    -- fetch application email address',
-'    l_app_email := blog_util.get_attribute_value(''APP_EMAIL'');',
+'    l_app_email := blog_util.get_attribute_value( ''APP_EMAIL'' );',
+'    -- fetch comment watch expires',
+'    l_watch_months := to_number(',
+'        blog_util.get_attribute_value( ''COMMENT_WATCH_MONTHS'' )',
+'      ) * -1',
+'    ;',
 '',
 '    -- send notify users that have subscribed to replies to comment',
 '    for c1 in(',
@@ -25604,7 +25631,7 @@ wwv_flow_api.append_to_install_script(
 '        on t1.post_id = v1.id',
 '      where 1 = 1',
 '        -- send notification if subscription is created less than month ago',
-'        and t1.created_on >= add_months( localtimestamp, -1 )',
+'        and t1.created_on >= add_months( localtimestamp, l_watch_months )',
 '        and v1.id = l_post_id',
 '    ) loop',
 '',
@@ -26281,7 +26308,16 @@ wwv_flow_api.append_to_install_script(
 '',
 '  end get_tag_anchor;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
+'---------------------------------------------------------------------'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'-----------',
 '  function get_description_meta(',
 '    p_desc in varchar2',
 '  ) return varchar2',
@@ -26326,16 +26362,7 @@ wwv_flow_api.append_to_install_script(
 '  end get_post_description_meta;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  function get_ta'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'b_canonical_link(',
+'  function get_tab_canonical_link(',
 '    p_app_page_id     in varchar2,',
 '    p_app_id          in varchar2 default null',
 '  ) return varchar2',
@@ -27041,7 +27068,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27078,7 +27105,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27115,7 +27142,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27152,7 +27179,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27189,11 +27216,20 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'','))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'''PROXY_USER'' )',
 '    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
@@ -27226,7 +27262,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27239,16 +27275,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for Trigger BLOG_FEATURES_TRG',
 '--------------------------------------------------------',
-'CREATE OR '))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'REPLACE EDITIONABLE TRIGGER "BLOG_FEATURES_TRG"',
+'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_FEATURES_TRG"',
 'before',
 'insert or',
 'update on blog_features',
@@ -27272,7 +27299,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27309,7 +27336,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27346,7 +27373,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27383,7 +27410,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27420,7 +27447,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27457,7 +27484,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27494,7 +27521,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27531,7 +27558,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27568,7 +27595,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27605,7 +27632,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27642,7 +27669,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '  end if;',
 '',
-'  :new.changed_on := coalesce( localtimestamp, :new.changed_on );',
+'  :new.changed_on := coalesce( :new.changed_on, localtimestamp );',
 '  :new.changed_by := coalesce(',
 '      :new.changed_by',
 '    , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -27782,6 +27809,8 @@ wwv_flow_api.create_install_script(
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''10'',''0'',''APP_GROUP'',''STRING'',''INTERNAL'',''BLOG_040000'',null);',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''40'',''0'',''COMMENT_WATCH_MONTHS'',''INTEGER'',''INTERNAL'',''1'',null);',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''50'',''0'',''G_LATEST_POSTS'',''INTEGER'',''INTERNAL'',''5'',null);',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''140'',''0'',''G_DATE_FORMAT'',''DATE_FORMAT'',''BLOG_PAR_GROUP_UI'',''fmDD Mon YYYY'',null);',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''150'',''0'',''G_POST_TITLE_DATE_FORMAT'',''DATE_FORMAT'',''BLOG_PAR_GROUP_UI'',''fmDay"," Month DD"," YYYY'',null);',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''160'',''0'',''G_ARCHIVE_DATE_FORMAT'',''DATE_FORMAT'',''BLOG_PAR_GROUP_UI'',''fmMonth, YYYY'',null);',
