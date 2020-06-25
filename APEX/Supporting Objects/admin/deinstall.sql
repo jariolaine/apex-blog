@@ -9,6 +9,7 @@ alter table blog_comment_subs drop constraint blog_comment_subs_fk2;
 alter table blog_links drop constraint blog_links_fk1;
 alter table blog_posts drop constraint blog_posts_fk1;
 alter table blog_posts drop constraint blog_posts_fk2;
+alter table blog_posts_uds drop constraint blog_posts_uds_fk1;
 alter table blog_post_tags drop constraint blog_post_tags_fk1;
 alter table blog_post_tags drop constraint blog_post_tags_fk2;
 --------------------------------------------------------
@@ -16,6 +17,7 @@ alter table blog_post_tags drop constraint blog_post_tags_fk2;
 --------------------------------------------------------
 drop package blog_cm;
 drop package blog_comm;
+drop package blog_ctx;
 drop package blog_html;
 drop package blog_ords;
 drop package blog_plugin;
@@ -37,6 +39,7 @@ drop table blog_link_groups;
 drop table blog_ords_templates;
 drop table blog_pages;
 drop table blog_posts;
+drop table blog_posts_uds;
 drop table blog_post_preview;
 drop table blog_post_tags;
 drop table blog_settings;

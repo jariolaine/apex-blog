@@ -61,7 +61,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --           Button:               3
 --           Report:              13
 --         LOVs:                   1
---         Shortcuts:             11
+--         Shortcuts:             10
 --         Plug-ins:               1
 --       Globalization:
 --         Messages:              11
@@ -126,7 +126,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200621181306'
+,p_last_upd_yyyymmddhh24miss=>'20200625064830'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>98
 ,p_ui_type_name => null
@@ -11304,16 +11304,6 @@ wwv_flow_api.create_shortcut(
 );
 end;
 /
-prompt --application/shared_components/user_interface/shortcuts/test_shortcut
-begin
-wwv_flow_api.create_shortcut(
- p_id=>wwv_flow_api.id(38824026216053086)
-,p_shortcut_name=>'TEST_SHORTCUT'
-,p_shortcut_type=>'HTML_TEXT'
-,p_shortcut=>'Testing button label'
-);
-end;
-/
 prompt --application/shared_components/email/templates/blog_new_comment_notify
 begin
 wwv_flow_api.create_email_template(
@@ -12453,7 +12443,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8667733481689180)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200518152122'
+,p_last_upd_yyyymmddhh24miss=>'20200625064830'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6979825819516521)
@@ -12503,7 +12493,8 @@ wwv_flow_api.create_report_region(
 'where 1 = 1',
 'and :P0_SEARCH is not null',
 'and (',
-'  contains( v1.body_html, replace( :P0_SEARCH, ''}'', ''\}'' ), 1 ) > 0',
+'--  contains( v1.body_html, replace( :P0_SEARCH, ''}'', ''\}'' ), 1 ) > 0',
+'  contains( v1.ctx_search, #OWNER#.blog_ctx.get_post_search( :P0_SEARCH ), 1 ) > 0',
 ')',
 'order by score(1) desc',
 '  ,v1.published_on desc'))

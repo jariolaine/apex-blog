@@ -61,7 +61,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --           Button:               3
 --           Report:              13
 --         LOVs:                   1
---         Shortcuts:             11
+--         Shortcuts:             10
 --         Plug-ins:               1
 --       Globalization:
 --         Messages:              11

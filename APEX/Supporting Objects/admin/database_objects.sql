@@ -328,6 +328,23 @@ create index blog_posts_ctx on blog_posts (body_html)
   )
 /
 --------------------------------------------------------
+--  DDL for Table BLOG_POSTS_UDS
+--------------------------------------------------------
+create table  blog_posts_uds(
+  id number( 38, 0 ) not null,
+	row_version number( 38, 0 ) not null,
+	created_on timestamp( 6 ) with local time zone not null,
+	created_by varchar2( 256 char ) not null,
+	changed_on timestamp( 6 ) with local time zone not null,
+	changed_by varchar2( 256 char ) not null,
+  post_id number( 38, 0 ) not null,
+  dummy char(1) default 'X' not null,
+	constraint blog_posts_uds_pk primary key( id ),
+  constraint blog_posts_uds_uk1 unique( post_id ),
+  constraint blog_posts_uds_ck1 check( row_version > 0 )
+)
+/
+--------------------------------------------------------
 --  DDL for Table BLOG_POST_PREVIEW
 --------------------------------------------------------
 create table blog_post_preview(
@@ -783,7 +800,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "CHANGED_ON", "COMMENTS_COUNT") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "CTX_SEARCH", "COMMENTS_COUNT") AS
   select
    t1.id                  as post_id
   ,t3.id                  as category_id
@@ -795,10 +812,11 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
   ,t1.first_paragraph     as first_paragraph
   ,t1.body_html           as body_html
   ,t1.published_on        as published_on
+  ,t1.changed_on          as changed_on
   ,t1.archive_year_month  as archive_year_month
   ,t1.archive_year        as archive_year
   ,t3.display_seq         as category_seq
-  ,t1.changed_on          as changed_on
+  ,t4.dummy               as ctx_search
   ,(
     select count( l1.id )
     from blog_comments l1
@@ -806,9 +824,13 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
     and l1.is_active = 1
     and l1.post_id  = t1.id
   )                       as comments_count
-from blog_posts       t1
-join blog_bloggers    t2 on t1.blogger_id  = t2.id
-join blog_categories  t3 on t1.category_id = t3.id
+from blog_posts t1
+join blog_bloggers t2
+  on t1.blogger_id  = t2.id
+join blog_categories t3
+  on t1.category_id = t3.id
+join blog_posts_search t4
+  on t1.id = t4.post_id
 where 1 = 1
 and t1.is_active = 1
 and t2.is_active = 1
@@ -862,7 +884,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "PUBLISHED_DISPLAY", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS
   select
    t1.id                as id
   ,t1.category_id       as category_id
@@ -881,6 +903,8 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_I
   ,t1.body_length       as body_length
   ,t1.published_on      as published_on
   ,t1.notes             as notes
+  ,t4.rowid             as ctx_rid
+  ,t4.dummy             as ctx_search
   ,case t1.is_active * t2.is_active * t3.is_active
     when 1
     then t1.published_on
@@ -923,8 +947,12 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_I
     else 'PUBLISHED'
    end                  as post_status
 from blog_posts t1
-join blog_categories t2 on t1.category_id = t2.id
-join blog_bloggers t3 on t1.blogger_id = t3.id
+join blog_categories t2
+  on t1.category_id = t2.id
+join blog_bloggers t3
+  on t1.blogger_id = t3.id
+join blog_posts_uds t4
+  on t1.id = t4.post_id
 where 1 = 1
 /
 --------------------------------------------------------
@@ -1019,6 +1047,149 @@ select q2.application_id
 from blog_data q1
 join apex_lov q2 on q1.post_status = q2.return_value
 with read only
+/
+CREATE OR REPLACE package  "BLOG_CTX"
+authid definer
+as
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--
+--  DESCRIPTION
+--    Procedures and functions Oracle text
+--
+--  MODIFIED (DD.MM.YYYY)
+--    Jari Laine 22.04.2019 - Created
+--
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure generate_post_datastore(
+    rid       in rowid,
+    tlob      in out nocopy clob
+  );
+--------------------------------------------------------------------------------
+  function get_post_search(
+    p_search  in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
+end "BLOG_CTX";
+/
+
+
+CREATE OR REPLACE package body "BLOG_CTX"
+as
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Private constants and variables
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- none
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Private procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function generate_search(
+    p_search  in varchar2,
+    p_feature in varchar2,
+    p_combine in varchar2
+  ) return varchar2
+  as
+    l_query        varchar2(32767);
+    l_clean_token  varchar2(1000);
+    l_tokens       apex_application_global.vc_arr2;
+  begin
+
+    l_tokens := apex_util.string_to_table( p_search, ' ' );
+
+    for i in 1..l_tokens.count
+    loop
+      -- remove special characters; irrelevant for full text search
+      l_clean_token := lower( regexp_replace( l_tokens( i ), '[<>{}/()*%&!$?.:,;\+#]', '' ) );
+
+      if ltrim( rtrim( l_clean_token ) ) is not null
+      then
+        if p_feature = 'FUZZY'
+        then
+          l_query := l_query || 'FUZZY({' || l_clean_token || '}, 50, 500) ';
+        elsif p_feature = 'WILDCARD_RIGHT'
+        then
+          l_query := l_query || l_clean_token || '% ';
+        else
+          l_query := l_query || '{' || l_clean_token || '} ';
+        end if;
+        if p_combine = 'OR'
+        then
+          l_query := l_query || ' or ';
+        else
+          l_query := l_query || ' and ';
+        end if;
+      end if;
+
+    end loop;
+
+    if p_combine = 'AND'
+    then
+      l_query := substr( l_query, 1, length( l_query ) - 5 );
+    else
+      l_query := substr( l_query, 1, length( l_query ) - 4 );
+    end if;
+
+    return ltrim( rtrim( l_query ));
+
+  end generate_search;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Global procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure generate_post_datastore(
+    rid   in rowid,
+    tlob  in out nocopy clob
+  )
+  as
+    l_row blog_v_all_posts%rowtype;
+  begin
+
+    select *
+    into l_row
+    from blog_v_all_posts
+    where 1 = 1
+    and ctx_rid = rid
+    ;
+
+    tlob :=
+      '<POST_TITLE>' || l_row.title || '</POST_TITLE>'
+      || '<POST_CATEGORY>' || l_row.category_title || '</POST_CATEGORY>'
+      || '<POST_DESCRIPTION>' || l_row.post_desc || '</POST_DESCRIPTION>'
+      || '<POST_BODY>' || l_row.body_html || '</POST_BODY>'
+      || '<POST_TAGS>' || l_row.visible_tags|| '</POST_TAGS>'
+    ;
+
+  end generate_post_datastore;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_post_search(
+    p_search in varchar2
+  ) return varchar2
+  as
+    c_xml constant varchar2(32767) := '<query><textquery><progression>' ||
+                                        '<seq>  #SEARCH#  </seq>' ||
+                                        '<seq> ?#SEARCH#  </seq>' ||
+                                        '<seq>  #SEARCH#% </seq>' ||
+                                        '<seq> %#SEARCH#% </seq>' ||
+                                      '</progression></textquery></query>';
+    l_search varchar2(32767) := p_search;
+  begin
+
+    -- remove special characters; irrelevant for full text search
+    l_search := regexp_replace( l_search, '[<>{}/()*%&!$?.:,;\+#]', '' );
+
+    return replace( c_xml, '#SEARCH#', l_search );
+
+  end get_post_search;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+end "BLOG_CTX";
 /
 CREATE OR REPLACE package  "BLOG_UTIL"
 authid definer
@@ -4888,7 +5059,7 @@ as
                                     ,p_canonical  => 'YES'
                                   )
               )
-              ,XMLElement( "lastmod", to_char( sys_extract_utc( posts.changed_on ), 'YYYY-MM-DD"T"HH24:MI:SS"+00:00""' ) )
+              ,XMLElement( "lastmod", to_char( sys_extract_utc( greatest( posts.published_on, posts.changed_on ) ), 'YYYY-MM-DD"T"HH24:MI:SS"+00:00""' ) )
             ) order by posts.published_on desc
           )
         )
@@ -5545,6 +5716,190 @@ begin
 end;
 /
 --------------------------------------------------------
+--  DDL for Trigger BLOG_POSTS_UDS_CATEGORIES_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_CATEGORIES_TRG"
+after
+update on blog_categories
+for each row
+begin
+
+  if :new.title_unique != :old.title_unique
+  then
+
+    update blog_posts_uds t1
+      set dummy = dummy
+    where 1 = 1
+    and exists(
+      select 1
+      from blog_posts x1
+      where 1 = 1
+        and x1.category_id = :new.id
+        and x1.id = t1.post_id
+    )
+    ;
+
+  end if;
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_POSTS_UDS_POSTS_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_POSTS_TRG"
+after
+insert or
+update on blog_posts
+for each row
+declare
+  l_update boolean;
+begin
+
+  if inserting
+  then
+
+    insert into blog_posts_uds( post_id )
+      values ( :new.id )
+    ;
+
+  elsif updating
+  then
+
+    l_update :=
+      case
+        when :new.category_id != :old.category_id
+        then true
+        when upper( :new.title ) != upper( :old.title )
+        then true
+        when upper( :new.post_desc ) != upper( :old.post_desc )
+        then true
+        when dbms_lob.compare( :new.body_html, :old.body_html ) != 0
+        then true
+        else false
+      end
+    ;
+
+    if l_update
+    then
+      update blog_posts_uds t1
+        set dummy = dummy
+      where 1 = 1
+      and t1.post_id  = :new.id
+      ;
+    end if;
+
+  end if;
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_POSTS_UDS_POST_TAGS_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_POST_TAGS_TRG"
+after
+insert or
+delete on blog_post_tags
+for each row
+begin
+
+  if inserting
+  then
+
+    update blog_posts_uds t1
+      set dummy = dummy
+    where 1 = 1
+    and t1.post_id = :new.post_id
+    ;
+
+  elsif deleting
+  then
+
+    update blog_posts_uds t1
+      set dummy = dummy
+    where 1 = 1
+    and t1.post_id = :old.post_id
+    ;
+
+  end if;
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_POSTS_UDS_TAGS_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_TAGS_TRG"
+after
+update on blog_tags
+for each row
+declare
+  l_update boolean;
+begin
+
+  l_update :=
+    case
+      when :new.tag_unique != :old.tag_unique
+      then true
+      when :new.is_active != :old.is_active
+      then true
+      else false
+    end
+  ;
+
+  if l_update
+  then
+    update blog_posts_uds t1
+      set dummy = dummy
+    where 1 = 1
+    and exists(
+      select 1
+      from blog_post_tags x1
+      where 1 = 1
+        and x1.post_id = t1.post_id
+        and x1.tag_id  = :new.id
+      )
+    ;
+  end if;
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_POSTS_UDS_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_TRG"
+before
+insert or
+update on blog_posts_uds
+for each row
+begin
+
+  if inserting then
+    :new.id           := coalesce( :new.id, blog_seq.nextval );
+    :new.row_version  := coalesce( :new.row_version, 1 );
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
+    :new.created_by   := coalesce(
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
+    );
+  elsif updating then
+    :new.row_version := coalesce(
+        :new.row_version
+      , coalesce( :old.row_version, 0 ) + 1
+    );
+  end if;
+
+  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
+  :new.changed_by := coalesce(
+      :new.changed_by
+    , sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
+  );
+
+end;
+/
+--------------------------------------------------------
 --  DDL for Trigger BLOG_POST_TAGS_TRG
 --------------------------------------------------------
 CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_TAGS_TRG"
@@ -5658,35 +6013,47 @@ end;
 --------------------------------------------------------
 --  DDL for Foreign Keys
 --------------------------------------------------------
-ALTER TABLE BLOG_COMMENTS ADD CONSTRAINT BLOG_COMMENTS_FK1 FOREIGN KEY (POST_ID)
-  REFERENCES BLOG_POSTS (ID) ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_COMMENTS ADD CONSTRAINT BLOG_COMMENTS_FK2 FOREIGN KEY (PARENT_ID)
-  REFERENCES BLOG_COMMENTS (ID) ON DELETE SET NULL ENABLE;
+  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK1" FOREIGN KEY ("POST_ID")
+	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_COMMENT_FLAGS ADD CONSTRAINT BLOG_COMMENT_FLAGS_FK1 FOREIGN KEY (COMMENT_ID)
-  REFERENCES BLOG_COMMENTS (ID) ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_COMMENT_SUBS ADD CONSTRAINT BLOG_COMMENT_SUBS_FK1 FOREIGN KEY (POST_ID)
-  REFERENCES BLOG_POSTS (ID) ON DELETE CASCADE ENABLE;
+  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK2" FOREIGN KEY ("PARENT_ID")
+	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE SET NULL ENABLE;
 
-ALTER TABLE BLOG_COMMENT_SUBS ADD CONSTRAINT BLOG_COMMENT_SUBS_FK2 FOREIGN KEY (EMAIL_ID)
-  REFERENCES BLOG_COMMENT_SUBS_EMAIL (ID) ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_INIT_ITEMS ADD CONSTRAINT BLOG_INIT_ITEMS_FK1 FOREIGN KEY (ITEM_NAME)
-  REFERENCES BLOG_SETTINGS (ATTRIBUTE_NAME) ENABLE;
+  ALTER TABLE "BLOG_COMMENT_FLAGS" ADD CONSTRAINT "BLOG_COMMENT_FLAGS_FK1" FOREIGN KEY ("COMMENT_ID")
+	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_LINKS ADD CONSTRAINT BLOG_LINKS_FK1 FOREIGN KEY (LINK_GROUP_ID)
-  REFERENCES BLOG_LINK_GROUPS (ID) ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_POSTS ADD CONSTRAINT BLOG_POSTS_FK1 FOREIGN KEY (BLOGGER_ID)
-  REFERENCES BLOG_BLOGGERS (ID) ENABLE;
+  ALTER TABLE "BLOG_COMMENT_SUBS" ADD CONSTRAINT "BLOG_COMMENT_SUBS_FK1" FOREIGN KEY ("POST_ID")
+	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_POSTS ADD CONSTRAINT BLOG_POSTS_FK2 FOREIGN KEY (CATEGORY_ID)
-  REFERENCES BLOG_CATEGORIES (ID) ENABLE;
 
-ALTER TABLE BLOG_POST_TAGS ADD CONSTRAINT BLOG_POST_TAGS_FK1 FOREIGN KEY (POST_ID)
-  REFERENCES BLOG_POSTS (ID) ON DELETE CASCADE ENABLE;
+  ALTER TABLE "BLOG_COMMENT_SUBS" ADD CONSTRAINT "BLOG_COMMENT_SUBS_FK2" FOREIGN KEY ("EMAIL_ID")
+	  REFERENCES "BLOG_COMMENT_SUBS_EMAIL" ("ID") ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_POST_TAGS ADD CONSTRAINT BLOG_POST_TAGS_FK2 FOREIGN KEY (TAG_ID)
-  REFERENCES BLOG_TAGS (ID) ENABLE;
+
+  ALTER TABLE "BLOG_LINKS" ADD CONSTRAINT "BLOG_LINKS_FK1" FOREIGN KEY ("LINK_GROUP_ID")
+	  REFERENCES "BLOG_LINK_GROUPS" ("ID") ON DELETE CASCADE ENABLE;
+
+
+  ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK1" FOREIGN KEY ("BLOGGER_ID")
+	  REFERENCES "BLOG_BLOGGERS" ("ID") ENABLE;
+
+
+  ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK2" FOREIGN KEY ("CATEGORY_ID")
+	  REFERENCES "BLOG_CATEGORIES" ("ID") ENABLE;
+
+
+  ALTER TABLE "BLOG_POSTS_UDS" ADD CONSTRAINT "BLOG_POSTS_UDS_FK1" FOREIGN KEY ("POST_ID")
+	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
+
+
+  ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK1" FOREIGN KEY ("POST_ID")
+	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
+
+
+  ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK2" FOREIGN KEY ("TAG_ID")
+	  REFERENCES "BLOG_TAGS" ("ID") ENABLE;
+

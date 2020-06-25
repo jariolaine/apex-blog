@@ -18,6 +18,7 @@ Ensure target schema associated to your APEX workspace is registered to ORDS and
 * CREATE TRIGGER
 * CREATE VIEW
 * CREATE JOB
+* ROLE CTXAPP
 
 ### Import Applications
 1. Access your target APEX workspace
