@@ -321,12 +321,6 @@ create table  blog_posts(
   constraint blog_posts_ck2 check( is_active in( 0 , 1 ) )
 )
 /
-
-create index blog_posts_ctx on blog_posts (body_html)
-  indextype is ctxsys.context  parameters (
-    'filter ctxsys.null_filter section group ctxsys.html_section_group sync (on commit)'
-  )
-/
 --------------------------------------------------------
 --  DDL for Table BLOG_POSTS_UDS
 --------------------------------------------------------
