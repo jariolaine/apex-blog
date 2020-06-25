@@ -19,16 +19,12 @@ begin
       , sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
-    :new.row_version := coalesce(
-        :new.row_version
-      , coalesce( :old.row_version, 0 ) + 1
-    );
+    :new.row_version := :old.row_version + 1;
   end if;
 
-  :new.changed_on := coalesce( :new.changed_on, localtimestamp );
+  :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      :new.changed_by
-    , sys_context( 'APEX$SESSION', 'APP_USER' )
+      sys_context( 'APEX$SESSION', 'APP_USER' )
     , sys_context( 'USERENV','PROXY_USER' )
     , sys_context( 'USERENV','SESSION_USER' )
   );
