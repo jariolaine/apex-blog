@@ -166,6 +166,7 @@ as
     l_data  := l_data || '&#' || ascii('?');
     l_data  := l_data || '</span>';
 
+    -- set correct answer to item session state
     apex_util.set_session_state(
        p_name   => p_item.attribute_05
       ,p_value  => to_char( l_num_1 + l_num_2 , blog_util.g_number_format )
@@ -179,7 +180,6 @@ as
     sys.owa_util.http_header_close;
     -- Write output
     sys.htp.prn( l_data );
-    -- set correct answer to item session state
 
   exception when others
   then

@@ -145,7 +145,11 @@ end;
 --------------------------------------------------------
 --  Create text index preferences
 --------------------------------------------------------
+declare
+  l_schema varchar2(256);
 begin
+
+  l_schema := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
 
   ctx_ddl.create_preference(
      preference_name  => 'BLOG_POSTS_DS'
@@ -155,7 +159,7 @@ begin
   ctx_ddl.set_attribute(
     preference_name   => 'BLOG_POSTS_DS'
     ,attribute_name   => 'PROCEDURE'
-    ,attribute_value  => 'BLOG_CTX.GENERATE_POST_DATASTORE'
+    ,attribute_value  => l_schema || '.BLOG_CTX.GENERATE_POST_DATASTORE'
   );
 
   ctx_ddl.set_attribute(
@@ -238,7 +242,7 @@ end;
 /
 
 --------------------------------------------------------
---  Create text index preferences
+--  Create text index
 --------------------------------------------------------
 create index blog_posts_ctx on blog_posts_uds (dummy)
 indextype is ctxsys.context parameters (

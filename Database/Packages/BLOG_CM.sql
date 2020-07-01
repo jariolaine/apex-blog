@@ -478,7 +478,7 @@ as
   ) return varchar2
   as
   begin
-    -- one reason for this function is that APEX 19.2 as bug in switch.
+    -- one reason for this function is that APEX 19.2 has bug in switch.
     -- switch not allow return value zero (0)
 
     -- conver APEX request to post status (blog_posts.is_active)

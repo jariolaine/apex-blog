@@ -14,7 +14,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524072911'
+,p_last_upd_yyyymmddhh24miss=>'20200701113824'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25773887524573137)
@@ -199,7 +199,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_RADIOGROUP'
 ,p_named_lov=>'IS_ACTIVE'
 ,p_lov=>'.'||wwv_flow_api.id(8819403626737334)||'.'
-,p_tag_attributes=>'data-z-switch="true"'
+,p_tag_css_classes=>'z-switch'
 ,p_colspan=>3
 ,p_field_template=>wwv_flow_api.id(8548970214518243)
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--radioButtonGroup'

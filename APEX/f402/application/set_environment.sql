@@ -65,7 +65,7 @@ prompt APPLICATION 402 - Blog Administration
 --         LOVs:                   9
 --         Shortcuts:              2
 --       Globalization:
---         Messages:              60
+--         Messages:              61
 --       Reports:
 --       E-Mail:
 --         Templates:              1

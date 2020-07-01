@@ -175,7 +175,8 @@ create table blog_files (
   constraint blog_files_uk1 unique( file_name  ),
   constraint blog_files_ck1 check( row_version > 0 ),
   constraint blog_files_ck2 check( is_active in( 0, 1 ) ),
-  constraint blog_files_ck3 check( is_download in( 0, 1 ) )
+  constraint blog_files_ck3 check( is_download in( 0, 1 ) ),
+  constraint blog_files_ck4 check( is_download = 0 or is_download = 1 and file_desc is not null )
 )
 /
 --------------------------------------------------------
@@ -823,7 +824,7 @@ join blog_bloggers t2
   on t1.blogger_id  = t2.id
 join blog_categories t3
   on t1.category_id = t3.id
-join blog_posts_search t4
+join blog_posts_uds t4
   on t1.id = t4.post_id
 where 1 = 1
 and t1.is_active = 1
@@ -1052,7 +1053,7 @@ as
 --    Procedures and functions Oracle text
 --
 --  MODIFIED (DD.MM.YYYY)
---    Jari Laine 22.04.2019 - Created
+--    Jari Laine 22.06.2020 - Created
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2137,6 +2138,7 @@ as
     l_data  := l_data || '&#' || ascii('?');
     l_data  := l_data || '</span>';
 
+    -- set correct answer to item session state
     apex_util.set_session_state(
        p_name   => p_item.attribute_05
       ,p_value  => to_char( l_num_1 + l_num_2 , blog_util.g_number_format )
@@ -2150,7 +2152,6 @@ as
     sys.owa_util.http_header_close;
     -- Write output
     sys.htp.prn( l_data );
-    -- set correct answer to item session state
 
   exception when others
   then
@@ -3094,7 +3095,7 @@ as
   ) return varchar2
   as
   begin
-    -- one reason for this function is that APEX 19.2 as bug in switch.
+    -- one reason for this function is that APEX 19.2 has bug in switch.
     -- switch not allow return value zero (0)
 
     -- conver APEX request to post status (blog_posts.is_active)

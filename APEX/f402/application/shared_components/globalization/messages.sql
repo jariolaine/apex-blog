@@ -135,6 +135,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Sent email notification of new comments'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(42044380079014521)
+,p_name=>'BLOG_FILES_CK4'
+,p_message_text=>'Files displayed in public files must have a description.'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(31903383999893435)
 ,p_name=>'BLOG_FILES_UK1'
 ,p_message_text=>'File with same name already exists.'

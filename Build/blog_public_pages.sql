@@ -126,7 +126,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_PUB_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200625064830'
+,p_last_upd_yyyymmddhh24miss=>'20200701092918'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>98
 ,p_ui_type_name => null
@@ -4369,7 +4369,7 @@ wwv_flow_api.create_row_template(
 ,p_internal_name=>'BLOG_POSTS_CUSTOM_1'
 ,p_javascript_code_onload=>'blog.UI.formatProgramCode("pre.z-program-code");'
 ,p_row_template1=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<article role="article" class="z-post">',
+'<article class="z-post">',
 '  <header class="z-post--header">',
 '    <h3>#PUBLISHED_ON#</h3>',
 '    <h1>#POST_TITLE#</h1>',
@@ -4383,7 +4383,7 @@ wwv_flow_api.create_row_template(
 '</article>'))
 ,p_row_template_condition1=>':READ_MORE_LINK is not null'
 ,p_row_template2=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<article role="article" class="z-post">',
+'<article class="z-post">',
 '  <header class="z-post--header">',
 '    <h3>#PUBLISHED_ON#</h3>',
 '    <h1>#POST_TITLE#</h1>',
@@ -4394,7 +4394,7 @@ wwv_flow_api.create_row_template(
 '</article>'))
 ,p_row_template_condition2=>':TAGS_HTML is not null'
 ,p_row_template3=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<article role="article" class="z-post">',
+'<article class="z-post">',
 '  <header class="z-post--header">',
 '    <h3>#PUBLISHED_ON#</h3>',
 '    <h1>#POST_TITLE#</h1>',
@@ -4433,7 +4433,7 @@ wwv_flow_api.create_row_template(
 ||' fa-chevron-left"></span></button>'
 ,p_theme_id=>42
 ,p_theme_class_id=>7
-,p_preset_template_options=>'z-posts:z-posts--pagination-border'
+,p_preset_template_options=>'z-posts'
 );
 end;
 /
@@ -4980,7 +4980,7 @@ wwv_flow_api.create_theme(
 ,p_default_popup_transition=>'NONE'
 ,p_default_navbar_list_template=>wwv_flow_api.id(6848359906267410)
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_theme_file_prefix(42),'#IMAGE_PREFIX#themes/theme_42/1.4/')
-,p_files_version=>230
+,p_files_version=>238
 ,p_icon_library=>'FONTAPEX'
 ,p_javascript_file_urls=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#IMAGE_PREFIX#libraries/apex/#MIN_DIRECTORY#widget.stickyWidget#MIN#.js?v=#APEX_VERSION#',
@@ -10825,7 +10825,7 @@ wwv_flow_api.create_template_option(
 ,p_display_sequence=>40
 ,p_report_template_id=>wwv_flow_api.id(6894976353301648)
 ,p_css_classes=>'z-posts z-post--noMargin'
-,p_group_id=>wwv_flow_api.id(14871717519305334)
+,p_group_id=>wwv_flow_api.id(14869720730305333)
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.create_template_option(
@@ -10836,7 +10836,7 @@ wwv_flow_api.create_template_option(
 ,p_display_sequence=>20
 ,p_report_template_id=>wwv_flow_api.id(6894976353301648)
 ,p_css_classes=>'z-posts z-post--mediumMargin'
-,p_group_id=>wwv_flow_api.id(14871717519305334)
+,p_group_id=>wwv_flow_api.id(14869720730305333)
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.create_template_option(
@@ -10847,7 +10847,7 @@ wwv_flow_api.create_template_option(
 ,p_display_sequence=>30
 ,p_report_template_id=>wwv_flow_api.id(6894976353301648)
 ,p_css_classes=>'z-posts z-post--smallMargin'
-,p_group_id=>wwv_flow_api.id(14871717519305334)
+,p_group_id=>wwv_flow_api.id(14869720730305333)
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.create_template_option(
@@ -11515,7 +11515,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200519164856'
+,p_last_upd_yyyymmddhh24miss=>'20200701044658'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
@@ -11660,6 +11660,7 @@ wwv_flow_api.create_page_item(
 ,p_placeholder=>'Search...'
 ,p_display_as=>'NATIVE_TEXT_FIELD'
 ,p_cSize=>30
+,p_cMaxlength=>256
 ,p_grid_label_column_span=>0
 ,p_field_template=>wwv_flow_api.id(6854381477267413)
 ,p_item_icon_css_classes=>'fa-search'
@@ -11712,7 +11713,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200531064036'
+,p_last_upd_yyyymmddhh24miss=>'20200701092918'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6432040642894060)
@@ -11786,7 +11787,7 @@ wwv_flow_api.create_report_columns(
 ,p_use_as_row_header=>'N'
 ,p_column_link=>'f?p=&APP_ID.:POST:&SESSION.::&DEBUG.:RP:P2_POST_ID:#POST_ID#'
 ,p_column_linktext=>'#POST_TITLE#'
-,p_column_link_attr=>'class="z-normal"'
+,p_column_link_attr=>'class="u-normal-text"'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );

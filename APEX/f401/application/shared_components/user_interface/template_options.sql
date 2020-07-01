@@ -4769,7 +4769,7 @@ wwv_flow_api.create_template_option(
 ,p_display_sequence=>40
 ,p_report_template_id=>wwv_flow_api.id(6894976353301648)
 ,p_css_classes=>'z-posts z-post--noMargin'
-,p_group_id=>wwv_flow_api.id(14871717519305334)
+,p_group_id=>wwv_flow_api.id(14869720730305333)
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.create_template_option(
@@ -4780,7 +4780,7 @@ wwv_flow_api.create_template_option(
 ,p_display_sequence=>20
 ,p_report_template_id=>wwv_flow_api.id(6894976353301648)
 ,p_css_classes=>'z-posts z-post--mediumMargin'
-,p_group_id=>wwv_flow_api.id(14871717519305334)
+,p_group_id=>wwv_flow_api.id(14869720730305333)
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.create_template_option(
@@ -4791,7 +4791,7 @@ wwv_flow_api.create_template_option(
 ,p_display_sequence=>30
 ,p_report_template_id=>wwv_flow_api.id(6894976353301648)
 ,p_css_classes=>'z-posts z-post--smallMargin'
-,p_group_id=>wwv_flow_api.id(14871717519305334)
+,p_group_id=>wwv_flow_api.id(14869720730305333)
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.create_template_option(

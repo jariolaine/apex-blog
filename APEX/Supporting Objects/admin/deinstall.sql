@@ -19,6 +19,7 @@ drop package blog_cm;
 drop package blog_comm;
 drop package blog_ctx;
 drop package blog_html;
+drop package blog_install;
 drop package blog_ords;
 drop package blog_plugin;
 drop package blog_url;
@@ -67,3 +68,12 @@ drop view blog_v_post_tags;
 drop view blog_v_rep_post_by_status;
 drop view blog_v_tags;
 drop view blog_v_temp_files;
+--------------------------------------------------------
+--  Drop text index preferences
+--------------------------------------------------------
+begin
+  ctx_ddl.drop_preference( 'BLOG_POSTS_LX' );
+  ctx_ddl.drop_preference( 'BLOG_POSTS_DS' );
+  ctx_ddl.drop_section_group( 'BLOG_POSTS_SG' );
+end;
+/

@@ -11,11 +11,11 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200625080443'
+,p_last_upd_yyyymmddhh24miss=>'20200701123331'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8596898648797585)
-,p_plug_name=>'All Posts Report'
+,p_plug_name=>'Posts Report'
 ,p_region_css_classes=>'z-IR--iconLinks'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8495746153518209)
