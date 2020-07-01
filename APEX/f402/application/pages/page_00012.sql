@@ -61,7 +61,7 @@ wwv_flow_api.create_page(
 '</ol>',
 ''))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200517185214'
+,p_last_upd_yyyymmddhh24miss=>'20200608171118'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -283,6 +283,7 @@ wwv_flow_api.create_page_item(
 ,p_cSize=>30
 ,p_field_template=>wwv_flow_api.id(8548970214518243)
 ,p_item_template_options=>'#DEFAULT#'
+,p_is_persistent=>'N'
 ,p_lov_display_extra=>'YES'
 ,p_protection_level=>'S'
 ,p_restricted_characters=>'WEB_SAFE'
@@ -472,7 +473,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_POPUP_LOV'
 ,p_named_lov=>'TAGS'
 ,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select ',
+'select',
 '   v1.tag        as return_value',
 '  ,v1.tag        as display_value',
 '  ,v1.tag_unique as display_seq',
@@ -577,6 +578,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_YES_NO'
 ,p_field_template=>wwv_flow_api.id(8548656595518243)
 ,p_item_template_options=>'#DEFAULT#'
+,p_is_persistent=>'N'
 ,p_protection_level=>'S'
 ,p_help_text=>'Enable editing publsih date.'
 ,p_attribute_01=>'APPLICATION'
@@ -627,6 +629,15 @@ wwv_flow_api.create_page_computation(
 '#OWNER#.blog_cm.get_first_paragraph(',
 '  p_body_html  => :P12_BODY_HTML',
 ')'))
+);
+wwv_flow_api.create_page_computation(
+ p_id=>wwv_flow_api.id(36997318502037729)
+,p_computation_sequence=>60
+,p_computation_item=>'P12_PUBLISHED_ON'
+,p_computation_type=>'PLSQL_EXPRESSION'
+,p_computation=>'to_char( localtimestamp, :G_USER_INPUT_DATE_TIME_FORMAT )'
+,p_compute_when=>'P12_PUBLISHED_ON'
+,p_compute_when_type=>'ITEM_IS_NULL'
 );
 wwv_flow_api.create_page_validation(
  p_id=>wwv_flow_api.id(8793505538610781)

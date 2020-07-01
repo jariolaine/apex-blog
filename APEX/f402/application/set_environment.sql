@@ -33,10 +33,10 @@ prompt APPLICATION 402 - Blog Administration
 --   Export Type:     Application Export
 --     Pages:                     29
 --       Items:                   62
---       Computations:             6
+--       Computations:             7
 --       Validations:              9
 --       Processes:               45
---       Regions:                 65
+--       Regions:                 66
 --       Buttons:                 68
 --       Dynamic Actions:         32
 --     Shared Components:
@@ -62,10 +62,10 @@ prompt APPLICATION 402 - Blog Administration
 --           Breadcrumb:           1
 --           Button:               3
 --           Report:              11
---         LOVs:                   8
+--         LOVs:                   9
 --         Shortcuts:              2
 --       Globalization:
---         Messages:              58
+--         Messages:              61
 --       Reports:
 --       E-Mail:
 --         Templates:              1

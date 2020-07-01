@@ -4762,58 +4762,91 @@ wwv_flow_api.create_template_option(
 ,p_help_text=>'This option will hide the pagination when all rows are displayed.'
 );
 wwv_flow_api.create_template_option(
- p_id=>wwv_flow_api.id(30658789906621675)
-,p_theme_id=>42
-,p_name=>'LAYOUT_DEFAULT'
-,p_display_name=>'Default'
-,p_display_sequence=>1
-,p_report_template_id=>wwv_flow_api.id(30641878306098019)
-,p_css_classes=>'z-Content'
-,p_group_id=>wwv_flow_api.id(14869720730305333)
-,p_template_types=>'REPORT'
-);
-wwv_flow_api.create_template_option(
- p_id=>wwv_flow_api.id(30659059289619020)
-,p_theme_id=>42
-,p_name=>'LAYOUT_STACKED'
-,p_display_name=>'Stacked'
-,p_display_sequence=>1
-,p_report_template_id=>wwv_flow_api.id(30641878306098019)
-,p_css_classes=>'z-Content--Stacked'
-,p_group_id=>wwv_flow_api.id(14869720730305333)
-,p_template_types=>'REPORT'
-);
-wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(35908431214731517)
 ,p_theme_id=>42
 ,p_name=>'NO_MARGIN'
-,p_display_name=>'No Margin'
-,p_display_sequence=>30
+,p_display_name=>'No Bottom Margin'
+,p_display_sequence=>40
 ,p_report_template_id=>wwv_flow_api.id(6894976353301648)
-,p_css_classes=>'z-post--no-margin'
-,p_group_id=>wwv_flow_api.id(14871717519305334)
+,p_css_classes=>'z-posts z-post--noMargin'
+,p_group_id=>wwv_flow_api.id(14869720730305333)
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(35908784357736441)
 ,p_theme_id=>42
 ,p_name=>'MEDIUM_MARGIN'
-,p_display_name=>'Medium Margin'
-,p_display_sequence=>10
+,p_display_name=>'Medium Bottom Margin'
+,p_display_sequence=>20
 ,p_report_template_id=>wwv_flow_api.id(6894976353301648)
-,p_css_classes=>'z-post--margin-medium'
-,p_group_id=>wwv_flow_api.id(14871717519305334)
+,p_css_classes=>'z-posts z-post--mediumMargin'
+,p_group_id=>wwv_flow_api.id(14869720730305333)
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(35909076701739894)
 ,p_theme_id=>42
 ,p_name=>'SMALL_MARGIN'
-,p_display_name=>'Small Margin'
-,p_display_sequence=>20
+,p_display_name=>'Small Bottom Margin'
+,p_display_sequence=>30
 ,p_report_template_id=>wwv_flow_api.id(6894976353301648)
-,p_css_classes=>'z-post--margin-small'
-,p_group_id=>wwv_flow_api.id(14871717519305334)
+,p_css_classes=>'z-posts z-post--smallMargin'
+,p_group_id=>wwv_flow_api.id(14869720730305333)
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(36115937360279993)
+,p_theme_id=>42
+,p_name=>'DEFAULT_LAYOUT'
+,p_display_name=>'Default'
+,p_display_sequence=>10
+,p_report_template_id=>wwv_flow_api.id(6894976353301648)
+,p_css_classes=>'z-posts'
+,p_group_id=>wwv_flow_api.id(14869720730305333)
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(36122412963378704)
+,p_theme_id=>42
+,p_name=>'LAYOUT_STACKED'
+,p_display_name=>'Stacked'
+,p_display_sequence=>20
+,p_report_template_id=>wwv_flow_api.id(30641878306098019)
+,p_css_classes=>'z-Content--Stacked'
+,p_group_id=>wwv_flow_api.id(14869720730305333)
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(36123786140389943)
+,p_theme_id=>42
+,p_name=>'DEFAULT_LAYOUT'
+,p_display_name=>'Default'
+,p_display_sequence=>10
+,p_report_template_id=>wwv_flow_api.id(30641878306098019)
+,p_css_classes=>'z-Content'
+,p_group_id=>wwv_flow_api.id(14869720730305333)
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(36129528889493830)
+,p_theme_id=>42
+,p_name=>'PAGINATION_BORDER'
+,p_display_name=>'Pagination Border'
+,p_display_sequence=>50
+,p_report_template_id=>wwv_flow_api.id(6894976353301648)
+,p_css_classes=>'z-posts--paginationBorder'
+,p_group_id=>wwv_flow_api.id(14870163460305333)
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(36132636087569600)
+,p_theme_id=>42
+,p_name=>'HIDE_PAGINATION'
+,p_display_name=>'Hide Pagination'
+,p_display_sequence=>60
+,p_report_template_id=>wwv_flow_api.id(6894976353301648)
+,p_css_classes=>'z-posts--paginationHidden'
+,p_group_id=>wwv_flow_api.id(14870163460305333)
 ,p_template_types=>'REPORT'
 );
 end;

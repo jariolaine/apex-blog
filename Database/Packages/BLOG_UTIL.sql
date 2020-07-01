@@ -235,27 +235,27 @@ as
     apex_debug.info( 'Fetch attribute %s return: %s', p_attribute_name, l_value );
     return l_value;
 
-    exception when no_data_found
-    then
+  exception when no_data_found
+  then
 
-      apex_debug.warn(
-         p_message => 'No data found. %s( %s => %s )'
-        ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-        ,p1 => 'p_attribute_name'
-        ,p2 => coalesce( p_attribute_name, '(null)' )
-      );
-      raise;
+    apex_debug.warn(
+       p_message => 'No data found. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_attribute_name'
+      ,p2 => coalesce( p_attribute_name, '(null)' )
+    );
+    raise;
 
-    when others
-    then
+  when others
+  then
 
-      apex_debug.error(
-         p_message => 'Unhandled error. %s( %s => %s )'
-        ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-        ,p1 => 'p_attribute_name'
-        ,p2 => coalesce( p_attribute_name, '(null)' )
-      );
-      raise;
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_attribute_name'
+      ,p2 => coalesce( p_attribute_name, '(null)' )
+    );
+    raise;
 
   end get_attribute_value;
 --------------------------------------------------------------------------------
@@ -449,8 +449,8 @@ as
       ,p2 => coalesce( p_post_id, '(null)' )
     );
 
-    --raise;
-    -- We wan't show errors between -20999 and -20901 in error page
+    -- We wan't show errors between -20999 and -20901 on APEX error page
+    -- see function apex_error_handler
     raise_application_error(-20901, 'Post not found.');
 
   when others

@@ -6,7 +6,7 @@ wwv_flow_api.create_row_template(
 ,p_internal_name=>'BLOG_POSTS_CUSTOM_1'
 ,p_javascript_code_onload=>'blog.UI.formatProgramCode("pre.z-program-code");'
 ,p_row_template1=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<article role="article" class="z-post">',
+'<article class="z-post">',
 '  <header class="z-post--header">',
 '    <h3>#PUBLISHED_ON#</h3>',
 '    <h1>#POST_TITLE#</h1>',
@@ -20,7 +20,7 @@ wwv_flow_api.create_row_template(
 '</article>'))
 ,p_row_template_condition1=>':READ_MORE_LINK is not null'
 ,p_row_template2=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<article role="article" class="z-post">',
+'<article class="z-post">',
 '  <header class="z-post--header">',
 '    <h3>#PUBLISHED_ON#</h3>',
 '    <h1>#POST_TITLE#</h1>',
@@ -31,7 +31,7 @@ wwv_flow_api.create_row_template(
 '</article>'))
 ,p_row_template_condition2=>':TAGS_HTML is not null'
 ,p_row_template3=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<article role="article" class="z-post">',
+'<article class="z-post">',
 '  <header class="z-post--header">',
 '    <h3>#PUBLISHED_ON#</h3>',
 '    <h1>#POST_TITLE#</h1>',
@@ -40,9 +40,9 @@ wwv_flow_api.create_row_template(
 '  <div class="z-post--body">#BODY_HTML#</div>',
 '  <footer class="z-post--footer"></footer>',
 '</article>'))
-,p_row_template_before_rows=>'<div class="z-posts #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_posts" data-region-id="#REGION_STATIC_ID#">'
+,p_row_template_before_rows=>'<div class="#COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_posts" data-region-id="#REGION_STATIC_ID#">'
 ,p_row_template_after_rows=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<div class="z-posts-pagination">',
+'<div class="z-posts--pagination">',
 '  <table class="t-Report-pagination t-Report-pagination--bottom" role="presentation">',
 '    #PAGINATION#',
 '  </table>  ',
@@ -70,6 +70,7 @@ wwv_flow_api.create_row_template(
 ||' fa-chevron-left"></span></button>'
 ,p_theme_id=>42
 ,p_theme_class_id=>7
+,p_preset_template_options=>'z-posts'
 );
 end;
 /

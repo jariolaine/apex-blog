@@ -175,7 +175,8 @@ create table blog_files (
   constraint blog_files_uk1 unique( file_name  ),
   constraint blog_files_ck1 check( row_version > 0 ),
   constraint blog_files_ck2 check( is_active in( 0, 1 ) ),
-  constraint blog_files_ck3 check( is_download in( 0, 1 ) )
+  constraint blog_files_ck3 check( is_download in( 0, 1 ) ),
+  constraint blog_files_ck4 check( is_download = 0 or is_download = 1 and file_desc is not null )
 )
 /
 --------------------------------------------------------
@@ -321,11 +322,22 @@ create table  blog_posts(
   constraint blog_posts_ck2 check( is_active in( 0 , 1 ) )
 )
 /
-
-create index blog_posts_ctx on blog_posts (body_html)
-  indextype is ctxsys.context  parameters (
-    'filter ctxsys.null_filter section group ctxsys.html_section_group sync (on commit)'
-  )
+--------------------------------------------------------
+--  DDL for Table BLOG_POSTS_UDS
+--------------------------------------------------------
+create table  blog_posts_uds(
+  id number( 38, 0 ) not null,
+	row_version number( 38, 0 ) not null,
+	created_on timestamp( 6 ) with local time zone not null,
+	created_by varchar2( 256 char ) not null,
+	changed_on timestamp( 6 ) with local time zone not null,
+	changed_by varchar2( 256 char ) not null,
+  post_id number( 38, 0 ) not null,
+  dummy char(1) default 'X' not null,
+	constraint blog_posts_uds_pk primary key( id ),
+  constraint blog_posts_uds_uk1 unique( post_id ),
+  constraint blog_posts_uds_ck1 check( row_version > 0 )
+)
 /
 --------------------------------------------------------
 --  DDL for Table BLOG_POST_PREVIEW
@@ -410,7 +422,7 @@ create table blog_settings(
   constraint blog_settings_ck14 check(
     data_type != 'INTEGER' or
     data_type = 'INTEGER' and
-    round( to_number( attribute_value ) ) between 1 and 100
+    round( to_number( attribute_value ) ) = to_number( attribute_value )
   ),
   constraint blog_settings_ck15 check(
     data_type != 'URL' or
@@ -783,7 +795,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "CHANGED_ON", "COMMENTS_COUNT") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "CTX_SEARCH", "COMMENTS_COUNT") AS
   select
    t1.id                  as post_id
   ,t3.id                  as category_id
@@ -795,10 +807,11 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
   ,t1.first_paragraph     as first_paragraph
   ,t1.body_html           as body_html
   ,t1.published_on        as published_on
+  ,t1.changed_on          as changed_on
   ,t1.archive_year_month  as archive_year_month
   ,t1.archive_year        as archive_year
   ,t3.display_seq         as category_seq
-  ,t1.changed_on          as changed_on
+  ,t4.dummy               as ctx_search
   ,(
     select count( l1.id )
     from blog_comments l1
@@ -806,9 +819,13 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
     and l1.is_active = 1
     and l1.post_id  = t1.id
   )                       as comments_count
-from blog_posts       t1
-join blog_bloggers    t2 on t1.blogger_id  = t2.id
-join blog_categories  t3 on t1.category_id = t3.id
+from blog_posts t1
+join blog_bloggers t2
+  on t1.blogger_id  = t2.id
+join blog_categories t3
+  on t1.category_id = t3.id
+join blog_posts_uds t4
+  on t1.id = t4.post_id
 where 1 = 1
 and t1.is_active = 1
 and t2.is_active = 1
@@ -862,7 +879,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "PUBLISHED_DISPLAY", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS
   select
    t1.id                as id
   ,t1.category_id       as category_id
@@ -881,6 +898,8 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_I
   ,t1.body_length       as body_length
   ,t1.published_on      as published_on
   ,t1.notes             as notes
+  ,t4.rowid             as ctx_rid
+  ,t4.dummy             as ctx_search
   ,case t1.is_active * t2.is_active * t3.is_active
     when 1
     then t1.published_on
@@ -923,8 +942,12 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_I
     else 'PUBLISHED'
    end                  as post_status
 from blog_posts t1
-join blog_categories t2 on t1.category_id = t2.id
-join blog_bloggers t3 on t1.blogger_id = t3.id
+join blog_categories t2
+  on t1.category_id = t2.id
+join blog_bloggers t3
+  on t1.blogger_id = t3.id
+join blog_posts_uds t4
+  on t1.id = t4.post_id
 where 1 = 1
 /
 --------------------------------------------------------
@@ -1019,6 +1042,149 @@ select q2.application_id
 from blog_data q1
 join apex_lov q2 on q1.post_status = q2.return_value
 with read only
+/
+CREATE OR REPLACE package  "BLOG_CTX"
+authid definer
+as
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--
+--  DESCRIPTION
+--    Procedures and functions Oracle text
+--
+--  MODIFIED (DD.MM.YYYY)
+--    Jari Laine 22.06.2020 - Created
+--
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure generate_post_datastore(
+    rid       in rowid,
+    tlob      in out nocopy clob
+  );
+--------------------------------------------------------------------------------
+  function get_post_search(
+    p_search  in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
+end "BLOG_CTX";
+/
+
+
+CREATE OR REPLACE package body "BLOG_CTX"
+as
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Private constants and variables
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- none
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Private procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function generate_search(
+    p_search  in varchar2,
+    p_feature in varchar2,
+    p_combine in varchar2
+  ) return varchar2
+  as
+    l_query        varchar2(32767);
+    l_clean_token  varchar2(1000);
+    l_tokens       apex_application_global.vc_arr2;
+  begin
+
+    l_tokens := apex_util.string_to_table( p_search, ' ' );
+
+    for i in 1..l_tokens.count
+    loop
+      -- remove special characters; irrelevant for full text search
+      l_clean_token := lower( regexp_replace( l_tokens( i ), '[<>{}/()*%&!$?.:,;\+#]', '' ) );
+
+      if ltrim( rtrim( l_clean_token ) ) is not null
+      then
+        if p_feature = 'FUZZY'
+        then
+          l_query := l_query || 'FUZZY({' || l_clean_token || '}, 50, 500) ';
+        elsif p_feature = 'WILDCARD_RIGHT'
+        then
+          l_query := l_query || l_clean_token || '% ';
+        else
+          l_query := l_query || '{' || l_clean_token || '} ';
+        end if;
+        if p_combine = 'OR'
+        then
+          l_query := l_query || ' or ';
+        else
+          l_query := l_query || ' and ';
+        end if;
+      end if;
+
+    end loop;
+
+    if p_combine = 'AND'
+    then
+      l_query := substr( l_query, 1, length( l_query ) - 5 );
+    else
+      l_query := substr( l_query, 1, length( l_query ) - 4 );
+    end if;
+
+    return ltrim( rtrim( l_query ));
+
+  end generate_search;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Global procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure generate_post_datastore(
+    rid   in rowid,
+    tlob  in out nocopy clob
+  )
+  as
+    l_row blog_v_all_posts%rowtype;
+  begin
+
+    select *
+    into l_row
+    from blog_v_all_posts
+    where 1 = 1
+    and ctx_rid = rid
+    ;
+
+    tlob :=
+      '<POST_TITLE>' || l_row.title || '</POST_TITLE>'
+      || '<POST_CATEGORY>' || l_row.category_title || '</POST_CATEGORY>'
+      || '<POST_DESCRIPTION>' || l_row.post_desc || '</POST_DESCRIPTION>'
+      || '<POST_BODY>' || l_row.body_html || '</POST_BODY>'
+      || '<POST_TAGS>' || l_row.visible_tags|| '</POST_TAGS>'
+    ;
+
+  end generate_post_datastore;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_post_search(
+    p_search in varchar2
+  ) return varchar2
+  as
+    c_xml constant varchar2(32767) := '<query><textquery><progression>' ||
+                                        '<seq>  #SEARCH#  </seq>' ||
+                                        '<seq> ?#SEARCH#  </seq>' ||
+                                        '<seq>  #SEARCH#% </seq>' ||
+                                        '<seq> %#SEARCH#% </seq>' ||
+                                      '</progression></textquery></query>';
+    l_search varchar2(32767) := p_search;
+  begin
+
+    -- remove special characters; irrelevant for full text search
+    l_search := regexp_replace( l_search, '[<>{}/()*%&!$?.:,;\+#]', '' );
+
+    return replace( c_xml, '#SEARCH#', l_search );
+
+  end get_post_search;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+end "BLOG_CTX";
 /
 CREATE OR REPLACE package  "BLOG_UTIL"
 authid definer
@@ -1257,27 +1423,27 @@ as
     apex_debug.info( 'Fetch attribute %s return: %s', p_attribute_name, l_value );
     return l_value;
 
-    exception when no_data_found
-    then
+  exception when no_data_found
+  then
 
-      apex_debug.warn(
-         p_message => 'No data found. %s( %s => %s )'
-        ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-        ,p1 => 'p_attribute_name'
-        ,p2 => coalesce( p_attribute_name, '(null)' )
-      );
-      raise;
+    apex_debug.warn(
+       p_message => 'No data found. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_attribute_name'
+      ,p2 => coalesce( p_attribute_name, '(null)' )
+    );
+    raise;
 
-    when others
-    then
+  when others
+  then
 
-      apex_debug.error(
-         p_message => 'Unhandled error. %s( %s => %s )'
-        ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-        ,p1 => 'p_attribute_name'
-        ,p2 => coalesce( p_attribute_name, '(null)' )
-      );
-      raise;
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_attribute_name'
+      ,p2 => coalesce( p_attribute_name, '(null)' )
+    );
+    raise;
 
   end get_attribute_value;
 --------------------------------------------------------------------------------
@@ -1471,8 +1637,8 @@ as
       ,p2 => coalesce( p_post_id, '(null)' )
     );
 
-    --raise;
-    -- We wan't show errors between -20999 and -20901 in error page
+    -- We wan't show errors between -20999 and -20901 on APEX error page
+    -- see function apex_error_handler
     raise_application_error(-20901, 'Post not found.');
 
   when others
@@ -1972,6 +2138,7 @@ as
     l_data  := l_data || '&#' || ascii('?');
     l_data  := l_data || '</span>';
 
+    -- set correct answer to item session state
     apex_util.set_session_state(
        p_name   => p_item.attribute_05
       ,p_value  => to_char( l_num_1 + l_num_2 , blog_util.g_number_format )
@@ -1985,7 +2152,6 @@ as
     sys.owa_util.http_header_close;
     -- Write output
     sys.htp.prn( l_data );
-    -- set correct answer to item session state
 
   exception when others
   then
@@ -2474,6 +2640,8 @@ as
 --                            run_settings_post_expression
 --                            run_feature_post_expression
 --                            update_feature
+--    Jari Laine 22.06.2020 - Bug fix to function is_integer
+--                            Added parameters p_min and p_max to function is_integer
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -2491,34 +2659,34 @@ as
     p_name            out nocopy varchar2
   );
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 14
+  -- Called from: admin app page 14
   function get_category_seq return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 20
+  -- Called from: admin app page 20
   function get_link_grp_seq return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 18
+  -- Called from: admin app page 18
   function get_link_seq(
     p_link_group_id   in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 12
+  -- Called from: admin app page 12
   function get_post_tags(
     p_post_id         in varchar2,
     p_sep             in varchar2 default ','
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 12
+  -- Called from: admin app page 12
   function get_category_title(
     p_category_id     in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 12
+  -- Called from: admin app page 12
   function get_first_paragraph(
     p_body_html       in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 12
+  -- Called from: admin app page 12
   function request_to_post_status(
     p_request         in varchar2
   ) return varchar2;
@@ -2528,6 +2696,7 @@ as
     p_file_name       in varchar2
   ) return boolean;
 --------------------------------------------------------------------------------
+  -- Called from: admin app page 12 and procedudre blog_cm.get_first_paragraph
   function remove_whitespace(
     p_string          in varchar2
   ) return varchar2;
@@ -2535,14 +2704,14 @@ as
   -- Called from: admin app page 23 and procedure blog_cm.file_upload
   procedure merge_files;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 12
+  -- Called from: admin app page 12
   procedure add_category(
     p_title           in varchar2,
     p_err_mesg        in varchar2,
     p_category_id     out nocopy number
   );
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 12
+  -- Called from: admin app page 12
   procedure add_post_tags(
     p_post_id         in varchar2,
     p_tags            in varchar2,
@@ -2573,6 +2742,8 @@ as
   -- Called from: admin app pages 20012
   function is_integer(
     p_value           in varchar2,
+    p_min             in number,
+    p_max             in number,
     p_err_mesg        in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -2636,6 +2807,15 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function next_seq(
+    p_max in number
+  ) return number
+  as
+  begin
+    return ceil( coalesce( p_max + 1, 1 ) / 10 ) * 10;
+  end next_seq;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure add_tag(
@@ -2749,17 +2929,19 @@ as
     then
 
       -- Fetch next display_seq
-      select ceil(coalesce(max(display_seq) + 1, 1) / 10) * 10
+      select max(display_seq) as display_seq
       into l_max
       from blog_bloggers
       ;
+
+      l_max := next_seq( l_max );
 
       -- Fetch user information from APEX users
       select email
         ,v1.first_name || ' ' || v1.last_name as full_name
       into l_email, l_name
       from apex_workspace_apex_users v1
-      where 1  =1
+      where 1 = 1
       and v1.user_name = p_username
       ;
 
@@ -2847,7 +3029,7 @@ as
     ;
     -- return next category display sequence
     l_result := to_char(
-      ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10
+       next_seq( l_max )
       ,blog_util.g_number_format
     );
 
@@ -2870,7 +3052,7 @@ as
     ;
     -- return next link group display sequence
     l_result := to_char(
-      ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10
+       next_seq( l_max )
       ,blog_util.g_number_format
     );
 
@@ -2899,7 +3081,7 @@ as
     ;
     -- return next link display sequence
     l_result := to_char(
-      ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10
+       next_seq( l_max )
       ,blog_util.g_number_format
     );
 
@@ -2913,7 +3095,7 @@ as
   ) return varchar2
   as
   begin
-    -- one reason for this function is that APEX 19.2 as bug in switch.
+    -- one reason for this function is that APEX 19.2 has bug in switch.
     -- switch not allow return value zero (0)
 
     -- conver APEX request to post status (blog_posts.is_active)
@@ -2958,8 +3140,6 @@ as
 
   exception when no_data_found then
     return null;
-  when others then
-    raise;
   end get_post_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2983,8 +3163,6 @@ as
 
   exception when no_data_found then
     return null;
-  when others then
-    raise;
   end get_category_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3011,7 +3189,7 @@ as
       l_first_p := substr( p_body_html, l_first_p_start, l_first_p_end );
 
       -- remove whitespace
-      l_first_p := replace( regexp_replace( l_first_p, '\s+', ' ' ), '  ', ' ' );
+      l_first_p := remove_whitespace( l_first_p );
 
     end if;
 
@@ -3102,7 +3280,7 @@ as
   as
   begin
     -- remove whitespace characters from string
-    return regexp_replace( p_string, '\s+', ' ' );
+    return replace( regexp_replace( p_string, '\s+', ' ' ), '  ', ' ' );
   end remove_whitespace;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3283,10 +3461,11 @@ as
   as
   begin
 
+    -- delete from blog_post_preview if there is row for session
     delete from blog_post_preview
     where id = p_id
     ;
-
+    -- insert preview data
     insert into blog_post_preview(
        id
       ,tags
@@ -3310,7 +3489,7 @@ as
   as
   begin
 
-    -- Delete from blog_post_preview rows where session is expired
+    -- delete from blog_post_preview rows where session is expired
     delete from blog_post_preview p
     where not exists (
       select 1
@@ -3330,9 +3509,9 @@ as
     job_not_exists  exception;
     pragma          exception_init(job_not_exists, -27475);
   begin
-
+    -- set job name
     l_job_name := 'BLOG_JOB_PURGE_POST_PREVIEW';
-
+    -- drop job if exists
     begin
       sys.dbms_scheduler.drop_job(
         job_name => l_job_name
@@ -3340,13 +3519,14 @@ as
     exception when job_not_exists then
       null;
     end;
-
+    -- if job is not just dropped
+    -- create new job
     if not p_drop_job then
       sys.dbms_scheduler.create_job(
          job_name        => l_job_name
         ,job_type        => 'STORED_PROCEDURE'
         ,job_action      => 'blog_conf.purge_post_preview'
-        ,start_date      => trunc(localtimestamp, 'HH')
+        ,start_date      => trunc( localtimestamp, 'HH')
         ,repeat_interval => 'FREQ=DAILY'
         ,enabled         => true
         ,comments        => 'Purge expired sessions posts previews'
@@ -3358,30 +3538,39 @@ as
 --------------------------------------------------------------------------------
   function is_integer(
     p_value     in varchar2,
+    p_min       in number,
+    p_max       in number,
     p_err_mesg  in varchar2
   ) return varchar2
   as
-    l_err_mesg varchar2(32700);
+    l_value     number;
+    l_err_mesg  varchar2(32700);
   begin
 
     -- prepare validation error message
-    l_err_mesg := apex_lang.message( p_err_mesg );
+    l_err_mesg := apex_lang.message( p_err_mesg, p_min, p_max );
 
     if l_err_mesg = apex_escape.html( p_err_mesg )
     then
       l_err_mesg := p_err_mesg;
     end if;
 
-    if round( to_number( p_value ) ) between 1 and 100
+    l_value := to_number( p_value );
+    -- check value is integer and between range
+    if round( l_value ) = l_value
+    and l_value between p_min and p_max
     then
+      -- if validation passes, clear error meassage
       l_err_mesg := null;
     end if;
 
     return l_err_mesg;
 
-  exception when invalid_number
+  exception
+  when invalid_number
   or value_error
   then
+    -- return error message
     return l_err_mesg;
   end is_integer;
 --------------------------------------------------------------------------------
@@ -3396,7 +3585,7 @@ as
 
     if not regexp_like(p_value, '^https?\:\/\/.*$')
     then
-      -- prepare validation error message
+      -- if validation fails prepare error message
       l_err_mesg := apex_lang.message( p_err_mesg );
 
       if l_err_mesg = apex_escape.html( p_err_mesg )
@@ -3404,6 +3593,7 @@ as
         l_err_mesg := p_err_mesg;
       end if;
     else
+      -- if validation passes, clear error meassage
       l_err_mesg := null;
     end if;
 
@@ -3430,15 +3620,19 @@ as
       l_err_mesg := p_err_mesg;
     end if;
 
-    if to_char( systimestamp, p_value ) = to_char( systimestamp, p_value )
+    -- try convert timestamp to string
+    if to_char( systimestamp, p_value ) is not null
     then
+      -- if validation passes, clear error meassage
       l_err_mesg := null;
     end if;
 
     return l_err_mesg;
 
-  exception when invalid_date_format
+  exception
+  when invalid_date_format
   then
+    -- return error message
     return l_err_mesg;
   end is_date_format;
 --------------------------------------------------------------------------------
@@ -3451,10 +3645,11 @@ as
     l_err_mesg varchar2(32700);
   begin
     -- TO DO see item 3 from package specs
+
     -- do some basic check for email address
     if not regexp_like(p_value, '^.*\@.*\..*$')
     then
-      -- Prepare validation error message
+      -- if validation fails prepare error message
       l_err_mesg := apex_lang.message( p_err_mesg );
 
       if l_err_mesg = apex_escape.html( p_err_mesg )
@@ -3462,6 +3657,7 @@ as
         l_err_mesg := p_err_mesg;
       end if;
     else
+      -- if validation passes, clear error meassage
       l_err_mesg := null;
     end if;
 
@@ -3554,14 +3750,20 @@ as
     p_email_template  in varchar2
   )
   as
-    l_post_id   number;
-    l_app_email varchar2(4000);
+    l_post_id       number;
+    l_watch_months  number;
+    l_app_email     varchar2(4000);
   begin
 
     l_post_id := to_number( p_post_id );
 
     -- fetch application email address
-    l_app_email := blog_util.get_attribute_value('APP_EMAIL');
+    l_app_email := blog_util.get_attribute_value( 'APP_EMAIL' );
+    -- fetch comment watch expires
+    l_watch_months := to_number(
+        blog_util.get_attribute_value( 'COMMENT_WATCH_MONTHS' )
+      ) * -1
+    ;
 
     -- send notify users that have subscribed to replies to comment
     for c1 in(
@@ -3589,7 +3791,7 @@ as
         on t1.post_id = v1.id
       where 1 = 1
         -- send notification if subscription is created less than month ago
-        and t1.created_on >= add_months( localtimestamp, -1 )
+        and t1.created_on >= add_months( localtimestamp, l_watch_months )
         and v1.id = l_post_id
     ) loop
 
@@ -4852,7 +5054,7 @@ as
                                     ,p_canonical  => 'YES'
                                   )
               )
-              ,XMLElement( "lastmod", to_char( sys_extract_utc( posts.changed_on ), 'YYYY-MM-DD"T"HH24:MI:SS"+00:00""' ) )
+              ,XMLElement( "lastmod", to_char( sys_extract_utc( greatest( posts.published_on, posts.changed_on ) ), 'YYYY-MM-DD"T"HH24:MI:SS"+00:00""' ) )
             ) order by posts.published_on desc
           )
         )
@@ -5003,22 +5205,22 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
     :new.row_version := :old.row_version + 1;
   end if;
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5036,21 +5238,22 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
 
-  :new.changed_on   := localtimestamp;
-  :new.changed_by   := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+  :new.changed_on := localtimestamp;
+  :new.changed_by := coalesce(
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5068,22 +5271,22 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV','PROXY_USER' )
-      ,sys_context( 'USERENV','SESSION_USER' )
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV','PROXY_USER' )
-    ,sys_context( 'USERENV','SESSION_USER' )
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5091,7 +5294,7 @@ end;
 --------------------------------------------------------
 --  DDL for Trigger BLOG_COMMENT_FLAGS_TRG
 --------------------------------------------------------
-CREATE OR REPLACE TRIGGER "BLOG_COMMENT_FLAGS_TRG" 
+CREATE OR REPLACE TRIGGER "BLOG_COMMENT_FLAGS_TRG"
 before
 insert or
 update on blog_comment_flags
@@ -5101,22 +5304,22 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV','PROXY_USER' )
-      ,sys_context( 'USERENV','SESSION_USER' )
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV','PROXY_USER' )
-    ,sys_context( 'USERENV','SESSION_USER' )
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5134,22 +5337,22 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV','PROXY_USER' )
-      ,sys_context( 'USERENV','SESSION_USER' )
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV','PROXY_USER' )
-    ,sys_context( 'USERENV','SESSION_USER' )
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5167,22 +5370,22 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV','PROXY_USER' )
-      ,sys_context( 'USERENV','SESSION_USER' )
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV','PROXY_USER' )
-    ,sys_context( 'USERENV','SESSION_USER' )
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5198,26 +5401,24 @@ for each row
 begin
 
   if inserting then
-
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5233,26 +5434,24 @@ for each row
 begin
 
   if inserting then
-
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5268,26 +5467,24 @@ for each row
 begin
 
   if inserting then
-
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5305,21 +5502,22 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5337,23 +5535,23 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
-    );
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
+  );
 
 end;
 /
@@ -5368,26 +5566,24 @@ for each row
 begin
 
   if inserting then
-
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5403,26 +5599,24 @@ for each row
 begin
 
   if inserting then
-
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5438,29 +5632,205 @@ for each row
 begin
 
   if inserting then
-    :new.id := coalesce( :new.id,
-      to_number( to_char( sys_extract_utc( systimestamp ), 'YYYYMMDDHH24MISSFF6' ) )
-    );
+    :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV','PROXY_USER' )
-      ,sys_context( 'USERENV','SESSION_USER' )
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
-
-  :new.published_on := coalesce( :new.published_on, localtimestamp );
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV','PROXY_USER' )
-      ,sys_context( 'USERENV','SESSION_USER' )
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
+  );
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_POSTS_UDS_CATEGORIES_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_CATEGORIES_TRG"
+after
+update on blog_categories
+for each row
+begin
+
+  if :new.title_unique != :old.title_unique
+  then
+
+    update blog_posts_uds t1
+      set dummy = dummy
+    where 1 = 1
+    and exists(
+      select 1
+      from blog_posts x1
+      where 1 = 1
+        and x1.category_id = :new.id
+        and x1.id = t1.post_id
+    )
+    ;
+
+  end if;
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_POSTS_UDS_POSTS_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_POSTS_TRG"
+after
+insert or
+update on blog_posts
+for each row
+declare
+  l_update boolean;
+begin
+
+  if inserting
+  then
+
+    insert into blog_posts_uds( post_id )
+      values ( :new.id )
+    ;
+
+  elsif updating
+  then
+
+    l_update :=
+      case
+        when :new.category_id != :old.category_id
+        then true
+        when upper( :new.title ) != upper( :old.title )
+        then true
+        when upper( :new.post_desc ) != upper( :old.post_desc )
+        then true
+        when dbms_lob.compare( :new.body_html, :old.body_html ) != 0
+        then true
+        else false
+      end
+    ;
+
+    if l_update
+    then
+      update blog_posts_uds t1
+        set dummy = dummy
+      where 1 = 1
+      and t1.post_id  = :new.id
+      ;
+    end if;
+
+  end if;
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_POSTS_UDS_POST_TAGS_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_POST_TAGS_TRG"
+after
+insert or
+delete on blog_post_tags
+for each row
+begin
+
+  if inserting
+  then
+
+    update blog_posts_uds t1
+      set dummy = dummy
+    where 1 = 1
+    and t1.post_id = :new.post_id
+    ;
+
+  elsif deleting
+  then
+
+    update blog_posts_uds t1
+      set dummy = dummy
+    where 1 = 1
+    and t1.post_id = :old.post_id
+    ;
+
+  end if;
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_POSTS_UDS_TAGS_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_TAGS_TRG"
+after
+update on blog_tags
+for each row
+declare
+  l_update boolean;
+begin
+
+  l_update :=
+    case
+      when :new.tag_unique != :old.tag_unique
+      then true
+      when :new.is_active != :old.is_active
+      then true
+      else false
+    end
+  ;
+
+  if l_update
+  then
+    update blog_posts_uds t1
+      set dummy = dummy
+    where 1 = 1
+    and exists(
+      select 1
+      from blog_post_tags x1
+      where 1 = 1
+        and x1.post_id = t1.post_id
+        and x1.tag_id  = :new.id
+      )
+    ;
+  end if;
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_POSTS_UDS_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_TRG"
+before
+insert or
+update on blog_posts_uds
+for each row
+begin
+
+  if inserting then
+    :new.id           := coalesce( :new.id, blog_seq.nextval );
+    :new.row_version  := coalesce( :new.row_version, 1 );
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
+    :new.created_by   := coalesce(
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
+  elsif updating then
+    :new.row_version := :old.row_version + 1;
+  end if;
+
+  :new.changed_on := localtimestamp;
+  :new.changed_by := coalesce(
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
+  );
 
 end;
 /
@@ -5477,21 +5847,22 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
 
-  :new.changed_on   := localtimestamp;
-  :new.changed_by   := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+  :new.changed_on := localtimestamp;
+  :new.changed_by := coalesce(
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5509,22 +5880,22 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5542,22 +5913,22 @@ begin
   if inserting then
     :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := localtimestamp;
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-       sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context('USERENV','PROXY_USER')
-      ,sys_context('USERENV','SESSION_USER')
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
     );
-
   elsif updating then
-    :new.row_version  := :old.row_version + 1;
+    :new.row_version := :old.row_version + 1;
   end if;
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context('USERENV','PROXY_USER')
-    ,sys_context('USERENV','SESSION_USER')
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5565,35 +5936,47 @@ end;
 --------------------------------------------------------
 --  DDL for Foreign Keys
 --------------------------------------------------------
-ALTER TABLE BLOG_COMMENTS ADD CONSTRAINT BLOG_COMMENTS_FK1 FOREIGN KEY (POST_ID)
-  REFERENCES BLOG_POSTS (ID) ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_COMMENTS ADD CONSTRAINT BLOG_COMMENTS_FK2 FOREIGN KEY (PARENT_ID)
-  REFERENCES BLOG_COMMENTS (ID) ON DELETE SET NULL ENABLE;
+  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK1" FOREIGN KEY ("POST_ID")
+	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_COMMENT_FLAGS ADD CONSTRAINT BLOG_COMMENT_FLAGS_FK1 FOREIGN KEY (COMMENT_ID)
-  REFERENCES BLOG_COMMENTS (ID) ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_COMMENT_SUBS ADD CONSTRAINT BLOG_COMMENT_SUBS_FK1 FOREIGN KEY (POST_ID)
-  REFERENCES BLOG_POSTS (ID) ON DELETE CASCADE ENABLE;
+  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK2" FOREIGN KEY ("PARENT_ID")
+	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE SET NULL ENABLE;
 
-ALTER TABLE BLOG_COMMENT_SUBS ADD CONSTRAINT BLOG_COMMENT_SUBS_FK2 FOREIGN KEY (EMAIL_ID)
-  REFERENCES BLOG_COMMENT_SUBS_EMAIL (ID) ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_INIT_ITEMS ADD CONSTRAINT BLOG_INIT_ITEMS_FK1 FOREIGN KEY (ITEM_NAME)
-  REFERENCES BLOG_SETTINGS (ATTRIBUTE_NAME) ENABLE;
+  ALTER TABLE "BLOG_COMMENT_FLAGS" ADD CONSTRAINT "BLOG_COMMENT_FLAGS_FK1" FOREIGN KEY ("COMMENT_ID")
+	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_LINKS ADD CONSTRAINT BLOG_LINKS_FK1 FOREIGN KEY (LINK_GROUP_ID)
-  REFERENCES BLOG_LINK_GROUPS (ID) ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_POSTS ADD CONSTRAINT BLOG_POSTS_FK1 FOREIGN KEY (BLOGGER_ID)
-  REFERENCES BLOG_BLOGGERS (ID) ENABLE;
+  ALTER TABLE "BLOG_COMMENT_SUBS" ADD CONSTRAINT "BLOG_COMMENT_SUBS_FK1" FOREIGN KEY ("POST_ID")
+	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_POSTS ADD CONSTRAINT BLOG_POSTS_FK2 FOREIGN KEY (CATEGORY_ID)
-  REFERENCES BLOG_CATEGORIES (ID) ENABLE;
 
-ALTER TABLE BLOG_POST_TAGS ADD CONSTRAINT BLOG_POST_TAGS_FK1 FOREIGN KEY (POST_ID)
-  REFERENCES BLOG_POSTS (ID) ON DELETE CASCADE ENABLE;
+  ALTER TABLE "BLOG_COMMENT_SUBS" ADD CONSTRAINT "BLOG_COMMENT_SUBS_FK2" FOREIGN KEY ("EMAIL_ID")
+	  REFERENCES "BLOG_COMMENT_SUBS_EMAIL" ("ID") ON DELETE CASCADE ENABLE;
 
-ALTER TABLE BLOG_POST_TAGS ADD CONSTRAINT BLOG_POST_TAGS_FK2 FOREIGN KEY (TAG_ID)
-  REFERENCES BLOG_TAGS (ID) ENABLE;
+
+  ALTER TABLE "BLOG_LINKS" ADD CONSTRAINT "BLOG_LINKS_FK1" FOREIGN KEY ("LINK_GROUP_ID")
+	  REFERENCES "BLOG_LINK_GROUPS" ("ID") ON DELETE CASCADE ENABLE;
+
+
+  ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK1" FOREIGN KEY ("BLOGGER_ID")
+	  REFERENCES "BLOG_BLOGGERS" ("ID") ENABLE;
+
+
+  ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK2" FOREIGN KEY ("CATEGORY_ID")
+	  REFERENCES "BLOG_CATEGORIES" ("ID") ENABLE;
+
+
+  ALTER TABLE "BLOG_POSTS_UDS" ADD CONSTRAINT "BLOG_POSTS_UDS_FK1" FOREIGN KEY ("POST_ID")
+	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
+
+
+  ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK1" FOREIGN KEY ("POST_ID")
+	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
+
+
+  ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK2" FOREIGN KEY ("TAG_ID")
+	  REFERENCES "BLOG_TAGS" ("ID") ENABLE;
+

@@ -76,6 +76,8 @@ Insert into BLOG_FEATURES (IS_ACTIVE,DISPLAY_SEQ,BUILD_OPTION_NAME,BUILD_OPTION_
 --  Inserting into BLOG_SETTINGS
 --------------------------------------------------------
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('10','0','APP_GROUP','STRING','INTERNAL','BLOG_040000',null);
+insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('40','0','COMMENT_WATCH_MONTHS','INTEGER','INTERNAL','1',null);
+insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('50','0','G_LATEST_POSTS','INTEGER','INTERNAL','5',null);
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('140','0','G_DATE_FORMAT','DATE_FORMAT','BLOG_PAR_GROUP_UI','fmDD Mon YYYY',null);
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('150','0','G_POST_TITLE_DATE_FORMAT','DATE_FORMAT','BLOG_PAR_GROUP_UI','fmDay"," Month DD"," YYYY',null);
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values ('160','0','G_ARCHIVE_DATE_FORMAT','DATE_FORMAT','BLOG_PAR_GROUP_UI','fmMonth, YYYY',null);
@@ -139,3 +141,115 @@ begin
 
 end;
 /
+
+--------------------------------------------------------
+--  Create text index preferences
+--------------------------------------------------------
+declare
+  l_schema varchar2(256);
+begin
+
+  l_schema := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
+
+  ctx_ddl.create_preference(
+     preference_name  => 'BLOG_POSTS_DS'
+    ,object_name      => 'USER_DATASTORE'
+  );
+
+  ctx_ddl.set_attribute(
+    preference_name   => 'BLOG_POSTS_DS'
+    ,attribute_name   => 'PROCEDURE'
+    ,attribute_value  => l_schema || '.BLOG_CTX.GENERATE_POST_DATASTORE'
+  );
+
+  ctx_ddl.set_attribute(
+    preference_name   => 'BLOG_POSTS_DS'
+    ,attribute_name   => 'OUTPUT_TYPE'
+    ,attribute_value  => 'CLOB'
+  );
+
+  ctx_ddl.create_section_group(
+    group_name        => 'BLOG_POSTS_SG'
+    ,group_type       => 'XML_SECTION_GROUP'
+  );
+
+  ctx_ddl.add_field_section(
+    group_name        => 'BLOG_POSTS_SG'
+    ,section_name     => 'TITLE'
+    ,tag              => 'POST_TITLE'
+    ,visible          => true
+  );
+
+  ctx_ddl.add_field_section(
+    group_name        => 'BLOG_POSTS_SG'
+    ,section_name     => 'CATEGORY'
+    ,tag              => 'POST_CATEGORY'
+    ,visible          => true
+  );
+
+  ctx_ddl.add_field_section(
+    group_name        => 'BLOG_POSTS_SG'
+    ,section_name     => 'DESCRIPTION'
+    ,tag              => 'POST_DESCRIPTION'
+    ,visible          => true
+  );
+
+  ctx_ddl.add_field_section(
+    group_name        => 'BLOG_POSTS_SG'
+    ,section_name     => 'BODY'
+    ,tag              => 'POST_BODY'
+    ,visible          => true
+  );
+
+  ctx_ddl.add_field_section(
+    group_name        => 'BLOG_POSTS_SG'
+    ,section_name     => 'TAGS'
+    ,tag              => 'POST_TAGS'
+    ,visible          => true
+  );
+
+  ctx_ddl.add_sdata_section(
+    group_name        => 'BLOG_POSTS_SG'
+    ,section_name     => 'YEAR_MONTH'
+    ,tag              => 'ARCHIVE_YEAR_MONTH'
+    ,datatype         => 'NUMBER'
+  );
+
+  ctx_ddl.create_preference(
+    preference_name   => 'BLOG_POSTS_LX'
+    ,object_name      => 'BASIC_LEXER'
+  );
+
+  ctx_ddl.set_attribute(
+    preference_name   => 'BLOG_POSTS_LX'
+    ,attribute_name   => 'MIXED_CASE'
+    ,attribute_value  => 'NO'
+  );
+
+  ctx_ddl.set_attribute(
+    preference_name   => 'BLOG_POSTS_LX'
+    ,attribute_name   => 'BASE_LETTER'
+    ,attribute_value  => 'YES'
+  );
+
+  ctx_ddl.set_attribute(
+    preference_name   => 'BLOG_POSTS_LX'
+    ,attribute_name   => 'BASE_LETTER_TYPE'
+    ,attribute_value  => 'GENERIC'
+  );
+
+end;
+/
+
+--------------------------------------------------------
+--  Create text index
+--------------------------------------------------------
+create index blog_posts_ctx on blog_posts_uds (dummy)
+indextype is ctxsys.context parameters (
+  'section group  BLOG_POSTS_SG
+   datastore      BLOG_POSTS_DS
+   lexer          BLOG_POSTS_LX
+   stoplist       ctxsys.empty_stoplist
+   memory         500M
+   sync           (on commit)'
+);

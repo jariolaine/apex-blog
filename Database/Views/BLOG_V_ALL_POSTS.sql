@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "PUBLISHED_DISPLAY", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS
   select
    t1.id                as id
   ,t1.category_id       as category_id
@@ -20,6 +20,8 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_I
   ,t1.body_length       as body_length
   ,t1.published_on      as published_on
   ,t1.notes             as notes
+  ,t4.rowid             as ctx_rid
+  ,t4.dummy             as ctx_search
   ,case t1.is_active * t2.is_active * t3.is_active
     when 1
     then t1.published_on
@@ -62,7 +64,11 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_I
     else 'PUBLISHED'
    end                  as post_status
 from blog_posts t1
-join blog_categories t2 on t1.category_id = t2.id
-join blog_bloggers t3 on t1.blogger_id = t3.id
+join blog_categories t2
+  on t1.category_id = t2.id
+join blog_bloggers t3
+  on t1.blogger_id = t3.id
+join blog_posts_uds t4
+  on t1.id = t4.post_id
 where 1 = 1
 /

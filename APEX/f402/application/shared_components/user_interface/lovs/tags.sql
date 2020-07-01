@@ -4,7 +4,7 @@ wwv_flow_api.create_list_of_values(
  p_id=>wwv_flow_api.id(7140542412077627)
 ,p_lov_name=>'TAGS'
 ,p_lov_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select ',
+'select',
 '   v1.tag        as return_value',
 '  ,v1.tag        as display_value',
 '  ,v1.tag_unique as display_seq',

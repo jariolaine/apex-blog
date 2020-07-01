@@ -15,15 +15,15 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200503210641'
+,p_last_upd_yyyymmddhh24miss=>'20200531055721'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(30430710498753130)
-,p_name=>'About Blogger '
-,p_template=>wwv_flow_api.id(6802870362267386)
+,p_name=>'About Bloggers'
+,p_template=>wwv_flow_api.id(6781372168267375)
 ,p_display_sequence=>10
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--hideHeader:t-Region--scrollBody:margin-bottom-lg'
-,p_component_template_options=>'#DEFAULT#:z-Content--Stacked'
+,p_region_template_options=>'#DEFAULT#'
+,p_component_template_options=>'#DEFAULT#:z-Content:t-Report--hideNoPagination'
 ,p_grid_column_span=>9
 ,p_display_column=>1
 ,p_display_point=>'BODY'
@@ -37,8 +37,6 @@ wwv_flow_api.create_report_region(
 'and t1.blogger_desc is not null',
 'order by t1.display_seq'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
-,p_plug_caching=>'CACHE'
-,p_plug_caching_max_age_in_sec=>604800
 ,p_query_row_template=>wwv_flow_api.id(30641878306098019)
 ,p_query_headings_type=>'NO_HEADINGS'
 ,p_query_num_rows=>500

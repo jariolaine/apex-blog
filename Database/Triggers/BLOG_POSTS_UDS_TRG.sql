@@ -1,10 +1,10 @@
 --------------------------------------------------------
---  DDL for Trigger BLOG_ORDS_TEMPLATES_TRG
+--  DDL for Trigger BLOG_POSTS_UDS_TRG
 --------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_ORDS_TEMPLATES_TRG"
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_TRG"
 before
 insert or
-update on blog_ords_templates
+update on blog_posts_uds
 for each row
 begin
 

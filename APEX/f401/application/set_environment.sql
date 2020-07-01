@@ -41,7 +41,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --       Dynamic Actions:          9
 --     Shared Components:
 --       Logic:
---         Items:                  6
+--         Items:                  7
 --         Processes:              2
 --         Build Options:         16
 --       Navigation:

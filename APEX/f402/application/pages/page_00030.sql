@@ -11,11 +11,11 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200503140303'
+,p_last_upd_yyyymmddhh24miss=>'20200701123714'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27412346667552217)
-,p_plug_name=>'Report on BLOG_V_ALL_COMMENTS'
+,p_plug_name=>'Comments Report'
 ,p_region_css_classes=>'z-IR--iconLinks'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8495746153518209)
@@ -23,18 +23,25 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.id          as comment_id',
-'   ,v1.post_id        as post_id',
-'   ,v1.parent_id      as parent_id',
-'   ,v1.created_on     as created_on',
-'   ,v1.changed_on     as changed_on',
-'   ,v1.changed_by     as changed_by',
-'   ,v1.comment_by     as comment_by',
-'   ,v1.post_title     as post_title',
-'   ,v1.is_active      as is_active',
-'   ,v1.body_html      as comment_body',
-'   ,v1.user_icon      as user_icon',
-'   ,v1.icon_modifier  as icon_modifier',
+'select v1.id         as comment_id',
+'  ,v1.post_id        as post_id',
+'  ,v1.parent_id      as parent_id',
+'  ,v1.created_on     as created_on',
+'  ,v1.changed_on     as changed_on',
+'  ,v1.changed_by     as changed_by',
+'  ,v1.comment_by     as comment_by',
+'  ,v1.post_title     as post_title',
+'  ,v1.is_active      as is_active',
+'  ,v1.body_html      as comment_body',
+'  ,v1.user_icon      as user_icon',
+'  ,v1.icon_modifier  as icon_modifier',
+'  ,case v1.is_active',
+'    when 0',
+'    then ''fa-minus-circle-o u-danger-text''',
+'    when 1',
+'    then ''fa-check-circle-o u-success-text''',
+'    else ''fa-question-circle-o''',
+'   end               as comment_status_icon',
 'from blog_v_all_comments v1'))
 ,p_plug_source_type=>'NATIVE_IR'
 ,p_translate_title=>'N'
@@ -137,6 +144,10 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_order=>90
 ,p_column_identifier=>'B'
 ,p_column_label=>'Status'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<span aria-hidden="true" title="#IS_ACTIVE#" class="fa #COMMENT_STATUS_ICON#"></span>',
+'<span class="u-VisuallyHidden">#IS_ACTIVE#</span>',
+''))
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
@@ -170,6 +181,15 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
 );
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(42033780437918101)
+,p_db_column_name=>'COMMENT_STATUS_ICON'
+,p_display_order=>130
+,p_column_identifier=>'M'
+,p_column_label=>'Comment Status Icon'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN'
+);
 wwv_flow_api.create_worksheet_rpt(
  p_id=>wwv_flow_api.id(27416916886555549)
 ,p_application_user=>'APXWS_DEFAULT'
@@ -177,7 +197,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_report_alias=>'274170'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'POST_TITLE:COMMENT_BY:CREATED_ON:IS_ACTIVE:'
+,p_report_columns=>'POST_TITLE:COMMENT_BY:CREATED_ON:IS_ACTIVE::COMMENT_STATUS_ICON'
 ,p_sort_column_1=>'CREATED_ON'
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'0'

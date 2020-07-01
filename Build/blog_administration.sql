@@ -33,10 +33,10 @@ prompt APPLICATION 402 - Blog Administration
 --   Export Type:     Application Export
 --     Pages:                     29
 --       Items:                   62
---       Computations:             6
+--       Computations:             7
 --       Validations:              9
 --       Processes:               45
---       Regions:                 65
+--       Regions:                 66
 --       Buttons:                 68
 --       Dynamic Actions:         32
 --     Shared Components:
@@ -62,10 +62,10 @@ prompt APPLICATION 402 - Blog Administration
 --           Breadcrumb:           1
 --           Button:               3
 --           Report:              11
---         LOVs:                   8
+--         LOVs:                   9
 --         Shortcuts:              2
 --       Globalization:
---         Messages:              58
+--         Messages:              61
 --       Reports:
 --       E-Mail:
 --         Templates:              1
@@ -90,7 +90,7 @@ wwv_flow_api.create_flow(
 ,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'402')
 ,p_application_group=>3742713376965422
 ,p_application_group_name=>'BLOG_040000'
-,p_application_group_comment=>'APEX Blog '
+,p_application_group_comment=>'APEX Blog'
 ,p_page_view_logging=>'YES'
 ,p_page_protection_enabled_y_n=>'Y'
 ,p_checksum_salt=>'B22C496AFD040C7B5F1E21FA4AC20C2D68FA779C3AF68FB8A6F3F4BB268E96B2'
@@ -128,7 +128,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'G_ADMIN_APP_ID'
 ,p_substitution_value_01=>'YES'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200530084639'
+,p_last_upd_yyyymmddhh24miss=>'20200701164359'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>195
 ,p_ui_type_name => null
@@ -815,6 +815,34 @@ wwv_flow_api.create_static_lov_data(
 );
 end;
 /
+prompt --application/shared_components/user_interface/lovs/link_status
+begin
+wwv_flow_api.create_list_of_values(
+ p_id=>wwv_flow_api.id(36215367226602541)
+,p_lov_name=>'LINK_STATUS'
+,p_lov_query=>'.'||wwv_flow_api.id(36215367226602541)||'.'
+,p_location=>'STATIC'
+);
+wwv_flow_api.create_static_lov_data(
+ p_id=>wwv_flow_api.id(36215627435602551)
+,p_lov_disp_sequence=>1
+,p_lov_disp_value=>'Enabled'
+,p_lov_return_value=>'ENABLED'
+);
+wwv_flow_api.create_static_lov_data(
+ p_id=>wwv_flow_api.id(36216068240602552)
+,p_lov_disp_sequence=>2
+,p_lov_disp_value=>'Disabled'
+,p_lov_return_value=>'DISABLED'
+);
+wwv_flow_api.create_static_lov_data(
+ p_id=>wwv_flow_api.id(36216465067602552)
+,p_lov_disp_sequence=>3
+,p_lov_disp_value=>'Link Collection is Disabled'
+,p_lov_return_value=>'GROUP_DISABLED'
+);
+end;
+/
 prompt --application/shared_components/user_interface/lovs/login_remember_username
 begin
 wwv_flow_api.create_list_of_values(
@@ -877,7 +905,7 @@ wwv_flow_api.create_list_of_values(
  p_id=>wwv_flow_api.id(7140542412077627)
 ,p_lov_name=>'TAGS'
 ,p_lov_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select ',
+'select',
 '   v1.tag        as return_value',
 '  ,v1.tag        as display_value',
 '  ,v1.tag_unique as display_seq',
@@ -11354,6 +11382,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Sent email notification of new comments'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(42044380079014521)
+,p_name=>'BLOG_FILES_CK4'
+,p_message_text=>'Files displayed in public files must have a description.'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(31903383999893435)
 ,p_name=>'BLOG_FILES_UK1'
 ,p_message_text=>'File with same name already exists.'
@@ -11367,6 +11400,11 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(23116114610465857)
 ,p_name=>'BLOG_LINK_GROUPS_UK1'
 ,p_message_text=>'Link collection with same name already exists.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(40637327457556920)
+,p_name=>'BLOG_MSG_BASIC_SETTINGS_INFO'
+,p_message_text=>'Changes to settings only take effect for new sessions in the public application.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(25114336930810124)
@@ -11439,6 +11477,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Date format'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(40622046631847902)
+,p_name=>'BLOG_PAR_G_LATEST_POSTS'
+,p_message_text=>'The number of posts in latest post list'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19032802687865238)
 ,p_name=>'BLOG_PAR_G_POST_TITLE_DATE_FORMAT'
 ,p_message_text=>'Posts header date format'
@@ -11501,7 +11544,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348168323345190)
 ,p_name=>'BLOG_VALIDATION_ERR_IS_INTEGER'
-,p_message_text=>'Value must be integer between 1 and 100.'
+,p_message_text=>'Value must be integer between %0 and %1.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348379677347133)
@@ -11782,11 +11825,11 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200508022934'
+,p_last_upd_yyyymmddhh24miss=>'20200701123331'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8596898648797585)
-,p_plug_name=>'All Posts Report'
+,p_plug_name=>'Posts Report'
 ,p_region_css_classes=>'z-IR--iconLinks'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8495746153518209)
@@ -11812,6 +11855,20 @@ wwv_flow_api.create_page_plug(
 '  ,v1.notes              as notes',
 '  ,v1.comments_count     as comments_count',
 '  ,v1.post_status        as post_status',
+'  ,v1.ctx_search         as ctx_search',
+'  ,case v1.post_status',
+'    when ''BLOGGER_DISABLED''',
+'    then ''fa-stop-circle-o u-danger-text''',
+'    when ''CATEGORY_DISABLED''',
+'    then ''fa-minus-circle-o u-danger-text''',
+'    when ''DRAFT''',
+'    then ''fa-pause-circle-o u-warning-text''',
+'    when ''SCHEDULED''',
+'    then ''fa-clock-o u-info-text''',
+'    when ''PUBLISHED''',
+'    then ''fa-check-circle-o u-success-text''',
+'    else ''fa-question-circle-o''',
+'   end                   as post_status_icon',
 '  ,btn.title_edit        as btn_title_edit',
 '  ,apex_page.get_url(',
 '     p_page   => 12',
@@ -11836,7 +11893,7 @@ wwv_flow_api.create_worksheet(
 ,p_name=>'Articles'
 ,p_max_row_count_message=>'The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.'
 ,p_no_data_found_message=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
-,p_oracle_text_index_column=>'BODY_HTML'
+,p_oracle_text_index_column=>'CTX_SEARCH'
 ,p_show_nulls_as=>'-'
 ,p_pagination_type=>'ROWS_X_TO_Y'
 ,p_pagination_display_pos=>'BOTTOM_RIGHT'
@@ -11870,9 +11927,18 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_text_as=>'HIDDEN'
 );
 wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(36998139921037737)
+,p_db_column_name=>'CTX_SEARCH'
+,p_display_order=>20
+,p_column_identifier=>'BM'
+,p_column_label=>'Ctx Search'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN'
+);
+wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(9637626471680614)
 ,p_db_column_name=>'CATEGORY_ID'
-,p_display_order=>20
+,p_display_order=>30
 ,p_column_identifier=>'AS'
 ,p_column_label=>'Category ID'
 ,p_column_type=>'NUMBER'
@@ -11881,7 +11947,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(27275478849075433)
 ,p_db_column_name=>'CREATED_ON'
-,p_display_order=>30
+,p_display_order=>40
 ,p_column_identifier=>'BH'
 ,p_column_label=>'Created'
 ,p_column_type=>'DATE'
@@ -11892,7 +11958,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(27275565959075434)
 ,p_db_column_name=>'CREATED_BY'
-,p_display_order=>40
+,p_display_order=>50
 ,p_column_identifier=>'BI'
 ,p_column_label=>'Created By'
 ,p_column_type=>'STRING'
@@ -11900,7 +11966,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(8599408102797592)
 ,p_db_column_name=>'CHANGED_ON'
-,p_display_order=>50
+,p_display_order=>60
 ,p_column_identifier=>'F'
 ,p_column_label=>'Changed'
 ,p_column_type=>'DATE'
@@ -11911,7 +11977,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(8599862540797593)
 ,p_db_column_name=>'CHANGED_BY'
-,p_display_order=>60
+,p_display_order=>70
 ,p_column_identifier=>'G'
 ,p_column_label=>'Changed By'
 ,p_column_type=>'STRING'
@@ -11920,7 +11986,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(24468689536361506)
 ,p_db_column_name=>'PUBLISHED_ON'
-,p_display_order=>70
+,p_display_order=>80
 ,p_column_identifier=>'AY'
 ,p_column_label=>'Published'
 ,p_column_type=>'DATE'
@@ -11931,7 +11997,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3880094723180117)
 ,p_db_column_name=>'BLOGGER_NAME'
-,p_display_order=>80
+,p_display_order=>90
 ,p_column_identifier=>'AF'
 ,p_column_label=>'Blogger'
 ,p_column_type=>'STRING'
@@ -11939,7 +12005,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3880100059180118)
 ,p_db_column_name=>'CATEGORY_TITLE'
-,p_display_order=>90
+,p_display_order=>100
 ,p_column_identifier=>'AG'
 ,p_column_label=>'Category'
 ,p_column_type=>'STRING'
@@ -11947,7 +12013,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3880250479180119)
 ,p_db_column_name=>'POST_TITLE'
-,p_display_order=>100
+,p_display_order=>110
 ,p_column_identifier=>'AH'
 ,p_column_label=>'Title'
 ,p_column_type=>'STRING'
@@ -11955,7 +12021,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3880461305180121)
 ,p_db_column_name=>'POST_DESC'
-,p_display_order=>110
+,p_display_order=>120
 ,p_column_identifier=>'AJ'
 ,p_column_label=>'Description'
 ,p_column_type=>'STRING'
@@ -11963,7 +12029,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3880617009180123)
 ,p_db_column_name=>'POST_TAGS'
-,p_display_order=>120
+,p_display_order=>130
 ,p_column_identifier=>'AL'
 ,p_column_label=>'Tags'
 ,p_column_type=>'STRING'
@@ -11977,9 +12043,9 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(24471943643361539)
 ,p_db_column_name=>'VISIBLE_TAGS'
-,p_display_order=>130
+,p_display_order=>140
 ,p_column_identifier=>'BB'
-,p_column_label=>'Visible Tags'
+,p_column_label=>'Tags (Enabled)'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_rpt_named_lov=>wwv_flow_api.id(24779831361886842)
@@ -11988,9 +12054,9 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(24471868067361538)
 ,p_db_column_name=>'HIDDEN_TAGS'
-,p_display_order=>140
+,p_display_order=>150
 ,p_column_identifier=>'BA'
-,p_column_label=>'Hidden Tags'
+,p_column_label=>'Tags (Disabled)'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_rpt_named_lov=>wwv_flow_api.id(24782207188898443)
@@ -11999,7 +12065,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3880562284180122)
 ,p_db_column_name=>'BODY_LENGTH'
-,p_display_order=>150
+,p_display_order=>160
 ,p_column_identifier=>'AK'
 ,p_column_label=>'HTML Length'
 ,p_column_type=>'NUMBER'
@@ -12008,7 +12074,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3881364957180130)
 ,p_db_column_name=>'COMMENTS_COUNT'
-,p_display_order=>160
+,p_display_order=>170
 ,p_column_identifier=>'AP'
 ,p_column_label=>'Comments'
 ,p_column_type=>'NUMBER'
@@ -12017,7 +12083,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(22958274033076039)
 ,p_db_column_name=>'NOTES'
-,p_display_order=>170
+,p_display_order=>180
 ,p_column_identifier=>'AX'
 ,p_column_label=>'Notes'
 ,p_column_type=>'STRING'
@@ -12025,9 +12091,13 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3880710343180124)
 ,p_db_column_name=>'POST_STATUS'
-,p_display_order=>180
+,p_display_order=>190
 ,p_column_identifier=>'AM'
 ,p_column_label=>'Status'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<span aria-hidden="true" title="#POST_STATUS#" class="fa #POST_STATUS_ICON#"></span>',
+'<span class="u-VisuallyHidden">#POST_STATUS#</span>',
+''))
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
@@ -12035,9 +12105,18 @@ wwv_flow_api.create_worksheet_column(
 ,p_rpt_show_filter_lov=>'1'
 );
 wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(31618832374094024)
+,p_db_column_name=>'POST_STATUS_ICON'
+,p_display_order=>200
+,p_column_identifier=>'BL'
+,p_column_label=>'Post Status Icon'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN'
+);
+wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(25132885666432510)
 ,p_db_column_name=>'EDIT_URL'
-,p_display_order=>190
+,p_display_order=>210
 ,p_column_identifier=>'BD'
 ,p_column_label=>'Edit Url'
 ,p_column_type=>'STRING'
@@ -12046,7 +12125,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3880372195180120)
 ,p_db_column_name=>'BODY_HTML'
-,p_display_order=>200
+,p_display_order=>220
 ,p_column_identifier=>'AI'
 ,p_column_label=>'Body Html'
 ,p_column_type=>'CLOB'
@@ -12055,7 +12134,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(25136663379432548)
 ,p_db_column_name=>'IR_DETAIL_VIEW_PUBLISHED'
-,p_display_order=>220
+,p_display_order=>230
 ,p_column_identifier=>'BF'
 ,p_column_label=>'Ir Detail View Published'
 ,p_column_type=>'STRING'
@@ -12064,7 +12143,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(31246733855982907)
 ,p_db_column_name=>'BTN_TITLE_EDIT'
-,p_display_order=>230
+,p_display_order=>240
 ,p_column_identifier=>'BK'
 ,p_column_label=>'Btn Title Edit'
 ,p_column_type=>'STRING'
@@ -12080,7 +12159,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_is_default=>'Y'
 ,p_display_rows=>10
 ,p_view_mode=>'REPORT'
-,p_report_columns=>'POST_TITLE:CATEGORY_TITLE:POST_STATUS:PUBLISHED_ON:'
+,p_report_columns=>'POST_TITLE:CATEGORY_TITLE:POST_STATUS:PUBLISHED_ON::POST_STATUS_ICON:CTX_SEARCH'
 ,p_sort_column_1=>'CREATED_ON'
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'0'
@@ -12112,7 +12191,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(24910908943771848)
 ,p_button_name=>'OPEN_CATEGORIES'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--noUI:t-Button--iconLeft:t-Button--pillStart'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Categories'
 ,p_button_position=>'REGION_TEMPLATE_NEXT'
@@ -12125,7 +12204,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(24910908943771848)
 ,p_button_name=>'OPEN_TAGS'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--noUI:t-Button--iconLeft:t-Button--pill'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Tags'
 ,p_button_position=>'REGION_TEMPLATE_NEXT'
@@ -12138,7 +12217,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(24910908943771848)
 ,p_button_name=>'CREATE_POST'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--noUI:t-Button--iconLeft:t-Button--pillEnd'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'New Post'
@@ -12321,7 +12400,7 @@ wwv_flow_api.create_page(
 '</ol>',
 ''))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200517185214'
+,p_last_upd_yyyymmddhh24miss=>'20200608171118'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -12543,6 +12622,7 @@ wwv_flow_api.create_page_item(
 ,p_cSize=>30
 ,p_field_template=>wwv_flow_api.id(8548970214518243)
 ,p_item_template_options=>'#DEFAULT#'
+,p_is_persistent=>'N'
 ,p_lov_display_extra=>'YES'
 ,p_protection_level=>'S'
 ,p_restricted_characters=>'WEB_SAFE'
@@ -12732,7 +12812,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_POPUP_LOV'
 ,p_named_lov=>'TAGS'
 ,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select ',
+'select',
 '   v1.tag        as return_value',
 '  ,v1.tag        as display_value',
 '  ,v1.tag_unique as display_seq',
@@ -12837,6 +12917,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_YES_NO'
 ,p_field_template=>wwv_flow_api.id(8548656595518243)
 ,p_item_template_options=>'#DEFAULT#'
+,p_is_persistent=>'N'
 ,p_protection_level=>'S'
 ,p_help_text=>'Enable editing publsih date.'
 ,p_attribute_01=>'APPLICATION'
@@ -12887,6 +12968,15 @@ wwv_flow_api.create_page_computation(
 '#OWNER#.blog_cm.get_first_paragraph(',
 '  p_body_html  => :P12_BODY_HTML',
 ')'))
+);
+wwv_flow_api.create_page_computation(
+ p_id=>wwv_flow_api.id(36997318502037729)
+,p_computation_sequence=>60
+,p_computation_item=>'P12_PUBLISHED_ON'
+,p_computation_type=>'PLSQL_EXPRESSION'
+,p_computation=>'to_char( localtimestamp, :G_USER_INPUT_DATE_TIME_FORMAT )'
+,p_compute_when=>'P12_PUBLISHED_ON'
+,p_compute_when_type=>'ITEM_IS_NULL'
 );
 wwv_flow_api.create_page_validation(
  p_id=>wwv_flow_api.id(8793505538610781)
@@ -13956,11 +14046,11 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200513172452'
+,p_last_upd_yyyymmddhh24miss=>'20200701123850'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
-,p_plug_name=>'All Files Report'
+,p_plug_name=>'Files Report'
 ,p_region_css_classes=>'z-IR--iconLinks'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8495746153518209)
@@ -13977,7 +14067,7 @@ wwv_flow_api.create_page_plug(
 '  ,case is_download',
 '    when 1',
 '    then apex_page.get_url(',
-'      p_application  => :G_PUB_APP_ID ',
+'      p_application  => :G_PUB_APP_ID',
 '      ,p_page        => ''FILES''',
 '      ,p_session     => null',
 '      ,p_debug       => ''NO''',
@@ -13995,6 +14085,13 @@ wwv_flow_api.create_page_plug(
 '  ,btn.copy_url           as btn_copy_url',
 '  ,btn.copy_url_label     as btn_copy_url_label',
 '  ,btn.title_edit         as btn_title_edit',
+'  ,case v1.is_active',
+'    when 0',
+'    then ''fa-minus-circle-o u-danger-text''',
+'    when 1',
+'    then ''fa-check-circle-o u-success-text''',
+'    else ''fa-question-circle-o''',
+'   end                    as file_status_icon',
 'from blog_v_all_files v1',
 'cross join(',
 '  select',
@@ -14086,6 +14183,10 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_order=>70
 ,p_column_identifier=>'AA'
 ,p_column_label=>'Status'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<span aria-hidden="true" title="#IS_ACTIVE#" class="fa #FILE_STATUS_ICON#"></span>',
+'<span class="u-VisuallyHidden">#IS_ACTIVE#</span>',
+''))
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
@@ -14210,6 +14311,15 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
 );
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(42033869947918102)
+,p_db_column_name=>'FILE_STATUS_ICON'
+,p_display_order=>210
+,p_column_identifier=>'AR'
+,p_column_label=>'File Status Icon'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN'
+);
 wwv_flow_api.create_worksheet_rpt(
  p_id=>wwv_flow_api.id(6738041656952365)
 ,p_application_user=>'APXWS_DEFAULT'
@@ -14219,7 +14329,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_view_mode=>'DETAIL'
-,p_report_columns=>'FILE_NAME:FILE_SIZE:FILE_DESC:IS_ACTIVE:IS_DOWNLOAD:BTN_COPY_URL:BTN_COPY_URL_LABEL:BTN_TITLE_EDIT'
+,p_report_columns=>'FILE_NAME:FILE_SIZE:FILE_DESC:IS_ACTIVE:IS_DOWNLOAD:BTN_COPY_URL:BTN_COPY_URL_LABEL:BTN_TITLE_EDIT:FILE_STATUS_ICON'
 ,p_sort_column_1=>'FILE_NAME'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'CHANGED_ON'
@@ -14253,7 +14363,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(24910787972771846)
 ,p_button_name=>'UPLOAD_FILE'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--noUI:t-Button--iconLeft:t-Button--pillEnd'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft:t-Button--pillEnd'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Upload File(s)'
@@ -14380,7 +14490,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200513172736'
+,p_last_upd_yyyymmddhh24miss=>'20200701120747'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6788182287545486)
@@ -14470,7 +14580,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_RADIOGROUP'
 ,p_named_lov=>'YES_NO'
 ,p_lov=>'.'||wwv_flow_api.id(6747712589074152)||'.'
-,p_tag_attributes=>'data-z-switch="true"'
+,p_tag_css_classes=>'z-switch'
 ,p_begin_on_new_line=>'N'
 ,p_colspan=>3
 ,p_field_template=>wwv_flow_api.id(8548970214518243)
@@ -14536,7 +14646,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_RADIOGROUP'
 ,p_named_lov=>'IS_ACTIVE'
 ,p_lov=>'.'||wwv_flow_api.id(8819403626737334)||'.'
-,p_tag_attributes=>'data-z-switch="true"'
+,p_tag_css_classes=>'z-switch'
 ,p_colspan=>3
 ,p_field_template=>wwv_flow_api.id(8548970214518243)
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--radioButtonGroup'
@@ -14688,7 +14798,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200509090926'
+,p_last_upd_yyyymmddhh24miss=>'20200531090027'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6849894493100859)
@@ -14701,9 +14811,20 @@ wwv_flow_api.create_page_plug(
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select v1.id      as id',
+'  ,v1.changed_on  as created_on',
+'  ,v1.changed_by  as created_by',
 '  ,v1.changed_on  as changed_on',
 '  ,v1.changed_by  as changed_by',
-'  ,v1.is_active   as is_active',
+'  ,v1.link_status as link_status',
+'  ,case v1.link_status',
+'    when ''GROUP_DISABLED''',
+'    then ''fa-stop-circle-o u-danger-text''',
+'    when ''DISABLED''',
+'    then ''fa-minus-circle-o u-danger-text''',
+'    when ''ENABLED''',
+'    then ''fa-check-circle-o u-success-text''',
+'    else ''fa-question-circle-o''',
+'   end            as link_status_icon',
 '  ,v1.display_seq as display_seq',
 '  ,v1.title       as title',
 '  ,v1.link_desc   as link_desc',
@@ -14750,9 +14871,28 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_text_as=>'HIDDEN'
 );
 wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(31618992606094025)
+,p_db_column_name=>'CREATED_ON'
+,p_display_order=>20
+,p_column_identifier=>'AY'
+,p_column_label=>'Created'
+,p_column_type=>'DATE'
+,p_column_alignment=>'CENTER'
+,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
+,p_tz_dependent=>'Y'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(31619047211094026)
+,p_db_column_name=>'CREATED_BY'
+,p_display_order=>30
+,p_column_identifier=>'AZ'
+,p_column_label=>'Created By'
+,p_column_type=>'STRING'
+);
+wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(18444999722293046)
 ,p_db_column_name=>'CHANGED_ON'
-,p_display_order=>50
+,p_display_order=>40
 ,p_column_identifier=>'AI'
 ,p_column_label=>'Changed'
 ,p_column_type=>'DATE'
@@ -14763,36 +14903,49 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(18445036864293047)
 ,p_db_column_name=>'CHANGED_BY'
-,p_display_order=>60
+,p_display_order=>50
 ,p_column_identifier=>'AJ'
 ,p_column_label=>'Changed By'
 ,p_column_type=>'STRING'
 );
 wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(28585187003643010)
-,p_db_column_name=>'IS_ACTIVE'
-,p_display_order=>70
-,p_column_identifier=>'AV'
-,p_column_label=>'Status'
-,p_column_type=>'NUMBER'
-,p_display_text_as=>'LOV_ESCAPE_SC'
-,p_column_alignment=>'CENTER'
-,p_rpt_named_lov=>wwv_flow_api.id(8819403626737334)
-,p_rpt_show_filter_lov=>'1'
-);
-wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3882035677180137)
 ,p_db_column_name=>'DISPLAY_SEQ'
-,p_display_order=>80
+,p_display_order=>70
 ,p_column_identifier=>'O'
 ,p_column_label=>'Sequence'
 ,p_column_type=>'NUMBER'
 ,p_column_alignment=>'RIGHT'
 );
 wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(31619295245094028)
+,p_db_column_name=>'LINK_STATUS'
+,p_display_order=>80
+,p_column_identifier=>'BA'
+,p_column_label=>'Status'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<span aria-hidden="true" title="#LINK_STATUS#" class="fa #LINK_STATUS_ICON#"></span>',
+'<span class="u-VisuallyHidden">#LINK_STATUS#</span>',
+''))
+,p_column_type=>'STRING'
+,p_display_text_as=>'LOV_ESCAPE_SC'
+,p_column_alignment=>'CENTER'
+,p_rpt_named_lov=>wwv_flow_api.id(36215367226602541)
+,p_rpt_show_filter_lov=>'1'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(31619389927094029)
+,p_db_column_name=>'LINK_STATUS_ICON'
+,p_display_order=>90
+,p_column_identifier=>'BB'
+,p_column_label=>'Link Status Icon'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN'
+);
+wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(19359713146963249)
 ,p_db_column_name=>'TITLE'
-,p_display_order=>90
+,p_display_order=>100
 ,p_column_identifier=>'AN'
 ,p_column_label=>'Title'
 ,p_column_type=>'STRING'
@@ -14800,7 +14953,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3882275772180139)
 ,p_db_column_name=>'LINK_DESC'
-,p_display_order=>100
+,p_display_order=>110
 ,p_column_identifier=>'Q'
 ,p_column_label=>'Description'
 ,p_column_type=>'STRING'
@@ -14808,7 +14961,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3882359433180140)
 ,p_db_column_name=>'LINK_URL'
-,p_display_order=>110
+,p_display_order=>120
 ,p_column_identifier=>'R'
 ,p_column_label=>'URL'
 ,p_column_link=>'#LINK_URL#'
@@ -14819,7 +14972,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(22958590684076042)
 ,p_db_column_name=>'NOTES'
-,p_display_order=>120
+,p_display_order=>130
 ,p_column_identifier=>'AQ'
 ,p_column_label=>'Notes'
 ,p_column_type=>'STRING'
@@ -14827,7 +14980,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(31246617470982906)
 ,p_db_column_name=>'BTN_TITLE_EDIT'
-,p_display_order=>130
+,p_display_order=>140
 ,p_column_identifier=>'AX'
 ,p_column_label=>'Btn Title Edit'
 ,p_column_type=>'STRING'
@@ -14842,7 +14995,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_view_mode=>'REPORT'
-,p_report_columns=>'TITLE:LINK_DESC::IS_ACTIVE:BTN_TITLE_EDIT'
+,p_report_columns=>'TITLE:LINK_DESC::LINK_STATUS:LINK_STATUS_ICON'
 ,p_sort_column_1=>'DISPLAY_SEQ'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'0'
@@ -14865,21 +15018,30 @@ wwv_flow_api.create_report_region(
 ,p_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
-,p_component_template_options=>'#DEFAULT#:t-Report--hideNoPagination:t-ContentRow--hideSelection:t-ContentRow--hideIcon:t-ContentRow--hideActions'
+,p_component_template_options=>'#DEFAULT#:t-Report--hideNoPagination:t-ContentRow--hideSelection:t-ContentRow--hideMisc'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.id as id',
-'  ,null          as item_classes',
-'  ,display_seq   as selection',
-'  ,null          as icon_class',
-'  ,null          as icon_html',
-'  ,v1.title      as title',
-'  ,v1.notes      as description',
-'  ,v1.is_active  as misc',
-'  ,null          as actions',
+'select v1.id       as id',
+'  ,null            as item_classes',
+'  ,display_seq     as selection',
+'  ,case v1.is_active',
+'  when 1',
+'    then ''fa fa-check-circle-o u-success-text''',
+'    else ''fa fa-minus-circle-o u-danger-text''',
+'   end             as icon_class',
+'  ,null            as icon_html',
+'  ,v1.title        as title',
+'  ,v1.notes        as description',
+'  ,v1.is_active    as misc',
+'  ,null            as actions',
+'  ,btn.title_edit  as btn_title_edit',
 'from blog_v_all_link_groups v1',
+'cross join (',
+'  select apex_lang.message(''BLOG_BTN_TITLE_EDIT'') as title_edit',
+'  from dual',
+') btn',
 'where 1 = 1',
 'and v1.id = :P17_LINK_GROUP_ID'))
 ,p_display_when_condition=>'P17_LINK_GROUP_ID'
@@ -14943,6 +15105,7 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>6
 ,p_column_heading=>'Icon Html'
 ,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="u-VisuallyHidden">#MISC#</span>'
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -14991,11 +15154,19 @@ wwv_flow_api.create_report_columns(
 ,p_column_heading=>'Actions'
 ,p_use_as_row_header=>'N'
 ,p_column_link=>'f?p=&APP_ID.:20:&SESSION.::&DEBUG.:RP,20:P20_ID:#ID#'
-,p_column_linktext=>'<span class="t-Icon fa fa-edit" aria-hidden="true"></span>Edit'
-,p_column_link_attr=>' class="t-Button t-Button--icon t-Button--noUI t-Button--iconLeft"'
+,p_column_linktext=>'<span class="t-Icon fa fa-edit" aria-hidden="true"></span>#BTN_TITLE_EDIT#'
+,p_column_link_attr=>' class="t-Button t-Button--small t-Button--icon t-Button--iconLeft"'
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(31619148468094027)
+,p_query_column_id=>10
+,p_column_alias=>'BTN_TITLE_EDIT'
+,p_column_display_sequence=>10
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(28585474513643013)
@@ -15024,22 +15195,16 @@ wwv_flow_api.create_report_region(
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select v1.id',
 '  ,null as link_class',
-'  ,apex_page.get_url( p_items => ''P17_LINK_GROUP_ID'', p_values => v1.id ) as link',
+'  ,apex_page.get_url(',
+'     p_items => ''P17_LINK_GROUP_ID''',
+'    ,p_values => v1.id',
+'   )    as link',
 '  ,null as link_attr',
-'  ,case is_active',
-'   when 1',
-'   then ''fa fa-check''',
-'   else ''fa fa-ban''',
-'   end as icon_class',
-'  ,case is_active',
-'   when 1',
-'   then ''u-hot''',
-'   else ''u-danger''',
-'   end as icon_color_class',
+'  ,null as icon_class',
+'  ,null as icon_color_class',
 '  ,case when coalesce( to_number( :P17_LINK_GROUP_ID ), 0 ) = id',
 '   then ''is-active'' ',
-'   else '' ''',
-'  end as list_class',
+'   end  as list_class',
 '  ,substr( v1.title, 1, 50) || ( case when length( v1.title ) > 50 then ''...'' end ) as list_title',
 '  ,null as list_text',
 '  ,null as list_badge',
@@ -15193,11 +15358,11 @@ wwv_flow_api.create_page_plug(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(24908291637771821)
-,p_button_sequence=>20
+,p_button_sequence=>10
 ,p_button_plug_id=>wwv_flow_api.id(6849894493100859)
 ,p_button_name=>'CREATE_LINK'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--noUI:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--small:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'New Link'
 ,p_button_position=>'REGION_TEMPLATE_EDIT'
@@ -15211,12 +15376,13 @@ wwv_flow_api.create_page_button(
 ,p_button_name=>'EDIT_GROUP'
 ,p_button_static_id=>'edit_master_btn'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--noUI:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--small:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Edit'
 ,p_button_position=>'REGION_TEMPLATE_EDIT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:20:&SESSION.::&DEBUG.:RP,20:P20_ID:&P17_LINK_GROUP_ID.'
 ,p_icon_css_classes=>'fa-pencil-square-o'
+,p_required_patch=>wwv_flow_api.id(24687280101070827)
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(25129089948406507)
@@ -15224,7 +15390,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(50093168854497120)
 ,p_button_name=>'RESET_PAGE'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--noUI:t-Button--iconLeft:t-Button--pillStart'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Reset'
 ,p_button_position=>'REGION_TEMPLATE_NEXT'
@@ -15237,7 +15403,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(50093168854497120)
 ,p_button_name=>'CREATE_GROUP'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--noUI:t-Button--iconLeft:t-Button--pillEnd'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'New Collection'
@@ -15247,11 +15413,11 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(7185644806716235)
-,p_button_sequence=>30
+,p_button_sequence=>20
 ,p_button_plug_id=>wwv_flow_api.id(6849894493100859)
 ,p_button_name=>'RESET_REPORT'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--small:t-Button--noUI:t-Button--iconLeft:t-Button--pillStart'
+,p_button_template_options=>'#DEFAULT#:t-Button--small:t-Button--noUI:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
@@ -15361,7 +15527,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200513172657'
+,p_last_upd_yyyymmddhh24miss=>'20200701114131'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6814521408894774)
@@ -15591,7 +15757,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_RADIOGROUP'
 ,p_named_lov=>'IS_ACTIVE'
 ,p_lov=>'.'||wwv_flow_api.id(8819403626737334)||'.'
-,p_tag_attributes=>'data-z-switch="true"'
+,p_tag_css_classes=>'z-switch'
 ,p_colspan=>3
 ,p_field_template=>wwv_flow_api.id(8548970214518243)
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--radioButtonGroup'
@@ -16357,7 +16523,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524072911'
+,p_last_upd_yyyymmddhh24miss=>'20200701113824'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25773887524573137)
@@ -16542,7 +16708,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_RADIOGROUP'
 ,p_named_lov=>'IS_ACTIVE'
 ,p_lov=>'.'||wwv_flow_api.id(8819403626737334)||'.'
-,p_tag_attributes=>'data-z-switch="true"'
+,p_tag_css_classes=>'z-switch'
 ,p_colspan=>3
 ,p_field_template=>wwv_flow_api.id(8548970214518243)
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--radioButtonGroup'
@@ -17147,11 +17313,11 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200503140303'
+,p_last_upd_yyyymmddhh24miss=>'20200701123714'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27412346667552217)
-,p_plug_name=>'Report on BLOG_V_ALL_COMMENTS'
+,p_plug_name=>'Comments Report'
 ,p_region_css_classes=>'z-IR--iconLinks'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8495746153518209)
@@ -17159,18 +17325,25 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.id          as comment_id',
-'   ,v1.post_id        as post_id',
-'   ,v1.parent_id      as parent_id',
-'   ,v1.created_on     as created_on',
-'   ,v1.changed_on     as changed_on',
-'   ,v1.changed_by     as changed_by',
-'   ,v1.comment_by     as comment_by',
-'   ,v1.post_title     as post_title',
-'   ,v1.is_active      as is_active',
-'   ,v1.body_html      as comment_body',
-'   ,v1.user_icon      as user_icon',
-'   ,v1.icon_modifier  as icon_modifier',
+'select v1.id         as comment_id',
+'  ,v1.post_id        as post_id',
+'  ,v1.parent_id      as parent_id',
+'  ,v1.created_on     as created_on',
+'  ,v1.changed_on     as changed_on',
+'  ,v1.changed_by     as changed_by',
+'  ,v1.comment_by     as comment_by',
+'  ,v1.post_title     as post_title',
+'  ,v1.is_active      as is_active',
+'  ,v1.body_html      as comment_body',
+'  ,v1.user_icon      as user_icon',
+'  ,v1.icon_modifier  as icon_modifier',
+'  ,case v1.is_active',
+'    when 0',
+'    then ''fa-minus-circle-o u-danger-text''',
+'    when 1',
+'    then ''fa-check-circle-o u-success-text''',
+'    else ''fa-question-circle-o''',
+'   end               as comment_status_icon',
 'from blog_v_all_comments v1'))
 ,p_plug_source_type=>'NATIVE_IR'
 ,p_translate_title=>'N'
@@ -17273,6 +17446,10 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_order=>90
 ,p_column_identifier=>'B'
 ,p_column_label=>'Status'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<span aria-hidden="true" title="#IS_ACTIVE#" class="fa #COMMENT_STATUS_ICON#"></span>',
+'<span class="u-VisuallyHidden">#IS_ACTIVE#</span>',
+''))
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
@@ -17306,6 +17483,15 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
 );
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(42033780437918101)
+,p_db_column_name=>'COMMENT_STATUS_ICON'
+,p_display_order=>130
+,p_column_identifier=>'M'
+,p_column_label=>'Comment Status Icon'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN'
+);
 wwv_flow_api.create_worksheet_rpt(
  p_id=>wwv_flow_api.id(27416916886555549)
 ,p_application_user=>'APXWS_DEFAULT'
@@ -17313,7 +17499,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_report_alias=>'274170'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'POST_TITLE:COMMENT_BY:CREATED_ON:IS_ACTIVE:'
+,p_report_columns=>'POST_TITLE:COMMENT_BY:CREATED_ON:IS_ACTIVE::COMMENT_STATUS_ICON'
 ,p_sort_column_1=>'CREATED_ON'
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'0'
@@ -17397,7 +17583,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200509112110'
+,p_last_upd_yyyymmddhh24miss=>'20200618063700'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(55991739715660967)
@@ -17415,35 +17601,30 @@ wwv_flow_api.create_page_plug(
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(61042110568461228)
 ,p_name=>'Comment'
-,p_template=>wwv_flow_api.id(8475374748518195)
+,p_template=>wwv_flow_api.id(8496813422518209)
 ,p_display_sequence=>10
 ,p_region_sub_css_classes=>'z-hidden'
-,p_region_template_options=>'#DEFAULT#'
+,p_region_template_options=>'#DEFAULT#:t-Region--hideHeader:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Comments--basic'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.post_title',
-'  ,null             as actions',
-'  ,v1.comment_by    as user_name',
-'  ,v1.body_html     as comment_text',
-'  ,v1.created_on    as comment_date',
-'  ,v1.user_icon     as user_icon',
-'  ,v1.icon_modifier as icon_modifier',
-'  ,''z-comment''      as comment_modifiers',
-'  ,apex_lang.message(',
-'    p_name => ''BLOG_TXT_STATUS''',
-'   )                as attribute_1',
-'  ,v1.is_active     as attribute_2',
-'  ,v1.changed_on    as attribute_3',
-'  ,v1.changed_by    as attribute_4',
-'  ,apex_lang.message(',
-'    p_name => ''BLOG_TXT_CHANGED_ON''',
-'   )                as changed_on',
-'  ,apex_lang.message(',
-'    p_name => ''BLOG_TXT_CHANGED_BY''',
-'   )                as changed_by',
+'select v1.post_title as post_title',
+'  ,null              as actions',
+'  ,v1.comment_by     as user_name',
+'  ,v1.body_html      as comment_text',
+'  ,v1.created_on     as comment_date',
+'  ,v1.user_icon      as user_icon',
+'  ,v1.icon_modifier  as icon_modifier',
+'  ,''z-comment''       as comment_modifiers',
+'  ,null              as attribute_1',
+'  ,null              as attribute_2',
+'  ,null              as attribute_3',
+'  ,null              as attribute_4',
+'  ,apex_util.savekey_vc2(',
+'    p_val => v1.is_active',
+'   )                as is_active',
 'from #OWNER#.blog_v_all_comments v1',
 'where 1 = 1',
 'and v1.id = :P31_COMMENT_ID'))
@@ -17559,9 +17740,6 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>9
 ,p_column_heading=>'Attribute 1'
 ,p_use_as_row_header=>'N'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<div class="z-comment--footer">',
-'  <div><span class="u-bold">#ATTRIBUTE_1#:&nbsp;</span><span>'))
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -17574,8 +17752,6 @@ wwv_flow_api.create_report_columns(
 ,p_column_heading=>'Attribute 2'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
-,p_display_as=>'TEXT_FROM_LOV_ESC'
-,p_named_lov=>wwv_flow_api.id(8819403626737334)
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -17587,12 +17763,6 @@ wwv_flow_api.create_report_columns(
 ,p_column_heading=>'Attribute 3'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'&G_USER_DATE_TIME_FORMAT.'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'</span>',
-'  </div>',
-'  <div>',
-'    <span class="u-bold">#CHANGED_ON#:&nbsp</span><span>#ATTRIBUTE_3#</span>',
-'  </div>'))
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -17604,49 +17774,20 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>12
 ,p_column_heading=>'Attribute 4'
 ,p_use_as_row_header=>'N'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'  <div>',
-'    <span class="u-bold">#CHANGED_BY#:&nbsp</span><span>#ATTRIBUTE_4#</span>',
-'  </div>',
-'</div>'))
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(31247448819982914)
+ p_id=>wwv_flow_api.id(36997867635037734)
 ,p_query_column_id=>13
-,p_column_alias=>'CHANGED_ON'
+,p_column_alias=>'IS_ACTIVE'
 ,p_column_display_sequence=>13
-,p_column_heading=>'Changed On'
+,p_column_heading=>'Is Active'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
-);
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(31247537947982915)
-,p_query_column_id=>14
-,p_column_alias=>'CHANGED_BY'
-,p_column_display_sequence=>14
-,p_column_heading=>'Changed By'
-,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_api.create_page_button(
- p_id=>wwv_flow_api.id(30219741701087823)
-,p_button_sequence=>20
-,p_button_plug_id=>wwv_flow_api.id(55991739715660967)
-,p_button_name=>'EDIT'
-,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
-,p_button_template_id=>wwv_flow_api.id(8549262062518244)
-,p_button_image_alt=>'Edit'
-,p_button_position=>'REGION_TEMPLATE_CHANGE'
-,p_button_redirect_url=>'f?p=&APP_ID.:32:&SESSION.::&DEBUG.:RP:P32_ID:&P31_COMMENT_ID.'
-,p_icon_css_classes=>'fa-edit'
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(30218199861087825)
@@ -17662,6 +17803,19 @@ wwv_flow_api.create_page_button(
 ,p_icon_css_classes=>'fa-remove'
 );
 wwv_flow_api.create_page_button(
+ p_id=>wwv_flow_api.id(30219741701087823)
+,p_button_sequence=>20
+,p_button_plug_id=>wwv_flow_api.id(55991739715660967)
+,p_button_name=>'EDIT'
+,p_button_action=>'REDIRECT_PAGE'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_id=>wwv_flow_api.id(8549262062518244)
+,p_button_image_alt=>'Edit'
+,p_button_position=>'REGION_TEMPLATE_NEXT'
+,p_button_redirect_url=>'f?p=&APP_ID.:32:&SESSION.::&DEBUG.:RP:P32_ID:&P31_COMMENT_ID.'
+,p_icon_css_classes=>'fa-edit'
+);
+wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(30218586803087824)
 ,p_button_sequence=>30
 ,p_button_plug_id=>wwv_flow_api.id(55991739715660967)
@@ -17673,6 +17827,8 @@ wwv_flow_api.create_page_button(
 ,p_button_image_alt=>'Reply'
 ,p_button_position=>'REGION_TEMPLATE_NEXT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:33:&SESSION.::&DEBUG.:RP:P33_COMMENT_ID:&P31_COMMENT_ID.'
+,p_button_condition=>'apex_util.keyval_vc2 = 1'
+,p_button_condition_type=>'PLSQL_EXPRESSION'
 ,p_icon_css_classes=>'fa-reply'
 );
 wwv_flow_api.create_page_item(
@@ -17734,7 +17890,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200513171632'
+,p_last_upd_yyyymmddhh24miss=>'20200701114207'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(30223667782039964)
@@ -17877,7 +18033,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_RADIOGROUP'
 ,p_named_lov=>'IS_ACTIVE'
 ,p_lov=>'.'||wwv_flow_api.id(8819403626737334)||'.'
-,p_tag_attributes=>'data-z-switch="true"'
+,p_tag_css_classes=>'z-switch'
 ,p_colspan=>3
 ,p_field_template=>wwv_flow_api.id(8548970214518243)
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--radioButtonGroup'
@@ -17985,11 +18141,11 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200518173708'
+,p_last_upd_yyyymmddhh24miss=>'20200701114226'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(30429034900753113)
-,p_name=>'Comment to which you reply'
+,p_name=>'Comment'
 ,p_template=>wwv_flow_api.id(8496813422518209)
 ,p_display_sequence=>30
 ,p_include_in_reg_disp_sel_yn=>'Y'
@@ -18338,7 +18494,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_RADIOGROUP'
 ,p_named_lov=>'IS_ACTIVE'
 ,p_lov=>'.'||wwv_flow_api.id(8819403626737334)||'.'
-,p_tag_attributes=>'data-z-switch="true"'
+,p_tag_css_classes=>'z-switch'
 ,p_colspan=>3
 ,p_field_template=>wwv_flow_api.id(8548970214518243)
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--radioButtonGroup'
@@ -20012,7 +20168,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524171844'
+,p_last_upd_yyyymmddhh24miss=>'20200623054437'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -20392,6 +20548,19 @@ wwv_flow_api.create_ig_report_column(
 ,p_break_sort_nulls=>'LAST'
 );
 wwv_flow_api.create_page_plug(
+ p_id=>wwv_flow_api.id(36998038204037736)
+,p_plug_name=>'Information'
+,p_region_template_options=>'#DEFAULT#:t-Alert--colorBG:t-Alert--horizontal:t-Alert--defaultIcons:t-Alert--warning:t-Alert--accessibleHeading:margin-bottom-none'
+,p_plug_template=>wwv_flow_api.id(8471603023518189)
+,p_plug_display_sequence=>10
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_plug_display_point=>'REGION_POSITION_01'
+,p_plug_source=>'&APP_TEXT$BLOG_MSG_BASIC_SETTINGS_INFO.'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(80220063138113444)
 ,p_plug_name=>'Buttons'
 ,p_region_template_options=>'#DEFAULT#:t-ButtonRegion--slimPadding'
@@ -20456,6 +20625,8 @@ wwv_flow_api.create_page_validation(
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_cm.is_integer(',
 '   p_value => :ATTRIBUTE_VALUE',
+'  ,p_min => 1',
+'  ,p_max => 50',
 '  ,p_err_mesg => ''BLOG_VALIDATION_ERR_IS_INTEGER''',
 ');'))
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -21782,6 +21953,7 @@ wwv_flow_api.create_install(
 'alter table blog_links drop constraint blog_links_fk1;',
 'alter table blog_posts drop constraint blog_posts_fk1;',
 'alter table blog_posts drop constraint blog_posts_fk2;',
+'alter table blog_posts_uds drop constraint blog_posts_uds_fk1;',
 'alter table blog_post_tags drop constraint blog_post_tags_fk1;',
 'alter table blog_post_tags drop constraint blog_post_tags_fk2;',
 '--------------------------------------------------------',
@@ -21789,7 +21961,9 @@ wwv_flow_api.create_install(
 '--------------------------------------------------------',
 'drop package blog_cm;',
 'drop package blog_comm;',
+'drop package blog_ctx;',
 'drop package blog_html;',
+'drop package blog_install;',
 'drop package blog_ords;',
 'drop package blog_plugin;',
 'drop package blog_url;',
@@ -21810,6 +21984,7 @@ wwv_flow_api.create_install(
 'drop table blog_ords_templates;',
 'drop table blog_pages;',
 'drop table blog_posts;',
+'drop table blog_posts_uds;',
 'drop table blog_post_preview;',
 'drop table blog_post_tags;',
 'drop table blog_settings;',
@@ -21837,6 +22012,15 @@ wwv_flow_api.create_install(
 'drop view blog_v_rep_post_by_status;',
 'drop view blog_v_tags;',
 'drop view blog_v_temp_files;',
+'--------------------------------------------------------',
+'--  Drop text index preferences',
+'--------------------------------------------------------',
+'begin',
+'  ctx_ddl.drop_preference( ''BLOG_POSTS_LX'' );',
+'  ctx_ddl.drop_preference( ''BLOG_POSTS_DS'' );',
+'  ctx_ddl.drop_section_group( ''BLOG_POSTS_SG'' );',
+'end;',
+'/',
 ''))
 ,p_required_free_kb=>100
 ,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
@@ -22029,7 +22213,8 @@ wwv_flow_api.create_install_script(
 '  constraint blog_files_uk1 unique( file_name  ),',
 '  constraint blog_files_ck1 check( row_version > 0 ),',
 '  constraint blog_files_ck2 check( is_active in( 0, 1 ) ),',
-'  constraint blog_files_ck3 check( is_download in( 0, 1 ) )',
+'  constraint blog_files_ck3 check( is_download in( 0, 1 ) ),',
+'  constraint blog_files_ck4 check( is_download = 0 or is_download = 1 and file_desc is not null )',
 ')',
 '/',
 '--------------------------------------------------------',
@@ -22175,11 +22360,22 @@ wwv_flow_api.create_install_script(
 '  constraint blog_posts_ck2 check( is_active in( 0 , 1 ) )',
 ')',
 '/',
-'',
-'create index blog_posts_ctx on blog_posts (body_html)',
-'  indextype is ctxsys.context  parameters (',
-'    ''filter ctxsys.null_filter section group ctxsys.html_section_group sync (on commit)''',
-'  )',
+'--------------------------------------------------------',
+'--  DDL for Table BLOG_POSTS_UDS',
+'--------------------------------------------------------',
+'create table  blog_posts_uds(',
+'  id number( 38, 0 ) not null,',
+'	row_version number( 38, 0 ) not null,',
+'	created_on timestamp( 6 ) with local time zone not null,',
+'	created_by varchar2( 256 char ) not null,',
+'	changed_on timestamp( 6 ) with local time zone not null,',
+'	changed_by varchar2( 256 char ) not null,',
+'  post_id number( 38, 0 ) not null,',
+'  dummy char(1) default ''X'' not null,',
+'	constraint blog_posts_uds_pk primary key( id ),',
+'  constraint blog_posts_uds_uk1 unique( post_id ),',
+'  constraint blog_posts_uds_ck1 check( row_version > 0 )',
+')',
 '/',
 '--------------------------------------------------------',
 '--  DDL for Table BLOG_POST_PREVIEW',
@@ -22264,7 +22460,7 @@ wwv_flow_api.create_install_script(
 '  constraint blog_settings_ck14 check(',
 '    data_type != ''INTEGER'' or',
 '    data_type = ''INTEGER'' and',
-'    round( to_number( attribute_value ) ) between 1 and 100',
+'    round( to_number( attribute_value ) ) = to_number( attribute_value )',
 '  ),',
 '  constraint blog_settings_ck15 check(',
 '    data_type != ''URL'' or',
@@ -22559,7 +22755,12 @@ wwv_flow_api.create_install_script(
 '  ,t1.is_active',
 '  ,t1.post_id as post_id',
 '  ,t1.parent_id as parent_id',
-'  ,t1.created_on as created_on',
+'  ,t1.create'))
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'d_on as created_on',
 '  ,t1.comment_by as comment_by',
 '  ,t1.body_html as comment_body',
 '  ,apex_string.get_initials( t1.comment_by ) as user_icon',
@@ -22572,12 +22773,7 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_FILES',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FI'))
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'LE_DESC") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC") AS',
 '  select t1.id as file_id',
 '  ,t1.created_on',
 '  ,t1.changed_on',
@@ -22645,8 +22841,8 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_POSTS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "C'
-||'HANGED_ON", "COMMENTS_COUNT") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CAT'
+||'EGORY_SEQ", "CTX_SEARCH", "COMMENTS_COUNT") AS',
 '  select',
 '   t1.id                  as post_id',
 '  ,t3.id                  as category_id',
@@ -22658,10 +22854,11 @@ wwv_flow_api.append_to_install_script(
 '  ,t1.first_paragraph     as first_paragraph',
 '  ,t1.body_html           as body_html',
 '  ,t1.published_on        as published_on',
+'  ,t1.changed_on          as changed_on',
 '  ,t1.archive_year_month  as archive_year_month',
 '  ,t1.archive_year        as archive_year',
 '  ,t3.display_seq         as category_seq',
-'  ,t1.changed_on          as changed_on',
+'  ,t4.dummy               as ctx_search',
 '  ,(',
 '    select count( l1.id )',
 '    from blog_comments l1',
@@ -22669,9 +22866,13 @@ wwv_flow_api.append_to_install_script(
 '    and l1.is_active = 1',
 '    and l1.post_id  = t1.id',
 '  )                       as comments_count',
-'from blog_posts       t1',
-'join blog_bloggers    t2 on t1.blogger_id  = t2.id',
-'join blog_categories  t3 on t1.category_id = t3.id',
+'from blog_posts t1',
+'join blog_bloggers t2',
+'  on t1.blogger_id  = t2.id',
+'join blog_categories t3',
+'  on t1.category_id = t3.id',
+'join blog_posts_uds t4',
+'  on t1.id = t4.post_id',
 'where 1 = 1',
 'and t1.is_active = 1',
 'and t2.is_active = 1',
@@ -22726,7 +22927,7 @@ wwv_flow_api.append_to_install_script(
 '--  DDL for View BLOG_V_ALL_POSTS',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LEN'
-||'GTH", "PUBLISHED_ON", "NOTES", "PUBLISHED_DISPLAY", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS',
+||'GTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS',
 '  select',
 '   t1.id                as id',
 '  ,t1.category_id       as category_id',
@@ -22745,6 +22946,8 @@ wwv_flow_api.append_to_install_script(
 '  ,t1.body_length       as body_length',
 '  ,t1.published_on      as published_on',
 '  ,t1.notes             as notes',
+'  ,t4.rowid             as ctx_rid',
+'  ,t4.dummy             as ctx_search',
 '  ,case t1.is_active * t2.is_active * t3.is_active',
 '    when 1',
 '    then t1.published_on',
@@ -22787,8 +22990,12 @@ wwv_flow_api.append_to_install_script(
 '    else ''PUBLISHED''',
 '   end                  as post_status',
 'from blog_posts t1',
-'join blog_categories t2 on t1.category_id = t2.id',
-'join blog_bloggers t3 on t1.blogger_id = t3.id',
+'join blog_categories t2',
+'  on t1.category_id = t2.id',
+'join blog_bloggers t3',
+'  on t1.blogger_id = t3.id',
+'join blog_posts_uds t4',
+'  on t1.id = t4.post_id',
 'where 1 = 1',
 '/',
 '--------------------------------------------------------',
@@ -22883,6 +23090,149 @@ wwv_flow_api.append_to_install_script(
 'from blog_data q1',
 'join apex_lov q2 on q1.post_status = q2.return_value',
 'with read only',
+'/',
+'CREATE OR REPLACE package  "BLOG_CTX"',
+'authid definer',
+'as',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'--',
+'--  DESCRIPTION',
+'--    Procedures and functions Oracle text',
+'--',
+'--  MODIFIED (DD.MM.YYYY)',
+'--    Jari Laine 22.06.2020 - Created',
+'--',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  procedure generate_post_datastore(',
+'    rid       in rowid,',
+'    tlob      in out nocopy clob',
+'  );',
+'--------------------------------------------------------------------------------',
+'  function get_post_search(',
+'    p_search  in varchar2',
+'  ) return varchar2;',
+'--------------------------------------------------------------------------------',
+'end "BLOG_CTX";',
+'/',
+'',
+'',
+'CREATE OR REPLACE package body "BLOG_CTX"',
+'as',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'-- Private constants and variables',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'-- none',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'-- Private procedures and functions',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  function generate_search(',
+'    p_search  in varchar2,',
+'    p_feature in varchar2,',
+'    p_combine in varchar2',
+'  ) return varchar2',
+'  as',
+'    l_query        varchar2(32767);',
+'    l_clean_token  varchar2(1000);',
+'    l_tokens       apex_application_global.vc_arr2;',
+'  begin',
+'',
+'    l_tokens := apex_util.string_to_table( p_search, '' '' );',
+'',
+'    for i in 1..l_tokens.count',
+'    loop',
+'      -- remove special characters; irrelevant for full text search',
+'      l_clean_token := lower( regexp_replace( l_tokens( i ), ''[<>{}/()*%&!$?.:,;\+#]'', '''' ) );',
+'',
+'      if ltrim( rtrim( l_clean_token ) ) is not null',
+'      then',
+'        if p_feature = ''FUZZY''',
+'        then',
+'          l_query := l_query || ''FUZZY({'' || l_clean_token || ''}, 50, 500) '';',
+'        elsif p_feature = ''WILDCARD_RIGHT''',
+'        then',
+'          l_query := l_query || l_clean_token || ''% '';',
+'        else',
+'          l_query := l_query || ''{'' || l_clean_token || ''} '';',
+'        end if;',
+'        if p_combine = ''OR''',
+'        then',
+'          l_query := l_query || '' or '';',
+'        else',
+'          l_query := l_query || '' and '';',
+'        end if;',
+'      end if;',
+'',
+'    end loop;',
+'',
+'    if p_combine = ''AND''',
+'    then',
+'      l_query := substr( l_query, 1, length( l_query ) - 5 );',
+'    else',
+'      l_query := substr( l_query, 1, length( l_query ) - 4 );',
+'    end if;',
+'',
+'    return ltrim( rtrim( l_query ));',
+'',
+'  end generate_search;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'-- Global procedures and functions',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  procedure generate_post_datastore(',
+'    rid   in rowid,',
+'    tlob  in out nocopy clob',
+'  )',
+'  as',
+'    l_row blog_v_all_posts%rowtype;',
+'  begin',
+'',
+'    select *',
+'    into l_row',
+'    from blog_v_all_posts',
+'    where 1 = 1',
+'    and ctx_rid = rid',
+'    ;',
+'',
+'    tlob :=',
+'      ''<POST_TITLE>'' || l_row.title || ''</POST_TITLE>''',
+'      || ''<POST_CATEGORY>'' || l_row.category_title || ''</POST_CATEGORY>''',
+'      || ''<POST_DESCRIPTION>'' || l_row.post_desc || ''</POST_DESCRIPTION>''',
+'      || ''<POST_BODY>'' || l_row.body_html || ''</POST_BODY>''',
+'      || ''<POST_TAGS>'' || l_row.visible_tags|| ''</POST_TAGS>''',
+'    ;',
+'',
+'  end generate_post_datastore;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  function get_post_search(',
+'    p_search in varchar2',
+'  ) return varchar2',
+'  as',
+'    c_xml constant varchar2(32767) := ''<query><textquery><progression>'' ||',
+'                                        ''<seq>  #SEARCH#  </seq>'' ||',
+'                                        ''<seq> ?#SEARCH#  </seq>'' ||',
+'                                        ''<seq>  #SEARCH#% </seq>'' ||',
+'                                        ''<seq> %#SEARCH#% </seq>'' ||',
+'                                      ''</progression></textquery></query>'';',
+'    l_search varchar2(32767) := p_search;',
+'  begin',
+'',
+'    -- remove special characters; irrelevant for full text search',
+'    l_search := regexp_replace( l_search, ''[<>{}/()*%&!$?.:,;\+#]'', '''' );',
+'',
+'    return replace( c_xml, ''#SEARCH#'', l_search );',
+'',
+'  end get_post_search;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'end "BLOG_CTX";',
 '/',
 'CREATE OR REPLACE package  "BLOG_UTIL"',
 'authid definer',
@@ -23121,27 +23471,27 @@ wwv_flow_api.append_to_install_script(
 '    apex_debug.info( ''Fetch attribute %s return: %s'', p_attribute_name, l_value );',
 '    return l_value;',
 '',
-'    exception when no_data_found',
-'    then',
+'  exception when no_data_found',
+'  then',
 '',
-'      apex_debug.warn(',
-'         p_message => ''No data found. %s( %s => %s )''',
-'        ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'        ,p1 => ''p_attribute_name''',
-'        ,p2 => coalesce( p_attribute_name, ''(null)'' )',
-'      );',
-'      raise;',
+'    apex_debug.warn(',
+'       p_message => ''No data found. %s( %s => %s )''',
+'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'      ,p1 => ''p_attribute_name''',
+'      ,p2 => coalesce( p_attribute_name, ''(null)'' )',
+'    );',
+'    raise;',
 '',
-'    when others',
-'    then',
+'  when others',
+'  then',
 '',
-'      apex_debug.error(',
-'         p_message => ''Unhandled error. %s( %s => %s )''',
-'        ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'        ,p1 => ''p_attribute_name''',
-'        ,p2 => coalesce( p_attribute_name, ''(null)'' )',
-'      );',
-'      raise;',
+'    apex_debug.error(',
+'       p_message => ''Unhandled error. %s( %s => %s )''',
+'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'      ,p1 => ''p_attribute_name''',
+'      ,p2 => coalesce( p_attribute_name, ''(null)'' )',
+'    );',
+'    raise;',
 '',
 '  end get_attribute_value;',
 '--------------------------------------------------------------------------------',
@@ -23244,7 +23594,15 @@ wwv_flow_api.append_to_install_script(
 '    apex_debug.warn(',
 '       p_message => ''No data found. %s( %s => %s, %s => %s )''',
 '      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => ''p_post_id''',
+'      ,'))
+);
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'p1 => ''p_post_id''',
 '      ,p2 => coalesce( p_post_id, ''(null)'' )',
 '      ,p3 => ''p_escape''',
 '      ,p4 => apex_debug.tochar( p_escape )',
@@ -23335,8 +23693,8 @@ wwv_flow_api.append_to_install_script(
 '      ,p2 => coalesce( p_post_id, ''(null)'' )',
 '    );',
 '',
-'    --raise;',
-'    -- We wan''t show errors between -20999 and -20901 in error page',
+'    -- We wan''t show errors between -20999 and -20901 on APEX error page',
+'    -- see function apex_error_handler',
 '    raise_application_error(-20901, ''Post not found.'');',
 '',
 '  when others',
@@ -23453,15 +23811,7 @@ wwv_flow_api.append_to_install_script(
 '  then',
 '',
 '    apex_debug.warn(',
-'       p_message => ''No data found. %s( %s => '))
-);
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'%s )''',
+'       p_message => ''No data found. %s( %s => %s )''',
 '      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
 '      ,p1 => ''p_tag_id''',
 '      ,p2 => coalesce( p_tag_id, ''(null)'' )',
@@ -23844,6 +24194,7 @@ wwv_flow_api.append_to_install_script(
 '    l_data  := l_data || ''&#'' || ascii(''?'');',
 '    l_data  := l_data || ''</span>'';',
 '',
+'    -- set correct answer to item session state',
 '    apex_util.set_session_state(',
 '       p_name   => p_item.attribute_05',
 '      ,p_value  => to_char( l_num_1 + l_num_2 , blog_util.g_number_format )',
@@ -23857,7 +24208,6 @@ wwv_flow_api.append_to_install_script(
 '    sys.owa_util.http_header_close;',
 '    -- Write output',
 '    sys.htp.prn( l_data );',
-'    -- set correct answer to item session state',
 '',
 '  exception when others',
 '  then',
@@ -24114,7 +24464,16 @@ wwv_flow_api.append_to_install_script(
 '         ,p_session     => p_session',
 '         ,p_clear_cache => ''RP''',
 '         ,p_items       => ''P2_POST_ID''',
-'         ,p_values      => p_post_id',
+'         ,p_val'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ues      => p_post_id',
 '         --,p_plain_url   => true',
 '        )',
 '      ;',
@@ -24315,16 +24674,7 @@ wwv_flow_api.append_to_install_script(
 '          --,p_plain_url   => true',
 '        )',
 '      );',
-'    en'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'d if;',
+'    end if;',
 '  end redirect_search;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -24355,6 +24705,8 @@ wwv_flow_api.append_to_install_script(
 '--                            run_settings_post_expression',
 '--                            run_feature_post_expression',
 '--                            update_feature',
+'--    Jari Laine 22.06.2020 - Bug fix to function is_integer',
+'--                            Added parameters p_min and p_max to function is_integer',
 '--',
 '--  TO DO:',
 '--    #1  check constraint name that raised dup_val_on_index error',
@@ -24372,34 +24724,34 @@ wwv_flow_api.append_to_install_script(
 '    p_name            out nocopy varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 14',
+'  -- Called from: admin app page 14',
 '  function get_category_seq return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 20',
+'  -- Called from: admin app page 20',
 '  function get_link_grp_seq return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 18',
+'  -- Called from: admin app page 18',
 '  function get_link_seq(',
 '    p_link_group_id   in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 12',
+'  -- Called from: admin app page 12',
 '  function get_post_tags(',
 '    p_post_id         in varchar2,',
 '    p_sep             in varchar2 default '',''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 12',
+'  -- Called from: admin app page 12',
 '  function get_category_title(',
 '    p_category_id     in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 12',
+'  -- Called from: admin app page 12',
 '  function get_first_paragraph(',
 '    p_body_html       in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 12',
+'  -- Called from: admin app page 12',
 '  function request_to_post_status(',
 '    p_request         in varchar2',
 '  ) return varchar2;',
@@ -24409,6 +24761,7 @@ wwv_flow_api.append_to_install_script(
 '    p_file_name       in varchar2',
 '  ) return boolean;',
 '--------------------------------------------------------------------------------',
+'  -- Called from: admin app page 12 and procedudre blog_cm.get_first_paragraph',
 '  function remove_whitespace(',
 '    p_string          in varchar2',
 '  ) return varchar2;',
@@ -24416,14 +24769,14 @@ wwv_flow_api.append_to_install_script(
 '  -- Called from: admin app page 23 and procedure blog_cm.file_upload',
 '  procedure merge_files;',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 12',
+'  -- Called from: admin app page 12',
 '  procedure add_category(',
 '    p_title           in varchar2,',
 '    p_err_mesg        in varchar2,',
 '    p_category_id     out nocopy number',
 '  );',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 12',
+'  -- Called from: admin app page 12',
 '  procedure add_post_tags(',
 '    p_post_id         in varchar2,',
 '    p_tags            in varchar2,',
@@ -24454,6 +24807,8 @@ wwv_flow_api.append_to_install_script(
 '  -- Called from: admin app pages 20012',
 '  function is_integer(',
 '    p_value           in varchar2,',
+'    p_min             in number,',
+'    p_max             in number,',
 '    p_err_mesg        in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
@@ -24517,6 +24872,15 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  function next_seq(',
+'    p_max in number',
+'  ) return number',
+'  as',
+'  begin',
+'    return ceil( coalesce( p_max + 1, 1 ) / 10 ) * 10;',
+'  end next_seq;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure add_tag(',
@@ -24630,17 +24994,19 @@ wwv_flow_api.append_to_install_script(
 '    then',
 '',
 '      -- Fetch next display_seq',
-'      select ceil(coalesce(max(display_seq) + 1, 1) / 10) * 10',
+'      select max(display_seq) as display_seq',
 '      into l_max',
 '      from blog_bloggers',
 '      ;',
+'',
+'      l_max := next_seq( l_max );',
 '',
 '      -- Fetch user information from APEX users',
 '      select email',
 '        ,v1.first_name || '' '' || v1.last_name as full_name',
 '      into l_email, l_name',
 '      from apex_workspace_apex_users v1',
-'      where 1  =1',
+'      where 1 = 1',
 '      and v1.user_name = p_username',
 '      ;',
 '',
@@ -24728,7 +25094,7 @@ wwv_flow_api.append_to_install_script(
 '    ;',
 '    -- return next category display sequence',
 '    l_result := to_char(',
-'      ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10',
+'       next_seq( l_max )',
 '      ,blog_util.g_number_format',
 '    );',
 '',
@@ -24751,7 +25117,7 @@ wwv_flow_api.append_to_install_script(
 '    ;',
 '    -- return next link group display sequence',
 '    l_result := to_char(',
-'      ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10',
+'       next_seq( l_max )',
 '      ,blog_util.g_number_format',
 '    );',
 '',
@@ -24780,7 +25146,7 @@ wwv_flow_api.append_to_install_script(
 '    ;',
 '    -- return next link display sequence',
 '    l_result := to_char(',
-'      ceil( coalesce( l_max + 1, 1 ) / 10 ) * 10',
+'       next_seq( l_max )',
 '      ,blog_util.g_number_format',
 '    );',
 '',
@@ -24794,7 +25160,7 @@ wwv_flow_api.append_to_install_script(
 '  ) return varchar2',
 '  as',
 '  begin',
-'    -- one reason for this function is that APEX 19.2 as bug in switch.',
+'    -- one reason for this function is that APEX 19.2 has bug in switch.',
 '    -- switch not allow return value zero (0)',
 '',
 '    -- conver APEX request to post status (blog_posts.is_active)',
@@ -24839,8 +25205,6 @@ wwv_flow_api.append_to_install_script(
 '',
 '  exception when no_data_found then',
 '    return null;',
-'  when others then',
-'    raise;',
 '  end get_post_tags;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -24864,8 +25228,6 @@ wwv_flow_api.append_to_install_script(
 '',
 '  exception when no_data_found then',
 '    return null;',
-'  when others then',
-'    raise;',
 '  end get_category_title;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -24892,7 +25254,7 @@ wwv_flow_api.append_to_install_script(
 '      l_first_p := substr( p_body_html, l_first_p_start, l_first_p_end );',
 '',
 '      -- remove whitespace',
-'      l_first_p := replace( regexp_replace( l_first_p, ''\s+'', '' '' ), ''  '', '' '' );',
+'      l_first_p := remove_whitespace( l_first_p );',
 '',
 '    end if;',
 '',
@@ -24983,7 +25345,7 @@ wwv_flow_api.append_to_install_script(
 '  as',
 '  begin',
 '    -- remove whitespace characters from string',
-'    return regexp_replace( p_string, ''\s+'', '' '' );',
+'    return replace( regexp_replace( p_string, ''\s+'', '' '' ), ''  '', '' '' );',
 '  end remove_whitespace;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -25035,7 +25397,16 @@ wwv_flow_api.append_to_install_script(
 '    -- category title must have some value',
 '    if l_value is null then',
 '      -- prepare error message',
-'      l_err_mesg := apex_lang.message( p_err_mesg );',
+'      l_err_mes'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'g := apex_lang.message( p_err_mesg );',
 '',
 '      if l_err_mesg = apex_escape.html( p_err_mesg )',
 '      then',
@@ -25164,10 +25535,11 @@ wwv_flow_api.append_to_install_script(
 '  as',
 '  begin',
 '',
+'    -- delete from blog_post_preview if there is row for session',
 '    delete from blog_post_preview',
 '    where id = p_id',
 '    ;',
-'',
+'    -- insert preview data',
 '    insert into blog_post_preview(',
 '       id',
 '      ,tags',
@@ -25191,7 +25563,7 @@ wwv_flow_api.append_to_install_script(
 '  as',
 '  begin',
 '',
-'    -- Delete from blog_post_preview rows where session is expired',
+'    -- delete from blog_post_preview rows where session is expired',
 '    delete from blog_post_preview p',
 '    where not exists (',
 '      select 1',
@@ -25211,9 +25583,9 @@ wwv_flow_api.append_to_install_script(
 '    job_not_exists  exception;',
 '    pragma          exception_init(job_not_exists, -27475);',
 '  begin',
-'',
+'    -- set job name',
 '    l_job_name := ''BLOG_JOB_PURGE_POST_PREVIEW'';',
-'',
+'    -- drop job if exists',
 '    begin',
 '      sys.dbms_scheduler.drop_job(',
 '        job_name => l_job_name',
@@ -25221,13 +25593,14 @@ wwv_flow_api.append_to_install_script(
 '    exception when job_not_exists then',
 '      null;',
 '    end;',
-'',
+'    -- if job is not just dropped',
+'    -- create new job',
 '    if not p_drop_job then',
 '      sys.dbms_scheduler.create_job(',
 '         job_name        => l_job_name',
 '        ,job_type        => ''STORED_PROCEDURE''',
 '        ,job_action      => ''blog_conf.purge_post_preview''',
-'        ,start_date      => trunc(localtimestamp, ''HH'')',
+'        ,start_date      => trunc( localtimestamp, ''HH'')',
 '        ,repeat_interval => ''FREQ=DAILY''',
 '        ,enabled         => true',
 '        ,comments        => ''Purge expired sessions posts previews''',
@@ -25239,46 +25612,46 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  function is_integer(',
 '    p_value     in varchar2,',
+'    p_min       in number,',
+'    p_max       in number,',
 '    p_err_mesg  in varchar2',
 '  ) return varchar2',
 '  as',
-'    l_err_mesg varchar2(32700);',
+'    l_value     number;',
+'    l_err_mesg  varchar2(32700);',
 '  begin',
 '',
 '    -- prepare validation error message',
-'    l_err_mesg := apex_lang.message( p_err_mesg );',
+'    l_err_mesg := apex_lang.message( p_err_mesg, p_min, p_max );',
 '',
 '    if l_err_mesg = apex_escape.html( p_err_mesg )',
 '    then',
 '      l_err_mesg := p_err_mesg;',
 '    end if;',
 '',
-'    if round( to_number( p_value ) ) between 1 and 100',
+'    l_value := to_number( p_value );',
+'    -- check value is integer and between range',
+'    if round( l_value ) = l_value',
+'    and l_value between p_min and p_max',
 '    then',
+'      -- if validation passes, clear error meassage',
 '      l_err_mesg := null;',
 '    end if;',
 '',
 '    return l_err_mesg;',
 '',
-'  exception when invalid_number',
+'  exception',
+'  when invalid_number',
 '  or value_error',
 '  then',
+'    -- return error message',
 '    return l_err_mesg;',
 '  end is_integer;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function is_url(',
 '    p_value     in varchar2,',
-'    p_err_mesg  '))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'in varchar2',
+'    p_err_mesg  in varchar2',
 '  ) return varchar2',
 '  as',
 '    l_err_mesg varchar2(32700);',
@@ -25286,7 +25659,7 @@ wwv_flow_api.append_to_install_script(
 '',
 '    if not regexp_like(p_value, ''^https?\:\/\/.*$'')',
 '    then',
-'      -- prepare validation error message',
+'      -- if validation fails prepare error message',
 '      l_err_mesg := apex_lang.message( p_err_mesg );',
 '',
 '      if l_err_mesg = apex_escape.html( p_err_mesg )',
@@ -25294,6 +25667,7 @@ wwv_flow_api.append_to_install_script(
 '        l_err_mesg := p_err_mesg;',
 '      end if;',
 '    else',
+'      -- if validation passes, clear error meassage',
 '      l_err_mesg := null;',
 '    end if;',
 '',
@@ -25320,15 +25694,19 @@ wwv_flow_api.append_to_install_script(
 '      l_err_mesg := p_err_mesg;',
 '    end if;',
 '',
-'    if to_char( systimestamp, p_value ) = to_char( systimestamp, p_value )',
+'    -- try convert timestamp to string',
+'    if to_char( systimestamp, p_value ) is not null',
 '    then',
+'      -- if validation passes, clear error meassage',
 '      l_err_mesg := null;',
 '    end if;',
 '',
 '    return l_err_mesg;',
 '',
-'  exception when invalid_date_format',
+'  exception',
+'  when invalid_date_format',
 '  then',
+'    -- return error message',
 '    return l_err_mesg;',
 '  end is_date_format;',
 '--------------------------------------------------------------------------------',
@@ -25341,10 +25719,11 @@ wwv_flow_api.append_to_install_script(
 '    l_err_mesg varchar2(32700);',
 '  begin',
 '    -- TO DO see item 3 from package specs',
+'',
 '    -- do some basic check for email address',
 '    if not regexp_like(p_value, ''^.*\@.*\..*$'')',
 '    then',
-'      -- Prepare validation error message',
+'      -- if validation fails prepare error message',
 '      l_err_mesg := apex_lang.message( p_err_mesg );',
 '',
 '      if l_err_mesg = apex_escape.html( p_err_mesg )',
@@ -25352,6 +25731,7 @@ wwv_flow_api.append_to_install_script(
 '        l_err_mesg := p_err_mesg;',
 '      end if;',
 '    else',
+'      -- if validation passes, clear error meassage',
 '      l_err_mesg := null;',
 '    end if;',
 '',
@@ -25444,14 +25824,20 @@ wwv_flow_api.append_to_install_script(
 '    p_email_template  in varchar2',
 '  )',
 '  as',
-'    l_post_id   number;',
-'    l_app_email varchar2(4000);',
+'    l_post_id       number;',
+'    l_watch_months  number;',
+'    l_app_email     varchar2(4000);',
 '  begin',
 '',
 '    l_post_id := to_number( p_post_id );',
 '',
 '    -- fetch application email address',
-'    l_app_email := blog_util.get_attribute_value(''APP_EMAIL'');',
+'    l_app_email := blog_util.get_attribute_value( ''APP_EMAIL'' );',
+'    -- fetch comment watch expires',
+'    l_watch_months := to_number(',
+'        blog_util.get_attribute_value( ''COMMENT_WATCH_MONTHS'' )',
+'      ) * -1',
+'    ;',
 '',
 '    -- send notify users that have subscribed to replies to comment',
 '    for c1 in(',
@@ -25479,7 +25865,7 @@ wwv_flow_api.append_to_install_script(
 '        on t1.post_id = v1.id',
 '      where 1 = 1',
 '        -- send notification if subscription is created less than month ago',
-'        and t1.created_on >= add_months( localtimestamp, -1 )',
+'        and t1.created_on >= add_months( localtimestamp, l_watch_months )',
 '        and v1.id = l_post_id',
 '    ) loop',
 '',
@@ -25986,7 +26372,16 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  -- called from pub app shortcut BLOG_CANONICAL_LINK_POST',
 '  function get_post_canonical_link(',
-'    p_post_id             in varchar2,',
+'    p_po'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'st_id             in varchar2,',
 '    p_app_id              in varchar2 default null',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
@@ -26201,16 +26596,7 @@ wwv_flow_api.append_to_install_script(
 '  end get_post_description_meta;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  function get_ta'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'b_canonical_link(',
+'  function get_tab_canonical_link(',
 '    p_app_page_id     in varchar2,',
 '    p_app_id          in varchar2 default null',
 '  ) return varchar2',
@@ -26751,7 +27137,7 @@ wwv_flow_api.append_to_install_script(
 '                                    ,p_canonical  => ''YES''',
 '                                  )',
 '              )',
-'              ,XMLElement( "lastmod", to_char( sys_extract_utc( posts.changed_on ), ''YYYY-MM-DD"T"HH24:MI:SS"+00:00""'' ) )',
+'              ,XMLElement( "lastmod", to_char( sys_extract_utc( greatest( posts.published_on, posts.changed_on ) ), ''YYYY-MM-DD"T"HH24:MI:SS"+00:00""'' ) )',
 '            ) order by posts.published_on desc',
 '          )',
 '        )',
@@ -26875,7 +27261,16 @@ wwv_flow_api.append_to_install_script(
 '      )',
 '    as blob encoding ''UTF-8'' indent size=2)',
 '    into l_xml',
-'    from blog_v_tags tags',
+'    from blog_v_ta'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'gs tags',
 '    ;',
 '',
 '    owa_util.mime_header(''application/xml'', false, ''UTF-8'');',
@@ -26902,22 +27297,22 @@ wwv_flow_api.append_to_install_script(
 '  if inserting then',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context(''USERENV'',''PROXY_USER'')',
-'      ,sys_context(''USERENV'',''SESSION_USER'')',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
-'',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context(''USERENV'',''PROXY_USER'')',
-'    ,sys_context(''USERENV'',''SESSION_USER'')',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -26935,21 +27330,22 @@ wwv_flow_api.append_to_install_script(
 '  if inserting then',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context(''USERENV'',''PROXY_USER'')',
-'      ,sys_context(''USERENV'',''SESSION_USER'')',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
-'  :new.changed_on   := localtimestamp;',
-'  :new.changed_by   := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context(''USERENV'',''PROXY_USER'')',
-'    ,sys_context(''USERENV'',''SESSION_USER'')',
+'  :new.changed_on := localtimestamp;',
+'  :new.changed_by := coalesce(',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -26967,22 +27363,22 @@ wwv_flow_api.append_to_install_script(
 '  if inserting then',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
-'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
-'',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
-'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -26990,7 +27386,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for Trigger BLOG_COMMENT_FLAGS_TRG',
 '--------------------------------------------------------',
-'CREATE OR REPLACE TRIGGER "BLOG_COMMENT_FLAGS_TRG" ',
+'CREATE OR REPLACE TRIGGER "BLOG_COMMENT_FLAGS_TRG"',
 'before',
 'insert or',
 'update on blog_comment_flags',
@@ -27000,22 +27396,22 @@ wwv_flow_api.append_to_install_script(
 '  if inserting then',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
-'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
-'',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
-'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -27033,22 +27429,22 @@ wwv_flow_api.append_to_install_script(
 '  if inserting then',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
-'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
-'',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
-'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -27066,22 +27462,22 @@ wwv_flow_api.append_to_install_script(
 '  if inserting then',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
-'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
-'',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
-'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -27097,26 +27493,24 @@ wwv_flow_api.append_to_install_script(
 'begin',
 '',
 '  if inserting then',
-'',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       :new.created_by',
-'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context(''USERENV'',''PROXY_USER'')',
-'      ,sys_context(''USERENV'',''SESSION_USER'')',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
-'',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context(''USERENV'',''PROXY_USER'')',
-'    ,sys_context(''USERENV'',''SESSION_USER'')',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -27128,39 +27522,28 @@ wwv_flow_api.append_to_install_script(
 'before',
 'insert or',
 'update on blog_files',
-'f'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'or each row',
+'for each row',
 'begin',
 '',
 '  if inserting then',
-'',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       :new.created_by',
-'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context(''USERENV'',''PROXY_USER'')',
-'      ,sys_context(''USERENV'',''SESSION_USER'')',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
-'',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context(''USERENV'',''PROXY_USER'')',
-'    ,sys_context(''USERENV'',''SESSION_USER'')',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -27176,26 +27559,24 @@ wwv_flow_api.append_to_install_script(
 'begin',
 '',
 '  if inserting then',
-'',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       :new.created_by',
-'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context(''USERENV'',''PROXY_USER'')',
-'      ,sys_context(''USERENV'',''SESSION_USER'')',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
-'',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context(''USERENV'',''PROXY_USER'')',
-'    ,sys_context(''USERENV'',''SESSION_USER'')',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -27213,21 +27594,22 @@ wwv_flow_api.append_to_install_script(
 '  if inserting then',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context(''USERENV'',''PROXY_USER'')',
-'      ,sys_context(''USERENV'',''SESSION_USER'')',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context(''USERENV'',''PROXY_USER'')',
-'    ,sys_context(''USERENV'',''SESSION_USER'')',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -27245,23 +27627,23 @@ wwv_flow_api.append_to_install_script(
 '  if inserting then',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       :new.created_by',
-'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context(''USERENV'',''PROXY_USER'')',
-'      ,sys_context(''USERENV'',''SESSION_USER'')',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'       sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context(''USERENV'',''PROXY_USER'')',
-'      ,sys_context(''USERENV'',''SESSION_USER'')',
-'    );',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'  );',
 '',
 'end;',
 '/',
@@ -27276,26 +27658,24 @@ wwv_flow_api.append_to_install_script(
 'begin',
 '',
 '  if inserting then',
-'',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       :new.created_by',
-'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context(''USERENV'',''PROXY_USER'')',
-'      ,sys_context(''USERENV'',''SESSION_USER'')',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
-'',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context(''USERENV'',''PROXY_USER'')',
-'    ,sys_context(''USERENV'',''SESSION_USER'')',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -27311,26 +27691,24 @@ wwv_flow_api.append_to_install_script(
 'begin',
 '',
 '  if inserting then',
-'',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       :new.created_by',
-'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context(''USERENV'',''PROXY_USER'')',
-'      ,sys_context(''USERENV'',''SESSION_USER'')',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
-'',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context(''USERENV'',''PROXY_USER'')',
-'    ,sys_context(''USERENV'',''SESSION_USER'')',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -27346,29 +27724,205 @@ wwv_flow_api.append_to_install_script(
 'begin',
 '',
 '  if inserting then',
-'    :new.id := coalesce( :new.id,',
-'      to_number( to_char( sys_extract_utc( systimestamp ), ''YYYYMMDDHH24MISSFF6'' ) )',
-'    );',
+'    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
-'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
-'',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
-'',
-'  :new.published_on := coalesce( :new.published_on, localtimestamp );',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'       sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
-'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'  );',
+'',
+'end;',
+'/',
+'--------------------------------------------------------',
+'--  DDL for Trigger BLOG_POSTS_UDS_CATEGORIES_TRG',
+'--------------------------------------------------------',
+'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_CATEGORIES_TRG"',
+'after',
+'update on blog_categories',
+'for each row',
+'begin',
+'',
+'  if :new.title_unique != :old.title_unique',
+'  then',
+'',
+'    update blog_posts_uds t1',
+'      set dummy = dummy',
+'    where 1 = 1',
+'    and exists(',
+'      select 1',
+'      from blog_posts x1',
+'      where 1 = 1',
+'        and x1.category_id = :new.id',
+'        and x1.id = t1.post_id',
+'    )',
+'    ;',
+'',
+'  end if;',
+'',
+'end;',
+'/',
+'--------------------------------------------------------',
+'--  DDL for Trigger BLOG_POSTS_UDS_POSTS_TRG',
+'--------------------------------------------------------',
+'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_POSTS_TRG"',
+'after',
+'insert or',
+'update on blog_posts',
+'for each row',
+'declare',
+'  l_update boolean;',
+'begin',
+'',
+'  if inserting',
+'  then',
+'',
+'    insert into blog_posts_uds( post_id )',
+'      values ( :new.id )',
+'    ;',
+'',
+'  elsif updating',
+'  then',
+'',
+'    l_update :=',
+'      case',
+'        when :new.category_id != :old.category_id',
+'        then true',
+'        when upper( :new.title ) != upper( :old.title )',
+'        then true',
+'        when upper( :new.post_desc ) != upper( :old.post_desc )',
+'        then true',
+'        when dbms_lob.compare( :new.body_html, :old.body_html ) != 0',
+'        then true',
+'        else false',
+'      end',
+'    ;',
+'',
+'    if l_update',
+'    then',
+'      update blog_posts_uds t1',
+'        set dummy = dummy',
+'      where 1 = 1',
+'      and t1.post_id  = :new.id',
+'      ;',
+'    end if;',
+'',
+'  end if;',
+'',
+'end;',
+'/',
+'--------------------------------------------------------',
+'--  DDL for Trigger BLOG_POSTS_UDS_POST_TAGS_TRG',
+'--------------------------------------------------------',
+'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_POST_TAGS_TRG"',
+'after',
+'insert or',
+'delete on blog_post_tags',
+'for each row',
+'begin',
+'',
+'  if inserting',
+'  then',
+'',
+'    update blog_posts_uds t1',
+'      set dummy = dummy',
+'    where 1 = 1',
+'    and t1.post_id = :new.post_id',
+'    ;',
+'',
+'  elsif deleting',
+'  then',
+'',
+'    update blog_posts_uds t1',
+'      set dummy = dummy',
+'    where 1 = 1',
+'    and t1.post_id = :old.post_id',
+'    ;',
+'',
+'  end if;',
+'',
+'end;',
+'/',
+'--------------------------------------------------------',
+'--  DDL for Trigger BLOG_POSTS_UDS_TAGS_TRG',
+'--------------------------------------------------------',
+'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_TAGS_TRG"',
+'after',
+'update on blog_tags',
+'for each row',
+'declare',
+'  l_update boolean;',
+'begin',
+'',
+'  l_update :=',
+'    case',
+'      when :new.tag_unique != :old.tag_unique',
+'      then true',
+'      when :new.is_active != :old.is_active',
+'      then true',
+'      else false',
+'    end',
+'  ;',
+'',
+'  if l_update',
+'  then',
+'    update blog_posts_uds t1',
+'      set dummy = dummy',
+'    where 1 = 1',
+'    and exists(',
+'      select 1',
+'      from blog_post_tags x1',
+'      where 1 = 1',
+'        and x1.post_id = t1.post_id',
+'        and x1.tag_id  = :new.id',
+'      )',
+'    ;',
+'  end if;',
+'',
+'end;',
+'/',
+'--------------------------------------------------------',
+'--  DDL for Trigger BLOG_POSTS_UDS_TRG',
+'--------------------------------------------------------',
+'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_TRG"',
+'before',
+'insert or',
+'update on blog_posts_uds',
+'for each row',
+'begin',
+'',
+'  if inserting then',
+'    :new.id           := coalesce( :new.id, blog_seq.nextval );',
+'    :new.row_version  := coalesce( :new.row_version, 1 );',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
+'    :new.created_by   := coalesce(',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
+'  elsif updating then',
+'    :new.row_version := :old.row_version + 1;',
+'  end if;',
+'',
+'  :new.changed_on := localtimestamp;',
+'  :new.changed_by := coalesce(',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'  );',
 '',
 'end;',
 '/',
@@ -27385,21 +27939,22 @@ wwv_flow_api.append_to_install_script(
 '  if inserting then',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context(''USERENV'',''PROXY_USER'')',
-'      ,sys_context(''USERENV'',''SESSION_USER'')',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
-'  :new.changed_on   := localtimestamp;',
-'  :new.changed_by   := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context(''USERENV'',''PROXY_USER'')',
-'    ,sys_context(''USERENV'',''SESSION_USER'')',
+'  :new.changed_on := localtimestamp;',
+'  :new.changed_by := coalesce(',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -27417,22 +27972,22 @@ wwv_flow_api.append_to_install_script(
 '  if inserting then',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context(''USERENV'',''PROXY_USER'')',
-'      ,sys_context(''USERENV'',''SESSION_USER'')',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
-'',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context(''USERENV'',''PROXY_USER'')',
-'    ,sys_context(''USERENV'',''SESSION_USER'')',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -27450,22 +28005,22 @@ wwv_flow_api.append_to_install_script(
 '  if inserting then',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := localtimestamp;',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'       sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context(''USERENV'',''PROXY_USER'')',
-'      ,sys_context(''USERENV'',''SESSION_USER'')',
+'        :new.created_by',
+'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      , sys_context( ''USERENV'',''PROXY_USER'' )',
+'      , sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
-'',
 '  elsif updating then',
-'    :new.row_version  := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context(''USERENV'',''PROXY_USER'')',
-'    ,sys_context(''USERENV'',''SESSION_USER'')',
+'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    , sys_context( ''USERENV'',''PROXY_USER'' )',
+'    , sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -27473,38 +28028,50 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for Foreign Keys',
 '--------------------------------------------------------',
-'ALTER TABLE BLOG_COMMENTS ADD CONSTRAINT BLOG_COMMENTS_FK1 FOREIGN KEY (POST_ID)',
-'  REFERENCES BLOG_POSTS (ID) ON DELETE CASCADE ENABLE;',
 '',
-'ALTER TABLE BLOG_COMMENTS ADD CONSTRAINT BLOG_COMMENTS_FK2 FOREIGN KEY (PARENT_ID)',
-'  REFERENCES BLOG_COMMENTS (ID) ON DELETE SET NULL ENABLE;',
+'  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK1" FOREIGN KEY ("POST_ID")',
+'	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;',
 '',
-'ALTER TABLE BLOG_COMMENT_FLAGS ADD CONSTRAINT BLOG_COMMENT_FLAGS_FK1 FOREIGN KEY (COMMENT_ID)',
-'  REFERENCES BLOG_COMMENTS (ID) ON DELETE CASCADE ENABLE;',
 '',
-'ALTER TABLE BLOG_COMMENT_SUBS ADD CONSTRAINT BLOG_COMMENT_SUBS_FK1 FOREIGN KEY (POST_ID)',
-'  REFERENCES BLOG_POSTS (ID) ON DELETE CASCADE ENABLE;',
+'  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK2" FOREIGN KEY ("PARENT_ID")',
+'	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE SET NULL ENABLE;',
 '',
-'ALTER TABLE BLOG_COMMENT_SUBS ADD CONSTRAINT BLOG_COMMENT_SUBS_FK2 FOREIGN KEY (EMAIL_ID)',
-'  REFERENCES BLOG_COMMENT_SUBS_EMAIL (ID) ON DELETE CASCADE ENABLE;',
 '',
-'ALTER TABLE BLOG_INIT_ITEMS ADD CONSTRAINT BLOG_INIT_ITEMS_FK1 FOREIGN KEY (ITEM_NAME)',
-'  REFERENCES BLOG_SETTINGS (ATTRIBUTE_NAME) ENABLE;',
+'  ALTER TABLE "BLOG_COMMENT_FLAGS" ADD CONSTRAINT "BLOG_COMMENT_FLAGS_FK1" FOREIGN KEY ("COMMENT_ID")',
+'	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE CASCADE ENABLE;',
 '',
-'ALTER TABLE BLOG_LINKS ADD CONSTRAINT BLOG_LINKS_FK1 FOREIGN KEY (LINK_GROUP_ID)',
-'  REFERENCES BLOG_LINK_GROUPS (ID) ON DELETE CASCADE ENABLE;',
 '',
-'ALTER TABLE BLOG_POSTS ADD CONSTRAINT BLOG_POSTS_FK1 FOREIGN KEY (BLOGGER_ID)',
-'  REFERENCES BLOG_BLOGGERS (ID) ENABLE;',
+'  ALTER TABLE "BLOG_COMMENT_SUBS" ADD CONSTRAINT "BLOG_COMMENT_SUBS_FK1" FOREIGN KEY ("POST_ID")',
+'	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;',
 '',
-'ALTER TABLE BLOG_POSTS ADD CONSTRAINT BLOG_POSTS_FK2 FOREIGN KEY (CATEGORY_ID)',
-'  REFERENCES BLOG_CATEGORIES (ID) ENABLE;',
 '',
-'ALTER TABLE BLOG_POST_TAGS ADD CONSTRAINT BLOG_POST_TAGS_FK1 FOREIGN KEY (POST_ID)',
-'  REFERENCES BLOG_POSTS (ID) ON DELETE CASCADE ENABLE;',
+'  ALTER TABLE "BLOG_COMMENT_SUBS" ADD CONSTRAINT "BLOG_COMMENT_SUBS_FK2" FOREIGN KEY ("EMAIL_ID")',
+'	  REFERENCES "BLOG_COMMENT_SUBS_EMAIL" ("ID") ON DELETE CASCADE ENABLE;',
 '',
-'ALTER TABLE BLOG_POST_TAGS ADD CONSTRAINT BLOG_POST_TAGS_FK2 FOREIGN KEY (TAG_ID)',
-'  REFERENCES BLOG_TAGS (ID) ENABLE;',
+'',
+'  ALTER TABLE "BLOG_LINKS" ADD CONSTRAINT "BLOG_LINKS_FK1" FOREIGN KEY ("LINK_GROUP_ID")',
+'	  REFERENCES "BLOG_LINK_GROUPS" ("ID") ON DELETE CASCADE ENABLE;',
+'',
+'',
+'  ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK1" FOREIGN KEY ("BLOGGER_ID")',
+'	  REFERENCES "BLOG_BLOGGERS" ("ID") ENABLE;',
+'',
+'',
+'  ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK2" FOREIGN KEY ("CATEGORY_ID")',
+'	  REFERENCES "BLOG_CATEGORIES" ("ID") ENABLE;',
+'',
+'',
+'  ALTER TABLE "BLOG_POSTS_UDS" ADD CONSTRAINT "BLOG_POSTS_UDS_FK1" FOREIGN KEY ("POST_ID")',
+'	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;',
+'',
+'',
+'  ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK1" FOREIGN KEY ("POST_ID")',
+'	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;',
+'',
+'',
+'  ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK2" FOREIGN KEY ("TAG_ID")',
+'	  REFERENCES "BLOG_TAGS" ("ID") ENABLE;',
+'',
 ''))
 );
 null;
@@ -27600,6 +28167,8 @@ wwv_flow_api.create_install_script(
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''10'',''0'',''APP_GROUP'',''STRING'',''INTERNAL'',''BLOG_040000'',null);',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''40'',''0'',''COMMENT_WATCH_MONTHS'',''INTEGER'',''INTERNAL'',''1'',null);',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''50'',''0'',''G_LATEST_POSTS'',''INTEGER'',''INTERNAL'',''5'',null);',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''140'',''0'',''G_DATE_FORMAT'',''DATE_FORMAT'',''BLOG_PAR_GROUP_UI'',''fmDD Mon YYYY'',null);',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''150'',''0'',''G_POST_TITLE_DATE_FORMAT'',''DATE_FORMAT'',''BLOG_PAR_GROUP_UI'',''fmDay"," Month DD"," YYYY'',null);',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,attribute_value,post_expression) values (''160'',''0'',''G_ARCHIVE_DATE_FORMAT'',''DATE_FORMAT'',''BLOG_PAR_GROUP_UI'',''fmMonth, YYYY'',null);',
@@ -27665,6 +28234,118 @@ wwv_flow_api.create_install_script(
 '',
 'end;',
 '/',
+'',
+'--------------------------------------------------------',
+'--  Create text index preferences',
+'--------------------------------------------------------',
+'declare',
+'  l_schema varchar2(256);',
+'begin',
+'',
+'  l_schema := sys_context( ''USERENV'', ''CURRENT_SCHEMA'' );',
+'',
+'  ctx_ddl.create_preference(',
+'     preference_name  => ''BLOG_POSTS_DS''',
+'    ,object_name      => ''USER_DATASTORE''',
+'  );',
+'',
+'  ctx_ddl.set_attribute(',
+'    preference_name   => ''BLOG_POSTS_DS''',
+'    ,attribute_name   => ''PROCEDURE''',
+'    ,attribute_value  => l_schema || ''.BLOG_CTX.GENERATE_POST_DATASTORE''',
+'  );',
+'',
+'  ctx_ddl.set_attribute(',
+'    preference_name   => ''BLOG_POSTS_DS''',
+'    ,attribute_name   => ''OUTPUT_TYPE''',
+'    ,attribute_value  => ''CLOB''',
+'  );',
+'',
+'  ctx_ddl.create_section_group(',
+'    group_name        => ''BLOG_POSTS_SG''',
+'    ,group_type       => ''XML_SECTION_GROUP''',
+'  );',
+'',
+'  ctx_ddl.add_field_section(',
+'    group_name        => ''BLOG_POSTS_SG''',
+'    ,section_name     => ''TITLE''',
+'    ,tag              => ''POST_TITLE''',
+'    ,visible          => true',
+'  );',
+'',
+'  ctx_ddl.add_field_section(',
+'    group_name        => ''BLOG_POSTS_SG''',
+'    ,section_name     => ''CATEGORY''',
+'    ,tag              => ''POST_CATEGORY''',
+'    ,visible          => true',
+'  );',
+'',
+'  ctx_ddl.add_field_section(',
+'    group_name        => ''BLOG_POSTS_SG''',
+'    ,section_name     => ''DESCRIPTION''',
+'    ,tag              => ''POST_DESCRIPTION''',
+'    ,visible          => true',
+'  );',
+'',
+'  ctx_ddl.add_field_section(',
+'    group_name        => ''BLOG_POSTS_SG''',
+'    ,section_name     => ''BODY''',
+'    ,tag              => ''POST_BODY''',
+'    ,visible          => true',
+'  );',
+'',
+'  ctx_ddl.add_field_section(',
+'    group_name        => ''BLOG_POSTS_SG''',
+'    ,section_name     => ''TAGS''',
+'    ,tag              => ''POST_TAGS''',
+'    ,visible          => true',
+'  );',
+'',
+'  ctx_ddl.add_sdata_section(',
+'    group_name        => ''BLOG_POSTS_SG''',
+'    ,section_name     => ''YEAR_MONTH''',
+'    ,tag              => ''ARCHIVE_YEAR_MONTH''',
+'    ,datatype         => ''NUMBER''',
+'  );',
+'',
+'  ctx_ddl.create_preference(',
+'    preference_name   => ''BLOG_POSTS_LX''',
+'    ,object_name      => ''BASIC_LEXER''',
+'  );',
+'',
+'  ctx_ddl.set_attribute(',
+'    preference_name   => ''BLOG_POSTS_LX''',
+'    ,attribute_name   => ''MIXED_CASE''',
+'    ,attribute_value  => ''NO''',
+'  );',
+'',
+'  ctx_ddl.set_attribute(',
+'    preference_name   => ''BLOG_POSTS_LX''',
+'    ,attribute_name   => ''BASE_LETTER''',
+'    ,attribute_value  => ''YES''',
+'  );',
+'',
+'  ctx_ddl.set_attribute(',
+'    preference_name   => ''BLOG_POSTS_LX''',
+'    ,attribute_name   => ''BASE_LETTER_TYPE''',
+'    ,attribute_value  => ''GENERIC''',
+'  );',
+'',
+'end;',
+'/',
+'',
+'--------------------------------------------------------',
+'--  Create text index',
+'--------------------------------------------------------',
+'create index blog_posts_ctx on blog_posts_uds (dummy)',
+'indextype is ctxsys.context parameters (',
+'  ''section group  BLOG_POSTS_SG',
+'   datastore      BLOG_POSTS_DS',
+'   lexer          BLOG_POSTS_LX',
+'   stoplist       ctxsys.empty_stoplist',
+'   memory         500M',
+'   sync           (on commit)''',
+');',
 ''))
 );
 end;
@@ -27712,80 +28393,76 @@ wwv_flow_api.create_install_script(
 'begin',
 'wwv_flow_api.g_varchar2_table := wwv_flow_api.empty_varchar2_table;',
 'wwv_flow_api.g_varchar2_table(1) := ''2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20456C656D656E74730A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A626C6F636B71756F74'';',
-'wwv_flow_api.g_varchar2_table(2) := ''653A3A6265666F72657B0A2020636F6E74656E743A206F70656E2D71756F74653B0A2020666F6E742D73697A653A20322E3272656D3B0A7D0A626C6F636B71756F74653A3A61667465727B0A2020636F6E74656E743A20636C6F73652D71756F74653B0A'';',
-'wwv_flow_api.g_varchar2_table(3) := ''2020666F6E742D73697A653A20322E3272656D3B0A7D0A626C6F636B71756F746520707B0A2020646973706C61793A20696E6C696E653B0A7D0A696E7075745B646174612D7A2D7377697463683D2274727565225D5B76616C75653D2230225D3A636865'';',
-'wwv_flow_api.g_varchar2_table(4) := ''636B65642B6C6162656C7B0A20206261636B67726F756E642D636F6C6F723A20233863386338633B0A2020626F726465722D636F6C6F723A20233863386338633B0A7D0A0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
-'wwv_flow_api.g_varchar2_table(5) := ''2A2A2A2A2A2A2A2A0A2A204D6F646966696572730A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D746578742D777261707B0A202077686974652D73706163653A207072652D777261703B0A'';',
-'wwv_flow_api.g_varchar2_table(6) := ''7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20436F6C6F72730A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D616C69636562'';',
-'wwv_flow_api.g_varchar2_table(7) := ''6C75657B0A2020636F6C6F723A202366316636666121696D706F7274616E743B0A7D0A2E7A2D6E6F726D616C7B0A2020636F6C6F723A202330303030303021696D706F7274616E743B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
-'wwv_flow_api.g_varchar2_table(8) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A204C6F676F0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D6170702D6C6F676F7B0A2020646973706C61793A20666C65783B0A2020666C65782D'';',
-'wwv_flow_api.g_varchar2_table(9) := ''646972656374696F6E3A20636F6C756D6E3B0A7D0A2E7A2D6170702D646573637B0A202077686974652D73706163653A206E6F726D616C3B0A7D0A0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A'';',
-'wwv_flow_api.g_varchar2_table(10) := ''2A20526967687420636F6C756D6E206C696E6B206C697374730A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2F2A0A2E7A2D6C696E6B2D2D6E6F2D626F726465722C0A2E7A2D6C696E6B2D2D6E6F'';',
-'wwv_flow_api.g_varchar2_table(11) := ''2D626F7264657220613A666F6375737B0A2020626F726465723A206E6F6E653B0A20206F75746C696E653A206E6F6E653B0A2020626F782D736861646F773A206E6F6E653B0A7D0A2A2F0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
-'wwv_flow_api.g_varchar2_table(12) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20496E746572616374697665205265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D49522D2D69636F6E4C696E6B732074643A66697273'';',
-'wwv_flow_api.g_varchar2_table(13) := ''742D6368696C64207B0A202077696474683A2031253B0A20206F766572666C6F773A2076697369626C653B0A7D0A0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20496E746572616374697665'';',
-'wwv_flow_api.g_varchar2_table(14) := ''20477269640A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D636F6E6669672D6967202E612D49472D686561646572207B0A2020646973706C61793A206E6F6E653B0A20207669736962696C'';',
-'wwv_flow_api.g_varchar2_table(15) := ''6974793A2068696464656E3B0A7D0A2E7A2D636F6E6669672D6967207370616E2E612D47562D627265616B4C6162656C207B0A2020646973706C61793A206E6F6E653B0A20207669736962696C6974793A2068696464656E3B0A7D0A2F2A2A2A2A2A2A2A'';',
-'wwv_flow_api.g_varchar2_table(16) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20436C6173736963207265706F7274730A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E6E6F64617461666F75'';',
-'wwv_flow_api.g_varchar2_table(17) := ''6E647B0A2020746578742D616C69676E3A2063656E7465723B0A2020636F6C6F723A20233236323632363B0A2020666F6E742D73697A653A20312E3272656D3B0A20206C696E652D6865696768743A203272656D3B0A202070616464696E673A20322E32'';',
-'wwv_flow_api.g_varchar2_table(18) := ''72656D3B0A7D0A2E706167696E6174696F6E7B0A2020746578742D616C69676E3A2072696768743B0A202077696474683A20313030253B0A7D0A0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A'';',
-'wwv_flow_api.g_varchar2_table(19) := ''20506F737420637573746F6D2074656D706C617465207265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D706F73747B0A20206261636B67726F756E642D636F6C6F723A202366'';',
-'wwv_flow_api.g_varchar2_table(20) := ''66666666663B0A20206D617267696E2D626F74746F6D3A20332E3272656D3B0A2020626F726465723A2031707820736F6C6964207267626128302C302C302C2E31293B0A2020626F726465722D7261646975733A203270783B0A2020626F782D73686164'';',
-'wwv_flow_api.g_varchar2_table(21) := ''6F773A20302032707820347078202D327078207267626128302C302C302C2E303735293B0A202070616464696E673A20313670783B0A7D0A2E7A2D706F73742D2D6865616465727B0A2020636C6561723A20626F74683B0A7D0A2E7A2D706F73742D2D68'';',
-'wwv_flow_api.g_varchar2_table(22) := ''65616465722068317B0A2020666F6E742D73697A653A20312E36656D3B0A20206D617267696E3A2030203020302E3272656D3B0A7D0A2E7A2D706F73742D2D6865616465722068327B0A2020666F6E742D73697A653A20312E3472656D3B0A20206D6172'';',
-'wwv_flow_api.g_varchar2_table(23) := ''67696E3A2030203020312E3872656D3B0A7D0A2E7A2D706F73742D2D6865616465722068337B0A2020666F6E742D73697A653A20312E3472656D3B0A20206D617267696E3A2030203020302E3272656D3B0A7D0A2E7A2D706F73742D2D626F647920696D'';',
-'wwv_flow_api.g_varchar2_table(24) := ''677B0A20206D61782D77696474683A20313030253B0A20206865696768743A206175746F3B0A7D0A2E7A2D706F73742D2D626F64792062727B0A2020636C6561723A206E6F6E6521696D706F7274616E743B0A7D0A2E7A2D706F73742D2D746167737B0A'';',
-'wwv_flow_api.g_varchar2_table(25) := ''202077696474683A20313030253B0A2020636C6561723A20626F74683B0A20206D617267696E3A203272656D203020303B0A2020626F726465722D746F703A2031707820736F6C6964207267626128302C20302C20302C20302E303735290A7D0A2E7A2D'';',
-'wwv_flow_api.g_varchar2_table(26) := ''706F73742D2D666F6F7465727B0A202077696474683A20313030253B0A2020636C6561723A20626F74683B0A20206D617267696E3A20312E3272656D203020303B0A7D0A2E7A2D706F73742D2D6E6F2D6D617267696E202E7A2D706F73747B0A20206D61'';',
-'wwv_flow_api.g_varchar2_table(27) := ''7267696E2D626F74746F6D3A203021696D706F7274616E743B0A7D0A2E7A2D706F73742D2D6D617267696E2D6D656469756D202E7A2D706F73747B0A20206D617267696E2D626F74746F6D3A20312E3672656D21696D706F7274616E743B0A7D0A2E7A2D'';',
-'wwv_flow_api.g_varchar2_table(28) := ''706F73742D2D6D617267696E2D736D616C6C202E7A2D706F73747B0A20206D617267696E2D626F74746F6D3A20302E3872656D21696D706F7274616E743B0A7D0A2F2A204952207370656369666963202A2F0A2E7A2D706F73742D2D49527B0A20206D61'';',
-'wwv_flow_api.g_varchar2_table(29) := ''7267696E3A203332707820313670780A7D0A2E7A2D706F7374732D706167696E6174696F6E7B0A626F726465723A2031707820736F6C6964207267626128302C302C302C2E31293B0A2020626F782D736861646F773A20302032707820347078202D3270'';',
-'wwv_flow_api.g_varchar2_table(30) := ''78207267626128302C302C302C2E303735293B0A2020626F726465722D7261646975733A203270783B0A202070616464696E673A20302E3472656D3B0A7D0A2E742D5265706F72742D2D686964654E6F506167696E6174696F6E202E7A2D706F7374732D'';',
-'wwv_flow_api.g_varchar2_table(31) := ''706167696E6174696F6E7B0A2020646973706C61793A206E6F6E653B0A20207669736962696C6974793A2068696464656E3B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A204172636869'';',
-'wwv_flow_api.g_varchar2_table(32) := ''7665732C2063617465676F7269657320616E64206C696E6B730A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D6C697374537461636B65642D2D5265706F727420756C7B0A20207061646469'';',
-'wwv_flow_api.g_varchar2_table(33) := ''6E673A20312E3672656D3B0A7D0A2E7A2D6C697374537461636B65642D2D4865616465727B0A2020626F726465722D746F703A2031707820736F6C6964207267626128302C302C302C2E31293B0A2020626F726465722D626F74746F6D3A203170782073'';',
-'wwv_flow_api.g_varchar2_table(34) := ''6F6C6964207267626128302C302C302C2E303735293B0A202070616464696E673A20312E3272656D3B0A20206D617267696E3A20303B0A2020666F6E742D73697A653A20312E3672656D3B0A2020666F6E742D7765696768743A203530303B0A20206C69'';',
-'wwv_flow_api.g_varchar2_table(35) := ''6E652D6865696768743A20322E3472656D3B0A7D0A2E7A2D6C697374537461636B65642D2D4865616465723A6E74682D6368696C642832297B0A2020626F726465722D746F703A206E6F6E653B0A7D0A2E7A2D6C697374537461636B65642D2D5265706F'';',
-'wwv_flow_api.g_varchar2_table(36) := ''727420756C3A66697273742D6368696C647B0A2020646973706C61793A206E6F6E653B0A20207669736962696C6974793A2068696464656E3B0A7D0A0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
-'wwv_flow_api.g_varchar2_table(37) := ''0A2A2046696C6573206D65646961206C697374207265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D4D656469614C697374202E6E6F64617461666F756E647B0A202070616464'';',
-'wwv_flow_api.g_varchar2_table(38) := ''696E673A20313670783B0A7D0A2E7A2D4D656469614C6973742D2D66696C6573202E742D4D656469614C6973742D7469746C65207B0A2020776F72642D627265616B3A20627265616B2D776F72643B0A7D0A0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
-'wwv_flow_api.g_varchar2_table(39) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A204C696E6B73206D65646961206C697374207265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D6E6F44617461466F'';',
-'wwv_flow_api.g_varchar2_table(40) := ''756E64202E742D4D656469614C6973742D646573637B0A2020636F6C6F723A20233236323632363B0A2020746578742D616C69676E3A2063656E7465723B0A2020666F6E742D73697A653A20312E3272656D3B0A20206C696E652D6865696768743A2032'';',
-'wwv_flow_api.g_varchar2_table(41) := ''72656D3B0A7D0A0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A2047656E6572616C20637573746F6D207265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
-'wwv_flow_api.g_varchar2_table(42) := ''2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D436F6E74656E74202E7A2D436F6E74656E742D2D526F777B0A2020626F726465723A2031707820736F6C6964207267626128302C302C302C2E31293B0A2020626F726465722D7261646975733A203270783B0A2020'';',
-'wwv_flow_api.g_varchar2_table(43) := ''626F782D736861646F773A20302032707820347078202D327078207267626128302C302C302C2E303735293B0A20206D617267696E2D626F74746F6D3A20332E3272656D3B0A7D0A2E7A2D436F6E74656E742D2D526F777B0A20206261636B67726F756E'';',
-'wwv_flow_api.g_varchar2_table(44) := ''642D636F6C6F723A20236666666666663B0A7D0A2E7A2D436F6E74656E742D2D5469746C657B0A2020626F726465722D626F74746F6D3A2031707820736F6C6964207267626128302C302C302C2E303735293B0A202070616464696E673A20312E327265'';',
-'wwv_flow_api.g_varchar2_table(45) := ''6D3B0A20206D617267696E3A20303B0A2020666F6E742D73697A653A20312E3672656D3B0A2020666F6E742D7765696768743A203530303B0A20206C696E652D6865696768743A20322E3472656D3B0A7D0A2E7A2D436F6E74656E742D2D537461636B65'';',
-'wwv_flow_api.g_varchar2_table(46) := ''64202E7A2D436F6E74656E742D2D5469746C657B0A2020626F726465722D746F703A2031707820736F6C6964207267626128302C302C302C2E303735293B0A7D0A2E7A2D436F6E74656E742D2D537461636B6564202E7A2D436F6E74656E742D2D526F77'';',
-'wwv_flow_api.g_varchar2_table(47) := ''3A66697273742D6368696C64202E7A2D436F6E74656E742D2D5469746C657B0A2020626F726465722D746F703A206E6F6E653B0A7D0A2E7A2D436F6E74656E742D2D426F64797B0A202070616464696E673A20312E3672656D3B0A7D0A0A2F2A2A2A2A2A'';',
-'wwv_flow_api.g_varchar2_table(48) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A2041626F757420636F6E74656E740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D617574686F722D'';',
-'wwv_flow_api.g_varchar2_table(49) := ''636F6E7461696E65727B0A2020646973706C61793A20666C65783B0A7D0A2E7A2D617574686F722D6C6566747B0A20206F726465723A20313B0A2020646973706C61793A20666C65783B0A2020666C65782D646972656374696F6E3A20636F6C756D6E3B'';',
-'wwv_flow_api.g_varchar2_table(50) := ''0A7D0A2E7A2D617574686F722D72696768747B0A20206F726465723A20323B0A202070616464696E673A20302030203020313670783B0A7D0A2E7A2D617574686F722D6261646765737B0A2020646973706C61793A20666C65783B0A2020666C65782D64'';',
-'wwv_flow_api.g_varchar2_table(51) := ''6972656374696F6E3A20636F6C756D6E3B0A7D0A2E7A2D617574686F722D626164676573203E202A7B0A20206D617267696E3A203130707820303B0A7D0A0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
-'wwv_flow_api.g_varchar2_table(52) := ''2A2A0A2A20436F6D6D656E7473207265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D626F64797B0A202077696474683A2030'';',
-'wwv_flow_api.g_varchar2_table(53) := ''3B0A7D0A2F2A206C6F6E672055524C20652E672E202A2F0A2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D636F6D6D656E747B0A20206F766572666C6F772D777261703A20627265616B2D776F72643B0A7D0A2E7A2D636F6D6D656E742D2D66'';',
-'wwv_flow_api.g_varchar2_table(54) := ''6F6F746572207B0A20206D617267696E2D746F703A20332E3272656D3B0A202070616464696E673A20312E3672656D20303B0A2020626F726465722D746F703A2031707820736F6C6964207267626128302C302C302C302E31293B0A7D0A0A2F2A2A2A2A'';',
-'wwv_flow_api.g_varchar2_table(55) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A2050726F6772616D20636F646520666F726D617474696E670A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F'';',
-'wwv_flow_api.g_varchar2_table(56) := ''0A7072652E7A2D70726F6772616D2D636F64657B0A2020666F6E742D66616D696C793A2053464D6F6E6F2D526567756C61722C4D656E6C6F2C4D6F6E61636F2C436F6E736F6C61732C4C696265726174696F6E204D6F6E6F2C42697473747265616D2056'';',
-'wwv_flow_api.g_varchar2_table(57) := ''6572612053616E73204D6F6E6F2C436F7572696572204E65772C6D6F6E6F73706163653B0A2020636F6C6F723A20233030303030303B0A2020666F6E742D73697A653A20312E3172656D3B0A20207461622D73697A653A20323B0A2020636F756E746572'';',
-'wwv_flow_api.g_varchar2_table(58) := ''2D72657365743A206C696E653B0A20206F766572666C6F772D783A206175746F3B0A2020626F726465723A2031707820736F6C6964207267626128302C302C302C2E303735293B0A2020626F726465722D7261646975733A20302E3272656D3B0A7D0A70'';',
-'wwv_flow_api.g_varchar2_table(59) := ''72652E7A2D70726F6772616D2D636F646520636F64657B0A2020666F6E742D66616D696C793A20696E68657269743B0A2020666F6E742D73697A653A20696E68657269743B0A20206C696E652D6865696768743A20696E68657269743B0A20207461622D'';',
-'wwv_flow_api.g_varchar2_table(60) := ''73697A653A20696E68657269743B0A2020636F756E7465722D696E6372656D656E743A206C696E653B0A20206D617267696E3A20303B0A202070616464696E673A20303B0A20206F766572666C6F773A2076697369626C653B0A7D0A7072652E7A2D7072'';',
-'wwv_flow_api.g_varchar2_table(61) := ''6F6772616D2D636F646520636F64653A3A6265666F72657B0A2020636F6E74656E743A20636F756E746572286C696E65293B0A2020757365722D73656C6563743A206E6F6E653B0A2020626F726465722D72696768743A2032707820736F6C6964202336'';',
-'wwv_flow_api.g_varchar2_table(62) := ''63653236633B0A2020626F726465722D6C6566743A2031707820736F6C6964207267626128302C302C302C2E303735293B0A2020626F726465722D746F703A2031707820736F6C6964207267626128302C302C302C2E303735293B0A20206261636B6772'';',
-'wwv_flow_api.g_varchar2_table(63) := ''6F756E642D636F6C6F723A207267626128302C302C302C2E303435293B0A20206D617267696E3A203020302E3472656D203020303B0A202070616464696E673A203020302E3472656D203020303B0A2020646973706C61793A20696E6C696E652D626C6F'';',
-'wwv_flow_api.g_varchar2_table(64) := ''636B3B0A2020746578742D616C69676E3A2072696768743B0A202077696474683A20322E34656D3B0A2020636F6C6F723A20233339333933393B0A7D0A7072652E7A2D70726F6772616D2D636F646520636F64653A66697273742D6368696C643A626566'';',
-'wwv_flow_api.g_varchar2_table(65) := ''6F72657B0A2020626F726465722D746F703A206E6F6E653B0A7D0A7072652E7A2D70726F6772616D2D636F646520636F64653A6E74682D6368696C64286F6464293A6265666F72657B0A20206261636B67726F756E642D636F6C6F723A20726762612830'';',
-'wwv_flow_api.g_varchar2_table(66) := ''2C302C302C2E303635293B0A7D0A0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20526567696F6E0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
-'wwv_flow_api.g_varchar2_table(67) := ''2A2A2F0A2E7A2D6170702D736F75726365207B0A202070616464696E673A20302E3472656D20303B0A7D0A0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A204D656469612071756572790A2A2A'';',
-'wwv_flow_api.g_varchar2_table(68) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A406D65646961206F6E6C792073637265656E20616E6420286D61782D77696474683A203634307078297B0A20202F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
-'wwv_flow_api.g_varchar2_table(69) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A20202A20506F737420637573746F6D207265706F72742074656D706C6174650A20202A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A20202E'';',
-'wwv_flow_api.g_varchar2_table(70) := ''7A2D706F73747B0A2020202070616464696E673A20312E3272656D3B0A20207D0A20202E7A2D706F73742D2D6865616465722068317B0A20202020666F6E742D73697A653A20312E34656D3B0A20207D0A20202E7A2D706F73742D2D6865616465722068'';',
-'wwv_flow_api.g_varchar2_table(71) := ''327B0A20202020666F6E742D73697A653A20312E3372656D3B0A20207D0A20202E7A2D706F73742D2D6865616465722068337B0A20202020666F6E742D73697A653A20312E3372656D3B0A20207D0A0A20202F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
-'wwv_flow_api.g_varchar2_table(72) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A20202A20417574686F7220696E666F0A20202A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A20202E7A2D617574686F722D636F6E7461696E65'';',
-'wwv_flow_api.g_varchar2_table(73) := ''727B0A20202020666C65782D646972656374696F6E3A20636F6C756D6E3B0A20202020616C69676E2D6974656D733A2063656E7465723B0A20207D0A20202E7A2D617574686F722D72696768747B0A2020202070616464696E673A203136707820303B0A'';',
-'wwv_flow_api.g_varchar2_table(74) := ''20207D0A20202E7A2D617574686F722D6261646765737B0A2020202070616464696E673A203136707820303B0A20202020616C69676E2D6974656D733A2063656E7465723B0A20207D0A0A7D0A0A2E7A2D68696464656E7B0A2020646973706C61793A20'';',
-'wwv_flow_api.g_varchar2_table(75) := ''6E6F6E653B0A20207669736962696C6974793A2068696464656E3B0A7D0A'';',
+'wwv_flow_api.g_varchar2_table(2) := ''653A3A6265666F7265207B0A2020636F6E74656E743A206F70656E2D71756F74653B0A2020666F6E742D73697A653A20322E3272656D3B0A7D0A626C6F636B71756F74653A3A6166746572207B0A2020636F6E74656E743A20636C6F73652D71756F7465'';',
+'wwv_flow_api.g_varchar2_table(3) := ''3B0A2020666F6E742D73697A653A20322E3272656D3B0A7D0A626C6F636B71756F74652070207B0A2020646973706C61793A20696E6C696E653B0A7D0A2E7A2D73776974636820696E7075745B76616C75653D2230225D3A636865636B6564202B206C61'';',
+'wwv_flow_api.g_varchar2_table(4) := ''62656C207B0A20206261636B67726F756E642D636F6C6F723A20233863386338633B0A2020626F726465722D636F6C6F723A20233863386338633B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
+'wwv_flow_api.g_varchar2_table(5) := ''2A0A2A204D6F646966696572730A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D746578742D77726170207B0A202077686974652D73706163653A207072652D777261703B0A7D0A2F2A2A2A'';',
+'wwv_flow_api.g_varchar2_table(6) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A204C6F676F0A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D6170702D6C6F676F207B0A202064'';',
+'wwv_flow_api.g_varchar2_table(7) := ''6973706C61793A20666C65783B0A2020666C65782D646972656374696F6E3A20636F6C756D6E3B0A7D0A2E7A2D6170702D64657363207B0A202077686974652D73706163653A206E6F726D616C3B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
+'wwv_flow_api.g_varchar2_table(8) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20496E746572616374697665205265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D49522D2D69636F6E4C696E6B732074'';',
+'wwv_flow_api.g_varchar2_table(9) := ''643A66697273742D6368696C64207B0A20206F766572666C6F773A2076697369626C653B0A202077696474683A2031253B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20496E74657261'';',
+'wwv_flow_api.g_varchar2_table(10) := ''637469766520477269640A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D636F6E6669672D6967202E612D49472D686561646572207B0A2020646973706C61793A206E6F6E6521696D706F72'';',
+'wwv_flow_api.g_varchar2_table(11) := ''74616E743B0A20207669736962696C6974793A2068696464656E21696D706F7274616E743B0A7D0A2E7A2D636F6E6669672D6967207370616E2E612D47562D627265616B4C6162656C207B0A2020646973706C61793A206E6F6E6521696D706F7274616E'';',
+'wwv_flow_api.g_varchar2_table(12) := ''743B0A20207669736962696C6974793A2068696464656E21696D706F7274616E743B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20436C6173736963207265706F7274730A2A2A2A2A2A'';',
+'wwv_flow_api.g_varchar2_table(13) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E6E6F64617461666F756E64207B0A2020746578742D616C69676E3A2063656E7465723B0A2020636F6C6F723A20233236323632363B0A2020666F6E742D73697A'';',
+'wwv_flow_api.g_varchar2_table(14) := ''653A20312E3272656D3B0A20206C696E652D6865696768743A203272656D3B0A202070616464696E673A20322E3272656D3B0A7D0A2E706167696E6174696F6E207B0A2020746578742D616C69676E3A2072696768743B0A202077696474683A20313030'';',
+'wwv_flow_api.g_varchar2_table(15) := ''253B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20506F737420637573746F6D2074656D706C617465207265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
+'wwv_flow_api.g_varchar2_table(16) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D706F7374207B0A20206261636B67726F756E642D636F6C6F723A20236666666666663B0A20206D617267696E2D626F74746F6D3A20332E3272656D3B0A2020626F726465723A2031707820736F6C69642072'';',
+'wwv_flow_api.g_varchar2_table(17) := ''67626128302C20302C20302C20302E31293B0A2020626F726465722D7261646975733A203270783B0A2020626F782D736861646F773A2032707820347078202D327078207267626128302C20302C20302C20302E303735293B0A202070616464696E673A'';',
+'wwv_flow_api.g_varchar2_table(18) := ''20312E3672656D3B0A7D0A2E7A2D706F73742D2D686561646572207B0A2020636C6561723A20626F74683B0A7D0A2E7A2D706F73742D2D686561646572206831207B0A2020666F6E742D73697A653A20312E36656D3B0A20206D617267696E3A20302030'';',
+'wwv_flow_api.g_varchar2_table(19) := ''20302E3272656D3B0A7D0A2E7A2D706F73742D2D686561646572206832207B0A2020666F6E742D73697A653A2031656D3B0A20206D617267696E3A2030203020312E3872656D3B0A7D0A2E7A2D706F73742D2D686561646572206833207B0A2020666F6E'';',
+'wwv_flow_api.g_varchar2_table(20) := ''742D73697A653A2031656D3B0A20206D617267696E3A2030203020302E3272656D3B0A7D0A2E7A2D706F73742D2D626F647920696D67207B0A20206D61782D77696474683A20313030253B0A20206865696768743A206175746F3B0A7D0A2E7A2D706F73'';',
+'wwv_flow_api.g_varchar2_table(21) := ''742D2D626F6479206272207B0A2020636C6561723A206E6F6E6521696D706F7274616E743B0A7D0A2E7A2D706F73742D2D74616773207B0A202077696474683A20313030253B0A2020636C6561723A20626F74683B0A20206D617267696E3A203272656D'';',
+'wwv_flow_api.g_varchar2_table(22) := ''203020303B0A2020626F726465722D746F703A2031707820736F6C6964207267626128302C20302C20302C20302E303735293B0A7D0A2E7A2D706F73742D2D666F6F746572207B0A202077696474683A20313030253B0A2020636C6561723A20626F7468'';',
+'wwv_flow_api.g_varchar2_table(23) := ''3B0A20206D617267696E3A20312E3272656D203020303B0A7D0A2E7A2D706F73742D2D6E6F4D617267696E202E7A2D706F7374207B0A20206D617267696E2D626F74746F6D3A20303B0A2020626F726465722D626F74746F6D3A206E6F6E653B0A7D0A2E'';',
+'wwv_flow_api.g_varchar2_table(24) := ''7A2D706F73742D2D6D656469756D4D617267696E202E7A2D706F7374207B0A20206D617267696E2D626F74746F6D3A20312E3672656D3B0A7D0A2E7A2D706F73742D2D736D616C6C4D617267696E202E7A2D706F7374207B0A20206D617267696E2D626F'';',
+'wwv_flow_api.g_varchar2_table(25) := ''74746F6D3A20302E3872656D3B0A7D0A2E7A2D706F7374732D2D706167696E6174696F6E426F72646572202E7A2D706F7374732D2D706167696E6174696F6E207B0A20206261636B67726F756E642D636F6C6F723A20236666666666663B0A2020626F72'';',
+'wwv_flow_api.g_varchar2_table(26) := ''6465723A2031707820736F6C6964207267626128302C20302C20302C20302E31293B0A2020626F782D736861646F773A2032707820347078202D327078207267626128302C20302C20302C20302E303735293B0A2020626F726465722D7261646975733A'';',
+'wwv_flow_api.g_varchar2_table(27) := ''203270783B0A202070616464696E673A20302E3472656D3B0A7D0A2E7A2D706F7374732D2D706167696E6174696F6E48696464656E202E7A2D706F7374732D2D706167696E6174696F6E207B0A2020646973706C61793A206E6F6E6521696D706F727461'';',
+'wwv_flow_api.g_varchar2_table(28) := ''6E743B0A20207669736962696C6974793A2068696464656E21696D706F7274616E743B0A7D0A2F2A204952207370656369666963202A2F0A2E7A2D706F73742D2D4952207B0A20206D617267696E3A20332E3272656D20312E3672656D3B0A7D0A2F2A2A'';',
+'wwv_flow_api.g_varchar2_table(29) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A2041726368697665732C2063617465676F7269657320616E64206C696E6B730A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
+'wwv_flow_api.g_varchar2_table(30) := ''2A2A2A2A2A2A2A2A2F0A2E7A2D6C697374537461636B65642D2D5265706F727420756C207B0A202070616464696E673A20312E3672656D3B0A7D0A2E7A2D6C697374537461636B65642D2D5265706F727420756C3A66697273742D6368696C64207B0A20'';',
+'wwv_flow_api.g_varchar2_table(31) := ''20646973706C61793A206E6F6E6521696D706F7274616E743B0A20207669736962696C6974793A2068696464656E21696D706F7274616E743B0A7D0A2E7A2D6C697374537461636B65642D2D486561646572207B0A2020626F726465722D746F703A2031'';',
+'wwv_flow_api.g_varchar2_table(32) := ''707820736F6C6964207267626128302C20302C20302C20302E31293B0A2020626F726465722D626F74746F6D3A2031707820736F6C6964207267626128302C20302C20302C20302E303735293B0A20206D617267696E3A20303B0A202070616464696E67'';',
+'wwv_flow_api.g_varchar2_table(33) := ''3A20312E3272656D3B0A2020666F6E742D73697A653A20312E3672656D3B0A2020666F6E742D7765696768743A203530303B0A20206C696E652D6865696768743A20322E3472656D3B0A7D0A2E7A2D6C697374537461636B65642D2D4865616465723A6E'';',
+'wwv_flow_api.g_varchar2_table(34) := ''74682D6368696C64283229207B0A2020626F726465722D746F703A206E6F6E653B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A2046696C6573206D65646961206C697374207265706F72'';',
+'wwv_flow_api.g_varchar2_table(35) := ''740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D4D656469614C6973742D2D66696C6573202E742D4D656469614C6973742D7469746C65207B0A2020776F72642D627265616B3A20627265'';',
+'wwv_flow_api.g_varchar2_table(36) := ''616B2D776F72643B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A204C696E6B73206D65646961206C697374207265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
+'wwv_flow_api.g_varchar2_table(37) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D6E6F44617461466F756E64202E742D4D656469614C6973742D626F6479207B0A202070616464696E673A20303B0A7D0A2E7A2D6E6F44617461466F756E64202E742D4D656469614C6973742D64657363'';',
+'wwv_flow_api.g_varchar2_table(38) := ''207B0A2020746578742D616C69676E3A2063656E7465723B0A2020636F6C6F723A20233236323632363B0A2020666F6E742D73697A653A20312E3272656D3B0A20206C696E652D6865696768743A203272656D3B0A202070616464696E673A20322E3272'';',
+'wwv_flow_api.g_varchar2_table(39) := ''656D3B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A2047656E6572616C20637573746F6D207265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
+'wwv_flow_api.g_varchar2_table(40) := ''2A2A2A2A2A2A2A2A2F0A2E7A2D436F6E74656E74202E7A2D436F6E74656E742D2D526F77207B0A2020626F726465723A2031707820736F6C6964207267626128302C20302C20302C20302E31293B0A2020626F726465722D7261646975733A203270783B'';',
+'wwv_flow_api.g_varchar2_table(41) := ''0A2020626F782D736861646F773A2032707820347078202D327078207267626128302C20302C20302C20302E303735293B0A20206D617267696E2D626F74746F6D3A20332E3272656D3B0A7D0A2E7A2D436F6E74656E742D2D526F77207B0A2020626163'';',
+'wwv_flow_api.g_varchar2_table(42) := ''6B67726F756E642D636F6C6F723A20236666666666663B0A7D0A2E7A2D436F6E74656E742D2D5469746C65207B0A2020626F726465722D626F74746F6D3A2031707820736F6C6964207267626128302C20302C20302C20302E303735293B0A2020706164'';',
+'wwv_flow_api.g_varchar2_table(43) := ''64696E673A20312E3272656D3B0A20206D617267696E3A20303B0A2020666F6E742D73697A653A20312E3672656D3B0A2020666F6E742D7765696768743A203530303B0A20206C696E652D6865696768743A20322E3472656D3B0A7D0A2E7A2D436F6E74'';',
+'wwv_flow_api.g_varchar2_table(44) := ''656E742D2D426F6479207B0A202070616464696E673A20312E3672656D3B0A7D0A2E7A2D436F6E74656E742D2D537461636B6564202E7A2D436F6E74656E742D2D5469746C65207B0A2020626F726465722D746F703A2031707820736F6C696420726762'';',
+'wwv_flow_api.g_varchar2_table(45) := ''6128302C20302C20302C20302E303735293B0A7D0A2E7A2D436F6E74656E742D2D537461636B6564202E7A2D436F6E74656E742D2D526F773A66697273742D6368696C64202E7A2D436F6E74656E742D2D5469746C65207B0A2020626F726465722D746F'';',
+'wwv_flow_api.g_varchar2_table(46) := ''703A206E6F6E653B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A2041626F757420636F6E74656E740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
+'wwv_flow_api.g_varchar2_table(47) := ''2A2A2A2A2A2F0A2E7A2D617574686F722D636F6E7461696E6572207B0A2020646973706C61793A20666C65783B0A7D0A2E7A2D617574686F722D6C656674207B0A20206F726465723A20313B0A2020646973706C61793A20666C65783B0A2020666C6578'';',
+'wwv_flow_api.g_varchar2_table(48) := ''2D646972656374696F6E3A20636F6C756D6E3B0A7D0A2E7A2D617574686F722D7269676874207B0A20206F726465723A20323B0A202070616464696E673A20302030203020312E3672656D3B0A7D0A2E7A2D617574686F722D626164676573207B0A2020'';',
+'wwv_flow_api.g_varchar2_table(49) := ''646973706C61793A20666C65783B0A2020666C65782D646972656374696F6E3A20636F6C756D6E3B0A7D0A2E7A2D617574686F722D626164676573203E202A207B0A20206D617267696E3A203172656D20303B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
+'wwv_flow_api.g_varchar2_table(50) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20436F6D6D656E7473207265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D636F6D6D656E74202E742D436F'';',
+'wwv_flow_api.g_varchar2_table(51) := ''6D6D656E74732D626F6479207B0A202077696474683A20303B0A7D0A2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D636F6D6D656E74207B0A20206F766572666C6F772D777261703A20627265616B2D776F72643B0A7D0A2F2A2A2A2A2A2A2A'';',
+'wwv_flow_api.g_varchar2_table(52) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A2050726F6772616D20636F646520666F726D617474696E670A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A7072'';',
+'wwv_flow_api.g_varchar2_table(53) := ''652E7A2D70726F6772616D2D636F6465207B0A2020666F6E742D66616D696C793A2053464D6F6E6F2D526567756C61722C204D656E6C6F2C204D6F6E61636F2C20436F6E736F6C61732C20224C696265726174696F6E204D6F6E6F222C20224269747374'';',
+'wwv_flow_api.g_varchar2_table(54) := ''7265616D20566572612053616E73204D6F6E6F222C2022436F7572696572204E6577222C206D6F6E6F73706163653B0A2020636F6C6F723A20233236323632363B0A2020666F6E742D73697A653A20312E3172656D3B0A20207461622D73697A653A2032'';',
+'wwv_flow_api.g_varchar2_table(55) := ''3B0A2020636F756E7465722D72657365743A206C696E653B0A20206F766572666C6F772D783A206175746F3B0A2020626F726465723A2031707820736F6C6964207267626128302C20302C20302C20302E303735293B0A2020626F726465722D72616469'';',
+'wwv_flow_api.g_varchar2_table(56) := ''75733A203270783B0A7D0A7072652E7A2D70726F6772616D2D636F646520636F6465207B0A2020666F6E742D66616D696C793A20696E68657269743B0A2020666F6E742D73697A653A20696E68657269743B0A20206C696E652D6865696768743A20696E'';',
+'wwv_flow_api.g_varchar2_table(57) := ''68657269743B0A20207461622D73697A653A20696E68657269743B0A2020636F756E7465722D696E6372656D656E743A206C696E653B0A20206D617267696E3A20303B0A202070616464696E673A20303B0A20206F766572666C6F773A2076697369626C'';',
+'wwv_flow_api.g_varchar2_table(58) := ''653B0A7D0A7072652E7A2D70726F6772616D2D636F646520636F64653A3A6265666F7265207B0A2020636F6E74656E743A20636F756E746572286C696E65293B0A2020757365722D73656C6563743A206E6F6E653B0A2020626F726465722D7269676874'';',
+'wwv_flow_api.g_varchar2_table(59) := ''3A2032707820736F6C696420233663653236633B0A2020626F726465722D6C6566743A2031707820736F6C6964207267626128302C20302C20302C20302E303735293B0A2020626F726465722D746F703A2031707820736F6C6964207267626128302C20'';',
+'wwv_flow_api.g_varchar2_table(60) := ''302C20302C20302E303735293B0A20206261636B67726F756E642D636F6C6F723A207267626128302C20302C20302C20302E303435293B0A20206D617267696E3A203020302E3472656D203020303B0A202070616464696E673A203020302E3472656D20'';',
+'wwv_flow_api.g_varchar2_table(61) := ''3020303B0A2020646973706C61793A20696E6C696E652D626C6F636B3B0A2020746578742D616C69676E3A2072696768743B0A202077696474683A20322E3872656D3B0A2020636F6C6F723A20233339333933393B0A7D0A7072652E7A2D70726F677261'';',
+'wwv_flow_api.g_varchar2_table(62) := ''6D2D636F646520636F64653A66697273742D6368696C643A6265666F7265207B0A2020626F726465722D746F703A206E6F6E653B0A7D0A7072652E7A2D70726F6772616D2D636F646520636F64653A6E74682D6368696C64286F6464293A6265666F7265'';',
+'wwv_flow_api.g_varchar2_table(63) := ''207B0A20206261636B67726F756E642D636F6C6F723A207267626128302C20302C20302C20302E303635293B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20526567696F6E0A2A2A2A2A'';',
+'wwv_flow_api.g_varchar2_table(64) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D6170702D736F75726365207B0A202070616464696E673A20302E3472656D20303B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
+'wwv_flow_api.g_varchar2_table(65) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A204D656469612071756572790A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A406D65646961206F6E6C792073637265656E20616E6420286D61782D776964'';',
+'wwv_flow_api.g_varchar2_table(66) := ''74683A20363430707829207B0A20202F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A20202A20506F737420637573746F6D207265706F72742074656D706C6174650A20202A2A2A2A2A2A2A2A2A2A2A'';',
+'wwv_flow_api.g_varchar2_table(67) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A20202E7A2D706F7374207B0A2020202070616464696E673A20312E3272656D3B0A20207D0A20202E7A2D706F73742D2D686561646572206831207B0A20202020666F6E742D7369'';',
+'wwv_flow_api.g_varchar2_table(68) := ''7A653A20312E34656D3B0A20207D0A20202F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A20202A20417574686F7220696E666F0A20202A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A'';',
+'wwv_flow_api.g_varchar2_table(69) := ''2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A20202E7A2D617574686F722D636F6E7461696E6572207B0A20202020666C65782D646972656374696F6E3A20636F6C756D6E3B0A20202020616C69676E2D6974656D733A2063656E7465723B0A20207D0A20202E7A'';',
+'wwv_flow_api.g_varchar2_table(70) := ''2D617574686F722D7269676874207B0A2020202070616464696E673A20312E3672656D20303B0A20207D0A20202E7A2D617574686F722D626164676573207B0A2020202070616464696E673A20312E3672656D20303B0A20202020616C69676E2D697465'';',
+'wwv_flow_api.g_varchar2_table(71) := ''6D733A2063656E7465723B0A20207D0A7D0A2E7A2D68696464656E207B0A2020646973706C61793A206E6F6E6521696D706F7274616E743B0A20207669736962696C6974793A2068696464656E21696D706F7274616E743B0A7D0A'';',
 'wwv_flow_api.create_workspace_static_file(',
 ' p_id=>wwv_flow_api.id(33408730253314950)',
 ',p_file_name=>''blog040000/style.css''',
