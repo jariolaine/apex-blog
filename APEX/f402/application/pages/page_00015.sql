@@ -11,11 +11,11 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200531072120'
+,p_last_upd_yyyymmddhh24miss=>'20200701123850'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
-,p_plug_name=>'All Files Report'
+,p_plug_name=>'Files Report'
 ,p_region_css_classes=>'z-IR--iconLinks'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8495746153518209)
@@ -50,6 +50,13 @@ wwv_flow_api.create_page_plug(
 '  ,btn.copy_url           as btn_copy_url',
 '  ,btn.copy_url_label     as btn_copy_url_label',
 '  ,btn.title_edit         as btn_title_edit',
+'  ,case v1.is_active',
+'    when 0',
+'    then ''fa-minus-circle-o u-danger-text''',
+'    when 1',
+'    then ''fa-check-circle-o u-success-text''',
+'    else ''fa-question-circle-o''',
+'   end                    as file_status_icon',
 'from blog_v_all_files v1',
 'cross join(',
 '  select',
@@ -141,6 +148,10 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_order=>70
 ,p_column_identifier=>'AA'
 ,p_column_label=>'Status'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<span aria-hidden="true" title="#IS_ACTIVE#" class="fa #FILE_STATUS_ICON#"></span>',
+'<span class="u-VisuallyHidden">#IS_ACTIVE#</span>',
+''))
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
@@ -265,6 +276,15 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
 );
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(42033869947918102)
+,p_db_column_name=>'FILE_STATUS_ICON'
+,p_display_order=>210
+,p_column_identifier=>'AR'
+,p_column_label=>'File Status Icon'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN'
+);
 wwv_flow_api.create_worksheet_rpt(
  p_id=>wwv_flow_api.id(6738041656952365)
 ,p_application_user=>'APXWS_DEFAULT'
@@ -274,7 +294,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_view_mode=>'DETAIL'
-,p_report_columns=>'FILE_NAME:FILE_SIZE:FILE_DESC:IS_ACTIVE:IS_DOWNLOAD:BTN_COPY_URL:BTN_COPY_URL_LABEL:BTN_TITLE_EDIT'
+,p_report_columns=>'FILE_NAME:FILE_SIZE:FILE_DESC:IS_ACTIVE:IS_DOWNLOAD:BTN_COPY_URL:BTN_COPY_URL_LABEL:BTN_TITLE_EDIT:FILE_STATUS_ICON'
 ,p_sort_column_1=>'FILE_NAME'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'CHANGED_ON'

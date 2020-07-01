@@ -6,7 +6,7 @@ wwv_flow_api.create_row_template(
 ,p_internal_name=>'BLOG_POSTS_CUSTOM_1'
 ,p_javascript_code_onload=>'blog.UI.formatProgramCode("pre.z-program-code");'
 ,p_row_template1=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<article role="article" class="z-post">',
+'<article class="z-post">',
 '  <header class="z-post--header">',
 '    <h3>#PUBLISHED_ON#</h3>',
 '    <h1>#POST_TITLE#</h1>',
@@ -20,7 +20,7 @@ wwv_flow_api.create_row_template(
 '</article>'))
 ,p_row_template_condition1=>':READ_MORE_LINK is not null'
 ,p_row_template2=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<article role="article" class="z-post">',
+'<article class="z-post">',
 '  <header class="z-post--header">',
 '    <h3>#PUBLISHED_ON#</h3>',
 '    <h1>#POST_TITLE#</h1>',
@@ -31,7 +31,7 @@ wwv_flow_api.create_row_template(
 '</article>'))
 ,p_row_template_condition2=>':TAGS_HTML is not null'
 ,p_row_template3=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<article role="article" class="z-post">',
+'<article class="z-post">',
 '  <header class="z-post--header">',
 '    <h3>#PUBLISHED_ON#</h3>',
 '    <h1>#POST_TITLE#</h1>',
@@ -70,7 +70,7 @@ wwv_flow_api.create_row_template(
 ||' fa-chevron-left"></span></button>'
 ,p_theme_id=>42
 ,p_theme_class_id=>7
-,p_preset_template_options=>'z-posts:z-posts--pagination-border'
+,p_preset_template_options=>'z-posts'
 );
 end;
 /

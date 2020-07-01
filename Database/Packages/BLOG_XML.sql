@@ -269,7 +269,7 @@ as
                                     ,p_canonical  => 'YES'
                                   )
               )
-              ,XMLElement( "lastmod", to_char( sys_extract_utc( posts.changed_on ), 'YYYY-MM-DD"T"HH24:MI:SS"+00:00""' ) )
+              ,XMLElement( "lastmod", to_char( sys_extract_utc( greatest( posts.published_on, posts.changed_on ) ), 'YYYY-MM-DD"T"HH24:MI:SS"+00:00""' ) )
             ) order by posts.published_on desc
           )
         )

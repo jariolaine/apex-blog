@@ -21,6 +21,7 @@ create table blog_files (
   constraint blog_files_uk1 unique( file_name  ),
   constraint blog_files_ck1 check( row_version > 0 ),
   constraint blog_files_ck2 check( is_active in( 0, 1 ) ),
-  constraint blog_files_ck3 check( is_download in( 0, 1 ) )
+  constraint blog_files_ck3 check( is_download in( 0, 1 ) ),
+  constraint blog_files_ck4 check( is_download = 0 or is_download = 1 and file_desc is not null )
 )
 /
