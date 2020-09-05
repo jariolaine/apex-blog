@@ -5,15 +5,17 @@
 @disabled-color: #8c8c8c;
 
 @code-text-color: #262626;
-@code-margin-bg-odd: rgba(0, 0, 0, 0.065);
-@code-margin-bg-even: rgba(0, 0, 0, 0.045);
+@code-bg-color: #fdfdfd;
+@code-margin-bg-odd: rgba(0, 0, 0, 0.075);
+@code-margin-bg-even: rgba(0, 0, 0, 0.035);
 @code-margin-border-right: 2px solid #6ce26c;
 @code-margin-text-color: #393939;
-@code-border: 1px solid rgba(0, 0, 0, 0.075);
+@code-border: 1px solid rgba(0, 0, 0, 0.055);
+@code-box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.055);
 @code-border-radius: 2px;
 
 @region-background: #ffffff;
-@region-box-shadow: 2px 4px -2px rgba(0, 0, 0, 0.075);
+@region-box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);
 @region-outer-border: 1px solid rgba(0, 0, 0, 0.1);
 @region-inner-border: 1px solid rgba(0, 0, 0, 0.075);
 @region-border-radius: 2px;
@@ -153,10 +155,13 @@ blockquote {
   clear: both;
   margin: 1.2rem 0 0;
 }
-.z-post--noMargin {
-  .z-post {
-    margin-bottom: @margin-none;
-		border-bottom: none;
+.z-posts--paginationBorder {
+  .z-posts--pagination {
+    background-color: @region-background;
+    border: @region-outer-border;
+    box-shadow: @region-box-shadow;
+    border-radius: @region-border-radius;
+    padding: 0.4rem;
   }
 }
 .z-post--mediumMargin {
@@ -169,14 +174,18 @@ blockquote {
     margin-bottom: @margin-small;
   }
 }
-.z-posts--paginationBorder {
+.z-post--noMargin {
+	.z-post {
+    margin-bottom: @margin-none;
+		&:not(:first-child){
+			border-top: none;
+		}
+	}
+}
+.z-post--noMargin.z-posts--paginationBorder {
   .z-posts--pagination {
-    background-color: @region-background;
-    border: @region-outer-border;
-    box-shadow: @region-box-shadow;
-    border-radius: @region-border-radius;
-    padding: 0.4rem;
-  }
+		border-top: none;
+	}
 }
 .z-posts--paginationHidden {
 	.z-posts--pagination {
@@ -319,7 +328,9 @@ pre.z-program-code {
   tab-size: 2;
   counter-reset: line;
   overflow-x: auto;
+	background-color: @code-bg-color;
   border: @code-border;
+	box-shadow: @code-box-shadow;
   border-radius: @code-border-radius;
   code {
     font-family: inherit;
@@ -334,8 +345,6 @@ pre.z-program-code {
       content: counter(line);
       user-select: none;
       border-right: @code-margin-border-right;
-      border-left: @code-border;
-      border-top: @code-border;
       background-color: @code-margin-bg-even;
       margin: 0 0.4rem 0 0;
       padding: 0 0.4rem 0 0;
@@ -343,9 +352,6 @@ pre.z-program-code {
       text-align: right;
       width: 2.8rem;
       color: @code-margin-text-color;
-    }
-    &:first-child:before {
-      border-top: none;
     }
     &:nth-child(odd):before {
       background-color: @code-margin-bg-odd;

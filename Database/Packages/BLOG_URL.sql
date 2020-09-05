@@ -364,7 +364,7 @@ as
       || ':'
       || p_post_id
       || ','
-      || p_subscription_id
+      || l_subs_id
     ;
 
     l_url :=

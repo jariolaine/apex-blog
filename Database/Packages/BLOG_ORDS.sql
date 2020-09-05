@@ -59,14 +59,16 @@ as
   begin
 
     for c1 in(
-      select uri_template
-       ,http_method
-       ,source_type
-       ,handler_source
-       ,notes
+      select t1.uri_template
+       ,t1.http_method
+       ,t1.source_type
+       ,t1.handler_source
+       ,t1.etag_type
+       ,t1.etag_query
+       ,t1.notes
       from blog_ords_templates t1
       where 1 = 1
-      and is_active = 1
+      and t1.is_active = 1
       and not exists(
         select 1
         from apex_application_build_options bo
@@ -81,8 +83,8 @@ as
         p_module_name     => c_module_name
         ,p_pattern        => c1.uri_template
         ,p_priority       => 0
-        ,p_etag_type      => 'HASH'
-        ,p_etag_query     => null
+        ,p_etag_type      => c1.etag_type
+        ,p_etag_query     => c1.etag_query
         ,p_comments       => c1.notes
       );
 

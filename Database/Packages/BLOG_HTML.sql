@@ -15,6 +15,8 @@ as
 --                            Added apex_debug to functions generating meta and canonical link
 --    Jari Laine 10.05.2020 - Utilize blog_url functions p_canonical
 --    Jari Laine 19.05.2020 - Removed obsolete function get_search_button
+--    Jari Laine 06.07.2020 - Added parameter p_rss_url to functions get_rss_link and get_rss_anchor
+--                            Removed parameter p_build_option_status from function get_rss_link
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -70,13 +72,15 @@ as
 --------------------------------------------------------------------------------
   -- called from pub app shortcut BLOG_RSS_ANCHOR
   function get_rss_anchor(
-    p_app_name            in varchar2
+    p_app_name            in varchar2,
+    p_rss_url             in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- called from pub app shortcut BLOG_RSS_LINK
   function get_rss_link(
+    p_app_id              in varchar2,
     p_app_name            in varchar2,
-    p_build_option_status in varchar2 default 'INCLUDE'
+    p_rss_url             in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- called from pub app classic report on pages 2, 3, 6, 14, 15
@@ -406,18 +410,26 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss_anchor(
-    p_app_name in varchar2
+    p_app_name in varchar2,
+    p_rss_url  in varchar2 default null
   ) return varchar2
   as
     l_rss_url varchar2(4000);
     l_rss_title varchar2(4000);
   begin
 
-    -- generate RSS anchor
+    -- get rss title
     l_rss_title := apex_lang.message( 'BLOG_RSS_TITLE', p_app_name );
 
-    l_rss_url := blog_util.get_attribute_value( 'RSS_URL' );
+    -- get rss url
+    l_rss_url := case
+      when p_rss_url is null
+      then blog_util.get_attribute_value( 'RSS_URL' )
+      else p_rss_url
+      end
+    ;
 
+    -- generate RSS anchor
     if l_rss_url is not null
     then
       l_rss_url :=
@@ -431,7 +443,7 @@ as
       ;
     else
       apex_debug.warn('RSS URL is empty. RSS anchor not generated.');
-      l_rss_url := '<small>RSS url is not set</small>';
+      l_rss_url := '<strong>RSS url is not set</strong>';
     end if;
 
     return l_rss_url;
@@ -440,35 +452,47 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss_link(
-    p_app_name            in varchar2,
-    p_build_option_status in varchar2 default 'INCLUDE'
+    p_app_id    in varchar2,
+    p_app_name  in varchar2,
+    p_rss_url   in varchar2 default null
   ) return varchar2
   as
-    l_rss_url varchar2(4000);
+    l_app_id    number;
+    l_rss_url   varchar2(4000);
     l_rss_title varchar2(4000);
   begin
-    -- generate link for rss
 
-    l_rss_url := blog_util.get_attribute_value( 'RSS_URL' );
+    l_app_id := to_number( p_app_id );
 
-    if p_build_option_status = 'INCLUDE'
-    and l_rss_url is not null
+    if apex_util.get_build_option_status(
+       p_application_id     => l_app_id
+      ,p_build_option_name  => 'BLOG_FEATURE_RSS'
+    ) = 'INCLUDE'
     then
-      l_rss_title := apex_lang.message( 'BLOG_RSS_TITLE', p_app_name );
-      --l_rss_title := apex_escape.html_attribute( l_rss_title );
-      l_rss_url :=
-        '<link rel="alternate" type="application/rss+xml" href="'
-        || l_rss_url
-        || '" title="'
-        || l_rss_title
-        || '"/>'
+      -- get rss url
+      l_rss_url := case
+        when p_rss_url is null
+        then blog_util.get_attribute_value( 'RSS_URL' )
+        else p_rss_url
+        end
       ;
-    else
-      if l_rss_url is null
+
+      -- generate link for rss
+      if l_rss_url is not null
       then
+        l_rss_title := apex_lang.message( 'BLOG_RSS_TITLE', p_app_name );
+        --l_rss_title := apex_escape.html_attribute( l_rss_title );
+        l_rss_url :=
+          '<link rel="alternate" type="application/rss+xml" href="'
+          || l_rss_url
+          || '" title="'
+          || l_rss_title
+          || '"/>'
+        ;
+      else
         apex_debug.warn('RSS  URL is empty. RSS link for header not generated.');
       end if;
-      l_rss_url := '<!-- no feed link -->';
+
     end if;
 
     return l_rss_url;
