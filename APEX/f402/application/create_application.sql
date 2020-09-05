@@ -1,5 +1,16 @@
 prompt --application/create_application
 begin
+--   Manifest
+--     FLOW: 402
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.03.31'
+,p_release=>'20.1.0.00.13'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_flow(
  p_id=>wwv_flow.g_flow_id
 ,p_owner=>nvl(wwv_flow_application_install.get_schema,'BLOG_040000')
@@ -42,13 +53,13 @@ wwv_flow_api.create_flow(
 ,p_csv_encoding=>'Y'
 ,p_auto_time_zone=>'Y'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
-,p_substitution_string_01=>'G_ADMIN_APP_ID'
-,p_substitution_value_01=>'YES'
+,p_friendly_url=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200701170359'
+,p_last_upd_yyyymmddhh24miss=>'20200728092334'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>195
 ,p_ui_type_name => null
 );
+wwv_flow_api.component_end;
 end;
 /

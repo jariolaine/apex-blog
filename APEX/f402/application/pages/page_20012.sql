@@ -1,5 +1,16 @@
 prompt --application/pages/page_20012
 begin
+--   Manifest
+--     PAGE: 20012
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.03.31'
+,p_release=>'20.1.0.00.13'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_page(
  p_id=>20012
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
@@ -18,7 +29,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200623054437'
+,p_last_upd_yyyymmddhh24miss=>'20200728092334'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -44,7 +55,7 @@ wwv_flow_api.create_page_plug(
 '  ,v1.changed_on        as changed_on',
 'from #OWNER#.blog_v_all_settings v1',
 'where 1 = 1',
-'and v1.group_name != ''INTERNAL''',
+'and v1.attribute_group != ''INTERNAL''',
 ''))
 ,p_plug_source_type=>'NATIVE_IG'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -476,7 +487,7 @@ wwv_flow_api.create_page_validation(
 'return #OWNER#.blog_cm.is_integer(',
 '   p_value => :ATTRIBUTE_VALUE',
 '  ,p_min => 1',
-'  ,p_max => 50',
+'  ,p_max => 20',
 '  ,p_err_mesg => ''BLOG_VALIDATION_ERR_IS_INTEGER''',
 ');'))
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -582,6 +593,26 @@ wwv_flow_api.create_page_da_action(
 ''))
 ,p_wait_for_result=>'Y'
 );
+wwv_flow_api.create_page_da_event(
+ p_id=>wwv_flow_api.id(14806777327070101)
+,p_name=>'Set Edit Mode'
+,p_event_sequence=>30
+,p_bind_type=>'bind'
+,p_bind_event_type=>'ready'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(14806855920070102)
+,p_event_id=>wwv_flow_api.id(14806777327070101)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_api.id(27272383079075402)
+,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex.region(this.affectedElements[0].id).call("getActions").set("edit", true);',
+''))
+);
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(31248479488982924)
 ,p_process_sequence=>20
@@ -609,5 +640,6 @@ wwv_flow_api.create_page_process(
 ,p_attribute_08=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
+wwv_flow_api.component_end;
 end;
 /

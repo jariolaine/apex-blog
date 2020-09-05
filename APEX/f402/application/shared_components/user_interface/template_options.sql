@@ -1,5 +1,16 @@
 prompt --application/shared_components/user_interface/template_options
 begin
+--   Manifest
+--     THEME OPTIONS: 402
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.03.31'
+,p_release=>'20.1.0.00.13'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(5325908589145977)
 ,p_theme_id=>42
@@ -943,9 +954,18 @@ wwv_flow_api.create_template_option(
 ,p_css_classes=>'t-Region--showCarouselControls'
 ,p_template_types=>'REGION'
 );
+wwv_flow_api.component_end;
 end;
 /
 begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.03.31'
+,p_release=>'20.1.0.00.13'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(8484869811518202)
 ,p_theme_id=>42
@@ -1916,6 +1936,18 @@ wwv_flow_api.create_template_option(
 ,p_template_types=>'REPORT'
 ,p_help_text=>'Displays a compact version of timeline with smaller text and fewer columns.'
 );
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.03.31'
+,p_release=>'20.1.0.00.13'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(8509640979518218)
 ,p_theme_id=>42
@@ -1927,9 +1959,6 @@ wwv_flow_api.create_template_option(
 ,p_group_id=>wwv_flow_api.id(13556370779214027)
 ,p_template_types=>'REPORT'
 );
-end;
-/
-begin
 wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(8509832270518218)
 ,p_theme_id=>42
@@ -2926,6 +2955,18 @@ wwv_flow_api.create_template_option(
 ,p_help_text=>'Stack badges on top of each other'
 ,p_is_advanced=>'N'
 );
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.03.31'
+,p_release=>'20.1.0.00.13'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(8531654387518232)
 ,p_theme_id=>42
@@ -2950,9 +2991,6 @@ wwv_flow_api.create_template_option(
 ,p_template_types=>'LIST'
 ,p_is_advanced=>'N'
 );
-end;
-/
-begin
 wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(8532209547518232)
 ,p_theme_id=>42
@@ -3945,6 +3983,18 @@ wwv_flow_api.create_template_option(
 ,p_help_text=>'Show form labels above input fields.'
 ,p_is_advanced=>'N'
 );
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.03.31'
+,p_release=>'20.1.0.00.13'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(13613284590214057)
 ,p_theme_id=>42
@@ -3966,9 +4016,6 @@ wwv_flow_api.create_template_option(
 ,p_template_types=>'FIELD'
 ,p_help_text=>'Displays the Item Pre Text in a block style immediately before the item.'
 );
-end;
-/
-begin
 wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(13614647839214057)
 ,p_theme_id=>42
@@ -4761,5 +4808,6 @@ wwv_flow_api.create_template_option(
 ,p_template_types=>'REPORT'
 ,p_help_text=>'This option reduces the padding and font sizes to present a compact display of the same information.'
 );
+wwv_flow_api.component_end;
 end;
 /

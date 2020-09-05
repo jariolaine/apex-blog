@@ -1,5 +1,16 @@
 prompt --application/pages/page_20011
 begin
+--   Manifest
+--     PAGE: 20011
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.03.31'
+,p_release=>'20.1.0.00.13'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_page(
  p_id=>20011
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
@@ -18,7 +29,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524193913'
+,p_last_upd_yyyymmddhh24miss=>'20200728092326'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27063074415689131)
@@ -500,6 +511,26 @@ wwv_flow_api.create_page_da_action(
 ''))
 ,p_wait_for_result=>'Y'
 );
+wwv_flow_api.create_page_da_event(
+ p_id=>wwv_flow_api.id(14806954183070103)
+,p_name=>'Set Edit Mode'
+,p_event_sequence=>30
+,p_bind_type=>'bind'
+,p_bind_event_type=>'ready'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(14807006401070104)
+,p_event_id=>wwv_flow_api.id(14806954183070103)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_api.id(27063074415689131)
+,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex.region(this.affectedElements[0].id).call("getActions").set("edit", true);',
+''))
+);
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(27064721351689148)
 ,p_process_sequence=>20
@@ -525,5 +556,6 @@ wwv_flow_api.create_page_process(
 ,p_exec_cond_for_each_row=>'Y'
 ,p_process_comment=>'Update build option value and run post expression'
 );
+wwv_flow_api.component_end;
 end;
 /

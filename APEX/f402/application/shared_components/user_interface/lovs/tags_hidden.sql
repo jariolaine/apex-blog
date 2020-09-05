@@ -1,5 +1,16 @@
 prompt --application/shared_components/user_interface/lovs/tags_hidden
 begin
+--   Manifest
+--     TAGS_HIDDEN
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.03.31'
+,p_release=>'20.1.0.00.13'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_list_of_values(
  p_id=>wwv_flow_api.id(24782207188898443)
 ,p_lov_name=>'TAGS_HIDDEN'
@@ -19,5 +30,6 @@ wwv_flow_api.create_list_of_values(
 ,p_default_sort_column_name=>'DISPLAY_SEQ'
 ,p_default_sort_direction=>'ASC'
 );
+wwv_flow_api.component_end;
 end;
 /

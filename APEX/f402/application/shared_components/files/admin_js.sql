@@ -1,5 +1,16 @@
 prompt --application/shared_components/files/admin_js
 begin
+--   Manifest
+--     APP STATIC FILES: 402
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.03.31'
+,p_release=>'20.1.0.00.13'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.g_varchar2_table := wwv_flow_api.empty_varchar2_table;
 wwv_flow_api.g_varchar2_table(1) := '2F2A2A0A2A20406E616D65737061636520626C6F670A2A2A2F0A76617220626C6F67203D20626C6F67207C7C207B7D3B0A0A2866756E6374696F6E28242C20726567696F6E2C20626C6F6729207B0A0A20202F2A2A0A20202A20406D6F64756C6520626C';
 wwv_flow_api.g_varchar2_table(2) := '6F672E61646D696E0A20202A2A2F0A2020626C6F672E61646D696E203D207B0A202020202F2A2A0A202020202A20406D6F64756C6520626C6F672E61646D696E2E63617465676F7269657349470A202020202A2A2F0A2020202063617465676F72696573';
@@ -115,5 +126,6 @@ wwv_flow_api.create_app_static_file(
 ,p_file_charset=>'utf-8'
 ,p_file_content => wwv_flow_api.varchar2_to_blob(wwv_flow_api.g_varchar2_table)
 );
+wwv_flow_api.component_end;
 end;
 /

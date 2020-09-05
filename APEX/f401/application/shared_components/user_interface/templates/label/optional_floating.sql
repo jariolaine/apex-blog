@@ -1,5 +1,16 @@
 prompt --application/shared_components/user_interface/templates/label/optional_floating
 begin
+--   Manifest
+--     LABEL TEMPLATE: OPTIONAL_FLOATING
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.03.31'
+,p_release=>'20.1.0.00.13'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_field_template(
  p_id=>wwv_flow_api.id(6854643778267413)
 ,p_template_name=>'Optional - Floating'
@@ -24,5 +35,6 @@ wwv_flow_api.create_field_template(
 ,p_reference_id=>1607675164727151865
 ,p_translate_this_template=>'N'
 );
+wwv_flow_api.component_end;
 end;
 /

@@ -1,5 +1,16 @@
 prompt --application/pages/page_00001
 begin
+--   Manifest
+--     PAGE: 00001
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.03.31'
+,p_release=>'20.1.0.00.13'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_page(
  p_id=>1
 ,p_user_interface_id=>wwv_flow_api.id(6877050287267426)
@@ -17,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200701092918'
+,p_last_upd_yyyymmddhh24miss=>'20200705044141'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6432040642894060)
@@ -158,5 +169,6 @@ wwv_flow_api.create_page_item(
 ,p_attribute_01=>'Y'
 ,p_item_comment=>'Report rows to display per report page'
 );
+wwv_flow_api.component_end;
 end;
 /

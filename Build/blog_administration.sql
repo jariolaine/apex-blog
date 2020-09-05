@@ -6,15 +6,15 @@ whenever sqlerror exit sql.sqlcode rollback
 -- ORACLE Application Express (APEX) export file
 --
 -- You should run the script connected to SQL*Plus as the Oracle user
--- APEX_190200 or as the owner (parsing schema) of the application.
+-- APEX_200100 or as the owner (parsing schema) of the application.
 --
 -- NOTE: Calls to apex_application_install override the defaults below.
 --
 --------------------------------------------------------------------------------
 begin
 wwv_flow_api.import_begin (
- p_version_yyyy_mm_dd=>'2019.10.04'
-,p_release=>'19.2.0.00.18'
+ p_version_yyyy_mm_dd=>'2020.03.31'
+,p_release=>'20.1.0.00.13'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -38,7 +38,7 @@ prompt APPLICATION 402 - Blog Administration
 --       Processes:               45
 --       Regions:                 66
 --       Buttons:                 68
---       Dynamic Actions:         32
+--       Dynamic Actions:         34
 --     Shared Components:
 --       Logic:
 --         Items:                  9
@@ -72,7 +72,7 @@ prompt APPLICATION 402 - Blog Administration
 --     Supporting Objects:  Included (auto-install)
 --       Install scripts:          3
 --       Validations:              1
---   Version:         19.2.0.00.18
+--   Version:         20.1.0.00.13
 --   Instance ID:     9502710254078678
 --
 
@@ -125,10 +125,9 @@ wwv_flow_api.create_flow(
 ,p_csv_encoding=>'Y'
 ,p_auto_time_zone=>'Y'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
-,p_substitution_string_01=>'G_ADMIN_APP_ID'
-,p_substitution_value_01=>'YES'
+,p_friendly_url=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200701170359'
+,p_last_upd_yyyymmddhh24miss=>'20200728092334'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>195
 ,p_ui_type_name => null
@@ -624,51 +623,83 @@ wwv_flow_api.create_flow_process(
 );
 end;
 /
-prompt --application/shared_components/logic/application_items
+prompt --application/shared_components/logic/application_items/g_app_desc
 begin
 wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(6653797369625590)
 ,p_name=>'G_APP_DESC'
 ,p_protection_level=>'I'
 );
+end;
+/
+prompt --application/shared_components/logic/application_items/g_app_name
+begin
 wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(8615126468915955)
 ,p_name=>'G_APP_NAME'
 ,p_protection_level=>'I'
 ,p_item_comment=>'Application name'
 );
+end;
+/
+prompt --application/shared_components/logic/application_items/g_blogger_id
+begin
 wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(8905163685110392)
 ,p_name=>'G_BLOGGER_ID'
 ,p_protection_level=>'I'
 );
+end;
+/
+prompt --application/shared_components/logic/application_items/g_blogger_name
+begin
 wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(27184479427659749)
 ,p_name=>'G_BLOGGER_NAME'
 ,p_protection_level=>'I'
 );
+end;
+/
+prompt --application/shared_components/logic/application_items/g_blog_static_files
+begin
 wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(20114488870624156)
 ,p_name=>'G_BLOG_STATIC_FILES'
 ,p_protection_level=>'I'
 );
+end;
+/
+prompt --application/shared_components/logic/application_items/g_post_title_date_format
+begin
 wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(8614919463913657)
 ,p_name=>'G_POST_TITLE_DATE_FORMAT'
 ,p_protection_level=>'I'
 ,p_item_comment=>'Post title date format in details view'
 );
+end;
+/
+prompt --application/shared_components/logic/application_items/g_pub_app_id
+begin
 wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(4233652519065297)
 ,p_name=>'G_PUB_APP_ID'
 ,p_protection_level=>'I'
 );
+end;
+/
+prompt --application/shared_components/logic/application_items/g_user_date_time_format
+begin
 wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(9007343053756881)
 ,p_name=>'G_USER_DATE_TIME_FORMAT'
 ,p_protection_level=>'I'
 ,p_item_comment=>'Application date time format'
 );
+end;
+/
+prompt --application/shared_components/logic/application_items/g_user_input_date_time_format
+begin
 wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(19066396643849216)
 ,p_name=>'G_USER_INPUT_DATE_TIME_FORMAT'
@@ -676,7 +707,7 @@ wwv_flow_api.create_flow_item(
 );
 end;
 /
-prompt --application/shared_components/logic/application_computations
+prompt --application/shared_components/logic/application_computations/g_blog_static_files
 begin
 wwv_flow_api.create_flow_computation(
  p_id=>wwv_flow_api.id(20114712727625957)
@@ -685,8 +716,12 @@ wwv_flow_api.create_flow_computation(
 ,p_computation_point=>'AFTER_LOGIN'
 ,p_computation_type=>'PLSQL_EXPRESSION'
 ,p_computation_processed=>'REPLACE_EXISTING'
-,p_computation=>'#OWNER#.blog_ords.get_module_path || ''files/'''
+,p_computation=>'#OWNER#.blog_ords.get_module_path || ''share/'''
 );
+end;
+/
+prompt --application/shared_components/logic/application_computations/g_user_date_time_format
+begin
 wwv_flow_api.create_flow_computation(
  p_id=>wwv_flow_api.id(8959846931541340)
 ,p_computation_sequence=>20
@@ -696,6 +731,10 @@ wwv_flow_api.create_flow_computation(
 ,p_computation_processed=>'REPLACE_EXISTING'
 ,p_computation=>'BLOG_DISPLAY_DATE_FORMAT'
 );
+end;
+/
+prompt --application/shared_components/logic/application_computations/g_user_date_time_format_002
+begin
 wwv_flow_api.create_flow_computation(
  p_id=>wwv_flow_api.id(28465031431932653)
 ,p_computation_sequence=>30
@@ -707,6 +746,10 @@ wwv_flow_api.create_flow_computation(
 ,p_compute_when=>'G_USER_DATE_TIME_FORMAT'
 ,p_compute_when_type=>'ITEM_IS_NULL'
 );
+end;
+/
+prompt --application/shared_components/logic/application_computations/g_user_input_date_time_format
+begin
 wwv_flow_api.create_flow_computation(
  p_id=>wwv_flow_api.id(19068228071884603)
 ,p_computation_sequence=>40
@@ -716,6 +759,10 @@ wwv_flow_api.create_flow_computation(
 ,p_computation_processed=>'REPLACE_EXISTING'
 ,p_computation=>'BLOG_INPUT_DATE_FORMAT'
 );
+end;
+/
+prompt --application/shared_components/logic/application_computations/g_user_input_date_time_format_002
+begin
 wwv_flow_api.create_flow_computation(
  p_id=>wwv_flow_api.id(28465412265925289)
 ,p_computation_sequence=>50
@@ -13758,6 +13805,7 @@ wwv_flow_api.create_interactive_grid(
 ,p_enable_flashback=>true
 ,p_define_chart_view=>false
 ,p_enable_download=>true
+,p_download_formats=>'CSV:HTML'
 ,p_enable_mail_download=>false
 ,p_fixed_header=>'REGION'
 ,p_fixed_header_max_height=>440
@@ -16280,6 +16328,7 @@ wwv_flow_api.create_interactive_grid(
 ,p_enable_flashback=>true
 ,p_define_chart_view=>false
 ,p_enable_download=>true
+,p_download_formats=>'CSV:HTML'
 ,p_enable_mail_download=>false
 ,p_fixed_header=>'REGION'
 ,p_fixed_header_max_height=>440
@@ -19639,7 +19688,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524193913'
+,p_last_upd_yyyymmddhh24miss=>'20200728092326'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27063074415689131)
@@ -20121,6 +20170,26 @@ wwv_flow_api.create_page_da_action(
 ''))
 ,p_wait_for_result=>'Y'
 );
+wwv_flow_api.create_page_da_event(
+ p_id=>wwv_flow_api.id(14806954183070103)
+,p_name=>'Set Edit Mode'
+,p_event_sequence=>30
+,p_bind_type=>'bind'
+,p_bind_event_type=>'ready'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(14807006401070104)
+,p_event_id=>wwv_flow_api.id(14806954183070103)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_api.id(27063074415689131)
+,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex.region(this.affectedElements[0].id).call("getActions").set("edit", true);',
+''))
+);
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(27064721351689148)
 ,p_process_sequence=>20
@@ -20168,7 +20237,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200623054437'
+,p_last_upd_yyyymmddhh24miss=>'20200728092334'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -20194,7 +20263,7 @@ wwv_flow_api.create_page_plug(
 '  ,v1.changed_on        as changed_on',
 'from #OWNER#.blog_v_all_settings v1',
 'where 1 = 1',
-'and v1.group_name != ''INTERNAL''',
+'and v1.attribute_group != ''INTERNAL''',
 ''))
 ,p_plug_source_type=>'NATIVE_IG'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -20626,7 +20695,7 @@ wwv_flow_api.create_page_validation(
 'return #OWNER#.blog_cm.is_integer(',
 '   p_value => :ATTRIBUTE_VALUE',
 '  ,p_min => 1',
-'  ,p_max => 50',
+'  ,p_max => 20',
 '  ,p_err_mesg => ''BLOG_VALIDATION_ERR_IS_INTEGER''',
 ');'))
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -20731,6 +20800,26 @@ wwv_flow_api.create_page_da_action(
 ');',
 ''))
 ,p_wait_for_result=>'Y'
+);
+wwv_flow_api.create_page_da_event(
+ p_id=>wwv_flow_api.id(14806777327070101)
+,p_name=>'Set Edit Mode'
+,p_event_sequence=>30
+,p_bind_type=>'bind'
+,p_bind_event_type=>'ready'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(14806855920070102)
+,p_event_id=>wwv_flow_api.id(14806777327070101)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_api.id(27272383079075402)
+,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex.region(this.affectedElements[0].id).call("getActions").set("edit", true);',
+''))
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(31248479488982924)

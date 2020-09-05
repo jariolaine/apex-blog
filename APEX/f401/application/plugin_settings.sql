@@ -1,5 +1,13 @@
 prompt --application/plugin_settings
 begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.03.31'
+,p_release=>'20.1.0.00.13'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_plugin_setting(
  p_id=>wwv_flow_api.id(6753928467267359)
 ,p_plugin_type=>'REGION TYPE'
@@ -44,5 +52,6 @@ wwv_flow_api.create_plugin_setting(
 ,p_attribute_01=>'Answer to question isn''t correct.'
 ,p_attribute_02=>'Ajax call returned error.'
 );
+wwv_flow_api.component_end;
 end;
 /

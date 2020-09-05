@@ -259,8 +259,10 @@ create table blog_ords_templates(
   display_seq number(10,0) not null,
   template_group varchar2( 256 char ) not null,
   uri_template varchar2( 256 char ) not null,
+  etag_type varchar2( 256 char ) not null,
+  etag_query varchar2( 4000 char ),
   http_method varchar2( 256 char ) not null,
-  source_type  varchar2( 256 char ) not null,
+  source_type varchar2( 256 char ) not null,
   handler_source varchar2( 256 char ) not null,
   build_option varchar2( 256 char ),
   notes varchar2(4000 char),
@@ -396,12 +398,12 @@ create table blog_settings(
   constraint blog_settings_ck1 check( row_version > 0 ),
   constraint blog_settings_ck2 check( is_nullable in( 0, 1 ) ),
   constraint blog_settings_ck3 check( display_seq > 0 ),
-  constraint blog_settings_ck11 check(
+  constraint blog_settings_ck4 check(
     is_nullable = 1 or
     is_nullable = 0 and
     attribute_value is not null
   ),
-  constraint blog_settings_ck12 check(
+  constraint blog_settings_ck5 check(
     group_name in(
       'BLOG_PAR_GROUP_GENERAL'
       ,'BLOG_PAR_GROUP_REPORTS'
@@ -410,7 +412,7 @@ create table blog_settings(
       ,'INTERNAL'
     )
   ),
-  constraint blog_settings_ck13 check(
+  constraint blog_settings_ck6 check(
     data_type in(
       'INTEGER'
       ,'STRING'
@@ -419,17 +421,22 @@ create table blog_settings(
       ,'EMAIL'
     )
   ),
-  constraint blog_settings_ck14 check(
+  constraint blog_settings_ck7 check(
     data_type != 'INTEGER' or
     data_type = 'INTEGER' and
     round( to_number( attribute_value ) ) = to_number( attribute_value )
   ),
-  constraint blog_settings_ck15 check(
+  constraint blog_settings_ck8 check(
+      data_type != 'DATE_FORMAT' or
+      data_type = 'DATE_FORMAT' and
+      to_char( created_on, attribute_value ) is not null
+  ),
+  constraint blog_settings_ck9 check(
     data_type != 'URL' or
     data_type = 'URL' and
     regexp_like( attribute_value, '^https?\:\/\/.*$' )
   ),
-  constraint blog_settings_ck16 check(
+  constraint blog_settings_ck10 check(
     data_type != 'EMAIL' or
     data_type = 'EMAIL' and
     regexp_like( attribute_value, '^.*\@.*\..*$' )
@@ -727,8 +734,9 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_FILES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "ROW_VERSION", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC") AS
   select t1.id as file_id
+  ,t1.row_version
   ,t1.created_on
   ,t1.changed_on
   ,t1.is_download
@@ -1839,14 +1847,16 @@ as
   begin
 
     for c1 in(
-      select uri_template
-       ,http_method
-       ,source_type
-       ,handler_source
-       ,notes
+      select t1.uri_template
+       ,t1.http_method
+       ,t1.source_type
+       ,t1.handler_source
+       ,t1.etag_type
+       ,t1.etag_query
+       ,t1.notes
       from blog_ords_templates t1
       where 1 = 1
-      and is_active = 1
+      and t1.is_active = 1
       and not exists(
         select 1
         from apex_application_build_options bo
@@ -1861,8 +1871,8 @@ as
         p_module_name     => c_module_name
         ,p_pattern        => c1.uri_template
         ,p_priority       => 0
-        ,p_etag_type      => 'HASH'
-        ,p_etag_query     => null
+        ,p_etag_type      => c1.etag_type
+        ,p_etag_query     => c1.etag_query
         ,p_comments       => c1.notes
       );
 
@@ -2574,7 +2584,7 @@ as
       || ':'
       || p_post_id
       || ','
-      || p_subscription_id
+      || l_subs_id
     ;
 
     l_url :=
@@ -4267,6 +4277,8 @@ as
 --                            Added apex_debug to functions generating meta and canonical link
 --    Jari Laine 10.05.2020 - Utilize blog_url functions p_canonical
 --    Jari Laine 19.05.2020 - Removed obsolete function get_search_button
+--    Jari Laine 06.07.2020 - Added parameter p_rss_url to functions get_rss_link and get_rss_anchor
+--                            Removed parameter p_build_option_status from function get_rss_link
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4322,13 +4334,15 @@ as
 --------------------------------------------------------------------------------
   -- called from pub app shortcut BLOG_RSS_ANCHOR
   function get_rss_anchor(
-    p_app_name            in varchar2
+    p_app_name            in varchar2,
+    p_rss_url             in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- called from pub app shortcut BLOG_RSS_LINK
   function get_rss_link(
+    p_app_id              in varchar2,
     p_app_name            in varchar2,
-    p_build_option_status in varchar2 default 'INCLUDE'
+    p_rss_url             in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- called from pub app classic report on pages 2, 3, 6, 14, 15
@@ -4658,18 +4672,26 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss_anchor(
-    p_app_name in varchar2
+    p_app_name in varchar2,
+    p_rss_url  in varchar2 default null
   ) return varchar2
   as
     l_rss_url varchar2(4000);
     l_rss_title varchar2(4000);
   begin
 
-    -- generate RSS anchor
+    -- get rss title
     l_rss_title := apex_lang.message( 'BLOG_RSS_TITLE', p_app_name );
 
-    l_rss_url := blog_util.get_attribute_value( 'RSS_URL' );
+    -- get rss url
+    l_rss_url := case
+      when p_rss_url is null
+      then blog_util.get_attribute_value( 'RSS_URL' )
+      else p_rss_url
+      end
+    ;
 
+    -- generate RSS anchor
     if l_rss_url is not null
     then
       l_rss_url :=
@@ -4683,7 +4705,7 @@ as
       ;
     else
       apex_debug.warn('RSS URL is empty. RSS anchor not generated.');
-      l_rss_url := '<small>RSS url is not set</small>';
+      l_rss_url := '<strong>RSS url is not set</strong>';
     end if;
 
     return l_rss_url;
@@ -4692,35 +4714,47 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss_link(
-    p_app_name            in varchar2,
-    p_build_option_status in varchar2 default 'INCLUDE'
+    p_app_id    in varchar2,
+    p_app_name  in varchar2,
+    p_rss_url   in varchar2 default null
   ) return varchar2
   as
-    l_rss_url varchar2(4000);
+    l_app_id    number;
+    l_rss_url   varchar2(4000);
     l_rss_title varchar2(4000);
   begin
-    -- generate link for rss
 
-    l_rss_url := blog_util.get_attribute_value( 'RSS_URL' );
+    l_app_id := to_number( p_app_id );
 
-    if p_build_option_status = 'INCLUDE'
-    and l_rss_url is not null
+    if apex_util.get_build_option_status(
+       p_application_id     => l_app_id
+      ,p_build_option_name  => 'BLOG_FEATURE_RSS'
+    ) = 'INCLUDE'
     then
-      l_rss_title := apex_lang.message( 'BLOG_RSS_TITLE', p_app_name );
-      --l_rss_title := apex_escape.html_attribute( l_rss_title );
-      l_rss_url :=
-        '<link rel="alternate" type="application/rss+xml" href="'
-        || l_rss_url
-        || '" title="'
-        || l_rss_title
-        || '"/>'
+      -- get rss url
+      l_rss_url := case
+        when p_rss_url is null
+        then blog_util.get_attribute_value( 'RSS_URL' )
+        else p_rss_url
+        end
       ;
-    else
-      if l_rss_url is null
+
+      -- generate link for rss
+      if l_rss_url is not null
       then
+        l_rss_title := apex_lang.message( 'BLOG_RSS_TITLE', p_app_name );
+        --l_rss_title := apex_escape.html_attribute( l_rss_title );
+        l_rss_url :=
+          '<link rel="alternate" type="application/rss+xml" href="'
+          || l_rss_url
+          || '" title="'
+          || l_rss_title
+          || '"/>'
+        ;
+      else
         apex_debug.warn('RSS  URL is empty. RSS link for header not generated.');
       end if;
-      l_rss_url := '<!-- no feed link -->';
+
     end if;
 
     return l_rss_url;
