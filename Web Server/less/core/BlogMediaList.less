@@ -1,0 +1,80 @@
+//out:../../css/core/BlogMediaList.css
+
+@import "_apex_variables";
+/******************************************************************************
+Color Variables
+******************************************************************************/
+
+@g_Border-Outer: contrast(@g_Region-BG, darken(@g_Region-BG,   12%), lighten(@g_Region-BG,   12%),  43%);
+
+.t-MediaList {
+  border-color: @g_Border-Outer;
+  background-color: @g_Region-BG;
+}
+
+.t-MediaList-item {
+  border-color: @g_Border-Outer;
+}
+
+.t-MediaList-item.is-active {
+  background-color: @_base-alpha-2;
+}
+
+.t-MediaList--horizontal .t-MediaList-item {
+  border-right: 1px solid @g_Border-Outer;
+}
+
+/* ==========================================================================
+   Link
+   ========================================================================== */
+a.t-MediaList-itemWrap {
+  color: @g_Link-Base;
+
+  &:hover {
+    background-color: contrast(@g_Region-BG, darken(@g_Region-BG,   2%), lighten(@g_Region-BG,   2%),  43%);
+    color: @g_Link-Base;
+
+    .t-MediaList-badge {}
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 1px @g_Focus inset;
+  }
+}
+
+.t-MediaList-itemWrap {
+  color: @g_Region-FG;
+}
+
+.t-MediaList-badge {
+  background-color: @_base-alpha-2;
+}
+
+.t-MediaList-badge,
+.t-MediaList-desc {
+  color: @g_Region-FG-Light;
+}
+
+.t-MediaList-icon {
+  background-color: @g_Accent-BG;
+  color: @g_Accent-FG;
+}
+
+.t-MediaList--cols {
+  box-shadow: -1px -1px 0 0 @g_Border-Outer inset;
+
+  .t-MediaList-item {
+
+    &:before,
+    &:after {
+      background-color: contrast(@g_Region-BG, darken(@g_Region-BG,   10%), lighten(@g_Region-BG,   10%),  43%);
+    }
+  }
+}
+
+/* ==========================================================================
+   Modifier: Apply Theme Colors
+   ---
+   Adds theme colors to the items.
+   ========================================================================== */
+.t-MediaList.u-colors {}

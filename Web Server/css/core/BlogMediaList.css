@@ -1,0 +1,985 @@
+/*
+{
+  "translate": true,
+  "groups":[
+  {
+    "name": "UTR.LESS.GLOBAL_COLORS",
+    "common": true,
+    "sequence": 1
+  },
+  {
+    "name": "UTR.LESS.CONTAINERS",
+    "common": true,
+    "sequence": 2
+  },
+{
+  "name": "UTR.LESS.NAVIGATION",
+  "common": true,
+  "sequence": 3
+  },
+  {
+  "name": "UTR.LESS.REGIONS",
+  "common": true,
+  "sequence": 4
+  },
+  {
+  "name": "UTR.LESS.BUTTONS",
+  "common": true,
+  "sequence": 5
+  },
+  {
+  "name": "UTR.LESS.FORMS",
+  "common": true,
+  "sequence": 6
+  },
+  {
+  "name": "UTR.LESS.STATES",
+  "common": true,
+  "sequence": 7
+  },
+  {
+    "name": "UTR.LESS.PALETTE",
+    "common": true,
+    "sequence": 8
+  },
+  {
+  "name": "UTR.LESS.INTERACTIVE_REPORTS",
+  "common": true,
+  "sequence": 9
+  },
+  {
+  "name": "UTR.LESS.LAYOUT",
+  "common": true,
+  "sequence": 10
+  }
+  ]
+}
+*/
+/*
+{
+  "var" : "@g_Accent-BG",
+  "name" : "UTR.LESS.HEADER_ACCENT",
+  "type" : "color",
+  "style": "big",
+  "group": "UTR.LESS.GLOBAL_COLORS"
+}
+*/
+/*
+{
+  "var" : "@g_Accent-OG",
+  "name" : "UTR.LESS.BODY_ACCENT",
+  "style": "big",
+  "type" : "color",
+  "group": "UTR.LESS.GLOBAL_COLORS"
+}
+*/
+/*
+{
+  "var" : "@g_Body-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.BODY"
+}
+*/
+/*
+{
+  "var" : "@g_Body-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.BODY"
+}
+*/
+/*
+{
+  "var" : "@g_Actions-Col-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.ACTIONS_COLUMN"
+}
+*/
+/*
+{
+  "var" : "@g_Actions-Col-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.ACTIONS_COLUMN"
+}
+*/
+/*
+{
+  "var" : "@g_Body-Title-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.TITLE_BAR"
+}
+*/
+/*
+{
+  "var" : "@g_Body-Title-FG",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.TITLE_BAR"
+}
+*/
+/*
+{
+  "var" : "@g_Container-BorderRadius",
+  "name" : "UTR.LESS.CONTAINER_BORDER_RADIUS",
+  "type" : "number",
+  "units": "px",
+  "range": {
+    "min": 0,
+    "max": 30,
+    "increment": 2
+  },
+  "group": "UTR.LESS.CONTAINERS"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-1",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_1"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-1-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_1"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-2",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup" : "UTR.LESS.COLOR_2"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-2-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup" : "UTR.LESS.COLOR_2"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-3",
+  "name" : "UTR.LESS.COLOR_3",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup" : "UTR.LESS.COLOR_3"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-3-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup" : "UTR.LESS.COLOR_3"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-4",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_4"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-4-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_4"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-5",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_5"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-5-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_5"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-6",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_6"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-6-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_6"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-7",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_7"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-7-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_7"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-8",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_8"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-8-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_8"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-9",
+  "name" : "UTR.LESS.COLOR_9",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_9"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-9-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_9"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-10",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_10"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-10-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_10"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-11",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_11"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-11-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_11"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-12",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_12"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-12-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_12"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-13",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_13"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-13-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_13"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-14",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_14"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-14-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_14"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-15",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_15"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-15-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_15"
+}
+*/
+/* State Colors
+========================================================================== */
+/*
+{
+  "var" : "@g_Disabled-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.DISABLED"
+}
+*/
+/*
+{
+  "var" : "@g_Disabled-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.DISABLED"
+}
+*/
+/*
+{
+  "var" : "@g_Primary-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.PRIMARY"
+}
+*/
+/*
+{
+  "var" : "@g_Primary-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.PRIMARY"
+}
+*/
+/*
+{
+  "var" : "@g_Success-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.SUCCESS"
+}
+*/
+/*
+{
+  "var" : "@g_Success-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.SUCCESS"
+}
+*/
+/*
+{
+  "var" : "@g_Info-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.INFO"
+}
+*/
+/*
+{
+  "var" : "@g_Info-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.INFO"
+}
+*/
+/*
+{
+  "var" : "@g_Warning-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.WARNING"
+}
+*/
+/*
+{
+"var" : "@g_Warning-FG",
+"name" : "UTR.LESS.FOREGROUND",
+"type" : "color",
+"group": "UTR.LESS.STATES",
+"subgroup": "UTR.LESS.WARNING"
+}
+*/
+/*
+{
+  "var" : "@g_Danger-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.DANGER"
+}
+*/
+/*
+{
+"var" : "@g_Danger-FG",
+"name" : "UTR.LESS.FOREGROUND",
+"type" : "color",
+"group": "UTR.LESS.STATES",
+"subgroup": "UTR.LESS.DANGER"
+}
+*/
+/*
+{
+  "var" : "@g_Header-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.HEADER"
+}
+*/
+/*
+{
+  "var" : "@g_Header-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.HEADER"
+}
+*/
+/*
+{
+"var" : "@g_Region-Header-BG",
+"name" : "UTR.LESS.BACKGROUND",
+"type" : "color",
+"group": "UTR.LESS.REGIONS",
+"subgroup": "UTR.LESS.REGION_HEADER"
+}
+*/
+/*
+{
+"var" : "@g_Region-Header-FG",
+"name" : "UTR.LESS.FOREGROUND",
+"type" : "color",
+"group": "UTR.LESS.REGIONS",
+"subgroup": "UTR.LESS.REGION_HEADER"
+}
+*/
+/*
+{
+  "var" : "@g_Region-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.REGIONS",
+  "subgroup": "UTR.LESS.BODY"
+}
+*/
+/*
+{
+  "var" : "@g_Region-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.REGIONS",
+  "subgroup": "UTR.LESS.BODY"
+}
+*/
+/*
+{
+  "var" : "@g_Form-Item-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.FORMS",
+  "subgroup": "UTR.LESS.ITEM"
+}
+*/
+/*
+{
+  "var" : "@g_Form-Item-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.FORMS",
+  "subgroup": "UTR.LESS.ITEM"
+}
+*/
+/*
+{
+  "var" : "@g_Form-Label",
+  "name" : "UTR.LESS.LABEL",
+  "type" : "color",
+  "group": "UTR.LESS.FORMS"
+}
+*/
+/*
+{
+  "var" : "@g_Form-BorderRadius",
+  "name" : "UTR.LESS.BORDER_RADIUS",
+  "type" : "number",
+  "units": "px",
+  "range": {
+    "min": 0,
+    "max": 30,
+    "increment": 2
+  },
+  "group": "UTR.LESS.FORMS"
+}
+*/
+/*
+{
+    "var": "@g_Nav_Style",
+    "name": "Navigation Style",
+    "type": "select",
+    "options": [
+        {
+            "d": "Light",
+            "r": "light"
+        },
+        {
+            "d": "Dark (Default)",
+            "r": "dark"
+        }
+    ],
+    "group": "UTR.LESS.NAVIGATION"
+}
+*/
+/*
+{
+  "var" : "@g_Nav-Active-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.SELECTED_STATE"
+}
+*/
+/*
+{
+  "var" : "@g_Nav-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.BODY"
+}
+*/
+/*
+{
+  "var" : "@g_Nav-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.BODY"
+}
+*/
+/*
+{
+  "var" : "@g_Nav-Active-FG",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.SELECTED_STATE"
+}
+*/
+/*
+{
+  "var" : "@g_Nav-Icon",
+  "name" : "UTR.LESS.NORMAL",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.ICON",
+  "checkContrast": false
+}
+*/
+/*
+{
+  "var" : "@g_Nav-Icon-Active",
+  "name" : "UTR.LESS.ACTIVE_STATE",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.ICON",
+  "checkContrast": false
+}
+*/
+/* Light and Dark Navigation Handling
+   ========================================================================== */
+/*
+{
+  "var" : "@g_Link-Base",
+  "name" : "UTR.LESS.LINK_COLOR",
+  "type" : "color",
+  "group": "UTR.LESS.GLOBAL_COLORS"
+}
+*/
+/*
+{
+  "var" : "@g_Nav-Accent-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.ACCENT"
+}
+*/
+/*
+{
+  "var" : "@g_Nav-Accent-FG",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.ACCENT"
+}
+*/
+/*
+{
+  "var" : "@g_Nav-Badge-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.BADGE"
+}
+*/
+/*
+{
+  "var" : "@g_Nav-Badge-FG",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.BADGE"
+}
+*/
+/*
+{
+  "var" : "@g_NavBarMenu-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.MENU"
+}
+*/
+/*
+{
+  "var" : "@g_NavBarMenu-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.MENU"
+}
+*/
+/*
+{
+  "var" : "@g_NavBarMenu-Active-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.MENU_ITEM_HOVER"
+}
+*/
+/*
+{
+  "var" : "@g_NavBarMenu-Active-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.MENU_ITEM_HOVER"
+}
+*/
+/*
+{
+  "var" : "@g_Focus",
+  "name" : "UTR.LESS.FOCUS_OUTLINE",
+  "type" : "color",
+  "group": "UTR.LESS.GLOBAL_COLORS"
+}
+*/
+/*
+{
+  "var" : "@g_Button-BorderRadius",
+  "name" : "UTR.LESS.BORDER_RADIUS",
+  "type" : "number",
+  "units": "px",
+  "range": {
+    "min": 0,
+    "max": 24,
+    "increment": 2
+  },
+  "group": "UTR.LESS.BUTTONS"
+}
+*/
+/*
+{
+  "var" : "@g_Button-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.NORMAL"
+}
+*/
+/*
+{
+  "var" : "@g_Button-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.NORMAL"
+}
+*/
+/*
+* BEGIN MIXINS
+*/
+/* Moving Button Variables to Main Variables
+   ========================================================================== */
+/*
+{
+  "var" : "@l_Button-Hot-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.HOT"
+}
+*/
+/*
+{
+  "var" : "@l_Button-Hot-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.HOT"
+}
+*/
+/*
+{
+  "var" : "@l_Button-Primary-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.PRIMARY"
+}
+*/
+/*
+{
+  "var" : "@l_Button-Primary-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.PRIMARY"
+}
+*/
+/*
+{
+  "var" : "@l_Button-Danger-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.DANGER"
+}
+*/
+/*
+{
+  "var" : "@l_Button-Danger-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.DANGER"
+}
+*/
+/*
+{
+  "var" : "@l_Button-Warning-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.WARNING"
+}
+*/
+/*
+{
+  "var" : "@l_Button-Warning-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.WARNING"
+}
+*/
+/*
+{
+  "var" : "@l_Button-Success-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.SUCCESS"
+}
+*/
+/*
+{
+  "var" : "@l_Button-Success-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.SUCCESS"
+}
+*/
+/*
+{
+  "var" : "@l_Button-Simple-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.SIMPLE"
+}
+*/
+/*
+{
+  "var" : "@l_Button-Simple-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.SIMPLE"
+}
+*/
+/* Overlay
+========================================================================== */
+/* Base Shades
+========================================================================== */
+/******************************************************************************
+Color Variables
+******************************************************************************/
+.t-MediaList {
+  border-color: #e0e0e0;
+  background-color: #ffffff;
+}
+.t-MediaList-item {
+  border-color: #e0e0e0;
+}
+.t-MediaList-item.is-active {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.t-MediaList--horizontal .t-MediaList-item {
+  border-right: 1px solid #e0e0e0;
+}
+/* ==========================================================================
+   Link
+   ========================================================================== */
+a.t-MediaList-itemWrap {
+  color: #006ed0;
+}
+a.t-MediaList-itemWrap:hover {
+  background-color: #fafafa;
+  color: #006ed0;
+}
+a.t-MediaList-itemWrap:focus {
+  box-shadow: 0 0 0 1px #0076df inset;
+}
+.t-MediaList-itemWrap {
+  color: #262626;
+}
+.t-MediaList-badge {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.t-MediaList-badge,
+.t-MediaList-desc {
+  color: #666666;
+}
+.t-MediaList-icon {
+  background-color: #0076df;
+  color: #ffffff;
+}
+.t-MediaList--cols {
+  box-shadow: -1px -1px 0 0 #e0e0e0 inset;
+}
+.t-MediaList--cols .t-MediaList-item:before,
+.t-MediaList--cols .t-MediaList-item:after {
+  background-color: #e6e6e6;
+}
+/* ==========================================================================
+   Modifier: Apply Theme Colors
+   ---
+   Adds theme colors to the items.
+   ========================================================================== */

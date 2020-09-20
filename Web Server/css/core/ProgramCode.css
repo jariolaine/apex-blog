@@ -1,0 +1,40 @@
+/**************************************
+* Program code formatting
+**************************************/
+pre.z-program-code {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
+  color: #262626;
+  font-size: 1.1rem;
+  tab-size: 2;
+  counter-reset: line;
+  overflow-x: auto;
+  background-color: #fdfdfd;
+  border: 1px solid rgba(0, 0, 0, 0.055);
+  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.055);
+  border-radius: 2px;
+}
+pre.z-program-code code {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  tab-size: inherit;
+  counter-increment: line;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+pre.z-program-code code::before {
+  content: counter(line);
+  user-select: none;
+  border-right: 2px solid #6ce26c;
+  background-color: rgba(0, 0, 0, 0.035);
+  margin: 0 0.4rem 0 0;
+  padding: 0 0.4rem 0 0;
+  display: inline-block;
+  text-align: right;
+  width: 2.8rem;
+  color: #393939;
+}
+pre.z-program-code code:nth-child(odd):before {
+  background-color: rgba(0, 0, 0, 0.075);
+}

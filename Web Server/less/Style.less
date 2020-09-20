@@ -1,0 +1,60 @@
+//out:../css/Style.css
+
+@import url('core/_variables');
+@import url('core/Elements');
+@import url('core/Logo');
+@import url('core/Regions');
+@import url('core/ClassicReport');
+@import url('core/PostReport');
+@import url('core/ContetReport');
+@import url('core/ProgramCode');
+@import url('core/AboutContent');
+@import url('core/Comments');
+@import url('core/Modifiers');
+@import url('core/StatusMarker');
+
+/**************************************
+* Archives and links
+**************************************/
+.z-listStacked--Report {
+  ul {
+    padding: 1.6rem;
+		&:first-child{
+			display: none!important;
+		  visibility: hidden!important;
+		}
+  }
+}
+.z-listStacked--Header {
+  border-top: @region-outer-border;
+  border-bottom: @region-inner-border;
+  margin: 0;
+  padding: 1.2rem;
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 2.4rem;
+  &:nth-child(1) {
+    border-top: none;
+  }
+}
+
+/**************************************
+* Files media list report
+**************************************/
+.z-MediaList--files {
+  .t-MediaList-title {
+    word-break: break-word;
+  }
+}
+
+/**************************************
+* Links media list report
+**************************************/
+.z-noDataFound {
+  .t-MediaList-body {
+    padding: 0;
+  }
+  .t-MediaList-desc {
+    .nodatafound;
+  }
+}

@@ -17,12 +17,6 @@ blockquote p {
   border-color: #8c8c8c;
 }
 /**************************************
-* Modifiers
-**************************************/
-.z-text-wrap {
-  white-space: pre-wrap;
-}
-/**************************************
 * Logo
 **************************************/
 .z-app-logo {
@@ -33,22 +27,30 @@ blockquote p {
   white-space: normal;
 }
 /**************************************
+* Region
+**************************************/
+.z-app-source {
+  padding: 0.4rem 0;
+}
+/**************************************
+* Interactive Grid
+**************************************/
+/*
+.z-config-ig .a-IG-header {
+	display: none!important;
+  visibility: hidden!important;
+}
+*/
+.z-config-ig span.a-GV-breakLabel {
+  display: none!important;
+  visibility: hidden!important;
+}
+/**************************************
 * Interactive Report
 **************************************/
 .z-IR--iconLinks td:first-child {
   overflow: visible;
   width: 1%;
-}
-/**************************************
-* Interactive Grid
-**************************************/
-.z-config-ig .a-IG-header {
-  display: none!important;
-  visibility: hidden!important;
-}
-.z-config-ig span.a-GV-breakLabel {
-  display: none!important;
-  visibility: hidden!important;
 }
 /**************************************
 * Classic reports
@@ -65,11 +67,11 @@ blockquote p {
   width: 100%;
 }
 /**************************************
-* Post custom template report
+* Post report
 **************************************/
 .z-post {
   background-color: #ffffff;
-  margin-bottom: 3.2rem;
+  margin-bottom: 1.6rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 2px;
   box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);
@@ -115,8 +117,8 @@ blockquote p {
   border-radius: 2px;
   padding: 0.4rem;
 }
-.z-post--mediumMargin .z-post {
-  margin-bottom: 1.6rem;
+.z-post--largeMargin .z-post {
+  margin-bottom: 3.2rem;
 }
 .z-post--smallMargin .z-post {
   margin-bottom: 0.8rem;
@@ -138,46 +140,14 @@ blockquote p {
 .z-post--IR {
   margin: 3.2rem 1.6rem;
 }
-/**************************************
-* Archives, categories and links
-**************************************/
-.z-listStacked--Report ul {
-  padding: 1.6rem;
-}
-.z-listStacked--Report ul:first-child {
-  display: none!important;
-  visibility: hidden!important;
-}
-.z-listStacked--Header {
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.075);
-  margin: 0;
-  padding: 1.2rem;
-  font-size: 1.6rem;
-  font-weight: 500;
-  line-height: 2.4rem;
-}
-.z-listStacked--Header:nth-child(2) {
-  border-top: none;
-}
-/**************************************
-* Files media list report
-**************************************/
-.z-MediaList--files .t-MediaList-title {
-  word-break: break-word;
-}
-/**************************************
-* Links media list report
-**************************************/
-.z-noDataFound .t-MediaList-body {
-  padding: 0;
-}
-.z-noDataFound .t-MediaList-desc {
-  text-align: center;
-  color: #262626;
-  font-size: 1.2rem;
-  line-height: 2rem;
-  padding: 2.2rem;
+@media only screen and (max-width: 640px) {
+  .z-post {
+    padding: 1.2rem;
+    margin-bottom: 1.6rem;
+  }
+  .z-post--header h1 {
+    font-size: 1.4em;
+  }
 }
 /**************************************
 * General custom report
@@ -186,7 +156,7 @@ blockquote p {
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 2px;
   box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);
-  margin-bottom: 3.2rem;
+  margin-bottom: 1.6rem;
 }
 .z-Content--Row {
   background-color: #ffffff;
@@ -207,37 +177,6 @@ blockquote p {
 }
 .z-Content--Stacked .z-Content--Row:first-child .z-Content--Title {
   border-top: none;
-}
-/**************************************
-* About content
-**************************************/
-.z-author-container {
-  display: flex;
-}
-.z-author-left {
-  order: 1;
-  display: flex;
-  flex-direction: column;
-}
-.z-author-right {
-  order: 2;
-  padding: 0 0 0 1.6rem;
-}
-.z-author-badges {
-  display: flex;
-  flex-direction: column;
-}
-.z-author-badges > * {
-  margin: 1rem 0;
-}
-/**************************************
-* Comments report
-**************************************/
-.z-comment .t-Comments-body {
-  width: 0;
-}
-.z-comment .t-Comments-comment {
-  overflow-wrap: break-word;
 }
 /**************************************
 * Program code formatting
@@ -280,27 +219,28 @@ pre.z-program-code code:nth-child(odd):before {
   background-color: rgba(0, 0, 0, 0.075);
 }
 /**************************************
-* Region
+* About content
 **************************************/
-.z-app-source {
-  padding: 0.4rem 0;
+.z-author-container {
+  display: flex;
 }
-/**************************************
-* Media query
-**************************************/
+.z-author-left {
+  order: 1;
+  display: flex;
+  flex-direction: column;
+}
+.z-author-right {
+  order: 2;
+  padding: 0 0 0 1.6rem;
+}
+.z-author-badges {
+  display: flex;
+  flex-direction: column;
+}
+.z-author-badges > * {
+  margin: 1rem 0;
+}
 @media only screen and (max-width: 640px) {
-  /**************************************
-  * Post custom report template
-  **************************************/
-  .z-post {
-    padding: 1.2rem;
-  }
-  .z-post--header h1 {
-    font-size: 1.4em;
-  }
-  /**************************************
-  * Author info
-  **************************************/
   .z-author-container {
     flex-direction: column;
     align-items: center;
@@ -313,7 +253,92 @@ pre.z-program-code code:nth-child(odd):before {
     align-items: center;
   }
 }
+/**************************************
+* Comments report
+**************************************/
+.z-comment {
+  padding: 1.6rem;
+  margin-bottom: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.075);
+}
+.z-comment .t-Comments-body {
+  width: 0;
+}
+.z-comment .t-Comments-comment {
+  overflow-wrap: break-word;
+}
+/**************************************
+* Modifiers
+**************************************/
+.z-text-wrap {
+  white-space: pre-wrap;
+}
 .z-hidden {
   display: none!important;
   visibility: hidden!important;
+}
+.z-status-marker {
+  position: relative;
+  margin: -8px -12px;
+  padding: 8px 12px;
+}
+/*
+  Generate a triangle at the top left of report cells containing status marker
+  elements.
+*/
+.z-status-marker::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 6px solid transparent;
+  width: 0;
+  height: 0;
+  content: "";
+}
+/*
+  Colour the triangles according to the specified status class.
+*/
+.z-status-marker.z-required::after {
+  border-color: #c00 transparent transparent #c00;
+}
+/**************************************
+* Archives and links
+**************************************/
+.z-listStacked--Report ul {
+  padding: 1.6rem;
+}
+.z-listStacked--Report ul:first-child {
+  display: none!important;
+  visibility: hidden!important;
+}
+.z-listStacked--Header {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.075);
+  margin: 0;
+  padding: 1.2rem;
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 2.4rem;
+}
+.z-listStacked--Header:nth-child(1) {
+  border-top: none;
+}
+/**************************************
+* Files media list report
+**************************************/
+.z-MediaList--files .t-MediaList-title {
+  word-break: break-word;
+}
+/**************************************
+* Links media list report
+**************************************/
+.z-noDataFound .t-MediaList-body {
+  padding: 0;
+}
+.z-noDataFound .t-MediaList-desc {
+  text-align: center;
+  color: #262626;
+  font-size: 1.2rem;
+  line-height: 2rem;
+  padding: 2.2rem;
 }

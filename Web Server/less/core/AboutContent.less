@@ -1,0 +1,38 @@
+//out:../../css/core/AboutContent.css
+
+@import url('_variables.less');
+/**************************************
+* About content
+**************************************/
+.z-author-container {
+  display: flex;
+}
+.z-author-left {
+  order: 1;
+  display: flex;
+  flex-direction: column;
+}
+.z-author-right {
+  order: 2;
+  padding: 0 0 0 1.6rem;
+}
+.z-author-badges {
+  display: flex;
+  flex-direction: column;
+}
+.z-author-badges > * {
+  margin: 1rem 0;
+}
+@media only screen and (max-width: 640px) {
+  .z-author-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .z-author-right {
+    padding: 1.6rem 0;
+  }
+  .z-author-badges {
+    padding: 1.6rem 0;
+    align-items: center;
+  }
+}

@@ -1,0 +1,26 @@
+/**************************************
+* Region
+**************************************/
+.z-app-source {
+  padding: 0.4rem 0;
+}
+/**************************************
+* Interactive Grid
+**************************************/
+/*
+.z-config-ig .a-IG-header {
+	display: none!important;
+  visibility: hidden!important;
+}
+*/
+.z-config-ig span.a-GV-breakLabel {
+  display: none!important;
+  visibility: hidden!important;
+}
+/**************************************
+* Interactive Report
+**************************************/
+.z-IR--iconLinks td:first-child {
+  overflow: visible;
+  width: 1%;
+}

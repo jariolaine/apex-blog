@@ -1,0 +1,14 @@
+/**************************************
+* Classic reports
+**************************************/
+.nodatafound {
+  text-align: center;
+  color: #262626;
+  font-size: 1.2rem;
+  line-height: 2rem;
+  padding: 2.2rem;
+}
+.pagination {
+  text-align: right;
+  width: 100%;
+}

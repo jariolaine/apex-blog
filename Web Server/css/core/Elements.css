@@ -1,0 +1,9 @@
+/**************************************
+* Comments report
+**************************************/
+.z-comment .t-Comments-body {
+  width: 0;
+}
+.z-comment .t-Comments-comment {
+  overflow-wrap: break-word;
+}

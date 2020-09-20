@@ -1,0 +1,29 @@
+/**************************************
+* General custom report
+**************************************/
+.z-Content .z-Content--Row {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);
+  margin-bottom: 1.6rem;
+}
+.z-Content--Row {
+  background-color: #ffffff;
+}
+.z-Content--Title {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.075);
+  padding: 1.2rem;
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 2.4rem;
+}
+.z-Content--Body {
+  padding: 1.6rem;
+}
+.z-Content--Stacked .z-Content--Title {
+  border-top: 1px solid rgba(0, 0, 0, 0.075);
+}
+.z-Content--Stacked .z-Content--Row:first-child .z-Content--Title {
+  border-top: none;
+}

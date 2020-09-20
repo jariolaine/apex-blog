@@ -1,0 +1,1472 @@
+/*
+{
+  "translate": true,
+  "groups":[
+  {
+    "name": "UTR.LESS.GLOBAL_COLORS",
+    "common": true,
+    "sequence": 1
+  },
+  {
+    "name": "UTR.LESS.CONTAINERS",
+    "common": true,
+    "sequence": 2
+  },
+{
+  "name": "UTR.LESS.NAVIGATION",
+  "common": true,
+  "sequence": 3
+  },
+  {
+  "name": "UTR.LESS.REGIONS",
+  "common": true,
+  "sequence": 4
+  },
+  {
+  "name": "UTR.LESS.BUTTONS",
+  "common": true,
+  "sequence": 5
+  },
+  {
+  "name": "UTR.LESS.FORMS",
+  "common": true,
+  "sequence": 6
+  },
+  {
+  "name": "UTR.LESS.STATES",
+  "common": true,
+  "sequence": 7
+  },
+  {
+    "name": "UTR.LESS.PALETTE",
+    "common": true,
+    "sequence": 8
+  },
+  {
+  "name": "UTR.LESS.INTERACTIVE_REPORTS",
+  "common": true,
+  "sequence": 9
+  },
+  {
+  "name": "UTR.LESS.LAYOUT",
+  "common": true,
+  "sequence": 10
+  }
+  ]
+}
+*/
+
+/*
+{
+  "var" : "@g_Accent-BG",
+  "name" : "UTR.LESS.HEADER_ACCENT",
+  "type" : "color",
+  "style": "big",
+  "group": "UTR.LESS.GLOBAL_COLORS"
+}
+*/
+@g_Accent-BG: #0076df;
+
+/*
+{
+  "var" : "@g_Accent-OG",
+  "name" : "UTR.LESS.BODY_ACCENT",
+  "style": "big",
+  "type" : "color",
+  "group": "UTR.LESS.GLOBAL_COLORS"
+}
+*/
+
+// @g_Accent-OGX:                    contrast(@g_Accent-BG, darken(@g_Accent-BG,   55%), lighten(@g_Accent-BG,   55%),  43%);
+// @g_Accent-OG:                     desaturate(@g_Accent-OGX,49%);
+
+@g_Accent-OG: #FDFDFD;
+
+@g_Accent-FG: contrast(@g_Accent-BG, darken(@g_Accent-BG,   75%), lighten(@g_Accent-BG,   75%),  43%);
+
+/*
+{
+  "var" : "@g_Body-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.BODY"
+}
+*/
+@g_Body-BG: @g_Accent-OG;
+
+/*
+{
+  "var" : "@g_Body-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.BODY"
+}
+*/
+@g_Body-Text: fade(contrast(@g_Body-BG, desaturate(darken(@g_Body-BG,  85%), 100%), desaturate(lighten(@g_Body-BG,  85%), 50%)), 100%);
+
+
+/*
+{
+  "var" : "@g_Actions-Col-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.ACTIONS_COLUMN"
+}
+*/
+@g_Actions-Col-BG: contrast(@g_Accent-OG, darken(@g_Accent-OG,   1.5%), lighten(@g_Accent-OG,   1.5%),  43%);
+
+/*
+{
+  "var" : "@g_Actions-Col-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.ACTIONS_COLUMN"
+}
+*/
+@g_Actions-Col-Text: fade(contrast(@g_Actions-Col-BG, desaturate(darken(@g_Actions-Col-BG,  85%), 100%), desaturate(lighten(@g_Actions-Col-BG,  85%), 50%)), 100%);
+
+/*
+{
+  "var" : "@g_Body-Title-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.TITLE_BAR"
+}
+*/
+@g_Body-Title-BG: lighten(@g_Accent-OG, 3%);
+
+/*
+{
+  "var" : "@g_Body-Title-FG",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.TITLE_BAR"
+}
+*/
+@g_Body-Title-FG: fade(contrast(@g_Body-Title-BG, desaturate(darken(@g_Body-Title-BG,  85%), 100%), desaturate(lighten(@g_Body-Title-BG,  85%), 50%)), 100%);
+
+/*
+{
+  "var" : "@g_Container-BorderRadius",
+  "name" : "UTR.LESS.CONTAINER_BORDER_RADIUS",
+  "type" : "number",
+  "units": "px",
+  "range": {
+    "min": 0,
+    "max": 30,
+    "increment": 2
+  },
+  "group": "UTR.LESS.CONTAINERS"
+}
+*/
+@g_Container-BorderRadius: 2px;
+
+
+/*
+{
+  "var" : "@g_Color-Palette-1",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_1"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-1-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_1"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-2",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup" : "UTR.LESS.COLOR_2"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-2-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup" : "UTR.LESS.COLOR_2"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-3",
+  "name" : "UTR.LESS.COLOR_3",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup" : "UTR.LESS.COLOR_3"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-3-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup" : "UTR.LESS.COLOR_3"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-4",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_4"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-4-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_4"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-5",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_5"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-5-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_5"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-6",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_6"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-6-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_6"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-7",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_7"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-7-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_7"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-8",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_8"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-8-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_8"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-9",
+  "name" : "UTR.LESS.COLOR_9",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_9"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-9-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_9"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-10",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_10"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-10-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_10"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-11",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_11"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-11-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_11"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-12",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_12"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-12-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_12"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-13",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_13"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-13-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_13"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-14",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_14"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-14-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_14"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-15",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_15"
+}
+*/
+/*
+{
+  "var" : "@g_Color-Palette-15-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.PALETTE",
+  "subgroup": "UTR.LESS.COLOR_15"
+}
+*/
+
+@g_Color-Palette-1 : #309FDB;
+@g_Color-Palette-2 : #13B6CF;
+@g_Color-Palette-3 : #2EBFBC;
+@g_Color-Palette-4 : #3CAF85;
+@g_Color-Palette-5 : #81BB5F;
+@g_Color-Palette-6 : #DDDE53;
+@g_Color-Palette-7 : #FBCE4A;
+@g_Color-Palette-8 : #ED813E;
+@g_Color-Palette-9 : #E95B54;
+@g_Color-Palette-10: #E85D88;
+@g_Color-Palette-11: #CA589D;
+@g_Color-Palette-12: #854E9B;
+@g_Color-Palette-13: #5A68AD;
+@g_Color-Palette-14: #AFBAC5;
+@g_Color-Palette-15: #6E8598;
+@g_Color-Palette-16: mix(#FFF, @g_Color-Palette-1, 20%);
+@g_Color-Palette-17: mix(#FFF, @g_Color-Palette-2, 20%);
+@g_Color-Palette-18: mix(#FFF, @g_Color-Palette-3, 20%);
+@g_Color-Palette-19: mix(#FFF, @g_Color-Palette-4, 20%);
+@g_Color-Palette-20: mix(#FFF, @g_Color-Palette-5, 20%);
+@g_Color-Palette-21: mix(#FFF, @g_Color-Palette-6, 20%);
+@g_Color-Palette-22: mix(#FFF, @g_Color-Palette-7, 20%);
+@g_Color-Palette-23: mix(#FFF, @g_Color-Palette-8, 20%);
+@g_Color-Palette-24: mix(#FFF, @g_Color-Palette-9, 20%);
+@g_Color-Palette-25: mix(#FFF, @g_Color-Palette-10, 20%);
+@g_Color-Palette-26: mix(#FFF, @g_Color-Palette-11, 20%);
+@g_Color-Palette-27: mix(#FFF, @g_Color-Palette-12, 20%);
+@g_Color-Palette-28: mix(#FFF, @g_Color-Palette-13, 20%);
+@g_Color-Palette-29: mix(#FFF, @g_Color-Palette-14, 20%);
+@g_Color-Palette-30: mix(#FFF, @g_Color-Palette-15, 20%);
+@g_Color-Palette-31: saturate(@g_Color-Palette-1, 15%);
+@g_Color-Palette-32: saturate(@g_Color-Palette-2, 15%);
+@g_Color-Palette-33: saturate(@g_Color-Palette-3, 15%);
+@g_Color-Palette-34: saturate(@g_Color-Palette-4, 15%);
+@g_Color-Palette-35: saturate(@g_Color-Palette-5, 15%);
+@g_Color-Palette-36: saturate(@g_Color-Palette-6, 15%);
+@g_Color-Palette-37: saturate(@g_Color-Palette-7, 15%);
+@g_Color-Palette-38: saturate(@g_Color-Palette-8, 15%);
+@g_Color-Palette-39: saturate(@g_Color-Palette-9, 15%);
+@g_Color-Palette-40: saturate(@g_Color-Palette-10, 15%);
+@g_Color-Palette-41: saturate(@g_Color-Palette-11, 15%);
+@g_Color-Palette-42: saturate(@g_Color-Palette-12, 15%);
+@g_Color-Palette-43: saturate(@g_Color-Palette-13, 15%);
+@g_Color-Palette-44: saturate(@g_Color-Palette-14, 15%);
+@g_Color-Palette-45: saturate(@g_Color-Palette-15, 15%);
+
+@g_Color-Palette-1-FG: fade(contrast(@g_Color-Palette-1, darken(@g_Color-Palette-1,  50%), lighten(@g_Color-Palette-1,  50%)), 100%);
+@g_Color-Palette-2-FG: fade(contrast(@g_Color-Palette-2, darken(@g_Color-Palette-2,  50%), lighten(@g_Color-Palette-2,  50%)), 100%);
+@g_Color-Palette-3-FG: fade(contrast(@g_Color-Palette-3, darken(@g_Color-Palette-3,  50%), lighten(@g_Color-Palette-3,  50%)), 100%);
+@g_Color-Palette-4-FG: fade(contrast(@g_Color-Palette-4, darken(@g_Color-Palette-4,  50%), lighten(@g_Color-Palette-4,  50%)), 100%);
+@g_Color-Palette-5-FG: fade(contrast(@g_Color-Palette-5, darken(@g_Color-Palette-5,  50%), lighten(@g_Color-Palette-5,  50%)), 100%);
+@g_Color-Palette-6-FG: fade(contrast(@g_Color-Palette-6, darken(@g_Color-Palette-6,  50%), lighten(@g_Color-Palette-6,  50%)), 100%);
+@g_Color-Palette-7-FG: fade(contrast(@g_Color-Palette-7, darken(@g_Color-Palette-7,  50%), lighten(@g_Color-Palette-7,  50%)), 100%);
+@g_Color-Palette-8-FG: fade(contrast(@g_Color-Palette-8, darken(@g_Color-Palette-8,  50%), lighten(@g_Color-Palette-8,  50%)), 100%);
+@g_Color-Palette-9-FG: fade(contrast(@g_Color-Palette-9, darken(@g_Color-Palette-9,  50%), lighten(@g_Color-Palette-9,  50%)), 100%);
+@g_Color-Palette-10-FG: fade(contrast(@g_Color-Palette-10, darken(@g_Color-Palette-10,  50%), lighten(@g_Color-Palette-10,  50%)), 100%);
+@g_Color-Palette-11-FG: fade(contrast(@g_Color-Palette-11, darken(@g_Color-Palette-11,  50%), lighten(@g_Color-Palette-11,  50%)), 100%);
+@g_Color-Palette-12-FG: fade(contrast(@g_Color-Palette-12, darken(@g_Color-Palette-12,  50%), lighten(@g_Color-Palette-12,  50%)), 100%);
+@g_Color-Palette-13-FG: fade(contrast(@g_Color-Palette-13, darken(@g_Color-Palette-13,  50%), lighten(@g_Color-Palette-13,  50%)), 100%);
+@g_Color-Palette-14-FG: fade(contrast(@g_Color-Palette-14, darken(@g_Color-Palette-14,  50%), lighten(@g_Color-Palette-14,  50%)), 100%);
+@g_Color-Palette-15-FG: fade(contrast(@g_Color-Palette-15, darken(@g_Color-Palette-15,  50%), lighten(@g_Color-Palette-15,  50%)), 100%);
+@g_Color-Palette-16-FG: fade(contrast(@g_Color-Palette-16, darken(@g_Color-Palette-16,  50%), lighten(@g_Color-Palette-16,  50%)), 100%);
+@g_Color-Palette-17-FG: fade(contrast(@g_Color-Palette-17, darken(@g_Color-Palette-17,  50%), lighten(@g_Color-Palette-17,  50%)), 100%);
+@g_Color-Palette-18-FG: fade(contrast(@g_Color-Palette-18, darken(@g_Color-Palette-18,  50%), lighten(@g_Color-Palette-18,  50%)), 100%);
+@g_Color-Palette-19-FG: fade(contrast(@g_Color-Palette-19, darken(@g_Color-Palette-19,  50%), lighten(@g_Color-Palette-19,  50%)), 100%);
+@g_Color-Palette-20-FG: fade(contrast(@g_Color-Palette-20, darken(@g_Color-Palette-20,  50%), lighten(@g_Color-Palette-20,  50%)), 100%);
+@g_Color-Palette-21-FG: fade(contrast(@g_Color-Palette-21, darken(@g_Color-Palette-21,  50%), lighten(@g_Color-Palette-21,  50%)), 100%);
+@g_Color-Palette-22-FG: fade(contrast(@g_Color-Palette-22, darken(@g_Color-Palette-22,  50%), lighten(@g_Color-Palette-22,  50%)), 100%);
+@g_Color-Palette-23-FG: fade(contrast(@g_Color-Palette-23, darken(@g_Color-Palette-23,  50%), lighten(@g_Color-Palette-23,  50%)), 100%);
+@g_Color-Palette-24-FG: fade(contrast(@g_Color-Palette-24, darken(@g_Color-Palette-24,  50%), lighten(@g_Color-Palette-24,  50%)), 100%);
+@g_Color-Palette-25-FG: fade(contrast(@g_Color-Palette-25, darken(@g_Color-Palette-25,  50%), lighten(@g_Color-Palette-25,  50%)), 100%);
+@g_Color-Palette-26-FG: fade(contrast(@g_Color-Palette-26, darken(@g_Color-Palette-26,  50%), lighten(@g_Color-Palette-26,  50%)), 100%);
+@g_Color-Palette-27-FG: fade(contrast(@g_Color-Palette-27, darken(@g_Color-Palette-27,  50%), lighten(@g_Color-Palette-27,  50%)), 100%);
+@g_Color-Palette-28-FG: fade(contrast(@g_Color-Palette-28, darken(@g_Color-Palette-28,  50%), lighten(@g_Color-Palette-28,  50%)), 100%);
+@g_Color-Palette-29-FG: fade(contrast(@g_Color-Palette-29, darken(@g_Color-Palette-29,  50%), lighten(@g_Color-Palette-29,  50%)), 100%);
+@g_Color-Palette-30-FG: fade(contrast(@g_Color-Palette-30, darken(@g_Color-Palette-30,  50%), lighten(@g_Color-Palette-30,  50%)), 100%);
+@g_Color-Palette-31-FG: fade(contrast(@g_Color-Palette-31, darken(@g_Color-Palette-31,  50%), lighten(@g_Color-Palette-31,  50%)), 100%);
+@g_Color-Palette-32-FG: fade(contrast(@g_Color-Palette-32, darken(@g_Color-Palette-32,  50%), lighten(@g_Color-Palette-32,  50%)), 100%);
+@g_Color-Palette-33-FG: fade(contrast(@g_Color-Palette-33, darken(@g_Color-Palette-33,  50%), lighten(@g_Color-Palette-33,  50%)), 100%);
+@g_Color-Palette-34-FG: fade(contrast(@g_Color-Palette-34, darken(@g_Color-Palette-34,  50%), lighten(@g_Color-Palette-34,  50%)), 100%);
+@g_Color-Palette-35-FG: fade(contrast(@g_Color-Palette-35, darken(@g_Color-Palette-35,  50%), lighten(@g_Color-Palette-35,  50%)), 100%);
+@g_Color-Palette-36-FG: fade(contrast(@g_Color-Palette-36, darken(@g_Color-Palette-36,  50%), lighten(@g_Color-Palette-36,  50%)), 100%);
+@g_Color-Palette-37-FG: fade(contrast(@g_Color-Palette-37, darken(@g_Color-Palette-37,  50%), lighten(@g_Color-Palette-37,  50%)), 100%);
+@g_Color-Palette-38-FG: fade(contrast(@g_Color-Palette-38, darken(@g_Color-Palette-38,  50%), lighten(@g_Color-Palette-38,  50%)), 100%);
+@g_Color-Palette-39-FG: fade(contrast(@g_Color-Palette-39, darken(@g_Color-Palette-39,  50%), lighten(@g_Color-Palette-39,  50%)), 100%);
+@g_Color-Palette-40-FG: fade(contrast(@g_Color-Palette-40, darken(@g_Color-Palette-40,  50%), lighten(@g_Color-Palette-40,  50%)), 100%);
+@g_Color-Palette-41-FG: fade(contrast(@g_Color-Palette-41, darken(@g_Color-Palette-41,  50%), lighten(@g_Color-Palette-41,  50%)), 100%);
+@g_Color-Palette-42-FG: fade(contrast(@g_Color-Palette-42, darken(@g_Color-Palette-42,  50%), lighten(@g_Color-Palette-42,  50%)), 100%);
+@g_Color-Palette-43-FG: fade(contrast(@g_Color-Palette-43, darken(@g_Color-Palette-43,  50%), lighten(@g_Color-Palette-43,  50%)), 100%);
+@g_Color-Palette-44-FG: fade(contrast(@g_Color-Palette-44, darken(@g_Color-Palette-44,  50%), lighten(@g_Color-Palette-44,  50%)), 100%);
+@g_Color-Palette-45-FG: fade(contrast(@g_Color-Palette-45, darken(@g_Color-Palette-45,  50%), lighten(@g_Color-Palette-45,  50%)), 100%);
+
+@_colors: @g_Color-Palette-1,
+@g_Color-Palette-2,
+@g_Color-Palette-3,
+@g_Color-Palette-4,
+@g_Color-Palette-5,
+@g_Color-Palette-6,
+@g_Color-Palette-7,
+@g_Color-Palette-8,
+@g_Color-Palette-9,
+@g_Color-Palette-10,
+@g_Color-Palette-11,
+@g_Color-Palette-12,
+@g_Color-Palette-13,
+@g_Color-Palette-14,
+@g_Color-Palette-15,
+@g_Color-Palette-16,
+@g_Color-Palette-17,
+@g_Color-Palette-18,
+@g_Color-Palette-19,
+@g_Color-Palette-20,
+@g_Color-Palette-21,
+@g_Color-Palette-22,
+@g_Color-Palette-23,
+@g_Color-Palette-24,
+@g_Color-Palette-25,
+@g_Color-Palette-26,
+@g_Color-Palette-27,
+@g_Color-Palette-28,
+@g_Color-Palette-29,
+@g_Color-Palette-30,
+mix(#000, @g_Color-Palette-31, 15%),
+mix(#000, @g_Color-Palette-32, 15%),
+mix(#000, @g_Color-Palette-33, 15%),
+mix(#000, @g_Color-Palette-34, 15%),
+mix(#000, @g_Color-Palette-35, 15%),
+mix(#000, @g_Color-Palette-36, 15%),
+mix(#000, @g_Color-Palette-37, 15%),
+mix(#000, @g_Color-Palette-38, 15%),
+mix(#000, @g_Color-Palette-39, 15%),
+mix(#000, @g_Color-Palette-40, 15%),
+mix(#000, @g_Color-Palette-41, 15%),
+mix(#000, @g_Color-Palette-42, 15%),
+mix(#000, @g_Color-Palette-43, 15%),
+mix(#000, @g_Color-Palette-44, 15%),
+mix(#000, @g_Color-Palette-45, 15%);
+
+@_colors_FG: @g_Color-Palette-1-FG,
+@g_Color-Palette-2-FG,
+@g_Color-Palette-3-FG,
+@g_Color-Palette-4-FG,
+@g_Color-Palette-5-FG,
+@g_Color-Palette-6-FG,
+@g_Color-Palette-7-FG,
+@g_Color-Palette-8-FG,
+@g_Color-Palette-9-FG,
+@g_Color-Palette-10-FG,
+@g_Color-Palette-11-FG,
+@g_Color-Palette-12-FG,
+@g_Color-Palette-13-FG,
+@g_Color-Palette-14-FG,
+@g_Color-Palette-15-FG,
+@g_Color-Palette-16-FG,
+@g_Color-Palette-17-FG,
+@g_Color-Palette-18-FG,
+@g_Color-Palette-19-FG,
+@g_Color-Palette-20-FG,
+@g_Color-Palette-21-FG,
+@g_Color-Palette-22-FG,
+@g_Color-Palette-23-FG,
+@g_Color-Palette-24-FG,
+@g_Color-Palette-25-FG,
+@g_Color-Palette-26-FG,
+@g_Color-Palette-27-FG,
+@g_Color-Palette-28-FG,
+@g_Color-Palette-29-FG,
+@g_Color-Palette-30-FG,
+@g_Color-Palette-31-FG,
+@g_Color-Palette-32-FG,
+@g_Color-Palette-33-FG,
+@g_Color-Palette-34-FG,
+@g_Color-Palette-35-FG,
+@g_Color-Palette-36-FG,
+@g_Color-Palette-37-FG,
+@g_Color-Palette-38-FG,
+@g_Color-Palette-39-FG,
+@g_Color-Palette-40-FG,
+@g_Color-Palette-41-FG,
+@g_Color-Palette-42-FG,
+@g_Color-Palette-43-FG,
+@g_Color-Palette-44-FG,
+@g_Color-Palette-45-FG;
+
+/* State Colors
+========================================================================== */
+
+/*
+{
+  "var" : "@g_Disabled-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.DISABLED"
+}
+*/
+@g_Disabled-BG: #707070;
+
+
+/*
+{
+  "var" : "@g_Disabled-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.DISABLED"
+}
+*/
+@g_Disabled-FG: #FFFFFF;
+
+/*
+{
+  "var" : "@g_Primary-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.PRIMARY"
+}
+*/
+@g_Primary-BG: contrast(@g_Accent-BG, darken(@g_Accent-BG,   40%), lighten(@g_Accent-BG,   40%),  43%);
+
+/*
+{
+  "var" : "@g_Primary-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.PRIMARY"
+}
+*/
+@g_Primary-FG: contrast(@g_Primary-BG, darken(@g_Primary-BG,   75%), lighten(@g_Primary-BG,   75%),  43%);
+
+/*
+{
+  "var" : "@g_Success-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.SUCCESS"
+}
+*/
+@g_Success-BG: #3BAA2C;
+
+/*
+{
+  "var" : "@g_Success-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.SUCCESS"
+}
+*/
+@g_Success-FG: #FFF;
+
+/*
+{
+  "var" : "@g_Info-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.INFO"
+}
+*/
+@g_Info-BG: #0076df;
+
+/*
+{
+  "var" : "@g_Info-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.INFO"
+}
+*/
+@g_Info-FG: contrast(@g_Info-BG, darken(@g_Info-BG,   75%), lighten(@g_Info-BG,   75%),  43%);
+
+/*
+{
+  "var" : "@g_Warning-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.WARNING"
+}
+*/
+@g_Warning-BG: #FBCE4A;
+
+/*
+{
+"var" : "@g_Warning-FG",
+"name" : "UTR.LESS.FOREGROUND",
+"type" : "color",
+"group": "UTR.LESS.STATES",
+"subgroup": "UTR.LESS.WARNING"
+}
+*/
+@g_Warning-FG: contrast(@g_Warning-BG, darken(@g_Warning-BG,   50%), lighten(@g_Warning-BG,   50%),  43%);
+
+/*
+{
+  "var" : "@g_Danger-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.STATES",
+  "subgroup": "UTR.LESS.DANGER"
+}
+*/
+@g_Danger-BG: #f44336;
+
+/*
+{
+"var" : "@g_Danger-FG",
+"name" : "UTR.LESS.FOREGROUND",
+"type" : "color",
+"group": "UTR.LESS.STATES",
+"subgroup": "UTR.LESS.DANGER"
+}
+*/
+@g_Danger-FG: contrast(@g_Danger-BG, darken(@g_Danger-BG,   50%), lighten(@g_Danger-BG,   50%),  43%);
+
+
+// Alert Colored Backgrounds
+@l_Alert-Warning-BG: lighten(@g_Warning-BG, 30%);
+@l_Alert-Success-BG: lighten(@g_Success-BG, 55%);
+@l_Alert-Danger-BG: lighten(@g_Danger-BG, 40%);
+@l_Alert-Info-BG: lighten(@g_Info-BG, 55%);
+
+
+/*
+{
+  "var" : "@g_Header-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.HEADER"
+}
+*/
+@g_Header-BG: @g_Accent-BG;
+
+/*
+{
+  "var" : "@g_Header-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.CONTAINERS",
+  "subgroup": "UTR.LESS.HEADER"
+}
+*/
+@g_Header-FG: @g_Accent-FG;
+
+
+// BEGIN REGION COLORS HERE
+
+/*
+{
+"var" : "@g_Region-Header-BG",
+"name" : "UTR.LESS.BACKGROUND",
+"type" : "color",
+"group": "UTR.LESS.REGIONS",
+"subgroup": "UTR.LESS.REGION_HEADER"
+}
+*/
+@g_Region-Header-BG: lighten(@g_Accent-OG, 4%);
+
+
+/*
+{
+"var" : "@g_Region-Header-FG",
+"name" : "UTR.LESS.FOREGROUND",
+"type" : "color",
+"group": "UTR.LESS.REGIONS",
+"subgroup": "UTR.LESS.REGION_HEADER"
+}
+*/
+@g_Region-Header-FG: fade(contrast(@g_Region-Header-BG, desaturate(darken(@g_Region-Header-BG,  85%), 100%), desaturate(lighten(@g_Region-Header-BG,  85%), 50%)), 100%);
+
+
+/*
+{
+  "var" : "@g_Region-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.REGIONS",
+  "subgroup": "UTR.LESS.BODY"
+}
+*/
+@g_Region-BG: lighten(@g_Region-Header-BG, 20%);
+
+/*
+{
+  "var" : "@g_Region-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.REGIONS",
+  "subgroup": "UTR.LESS.BODY"
+}
+*/
+@g_Region-FG: fade(contrast(@g_Region-BG, desaturate(darken(@g_Region-BG,  85%), 100%), desaturate(lighten(@g_Region-BG,  85%), 50%)), 100%);
+
+
+@g_Region-FG-Light: fade(contrast(@g_Region-BG, desaturate(darken(@g_Region-BG,  60%), 100%), desaturate(lighten(@g_Region-BG,  60%), 50%)), 100%);
+@g_Region-FG-Extra-Light: fade(contrast(@g_Region-BG, desaturate(darken(@g_Region-BG,  25%), 100%), desaturate(lighten(@g_Region-BG,  25%), 50%)), 100%);
+
+
+/*
+{
+  "var" : "@g_Form-Item-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.FORMS",
+  "subgroup": "UTR.LESS.ITEM"
+}
+*/
+@g_Form-Item-BG: contrast(@g_Region-BG, darken(@g_Region-BG,   2.5%), lighten(@g_Region-BG,   2.5%),  43%);
+
+/*
+{
+  "var" : "@g_Form-Item-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.FORMS",
+  "subgroup": "UTR.LESS.ITEM"
+}
+*/
+@g_Form-Item-FG: fade(contrast(@g_Form-Item-BG, desaturate(darken(@g_Form-Item-BG,  85%), 100%), desaturate(lighten(@g_Form-Item-BG,  85%), 50%)), 100%);
+
+/*
+{
+  "var" : "@g_Form-Label",
+  "name" : "UTR.LESS.LABEL",
+  "type" : "color",
+  "group": "UTR.LESS.FORMS"
+}
+*/
+@g_Form-Label: @g_Region-FG;
+
+/*
+{
+  "var" : "@g_Form-BorderRadius",
+  "name" : "UTR.LESS.BORDER_RADIUS",
+  "type" : "number",
+  "units": "px",
+  "range": {
+    "min": 0,
+    "max": 30,
+    "increment": 2
+  },
+  "group": "UTR.LESS.FORMS"
+}
+*/
+@g_Form-BorderRadius: @g_Container-BorderRadius;
+
+// Form Item Focus and Hover
+@l_Form-Item-focusBG: lighten(@g_Form-Item-BG, 10%);
+@l_Form-Item-hoverBG: lighten(@g_Form-Item-BG, 5%);
+
+// BEGIN NAVIGATION
+/*
+{
+    "var": "@g_Nav_Style",
+    "name": "Navigation Style",
+    "type": "select",
+    "options": [
+        {
+            "d": "Light",
+            "r": "light"
+        },
+        {
+            "d": "Dark (Default)",
+            "r": "dark"
+        }
+    ],
+    "group": "UTR.LESS.NAVIGATION"
+}
+*/
+@g_Nav_Style: dark;
+
+
+/*
+{
+  "var" : "@g_Nav-Active-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.SELECTED_STATE"
+}
+*/
+
+.setNavigationStyle() when (@g_Nav_Style=light) {
+  @g_Nav-BGX: contrast(@g_Accent-BG, darken(@g_Accent-BG,   57%), lighten(@g_Accent-BG,   57%),  43%);
+  @g_Nav-BG: desaturate(@g_Nav-BGX, 48%);
+  @g_Nav-Active-BG: darken(@g_Nav-BG, 3%);
+
+  .t-PageBody--leftNav .t-Body-nav {
+    border-right: 1px solid rgba(0, 0, 0, .075);
+
+    .u-RTL & {
+      border-right-width: 0;
+      border-left: 1px solid rgba(0, 0, 0, .075);
+    }
+  }
+}
+
+.setNavigationStyle() when (@g_Nav_Style=dark) {
+  @g_Nav-BGX: desaturate(@g_Accent-BG, 85%);
+  @g_Nav-BG: darken(@g_Nav-BGX, 20%);
+  @g_Nav-Active-BG: darken(@g_Nav-BG, 10%);
+}
+
+.setNavigationStyle();
+
+/*
+{
+  "var" : "@g_Nav-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.BODY"
+}
+*/
+
+/*
+{
+  "var" : "@g_Nav-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.BODY"
+}
+*/
+@g_Nav-FG: contrast(@g_Nav-BG, darken(@g_Nav-BG,   80%), lighten(@g_Nav-BG,   80%),  43%);
+
+/*
+{
+  "var" : "@g_Nav-Active-FG",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.SELECTED_STATE"
+}
+*/
+@g_Nav-Active-FG: contrast(@g_Nav-Active-BG, darken(@g_Nav-Active-BG,   95%), lighten(@g_Nav-Active-BG,   95%),  43%);
+
+/*
+{
+  "var" : "@g_Nav-Icon",
+  "name" : "UTR.LESS.NORMAL",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.ICON",
+  "checkContrast": false
+}
+*/
+@g_Nav-Icon: @g_Nav-FG;
+/*
+{
+  "var" : "@g_Nav-Icon-Active",
+  "name" : "UTR.LESS.ACTIVE_STATE",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.ICON",
+  "checkContrast": false
+}
+*/
+@g_Nav-Icon-Active: @g_Nav-Active-FG;
+
+/* Light and Dark Navigation Handling
+   ========================================================================== */
+
+
+/*
+{
+  "var" : "@g_Link-Base",
+  "name" : "UTR.LESS.LINK_COLOR",
+  "type" : "color",
+  "group": "UTR.LESS.GLOBAL_COLORS"
+}
+*/
+@g_Link-Base: darken(@g_Accent-BG, 3%);
+
+/*
+{
+  "var" : "@g_Nav-Accent-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.ACCENT"
+}
+*/
+@g_Nav-Accent-BG: @g_Accent-BG;
+
+/*
+{
+  "var" : "@g_Nav-Accent-FG",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.ACCENT"
+}
+*/
+@g_Nav-Accent-FG: @g_Accent-FG;
+
+/*
+{
+  "var" : "@g_Nav-Badge-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.BADGE"
+}
+*/
+@g_Nav-Badge-BG: @g_Accent-BG;
+
+/*
+{
+  "var" : "@g_Nav-Badge-FG",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.BADGE"
+}
+*/
+@g_Nav-Badge-FG: @g_Accent-FG;
+
+/*
+{
+  "var" : "@g_NavBarMenu-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.MENU"
+}
+*/
+@g_NavBarMenu-BG: #FFFFFF;
+
+/*
+{
+  "var" : "@g_NavBarMenu-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.MENU"
+}
+*/
+@g_NavBarMenu-FG: fade(contrast(@g_NavBarMenu-BG, desaturate(darken(@g_NavBarMenu-BG,  85%), 100%), desaturate(lighten(@g_NavBarMenu-BG,  85%), 50%)), 100%);
+
+/*
+{
+  "var" : "@g_NavBarMenu-Active-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.MENU_ITEM_HOVER"
+}
+*/
+@g_NavBarMenu-Active-BG: @g_Accent-BG;
+
+/*
+{
+  "var" : "@g_NavBarMenu-Active-FG",
+  "name" : "UTR.LESS.FOREGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.NAVIGATION",
+  "subgroup": "UTR.LESS.MENU_ITEM_HOVER"
+}
+*/
+@g_NavBarMenu-Active-FG: @g_Accent-FG;
+
+
+/*
+{
+  "var" : "@g_Focus",
+  "name" : "UTR.LESS.FOCUS_OUTLINE",
+  "type" : "color",
+  "group": "UTR.LESS.GLOBAL_COLORS"
+}
+*/
+@g_Focus: @g_Accent-BG;
+
+@g_Focus-tmp: contrast(@g_Focus, darken(@g_Focus,   85%), lighten(@g_Focus,   85%),  43%);
+@g_Focus-FG: fade(@g_Focus-tmp, 100%);
+
+
+/*
+{
+  "var" : "@g_Button-BorderRadius",
+  "name" : "UTR.LESS.BORDER_RADIUS",
+  "type" : "number",
+  "units": "px",
+  "range": {
+    "min": 0,
+    "max": 24,
+    "increment": 2
+  },
+  "group": "UTR.LESS.BUTTONS"
+}
+*/
+@g_Button-BorderRadius: 2px;
+/*
+{
+  "var" : "@g_Button-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.NORMAL"
+}
+*/
+@g_Button-BG: mix(#F0F0F0, @g_Region-BG);
+
+/*
+{
+  "var" : "@g_Button-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.NORMAL"
+}
+*/
+@g_Button-Text-tmp: contrast(@g_Button-BG, darken(@g_Button-BG,   75%), lighten(@g_Button-BG,   75%),  43%);
+@g_Button-Text: fade(@g_Button-Text-tmp, 100%);
+
+/*
+* BEGIN MIXINS
+*/
+.region-hover() {
+  background-color: contrast(@g_Region-BG, darken(@g_Region-BG,   5%), lighten(@g_Region-BG,   5%),  43%);
+}
+
+.text-combo(@percent) {
+  .t-Body & {
+    color: fade(contrast(@g_Body-BG, desaturate(darken(@g_Body-BG,  @percent), 100%), desaturate(lighten(@g_Body-BG,  @percent), 50%)), 100%);
+  }
+
+  .t-Body-title & {
+    color: fade(contrast(@g_Body-Title-BG, desaturate(darken(@g_Body-Title-BG,  @percent), 100%), desaturate(lighten(@g_Body-Title-BG,  @percent), 50%)), 100%);
+  }
+
+  .t-Body-info & {
+    color: fade(contrast(@g_Body-Title-BG, desaturate(darken(@g_Body-Title-BG,  @percent), 100%), desaturate(lighten(@g_Body-Title-BG,  @percent), 50%)), 100%);
+  }
+
+  .t-Region &,
+  .t-ButtonRegion & {
+    color: fade(contrast(@g_Region-BG, desaturate(darken(@g_Region-BG,  @percent), 100%), desaturate(lighten(@g_Region-BG,  @percent), 50%)), 100%);
+  }
+}
+
+.text-black-white() {
+  .text-combo(100%);
+}
+
+//#404040
+.text-dark() {
+  .text-combo(75%);
+}
+
+//#707070
+.text-normal() {
+  .text-combo(50%);
+}
+
+.text-light() {
+  .text-combo(25%);
+}
+
+.transform-less(@string) {
+  transform: @string;
+
+}
+
+.translate3d-less(@x, @y: 0, @z: 0) {
+  transform: translate3d(@x, @y, @z);
+}
+
+.apex-direction-left(@val) {
+  :not(.u-RTL) & {
+    left: @val;
+  }
+
+  .u-RTL & {
+    right: @val;
+  }
+}
+
+.apex-direction-margin-left(@val) {
+  :not(.u-RTL) & {
+    margin-left: @val;
+  }
+
+  .u-RTL & {
+    margin-right: @val;
+  }
+}
+
+.apex-direction-right(@val) {
+  :not(.u-RTL) & {
+    right: @val;
+  }
+
+  .u-RTL & {
+    left: @val;
+  }
+}
+
+.apex-direction-margin-right(@val) {
+  :not(.u-RTL) & {
+    margin-right: @val;
+  }
+
+  .u-RTL & {
+    margin-left: @val;
+  }
+}
+
+.apex-direction-translate(@val) {
+  :not(.u-RTL) & {
+    .translate3d-less(@val, 0, 0);
+  }
+
+  .u-RTL & {
+    .translate3d-less(-@val, 0, 0);
+  }
+}
+
+
+/* Moving Button Variables to Main Variables
+   ========================================================================== */
+/*
+{
+  "var" : "@l_Button-Hot-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.HOT"
+}
+*/
+@l_Button-Hot-BG: @g_Accent-BG;
+
+/*
+{
+  "var" : "@l_Button-Hot-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.HOT"
+}
+*/
+@l_Button-Hot-Text-tmp: contrast(@l_Button-Hot-BG, darken(@l_Button-Hot-BG,   85%), lighten(@l_Button-Hot-BG,   85%),  43%);
+@l_Button-Hot-Text: fade(@l_Button-Hot-Text-tmp, 100%);
+
+/*
+{
+  "var" : "@l_Button-Primary-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.PRIMARY"
+}
+*/
+@l_Button-Primary-BG: @g_Primary-BG;
+
+
+/*
+{
+  "var" : "@l_Button-Primary-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.PRIMARY"
+}
+*/
+@l_Button-Primary-Text: fade(@g_Primary-FG, 100%);
+
+/*
+{
+  "var" : "@l_Button-Danger-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.DANGER"
+}
+*/
+@l_Button-Danger-BG: @g_Danger-BG;
+
+/*
+{
+  "var" : "@l_Button-Danger-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.DANGER"
+}
+*/
+@l_Button-Danger-Text: fade(@g_Danger-FG, 100%);
+
+/*
+{
+  "var" : "@l_Button-Warning-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.WARNING"
+}
+*/
+@l_Button-Warning-BG: @g_Warning-BG;
+
+/*
+{
+  "var" : "@l_Button-Warning-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.WARNING"
+}
+*/
+@l_Button-Warning-Text: fade(@g_Warning-FG, 100%);
+
+/*
+{
+  "var" : "@l_Button-Success-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.SUCCESS"
+}
+*/
+@l_Button-Success-BG: @g_Success-BG;
+
+/*
+{
+  "var" : "@l_Button-Success-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.SUCCESS"
+}
+*/
+@l_Button-Success-Text: fade(@g_Success-FG, 100%);
+
+/*
+{
+  "var" : "@l_Button-Simple-BG",
+  "name" : "UTR.LESS.BACKGROUND",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.SIMPLE"
+}
+*/
+@l_Button-Simple-BG: #FFFFFF;
+
+/*
+{
+  "var" : "@l_Button-Simple-Text",
+  "name" : "UTR.LESS.TEXT",
+  "type" : "color",
+  "group": "UTR.LESS.BUTTONS",
+  "subgroup": "UTR.LESS.SIMPLE"
+}
+*/
+@l_Button-Simple-Text: fade(contrast(@l_Button-Simple-BG, darken(@l_Button-Simple-BG,  75%), lighten(@l_Button-Simple-BG,  75%)), 100%);
+
+/* Overlay
+========================================================================== */
+@g_Overlay-bg: fade(#000, 25);
+
+/* Base Shades
+========================================================================== */
+@_base: #000;
+@_base-bg: #fff;
+@_base-tint: @g_Accent-BG;
+
+@_base-shade-0: @_base-bg;
+@_base-shade-1: mix(@_base, @_base-bg, 2.5%); // #f9f9f9
+@_base-shade-2: mix(@_base, @_base-bg, 6%); // #f0f0f0
+@_base-shade-3: mix(@_base, @_base-bg, 12%); // #e0e0e0
+@_base-shade-4: mix(@_base, @_base-bg, 18%); // #d1d1d1
+@_base-shade-5: mix(@_base, @_base-bg, 37%); // #a0a0a0
+@_base-shade-6: mix(@_base, @_base-bg, 56%); // #707070
+@_base-shade-7: mix(@_base, @_base-bg, 60%); // #666
+@_base-shade-8: mix(@_base, @_base-bg, 75%); // #404040
+@_base-shade-9: mix(@_base, @_base-bg, 85%); // #212121
+@_base-shade-10: @_base;
+
+@_base-alpha-0: fade(@_base, 0);
+@_base-alpha-1: fade(@_base, 2.5);
+@_base-alpha-2: fade(@_base, 5);
+@_base-alpha-3: fade(@_base, 7.5);
+@_base-alpha-4: fade(@_base, 10);
+@_base-alpha-5: fade(@_base, 15);
+@_base-alpha-6: fade(@_base, 20);
+@_base-alpha-7: fade(@_base, 25);
+@_base-alpha-8: fade(@_base, 40);
+@_base-alpha-9: fade(@_base, 50);
+@_base-alpha-10: fade(@_base, 65);
+@_base-alpha-11: fade(@_base, 75);
+@_base-alpha-12: fade(@_base, 95);
+@_base-alpha-13: fade(@_base, 100);
+
+@_base-bg-alpha-0: fade(@_base-bg, 0);
+@_base-bg-alpha-1: fade(@_base-bg, 2.5);
+@_base-bg-alpha-2: fade(@_base-bg, 5);
+@_base-bg-alpha-3: fade(@_base-bg, 7.5);
+@_base-bg-alpha-4: fade(@_base-bg, 10);
+@_base-bg-alpha-5: fade(@_base-bg, 15);
+@_base-bg-alpha-6: fade(@_base-bg, 20);
+@_base-bg-alpha-7: fade(@_base-bg, 25);
+@_base-bg-alpha-8: fade(@_base-bg, 40);
+@_base-bg-alpha-9: fade(@_base-bg, 50);
+@_base-bg-alpha-10: fade(@_base-bg, 65);
+@_base-bg-alpha-11: fade(@_base-bg, 75);
+@_base-bg-alpha-12: fade(@_base-bg, 95);
+@_base-bg-alpha-13: fade(@_base-bg, 100);
+
+@_base-shadow-0: fade(#000, 0);
+@_base-shadow-1: fade(#000, 2.5);
+@_base-shadow-2: fade(#000, 5);
+@_base-shadow-3: fade(#000, 7.5);
+@_base-shadow-4: fade(#000, 10);
+@_base-shadow-5: fade(#000, 15);
+@_base-shadow-6: fade(#000, 20);
+@_base-shadow-7: fade(#000, 25);
+@_base-shadow-8: fade(#000, 40);
+@_base-shadow-9: fade(#000, 50);
+@_base-shadow-10: fade(#000, 65);
+@_base-shadow-11: fade(#000, 75);
+@_base-shadow-12: fade(#000, 95);
+@_base-shadow-13: fade(#000, 100);
+
+
+// IG Body
+@GVBody_bg: @g_Region-BG;
