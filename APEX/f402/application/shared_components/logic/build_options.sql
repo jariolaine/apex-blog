@@ -39,6 +39,20 @@ wwv_flow_api.create_build_option(
 ,p_default_on_export=>'INCLUDE'
 ,p_build_option_comment=>'Objects that need to reviewed and changed in future.'
 );
+wwv_flow_api.create_build_option(
+ p_id=>wwv_flow_api.id(35674953070739317)
+,p_build_option_name=>'APEX Authentication'
+,p_build_option_status=>'INCLUDE'
+,p_on_upgrade_keep_status=>true
+,p_build_option_comment=>'Enable or disable APEX authentication from login screen'
+);
+wwv_flow_api.create_build_option(
+ p_id=>wwv_flow_api.id(35675193135740905)
+,p_build_option_name=>'Google Authentication'
+,p_build_option_status=>'INCLUDE'
+,p_on_upgrade_keep_status=>true
+,p_build_option_comment=>'Enable or disable Google authentication from login screen'
+);
 wwv_flow_api.component_end;
 end;
 /

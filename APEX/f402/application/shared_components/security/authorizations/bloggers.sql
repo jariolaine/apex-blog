@@ -14,10 +14,9 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_security_scheme(
  p_id=>wwv_flow_api.id(28359530175115492)
 ,p_name=>'Bloggers'
-,p_scheme_type=>'NATIVE_IS_IN_GROUP'
-,p_attribute_01=>'Bloggers'
-,p_attribute_02=>'W'
-,p_error_message=>'Unauthorized access.'
+,p_scheme_type=>'NATIVE_FUNCTION_BODY'
+,p_attribute_01=>'return apex_util.current_user_in_group( ''Bloggers'' );'
+,p_error_message=>'You are not authorized to access this application.'
 ,p_caching=>'BY_USER_BY_SESSION'
 );
 wwv_flow_api.component_end;

@@ -15,6 +15,9 @@ create table blog_settings(
   group_name varchar2( 64 char ) not null,
   attribute_value varchar2( 4000 char ),
   post_expression varchar2( 4000 char ),
+  in_min number(2,0),
+  in_max number(2,0),
+  example_value varchar2( 4000 char ),
   notes varchar2(4000 char),
   constraint blog_settings_pk primary key( id ),
   constraint blog_settings_uk1 unique( attribute_name ),
@@ -47,6 +50,8 @@ create table blog_settings(
   constraint blog_settings_ck7 check(
     data_type != 'INTEGER' or
     data_type = 'INTEGER' and
+    int_min is not null and
+    int_max is not null and
     round( to_number( attribute_value ) ) = to_number( attribute_value )
   ),
   constraint blog_settings_ck8 check(

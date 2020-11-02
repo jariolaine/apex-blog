@@ -30,6 +30,7 @@ wwv_flow_api.create_list(
 '  ,null                 as image',
 '  ,null                 as image_attribute',
 '  ,null                 as image_alt_attribute',
+'--,v1.post_count        as attribute1',
 '  ,null                 as attribute1',
 '   -- add archive id to data attribute',
 '   -- we can use it in dynamic action to set current list item',

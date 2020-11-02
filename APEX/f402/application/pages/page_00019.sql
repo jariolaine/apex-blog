@@ -15,7 +15,6 @@ wwv_flow_api.create_page(
  p_id=>19
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
 ,p_name=>'Add/Edit Tags'
-,p_alias=>'TAGS'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Tags'
 ,p_autocomplete_on_off=>'OFF'
@@ -30,7 +29,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524072857'
+,p_last_upd_yyyymmddhh24miss=>'20201003055944'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9879490963762847)

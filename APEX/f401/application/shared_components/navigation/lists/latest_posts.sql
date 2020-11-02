@@ -35,7 +35,7 @@ wwv_flow_api.create_list(
 '   || ''"''               as attribute2',
 'from #OWNER#.blog_v_posts_last20 v1',
 'where 1 = 1',
-'and v1.display_seq <= :G_LATEST_POSTS',
+'and v1.display_seq <= :G_LATEST_POST_ROWS',
 'order by v1.published_on desc',
 ''))
 ,p_list_status=>'PUBLIC'

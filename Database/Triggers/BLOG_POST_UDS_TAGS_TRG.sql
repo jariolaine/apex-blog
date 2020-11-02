@@ -1,7 +1,7 @@
 --------------------------------------------------------
---  DDL for Trigger BLOG_POSTS_UDS_TAGS_TRG
+--  DDL for Trigger BLOG_POST_UDS_TAGS_TRG
 --------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_TAGS_TRG"
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_TAGS_TRG"
 after
 update on blog_tags
 for each row
@@ -21,7 +21,7 @@ begin
 
   if l_update
   then
-    update blog_posts_uds t1
+    update blog_post_uds t1
       set dummy = dummy
     where 1 = 1
     and exists(

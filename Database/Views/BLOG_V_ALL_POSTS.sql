@@ -68,7 +68,7 @@ join blog_categories t2
   on t1.category_id = t2.id
 join blog_bloggers t3
   on t1.blogger_id = t3.id
-join blog_posts_uds t4
+join blog_post_uds t4
   on t1.id = t4.post_id
 where 1 = 1
 /

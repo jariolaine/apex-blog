@@ -310,7 +310,7 @@ as
            p_post_id      => p_post_id
           ,p_app_id       => p_app_id
           ,p_session      => ''
-          ,p_canonical => 'YES'
+          ,p_canonical    => 'YES'
         )
         || '" />'
       ;
@@ -340,7 +340,7 @@ as
            p_category_id  => p_category_id
           ,p_app_id       => p_app_id
           ,p_session      => ''
-          ,p_canonical => 'YES'
+          ,p_canonical    => 'YES'
         )
         || '" />'
       ;
@@ -367,10 +367,10 @@ as
       l_html :=
         '<link rel="canonical" href="'
         || blog_url.get_archive(
-           p_archive_id   => p_archive_id
-          ,p_app_id       => p_app_id
-          ,p_session      => ''
-          ,p_canonical => 'YES'
+           p_archive_id => p_archive_id
+          ,p_app_id     => p_app_id
+          ,p_session    => ''
+          ,p_canonical  => 'YES'
         )
         || '" />'
       ;
@@ -414,8 +414,9 @@ as
     p_rss_url  in varchar2 default null
   ) return varchar2
   as
-    l_rss_url varchar2(4000);
-    l_rss_title varchar2(4000);
+    l_rss_url     varchar2(4000);
+    l_rss_title   varchar2(4000);
+    l_rss_anchor  varchar2(4000);
   begin
 
     -- get rss title
@@ -424,7 +425,7 @@ as
     -- get rss url
     l_rss_url := case
       when p_rss_url is null
-      then blog_util.get_attribute_value( 'RSS_URL' )
+      then blog_util.get_attribute_value( 'G_RSS_URL' )
       else p_rss_url
       end
     ;
@@ -432,7 +433,7 @@ as
     -- generate RSS anchor
     if l_rss_url is not null
     then
-      l_rss_url :=
+      l_rss_anchor :=
         '<a href="'
         || l_rss_url
         || '" rel="alternate" type="application/rss+xml" aria-label="'
@@ -443,10 +444,9 @@ as
       ;
     else
       apex_debug.warn('RSS URL is empty. RSS anchor not generated.');
-      l_rss_url := '<strong>RSS url is not set</strong>';
     end if;
 
-    return l_rss_url;
+    return l_rss_anchor;
 
   end get_rss_anchor;
 --------------------------------------------------------------------------------
@@ -472,7 +472,7 @@ as
       -- get rss url
       l_rss_url := case
         when p_rss_url is null
-        then blog_util.get_attribute_value( 'RSS_URL' )
+        then blog_util.get_attribute_value( 'G_RSS_URL' )
         else p_rss_url
         end
       ;

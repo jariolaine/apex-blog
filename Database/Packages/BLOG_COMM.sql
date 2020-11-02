@@ -338,7 +338,7 @@ as
   begin
 
     -- fetch application email address
-    l_app_email := blog_util.get_attribute_value('APP_EMAIL');
+    l_app_email := blog_util.get_attribute_value('G_APP_EMAIL');
 
     l_post_id   := to_number( p_post_id );
 

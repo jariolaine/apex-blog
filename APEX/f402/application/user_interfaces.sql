@@ -27,10 +27,10 @@ wwv_flow_api.create_user_interface(
 ,p_navigation_list_position=>'SIDE'
 ,p_navigation_list_template_id=>wwv_flow_api.id(8542581297518238)
 ,p_nav_list_template_options=>'#DEFAULT#:js-defaultCollapsed:js-navCollapsed--default:t-TreeNav--styleB'
-,p_css_file_urls=>'#WORKSPACE_IMAGES#blog040000/style.css?version=#APP_VERSION#'
+,p_css_file_urls=>'#WORKSPACE_IMAGES#blog/1.0/css/Style.css?version=#APP_VERSION#'
 ,p_javascript_file_urls=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#WORKSPACE_IMAGES#blog040000/blog.js?version=#APP_VERSION#',
-'#APP_IMAGES#admin.js?version=#APP_VERSION#'))
+'#WORKSPACE_IMAGES#blog/1.0/js/blog.js?version=#APP_VERSION#',
+'#WORKSPACE_IMAGES#blog/1.0/js/admin.js?version=#APP_VERSION#'))
 ,p_nav_bar_type=>'LIST'
 ,p_nav_bar_list_id=>wwv_flow_api.id(8570714984518262)
 ,p_nav_bar_list_template_id=>wwv_flow_api.id(8542379958518238)

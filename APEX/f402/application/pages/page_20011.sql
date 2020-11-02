@@ -15,7 +15,6 @@ wwv_flow_api.create_page(
  p_id=>20011
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
 ,p_name=>'Configuration Options'
-,p_alias=>'CONFIGURATION-OPTIONS'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Configuration Options'
 ,p_autocomplete_on_off=>'OFF'
@@ -29,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200728092326'
+,p_last_upd_yyyymmddhh24miss=>'20201015181007'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27063074415689131)
@@ -134,14 +133,12 @@ wwv_flow_api.create_region_column(
 ,p_stretch=>'A'
 ,p_attribute_02=>'VALUE'
 ,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
-,p_enable_filter=>true
+,p_enable_filter=>false
 ,p_filter_is_required=>false
-,p_filter_date_ranges=>'ALL'
-,p_filter_lov_type=>'DISTINCT'
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.configIG.initColumn'
 ,p_enable_sort_group=>false
-,p_enable_hide=>true
+,p_enable_hide=>false
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
@@ -545,8 +542,7 @@ wwv_flow_api.create_page_process(
 '  ,p_feature_id      => :FEATURE_ID',
 '  ,p_build_option_id => :BUILD_OPTION_ID',
 '  ,p_build_status    => :STATUS',
-');',
-''))
+');'))
 ,p_attribute_05=>'N'
 ,p_attribute_06=>'N'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'

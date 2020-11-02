@@ -4877,6 +4877,171 @@ wwv_flow_api.create_template_option(
 ,p_help_text=>'This option reduces the padding and font sizes to present a compact display of the same information.'
 );
 wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(24777399240754649)
+,p_theme_id=>42
+,p_name=>'LARGE_BOTTOM_MARGIN'
+,p_display_name=>'Large Bottom Margin'
+,p_display_sequence=>20
+,p_report_template_id=>wwv_flow_api.id(6894976353301648)
+,p_css_classes=>'z-posts z-post--largeMargin'
+,p_group_id=>wwv_flow_api.id(9868669134188595)
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(24781510998835095)
+,p_theme_id=>42
+,p_name=>'2_COLUMN_GRID'
+,p_display_name=>'2 Column Grid'
+,p_display_sequence=>10
+,p_report_template_id=>wwv_flow_api.id(24781131315835089)
+,p_css_classes=>'t-MediaList--cols t-MediaList--2cols'
+,p_group_id=>wwv_flow_api.id(9868669134188595)
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(24781955710835095)
+,p_theme_id=>42
+,p_name=>'3_COLUMN_GRID'
+,p_display_name=>'3 Column Grid'
+,p_display_sequence=>20
+,p_report_template_id=>wwv_flow_api.id(24781131315835089)
+,p_css_classes=>'t-MediaList--cols t-MediaList--3cols'
+,p_group_id=>wwv_flow_api.id(9868669134188595)
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(24782318724835095)
+,p_theme_id=>42
+,p_name=>'4_COLUMN_GRID'
+,p_display_name=>'4 Column Grid'
+,p_display_sequence=>30
+,p_report_template_id=>wwv_flow_api.id(24781131315835089)
+,p_css_classes=>'t-MediaList--cols t-MediaList--4cols'
+,p_group_id=>wwv_flow_api.id(9868669134188595)
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(24782740552835096)
+,p_theme_id=>42
+,p_name=>'5_COLUMN_GRID'
+,p_display_name=>'5 Column Grid'
+,p_display_sequence=>40
+,p_report_template_id=>wwv_flow_api.id(24781131315835089)
+,p_css_classes=>'t-MediaList--cols t-MediaList--5cols'
+,p_group_id=>wwv_flow_api.id(9868669134188595)
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(24783036742835096)
+,p_theme_id=>42
+,p_name=>'APPLY_THEME_COLORS'
+,p_display_name=>'Apply Theme Colors'
+,p_display_sequence=>40
+,p_report_template_id=>wwv_flow_api.id(24781131315835089)
+,p_css_classes=>'u-colors'
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(24783457406835096)
+,p_theme_id=>42
+,p_name=>'ICONS_ROUNDED'
+,p_display_name=>'Rounded Corners'
+,p_display_sequence=>10
+,p_report_template_id=>wwv_flow_api.id(24781131315835089)
+,p_css_classes=>'t-MediaList--iconsRounded'
+,p_group_id=>wwv_flow_api.id(9853454130188586)
+,p_template_types=>'REPORT'
+,p_help_text=>'The icons are displayed within a square with rounded corners.'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(24783890541835097)
+,p_theme_id=>42
+,p_name=>'ICONS_SQUARE'
+,p_display_name=>'Square'
+,p_display_sequence=>20
+,p_report_template_id=>wwv_flow_api.id(24781131315835089)
+,p_css_classes=>'t-MediaList--iconsSquare'
+,p_group_id=>wwv_flow_api.id(9853454130188586)
+,p_template_types=>'REPORT'
+,p_help_text=>'The icons are displayed within a square shape.'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(24784269165835097)
+,p_theme_id=>42
+,p_name=>'LARGE'
+,p_display_name=>'Large'
+,p_display_sequence=>20
+,p_report_template_id=>wwv_flow_api.id(24781131315835089)
+,p_css_classes=>'t-MediaList--large force-fa-lg'
+,p_group_id=>wwv_flow_api.id(9860242702188591)
+,p_template_types=>'REPORT'
+,p_help_text=>'Increases the size of the text and icons in the list.'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(24784651813835097)
+,p_theme_id=>42
+,p_name=>'SHOW_BADGES'
+,p_display_name=>'Show Badges'
+,p_display_sequence=>30
+,p_report_template_id=>wwv_flow_api.id(24781131315835089)
+,p_css_classes=>'t-MediaList--showBadges'
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.03.31'
+,p_release=>'20.1.0.00.13'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(24785021469835097)
+,p_theme_id=>42
+,p_name=>'SHOW_DESCRIPTION'
+,p_display_name=>'Show Description'
+,p_display_sequence=>20
+,p_report_template_id=>wwv_flow_api.id(24781131315835089)
+,p_css_classes=>'t-MediaList--showDesc'
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(24785401697835097)
+,p_theme_id=>42
+,p_name=>'SHOW_ICONS'
+,p_display_name=>'Show Icons'
+,p_display_sequence=>10
+,p_report_template_id=>wwv_flow_api.id(24781131315835089)
+,p_css_classes=>'t-MediaList--showIcons'
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(24785882874835098)
+,p_theme_id=>42
+,p_name=>'SPAN_HORIZONTAL'
+,p_display_name=>'Span Horizontal'
+,p_display_sequence=>50
+,p_report_template_id=>wwv_flow_api.id(24781131315835089)
+,p_css_classes=>'t-MediaList--horizontal'
+,p_group_id=>wwv_flow_api.id(9868669134188595)
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
+ p_id=>wwv_flow_api.id(24786225159835099)
+,p_theme_id=>42
+,p_name=>'STACK'
+,p_display_name=>'Stack'
+,p_display_sequence=>5
+,p_report_template_id=>wwv_flow_api.id(24781131315835089)
+,p_css_classes=>'t-MediaList--stack'
+,p_group_id=>wwv_flow_api.id(9868669134188595)
+,p_template_types=>'REPORT'
+);
+wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(35908431214731517)
 ,p_theme_id=>42
 ,p_name=>'NO_MARGIN'
@@ -4884,16 +5049,7 @@ wwv_flow_api.create_template_option(
 ,p_display_sequence=>40
 ,p_report_template_id=>wwv_flow_api.id(6894976353301648)
 ,p_css_classes=>'z-posts z-post--noMargin'
-,p_template_types=>'REPORT'
-);
-wwv_flow_api.create_template_option(
- p_id=>wwv_flow_api.id(35908784357736441)
-,p_theme_id=>42
-,p_name=>'MEDIUM_MARGIN'
-,p_display_name=>'Medium Bottom Margin'
-,p_display_sequence=>20
-,p_report_template_id=>wwv_flow_api.id(6894976353301648)
-,p_css_classes=>'z-posts z-post--mediumMargin'
+,p_group_id=>wwv_flow_api.id(9868669134188595)
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.create_template_option(
@@ -4904,6 +5060,7 @@ wwv_flow_api.create_template_option(
 ,p_display_sequence=>30
 ,p_report_template_id=>wwv_flow_api.id(6894976353301648)
 ,p_css_classes=>'z-posts z-post--smallMargin'
+,p_group_id=>wwv_flow_api.id(9868669134188595)
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.create_template_option(
@@ -4914,6 +5071,7 @@ wwv_flow_api.create_template_option(
 ,p_display_sequence=>10
 ,p_report_template_id=>wwv_flow_api.id(6894976353301648)
 ,p_css_classes=>'z-posts'
+,p_group_id=>wwv_flow_api.id(9868669134188595)
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.create_template_option(
@@ -4924,6 +5082,7 @@ wwv_flow_api.create_template_option(
 ,p_display_sequence=>20
 ,p_report_template_id=>wwv_flow_api.id(30641878306098019)
 ,p_css_classes=>'z-Content--Stacked'
+,p_group_id=>wwv_flow_api.id(9848697842188583)
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.create_template_option(
@@ -4934,6 +5093,7 @@ wwv_flow_api.create_template_option(
 ,p_display_sequence=>10
 ,p_report_template_id=>wwv_flow_api.id(30641878306098019)
 ,p_css_classes=>'z-Content'
+,p_group_id=>wwv_flow_api.id(9848697842188583)
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.create_template_option(
@@ -4944,6 +5104,7 @@ wwv_flow_api.create_template_option(
 ,p_display_sequence=>50
 ,p_report_template_id=>wwv_flow_api.id(6894976353301648)
 ,p_css_classes=>'z-posts--paginationBorder'
+,p_group_id=>wwv_flow_api.id(9859877804188590)
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.create_template_option(
@@ -4954,6 +5115,7 @@ wwv_flow_api.create_template_option(
 ,p_display_sequence=>60
 ,p_report_template_id=>wwv_flow_api.id(6894976353301648)
 ,p_css_classes=>'z-posts--paginationHidden'
+,p_group_id=>wwv_flow_api.id(9859877804188590)
 ,p_template_types=>'REPORT'
 );
 wwv_flow_api.component_end;

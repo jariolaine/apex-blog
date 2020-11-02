@@ -4,16 +4,19 @@
 /**************************************
 * Program code formatting
 **************************************/
+
 pre.z-program-code {
-  font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Bitstream Vera Sans Mono","Courier New",monospace;
+  font-family: @code-font;
   color: @code-text-color;
   font-size: 1.1rem;
   tab-size: 2;
   counter-reset: line;
   overflow-x: auto;
+/*
 	background-color: @code-bg-color;
   border: @code-border;
 	box-shadow: @code-box-shadow;
+*/
   border-radius: @code-border-radius;
   code {
     font-family: inherit;
@@ -28,6 +31,7 @@ pre.z-program-code {
       content: counter(line);
       user-select: none;
       border-right: @code-margin-border-right;
+      border-left: @code-border;
       background-color: @code-margin-bg-even;
       margin: 0 0.4rem 0 0;
       padding: 0 0.4rem 0 0;
@@ -38,6 +42,12 @@ pre.z-program-code {
     }
     &:nth-child(odd):before {
       background-color: @code-margin-bg-odd;
+    }
+    &:first-child:before {
+      border-top: @code-border;
+    }
+    &:last-child:before {
+      border-bottom: @code-border;
     }
   }
 }

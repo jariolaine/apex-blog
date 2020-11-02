@@ -21,7 +21,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200701044658'
+,p_last_upd_yyyymmddhh24miss=>'20200923191151'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
@@ -72,7 +72,7 @@ wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6913532952677128)
 ,p_plug_name=>'Categories'
 ,p_parent_plug_id=>wwv_flow_api.id(6433383599894073)
-,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(6802870362267386)
 ,p_plug_display_sequence=>80
@@ -90,7 +90,7 @@ wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6913618929677129)
 ,p_plug_name=>'Latest Posts'
 ,p_parent_plug_id=>wwv_flow_api.id(6433383599894073)
-,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(6802870362267386)
 ,p_plug_display_sequence=>90
@@ -114,8 +114,8 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_point=>'BODY'
 ,p_plug_source=>'"BLOG_RSS_ANCHOR"'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_plug_caching=>'CACHE'
-,p_plug_caching_max_age_in_sec=>31536000
+,p_plug_display_condition_type=>'ITEM_IS_NOT_NULL'
+,p_plug_display_when_condition=>'G_RSS_URL'
 ,p_required_patch=>wwv_flow_api.id(8635198962090938)
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'HTML'
@@ -125,7 +125,7 @@ wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(28587492454643033)
 ,p_plug_name=>'Archives'
 ,p_parent_plug_id=>wwv_flow_api.id(6433383599894073)
-,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(6802870362267386)
 ,p_plug_display_sequence=>100
@@ -141,20 +141,19 @@ wwv_flow_api.create_page_plug(
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(31250153901982941)
-,p_plug_name=>'Source Code'
+,p_plug_name=>'Powered by / link to source code'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(6781372168267375)
 ,p_plug_display_sequence=>20
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="z-app-source">',
-'  <a href="https://github.com/jariolaine/apex-blog"><small>APEX Blog</small></a>',
+'  <small>Powered By <a href="https://github.com/jariolaine/apex-blog">APEX Blog</a></small>',
 '</div>'))
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'HTML'
-,p_plug_comment=>'Removing or altering this region violates license agreement'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(6433577571894075)

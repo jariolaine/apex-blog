@@ -15,7 +15,6 @@ wwv_flow_api.create_page(
  p_id=>12
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
 ,p_name=>'Add/Edit Post'
-,p_alias=>'POST'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Post'
 ,p_first_item=>'AUTO_FIRST_ITEM'
@@ -72,7 +71,7 @@ wwv_flow_api.create_page(
 '</ol>',
 ''))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200608171118'
+,p_last_upd_yyyymmddhh24miss=>'20201004053952'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -145,7 +144,7 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(19020291458830226)
-,p_button_sequence=>90
+,p_button_sequence=>70
 ,p_button_plug_id=>wwv_flow_api.id(9832800462215220)
 ,p_button_name=>'CREATE_DRAFT'
 ,p_button_action=>'SUBMIT'
@@ -160,7 +159,7 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(8786300121610764)
-,p_button_sequence=>100
+,p_button_sequence=>80
 ,p_button_plug_id=>wwv_flow_api.id(9832800462215220)
 ,p_button_name=>'CREATE'
 ,p_button_action=>'SUBMIT'
@@ -176,14 +175,14 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(8786578519610764)
-,p_button_sequence=>30
+,p_button_sequence=>10
 ,p_button_plug_id=>wwv_flow_api.id(9832800462215220)
 ,p_button_name=>'DELETE'
 ,p_button_action=>'REDIRECT_URL'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Delete'
-,p_button_position=>'REGION_TEMPLATE_DELETE'
+,p_button_position=>'REGION_TEMPLATE_EDIT'
 ,p_button_redirect_url=>'javascript:apex.confirm(htmldb_delete_message,''DELETE'');'
 ,p_button_execute_validations=>'N'
 ,p_button_condition=>'P12_ID'
@@ -193,7 +192,7 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(8786489415610764)
-,p_button_sequence=>40
+,p_button_sequence=>30
 ,p_button_plug_id=>wwv_flow_api.id(9832800462215220)
 ,p_button_name=>'SAVE_DRAFT'
 ,p_button_action=>'SUBMIT'
@@ -209,7 +208,7 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(26971334973257341)
-,p_button_sequence=>60
+,p_button_sequence=>40
 ,p_button_plug_id=>wwv_flow_api.id(9832800462215220)
 ,p_button_name=>'SAVE_AND_PUBLISH'
 ,p_button_action=>'SUBMIT'
@@ -226,7 +225,7 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(26971643270257344)
-,p_button_sequence=>70
+,p_button_sequence=>50
 ,p_button_plug_id=>wwv_flow_api.id(9832800462215220)
 ,p_button_name=>'REVERT_TO_DRAFT'
 ,p_button_action=>'SUBMIT'
@@ -242,7 +241,7 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(26971566670257343)
-,p_button_sequence=>80
+,p_button_sequence=>60
 ,p_button_plug_id=>wwv_flow_api.id(9832800462215220)
 ,p_button_name=>'SAVE'
 ,p_button_action=>'SUBMIT'
@@ -461,7 +460,7 @@ wwv_flow_api.create_page_item(
 ,p_help_text=>'Refer online document <a target="_balank" href="https://ckeditor.com/docs/ckeditor4/latest/features/basicstyles.html">Basic Text Styles: Bold, Italic and More</a> how style your post.'
 ,p_plugin_init_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'function ( options ) {',
-'  options.contentsCss = [ "&APP_IMAGES.chkeditor.css" ];',
+'  options.contentsCss = [ "&WORKSPACE_IMAGES.blog/1.0/css/chkeditor.css" ];',
 '  options = blog.admin.editorInit( options );',
 '  return options;',
 '}'))

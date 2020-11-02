@@ -137,6 +137,22 @@ wwv_flow_api.create_build_option(
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable / disable the ability to subscribe to email notification of new comments'
 );
+wwv_flow_api.create_build_option(
+ p_id=>wwv_flow_api.id(41172379976935637)
+,p_build_option_name=>'BLOG_FEATURE_SITEMAP'
+,p_build_option_status=>'INCLUDE'
+,p_default_on_export=>'INCLUDE'
+,p_on_upgrade_keep_status=>true
+,p_build_option_comment=>'Enable/disable sitemap application processes'
+);
+wwv_flow_api.create_build_option(
+ p_id=>wwv_flow_api.id(41177796042194178)
+,p_build_option_name=>'BLOG_FEATURE_SITEMAPINDEX'
+,p_build_option_status=>'INCLUDE'
+,p_default_on_export=>'INCLUDE'
+,p_on_upgrade_keep_status=>true
+,p_build_option_comment=>'Enable/disable sitemapindex application process'
+);
 wwv_flow_api.component_end;
 end;
 /

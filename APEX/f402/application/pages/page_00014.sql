@@ -15,7 +15,6 @@ wwv_flow_api.create_page(
  p_id=>14
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
 ,p_name=>'Add/Edit Categories'
-,p_alias=>'CATEGORIES'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Categories'
 ,p_autocomplete_on_off=>'OFF'
@@ -39,7 +38,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524083016'
+,p_last_upd_yyyymmddhh24miss=>'20201003055911'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9834087769215232)

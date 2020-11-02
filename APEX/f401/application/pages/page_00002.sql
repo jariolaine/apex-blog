@@ -26,7 +26,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200702185807'
+,p_last_upd_yyyymmddhh24miss=>'20201102161450'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -34,7 +34,7 @@ wwv_flow_api.create_report_region(
 ,p_region_name=>'comments'
 ,p_template=>wwv_flow_api.id(6802870362267386)
 ,p_display_sequence=>20
-,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody:margin-bottom-lg'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Comments--basic:t-Comments--iconsRounded:t-Report--hideNoPagination'
 ,p_new_grid_row=>false
 ,p_grid_column_span=>9
@@ -181,11 +181,11 @@ wwv_flow_api.create_report_columns(
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(9653988616337837)
-,p_name=>'Post Container'
+,p_name=>'Post'
 ,p_template=>wwv_flow_api.id(6781372168267375)
 ,p_display_sequence=>10
 ,p_region_template_options=>'#DEFAULT#'
-,p_component_template_options=>'#DEFAULT#:z-posts z-post--noMargin:z-posts:z-posts--paginationHidden'
+,p_component_template_options=>'#DEFAULT#:z-posts:z-posts--paginationHidden'
 ,p_grid_column_span=>9
 ,p_display_column=>1
 ,p_display_point=>'BODY'
@@ -252,7 +252,7 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>4
 ,p_column_heading=>'Category Title'
 ,p_use_as_row_header=>'N'
-,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.:RP:P14_CATEGORY_ID:#CATEGORY_ID#'
+,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.::P14_CATEGORY_ID:#CATEGORY_ID#'
 ,p_column_linktext=>'#CATEGORY_TITLE#'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -301,7 +301,7 @@ wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27860638995256805)
 ,p_plug_name=>'Pagination'
 ,p_region_css_classes=>'u-textCenter1'
-,p_region_template_options=>'#DEFAULT#:t-Region--removeHeader:t-Region--scrollBody:margin-top-lg:margin-bottom-lg'
+,p_region_template_options=>'#DEFAULT#:t-Region--removeHeader:t-Region--scrollBody'
 ,p_plug_template=>wwv_flow_api.id(6802870362267386)
 ,p_plug_display_sequence=>10
 ,p_plug_new_grid_row=>false
@@ -578,6 +578,15 @@ wwv_flow_api.create_page_process(
 ,p_process_when=>'P2_SUBSCRIPTION_ID'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
 ,p_process_success_message=>'You have now unsubscribed from notifications for this post comments.'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(26063395480107811)
+,p_process_sequence=>30
+,p_process_point=>'BEFORE_HEADER'
+,p_process_type=>'NATIVE_RESET_PAGINATION'
+,p_process_name=>'Reset Comments Pagination'
+,p_attribute_01=>'THIS_PAGE'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.component_end;
 end;

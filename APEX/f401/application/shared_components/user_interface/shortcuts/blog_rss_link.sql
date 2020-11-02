@@ -20,6 +20,7 @@ wwv_flow_api.create_shortcut(
 'return #OWNER#.blog_html.get_rss_link(',
 '   p_app_id => :APP_ID',
 '  ,p_app_name => :G_APP_NAME',
+'  ,p_rss_url => :G_RSS_URL',
 ');'))
 );
 wwv_flow_api.component_end;

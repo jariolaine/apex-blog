@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_dialog_chained=>'N'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200509090156'
+,p_last_upd_yyyymmddhh24miss=>'20201005153833'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(19240916739616131)
@@ -86,6 +86,7 @@ wwv_flow_api.create_page_branch(
 ,p_branch_point=>'AFTER_PROCESSING'
 ,p_branch_type=>'REDIRECT_URL'
 ,p_branch_sequence=>20
+,p_required_patch=>wwv_flow_api.id(10006498624902877)
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(8642725922195004)
@@ -191,6 +192,7 @@ wwv_flow_api.create_page_process(
 ,p_attribute_02=>'BLOG_DISPLAY_DATE_FORMAT'
 ,p_attribute_03=>'P503_DISPLAY_DATE_FORMAT'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_when_button_id=>wwv_flow_api.id(8969369173638064)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(19019771609830221)
@@ -202,6 +204,28 @@ wwv_flow_api.create_page_process(
 ,p_attribute_02=>'BLOG_INPUT_DATE_FORMAT'
 ,p_attribute_03=>'P503_INPUT_DATE_FORMAT'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_when_button_id=>wwv_flow_api.id(8969369173638064)
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(32677963956272617)
+,p_process_sequence=>30
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Set Application Items'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex_util.set_session_state(''G_USER_DATE_TIME_FORMAT'', :P503_DISPLAY_DATE_FORMAT, false);',
+'apex_util.set_session_state(''G_USER_INPUT_DATE_TIME_FORMAT'', :P503_INPUT_DATE_FORMAT, false);'))
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(33082095504844006)
+,p_process_sequence=>40
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_CLOSE_WINDOW'
+,p_process_name=>'Close Dialog'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_when_button_id=>wwv_flow_api.id(8969369173638064)
+,p_process_success_message=>'&APP_TEXT$BLOG_MSG_PREFERENCES_UPDATED!HTML.'
 );
 wwv_flow_api.component_end;
 end;

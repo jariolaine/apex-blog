@@ -18,8 +18,9 @@ prompt --install
 @@application/shared_components/logic/application_items/g_app_name.sql
 @@application/shared_components/logic/application_items/g_archive_date_format.sql
 @@application/shared_components/logic/application_items/g_date_format.sql
-@@application/shared_components/logic/application_items/g_latest_posts.sql
+@@application/shared_components/logic/application_items/g_latest_post_rows.sql
 @@application/shared_components/logic/application_items/g_post_title_date_format.sql
+@@application/shared_components/logic/application_items/g_rss_url.sql
 @@application/shared_components/logic/application_items/g_search_rows.sql
 @@application/shared_components/logic/application_settings.sql
 @@application/shared_components/navigation/tabs/standard.sql
@@ -80,6 +81,7 @@ prompt --install
 @@application/shared_components/user_interface/templates/report/search_results.sql
 @@application/shared_components/user_interface/templates/report/blog_posts_custom_1.sql
 @@application/shared_components/user_interface/templates/report/content_row.sql
+@@application/shared_components/user_interface/templates/report/media_list_002.sql
 @@application/shared_components/user_interface/templates/report/blog_general_custom_2.sql
 @@application/shared_components/user_interface/templates/label/hidden.sql
 @@application/shared_components/user_interface/templates/label/optional.sql

@@ -9,9 +9,9 @@ alter table blog_comment_subs drop constraint blog_comment_subs_fk2;
 alter table blog_links drop constraint blog_links_fk1;
 alter table blog_posts drop constraint blog_posts_fk1;
 alter table blog_posts drop constraint blog_posts_fk2;
-alter table blog_posts_uds drop constraint blog_posts_uds_fk1;
 alter table blog_post_tags drop constraint blog_post_tags_fk1;
 alter table blog_post_tags drop constraint blog_post_tags_fk2;
+alter table blog_post_uds drop constraint blog_post_uds_fk1;
 --------------------------------------------------------
 --  Drop objects
 --------------------------------------------------------
@@ -39,9 +39,9 @@ drop table blog_link_groups;
 drop table blog_ords_templates;
 drop table blog_pages;
 drop table blog_posts;
-drop table blog_posts_uds;
 drop table blog_post_preview;
 drop table blog_post_tags;
+drop table blog_post_uds;
 drop table blog_settings;
 drop table blog_tags;
 drop view blog_v_all_categories;
@@ -68,11 +68,17 @@ drop view blog_v_rep_post_by_status;
 drop view blog_v_tags;
 drop view blog_v_temp_files;
 --------------------------------------------------------
+--  Drop text index section groups
+--------------------------------------------------------
+begin
+ctx_ddl.drop_section_group( 'BLOG_POST_UDS_SG' );
+end
+/
+--------------------------------------------------------
 --  Drop text index preferences
 --------------------------------------------------------
 begin
-  ctx_ddl.drop_preference( 'BLOG_POSTS_LX' );
-  ctx_ddl.drop_preference( 'BLOG_POSTS_DS' );
-  ctx_ddl.drop_section_group( 'BLOG_POSTS_SG' );
-end;
+ctx_ddl.drop_preference( 'BLOG_POST_UDS_DS');
+ctx_ddl.drop_preference( 'BLOG_POST_UDS_LX');
+end
 /

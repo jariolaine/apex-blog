@@ -40,7 +40,7 @@ wwv_flow_api.create_plug_template(
 ,p_template_comment=>'Red Theme'
 );
 wwv_flow_api.create_plug_tmpl_display_point(
- p_id=>wwv_flow_api.id(13729872159214149)
+ p_id=>wwv_flow_api.id(25202615856740515)
 ,p_plug_template_id=>wwv_flow_api.id(8476383962518195)
 ,p_name=>'Region Body'
 ,p_placeholder=>'BODY'
@@ -49,7 +49,7 @@ wwv_flow_api.create_plug_tmpl_display_point(
 ,p_max_fixed_grid_columns=>12
 );
 wwv_flow_api.create_plug_tmpl_display_point(
- p_id=>wwv_flow_api.id(13730362987214149)
+ p_id=>wwv_flow_api.id(25203127817740516)
 ,p_plug_template_id=>wwv_flow_api.id(8476383962518195)
 ,p_name=>'Sub Regions'
 ,p_placeholder=>'SUB_REGIONS'

@@ -22,6 +22,8 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATE
     t1.group_name
   )                         as attribute_group
   ,t1.post_expression       as post_expression
+  ,t1.int_min               as int_min
+  ,t1.int_max               as int_max
 from blog_settings t1
 where 1 = 1
 /

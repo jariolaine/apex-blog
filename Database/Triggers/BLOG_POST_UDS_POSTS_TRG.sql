@@ -1,7 +1,7 @@
 --------------------------------------------------------
---  DDL for Trigger BLOG_POSTS_UDS_POSTS_TRG
+--  DDL for Trigger BLOG_POST_UDS_POSTS_TRG
 --------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_POSTS_TRG"
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_POSTS_TRG"
 after
 insert or
 update on blog_posts
@@ -13,7 +13,7 @@ begin
   if inserting
   then
 
-    insert into blog_posts_uds( post_id )
+    insert into blog_post_uds( post_id )
       values ( :new.id )
     ;
 
@@ -36,7 +36,7 @@ begin
 
     if l_update
     then
-      update blog_posts_uds t1
+      update blog_post_uds t1
         set dummy = dummy
       where 1 = 1
       and t1.post_id  = :new.id

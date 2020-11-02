@@ -41,7 +41,7 @@ wwv_flow_api.create_plug_template(
 ,p_translate_this_template=>'N'
 );
 wwv_flow_api.create_plug_tmpl_display_point(
- p_id=>wwv_flow_api.id(13809481771214246)
+ p_id=>wwv_flow_api.id(25288004847740582)
 ,p_plug_template_id=>wwv_flow_api.id(8507240237518215)
 ,p_name=>'Wizard Sub Regions'
 ,p_placeholder=>'SUB_REGIONS'

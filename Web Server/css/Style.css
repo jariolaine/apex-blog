@@ -21,10 +21,23 @@ blockquote p {
 **************************************/
 .z-app-logo {
   display: flex;
-  flex-direction: column;
+  align-items: baseline;
 }
-.z-app-desc {
+.z-app-logo .z-app-desc {
   white-space: normal;
+  font-style: oblique;
+  font-size: 1.4rem;
+  margin-left: 0.6rem;
+}
+@media only screen and (max-width: 640px) {
+  .z-app-logo {
+    flex-direction: column;
+  }
+  .z-app-logo .z-app-desc {
+    font-size: 1.2rem;
+    line-height: 1.6rem;
+    margin-left: 0;
+  }
 }
 /**************************************
 * Region
@@ -110,6 +123,9 @@ blockquote p {
   clear: both;
   margin: 1.2rem 0 0;
 }
+.z-posts--pagination {
+  margin-bottom: 16px;
+}
 .z-posts--paginationBorder .z-posts--pagination {
   background-color: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -188,9 +204,11 @@ pre.z-program-code {
   tab-size: 2;
   counter-reset: line;
   overflow-x: auto;
-  background-color: #fdfdfd;
-  border: 1px solid rgba(0, 0, 0, 0.055);
-  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.055);
+  /*
+	background-color: @code-bg-color;
+  border: @code-border;
+	box-shadow: @code-box-shadow;
+*/
   border-radius: 2px;
 }
 pre.z-program-code code {
@@ -207,6 +225,7 @@ pre.z-program-code code::before {
   content: counter(line);
   user-select: none;
   border-right: 2px solid #6ce26c;
+  border-left: 1px solid rgba(0, 0, 0, 0.055);
   background-color: rgba(0, 0, 0, 0.035);
   margin: 0 0.4rem 0 0;
   padding: 0 0.4rem 0 0;
@@ -217,6 +236,12 @@ pre.z-program-code code::before {
 }
 pre.z-program-code code:nth-child(odd):before {
   background-color: rgba(0, 0, 0, 0.075);
+}
+pre.z-program-code code:first-child:before {
+  border-top: 1px solid rgba(0, 0, 0, 0.055);
+}
+pre.z-program-code code:last-child:before {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.055);
 }
 /**************************************
 * About content
@@ -277,6 +302,9 @@ pre.z-program-code code:nth-child(odd):before {
   display: none!important;
   visibility: hidden!important;
 }
+/**************************************
+* Status Marker
+**************************************/
 .z-status-marker {
   position: relative;
   margin: -8px -12px;

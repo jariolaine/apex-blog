@@ -19,7 +19,7 @@ wwv_flow_api.create_list(
 'select',
 '   1                    as link_level',
 '  ,t1.page_title        as link_text',
-'  ,blog_url.get_tab(',
+'  ,#OWNER#.blog_url.get_tab(',
 '     p_app_page_id => t1.page_alias',
 '   )                    as target_url',
 '  ,case',

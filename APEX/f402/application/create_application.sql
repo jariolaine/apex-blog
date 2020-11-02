@@ -33,7 +33,6 @@ wwv_flow_api.create_flow(
 ,p_documentation_banner=>'Application created from create application wizard 2019.04.22.'
 ,p_authentication=>'PLUGIN'
 ,p_authentication_id=>wwv_flow_api.id(24462639138097628)
-,p_populate_roles=>'A'
 ,p_application_tab_set=>1
 ,p_logo_type=>'T'
 ,p_logo_text=>'&G_APP_NAME.'
@@ -55,7 +54,7 @@ wwv_flow_api.create_flow(
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_friendly_url=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200728092334'
+,p_last_upd_yyyymmddhh24miss=>'20201102213121'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>195
 ,p_ui_type_name => null

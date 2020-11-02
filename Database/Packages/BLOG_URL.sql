@@ -25,56 +25,81 @@ as
     p_app_page_id     in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_request         in varchar2 default null,
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_post(
     p_post_id         in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_post(
     p_post_id         in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_category(
     p_category_id     in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_category(
     p_category_id     in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_archive(
     p_archive_id      in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_archive(
     p_archive_id      in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_tag(
     p_tag_id          in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_unsubscribe(
@@ -113,10 +138,14 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tab(
-    p_app_page_id   in varchar2,
-    p_app_id        in varchar2 default null,
-    p_session       in varchar2 default null,
-    p_canonical     in varchar2 default 'NO'
+    p_app_page_id in varchar2,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_request     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
   begin
@@ -131,18 +160,22 @@ as
         p_application => p_app_id
        ,p_page        => p_app_page_id
        ,p_session     => p_session
-       ,p_clear_cache => 'RP'
-       --,p_plain_url   => true
+       ,p_request     => p_request
+       ,p_clear_cache => p_clear_cache
+       ,p_plain_url   => true
       );
 
   end get_tab;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_post(
-    p_post_id       in number,
-    p_app_id        in varchar2 default null,
-    p_session       in varchar2 default null,
-    p_canonical     in varchar2 default 'NO'
+    p_post_id     in number,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
     l_post_id varchar2(256);
@@ -154,57 +187,50 @@ as
          p_post_id      => l_post_id
         ,p_app_id       => p_app_id
         ,p_session      => p_session
+        ,p_clear_cache  => p_clear_cache
         ,p_canonical    => p_canonical
+        ,p_plain_url    => p_plain_url
+        ,p_encode_url   => p_encode_url
       );
 
   end get_post;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_post(
-    p_post_id       in varchar2,
-    p_app_id        in varchar2 default null,
-    p_session       in varchar2 default null,
-    p_canonical     in varchar2 default 'NO'
+    p_post_id     in varchar2,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
     l_url varchar2(4000);
   begin
 
-    -- workaround because APEX 19.2
-    -- apex_page.get_url don't have parameter p_plain_url
-    if p_canonical = 'YES'
-    then
-      l_url := 'f?p='
-        || coalesce( p_app_id, v( 'APP_ID' ) )
-        || ':POST:::NO:RP:'
-        || 'P2_POST_ID'
-        || ':'
-        || p_post_id
-      ;
+    l_url := apex_page.get_url(
+      p_application => p_app_id
+     ,p_page        => 'POST'
+     ,p_session     => p_session
+     ,p_clear_cache => p_clear_cache
+     ,p_items       => 'P2_POST_ID'
+     ,p_values      => p_post_id
+     ,p_plain_url   => case p_plain_url when 'YES' then true else false end
+   );
 
-      l_url :=
-        apex_util.prepare_url(
-           p_url => l_url
-          ,p_plain_url => true
-        );
-
-      l_url := blog_util.get_attribute_value( 'CANONICAL_URL' ) || l_url;
-
-    else
-      l_url :=
-        apex_page.get_url(
-          p_application => p_app_id
-         ,p_page        => 'POST'
-         ,p_session     => p_session
-         ,p_clear_cache => 'RP'
-         ,p_items       => 'P2_POST_ID'
-         ,p_values      => p_post_id
-         --,p_plain_url   => true
-        )
-      ;
-    end if;
-
-    return l_url;
+    return
+      case p_canonical
+      when 'YES'
+      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      end
+      ||
+      case p_encode_url
+      when 'YES'
+      then apex_util.url_encode( l_url )
+      else l_url
+      end
+    ;
 
   end get_post;
 --------------------------------------------------------------------------------
@@ -213,7 +239,10 @@ as
     p_category_id in number,
     p_app_id      in varchar2 default null,
     p_session     in varchar2 default null,
-    p_canonical   in varchar2 default 'NO'
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
     l_category_id varchar2(256);
@@ -226,6 +255,9 @@ as
         ,p_app_id       => p_app_id
         ,p_session      => p_session
         ,p_canonical    => p_canonical
+        ,p_clear_cache  => p_clear_cache
+        ,p_plain_url    => p_plain_url
+        ,p_encode_url   => p_encode_url
       );
 
   end get_category;
@@ -235,7 +267,10 @@ as
     p_category_id in varchar2,
     p_app_id      in varchar2 default null,
     p_session     in varchar2 default null,
-    p_canonical   in varchar2 default 'NO'
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
   begin
@@ -250,20 +285,23 @@ as
         p_application => p_app_id
        ,p_page        => 'CATEGORY'
        ,p_session     => p_session
-       ,p_clear_cache => 'RP'
+       ,p_clear_cache => p_clear_cache
        ,p_items       => 'P14_CATEGORY_ID'
        ,p_values      => p_category_id
-       --,p_plain_url   => true
+       ,p_plain_url   => case p_plain_url when 'YES' then true else false end
       );
 
   end get_category;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_archive(
-    p_archive_id      in number,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_archive_id  in number,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
     l_archive_id varchar2(256);
@@ -276,16 +314,22 @@ as
         ,p_app_id       => p_app_id
         ,p_session      => p_session
         ,p_canonical    => p_canonical
+        ,p_clear_cache  => p_clear_cache
+        ,p_plain_url    => p_plain_url
+        ,p_encode_url   => p_encode_url
       );
 
   end get_archive;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_archive(
-    p_archive_id      in varchar2,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_archive_id  in varchar2,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
   begin
@@ -300,10 +344,10 @@ as
          p_application => p_app_id
         ,p_page        => 'ARCHIVES'
         ,p_session     => p_session
-        ,p_clear_cache => 'RP'
+        ,p_clear_cache => p_clear_cache
         ,p_items       => 'P15_ARCHIVE_ID'
         ,p_values      => p_archive_id
-        --,p_plain_url   => true
+        ,p_plain_url   => case p_plain_url when 'YES' then true else false end
       )
     ;
 
@@ -314,7 +358,10 @@ as
     p_tag_id      in number,
     p_app_id      in varchar2 default null,
     p_session     in varchar2 default null,
-    p_canonical   in varchar2 default 'NO'
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
     l_tag_id varchar2(256);
@@ -332,10 +379,10 @@ as
          p_application => p_app_id
         ,p_page        => 'TAG'
         ,p_session     => p_session
-        ,p_clear_cache => 'RP'
+        ,p_clear_cache => p_clear_cache
         ,p_items       => 'P6_TAG_ID'
         ,p_values      => l_tag_id
-        --,p_plain_url   => true
+        ,p_plain_url   => case p_plain_url when 'YES' then true else false end
       )
     ;
 
@@ -387,19 +434,19 @@ as
   as
   begin
     -- Get search page URL and redirect if there there is string for search
-    if p_value is not null then
+    --if p_value is not null then
       apex_util.redirect_url (
         apex_page.get_url(
            p_application => p_app_id
           ,p_page        => 'SEARCH'
           ,p_session     => p_session
-          ,p_clear_cache => 'RP'
+--          ,p_clear_cache => 'RP'
           ,p_items       => 'P0_SEARCH'
           ,p_values      => p_value
-          --,p_plain_url   => true
+          ,p_plain_url   => true
         )
       );
-    end if;
+    --end if;
   end redirect_search;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

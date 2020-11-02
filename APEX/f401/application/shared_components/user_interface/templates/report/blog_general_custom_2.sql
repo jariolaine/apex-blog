@@ -13,7 +13,7 @@ wwv_flow_api.component_begin (
 );
 wwv_flow_api.create_row_template(
  p_id=>wwv_flow_api.id(30641878306098019)
-,p_row_template_name=>'Blog General (Custom 2)'
+,p_row_template_name=>'Blog Content (Custom 2)'
 ,p_internal_name=>'BLOG_GENERAL_CUSTOM_2'
 ,p_row_template1=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="z-Content--Row">',

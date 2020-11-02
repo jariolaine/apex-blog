@@ -32,10 +32,10 @@ wwv_flow_api.create_row_template(
 '    </div>',
 '  </div>',
 '</li>'))
-,p_row_template_before_rows=>'<ul class="t-ContentRow #COMPONENT_CSS_CLASSES#">'
+,p_row_template_before_rows=>'<ul class="t-ContentRow #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_report" data-region-id="#REGION_STATIC_ID#">'
 ,p_row_template_after_rows=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '</ul>',
-'#PAGINATION#'))
+'<table class="t-Report-pagination" role="presentation">#PAGINATION#</table>'))
 ,p_row_template_type=>'NAMED_COLUMNS'
 ,p_row_template_display_cond1=>'0'
 ,p_row_template_display_cond2=>'0'

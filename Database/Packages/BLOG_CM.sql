@@ -25,16 +25,21 @@ as
 --                            update_feature
 --    Jari Laine 22.06.2020 - Bug fix to function is_integer
 --                            Added parameters p_min and p_max to function is_integer
+--    Jari Laine 30.09.2020 - Added procedure google_post_authentication
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
 --    #2  group name is hard coded to procedure add_blogger
---        some reason didn't manage use apex_authorization.is_authorized
---        seems user session isn't entablished before process point After Authentication runs
 --    #3  email validation could improved
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  -- Called from: authentication schema Google
+  procedure google_post_authentication(
+    p_user_email      in varchar2 default null
+  );
+--------------------------------------------------------------------------------
+  -- Called from: application process
   procedure get_blogger_details(
     p_app_id          in varchar2,
     p_username        in varchar2,
@@ -278,7 +283,8 @@ as
   )
   as
   begin
-    -- cleanup relationship from tags that aren't belong to post anymore
+
+    -- delete relationship from tags that aren't belong to post anymore
     delete
     from blog_post_tags t1
     where 1 = 1
@@ -289,6 +295,7 @@ as
       where 1 = 1
       and x1.column_value = t1.tag_id
     );
+
   end cleanup_post_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -305,38 +312,30 @@ as
     l_email varchar2(256);
   begin
 
-    -- check if user is in specific group
-    -- if authorized add user to blog_bloggers table
-    -- TO DO see item 2 from package specs
-    if apex_util.current_user_in_group( 'Bloggers' )
-    then
+    -- fetch next display_seq
+    select max(display_seq) as display_seq
+    into l_max
+    from blog_bloggers
+    ;
 
-      -- Fetch next display_seq
-      select max(display_seq) as display_seq
-      into l_max
-      from blog_bloggers
-      ;
+    l_max := next_seq( l_max );
 
-      l_max := next_seq( l_max );
+    -- fetch user information from APEX users
+    select email
+      ,v1.first_name || ' ' || v1.last_name as full_name
+    into l_email, l_name
+    from apex_workspace_apex_users v1
+    where 1 = 1
+    and v1.user_name = p_username
+    ;
 
-      -- Fetch user information from APEX users
-      select email
-        ,v1.first_name || ' ' || v1.last_name as full_name
-      into l_email, l_name
-      from apex_workspace_apex_users v1
-      where 1 = 1
-      and v1.user_name = p_username
-      ;
-
-      -- Add new blogger
-      insert into blog_bloggers
-      ( apex_username, is_active, display_seq, blogger_name, email )
-      values
-      ( p_username, 1, l_max, l_name, l_email )
-      returning id, blogger_name into p_id, p_name
-      ;
-
-    end if;
+    -- add new blogger
+    insert into blog_bloggers
+    ( apex_username, is_active, display_seq, blogger_name, email )
+    values
+    ( p_username, 1, l_max, l_name, l_email )
+    returning id, blogger_name into p_id, p_name
+    ;
 
   end add_blogger;
 --------------------------------------------------------------------------------
@@ -348,7 +347,7 @@ as
     l_plsql varchar2(32700);
   begin
 
-    -- fetch post exporession
+    -- fetch feature post expression
     select v1.post_expression
     into l_plsql
     from blog_v_all_features v1
@@ -356,7 +355,7 @@ as
       and v1.post_expression is not null
       and v1.feature_id = p_id
     ;
-    -- run expression
+    -- execute post expression
     apex_plugin_util.execute_plsql_code(
       p_plsql_code => l_plsql
     );
@@ -370,6 +369,56 @@ as
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  procedure google_post_authentication(
+    p_user_email in varchar2 default null
+  )
+  as
+    l_app_user    varchar2(32700);
+    l_user_name   varchar2(32700);
+    l_user_email  varchar2(32700);
+  begin
+
+    -- get user email from context if parameter p_user_email is null
+    l_user_email :=
+      case
+      when p_user_email is null
+      then lower( sys_context( 'APEX$SESSION', 'APP_USER' ) )
+      else lower( p_user_email )
+      end;
+
+    -- fetch APEX workspace user by email address
+    select user_name
+    into l_user_name
+    from apex_workspace_apex_users
+    where 1 = 1
+      and lower( email ) = l_user_email
+    ;
+
+    -- set user name
+    apex_custom_auth.set_user( l_user_name );
+
+/*
+    -- Enable groups
+    apex_authorization.enable_dynamic_groups (
+      p_group_names => apex_t_varchar2( 'Bloggers', 'Blog Administrators' )
+    );
+*/
+
+  exception when no_data_found
+  then
+    apex_debug.warn( 'APEX workspace user having email address %s not found.', l_user_email );
+  when too_many_rows
+  then
+    apex_debug.error( 'Multiple APEX workspace users having same email address %s.', l_user_email );
+    apex_debug.error( 'Can not determine corret APEX workspace user name.' );
+  when others
+  then
+    apex_debug.error( 'Unhandled post authentication procedure error.');
+    apex_debug.error( sqlerrm );
+    raise;
+  end;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure get_blogger_details(
     p_app_id    in varchar2,
     p_username  in varchar2,
@@ -378,6 +427,7 @@ as
   )
   as
   begin
+
     -- fetch blogger id and name
     select id
       ,blogger_name
@@ -385,17 +435,22 @@ as
     from blog_bloggers
     where apex_username = p_username
     ;
+
   exception when no_data_found
   then
-    -- if blogger details not found
-    -- check if user is authorized use blog
-    -- if authorized add user to blog_bloggers table
-    add_blogger(
-       p_app_id => p_app_id
-      ,p_username => p_username
-      ,p_id => p_id
-      ,p_name => p_name
-    );
+
+    -- if blogger details not found, check is user authorized use blog
+    if apex_util.current_user_in_group( 'Bloggers' )
+    then
+      -- if authorized add user to blog_bloggers table
+      add_blogger(
+         p_app_id => p_app_id
+        ,p_username => p_username
+        ,p_id => p_id
+        ,p_name => p_name
+      );
+    end if;
+
   end get_blogger_details;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -405,6 +460,7 @@ as
     l_max     number;
     l_result  varchar2(256);
   begin
+
     -- fetch max category display sequence
     select max( v1.display_seq ) as display_seq
     into l_max
@@ -478,6 +534,7 @@ as
   ) return varchar2
   as
   begin
+
     -- one reason for this function is that APEX 19.2 has bug in switch.
     -- switch not allow return value zero (0)
 
@@ -598,12 +655,14 @@ as
       ,p_sep => ':'
     );
 
+    -- create apex_collection for storing files
+    -- collection is used to show what files already exists in repository
+    -- we prompt user to confirm those files overwrite
     apex_collection.create_or_truncate_collection(
       p_collection_name => 'BLOG_FILES'
     );
 
     -- store uploaded files to apex_collection
-    -- if files exists, we prompt user to confirm file overwrite
     for i in 1 .. l_file_names.count
     loop
 
@@ -775,24 +834,28 @@ as
     for i in 1 .. l_tag_tab.count
     loop
 
-      -- add tag to repository
+      -- reset variable holding tag id
       l_tag_id := null;
 
+      -- add tag to repository
       add_tag(
          p_tag    => l_tag_tab(i)
         ,p_tag_id => l_tag_id
       );
 
+      -- if tag was added to repository
+      -- create relationships between tag and post
       if l_tag_id is not null then
 
         -- collect tag id to table.
-        -- table is used at end of procedure for checking relationships between tags and post
+        -- table is used at end of procedure
+        -- for checking relationships that should be removed
         apex_string.push( l_tag_id_tab, l_tag_id );
 
         -- get table record count for tag display sequence
         l_display_seq:= l_tag_id_tab.count * 10;
 
-        -- tag post
+        -- add tag relationships to post
         add_tag_to_post(
            p_post_id     => l_post_id
           ,p_tag_id      => l_tag_id
@@ -803,6 +866,7 @@ as
 
     end loop;
 
+    -- delete removed tags relationships
     cleanup_post_tags(
        p_post_id => l_post_id
       ,p_tag_tab => l_tag_id_tab
@@ -1141,10 +1205,10 @@ as
     l_post_id := to_number( p_post_id );
 
     -- fetch application email address
-    l_app_email := blog_util.get_attribute_value( 'APP_EMAIL' );
+    l_app_email := blog_util.get_attribute_value( 'G_APP_EMAIL' );
     -- fetch comment watch expires
     l_watch_months := to_number(
-        blog_util.get_attribute_value( 'COMMENT_WATCH_MONTHS' )
+        blog_util.get_attribute_value( 'G_COMMENT_WATCH_MONTHS' )
       ) * -1
     ;
 

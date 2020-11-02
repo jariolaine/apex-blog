@@ -1,4 +1,4 @@
-CREATE OR REPLACE package "BLOG_XML"
+create or replace package "BLOG_XML"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -20,11 +20,20 @@ as
 --                              sitemap_categories
 --                              sitemap_archives
 --                              sitemap_atags
+--    Jari Laine 25.10.2020   XSL for RSS feed
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss(
-    p_lang in varchar2 default 'en'
+    p_lang      in varchar2 default 'en',
+    p_rss_url   in varchar2 default null,
+    p_app_name  in varchar2 default null,
+    p_app_desc  in varchar2 default null,
+    p_app_id    in varchar2 default null
+  );
+--------------------------------------------------------------------------------
+  procedure rss_xsl(
+    p_css_file  in varchar2
   );
 --------------------------------------------------------------------------------
   procedure sitemap_index;
@@ -42,8 +51,7 @@ as
 end "BLOG_XML";
 /
 
-
-CREATE OR REPLACE package body "BLOG_XML"
+create or replace package body "BLOG_XML"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -63,12 +71,18 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss(
-    p_lang in varchar2 default 'en'
+    p_lang      in varchar2 default 'en',
+    p_rss_url   in varchar2 default null,
+    p_app_name  in varchar2 default null,
+    p_app_desc  in varchar2 default null,
+    p_app_id    in varchar2 default null
   )
   as
+    l_xml           xmltype;
     l_rss           blob;
     l_app_id        varchar2(256);
     l_rss_url       varchar2(4000);
+    l_xsl_url       varchar2(4000);
     l_rss_desc      varchar2(4000);
     l_home_url      varchar2(4000);
     l_blog_name     varchar2(4000);
@@ -76,13 +90,25 @@ as
   begin
 
     -- RSS feed URL
-    l_rss_url   := blog_util.get_attribute_value( 'RSS_URL' );
+    l_rss_url   := coalesce(
+       p_rss_url
+      ,blog_util.get_attribute_value( 'G_RSS_URL' )
+    );
     -- blog name
-    l_blog_name := blog_util.get_attribute_value( 'G_APP_NAME' );
+    l_blog_name := coalesce(
+       p_app_name
+      ,blog_util.get_attribute_value( 'G_APP_NAME' )
+    );
     -- rss feed description
-    l_rss_desc  := blog_util.get_attribute_value( 'G_APP_DESC' );
+    l_rss_desc  := coalesce(
+       p_app_desc
+      ,blog_util.get_attribute_value( 'G_APP_DESC' )
+    );
     -- blog application id
-    l_app_id    := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
+    l_app_id    := coalesce(
+       p_app_id
+      ,blog_util.get_attribute_value( 'G_PUB_APP_ID' )
+    );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
        p_app_page_id => 'HOME'
@@ -90,8 +116,16 @@ as
       ,p_canonical => 'YES'
     );
 
+    l_xsl_url := blog_url.get_tab(
+       p_app_page_id => 'HOME'
+      ,p_app_id => l_app_id
+      ,p_request => 'APPLICATION_PROCESS=RSS_XSL'
+      ,p_canonical => 'YES'
+    );
+
     -- generate RSS
-    select xmlserialize( document
+    select xmlserialize( content xmlconcat(
+      xmlpi("xml-stylesheet",'type="text/xsl" href="' || l_xsl_url ||'" media="screen"'),
       xmlelement(
         "rss", xmlattributes(
            l_rss_version as "version"
@@ -133,18 +167,76 @@ as
           )
         )
       )
+    )
     as blob encoding 'UTF-8' indent size=2)
     into l_rss
     from blog_v_posts_last20 posts
     ;
 
-    owa_util.mime_header( 'application/rss+xml', false, 'UTF-8' );
+    owa_util.mime_header( 'application/xml', false, 'UTF-8' );
     sys.htp.p( 'Cache-Control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_rss );
 
   end rss;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure rss_xsl(
+    p_css_file in varchar2
+  )
+  as
+    l_xml     xmltype;
+    l_xsl     blob;
+  begin
+
+    l_xml :=
+      sys.xmltype.createxml('
+        <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+          <!-- This causes the HTML doctype (<!doctype hmlt>) to be rendered. -->
+          <xsl:output method="html" doctype-system="about:legacy-compat" indent="yes" />
+          <!-- Start matching at the Channel node within the XML RSS feed. -->
+          <xsl:template match="/rss/channel">
+            <html lang="en">
+            <head>
+              <meta charset="utf-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+              <title>
+                <xsl:value-of select="title" />
+              </title>
+              <link rel="stylesheet" type="text/css" href="' || p_css_file || '" />
+            </head>
+            <body>
+              <h1 class="title"><a href="{ link }"><xsl:value-of select="title" /></a></h1>
+              <p class="description"><xsl:value-of select="description" /></p>
+              <xsl:for-each select="./item">
+                <article class="z-post">
+                  <header class="z-post--header">
+                    <h2><a href="{ link }"><xsl:value-of select="title" /></a></h2>
+                  </header>
+                  <p class="z-post--body"><xsl:value-of select="description" /></p>
+                </article>
+              </xsl:for-each>
+            </body>
+            </html>
+          </xsl:template>
+        </xsl:stylesheet>
+      ')
+    ;
+
+    select xmlserialize( content l_xml
+    as blob encoding 'UTF-8' indent size=2)
+    into l_xsl
+    from dual
+    ;
+
+    owa_util.mime_header( 'application/xml', false, 'UTF-8' );
+    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.owa_util.http_header_close;
+
+    wpg_docload.download_file( l_xsl );
+
+  end rss_xsl;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure sitemap_index

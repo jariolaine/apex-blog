@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200701114226'
+,p_last_upd_yyyymmddhh24miss=>'20201001180858'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(30429034900753113)
@@ -31,8 +31,8 @@ wwv_flow_api.create_report_region(
 ,p_template=>wwv_flow_api.id(8496813422518209)
 ,p_display_sequence=>30
 ,p_include_in_reg_disp_sel_yn=>'Y'
-,p_region_template_options=>'#DEFAULT#:t-Region--hideHeader:t-Region--scrollBody'
-,p_component_template_options=>'#DEFAULT#:t-Comments--basic'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--hideHeader:t-Region--noBorder:t-Region--scrollBody'
+,p_component_template_options=>'#DEFAULT#:t-Comments--chat'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -43,8 +43,8 @@ wwv_flow_api.create_report_region(
 '  ,v1.body_html     as comment_text',
 '  ,v1.created_on    as comment_date',
 '  ,v1.user_icon     as user_icon',
-'  ,v1.icon_modifier as icon_modifier',
-'  ,''z-comment''      as comment_modifiers',
+'  ,''z-hidden''       as icon_modifier',
+'  ,null             as comment_modifiers',
 '  ,null             as attribute_1',
 '  ,null             as attribute_2',
 '  ,null             as attribute_3',
@@ -52,6 +52,7 @@ wwv_flow_api.create_report_region(
 'from #OWNER#.blog_v_all_comments v1',
 'where 1 = 1',
 'and v1.id = :P33_COMMENT_ID'))
+,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_query_row_template=>wwv_flow_api.id(8521917209518225)
 ,p_query_num_rows=>1
@@ -224,6 +225,7 @@ wwv_flow_api.create_page_button(
 ,p_button_position=>'REGION_TEMPLATE_CLOSE'
 ,p_warn_on_unsaved_changes=>null
 ,p_icon_css_classes=>'fa-remove'
+,p_required_patch=>wwv_flow_api.id(24687280101070827)
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(30406635733000798)
@@ -337,7 +339,7 @@ wwv_flow_api.create_page_item(
 ,p_protection_level=>'S'
 ,p_plugin_init_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'function ( options ) {',
-'  options.contentsCss = [ "&APP_IMAGES.chkeditor.css" ];',
+'  options.contentsCss = [ "&WORKSPACE_IMAGES.blog/1.0/css/chkeditor.css" ];',
 '  options = blog.admin.editorInit( options );',
 '  return options;',
 '}'))

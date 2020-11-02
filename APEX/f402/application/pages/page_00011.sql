@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200701123331'
+,p_last_upd_yyyymmddhh24miss=>'20201005152733'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8596898648797585)
@@ -471,66 +471,6 @@ wwv_flow_api.create_page_da_action(
 ,p_action=>'NATIVE_REFRESH'
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_api.id(8596898648797585)
-);
-wwv_flow_api.create_page_da_event(
- p_id=>wwv_flow_api.id(26969672796257324)
-,p_name=>'Process Post'
-,p_event_sequence=>30
-,p_triggering_element_type=>'REGION'
-,p_triggering_region_id=>wwv_flow_api.id(8596898648797585)
-,p_bind_type=>'bind'
-,p_bind_event_type=>'apexafterclosedialog'
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(26969789584257325)
-,p_event_id=>wwv_flow_api.id(26969672796257324)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_REFRESH'
-,p_affected_elements_type=>'REGION'
-,p_affected_region_id=>wwv_flow_api.id(8596898648797585)
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(26970059546257328)
-,p_event_id=>wwv_flow_api.id(26969672796257324)
-,p_event_result=>'TRUE'
-,p_action_sequence=>20
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex.message.showPageSuccess(this.data.successMessage.text);',
-''))
-);
-wwv_flow_api.create_page_da_event(
- p_id=>wwv_flow_api.id(26970536319257333)
-,p_name=>'Process Post Create'
-,p_event_sequence=>40
-,p_triggering_element_type=>'BUTTON'
-,p_triggering_button_id=>wwv_flow_api.id(24911046946771849)
-,p_bind_type=>'bind'
-,p_bind_event_type=>'apexafterclosedialog'
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(26970672170257334)
-,p_event_id=>wwv_flow_api.id(26970536319257333)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_REFRESH'
-,p_affected_elements_type=>'REGION'
-,p_affected_region_id=>wwv_flow_api.id(8596898648797585)
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(26970738569257335)
-,p_event_id=>wwv_flow_api.id(26970536319257333)
-,p_event_result=>'TRUE'
-,p_action_sequence=>20
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex.message.showPageSuccess(this.data.successMessage.text);',
-''))
 );
 wwv_flow_api.component_end;
 end;

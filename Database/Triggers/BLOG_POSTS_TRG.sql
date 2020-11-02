@@ -9,7 +9,10 @@ for each row
 begin
 
   if inserting then
-    :new.id           := coalesce( :new.id, blog_seq.nextval );
+    :new.id           := coalesce(
+        :new.id
+      , to_number( to_char( sys_extract_utc( localtimestamp ), 'YYYYMMDDHH24MISSFF6' ) )
+    );
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(

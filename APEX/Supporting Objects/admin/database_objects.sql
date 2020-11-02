@@ -325,23 +325,6 @@ create table  blog_posts(
 )
 /
 --------------------------------------------------------
---  DDL for Table BLOG_POSTS_UDS
---------------------------------------------------------
-create table  blog_posts_uds(
-  id number( 38, 0 ) not null,
-	row_version number( 38, 0 ) not null,
-	created_on timestamp( 6 ) with local time zone not null,
-	created_by varchar2( 256 char ) not null,
-	changed_on timestamp( 6 ) with local time zone not null,
-	changed_by varchar2( 256 char ) not null,
-  post_id number( 38, 0 ) not null,
-  dummy char(1) default 'X' not null,
-	constraint blog_posts_uds_pk primary key( id ),
-  constraint blog_posts_uds_uk1 unique( post_id ),
-  constraint blog_posts_uds_ck1 check( row_version > 0 )
-)
-/
---------------------------------------------------------
 --  DDL for Table BLOG_POST_PREVIEW
 --------------------------------------------------------
 create table blog_post_preview(
@@ -376,6 +359,23 @@ create table blog_post_tags(
 )
 /
 --------------------------------------------------------
+--  DDL for Table BLOG_
+--------------------------------------------------------
+create table  blog_post_uds(
+  id number( 38, 0 ) not null,
+	row_version number( 38, 0 ) not null,
+	created_on timestamp( 6 ) with local time zone not null,
+	created_by varchar2( 256 char ) not null,
+	changed_on timestamp( 6 ) with local time zone not null,
+	changed_by varchar2( 256 char ) not null,
+  post_id number( 38, 0 ) not null,
+  dummy char(1) default 'X' not null,
+	constraint blog_post_uds_pk primary key( id ),
+  constraint blog_post_uds_uk1 unique( post_id ),
+  constraint blog_post_uds_ck1 check( row_version > 0 )
+)
+/
+--------------------------------------------------------
 --  DDL for Table BLOG_POST_SETTINGS
 --------------------------------------------------------
 create table blog_settings(
@@ -392,6 +392,9 @@ create table blog_settings(
   group_name varchar2( 64 char ) not null,
   attribute_value varchar2( 4000 char ),
   post_expression varchar2( 4000 char ),
+  in_min number(2,0),
+  in_max number(2,0),
+  example_value varchar2( 4000 char ),
   notes varchar2(4000 char),
   constraint blog_settings_pk primary key( id ),
   constraint blog_settings_uk1 unique( attribute_name ),
@@ -424,6 +427,8 @@ create table blog_settings(
   constraint blog_settings_ck7 check(
     data_type != 'INTEGER' or
     data_type = 'INTEGER' and
+    int_min is not null and
+    int_max is not null and
     round( to_number( attribute_value ) ) = to_number( attribute_value )
   ),
   constraint blog_settings_ck8 check(
@@ -676,6 +681,8 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATE
     t1.group_name
   )                         as attribute_group
   ,t1.post_expression       as post_expression
+  ,t1.int_min               as int_min
+  ,t1.int_max               as int_max
 from blog_settings t1
 where 1 = 1
 /
@@ -725,7 +732,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "IS_ACTIVE", "POST
   ,t1.comment_by as comment_by
   ,t1.body_html as comment_body
   ,apex_string.get_initials( t1.comment_by ) as user_icon
-  ,'u-color-' || ora_hash( lower( t1.comment_by ), 45) as icon_modifier
+  ,'u-color-' || ora_hash( lower( t1.comment_by ), 44) + 1 as icon_modifier
 from blog_comments t1
 where 1 = 1
 and t1.is_active = 1
@@ -832,7 +839,7 @@ join blog_bloggers t2
   on t1.blogger_id  = t2.id
 join blog_categories t3
   on t1.category_id = t3.id
-join blog_posts_uds t4
+join blog_post_uds t4
   on t1.id = t4.post_id
 where 1 = 1
 and t1.is_active = 1
@@ -954,7 +961,7 @@ join blog_categories t2
   on t1.category_id = t2.id
 join blog_bloggers t3
   on t1.blogger_id = t3.id
-join blog_posts_uds t4
+join blog_post_uds t4
   on t1.id = t4.post_id
 where 1 = 1
 /
@@ -2245,56 +2252,81 @@ as
     p_app_page_id     in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_request         in varchar2 default null,
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_post(
     p_post_id         in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_post(
     p_post_id         in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_category(
     p_category_id     in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_category(
     p_category_id     in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_archive(
     p_archive_id      in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_archive(
     p_archive_id      in varchar2,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_tag(
     p_tag_id          in number,
     p_app_id          in varchar2 default null,
     p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_unsubscribe(
@@ -2333,10 +2365,14 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tab(
-    p_app_page_id   in varchar2,
-    p_app_id        in varchar2 default null,
-    p_session       in varchar2 default null,
-    p_canonical     in varchar2 default 'NO'
+    p_app_page_id in varchar2,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_request     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
   begin
@@ -2351,18 +2387,22 @@ as
         p_application => p_app_id
        ,p_page        => p_app_page_id
        ,p_session     => p_session
-       ,p_clear_cache => 'RP'
-       --,p_plain_url   => true
+       ,p_request     => p_request
+       ,p_clear_cache => p_clear_cache
+       ,p_plain_url   => true
       );
 
   end get_tab;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_post(
-    p_post_id       in number,
-    p_app_id        in varchar2 default null,
-    p_session       in varchar2 default null,
-    p_canonical     in varchar2 default 'NO'
+    p_post_id     in number,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
     l_post_id varchar2(256);
@@ -2374,57 +2414,50 @@ as
          p_post_id      => l_post_id
         ,p_app_id       => p_app_id
         ,p_session      => p_session
+        ,p_clear_cache  => p_clear_cache
         ,p_canonical    => p_canonical
+        ,p_plain_url    => p_plain_url
+        ,p_encode_url   => p_encode_url
       );
 
   end get_post;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_post(
-    p_post_id       in varchar2,
-    p_app_id        in varchar2 default null,
-    p_session       in varchar2 default null,
-    p_canonical     in varchar2 default 'NO'
+    p_post_id     in varchar2,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
     l_url varchar2(4000);
   begin
 
-    -- workaround because APEX 19.2
-    -- apex_page.get_url don't have parameter p_plain_url
-    if p_canonical = 'YES'
-    then
-      l_url := 'f?p='
-        || coalesce( p_app_id, v( 'APP_ID' ) )
-        || ':POST:::NO:RP:'
-        || 'P2_POST_ID'
-        || ':'
-        || p_post_id
-      ;
+    l_url := apex_page.get_url(
+      p_application => p_app_id
+     ,p_page        => 'POST'
+     ,p_session     => p_session
+     ,p_clear_cache => p_clear_cache
+     ,p_items       => 'P2_POST_ID'
+     ,p_values      => p_post_id
+     ,p_plain_url   => case p_plain_url when 'YES' then true else false end
+   );
 
-      l_url :=
-        apex_util.prepare_url(
-           p_url => l_url
-          ,p_plain_url => true
-        );
-
-      l_url := blog_util.get_attribute_value( 'CANONICAL_URL' ) || l_url;
-
-    else
-      l_url :=
-        apex_page.get_url(
-          p_application => p_app_id
-         ,p_page        => 'POST'
-         ,p_session     => p_session
-         ,p_clear_cache => 'RP'
-         ,p_items       => 'P2_POST_ID'
-         ,p_values      => p_post_id
-         --,p_plain_url   => true
-        )
-      ;
-    end if;
-
-    return l_url;
+    return
+      case p_canonical
+      when 'YES'
+      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      end
+      ||
+      case p_encode_url
+      when 'YES'
+      then apex_util.url_encode( l_url )
+      else l_url
+      end
+    ;
 
   end get_post;
 --------------------------------------------------------------------------------
@@ -2433,7 +2466,10 @@ as
     p_category_id in number,
     p_app_id      in varchar2 default null,
     p_session     in varchar2 default null,
-    p_canonical   in varchar2 default 'NO'
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
     l_category_id varchar2(256);
@@ -2446,6 +2482,9 @@ as
         ,p_app_id       => p_app_id
         ,p_session      => p_session
         ,p_canonical    => p_canonical
+        ,p_clear_cache  => p_clear_cache
+        ,p_plain_url    => p_plain_url
+        ,p_encode_url   => p_encode_url
       );
 
   end get_category;
@@ -2455,7 +2494,10 @@ as
     p_category_id in varchar2,
     p_app_id      in varchar2 default null,
     p_session     in varchar2 default null,
-    p_canonical   in varchar2 default 'NO'
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
   begin
@@ -2470,20 +2512,23 @@ as
         p_application => p_app_id
        ,p_page        => 'CATEGORY'
        ,p_session     => p_session
-       ,p_clear_cache => 'RP'
+       ,p_clear_cache => p_clear_cache
        ,p_items       => 'P14_CATEGORY_ID'
        ,p_values      => p_category_id
-       --,p_plain_url   => true
+       ,p_plain_url   => case p_plain_url when 'YES' then true else false end
       );
 
   end get_category;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_archive(
-    p_archive_id      in number,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_archive_id  in number,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
     l_archive_id varchar2(256);
@@ -2496,16 +2541,22 @@ as
         ,p_app_id       => p_app_id
         ,p_session      => p_session
         ,p_canonical    => p_canonical
+        ,p_clear_cache  => p_clear_cache
+        ,p_plain_url    => p_plain_url
+        ,p_encode_url   => p_encode_url
       );
 
   end get_archive;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_archive(
-    p_archive_id      in varchar2,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_canonical       in varchar2 default 'NO'
+    p_archive_id  in varchar2,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
   begin
@@ -2520,10 +2571,10 @@ as
          p_application => p_app_id
         ,p_page        => 'ARCHIVES'
         ,p_session     => p_session
-        ,p_clear_cache => 'RP'
+        ,p_clear_cache => p_clear_cache
         ,p_items       => 'P15_ARCHIVE_ID'
         ,p_values      => p_archive_id
-        --,p_plain_url   => true
+        ,p_plain_url   => case p_plain_url when 'YES' then true else false end
       )
     ;
 
@@ -2534,7 +2585,10 @@ as
     p_tag_id      in number,
     p_app_id      in varchar2 default null,
     p_session     in varchar2 default null,
-    p_canonical   in varchar2 default 'NO'
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
     l_tag_id varchar2(256);
@@ -2552,10 +2606,10 @@ as
          p_application => p_app_id
         ,p_page        => 'TAG'
         ,p_session     => p_session
-        ,p_clear_cache => 'RP'
+        ,p_clear_cache => p_clear_cache
         ,p_items       => 'P6_TAG_ID'
         ,p_values      => l_tag_id
-        --,p_plain_url   => true
+        ,p_plain_url   => case p_plain_url when 'YES' then true else false end
       )
     ;
 
@@ -2607,19 +2661,19 @@ as
   as
   begin
     -- Get search page URL and redirect if there there is string for search
-    if p_value is not null then
+    --if p_value is not null then
       apex_util.redirect_url (
         apex_page.get_url(
            p_application => p_app_id
           ,p_page        => 'SEARCH'
           ,p_session     => p_session
-          ,p_clear_cache => 'RP'
+--          ,p_clear_cache => 'RP'
           ,p_items       => 'P0_SEARCH'
           ,p_values      => p_value
-          --,p_plain_url   => true
+          ,p_plain_url   => true
         )
       );
-    end if;
+    --end if;
   end redirect_search;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2652,16 +2706,21 @@ as
 --                            update_feature
 --    Jari Laine 22.06.2020 - Bug fix to function is_integer
 --                            Added parameters p_min and p_max to function is_integer
+--    Jari Laine 30.09.2020 - Added procedure google_post_authentication
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
 --    #2  group name is hard coded to procedure add_blogger
---        some reason didn't manage use apex_authorization.is_authorized
---        seems user session isn't entablished before process point After Authentication runs
 --    #3  email validation could improved
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  -- Called from: authentication schema Google
+  procedure google_post_authentication(
+    p_user_email      in varchar2 default null
+  );
+--------------------------------------------------------------------------------
+  -- Called from: application process
   procedure get_blogger_details(
     p_app_id          in varchar2,
     p_username        in varchar2,
@@ -2905,7 +2964,8 @@ as
   )
   as
   begin
-    -- cleanup relationship from tags that aren't belong to post anymore
+
+    -- delete relationship from tags that aren't belong to post anymore
     delete
     from blog_post_tags t1
     where 1 = 1
@@ -2916,6 +2976,7 @@ as
       where 1 = 1
       and x1.column_value = t1.tag_id
     );
+
   end cleanup_post_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2932,38 +2993,30 @@ as
     l_email varchar2(256);
   begin
 
-    -- check if user is in specific group
-    -- if authorized add user to blog_bloggers table
-    -- TO DO see item 2 from package specs
-    if apex_util.current_user_in_group( 'Bloggers' )
-    then
+    -- fetch next display_seq
+    select max(display_seq) as display_seq
+    into l_max
+    from blog_bloggers
+    ;
 
-      -- Fetch next display_seq
-      select max(display_seq) as display_seq
-      into l_max
-      from blog_bloggers
-      ;
+    l_max := next_seq( l_max );
 
-      l_max := next_seq( l_max );
+    -- fetch user information from APEX users
+    select email
+      ,v1.first_name || ' ' || v1.last_name as full_name
+    into l_email, l_name
+    from apex_workspace_apex_users v1
+    where 1 = 1
+    and v1.user_name = p_username
+    ;
 
-      -- Fetch user information from APEX users
-      select email
-        ,v1.first_name || ' ' || v1.last_name as full_name
-      into l_email, l_name
-      from apex_workspace_apex_users v1
-      where 1 = 1
-      and v1.user_name = p_username
-      ;
-
-      -- Add new blogger
-      insert into blog_bloggers
-      ( apex_username, is_active, display_seq, blogger_name, email )
-      values
-      ( p_username, 1, l_max, l_name, l_email )
-      returning id, blogger_name into p_id, p_name
-      ;
-
-    end if;
+    -- add new blogger
+    insert into blog_bloggers
+    ( apex_username, is_active, display_seq, blogger_name, email )
+    values
+    ( p_username, 1, l_max, l_name, l_email )
+    returning id, blogger_name into p_id, p_name
+    ;
 
   end add_blogger;
 --------------------------------------------------------------------------------
@@ -2975,7 +3028,7 @@ as
     l_plsql varchar2(32700);
   begin
 
-    -- fetch post exporession
+    -- fetch feature post expression
     select v1.post_expression
     into l_plsql
     from blog_v_all_features v1
@@ -2983,7 +3036,7 @@ as
       and v1.post_expression is not null
       and v1.feature_id = p_id
     ;
-    -- run expression
+    -- execute post expression
     apex_plugin_util.execute_plsql_code(
       p_plsql_code => l_plsql
     );
@@ -2997,6 +3050,56 @@ as
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  procedure google_post_authentication(
+    p_user_email in varchar2 default null
+  )
+  as
+    l_app_user    varchar2(32700);
+    l_user_name   varchar2(32700);
+    l_user_email  varchar2(32700);
+  begin
+
+    -- get user email from context if parameter p_user_email is null
+    l_user_email :=
+      case
+      when p_user_email is null
+      then lower( sys_context( 'APEX$SESSION', 'APP_USER' ) )
+      else lower( p_user_email )
+      end;
+
+    -- fetch APEX workspace user by email address
+    select user_name
+    into l_user_name
+    from apex_workspace_apex_users
+    where 1 = 1
+      and lower( email ) = l_user_email
+    ;
+
+    -- set user name
+    apex_custom_auth.set_user( l_user_name );
+
+/*
+    -- Enable groups
+    apex_authorization.enable_dynamic_groups (
+      p_group_names => apex_t_varchar2( 'Bloggers', 'Blog Administrators' )
+    );
+*/
+
+  exception when no_data_found
+  then
+    apex_debug.warn( 'APEX workspace user having email address %s not found.', l_user_email );
+  when too_many_rows
+  then
+    apex_debug.error( 'Multiple APEX workspace users having same email address %s.', l_user_email );
+    apex_debug.error( 'Can not determine corret APEX workspace user name.' );
+  when others
+  then
+    apex_debug.error( 'Unhandled post authentication procedure error.');
+    apex_debug.error( sqlerrm );
+    raise;
+  end;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure get_blogger_details(
     p_app_id    in varchar2,
     p_username  in varchar2,
@@ -3005,6 +3108,7 @@ as
   )
   as
   begin
+
     -- fetch blogger id and name
     select id
       ,blogger_name
@@ -3012,17 +3116,22 @@ as
     from blog_bloggers
     where apex_username = p_username
     ;
+
   exception when no_data_found
   then
-    -- if blogger details not found
-    -- check if user is authorized use blog
-    -- if authorized add user to blog_bloggers table
-    add_blogger(
-       p_app_id => p_app_id
-      ,p_username => p_username
-      ,p_id => p_id
-      ,p_name => p_name
-    );
+
+    -- if blogger details not found, check is user authorized use blog
+    if apex_util.current_user_in_group( 'Bloggers' )
+    then
+      -- if authorized add user to blog_bloggers table
+      add_blogger(
+         p_app_id => p_app_id
+        ,p_username => p_username
+        ,p_id => p_id
+        ,p_name => p_name
+      );
+    end if;
+
   end get_blogger_details;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3032,6 +3141,7 @@ as
     l_max     number;
     l_result  varchar2(256);
   begin
+
     -- fetch max category display sequence
     select max( v1.display_seq ) as display_seq
     into l_max
@@ -3105,6 +3215,7 @@ as
   ) return varchar2
   as
   begin
+
     -- one reason for this function is that APEX 19.2 has bug in switch.
     -- switch not allow return value zero (0)
 
@@ -3225,12 +3336,14 @@ as
       ,p_sep => ':'
     );
 
+    -- create apex_collection for storing files
+    -- collection is used to show what files already exists in repository
+    -- we prompt user to confirm those files overwrite
     apex_collection.create_or_truncate_collection(
       p_collection_name => 'BLOG_FILES'
     );
 
     -- store uploaded files to apex_collection
-    -- if files exists, we prompt user to confirm file overwrite
     for i in 1 .. l_file_names.count
     loop
 
@@ -3402,24 +3515,28 @@ as
     for i in 1 .. l_tag_tab.count
     loop
 
-      -- add tag to repository
+      -- reset variable holding tag id
       l_tag_id := null;
 
+      -- add tag to repository
       add_tag(
          p_tag    => l_tag_tab(i)
         ,p_tag_id => l_tag_id
       );
 
+      -- if tag was added to repository
+      -- create relationships between tag and post
       if l_tag_id is not null then
 
         -- collect tag id to table.
-        -- table is used at end of procedure for checking relationships between tags and post
+        -- table is used at end of procedure
+        -- for checking relationships that should be removed
         apex_string.push( l_tag_id_tab, l_tag_id );
 
         -- get table record count for tag display sequence
         l_display_seq:= l_tag_id_tab.count * 10;
 
-        -- tag post
+        -- add tag relationships to post
         add_tag_to_post(
            p_post_id     => l_post_id
           ,p_tag_id      => l_tag_id
@@ -3430,6 +3547,7 @@ as
 
     end loop;
 
+    -- delete removed tags relationships
     cleanup_post_tags(
        p_post_id => l_post_id
       ,p_tag_tab => l_tag_id_tab
@@ -3768,10 +3886,10 @@ as
     l_post_id := to_number( p_post_id );
 
     -- fetch application email address
-    l_app_email := blog_util.get_attribute_value( 'APP_EMAIL' );
+    l_app_email := blog_util.get_attribute_value( 'G_APP_EMAIL' );
     -- fetch comment watch expires
     l_watch_months := to_number(
-        blog_util.get_attribute_value( 'COMMENT_WATCH_MONTHS' )
+        blog_util.get_attribute_value( 'G_COMMENT_WATCH_MONTHS' )
       ) * -1
     ;
 
@@ -4159,7 +4277,7 @@ as
   begin
 
     -- fetch application email address
-    l_app_email := blog_util.get_attribute_value('APP_EMAIL');
+    l_app_email := blog_util.get_attribute_value('G_APP_EMAIL');
 
     l_post_id   := to_number( p_post_id );
 
@@ -4572,7 +4690,7 @@ as
            p_post_id      => p_post_id
           ,p_app_id       => p_app_id
           ,p_session      => ''
-          ,p_canonical => 'YES'
+          ,p_canonical    => 'YES'
         )
         || '" />'
       ;
@@ -4602,7 +4720,7 @@ as
            p_category_id  => p_category_id
           ,p_app_id       => p_app_id
           ,p_session      => ''
-          ,p_canonical => 'YES'
+          ,p_canonical    => 'YES'
         )
         || '" />'
       ;
@@ -4629,10 +4747,10 @@ as
       l_html :=
         '<link rel="canonical" href="'
         || blog_url.get_archive(
-           p_archive_id   => p_archive_id
-          ,p_app_id       => p_app_id
-          ,p_session      => ''
-          ,p_canonical => 'YES'
+           p_archive_id => p_archive_id
+          ,p_app_id     => p_app_id
+          ,p_session    => ''
+          ,p_canonical  => 'YES'
         )
         || '" />'
       ;
@@ -4676,8 +4794,9 @@ as
     p_rss_url  in varchar2 default null
   ) return varchar2
   as
-    l_rss_url varchar2(4000);
-    l_rss_title varchar2(4000);
+    l_rss_url     varchar2(4000);
+    l_rss_title   varchar2(4000);
+    l_rss_anchor  varchar2(4000);
   begin
 
     -- get rss title
@@ -4686,7 +4805,7 @@ as
     -- get rss url
     l_rss_url := case
       when p_rss_url is null
-      then blog_util.get_attribute_value( 'RSS_URL' )
+      then blog_util.get_attribute_value( 'G_RSS_URL' )
       else p_rss_url
       end
     ;
@@ -4694,7 +4813,7 @@ as
     -- generate RSS anchor
     if l_rss_url is not null
     then
-      l_rss_url :=
+      l_rss_anchor :=
         '<a href="'
         || l_rss_url
         || '" rel="alternate" type="application/rss+xml" aria-label="'
@@ -4705,10 +4824,9 @@ as
       ;
     else
       apex_debug.warn('RSS URL is empty. RSS anchor not generated.');
-      l_rss_url := '<strong>RSS url is not set</strong>';
     end if;
 
-    return l_rss_url;
+    return l_rss_anchor;
 
   end get_rss_anchor;
 --------------------------------------------------------------------------------
@@ -4734,7 +4852,7 @@ as
       -- get rss url
       l_rss_url := case
         when p_rss_url is null
-        then blog_util.get_attribute_value( 'RSS_URL' )
+        then blog_util.get_attribute_value( 'G_RSS_URL' )
         else p_rss_url
         end
       ;
@@ -4817,7 +4935,7 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_HTML";
 /
-CREATE OR REPLACE package "BLOG_XML"
+create or replace package "BLOG_XML"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -4839,11 +4957,20 @@ as
 --                              sitemap_categories
 --                              sitemap_archives
 --                              sitemap_atags
+--    Jari Laine 25.10.2020   XSL for RSS feed
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss(
-    p_lang in varchar2 default 'en'
+    p_lang      in varchar2 default 'en',
+    p_rss_url   in varchar2 default null,
+    p_app_name  in varchar2 default null,
+    p_app_desc  in varchar2 default null,
+    p_app_id    in varchar2 default null
+  );
+--------------------------------------------------------------------------------
+  procedure rss_xsl(
+    p_css_file  in varchar2
   );
 --------------------------------------------------------------------------------
   procedure sitemap_index;
@@ -4861,8 +4988,7 @@ as
 end "BLOG_XML";
 /
 
-
-CREATE OR REPLACE package body "BLOG_XML"
+create or replace package body "BLOG_XML"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4882,12 +5008,18 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss(
-    p_lang in varchar2 default 'en'
+    p_lang      in varchar2 default 'en',
+    p_rss_url   in varchar2 default null,
+    p_app_name  in varchar2 default null,
+    p_app_desc  in varchar2 default null,
+    p_app_id    in varchar2 default null
   )
   as
+    l_xml           xmltype;
     l_rss           blob;
     l_app_id        varchar2(256);
     l_rss_url       varchar2(4000);
+    l_xsl_url       varchar2(4000);
     l_rss_desc      varchar2(4000);
     l_home_url      varchar2(4000);
     l_blog_name     varchar2(4000);
@@ -4895,13 +5027,25 @@ as
   begin
 
     -- RSS feed URL
-    l_rss_url   := blog_util.get_attribute_value( 'RSS_URL' );
+    l_rss_url   := coalesce(
+       p_rss_url
+      ,blog_util.get_attribute_value( 'G_RSS_URL' )
+    );
     -- blog name
-    l_blog_name := blog_util.get_attribute_value( 'G_APP_NAME' );
+    l_blog_name := coalesce(
+       p_app_name
+      ,blog_util.get_attribute_value( 'G_APP_NAME' )
+    );
     -- rss feed description
-    l_rss_desc  := blog_util.get_attribute_value( 'G_APP_DESC' );
+    l_rss_desc  := coalesce(
+       p_app_desc
+      ,blog_util.get_attribute_value( 'G_APP_DESC' )
+    );
     -- blog application id
-    l_app_id    := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
+    l_app_id    := coalesce(
+       p_app_id
+      ,blog_util.get_attribute_value( 'G_PUB_APP_ID' )
+    );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
        p_app_page_id => 'HOME'
@@ -4909,8 +5053,16 @@ as
       ,p_canonical => 'YES'
     );
 
+    l_xsl_url := blog_url.get_tab(
+       p_app_page_id => 'HOME'
+      ,p_app_id => l_app_id
+      ,p_request => 'APPLICATION_PROCESS=RSS_XSL'
+      ,p_canonical => 'YES'
+    );
+
     -- generate RSS
-    select xmlserialize( document
+    select xmlserialize( content xmlconcat(
+      xmlpi("xml-stylesheet",'type="text/xsl" href="' || l_xsl_url ||'" media="screen"'),
       xmlelement(
         "rss", xmlattributes(
            l_rss_version as "version"
@@ -4952,18 +5104,76 @@ as
           )
         )
       )
+    )
     as blob encoding 'UTF-8' indent size=2)
     into l_rss
     from blog_v_posts_last20 posts
     ;
 
-    owa_util.mime_header( 'application/rss+xml', false, 'UTF-8' );
+    owa_util.mime_header( 'application/xml', false, 'UTF-8' );
     sys.htp.p( 'Cache-Control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_rss );
 
   end rss;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure rss_xsl(
+    p_css_file in varchar2
+  )
+  as
+    l_xml     xmltype;
+    l_xsl     blob;
+  begin
+
+    l_xml :=
+      sys.xmltype.createxml('
+        <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+          <!-- This causes the HTML doctype (<!doctype hmlt>) to be rendered. -->
+          <xsl:output method="html" doctype-system="about:legacy-compat" indent="yes" />
+          <!-- Start matching at the Channel node within the XML RSS feed. -->
+          <xsl:template match="/rss/channel">
+            <html lang="en">
+            <head>
+              <meta charset="utf-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+              <title>
+                <xsl:value-of select="title" />
+              </title>
+              <link rel="stylesheet" type="text/css" href="' || p_css_file || '" />
+            </head>
+            <body>
+              <h1 class="title"><a href="{ link }"><xsl:value-of select="title" /></a></h1>
+              <p class="description"><xsl:value-of select="description" /></p>
+              <xsl:for-each select="./item">
+                <article class="z-post">
+                  <header class="z-post--header">
+                    <h2><a href="{ link }"><xsl:value-of select="title" /></a></h2>
+                  </header>
+                  <p class="z-post--body"><xsl:value-of select="description" /></p>
+                </article>
+              </xsl:for-each>
+            </body>
+            </html>
+          </xsl:template>
+        </xsl:stylesheet>
+      ')
+    ;
+
+    select xmlserialize( content l_xml
+    as blob encoding 'UTF-8' indent size=2)
+    into l_xsl
+    from dual
+    ;
+
+    owa_util.mime_header( 'application/xml', false, 'UTF-8' );
+    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.owa_util.http_header_close;
+
+    wpg_docload.download_file( l_xsl );
+
+  end rss_xsl;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure sitemap_index
@@ -5666,187 +5876,10 @@ for each row
 begin
 
   if inserting then
-    :new.id           := coalesce( :new.id, blog_seq.nextval );
-    :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := coalesce( :new.created_on, localtimestamp );
-    :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+    :new.id           := coalesce(
+        :new.id
+      , to_number( to_char( sys_extract_utc( localtimestamp ), 'YYYYMMDDHH24MISSFF6' ) )
     );
-  elsif updating then
-    :new.row_version := :old.row_version + 1;
-  end if;
-
-  :new.changed_on := localtimestamp;
-  :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
-  );
-
-end;
-/
---------------------------------------------------------
---  DDL for Trigger BLOG_POSTS_UDS_CATEGORIES_TRG
---------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_CATEGORIES_TRG"
-after
-update on blog_categories
-for each row
-begin
-
-  if :new.title_unique != :old.title_unique
-  then
-
-    update blog_posts_uds t1
-      set dummy = dummy
-    where 1 = 1
-    and exists(
-      select 1
-      from blog_posts x1
-      where 1 = 1
-        and x1.category_id = :new.id
-        and x1.id = t1.post_id
-    )
-    ;
-
-  end if;
-
-end;
-/
---------------------------------------------------------
---  DDL for Trigger BLOG_POSTS_UDS_POSTS_TRG
---------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_POSTS_TRG"
-after
-insert or
-update on blog_posts
-for each row
-declare
-  l_update boolean;
-begin
-
-  if inserting
-  then
-
-    insert into blog_posts_uds( post_id )
-      values ( :new.id )
-    ;
-
-  elsif updating
-  then
-
-    l_update :=
-      case
-        when :new.category_id != :old.category_id
-        then true
-        when upper( :new.title ) != upper( :old.title )
-        then true
-        when upper( :new.post_desc ) != upper( :old.post_desc )
-        then true
-        when dbms_lob.compare( :new.body_html, :old.body_html ) != 0
-        then true
-        else false
-      end
-    ;
-
-    if l_update
-    then
-      update blog_posts_uds t1
-        set dummy = dummy
-      where 1 = 1
-      and t1.post_id  = :new.id
-      ;
-    end if;
-
-  end if;
-
-end;
-/
---------------------------------------------------------
---  DDL for Trigger BLOG_POSTS_UDS_POST_TAGS_TRG
---------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_POST_TAGS_TRG"
-after
-insert or
-delete on blog_post_tags
-for each row
-begin
-
-  if inserting
-  then
-
-    update blog_posts_uds t1
-      set dummy = dummy
-    where 1 = 1
-    and t1.post_id = :new.post_id
-    ;
-
-  elsif deleting
-  then
-
-    update blog_posts_uds t1
-      set dummy = dummy
-    where 1 = 1
-    and t1.post_id = :old.post_id
-    ;
-
-  end if;
-
-end;
-/
---------------------------------------------------------
---  DDL for Trigger BLOG_POSTS_UDS_TAGS_TRG
---------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_TAGS_TRG"
-after
-update on blog_tags
-for each row
-declare
-  l_update boolean;
-begin
-
-  l_update :=
-    case
-      when :new.tag_unique != :old.tag_unique
-      then true
-      when :new.is_active != :old.is_active
-      then true
-      else false
-    end
-  ;
-
-  if l_update
-  then
-    update blog_posts_uds t1
-      set dummy = dummy
-    where 1 = 1
-    and exists(
-      select 1
-      from blog_post_tags x1
-      where 1 = 1
-        and x1.post_id = t1.post_id
-        and x1.tag_id  = :new.id
-      )
-    ;
-  end if;
-
-end;
-/
---------------------------------------------------------
---  DDL for Trigger BLOG_POSTS_UDS_TRG
---------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_UDS_TRG"
-before
-insert or
-update on blog_posts_uds
-for each row
-begin
-
-  if inserting then
-    :new.id           := coalesce( :new.id, blog_seq.nextval );
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
@@ -5875,6 +5908,187 @@ CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_TAGS_TRG"
 before
 insert or
 update on blog_post_tags
+for each row
+begin
+
+  if inserting then
+    :new.id           := coalesce( :new.id, blog_seq.nextval );
+    :new.row_version  := coalesce( :new.row_version, 1 );
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
+    :new.created_by   := coalesce(
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
+    );
+  elsif updating then
+    :new.row_version := :old.row_version + 1;
+  end if;
+
+  :new.changed_on := localtimestamp;
+  :new.changed_by := coalesce(
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
+  );
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_POST_UDS_CATEGORIES_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_CATEGORIES_TRG"
+after
+update on blog_categories
+for each row
+begin
+
+  -- if category change update post user datastore table
+  if :new.title_unique != :old.title_unique
+  then
+
+    update blog_post_uds t1
+      set dummy = dummy
+    where 1 = 1
+    and exists(
+      select 1
+      from blog_posts x1
+      where 1 = 1
+        and x1.category_id = :new.id
+        and x1.id = t1.post_id
+    )
+    ;
+
+  end if;
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_POST_UDS_POSTS_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_POSTS_TRG"
+after
+insert or
+update on blog_posts
+for each row
+declare
+  l_update boolean;
+begin
+
+  if inserting
+  then
+
+    insert into blog_post_uds( post_id )
+      values ( :new.id )
+    ;
+
+  elsif updating
+  then
+
+    l_update :=
+      case
+        when :new.category_id != :old.category_id
+        then true
+        when upper( :new.title ) != upper( :old.title )
+        then true
+        when upper( :new.post_desc ) != upper( :old.post_desc )
+        then true
+        when dbms_lob.compare( :new.body_html, :old.body_html ) != 0
+        then true
+        else false
+      end
+    ;
+
+    if l_update
+    then
+      update blog_post_uds t1
+        set dummy = dummy
+      where 1 = 1
+      and t1.post_id  = :new.id
+      ;
+    end if;
+
+  end if;
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_POST_UDS_POST_TAGS_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_POST_TAGS_TRG"
+after
+insert or
+delete on blog_post_tags
+for each row
+begin
+
+  if inserting
+  then
+
+    update blog_post_uds t1
+      set dummy = dummy
+    where 1 = 1
+    and t1.post_id = :new.post_id
+    ;
+
+  elsif deleting
+  then
+
+    update blog_post_uds t1
+      set dummy = dummy
+    where 1 = 1
+    and t1.post_id = :old.post_id
+    ;
+
+  end if;
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_POST_UDS_TAGS_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_TAGS_TRG"
+after
+update on blog_tags
+for each row
+declare
+  l_update boolean;
+begin
+
+  l_update :=
+    case
+      when :new.tag_unique != :old.tag_unique
+      then true
+      when :new.is_active != :old.is_active
+      then true
+      else false
+    end
+  ;
+
+  if l_update
+  then
+    update blog_post_uds t1
+      set dummy = dummy
+    where 1 = 1
+    and exists(
+      select 1
+      from blog_post_tags x1
+      where 1 = 1
+        and x1.post_id = t1.post_id
+        and x1.tag_id  = :new.id
+      )
+    ;
+  end if;
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_POST_UDS_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_TRG"
+before
+insert or
+update on blog_post_uds
 for each row
 begin
 
@@ -6003,14 +6217,14 @@ end;
 	  REFERENCES "BLOG_CATEGORIES" ("ID") ENABLE;
 
 
-  ALTER TABLE "BLOG_POSTS_UDS" ADD CONSTRAINT "BLOG_POSTS_UDS_FK1" FOREIGN KEY ("POST_ID")
-	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
-
-
   ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK1" FOREIGN KEY ("POST_ID")
 	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
 
 
   ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK2" FOREIGN KEY ("TAG_ID")
 	  REFERENCES "BLOG_TAGS" ("ID") ENABLE;
+
+
+  ALTER TABLE "BLOG_POST_UDS" ADD CONSTRAINT "BLOG_POST_UDS_FK1" FOREIGN KEY ("POST_ID")
+	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
 
