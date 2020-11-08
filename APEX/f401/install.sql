@@ -6,8 +6,8 @@ prompt --install
 @@application/shared_components/navigation/lists/categories.sql
 @@application/shared_components/navigation/lists/latest_posts.sql
 @@application/shared_components/navigation/lists/archives.sql
-@@application/shared_components/navigation/lists/footer_links.sql
 @@application/shared_components/navigation/lists/navigation_menu.sql
+@@application/shared_components/navigation/lists/footer_links.sql
 @@application/shared_components/files/app_icon_css.sql
 @@application/shared_components/files/app_icon_svg.sql
 @@application/plugin_settings.sql
@@ -130,5 +130,6 @@ prompt --install
 @@application/pages/page_00014.sql
 @@application/pages/page_00015.sql
 @@application/pages/page_01001.sql
+@@application/pages/page_01002.sql
 @@application/pages/page_09999.sql
 @@application/end_environment.sql

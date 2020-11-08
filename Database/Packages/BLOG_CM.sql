@@ -467,10 +467,7 @@ as
     from blog_v_all_categories v1
     ;
     -- return next category display sequence
-    l_result := to_char(
-       next_seq( l_max )
-      ,blog_util.g_number_format
-    );
+    l_result := blog_util.int_to_vc2( next_seq( l_max ) );
 
     return l_result;
 
@@ -490,10 +487,7 @@ as
     from blog_v_all_link_groups v1
     ;
     -- return next link group display sequence
-    l_result := to_char(
-       next_seq( l_max )
-      ,blog_util.g_number_format
-    );
+    l_result := blog_util.int_to_vc2( next_seq( l_max ) );
 
     return l_result;
 
@@ -519,10 +513,7 @@ as
     and link_group_id = l_link_group_id
     ;
     -- return next link display sequence
-    l_result := to_char(
-       next_seq( l_max )
-      ,blog_util.g_number_format
-    );
+    l_result := blog_util.int_to_vc2( next_seq( l_max ) );
 
     return l_result;
 
@@ -994,21 +985,24 @@ as
     l_err_mesg  varchar2(32700);
   begin
 
-    -- prepare validation error message
-    l_err_mesg := apex_lang.message( p_err_mesg, p_min, p_max );
-
-    if l_err_mesg = apex_escape.html( p_err_mesg )
+    if p_value is not null
     then
-      l_err_mesg := p_err_mesg;
-    end if;
+      -- prepare validation error message
+      l_err_mesg := apex_lang.message( p_err_mesg, p_min, p_max );
 
-    l_value := to_number( p_value );
-    -- check value is integer and between range
-    if round( l_value ) = l_value
-    and l_value between p_min and p_max
-    then
-      -- if validation passes, clear error meassage
-      l_err_mesg := null;
+      if l_err_mesg = apex_escape.html( p_err_mesg )
+      then
+        l_err_mesg := p_err_mesg;
+      end if;
+
+      l_value := to_number( p_value );
+      -- check value is integer and between range
+      if round( l_value ) = l_value
+      and l_value between p_min and p_max
+      then
+        -- if validation passes, clear error meassage
+        l_err_mesg := null;
+      end if;
     end if;
 
     return l_err_mesg;
@@ -1185,7 +1179,7 @@ as
     and v1.id = l_comment_id
     ;
 
-    return to_char(l_post_id, blog_util.g_number_format );
+    return blog_util.int_to_vc2( l_post_id );
 
   end get_comment_post_id;
 --------------------------------------------------------------------------------

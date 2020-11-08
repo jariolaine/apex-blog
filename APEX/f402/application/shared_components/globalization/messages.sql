@@ -85,9 +85,19 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Files'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(42619643585051305)
+,p_name=>'BLOG_FEATURE_FOOTER_LINKS'
+,p_message_text=>'Footer link list'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28287948386327902)
 ,p_name=>'BLOG_FEATURE_GROUP_COMMENTS'
 ,p_message_text=>'Comments'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(42619895282058203)
+,p_name=>'BLOG_FEATURE_GROUP_MISC'
+,p_message_text=>'Miscellaneous'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28375527216531703)

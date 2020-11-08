@@ -10,15 +10,15 @@ create table blog_settings(
   changed_by varchar2( 256 char ) not null,
   is_nullable number( 1, 0 ) not null,
   display_seq number( 10, 0 ) not null,
-  attribute_name varchar2( 64 char ) not null,
-  data_type varchar2( 64 char ) not null,
   group_name varchar2( 64 char ) not null,
+  attribute_name varchar2( 64 char ) not null,
   attribute_value varchar2( 4000 char ),
+  data_type varchar2( 64 char ) not null,
   post_expression varchar2( 4000 char ),
-  in_min number(2,0),
-  in_max number(2,0),
-  example_value varchar2( 4000 char ),
+  int_min number(2,0),
+  int_max number(2,0),
   notes varchar2(4000 char),
+  install_value varchar2( 4000 char ),
   constraint blog_settings_pk primary key( id ),
   constraint blog_settings_uk1 unique( attribute_name ),
   constraint blog_settings_ck1 check( row_version > 0 ),
@@ -31,7 +31,7 @@ create table blog_settings(
   ),
   constraint blog_settings_ck5 check(
     group_name in(
-      'BLOG_PAR_GROUP_GENERAL'
+       'BLOG_PAR_GROUP_GENERAL'
       ,'BLOG_PAR_GROUP_REPORTS'
       ,'BLOG_PAR_GROUP_SEO'
       ,'BLOG_PAR_GROUP_UI'
@@ -40,7 +40,7 @@ create table blog_settings(
   ),
   constraint blog_settings_ck6 check(
     data_type in(
-      'INTEGER'
+       'INTEGER'
       ,'STRING'
       ,'DATE_FORMAT'
       ,'URL'

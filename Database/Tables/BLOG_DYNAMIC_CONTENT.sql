@@ -1,0 +1,23 @@
+--------------------------------------------------------
+--  DDL for Table BLOG_DYNAMIC_CONTENT
+--------------------------------------------------------
+create table blog_dynamic_content(
+  id number(38,0) not null enable,
+	row_version number(38,0) not null enable,
+	created_on timestamp (6) with local time zone not null enable,
+	created_by varchar2(256 char) not null,
+	changed_on timestamp (6) with local time zone not null enable,
+	changed_by varchar2(256 char) not null,
+	is_active number(1,0) not null enable,
+	display_seq number(10,0) not null enable,
+  content_type varchar2(64 char) not null,
+  content_static_id varchar2(64 char) not null,
+  content_desc varchar2(256 char) not null,
+  content_html clob,
+  constraint blog_dynamic_content_ck1 check( row_version > 0 ),
+  constraint blog_dynamic_content_ck2 check( is_active in( 0, 1 ) ),
+  constraint blog_dynamic_content_ck3 check( display_seq > 0 ),
+  constraint blog_dynamic_content_pk primary key( id ),
+  constraint blog_dynamic_content_uk1 unique (content_type, content_static_id)
+)
+/

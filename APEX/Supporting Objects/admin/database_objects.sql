@@ -130,6 +130,29 @@ create table blog_comment_subs_email(
 )
 /
 --------------------------------------------------------
+--  DDL for Table BLOG_DYNAMIC_CONTENT
+--------------------------------------------------------
+create table blog_dynamic_content(
+  id number(38,0) not null enable,
+	row_version number(38,0) not null enable,
+	created_on timestamp (6) with local time zone not null enable,
+	created_by varchar2(256 char) not null,
+	changed_on timestamp (6) with local time zone not null enable,
+	changed_by varchar2(256 char) not null,
+	is_active number(1,0) not null enable,
+	display_seq number(10,0) not null enable,
+  content_type varchar2(64 char) not null,
+  content_static_id varchar2(64 char) not null,
+  content_desc varchar2(256 char) not null,
+  content_html clob,
+  constraint blog_dynamic_content_ck1 check( row_version > 0 ),
+  constraint blog_dynamic_content_ck2 check( is_active in( 0, 1 ) ),
+  constraint blog_dynamic_content_ck3 check( display_seq > 0 ),
+  constraint blog_dynamic_content_pk primary key( id ),
+  constraint blog_dynamic_content_uk1 unique (content_type, content_static_id)
+)
+/
+--------------------------------------------------------
 --  DDL for Table BLOG_FEATURES
 --------------------------------------------------------
 create table blog_features(
@@ -387,15 +410,15 @@ create table blog_settings(
   changed_by varchar2( 256 char ) not null,
   is_nullable number( 1, 0 ) not null,
   display_seq number( 10, 0 ) not null,
-  attribute_name varchar2( 64 char ) not null,
-  data_type varchar2( 64 char ) not null,
   group_name varchar2( 64 char ) not null,
+  attribute_name varchar2( 64 char ) not null,
   attribute_value varchar2( 4000 char ),
+  data_type varchar2( 64 char ) not null,
   post_expression varchar2( 4000 char ),
-  in_min number(2,0),
-  in_max number(2,0),
-  example_value varchar2( 4000 char ),
+  int_min number(2,0),
+  int_max number(2,0),
   notes varchar2(4000 char),
+  install_value varchar2( 4000 char ),
   constraint blog_settings_pk primary key( id ),
   constraint blog_settings_uk1 unique( attribute_name ),
   constraint blog_settings_ck1 check( row_version > 0 ),
@@ -408,7 +431,7 @@ create table blog_settings(
   ),
   constraint blog_settings_ck5 check(
     group_name in(
-      'BLOG_PAR_GROUP_GENERAL'
+       'BLOG_PAR_GROUP_GENERAL'
       ,'BLOG_PAR_GROUP_REPORTS'
       ,'BLOG_PAR_GROUP_SEO'
       ,'BLOG_PAR_GROUP_UI'
@@ -417,7 +440,7 @@ create table blog_settings(
   ),
   constraint blog_settings_ck6 check(
     data_type in(
-      'INTEGER'
+       'INTEGER'
       ,'STRING'
       ,'DATE_FORMAT'
       ,'URL'
@@ -660,7 +683,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_SETTINGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "DATA_TYPE", "GROUP_NAME", "ATTRIBUTE_DESC", "ATTRIBUTE_VALUE", "ATTRIBUTE_GROUP", "POST_EXPRESSION") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "DATA_TYPE", "GROUP_NAME", "ATTRIBUTE_DESC", "ATTRIBUTE_VALUE", "ATTRIBUTE_GROUP", "POST_EXPRESSION", "INT_MIN", "INT_MAX") AS
   select t1.id                as id
   ,t1.row_version           as row_version
   ,t1.created_on            as created_on
@@ -1231,51 +1254,60 @@ as
 --                            ORA error is between -20999 and 20901
 --                            Changed procedure get_post_pagination to raises ORA -20901 when no data found
 --    Jari Laine 19.05.2020   Removed global constants
+--    Jari Laine 05.11.2020   Procedure render_dynamic_content
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global constants
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-
-  g_number_format constant varchar2(40)   := 'fm99999999999999999999999999999999999999';
-
+-- none
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function apex_error_handler (
-    p_error           in apex_error.t_error
+    p_error             in apex_error.t_error
   ) return apex_error.t_error_result;
+
+  function int_to_vc2(
+    p_value in number
+  ) return varchar2;
 --------------------------------------------------------------------------------
   function get_attribute_value(
-    p_attribute_name  in varchar2
+    p_attribute_name    in varchar2
   ) return varchar2 result_cache;
 --------------------------------------------------------------------------------
   procedure initialize_items(
-    p_app_id          in varchar2
+    p_app_id            in varchar2
   );
 --------------------------------------------------------------------------------
   function get_post_title(
-    p_post_id         in varchar2,
-    p_escape          in boolean
+    p_post_id           in varchar2,
+    p_escape            in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure get_post_pagination(
-    p_post_id         in varchar2,
-    p_post_title      out nocopy varchar2,
-    p_newer_id        out nocopy varchar2,
-    p_newer_title     out nocopy varchar2,
-    p_older_id        out nocopy varchar2,
-    p_older_title     out nocopy varchar2
+    p_post_id           in varchar2,
+    p_post_title        out nocopy varchar2,
+    p_newer_id          out nocopy varchar2,
+    p_newer_title       out nocopy varchar2,
+    p_older_id          out nocopy varchar2,
+    p_older_title       out nocopy varchar2
   );
 --------------------------------------------------------------------------------
   function get_category_title(
-    p_category_id     in varchar2,
-    p_escape          in boolean
+    p_category_id       in varchar2,
+    p_escape            in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_tag(
-    p_tag_id          in varchar2
+    p_tag_id            in varchar2
   ) return varchar2;
+--------------------------------------------------------------------------------
+  procedure render_dynamic_content(
+    p_content_type      in varchar2,
+    p_content_static_id in varchar2,
+    p_date_format       in varchar2
+  );
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
@@ -1409,6 +1441,15 @@ as
     return l_result;
 
   end apex_error_handler;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function int_to_vc2(
+    p_value in number
+  ) return varchar2
+  as
+  begin
+    return to_char( p_value,  'fm99999999999999999999999999999999999999' );
+  end int_to_vc2;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_attribute_value(
@@ -1635,9 +1676,9 @@ as
     ;
 
     p_post_title  := l_post_title;
-    p_newer_id    := to_char( l_newer_id, g_number_format );
+    p_newer_id    := int_to_vc2( l_newer_id );
     p_newer_title := l_newer_title;
-    p_older_id    := to_char( l_older_id, g_number_format );
+    p_older_id    := int_to_vc2( l_older_id );
     p_older_title := l_older_title;
 
     apex_debug.info( 'Fetch post: %s next_id: %s prev_id: %s', p_post_id, p_newer_id, p_older_id );
@@ -1789,6 +1830,41 @@ as
     raise;
 
   end get_tag;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure render_dynamic_content(
+    p_content_type      in varchar2,
+    p_content_static_id in varchar2,
+    p_date_format       in varchar2
+  )
+  as
+  begin
+
+    for c1 in(
+      select t1.content_desc
+        ,t1.content_html
+        ,t1.changed_on
+      from blog_dynamic_content t1
+      where 1 = 1
+      and t1.is_active = 1
+      and t1.content_type = p_content_type
+      and t1.content_static_id = p_content_static_id
+    ) loop
+
+      sys.htp.p( '<h1>' || c1.content_desc || '</h1>' );
+
+      sys.htp.p( c1.content_html );
+
+      sys.htp.p(
+          apex_lang.message(
+             'BLOG_INFO_LAST_UPDATED'
+            ,to_char( c1.changed_on, p_date_format )
+          )
+        );
+
+    end loop;
+
+  end render_dynamic_content;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
@@ -2041,15 +2117,14 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function to_html_entities(
-    p_number in number,
-    p_format in varchar2
+    p_number in number
   ) return varchar2
   as
     l_string varchar2(4000);
     l_result varchar2(4000);
   begin
 
-    l_string := to_char( p_number, p_format );
+    l_string := blog_util.int_to_vc2( p_number );
     for i in 1 .. length( l_string )
     loop
       l_result := l_result || '&#' || ascii( substr( l_string, i, 1 ) );
@@ -2149,16 +2224,16 @@ as
     l_num_2 := round( sys.dbms_random.value( l_min, l_max ) );
 
     l_data  := '<span class="z-question">';
-    l_data  := l_data || to_html_entities( l_num_1, blog_util.g_number_format );
+    l_data  := l_data || to_html_entities( l_num_1 );
     l_data  := l_data || '&nbsp;&#' || ascii('+') || '&nbsp;';
-    l_data  := l_data || to_html_entities( l_num_2, blog_util.g_number_format );
+    l_data  := l_data || to_html_entities( l_num_2 );
     l_data  := l_data || '&#' || ascii('?');
     l_data  := l_data || '</span>';
 
     -- set correct answer to item session state
     apex_util.set_session_state(
        p_name   => p_item.attribute_05
-      ,p_value  => to_char( l_num_1 + l_num_2 , blog_util.g_number_format )
+      ,p_value  => blog_util.int_to_vc2( l_num_1 + l_num_2 )
       ,p_commit => false
     );
 
@@ -2408,7 +2483,7 @@ as
     l_post_id varchar2(256);
   begin
 
-    l_post_id := to_char( p_post_id, blog_util.g_number_format );
+    l_post_id := blog_util.int_to_vc2( p_post_id );
     return
       get_post(
          p_post_id      => l_post_id
@@ -2475,7 +2550,7 @@ as
     l_category_id varchar2(256);
   begin
 
-    l_category_id := to_char( p_category_id, blog_util.g_number_format );
+    l_category_id := blog_util.int_to_vc2( p_category_id );
     return
       get_category(
          p_category_id  => l_category_id
@@ -2534,7 +2609,7 @@ as
     l_archive_id varchar2(256);
   begin
 
-    l_archive_id := to_char( p_archive_id, blog_util.g_number_format );
+    l_archive_id := blog_util.int_to_vc2( p_archive_id );
     return
       get_archive(
          p_archive_id   => l_archive_id
@@ -2594,7 +2669,7 @@ as
     l_tag_id varchar2(256);
   begin
 
-    l_tag_id := to_char( p_tag_id, blog_util.g_number_format );
+    l_tag_id := blog_util.int_to_vc2( p_tag_id );
 
     return
       case p_canonical
@@ -2626,7 +2701,7 @@ as
     l_subs_id varchar2(256);
   begin
 
-    l_subs_id := to_char( p_subscription_id, blog_util.g_number_format );
+    l_subs_id := blog_util.int_to_vc2( p_subscription_id );
     -- workaround because APEX 19.2
     -- apex_page.get_url don't have parameter p_plain_url
     l_url := 'f?p='
@@ -3148,10 +3223,7 @@ as
     from blog_v_all_categories v1
     ;
     -- return next category display sequence
-    l_result := to_char(
-       next_seq( l_max )
-      ,blog_util.g_number_format
-    );
+    l_result := blog_util.int_to_vc2( next_seq( l_max ) );
 
     return l_result;
 
@@ -3171,10 +3243,7 @@ as
     from blog_v_all_link_groups v1
     ;
     -- return next link group display sequence
-    l_result := to_char(
-       next_seq( l_max )
-      ,blog_util.g_number_format
-    );
+    l_result := blog_util.int_to_vc2( next_seq( l_max ) );
 
     return l_result;
 
@@ -3200,10 +3269,7 @@ as
     and link_group_id = l_link_group_id
     ;
     -- return next link display sequence
-    l_result := to_char(
-       next_seq( l_max )
-      ,blog_util.g_number_format
-    );
+    l_result := blog_util.int_to_vc2( next_seq( l_max ) );
 
     return l_result;
 
@@ -3675,21 +3741,24 @@ as
     l_err_mesg  varchar2(32700);
   begin
 
-    -- prepare validation error message
-    l_err_mesg := apex_lang.message( p_err_mesg, p_min, p_max );
-
-    if l_err_mesg = apex_escape.html( p_err_mesg )
+    if p_value is not null
     then
-      l_err_mesg := p_err_mesg;
-    end if;
+      -- prepare validation error message
+      l_err_mesg := apex_lang.message( p_err_mesg, p_min, p_max );
 
-    l_value := to_number( p_value );
-    -- check value is integer and between range
-    if round( l_value ) = l_value
-    and l_value between p_min and p_max
-    then
-      -- if validation passes, clear error meassage
-      l_err_mesg := null;
+      if l_err_mesg = apex_escape.html( p_err_mesg )
+      then
+        l_err_mesg := p_err_mesg;
+      end if;
+
+      l_value := to_number( p_value );
+      -- check value is integer and between range
+      if round( l_value ) = l_value
+      and l_value between p_min and p_max
+      then
+        -- if validation passes, clear error meassage
+        l_err_mesg := null;
+      end if;
     end if;
 
     return l_err_mesg;
@@ -3866,7 +3935,7 @@ as
     and v1.id = l_comment_id
     ;
 
-    return to_char(l_post_id, blog_util.g_number_format );
+    return blog_util.int_to_vc2( l_post_id );
 
   end get_comment_post_id;
 --------------------------------------------------------------------------------
@@ -4957,25 +5026,29 @@ as
 --                              sitemap_categories
 --                              sitemap_archives
 --                              sitemap_atags
---    Jari Laine 25.10.2020   XSL for RSS feed
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss(
-    p_lang      in varchar2 default 'en',
-    p_rss_url   in varchar2 default null,
-    p_app_name  in varchar2 default null,
-    p_app_desc  in varchar2 default null,
-    p_app_id    in varchar2 default null
+    p_rss_url   in varchar2,
+    p_app_name  in varchar2,
+    p_app_desc  in varchar2,
+    p_lang      in varchar2 default 'en'
   );
 --------------------------------------------------------------------------------
   procedure rss_xsl(
-    p_css_file  in varchar2
+    p_css_file      in varchar2
   );
 --------------------------------------------------------------------------------
-  procedure sitemap_index;
+  procedure sitemap_index(
+    p_app_id        in varchar2,
+    p_app_page_id   in varchar2,
+    p_build_option  in varchar2
+  );
 --------------------------------------------------------------------------------
-  procedure sitemap_main;
+  procedure sitemap_main(
+    p_app_id        in varchar2
+  );
 --------------------------------------------------------------------------------
   procedure sitemap_posts;
 --------------------------------------------------------------------------------
@@ -5008,11 +5081,10 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss(
-    p_lang      in varchar2 default 'en',
-    p_rss_url   in varchar2 default null,
-    p_app_name  in varchar2 default null,
-    p_app_desc  in varchar2 default null,
-    p_app_id    in varchar2 default null
+    p_rss_url   in varchar2,
+    p_app_name  in varchar2,
+    p_app_desc  in varchar2,
+    p_lang      in varchar2 default 'en'
   )
   as
     l_xml           xmltype;
@@ -5020,9 +5092,9 @@ as
     l_app_id        varchar2(256);
     l_rss_url       varchar2(4000);
     l_xsl_url       varchar2(4000);
-    l_rss_desc      varchar2(4000);
     l_home_url      varchar2(4000);
-    l_blog_name     varchar2(4000);
+    l_app_name      varchar2(4000);
+    l_app_desc      varchar2(4000);
     l_rss_version   constant varchar2(5) := '2.0';
   begin
 
@@ -5032,37 +5104,28 @@ as
       ,blog_util.get_attribute_value( 'G_RSS_URL' )
     );
     -- blog name
-    l_blog_name := coalesce(
+    l_app_name := coalesce(
        p_app_name
       ,blog_util.get_attribute_value( 'G_APP_NAME' )
     );
     -- rss feed description
-    l_rss_desc  := coalesce(
+    l_app_desc  := coalesce(
        p_app_desc
       ,blog_util.get_attribute_value( 'G_APP_DESC' )
-    );
-    -- blog application id
-    l_app_id    := coalesce(
-       p_app_id
-      ,blog_util.get_attribute_value( 'G_PUB_APP_ID' )
     );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
        p_app_page_id => 'HOME'
-      ,p_app_id => l_app_id
       ,p_canonical => 'YES'
     );
-
-    l_xsl_url := blog_url.get_tab(
-       p_app_page_id => 'HOME'
-      ,p_app_id => l_app_id
-      ,p_request => 'APPLICATION_PROCESS=RSS_XSL'
-      ,p_canonical => 'YES'
-    );
+    -- rss transformations (XSLT)
+    l_xsl_url := blog_util.get_attribute_value( 'G_RSS_XSL_URL' );
 
     -- generate RSS
     select xmlserialize( content xmlconcat(
-      xmlpi("xml-stylesheet",'type="text/xsl" href="' || l_xsl_url ||'" media="screen"'),
+      case when l_xsl_url is not null
+      then xmlpi("xml-stylesheet",'type="text/xsl" href="' || l_xsl_url ||'" media="screen"')
+      end,
       xmlelement(
         "rss", xmlattributes(
            l_rss_version as "version"
@@ -5080,9 +5143,9 @@ as
             )
           )
           ,xmlforest(
-             l_blog_name                      as "title"
+             l_app_name                       as "title"
             ,l_home_url                       as "link"
-            ,l_rss_desc                       as "description"
+            ,l_app_desc                       as "description"
             ,p_lang                           as "language"
           )
           ,xmlagg(
@@ -5092,8 +5155,7 @@ as
               ,xmlelement( "dc:creator",  posts.blogger_name )
               ,xmlelement( "category",    posts.category_title )
               ,xmlelement( "link",        blog_url.get_post(
-                                             p_app_id     => l_app_id
-                                            ,p_post_id    => posts.post_id
+                                             p_post_id    => posts.post_id
                                             ,p_canonical  => 'YES'
                                           )
               )
@@ -5161,8 +5223,10 @@ as
       ')
     ;
 
-    select xmlserialize( content l_xml
-    as blob encoding 'UTF-8' indent size=2)
+    select xmlserialize(
+      content l_xml
+      as blob encoding 'UTF-8' indent size=2
+    )
     into l_xsl
     from dual
     ;
@@ -5176,17 +5240,20 @@ as
   end rss_xsl;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure sitemap_index
+  procedure sitemap_index(
+    p_app_id        in varchar2,
+    p_app_page_id   in varchar2,
+    p_build_option  in varchar2
+  )
   as
     l_xml     blob;
-    l_app_id  number;
     l_url     varchar2(4000);
   begin
 
-    l_app_id := to_number( blog_util.get_attribute_value ( 'G_PUB_APP_ID' ) );
-
-    l_url := blog_ords.get_module_path(
-      p_canonical => 'YES'
+    l_url := blog_url.get_tab(
+       p_app_page_id  => p_app_page_id
+      ,p_request      => 'application_process='
+      ,p_canonical    => 'YES'
     );
 
     select xmlserialize( document
@@ -5196,23 +5263,25 @@ as
         (
           xmlagg(
             xmlelement( "sitemap"
-              ,xmlelement( "loc", l_url || t1.uri_template )
-            ) order by t1.display_seq
+              ,xmlelement( "loc", l_url || t1.process_name )
+            ) order by t1.execution_sequence
           )
         )
       )
     as blob encoding 'UTF-8' indent size=2)
     into l_xml
-    from blog_ords_templates t1
+    from apex_application_page_proc t1
     where 1 = 1
-    and t1.is_active = 1
-    and t1.template_group = 'SITEMAP'
-    and not exists(
+    and t1.application_id = p_app_id
+    and t1.page_id = p_app_page_id
+    and t1.build_option = p_build_option
+    and exists(
       select 1
       from apex_application_build_options bo
       where 1 = 1
-      and bo.application_id = l_app_id
-      and bo.build_option_status = 'Exclude'
+      and bo.application_id = p_app_id
+      and bo.build_option_name = p_build_option
+      and bo.build_option_status = 'Include'
       and bo.build_option_name = t1.build_option
     );
 
@@ -5225,15 +5294,12 @@ as
   end sitemap_index;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure sitemap_main
+  procedure sitemap_main(
+    p_app_id in varchar2
+  )
   as
-    l_xml     blob;
-    l_app_id  varchar2(256);
-    l_pub_id  number;
+    l_xml blob;
   begin
-
-    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
-    l_pub_id := to_number( l_app_id );
 
     select xmlserialize( document
       xmlelement(
@@ -5242,9 +5308,8 @@ as
         (
           xmlagg(
             xmlelement( "url"
-              ,xmlelement( "loc",  blog_url.get_tab(
-                                   p_app_id  => l_app_id
-                                  ,p_app_page_id => t1.page_alias
+              ,xmlelement( "loc", blog_url.get_tab(
+                                   p_app_page_id => t1.page_alias
                                   ,p_canonical => 'YES'
                                 )
               )
@@ -5262,7 +5327,7 @@ as
         select 1
         from apex_application_build_options bo
         where 1 = 1
-          and bo.application_id = l_pub_id
+          and bo.application_id = p_app_id
           and bo.build_option_name = t1.build_option
           and bo.build_option_status = 'Exclude'
       )
@@ -5279,11 +5344,8 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_posts
   as
-    l_xml     blob;
-    l_app_id  varchar2(256);
+    l_xml blob;
   begin
-
-    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
 
     select xmlserialize( document
       xmlelement(
@@ -5293,8 +5355,7 @@ as
           xmlagg(
             xmlelement( "url"
               ,xmlelement( "loc", blog_url.get_post(
-                                     p_app_id     => l_app_id
-                                    ,p_post_id    => posts.post_id
+                                     p_post_id    => posts.post_id
                                     ,p_canonical  => 'YES'
                                   )
               )
@@ -5319,11 +5380,8 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_categories
   as
-    l_xml     blob;
-    l_app_id  varchar2(256);
+    l_xml blob;
   begin
-
-    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
 
     select xmlserialize( document
       xmlelement(
@@ -5333,8 +5391,7 @@ as
           xmlagg(
             xmlelement( "url"
               ,xmlelement( "loc", blog_url.get_category(
-                                     p_app_id       => l_app_id
-                                    ,p_category_id  => cat.category_id
+                                     p_category_id  => cat.category_id
                                     ,p_canonical    => 'YES'
                                   )
               )
@@ -5358,11 +5415,8 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_archives
   as
-    l_xml     blob;
-    l_app_id  varchar2(256);
+    l_xml blob;
   begin
-
-    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
 
     select xmlserialize( document
       xmlelement(
@@ -5372,8 +5426,7 @@ as
           xmlagg(
             xmlelement( "url"
               ,xmlelement( "loc", blog_url.get_archive(
-                                     p_app_id     => l_app_id
-                                    ,p_archive_id => arc.archive_year
+                                     p_archive_id => arc.archive_year
                                     ,p_canonical  => 'YES'
                                   )
               )
@@ -5397,11 +5450,8 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_tags
   as
-    l_xml     blob;
-    l_app_id  varchar2(256);
+    l_xml blob;
   begin
-
-    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
 
     select xmlserialize( document
       xmlelement(
@@ -5411,8 +5461,7 @@ as
           xmlagg(
             xmlelement( "url"
               ,xmlelement( "loc", blog_url.get_tag(
-                                     p_app_id     => l_app_id
-                                    ,p_tag_id     => tags.tag_id
+                                     p_tag_id     => tags.tag_id
                                     ,p_canonical  => 'YES'
                                   )
               )
@@ -5608,6 +5657,39 @@ CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_COMMENT_SUBS_TRG"
 before
 insert or
 update on blog_comment_subs
+for each row
+begin
+
+  if inserting then
+    :new.id           := coalesce( :new.id, blog_seq.nextval );
+    :new.row_version  := coalesce( :new.row_version, 1 );
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
+    :new.created_by   := coalesce(
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
+    );
+  elsif updating then
+    :new.row_version := :old.row_version + 1;
+  end if;
+
+  :new.changed_on := localtimestamp;
+  :new.changed_by := coalesce(
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
+  );
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_DYNAMIC_CONTENT_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_DYNAMIC_CONTENT_TRG"
+before
+insert or
+update on blog_dynamic_content
 for each row
 begin
 

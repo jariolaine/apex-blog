@@ -153,6 +153,14 @@ wwv_flow_api.create_build_option(
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable sitemapindex application process'
 );
+wwv_flow_api.create_build_option(
+ p_id=>wwv_flow_api.id(42618909236023987)
+,p_build_option_name=>'BLOG_FEATURE_FOOTER_LINKS'
+,p_build_option_status=>'INCLUDE'
+,p_default_on_export=>'INCLUDE'
+,p_on_upgrade_keep_status=>true
+,p_build_option_comment=>'Show/Hide footer links'
+);
 wwv_flow_api.component_end;
 end;
 /

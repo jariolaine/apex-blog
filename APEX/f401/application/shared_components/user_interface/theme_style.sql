@@ -70,6 +70,18 @@ wwv_flow_api.create_theme_style(
 ,p_theme_roller_read_only=>true
 ,p_reference_id=>3291983347983194966
 );
+wwv_flow_api.create_theme_style(
+ p_id=>wwv_flow_api.id(42480195505165995)
+,p_theme_id=>42
+,p_name=>'Vita (Blog)'
+,p_is_current=>false
+,p_is_public=>true
+,p_is_accessible=>true
+,p_theme_roller_input_file_urls=>'#THEME_IMAGES#less/theme/Vita.less'
+,p_theme_roller_config=>'{"customCSS":"","vars":{"@Head-Height":"64px"}}'
+,p_theme_roller_output_file_url=>'#THEME_DB_IMAGES#42480195505165995.css'
+,p_theme_roller_read_only=>false
+);
 wwv_flow_api.component_end;
 end;
 /

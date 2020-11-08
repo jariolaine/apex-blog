@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(24626889314854172)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200921172431'
+,p_last_upd_yyyymmddhh24miss=>'20201104203318'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25312085512124215)
@@ -69,19 +69,19 @@ wwv_flow_api.create_report_region(
 'where 1 = 1',
 'and v1.is_download = 1',
 'and (',
-'  :P11_SEARCH_FILES is null or',
+'  :P11_FILE_NAME is null or',
 '  (',
-'    :P11_SEARCH_FILES is not null and',
+'    :P11_FILE_NAME is not null and',
 '    (',
-'      instr( upper( v1.file_name ), upper( :P11_SEARCH_FILES ) ) > 0 or',
-'      instr( upper( v1.file_desc ), upper( :P11_SEARCH_FILES ) ) > 0',
+'      instr( upper( v1.file_name ), upper( :P11_FILE_NAME ) ) > 0 or',
+'      instr( upper( v1.file_desc ), upper( :P11_FILE_NAME ) ) > 0',
 '    )',
 '  )',
 ')',
 'order by v1.file_name'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
-,p_ajax_items_to_submit=>'P11_SEARCH_FILES'
+,p_ajax_items_to_submit=>'P11_FILE_NAME'
 ,p_query_row_template=>wwv_flow_api.id(6815219261267393)
 ,p_query_num_rows=>100
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -105,16 +105,22 @@ wwv_flow_api.create_report_columns(
 ,p_query_column_id=>2
 ,p_column_alias=>'LIST_TITLE'
 ,p_column_display_sequence=>2
-,p_hidden_column=>'Y'
+,p_column_heading=>'List Title'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(25291104750911814)
 ,p_query_column_id=>3
 ,p_column_alias=>'LIST_TEXT'
 ,p_column_display_sequence=>3
-,p_hidden_column=>'Y'
+,p_column_heading=>'List Text'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(25291287740911815)
@@ -132,48 +138,66 @@ wwv_flow_api.create_report_columns(
 ,p_query_column_id=>5
 ,p_column_alias=>'LIST_CLASS'
 ,p_column_display_sequence=>5
-,p_hidden_column=>'Y'
+,p_column_heading=>'List Class'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(25291314972911816)
 ,p_query_column_id=>6
 ,p_column_alias=>'ICON_CLASS'
 ,p_column_display_sequence=>6
-,p_hidden_column=>'Y'
+,p_column_heading=>'Icon Class'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(25291621607911819)
 ,p_query_column_id=>7
 ,p_column_alias=>'ICON_COLOR_CLASS'
 ,p_column_display_sequence=>7
-,p_hidden_column=>'Y'
+,p_column_heading=>'Icon Color Class'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(25311259127124207)
 ,p_query_column_id=>8
 ,p_column_alias=>'LINK'
 ,p_column_display_sequence=>8
-,p_hidden_column=>'Y'
+,p_column_heading=>'Link'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(25311373391124208)
 ,p_query_column_id=>9
 ,p_column_alias=>'LINK_ATTR'
 ,p_column_display_sequence=>9
-,p_hidden_column=>'Y'
+,p_column_heading=>'Link Attr'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(25291577161911818)
 ,p_query_column_id=>10
 ,p_column_alias=>'LINK_CLASS'
 ,p_column_display_sequence=>10
-,p_hidden_column=>'Y'
+,p_column_heading=>'Link Class'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(50989785872352709)
@@ -191,7 +215,7 @@ wwv_flow_api.create_page_plug(
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(25678350637228506)
-,p_name=>'P11_SEARCH_FILES'
+,p_name=>'P11_FILE_NAME'
 ,p_item_sequence=>10
 ,p_item_plug_id=>wwv_flow_api.id(50989785872352709)
 ,p_use_cache_before_default=>'NO'
@@ -218,7 +242,7 @@ wwv_flow_api.create_page_da_event(
 ,p_name=>'Perform Search'
 ,p_event_sequence=>10
 ,p_triggering_element_type=>'ITEM'
-,p_triggering_element=>'P11_SEARCH_FILES'
+,p_triggering_element=>'P11_FILE_NAME'
 ,p_triggering_condition_type=>'JAVASCRIPT_EXPRESSION'
 ,p_triggering_expression=>'this.browserEvent.which === apex.jQuery.ui.keyCode.ENTER'
 ,p_bind_type=>'bind'

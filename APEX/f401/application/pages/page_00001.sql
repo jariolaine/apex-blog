@@ -25,10 +25,14 @@ wwv_flow_api.create_page(
 '"BLOG_CANONICAL_LINK_TAB"',
 '"BLOG_RSS_LINK"',
 ''))
+,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'.z-noBorder *{',
+'border: none!important',
+'}'))
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201102174258'
+,p_last_upd_yyyymmddhh24miss=>'20201108130810'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6432040642894060)
@@ -145,7 +149,7 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>7
 ,p_column_heading=>'Read More Link'
 ,p_use_as_row_header=>'N'
-,p_column_link=>'f?p=&APP_ID.:2:&SESSION.::&DEBUG.:RP:P2_POST_ID:#POST_ID#'
+,p_column_link=>'f?p=&APP_ID.:2:&SESSION.::&DEBUG.::P2_POST_ID:#POST_ID#'
 ,p_column_linktext=>'#READ_MORE_LINK#<span aria-hidden="true" class="fa fa-angle-double-right u-alignMiddle margin-left-sm"></span>'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -201,7 +205,9 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'rss.xsl'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_xml.rss_xsl(',
-'  p_css_file => ''../../../'' || :WORKSPACE_IMAGES || ''blog/1.0/css/rss-xsl.css''',
+'  p_css_file => apex_plugin_util.get_plsql_expression_result (',
+'    p_plsql_expression => blog_util.get_attribute_value(''G_RSS_XSL_CSS_URL'')',
+'  )',
 ');'))
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_api.id(8635198962090938)

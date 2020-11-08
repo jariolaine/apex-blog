@@ -20,25 +20,29 @@ as
 --                              sitemap_categories
 --                              sitemap_archives
 --                              sitemap_atags
---    Jari Laine 25.10.2020   XSL for RSS feed
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss(
-    p_lang      in varchar2 default 'en',
-    p_rss_url   in varchar2 default null,
-    p_app_name  in varchar2 default null,
-    p_app_desc  in varchar2 default null,
-    p_app_id    in varchar2 default null
+    p_rss_url   in varchar2,
+    p_app_name  in varchar2,
+    p_app_desc  in varchar2,
+    p_lang      in varchar2 default 'en'
   );
 --------------------------------------------------------------------------------
   procedure rss_xsl(
-    p_css_file  in varchar2
+    p_css_file      in varchar2
   );
 --------------------------------------------------------------------------------
-  procedure sitemap_index;
+  procedure sitemap_index(
+    p_app_id        in varchar2,
+    p_app_page_id   in varchar2,
+    p_build_option  in varchar2
+  );
 --------------------------------------------------------------------------------
-  procedure sitemap_main;
+  procedure sitemap_main(
+    p_app_id        in varchar2
+  );
 --------------------------------------------------------------------------------
   procedure sitemap_posts;
 --------------------------------------------------------------------------------
@@ -71,11 +75,10 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss(
-    p_lang      in varchar2 default 'en',
-    p_rss_url   in varchar2 default null,
-    p_app_name  in varchar2 default null,
-    p_app_desc  in varchar2 default null,
-    p_app_id    in varchar2 default null
+    p_rss_url   in varchar2,
+    p_app_name  in varchar2,
+    p_app_desc  in varchar2,
+    p_lang      in varchar2 default 'en'
   )
   as
     l_xml           xmltype;
@@ -83,9 +86,9 @@ as
     l_app_id        varchar2(256);
     l_rss_url       varchar2(4000);
     l_xsl_url       varchar2(4000);
-    l_rss_desc      varchar2(4000);
     l_home_url      varchar2(4000);
-    l_blog_name     varchar2(4000);
+    l_app_name      varchar2(4000);
+    l_app_desc      varchar2(4000);
     l_rss_version   constant varchar2(5) := '2.0';
   begin
 
@@ -95,37 +98,28 @@ as
       ,blog_util.get_attribute_value( 'G_RSS_URL' )
     );
     -- blog name
-    l_blog_name := coalesce(
+    l_app_name := coalesce(
        p_app_name
       ,blog_util.get_attribute_value( 'G_APP_NAME' )
     );
     -- rss feed description
-    l_rss_desc  := coalesce(
+    l_app_desc  := coalesce(
        p_app_desc
       ,blog_util.get_attribute_value( 'G_APP_DESC' )
-    );
-    -- blog application id
-    l_app_id    := coalesce(
-       p_app_id
-      ,blog_util.get_attribute_value( 'G_PUB_APP_ID' )
     );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
        p_app_page_id => 'HOME'
-      ,p_app_id => l_app_id
       ,p_canonical => 'YES'
     );
-
-    l_xsl_url := blog_url.get_tab(
-       p_app_page_id => 'HOME'
-      ,p_app_id => l_app_id
-      ,p_request => 'APPLICATION_PROCESS=RSS_XSL'
-      ,p_canonical => 'YES'
-    );
+    -- rss transformations (XSLT)
+    l_xsl_url := blog_util.get_attribute_value( 'G_RSS_XSL_URL' );
 
     -- generate RSS
     select xmlserialize( content xmlconcat(
-      xmlpi("xml-stylesheet",'type="text/xsl" href="' || l_xsl_url ||'" media="screen"'),
+      case when l_xsl_url is not null
+      then xmlpi("xml-stylesheet",'type="text/xsl" href="' || l_xsl_url ||'" media="screen"')
+      end,
       xmlelement(
         "rss", xmlattributes(
            l_rss_version as "version"
@@ -143,9 +137,9 @@ as
             )
           )
           ,xmlforest(
-             l_blog_name                      as "title"
+             l_app_name                       as "title"
             ,l_home_url                       as "link"
-            ,l_rss_desc                       as "description"
+            ,l_app_desc                       as "description"
             ,p_lang                           as "language"
           )
           ,xmlagg(
@@ -155,8 +149,7 @@ as
               ,xmlelement( "dc:creator",  posts.blogger_name )
               ,xmlelement( "category",    posts.category_title )
               ,xmlelement( "link",        blog_url.get_post(
-                                             p_app_id     => l_app_id
-                                            ,p_post_id    => posts.post_id
+                                             p_post_id    => posts.post_id
                                             ,p_canonical  => 'YES'
                                           )
               )
@@ -224,8 +217,10 @@ as
       ')
     ;
 
-    select xmlserialize( content l_xml
-    as blob encoding 'UTF-8' indent size=2)
+    select xmlserialize(
+      content l_xml
+      as blob encoding 'UTF-8' indent size=2
+    )
     into l_xsl
     from dual
     ;
@@ -239,17 +234,20 @@ as
   end rss_xsl;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure sitemap_index
+  procedure sitemap_index(
+    p_app_id        in varchar2,
+    p_app_page_id   in varchar2,
+    p_build_option  in varchar2
+  )
   as
     l_xml     blob;
-    l_app_id  number;
     l_url     varchar2(4000);
   begin
 
-    l_app_id := to_number( blog_util.get_attribute_value ( 'G_PUB_APP_ID' ) );
-
-    l_url := blog_ords.get_module_path(
-      p_canonical => 'YES'
+    l_url := blog_url.get_tab(
+       p_app_page_id  => p_app_page_id
+      ,p_request      => 'application_process='
+      ,p_canonical    => 'YES'
     );
 
     select xmlserialize( document
@@ -259,23 +257,25 @@ as
         (
           xmlagg(
             xmlelement( "sitemap"
-              ,xmlelement( "loc", l_url || t1.uri_template )
-            ) order by t1.display_seq
+              ,xmlelement( "loc", l_url || t1.process_name )
+            ) order by t1.execution_sequence
           )
         )
       )
     as blob encoding 'UTF-8' indent size=2)
     into l_xml
-    from blog_ords_templates t1
+    from apex_application_page_proc t1
     where 1 = 1
-    and t1.is_active = 1
-    and t1.template_group = 'SITEMAP'
-    and not exists(
+    and t1.application_id = p_app_id
+    and t1.page_id = p_app_page_id
+    and t1.build_option = p_build_option
+    and exists(
       select 1
       from apex_application_build_options bo
       where 1 = 1
-      and bo.application_id = l_app_id
-      and bo.build_option_status = 'Exclude'
+      and bo.application_id = p_app_id
+      and bo.build_option_name = p_build_option
+      and bo.build_option_status = 'Include'
       and bo.build_option_name = t1.build_option
     );
 
@@ -288,15 +288,12 @@ as
   end sitemap_index;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure sitemap_main
+  procedure sitemap_main(
+    p_app_id in varchar2
+  )
   as
-    l_xml     blob;
-    l_app_id  varchar2(256);
-    l_pub_id  number;
+    l_xml blob;
   begin
-
-    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
-    l_pub_id := to_number( l_app_id );
 
     select xmlserialize( document
       xmlelement(
@@ -305,9 +302,8 @@ as
         (
           xmlagg(
             xmlelement( "url"
-              ,xmlelement( "loc",  blog_url.get_tab(
-                                   p_app_id  => l_app_id
-                                  ,p_app_page_id => t1.page_alias
+              ,xmlelement( "loc", blog_url.get_tab(
+                                   p_app_page_id => t1.page_alias
                                   ,p_canonical => 'YES'
                                 )
               )
@@ -325,7 +321,7 @@ as
         select 1
         from apex_application_build_options bo
         where 1 = 1
-          and bo.application_id = l_pub_id
+          and bo.application_id = p_app_id
           and bo.build_option_name = t1.build_option
           and bo.build_option_status = 'Exclude'
       )
@@ -342,11 +338,8 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_posts
   as
-    l_xml     blob;
-    l_app_id  varchar2(256);
+    l_xml blob;
   begin
-
-    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
 
     select xmlserialize( document
       xmlelement(
@@ -356,8 +349,7 @@ as
           xmlagg(
             xmlelement( "url"
               ,xmlelement( "loc", blog_url.get_post(
-                                     p_app_id     => l_app_id
-                                    ,p_post_id    => posts.post_id
+                                     p_post_id    => posts.post_id
                                     ,p_canonical  => 'YES'
                                   )
               )
@@ -382,11 +374,8 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_categories
   as
-    l_xml     blob;
-    l_app_id  varchar2(256);
+    l_xml blob;
   begin
-
-    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
 
     select xmlserialize( document
       xmlelement(
@@ -396,8 +385,7 @@ as
           xmlagg(
             xmlelement( "url"
               ,xmlelement( "loc", blog_url.get_category(
-                                     p_app_id       => l_app_id
-                                    ,p_category_id  => cat.category_id
+                                     p_category_id  => cat.category_id
                                     ,p_canonical    => 'YES'
                                   )
               )
@@ -421,11 +409,8 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_archives
   as
-    l_xml     blob;
-    l_app_id  varchar2(256);
+    l_xml blob;
   begin
-
-    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
 
     select xmlserialize( document
       xmlelement(
@@ -435,8 +420,7 @@ as
           xmlagg(
             xmlelement( "url"
               ,xmlelement( "loc", blog_url.get_archive(
-                                     p_app_id     => l_app_id
-                                    ,p_archive_id => arc.archive_year
+                                     p_archive_id => arc.archive_year
                                     ,p_canonical  => 'YES'
                                   )
               )
@@ -460,11 +444,8 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_tags
   as
-    l_xml     blob;
-    l_app_id  varchar2(256);
+    l_xml blob;
   begin
-
-    l_app_id := blog_util.get_attribute_value( 'G_PUB_APP_ID' );
 
     select xmlserialize( document
       xmlelement(
@@ -474,8 +455,7 @@ as
           xmlagg(
             xmlelement( "url"
               ,xmlelement( "loc", blog_url.get_tag(
-                                     p_app_id     => l_app_id
-                                    ,p_tag_id     => tags.tag_id
+                                     p_tag_id     => tags.tag_id
                                     ,p_canonical  => 'YES'
                                   )
               )

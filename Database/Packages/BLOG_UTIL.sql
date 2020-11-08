@@ -28,51 +28,60 @@ as
 --                            ORA error is between -20999 and 20901
 --                            Changed procedure get_post_pagination to raises ORA -20901 when no data found
 --    Jari Laine 19.05.2020   Removed global constants
+--    Jari Laine 05.11.2020   Procedure render_dynamic_content
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global constants
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-
-  g_number_format constant varchar2(40)   := 'fm99999999999999999999999999999999999999';
-
+-- none
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function apex_error_handler (
-    p_error           in apex_error.t_error
+    p_error             in apex_error.t_error
   ) return apex_error.t_error_result;
+
+  function int_to_vc2(
+    p_value in number
+  ) return varchar2;
 --------------------------------------------------------------------------------
   function get_attribute_value(
-    p_attribute_name  in varchar2
+    p_attribute_name    in varchar2
   ) return varchar2 result_cache;
 --------------------------------------------------------------------------------
   procedure initialize_items(
-    p_app_id          in varchar2
+    p_app_id            in varchar2
   );
 --------------------------------------------------------------------------------
   function get_post_title(
-    p_post_id         in varchar2,
-    p_escape          in boolean
+    p_post_id           in varchar2,
+    p_escape            in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure get_post_pagination(
-    p_post_id         in varchar2,
-    p_post_title      out nocopy varchar2,
-    p_newer_id        out nocopy varchar2,
-    p_newer_title     out nocopy varchar2,
-    p_older_id        out nocopy varchar2,
-    p_older_title     out nocopy varchar2
+    p_post_id           in varchar2,
+    p_post_title        out nocopy varchar2,
+    p_newer_id          out nocopy varchar2,
+    p_newer_title       out nocopy varchar2,
+    p_older_id          out nocopy varchar2,
+    p_older_title       out nocopy varchar2
   );
 --------------------------------------------------------------------------------
   function get_category_title(
-    p_category_id     in varchar2,
-    p_escape          in boolean
+    p_category_id       in varchar2,
+    p_escape            in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_tag(
-    p_tag_id          in varchar2
+    p_tag_id            in varchar2
   ) return varchar2;
+--------------------------------------------------------------------------------
+  procedure render_dynamic_content(
+    p_content_type      in varchar2,
+    p_content_static_id in varchar2,
+    p_date_format       in varchar2
+  );
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
@@ -206,6 +215,15 @@ as
     return l_result;
 
   end apex_error_handler;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function int_to_vc2(
+    p_value in number
+  ) return varchar2
+  as
+  begin
+    return to_char( p_value,  'fm99999999999999999999999999999999999999' );
+  end int_to_vc2;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_attribute_value(
@@ -432,9 +450,9 @@ as
     ;
 
     p_post_title  := l_post_title;
-    p_newer_id    := to_char( l_newer_id, g_number_format );
+    p_newer_id    := int_to_vc2( l_newer_id );
     p_newer_title := l_newer_title;
-    p_older_id    := to_char( l_older_id, g_number_format );
+    p_older_id    := int_to_vc2( l_older_id );
     p_older_title := l_older_title;
 
     apex_debug.info( 'Fetch post: %s next_id: %s prev_id: %s', p_post_id, p_newer_id, p_older_id );
@@ -586,6 +604,41 @@ as
     raise;
 
   end get_tag;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure render_dynamic_content(
+    p_content_type      in varchar2,
+    p_content_static_id in varchar2,
+    p_date_format       in varchar2
+  )
+  as
+  begin
+
+    for c1 in(
+      select t1.content_desc
+        ,t1.content_html
+        ,t1.changed_on
+      from blog_dynamic_content t1
+      where 1 = 1
+      and t1.is_active = 1
+      and t1.content_type = p_content_type
+      and t1.content_static_id = p_content_static_id
+    ) loop
+
+      sys.htp.p( '<h1>' || c1.content_desc || '</h1>' );
+
+      sys.htp.p( c1.content_html );
+
+      sys.htp.p(
+          apex_lang.message(
+             'BLOG_INFO_LAST_UPDATED'
+            ,to_char( c1.changed_on, p_date_format )
+          )
+        );
+
+    end loop;
+
+  end render_dynamic_content;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";

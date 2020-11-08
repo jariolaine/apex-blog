@@ -30,6 +30,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Ooops... We are sorry! Unexpected internal error have occurred.'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(41895368735673735)
+,p_name=>'BLOG_INFO_LAST_UPDATED'
+,p_message_text=>'<p>Document was last updated on %0.</p>'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(26263231362694367)
 ,p_name=>'BLOG_MSG_NO_DATA_FOUND'
 ,p_message_text=>'No Records Found'

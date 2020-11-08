@@ -181,7 +181,7 @@ as
     l_post_id varchar2(256);
   begin
 
-    l_post_id := to_char( p_post_id, blog_util.g_number_format );
+    l_post_id := blog_util.int_to_vc2( p_post_id );
     return
       get_post(
          p_post_id      => l_post_id
@@ -248,7 +248,7 @@ as
     l_category_id varchar2(256);
   begin
 
-    l_category_id := to_char( p_category_id, blog_util.g_number_format );
+    l_category_id := blog_util.int_to_vc2( p_category_id );
     return
       get_category(
          p_category_id  => l_category_id
@@ -307,7 +307,7 @@ as
     l_archive_id varchar2(256);
   begin
 
-    l_archive_id := to_char( p_archive_id, blog_util.g_number_format );
+    l_archive_id := blog_util.int_to_vc2( p_archive_id );
     return
       get_archive(
          p_archive_id   => l_archive_id
@@ -367,7 +367,7 @@ as
     l_tag_id varchar2(256);
   begin
 
-    l_tag_id := to_char( p_tag_id, blog_util.g_number_format );
+    l_tag_id := blog_util.int_to_vc2( p_tag_id );
 
     return
       case p_canonical
@@ -399,7 +399,7 @@ as
     l_subs_id varchar2(256);
   begin
 
-    l_subs_id := to_char( p_subscription_id, blog_util.g_number_format );
+    l_subs_id := blog_util.int_to_vc2( p_subscription_id );
     -- workaround because APEX 19.2
     -- apex_page.get_url don't have parameter p_plain_url
     l_url := 'f?p='
