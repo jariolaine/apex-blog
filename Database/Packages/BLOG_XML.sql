@@ -31,7 +31,7 @@ as
   );
 --------------------------------------------------------------------------------
   procedure rss_xsl(
-    p_css_file      in varchar2
+    p_ws_images in varchar2
   );
 --------------------------------------------------------------------------------
   procedure sitemap_index(
@@ -176,12 +176,18 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss_xsl(
-    p_css_file in varchar2
+    p_ws_images in varchar2
   )
   as
-    l_xml     xmltype;
-    l_xsl     blob;
+    l_css varchar2(1024);
+    l_xml xmltype;
+    l_xsl blob;
   begin
+
+    l_css := apex_util.host_url('APEX_PATH');
+    l_css := substr( l_css, instr( l_css, '/', 1, 3 ) );
+    l_css := l_css || p_ws_images;
+    l_css := l_css || blog_util.get_attribute_value( 'G_RSS_XSL_CSS_URL' );
 
     l_xml :=
       sys.xmltype.createxml('
@@ -197,7 +203,7 @@ as
               <title>
                 <xsl:value-of select="title" />
               </title>
-              <link rel="stylesheet" type="text/css" href="' || p_css_file || '" />
+              <link rel="stylesheet" type="text/css" href="' || l_css || '" />
             </head>
             <body>
               <h1 class="title"><a href="{ link }"><xsl:value-of select="title" /></a></h1>

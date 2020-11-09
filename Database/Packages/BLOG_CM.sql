@@ -26,6 +26,7 @@ as
 --    Jari Laine 22.06.2020 - Bug fix to function is_integer
 --                            Added parameters p_min and p_max to function is_integer
 --    Jari Laine 30.09.2020 - Added procedure google_post_authentication
+--    Jari Laine 08.11.2020 - Added procedure render_url_info
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -179,6 +180,8 @@ as
     p_post_id         in varchar2,
     p_email_template  in varchar2
   );
+--------------------------------------------------------------------------------
+  procedure render_url_info;
 --------------------------------------------------------------------------------
 end "BLOG_CM";
 /
@@ -1247,6 +1250,48 @@ as
 
   end send_reply_notify;
 --------------------------------------------------------------------------------
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure render_url_info
+  as
+  begin
+    sys.htp.p( '<p>' );
+    sys.htp.p(
+      apex_lang.message(
+        'BLOG_URL_INFO_HOME'
+        ,blog_url.get_tab(
+          p_app_id => blog_util.get_attribute_value( 'G_PUB_APP_ID' )
+          ,p_app_page_id => 'home'
+          ,p_canonical => 'YES'
+        )
+      )
+    );
+    sys.htp.p( '</p><p>' );
+    sys.htp.p(
+      apex_lang.message(
+        'BLOG_URL_INFO_SITEMAP'
+        ,blog_url.get_tab(
+           p_app_id => blog_util.get_attribute_value( 'G_PUB_APP_ID' )
+          ,p_app_page_id => 'home'
+          ,p_request => 'application_process=sitemapindex.xml'
+          ,p_canonical => 'YES'
+        )
+      )
+    );
+    sys.htp.p( '</p><p>' );
+    sys.htp.p(
+      apex_lang.message(
+        'BLOG_URL_INFO_RSS'
+        ,blog_url.get_tab(
+           p_app_id => blog_util.get_attribute_value( 'G_PUB_APP_ID' )
+          ,p_app_page_id => 'home'
+          ,p_request => 'application_process=rss.xml'
+          ,p_canonical => 'YES'
+        )
+      )
+    );
+    sys.htp.p( '</p>' );
+  end render_url_info;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 end "BLOG_CM";
 /

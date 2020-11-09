@@ -9,6 +9,10 @@ prompt --install
 @@application/shared_components/navigation/lists/settings.sql
 @@application/shared_components/files/app_icon_svg.sql
 @@application/shared_components/files/app_icon_css.sql
+@@application/shared_components/files/js_admin_js.sql
+@@application/shared_components/files/js_blog_js.sql
+@@application/shared_components/files/css_chkeditor_css.sql
+@@application/shared_components/files/css_style_css.sql
 @@application/plugin_settings.sql
 @@application/shared_components/security/authorizations/bloggers.sql
 @@application/shared_components/security/authorizations/workspace_group_bloggers.sql

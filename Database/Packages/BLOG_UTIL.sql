@@ -77,6 +77,10 @@ as
     p_tag_id            in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
+  procedure check_archive_exists(
+    p_archive_id  in varchar2
+  );
+--------------------------------------------------------------------------------
   procedure render_dynamic_content(
     p_content_type      in varchar2,
     p_content_static_id in varchar2,
@@ -381,6 +385,11 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
+    -- show http error
+    owa_util.status_line( 404 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   when others
@@ -394,6 +403,11 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
+    -- show http error
+    owa_util.status_line( 400 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   end get_post_title;
@@ -467,9 +481,15 @@ as
       ,p2 => coalesce( p_post_id, '(null)' )
     );
 
+    -- show http error
+    owa_util.status_line( 404 );
+    apex_application.stop_apex_engine;
+
+    raise;
+
     -- We wan't show errors between -20999 and -20901 on APEX error page
     -- see function apex_error_handler
-    raise_application_error(-20901, 'Post not found.');
+--    raise_application_error(-20901, 'Post not found.');
 
   when others
   then
@@ -484,6 +504,11 @@ as
       ,p5 => 'p_older_id'
       ,p6 => p_older_id
     );
+
+    -- show http error
+    owa_util.status_line( 400 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   end get_post_pagination;
@@ -536,6 +561,11 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
+    -- show http error
+    owa_util.status_line( 404 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   when others then
@@ -547,7 +577,13 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
+    -- show http error
+    owa_util.status_line( 400 );
+    apex_application.stop_apex_engine;
+
     raise;
+
   end get_category_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -590,6 +626,11 @@ as
       ,p1 => 'p_tag_id'
       ,p2 => coalesce( p_tag_id, '(null)' )
     );
+
+    -- show http error
+    owa_util.status_line( 404 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   when others
@@ -601,9 +642,78 @@ as
       ,p1 => 'p_tag_id'
       ,p2 => coalesce( p_tag_id, '(null)' )
     );
+
+    -- show http error
+    owa_util.status_line( 400 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   end get_tag;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure check_archive_exists(
+    p_archive_id  in varchar2
+  )
+  as
+    l_archive_id  number;
+    l_value       number;
+  begin
+
+    apex_debug.enter(
+      'blog_util.check_archive_exists'
+      ,'p_archive_id'
+      ,p_archive_id
+    );
+
+    if p_archive_id is null then
+      raise no_data_found;
+    end if;
+
+    l_archive_id := to_number( p_archive_id );
+
+    -- fetch and return tag name
+    select t1.archive_year
+    into l_value
+    from blog_v_archive_year t1
+    where 1 = 1
+    and t1.archive_year = l_archive_id
+    ;
+    apex_debug.info( 'Fetch archive: %s return: %s', p_archive_id, l_value );
+
+  exception when no_data_found
+  then
+
+    apex_debug.warn(
+       p_message => 'No data found. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_archive_id'
+      ,p2 => coalesce( p_archive_id, '(null)' )
+    );
+
+    -- show http error
+    owa_util.status_line( 404 );
+    apex_application.stop_apex_engine;
+
+    raise;
+
+  when others
+  then
+
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_archive_id'
+      ,p2 => coalesce( p_archive_id, '(null)' )
+    );
+
+    -- show http error
+    owa_util.status_line( 400 );
+    apex_application.stop_apex_engine;
+
+    raise;
+
+  end check_archive_exists;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure render_dynamic_content(

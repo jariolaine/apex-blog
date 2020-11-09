@@ -1,3 +1,4 @@
+/*//out:../../css/core/Elements.css*/
 /**************************************
 * Elements
 **************************************/
@@ -16,6 +17,7 @@ blockquote p {
   background-color: #8c8c8c;
   border-color: #8c8c8c;
 }
+/*//out:../../css/core/Logo.css*/
 /**************************************
 * Logo
 **************************************/
@@ -44,6 +46,7 @@ blockquote p {
     display: none!important;
   }
 }
+/*//out:../../css/core/Regions.css*/
 /**************************************
 * Region
 **************************************/
@@ -70,6 +73,7 @@ blockquote p {
   overflow: visible;
   width: 1%;
 }
+/*//out:../../css/core/ClassicReport.css*/
 /**************************************
 * Classic reports
 **************************************/
@@ -84,6 +88,7 @@ blockquote p {
   text-align: right;
   width: 100%;
 }
+/*//out:../../css/core/PostReport.css*/
 /**************************************
 * Post report
 **************************************/
@@ -91,7 +96,7 @@ blockquote p {
   background-color: #ffffff;
   margin-bottom: 1.6rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 2px;
+  border-radius: 4px;
   box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);
   padding: 1.6rem;
 }
@@ -135,7 +140,7 @@ blockquote p {
   background-color: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);
-  border-radius: 2px;
+  border-radius: 4px;
   padding: 0.4rem;
 }
 .z-post--largeMargin .z-post {
@@ -170,12 +175,13 @@ blockquote p {
     font-size: 1.4em;
   }
 }
+/*//out:../../css/core/ContetReport.css*/
 /**************************************
 * General custom report
 **************************************/
 .z-Content .z-Content--Row {
   border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 2px;
+  border-radius: 4px;
   box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);
   margin-bottom: 1.6rem;
 }
@@ -199,6 +205,7 @@ blockquote p {
 .z-Content--Stacked .z-Content--Row:first-child .z-Content--Title {
   border-top: none;
 }
+/*//out:../../css/core/ProgramCode.css*/
 /**************************************
 * Program code formatting
 **************************************/
@@ -214,7 +221,7 @@ pre.z-program-code {
   border: @code-border;
 	box-shadow: @code-box-shadow;
 */
-  border-radius: 2px;
+  border-radius: 4px;
 }
 pre.z-program-code code {
   font-family: inherit;
@@ -248,6 +255,7 @@ pre.z-program-code code:first-child:before {
 pre.z-program-code code:last-child:before {
   border-bottom: 1px solid rgba(0, 0, 0, 0.055);
 }
+/*//out:../../css/core/AboutContent.css*/
 /**************************************
 * About content
 **************************************/
@@ -283,6 +291,7 @@ pre.z-program-code code:last-child:before {
     align-items: center;
   }
 }
+/*//out:../../css/core/Comments.css*/
 /**************************************
 * Comments report
 **************************************/
@@ -297,6 +306,7 @@ pre.z-program-code code:last-child:before {
 .z-comment .t-Comments-comment {
   overflow-wrap: break-word;
 }
+/*//out:../../css/core/Modifiers.css*/
 /**************************************
 * Modifiers
 **************************************/
@@ -307,6 +317,7 @@ pre.z-program-code code:last-child:before {
   display: none!important;
   visibility: hidden!important;
 }
+/*//out:../../css/core/StatusMarker.css*/
 /**************************************
 * Status Marker
 **************************************/
@@ -335,43 +346,11 @@ pre.z-program-code code:last-child:before {
   border-color: #c00 transparent transparent #c00;
 }
 /**************************************
-* Archives and links
+* Media list report extra classes
 **************************************/
-.z-listStacked--Report ul {
-  padding: 1.6rem;
+.z-border-radius {
+  border-radius: 4px;
 }
-.z-listStacked--Report ul:first-child {
-  display: none!important;
-  visibility: hidden!important;
-}
-.z-listStacked--Header {
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.075);
-  margin: 0;
-  padding: 1.2rem;
-  font-size: 1.6rem;
-  font-weight: 500;
-  line-height: 2.4rem;
-}
-.z-listStacked--Header:nth-child(1) {
-  border-top: none;
-}
-/**************************************
-* Files media list report
-**************************************/
 .z-MediaList--files .t-MediaList-title {
   word-break: break-word;
-}
-/**************************************
-* Links media list report
-**************************************/
-.z-noDataFound .t-MediaList-body {
-  padding: 0;
-}
-.z-noDataFound .t-MediaList-desc {
-  text-align: center;
-  color: #262626;
-  font-size: 1.2rem;
-  line-height: 2rem;
-  padding: 2.2rem;
 }

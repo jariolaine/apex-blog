@@ -32,7 +32,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201108130810'
+,p_last_upd_yyyymmddhh24miss=>'20201109163342'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6432040642894060)
@@ -205,9 +205,7 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'rss.xsl'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_xml.rss_xsl(',
-'  p_css_file => apex_plugin_util.get_plsql_expression_result (',
-'    p_plsql_expression => blog_util.get_attribute_value(''G_RSS_XSL_CSS_URL'')',
-'  )',
+'  p_ws_images => :APP_IMAGES',
 ');'))
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_api.id(8635198962090938)

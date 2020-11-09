@@ -1303,6 +1303,10 @@ as
     p_tag_id            in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
+  procedure check_archive_exists(
+    p_archive_id  in varchar2
+  );
+--------------------------------------------------------------------------------
   procedure render_dynamic_content(
     p_content_type      in varchar2,
     p_content_static_id in varchar2,
@@ -1607,6 +1611,11 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
+    -- show http error
+    owa_util.status_line( 404 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   when others
@@ -1620,6 +1629,11 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
+    -- show http error
+    owa_util.status_line( 400 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   end get_post_title;
@@ -1693,9 +1707,15 @@ as
       ,p2 => coalesce( p_post_id, '(null)' )
     );
 
+    -- show http error
+    owa_util.status_line( 404 );
+    apex_application.stop_apex_engine;
+
+    raise;
+
     -- We wan't show errors between -20999 and -20901 on APEX error page
     -- see function apex_error_handler
-    raise_application_error(-20901, 'Post not found.');
+--    raise_application_error(-20901, 'Post not found.');
 
   when others
   then
@@ -1710,6 +1730,11 @@ as
       ,p5 => 'p_older_id'
       ,p6 => p_older_id
     );
+
+    -- show http error
+    owa_util.status_line( 400 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   end get_post_pagination;
@@ -1762,6 +1787,11 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
+    -- show http error
+    owa_util.status_line( 404 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   when others then
@@ -1773,7 +1803,13 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
+    -- show http error
+    owa_util.status_line( 400 );
+    apex_application.stop_apex_engine;
+
     raise;
+
   end get_category_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1816,6 +1852,11 @@ as
       ,p1 => 'p_tag_id'
       ,p2 => coalesce( p_tag_id, '(null)' )
     );
+
+    -- show http error
+    owa_util.status_line( 404 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   when others
@@ -1827,9 +1868,78 @@ as
       ,p1 => 'p_tag_id'
       ,p2 => coalesce( p_tag_id, '(null)' )
     );
+
+    -- show http error
+    owa_util.status_line( 400 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   end get_tag;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure check_archive_exists(
+    p_archive_id  in varchar2
+  )
+  as
+    l_archive_id  number;
+    l_value       number;
+  begin
+
+    apex_debug.enter(
+      'blog_util.check_archive_exists'
+      ,'p_archive_id'
+      ,p_archive_id
+    );
+
+    if p_archive_id is null then
+      raise no_data_found;
+    end if;
+
+    l_archive_id := to_number( p_archive_id );
+
+    -- fetch and return tag name
+    select t1.archive_year
+    into l_value
+    from blog_v_archive_year t1
+    where 1 = 1
+    and t1.archive_year = l_archive_id
+    ;
+    apex_debug.info( 'Fetch archive: %s return: %s', p_archive_id, l_value );
+
+  exception when no_data_found
+  then
+
+    apex_debug.warn(
+       p_message => 'No data found. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_archive_id'
+      ,p2 => coalesce( p_archive_id, '(null)' )
+    );
+
+    -- show http error
+    owa_util.status_line( 404 );
+    apex_application.stop_apex_engine;
+
+    raise;
+
+  when others
+  then
+
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_archive_id'
+      ,p2 => coalesce( p_archive_id, '(null)' )
+    );
+
+    -- show http error
+    owa_util.status_line( 400 );
+    apex_application.stop_apex_engine;
+
+    raise;
+
+  end check_archive_exists;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure render_dynamic_content(
@@ -2782,6 +2892,7 @@ as
 --    Jari Laine 22.06.2020 - Bug fix to function is_integer
 --                            Added parameters p_min and p_max to function is_integer
 --    Jari Laine 30.09.2020 - Added procedure google_post_authentication
+--    Jari Laine 08.11.2020 - Added procedure render_url_info
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -2935,6 +3046,8 @@ as
     p_post_id         in varchar2,
     p_email_template  in varchar2
   );
+--------------------------------------------------------------------------------
+  procedure render_url_info;
 --------------------------------------------------------------------------------
 end "BLOG_CM";
 /
@@ -4003,7 +4116,49 @@ as
 
   end send_reply_notify;
 --------------------------------------------------------------------------------
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure render_url_info
+  as
+  begin
+    sys.htp.p( '<p>' );
+    sys.htp.p(
+      apex_lang.message(
+        'BLOG_URL_INFO_HOME'
+        ,blog_url.get_tab(
+          p_app_id => blog_util.get_attribute_value( 'G_PUB_APP_ID' )
+          ,p_app_page_id => 'home'
+          ,p_canonical => 'YES'
+        )
+      )
+    );
+    sys.htp.p( '</p><p>' );
+    sys.htp.p(
+      apex_lang.message(
+        'BLOG_URL_INFO_SITEMAP'
+        ,blog_url.get_tab(
+           p_app_id => blog_util.get_attribute_value( 'G_PUB_APP_ID' )
+          ,p_app_page_id => 'home'
+          ,p_request => 'application_process=sitemapindex.xml'
+          ,p_canonical => 'YES'
+        )
+      )
+    );
+    sys.htp.p( '</p><p>' );
+    sys.htp.p(
+      apex_lang.message(
+        'BLOG_URL_INFO_RSS'
+        ,blog_url.get_tab(
+           p_app_id => blog_util.get_attribute_value( 'G_PUB_APP_ID' )
+          ,p_app_page_id => 'home'
+          ,p_request => 'application_process=rss.xml'
+          ,p_canonical => 'YES'
+        )
+      )
+    );
+    sys.htp.p( '</p>' );
+  end render_url_info;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 end "BLOG_CM";
 /
 CREATE OR REPLACE package  "BLOG_COMM"
@@ -5037,7 +5192,7 @@ as
   );
 --------------------------------------------------------------------------------
   procedure rss_xsl(
-    p_css_file      in varchar2
+    p_ws_images in varchar2
   );
 --------------------------------------------------------------------------------
   procedure sitemap_index(
@@ -5182,12 +5337,18 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss_xsl(
-    p_css_file in varchar2
+    p_ws_images in varchar2
   )
   as
-    l_xml     xmltype;
-    l_xsl     blob;
+    l_css varchar2(1024);
+    l_xml xmltype;
+    l_xsl blob;
   begin
+
+    l_css := apex_util.host_url('APEX_PATH');
+    l_css := substr( l_css, instr( l_css, '/', 1, 3 ) );
+    l_css := l_css || p_ws_images;
+    l_css := l_css || blog_util.get_attribute_value( 'G_RSS_XSL_CSS_URL' );
 
     l_xml :=
       sys.xmltype.createxml('
@@ -5203,7 +5364,7 @@ as
               <title>
                 <xsl:value-of select="title" />
               </title>
-              <link rel="stylesheet" type="text/css" href="' || p_css_file || '" />
+              <link rel="stylesheet" type="text/css" href="' || l_css || '" />
             </head>
             <body>
               <h1 class="title"><a href="{ link }"><xsl:value-of select="title" /></a></h1>

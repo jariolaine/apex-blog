@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_dialog_chained=>'N'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201104184258'
+,p_last_upd_yyyymmddhh24miss=>'20201109163032'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8857181938695778)
@@ -183,7 +183,7 @@ wwv_flow_api.create_page_item(
 ,p_protection_level=>'S'
 ,p_plugin_init_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'function ( options ) {',
-'  options.contentsCss = ["&WORKSPACE_IMAGES.blog/1.0/css/chkeditor.css"];',
+'  options.contentsCss = ["&APP_IMAGES.css/chkeditor.css"];',
 '  options = blog.admin.editorInit(options);',
 '  options.disallowedContent = "";',
 '  options.allowedContent.script = true;',

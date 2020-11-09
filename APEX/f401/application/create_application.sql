@@ -17,8 +17,8 @@ wwv_flow_api.create_flow(
 ,p_name=>nvl(wwv_flow_application_install.get_application_name,'Blog Public Pages')
 ,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'BLOG')
 ,p_application_group=>3742713376965422
-,p_application_group_name=>'BLOG_040000'
-,p_application_group_comment=>'APEX Blog'
+,p_application_group_name=>'Blog 4.0'
+,p_application_group_comment=>'APEX Blog applications. APEX version 20.1'
 ,p_page_view_logging=>'YES'
 ,p_page_protection_enabled_y_n=>'Y'
 ,p_checksum_salt=>'A62184636C79274387CBB6C9840762CA531D62DEA8CD2BD8BA55E607E36A7AF2'
@@ -54,9 +54,9 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201108130810'
+,p_last_upd_yyyymmddhh24miss=>'20201109163342'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>98
+,p_files_version=>101
 ,p_ui_type_name => null
 );
 wwv_flow_api.component_end;

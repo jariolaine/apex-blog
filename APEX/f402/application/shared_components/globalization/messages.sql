@@ -137,7 +137,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27923224953053769)
 ,p_name=>'BLOG_FEATURE_POST_PAGINATION'
-,p_message_text=>'Newer and older pagination buttons'
+,p_message_text=>'Newer and older post pagination buttons'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(8651776706351892)
@@ -318,6 +318,26 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(31444183113959558)
 ,p_name=>'BLOG_TXT_STATUS'
 ,p_message_text=>'Status'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(42684822108701097)
+,p_name=>'BLOG_URL_INFO_HOME'
+,p_message_text=>'Home page: <a target="_blank" href="%0">%0</a>'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(42687215594771663)
+,p_name=>'BLOG_URL_INFO_RSS'
+,p_message_text=>'RSS feed: <a target="_blank" href="%0">%0</a>'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(42685075385703287)
+,p_name=>'BLOG_URL_INFO_SITEMAP'
+,p_message_text=>'Sitemap: <a target="_blank" href="%0">%0</a>'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(42695780679927158)
+,p_name=>'BLOG_URL_INFO_TITLE'
+,p_message_text=>'Below you will find the main URLs of the blog'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348583930349647)

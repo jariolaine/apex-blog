@@ -10,6 +10,9 @@ prompt --install
 @@application/shared_components/navigation/lists/footer_links.sql
 @@application/shared_components/files/app_icon_css.sql
 @@application/shared_components/files/app_icon_svg.sql
+@@application/shared_components/files/css_rss_xsl_css.sql
+@@application/shared_components/files/css_style_css.sql
+@@application/shared_components/files/js_blog_js.sql
 @@application/plugin_settings.sql
 @@application/shared_components/navigation/navigation_bar.sql
 @@application/shared_components/logic/application_processes/initiatize_items.sql
@@ -81,7 +84,6 @@ prompt --install
 @@application/shared_components/user_interface/templates/report/search_results.sql
 @@application/shared_components/user_interface/templates/report/blog_posts_custom_1.sql
 @@application/shared_components/user_interface/templates/report/content_row.sql
-@@application/shared_components/user_interface/templates/report/media_list_002.sql
 @@application/shared_components/user_interface/templates/report/blog_general_custom_2.sql
 @@application/shared_components/user_interface/templates/label/hidden.sql
 @@application/shared_components/user_interface/templates/label/optional.sql
