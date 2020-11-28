@@ -200,16 +200,6 @@ wwv_flow_api.create_message(
 ,p_message_text=>'No Record Selected'
 );
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(8976378218714772)
-,p_name=>'BLOG_MSG_PREFERENCES_UPDATED'
-,p_message_text=>'Preferences Updated.'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(8946106054018263)
-,p_name=>'BLOG_MSG_PROFILE_UPDATED'
-,p_message_text=>'Profile Updated.'
-);
-wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19058970469252490)
 ,p_name=>'BLOG_PAR_CANONICAL_URL'
 ,p_message_text=>'Canonical URL'
@@ -300,6 +290,21 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Posts found from this category. Move posts to other category and then delete category.'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(42684822108701097)
+,p_name=>'BLOG_PUB_APP_LINK_HOME'
+,p_message_text=>'Home page canonical URL'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(42687215594771663)
+,p_name=>'BLOG_PUB_APP_LINK_RSS'
+,p_message_text=>'RSS feed'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(42685075385703287)
+,p_name=>'BLOG_PUB_APP_LINK_SITEMAP'
+,p_message_text=>'Sitemap'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(10038391422712576)
 ,p_name=>'BLOG_TAGS_UK1'
 ,p_message_text=>'Tag with same name already exists.'
@@ -318,26 +323,6 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(31444183113959558)
 ,p_name=>'BLOG_TXT_STATUS'
 ,p_message_text=>'Status'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(42684822108701097)
-,p_name=>'BLOG_URL_INFO_HOME'
-,p_message_text=>'Home page: <a target="_blank" href="%0">%0</a>'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(42687215594771663)
-,p_name=>'BLOG_URL_INFO_RSS'
-,p_message_text=>'RSS feed: <a target="_blank" href="%0">%0</a>'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(42685075385703287)
-,p_name=>'BLOG_URL_INFO_SITEMAP'
-,p_message_text=>'Sitemap: <a target="_blank" href="%0">%0</a>'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(42695780679927158)
-,p_name=>'BLOG_URL_INFO_TITLE'
-,p_message_text=>'Below you will find the main URLs of the blog'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348583930349647)

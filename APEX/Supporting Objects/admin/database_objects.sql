@@ -269,34 +269,6 @@ create table blog_link_groups(
 )
 /
 --------------------------------------------------------
---  DDL for Table BLOG_ORDS_TEMPLATES
---------------------------------------------------------
-create table blog_ords_templates(
-  id number( 38, 0 ) not null,
-  row_version number( 38, 0 ) not null,
-  created_on timestamp( 6 ) with local time zone not null,
-  created_by varchar2( 256 char ) not null,
-  changed_on timestamp( 6 ) with local time zone not null,
-  changed_by varchar2( 256 char ) not null,
-  is_active number( 1, 0 ) not null,
-  display_seq number(10,0) not null,
-  template_group varchar2( 256 char ) not null,
-  uri_template varchar2( 256 char ) not null,
-  etag_type varchar2( 256 char ) not null,
-  etag_query varchar2( 4000 char ),
-  http_method varchar2( 256 char ) not null,
-  source_type varchar2( 256 char ) not null,
-  handler_source varchar2( 256 char ) not null,
-  build_option varchar2( 256 char ),
-  notes varchar2(4000 char),
-  constraint blog_ords_templates_pk primary key( id ),
-  constraint blog_ords_templates_uk1 unique( uri_template  ),
-  constraint blog_ords_templates_ck1 check( row_version > 0 ),
-  constraint blog_ords_templates_ck2 check( is_active in( 0, 1 ) ),
-  constraint blog_ords_templates_ck3 check( display_seq > 0 )
-)
-/
---------------------------------------------------------
 --  DDL for Table BLOG_PAGES
 --------------------------------------------------------
 create table blog_pages(
@@ -762,6 +734,20 @@ and t1.is_active = 1
 with read only
 /
 --------------------------------------------------------
+--  DDL for View BLOG_V_DYNAMIC_CONTENT
+--------------------------------------------------------
+CREATE OR REPLACE FORCE VIEW "BLOG_V_DYNAMIC_CONTENT" ("CONTENT_STATIC_ID", "CHANGED_ON", "DISPLAY_SEQ", "CONTENT_DESC", "CONTENT_HTML", "CONTENT_TYPE") AS
+  select t1.content_static_id
+  ,t1.changed_on
+  ,t1.display_seq
+  ,t1.content_desc
+  ,t1.content_html
+  ,t1.content_type
+from blog_dynamic_content t1
+where 1 = 1
+and t1.is_active = 1
+;
+--------------------------------------------------------
 --  DDL for View BLOG_V_FILES
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "ROW_VERSION", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC") AS
@@ -809,25 +795,6 @@ join blog_link_groups t2
   on t1.link_group_id = t2.id
 where 1 = 1
 and t1.is_active * t2.is_active > 0
-with read only
-/
---------------------------------------------------------
---  DDL for View BLOG_V_LINK_GROUPS
---------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_LINK_GROUPS" ( "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ") AS
-  select t1.id        as group_id
-  ,t1.title           as group_title
-  ,t1.display_seq     as group_display_seq
-from blog_link_groups t1
-where 1 = 1
-and t1.is_active = 1
-and exists(
-  select 1
-  from blog_links x1
-  where 1 = 1
-  and x1.is_active = 1
-  and x1.link_group_id = t1.id
-)
 with read only
 /
 --------------------------------------------------------
@@ -884,6 +851,48 @@ join blog_post_tags t2 on t1.id = t2.tag_id
 where 1 = 1
 and t1.is_active * t2.is_active > 0
 with read only
+/
+--------------------------------------------------------
+--  DDL for View BLOG_V_REP_APP_LINKS
+--------------------------------------------------------
+CREATE OR REPLACE FORCE VIEW "BLOG_V_REP_APP_LINKS" ("DISPLAY_SEQ", "LIST_LABEL", "LIST_LINK", "LIST_ICON") AS
+  select 1 as display_seq
+  ,apex_lang.message(
+    'BLOG_PUB_APP_LINK_HOME'
+  ) as list_label
+  ,blog_url.get_tab(
+     p_app_id       => blog_util.get_attribute_value( 'G_PUB_APP_ID' )
+    ,p_app_page_id  => 'home'
+    ,p_canonical    => 'YES'
+  ) as list_link
+  ,'fa-home' as list_icon
+from dual
+union all
+select 2 as display_seq
+  ,apex_lang.message(
+    'BLOG_PUB_APP_LINK_SITEMAP'
+  ) as list_label
+  ,blog_url.get_tab(
+     p_app_id       => blog_util.get_attribute_value( 'G_PUB_APP_ID' )
+    ,p_app_page_id  => 'home'
+    ,p_request      => 'application_process=sitemapindex.xml'
+    ,p_canonical    => 'YES'
+  ) as list_link
+  ,'fa-sitemap' as list_icon
+from dual
+union all
+select 3 as display_seq
+  ,apex_lang.message(
+    'BLOG_PUB_APP_LINK_RSS'
+  ) as list_label
+  ,blog_url.get_tab(
+     p_app_id       => blog_util.get_attribute_value( 'G_PUB_APP_ID' )
+    ,p_app_page_id  => 'home'
+    ,p_request      => 'application_process=rss.xml'
+    ,p_canonical    => 'YES'
+  ) as list_link
+  ,'fa-rss' as list_icon
+from dual
 /
 --------------------------------------------------------
 --  DDL for View BLOG_V_TAGS
@@ -1050,35 +1059,6 @@ select qry.rn         as display_seq
 from qry
 where 1 = 1
 and qry.rn <= 20
-with read only
-/
---------------------------------------------------------
---  DDL for View BLOG_V_REP_POST_BY_STATUS
---------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_REP_POST_BY_STATUS" ("APPLICATION_ID", "NUM_POSTS", "POST_STATUS") AS
-  with apex_lov as(
-  select v1.application_id
-    ,v1.return_value
-    ,v1.display_value
-  from apex_application_lov_entries v1
-  where 1 = 1
-  and v1.list_of_values_name = 'POST_STATUS'
-), blog_data as(
-  select v1.post_status
-    ,count(1) as num_posts
-  from blog_v_all_posts v1
-  where 1 = 1
-  group by v1.post_status
-)
-select q2.application_id
-  ,q1.num_posts
-  ,case
-    when q2.return_value is null
-    then q1.post_status
-    else q2.display_value
-   end as post_status
-from blog_data q1
-join apex_lov q2 on q1.post_status = q2.return_value
 with read only
 /
 CREATE OR REPLACE package  "BLOG_CTX"
@@ -1311,6 +1291,10 @@ as
     p_content_type      in varchar2,
     p_content_static_id in varchar2,
     p_date_format       in varchar2
+  );
+--------------------------------------------------------------------------------
+  procedure download_file (
+    p_file_name   in varchar2
   );
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
@@ -1668,25 +1652,50 @@ as
 
     l_post_id := to_number( p_post_id );
 
-    select q1.post_title
-      ,q1.newer_id
-      ,q1.newer_title
-      ,q1.older_id
-      ,q1.older_title
-    into l_post_title, l_newer_id, l_newer_title, l_older_id, l_older_title
-    from (
-      select
-         v1.post_id
+    with q1 as(
+      select --+ inline
+        v1.post_id
         ,v1.post_title
-        ,lag( v1.post_id ) over(order by v1.published_on desc) as newer_id
-        ,lag( v1.post_title ) over(order by v1.published_on desc) as newer_title
-        ,lead( v1.post_id ) over(order by v1.published_on desc) as older_id
-        ,lead( v1.post_title ) over(order by v1.published_on desc) as older_title
+        ,(
+          select --+ first_rows(1)
+            lkp1.id
+          from blog_posts lkp1
+          where 1 = 1
+          and lkp1.published_on > v1.published_on
+          order by lkp1.published_on asc
+          fetch first 1 rows only
+        ) as newer_id
+        ,(
+          select --+ first_rows(1)
+            lkp2.id
+          from blog_posts lkp2
+          where 1 = 1
+          and lkp2.published_on < v1.published_on
+          order by lkp2.published_on desc
+          fetch first 1 rows only
+        ) as older_id
       from blog_v_posts v1
       where 1 = 1
-    ) q1
+      and v1.post_id = l_post_id
+    )
+    select q1.post_title
+      ,q1.newer_id
+      ,(
+        select lkp3.post_title
+        from blog_v_posts lkp3
+        where 1 = 1
+        and lkp3.post_id = q1.newer_id
+      ) as newer_title
+      ,q1.older_id
+      ,(
+        select lkp4.post_title
+        from blog_v_posts lkp4
+        where 1 = 1
+        and lkp4.post_id = q1.older_id
+      ) as older_title
+    into l_post_title, l_newer_id, l_newer_title, l_older_id, l_older_title
+    from q1
     where 1 = 1
-    and q1.post_id = l_post_id
     ;
 
     p_post_title  := l_post_title;
@@ -1951,14 +1960,13 @@ as
   begin
 
     for c1 in(
-      select t1.content_desc
-        ,t1.content_html
-        ,t1.changed_on
-      from blog_dynamic_content t1
+      select v1.content_desc
+        ,v1.content_html
+        ,v1.changed_on
+      from blog_v_dynamic_content v1
       where 1 = 1
-      and t1.is_active = 1
-      and t1.content_type = p_content_type
-      and t1.content_static_id = p_content_static_id
+      and v1.content_type = p_content_type
+      and v1.content_static_id = p_content_static_id
     ) loop
 
       sys.htp.p( '<h1>' || c1.content_desc || '</h1>' );
@@ -1977,201 +1985,34 @@ as
   end render_dynamic_content;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-end "BLOG_UTIL";
-/
-CREATE OR REPLACE package "BLOG_ORDS"
-authid definer
-as
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---
---  DESCRIPTION
---    Procedure and functions for ORDS
---
---  MODIFIED (DD.MM.YYYY)
---    Jari Laine 09.01.2020 - Created
---    Jari Laine 28.03.2020 - Added procedure create_public_xml_module
---                            Local constants renamed
---    Jari Laine 09.04.2020 - Package reorganized and removed e.g.
---                            procedures create_public_xml_module and create_public_files_module
---    Jari Laine 17.05.2020 - Add get_ords_service function.
---                            Originaly function was in blog_xml package
---    Jari Laine 18.05.2020 - Add private constant c_module_name
---                            Removed function get_file_path_prefix
---                            Removed ORDS specific constants from package blog_util
---                            Removed function get_ords_service
---                            Added function get_module_path
---    Jari Laine 24.04.2020 - Combined all template creation to one procedure because
---                            templates metadata is stored to blog_ords_tempates
---
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure create_module(
-    p_app_id    in number,
-    p_base_path in varchar2 default null
-  );
---------------------------------------------------------------------------------
-  function get_module_path(
-    p_canonical     in varchar2 default 'NO'
-  ) return varchar2;
---------------------------------------------------------------------------------
-end "BLOG_ORDS";
-/
-
-
-CREATE OR REPLACE package body "BLOG_ORDS"
-as
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Private constants and variables
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  c_owner       constant varchar2(4000) := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
-  c_module_name constant varchar2(256)  := 'BLOG_PUBLIC_FILES';
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Private procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure create_templates(
-    p_app_id in number
+  procedure download_file (
+    p_file_name   in varchar2
   )
   as
+    l_file_t blog_v_files%rowtype;
   begin
 
-    for c1 in(
-      select t1.uri_template
-       ,t1.http_method
-       ,t1.source_type
-       ,t1.handler_source
-       ,t1.etag_type
-       ,t1.etag_query
-       ,t1.notes
-      from blog_ords_templates t1
-      where 1 = 1
-      and t1.is_active = 1
-      and not exists(
-        select 1
-        from apex_application_build_options bo
-        where 1 = 1
-        and bo.application_id = p_app_id
-        and bo.build_option_status = 'Exclude'
-        and bo.build_option_name = t1.build_option
-      )
-    ) loop
-
-      ords.define_template(
-        p_module_name     => c_module_name
-        ,p_pattern        => c1.uri_template
-        ,p_priority       => 0
-        ,p_etag_type      => c1.etag_type
-        ,p_etag_query     => c1.etag_query
-        ,p_comments       => c1.notes
-      );
-
-      ords.define_handler(
-        p_module_name     => c_module_name
-        ,p_pattern        => c1.uri_template
-        ,p_method         => c1.http_method
-        ,p_source_type    => c1.source_type
-        ,p_mimes_allowed  => null
-        ,p_comments       => c1.notes
-        ,p_source         => c1.handler_source
-      );
-
-    end loop;
-
-  end create_templates;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Global procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure create_module(
-    p_app_id    in number,
-    p_base_path in varchar2 default null
-  )
-  as
-    l_base_path varchar2(256);
-  begin
-
-    begin
-      -- query ORDS metadata to get resource url
-      select t2.uri_prefix as url
-      into l_base_path
-      from user_ords_schemas t1
-      join user_ords_modules t2
-        on t1.id = t2.schema_id
-      where 1 = 1
-        and t1.parsing_schema = c_owner
-        and t2.name = c_module_name
-      ;
-    exception when no_data_found then
-      l_base_path := null;
-    end;
-
-    l_base_path :=
-      case when p_base_path is not null
-      then p_base_path
-      else
-        case when l_base_path is not null
-        then l_base_path
-        else sys.dbms_random.string('l', 6)
-        end
-      end
+    select *
+    into l_file_t
+    from blog_v_files t1
+    where 1 = 1
+    and t1.is_download = 0
+    and t1.file_name = p_file_name
     ;
-    -- Static files module
-    ords.define_module(
-      p_module_name     => c_module_name
-      ,p_base_path      => l_base_path
-      ,p_items_per_page => 25
-      ,p_status         => 'PUBLISHED'
-      ,p_comments       => 'Blog static content from blog_files table and dynamic XML'
-    );
 
-    create_templates(
-      p_app_id => p_app_id
-    );
+    sys.owa_util.mime_header( coalesce ( l_file_t.mime_type, 'application/octet' ), false );
+    sys.htp.p( 'Cache-Control: public, max-age=3600' );
+    sys.owa_util.http_header_close;
 
-  end create_module;
+    sys.wpg_docload.download_file ( l_file_t.blob_content );
+
+  exception when no_data_found
+  then
+    owa_util.status_line( 404 );
+  end download_file;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_module_path(
-    p_canonical     in varchar2 default 'NO'
-  ) return varchar2
-  as
-    l_url   varchar2(4000);
-  begin
-
-    begin
-      -- query ORDS metadata to get resource url
-      select t1.pattern || t2.uri_prefix as url
-      into l_url
-      from user_ords_schemas t1
-      join user_ords_modules t2
-        on t1.id = t2.schema_id
-      where 1 = 1
-        and t1.parsing_schema = c_owner
-        and t2.name = c_module_name
-      ;
-    exception when no_data_found then
-      raise_application_error( -20001,  'Configuration not exists.' );
-      l_url := null;
-    end;
-
-    if p_canonical = 'YES'
-    then
-      l_url := blog_util.get_attribute_value( 'CANONICAL_URL' )
-        || l_url
-      ;
-    end if;
-
-    return l_url;
-
-  end get_module_path;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-end "BLOG_ORDS";
+end "BLOG_UTIL";
 /
 CREATE OR REPLACE package  "BLOG_PLUGIN"
 authid definer
@@ -2892,7 +2733,8 @@ as
 --    Jari Laine 22.06.2020 - Bug fix to function is_integer
 --                            Added parameters p_min and p_max to function is_integer
 --    Jari Laine 30.09.2020 - Added procedure google_post_authentication
---    Jari Laine 08.11.2020 - Added procedure render_url_info
+--    Jari Laine 28.11.2020 - Removed obsolete function get_comment_post_id
+--                            Renamed function google_post_authentication to post_authentication
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -2902,7 +2744,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   -- Called from: authentication schema Google
-  procedure google_post_authentication(
+  procedure post_authentication(
     p_user_email      in varchar2 default null
   );
 --------------------------------------------------------------------------------
@@ -3035,19 +2877,12 @@ as
   );
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 32
-  function get_comment_post_id(
-    p_comment_id      in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
-  -- Called from: admin app pages 33
   procedure send_reply_notify(
     p_app_id          in varchar2,
     p_app_name        in varchar2,
     p_post_id         in varchar2,
     p_email_template  in varchar2
   );
---------------------------------------------------------------------------------
-  procedure render_url_info;
 --------------------------------------------------------------------------------
 end "BLOG_CM";
 /
@@ -3238,7 +3073,7 @@ as
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure google_post_authentication(
+  procedure post_authentication(
     p_user_email in varchar2 default null
   )
   as
@@ -3285,7 +3120,7 @@ as
     apex_debug.error( 'Unhandled post authentication procedure error.');
     apex_debug.error( sqlerrm );
     raise;
-  end;
+  end post_authentication;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure get_blogger_details(
@@ -4030,29 +3865,6 @@ as
   end update_feature;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_comment_post_id(
-    p_comment_id in varchar2
-  ) return varchar2
-  as
-    l_comment_id  number;
-    l_post_id     number;
-  begin
-
-    l_comment_id := to_number( p_comment_id );
-
-    -- fetch and return post id for comment
-    select v1.post_id
-    into l_post_id
-    from blog_v_all_comments v1
-    where 1 = 1
-    and v1.id = l_comment_id
-    ;
-
-    return blog_util.int_to_vc2( l_post_id );
-
-  end get_comment_post_id;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   procedure send_reply_notify(
     p_app_id          in varchar2,
     p_app_name        in varchar2,
@@ -4115,48 +3927,6 @@ as
     end loop;
 
   end send_reply_notify;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure render_url_info
-  as
-  begin
-    sys.htp.p( '<p>' );
-    sys.htp.p(
-      apex_lang.message(
-        'BLOG_URL_INFO_HOME'
-        ,blog_url.get_tab(
-          p_app_id => blog_util.get_attribute_value( 'G_PUB_APP_ID' )
-          ,p_app_page_id => 'home'
-          ,p_canonical => 'YES'
-        )
-      )
-    );
-    sys.htp.p( '</p><p>' );
-    sys.htp.p(
-      apex_lang.message(
-        'BLOG_URL_INFO_SITEMAP'
-        ,blog_url.get_tab(
-           p_app_id => blog_util.get_attribute_value( 'G_PUB_APP_ID' )
-          ,p_app_page_id => 'home'
-          ,p_request => 'application_process=sitemapindex.xml'
-          ,p_canonical => 'YES'
-        )
-      )
-    );
-    sys.htp.p( '</p><p>' );
-    sys.htp.p(
-      apex_lang.message(
-        'BLOG_URL_INFO_RSS'
-        ,blog_url.get_tab(
-           p_app_id => blog_util.get_attribute_value( 'G_PUB_APP_ID' )
-          ,p_app_page_id => 'home'
-          ,p_request => 'application_process=rss.xml'
-          ,p_canonical => 'YES'
-        )
-      )
-    );
-    sys.htp.p( '</p>' );
-  end render_url_info;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_CM";
@@ -6043,39 +5813,6 @@ begin
 end;
 /
 --------------------------------------------------------
---  DDL for Trigger BLOG_ORDS_TEMPLATES_TRG
---------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_ORDS_TEMPLATES_TRG"
-before
-insert or
-update on blog_ords_templates
-for each row
-begin
-
-  if inserting then
-    :new.id           := coalesce( :new.id, blog_seq.nextval );
-    :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := coalesce( :new.created_on, localtimestamp );
-    :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
-    );
-  elsif updating then
-    :new.row_version := :old.row_version + 1;
-  end if;
-
-  :new.changed_on := localtimestamp;
-  :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
-  );
-
-end;
-/
---------------------------------------------------------
 --  DDL for Trigger BLOG_PAGES_TRG
 --------------------------------------------------------
 CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_PAGES_TRG"
@@ -6260,9 +5997,12 @@ end;
 --------------------------------------------------------
 CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_POST_TAGS_TRG"
 after
-insert or
-delete on blog_post_tags
+insert
+--or delete
+on blog_post_tags
 for each row
+declare
+  l_post_id number;
 begin
 
   if inserting

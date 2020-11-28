@@ -45,7 +45,7 @@ wwv_flow_api.create_flow(
 ,p_flow_unavailable_text=>'This application is currently unavailable at this time.'
 ,p_exact_substitutions_only=>'Y'
 ,p_browser_cache=>'N'
-,p_browser_frame=>'D'
+,p_browser_frame=>'S'
 ,p_runtime_api_usage=>'T:O'
 ,p_security_scheme=>wwv_flow_api.id(28359530175115492)
 ,p_rejoin_existing_sessions=>'N'
@@ -54,7 +54,7 @@ wwv_flow_api.create_flow(
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_friendly_url=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201109163951'
+,p_last_upd_yyyymmddhh24miss=>'20201128112909'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>199
 ,p_ui_type_name => null

@@ -51,7 +51,9 @@ blockquote p {
 * Region
 **************************************/
 .z-app-source {
-  padding: 0.4rem 0;
+  padding: 0.6rem 0;
+  margin-bottom: 1.6rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.075);
 }
 /**************************************
 * Interactive Grid
@@ -295,11 +297,6 @@ pre.z-program-code code:last-child:before {
 /**************************************
 * Comments report
 **************************************/
-.z-comment {
-  padding: 1.6rem;
-  margin-bottom: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.075);
-}
 .z-comment .t-Comments-body {
   width: 0;
 }

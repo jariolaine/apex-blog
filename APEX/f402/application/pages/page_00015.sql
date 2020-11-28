@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201015184534'
+,p_last_upd_yyyymmddhh24miss=>'20201128091754'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
@@ -44,14 +44,19 @@ wwv_flow_api.create_page_plug(
 '    when 1',
 '    then apex_page.get_url(',
 '      p_application  => :G_PUB_APP_ID',
-'      ,p_page        => ''FILES''',
+'      ,p_page        => ''REPOSITORY''',
 '      ,p_session     => null',
-'      ,p_debug       => ''NO''',
-'      ,p_clear_cache => ''11''',
-'      ,p_items       => ''P11_SEARCH_FILES''',
+'      ,p_items       => ''P11_FILE_NAME''',
 '      ,p_values      => v1.file_name',
 '    )',
-'    else :G_BLOG_STATIC_FILES || v1.file_name',
+'    else apex_page.get_url(',
+'      p_application  => :G_PUB_APP_ID',
+'      ,p_page        => ''HOME''',
+'      ,p_session     => null',
+'      ,p_request     => ''application_process=download''',
+'      ,p_items       => ''P1_FILE_NAME''',
+'      ,p_values      => v1.file_name',
+'    )',
 '   end                    as relative_path',
 '  ,v1.mime_type           as mime_type',
 '  ,v1.file_size           as file_size',

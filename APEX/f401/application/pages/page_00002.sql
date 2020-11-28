@@ -26,7 +26,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201108172413'
+,p_last_upd_yyyymmddhh24miss=>'20201128072758'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -34,7 +34,7 @@ wwv_flow_api.create_report_region(
 ,p_region_name=>'comments'
 ,p_template=>wwv_flow_api.id(6802870362267386)
 ,p_display_sequence=>20
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
+,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Comments--basic:t-Comments--iconsRounded:t-Report--hideNoPagination'
 ,p_new_grid_row=>false
 ,p_grid_column_span=>9
@@ -300,7 +300,6 @@ wwv_flow_api.create_report_columns(
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27860638995256805)
 ,p_plug_name=>'Pagination'
-,p_region_css_classes=>'u-textCenter1'
 ,p_region_template_options=>'#DEFAULT#:t-Region--removeHeader:t-Region--scrollBody'
 ,p_plug_template=>wwv_flow_api.id(6802870362267386)
 ,p_plug_display_sequence=>10
@@ -320,7 +319,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(27860638995256805)
 ,p_button_name=>'NEWER'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--link:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--link:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(6855239813267414)
 ,p_button_image_alt=>'&P2_NEWER_TITLE.'
 ,p_button_position=>'BOTTOM'
@@ -328,7 +327,7 @@ wwv_flow_api.create_page_button(
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ALIAS.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_NEWER_ID.'
 ,p_button_condition=>'P2_NEWER_ID'
 ,p_button_condition_type=>'ITEM_IS_NOT_NULL'
-,p_button_css_classes=>'z-text-wrap'
+,p_button_css_classes=>'z-text-wrap u-pullLeft padding-left-none'
 ,p_icon_css_classes=>'fa-angle-left'
 ,p_required_patch=>wwv_flow_api.id(27921011391085431)
 );
@@ -338,14 +337,14 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(27860638995256805)
 ,p_button_name=>'OLDER'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--link:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--link:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(6855239813267414)
 ,p_button_image_alt=>'&P2_OLDER_TITLE.'
 ,p_button_position=>'BOTTOM'
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ALIAS.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_OLDER_ID.'
 ,p_button_condition=>'P2_OLDER_ID'
 ,p_button_condition_type=>'ITEM_IS_NOT_NULL'
-,p_button_css_classes=>'z-text-wrap'
+,p_button_css_classes=>'z-text-wrap u-pullRight padding-right-none'
 ,p_icon_css_classes=>'fa-angle-right'
 ,p_required_patch=>wwv_flow_api.id(27921011391085431)
 );

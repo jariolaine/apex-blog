@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201017055536'
+,p_last_upd_yyyymmddhh24miss=>'20201128102736'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8575301514518303)
@@ -80,7 +80,7 @@ wwv_flow_api.create_page_button(
 ,p_button_image_alt=>'Login with Google'
 ,p_button_position=>'REGION_TEMPLATE_NEXT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:1:&SESSION.:APEX_AUTHENTICATION=Google:&DEBUG.:::'
-,p_icon_css_classes=>'fa-envelope'
+,p_icon_css_classes=>'fa-envelope-user'
 ,p_required_patch=>wwv_flow_api.id(35675193135740905)
 );
 wwv_flow_api.create_page_item(

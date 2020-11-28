@@ -14,6 +14,7 @@ prompt --install
 @@application/shared_components/files/css_style_css.sql
 @@application/shared_components/files/js_blog_js.sql
 @@application/plugin_settings.sql
+@@application/shared_components/security/authorizations/administration_rights.sql
 @@application/shared_components/navigation/navigation_bar.sql
 @@application/shared_components/logic/application_processes/initiatize_items.sql
 @@application/shared_components/logic/application_processes/redirect_to_search_page.sql

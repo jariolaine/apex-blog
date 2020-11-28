@@ -87,6 +87,10 @@ as
     p_date_format       in varchar2
   );
 --------------------------------------------------------------------------------
+  procedure download_file (
+    p_file_name   in varchar2
+  );
+--------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
 
@@ -442,25 +446,50 @@ as
 
     l_post_id := to_number( p_post_id );
 
-    select q1.post_title
-      ,q1.newer_id
-      ,q1.newer_title
-      ,q1.older_id
-      ,q1.older_title
-    into l_post_title, l_newer_id, l_newer_title, l_older_id, l_older_title
-    from (
-      select
-         v1.post_id
+    with q1 as(
+      select --+ inline
+        v1.post_id
         ,v1.post_title
-        ,lag( v1.post_id ) over(order by v1.published_on desc) as newer_id
-        ,lag( v1.post_title ) over(order by v1.published_on desc) as newer_title
-        ,lead( v1.post_id ) over(order by v1.published_on desc) as older_id
-        ,lead( v1.post_title ) over(order by v1.published_on desc) as older_title
+        ,(
+          select --+ first_rows(1)
+            lkp1.id
+          from blog_posts lkp1
+          where 1 = 1
+          and lkp1.published_on > v1.published_on
+          order by lkp1.published_on asc
+          fetch first 1 rows only
+        ) as newer_id
+        ,(
+          select --+ first_rows(1)
+            lkp2.id
+          from blog_posts lkp2
+          where 1 = 1
+          and lkp2.published_on < v1.published_on
+          order by lkp2.published_on desc
+          fetch first 1 rows only
+        ) as older_id
       from blog_v_posts v1
       where 1 = 1
-    ) q1
+      and v1.post_id = l_post_id
+    )
+    select q1.post_title
+      ,q1.newer_id
+      ,(
+        select lkp3.post_title
+        from blog_v_posts lkp3
+        where 1 = 1
+        and lkp3.post_id = q1.newer_id
+      ) as newer_title
+      ,q1.older_id
+      ,(
+        select lkp4.post_title
+        from blog_v_posts lkp4
+        where 1 = 1
+        and lkp4.post_id = q1.older_id
+      ) as older_title
+    into l_post_title, l_newer_id, l_newer_title, l_older_id, l_older_title
+    from q1
     where 1 = 1
-    and q1.post_id = l_post_id
     ;
 
     p_post_title  := l_post_title;
@@ -725,14 +754,13 @@ as
   begin
 
     for c1 in(
-      select t1.content_desc
-        ,t1.content_html
-        ,t1.changed_on
-      from blog_dynamic_content t1
+      select v1.content_desc
+        ,v1.content_html
+        ,v1.changed_on
+      from blog_v_dynamic_content v1
       where 1 = 1
-      and t1.is_active = 1
-      and t1.content_type = p_content_type
-      and t1.content_static_id = p_content_static_id
+      and v1.content_type = p_content_type
+      and v1.content_static_id = p_content_static_id
     ) loop
 
       sys.htp.p( '<h1>' || c1.content_desc || '</h1>' );
@@ -749,6 +777,33 @@ as
     end loop;
 
   end render_dynamic_content;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure download_file (
+    p_file_name   in varchar2
+  )
+  as
+    l_file_t blog_v_files%rowtype;
+  begin
+
+    select *
+    into l_file_t
+    from blog_v_files t1
+    where 1 = 1
+    and t1.is_download = 0
+    and t1.file_name = p_file_name
+    ;
+
+    sys.owa_util.mime_header( coalesce ( l_file_t.mime_type, 'application/octet' ), false );
+    sys.htp.p( 'Cache-Control: public, max-age=3600' );
+    sys.owa_util.http_header_close;
+
+    sys.wpg_docload.download_file ( l_file_t.blob_content );
+
+  exception when no_data_found
+  then
+    owa_util.status_line( 404 );
+  end download_file;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";

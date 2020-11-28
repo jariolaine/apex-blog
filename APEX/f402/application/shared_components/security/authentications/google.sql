@@ -22,7 +22,7 @@ wwv_flow_api.create_authentication(
 ,p_attribute_09=>'email'
 ,p_attribute_11=>'N'
 ,p_invalid_session_type=>'LOGIN'
-,p_post_auth_process=>'blog_cm.google_post_authentication'
+,p_post_auth_process=>'blog_cm.post_authentication'
 ,p_use_secure_cookie_yn=>'N'
 ,p_ras_mode=>0
 ,p_switch_in_session_yn=>'Y'

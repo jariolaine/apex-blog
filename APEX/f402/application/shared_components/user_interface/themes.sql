@@ -22,7 +22,7 @@ wwv_flow_api.create_theme(
 ,p_reference_id=>4070917134413059350
 ,p_is_locked=>false
 ,p_default_page_template=>wwv_flow_api.id(8469116986518187)
-,p_default_dialog_template=>wwv_flow_api.id(8456403392518180)
+,p_default_dialog_template=>wwv_flow_api.id(8454173643518178)
 ,p_error_template=>wwv_flow_api.id(8455602087518179)
 ,p_printer_friendly_template=>wwv_flow_api.id(8469116986518187)
 ,p_breadcrumb_display_point=>'REGION_POSITION_01'

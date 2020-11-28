@@ -7,6 +7,7 @@ prompt --install
 @@application/shared_components/navigation/lists/desktop_navigation_bar.sql
 @@application/shared_components/navigation/lists/home.sql
 @@application/shared_components/navigation/lists/settings.sql
+@@application/shared_components/navigation/lists/public_application_links.sql
 @@application/shared_components/files/app_icon_svg.sql
 @@application/shared_components/files/app_icon_css.sql
 @@application/shared_components/files/js_admin_js.sql
@@ -15,7 +16,7 @@ prompt --install
 @@application/shared_components/files/css_style_css.sql
 @@application/plugin_settings.sql
 @@application/shared_components/security/authorizations/bloggers.sql
-@@application/shared_components/security/authorizations/workspace_group_bloggers.sql
+@@application/shared_components/security/authorizations/administration_rights.sql
 @@application/shared_components/navigation/navigation_bar.sql
 @@application/shared_components/logic/application_processes/get_blogger_details.sql
 @@application/shared_components/logic/application_processes/initialize_items.sql
@@ -23,12 +24,10 @@ prompt --install
 @@application/shared_components/logic/application_items/g_app_name.sql
 @@application/shared_components/logic/application_items/g_blogger_id.sql
 @@application/shared_components/logic/application_items/g_blogger_name.sql
-@@application/shared_components/logic/application_items/g_blog_static_files.sql
 @@application/shared_components/logic/application_items/g_post_title_date_format.sql
 @@application/shared_components/logic/application_items/g_pub_app_id.sql
 @@application/shared_components/logic/application_items/g_user_date_time_format.sql
 @@application/shared_components/logic/application_items/g_user_input_date_time_format.sql
-@@application/shared_components/logic/application_computations/g_blog_static_files.sql
 @@application/shared_components/logic/application_computations/g_user_date_time_format.sql
 @@application/shared_components/logic/application_computations/g_user_date_time_format_002.sql
 @@application/shared_components/logic/application_computations/g_user_input_date_time_format.sql
@@ -145,12 +144,8 @@ prompt --install
 @@application/pages/page_00030.sql
 @@application/pages/page_00031.sql
 @@application/pages/page_00032.sql
-@@application/pages/page_00033.sql
 @@application/pages/page_00201.sql
-@@application/pages/page_00301.sql
-@@application/pages/page_00500.sql
 @@application/pages/page_00501.sql
-@@application/pages/page_00503.sql
 @@application/pages/page_09999.sql
 @@application/pages/page_20010.sql
 @@application/pages/page_20011.sql

@@ -38,7 +38,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201003055911'
+,p_last_upd_yyyymmddhh24miss=>'20201126182350'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9834087769215232)
@@ -181,22 +181,20 @@ wwv_flow_api.create_region_column(
 ,p_source_expression=>'IS_ACTIVE'
 ,p_data_type=>'NUMBER'
 ,p_is_query_only=>false
-,p_item_type=>'NATIVE_SELECT_LIST'
+,p_item_type=>'NATIVE_YES_NO'
 ,p_heading=>'Status'
 ,p_heading_alignment=>'CENTER'
 ,p_display_sequence=>140
 ,p_value_alignment=>'CENTER'
 ,p_stretch=>'N'
+,p_attribute_01=>'CUSTOM'
+,p_attribute_02=>'1'
+,p_attribute_03=>'Enabled'
+,p_attribute_04=>'0'
+,p_attribute_05=>'Disabled'
 ,p_is_required=>true
-,p_lov_type=>'SHARED'
-,p_lov_id=>wwv_flow_api.id(8819403626737334)
-,p_lov_display_extra=>false
-,p_lov_display_null=>false
 ,p_enable_filter=>true
-,p_filter_operators=>'CASE_INSENSITIVE'
 ,p_filter_is_required=>false
-,p_filter_text_case=>'MIXED'
-,p_filter_exact_match=>true
 ,p_filter_lov_type=>'LOV'
 ,p_use_as_row_header=>false
 ,p_enable_sort_group=>true
@@ -209,8 +207,6 @@ wwv_flow_api.create_region_column(
 ,p_include_in_export=>true
 ,p_help_text=>'Is category enabled or disabled. If you disable existing category, it will hide all post in this category from reades. Also category is not available anymore in "Category" field search when creating or changing post. Still you can use disabled catego'
 ||'ry by typing it e.g. for new post. Post will not be visible for reades until you activate category or change post category one that is enabled.'
-,p_required_patch=>wwv_flow_api.id(24687510906079791)
-,p_column_comment=>'Considere use switch in future. APEX 19.2 has bug in switch that off value can''t be zero (0)'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9831001078215202)

@@ -19,11 +19,11 @@ wwv_flow_api.create_page(
 ,p_step_title=>'Job Reporting'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8574375481518289)
-,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
+,p_page_template_options=>'#DEFAULT#'
 ,p_required_patch=>wwv_flow_api.id(8935943081653812)
 ,p_help_text=>'<p>This report includes all the jobs selected to be monitored by this application.  More details of each job can be viewed by clicking on the job name.</p>'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200511180741'
+,p_last_upd_yyyymmddhh24miss=>'20201128104521'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(24873986309683431)

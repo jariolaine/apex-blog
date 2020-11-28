@@ -67,16 +67,6 @@ wwv_flow_api.create_list_item(
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(28656742498953320)
-,p_list_item_display_sequence=>60
-,p_list_item_link_text=>'Stats'
-,p_list_item_link_target=>'f?p=&APP_ID.:301:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-line-chart'
-,p_required_patch=>wwv_flow_api.id(8935943081653812)
-,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
-,p_list_item_current_for_pages=>'301'
-);
-wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(24902524516683500)
 ,p_list_item_display_sequence=>70
 ,p_list_item_link_text=>'Settings'

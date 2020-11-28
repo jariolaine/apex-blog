@@ -3,9 +3,12 @@
 --------------------------------------------------------
 CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_POST_TAGS_TRG"
 after
-insert or
-delete on blog_post_tags
+insert
+--or delete
+on blog_post_tags
 for each row
+declare
+  l_post_id number;
 begin
 
   if inserting

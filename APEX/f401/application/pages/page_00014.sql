@@ -16,7 +16,7 @@ wwv_flow_api.create_page(
 ,p_user_interface_id=>wwv_flow_api.id(6877050287267426)
 ,p_name=>'Posts Under Category'
 ,p_alias=>'CATEGORY'
-,p_step_title=>'Category &P14_CATEGORY_TITLE. | &G_APP_NAME.'
+,p_step_title=>'&P14_CATEGORY_TITLE. | &G_APP_NAME.'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8697986188142973)
@@ -25,11 +25,11 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8635355820099640)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200922142138'
+,p_last_upd_yyyymmddhh24miss=>'20201115082844'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(40117793173805532)
-,p_name=>'Category &P14_CATEGORY_TITLE.'
+,p_name=>'&P14_CATEGORY_TITLE.'
 ,p_region_name=>'page-content-container'
 ,p_template=>wwv_flow_api.id(6802870362267386)
 ,p_display_sequence=>10
@@ -71,9 +71,10 @@ wwv_flow_api.create_report_region(
 '  from dual',
 ') labels',
 'where 1 = 1',
-'  and v1.category_id = :P14_CATEGORY_ID',
+'  and v1.category_id = :P14_CATEGORY_ID or :P14_CATEGORY_ID is null',
 'order by v1.category_seq',
 '  ,v1.published_on desc'))
+,p_translate_title=>'N'
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P14_CATEGORY_ID'
 ,p_query_row_template=>wwv_flow_api.id(6833829938267402)

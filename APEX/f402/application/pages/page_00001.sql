@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201108170212'
+,p_last_upd_yyyymmddhh24miss=>'20201128083235'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8582113239518316)
@@ -36,21 +36,6 @@ wwv_flow_api.create_page_plug(
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
-wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(11546355289783653)
-,p_plug_name=>'Manage Content'
-,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h2:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:u-colors:t-MediaList--iconsRounded'
-,p_plug_template=>wwv_flow_api.id(8490381578518205)
-,p_plug_display_sequence=>10
-,p_plug_display_point=>'BODY'
-,p_list_id=>wwv_flow_api.id(9067056365154845)
-,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>wwv_flow_api.id(8538547318518236)
-,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_required_patch=>wwv_flow_api.id(10006498624902877)
-);
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(28585539957643014)
 ,p_name=>'Dashboard'
@@ -58,12 +43,13 @@ wwv_flow_api.create_report_region(
 ,p_display_sequence=>1
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--removeHeader:t-Region--scrollBody'
-,p_component_template_options=>'#DEFAULT#:u-colors:t-BadgeList--medium:t-BadgeList--circular:t-BadgeList--float:t-Report--hideNoPagination'
+,p_component_template_options=>'#DEFAULT#:u-colors:t-BadgeList--large:t-BadgeList--circular:t-BadgeList--flex:t-Report--hideNoPagination'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select sum(',
+'select count(1) as num_posts',
+'  ,sum(',
 '    case post_status',
 '    when ''PUBLISHED''',
 '      then 1',
@@ -84,10 +70,21 @@ wwv_flow_api.create_report_region(
 ,p_plug_query_strip_html=>'N'
 );
 wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(28586519252643024)
+ p_id=>wwv_flow_api.id(45721959839325201)
 ,p_query_column_id=>1
-,p_column_alias=>'NUM_PUBLISHED'
+,p_column_alias=>'NUM_POSTS'
 ,p_column_display_sequence=>1
+,p_column_heading=>'Total Posts'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(28586519252643024)
+,p_query_column_id=>2
+,p_column_alias=>'NUM_PUBLISHED'
+,p_column_display_sequence=>2
 ,p_column_heading=>'Published Posts'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
@@ -96,9 +93,9 @@ wwv_flow_api.create_report_columns(
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(28586698865643025)
-,p_query_column_id=>2
+,p_query_column_id=>3
 ,p_column_alias=>'NUM_COMMENTS'
-,p_column_display_sequence=>2
+,p_column_display_sequence=>3
 ,p_column_heading=>'Comments'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
@@ -106,18 +103,20 @@ wwv_flow_api.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(84571485511278016)
-,p_plug_name=>'&APP_TEXT$BLOG_URL_INFO_TITLE.'
-,p_region_template_options=>'#DEFAULT#:t-Region--textContent:t-Region--scrollBody'
-,p_component_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_api.id(8496813422518209)
-,p_plug_display_sequence=>20
+ p_id=>wwv_flow_api.id(41879278282408333)
+,p_plug_name=>'Blog URLs'
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h2:t-ContentBlock--lightBG'
+,p_component_template_options=>'#DEFAULT#:u-colors'
+,p_plug_template=>wwv_flow_api.id(8490381578518205)
+,p_plug_display_sequence=>11
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'BODY'
-,p_plug_source=>'#OWNER#.blog_cm.render_url_info;'
-,p_plug_source_type=>'NATIVE_PLSQL'
-,p_translate_title=>'N'
+,p_list_id=>wwv_flow_api.id(43181213072992711)
+,p_plug_source_type=>'NATIVE_LIST'
+,p_list_template_id=>wwv_flow_api.id(8538547318518236)
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_plug_caching=>'CACHE'
+,p_plug_caching_max_age_in_sec=>21600
 );
 wwv_flow_api.component_end;
 end;

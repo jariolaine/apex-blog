@@ -26,7 +26,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200509072822'
+,p_last_upd_yyyymmddhh24miss=>'20201110165139'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(35972740955622136)
@@ -112,11 +112,12 @@ wwv_flow_api.create_page_item(
 ,p_item_sequence=>30
 ,p_item_plug_id=>wwv_flow_api.id(35972740955622136)
 ,p_prompt=>'Remember username'
-,p_display_as=>'NATIVE_TEXT_FIELD'
-,p_label_alignment=>'RIGHT'
+,p_display_as=>'NATIVE_CHECKBOX'
+,p_named_lov=>'LOGIN_REMEMBER_USERNAME'
+,p_lov=>'.'||wwv_flow_api.id(6882607828267435)||'.'
 ,p_field_template=>wwv_flow_api.id(6854381477267413)
 ,p_item_template_options=>'#DEFAULT#'
-,p_lov_display_extra=>'NO'
+,p_lov_display_extra=>'YES'
 ,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<p>',
 'If you select this checkbox, the application will save your username in a persistent browser cookie named "LOGIN_USERNAME_COOKIE".',

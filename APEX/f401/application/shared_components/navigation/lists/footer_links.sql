@@ -16,19 +16,17 @@ wwv_flow_api.create_list(
 ,p_name=>'Footer Links'
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select null                         as list_level',
-'  ,t1.content_desc                  as list_label',
+'select null                             as list_level',
+'  ,v1.content_desc                      as list_label',
 '  ,apex_page.get_url(',
 '     p_page     => 1002',
-'    ,p_request  => t1.content_static_id',
-'  )                                 as list_target',
-'  ,''N''                              as is_current',
-'',
-'from blog_dynamic_content t1',
+'    ,p_request  => v1.content_static_id',
+'  )                                     as list_target',
+'  ,''N''                                  as is_current',
+'from blog_v_dynamic_content v1',
 'where 1 = 1',
-'and t1.is_active = 1',
-'and t1.content_type = ''FOOTER_LINK''',
-'order by t1.display_seq'))
+'and v1.content_type = ''FOOTER_LINK''',
+'order by v1.display_seq'))
 ,p_list_status=>'PUBLIC'
 );
 wwv_flow_api.component_end;
