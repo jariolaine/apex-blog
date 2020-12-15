@@ -21,7 +21,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201115221946'
+,p_last_upd_yyyymmddhh24miss=>'20201212064100'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
@@ -145,12 +145,12 @@ wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(31250153901982941)
 ,p_plug_name=>'Powered by / link to source code'
 ,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_api.id(6781372168267375)
+,p_plug_template=>wwv_flow_api.id(6781539027267375)
 ,p_plug_display_sequence=>20
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="z-app-source">',
-'  <span>Powered By <a href="https://github.com/jariolaine/apex-blog">APEX Blog</a></span>',
+'Powered By <a href="https://github.com/jariolaine/apex-blog">APEX Blog</a>',
 '</div>'))
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -165,8 +165,8 @@ wwv_flow_api.create_page_plug(
 ,p_component_template_options=>'#DEFAULT#:t-LinksList--actions'
 ,p_plug_template=>wwv_flow_api.id(6781372168267375)
 ,p_plug_display_sequence=>10
-,p_plug_grid_column_span=>4
-,p_plug_display_column=>5
+,p_plug_grid_column_span=>3
+,p_plug_display_column=>6
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_list_id=>wwv_flow_api.id(41857893903151708)
 ,p_plug_source_type=>'NATIVE_LIST'
@@ -176,7 +176,7 @@ wwv_flow_api.create_page_plug(
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41877798757408318)
 ,p_plug_name=>'Tabs'
-,p_region_css_classes=>'padding-left-md'
+,p_region_css_classes=>'padding-left-md z-tabs'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'#DEFAULT#:t-Tabs--simple'
 ,p_plug_template=>wwv_flow_api.id(6781372168267375)

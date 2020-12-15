@@ -105,11 +105,6 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Pages'
 );
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(28394322349157684)
-,p_name=>'BLOG_FEATURE_GROUP_POST'
-,p_message_text=>'Post'
-);
-wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28288384519293388)
 ,p_name=>'BLOG_FEATURE_GROUP_RIGHT_COLUMN'
 ,p_message_text=>'Right column'

@@ -601,20 +601,27 @@ as
     l_first_p       varchar2(32700);
     l_first_p_start number;
     l_first_p_end   number;
+    l_length        number;
   begin
 
-    -- get first paragraph start and end positions
-    l_first_p_start := instr( p_body_html, '<p>' );
-    l_first_p_end   := instr( p_body_html, '</p>' );
+    l_first_p_end := instr( p_body_html, '<!--more-->' ) - 1;
+    if l_first_p_end > 0
+    then
+      l_first_p_start := 1;
+    else
+      -- get first paragraph start and end positions
+      l_first_p_start := instr( p_body_html, '<p>' );
+      l_first_p_end   := instr( p_body_html, '</p>', l_first_p_start ) + 3;
+    end if;
 
     --post must have at least one paragraph
     if l_first_p_start > 0 and l_first_p_end > 0 then
 
       l_first_p_start := l_first_p_start - 1;
-      l_first_p_end   := l_first_p_end + 3;
+      l_length        := l_first_p_end - l_first_p_start;
 
       -- get first paragraph
-      l_first_p := substr( p_body_html, l_first_p_start, l_first_p_end );
+      l_first_p := substr( p_body_html, l_first_p_start, l_length );
 
       -- remove whitespace
       l_first_p := remove_whitespace( l_first_p );

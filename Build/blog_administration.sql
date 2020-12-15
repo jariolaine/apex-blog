@@ -65,7 +65,7 @@ prompt APPLICATION 402 - Blog Administration
 --         LOVs:                   9
 --         Shortcuts:              2
 --       Globalization:
---         Messages:              65
+--         Messages:              64
 --       Reports:
 --       E-Mail:
 --         Templates:              1
@@ -125,7 +125,7 @@ wwv_flow_api.create_flow(
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_friendly_url=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201128112909'
+,p_last_upd_yyyymmddhh24miss=>'20201215122100'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>199
 ,p_ui_type_name => null
@@ -11716,11 +11716,6 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28375527216531703)
 ,p_name=>'BLOG_FEATURE_GROUP_PAGE'
 ,p_message_text=>'Pages'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(28394322349157684)
-,p_name=>'BLOG_FEATURE_GROUP_POST'
-,p_message_text=>'Post'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28288384519293388)
@@ -25948,20 +25943,27 @@ wwv_flow_api.append_to_install_script(
 '    l_first_p       varchar2(32700);',
 '    l_first_p_start number;',
 '    l_first_p_end   number;',
+'    l_length        number;',
 '  begin',
 '',
-'    -- get first paragraph start and end positions',
-'    l_first_p_start := instr( p_body_html, ''<p>'' );',
-'    l_first_p_end   := instr( p_body_html, ''</p>'' );',
+'    l_first_p_end := instr( p_body_html, ''<!--more-->'' ) - 1;',
+'    if l_first_p_end > 0',
+'    then',
+'      l_first_p_start := 1;',
+'    else',
+'      -- get first paragraph start and end positions',
+'      l_first_p_start := instr( p_body_html, ''<p>'' );',
+'      l_first_p_end   := instr( p_body_html, ''</p>'', l_first_p_start ) + 3;',
+'    end if;',
 '',
 '    --post must have at least one paragraph',
 '    if l_first_p_start > 0 and l_first_p_end > 0 then',
 '',
 '      l_first_p_start := l_first_p_start - 1;',
-'      l_first_p_end   := l_first_p_end + 3;',
+'      l_length        := l_first_p_end - l_first_p_start;',
 '',
 '      -- get first paragraph',
-'      l_first_p := substr( p_body_html, l_first_p_start, l_first_p_end );',
+'      l_first_p := substr( p_body_html, l_first_p_start, l_length );',
 '',
 '      -- remove whitespace',
 '      l_first_p := remove_whitespace( l_first_p );',
@@ -25977,16 +25979,7 @@ wwv_flow_api.append_to_install_script(
 '    p_file_name in varchar2',
 '  ) return boolean',
 '  as',
-'    l_file_exists boolean;',
-'    l_file_names  apex_t_varchar2;',
-'    l_file_name   varchar2(256);',
-'  begin',
-'',
-'    l_file_exists := false;',
-'',
-'    -- Get file names',
-'    l_file_names := apex_string.split (',
-'      p_str => p_file_'))
+'    l_file'))
 );
 null;
 end;
@@ -25995,7 +25988,16 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'name',
+'_exists boolean;',
+'    l_file_names  apex_t_varchar2;',
+'    l_file_name   varchar2(256);',
+'  begin',
+'',
+'    l_file_exists := false;',
+'',
+'    -- Get file names',
+'    l_file_names := apex_string.split (',
+'      p_str => p_file_name',
 '      ,p_sep => '':''',
 '    );',
 '',
@@ -26981,14 +26983,7 @@ wwv_flow_api.append_to_install_script(
 '        values ( l_email, 1 )',
 '        returning id into l_email_id',
 '        ;',
-'      -- if email address already exists, fetch id',
-'      exception when dup_val_on_index',
-'      then',
-'        select id',
-'        into l_email_id',
-'        from blog_comment_subs_email',
-'        where 1 = 1',
-'        and em'))
+'    '))
 );
 null;
 end;
@@ -26997,7 +26992,14 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ail_unique = l_email',
+'  -- if email address already exists, fetch id',
+'      exception when dup_val_on_index',
+'      then',
+'        select id',
+'        into l_email_id',
+'        from blog_comment_subs_email',
+'        where 1 = 1',
+'        and email_unique = l_email',
 '        ;',
 '      end;',
 '      -- store post to email link',
@@ -27847,12 +27849,7 @@ wwv_flow_api.append_to_install_script(
 '',
 '    select xmlserialize( document',
 '      xmlelement(',
-'        "sitemapindex",',
-'        xmlattributes( ''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns" ),',
-'        (',
-'          xmlagg(',
-'            xmlelement( "sitemap"',
-'              ,xmlelement( "loc", l_url || t1.process_name '))
+'        "sitemapi'))
 );
 null;
 end;
@@ -27861,7 +27858,12 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-')',
+'ndex",',
+'        xmlattributes( ''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns" ),',
+'        (',
+'          xmlagg(',
+'            xmlelement( "sitemap"',
+'              ,xmlelement( "loc", l_url || t1.process_name )',
 '            ) order by t1.execution_sequence',
 '          )',
 '        )',
@@ -28859,15 +28861,7 @@ wwv_flow_api.append_to_install_script(
 '	  REFERENCES "BLOG_LINK_GROUPS" ("ID") ON DELETE CASCADE ENABLE;',
 '',
 '',
-'  ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK1" FOREIGN KEY ("BLOGGER_ID")',
-'	  REFERENCES "BLOG_BLOGGERS" ("ID") ENABLE;',
-'',
-'',
-'  ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK2" FOREIGN KEY ("CATEGORY_ID")',
-'	  REFERENCES "BLOG_CATEGORIES" ("ID") ENABLE;',
-'',
-'',
-'  ALTER T'))
+'  ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK1" FOREIGN KEY'))
 );
 null;
 end;
@@ -28876,7 +28870,15 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK1" FOREIGN KEY ("POST_ID")',
+' ("BLOGGER_ID")',
+'	  REFERENCES "BLOG_BLOGGERS" ("ID") ENABLE;',
+'',
+'',
+'  ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK2" FOREIGN KEY ("CATEGORY_ID")',
+'	  REFERENCES "BLOG_CATEGORIES" ("ID") ENABLE;',
+'',
+'',
+'  ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK1" FOREIGN KEY ("POST_ID")',
 '	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;',
 '',
 '',
