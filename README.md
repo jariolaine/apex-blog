@@ -6,8 +6,7 @@ Blog application built with Oracle Application Express (APEX).
 
 ### System Requirements
 * Oracle database version 18c or higher
-* Oracle Application Express version 19.2 or higher
-* Oracle REST Data Service version 19.2 or higher
+* Oracle Application Express version 20.1 or higher
 
 ### Needed Privileges
 Ensure target schema associated to your APEX workspace is registered to ORDS, has following system privileges and roles:
