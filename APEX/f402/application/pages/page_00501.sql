@@ -4,8 +4,8 @@ begin
 --     PAGE: 00501
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.03.31'
-,p_release=>'20.1.0.00.13'
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -209,6 +209,7 @@ wwv_flow_api.create_page_item(
 ,p_attribute_03=>'Y'
 ,p_attribute_04=>'moonocolor'
 ,p_attribute_05=>'top'
+,p_attribute_06=>'4'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(27061385140689114)
@@ -291,6 +292,7 @@ wwv_flow_api.create_page_validation(
 '   p_value => :P501_DISPLAY_DATE_FORMAT',
 '  ,p_err_mesg => ''BLOG_VALIDATION_ERR_IS_DATE_FORMAT''',
 ');'))
+,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
 ,p_validation_condition=>'P501_DISPLAY_DATE_FORMAT'
 ,p_validation_condition2=>'SINCE'
@@ -306,6 +308,7 @@ wwv_flow_api.create_page_validation(
 '   p_value => :P501_INPUT_DATE_FORMAT',
 '  ,p_err_mesg => ''BLOG_VALIDATION_ERR_IS_DATE_FORMAT''',
 ');'))
+,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
 ,p_error_display_location=>'INLINE_WITH_FIELD'
 );
@@ -357,6 +360,7 @@ wwv_flow_api.create_page_process(
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'apex_util.set_session_state(''G_USER_DATE_TIME_FORMAT'', :P501_DISPLAY_DATE_FORMAT, false);',
 'apex_util.set_session_state(''G_USER_INPUT_DATE_TIME_FORMAT'', :P501_INPUT_DATE_FORMAT, false);'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.create_page_process(
@@ -385,6 +389,7 @@ wwv_flow_api.create_page_process(
 '   p_application => :G_PUB_APP_ID',
 '  ,p_page => 12',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_api.id(8857640492695778)
 );

@@ -4,8 +4,8 @@ begin
 --     PAGE: 00001
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.03.31'
-,p_release=>'20.1.0.00.13'
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -205,6 +205,7 @@ wwv_flow_api.create_page_process(
 '  ,p_app_name => :G_APP_NAME',
 '  ,p_app_desc => :G_APP_DESC',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_api.id(8635198962090938)
 );
@@ -218,6 +219,7 @@ wwv_flow_api.create_page_process(
 '#OWNER#.blog_xml.rss_xsl(',
 '  p_ws_images => :APP_IMAGES',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_api.id(8635198962090938)
 );
@@ -233,6 +235,7 @@ wwv_flow_api.create_page_process(
 '  ,p_app_page_id   => :APP_PAGE_ID',
 '  ,p_build_option  => ''BLOG_FEATURE_SITEMAP''',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_api.id(41177796042194178)
 );
@@ -246,6 +249,7 @@ wwv_flow_api.create_page_process(
 '#OWNER#.blog_xml.sitemap_main(',
 '  p_app_id => :APP_ID',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
@@ -256,6 +260,7 @@ wwv_flow_api.create_page_process(
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'sitemap-posts.xml'
 ,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_posts;'
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
@@ -266,6 +271,7 @@ wwv_flow_api.create_page_process(
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'sitemap-categories.xml'
 ,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_categories;'
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
@@ -276,6 +282,7 @@ wwv_flow_api.create_page_process(
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'sitemap-archives.xml'
 ,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_archives;'
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
@@ -286,6 +293,7 @@ wwv_flow_api.create_page_process(
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'sitemap-tags.xml'
 ,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_tags;'
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
@@ -299,6 +307,7 @@ wwv_flow_api.create_page_process(
 '#OWNER#.blog_util.download_file (',
 '   p_file_name => :P1_FILE_NAME',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.component_end;

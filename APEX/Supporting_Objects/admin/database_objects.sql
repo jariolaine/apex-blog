@@ -1658,8 +1658,8 @@ as
         ,v1.post_title
         ,(
           select --+ first_rows(1)
-            lkp1.id
-          from blog_posts lkp1
+            lkp1.post_id
+          from blog_v_posts lkp1
           where 1 = 1
           and lkp1.published_on > v1.published_on
           order by lkp1.published_on asc
@@ -1667,8 +1667,8 @@ as
         ) as newer_id
         ,(
           select --+ first_rows(1)
-            lkp2.id
-          from blog_posts lkp2
+            lkp2.post_id
+          from blog_v_posts lkp2
           where 1 = 1
           and lkp2.published_on < v1.published_on
           order by lkp2.published_on desc
@@ -1681,17 +1681,17 @@ as
     select q1.post_title
       ,q1.newer_id
       ,(
-        select lkp3.post_title
-        from blog_v_posts lkp3
+        select lkp3.title
+        from blog_posts lkp3
         where 1 = 1
-        and lkp3.post_id = q1.newer_id
+        and lkp3.id = q1.newer_id
       ) as newer_title
       ,q1.older_id
       ,(
-        select lkp4.post_title
-        from blog_v_posts lkp4
+        select lkp4.title
+        from blog_posts lkp4
         where 1 = 1
-        and lkp4.post_id = q1.older_id
+        and lkp4.id = q1.older_id
       ) as older_title
     into l_post_title, l_newer_id, l_newer_title, l_older_id, l_older_title
     from q1

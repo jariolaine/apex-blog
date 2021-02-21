@@ -1,11 +1,11 @@
-prompt --application/shared_components/credentials/google_project_oracle_cloud
+prompt --application/shared_components/credentials/google_oauth2
 begin
 --   Manifest
---     CREDENTIAL: Google Project Oracle Cloud
+--     CREDENTIAL: Google OAuth2
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.03.31'
-,p_release=>'20.1.0.00.13'
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -13,8 +13,8 @@ wwv_flow_api.component_begin (
 );
 wwv_flow_api.create_credential(
  p_id=>wwv_flow_api.id(56930855466327031)
-,p_name=>'Google Project Oracle Cloud'
-,p_static_id=>'GOOGLE_OAUTH2_JLADB01'
+,p_name=>'Google OAuth2'
+,p_static_id=>'GOOGLE_OAUTH2'
 ,p_authentication_type=>'OAUTH2_CLIENT_CREDENTIALS'
 ,p_prompt_on_install=>true
 );

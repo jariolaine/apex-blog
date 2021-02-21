@@ -4,8 +4,8 @@ begin
 --     PAGE: 00032
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.03.31'
-,p_release=>'20.1.0.00.13'
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -405,6 +405,7 @@ wwv_flow_api.create_page_item(
 ,p_attribute_03=>'Y'
 ,p_attribute_04=>'moonocolor'
 ,p_attribute_05=>'top'
+,p_attribute_06=>'4'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(45887036864413658)
@@ -432,6 +433,7 @@ wwv_flow_api.create_page_process(
 '  ,p_post_id         => :P32_POST_ID',
 '  ,p_email_template  => ''BLOG_REPLY_TO_COMMENT_NOTIFY''',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_api.id(45881981213413652)
 ,p_process_when=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -440,7 +442,8 @@ wwv_flow_api.create_page_process(
 '  ,p_build_option_name => ''BLOG_FEATURE_SUBSCRIBE_COMMENTS''',
 ') = ''INCLUDE''',
 ''))
-,p_process_when_type=>'PLSQL_EXPRESSION'
+,p_process_when_type=>'EXPRESSION'
+,p_process_when2=>'PLSQL'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(45889513339413667)

@@ -2,7 +2,7 @@ prompt --install
 @@application/set_environment.sql
 @@application/delete_application.sql
 @@application/create_application.sql
-@@application/shared_components/credentials/google_project_oracle_cloud.sql
+@@application/shared_components/credentials/google_oauth2.sql
 @@application/shared_components/navigation/lists/desktop_navigation_menu.sql
 @@application/shared_components/navigation/lists/desktop_navigation_bar.sql
 @@application/shared_components/navigation/lists/home.sql
@@ -46,6 +46,7 @@ prompt --install
 @@application/shared_components/user_interface/lovs/yes_no.sql
 @@application/pages/page_groups.sql
 @@application/comments.sql
+@@application/shared_components/navigation/breadcrumbentry.sql
 @@application/shared_components/user_interface/templates/page/master_detail.sql
 @@application/shared_components/user_interface/templates/page/modal_dialog.sql
 @@application/shared_components/user_interface/templates/page/login.sql

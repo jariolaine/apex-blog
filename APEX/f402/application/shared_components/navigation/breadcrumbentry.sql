@@ -1,7 +1,7 @@
-prompt --application/shared_components/navigation/tabs/parent
+prompt --application/shared_components/navigation/breadcrumbentry
 begin
 --   Manifest
---     TOP LEVEL TABS: 402
+--     BREADCRUMB ENTRY: 
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2020.10.01'

@@ -4,8 +4,8 @@ begin
 --     PAGE: 00012
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.03.31'
-,p_release=>'20.1.0.00.13'
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -272,7 +272,8 @@ wwv_flow_api.create_page_item(
 '#OWNER#.blog_cm.get_category_title(',
 '   p_category_id => :P12_CATEGORY_ID',
 ')'))
-,p_item_default_type=>'PLSQL_EXPRESSION'
+,p_item_default_type=>'EXPRESSION'
+,p_item_default_language=>'PLSQL'
 ,p_prompt=>'Category'
 ,p_display_as=>'NATIVE_POPUP_LOV'
 ,p_named_lov=>'CATEGORIES'
@@ -466,6 +467,7 @@ wwv_flow_api.create_page_item(
 ,p_attribute_03=>'Y'
 ,p_attribute_04=>'moonocolor'
 ,p_attribute_05=>'top'
+,p_attribute_06=>'4'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(8795875029610783)
@@ -477,7 +479,8 @@ wwv_flow_api.create_page_item(
 '#OWNER#.blog_cm.get_post_tags(',
 '  p_post_id => :P12_ID',
 ')'))
-,p_source_type=>'FUNCTION'
+,p_source_type=>'EXPRESSION'
+,p_source_language=>'PLSQL'
 ,p_display_as=>'NATIVE_POPUP_LOV'
 ,p_named_lov=>'TAGS'
 ,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -609,7 +612,8 @@ wwv_flow_api.create_page_computation(
  p_id=>wwv_flow_api.id(7077847981172776)
 ,p_computation_sequence=>30
 ,p_computation_item=>'P12_POST_DESC'
-,p_computation_type=>'PLSQL_EXPRESSION'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_cm.remove_whitespace(',
 '  p_string => :P12_POST_DESC',
@@ -620,7 +624,8 @@ wwv_flow_api.create_page_computation(
  p_id=>wwv_flow_api.id(19020963247830233)
 ,p_computation_sequence=>40
 ,p_computation_item=>'P12_IS_ACTIVE'
-,p_computation_type=>'PLSQL_EXPRESSION'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_cm.request_to_post_status(',
 '  p_request    => :REQUEST',
@@ -632,7 +637,8 @@ wwv_flow_api.create_page_computation(
  p_id=>wwv_flow_api.id(31618253990094018)
 ,p_computation_sequence=>50
 ,p_computation_item=>'P12_FIRST_PARAGRAPH'
-,p_computation_type=>'PLSQL_EXPRESSION'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_cm.get_first_paragraph(',
 '  p_body_html  => :P12_BODY_HTML',
@@ -642,7 +648,8 @@ wwv_flow_api.create_page_computation(
  p_id=>wwv_flow_api.id(36997318502037729)
 ,p_computation_sequence=>60
 ,p_computation_item=>'P12_PUBLISHED_ON'
-,p_computation_type=>'PLSQL_EXPRESSION'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
 ,p_computation=>'to_char( localtimestamp, :G_USER_INPUT_DATE_TIME_FORMAT )'
 ,p_compute_when=>'P12_PUBLISHED_ON'
 ,p_compute_when_type=>'ITEM_IS_NULL'
@@ -903,6 +910,7 @@ wwv_flow_api.create_page_process(
 '  ,p_err_mesg    => ''BLOG_VALIDATION_ERR_NO_CATEGORY_TITLE''',
 '  ,p_category_id => :P12_CATEGORY_ID',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_comment=>'Add new category if not exists and get category id. If category exists return category id.'
 );
@@ -930,6 +938,7 @@ wwv_flow_api.create_page_process(
 '   p_post_id => :P12_ID',
 '  ,p_tags    => :P12_TAGS',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'DELETE'
 ,p_process_when_type=>'REQUEST_NOT_EQUAL_CONDITION'
@@ -946,6 +955,7 @@ wwv_flow_api.create_page_process(
 '   p_application => :G_PUB_APP_ID',
 '  ,p_page => 0',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.component_end;

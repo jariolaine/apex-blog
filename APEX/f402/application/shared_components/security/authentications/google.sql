@@ -4,8 +4,8 @@ begin
 --     AUTHENTICATION: Google
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.03.31'
-,p_release=>'20.1.0.00.13'
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -18,9 +18,9 @@ wwv_flow_api.create_authentication(
 ,p_attribute_01=>wwv_flow_api.id(56930855466327031)
 ,p_attribute_02=>'GOOGLE'
 ,p_attribute_07=>'email'
-,p_attribute_08=>'prompt=consent'
 ,p_attribute_09=>'email'
 ,p_attribute_11=>'N'
+,p_attribute_13=>'Y'
 ,p_invalid_session_type=>'LOGIN'
 ,p_post_auth_process=>'blog_cm.post_authentication'
 ,p_use_secure_cookie_yn=>'N'

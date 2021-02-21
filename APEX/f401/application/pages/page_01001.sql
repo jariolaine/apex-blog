@@ -4,8 +4,8 @@ begin
 --     PAGE: 01001
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.03.31'
-,p_release=>'20.1.0.00.13'
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -178,7 +178,8 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_TEXT_FIELD'
 ,p_cMaxlength=>256
 ,p_display_when=>'#OWNER#.blog_util.get_attribute_value(''G_APP_EMAIL'') is not null'
-,p_display_when_type=>'PLSQL_EXPRESSION'
+,p_display_when2=>'PLSQL'
+,p_display_when_type=>'EXPRESSION'
 ,p_field_template=>wwv_flow_api.id(6854643778267413)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
@@ -297,7 +298,8 @@ wwv_flow_api.create_page_computation(
  p_id=>wwv_flow_api.id(31616932627094005)
 ,p_computation_sequence=>10
 ,p_computation_item=>'P1001_COMMENT_HTML'
-,p_computation_type=>'PLSQL_EXPRESSION'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_comm.format_comment(',
 '  p_comment => :P1001_COMMENT',
@@ -324,6 +326,7 @@ wwv_flow_api.create_page_validation(
 '  ,p_length_err_mesg => ''BLOG_VALIDATION_ERR_COMMENT_LENGTH''',
 '  ,p_parse_err_mesg  => ''BLOG_VALIDATION_ERR_COMMENT_HTML''',
 ');'))
+,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
 ,p_associated_item=>wwv_flow_api.id(6289109968551661)
 ,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
@@ -373,6 +376,7 @@ wwv_flow_api.create_page_process(
 '  ,p_app_name        => :G_APP_NAME',
 '  ,p_email_template  => ''BLOG_NEW_COMMENT_NOTIFY''',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_comment=>'Notify blogger about new comment for post'
 );
@@ -387,6 +391,7 @@ wwv_flow_api.create_page_process(
 '   p_post_id  => :P1001_POST_ID',
 '  ,p_email    => :P1001_EMAIL',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'P1001_EMAIL'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'

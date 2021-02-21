@@ -4,8 +4,8 @@ begin
 --     PAGE: 00010
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.03.31'
-,p_release=>'20.1.0.00.13'
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(6905258727754156)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201128075834'
+,p_last_upd_yyyymmddhh24miss=>'20210102043535'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25312381302124218)
@@ -41,13 +41,14 @@ wwv_flow_api.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_caching=>'CACHE'
 ,p_plug_caching_max_age_in_sec=>60
-,p_plug_cache_when_cond_type=>'PLSQL_EXPRESSION'
+,p_plug_cache_when_cond_type=>'EXPRESSION'
 ,p_plug_cache_when_condition_e1=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'apex_util.get_build_option_status(',
 '   p_application_id => :APP_ID',
 '  ,p_build_option_name => ''BLOG_FEATURE_SEARCH_LINKS''',
 ') = ''EXCLUDE''',
 ''))
+,p_plug_cache_when_condition_e2=>'PLSQL'
 ,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'

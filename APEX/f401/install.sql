@@ -32,6 +32,7 @@ prompt --install
 @@application/shared_components/user_interface/lovs/login_remember_username.sql
 @@application/pages/page_groups.sql
 @@application/comments.sql
+@@application/shared_components/navigation/breadcrumbentry.sql
 @@application/shared_components/user_interface/templates/page/master_detail.sql
 @@application/shared_components/user_interface/templates/page/modal_dialog.sql
 @@application/shared_components/user_interface/templates/page/login.sql
@@ -60,6 +61,7 @@ prompt --install
 @@application/shared_components/user_interface/templates/region/tabs_container.sql
 @@application/shared_components/user_interface/templates/region/title_bar.sql
 @@application/shared_components/user_interface/templates/region/wizard_container.sql
+@@application/shared_components/user_interface/templates/region/cards_container.sql
 @@application/shared_components/user_interface/templates/list/badge_list.sql
 @@application/shared_components/user_interface/templates/list/cards.sql
 @@application/shared_components/user_interface/templates/list/links_list.sql

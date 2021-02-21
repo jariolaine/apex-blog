@@ -4,8 +4,8 @@ begin
 --     FLOW: 402
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.03.31'
-,p_release=>'20.1.0.00.13'
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -24,6 +24,7 @@ wwv_flow_api.create_flow(
 ,p_checksum_salt=>'B22C496AFD040C7B5F1E21FA4AC20C2D68FA779C3AF68FB8A6F3F4BB268E96B2'
 ,p_checksum_salt_last_reset=>'20200329211509'
 ,p_bookmark_checksum_function=>'SH512'
+,p_accept_old_checksums=>false
 ,p_compatibility_mode=>'19.2'
 ,p_flow_language=>'en'
 ,p_flow_language_derived_from=>'FLOW_PREFERENCE'
@@ -45,7 +46,7 @@ wwv_flow_api.create_flow(
 ,p_flow_unavailable_text=>'This application is currently unavailable at this time.'
 ,p_exact_substitutions_only=>'Y'
 ,p_browser_cache=>'N'
-,p_browser_frame=>'S'
+,p_browser_frame=>'D'
 ,p_runtime_api_usage=>'T:O'
 ,p_security_scheme=>wwv_flow_api.id(28359530175115492)
 ,p_rejoin_existing_sessions=>'N'
@@ -54,10 +55,11 @@ wwv_flow_api.create_flow(
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_friendly_url=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201215122100'
+,p_last_upd_yyyymmddhh24miss=>'20210221133927'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>199
+,p_files_version=>202
 ,p_ui_type_name => null
+,p_print_server_type=>'INSTANCE'
 );
 wwv_flow_api.component_end;
 end;

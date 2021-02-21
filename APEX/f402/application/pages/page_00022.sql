@@ -4,8 +4,8 @@ begin
 --     PAGE: 00022
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.03.31'
-,p_release=>'20.1.0.00.13'
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -103,6 +103,7 @@ wwv_flow_api.create_page_item(
 ,p_attribute_01=>'APEX_APPLICATION_TEMP_FILES'
 ,p_attribute_09=>'REQUEST'
 ,p_attribute_10=>'Y'
+,p_attribute_12=>'INLINE'
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(20780700866101698)
@@ -132,7 +133,8 @@ wwv_flow_api.create_page_process(
 '#OWNER#.blog_cm.file_upload(',
 '  p_file_name => :P22_FILE_NAME',
 ')'))
-,p_process_when_type=>'PLSQL_EXPRESSION'
+,p_process_when_type=>'EXPRESSION'
+,p_process_when2=>'PLSQL'
 ,p_process_success_message=>'File(s) uploaded.'
 ,p_process_comment=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'This Close Dialog process condition handles file upload.',
