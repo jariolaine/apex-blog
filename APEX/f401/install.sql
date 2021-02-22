@@ -137,4 +137,8 @@ prompt --install
 @@application/pages/page_01001.sql
 @@application/pages/page_01002.sql
 @@application/pages/page_09999.sql
+@@application/deployment/definition.sql
+@@application/deployment/install/install_metadata.sql
+@@application/deployment/checks.sql
+@@application/deployment/buildoptions.sql
 @@application/end_environment.sql

@@ -423,6 +423,7 @@ wwv_flow_api.create_interactive_grid(
 wwv_flow_api.create_ig_report(
  p_id=>wwv_flow_api.id(9880366681762849)
 ,p_interactive_grid_id=>wwv_flow_api.id(9879968674762848)
+,p_static_id=>'249323'
 ,p_type=>'PRIMARY'
 ,p_default_view=>'GRID'
 ,p_rows_per_page=>20

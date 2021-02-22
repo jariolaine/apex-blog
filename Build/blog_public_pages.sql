@@ -69,7 +69,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --       Reports:
 --       E-Mail:
 --         Templates:              1
---     Supporting Objects:  Included (auto-install)
+--     Supporting Objects:  Included
 --       Install scripts:          1
 --   Version:         20.2.0.00.20
 --   Instance ID:     9502710254078678
@@ -4776,6 +4776,7 @@ wwv_flow_api.create_row_template(
 ,p_theme_id=>42
 ,p_theme_class_id=>7
 ,p_preset_template_options=>'z-posts'
+,p_translate_this_template=>'N'
 );
 end;
 /
@@ -4860,6 +4861,7 @@ wwv_flow_api.create_row_template(
 ,p_theme_id=>42
 ,p_theme_class_id=>8
 ,p_preset_template_options=>'z-Content'
+,p_translate_this_template=>'N'
 );
 end;
 /
@@ -14619,6 +14621,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_caching=>'CACHE'
 ,p_plug_caching_max_age_in_sec=>600
+,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 ,p_required_patch=>wwv_flow_api.id(8635355820099640)
 ,p_plug_comment=>'Categories link list'
 );
@@ -14637,6 +14640,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_caching=>'CACHE'
 ,p_plug_caching_max_age_in_sec=>600
+,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 ,p_required_patch=>wwv_flow_api.id(8677319562925389)
 ,p_plug_comment=>'Latest post link list'
 );
@@ -14654,6 +14658,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_when_condition=>'G_RSS_URL'
 ,p_plug_caching=>'CACHE'
 ,p_plug_caching_max_age_in_sec=>600
+,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 ,p_required_patch=>wwv_flow_api.id(8635198962090938)
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'HTML'
@@ -14674,6 +14679,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_caching=>'CACHE'
 ,p_plug_caching_max_age_in_sec=>600
+,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 ,p_required_patch=>wwv_flow_api.id(8670890848739263)
 ,p_plug_comment=>'Archives link list'
 );
@@ -18130,7 +18136,7 @@ end;
 /
 prompt --application/end_environment
 begin
-wwv_flow_api.import_end(p_auto_install_sup_obj => nvl(wwv_flow_application_install.get_auto_install_sup_obj, true));
+wwv_flow_api.import_end(p_auto_install_sup_obj => nvl(wwv_flow_application_install.get_auto_install_sup_obj, false));
 commit;
 end;
 /

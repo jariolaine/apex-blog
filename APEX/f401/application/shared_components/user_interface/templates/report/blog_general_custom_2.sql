@@ -34,6 +34,7 @@ wwv_flow_api.create_row_template(
 ,p_theme_id=>42
 ,p_theme_class_id=>8
 ,p_preset_template_options=>'z-Content'
+,p_translate_this_template=>'N'
 );
 wwv_flow_api.component_end;
 end;

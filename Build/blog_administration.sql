@@ -36,7 +36,7 @@ prompt APPLICATION 402 - Blog Administration
 --       Computations:             5
 --       Validations:              9
 --       Processes:               50
---       Regions:                 67
+--       Regions:                 66
 --       Buttons:                 67
 --       Dynamic Actions:         31
 --     Shared Components:
@@ -69,7 +69,7 @@ prompt APPLICATION 402 - Blog Administration
 --       Reports:
 --       E-Mail:
 --         Templates:              1
---     Supporting Objects:  Included (auto-install)
+--     Supporting Objects:  Included
 --       Install scripts:          3
 --   Version:         20.2.0.00.20
 --   Instance ID:     9502710254078678
@@ -126,7 +126,7 @@ wwv_flow_api.create_flow(
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_friendly_url=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210221133927'
+,p_last_upd_yyyymmddhh24miss=>'20210222141919'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>202
 ,p_ui_type_name => null
@@ -12180,7 +12180,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210131195333'
+,p_last_upd_yyyymmddhh24miss=>'20210222141919'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8582113239518316)
@@ -12193,19 +12193,6 @@ wwv_flow_api.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
-);
-wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(19410021815643201)
-,p_plug_name=>'&APP_USER.'
-,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
-,p_component_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_api.id(8496813422518209)
-,p_plug_display_sequence=>21
-,p_include_in_reg_disp_sel_yn=>'Y'
-,p_plug_display_point=>'BODY'
-,p_plug_source=>'OWA_UTIL.PRINT_CGI_ENV'
-,p_plug_source_type=>'NATIVE_PLSQL'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(28585539957643014)
@@ -12288,6 +12275,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_caching=>'CACHE'
 ,p_plug_caching_max_age_in_sec=>21600
+,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 );
 end;
 /
@@ -14192,6 +14180,7 @@ wwv_flow_api.create_interactive_grid(
 wwv_flow_api.create_ig_report(
  p_id=>wwv_flow_api.id(15190897476050378)
 ,p_interactive_grid_id=>wwv_flow_api.id(15190504448050377)
+,p_static_id=>'249317'
 ,p_type=>'PRIMARY'
 ,p_default_view=>'GRID'
 ,p_rows_per_page=>20
@@ -16721,6 +16710,7 @@ wwv_flow_api.create_interactive_grid(
 wwv_flow_api.create_ig_report(
  p_id=>wwv_flow_api.id(9880366681762849)
 ,p_interactive_grid_id=>wwv_flow_api.id(9879968674762848)
+,p_static_id=>'249323'
 ,p_type=>'PRIMARY'
 ,p_default_view=>'GRID'
 ,p_rows_per_page=>20
@@ -20389,6 +20379,7 @@ wwv_flow_api.create_interactive_grid(
 ,p_define_chart_view=>false
 ,p_enable_download=>false
 ,p_download_formats=>null
+,p_enable_mail_download=>true
 ,p_fixed_header=>'NONE'
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false
@@ -20399,6 +20390,7 @@ wwv_flow_api.create_interactive_grid(
 wwv_flow_api.create_ig_report(
  p_id=>wwv_flow_api.id(27234020761386684)
 ,p_interactive_grid_id=>wwv_flow_api.id(27063837092689139)
+,p_static_id=>'249339'
 ,p_type=>'PRIMARY'
 ,p_default_view=>'GRID'
 ,p_show_row_number=>false
@@ -21000,6 +20992,7 @@ wwv_flow_api.create_interactive_grid(
 ,p_define_chart_view=>false
 ,p_enable_download=>false
 ,p_download_formats=>null
+,p_enable_mail_download=>true
 ,p_fixed_header=>'NONE'
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false
@@ -21008,6 +21001,7 @@ wwv_flow_api.create_interactive_grid(
 wwv_flow_api.create_ig_report(
  p_id=>wwv_flow_api.id(27305085557698518)
 ,p_interactive_grid_id=>wwv_flow_api.id(27273553203075414)
+,p_static_id=>'249341'
 ,p_type=>'PRIMARY'
 ,p_default_view=>'GRID'
 ,p_show_row_number=>false
@@ -23187,7 +23181,7 @@ end;
 /
 prompt --application/end_environment
 begin
-wwv_flow_api.import_end(p_auto_install_sup_obj => nvl(wwv_flow_application_install.get_auto_install_sup_obj, true));
+wwv_flow_api.import_end(p_auto_install_sup_obj => nvl(wwv_flow_application_install.get_auto_install_sup_obj, false));
 commit;
 end;
 /
