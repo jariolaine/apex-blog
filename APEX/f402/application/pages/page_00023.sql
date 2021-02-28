@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201003060023'
+,p_last_upd_yyyymmddhh24miss=>'20210228102750'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(20788260829204935)
@@ -36,12 +36,13 @@ wwv_flow_api.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select file_name',
-'  ,file_desc',
-'from blog_v_temp_files',
+'select',
+'   v1.c001  as file_name',
+'  ,v1.c002  as file_desc',
+'from apex_collections v1',
 'where 1 = 1',
-'and id is not null',
-'order by seq_id'))
+'and v1.collection_name = ''BLOG_FILES''',
+'order by v1.seq_id'))
 ,p_ajax_enabled=>'Y'
 ,p_query_row_template=>wwv_flow_api.id(8519378220518224)
 ,p_query_num_rows=>15

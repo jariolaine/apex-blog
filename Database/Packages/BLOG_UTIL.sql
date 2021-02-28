@@ -28,6 +28,7 @@ as
 --                            ORA error is between -20999 and 20901
 --                            Changed procedure get_post_pagination to raises ORA -20901 when no data found
 --    Jari Laine 19.05.2020   Removed global constants
+--    Jari Laine 23.05.2020 - Modifications to remove ORDS depency
 --    Jari Laine 05.11.2020   Procedure render_dynamic_content
 --
 --------------------------------------------------------------------------------

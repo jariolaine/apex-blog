@@ -28,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201128091245'
+,p_last_upd_yyyymmddhh24miss=>'20210228101301'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6432040642894060)
@@ -169,21 +169,6 @@ wwv_flow_api.create_page_item(
 ,p_attribute_01=>'Y'
 ,p_item_comment=>'Report rows to display per report page'
 );
-wwv_flow_api.create_page_item(
- p_id=>wwv_flow_api.id(45726003200325242)
-,p_name=>'P1_FILE_NAME'
-,p_item_sequence=>20
-,p_item_plug_id=>wwv_flow_api.id(6433141607894071)
-,p_prompt=>'File Name'
-,p_display_as=>'NATIVE_TEXT_FIELD'
-,p_cSize=>30
-,p_field_template=>wwv_flow_api.id(6854643778267413)
-,p_item_template_options=>'#DEFAULT#'
-,p_attribute_01=>'N'
-,p_attribute_02=>'N'
-,p_attribute_04=>'TEXT'
-,p_attribute_05=>'BOTH'
-);
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26063441570107812)
 ,p_process_sequence=>10
@@ -305,7 +290,7 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'download'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_util.download_file (',
-'   p_file_name => :P1_FILE_NAME',
+'   p_file_name => :P11_FILE_NAME',
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'

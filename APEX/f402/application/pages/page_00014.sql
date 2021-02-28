@@ -38,7 +38,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210228090513'
+,p_last_upd_yyyymmddhh24miss=>'20210228115845'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9834087769215232)
@@ -473,7 +473,7 @@ wwv_flow_api.create_interactive_grid(
 ,p_select_first_row=>false
 ,p_fixed_row_height=>true
 ,p_pagination_type=>'SCROLL'
-,p_show_total_row_count=>false
+,p_show_total_row_count=>true
 ,p_no_data_found_message=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
 ,p_show_toolbar=>true
 ,p_enable_save_public_report=>false

@@ -29,6 +29,7 @@ as
 --    Jari Laine 28.11.2020 - Removed obsolete function get_comment_post_id
 --                            Renamed function google_post_authentication to post_authentication
 --    Jari Laine 28.02.2020 - New function get_footer_link_seq
+--    Jari Laine 23.05.2020 - Modifications to remove ORDS depency
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -688,8 +689,8 @@ as
       l_file_name := substr(l_file_names(i), instr(l_file_names(i), '/') + 1);
 
       for c1 in(
-        select t1.id        as id
-          ,t2.id            as file_id
+        select
+           t2.id            as file_id
           ,t2.row_version   as row_version
           ,t2.is_active     as is_active
           ,t2.is_download   as is_download
@@ -711,11 +712,9 @@ as
 
         apex_collection.add_member(
            p_collection_name => 'BLOG_FILES'
-          ,p_n001     => c1.id
-          ,p_n002     => c1.file_id
-          ,p_n003     => c1.row_version
-          ,p_n004     => coalesce(c1.is_active, 1)
-          ,p_n005     => coalesce(c1.is_download, 0)
+          ,p_n001     => c1.file_id
+          ,p_n002     => coalesce(c1.is_active, 1)
+          ,p_n003     => coalesce(c1.is_download, 0)
           ,p_c001     => l_file_name
           ,p_c002     => c1.file_desc
           ,p_c003     => c1.mime_type
@@ -750,11 +749,23 @@ as
   begin
 
     -- insert new files and overwrite existing
-    merge into blog_files t1 using blog_v_temp_files v1
-    on (t1.id = v1.id)
+    merge into blog_files t1 using (
+      select
+         n001                 as id
+        ,coalesce( n002, 1 )  as is_active
+        ,coalesce( n003, 0 )  as is_download
+        ,c001                 as file_name
+        ,c002                 as file_desc
+        ,c003                 as mime_type
+        ,blob001              as blob_content
+      from apex_collections
+      where 1 = 1
+      and collection_name = 'BLOG_FILES'
+    ) new_files
+    on (t1.id = new_files.id)
     when matched then
       update
-        set t1.blob_content = v1.blob_content
+        set t1.blob_content = new_files.blob_content
     when not matched then
       insert (
          is_active
@@ -765,12 +776,12 @@ as
         ,file_desc
       )
       values (
-         v1.is_active
-        ,v1.is_download
-        ,v1.file_name
-        ,v1.mime_type
-        ,v1.blob_content
-        ,v1.file_desc
+         new_files.is_active
+        ,new_files.is_download
+        ,new_files.file_name
+        ,new_files.mime_type
+        ,new_files.blob_content
+        ,new_files.file_desc
       );
 
   end merge_files;

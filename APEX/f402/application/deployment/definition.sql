@@ -121,7 +121,6 @@ wwv_flow_api.create_install(
 'drop view blog_v_post_tags;',
 'drop view blog_v_rep_app_links;',
 'drop view blog_v_tags;',
-'drop view blog_v_temp_files;',
 '--------------------------------------------------------',
 '--  Drop text index section groups',
 '--------------------------------------------------------',

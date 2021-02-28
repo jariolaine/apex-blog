@@ -20,28 +20,11 @@ begin
   elsif updating
   then
 
-    l_update :=
-      case
-        when :new.category_id != :old.category_id
-        then true
-        when upper( :new.title ) != upper( :old.title )
-        then true
-        when upper( :new.post_desc ) != upper( :old.post_desc )
-        then true
-        when dbms_lob.compare( :new.body_html, :old.body_html ) != 0
-        then true
-        else false
-      end
+    update blog_post_uds t1
+      set dummy = dummy
+    where 1 = 1
+    and t1.post_id  = :new.id
     ;
-
-    if l_update
-    then
-      update blog_post_uds t1
-        set dummy = dummy
-      where 1 = 1
-      and t1.post_id  = :new.id
-      ;
-    end if;
 
   end if;
 

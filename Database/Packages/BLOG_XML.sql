@@ -16,6 +16,7 @@ as
 --                            and constant c_pub_app_id
 --                            Moved private function get_ords_service to blog_ords package
 --    Jari Laine 23.05.2020 - Changed procedure sitemap_main to use table blog_pages
+--                            Modifications to remove ORDS depency
 --                            New procedures:
 --                              sitemap_categories
 --                              sitemap_archives

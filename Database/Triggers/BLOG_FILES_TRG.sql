@@ -29,5 +29,7 @@ begin
     , sys_context( 'USERENV','SESSION_USER' )
   );
 
+  :new.file_size := sys.dbms_lob.getlength( :new.blob_content );
+
 end;
 /
