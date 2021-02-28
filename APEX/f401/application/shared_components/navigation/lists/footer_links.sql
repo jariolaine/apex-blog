@@ -20,7 +20,7 @@ wwv_flow_api.create_list(
 '  ,v1.content_desc                      as list_label',
 '  ,apex_page.get_url(',
 '     p_page     => 1002',
-'    ,p_request  => v1.content_static_id',
+'    ,p_request  => v1.content_id',
 '  )                                     as list_target',
 '  ,''N''                                  as is_current',
 'from blog_v_dynamic_content v1',

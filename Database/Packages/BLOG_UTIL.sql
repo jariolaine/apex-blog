@@ -1,4 +1,4 @@
-CREATE OR REPLACE package  "BLOG_UTIL"
+create or replace package "BLOG_UTIL"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -39,52 +39,51 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function apex_error_handler (
-    p_error             in apex_error.t_error
+    p_error           in apex_error.t_error
   ) return apex_error.t_error_result;
 
   function int_to_vc2(
-    p_value in number
+    p_value           in number
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_attribute_value(
-    p_attribute_name    in varchar2
+    p_attribute_name  in varchar2
   ) return varchar2 result_cache;
 --------------------------------------------------------------------------------
   procedure initialize_items(
-    p_app_id            in varchar2
+    p_app_id          in varchar2
   );
 --------------------------------------------------------------------------------
   function get_post_title(
-    p_post_id           in varchar2,
-    p_escape            in boolean
+    p_post_id         in varchar2,
+    p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure get_post_pagination(
-    p_post_id           in varchar2,
-    p_post_title        out nocopy varchar2,
-    p_newer_id          out nocopy varchar2,
-    p_newer_title       out nocopy varchar2,
-    p_older_id          out nocopy varchar2,
-    p_older_title       out nocopy varchar2
+    p_post_id         in varchar2,
+    p_post_title      out nocopy varchar2,
+    p_newer_id        out nocopy varchar2,
+    p_newer_title     out nocopy varchar2,
+    p_older_id        out nocopy varchar2,
+    p_older_title     out nocopy varchar2
   );
 --------------------------------------------------------------------------------
   function get_category_title(
-    p_category_id       in varchar2,
-    p_escape            in boolean
+    p_category_id     in varchar2,
+    p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_tag(
-    p_tag_id            in varchar2
+    p_tag_id          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure check_archive_exists(
-    p_archive_id  in varchar2
+    p_archive_id      in varchar2
   );
 --------------------------------------------------------------------------------
   procedure render_dynamic_content(
-    p_content_type      in varchar2,
-    p_content_static_id in varchar2,
-    p_date_format       in varchar2
+    p_content_id      in varchar2,
+    p_date_format     in varchar2
   );
 --------------------------------------------------------------------------------
   procedure download_file (
@@ -95,7 +94,7 @@ end "BLOG_UTIL";
 /
 
 
-CREATE OR REPLACE package body "BLOG_UTIL"
+create or replace package body "BLOG_UTIL"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -746,9 +745,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure render_dynamic_content(
-    p_content_type      in varchar2,
-    p_content_static_id in varchar2,
-    p_date_format       in varchar2
+    p_content_id  in varchar2,
+    p_date_format in varchar2
   )
   as
   begin
@@ -759,8 +757,7 @@ as
         ,v1.changed_on
       from blog_v_dynamic_content v1
       where 1 = 1
-      and v1.content_type = p_content_type
-      and v1.content_static_id = p_content_static_id
+      and v1.content_id = p_content_id
     ) loop
 
       sys.htp.p( '<h1>' || c1.content_desc || '</h1>' );

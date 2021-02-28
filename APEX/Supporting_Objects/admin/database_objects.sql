@@ -142,14 +142,13 @@ create table blog_dynamic_content(
 	is_active number(1,0) not null enable,
 	display_seq number(10,0) not null enable,
   content_type varchar2(64 char) not null,
-  content_static_id varchar2(64 char) not null,
   content_desc varchar2(256 char) not null,
-  content_html clob,
+  content_html clob not null,
   constraint blog_dynamic_content_ck1 check( row_version > 0 ),
   constraint blog_dynamic_content_ck2 check( is_active in( 0, 1 ) ),
   constraint blog_dynamic_content_ck3 check( display_seq > 0 ),
-  constraint blog_dynamic_content_pk primary key( id ),
-  constraint blog_dynamic_content_uk1 unique (content_type, content_static_id)
+  constraint blog_dynamic_content_ck4 check( content_type in( 'FOOTER_LINK' ) ),
+  constraint blog_dynamic_content_pk primary key( id )
 )
 /
 --------------------------------------------------------
@@ -526,10 +525,30 @@ from blog_comments t1
 where 1 = 1
 /
 --------------------------------------------------------
+--  DDL for View BLOG_V_ALL_DYNAMIC_CONTENT
+--------------------------------------------------------
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "CONTENT_TYPE", "DISPLAY_SEQ", "CONTENT_DESC", "CONTENT_HTML") AS
+  select
+   t1.id                as id
+  ,t1.row_version       as row_version
+  ,t1.created_on        as created_on
+  ,lower(t1.created_by) as created_by
+  ,t1.changed_on        as changed_on
+  ,lower(t1.changed_by) as changed_by
+  ,t1.is_active         as is_active
+  ,t1.content_type      as content_type
+  ,t1.display_seq       as display_seq
+  ,t1.content_desc      as content_desc
+  ,t1.content_html      as content_html
+from blog_dynamic_content t1
+where 1 = 1
+;
+--------------------------------------------------------
 --  DDL for View BLOG_V_ALL_FEATURES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("FEATURE_ID", "APPLICATION_ID", "BUILD_OPTION_ID", "ALLOWED_ROW_OPERATION", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS_ACTIVE", "POST_EXPRESSION") AS
-  select t2.id                  as feature_id
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "ALLOWED_ROW_OPERATION", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS_ACTIVE", "POST_EXPRESSION") AS
+  select
+   t2.id                        as id
   ,t1.application_id            as application_id
   ,t1.build_option_id           as build_option_id
   ,'U'                          as allowed_row_operation
@@ -555,7 +574,8 @@ with read only
 --  DDL for View BLOG_V_ALL_FILES
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FILES" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC", "NOTES") AS
-  select t1.id          as id
+  select
+   t1.id                as id
   ,t1.row_version       as row_version
   ,t1.created_on        as created_on
   ,lower(t1.created_by) as created_by
@@ -612,7 +632,8 @@ where 1 = 1
 --  DDL for View BLOG_V_ALL_LINK_GROUPS
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINK_GROUPS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "DISPLAY_SEQ", "TITLE", "TITLE_UNIQUE", "NOTES", "LINK_COUNT") AS
-  select t1.id          as id
+  select
+   t1.id                as id
   ,t1.row_version       as row_version
   ,t1.created_on        as created_on
   ,lower(t1.created_by) as created_by
@@ -656,7 +677,8 @@ where 1 = 1
 --  DDL for View BLOG_V_ALL_SETTINGS
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "DATA_TYPE", "GROUP_NAME", "ATTRIBUTE_DESC", "ATTRIBUTE_VALUE", "ATTRIBUTE_GROUP", "POST_EXPRESSION", "INT_MIN", "INT_MAX") AS
-  select t1.id                as id
+  select
+   t1.id                    as id
   ,t1.row_version           as row_version
   ,t1.created_on            as created_on
   ,lower(t1.created_by)     as created_by
@@ -685,7 +707,8 @@ where 1 = 1
 --  DDL for View BLOG_V_ALL_TAGS
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "TAG", "TAG_UNIQUE", "NOTES", "POSTS_COUNT", "ALLOWED_ROW_OPERATION") AS
-  select t1.id          as id
+  select
+   t1.id                as id
   ,t1.row_version       as row_version
   ,t1.created_on        as created_on
   ,lower(t1.created_by) as created_by
@@ -719,15 +742,19 @@ where 1 = 1
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "IS_ACTIVE", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "USER_ICON", "ICON_MODIFIER") AS
   select
-   t1.id as comment_id
-  ,t1.is_active
-  ,t1.post_id as post_id
-  ,t1.parent_id as parent_id
-  ,t1.created_on as created_on
-  ,t1.comment_by as comment_by
-  ,t1.body_html as comment_body
-  ,apex_string.get_initials( t1.comment_by ) as user_icon
-  ,'u-color-' || ora_hash( lower( t1.comment_by ), 44) + 1 as icon_modifier
+   t1.id          as comment_id
+  ,t1.is_active   as is_active
+  ,t1.post_id     as post_id
+  ,t1.parent_id   as parent_id
+  ,t1.created_on  as created_on
+  ,t1.comment_by  as comment_by
+  ,t1.body_html   as comment_body
+  ,apex_string.get_initials(
+    t1.comment_by
+   )              as user_icon
+  ,'u-color-' || ora_hash( 
+      lower( t1.comment_by ), 44
+    ) + 1         as icon_modifier
 from blog_comments t1
 where 1 = 1
 and t1.is_active = 1
@@ -736,13 +763,14 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_DYNAMIC_CONTENT
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_DYNAMIC_CONTENT" ("CONTENT_STATIC_ID", "CHANGED_ON", "DISPLAY_SEQ", "CONTENT_DESC", "CONTENT_HTML", "CONTENT_TYPE") AS
-  select t1.content_static_id
-  ,t1.changed_on
-  ,t1.display_seq
-  ,t1.content_desc
-  ,t1.content_html
-  ,t1.content_type
+CREATE OR REPLACE FORCE VIEW "BLOG_V_DYNAMIC_CONTENT" ("CONTENT_ID", "CONTENT_TYPE", "CHANGED_ON", "DISPLAY_SEQ", "CONTENT_DESC", "CONTENT_HTML") AS
+  select
+   t1.id            as content_id
+  ,t1.content_type  as content_type
+  ,t1.changed_on    as changed_on
+  ,t1.display_seq   as display_seq
+  ,t1.content_desc  as content_desc
+  ,t1.content_html  as content_html
 from blog_dynamic_content t1
 where 1 = 1
 and t1.is_active = 1
@@ -751,17 +779,18 @@ and t1.is_active = 1
 --  DDL for View BLOG_V_FILES
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "ROW_VERSION", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC") AS
-  select t1.id as file_id
-  ,t1.row_version
-  ,t1.created_on
-  ,t1.changed_on
-  ,t1.is_download
-  ,t1.file_name
-  ,t1.mime_type
-  ,t1.blob_content
-  ,t1.file_size
-  ,t1.file_charset
-  ,t1.file_desc
+select
+   t1.id      as file_id
+  ,t1.row_version   as row_version
+  ,t1.created_on    as created_on
+  ,t1.changed_on    as changed_on
+  ,t1.is_download   as is_download
+  ,t1.file_name     as file_name
+  ,t1.mime_type     as mime_type
+  ,t1.blob_content  as blob_content
+  ,t1.file_size     as file_size
+  ,t1.file_charset  as file_charset
+  ,t1.file_desc     as file_desc
 from blog_files t1
 where 1 = 1
 and t1.is_active = 1
@@ -771,9 +800,10 @@ with read only
 --  DDL for View BLOG_V_INIT_ITEMS
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_INIT_ITEMS" ("APPLICATION_ID", "ITEM_NAME", "ITEM_VALUE") AS
-  select i.application_id as application_id
-  ,i.item_name          as item_name
-  ,s.attribute_value    as item_value
+  select
+   i.application_id   as application_id
+  ,i.item_name        as item_name
+  ,s.attribute_value  as item_value
 from blog_init_items i
 join blog_settings s
   on i.item_name = s.attribute_name
@@ -782,14 +812,15 @@ join blog_settings s
 --  DDL for View BLOG_V_LINKS
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ", "DISPLAY_SEQ", "LINK_TITLE", "LINK_DESC", "LINK_URL") AS
-  select t1.id        as link_id
-  ,t2.id              as group_id
-  ,t2.title           as group_title
-  ,t2.display_seq     as group_display_seq
-  ,t1.display_seq     as display_seq
-  ,t1.title           as link_title
-  ,t1.link_desc       as link_desc
-  ,t1.link_url        as link_url
+  select
+   t1.id          as link_id
+  ,t2.id          as group_id
+  ,t2.title       as group_title
+  ,t2.display_seq as group_display_seq
+  ,t1.display_seq as display_seq
+  ,t1.title       as link_title
+  ,t1.link_desc   as link_desc
+  ,t1.link_url    as link_url
 from blog_links t1
 join blog_link_groups t2
   on t1.link_group_id = t2.id
@@ -842,10 +873,11 @@ with read only
 --  DDL for View BLOG_V_POSTS_TAGS
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_POST_TAGS" ("POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG") AS
-  select t2.post_id  as post_id
-  ,t2.tag_id       as tag_id
-  ,t2.display_seq  as display_seq
-  ,t1.tag          as tag
+  select
+   t2.post_id     as post_id
+  ,t2.tag_id      as tag_id
+  ,t2.display_seq as display_seq
+  ,t1.tag         as tag
 from blog_tags t1
 join blog_post_tags t2 on t1.id = t2.tag_id
 where 1 = 1
@@ -898,8 +930,9 @@ from dual
 --  DDL for View BLOG_V_TAGS
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG") AS
-  select t1.id  as tag_id
-  ,t1.tag     as tag
+  select
+   t1.id  as tag_id
+  ,t1.tag as tag
 from blog_tags t1
 where 1 = 1
 and t1.is_active = 1
@@ -1001,7 +1034,8 @@ where 1 = 1
 --  DDL for View BLOG_V_ARCHIVE_YEAR
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_ARCHIVE_YEAR" ("ARCHIVE_YEAR", "POST_COUNT") AS
-select t1.archive_year  as archive_year
+select
+   t1.archive_year      as archive_year
   ,count( t1.post_id )  as post_count
 from blog_v_posts t1
 where 1 = 1
@@ -1049,7 +1083,8 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "P
     ,t1.published_on
   from blog_v_posts t1
 )
-select qry.rn         as display_seq
+select
+   qry.rn             as display_seq
   ,qry.post_id        as post_id
   ,qry.published_on   as published_on
   ,qry.blogger_name   as blogger_name
@@ -1204,7 +1239,7 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_CTX";
 /
-CREATE OR REPLACE package  "BLOG_UTIL"
+create or replace package "BLOG_UTIL"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -1245,52 +1280,51 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function apex_error_handler (
-    p_error             in apex_error.t_error
+    p_error           in apex_error.t_error
   ) return apex_error.t_error_result;
 
   function int_to_vc2(
-    p_value in number
+    p_value           in number
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_attribute_value(
-    p_attribute_name    in varchar2
+    p_attribute_name  in varchar2
   ) return varchar2 result_cache;
 --------------------------------------------------------------------------------
   procedure initialize_items(
-    p_app_id            in varchar2
+    p_app_id          in varchar2
   );
 --------------------------------------------------------------------------------
   function get_post_title(
-    p_post_id           in varchar2,
-    p_escape            in boolean
+    p_post_id         in varchar2,
+    p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure get_post_pagination(
-    p_post_id           in varchar2,
-    p_post_title        out nocopy varchar2,
-    p_newer_id          out nocopy varchar2,
-    p_newer_title       out nocopy varchar2,
-    p_older_id          out nocopy varchar2,
-    p_older_title       out nocopy varchar2
+    p_post_id         in varchar2,
+    p_post_title      out nocopy varchar2,
+    p_newer_id        out nocopy varchar2,
+    p_newer_title     out nocopy varchar2,
+    p_older_id        out nocopy varchar2,
+    p_older_title     out nocopy varchar2
   );
 --------------------------------------------------------------------------------
   function get_category_title(
-    p_category_id       in varchar2,
-    p_escape            in boolean
+    p_category_id     in varchar2,
+    p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_tag(
-    p_tag_id            in varchar2
+    p_tag_id          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure check_archive_exists(
-    p_archive_id  in varchar2
+    p_archive_id      in varchar2
   );
 --------------------------------------------------------------------------------
   procedure render_dynamic_content(
-    p_content_type      in varchar2,
-    p_content_static_id in varchar2,
-    p_date_format       in varchar2
+    p_content_id      in varchar2,
+    p_date_format     in varchar2
   );
 --------------------------------------------------------------------------------
   procedure download_file (
@@ -1301,7 +1335,7 @@ end "BLOG_UTIL";
 /
 
 
-CREATE OR REPLACE package body "BLOG_UTIL"
+create or replace package body "BLOG_UTIL"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1952,9 +1986,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure render_dynamic_content(
-    p_content_type      in varchar2,
-    p_content_static_id in varchar2,
-    p_date_format       in varchar2
+    p_content_id  in varchar2,
+    p_date_format in varchar2
   )
   as
   begin
@@ -1965,8 +1998,7 @@ as
         ,v1.changed_on
       from blog_v_dynamic_content v1
       where 1 = 1
-      and v1.content_type = p_content_type
-      and v1.content_static_id = p_content_static_id
+      and v1.content_id = p_content_id
     ) loop
 
       sys.htp.p( '<h1>' || c1.content_desc || '</h1>' );
@@ -2735,6 +2767,7 @@ as
 --    Jari Laine 30.09.2020 - Added procedure google_post_authentication
 --    Jari Laine 28.11.2020 - Removed obsolete function get_comment_post_id
 --                            Renamed function google_post_authentication to post_authentication
+--    Jari Laine 28.02.2020 - New function get_footer_link_seq
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -2761,6 +2794,9 @@ as
 --------------------------------------------------------------------------------
   -- Called from: admin app page 20
   function get_link_grp_seq return varchar2;
+--------------------------------------------------------------------------------
+  -- Called from: admin app page xx
+  function get_footer_link_seq return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app page 18
   function get_link_seq(
@@ -3057,7 +3093,7 @@ as
     from blog_v_all_features v1
     where 1 = 1
       and v1.post_expression is not null
-      and v1.feature_id = p_id
+      and v1.id = p_id
     ;
     -- execute post expression
     apex_plugin_util.execute_plsql_code(
@@ -3196,6 +3232,26 @@ as
     return l_result;
 
   end get_link_grp_seq;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_footer_link_seq
+  return varchar2
+  as
+    l_max     number;
+    l_result  varchar2(256);
+  begin
+
+    -- fetch max link group display sequence
+    select max( v1.display_seq ) as display_seq
+    into l_max
+    from blog_v_all_dynamic_content v1
+    ;
+    -- return next link group display sequence
+    l_result := blog_util.int_to_vc2( next_seq( l_max ) );
+
+    return l_result;
+
+  end get_footer_link_seq;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_link_seq(

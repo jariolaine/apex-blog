@@ -48,10 +48,10 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings(display_seq, is_nullable, attribute_name, data_type, group_name, post_expression, int_min,int_max, install_value, attribute_value) values(''10'',''0'',''APP_GROUP'',''STRING'',''INTERNAL'',null,null,null,''''''BLOG_040000'''''',''BLOG_040000'
-||''');',
 'insert into blog_settings(display_seq, is_nullable, attribute_name, data_type, group_name, post_expression, int_min,int_max, install_value, attribute_value) values(''20'',''1'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,null,''blog_util.int_to_vc2(apex_'
 ||'application_install.get_application_id)'',blog_util.int_to_vc2(apex_application_install.get_application_id));',
+'insert into blog_settings(display_seq, is_nullable, attribute_name, data_type, group_name, post_expression, int_min,int_max, install_value, attribute_value) values(''30'',''0'',''APP_GROUP'',''STRING'',''INTERNAL'',null,null,null,''''''BLOG_040000'''''',''BLOG_040000'
+||''');',
 'insert into blog_settings(display_seq, is_nullable, attribute_name, data_type, group_name, post_expression, int_min,int_max, install_value, attribute_value) values(''40'',''0'',''G_LATEST_POST_ROWS'',''INTEGER'',''BLOG_PAR_GROUP_UI'',null,''1'',''20'',''''''5'''''',''5'')'
 ||';',
 'insert into blog_settings(display_seq, is_nullable, attribute_name, data_type, group_name, post_expression, int_min,int_max, install_value, attribute_value) values(''50'',''0'',''G_COMMENT_WATCH_MONTHS'',''INTEGER'',''INTERNAL'',null,''1'',''6'',''''''1'''''',''1'');',

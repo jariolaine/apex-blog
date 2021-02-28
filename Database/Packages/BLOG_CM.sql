@@ -28,6 +28,7 @@ as
 --    Jari Laine 30.09.2020 - Added procedure google_post_authentication
 --    Jari Laine 28.11.2020 - Removed obsolete function get_comment_post_id
 --                            Renamed function google_post_authentication to post_authentication
+--    Jari Laine 28.02.2020 - New function get_footer_link_seq
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -54,6 +55,9 @@ as
 --------------------------------------------------------------------------------
   -- Called from: admin app page 20
   function get_link_grp_seq return varchar2;
+--------------------------------------------------------------------------------
+  -- Called from: admin app page xx
+  function get_footer_link_seq return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app page 18
   function get_link_seq(
@@ -350,7 +354,7 @@ as
     from blog_v_all_features v1
     where 1 = 1
       and v1.post_expression is not null
-      and v1.feature_id = p_id
+      and v1.id = p_id
     ;
     -- execute post expression
     apex_plugin_util.execute_plsql_code(
@@ -489,6 +493,26 @@ as
     return l_result;
 
   end get_link_grp_seq;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_footer_link_seq
+  return varchar2
+  as
+    l_max     number;
+    l_result  varchar2(256);
+  begin
+
+    -- fetch max link group display sequence
+    select max( v1.display_seq ) as display_seq
+    into l_max
+    from blog_v_all_dynamic_content v1
+    ;
+    -- return next link group display sequence
+    l_result := blog_util.int_to_vc2( next_seq( l_max ) );
+
+    return l_result;
+
+  end get_footer_link_seq;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_link_seq(

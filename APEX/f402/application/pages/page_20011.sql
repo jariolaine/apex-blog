@@ -28,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201126233123'
+,p_last_upd_yyyymmddhh24miss=>'20210228083707'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27063074415689131)
@@ -41,16 +41,16 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.feature_id         as feature_id',
-'  ,v1.build_option_id        as build_option_id',
-'  ,v1.application_id         as application_id',
-'  ,v1.allowed_row_operation  as allowed_row_operation',
-'  ,v1.display_seq            as display_seq',
-'  ,v1.feature_name           as feature_name',
-'  ,v1.feature_group          as feature_group',
-'  ,v1.build_option_status    as status',
-'  ,v1.last_updated_on        as last_updated',
-'  ,v1.last_updated_by        as last_updated_by',
+'select v1.id                as feature_id',
+'  ,v1.build_option_id       as build_option_id',
+'  ,v1.application_id        as application_id',
+'  ,v1.allowed_row_operation as allowed_row_operation',
+'  ,v1.display_seq           as display_seq',
+'  ,v1.feature_name          as feature_name',
+'  ,v1.feature_group         as feature_group',
+'  ,v1.build_option_status   as status',
+'  ,v1.last_updated_on       as last_updated',
+'  ,v1.last_updated_by       as last_updated_by',
 'from #OWNER#.blog_v_all_features v1',
 'where 1 = 1',
 'and v1.application_id = :G_PUB_APP_ID',

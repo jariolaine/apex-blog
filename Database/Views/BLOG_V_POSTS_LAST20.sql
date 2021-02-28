@@ -13,7 +13,8 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "P
     ,t1.published_on
   from blog_v_posts t1
 )
-select qry.rn         as display_seq
+select
+   qry.rn             as display_seq
   ,qry.post_id        as post_id
   ,qry.published_on   as published_on
   ,qry.blogger_name   as blogger_name

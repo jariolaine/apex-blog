@@ -43,14 +43,6 @@ wwv_flow_api.create_list_item(
 ,p_list_item_current_for_pages=>'30'
 );
 wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(41928920771097403)
-,p_list_item_display_sequence=>31
-,p_list_item_link_text=>'Dynamic Content'
-,p_list_item_link_target=>'f?p=&APP_ID.:25:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-dynamic-content'
-,p_list_item_current_type=>'TARGET_PAGE'
-);
-wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(6831291448017455)
 ,p_list_item_display_sequence=>40
 ,p_list_item_link_text=>'Links'
