@@ -21,7 +21,7 @@ wwv_flow_api.create_user_interface(
 ,p_theme_id=>42
 ,p_home_url=>'f?p=&APP_ID.:HOME:&SESSION.'
 ,p_login_url=>'f?p=&APP_ID.:LOGIN:&SESSION.'
-,p_theme_style_by_user_pref=>true
+,p_theme_style_by_user_pref=>false
 ,p_global_page_id=>0
 ,p_navigation_list_id=>wwv_flow_api.id(8450775247518171)
 ,p_navigation_list_position=>'SIDE'
