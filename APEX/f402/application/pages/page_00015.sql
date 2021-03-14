@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210228110116'
+,p_last_upd_yyyymmddhh24miss=>'20210301164940'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
@@ -51,7 +51,7 @@ wwv_flow_api.create_page_plug(
 '    )',
 '    else apex_page.get_url(',
 '      p_application  => :G_PUB_APP_ID',
-'      ,p_page        => ''HOME''',
+'      ,p_page        => ''PGM''',
 '      ,p_session     => null',
 '      ,p_request     => ''application_process=download''',
 '      ,p_items       => ''P11_FILE_NAME''',

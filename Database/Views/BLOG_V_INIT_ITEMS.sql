@@ -9,4 +9,6 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_INIT_ITEMS" ("APPLICATION_ID", "ITEM_NAME",
 from blog_init_items i
 join blog_settings s
   on i.item_name = s.attribute_name
-;
+where 1 = 1
+with read only
+/

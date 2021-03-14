@@ -774,7 +774,8 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_DYNAMIC_CONTENT" ("CONTENT_ID", "CONTENT_TY
 from blog_dynamic_content t1
 where 1 = 1
 and t1.is_active = 1
-;
+with read only
+/
 --------------------------------------------------------
 --  DDL for View BLOG_V_FILES
 --------------------------------------------------------
@@ -807,7 +808,9 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_INIT_ITEMS" ("APPLICATION_ID", "ITEM_NAME",
 from blog_init_items i
 join blog_settings s
   on i.item_name = s.attribute_name
-;
+where 1 = 1
+with read only
+/
 --------------------------------------------------------
 --  DDL for View BLOG_V_LINKS
 --------------------------------------------------------
@@ -888,43 +891,40 @@ with read only
 --  DDL for View BLOG_V_REP_APP_LINKS
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_REP_APP_LINKS" ("DISPLAY_SEQ", "LIST_LABEL", "LIST_LINK", "LIST_ICON") AS
-  select 1 as display_seq
+  select 1          as display_seq
   ,apex_lang.message(
     'BLOG_PUB_APP_LINK_HOME'
-  ) as list_label
+  )                 as list_label
   ,blog_url.get_tab(
-     p_app_id       => blog_util.get_attribute_value( 'G_PUB_APP_ID' )
+     p_app_id       => attribute_value
     ,p_app_page_id  => 'home'
     ,p_canonical    => 'YES'
-  ) as list_link
-  ,'fa-home' as list_icon
-from dual
+  )                 as list_link
+  ,'fa-home'        as list_icon
+from blog_settings
+where 1 = 1
+and attribute_name = 'G_PUB_APP_ID'
 union all
-select 2 as display_seq
+select 2            as display_seq
   ,apex_lang.message(
     'BLOG_PUB_APP_LINK_SITEMAP'
-  ) as list_label
-  ,blog_url.get_tab(
-     p_app_id       => blog_util.get_attribute_value( 'G_PUB_APP_ID' )
-    ,p_app_page_id  => 'home'
-    ,p_request      => 'application_process=sitemapindex.xml'
-    ,p_canonical    => 'YES'
-  ) as list_link
-  ,'fa-sitemap' as list_icon
-from dual
+  )                 as list_label
+  ,attribute_value  as list_link
+  ,'fa-sitemap'     as list_icon
+from blog_settings
+where 1 = 1
+and attribute_name = 'G_SITEMAP_URL'
 union all
-select 3 as display_seq
+select 3            as display_seq
   ,apex_lang.message(
     'BLOG_PUB_APP_LINK_RSS'
-  ) as list_label
-  ,blog_url.get_tab(
-     p_app_id       => blog_util.get_attribute_value( 'G_PUB_APP_ID' )
-    ,p_app_page_id  => 'home'
-    ,p_request      => 'application_process=rss.xml'
-    ,p_canonical    => 'YES'
-  ) as list_link
-  ,'fa-rss' as list_icon
-from dual
+  )                 as list_label
+  ,attribute_value  as list_link
+  ,'fa-rss'         as list_icon
+from blog_settings
+where 1 = 1
+and attribute_name = 'G_RSS_URL'
+with read only
 /
 --------------------------------------------------------
 --  DDL for View BLOG_V_TAGS
@@ -1250,9 +1250,9 @@ as
 --                            Changed apex_error_handler honor error display position when
 --                            ORA error is between -20999 and 20901
 --                            Changed procedure get_post_pagination to raises ORA -20901 when no data found
---    Jari Laine 19.05.2020   Removed global constants
+--    Jari Laine 19.05.2020 - Removed global constants
 --    Jari Laine 23.05.2020 - Modifications to remove ORDS depency
---    Jari Laine 05.11.2020   Procedure render_dynamic_content
+--    Jari Laine 05.11.2020 - Procedure render_dynamic_content
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1527,7 +1527,7 @@ as
     end if;
 
     l_app_id := to_number( p_app_id );
-    -- loop materialized view and set items values
+    -- Set items session state
     for c1 in (
       select
         i.item_name,
@@ -1738,10 +1738,6 @@ as
     apex_application.stop_apex_engine;
 
     raise;
-
-    -- We wan't show errors between -20999 and -20901 on APEX error page
-    -- see function apex_error_handler
---    raise_application_error(-20901, 'Post not found.');
 
   when others
   then
@@ -5156,7 +5152,7 @@ as
     ;
 
     owa_util.mime_header( 'application/xml', false, 'UTF-8' );
-    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'cache-control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_rss );
@@ -5221,7 +5217,7 @@ as
     ;
 
     owa_util.mime_header( 'application/xml', false, 'UTF-8' );
-    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'cache-control: max-age=315360000, immutable, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_xsl );
@@ -5261,6 +5257,7 @@ as
     into l_xml
     from apex_application_page_proc t1
     where 1 = 1
+    and t1.process_name != 'sitemap-index.xml'
     and t1.application_id = p_app_id
     and t1.page_id = p_app_page_id
     and t1.build_option = p_build_option
@@ -5275,7 +5272,7 @@ as
     );
 
     owa_util.mime_header( 'application/xml', false, 'UTF-8' );
-    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'cache-control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_xml );
@@ -5323,7 +5320,7 @@ as
     ;
 
     owa_util.mime_header( 'application/xml', false, 'UTF-8' );
-    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'cache-control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_xml );
@@ -5359,7 +5356,7 @@ as
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p('Cache-Control: max-age=3600, public' );
+    sys.htp.p('cache-control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file(l_xml);
@@ -5394,7 +5391,7 @@ as
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'cache-control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_xml );
@@ -5429,7 +5426,7 @@ as
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'cache-control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_xml );
@@ -5464,7 +5461,7 @@ as
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'cache-control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_xml );

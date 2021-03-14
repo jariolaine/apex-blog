@@ -114,7 +114,7 @@ wwv_flow_api.create_list_template(
 ,p_a02_label=>'Badge Value'
 ,p_a03_label=>'Description'
 ,p_a04_label=>'List Item Class'
-,p_a05_label=>'Shortcut'
+,p_a05_label=>'Shortcut Key'
 ,p_a06_label=>'Link Target'
 ,p_a07_label=>'Badge Class'
 ,p_a08_label=>'Menu Item Class'

@@ -28,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210228101301'
+,p_last_upd_yyyymmddhh24miss=>'20210301164845'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6432040642894060)
@@ -176,123 +176,6 @@ wwv_flow_api.create_page_process(
 ,p_process_type=>'NATIVE_RESET_PAGINATION'
 ,p_process_name=>'Reset Posts Pagination'
 ,p_attribute_01=>'THIS_PAGE'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(24220222539098849)
-,p_process_sequence=>10
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'rss.xml'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_xml.rss(',
-'   p_rss_url  => :G_RSS_URL',
-'  ,p_app_name => :G_APP_NAME',
-'  ,p_app_desc => :G_APP_DESC',
-');'))
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(8635198962090938)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(38056825524862311)
-,p_process_sequence=>20
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'rss.xsl'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_xml.rss_xsl(',
-'  p_ws_images => :APP_IMAGES',
-');'))
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(8635198962090938)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(40726001873800839)
-,p_process_sequence=>30
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'sitemapindex.xml'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_xml.sitemap_index(',
-'   p_app_id        => :APP_ID',
-'  ,p_app_page_id   => :APP_PAGE_ID',
-'  ,p_build_option  => ''BLOG_FEATURE_SITEMAP''',
-');'))
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(41177796042194178)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(40726135083800840)
-,p_process_sequence=>40
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'sitemap-main.xml'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_xml.sitemap_main(',
-'  p_app_id => :APP_ID',
-');'))
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(41172379976935637)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(40726281710800841)
-,p_process_sequence=>50
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'sitemap-posts.xml'
-,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_posts;'
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(41172379976935637)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(40726333464800842)
-,p_process_sequence=>60
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'sitemap-categories.xml'
-,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_categories;'
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(41172379976935637)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(40726435261800843)
-,p_process_sequence=>70
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'sitemap-archives.xml'
-,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_archives;'
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(41172379976935637)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(40726513391800844)
-,p_process_sequence=>80
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'sitemap-tags.xml'
-,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_tags;'
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(41172379976935637)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(45725903832325241)
-,p_process_sequence=>90
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'download'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_util.download_file (',
-'   p_file_name => :P11_FILE_NAME',
-');'))
-,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.component_end;

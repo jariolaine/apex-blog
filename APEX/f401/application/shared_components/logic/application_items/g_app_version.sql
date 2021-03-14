@@ -1,7 +1,7 @@
-prompt --application/shared_components/logic/application_items/g_rss_url
+prompt --application/shared_components/logic/application_items/g_app_version
 begin
 --   Manifest
---     APPLICATION ITEM: G_RSS_URL
+--     APPLICATION ITEM: G_APP_VERSION
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2020.10.01'
@@ -12,8 +12,8 @@ wwv_flow_api.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_api.create_flow_item(
- p_id=>wwv_flow_api.id(25891224972537037)
-,p_name=>'G_RSS_URL'
+ p_id=>wwv_flow_api.id(26222870858137050)
+,p_name=>'G_APP_VERSION'
 ,p_protection_level=>'I'
 );
 wwv_flow_api.component_end;

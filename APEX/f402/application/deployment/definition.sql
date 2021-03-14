@@ -73,7 +73,6 @@ wwv_flow_api.create_install(
 'drop package blog_comm;',
 'drop package blog_ctx;',
 'drop package blog_html;',
-'drop package blog_install;',
 'drop package blog_plugin;',
 'drop package blog_url;',
 'drop package blog_util;',

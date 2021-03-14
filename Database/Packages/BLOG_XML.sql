@@ -168,7 +168,7 @@ as
     ;
 
     owa_util.mime_header( 'application/xml', false, 'UTF-8' );
-    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'cache-control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_rss );
@@ -233,7 +233,7 @@ as
     ;
 
     owa_util.mime_header( 'application/xml', false, 'UTF-8' );
-    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'cache-control: max-age=315360000, immutable, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_xsl );
@@ -273,6 +273,7 @@ as
     into l_xml
     from apex_application_page_proc t1
     where 1 = 1
+    and t1.process_name != 'sitemap-index.xml'
     and t1.application_id = p_app_id
     and t1.page_id = p_app_page_id
     and t1.build_option = p_build_option
@@ -287,7 +288,7 @@ as
     );
 
     owa_util.mime_header( 'application/xml', false, 'UTF-8' );
-    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'cache-control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_xml );
@@ -335,7 +336,7 @@ as
     ;
 
     owa_util.mime_header( 'application/xml', false, 'UTF-8' );
-    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'cache-control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_xml );
@@ -371,7 +372,7 @@ as
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p('Cache-Control: max-age=3600, public' );
+    sys.htp.p('cache-control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file(l_xml);
@@ -406,7 +407,7 @@ as
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'cache-control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_xml );
@@ -441,7 +442,7 @@ as
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'cache-control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_xml );
@@ -476,7 +477,7 @@ as
     ;
 
     owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p( 'Cache-Control: max-age=3600, public' );
+    sys.htp.p( 'cache-control: max-age=3600, public' );
     sys.owa_util.http_header_close;
 
     wpg_docload.download_file( l_xml );

@@ -27,9 +27,9 @@ as
 --                            Changed apex_error_handler honor error display position when
 --                            ORA error is between -20999 and 20901
 --                            Changed procedure get_post_pagination to raises ORA -20901 when no data found
---    Jari Laine 19.05.2020   Removed global constants
+--    Jari Laine 19.05.2020 - Removed global constants
 --    Jari Laine 23.05.2020 - Modifications to remove ORDS depency
---    Jari Laine 05.11.2020   Procedure render_dynamic_content
+--    Jari Laine 05.11.2020 - Procedure render_dynamic_content
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -304,7 +304,7 @@ as
     end if;
 
     l_app_id := to_number( p_app_id );
-    -- loop materialized view and set items values
+    -- Set items session state
     for c1 in (
       select
         i.item_name,
@@ -515,10 +515,6 @@ as
     apex_application.stop_apex_engine;
 
     raise;
-
-    -- We wan't show errors between -20999 and -20901 on APEX error page
-    -- see function apex_error_handler
---    raise_application_error(-20901, 'Post not found.');
 
   when others
   then

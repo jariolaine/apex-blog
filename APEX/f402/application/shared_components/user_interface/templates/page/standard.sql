@@ -191,7 +191,7 @@ wwv_flow_api.create_template(
 ,p_reference_id=>4070909157481059304
 );
 wwv_flow_api.create_page_tmpl_display_point(
- p_id=>wwv_flow_api.id(25183767941740496)
+ p_id=>wwv_flow_api.id(27916298894030400)
 ,p_page_template_id=>wwv_flow_api.id(8469116986518187)
 ,p_name=>'Content Body'
 ,p_placeholder=>'BODY'
@@ -200,7 +200,7 @@ wwv_flow_api.create_page_tmpl_display_point(
 ,p_max_fixed_grid_columns=>12
 );
 wwv_flow_api.create_page_tmpl_display_point(
- p_id=>wwv_flow_api.id(25184161499740496)
+ p_id=>wwv_flow_api.id(27916789076030400)
 ,p_page_template_id=>wwv_flow_api.id(8469116986518187)
 ,p_name=>'Breadcrumb Bar'
 ,p_placeholder=>'REGION_POSITION_01'
@@ -208,7 +208,7 @@ wwv_flow_api.create_page_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_api.create_page_tmpl_display_point(
- p_id=>wwv_flow_api.id(25184685542740496)
+ p_id=>wwv_flow_api.id(27917266185030400)
 ,p_page_template_id=>wwv_flow_api.id(8469116986518187)
 ,p_name=>'Inline Dialogs'
 ,p_placeholder=>'REGION_POSITION_04'
@@ -217,7 +217,7 @@ wwv_flow_api.create_page_tmpl_display_point(
 ,p_max_fixed_grid_columns=>12
 );
 wwv_flow_api.create_page_tmpl_display_point(
- p_id=>wwv_flow_api.id(25185188227740497)
+ p_id=>wwv_flow_api.id(27917702869030400)
 ,p_page_template_id=>wwv_flow_api.id(8469116986518187)
 ,p_name=>'Footer'
 ,p_placeholder=>'REGION_POSITION_05'
@@ -226,7 +226,7 @@ wwv_flow_api.create_page_tmpl_display_point(
 ,p_max_fixed_grid_columns=>12
 );
 wwv_flow_api.create_page_tmpl_display_point(
- p_id=>wwv_flow_api.id(25185665027740497)
+ p_id=>wwv_flow_api.id(27918294086030401)
 ,p_page_template_id=>wwv_flow_api.id(8469116986518187)
 ,p_name=>'Page Navigation'
 ,p_placeholder=>'REGION_POSITION_06'
@@ -234,7 +234,7 @@ wwv_flow_api.create_page_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_api.create_page_tmpl_display_point(
- p_id=>wwv_flow_api.id(25186160583740497)
+ p_id=>wwv_flow_api.id(27918727416030401)
 ,p_page_template_id=>wwv_flow_api.id(8469116986518187)
 ,p_name=>'Page Header'
 ,p_placeholder=>'REGION_POSITION_07'
@@ -242,7 +242,7 @@ wwv_flow_api.create_page_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_api.create_page_tmpl_display_point(
- p_id=>wwv_flow_api.id(25186674004740497)
+ p_id=>wwv_flow_api.id(27919215758030401)
 ,p_page_template_id=>wwv_flow_api.id(8469116986518187)
 ,p_name=>'Before Content Body'
 ,p_placeholder=>'REGION_POSITION_08'

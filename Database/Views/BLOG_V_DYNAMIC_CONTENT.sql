@@ -12,4 +12,5 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_DYNAMIC_CONTENT" ("CONTENT_ID", "CONTENT_TY
 from blog_dynamic_content t1
 where 1 = 1
 and t1.is_active = 1
-;
+with read only
+/

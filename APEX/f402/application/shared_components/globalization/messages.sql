@@ -155,6 +155,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Search from posts'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(26723867067879987)
+,p_name=>'BLOG_FEATURE_SITEMAP'
+,p_message_text=>'Generate sitemap'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(33704880398366885)
 ,p_name=>'BLOG_FEATURE_SUBSCRIBE_COMMENTS'
 ,p_message_text=>'Sent email notification of new comments'

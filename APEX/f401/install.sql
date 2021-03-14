@@ -20,6 +20,7 @@ prompt --install
 @@application/shared_components/logic/application_processes/redirect_to_search_page.sql
 @@application/shared_components/logic/application_items/g_app_desc.sql
 @@application/shared_components/logic/application_items/g_app_name.sql
+@@application/shared_components/logic/application_items/g_app_version.sql
 @@application/shared_components/logic/application_items/g_archive_date_format.sql
 @@application/shared_components/logic/application_items/g_date_format.sql
 @@application/shared_components/logic/application_items/g_latest_post_rows.sql
@@ -136,6 +137,7 @@ prompt --install
 @@application/pages/page_00015.sql
 @@application/pages/page_01001.sql
 @@application/pages/page_01002.sql
+@@application/pages/page_01003.sql
 @@application/pages/page_09999.sql
 @@application/deployment/definition.sql
 @@application/deployment/install/install_metadata.sql

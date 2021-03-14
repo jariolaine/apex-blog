@@ -22,6 +22,7 @@ prompt --install
 @@application/shared_components/logic/application_processes/initialize_items.sql
 @@application/shared_components/logic/application_items/g_app_desc.sql
 @@application/shared_components/logic/application_items/g_app_name.sql
+@@application/shared_components/logic/application_items/g_app_version.sql
 @@application/shared_components/logic/application_items/g_blogger_id.sql
 @@application/shared_components/logic/application_items/g_blogger_name.sql
 @@application/shared_components/logic/application_items/g_post_title_date_format.sql
@@ -75,6 +76,7 @@ prompt --install
 @@application/shared_components/user_interface/templates/region/tabs_container.sql
 @@application/shared_components/user_interface/templates/region/title_bar.sql
 @@application/shared_components/user_interface/templates/region/wizard_container.sql
+@@application/shared_components/user_interface/templates/region/cards_container.sql
 @@application/shared_components/user_interface/templates/list/badge_list.sql
 @@application/shared_components/user_interface/templates/list/cards.sql
 @@application/shared_components/user_interface/templates/list/links_list.sql
