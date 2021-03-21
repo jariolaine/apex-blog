@@ -57,7 +57,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19324753900501668)
 ,p_name=>'BLOG_CONFIRM_LINK_GROUP_DELETE'
-,p_message_text=>'You have requested the permanent deletion of link collection. Following link(s) will be also deleted.'
+,p_message_text=>'You have requested the permanent deletion of links label. Following link(s) will be also deleted.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(30112367443952323)
@@ -182,7 +182,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(23116114610465857)
 ,p_name=>'BLOG_LINK_GROUPS_UK1'
-,p_message_text=>'Link collection with same name already exists.'
+,p_message_text=>'Label with same name already exists.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(40637327457556920)

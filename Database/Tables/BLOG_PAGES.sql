@@ -17,6 +17,7 @@ create table blog_pages(
   notes varchar2(4000 char),
   constraint blog_pages_pk primary key( id ),
   constraint blog_pages_uk1 unique( page_alias  ),
+  constraint blog_pages_uk2 unique( page_type, page_alias  ),
   constraint blog_pages_ck1 check( row_version > 0 ),
   constraint blog_pages_ck2 check( is_active in( 0, 1 ) ),
   constraint blog_pages_ck3 check( display_seq > 0 )

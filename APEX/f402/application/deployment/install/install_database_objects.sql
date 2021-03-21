@@ -306,6 +306,7 @@ wwv_flow_api.create_install_script(
 '  notes varchar2(4000 char),',
 '  constraint blog_pages_pk primary key( id ),',
 '  constraint blog_pages_uk1 unique( page_alias  ),',
+'  constraint blog_pages_uk2 unique( page_type, page_alias  ),',
 '  constraint blog_pages_ck1 check( row_version > 0 ),',
 '  constraint blog_pages_ck2 check( is_active in( 0, 1 ) ),',
 '  constraint blog_pages_ck3 check( display_seq > 0 )',
@@ -731,9 +732,7 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "TAG", "TAG_UNIQUE", "NOTES", "POSTS_COUNT", "ALLOWED_ROW_OPERATION") AS',
 '  select',
-'   t1.id                as id',
-'  ,t1.row_version       as row_version',
-'  ,t1.created_'))
+'   t1.id              '))
 );
 wwv_flow_api.component_end;
 end;
@@ -750,7 +749,9 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'on        as created_on',
+'  as id',
+'  ,t1.row_version       as row_version',
+'  ,t1.created_on        as created_on',
 '  ,lower(t1.created_by) as created_by',
 '  ,t1.changed_on        as changed_on',
 '  ,lower(t1.changed_by) as changed_by',
@@ -1569,10 +1570,7 @@ wwv_flow_api.append_to_install_script(
 '    end if;',
 '',
 '    l_app_id := to_number( p_app_id );',
-'    -- Set items session state',
-'    for c1 in (',
-'      select',
-'     '))
+'    -'))
 );
 null;
 wwv_flow_api.component_end;
@@ -1590,7 +1588,10 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   i.item_name,',
+'- Set items session state',
+'    for c1 in (',
+'      select',
+'        i.item_name,',
 '        i.item_value',
 '      from blog_v_init_items i',
 '      where i.application_id = l_app_id',
@@ -2509,8 +2510,7 @@ wwv_flow_api.append_to_install_script(
 '    return',
 '      get_post(',
 '         p_post_id      => l_post_id',
-'        ,p_app_id       => p_app_id',
-'        ,p_session      => p_sessio'))
+'        ,'))
 );
 null;
 wwv_flow_api.component_end;
@@ -2528,7 +2528,8 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'n',
+'p_app_id       => p_app_id',
+'        ,p_session      => p_session',
 '        ,p_clear_cache  => p_clear_cache',
 '        ,p_canonical    => p_canonical',
 '        ,p_plain_url    => p_plain_url',
@@ -2826,10 +2827,12 @@ wwv_flow_api.append_to_install_script(
 '--                            Renamed function google_post_authentication to post_authentication',
 '--    Jari Laine 28.02.2020 - New function get_footer_link_seq',
 '--    Jari Laine 23.05.2020 - Modifications to remove ORDS depency',
+'--    Jari Laine 21.03.2021 - Changed procedure get_blogger_details fetch authorization group name stored to BLOG_SETTINGS table',
+'--                            Added trim to function remove_whitespace',
+'--                            Changed procedures add_category and add_tag use function remove_whitespace',
 '--',
 '--  TO DO:',
 '--    #1  check constraint name that raised dup_val_on_index error',
-'--    #2  group name is hard coded to procedure add_blogger',
 '--    #3  email validation could improved',
 '--',
 '--------------------------------------------------------------------------------',
@@ -3013,7 +3016,7 @@ wwv_flow_api.append_to_install_script(
 '  begin',
 '',
 '    p_tag_id  := null;',
-'    l_value := trim( p_tag );',
+'    l_value := remove_whitespace( p_tag );',
 '',
 '    -- if tag is not null then insert to table and return id',
 '    if l_value is not null then',
@@ -3224,6 +3227,7 @@ wwv_flow_api.append_to_install_script(
 '    p_name      out nocopy varchar2',
 '  )',
 '  as',
+'    l_authz_grp varchar2(256);',
 '  begin',
 '',
 '    -- fetch blogger id and name',
@@ -3237,8 +3241,10 @@ wwv_flow_api.append_to_install_script(
 '  exception when no_data_found',
 '  then',
 '',
+'    -- fetch authorization group names',
+'    l_authz_grp := blog_util.get_attribute_value( ''G_ADMIN_APP_AUTHZ_GROUP'' );',
 '    -- if blogger details not found, check is user authorized use blog',
-'    if apex_util.current_user_in_group( ''Bloggers'' )',
+'    if apex_util.current_user_in_group( l_authz_grp )',
 '    then',
 '      -- if authorized add user to blog_bloggers table',
 '      add_blogger(',
@@ -3410,22 +3416,7 @@ wwv_flow_api.append_to_install_script(
 '    ;',
 '    return l_title;',
 '',
-'  exception when no_data_found then',
-'    return null;',
-'  end get_category_title;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function get_first_paragraph(',
-'    p_body_html in varchar2',
-'  ) return varchar2',
-'  as',
-'    l_first_p       varchar2(32700);',
-'    l_first_p_start number;',
-'    l_first_p_end   number;',
-'    l_length        number;',
-'  begin',
-'',
-'    l_first_p_end := instr( p_body_html'))
+'  exception when no_data_found the'))
 );
 null;
 wwv_flow_api.component_end;
@@ -3443,7 +3434,22 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-', ''<!--more-->'' ) - 1;',
+'n',
+'    return null;',
+'  end get_category_title;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  function get_first_paragraph(',
+'    p_body_html in varchar2',
+'  ) return varchar2',
+'  as',
+'    l_first_p       varchar2(32700);',
+'    l_first_p_start number;',
+'    l_first_p_end   number;',
+'    l_length        number;',
+'  begin',
+'',
+'    l_first_p_end := instr( p_body_html, ''<!--more-->'' ) - 1;',
 '    if l_first_p_end > 0',
 '    then',
 '      l_first_p_start := 1;',
@@ -3554,7 +3560,7 @@ wwv_flow_api.append_to_install_script(
 '  as',
 '  begin',
 '    -- remove whitespace characters from string',
-'    return replace( regexp_replace( p_string, ''\s+'', '' '' ), ''  '', '' '' );',
+'    return trim( replace( regexp_replace( p_string, ''\s+'', '' '' ), ''  '', '' '' ) );',
 '  end remove_whitespace;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -3613,7 +3619,7 @@ wwv_flow_api.append_to_install_script(
 '  begin',
 '',
 '    p_category_id := null;',
-'    l_value := trim( p_title );',
+'    l_value := remove_whitespace( p_title );',
 '',
 '    -- category title must have some value',
 '    if l_value is null then',
@@ -3630,7 +3636,7 @@ wwv_flow_api.append_to_install_script(
 '    end if;',
 '',
 '    -- get next sequence value',
-'    l_seq   := get_category_seq;',
+'    l_seq := get_category_seq;',
 '',
 '    -- try insert category and return id for out parameter.',
 '    -- if unique constraint violation raised, category exists.',
@@ -4420,21 +4426,7 @@ wwv_flow_api.append_to_install_script(
 '  begin',
 '',
 '    -- fetch application email address',
-'    l_app_email := blog_util.get_attribute_value(''G_APP_EMAIL'');',
-'',
-'    l_post_id   := to_number( p_post_id );',
-'',
-'    -- get values for APEX email template',
-'    -- send notify email if blog email address is set',
-'    -- and blogger has set email',
-'    for c1 in(',
-'      select v1.blogger_email',
-'        ,json_object (',
-'           ''APP_NAME''     value p_app_name',
-'          ,''BLOGGER_NAME'' value v1.blogger_name',
-'          ,''POST_TITLE''   value v1.title',
-'          ,''POST_LINK''    value',
-'              b'))
+'    l'))
 );
 null;
 wwv_flow_api.component_end;
@@ -4452,7 +4444,21 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'log_url.get_post(',
+'_app_email := blog_util.get_attribute_value(''G_APP_EMAIL'');',
+'',
+'    l_post_id   := to_number( p_post_id );',
+'',
+'    -- get values for APEX email template',
+'    -- send notify email if blog email address is set',
+'    -- and blogger has set email',
+'    for c1 in(',
+'      select v1.blogger_email',
+'        ,json_object (',
+'           ''APP_NAME''     value p_app_name',
+'          ,''BLOGGER_NAME'' value v1.blogger_name',
+'          ,''POST_TITLE''   value v1.title',
+'          ,''POST_LINK''    value',
+'              blog_url.get_post(',
 '                 p_post_id => v1.id',
 '                ,p_canonical => ''YES''',
 '              )',
@@ -5297,17 +5303,7 @@ wwv_flow_api.append_to_install_script(
 '          <xsl:template match="/rss/channel">',
 '            <html lang="en">',
 '            <head>',
-'              <meta charset="utf-8" />',
-'              <meta name="viewport" content="width=device-width, initial-scale=1.0" />',
-'              <title>',
-'                <xsl:value-of select="title" />',
-'              </title>',
-'              <link rel="stylesheet" type="text/css" href="'' || l_css || ''" />',
-'            </head>',
-'            <body>',
-'              <h1 class="title"><a href="{ link }"><xsl:value-of select="title" /></a></h1>',
-'              <p class="description"><xsl:value-of select="description" /></p>',
-'              <x'))
+'              <meta charset="utf-8" />'))
 );
 null;
 wwv_flow_api.component_end;
@@ -5325,7 +5321,17 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'sl:for-each select="./item">',
+'',
+'              <meta name="viewport" content="width=device-width, initial-scale=1.0" />',
+'              <title>',
+'                <xsl:value-of select="title" />',
+'              </title>',
+'              <link rel="stylesheet" type="text/css" href="'' || l_css || ''" />',
+'            </head>',
+'            <body>',
+'              <h1 class="title"><a href="{ link }"><xsl:value-of select="title" /></a></h1>',
+'              <p class="description"><xsl:value-of select="description" /></p>',
+'              <xsl:for-each select="./item">',
 '                <article class="z-post">',
 '                  <header class="z-post--header">',
 '                    <h2><a href="{ link }"><xsl:value-of select="title" /></a></h2>',
@@ -6305,19 +6311,7 @@ wwv_flow_api.append_to_install_script(
 '--  DDL for Foreign Keys',
 '--------------------------------------------------------',
 '',
-'  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK1" FOREIGN KEY ("POST_ID")',
-'	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;',
-'',
-'',
-'  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK2" FOREIGN KEY ("PARENT_ID")',
-'	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE SET NULL ENABLE;',
-'',
-'',
-'  ALTER TABLE "BLOG_COMMENT_FLAGS" ADD CONSTRAINT "BLOG_COMMENT_FLAGS_FK1" FOREIGN KEY ("COMMENT_ID")',
-'	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE CASCADE ENABLE;',
-'',
-'',
-'  ALTER TABLE "BLOG_COMMENT_SUBS" ADD CONSTRAINT "BLOG_COMMEN'))
+'  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_CO'))
 );
 null;
 wwv_flow_api.component_end;
@@ -6335,7 +6329,19 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'T_SUBS_FK1" FOREIGN KEY ("POST_ID")',
+'MMENTS_FK1" FOREIGN KEY ("POST_ID")',
+'	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;',
+'',
+'',
+'  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK2" FOREIGN KEY ("PARENT_ID")',
+'	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE SET NULL ENABLE;',
+'',
+'',
+'  ALTER TABLE "BLOG_COMMENT_FLAGS" ADD CONSTRAINT "BLOG_COMMENT_FLAGS_FK1" FOREIGN KEY ("COMMENT_ID")',
+'	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE CASCADE ENABLE;',
+'',
+'',
+'  ALTER TABLE "BLOG_COMMENT_SUBS" ADD CONSTRAINT "BLOG_COMMENT_SUBS_FK1" FOREIGN KEY ("POST_ID")',
 '	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;',
 '',
 '',

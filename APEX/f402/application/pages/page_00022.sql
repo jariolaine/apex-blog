@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210222155255'
+,p_last_upd_yyyymmddhh24miss=>'20210321134857'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(20749984140206608)
@@ -103,7 +103,7 @@ wwv_flow_api.create_page_item(
 ,p_attribute_01=>'APEX_APPLICATION_TEMP_FILES'
 ,p_attribute_09=>'REQUEST'
 ,p_attribute_10=>'Y'
-,p_attribute_12=>'INLINE'
+,p_attribute_12=>'DROPZONE_BLOCK'
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(20780700866101698)

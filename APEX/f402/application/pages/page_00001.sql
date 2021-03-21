@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210307062136'
+,p_last_upd_yyyymmddhh24miss=>'20210321144745'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8582113239518316)
@@ -48,14 +48,21 @@ wwv_flow_api.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select count(1) as num_posts',
-'  ,sum(',
+'select',
+'  sum(',
 '    case post_status',
 '    when ''PUBLISHED''',
 '      then 1',
 '      else 0',
 '    end',
 '   )                    as num_published',
+'  ,sum(',
+'    case post_status',
+'    when ''PUBLISHED''',
+'      then 0',
+'      else 1',
+'    end',
+'   )                    as num_draft',
 '  ,sum(comments_count)  as num_comments',
 'from blog_v_all_posts'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
@@ -70,19 +77,8 @@ wwv_flow_api.create_report_region(
 ,p_plug_query_strip_html=>'N'
 );
 wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(45721959839325201)
-,p_query_column_id=>1
-,p_column_alias=>'NUM_POSTS'
-,p_column_display_sequence=>1
-,p_column_heading=>'Total Posts'
-,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(28586519252643024)
-,p_query_column_id=>2
+,p_query_column_id=>1
 ,p_column_alias=>'NUM_PUBLISHED'
 ,p_column_display_sequence=>2
 ,p_column_heading=>'Published Posts'
@@ -92,10 +88,21 @@ wwv_flow_api.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(29623691892195202)
+,p_query_column_id=>2
+,p_column_alias=>'NUM_DRAFT'
+,p_column_display_sequence=>12
+,p_column_heading=>'Unpublished Posts'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(28586698865643025)
 ,p_query_column_id=>3
 ,p_column_alias=>'NUM_COMMENTS'
-,p_column_display_sequence=>3
+,p_column_display_sequence=>22
 ,p_column_heading=>'Comments'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'

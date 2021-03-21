@@ -41,7 +41,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201015183116'
+,p_last_upd_yyyymmddhh24miss=>'20210321133110'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6849894493100859)
@@ -256,12 +256,12 @@ wwv_flow_api.create_worksheet_rpt(
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(27864428062256843)
-,p_name=>'Link Collection'
+,p_name=>'Links Label'
 ,p_template=>wwv_flow_api.id(8496813422518209)
 ,p_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
-,p_component_template_options=>'#DEFAULT#:t-Report--hideNoPagination:t-ContentRow--hideSelection:t-ContentRow--hideMisc'
+,p_component_template_options=>'#DEFAULT#:t-Report--hideNoPagination:t-ContentRow--hideSelection:t-ContentRow--hideMisc:t-ContentRow--hideActions'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -284,12 +284,10 @@ wwv_flow_api.create_report_region(
 '    else txt.status_disabled',
 '   end             as misc',
 '  ,null            as actions',
-'  ,txt.title_edit  as btn_title_edit',
 'from blog_v_all_link_groups v1',
 'cross join (',
-'  select apex_lang.message(''BLOG_BTN_TITLE_EDIT'') as title_edit',
-'    ,apex_lang.lang(''Enabled'')                    as status_enabled',
-'    ,apex_lang.lang(''Disabled'')                   as status_disabled',
+'  select apex_lang.lang(''Enabled'')  as status_enabled',
+'    ,apex_lang.lang(''Disabled'')     as status_disabled',
 '  from dual',
 ') txt',
 'where 1 = 1',
@@ -404,8 +402,6 @@ wwv_flow_api.create_report_columns(
 ,p_column_heading=>'Misc'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
-,p_display_as=>'TEXT_FROM_LOV_ESC'
-,p_named_lov=>wwv_flow_api.id(8819403626737334)
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -416,20 +412,9 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>10
 ,p_column_heading=>'Actions'
 ,p_use_as_row_header=>'N'
-,p_column_link=>'f?p=&APP_ID.:20:&SESSION.::&DEBUG.:RP,20:P20_ID:#ID#'
-,p_column_linktext=>'<span class="t-Icon fa fa-edit" aria-hidden="true"></span>#BTN_TITLE_EDIT#'
-,p_column_link_attr=>' class="t-Button t-Button--icon t-Button--iconLeft"'
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
-);
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(31619148468094027)
-,p_query_column_id=>11
-,p_column_alias=>'BTN_TITLE_EDIT'
-,p_column_display_sequence=>11
-,p_hidden_column=>'Y'
-,p_derived_column=>'N'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(28585474513643013)
@@ -633,6 +618,19 @@ wwv_flow_api.create_page_button(
 ,p_icon_css_classes=>'fa-plus'
 );
 wwv_flow_api.create_page_button(
+ p_id=>wwv_flow_api.id(29623575443195201)
+,p_button_sequence=>10
+,p_button_plug_id=>wwv_flow_api.id(27864428062256843)
+,p_button_name=>'EDIT'
+,p_button_action=>'REDIRECT_PAGE'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_id=>wwv_flow_api.id(8549262062518244)
+,p_button_image_alt=>'Edit'
+,p_button_position=>'REGION_TEMPLATE_EDIT'
+,p_button_redirect_url=>'f?p=&APP_ID.:20:&SESSION.::&DEBUG.::P20_ID:&P17_LINK_GROUP_ID.'
+,p_icon_css_classes=>'fa-edit'
+);
+wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(25129089948406507)
 ,p_button_sequence=>10
 ,p_button_plug_id=>wwv_flow_api.id(50093168854497120)
@@ -649,12 +647,12 @@ wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(25129462465406507)
 ,p_button_sequence=>30
 ,p_button_plug_id=>wwv_flow_api.id(50093168854497120)
-,p_button_name=>'CREATE_GROUP'
+,p_button_name=>'CREATE_LABEL'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_is_hot=>'Y'
-,p_button_image_alt=>'New Collection'
+,p_button_image_alt=>'New Label'
 ,p_button_position=>'REGION_TEMPLATE_NEXT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:20:&SESSION.::&DEBUG.:RP,20::'
 ,p_icon_css_classes=>'fa-plus'

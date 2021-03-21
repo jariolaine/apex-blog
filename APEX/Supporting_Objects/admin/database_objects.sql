@@ -286,6 +286,7 @@ create table blog_pages(
   notes varchar2(4000 char),
   constraint blog_pages_pk primary key( id ),
   constraint blog_pages_uk1 unique( page_alias  ),
+  constraint blog_pages_uk2 unique( page_type, page_alias  ),
   constraint blog_pages_ck1 check( row_version > 0 ),
   constraint blog_pages_ck2 check( is_active in( 0, 1 ) ),
   constraint blog_pages_ck3 check( display_seq > 0 )
@@ -2748,10 +2749,12 @@ as
 --                            Renamed function google_post_authentication to post_authentication
 --    Jari Laine 28.02.2020 - New function get_footer_link_seq
 --    Jari Laine 23.05.2020 - Modifications to remove ORDS depency
+--    Jari Laine 21.03.2021 - Changed procedure get_blogger_details fetch authorization group name stored to BLOG_SETTINGS table
+--                            Added trim to function remove_whitespace
+--                            Changed procedures add_category and add_tag use function remove_whitespace
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
---    #2  group name is hard coded to procedure add_blogger
 --    #3  email validation could improved
 --
 --------------------------------------------------------------------------------
@@ -2935,7 +2938,7 @@ as
   begin
 
     p_tag_id  := null;
-    l_value := trim( p_tag );
+    l_value := remove_whitespace( p_tag );
 
     -- if tag is not null then insert to table and return id
     if l_value is not null then
@@ -3146,6 +3149,7 @@ as
     p_name      out nocopy varchar2
   )
   as
+    l_authz_grp varchar2(256);
   begin
 
     -- fetch blogger id and name
@@ -3159,8 +3163,10 @@ as
   exception when no_data_found
   then
 
+    -- fetch authorization group names
+    l_authz_grp := blog_util.get_attribute_value( 'G_ADMIN_APP_AUTHZ_GROUP' );
     -- if blogger details not found, check is user authorized use blog
-    if apex_util.current_user_in_group( 'Bloggers' )
+    if apex_util.current_user_in_group( l_authz_grp )
     then
       -- if authorized add user to blog_bloggers table
       add_blogger(
@@ -3458,7 +3464,7 @@ as
   as
   begin
     -- remove whitespace characters from string
-    return replace( regexp_replace( p_string, '\s+', ' ' ), '  ', ' ' );
+    return trim( replace( regexp_replace( p_string, '\s+', ' ' ), '  ', ' ' ) );
   end remove_whitespace;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3517,7 +3523,7 @@ as
   begin
 
     p_category_id := null;
-    l_value := trim( p_title );
+    l_value := remove_whitespace( p_title );
 
     -- category title must have some value
     if l_value is null then
@@ -3534,7 +3540,7 @@ as
     end if;
 
     -- get next sequence value
-    l_seq   := get_category_seq;
+    l_seq := get_category_seq;
 
     -- try insert category and return id for out parameter.
     -- if unique constraint violation raised, category exists.
