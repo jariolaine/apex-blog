@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210314121424'
+,p_last_upd_yyyymmddhh24miss=>'20210409120346'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(45722633696325208)
@@ -374,22 +374,6 @@ wwv_flow_api.create_page_computation(
 ,p_computation=>'1'
 ,p_compute_when=>'ENABLE'
 ,p_compute_when_type=>'REQUEST_EQUALS_CONDITION'
-);
-wwv_flow_api.create_page_da_event(
- p_id=>wwv_flow_api.id(30214775877134659)
-,p_name=>'Format Code'
-,p_event_sequence=>10
-,p_bind_type=>'bind'
-,p_bind_event_type=>'ready'
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(30215158433134656)
-,p_event_id=>wwv_flow_api.id(30214775877134659)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'Y'
-,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_attribute_01=>'blog.UI.formatProgramCode("pre.z-program-code")'
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(30220193517083436)

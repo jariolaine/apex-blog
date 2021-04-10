@@ -2,50 +2,22 @@
 /**************************************
 * Program code formatting
 **************************************/
-
 pre.z-program-code {
   font-family: @code-font;
   color: @code-text-color;
-  font-size: 1.1rem;
-  tab-size: 2;
-  counter-reset: line;
+  font-size: @code-font-size;
+  tab-size: @code-tab-size;
   overflow-x: auto;
-/*
-	background-color: @code-bg-color;
+  display: block;
+  padding: @code-padding;
+  margin: @code-margin;
   border: @code-border;
-	box-shadow: @code-box-shadow;
-*/
+  border-left: @code-border-left;
   border-radius: @code-border-radius;
-  code {
+  background-color: @code-bg-color;
+  box-shadow: @code-box-shadow;
+  code{
     font-family: inherit;
     font-size: inherit;
-    line-height: inherit;
-    tab-size: inherit;
-    counter-increment: line;
-    margin: 0;
-    padding: 0;
-    overflow: visible;
-    &::before {
-      content: counter(line);
-      user-select: none;
-      border-right: @code-margin-border-right;
-      border-left: @code-border;
-      background-color: @code-margin-bg-even;
-      margin: 0 0.4rem 0 0;
-      padding: 0 0.4rem 0 0;
-      display: inline-block;
-      text-align: right;
-      width: 2.8rem;
-      color: @code-margin-text-color;
-    }
-    &:nth-child(odd):before {
-      background-color: @code-margin-bg-odd;
-    }
-    &:first-child:before {
-      border-top: @code-border;
-    }
-    &:last-child:before {
-      border-bottom: @code-border;
-    }
   }
 }

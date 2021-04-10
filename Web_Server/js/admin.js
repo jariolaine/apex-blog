@@ -5,6 +5,16 @@ var blog = blog || {};
 
 (function($, region, blog) {
 
+  // on page ready
+  // hide automatically success message
+  $(function() {
+    apex.theme42.util.configAPEXMsgs({
+      autoDismiss: true
+      // duration is optional (Default is 3000 milliseconds)
+      ,duration: 5000
+    });
+  });
+
   /**
   * @module blog.admin
   **/

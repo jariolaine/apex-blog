@@ -5,11 +5,11 @@ Blog application built with Oracle Application Express (APEX).
 ## Install
 
 ### System Requirements
-* Oracle database version 18c or higher
+* Oracle database version 19c or higher
 * Oracle Application Express version 20.2 or higher
 
 ### Needed Privileges
-Ensure target schema associated to your APEX workspace is registered to ORDS, has following system privileges and roles:
+Ensure target schema associated to your APEX workspace has following system privileges and roles:
 * CREATE INDEXTYPE
 * CREATE PROCEDURE
 * CREATE SEQUENCE

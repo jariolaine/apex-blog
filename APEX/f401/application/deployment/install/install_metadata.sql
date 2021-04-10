@@ -79,11 +79,11 @@ wwv_flow_api.create_install_script(
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values (''220'',''0'',''CANONICAL_URL'',''URL'',''BLOG_PAR_GROUP_SEO'',''trim( rtrim( :ATTRIBUTE_VALUE, ''''/'''' )'
 ||' )'',null,null,''apex_util.host_url()'',apex_util.host_url());',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values (''230'',''1'',''G_RSS_URL'',''URL'',''BLOG_PAR_GROUP_SEO'',null,null,null,''apex_util.host_url(''''SCRIPT'
-||''''') || ''''f?p='''' || blog_util.int_to_vc2(coalesce(apex_application_install.get_application_id, apex_application.g_flow_id)) || '''':pgm::application_process%3Drss.xml'''''',apex_util.host_url(''SCRIPT'') || ''f?p='' || blog_util.int_to_vc2(coalesce(apex_applic'
-||'ation_install.get_application_id, apex_application.g_flow_id)) || '':pgm::application_process%3Drss.xml'');',
+||''''') || ''''f?p='''' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '''':pgm::application_process%3Drss.xml'''''',apex_util.host_url(''SCRIPT'') || ''f?p='' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '':pgm::app'
+||'lication_process%3Drss.xml'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values (''240'',''1'',''G_RSS_XSL_URL'',''URL'',''BLOG_PAR_GROUP_SEO'',null,null,null,''apex_util.host_url(''''SC'
-||'RIPT'''') || ''''f?p='''' || blog_util.int_to_vc2(coalesce(apex_application_install.get_application_id, apex_application.g_flow_id)) || '''':pgm::application_process%3Drss.xsl'''''',apex_util.host_url(''SCRIPT'') || ''f?p='' || blog_util.int_to_vc2(coalesce(apex_ap'
-||'plication_install.get_application_id, apex_application.g_flow_id)) || '':pgm::application_process%3Drss.xsl'');',
+||'RIPT'''') || ''''f?p='''' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '''':pgm::application_process%3Drss.xsl'''''',apex_util.host_url(''SCRIPT'') || ''f?p='' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '':pgm:'
+||':application_process%3Drss.xsl'');',
 '--',
 '--------------------------------------------------------',
 '--  Inserting into BLOG_FEATURES',
@@ -125,7 +125,6 @@ wwv_flow_api.create_install_script(
 'where 1 = 1',
 'and pi.application_id = blog_util.get_attribute_value( ''G_ADMIN_APP_ID'' )',
 ';',
-'',
 ''))
 );
 wwv_flow_api.component_end;

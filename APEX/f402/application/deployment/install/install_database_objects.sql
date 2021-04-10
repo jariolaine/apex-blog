@@ -792,10 +792,11 @@ wwv_flow_api.append_to_install_script(
 '  ,t1.body_html   as comment_body',
 '  ,apex_string.get_initials(',
 '    t1.comment_by',
-'   )              as user_icon',
-'  ,''u-color-'' || ora_hash( ',
-'      lower( t1.comment_by ), 44',
-'    ) + 1         as icon_modifier',
+'  )               as user_icon',
+'  ,''u-color-''',
+'  || (',
+'   ora_hash( lower( t1.comment_by ), 44 ) + 1',
+'  )               as icon_modifier',
 'from blog_comments t1',
 'where 1 = 1',
 'and t1.is_active = 1',
@@ -1569,8 +1570,7 @@ wwv_flow_api.append_to_install_script(
 '      raise no_data_found;',
 '    end if;',
 '',
-'    l_app_id := to_number( p_app_id );',
-'    -'))
+'    l_app_id := to_number( p_app_id );'))
 );
 null;
 wwv_flow_api.component_end;
@@ -1588,7 +1588,8 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'- Set items session state',
+'',
+'    -- Set items session state',
 '    for c1 in (',
 '      select',
 '        i.item_name,',
@@ -2510,7 +2511,7 @@ wwv_flow_api.append_to_install_script(
 '    return',
 '      get_post(',
 '         p_post_id      => l_post_id',
-'        ,'))
+'  '))
 );
 null;
 wwv_flow_api.component_end;
@@ -2528,7 +2529,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'p_app_id       => p_app_id',
+'      ,p_app_id       => p_app_id',
 '        ,p_session      => p_session',
 '        ,p_clear_cache  => p_clear_cache',
 '        ,p_canonical    => p_canonical',
@@ -3416,7 +3417,7 @@ wwv_flow_api.append_to_install_script(
 '    ;',
 '    return l_title;',
 '',
-'  exception when no_data_found the'))
+'  exception when no_data_fo'))
 );
 null;
 wwv_flow_api.component_end;
@@ -3434,7 +3435,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'n',
+'und then',
 '    return null;',
 '  end get_category_title;',
 '--------------------------------------------------------------------------------',
@@ -4425,8 +4426,7 @@ wwv_flow_api.append_to_install_script(
 '    l_app_email varchar2(4000);',
 '  begin',
 '',
-'    -- fetch application email address',
-'    l'))
+'    -- fetch application email address'))
 );
 null;
 wwv_flow_api.component_end;
@@ -4444,7 +4444,8 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_app_email := blog_util.get_attribute_value(''G_APP_EMAIL'');',
+'',
+'    l_app_email := blog_util.get_attribute_value(''G_APP_EMAIL'');',
 '',
 '    l_post_id   := to_number( p_post_id );',
 '',
@@ -5303,7 +5304,7 @@ wwv_flow_api.append_to_install_script(
 '          <xsl:template match="/rss/channel">',
 '            <html lang="en">',
 '            <head>',
-'              <meta charset="utf-8" />'))
+'              <meta charset="utf'))
 );
 null;
 wwv_flow_api.component_end;
@@ -5321,7 +5322,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'-8" />',
 '              <meta name="viewport" content="width=device-width, initial-scale=1.0" />',
 '              <title>',
 '                <xsl:value-of select="title" />',
@@ -6311,7 +6312,7 @@ wwv_flow_api.append_to_install_script(
 '--  DDL for Foreign Keys',
 '--------------------------------------------------------',
 '',
-'  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_CO'))
+'  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "'))
 );
 null;
 wwv_flow_api.component_end;
@@ -6329,7 +6330,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'MMENTS_FK1" FOREIGN KEY ("POST_ID")',
+'BLOG_COMMENTS_FK1" FOREIGN KEY ("POST_ID")',
 '	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;',
 '',
 '',
@@ -6371,7 +6372,6 @@ wwv_flow_api.append_to_install_script(
 '',
 '  ALTER TABLE "BLOG_POST_UDS" ADD CONSTRAINT "BLOG_POST_UDS_FK1" FOREIGN KEY ("POST_ID")',
 '	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;',
-'',
 ''))
 );
 null;

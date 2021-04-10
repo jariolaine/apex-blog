@@ -20,33 +20,6 @@
 	**/
 	blog.UI = {
 
-	  /**
-	  * @function formatProgramCode
-	  * @example blog.UI.formatProgramCode("pre.program-code");
-	  **/
-	  formatProgramCode: function( selector ){
-	    var elem$ = $( selector );
-
-	    elem$.html( function( ind, oldHTML ){
-
-	      var lrows = [];
-	      lrows = oldHTML.split( "\n" );
-
-	      if( lrows && lrows.length ){
-
-	        while( lrows.length > 0 && lrows[lrows.length - 1].trim().length === 0 ){
-	          lrows.pop();
-	        }
-
-	        if( lrows && lrows.length ){
-	          return "<code>" + lrows.join( "</code>\n<code>" ) + "</code>";
-	        }
-
-	      }
-
-	    });
-
-	  },
     /**
 	  * @function setListCurrentItem
 	  * @example blog.UI.setListCurrentItem({ affectedElements: this.affectedElements, pageItem: "PX_ITEM" });

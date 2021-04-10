@@ -47,10 +47,10 @@ wwv_flow_api.create_list_item(
 wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(25756063318250538)
 ,p_list_item_display_sequence=>40
-,p_list_item_link_text=>'Footer Links'
+,p_list_item_link_text=>'Popup Pages'
 ,p_list_item_link_target=>'f?p=&APP_ID.:25:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-list'
-,p_list_text_01=>'Add and maintain blog footer link list'
+,p_list_text_01=>'Create and maintain popup pages. Link to popups are visible in blog footer. Use e.g. create privacy or cookie policy'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_api.component_end;
