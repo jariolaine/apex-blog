@@ -17,7 +17,6 @@ wwv_flow_api.create_page(
 ,p_name=>'Footer Links Dialog'
 ,p_alias=>'INFORMATION'
 ,p_page_mode=>'MODAL'
-,p_step_title=>'Information'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8700188054171688)
 ,p_step_template=>wwv_flow_api.id(6762463719267365)
@@ -25,7 +24,7 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210301155935'
+,p_last_upd_yyyymmddhh24miss=>'20210411083821'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41876461524408305)
@@ -46,6 +45,20 @@ wwv_flow_api.create_page_plug(
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
+wwv_flow_api.create_page_button(
+ p_id=>wwv_flow_api.id(36227766771379736)
+,p_button_sequence=>10
+,p_button_plug_id=>wwv_flow_api.id(41876461524408305)
+,p_button_name=>'CLOSE'
+,p_button_action=>'DEFINED_BY_DA'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconRight:t-Button--stretch'
+,p_button_template_id=>wwv_flow_api.id(6855239813267414)
+,p_button_image_alt=>'Close'
+,p_button_position=>'BELOW_BOX'
+,p_button_execute_validations=>'N'
+,p_warn_on_unsaved_changes=>null
+,p_icon_css_classes=>'fa-close'
+);
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(41879333719408334)
 ,p_name=>'P1002_PAGE_TITLE'
@@ -55,6 +68,23 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'U'
 ,p_protection_level=>'S'
 ,p_attribute_01=>'Y'
+);
+wwv_flow_api.create_page_da_event(
+ p_id=>wwv_flow_api.id(36227874221379737)
+,p_name=>'Close Dialog'
+,p_event_sequence=>10
+,p_triggering_element_type=>'BUTTON'
+,p_triggering_button_id=>wwv_flow_api.id(36227766771379736)
+,p_bind_type=>'bind'
+,p_bind_event_type=>'click'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(36227948089379738)
+,p_event_id=>wwv_flow_api.id(36227874221379737)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_DIALOG_CANCEL'
 );
 wwv_flow_api.component_end;
 end;

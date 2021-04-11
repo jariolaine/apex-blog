@@ -80,6 +80,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Categories'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(37513927722106952)
+,p_name=>'BLOG_FEATURE_EMAIL_VALIDATION_API'
+,p_message_text=>'Validate email address using REST API call'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(24631921054971612)
 ,p_name=>'BLOG_FEATURE_FILES'
 ,p_message_text=>'Files'

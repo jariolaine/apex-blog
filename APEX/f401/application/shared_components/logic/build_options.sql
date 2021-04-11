@@ -138,6 +138,14 @@ wwv_flow_api.create_build_option(
 ,p_build_option_comment=>'Enable / disable the ability to subscribe to email notification of new comments'
 );
 wwv_flow_api.create_build_option(
+ p_id=>wwv_flow_api.id(37511226776078888)
+,p_build_option_name=>'BLOG_FEATURE_EMAIL_VALIDATION_API'
+,p_build_option_status=>'EXCLUDE'
+,p_default_on_export=>'EXCLUDE'
+,p_on_upgrade_keep_status=>true
+,p_build_option_comment=>'Enable/disable comment subscription email address validation using Abstract email validation API'
+);
+wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(41172379976935637)
 ,p_build_option_name=>'BLOG_FEATURE_SITEMAP'
 ,p_build_option_status=>'INCLUDE'

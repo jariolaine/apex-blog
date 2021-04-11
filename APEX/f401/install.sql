@@ -2,6 +2,10 @@ prompt --install
 @@application/set_environment.sql
 @@application/delete_application.sql
 @@application/create_application.sql
+@@application/shared_components/credentials/abstract_email_validation_api_key.sql
+@@application/shared_components/remote_servers/abstract.sql
+@@application/shared_components/data_profiles/email_validation_api.sql
+@@application/shared_components/web_sources/abstract_email_validation_api.sql
 @@application/shared_components/navigation/lists/navigation_bar.sql
 @@application/shared_components/navigation/lists/categories.sql
 @@application/shared_components/navigation/lists/latest_posts.sql

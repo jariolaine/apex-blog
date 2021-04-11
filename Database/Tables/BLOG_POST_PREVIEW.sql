@@ -7,7 +7,7 @@ create table blog_post_preview(
   post_title varchar2( 128 char ),
   category_title varchar2( 128 char ),
   body_html clob,
-  tags varchar2( 4000 char ),
+  tags varchar2( 4000 byte ),
   constraint blog_post_preview_pk primary key( id )
 )
 /

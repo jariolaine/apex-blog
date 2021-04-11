@@ -22,7 +22,7 @@ wwv_flow_api.create_list_item(
 ,p_list_item_link_text=>'Basic Settings'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20012:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-layout-header-sidebar-right'
-,p_list_text_01=>'Setup blog title, blog Description and other basic settings'
+,p_list_text_01=>'Setup title, description and other basic settings for application.'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_api.create_list_item(
@@ -31,7 +31,7 @@ wwv_flow_api.create_list_item(
 ,p_list_item_link_text=>'Configuration Options'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20011:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-gears'
-,p_list_text_01=>'Enable or disable application features'
+,p_list_text_01=>'Enable or disable application features.'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_api.create_list_item(
@@ -50,7 +50,7 @@ wwv_flow_api.create_list_item(
 ,p_list_item_link_text=>'Popup Pages'
 ,p_list_item_link_target=>'f?p=&APP_ID.:25:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-list'
-,p_list_text_01=>'Create and maintain popup pages. Link to popups are visible in blog footer. Use e.g. create privacy or cookie policy'
+,p_list_text_01=>'Create and maintain modal pages. A link to the page will appear in the blog footer. For example, create a page for a disclaimer.'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_api.component_end;

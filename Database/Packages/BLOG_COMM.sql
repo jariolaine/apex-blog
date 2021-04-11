@@ -9,37 +9,53 @@ as
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 11.05.2020 - Created
+--    Jari Laine 11.04.2021 - New procedure reply_notify
+--                            New functions validate_email and is_email_verified
 --
 --  TO DO:
---    #1  comment HTML validation could improved
+--    #1  comment HTML validation could be improved
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function format_comment(
-    p_comment         in varchar2,
-    p_remove_anchors  in boolean default false
+    p_comment           in varchar2,
+    p_remove_anchors    in boolean default false
   ) return varchar2;
 --------------------------------------------------------------------------------
   function validate_comment(
-    p_comment         in varchar2,
-    p_length_err_mesg in varchar2,
-    p_parse_err_mesg  in varchar2,
-    p_max_length      in number default 4000
+    p_comment           in varchar2,
+    p_max_length        in number default 4000
   ) return varchar2;
 --------------------------------------------------------------------------------
+  function validate_email(
+    p_email             in varchar2
+  ) return boolean;
+--------------------------------------------------------------------------------
+  function is_email_verified(
+    p_email             in varchar2
+  ) return boolean;
+--------------------------------------------------------------------------------
   procedure new_comment_notify(
-    p_post_id         in varchar2,
-    p_app_name        in varchar2,
-    p_email_template  in varchar2
+    p_post_id           in varchar2,
+    p_app_name          in varchar2,
+    p_email_template    in varchar2
+  );
+--------------------------------------------------------------------------------
+  -- Called from: admin app pages 32
+  procedure reply_notify(
+    p_app_id            in varchar2,
+    p_app_name          in varchar2,
+    p_post_id           in varchar2,
+    p_email_template    in varchar2
   );
 --------------------------------------------------------------------------------
   procedure subscribe(
-    p_post_id         in varchar2,
-    p_email           in varchar2
+    p_post_id           in varchar2,
+    p_email             in varchar2
   );
 --------------------------------------------------------------------------------
   procedure unsubscribe(
-    p_subscription_id in varchar2
+    p_subscription_id   in varchar2
   );
 --------------------------------------------------------------------------------
 end "BLOG_COMM";
@@ -216,7 +232,7 @@ as
               ||
                 case
                 when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
-                then '<br />' || chr(10)
+                then '<br>' || chr(10)
                 end
               || l_temp
             ;
@@ -275,8 +291,6 @@ as
 --------------------------------------------------------------------------------
   function validate_comment(
     p_comment         in varchar2,
-    p_length_err_mesg in varchar2,
-    p_parse_err_mesg  in varchar2,
     p_max_length      in number default 4000
   ) return varchar2
   as
@@ -289,10 +303,10 @@ as
   begin
 
     -- check formatted comment length
-    if length( p_comment ) > p_max_length
+    if lengthb( p_comment ) > p_max_length
     then
       -- set error message
-      l_err_mesg := p_length_err_mesg;
+      l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_LENGTH';
     else
       -- check HTML is valid
       -- TO DO see item 1 from package specs
@@ -304,7 +318,7 @@ as
         );
       exception when xml_parsing_failed then
         -- set error message
-        l_err_mesg := p_parse_err_mesg;
+        l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_HTML';
       end;
 
     end if;
@@ -313,18 +327,91 @@ as
     then
       -- prepare return validation error message
       l_result := apex_lang.message( l_err_mesg );
-
-      if l_result = apex_escape.html( l_err_mesg )
-      then
-        l_result := l_err_mesg;
-      end if;
-
     end if;
     -- return validation result
     -- if validation fails we return error message stored to variable
     return l_result;
 
   end validate_comment;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function validate_email(
+    p_email in varchar2
+  ) return boolean
+  as
+    l_params    apex_exec.t_parameters;
+    l_response  clob;
+    l_json      json_object_t;
+    l_result    boolean;
+  begin
+    -- set result to false by default
+    l_result := false;
+
+    if not is_email_verified(p_email)
+    then
+
+      -- set email as parameter for rest source
+      apex_exec.add_parameter( l_params, 'email', p_email );
+      -- call rest source to validate email
+      apex_exec.execute_rest_source(
+         p_static_id  => 'ABSTRACT_EMAIL_VALIDATION_API'
+        ,p_operation  => 'GET'
+        ,p_parameters => l_params
+      );
+
+      -- get response
+      l_response := apex_exec.get_parameter_clob( l_params, 'response' );
+      apex_debug.info( 'Email validation response: %s', l_response );
+      -- convert response to json object
+      l_json := json_object_t( l_response );
+      -- check email deliverability
+      if l_json.get('deliverability').to_string = '"DELIVERABLE"'
+      then
+        -- if email is deliverable return true
+        l_result := true;
+      end if;
+      
+    else
+      l_result := true;
+    end if;
+
+    return l_result;
+
+  exception when others
+  then
+    -- if something goes wrong
+    apex_debug.error( 'Email validation failed: %s', sqlerrm );
+    raise_application_error( -20002 ,  apex_lang.message( 'BLOG_EMAIL_VALIDATION_ERROR' ) );
+    raise;
+  end validate_email;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function is_email_verified(
+    p_email in varchar2
+  ) return boolean
+  as
+    l_cnt     number;
+    l_result  boolean;
+  begin
+    -- set result to false by default
+    l_result := false;
+
+    -- get email count from table
+    select count(1) as cnt
+    into l_cnt
+    from blog_subscribers_email t1
+    where 1 = 1
+    and t1.email = lower( trim( p_email ) )
+    ;
+    if l_cnt = 1
+    then
+      -- email exists return true
+      l_result := true;
+    end if;
+    -- return result
+    return l_result;
+
+  end is_email_verified;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure new_comment_notify(
@@ -337,10 +424,16 @@ as
     l_app_email varchar2(4000);
   begin
 
+    l_post_id   := to_number( p_post_id );
+
     -- fetch application email address
     l_app_email := blog_util.get_attribute_value('G_APP_EMAIL');
-
-    l_post_id   := to_number( p_post_id );
+    -- if application email address is not set, exit from procedure
+    if l_app_email is null
+    then
+      apex_debug.info('application email address is not set');
+      return;
+    end if;
 
     -- get values for APEX email template
     -- send notify email if blog email address is set
@@ -361,8 +454,15 @@ as
       where 1 = 1
       and v1.id = l_post_id
       and v1.blogger_email is not null
-      and l_app_email is not null
     ) loop
+
+      apex_debug.info(
+        'Send email to: %s from: %s template: %s placeholders: %s'
+        ,c1.blogger_email
+        ,l_app_email
+        ,p_email_template
+        ,c1.placeholders
+      );
       -- send notify email
       apex_mail.send (
          p_to                 => c1.blogger_email
@@ -373,6 +473,87 @@ as
     end loop;
 
   end new_comment_notify;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure reply_notify(
+    p_app_id          in varchar2,
+    p_app_name        in varchar2,
+    p_post_id         in varchar2,
+    p_email_template  in varchar2
+  )
+  as
+    l_watch_end     date;
+    l_post_id       number;
+    l_watch_months  number;
+    l_app_email     varchar2(4000);
+  begin
+
+    l_post_id := to_number( p_post_id );
+
+    -- fetch application email address
+    l_app_email := blog_util.get_attribute_value( 'G_APP_EMAIL' );
+    -- if application email address is not set, exit from procedure
+    if l_app_email is null
+    then
+      apex_debug.info('application email address is not set');
+      return;
+    end if;
+
+    -- fetch comment watch expires
+    l_watch_months := to_number(
+        blog_util.get_attribute_value( 'G_COMMENT_WATCH_MONTHS' )
+      ) * -1
+    ;
+    l_watch_end := add_months( trunc( sysdate ), l_watch_months );
+
+    -- send notify users that have subscribed to replies to comment
+    for c1 in(
+      select t2.email
+      ,json_object (
+         'APP_NAME'         value p_app_name
+        ,'POST_TITLE'       value v1.title
+        ,'POST_LINK'        value
+            blog_url.get_post(
+               p_app_id     => p_app_id
+              ,p_post_id    => v1.id
+              ,p_canonical  => 'YES'
+            )
+        ,'UNSUBSCRIBE_LINK' value
+            blog_url.get_unsubscribe(
+               p_app_id          => p_app_id
+              ,p_post_id         => p_post_id
+              ,p_subscription_id => t1.id
+            )
+       ) as placeholders
+      from blog_comment_subscribers t1
+      join blog_subscribers_email t2
+        on t1.email_id = t2.id
+      join blog_v_all_posts v1
+        on t1.post_id = v1.id
+      where 1 = 1
+        and v1.id = l_post_id
+        -- send notification if subscription is created less than months ago specified in settings
+        and t1.subscription_date > l_watch_end
+    ) loop
+
+      apex_debug.info(
+        'Send email to: %s from: %s template: %s placeholders: %s'
+        ,c1.email
+        ,l_app_email
+        ,p_email_template
+        ,c1.placeholders
+      );
+      -- send notify email
+      apex_mail.send (
+         p_from => l_app_email
+        ,p_to   => c1.email
+        ,p_template_static_id => p_email_template
+        ,p_placeholders => c1.placeholders
+      );
+
+    end loop;
+
+  end reply_notify;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure subscribe(
@@ -392,34 +573,43 @@ as
     if p_email is not null
     and p_post_id is not null
     then
-      -- store email address and return id
+      -- check if email address already exists and fetch id
       begin
-        insert into
-          blog_comment_subs_email( email, is_active )
-        values ( l_email, 1 )
-        returning id into l_email_id
-        ;
-      -- if email address already exists, fetch id
-      exception when dup_val_on_index
-      then
         select id
         into l_email_id
-        from blog_comment_subs_email
+        from blog_subscribers_email
         where 1 = 1
-        and email_unique = l_email
+        and email = l_email
+        ;
+      -- if email address not exists, insert and return id
+      exception when no_data_found
+      then
+        insert into
+            blog_subscribers_email( email, is_active )
+        values
+          ( l_email, 1 )
+        returning id into l_email_id
         ;
       end;
-      -- store post to email link
-      insert into
-        blog_comment_subs( post_id, email_id )
-      values
-        ( p_post_id, l_email_id )
-      ;
+      -- insert post to email relation
+      begin
+        insert into
+          blog_comment_subscribers( post_id, email_id, subscription_date )
+        values
+          ( p_post_id, l_email_id, trunc( sysdate ) )
+        ;
+      -- if subscription already exists update subscription
+      exception when dup_val_on_index
+      then
+        update blog_comment_subscribers
+          set subscription_date = trunc( sysdate )
+        where 1 = 1
+        and post_id = p_post_id
+        and email_id = l_email_id
+        ;
+      end;
     end if;
-  -- if subscription already exists, do nothing
-  exception when dup_val_on_index
-  then
-    null;
+
   end subscribe;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -430,7 +620,7 @@ as
   begin
     -- remove user subscribtion to get notify from replies
     delete
-      from blog_comment_subs
+      from blog_comment_subscribers
     where 1 = 1
     and id = p_subscription_id
     ;

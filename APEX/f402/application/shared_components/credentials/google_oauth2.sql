@@ -16,7 +16,9 @@ wwv_flow_api.create_credential(
 ,p_name=>'Google OAuth2'
 ,p_static_id=>'GOOGLE_OAUTH2'
 ,p_authentication_type=>'OAUTH2_CLIENT_CREDENTIALS'
+,p_scope=>'email'
 ,p_prompt_on_install=>true
+,p_credential_comment=>'Google authentication'
 );
 wwv_flow_api.component_end;
 end;

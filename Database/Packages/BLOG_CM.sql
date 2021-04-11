@@ -33,6 +33,7 @@ as
 --    Jari Laine 21.03.2021 - Changed procedure get_blogger_details fetch authorization group name stored to BLOG_SETTINGS table
 --                            Added trim to function remove_whitespace
 --                            Changed procedures add_category and add_tag use function remove_whitespace
+--    Jari Laine 11.04.2021 - Procedure send_reply_notify moved to package BLOG_COMM
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -176,14 +177,6 @@ as
     p_build_status    in varchar2
   );
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 32
-  procedure send_reply_notify(
-    p_app_id          in varchar2,
-    p_app_name        in varchar2,
-    p_post_id         in varchar2,
-    p_email_template  in varchar2
-  );
---------------------------------------------------------------------------------
 end "BLOG_CM";
 /
 
@@ -221,30 +214,22 @@ as
     p_tag_id  := null;
     l_value := remove_whitespace( p_tag );
 
-    -- if tag is not null then insert to table and return id
+    -- if tag is not null then fetch id
     if l_value is not null then
 
       begin
-
-        insert into blog_tags( is_active, tag )
-        values ( 1, l_value )
-        returning id into p_tag_id
-        ;
-
-      -- if unique constraint violation, tag exists.
-      -- find id for tag in exception handler
-      -- TO DO see item 1 from package specs
-      exception when dup_val_on_index then
-
-        l_value := upper(l_value);
-
         select id
         into p_tag_id
         from blog_v_all_tags
         where 1 = 1
-        and tag_unique = l_value
+        and tag_unique = upper( l_value )
         ;
-
+      -- if tag not exists insert and return id
+      exception when no_data_found then
+        insert into blog_tags( is_active, tag )
+        values ( 1, l_value )
+        returning id into p_tag_id
+        ;
       end;
 
     end if;
@@ -823,25 +808,20 @@ as
     -- get next sequence value
     l_seq := get_category_seq;
 
-    -- try insert category and return id for out parameter.
-    -- if unique constraint violation raised, category exists.
-    -- then find category id for out parameter in exception handler
-    insert into blog_categories ( is_active, display_seq, title )
-    values( 1, l_seq, l_value )
-    returning id into p_category_id
-    ;
-
-  -- TO DO see item 1 from package specs
-  exception when dup_val_on_index then
-    -- if category already exists, just fetch id
-    l_value := upper( l_value );
+    -- check if category already exists and fetch id
     select v1.id
     into p_category_id
     from blog_v_all_categories v1
     where 1 = 1
-    and v1.title_unique = l_value
+    and v1.title_unique = upper( l_value )
     ;
-
+  -- if category not exists insert and return id
+  exception when no_data_found then
+    -- try insert category and return id for out parameter.
+    insert into blog_categories ( is_active, display_seq, title )
+    values( 1, l_seq, l_value )
+    returning id into p_category_id
+    ;
   end add_category;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1203,70 +1183,6 @@ as
     );
 
   end update_feature;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure send_reply_notify(
-    p_app_id          in varchar2,
-    p_app_name        in varchar2,
-    p_post_id         in varchar2,
-    p_email_template  in varchar2
-  )
-  as
-    l_post_id       number;
-    l_watch_months  number;
-    l_app_email     varchar2(4000);
-  begin
-
-    l_post_id := to_number( p_post_id );
-
-    -- fetch application email address
-    l_app_email := blog_util.get_attribute_value( 'G_APP_EMAIL' );
-    -- fetch comment watch expires
-    l_watch_months := to_number(
-        blog_util.get_attribute_value( 'G_COMMENT_WATCH_MONTHS' )
-      ) * -1
-    ;
-
-    -- send notify users that have subscribed to replies to comment
-    for c1 in(
-      select t2.email
-      ,json_object (
-         'APP_NAME'         value p_app_name
-        ,'POST_TITLE'       value v1.title
-        ,'POST_LINK'        value
-            blog_url.get_post(
-               p_app_id     => p_app_id
-              ,p_post_id    => v1.id
-              ,p_canonical  => 'YES'
-            )
-        ,'UNSUBSCRIBE_LINK' value
-            blog_url.get_unsubscribe(
-               p_app_id          => p_app_id
-              ,p_post_id         => p_post_id
-              ,p_subscription_id => t1.id
-            )
-       ) as placeholders
-      from blog_comment_subs t1
-      join blog_comment_subs_email t2
-        on t1.email_id = t2.id
-      join blog_v_all_posts v1
-        on t1.post_id = v1.id
-      where 1 = 1
-        -- send notification if subscription is created less than month ago
-        and t1.created_on >= add_months( localtimestamp, l_watch_months )
-        and v1.id = l_post_id
-    ) loop
-
-      apex_mail.send (
-         p_from => l_app_email
-        ,p_to   => c1.email
-        ,p_template_static_id => p_email_template
-        ,p_placeholders => c1.placeholders
-      );
-
-    end loop;
-
-  end send_reply_notify;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_CM";

@@ -22,8 +22,8 @@ create table  blog_bloggers(
 	blogger_name varchar2( 256 char ) not null,
 	apex_username varchar2(  256 char ) not null,
 	email varchar2( 256 char ),
-	blogger_desc varchar2( 4000 char ),
-  notes varchar2(4000 char),
+	blogger_desc varchar2( 4000 byte ),
+  notes varchar2( 4000 byte ),
   constraint blog_bloggers_pk primary key( id ),
   constraint blog_bloggers_uk1 unique( apex_username ),
   constraint blog_bloggers_ck1 check( row_version > 0 ),
@@ -45,7 +45,7 @@ create table  blog_categories(
 	display_seq number( 10, 0 ) not null,
 	title varchar2( 256 char ) not null,
 	title_unique varchar2( 256 char ) as( upper( trim( title ) ) ) virtual ,
-	notes varchar2( 4000 char ),
+	notes varchar2( 4000 byte ),
   constraint blog_categories_pk primary key( id ),
 	constraint blog_categories_uk1 unique( title ),
 	constraint blog_categories_uk2 unique( title_unique ),
@@ -67,7 +67,7 @@ create table blog_comments(
   is_active number( 1, 0 ) not null,
   post_id number( 38, 0 ) not null,
   parent_id number( 38, 0 ),
-  body_html varchar2( 4000 char ) not null,
+  body_html varchar2( 4000 byte ) not null,
   comment_by varchar2( 256 char ) not null,
   constraint blog_comments_pk primary key( id ),
   constraint blog_comment_ck2 check( is_active in( 0 , 1 ) ),
@@ -85,16 +85,16 @@ create table blog_comment_flags (
   changed_on timestamp( 6 ) with local time zone not null,
   changed_by varchar2( 256 char ) not null,
   comment_id number( 38, 0 ) not null,
-  flag varchar2( 256 char ) not null,
-  notes varchar2(4000 char),
+  flag varchar2( 64 char ) not null,
+  notes varchar2( 4000 byte ),
   constraint blog_comment_flags_pk primary key( id ),
   constraint blog_comment_flags_ck1 check( row_version > 0 )
 )
 /
 --------------------------------------------------------
---  DDL for Table BLOG_COMMENT_SUBS
+--  DDL for Table BLOG_COMMENT_SUBSCRIBERS
 --------------------------------------------------------
-create table blog_comment_subs(
+create table blog_comment_subscribers(
   id number( 38, 0 ) not null,
   row_version number( 38, 0 ) not null,
   created_on timestamp( 6 ) with local time zone not null,
@@ -103,46 +103,27 @@ create table blog_comment_subs(
   changed_by varchar2( 256 char ) not null,
   post_id number( 38, 0 ) not null,
   email_id number( 38, 0 ) not null,
-  notes varchar2(4000 char),
-  constraint blog_comment_subs_pk primary key( id ),
-  constraint blog_comment_subs_uk1 unique( post_id, email_id ),
-  constraint blog_comment_subs_ck1 check( row_version > 0 )
-)
-/
---------------------------------------------------------
---  DDL for Table BLOG_COMMENT_SUBS_EMAIL
---------------------------------------------------------
-create table blog_comment_subs_email(
-  id number( 38, 0 ) not null,
-  row_version number( 38, 0 ) not null,
-  created_on timestamp( 6 ) with local time zone not null,
-  created_by varchar2( 256 char ) not null,
-  changed_on timestamp( 6 ) with local time zone not null,
-  changed_by varchar2( 256 char ) not null,
-  is_active number( 1, 0 ) not null,
-  email varchar2( 256 char ) not null,
-  notes varchar2(4000 char),
-  email_unique varchar2( 256 char ) as ( lower( trim( email ) ) ) virtual not null,
-  constraint blog_comment_subs_email_pk primary key( id ),
-  constraint blog_comment_subs_email_uk1 unique( email_unique ),
-  constraint blog_comment_subs_email_ck1 check( row_version > 0 ),
-  constraint blog_comment_subs_email_ck2 check( is_active in( 0, 1 ) )
+  subscription_date date not null,
+  notes varchar2( 4000 byte ),
+  constraint blog_comment_subscribers_pk primary key( id ),
+  constraint blog_comment_subscribers_uk1 unique( post_id, email_id ),
+  constraint blog_comment_subscribers_ck1 check( row_version > 0 )
 )
 /
 --------------------------------------------------------
 --  DDL for Table BLOG_DYNAMIC_CONTENT
 --------------------------------------------------------
 create table blog_dynamic_content(
-  id number(38,0) not null enable,
-	row_version number(38,0) not null enable,
-	created_on timestamp (6) with local time zone not null enable,
-	created_by varchar2(256 char) not null,
-	changed_on timestamp (6) with local time zone not null enable,
-	changed_by varchar2(256 char) not null,
-	is_active number(1,0) not null enable,
-	display_seq number(10,0) not null enable,
-  content_type varchar2(64 char) not null,
-  content_desc varchar2(256 char) not null,
+  id number( 38,0 ) not null enable,
+	row_version number( 38,0 ) not null enable,
+	created_on timestamp ( 6 ) with local time zone not null enable,
+	created_by varchar2( 256 char ) not null,
+	changed_on timestamp ( 6 ) with local time zone not null enable,
+	changed_by varchar2( 256 char ) not null,
+	is_active number( 1,0 ) not null enable,
+	display_seq number( 10,0 ) not null enable,
+  content_type varchar2( 64 char ) not null,
+  content_desc varchar2( 256 char ) not null,
   content_html clob not null,
   constraint blog_dynamic_content_ck1 check( row_version > 0 ),
   constraint blog_dynamic_content_ck2 check( is_active in( 0, 1 ) ),
@@ -165,8 +146,8 @@ create table blog_features(
   display_seq number( 10, 0 ) not null,
   build_option_name varchar2( 255 char ) not null,
   build_option_group varchar2( 255 char ) not null,
-  post_expression varchar2( 4000 char ),
-  notes varchar2( 4000 char ),
+  post_expression varchar2( 4000 byte ),
+  notes varchar2( 4000 byte ),
   constraint blog_features_pk primary key( id ),
   constraint blog_features_uk1 unique( build_option_name ),
   constraint blog_features_ck1 check( row_version > 0 ),
@@ -191,8 +172,8 @@ create table blog_files (
   blob_content blob not null,
   file_size number( 38, 0 ) not null,
   file_charset varchar2( 256 char ),
-  file_desc varchar2( 4000 char ),
-  notes varchar2( 4000 char ),
+  file_desc varchar2( 4000 byte ),
+  notes varchar2( 4000 byte ),
   constraint blog_files_pk primary key( id ),
   constraint blog_files_uk1 unique( file_name  ),
   constraint blog_files_ck1 check( row_version > 0 ),
@@ -212,9 +193,9 @@ create table blog_init_items(
   changed_on timestamp( 6 ) with local time zone not null,
   changed_by varchar2( 256 char ) not null,
   is_active number( 1, 0 ) not null,
-  application_id number(38,0) not null,
-  item_name varchar2(256 char) not null,
-  notes varchar2(4000 char),
+  application_id number( 38,0 ) not null,
+  item_name varchar2( 256 char ) not null,
+  notes varchar2( 4000 byte ),
   constraint blog_init_items_pk primary key( id ),
   constraint blog_init_items_uk1 unique( application_id, item_name ),
   constraint blog_init_items_ck1 check( row_version > 0 ),
@@ -235,9 +216,9 @@ create table blog_links(
   display_seq number( 10, 0 ) not null,
   link_group_id number not null,
   title varchar2( 256 char ) not null,
-  link_desc varchar2( 4000 char ) not null,
+  link_desc varchar2( 4000 byte ) not null,
   link_url varchar2( 256 char ) not null,
-  notes varchar2( 4000 char ),
+  notes varchar2( 4000 byte ),
   constraint blog_links_pk primary key( id ),
   constraint blog_links_uk1 unique( link_group_id, id ),
   constraint blog_links_ck1 check( row_version > 0 ),
@@ -259,7 +240,7 @@ create table blog_link_groups(
   display_seq number( 10, 0 ) not null,
   title varchar2( 256 char ) not null,
   title_unique varchar2( 256 char ) as ( upper( title ) ) virtual ,
-  notes varchar2( 4000 char ),
+  notes varchar2( 4000 byte ),
   constraint blog_link_groups_pk primary key( id ),
   constraint blog_link_groups_uk1 unique( title_unique ),
   constraint blog_link_groups_ck1 check( row_version > 0 ),
@@ -283,10 +264,10 @@ create table blog_pages(
   page_alias varchar2( 256 char ) not null,
   page_type varchar2( 256 char ) not null,
   build_option varchar2( 256 char ),
-  notes varchar2(4000 char),
+  notes varchar2( 4000 byte ),
   constraint blog_pages_pk primary key( id ),
-  constraint blog_pages_uk1 unique( page_alias  ),
-  constraint blog_pages_uk2 unique( page_type, page_alias  ),
+  constraint blog_pages_uk1 unique( page_alias ),
+  constraint blog_pages_uk2 unique( page_type, page_alias ),
   constraint blog_pages_ck1 check( row_version > 0 ),
   constraint blog_pages_ck2 check( is_active in( 0, 1 ) ),
   constraint blog_pages_ck3 check( display_seq > 0 )
@@ -308,9 +289,9 @@ create table  blog_posts(
 	title varchar2( 256 char ) not null,
 	post_desc varchar2( 1024 char ) not null,
 	body_html clob not null,
-	first_paragraph varchar2( 4000 char ) not null,
+	first_paragraph varchar2( 4000 byte ) not null,
 	published_on timestamp( 6 ) with local time zone not null,
-	notes varchar2( 4000 char ),
+	notes varchar2( 4000 byte ),
   body_length number( 38, 0 ) as ( sys.dbms_lob.getlength( body_html ) ) virtual,
 	archive_year_month number( 6, 0 ) as ( to_number( to_char( published_on, 'YYYYMM' ) ) ) virtual ,
 	archive_year number( 4, 0 ) as ( to_number( to_char( published_on, 'YYYY' ) ) ) virtual ,
@@ -328,7 +309,7 @@ create table blog_post_preview(
   post_title varchar2( 128 char ),
   category_title varchar2( 128 char ),
   body_html clob,
-  tags varchar2( 4000 char ),
+  tags varchar2( 4000 byte ),
   constraint blog_post_preview_pk primary key( id )
 )
 /
@@ -364,7 +345,7 @@ create table  blog_post_uds(
 	changed_on timestamp( 6 ) with local time zone not null,
 	changed_by varchar2( 256 char ) not null,
   post_id number( 38, 0 ) not null,
-  dummy char(1) default 'X' not null,
+  dummy char( 1 ) default 'X' not null,
 	constraint blog_post_uds_pk primary key( id ),
   constraint blog_post_uds_uk1 unique( post_id ),
   constraint blog_post_uds_ck1 check( row_version > 0 )
@@ -384,13 +365,13 @@ create table blog_settings(
   display_seq number( 10, 0 ) not null,
   group_name varchar2( 64 char ) not null,
   attribute_name varchar2( 64 char ) not null,
-  attribute_value varchar2( 4000 char ),
+  attribute_value varchar2( 4000 byte ),
   data_type varchar2( 64 char ) not null,
-  post_expression varchar2( 4000 char ),
-  int_min number(2,0),
-  int_max number(2,0),
-  notes varchar2(4000 char),
-  install_value varchar2( 4000 char ),
+  post_expression varchar2( 4000 byte ),
+  int_min number( 2,0 ),
+  int_max number( 2,0 ),
+  notes varchar2( 4000 byte ),
+  install_value varchar2( 4000 byte ),
   constraint blog_settings_pk primary key( id ),
   constraint blog_settings_uk1 unique( attribute_name ),
   constraint blog_settings_ck1 check( row_version > 0 ),
@@ -444,6 +425,26 @@ create table blog_settings(
 )
 /
 --------------------------------------------------------
+--  DDL for Table BLOG_SUBSCRIBERS_EMAIL
+--------------------------------------------------------
+create table blog_subscribers_email(
+  id number( 38, 0 ) not null,
+  row_version number( 38, 0 ) not null,
+  created_on timestamp( 6 ) with local time zone not null,
+  created_by varchar2( 256 char ) not null,
+  changed_on timestamp( 6 ) with local time zone not null,
+  changed_by varchar2( 256 char ) not null,
+  is_active number( 1, 0 ) not null,
+  email varchar2( 256 char ) not null,
+  notes varchar2( 4000 byte ),
+  constraint blog_subscribers_email_pk primary key( id ),
+  constraint blog_subscribers_email_uk1 unique( email ),
+  constraint blog_subscribers_email_ck1 check( row_version > 0 ),
+  constraint blog_subscribers_email_ck2 check( is_active in( 0, 1 ) ),
+  constraint blog_subscribers_email_ck3 check( email = lower( trim( email ) ) )
+)
+/
+--------------------------------------------------------
 --  DDL for Table BLOG_TAGS
 --------------------------------------------------------
 create table blog_tags (
@@ -456,7 +457,7 @@ create table blog_tags (
   is_active number( 1, 0 ) not null,
   tag varchar2( 64 char ) not null,
   tag_unique varchar2( 64 char ) as ( upper( trim( tag ) ) ) virtual ,
-  notes varchar2( 4000 char ),
+  notes varchar2( 4000 byte ),
   constraint blog_tags_pk primary key( id ),
   constraint blog_tags_uk1 unique( tag ),
   constraint blog_tags_uk2 unique( tag_unique ),
@@ -2027,697 +2028,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
-CREATE OR REPLACE package  "BLOG_PLUGIN"
-authid definer
-as
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---
---  DESCRIPTION
---    Procedures and functions for APEX plugins
---
---  MODIFIED (DD.MM.YYYY)
---    Jari Laine 22.04.2019 - Created
---    Jari Laine 03.01.2020 - Comments to package specs
---
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure render_math_question_field(
-    p_item    in apex_plugin.t_item,
-    p_plugin  in apex_plugin.t_plugin,
-    p_param   in apex_plugin.t_item_render_param,
-    p_result  in out nocopy apex_plugin.t_item_render_result
-  );
---------------------------------------------------------------------------------
-  procedure ajax_math_question_field(
-    p_item    in            apex_plugin.t_item,
-    p_plugin  in            apex_plugin.t_plugin,
-    p_param   in            apex_plugin.t_item_ajax_param,
-    p_result  in out nocopy apex_plugin.t_item_ajax_result
-  );
---------------------------------------------------------------------------------
-  procedure validate_math_question_field(
-    p_item    in            apex_plugin.t_item,
-    p_plugin  in            apex_plugin.t_plugin,
-    p_param   in            apex_plugin.t_item_validation_param,
-    p_result  in out nocopy apex_plugin.t_item_validation_result
-  );
---------------------------------------------------------------------------------
-end "BLOG_PLUGIN";
-/
-
-
-CREATE OR REPLACE package body "BLOG_PLUGIN"
-as
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Private constants and variables
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- none
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Private procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function to_html_entities(
-    p_number in number
-  ) return varchar2
-  as
-    l_string varchar2(4000);
-    l_result varchar2(4000);
-  begin
-
-    l_string := blog_util.int_to_vc2( p_number );
-    for i in 1 .. length( l_string )
-    loop
-      l_result := l_result || '&#' || ascii( substr( l_string, i, 1 ) );
-    end loop;
-    return l_result;
-
-  end to_html_entities;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Global procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure render_math_question_field(
-    p_item in apex_plugin.t_item,
-    p_plugin in apex_plugin.t_plugin,
-    p_param in apex_plugin.t_item_render_param,
-    p_result in out nocopy apex_plugin.t_item_render_result
-  )
-  as
-    l_name varchar2(30);
-  begin
-
-    l_name := apex_plugin.get_input_name_for_page_item(false);
-
-    if p_param.is_readonly or p_param.is_printer_friendly then
-
-      -- emit hidden text field if necessary
-      apex_plugin_util.print_hidden_if_readonly (
-        p_item_name => p_item.name,
-        p_value => p_param.value,
-        p_is_readonly => p_param.is_readonly,
-        p_is_printer_friendly => p_param.is_printer_friendly
-      );
-      -- emit display span with the value
-      apex_plugin_util.print_display_only (
-        p_item_name => p_item.name,
-        p_display_value => p_param.value,
-        p_show_line_breaks => false,
-        p_escape => true,
-        p_attributes => p_item.element_attributes
-      );
-    else
-
-      sys.htp.p('<input type="text" '
-        || case when p_item.element_width is not null
-            then'size="' || p_item.element_width ||'" '
-           end
-        || case when p_item.element_max_length  is not null
-            then 'maxlength="' || p_item.element_max_length || '" '
-           end
-        || apex_plugin_util.get_element_attributes(p_item, l_name, 'text_field apex-item-text')
-        || 'value="" />'
-      );
-      sys.htp.p('<span class="apex-item-icon '
-        || p_item.icon_css_classes
-        || '" aria-hidden="true"></span>'
-      );
-
-      apex_javascript.add_onload_code (
-        p_code => 'apex.server.plugin("' || apex_plugin.get_ajax_identifier || '",{},{'
-        || 'dataType:"text",'
-        || 'success:function(data){'
---        || '$(".z-question").html(data);'
-        || '$(data).insertBefore($("#' || p_item.name || '_LABEL").children());'
-        || '}});'
-      );
-      -- Tell APEX that this textarea is navigable
-      p_result.is_navigable := true;
-
-    end if;
-
-  end render_math_question_field;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure ajax_math_question_field(
-    p_item   in            apex_plugin.t_item,
-    p_plugin in            apex_plugin.t_plugin,
-    p_param  in            apex_plugin.t_item_ajax_param,
-    p_result in out nocopy apex_plugin.t_item_ajax_result
-  )
-  as
-    l_err   varchar2(4000);
-    l_data  varchar2(4000);
-    l_min   number;
-    l_max   number;
-    l_num_1 number;
-    l_num_2 number;
-    l_tab   apex_t_varchar2;
-  begin
-
-    l_min   := to_number( p_item.attribute_01 );
-    l_max   := to_number( p_item.attribute_02 );
-    l_num_1 := round( sys.dbms_random.value( l_min, l_max ) );
-
-    l_min   := to_number( p_item.attribute_03 );
-    l_max   := to_number( p_item.attribute_04 );
-    l_num_2 := round( sys.dbms_random.value( l_min, l_max ) );
-
-    l_data  := '<span class="z-question">';
-    l_data  := l_data || to_html_entities( l_num_1 );
-    l_data  := l_data || '&nbsp;&#' || ascii('+') || '&nbsp;';
-    l_data  := l_data || to_html_entities( l_num_2 );
-    l_data  := l_data || '&#' || ascii('?');
-    l_data  := l_data || '</span>';
-
-    -- set correct answer to item session state
-    apex_util.set_session_state(
-       p_name   => p_item.attribute_05
-      ,p_value  => blog_util.int_to_vc2( l_num_1 + l_num_2 )
-      ,p_commit => false
-    );
-
-    -- Write header for the output
-    sys.owa_util.mime_header('text/plain', false);
-    sys.htp.p('Cache-Control: no-cache');
-    sys.htp.p('Pragma: no-cache');
-    sys.owa_util.http_header_close;
-    -- Write output
-    sys.htp.prn( l_data );
-
-  exception when others
-  then
-
-    l_err := apex_lang.message(
-      p_name => p_plugin.attribute_02
-      ,p0 => p_item.plain_label
-    );
-
-    sys.htp.prn( l_err );
-
-  end ajax_math_question_field;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure validate_math_question_field(
-    p_item   in            apex_plugin.t_item,
-    p_plugin in            apex_plugin.t_plugin,
-    p_param  in            apex_plugin.t_item_validation_param,
-    p_result in out nocopy apex_plugin.t_item_validation_result
-  )
-  as
-    l_answer  varchar2(4000);
-    l_value   varchar2(4000);
-    l_result  boolean;
-  begin
-
-    if p_param.value is not null then
-
-      l_value   := v(p_item.attribute_05);
-      l_answer  := p_param.value;
-
-      -- Check is answer correct
-      l_result  := case when l_value = l_answer then true else false end;
-
-    else
-      l_result := false;
-    end if;
-
-    if not l_result then
-
-      p_result.message := apex_lang.message(
-        p_name => p_plugin.attribute_01
-        ,p0 => p_item.plain_label
-      );
-
-      if p_result.message = apex_escape.html(p_plugin.attribute_01) then
-        p_result.message := p_plugin.attribute_01;
-      end if;
-
-    end if;
-
-  end validate_math_question_field;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-end "BLOG_PLUGIN";
-/
-CREATE OR REPLACE package  "BLOG_URL"
-authid definer
-as
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---
---  DESCRIPTION
---    Generate URL or redirect
---
---  MODIFIED (DD.MM.YYYY)
---    Jari Laine 22.04.2019 - Created
---    Jari Laine 09.05.2020 - Functions that are called only from APEX
---                            number return value and number input parameters changed to varchar2.
---                            Functions that are also used in query
---                            another signature with varchar2 input and return values created for APEX
---                            Added parameter p_canonical to functions returning URL
---    Jari Laine 10.05.2020 - New function get_unsubscribe
---    Jari Laine 19.05.2020 - Changed page and items name to "hard coded" values
---                            and removed global constants from blog_util package
---    Jari Laine 23.05.2020 - Removed default from function get_tab parameter p_app_page_id
---
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_tab(
-    p_app_page_id     in varchar2,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_request         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
-  ) return varchar2;
---------------------------------------------------------------------------------
-  function get_post(
-    p_post_id         in number,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
-  ) return varchar2;
---------------------------------------------------------------------------------
-  function get_post(
-    p_post_id         in varchar2,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
-  ) return varchar2;
---------------------------------------------------------------------------------
-  function get_category(
-    p_category_id     in number,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
-  ) return varchar2;
---------------------------------------------------------------------------------
-  function get_category(
-    p_category_id     in varchar2,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
-  ) return varchar2;
---------------------------------------------------------------------------------
-  function get_archive(
-    p_archive_id      in number,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
-  ) return varchar2;
---------------------------------------------------------------------------------
-  function get_archive(
-    p_archive_id      in varchar2,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
-  ) return varchar2;
---------------------------------------------------------------------------------
-  function get_tag(
-    p_tag_id          in number,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
-  ) return varchar2;
---------------------------------------------------------------------------------
-  function get_unsubscribe(
-    p_app_id          in varchar2,
-    p_post_id         in varchar2,
-    p_subscription_id in number
-  ) return varchar2;
---------------------------------------------------------------------------------
-  procedure redirect_search(
-    p_value           in varchar2,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null
-  );
---------------------------------------------------------------------------------
-end "BLOG_URL";
-/
-
-
-CREATE OR REPLACE package body "BLOG_URL"
-as
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Private constants and variables
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- none
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Private procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- none
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Global procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_tab(
-    p_app_page_id in varchar2,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_request     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
-  ) return varchar2
-  as
-  begin
-
-    return
-      case p_canonical
-      when 'YES'
-      then blog_util.get_attribute_value( 'CANONICAL_URL' )
-      end
-      ||
-      apex_page.get_url(
-        p_application => p_app_id
-       ,p_page        => p_app_page_id
-       ,p_session     => p_session
-       ,p_request     => p_request
-       ,p_clear_cache => p_clear_cache
-       ,p_plain_url   => true
-      );
-
-  end get_tab;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_post(
-    p_post_id     in number,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
-  ) return varchar2
-  as
-    l_post_id varchar2(256);
-  begin
-
-    l_post_id := blog_util.int_to_vc2( p_post_id );
-    return
-      get_post(
-         p_post_id      => l_post_id
-        ,p_app_id       => p_app_id
-        ,p_session      => p_session
-        ,p_clear_cache  => p_clear_cache
-        ,p_canonical    => p_canonical
-        ,p_plain_url    => p_plain_url
-        ,p_encode_url   => p_encode_url
-      );
-
-  end get_post;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_post(
-    p_post_id     in varchar2,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
-  ) return varchar2
-  as
-    l_url varchar2(4000);
-  begin
-
-    l_url := apex_page.get_url(
-      p_application => p_app_id
-     ,p_page        => 'POST'
-     ,p_session     => p_session
-     ,p_clear_cache => p_clear_cache
-     ,p_items       => 'P2_POST_ID'
-     ,p_values      => p_post_id
-     ,p_plain_url   => case p_plain_url when 'YES' then true else false end
-   );
-
-    return
-      case p_canonical
-      when 'YES'
-      then blog_util.get_attribute_value( 'CANONICAL_URL' )
-      end
-      ||
-      case p_encode_url
-      when 'YES'
-      then apex_util.url_encode( l_url )
-      else l_url
-      end
-    ;
-
-  end get_post;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_category(
-    p_category_id in number,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
-  ) return varchar2
-  as
-    l_category_id varchar2(256);
-  begin
-
-    l_category_id := blog_util.int_to_vc2( p_category_id );
-    return
-      get_category(
-         p_category_id  => l_category_id
-        ,p_app_id       => p_app_id
-        ,p_session      => p_session
-        ,p_canonical    => p_canonical
-        ,p_clear_cache  => p_clear_cache
-        ,p_plain_url    => p_plain_url
-        ,p_encode_url   => p_encode_url
-      );
-
-  end get_category;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_category(
-    p_category_id in varchar2,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
-  ) return varchar2
-  as
-  begin
-
-    return
-      case p_canonical
-      when 'YES'
-      then blog_util.get_attribute_value( 'CANONICAL_URL' )
-      end
-      ||
-      apex_page.get_url(
-        p_application => p_app_id
-       ,p_page        => 'CATEGORY'
-       ,p_session     => p_session
-       ,p_clear_cache => p_clear_cache
-       ,p_items       => 'P14_CATEGORY_ID'
-       ,p_values      => p_category_id
-       ,p_plain_url   => case p_plain_url when 'YES' then true else false end
-      );
-
-  end get_category;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_archive(
-    p_archive_id  in number,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
-  ) return varchar2
-  as
-    l_archive_id varchar2(256);
-  begin
-
-    l_archive_id := blog_util.int_to_vc2( p_archive_id );
-    return
-      get_archive(
-         p_archive_id   => l_archive_id
-        ,p_app_id       => p_app_id
-        ,p_session      => p_session
-        ,p_canonical    => p_canonical
-        ,p_clear_cache  => p_clear_cache
-        ,p_plain_url    => p_plain_url
-        ,p_encode_url   => p_encode_url
-      );
-
-  end get_archive;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_archive(
-    p_archive_id  in varchar2,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
-  ) return varchar2
-  as
-  begin
-
-    return
-      case p_canonical
-      when 'YES'
-      then blog_util.get_attribute_value( 'CANONICAL_URL' )
-      end
-      ||
-      apex_page.get_url(
-         p_application => p_app_id
-        ,p_page        => 'ARCHIVES'
-        ,p_session     => p_session
-        ,p_clear_cache => p_clear_cache
-        ,p_items       => 'P15_ARCHIVE_ID'
-        ,p_values      => p_archive_id
-        ,p_plain_url   => case p_plain_url when 'YES' then true else false end
-      )
-    ;
-
-  end get_archive;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_tag(
-    p_tag_id      in number,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
-  ) return varchar2
-  as
-    l_tag_id varchar2(256);
-  begin
-
-    l_tag_id := blog_util.int_to_vc2( p_tag_id );
-
-    return
-      case p_canonical
-      when 'YES'
-      then blog_util.get_attribute_value( 'CANONICAL_URL' )
-      end
-      ||
-      apex_page.get_url(
-         p_application => p_app_id
-        ,p_page        => 'TAG'
-        ,p_session     => p_session
-        ,p_clear_cache => p_clear_cache
-        ,p_items       => 'P6_TAG_ID'
-        ,p_values      => l_tag_id
-        ,p_plain_url   => case p_plain_url when 'YES' then true else false end
-      )
-    ;
-
-  end get_tag;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_unsubscribe(
-    p_app_id          in varchar2,
-    p_post_id         in varchar2,
-    p_subscription_id in number
-  ) return varchar2
-  as
-    l_url     varchar2(4000);
-    l_subs_id varchar2(256);
-  begin
-
-    l_subs_id := blog_util.int_to_vc2( p_subscription_id );
-    -- workaround because APEX 19.2
-    -- apex_page.get_url don't have parameter p_plain_url
-    l_url := 'f?p='
-      || p_app_id
-      || ':POST:::NO:RP:'
-      || 'P2_POST_ID'
-      || ','
-      || 'P2_SUBSCRIPTION_ID'
-      || ':'
-      || p_post_id
-      || ','
-      || l_subs_id
-    ;
-
-    l_url :=
-      apex_util.prepare_url(
-         p_url => l_url
-        ,p_checksum_type => 'PUBLIC_BOOKMARK'
-        ,p_plain_url => true
-      );
-
-    return blog_util.get_attribute_value( 'CANONICAL_URL' ) || l_url;
-
-  end get_unsubscribe;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure redirect_search(
-    p_value         in varchar2,
-    p_app_id        in varchar2 default null,
-    p_session       in varchar2 default null
-  )
-  as
-  begin
-    -- Get search page URL and redirect if there there is string for search
-    --if p_value is not null then
-      apex_util.redirect_url (
-        apex_page.get_url(
-           p_application => p_app_id
-          ,p_page        => 'SEARCH'
-          ,p_session     => p_session
---          ,p_clear_cache => 'RP'
-          ,p_items       => 'P0_SEARCH'
-          ,p_values      => p_value
-          ,p_plain_url   => true
-        )
-      );
-    --end if;
-  end redirect_search;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-end "BLOG_URL";
-/
 CREATE OR REPLACE package "BLOG_CM"
 authid definer
 as
@@ -2753,6 +2063,7 @@ as
 --    Jari Laine 21.03.2021 - Changed procedure get_blogger_details fetch authorization group name stored to BLOG_SETTINGS table
 --                            Added trim to function remove_whitespace
 --                            Changed procedures add_category and add_tag use function remove_whitespace
+--    Jari Laine 11.04.2021 - Procedure send_reply_notify moved to package BLOG_COMM
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -2896,14 +2207,6 @@ as
     p_build_status    in varchar2
   );
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 32
-  procedure send_reply_notify(
-    p_app_id          in varchar2,
-    p_app_name        in varchar2,
-    p_post_id         in varchar2,
-    p_email_template  in varchar2
-  );
---------------------------------------------------------------------------------
 end "BLOG_CM";
 /
 
@@ -2941,30 +2244,22 @@ as
     p_tag_id  := null;
     l_value := remove_whitespace( p_tag );
 
-    -- if tag is not null then insert to table and return id
+    -- if tag is not null then fetch id
     if l_value is not null then
 
       begin
-
-        insert into blog_tags( is_active, tag )
-        values ( 1, l_value )
-        returning id into p_tag_id
-        ;
-
-      -- if unique constraint violation, tag exists.
-      -- find id for tag in exception handler
-      -- TO DO see item 1 from package specs
-      exception when dup_val_on_index then
-
-        l_value := upper(l_value);
-
         select id
         into p_tag_id
         from blog_v_all_tags
         where 1 = 1
-        and tag_unique = l_value
+        and tag_unique = upper( l_value )
         ;
-
+      -- if tag not exists insert and return id
+      exception when no_data_found then
+        insert into blog_tags( is_active, tag )
+        values ( 1, l_value )
+        returning id into p_tag_id
+        ;
       end;
 
     end if;
@@ -3543,25 +2838,20 @@ as
     -- get next sequence value
     l_seq := get_category_seq;
 
-    -- try insert category and return id for out parameter.
-    -- if unique constraint violation raised, category exists.
-    -- then find category id for out parameter in exception handler
-    insert into blog_categories ( is_active, display_seq, title )
-    values( 1, l_seq, l_value )
-    returning id into p_category_id
-    ;
-
-  -- TO DO see item 1 from package specs
-  exception when dup_val_on_index then
-    -- if category already exists, just fetch id
-    l_value := upper( l_value );
+    -- check if category already exists and fetch id
     select v1.id
     into p_category_id
     from blog_v_all_categories v1
     where 1 = 1
-    and v1.title_unique = l_value
+    and v1.title_unique = upper( l_value )
     ;
-
+  -- if category not exists insert and return id
+  exception when no_data_found then
+    -- try insert category and return id for out parameter.
+    insert into blog_categories ( is_active, display_seq, title )
+    values( 1, l_seq, l_value )
+    returning id into p_category_id
+    ;
   end add_category;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3925,71 +3215,700 @@ as
   end update_feature;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure send_reply_notify(
-    p_app_id          in varchar2,
-    p_app_name        in varchar2,
-    p_post_id         in varchar2,
-    p_email_template  in varchar2
-  )
+end "BLOG_CM";
+/
+CREATE OR REPLACE package  "BLOG_PLUGIN"
+authid definer
+as
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--
+--  DESCRIPTION
+--    Procedures and functions for APEX plugins
+--
+--  MODIFIED (DD.MM.YYYY)
+--    Jari Laine 22.04.2019 - Created
+--    Jari Laine 03.01.2020 - Comments to package specs
+--
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure render_math_question_field(
+    p_item    in apex_plugin.t_item,
+    p_plugin  in apex_plugin.t_plugin,
+    p_param   in apex_plugin.t_item_render_param,
+    p_result  in out nocopy apex_plugin.t_item_render_result
+  );
+--------------------------------------------------------------------------------
+  procedure ajax_math_question_field(
+    p_item    in            apex_plugin.t_item,
+    p_plugin  in            apex_plugin.t_plugin,
+    p_param   in            apex_plugin.t_item_ajax_param,
+    p_result  in out nocopy apex_plugin.t_item_ajax_result
+  );
+--------------------------------------------------------------------------------
+  procedure validate_math_question_field(
+    p_item    in            apex_plugin.t_item,
+    p_plugin  in            apex_plugin.t_plugin,
+    p_param   in            apex_plugin.t_item_validation_param,
+    p_result  in out nocopy apex_plugin.t_item_validation_result
+  );
+--------------------------------------------------------------------------------
+end "BLOG_PLUGIN";
+/
+
+
+CREATE OR REPLACE package body "BLOG_PLUGIN"
+as
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Private constants and variables
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- none
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Private procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function to_html_entities(
+    p_number in number
+  ) return varchar2
   as
-    l_post_id       number;
-    l_watch_months  number;
-    l_app_email     varchar2(4000);
+    l_string varchar2(4000);
+    l_result varchar2(4000);
   begin
 
-    l_post_id := to_number( p_post_id );
+    l_string := blog_util.int_to_vc2( p_number );
+    for i in 1 .. length( l_string )
+    loop
+      l_result := l_result || '&#' || ascii( substr( l_string, i, 1 ) );
+    end loop;
+    return l_result;
 
-    -- fetch application email address
-    l_app_email := blog_util.get_attribute_value( 'G_APP_EMAIL' );
-    -- fetch comment watch expires
-    l_watch_months := to_number(
-        blog_util.get_attribute_value( 'G_COMMENT_WATCH_MONTHS' )
-      ) * -1
-    ;
+  end to_html_entities;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Global procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure render_math_question_field(
+    p_item in apex_plugin.t_item,
+    p_plugin in apex_plugin.t_plugin,
+    p_param in apex_plugin.t_item_render_param,
+    p_result in out nocopy apex_plugin.t_item_render_result
+  )
+  as
+    l_name varchar2(30);
+  begin
 
-    -- send notify users that have subscribed to replies to comment
-    for c1 in(
-      select t2.email
-      ,json_object (
-         'APP_NAME'         value p_app_name
-        ,'POST_TITLE'       value v1.title
-        ,'POST_LINK'        value
-            blog_url.get_post(
-               p_app_id     => p_app_id
-              ,p_post_id    => v1.id
-              ,p_canonical  => 'YES'
-            )
-        ,'UNSUBSCRIBE_LINK' value
-            blog_url.get_unsubscribe(
-               p_app_id          => p_app_id
-              ,p_post_id         => p_post_id
-              ,p_subscription_id => t1.id
-            )
-       ) as placeholders
-      from blog_comment_subs t1
-      join blog_comment_subs_email t2
-        on t1.email_id = t2.id
-      join blog_v_all_posts v1
-        on t1.post_id = v1.id
-      where 1 = 1
-        -- send notification if subscription is created less than month ago
-        and t1.created_on >= add_months( localtimestamp, l_watch_months )
-        and v1.id = l_post_id
-    ) loop
+    l_name := apex_plugin.get_input_name_for_page_item(false);
 
-      apex_mail.send (
-         p_from => l_app_email
-        ,p_to   => c1.email
-        ,p_template_static_id => p_email_template
-        ,p_placeholders => c1.placeholders
+    if p_param.is_readonly or p_param.is_printer_friendly then
+
+      -- emit hidden text field if necessary
+      apex_plugin_util.print_hidden_if_readonly (
+        p_item_name => p_item.name,
+        p_value => p_param.value,
+        p_is_readonly => p_param.is_readonly,
+        p_is_printer_friendly => p_param.is_printer_friendly
+      );
+      -- emit display span with the value
+      apex_plugin_util.print_display_only (
+        p_item_name => p_item.name,
+        p_display_value => p_param.value,
+        p_show_line_breaks => false,
+        p_escape => true,
+        p_attributes => p_item.element_attributes
+      );
+    else
+
+      sys.htp.p('<input type="text" '
+        || case when p_item.element_width is not null
+            then'size="' || p_item.element_width ||'" '
+           end
+        || case when p_item.element_max_length  is not null
+            then 'maxlength="' || p_item.element_max_length || '" '
+           end
+        || apex_plugin_util.get_element_attributes(p_item, l_name, 'text_field apex-item-text')
+        || 'value="" />'
+      );
+      sys.htp.p('<span class="apex-item-icon '
+        || p_item.icon_css_classes
+        || '" aria-hidden="true"></span>'
       );
 
-    end loop;
+      apex_javascript.add_onload_code (
+        p_code => 'apex.server.plugin("' || apex_plugin.get_ajax_identifier || '",{},{'
+        || 'dataType:"text",'
+        || 'success:function(data){'
+--        || '$(".z-question").html(data);'
+        || '$(data).insertBefore($("#' || p_item.name || '_LABEL").children());'
+        || '}});'
+      );
+      -- Tell APEX that this textarea is navigable
+      p_result.is_navigable := true;
 
-  end send_reply_notify;
+    end if;
+
+  end render_math_question_field;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-end "BLOG_CM";
+  procedure ajax_math_question_field(
+    p_item   in            apex_plugin.t_item,
+    p_plugin in            apex_plugin.t_plugin,
+    p_param  in            apex_plugin.t_item_ajax_param,
+    p_result in out nocopy apex_plugin.t_item_ajax_result
+  )
+  as
+    l_err   varchar2(4000);
+    l_data  varchar2(4000);
+    l_min   number;
+    l_max   number;
+    l_num_1 number;
+    l_num_2 number;
+    l_tab   apex_t_varchar2;
+  begin
+
+    l_min   := to_number( p_item.attribute_01 );
+    l_max   := to_number( p_item.attribute_02 );
+    l_num_1 := round( sys.dbms_random.value( l_min, l_max ) );
+
+    l_min   := to_number( p_item.attribute_03 );
+    l_max   := to_number( p_item.attribute_04 );
+    l_num_2 := round( sys.dbms_random.value( l_min, l_max ) );
+
+    l_data  := '<span class="z-question">';
+    l_data  := l_data || to_html_entities( l_num_1 );
+    l_data  := l_data || '&nbsp;&#' || ascii('+') || '&nbsp;';
+    l_data  := l_data || to_html_entities( l_num_2 );
+    l_data  := l_data || '&#' || ascii('?');
+    l_data  := l_data || '</span>';
+
+    -- set correct answer to item session state
+    apex_util.set_session_state(
+       p_name   => p_item.attribute_05
+      ,p_value  => blog_util.int_to_vc2( l_num_1 + l_num_2 )
+      ,p_commit => false
+    );
+
+    -- Write header for the output
+    sys.owa_util.mime_header('text/plain', false);
+    sys.htp.p('Cache-Control: no-cache');
+    sys.htp.p('Pragma: no-cache');
+    sys.owa_util.http_header_close;
+    -- Write output
+    sys.htp.prn( l_data );
+
+  exception when others
+  then
+
+    apex_debug.error( 'ajax_math_question_field error: %s', sqlerrm );
+
+    l_err := apex_lang.message(
+       p_name => p_plugin.attribute_02
+      ,p0 => p_item.plain_label
+    );
+    raise_application_error( -20002 ,  l_err );
+    raise;
+
+  end ajax_math_question_field;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure validate_math_question_field(
+    p_item   in            apex_plugin.t_item,
+    p_plugin in            apex_plugin.t_plugin,
+    p_param  in            apex_plugin.t_item_validation_param,
+    p_result in out nocopy apex_plugin.t_item_validation_result
+  )
+  as
+    l_answer  varchar2(4000);
+    l_value   varchar2(4000);
+    l_result  boolean;
+  begin
+
+    if p_param.value is not null then
+
+      l_value   := v(p_item.attribute_05);
+      l_answer  := p_param.value;
+
+      -- Check is answer correct
+      l_result  := case when l_value = l_answer then true else false end;
+
+    else
+      l_result := false;
+    end if;
+
+    if not l_result then
+
+      p_result.message := apex_lang.message(
+        p_name => p_plugin.attribute_01
+        ,p0 => p_item.plain_label
+      );
+
+      if p_result.message = apex_escape.html(p_plugin.attribute_01) then
+        p_result.message := p_plugin.attribute_01;
+      end if;
+
+    end if;
+
+  end validate_math_question_field;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+end "BLOG_PLUGIN";
+/
+CREATE OR REPLACE package  "BLOG_URL"
+authid definer
+as
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--
+--  DESCRIPTION
+--    Generate URL or redirect
+--
+--  MODIFIED (DD.MM.YYYY)
+--    Jari Laine 22.04.2019 - Created
+--    Jari Laine 09.05.2020 - Functions that are called only from APEX
+--                            number return value and number input parameters changed to varchar2.
+--                            Functions that are also used in query
+--                            another signature with varchar2 input and return values created for APEX
+--                            Added parameter p_canonical to functions returning URL
+--    Jari Laine 10.05.2020 - New function get_unsubscribe
+--    Jari Laine 19.05.2020 - Changed page and items name to "hard coded" values
+--                            and removed global constants from blog_util package
+--    Jari Laine 23.05.2020 - Removed default from function get_tab parameter p_app_page_id
+--
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_tab(
+    p_app_page_id     in varchar2,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null,
+    p_request         in varchar2 default null,
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  function get_post(
+    p_post_id         in number,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null,
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  function get_post(
+    p_post_id         in varchar2,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null,
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  function get_category(
+    p_category_id     in number,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null,
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  function get_category(
+    p_category_id     in varchar2,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null,
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  function get_archive(
+    p_archive_id      in number,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null,
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  function get_archive(
+    p_archive_id      in varchar2,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null,
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  function get_tag(
+    p_tag_id          in number,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null,
+    p_clear_cache     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO',
+    p_plain_url       in varchar2 default 'YES',
+    p_encode_url      in varchar2 default 'NO'
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  function get_unsubscribe(
+    p_app_id          in varchar2,
+    p_post_id         in varchar2,
+    p_subscription_id in number
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  procedure redirect_search(
+    p_value           in varchar2,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null
+  );
+--------------------------------------------------------------------------------
+end "BLOG_URL";
+/
+
+
+CREATE OR REPLACE package body "BLOG_URL"
+as
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Private constants and variables
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- none
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Private procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- none
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Global procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_tab(
+    p_app_page_id in varchar2,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_request     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
+  ) return varchar2
+  as
+  begin
+
+    return
+      case p_canonical
+      when 'YES'
+      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      end
+      ||
+      apex_page.get_url(
+        p_application => p_app_id
+       ,p_page        => p_app_page_id
+       ,p_session     => p_session
+       ,p_request     => p_request
+       ,p_clear_cache => p_clear_cache
+       ,p_plain_url   => true
+      );
+
+  end get_tab;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_post(
+    p_post_id     in number,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
+  ) return varchar2
+  as
+    l_post_id varchar2(256);
+  begin
+
+    l_post_id := blog_util.int_to_vc2( p_post_id );
+    return
+      get_post(
+         p_post_id      => l_post_id
+        ,p_app_id       => p_app_id
+        ,p_session      => p_session
+        ,p_clear_cache  => p_clear_cache
+        ,p_canonical    => p_canonical
+        ,p_plain_url    => p_plain_url
+        ,p_encode_url   => p_encode_url
+      );
+
+  end get_post;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_post(
+    p_post_id     in varchar2,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
+  ) return varchar2
+  as
+    l_url varchar2(4000);
+  begin
+
+    l_url := apex_page.get_url(
+      p_application => p_app_id
+     ,p_page        => 'POST'
+     ,p_session     => p_session
+     ,p_clear_cache => p_clear_cache
+     ,p_items       => 'P2_POST_ID'
+     ,p_values      => p_post_id
+     ,p_plain_url   => case p_plain_url when 'YES' then true else false end
+   );
+
+    return
+      case p_canonical
+      when 'YES'
+      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      end
+      ||
+      case p_encode_url
+      when 'YES'
+      then apex_util.url_encode( l_url )
+      else l_url
+      end
+    ;
+
+  end get_post;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_category(
+    p_category_id in number,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
+  ) return varchar2
+  as
+    l_category_id varchar2(256);
+  begin
+
+    l_category_id := blog_util.int_to_vc2( p_category_id );
+    return
+      get_category(
+         p_category_id  => l_category_id
+        ,p_app_id       => p_app_id
+        ,p_session      => p_session
+        ,p_canonical    => p_canonical
+        ,p_clear_cache  => p_clear_cache
+        ,p_plain_url    => p_plain_url
+        ,p_encode_url   => p_encode_url
+      );
+
+  end get_category;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_category(
+    p_category_id in varchar2,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
+  ) return varchar2
+  as
+  begin
+
+    return
+      case p_canonical
+      when 'YES'
+      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      end
+      ||
+      apex_page.get_url(
+        p_application => p_app_id
+       ,p_page        => 'CATEGORY'
+       ,p_session     => p_session
+       ,p_clear_cache => p_clear_cache
+       ,p_items       => 'P14_CATEGORY_ID'
+       ,p_values      => p_category_id
+       ,p_plain_url   => case p_plain_url when 'YES' then true else false end
+      );
+
+  end get_category;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_archive(
+    p_archive_id  in number,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
+  ) return varchar2
+  as
+    l_archive_id varchar2(256);
+  begin
+
+    l_archive_id := blog_util.int_to_vc2( p_archive_id );
+    return
+      get_archive(
+         p_archive_id   => l_archive_id
+        ,p_app_id       => p_app_id
+        ,p_session      => p_session
+        ,p_canonical    => p_canonical
+        ,p_clear_cache  => p_clear_cache
+        ,p_plain_url    => p_plain_url
+        ,p_encode_url   => p_encode_url
+      );
+
+  end get_archive;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_archive(
+    p_archive_id  in varchar2,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
+  ) return varchar2
+  as
+  begin
+
+    return
+      case p_canonical
+      when 'YES'
+      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      end
+      ||
+      apex_page.get_url(
+         p_application => p_app_id
+        ,p_page        => 'ARCHIVES'
+        ,p_session     => p_session
+        ,p_clear_cache => p_clear_cache
+        ,p_items       => 'P15_ARCHIVE_ID'
+        ,p_values      => p_archive_id
+        ,p_plain_url   => case p_plain_url when 'YES' then true else false end
+      )
+    ;
+
+  end get_archive;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_tag(
+    p_tag_id      in number,
+    p_app_id      in varchar2 default null,
+    p_session     in varchar2 default null,
+    p_clear_cache in varchar2 default null,
+    p_canonical   in varchar2 default 'NO',
+    p_plain_url   in varchar2 default 'YES',
+    p_encode_url  in varchar2 default 'NO'
+  ) return varchar2
+  as
+    l_tag_id varchar2(256);
+  begin
+
+    l_tag_id := blog_util.int_to_vc2( p_tag_id );
+
+    return
+      case p_canonical
+      when 'YES'
+      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      end
+      ||
+      apex_page.get_url(
+         p_application => p_app_id
+        ,p_page        => 'TAG'
+        ,p_session     => p_session
+        ,p_clear_cache => p_clear_cache
+        ,p_items       => 'P6_TAG_ID'
+        ,p_values      => l_tag_id
+        ,p_plain_url   => case p_plain_url when 'YES' then true else false end
+      )
+    ;
+
+  end get_tag;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_unsubscribe(
+    p_app_id          in varchar2,
+    p_post_id         in varchar2,
+    p_subscription_id in number
+  ) return varchar2
+  as
+    l_url     varchar2(4000);
+    l_subs_id varchar2(256);
+  begin
+
+    l_subs_id := blog_util.int_to_vc2( p_subscription_id );
+    -- workaround because APEX 19.2
+    -- apex_page.get_url don't have parameter p_plain_url
+    l_url := 'f?p='
+      || p_app_id
+      || ':POST:::NO:RP:'
+      || 'P2_POST_ID'
+      || ','
+      || 'P2_SUBSCRIPTION_ID'
+      || ':'
+      || p_post_id
+      || ','
+      || l_subs_id
+    ;
+
+    l_url :=
+      apex_util.prepare_url(
+         p_url => l_url
+        ,p_checksum_type => 'PUBLIC_BOOKMARK'
+        ,p_plain_url => true
+      );
+
+    return blog_util.get_attribute_value( 'CANONICAL_URL' ) || l_url;
+
+  end get_unsubscribe;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure redirect_search(
+    p_value         in varchar2,
+    p_app_id        in varchar2 default null,
+    p_session       in varchar2 default null
+  )
+  as
+  begin
+    -- Get search page URL and redirect if there there is string for search
+    --if p_value is not null then
+      apex_util.redirect_url (
+        apex_page.get_url(
+           p_application => p_app_id
+          ,p_page        => 'SEARCH'
+          ,p_session     => p_session
+--          ,p_clear_cache => 'RP'
+          ,p_items       => 'P0_SEARCH'
+          ,p_values      => p_value
+          ,p_plain_url   => true
+        )
+      );
+    --end if;
+  end redirect_search;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+end "BLOG_URL";
 /
 CREATE OR REPLACE package  "BLOG_COMM"
 authid definer
@@ -4002,37 +3921,53 @@ as
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 11.05.2020 - Created
+--    Jari Laine 11.04.2021 - New procedure reply_notify
+--                            New functions validate_email and is_email_verified
 --
 --  TO DO:
---    #1  comment HTML validation could improved
+--    #1  comment HTML validation could be improved
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function format_comment(
-    p_comment         in varchar2,
-    p_remove_anchors  in boolean default false
+    p_comment           in varchar2,
+    p_remove_anchors    in boolean default false
   ) return varchar2;
 --------------------------------------------------------------------------------
   function validate_comment(
-    p_comment         in varchar2,
-    p_length_err_mesg in varchar2,
-    p_parse_err_mesg  in varchar2,
-    p_max_length      in number default 4000
+    p_comment           in varchar2,
+    p_max_length        in number default 4000
   ) return varchar2;
 --------------------------------------------------------------------------------
+  function validate_email(
+    p_email             in varchar2
+  ) return boolean;
+--------------------------------------------------------------------------------
+  function is_email_verified(
+    p_email             in varchar2
+  ) return boolean;
+--------------------------------------------------------------------------------
   procedure new_comment_notify(
-    p_post_id         in varchar2,
-    p_app_name        in varchar2,
-    p_email_template  in varchar2
+    p_post_id           in varchar2,
+    p_app_name          in varchar2,
+    p_email_template    in varchar2
+  );
+--------------------------------------------------------------------------------
+  -- Called from: admin app pages 32
+  procedure reply_notify(
+    p_app_id            in varchar2,
+    p_app_name          in varchar2,
+    p_post_id           in varchar2,
+    p_email_template    in varchar2
   );
 --------------------------------------------------------------------------------
   procedure subscribe(
-    p_post_id         in varchar2,
-    p_email           in varchar2
+    p_post_id           in varchar2,
+    p_email             in varchar2
   );
 --------------------------------------------------------------------------------
   procedure unsubscribe(
-    p_subscription_id in varchar2
+    p_subscription_id   in varchar2
   );
 --------------------------------------------------------------------------------
 end "BLOG_COMM";
@@ -4209,7 +4144,7 @@ as
               ||
                 case
                 when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
-                then '<br />' || chr(10)
+                then '<br>' || chr(10)
                 end
               || l_temp
             ;
@@ -4268,8 +4203,6 @@ as
 --------------------------------------------------------------------------------
   function validate_comment(
     p_comment         in varchar2,
-    p_length_err_mesg in varchar2,
-    p_parse_err_mesg  in varchar2,
     p_max_length      in number default 4000
   ) return varchar2
   as
@@ -4282,10 +4215,10 @@ as
   begin
 
     -- check formatted comment length
-    if length( p_comment ) > p_max_length
+    if lengthb( p_comment ) > p_max_length
     then
       -- set error message
-      l_err_mesg := p_length_err_mesg;
+      l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_LENGTH';
     else
       -- check HTML is valid
       -- TO DO see item 1 from package specs
@@ -4297,7 +4230,7 @@ as
         );
       exception when xml_parsing_failed then
         -- set error message
-        l_err_mesg := p_parse_err_mesg;
+        l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_HTML';
       end;
 
     end if;
@@ -4306,18 +4239,91 @@ as
     then
       -- prepare return validation error message
       l_result := apex_lang.message( l_err_mesg );
-
-      if l_result = apex_escape.html( l_err_mesg )
-      then
-        l_result := l_err_mesg;
-      end if;
-
     end if;
     -- return validation result
     -- if validation fails we return error message stored to variable
     return l_result;
 
   end validate_comment;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function validate_email(
+    p_email in varchar2
+  ) return boolean
+  as
+    l_params    apex_exec.t_parameters;
+    l_response  clob;
+    l_json      json_object_t;
+    l_result    boolean;
+  begin
+    -- set result to false by default
+    l_result := false;
+
+    if not is_email_verified(p_email)
+    then
+
+      -- set email as parameter for rest source
+      apex_exec.add_parameter( l_params, 'email', p_email );
+      -- call rest source to validate email
+      apex_exec.execute_rest_source(
+         p_static_id  => 'ABSTRACT_EMAIL_VALIDATION_API'
+        ,p_operation  => 'GET'
+        ,p_parameters => l_params
+      );
+
+      -- get response
+      l_response := apex_exec.get_parameter_clob( l_params, 'response' );
+      apex_debug.info( 'Email validation response: %s', l_response );
+      -- convert response to json object
+      l_json := json_object_t( l_response );
+      -- check email deliverability
+      if l_json.get('deliverability').to_string = '"DELIVERABLE"'
+      then
+        -- if email is deliverable return true
+        l_result := true;
+      end if;
+      
+    else
+      l_result := true;
+    end if;
+
+    return l_result;
+
+  exception when others
+  then
+    -- if something goes wrong
+    apex_debug.error( 'Email validation failed: %s', sqlerrm );
+    raise_application_error( -20002 ,  apex_lang.message( 'BLOG_EMAIL_VALIDATION_ERROR' ) );
+    raise;
+  end validate_email;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function is_email_verified(
+    p_email in varchar2
+  ) return boolean
+  as
+    l_cnt     number;
+    l_result  boolean;
+  begin
+    -- set result to false by default
+    l_result := false;
+
+    -- get email count from table
+    select count(1) as cnt
+    into l_cnt
+    from blog_subscribers_email t1
+    where 1 = 1
+    and t1.email = lower( trim( p_email ) )
+    ;
+    if l_cnt = 1
+    then
+      -- email exists return true
+      l_result := true;
+    end if;
+    -- return result
+    return l_result;
+
+  end is_email_verified;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure new_comment_notify(
@@ -4330,10 +4336,16 @@ as
     l_app_email varchar2(4000);
   begin
 
+    l_post_id   := to_number( p_post_id );
+
     -- fetch application email address
     l_app_email := blog_util.get_attribute_value('G_APP_EMAIL');
-
-    l_post_id   := to_number( p_post_id );
+    -- if application email address is not set, exit from procedure
+    if l_app_email is null
+    then
+      apex_debug.info('application email address is not set');
+      return;
+    end if;
 
     -- get values for APEX email template
     -- send notify email if blog email address is set
@@ -4354,8 +4366,15 @@ as
       where 1 = 1
       and v1.id = l_post_id
       and v1.blogger_email is not null
-      and l_app_email is not null
     ) loop
+
+      apex_debug.info(
+        'Send email to: %s from: %s template: %s placeholders: %s'
+        ,c1.blogger_email
+        ,l_app_email
+        ,p_email_template
+        ,c1.placeholders
+      );
       -- send notify email
       apex_mail.send (
          p_to                 => c1.blogger_email
@@ -4366,6 +4385,87 @@ as
     end loop;
 
   end new_comment_notify;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure reply_notify(
+    p_app_id          in varchar2,
+    p_app_name        in varchar2,
+    p_post_id         in varchar2,
+    p_email_template  in varchar2
+  )
+  as
+    l_watch_end     date;
+    l_post_id       number;
+    l_watch_months  number;
+    l_app_email     varchar2(4000);
+  begin
+
+    l_post_id := to_number( p_post_id );
+
+    -- fetch application email address
+    l_app_email := blog_util.get_attribute_value( 'G_APP_EMAIL' );
+    -- if application email address is not set, exit from procedure
+    if l_app_email is null
+    then
+      apex_debug.info('application email address is not set');
+      return;
+    end if;
+
+    -- fetch comment watch expires
+    l_watch_months := to_number(
+        blog_util.get_attribute_value( 'G_COMMENT_WATCH_MONTHS' )
+      ) * -1
+    ;
+    l_watch_end := add_months( trunc( sysdate ), l_watch_months );
+
+    -- send notify users that have subscribed to replies to comment
+    for c1 in(
+      select t2.email
+      ,json_object (
+         'APP_NAME'         value p_app_name
+        ,'POST_TITLE'       value v1.title
+        ,'POST_LINK'        value
+            blog_url.get_post(
+               p_app_id     => p_app_id
+              ,p_post_id    => v1.id
+              ,p_canonical  => 'YES'
+            )
+        ,'UNSUBSCRIBE_LINK' value
+            blog_url.get_unsubscribe(
+               p_app_id          => p_app_id
+              ,p_post_id         => p_post_id
+              ,p_subscription_id => t1.id
+            )
+       ) as placeholders
+      from blog_comment_subscribers t1
+      join blog_subscribers_email t2
+        on t1.email_id = t2.id
+      join blog_v_all_posts v1
+        on t1.post_id = v1.id
+      where 1 = 1
+        and v1.id = l_post_id
+        -- send notification if subscription is created less than months ago specified in settings
+        and t1.subscription_date > l_watch_end
+    ) loop
+
+      apex_debug.info(
+        'Send email to: %s from: %s template: %s placeholders: %s'
+        ,c1.email
+        ,l_app_email
+        ,p_email_template
+        ,c1.placeholders
+      );
+      -- send notify email
+      apex_mail.send (
+         p_from => l_app_email
+        ,p_to   => c1.email
+        ,p_template_static_id => p_email_template
+        ,p_placeholders => c1.placeholders
+      );
+
+    end loop;
+
+  end reply_notify;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure subscribe(
@@ -4385,34 +4485,43 @@ as
     if p_email is not null
     and p_post_id is not null
     then
-      -- store email address and return id
+      -- check if email address already exists and fetch id
       begin
-        insert into
-          blog_comment_subs_email( email, is_active )
-        values ( l_email, 1 )
-        returning id into l_email_id
-        ;
-      -- if email address already exists, fetch id
-      exception when dup_val_on_index
-      then
         select id
         into l_email_id
-        from blog_comment_subs_email
+        from blog_subscribers_email
         where 1 = 1
-        and email_unique = l_email
+        and email = l_email
+        ;
+      -- if email address not exists, insert and return id
+      exception when no_data_found
+      then
+        insert into
+            blog_subscribers_email( email, is_active )
+        values
+          ( l_email, 1 )
+        returning id into l_email_id
         ;
       end;
-      -- store post to email link
-      insert into
-        blog_comment_subs( post_id, email_id )
-      values
-        ( p_post_id, l_email_id )
-      ;
+      -- insert post to email relation
+      begin
+        insert into
+          blog_comment_subscribers( post_id, email_id, subscription_date )
+        values
+          ( p_post_id, l_email_id, trunc( sysdate ) )
+        ;
+      -- if subscription already exists update subscription
+      exception when dup_val_on_index
+      then
+        update blog_comment_subscribers
+          set subscription_date = trunc( sysdate )
+        where 1 = 1
+        and post_id = p_post_id
+        and email_id = l_email_id
+        ;
+      end;
     end if;
-  -- if subscription already exists, do nothing
-  exception when dup_val_on_index
-  then
-    null;
+
   end subscribe;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4423,7 +4532,7 @@ as
   begin
     -- remove user subscribtion to get notify from replies
     delete
-      from blog_comment_subs
+      from blog_comment_subscribers
     where 1 = 1
     and id = p_subscription_id
     ;
@@ -5028,8 +5137,7 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_index(
     p_app_id        in varchar2,
-    p_app_page_id   in varchar2,
-    p_build_option  in varchar2
+    p_app_page_id   in varchar2
   );
 --------------------------------------------------------------------------------
   procedure sitemap_main(
@@ -5234,12 +5342,12 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_index(
     p_app_id        in varchar2,
-    p_app_page_id   in varchar2,
-    p_build_option  in varchar2
+    p_app_page_id   in varchar2
   )
   as
     l_xml     blob;
     l_url     varchar2(4000);
+    l_build_option constant varchar2(256) := 'BLOG_FEATURE_SITEMAP';
   begin
 
     l_url := blog_url.get_tab(
@@ -5267,13 +5375,13 @@ as
     and t1.process_name != 'sitemap-index.xml'
     and t1.application_id = p_app_id
     and t1.page_id = p_app_page_id
-    and t1.build_option = p_build_option
+    and t1.build_option = l_build_option
     and exists(
       select 1
       from apex_application_build_options bo
       where 1 = 1
       and bo.application_id = p_app_id
-      and bo.build_option_name = p_build_option
+      and bo.build_option_name = l_build_option
       and bo.build_option_status = 'Include'
       and bo.build_option_name = t1.build_option
     );
@@ -5611,45 +5719,12 @@ begin
 end;
 /
 --------------------------------------------------------
---  DDL for Trigger BLOG_COMMENT_SUBS_EMAIL_TRG
+--  DDL for Trigger BLOG_COMMENT_SUBSCRIBERS_TRG
 --------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_COMMENT_SUBS_EMAIL_TRG"
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_COMMENT_SUBSCRIBERS_TRG"
 before
 insert or
-update on blog_comment_subs_email
-for each row
-begin
-
-  if inserting then
-    :new.id           := coalesce( :new.id, blog_seq.nextval );
-    :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := coalesce( :new.created_on, localtimestamp );
-    :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
-    );
-  elsif updating then
-    :new.row_version := :old.row_version + 1;
-  end if;
-
-  :new.changed_on := localtimestamp;
-  :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
-  );
-
-end;
-/
---------------------------------------------------------
---  DDL for Trigger BLOG_COMMENT_SUBS_TRG
---------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_COMMENT_SUBS_TRG"
-before
-insert or
-update on blog_comment_subs
+update on blog_comment_subscribers
 for each row
 begin
 
@@ -6144,6 +6219,39 @@ begin
 end;
 /
 --------------------------------------------------------
+--  DDL for Trigger BLOG_SUBSCRIBERS_EMAIL_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_SUBSCRIBERS_EMAIL_TRG"
+before
+insert or
+update on blog_subscribers_email
+for each row
+begin
+
+  if inserting then
+    :new.id           := coalesce( :new.id, blog_seq.nextval );
+    :new.row_version  := coalesce( :new.row_version, 1 );
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
+    :new.created_by   := coalesce(
+        :new.created_by
+      , sys_context( 'APEX$SESSION', 'APP_USER' )
+      , sys_context( 'USERENV','PROXY_USER' )
+      , sys_context( 'USERENV','SESSION_USER' )
+    );
+  elsif updating then
+    :new.row_version := :old.row_version + 1;
+  end if;
+
+  :new.changed_on := localtimestamp;
+  :new.changed_by := coalesce(
+      sys_context( 'APEX$SESSION', 'APP_USER' )
+    , sys_context( 'USERENV','PROXY_USER' )
+    , sys_context( 'USERENV','SESSION_USER' )
+  );
+
+end;
+/
+--------------------------------------------------------
 --  DDL for Trigger BLOG_TAGS_TRG
 --------------------------------------------------------
 CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_TAGS_TRG"
@@ -6192,12 +6300,12 @@ end;
 	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE CASCADE ENABLE;
 
 
-  ALTER TABLE "BLOG_COMMENT_SUBS" ADD CONSTRAINT "BLOG_COMMENT_SUBS_FK1" FOREIGN KEY ("POST_ID")
+  ALTER TABLE "BLOG_COMMENT_SUBSCRIBERS" ADD CONSTRAINT "BLOG_COMMENT_SUBSCRIBERS_FK1" FOREIGN KEY ("POST_ID")
 	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
 
 
-  ALTER TABLE "BLOG_COMMENT_SUBS" ADD CONSTRAINT "BLOG_COMMENT_SUBS_FK2" FOREIGN KEY ("EMAIL_ID")
-	  REFERENCES "BLOG_COMMENT_SUBS_EMAIL" ("ID") ON DELETE CASCADE ENABLE;
+  ALTER TABLE "BLOG_COMMENT_SUBSCRIBERS" ADD CONSTRAINT "BLOG_COMMENT_SUBSCRIBERS_FK2" FOREIGN KEY ("EMAIL_ID")
+	  REFERENCES "BLOG_SUBSCRIBERS_EMAIL" ("ID") ON DELETE CASCADE ENABLE;
 
 
   ALTER TABLE "BLOG_LINKS" ADD CONSTRAINT "BLOG_LINKS_FK1" FOREIGN KEY ("LINK_GROUP_ID")

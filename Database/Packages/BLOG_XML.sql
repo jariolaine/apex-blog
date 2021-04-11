@@ -37,8 +37,7 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_index(
     p_app_id        in varchar2,
-    p_app_page_id   in varchar2,
-    p_build_option  in varchar2
+    p_app_page_id   in varchar2
   );
 --------------------------------------------------------------------------------
   procedure sitemap_main(
@@ -243,12 +242,12 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_index(
     p_app_id        in varchar2,
-    p_app_page_id   in varchar2,
-    p_build_option  in varchar2
+    p_app_page_id   in varchar2
   )
   as
     l_xml     blob;
     l_url     varchar2(4000);
+    l_build_option constant varchar2(256) := 'BLOG_FEATURE_SITEMAP';
   begin
 
     l_url := blog_url.get_tab(
@@ -276,13 +275,13 @@ as
     and t1.process_name != 'sitemap-index.xml'
     and t1.application_id = p_app_id
     and t1.page_id = p_app_page_id
-    and t1.build_option = p_build_option
+    and t1.build_option = l_build_option
     and exists(
       select 1
       from apex_application_build_options bo
       where 1 = 1
       and bo.application_id = p_app_id
-      and bo.build_option_name = p_build_option
+      and bo.build_option_name = l_build_option
       and bo.build_option_status = 'Include'
       and bo.build_option_name = t1.build_option
     );

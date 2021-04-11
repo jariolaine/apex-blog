@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_browser_cache=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210307104544'
+,p_last_upd_yyyymmddhh24miss=>'20210411161932'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(25877994435218885)
@@ -65,7 +65,6 @@ wwv_flow_api.create_page_process(
 '#OWNER#.blog_xml.sitemap_index(',
 '   p_app_id        => :APP_ID',
 '  ,p_app_page_id   => :APP_PAGE_ID',
-'  ,p_build_option  => ''BLOG_FEATURE_SITEMAP''',
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'

@@ -12,7 +12,7 @@ create table  blog_categories(
 	display_seq number( 10, 0 ) not null,
 	title varchar2( 256 char ) not null,
 	title_unique varchar2( 256 char ) as( upper( trim( title ) ) ) virtual ,
-	notes varchar2( 4000 char ),
+	notes varchar2( 4000 byte ),
   constraint blog_categories_pk primary key( id ),
 	constraint blog_categories_uk1 unique( title ),
 	constraint blog_categories_uk2 unique( title_unique ),

@@ -35,7 +35,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201102195754'
+,p_last_upd_yyyymmddhh24miss=>'20210411202457'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -57,7 +57,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_01'
-,p_plug_source=>'&APP_TEXT$BLOG_TXT_MODERATE_ENABLED.'
+,p_plug_source=>'&APP_TEXT$BLOG_MSG_MODERATE_ENABLED.'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_required_patch=>wwv_flow_api.id(28281277020489892)
 ,p_attribute_01=>'N'
@@ -73,7 +73,6 @@ wwv_flow_api.create_page_plug(
 ,p_plug_item_display_point=>'BELOW'
 ,p_query_type=>'TABLE'
 ,p_query_table=>'BLOG_COMMENTS'
-,p_query_where=>':P1001_ID is null'
 ,p_include_rowid_column=>false
 ,p_is_editable=>true
 ,p_edit_operations=>'i'
@@ -94,7 +93,7 @@ wwv_flow_api.create_page_button(
 ,p_button_position=>'REGION_TEMPLATE_CLOSE'
 ,p_button_execute_validations=>'N'
 ,p_warn_on_unsaved_changes=>null
-,p_icon_css_classes=>'fa-remove'
+,p_icon_css_classes=>'fa-chevron-left'
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(6283414650551656)
@@ -138,12 +137,13 @@ wwv_flow_api.create_page_item(
 ,p_source=>'COMMENT_BY'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_TEXT_FIELD'
-,p_cMaxlength=>1024
+,p_cMaxlength=>256
 ,p_field_template=>wwv_flow_api.id(6855004103267413)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
+,p_inline_help_text=>'Enter your name. The name is visible in the comments.'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'TEXT'
@@ -156,7 +156,7 @@ wwv_flow_api.create_page_item(
 ,p_item_plug_id=>wwv_flow_api.id(147769743184406827)
 ,p_prompt=>'Last Name'
 ,p_display_as=>'NATIVE_TEXT_FIELD'
-,p_cMaxlength=>80
+,p_cMaxlength=>256
 ,p_grid_column_css_classes=>'z-hidden'
 ,p_field_template=>wwv_flow_api.id(6855004103267413)
 ,p_item_template_options=>'#DEFAULT#'
@@ -186,11 +186,12 @@ wwv_flow_api.create_page_item(
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
 ,p_required_patch=>wwv_flow_api.id(33703543205326403)
-,p_inline_help_text=>'Provide your email address if you wish receive followup notification when new reply is posted. <br />Your email address will not be published or shared.'
+,p_inline_help_text=>'Provide your email address if you wish receive followup notification when new reply is posted. <br>Your email address will not be published or shared.'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'EMAIL'
 ,p_attribute_05=>'BOTH'
+,p_item_comment=>'Application email must be set and feature "Sent email notification of new comments" enabled before users can subscribe to get email notifications'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(6289109968551661)
@@ -201,7 +202,7 @@ wwv_flow_api.create_page_item(
 ,p_prompt=>'Comment'
 ,p_display_as=>'NATIVE_TEXTAREA'
 ,p_cSize=>30
-,p_cMaxlength=>16000
+,p_cMaxlength=>3000
 ,p_cHeight=>5
 ,p_field_template=>wwv_flow_api.id(6855004103267413)
 ,p_item_css_classes=>'padding-top-none'
@@ -278,6 +279,7 @@ wwv_flow_api.create_page_item(
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'US_ONLY'
 ,p_attribute_01=>'Y'
+,p_item_comment=>'If comments need to be moderated, computation set value to zero (0). Else use default value 1'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(31617298354094008)
@@ -292,7 +294,7 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_attribute_01=>'Y'
-,p_item_comment=>'This item is used by automatic form processing process. After submit computation stores formatted comment here.'
+,p_item_comment=>'This item is used on automatic form processing process. After submit computation stores formatted comment to item.'
 );
 wwv_flow_api.create_page_computation(
  p_id=>wwv_flow_api.id(31616932627094005)
@@ -322,15 +324,30 @@ wwv_flow_api.create_page_validation(
 ,p_validation_sequence=>20
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_comm.validate_comment(',
-'   p_comment         => :P1001_COMMENT_HTML',
-'  ,p_length_err_mesg => ''BLOG_VALIDATION_ERR_COMMENT_LENGTH''',
-'  ,p_parse_err_mesg  => ''BLOG_VALIDATION_ERR_COMMENT_HTML''',
+'  p_comment => :P1001_COMMENT_HTML',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
 ,p_associated_item=>wwv_flow_api.id(6289109968551661)
 ,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
-,p_validation_comment=>'Validate formatted comment length and HTML'
+,p_validation_comment=>'Validate formatted comment length and HTML. Return error text if validation fails'
+);
+wwv_flow_api.create_page_validation(
+ p_id=>wwv_flow_api.id(36228247829379741)
+,p_validation_name=>'Validate Email'
+,p_validation_sequence=>30
+,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'return #OWNER#.blog_comm.validate_email(',
+'  p_email => :P1001_EMAIL',
+');'))
+,p_validation2=>'PLSQL'
+,p_validation_type=>'FUNC_BODY_RETURNING_BOOLEAN'
+,p_error_message=>'&APP_TEXT$BLOG_VALIDATION_ERR_EMAIL.'
+,p_validation_condition=>'P1001_EMAIL'
+,p_validation_condition_type=>'ITEM_IS_NOT_NULL'
+,p_associated_item=>wwv_flow_api.id(6286425900551659)
+,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(37511226776078888)
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(2754144221851926)
@@ -396,7 +413,7 @@ wwv_flow_api.create_page_process(
 ,p_process_when=>'P1001_EMAIL'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
 ,p_required_patch=>wwv_flow_api.id(33703543205326403)
-,p_process_comment=>'Save user email for notification for replies to comment'
+,p_process_comment=>'Save user email for notification for new replies to comment if user provides email address and feature "Sent email notification of new comments" is enabled'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(31247931198982919)
@@ -417,7 +434,7 @@ wwv_flow_api.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_success_message=>'Thanks for commenting.'
 ,p_required_patch=>-wwv_flow_api.id(28281277020489892)
-,p_process_comment=>'Comments need to be moderated'
+,p_process_comment=>'Comments aren''t moderated'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(31617539210094011)
@@ -428,7 +445,7 @@ wwv_flow_api.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_success_message=>'Thanks for commenting. Your comment will be published after author has review it.'
 ,p_required_patch=>wwv_flow_api.id(7073708623458378)
-,p_process_comment=>'Comments not need to be moderated'
+,p_process_comment=>'Comments are moderated'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26385626116542649)

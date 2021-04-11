@@ -26,13 +26,13 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200913052333'
+,p_last_upd_yyyymmddhh24miss=>'20210411152024'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(30430710498753130)
 ,p_name=>'About Bloggers'
 ,p_template=>wwv_flow_api.id(6781372168267375)
-,p_display_sequence=>10
+,p_display_sequence=>20
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'#DEFAULT#:z-Content:t-Report--hideNoPagination'
 ,p_grid_column_span=>9

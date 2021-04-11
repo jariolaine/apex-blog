@@ -183,12 +183,14 @@ as
   exception when others
   then
 
+    apex_debug.error( 'ajax_math_question_field error: %s', sqlerrm );
+
     l_err := apex_lang.message(
-      p_name => p_plugin.attribute_02
+       p_name => p_plugin.attribute_02
       ,p0 => p_item.plain_label
     );
-
-    sys.htp.prn( l_err );
+    raise_application_error( -20002 ,  l_err );
+    raise;
 
   end ajax_math_question_field;
 --------------------------------------------------------------------------------

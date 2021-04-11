@@ -12,7 +12,7 @@ create table blog_link_groups(
   display_seq number( 10, 0 ) not null,
   title varchar2( 256 char ) not null,
   title_unique varchar2( 256 char ) as ( upper( title ) ) virtual ,
-  notes varchar2( 4000 char ),
+  notes varchar2( 4000 byte ),
   constraint blog_link_groups_pk primary key( id ),
   constraint blog_link_groups_uk1 unique( title_unique ),
   constraint blog_link_groups_ck1 check( row_version > 0 ),

@@ -1,10 +1,10 @@
 --------------------------------------------------------
---  DDL for Trigger BLOG_COMMENT_SUBS_EMAIL_TRG
+--  DDL for Trigger BLOG_COMMENT_SUBSCRIBERS_TRG
 --------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_COMMENT_SUBS_EMAIL_TRG"
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_COMMENT_SUBSCRIBERS_TRG"
 before
 insert or
-update on blog_comment_subs_email
+update on blog_comment_subscribers
 for each row
 begin
 

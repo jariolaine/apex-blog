@@ -11,7 +11,7 @@ create table blog_tags (
   is_active number( 1, 0 ) not null,
   tag varchar2( 64 char ) not null,
   tag_unique varchar2( 64 char ) as ( upper( trim( tag ) ) ) virtual ,
-  notes varchar2( 4000 char ),
+  notes varchar2( 4000 byte ),
   constraint blog_tags_pk primary key( id ),
   constraint blog_tags_uk1 unique( tag ),
   constraint blog_tags_uk2 unique( tag_unique ),

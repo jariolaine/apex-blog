@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201128102736'
+,p_last_upd_yyyymmddhh24miss=>'20210411052902'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8575301514518303)
@@ -65,7 +65,7 @@ wwv_flow_api.create_page_button(
 ,p_button_template_options=>'#DEFAULT#'
 ,p_button_template_id=>wwv_flow_api.id(8549115324518244)
 ,p_button_is_hot=>'Y'
-,p_button_image_alt=>'Sign In'
+,p_button_image_alt=>'Sign in'
 ,p_button_position=>'REGION_TEMPLATE_NEXT'
 ,p_required_patch=>wwv_flow_api.id(35674953070739317)
 );
@@ -75,9 +75,9 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(8575301514518303)
 ,p_button_name=>'LOGIN_GOOGLE'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--danger:t-Button--iconLeft'
-,p_button_template_id=>wwv_flow_api.id(8549262062518244)
-,p_button_image_alt=>'Login with Google'
+,p_button_template_options=>'#DEFAULT#:t-Button--danger'
+,p_button_template_id=>wwv_flow_api.id(8549115324518244)
+,p_button_image_alt=>'&#x1D5A6;  Sign in with Google'
 ,p_button_position=>'REGION_TEMPLATE_NEXT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:1:&SESSION.:APEX_AUTHENTICATION=Google:&DEBUG.:::'
 ,p_icon_css_classes=>'fa-envelope-user'
