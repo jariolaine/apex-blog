@@ -89,9 +89,10 @@ as
     p_request         in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app page 22 Close Dialog condition
+  -- Called from: admin app page 22 process "Close Dialog" condition
   function file_upload(
-    p_file_name       in varchar2
+    p_file_name       in varchar2,
+    p_collection_name in varchar2
   ) return boolean;
 --------------------------------------------------------------------------------
   -- Called from: admin app page 12 and procedudre blog_cm.get_first_paragraph
@@ -100,12 +101,13 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app page 23 and procedure blog_cm.file_upload
-  procedure merge_files;
+  procedure merge_files(
+    p_collection_name in varchar2
+  );
 --------------------------------------------------------------------------------
-  -- Called from: admin app page 12
+  -- Called from: admin app page 12 after submit process "Process Category"
   procedure add_category(
     p_title           in varchar2,
-    p_err_mesg        in varchar2,
     p_category_id     out nocopy number
   );
 --------------------------------------------------------------------------------
@@ -137,30 +139,30 @@ as
     p_drop_job        in boolean default false
   );
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 20012
+  -- Called from: admin app pages 20012 validation "Is Integer"
   function is_integer(
     p_value           in varchar2,
     p_min             in number,
     p_max             in number,
-    p_err_mesg        in varchar2
+    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_INTEGER'
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 20012
+  -- Called from: admin app pages 20012 validation "Is URL"
   function is_url(
     p_value           in varchar2,
-    p_err_mesg        in varchar2
+    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_URL'
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 20012
+  -- Called from: admin app pages 20012 validation "Is date format"
   function is_date_format(
     p_value           in varchar2,
-    p_err_mesg        in varchar2
+    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_DATE_FORMAT'
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 20012
+  -- Called from: admin app pages 20012 validation "Is email"
   function is_email(
     p_value           in varchar2,
-    p_err_mesg        in varchar2
+    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_EMAIL'
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from: admin app pages 20012
@@ -362,45 +364,25 @@ as
     p_user_email in varchar2 default null
   )
   as
-    l_app_user    varchar2(32700);
-    l_user_name   varchar2(32700);
-    l_user_email  varchar2(32700);
+    l_group_names apex_t_varchar2;
   begin
 
-    -- get user email from context if parameter p_user_email is null
-    l_user_email :=
-      case
-      when p_user_email is null
-      then lower( sys_context( 'APEX$SESSION', 'APP_USER' ) )
-      else lower( p_user_email )
-      end;
+    -- collect user groups
+    for c1 in(
+      select group_name
+      from apex_workspace_group_users
+      where 1 = 1
+        and user_name = sys_context( 'APEX$SESSION', 'APP_USER' )
+    ) loop
+      apex_string.push( l_group_names, c1.group_name );
+    end loop;
 
-    -- fetch APEX workspace user by email address
-    select user_name
-    into l_user_name
-    from apex_workspace_apex_users
-    where 1 = 1
-      and lower( email ) = l_user_email
-    ;
-
-    -- set user name
-    apex_custom_auth.set_user( l_user_name );
-
-/*
     -- Enable groups
     apex_authorization.enable_dynamic_groups (
-      p_group_names => apex_t_varchar2( 'Bloggers', 'Blog Administrators' )
+      p_group_names => l_group_names
     );
-*/
 
-  exception when no_data_found
-  then
-    apex_debug.warn( 'APEX workspace user having email address %s not found.', l_user_email );
-  when too_many_rows
-  then
-    apex_debug.error( 'Multiple APEX workspace users having same email address %s.', l_user_email );
-    apex_debug.error( 'Can not determine corret APEX workspace user name.' );
-  when others
+  exception when others
   then
     apex_debug.error( 'Unhandled post authentication procedure error.');
     apex_debug.error( sqlerrm );
@@ -429,7 +411,7 @@ as
   exception when no_data_found
   then
 
-    -- fetch authorization group names
+    -- fetch authorization group name
     l_authz_grp := blog_util.get_attribute_value( 'G_ADMIN_APP_AUTHZ_GROUP' );
     -- if blogger details not found, check is user authorized use blog
     if apex_util.current_user_in_group( l_authz_grp )
@@ -649,7 +631,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function file_upload(
-    p_file_name in varchar2
+    p_file_name       in varchar2,
+    p_collection_name in varchar2
   ) return boolean
   as
     l_file_exists boolean;
@@ -669,7 +652,7 @@ as
     -- collection is used to show what files already exists in repository
     -- we prompt user to confirm those files overwrite
     apex_collection.create_or_truncate_collection(
-      p_collection_name => 'BLOG_FILES'
+      p_collection_name => p_collection_name
     );
 
     -- store uploaded files to apex_collection
@@ -701,7 +684,7 @@ as
         ;
 
         apex_collection.add_member(
-           p_collection_name => 'BLOG_FILES'
+           p_collection_name => p_collection_name
           ,p_n001     => c1.file_id
           ,p_n002     => coalesce(c1.is_active, 1)
           ,p_n003     => coalesce(c1.is_download, 0)
@@ -716,7 +699,9 @@ as
 
     -- if non of files exists, insert files to blog_files
     if not l_file_exists then
-      merge_files;
+      merge_files(
+        p_collection_name => p_collection_name
+      );
     end if;
 
     return not l_file_exists;
@@ -734,23 +719,25 @@ as
   end remove_whitespace;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure merge_files
+  procedure merge_files(
+    p_collection_name in varchar2
+  )
   as
   begin
 
     -- insert new files and overwrite existing
     merge into blog_files t1 using (
       select
-         n001                 as id
-        ,coalesce( n002, 1 )  as is_active
-        ,coalesce( n003, 0 )  as is_download
-        ,c001                 as file_name
-        ,c002                 as file_desc
-        ,c003                 as mime_type
-        ,blob001              as blob_content
+         n001     as id
+        ,n002     as is_active
+        ,n003     as is_download
+        ,c001     as file_name
+        ,c002     as file_desc
+        ,c003     as mime_type
+        ,blob001  as blob_content
       from apex_collections
       where 1 = 1
-      and collection_name = 'BLOG_FILES'
+      and collection_name = p_collection_name
     ) new_files
     on (t1.id = new_files.id)
     when matched then
@@ -766,8 +753,8 @@ as
         ,file_desc
       )
       values (
-         new_files.is_active
-        ,new_files.is_download
+         coalesce( new_files.is_active ,  1 )
+        ,coalesce( new_files.is_download, 0 )
         ,new_files.file_name
         ,new_files.mime_type
         ,new_files.blob_content
@@ -779,34 +766,15 @@ as
 --------------------------------------------------------------------------------
   procedure add_category(
     p_title       in varchar2,
-    p_err_mesg    in varchar2,
     p_category_id out nocopy number
   )
   as
-    l_seq       number;
-    l_value     varchar2(512);
-    l_err_mesg  varchar2(32700);
+    l_seq   number;
+    l_value varchar2(512);
   begin
 
-    p_category_id := null;
+    -- remove whitespace from category title
     l_value := remove_whitespace( p_title );
-
-    -- category title must have some value
-    if l_value is null then
-      -- prepare error message
-      l_err_mesg := apex_lang.message( p_err_mesg );
-
-      if l_err_mesg = apex_escape.html( p_err_mesg )
-      then
-        l_err_mesg := p_err_mesg;
-      end if;
-
-      raise_application_error( -20002,  l_err_mesg );
-
-    end if;
-
-    -- get next sequence value
-    l_seq := get_category_seq;
 
     -- check if category already exists and fetch id
     select v1.id
@@ -817,6 +785,8 @@ as
     ;
   -- if category not exists insert and return id
   exception when no_data_found then
+    -- get next sequence value
+    l_seq := get_category_seq;
     -- try insert category and return id for out parameter.
     insert into blog_categories ( is_active, display_seq, title )
     values( 1, l_seq, l_value )
@@ -1002,7 +972,7 @@ as
     p_value     in varchar2,
     p_min       in number,
     p_max       in number,
-    p_err_mesg  in varchar2
+    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_IS_INTEGER'
   ) return varchar2
   as
     l_value     number;
@@ -1042,7 +1012,7 @@ as
 --------------------------------------------------------------------------------
   function is_url(
     p_value     in varchar2,
-    p_err_mesg  in varchar2
+    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_IS_URL'
   ) return varchar2
   as
     l_err_mesg varchar2(32700);
@@ -1069,7 +1039,7 @@ as
 --------------------------------------------------------------------------------
   function is_date_format(
     p_value     in varchar2,
-    p_err_mesg  in varchar2
+    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_IS_DATE_FORMAT'
   ) return varchar2
   as
     l_err_mesg          varchar2(32700);
@@ -1104,7 +1074,7 @@ as
 --------------------------------------------------------------------------------
   function is_email(
     p_value     in varchar2,
-    p_err_mesg  in varchar2
+    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_IS_EMAIL'
   ) return varchar2
   as
     l_err_mesg varchar2(32700);

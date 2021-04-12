@@ -6,6 +6,7 @@ alter table blog_comments drop constraint blog_comments_fk2;
 alter table blog_comment_flags drop constraint blog_comment_flags_fk1;
 alter table blog_comment_subscribers drop constraint blog_comment_subscribers_fk1;
 alter table blog_comment_subscribers drop constraint blog_comment_subscribers_fk2;
+alter table blog_init_items drop constraint blog_init_items_fk1;
 alter table blog_links drop constraint blog_links_fk1;
 alter table blog_posts drop constraint blog_posts_fk1;
 alter table blog_posts drop constraint blog_posts_fk2;
@@ -64,7 +65,6 @@ drop view blog_v_links;
 drop view blog_v_posts;
 drop view blog_v_posts_last20;
 drop view blog_v_post_tags;
-drop view blog_v_rep_app_links;
 drop view blog_v_tags;
 --------------------------------------------------------
 --  Drop text index section groups

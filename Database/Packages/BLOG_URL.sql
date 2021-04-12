@@ -404,7 +404,7 @@ as
     -- apex_page.get_url don't have parameter p_plain_url
     l_url := 'f?p='
       || p_app_id
-      || ':POST:::NO:RP:'
+      || ':POST:::NO::'
       || 'P2_POST_ID'
       || ','
       || 'P2_SUBSCRIPTION_ID'

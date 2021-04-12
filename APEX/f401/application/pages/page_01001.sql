@@ -35,7 +35,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210411202457'
+,p_last_upd_yyyymmddhh24miss=>'20210412173657'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -347,6 +347,7 @@ wwv_flow_api.create_page_validation(
 ,p_validation_condition_type=>'ITEM_IS_NOT_NULL'
 ,p_associated_item=>wwv_flow_api.id(6286425900551659)
 ,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
+,p_security_scheme=>wwv_flow_api.id(37678540113813919)
 ,p_required_patch=>wwv_flow_api.id(37511226776078888)
 );
 wwv_flow_api.create_page_da_event(
@@ -382,8 +383,37 @@ wwv_flow_api.create_page_process(
 ,p_process_comment=>'Save comment'
 );
 wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(26970862080257336)
+ p_id=>wwv_flow_api.id(36228428060379743)
 ,p_process_sequence=>30
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Set new flag'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#OWNER#.blog_comm.flag_comment(',
+'   p_comment_id => :P1001_ID',
+'  ,p_flag       => ''NEW''',
+');'))
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(36228592519379744)
+,p_process_sequence=>40
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Set moderate flag'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#OWNER#.blog_comm.flag_comment(',
+'   p_comment_id => :P1001_ID',
+'  ,p_flag       => ''MODERATE''',
+');'))
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(28281277020489892)
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(26970862080257336)
+,p_process_sequence=>50
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Notify Blogger'
@@ -399,7 +429,7 @@ wwv_flow_api.create_page_process(
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(31248826734982928)
-,p_process_sequence=>40
+,p_process_sequence=>60
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Subscribe User'
@@ -417,7 +447,7 @@ wwv_flow_api.create_page_process(
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(31247931198982919)
-,p_process_sequence=>50
+,p_process_sequence=>70
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_SESSION_STATE'
 ,p_process_name=>'Clear items'
@@ -426,26 +456,26 @@ wwv_flow_api.create_page_process(
 ,p_process_comment=>'At least question answer item saves session state to disk. Clear all page items session state.'
 );
 wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(26385226571542645)
-,p_process_sequence=>60
+ p_id=>wwv_flow_api.id(31617539210094011)
+,p_process_sequence=>80
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'No Need to Moderate'
+,p_process_name=>'Comment will be moderated'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_success_message=>'Thanks for commenting. Your comment will be published after author has review it.'
+,p_required_patch=>wwv_flow_api.id(28281277020489892)
+,p_process_comment=>'Comments are moderated'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(26385226571542645)
+,p_process_sequence=>90
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_CLOSE_WINDOW'
+,p_process_name=>'Comment approved'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_success_message=>'Thanks for commenting.'
 ,p_required_patch=>-wwv_flow_api.id(28281277020489892)
 ,p_process_comment=>'Comments aren''t moderated'
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(31617539210094011)
-,p_process_sequence=>70
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'Need to Moderate'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_success_message=>'Thanks for commenting. Your comment will be published after author has review it.'
-,p_required_patch=>wwv_flow_api.id(7073708623458378)
-,p_process_comment=>'Comments are moderated'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26385626116542649)

@@ -26,8 +26,8 @@ wwv_flow_api.component_begin (
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(37505555105749125)
-,p_name=>'BLOG_EMAIL_VALIDATION_ERROR'
-,p_message_text=>'Email validation failed. Please try again later.'
+,p_name=>'BLOG_EMAIL_VALIDATION_API_SQLERRM'
+,p_message_text=>'Email validation REST API returned error.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(7036756648298659)
@@ -87,7 +87,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(26897874228793079)
 ,p_name=>'BLOG_VALIDATION_ERR_COMMENT_LENGTH'
-,p_message_text=>'Comment is too long. Please try summarize the comment.'
+,p_message_text=>'Comment is too long. Please summarize the comment.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(37506760598851568)

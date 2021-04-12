@@ -70,7 +70,7 @@ wwv_flow_api.create_page(
 '</ol>',
 ''))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210222154902'
+,p_last_upd_yyyymmddhh24miss=>'20210412104959'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -907,7 +907,6 @@ wwv_flow_api.create_page_process(
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_cm.add_category(',
 '   p_title       => :P12_CATEGORY_TITLE',
-'  ,p_err_mesg    => ''BLOG_VALIDATION_ERR_NO_CATEGORY_TITLE''',
 '  ,p_category_id => :P12_CATEGORY_ID',
 ');'))
 ,p_process_clob_language=>'PLSQL'

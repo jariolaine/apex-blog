@@ -47,7 +47,7 @@ wwv_flow_api.create_list_item(
 wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(25756063318250538)
 ,p_list_item_display_sequence=>40
-,p_list_item_link_text=>'Popup Pages'
+,p_list_item_link_text=>'Modal Pages'
 ,p_list_item_link_target=>'f?p=&APP_ID.:25:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-list'
 ,p_list_text_01=>'Create and maintain modal pages. A link to the page will appear in the blog footer. For example, create a page for a disclaimer.'

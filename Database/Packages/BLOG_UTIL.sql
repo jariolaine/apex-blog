@@ -123,7 +123,7 @@ as
     l_result          apex_error.t_error_result;
     l_reference_id    pls_integer;
     l_constraint_name varchar2(255);
-    l_err_msg         varchar2(32700);
+    l_err_mesg        varchar2(32700);
 
   begin
 
@@ -181,11 +181,11 @@ as
             p_error => p_error
           );
 
-        l_err_msg := apex_lang.message(l_constraint_name);
+        l_err_mesg := apex_lang.message(l_constraint_name);
 
         -- not every constraint has to be in our lookup table
-        if not l_err_msg = l_constraint_name then
-          l_result.message := l_err_msg;
+        if not l_err_mesg = l_constraint_name then
+          l_result.message := l_err_mesg;
           l_result.additional_info := null;
         end if;
 

@@ -19,7 +19,7 @@ wwv_flow_api.create_authentication(
 ,p_attribute_02=>'GOOGLE'
 ,p_attribute_07=>'email'
 ,p_attribute_09=>'email'
-,p_attribute_11=>'N'
+,p_attribute_11=>'Y'
 ,p_attribute_13=>'Y'
 ,p_invalid_session_type=>'LOGIN'
 ,p_post_auth_process=>'blog_cm.post_authentication'

@@ -90,11 +90,6 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Files'
 );
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(42619643585051305)
-,p_name=>'BLOG_FEATURE_FOOTER_LINKS'
-,p_message_text=>'Footer link list'
-);
-wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28287948386327902)
 ,p_name=>'BLOG_FEATURE_GROUP_COMMENTS'
 ,p_message_text=>'Comments'
@@ -130,6 +125,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Links'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(42619643585051305)
+,p_name=>'BLOG_FEATURE_MODAL_PAGES'
+,p_message_text=>'Modal pages links in blog footer'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28283165676427890)
 ,p_name=>'BLOG_FEATURE_MODERATE_COMMENTS'
 ,p_message_text=>'Comments need to moderated'
@@ -137,7 +137,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27923224953053769)
 ,p_name=>'BLOG_FEATURE_POST_PAGINATION'
-,p_message_text=>'Newer and older post pagination buttons'
+,p_message_text=>'Links to newer and older post'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(8651776706351892)
@@ -348,11 +348,6 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348379677347133)
 ,p_name=>'BLOG_VALIDATION_ERR_IS_URL'
 ,p_message_text=>'URL must begin with http(s)://.'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(27198668939552588)
-,p_name=>'BLOG_VALIDATION_ERR_NO_CATEGORY_TITLE'
-,p_message_text=>'Category must have some value.'
 );
 wwv_flow_api.component_end;
 end;

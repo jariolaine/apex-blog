@@ -12,7 +12,7 @@ insert into blog_pages (is_active,display_seq,page_title,page_alias,page_type,bu
 insert into blog_features (is_active,display_seq,build_option_name,build_option_group) values ('1','10','BLOG_FEATURE_ALLOW_COMMENTS','BLOG_FEATURE_GROUP_COMMENTS');
 insert into blog_features (is_active,display_seq,build_option_name,build_option_group) values ('1','20','BLOG_FEATURE_MODERATE_COMMENTS','BLOG_FEATURE_GROUP_COMMENTS');
 insert into blog_features (is_active,display_seq,build_option_name,build_option_group) values ('1','30','BLOG_FEATURE_SUBSCRIBE_COMMENTS','BLOG_FEATURE_GROUP_COMMENTS');
-insert into blog_features (is_active,display_seq,build_option_name,build_option_group) values ('1','40','BLOG_FEATURE_EMAIL_VALIDATION_API','BLOG_FEATURE_GROUP_COMMENTS');
+insert into blog_features (is_active,display_seq,build_option_name,build_option_group) values ('0','40','BLOG_FEATURE_EMAIL_VALIDATION_API','BLOG_FEATURE_GROUP_COMMENTS');
 insert into blog_features (is_active,display_seq,build_option_name,build_option_group) values ('1','50','BLOG_FEATURE_POST_PAGINATION','BLOG_FEATURE_GROUP_MISC');
 insert into blog_features (is_active,display_seq,build_option_name,build_option_group) values ('1','60','BLOG_FEATURE_SEARCH_POSTS','BLOG_FEATURE_GROUP_SEARCH');
 insert into blog_features (is_active,display_seq,build_option_name,build_option_group) values ('1','70','BLOG_FEATURE_CATEGORY','BLOG_FEATURE_GROUP_RIGHT_COLUMN');
@@ -24,7 +24,7 @@ insert into blog_features (is_active,display_seq,build_option_name,build_option_
 insert into blog_features (is_active,display_seq,build_option_name,build_option_group) values ('1','130','BLOG_FEATURE_ABOUT','BLOG_FEATURE_GROUP_PAGE');
 insert into blog_features (is_active,display_seq,build_option_name,build_option_group) values ('1','140','BLOG_FEATURE_SEARCH_LINKS','BLOG_FEATURE_GROUP_SEARCH');
 insert into blog_features (is_active,display_seq,build_option_name,build_option_group) values ('1','150','BLOG_FEATURE_SEARCH_FILES','BLOG_FEATURE_GROUP_SEARCH');
-insert into blog_features (is_active,display_seq,build_option_name,build_option_group) values ('1','160','BLOG_FEATURE_FOOTER_LINKS','BLOG_FEATURE_GROUP_MISC');
+insert into blog_features (is_active,display_seq,build_option_name,build_option_group) values ('1','160','BLOG_FEATURE_MODAL_PAGES','BLOG_FEATURE_GROUP_MISC');
 insert into blog_features (is_active,display_seq,build_option_name,build_option_group) values ('1','170','BLOG_FEATURE_SITEMAP','BLOG_FEATURE_GROUP_MISC');
 --
 --------------------------------------------------------
@@ -33,10 +33,11 @@ insert into blog_features (is_active,display_seq,build_option_name,build_option_
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values ('20','1','G_PUB_APP_ID','STRING','INTERNAL',null,null,null,'blog_util.int_to_vc2(apex_application_install.get_application_id)',blog_util.int_to_vc2(apex_application_install.get_application_id));
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values ('30','0','G_APP_VERSION','STRING','INTERNAL',null,null,null,'''Release 4.4.1b''','Release 4.4.1b');
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values ('40','0','G_ADMIN_APP_AUTHZ_GROUP','STRING','INTERNAL',null,null,null,'''Bloggers''','Bloggers');
-insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values ('50','0','G_COMMENT_WATCH_MONTHS','INTEGER','INTERNAL',null,'1','6','''1''','1');
+insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values ('50','0','G_EMAIL_VALIDATION_API_KEY','STRING','INTERNAL',null,null,null,'''NO''','NO');
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values ('60','1','G_RSS_XSL_CSS_URL','STRING','INTERNAL',null,null,null,'''css/rss-xsl.css''','css/rss-xsl.css');
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values ('70','1','G_SITEMAP_URL','URL','INTERNAL',null,null,null,'apex_util.host_url(''SCRIPT'') || ''f?p='' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '':pgm::application_process=sitemap-index.xml''',apex_util.host_url('SCRIPT') || 'f?p=' || blog_util.int_to_vc2(apex_application_install.get_application_id) || ':pgm::application_process=sitemap-index.xml');
-insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values ('110','0','G_LATEST_POST_ROWS','INTEGER','BLOG_PAR_GROUP_UI',null,'1','20','''5''','5');
+insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values ('80','0','G_COMMENT_WATCH_MONTHS','INTEGER','INTERNAL',null,'1','6','''1''','1');
+insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values ('120','0','G_LATEST_POST_ROWS','INTEGER','BLOG_PAR_GROUP_UI',null,'1','20','''5''','5');
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values ('130','0','G_APP_NAME','STRING','BLOG_PAR_GROUP_GENERAL',null,null,null,'''My Blog''','My Blog');
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values ('140','0','G_APP_DESC','STRING','BLOG_PAR_GROUP_GENERAL',null,null,null,'''About Almost Everything''','About Almost Everything');
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,install_value,attribute_value) values ('150','1','G_APP_EMAIL','EMAIL','BLOG_PAR_GROUP_GENERAL',null,null,null,null,null);

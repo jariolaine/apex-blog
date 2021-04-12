@@ -19,7 +19,7 @@ wwv_flow_api.create_web_source_module(
 ,p_data_profile_id=>wwv_flow_api.id(37423660597418881)
 ,p_remote_server_id=>wwv_flow_api.id(37422434064399125)
 ,p_url_path_prefix=>'v1/'
-,p_credential_id=>wwv_flow_api.id(37422157706388629)
+,p_credential_id=>wwv_flow_api.id(37671933040533063)
 ,p_module_comment=>'Abstract email validation API (https://www.abstractapi.com/)'
 );
 wwv_flow_api.create_web_source_param(
@@ -75,6 +75,7 @@ wwv_flow_api.create_web_source_operation(
 ,p_database_operation=>'FETCH_COLLECTION'
 ,p_url_pattern=>'.'
 ,p_allow_fetch_all_rows=>false
+,p_caching=>'ALL_USERS'
 ,p_invalidate_when=>'FREQ=DAILY;BYHOUR=0;BYMINUTE=0;BYSECOND=0'
 );
 wwv_flow_api.component_end;

@@ -24,7 +24,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210410065507'
+,p_last_upd_yyyymmddhh24miss=>'20210412134452'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(76305240814166745)
@@ -270,6 +270,22 @@ wwv_flow_api.create_page_branch(
 ,p_branch_sequence=>10
 );
 wwv_flow_api.create_page_item(
+ p_id=>wwv_flow_api.id(37643835188287104)
+,p_name=>'P32_IS_ACTIVE'
+,p_source_data_type=>'NUMBER'
+,p_item_sequence=>40
+,p_item_plug_id=>wwv_flow_api.id(106502470509454426)
+,p_item_source_plug_id=>wwv_flow_api.id(106502470509454426)
+,p_item_default=>'1'
+,p_source=>'IS_ACTIVE'
+,p_source_type=>'REGION_SOURCE_COLUMN'
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'N'
+,p_protection_level=>'I'
+,p_restricted_characters=>'US_ONLY'
+,p_attribute_01=>'Y'
+);
+wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(45883809448413654)
 ,p_name=>'P32_ID'
 ,p_source_data_type=>'NUMBER'
@@ -304,7 +320,7 @@ wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(45884682070413655)
 ,p_name=>'P32_POST_ID'
 ,p_source_data_type=>'NUMBER'
-,p_item_sequence=>40
+,p_item_sequence=>50
 ,p_item_plug_id=>wwv_flow_api.id(106502470509454426)
 ,p_item_source_plug_id=>wwv_flow_api.id(106502470509454426)
 ,p_item_default=>'P31_POST_ID'
@@ -321,7 +337,7 @@ wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(45885049820413655)
 ,p_name=>'P32_PARENT_ID'
 ,p_source_data_type=>'NUMBER'
-,p_item_sequence=>50
+,p_item_sequence=>60
 ,p_item_plug_id=>wwv_flow_api.id(106502470509454426)
 ,p_item_source_plug_id=>wwv_flow_api.id(106502470509454426)
 ,p_item_default=>'P31_ID'
@@ -338,7 +354,7 @@ wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(45885439088413656)
 ,p_name=>'P32_COMMENT_BY'
 ,p_source_data_type=>'VARCHAR2'
-,p_item_sequence=>60
+,p_item_sequence=>70
 ,p_item_plug_id=>wwv_flow_api.id(106502470509454426)
 ,p_item_source_plug_id=>wwv_flow_api.id(106502470509454426)
 ,p_item_default=>'G_BLOGGER_NAME'
@@ -402,7 +418,7 @@ wwv_flow_api.create_page_process(
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Sent reply notification'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_cm.send_reply_notify(',
+'#OWNER#.blog_comm.reply_notify(',
 '   p_app_id          => :G_PUB_APP_ID',
 '  ,p_app_name        => :G_APP_NAME',
 '  ,p_post_id         => :P32_POST_ID',

@@ -35,6 +35,16 @@ as
     p_email             in varchar2
   ) return boolean;
 --------------------------------------------------------------------------------
+  procedure flag_comment(
+    p_comment_id        in varchar2,
+    p_flag              in varchar2
+  );
+--------------------------------------------------------------------------------
+  procedure unflag_comment(
+    p_comment_id        in varchar2,
+    p_flag              in varchar2
+  );
+--------------------------------------------------------------------------------
   procedure new_comment_notify(
     p_post_id           in varchar2,
     p_app_name          in varchar2,
@@ -361,7 +371,15 @@ as
 
       -- get response
       l_response := apex_exec.get_parameter_clob( l_params, 'response' );
-      apex_debug.info( 'Email validation response: %s', l_response );
+      apex_debug.info( 'Email validation response status: %s response body: %s'
+        ,apex_web_service.g_status_code
+        ,l_response
+      );
+      if apex_web_service.g_status_code != 200
+      then
+        raise_application_error( -20002 ,  apex_lang.message( 'BLOG_EMAIL_VALIDATION_API_SQLERRM' ) );
+      end if;
+
       -- convert response to json object
       l_json := json_object_t( l_response );
       -- check email deliverability
@@ -370,7 +388,7 @@ as
         -- if email is deliverable return true
         l_result := true;
       end if;
-      
+
     else
       l_result := true;
     end if;
@@ -381,7 +399,6 @@ as
   then
     -- if something goes wrong
     apex_debug.error( 'Email validation failed: %s', sqlerrm );
-    raise_application_error( -20002 ,  apex_lang.message( 'BLOG_EMAIL_VALIDATION_ERROR' ) );
     raise;
   end validate_email;
 --------------------------------------------------------------------------------
@@ -412,6 +429,35 @@ as
     return l_result;
 
   end is_email_verified;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure flag_comment(
+    p_comment_id  in varchar2,
+    p_flag        in varchar2
+  )
+  as
+  begin
+    insert into blog_comment_flags( comment_id, flag)
+      values( p_comment_id, p_flag)
+    ;
+  exception when dup_val_on_index
+  then
+    null;
+  end flag_comment;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure unflag_comment(
+    p_comment_id  in varchar2,
+    p_flag        in varchar2
+  )
+  as
+  begin
+    delete from blog_comment_flags
+    where 1 = 1
+      and comment_id = p_comment_id
+      and flag = p_flag
+    ;
+  end unflag_comment;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure new_comment_notify(
@@ -622,7 +668,7 @@ as
     delete
       from blog_comment_subscribers
     where 1 = 1
-    and id = p_subscription_id
+      and id = p_subscription_id
     ;
   end unsubscribe;
 --------------------------------------------------------------------------------

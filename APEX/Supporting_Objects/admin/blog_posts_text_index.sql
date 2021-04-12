@@ -58,7 +58,7 @@ begin
   );
 
   ctx_ddl.add_field_section(
-     group_name        => 'BLOG_POST_UDS_SG'
+     group_name       => 'BLOG_POST_UDS_SG'
     ,section_name     => 'TAGS'
     ,tag              => 'POST_TAGS'
     ,visible          => true

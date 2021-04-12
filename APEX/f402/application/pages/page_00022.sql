@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210321134857'
+,p_last_upd_yyyymmddhh24miss=>'20210412110557'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(20749984140206608)
@@ -131,7 +131,8 @@ wwv_flow_api.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_cm.file_upload(',
-'  p_file_name => :P22_FILE_NAME',
+'   p_file_name        => :P22_FILE_NAME',
+'  ,p_collection_name  => :BLOG_FILE_UPLOAD_COLLECTION',
 ')'))
 ,p_process_when_type=>'EXPRESSION'
 ,p_process_when2=>'PLSQL'

@@ -12,10 +12,11 @@ wwv_flow_api.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_api.create_credential(
- p_id=>wwv_flow_api.id(37422157706388629)
+ p_id=>wwv_flow_api.id(37671933040533063)
 ,p_name=>'Abstract email validation API key'
 ,p_static_id=>'ABSTRACT_EMAIL_VALIDATION_API_KEY'
 ,p_authentication_type=>'HTTP_QUERY_STRING'
+,p_valid_for_urls=>'https://emailvalidation.abstractapi.com/'
 ,p_prompt_on_install=>true
 ,p_credential_comment=>'Abstract email validation API key (https://www.abstractapi.com/)'
 );
