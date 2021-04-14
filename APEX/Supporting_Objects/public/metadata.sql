@@ -25,7 +25,7 @@ insert into blog_features (is_active,display_seq,build_option_name,build_option_
 insert into blog_features (is_active,display_seq,build_option_name,build_option_group,help_message) values ('1','140','BLOG_FEATURE_SEARCH_LINKS','BLOG_FEATURE_GROUP_SEARCH',null);
 insert into blog_features (is_active,display_seq,build_option_name,build_option_group,help_message) values ('1','150','BLOG_FEATURE_SEARCH_FILES','BLOG_FEATURE_GROUP_SEARCH',null);
 insert into blog_features (is_active,display_seq,build_option_name,build_option_group,help_message) values ('1','160','BLOG_FEATURE_MODAL_PAGES','BLOG_FEATURE_GROUP_MISC',null);
-insert into blog_features (is_active,display_seq,build_option_name,build_option_group,help_message) values ('1','170','BLOG_FEATURE_SITEMAP','BLOG_FEATURE_GROUP_MISC',null);
+insert into blog_features (is_active,display_seq,build_option_name,build_option_group,help_message) values ('0','170','BLOG_FEATURE_SITEMAP','BLOG_FEATURE_GROUP_MISC',null);
 insert into blog_features (is_active,display_seq,build_option_name,build_option_group,help_message) values ('1','1010','BLOG_ADM_FEATURE_APEX_AUTH','BLOG_FEATURE_GROUP_AUTH',null);
 insert into blog_features (is_active,display_seq,build_option_name,build_option_group,help_message) values ('1','1020','BLOG_ADM_FEATURE_GOOGLE_AUTH','BLOG_FEATURE_GROUP_AUTH',null);
 --

@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210413192912'
+,p_last_upd_yyyymmddhh24miss=>'20210414173304'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27412346667552217)
@@ -34,26 +34,45 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.id         as comment_id',
-'  ,v1.post_id        as post_id',
-'  ,v1.parent_id      as parent_id',
-'  ,v1.created_on     as created_on',
-'  ,v1.changed_on     as changed_on',
-'  ,v1.changed_by     as changed_by',
-'  ,v1.comment_by     as comment_by',
-'  ,v1.post_title     as post_title',
-'  ,v1.status         as status',
+'select v1.id          as comment_id',
+'  ,v1.post_id         as post_id',
+'  ,v1.parent_id       as parent_id',
+'  ,v1.created_on      as created_on',
+'  ,v1.changed_on      as changed_on',
+'  ,v1.changed_by      as changed_by',
+'  ,v1.comment_by      as comment_by',
+'  ,v1.post_title      as post_title',
+'  ,v1.status          as status',
+'  ,case v1.flag',
+'    when ''UNREAD''',
+'      then ''fa-envelope-o''',
+'    when ''REPLY''',
+'    then ''fa-send-o''',
+'    when ''READ''',
+'    then ''fa-envelope-open-o''',
+'  end                 as edit_icon',
+'  ,case v1.status ',
+'    when ''MODERATE''',
+'      then ''fa-exclamation-triangle-o u-warning-text''',
+'    when ''DISABLED''',
+'      then ''fa-minus-circle-o u-danger-text''',
+'    when ''ENABLED''',
+'      then ''fa-check-circle-o u-success-text''',
+'  end                 as status_icon',
+'  ,case v1.flag',
+'    when ''UNREAD''',
+'      then ''data-unread''',
+'  end                 as btn_data',
+'  ,btn.title_open',
 '--  ,v1.is_active      as is_active',
 '--  ,v1.body_html      as comment_body',
-'  ,v1.edit_icon      as edit_icon',
-'  ,v1.status_icon    as status_icon',
-'  ,case edit_icon',
-'    when ''fa-envelope-o''',
-'    then ''data-open="true"''',
-'  end                as btn_data',
 '--  ,v1.user_icon      as user_icon',
 '--  ,v1.icon_modifier  as icon_modifier',
-'from blog_v_all_comments v1'))
+'from blog_v_all_comments v1',
+'cross join (',
+'  select apex_lang.message(''BLOG_BTN_TITLE_OPEN'') as title_open',
+'  from dual',
+') btn'))
 ,p_plug_source_type=>'NATIVE_IR'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -71,7 +90,7 @@ wwv_flow_api.create_worksheet(
 ,p_download_formats=>'CSV:HTML:EMAIL:XLSX:PDF:RTF'
 ,p_detail_link=>'f?p=&APP_ID.:31:&SESSION.::&DEBUG.:RP,:P31_POST_ID,P31_ID:#POST_ID#,#COMMENT_ID#'
 ,p_detail_link_text=>'<span class="t-Icon fa #EDIT_ICON#" aria-hidden="true"></span>'
-,p_detail_link_attr=>'#BTN_DATA# class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
+,p_detail_link_attr=>'#BTN_DATA# title="#TITLE_OPEN#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
 ,p_owner=>'LAINFJAR'
 ,p_internal_uid=>27412486259552217
 );
@@ -195,6 +214,15 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
 );
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(37645548070287121)
+,p_db_column_name=>'TITLE_OPEN'
+,p_display_order=>150
+,p_column_identifier=>'R'
+,p_column_label=>'Title Open'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN'
+);
 wwv_flow_api.create_worksheet_rpt(
  p_id=>wwv_flow_api.id(27416916886555549)
 ,p_application_user=>'APXWS_DEFAULT'
@@ -203,7 +231,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_display_rows=>10
-,p_report_columns=>'POST_TITLE:COMMENT_BY:CHANGED_ON:STATUS:BTN_DATA'
+,p_report_columns=>'POST_TITLE:COMMENT_BY:CHANGED_ON:STATUS:BTN_DATA:TITLE_OPEN'
 ,p_sort_column_1=>'CREATED_ON'
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'0'
@@ -259,7 +287,7 @@ wwv_flow_api.create_page_da_action(
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'$(this.triggeringElement).find("a[data-open]").one("click", function(){',
+'$(this.triggeringElement).find("a[data-unread]").one("click", function(){',
 '  $(this).children("span").toggleClass("fa-envelope-o fa-envelope-open-o");',
 '});'))
 );

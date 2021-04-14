@@ -48,7 +48,7 @@ wwv_flow_api.create_page(
 '</h3>',
 '<ol>',
 '  <li>',
-'    Click posts title you want to edit.',
+'    Click edit button on post you want to edit.',
 '  </li>',
 '  <li>',
 '    Make your changes.',
@@ -62,7 +62,7 @@ wwv_flow_api.create_page(
 '</h3>',
 '<ol>',
 '  <li>',
-'    Click posts title you want to delete.',
+'    Click edit button on post you want to delete.',
 '  </li>',
 '  <li>',
 '    Click Delete.',
@@ -70,7 +70,7 @@ wwv_flow_api.create_page(
 '</ol>',
 ''))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210412104959'
+,p_last_upd_yyyymmddhh24miss=>'20210414184408'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -137,6 +137,7 @@ wwv_flow_api.create_page_button(
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Cancel'
 ,p_button_position=>'REGION_TEMPLATE_CLOSE'
+,p_button_execute_validations=>'N'
 ,p_warn_on_unsaved_changes=>null
 ,p_icon_css_classes=>'fa-chevron-left'
 );

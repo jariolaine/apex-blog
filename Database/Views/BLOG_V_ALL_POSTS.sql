@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS
   select
    t1.id                as id
   ,t1.category_id       as category_id
@@ -26,21 +26,27 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_I
     when 1
     then t1.published_on
    end                  as published_display
+   ,(
+     select listagg( '(' || tags.tag_id || ')' )  within group(order by tags.id)
+     from blog_v_all_post_tags tags
+     where 1 = 1
+     and tags.post_id = t1.id
+   )                     as tag_id
   ,(
-    select listagg( tags.tag, ', ' )  within group(order by tags.display_seq) as tags
+    select listagg( tags.tag, ', ' )  within group(order by tags.display_seq)
     from blog_v_all_post_tags tags
     where 1 = 1
     and tags.post_id = t1.id
   )                     as post_tags
   ,(
-    select listagg( tags.tag, ', ' )  within group(order by tags.display_seq) as tags
+    select listagg( tags.tag, ', ' )  within group(order by tags.display_seq)
     from blog_v_all_post_tags tags
     where 1 = 1
     and tags.post_id = t1.id
     and tags.is_active = 1
   )                     as visible_tags
   ,(
-    select listagg( tags.tag, ', ' )  within group(order by tags.display_seq) as tags
+    select listagg( tags.tag, ', ' )  within group(order by tags.display_seq)
     from blog_v_all_post_tags tags
     where 1 = 1
     and tags.post_id = t1.id

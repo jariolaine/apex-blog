@@ -40,6 +40,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Edit'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(38326544290801225)
+,p_name=>'BLOG_BTN_TITLE_OPEN'
+,p_message_text=>'Open'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(26356711295747260)
 ,p_name=>'BLOG_BTN_TITLE_VIEW_POSTS'
 ,p_message_text=>'View Posts'
@@ -102,7 +107,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28375527216531703)
 ,p_name=>'BLOG_FEATURE_GROUP_PAGE'
-,p_message_text=>'Pages'
+,p_message_text=>'Tabs and Pages '
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28288384519293388)

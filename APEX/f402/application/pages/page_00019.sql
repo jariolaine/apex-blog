@@ -29,13 +29,13 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210412193521'
+,p_last_upd_yyyymmddhh24miss=>'20210414193545'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9879490963762847)
 ,p_plug_name=>'Add/Edit Tags'
 ,p_region_name=>'tags'
-,p_region_template_options=>'#DEFAULT#'
+,p_region_template_options=>'#DEFAULT#:margin-bottom-none'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8495746153518209)
 ,p_plug_display_sequence=>20
@@ -372,7 +372,7 @@ wwv_flow_api.create_region_column(
 ,p_display_sequence=>150
 ,p_value_alignment=>'CENTER'
 ,p_stretch=>'N'
-,p_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:RP,CIR:IRC_POST_TAGS:&TAG.'
+,p_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:RR,:IRC_TAG_ID:\(&ID.)\'
 ,p_link_text=>'<span aria-hidden="true" class="t-Icon fa fa-external-link"></span>'
 ,p_link_attributes=>'title="&BTN_POSTS_LINK."'
 ,p_enable_filter=>true
@@ -569,11 +569,12 @@ wwv_flow_api.create_page_button(
 ,p_button_sequence=>30
 ,p_button_plug_id=>wwv_flow_api.id(19865705897627513)
 ,p_button_name=>'CLOSE'
-,p_button_action=>'DEFINED_BY_DA'
+,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Close'
 ,p_button_position=>'REGION_TEMPLATE_CLOSE'
+,p_button_redirect_url=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:::'
 ,p_warn_on_unsaved_changes=>null
 ,p_icon_css_classes=>'fa-close'
 );
@@ -607,23 +608,6 @@ wwv_flow_api.create_page_button(
 ,p_button_css_classes=>'js-actionButton'
 ,p_icon_css_classes=>'fa-save'
 ,p_button_cattributes=>'data-action="tags-ig-save"'
-);
-wwv_flow_api.create_page_da_event(
- p_id=>wwv_flow_api.id(24930208886416362)
-,p_name=>'Close Dialog'
-,p_event_sequence=>10
-,p_triggering_element_type=>'BUTTON'
-,p_triggering_button_id=>wwv_flow_api.id(10031955247412282)
-,p_bind_type=>'bind'
-,p_bind_event_type=>'click'
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(24930606998416365)
-,p_event_id=>wwv_flow_api.id(24930208886416362)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_DIALOG_CLOSE'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(9884133660762856)

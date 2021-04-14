@@ -84,7 +84,7 @@ create table blog_comment_flags (
   changed_on timestamp( 6 ) with local time zone not null,
   changed_by varchar2( 256 char ) not null,
   comment_id number( 38, 0 ) not null,
-  flag varchar2( 256 char ) not null
+  flag varchar2( 256 char ) not null,
   constraint blog_comment_flags_pk primary key( id ),
   constraint blog_comment_flags_uk1 unique(comment_id, flag ),
   constraint blog_comment_flags_ck1 check( row_version > 0 ),
@@ -499,7 +499,7 @@ from blog_categories t1
 --------------------------------------------------------
 --  DDL for View BLOG_V_COMMENTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "PARENT_ID", "POST_TITLE", "BODY_HTML", "COMMENT_BY", "STATUS", "EDIT_ICON", "STATUS_ICON", "USER_ICON", "ICON_MODIFIER")  AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "PARENT_ID", "POST_TITLE", "BODY_HTML", "COMMENT_BY", "STATUS", "FLAG", "USER_ICON", "ICON_MODIFIER")  AS
   select
    t1.id            as id
   ,t1.row_version   as row_version
@@ -537,38 +537,19 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATE
         else 'UNKNOWN'
       end
    end              as status
-  ,case
-    when exists(
-      select 1
-      from blog_comment_flags f1
-      where 1 = 1
-        and f1.comment_id = t1.id
-        and f1.flag = 'NEW'
-    )
-    then 'fa-envelope-o'
-    when t1.parent_id is not null
-    then 'fa-send-o'
-    else 'fa-envelope-open-o'
-   end              as edit_icon
-  ,case
-    when exists(
-      select 1
-      from blog_comment_flags f1
-      where 1 = 1
-        and t1.is_active = 0
-        and f1.comment_id = t1.id
-        and f1.flag = 'MODERATE'
-    )
-    then 'fa-exclamation-triangle-o u-warning-text'
-    else
-      case t1.is_active
-        when 0
-        then 'fa-minus-circle-o u-danger-text'
-        when 1
-        then 'fa-check-circle-o u-success-text'
-        else 'fa-question-circle-o'
-      end
-   end              as status_icon
+   ,case
+     when exists(
+       select 1
+       from blog_comment_flags f1
+       where 1 = 1
+         and f1.comment_id = t1.id
+         and f1.flag = 'NEW'
+     )
+     then 'UNREAD'
+     when t1.parent_id is not null
+     then 'REPLY'
+     else 'READ'
+    end              as flag
   ,apex_string.get_initials(
     t1.comment_by
   )                 as user_icon
@@ -956,7 +937,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS
   select
    t1.id                as id
   ,t1.category_id       as category_id
@@ -981,21 +962,27 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_I
     when 1
     then t1.published_on
    end                  as published_display
+   ,(
+     select listagg( '(' || tags.tag_id || ')' )  within group(order by tags.id)
+     from blog_v_all_post_tags tags
+     where 1 = 1
+     and tags.post_id = t1.id
+   )                     as tag_id
   ,(
-    select listagg( tags.tag, ', ' )  within group(order by tags.display_seq) as tags
+    select listagg( tags.tag, ', ' )  within group(order by tags.display_seq)
     from blog_v_all_post_tags tags
     where 1 = 1
     and tags.post_id = t1.id
   )                     as post_tags
   ,(
-    select listagg( tags.tag, ', ' )  within group(order by tags.display_seq) as tags
+    select listagg( tags.tag, ', ' )  within group(order by tags.display_seq)
     from blog_v_all_post_tags tags
     where 1 = 1
     and tags.post_id = t1.id
     and tags.is_active = 1
   )                     as visible_tags
   ,(
-    select listagg( tags.tag, ', ' )  within group(order by tags.display_seq) as tags
+    select listagg( tags.tag, ', ' )  within group(order by tags.display_seq)
     from blog_v_all_post_tags tags
     where 1 = 1
     and tags.post_id = t1.id
