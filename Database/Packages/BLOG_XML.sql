@@ -5,7 +5,7 @@ as
 --------------------------------------------------------------------------------
 --
 --  DESCRIPTION
---    Procedure and functions to generate e.g. RSS feed and sitemap
+--    Procedure and functions to generate and output RSS feed and sitemap
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 07.05.2019 - Created
@@ -24,6 +24,8 @@ as
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1003 Ajax Callback process "rss.xml"
   procedure rss(
     p_rss_url   in varchar2,
     p_app_name  in varchar2,
@@ -31,25 +33,39 @@ as
     p_lang      in varchar2 default 'en'
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1003 Ajax Callback process "rss.xsl"
   procedure rss_xsl(
     p_ws_images in varchar2
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1003 Ajax Callback process "sitemap-index.xml"
   procedure sitemap_index(
     p_app_id        in varchar2,
     p_app_page_id   in varchar2
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1003 Ajax Callback process "sitemap-main.xml"
   procedure sitemap_main(
     p_app_id        in varchar2
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1003 Ajax Callback process "sitemap-posts.xml"
   procedure sitemap_posts;
 --------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1003 Ajax Callback process "sitemap-categories.xml"
   procedure sitemap_categories;
 --------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1003 Ajax Callback process "sitemap-archives.xml"
   procedure sitemap_archives;
 --------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1003 Ajax Callback process "sitemap-tags.xml"
   procedure sitemap_tags;
 --------------------------------------------------------------------------------
 end "BLOG_XML";
@@ -276,15 +292,11 @@ as
     and t1.application_id = p_app_id
     and t1.page_id = p_app_page_id
     and t1.build_option = l_build_option
-    and exists(
-      select 1
-      from apex_application_build_options bo
-      where 1 = 1
-      and bo.application_id = p_app_id
-      and bo.build_option_name = l_build_option
-      and bo.build_option_status = 'Include'
-      and bo.build_option_name = t1.build_option
-    );
+    and apex_util.get_build_option_status(
+           p_application_id    => p_app_id
+          ,p_build_option_name => l_build_option
+        ) = 'INCLUDE'
+    ;
 
     owa_util.mime_header( 'application/xml', false, 'UTF-8' );
     sys.htp.p( 'cache-control: max-age=3600, public' );
@@ -310,9 +322,9 @@ as
           xmlagg(
             xmlelement( "url"
               ,xmlelement( "loc", blog_url.get_tab(
-                                   p_app_page_id => t1.page_alias
-                                  ,p_canonical => 'YES'
-                                )
+                                     p_app_page_id => t1.page_alias
+                                    ,p_canonical => 'YES'
+                                  )
               )
             ) order by t1.display_seq
           )
@@ -324,14 +336,14 @@ as
     where 1 = 1
       and t1.is_active = 1
       and t1.page_type = 'TAB'
-      and not exists(
-        select 1
-        from apex_application_build_options bo
-        where 1 = 1
-          and bo.application_id = p_app_id
-          and bo.build_option_name = t1.build_option
-          and bo.build_option_status = 'Exclude'
-      )
+      and case
+        when t1.build_option is null
+        then 'INCLUDE'
+        else  apex_util.get_build_option_status(
+                 p_application_id    => p_app_id
+                ,p_build_option_name => t1.build_option
+              )
+      end = 'INCLUDE'
     ;
 
     owa_util.mime_header( 'application/xml', false, 'UTF-8' );

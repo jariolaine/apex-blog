@@ -14,19 +14,19 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_page(
  p_id=>25
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
-,p_name=>'Popup Pages'
+,p_name=>'Modal Popup Pages'
 ,p_alias=>'POPUP-PAGES'
 ,p_page_mode=>'MODAL'
-,p_step_title=>'Popup Pages'
+,p_step_title=>'Modal Popup Pages'
 ,p_autocomplete_on_off=>'OFF'
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210412193227'
+,p_last_upd_yyyymmddhh24miss=>'20210413113445'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41939477197116306)
-,p_plug_name=>'Popup Pages'
+,p_plug_name=>'Modal Popup Pages'
 ,p_region_css_classes=>'z-IR--iconLinks'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8495746153518209)
@@ -57,7 +57,7 @@ wwv_flow_api.create_page_plug(
 ,p_prn_width=>11
 ,p_prn_height=>8.5
 ,p_prn_orientation=>'HORIZONTAL'
-,p_prn_page_header=>'Popup Pages'
+,p_prn_page_header=>'Modal Popup Pages'
 ,p_prn_page_header_font_color=>'#000000'
 ,p_prn_page_header_font_family=>'Helvetica'
 ,p_prn_page_header_font_weight=>'normal'
@@ -113,7 +113,8 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_identifier=>'B'
 ,p_column_label=>'Created'
 ,p_column_type=>'DATE'
-,p_heading_alignment=>'LEFT'
+,p_heading_alignment=>'RIGHT'
+,p_column_alignment=>'RIGHT'
 ,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
 ,p_tz_dependent=>'Y'
 );
@@ -133,7 +134,8 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_identifier=>'D'
 ,p_column_label=>'Changed'
 ,p_column_type=>'DATE'
-,p_heading_alignment=>'LEFT'
+,p_heading_alignment=>'RIGHT'
+,p_column_alignment=>'RIGHT'
 ,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
 ,p_tz_dependent=>'Y'
 );

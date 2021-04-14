@@ -28,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210412105417'
+,p_last_upd_yyyymmddhh24miss=>'20210413113614'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -149,9 +149,9 @@ wwv_flow_api.create_region_column(
 ,p_is_query_only=>true
 ,p_item_type=>'NATIVE_DISPLAY_ONLY'
 ,p_heading=>'Changed'
-,p_heading_alignment=>'LEFT'
+,p_heading_alignment=>'RIGHT'
 ,p_display_sequence=>120
-,p_value_alignment=>'LEFT'
+,p_value_alignment=>'RIGHT'
 ,p_stretch=>'A'
 ,p_attribute_02=>'VALUE'
 ,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
@@ -198,9 +198,9 @@ wwv_flow_api.create_region_column(
 ,p_is_query_only=>true
 ,p_item_type=>'NATIVE_DISPLAY_ONLY'
 ,p_heading=>'Sequence'
-,p_heading_alignment=>'LEFT'
+,p_heading_alignment=>'RIGHT'
 ,p_display_sequence=>80
-,p_value_alignment=>'LEFT'
+,p_value_alignment=>'RIGHT'
 ,p_attribute_02=>'VALUE'
 ,p_enable_filter=>false
 ,p_filter_is_required=>false

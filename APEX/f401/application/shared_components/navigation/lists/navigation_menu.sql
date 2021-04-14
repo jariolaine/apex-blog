@@ -31,13 +31,13 @@ wwv_flow_api.create_list(
 'where 1 = 1',
 'and t1.is_active = 1',
 'and t1.page_type = ''TAB''',
-'and not case when t1.build_option is null',
+'and case when t1.build_option is null',
 'then ''INCLUDE''',
 'else apex_util.get_build_option_status(',
 '   p_application_id    => :APP_ID',
 '  ,p_build_option_name => t1.build_option',
 ')',
-'end = ''EXCLUDE''',
+'end = ''INCLUDE''',
 'order by t1.display_seq',
 ''))
 ,p_list_status=>'PUBLIC'

@@ -24,7 +24,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210412134452'
+,p_last_upd_yyyymmddhh24miss=>'20210413190715'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(76305240814166745)
@@ -33,7 +33,7 @@ wwv_flow_api.create_report_region(
 ,p_display_sequence=>30
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--hideHeader:t-Region--noBorder:t-Region--scrollBody'
-,p_component_template_options=>'#DEFAULT#:t-Comments--basic'
+,p_component_template_options=>'#DEFAULT#:t-Comments--basic:t-Comments--iconsRounded'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -43,7 +43,9 @@ wwv_flow_api.create_report_region(
 '  ,v1.comment_by    as user_name',
 '  ,v1.body_html     as comment_text',
 '  ,v1.created_on    as comment_date',
-'  ,v1.user_icon     as user_icon',
+'--  ,v1.user_icon     as user_icon',
+'--  ,v1.icon_modifier as icon_modifier',
+'  ,null             as user_icon',
 '  ,''z-hidden''       as icon_modifier',
 '  ,null             as comment_modifiers',
 '  ,null             as attribute_1',
@@ -263,11 +265,21 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_branch(
  p_id=>wwv_flow_api.id(45725696176325238)
+,p_branch_name=>'Go to Page 30'
+,p_branch_action=>'f?p=&APP_ID.:30:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+,p_branch_point=>'AFTER_PROCESSING'
+,p_branch_type=>'REDIRECT_URL'
+,p_branch_when_button_id=>wwv_flow_api.id(45881981213413652)
+,p_branch_sequence=>10
+);
+wwv_flow_api.create_page_branch(
+ p_id=>wwv_flow_api.id(37644385404287109)
 ,p_branch_name=>'Go to Page 31'
 ,p_branch_action=>'f?p=&APP_ID.:31:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
 ,p_branch_point=>'AFTER_PROCESSING'
 ,p_branch_type=>'REDIRECT_URL'
-,p_branch_sequence=>10
+,p_branch_when_button_id=>wwv_flow_api.id(45722332769325205)
+,p_branch_sequence=>20
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(37643835188287104)
@@ -435,16 +447,6 @@ wwv_flow_api.create_page_process(
 ''))
 ,p_process_when_type=>'EXPRESSION'
 ,p_process_when2=>'PLSQL'
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(45889513339413667)
-,p_process_sequence=>30
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'Close Dialog'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when_button_id=>wwv_flow_api.id(45881981213413652)
-,p_process_success_message=>'Reply submitted.'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(45886695647413657)

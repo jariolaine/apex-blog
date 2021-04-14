@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_FEATURES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS_ACTIVE", "POST_EXPRESSION") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS_ACTIVE") AS
   select
    t2.id                        as id
   ,t1.application_id            as application_id
@@ -17,7 +17,6 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUI
   ,t1.last_updated_on           as last_updated_on
   ,lower( t1.last_updated_by )  as last_updated_by
   ,t2.is_active                 as is_active
-  ,t2.post_expression           as post_expression
 from apex_application_build_options t1
 join blog_features t2
   on t1.build_option_name = t2.build_option_name

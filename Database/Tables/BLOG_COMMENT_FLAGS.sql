@@ -9,8 +9,7 @@ create table blog_comment_flags (
   changed_on timestamp( 6 ) with local time zone not null,
   changed_by varchar2( 256 char ) not null,
   comment_id number( 38, 0 ) not null,
-  flag varchar2( 64 char ) not null,
-  notes varchar2( 4000 byte ),
+  flag varchar2( 256 char ) not null
   constraint blog_comment_flags_pk primary key( id ),
   constraint blog_comment_flags_uk1 unique(comment_id, flag ),
   constraint blog_comment_flags_ck1 check( row_version > 0 ),

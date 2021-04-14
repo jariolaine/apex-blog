@@ -14,20 +14,20 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_page(
  p_id=>26
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
-,p_name=>'Add/Edit Popup Page'
+,p_name=>'Add/Edit Modal Popup Page'
 ,p_alias=>'ADD-EDIT-POPUP'
 ,p_page_mode=>'MODAL'
-,p_step_title=>'Add/Edit Popup Page'
+,p_step_title=>'Add/Edit Modal Popup Page'
 ,p_autocomplete_on_off=>'OFF'
 ,p_javascript_code=>'var htmldb_delete_message=''"DELETE_CONFIRM_MSG"'';'
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210410072115'
+,p_last_upd_yyyymmddhh24miss=>'20210413083712'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41929607444116285)
-,p_plug_name=>'Add/Edit Popup Page'
+,p_plug_name=>'Add/Edit Modal Popup Page'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8475374748518195)
 ,p_plug_display_sequence=>10
@@ -211,7 +211,7 @@ wwv_flow_api.create_page_item(
 ,p_item_sequence=>10
 ,p_item_plug_id=>wwv_flow_api.id(41876660153408307)
 ,p_item_source_plug_id=>wwv_flow_api.id(41929607444116285)
-,p_item_default=>'#OWNER#.blog_cm.get_footer_link_seq'
+,p_item_default=>'#OWNER#.blog_cm.get_modal_page_seq'
 ,p_item_default_type=>'EXPRESSION'
 ,p_item_default_language=>'PLSQL'
 ,p_prompt=>'Display Seq'
@@ -280,7 +280,7 @@ wwv_flow_api.create_page_process(
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_region_id=>wwv_flow_api.id(41929607444116285)
 ,p_process_type=>'NATIVE_FORM_DML'
-,p_process_name=>'Process form Add/Edit Popup Page'
+,p_process_name=>'Process form Add/Edit Modal Popup Page'
 ,p_attribute_01=>'REGION_SOURCE'
 ,p_attribute_05=>'Y'
 ,p_attribute_06=>'Y'
@@ -293,7 +293,7 @@ wwv_flow_api.create_page_process(
 ,p_process_point=>'BEFORE_HEADER'
 ,p_region_id=>wwv_flow_api.id(41929607444116285)
 ,p_process_type=>'NATIVE_FORM_INIT'
-,p_process_name=>'Initialize form Add/Edit Popup Page'
+,p_process_name=>'Initialize form Add/Edit Modal Popup Page'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.component_end;

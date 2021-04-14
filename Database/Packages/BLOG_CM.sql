@@ -5,7 +5,7 @@ as
 --------------------------------------------------------------------------------
 --
 --  DESCRIPTION
---    Content management API
+--    Content and configuration management API
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 26.04.2019 - Created
@@ -34,6 +34,8 @@ as
 --                            Added trim to function remove_whitespace
 --                            Changed procedures add_category and add_tag use function remove_whitespace
 --    Jari Laine 11.04.2021 - Procedure send_reply_notify moved to package BLOG_COMM
+--    Jari Laine 13.04.2021 - Changes to procedure post_authentication
+--                            Function get_footer_link_seq renamed to get_modal_page_seq
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -41,12 +43,14 @@ as
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  -- Called from: authentication schema Google
+  -- Called from:
+  --  admin app authentication schema Google
   procedure post_authentication(
     p_user_email      in varchar2 default null
   );
 --------------------------------------------------------------------------------
-  -- Called from: application process
+  -- Called from:
+  --  admin app application processes
   procedure get_blogger_details(
     p_app_id          in varchar2,
     p_username        in varchar2,
@@ -54,71 +58,84 @@ as
     p_name            out nocopy varchar2
   );
 --------------------------------------------------------------------------------
-  -- Called from: admin app page 14
+  -- Called from:
+  --  admin app page 14
   function get_category_seq return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app page 20
+  -- Called from:
+  --  admin app page 20
   function get_link_grp_seq return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app page xx
-  function get_footer_link_seq return varchar2;
+  -- Called from:
+  --  admin app page xx
+  function get_modal_page_seq return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app page 18
+  -- Called from:
+  --  admin app page 18
   function get_link_seq(
     p_link_group_id   in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app page 12
+  -- Called from:
+  --  admin app page 12
   function get_post_tags(
     p_post_id         in varchar2,
     p_sep             in varchar2 default ','
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app page 12
+  -- Called from:
+  --  admin app page 12
   function get_category_title(
     p_category_id     in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app page 12
+  -- Called from:
+  --  admin app page 12
   function get_first_paragraph(
     p_body_html       in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app page 12
+  -- Called from:
+  --  admin app page 12
   function request_to_post_status(
     p_request         in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app page 22 process "Close Dialog" condition
+  -- Called from:
+  --  admin app page 22 Processing process "Close Dialog" condition
   function file_upload(
     p_file_name       in varchar2,
     p_collection_name in varchar2
   ) return boolean;
 --------------------------------------------------------------------------------
-  -- Called from: admin app page 12 and procedudre blog_cm.get_first_paragraph
+  -- Called from:
+  --  admin app page 12 and procedudre blog_cm.get_first_paragraph
   function remove_whitespace(
     p_string          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app page 23 and procedure blog_cm.file_upload
+  -- Called from:
+  --  admin app page 23 and procedure blog_cm.file_upload
   procedure merge_files(
     p_collection_name in varchar2
   );
 --------------------------------------------------------------------------------
-  -- Called from: admin app page 12 after submit process "Process Category"
+  -- Called from:
+  --  admin app page 12 Processing process "Process Category"
   procedure add_category(
     p_title           in varchar2,
     p_category_id     out nocopy number
   );
 --------------------------------------------------------------------------------
-  -- Called from: admin app page 12
+  -- Called from:
+  --  admin app page 12
   procedure add_post_tags(
     p_post_id         in varchar2,
     p_tags            in varchar2,
     p_sep             in varchar2 default ','
   );
 --------------------------------------------------------------------------------
-  -- This procedure is not used currently
+  -- this procedure is not used currently
   procedure remove_unused_tags;
 --------------------------------------------------------------------------------
   -- this procedure is not used / not ready
@@ -130,7 +147,6 @@ as
     p_body_html       in clob
   );
 --------------------------------------------------------------------------------
-  -- Called from: procedure blog_conf.purge_post_preview_job
   -- this procedure is not used / not ready
   procedure purge_post_preview;
 ---------------------------- ----------------------------------------------------
@@ -139,7 +155,8 @@ as
     p_drop_job        in boolean default false
   );
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 20012 validation "Is Integer"
+  -- Called from:
+  --  admin app page 20012 validation "Is Integer"
   function is_integer(
     p_value           in varchar2,
     p_min             in number,
@@ -147,31 +164,36 @@ as
     p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_INTEGER'
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 20012 validation "Is URL"
+  -- Called from:
+  --  admin app page 20012 validation "Is URL"
   function is_url(
     p_value           in varchar2,
     p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_URL'
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 20012 validation "Is date format"
+  -- Called from:
+  --  admin app page 20012 validation "Is date format"
   function is_date_format(
     p_value           in varchar2,
     p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_DATE_FORMAT'
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 20012 validation "Is email"
+  -- Called from:
+  --  admin app page 20012 validation "Is email"
   function is_email(
     p_value           in varchar2,
     p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_EMAIL'
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 20012
+  -- Called from:
+  --  admin app page 20012 Processing process "Run post expression"
   procedure run_settings_post_expression(
     p_id              in number,
     p_value           in out nocopy varchar2
   );
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 20011
+  -- Called from:
+  --  admin app page 20011 Processing process "Features - Save Interactive Grid Data"
   procedure update_feature(
     p_app_id          in number,
     p_feature_id      in number,
@@ -331,32 +353,6 @@ as
   end add_blogger;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure run_feature_post_expression(
-    p_id  in number
-  )
-  as
-    l_plsql varchar2(32700);
-  begin
-
-    -- fetch feature post expression
-    select v1.post_expression
-    into l_plsql
-    from blog_v_all_features v1
-    where 1 = 1
-      and v1.post_expression is not null
-      and v1.id = p_id
-    ;
-    -- execute post expression
-    apex_plugin_util.execute_plsql_code(
-      p_plsql_code => l_plsql
-    );
-
-  exception when no_data_found
-  then
-    null;
-  end run_feature_post_expression;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -367,7 +363,7 @@ as
     l_group_names apex_t_varchar2;
   begin
 
-    -- collect user groups
+    -- collect user groups to PL/SQL table
     for c1 in(
       select group_name
       from apex_workspace_group_users
@@ -377,15 +373,14 @@ as
       apex_string.push( l_group_names, c1.group_name );
     end loop;
 
-    -- Enable groups
+    -- Enable user groups
     apex_authorization.enable_dynamic_groups (
       p_group_names => l_group_names
     );
 
   exception when others
   then
-    apex_debug.error( 'Unhandled post authentication procedure error.');
-    apex_debug.error( sqlerrm );
+    apex_debug.error( 'Unhandled post authentication procedure error: %s: ', sqlerrm );
     raise;
   end post_authentication;
 --------------------------------------------------------------------------------
@@ -400,7 +395,7 @@ as
     l_authz_grp varchar2(256);
   begin
 
-    -- fetch blogger id and name
+    -- fetch user id and name
     select id
       ,blogger_name
     into p_id, p_name
@@ -408,15 +403,15 @@ as
     where apex_username = p_username
     ;
 
+  -- if user not found, check is user authorized use blog
   exception when no_data_found
   then
-
-    -- fetch authorization group name
+    -- fetch user group name that is used for admin app authorization
     l_authz_grp := blog_util.get_attribute_value( 'G_ADMIN_APP_AUTHZ_GROUP' );
-    -- if blogger details not found, check is user authorized use blog
+    -- verify user is authorized
     if apex_util.current_user_in_group( l_authz_grp )
     then
-      -- if authorized add user to blog_bloggers table
+      -- if user is authorized add user to blog_bloggers table
       add_blogger(
          p_app_id => p_app_id
         ,p_username => p_username
@@ -468,7 +463,7 @@ as
   end get_link_grp_seq;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_footer_link_seq
+  function get_modal_page_seq
   return varchar2
   as
     l_max     number;
@@ -485,7 +480,7 @@ as
 
     return l_result;
 
-  end get_footer_link_seq;
+  end get_modal_page_seq;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_link_seq(
@@ -1145,11 +1140,6 @@ as
        p_application_id => p_app_id
       ,p_id => p_build_option_id
       ,p_build_status => upper( p_build_status )
-    );
-
-    -- run post expression
-    run_feature_post_expression(
-      p_id => p_feature_id
     );
 
   end update_feature;

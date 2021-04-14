@@ -14,7 +14,6 @@ create table blog_pages(
   page_alias varchar2( 256 char ) not null,
   page_type varchar2( 256 char ) not null,
   build_option varchar2( 256 char ),
-  notes varchar2( 4000 byte ),
   constraint blog_pages_pk primary key( id ),
   constraint blog_pages_uk1 unique( page_alias ),
   constraint blog_pages_uk2 unique( page_type, page_alias ),

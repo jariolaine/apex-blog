@@ -5,7 +5,7 @@ as
 --------------------------------------------------------------------------------
 --
 --  DESCRIPTION
---    Procedure and functions for public application
+--    Procedure and functions for comments
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 11.05.2020 - Created

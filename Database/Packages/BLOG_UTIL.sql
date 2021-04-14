@@ -33,16 +33,10 @@ as
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- Global constants
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- none
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   function apex_error_handler (
     p_error           in apex_error.t_error
   ) return apex_error.t_error_result;
-
+--------------------------------------------------------------------------------
   function int_to_vc2(
     p_value           in number
   ) return varchar2;
@@ -82,11 +76,15 @@ as
     p_archive_id      in varchar2
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1002 PL/SQL Dynamic Content Region "Content
   procedure render_dynamic_content(
     p_content_id      in varchar2,
     p_date_format     in varchar2
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1003 Ajax Callback process "download"
   procedure download_file (
     p_file_name   in varchar2
   );

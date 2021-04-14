@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210412155037'
+,p_last_upd_yyyymmddhh24miss=>'20210413192912'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27412346667552217)
@@ -46,9 +46,13 @@ wwv_flow_api.create_page_plug(
 '--  ,v1.is_active      as is_active',
 '--  ,v1.body_html      as comment_body',
 '  ,v1.edit_icon      as edit_icon',
-'  ,v1.user_icon      as user_icon',
-'  ,v1.icon_modifier  as icon_modifier',
 '  ,v1.status_icon    as status_icon',
+'  ,case edit_icon',
+'    when ''fa-envelope-o''',
+'    then ''data-open="true"''',
+'  end                as btn_data',
+'--  ,v1.user_icon      as user_icon',
+'--  ,v1.icon_modifier  as icon_modifier',
 'from blog_v_all_comments v1'))
 ,p_plug_source_type=>'NATIVE_IR'
 ,p_translate_title=>'N'
@@ -67,7 +71,7 @@ wwv_flow_api.create_worksheet(
 ,p_download_formats=>'CSV:HTML:EMAIL:XLSX:PDF:RTF'
 ,p_detail_link=>'f?p=&APP_ID.:31:&SESSION.::&DEBUG.:RP,:P31_POST_ID,P31_ID:#POST_ID#,#COMMENT_ID#'
 ,p_detail_link_text=>'<span class="t-Icon fa #EDIT_ICON#" aria-hidden="true"></span>'
-,p_detail_link_attr=>'class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
+,p_detail_link_attr=>'#BTN_DATA# class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
 ,p_owner=>'LAINFJAR'
 ,p_internal_uid=>27412486259552217
 );
@@ -174,29 +178,20 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_text_as=>'HIDDEN'
 );
 wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(27415609968552223)
-,p_db_column_name=>'USER_ICON'
-,p_display_order=>110
-,p_column_identifier=>'H'
-,p_column_label=>'User Icon'
-,p_column_type=>'STRING'
-,p_display_text_as=>'HIDDEN'
-);
-wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(27416092174552224)
-,p_db_column_name=>'ICON_MODIFIER'
-,p_display_order=>120
-,p_column_identifier=>'I'
-,p_column_label=>'Icon Modifier'
-,p_column_type=>'STRING'
-,p_display_text_as=>'HIDDEN'
-);
-wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(36229030214379749)
 ,p_db_column_name=>'STATUS_ICON'
 ,p_display_order=>130
 ,p_column_identifier=>'P'
 ,p_column_label=>'Status Icon'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(37644856030287114)
+,p_db_column_name=>'BTN_DATA'
+,p_display_order=>140
+,p_column_identifier=>'Q'
+,p_column_label=>'Btn Data'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
 );
@@ -208,7 +203,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_display_rows=>10
-,p_report_columns=>'POST_TITLE:COMMENT_BY:CHANGED_ON:STATUS:'
+,p_report_columns=>'POST_TITLE:COMMENT_BY:CHANGED_ON:STATUS:BTN_DATA'
 ,p_sort_column_1=>'CREATED_ON'
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'0'
@@ -248,34 +243,25 @@ wwv_flow_api.create_page_button(
 ,p_icon_css_classes=>'fa-undo-alt'
 );
 wwv_flow_api.create_page_da_event(
- p_id=>wwv_flow_api.id(30430352514753126)
-,p_name=>'Comment Dialog Closed'
+ p_id=>wwv_flow_api.id(37644907003287115)
+,p_name=>'Toggle button class'
 ,p_event_sequence=>10
 ,p_triggering_element_type=>'REGION'
 ,p_triggering_region_id=>wwv_flow_api.id(27412346667552217)
 ,p_bind_type=>'bind'
-,p_bind_event_type=>'apexafterclosedialog'
+,p_bind_event_type=>'apexafterrefresh'
 );
 wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(30430477304753127)
-,p_event_id=>wwv_flow_api.id(30430352514753126)
+ p_id=>wwv_flow_api.id(37645018465287116)
+,p_event_id=>wwv_flow_api.id(37644907003287115)
 ,p_event_result=>'TRUE'
 ,p_action_sequence=>10
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_REFRESH'
-,p_affected_elements_type=>'REGION'
-,p_affected_region_id=>wwv_flow_api.id(27412346667552217)
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(30430562651753128)
-,p_event_id=>wwv_flow_api.id(30430352514753126)
-,p_event_result=>'TRUE'
-,p_action_sequence=>20
-,p_execute_on_page_init=>'N'
+,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex.message.showPageSuccess(this.data.successMessage.text);',
-''))
+'$(this.triggeringElement).find("a[data-open]").one("click", function(){',
+'  $(this).children("span").toggleClass("fa-envelope-o fa-envelope-open-o");',
+'});'))
 );
 wwv_flow_api.component_end;
 end;

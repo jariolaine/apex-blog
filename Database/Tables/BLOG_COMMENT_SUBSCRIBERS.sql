@@ -11,7 +11,6 @@ create table blog_comment_subscribers(
   post_id number( 38, 0 ) not null,
   email_id number( 38, 0 ) not null,
   subscription_date date not null,
-  notes varchar2( 4000 byte ),
   constraint blog_comment_subscribers_pk primary key( id ),
   constraint blog_comment_subscribers_uk1 unique( post_id, email_id ),
   constraint blog_comment_subscribers_ck1 check( row_version > 0 )
