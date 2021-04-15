@@ -10,9 +10,9 @@ prompt --install
 @@application/shared_components/navigation/lists/public_application_links.sql
 @@application/shared_components/files/app_icon_svg.sql
 @@application/shared_components/files/app_icon_css.sql
+@@application/shared_components/files/css_admin_css.sql
 @@application/shared_components/files/js_admin_js.sql
 @@application/shared_components/files/css_chkeditor_css.sql
-@@application/shared_components/files/css_style_css.sql
 @@application/plugin_settings.sql
 @@application/shared_components/security/authorizations/bloggers.sql
 @@application/shared_components/security/authorizations/administration_rights.sql
@@ -122,7 +122,6 @@ prompt --install
 @@application/shared_components/globalization/messages.sql
 @@application/shared_components/globalization/dyntranslations.sql
 @@application/shared_components/user_interface/shortcuts/delete_confirm_msg.sql
-@@application/shared_components/user_interface/shortcuts/blog_requst_to_message.sql
 @@application/shared_components/email/templates/blog_reply_to_comment_notify.sql
 @@application/shared_components/security/authentications/application_express_authentication.sql
 @@application/shared_components/security/authentications/google.sql

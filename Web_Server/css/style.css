@@ -50,20 +50,6 @@ blockquote p {
   padding: 0.6rem 0;
 }
 /**************************************
-* Interactive Grid
-**************************************/
-.z-config-ig span.a-GV-breakLabel {
-  display: none!important;
-  visibility: hidden!important;
-}
-/**************************************
-* Interactive Report
-**************************************/
-.z-IR--iconLinks tr > :first-child {
-  padding: 0.4em;
-  width: 0.1%;
-}
-/**************************************
 * Media list report extra classes
 **************************************/
 .z-border-radius {
@@ -159,15 +145,6 @@ blockquote p {
 .z-posts--paginationHidden .z-posts--pagination {
   display: none!important;
   visibility: hidden!important;
-}
-/* Post HTML */
-.z-container--postImage {
-  margin: 0 0 1.6em;
-  text-align: center;
-}
-/* IR specific */
-.z-post--IR {
-  margin: 3.2rem 1.6rem;
 }
 @media only screen and (max-width: 640px) {
   .z-post {
@@ -282,31 +259,4 @@ pre.z-program-code code {
 .z-hidden {
   display: none!important;
   visibility: hidden!important;
-}
-/**************************************
-* Status Marker
-**************************************/
-.z-status-marker {
-  position: relative;
-  margin: -8px -12px;
-  padding: 8px 12px;
-}
-/*
-  Generate a triangle at the top left of report cells containing status marker
-  elements.
-*/
-.z-status-marker::after {
-  position: absolute;
-  top: 0;
-  left: 0;
-  border: 6px solid transparent;
-  width: 0;
-  height: 0;
-  content: "";
-}
-/*
-  Colour the triangles according to the specified status class.
-*/
-.z-status-marker.z-required::after {
-  border-color: #c00 transparent transparent #c00;
 }

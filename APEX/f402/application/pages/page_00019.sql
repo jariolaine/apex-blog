@@ -29,7 +29,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210414193545'
+,p_last_upd_yyyymmddhh24miss=>'20210415133545'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9879490963762847)
@@ -112,6 +112,8 @@ wwv_flow_api.create_region_column(
 ,p_default_expression=>'1'
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
+,p_help_text=>'Is tag enabled or disabled. If you disable existing tag, it will hidden form all post from readers. Also tag is not available anymore in "Tags" field search when creating or changing posts. Still you can use disabled tag by typing it e.g. for new pos'
+||'t. Tag will be hidden from reades until you activate tag.'
 ,p_column_comment=>'Considere use switch in future. APEX 19.2 switch has bug: off value can''t be zero (0)'
 );
 wwv_flow_api.create_region_column(
@@ -156,6 +158,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'When tag was created.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9831882389215210)
@@ -182,6 +185,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'Who created tag.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9831961464215211)
@@ -207,6 +211,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'When tag was last changed.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9832067227215212)
@@ -233,6 +238,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'Who has changed tag last.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9832122403215213)
@@ -258,6 +264,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'Number of post in this tag.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9880664286762850)
@@ -289,7 +296,7 @@ wwv_flow_api.create_region_column(
 ,p_data_type=>'VARCHAR2'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_TEXT_FIELD'
-,p_heading=>'Name'
+,p_heading=>'Title'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>120
 ,p_value_alignment=>'LEFT'
@@ -310,6 +317,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
+,p_help_text=>'Describes what your tag is about.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9883550380762854)
@@ -358,6 +366,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
+,p_help_text=>'Enter any comments or notes here. These notes not displayed for public.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(31246288515982902)
@@ -387,6 +396,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'Filter posts report by this tag.'
 );
 wwv_flow_api.create_interactive_grid(
  p_id=>wwv_flow_api.id(9879968674762848)
@@ -570,7 +580,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(19865705897627513)
 ,p_button_name=>'CLOSE'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Close'
 ,p_button_position=>'REGION_TEMPLATE_CLOSE'
@@ -584,7 +594,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(19865705897627513)
 ,p_button_name=>'ADD_ROW'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Add'
 ,p_button_position=>'REGION_TEMPLATE_CREATE'
@@ -599,7 +609,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(19865705897627513)
 ,p_button_name=>'SAVE'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Save'

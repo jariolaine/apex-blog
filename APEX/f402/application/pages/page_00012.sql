@@ -70,7 +70,7 @@ wwv_flow_api.create_page(
 '</ol>',
 ''))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210414184408'
+,p_last_upd_yyyymmddhh24miss=>'20210415130744'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -79,6 +79,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_template=>wwv_flow_api.id(8475374748518195)
 ,p_plug_display_sequence=>20
 ,p_plug_new_grid_row=>false
+,p_plug_grid_column_css_classes=>'padding-left-none'
 ,p_plug_display_column=>10
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'TABLE'
@@ -95,6 +96,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_template=>wwv_flow_api.id(8475523710518195)
 ,p_plug_display_sequence=>10
 ,p_plug_grid_column_span=>9
+,p_plug_grid_column_css_classes=>'padding-right-none'
 ,p_plug_display_point=>'BODY'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
@@ -297,12 +299,8 @@ wwv_flow_api.create_page_item(
 ,p_lov_display_extra=>'YES'
 ,p_protection_level=>'S'
 ,p_restricted_characters=>'WEB_SAFE'
-,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'Categories are case insensitive unique. ',
-'Example, if you enter "my category" and there is already category "My Category", ',
-'later will be used as post category. ',
-'Use search to find existing categories. ',
-'You can maintain categories information by clicking Categories tab at Posts page.'))
+,p_help_text=>'Categories are case insensitive unique. Example, if you enter "my category" and there is already category "My Category", later will be used as post category. Use search to find existing categories. You can maintain categories information by clicking '
+||'Categories tab at Posts page.'
 ,p_attribute_01=>'POPUP'
 ,p_attribute_02=>'FIRST_ROWSET'
 ,p_attribute_03=>'N'
@@ -408,6 +406,7 @@ wwv_flow_api.create_page_item(
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
+,p_help_text=>'Describes what your post is about.'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'TEXT'
@@ -457,7 +456,8 @@ wwv_flow_api.create_page_item(
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--stretchInputs'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
-,p_help_text=>'Refer online document <a target="_balank" href="https://ckeditor.com/docs/ckeditor4/latest/features/basicstyles.html">Basic Text Styles: Bold, Italic and More</a> how style your post.'
+,p_help_text=>'&APP_TEXT$BLOG_HELP_POST_EDITOR!RAW.'
+,p_inline_help_text=>'&APP_TEXT$BLOG_HELP_POST_EDITOR!RAW.'
 ,p_plugin_init_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'function ( options ) {',
 '  options.contentsCss = [ "&APP_IMAGES.css/chkeditor.css" ];',
@@ -469,6 +469,7 @@ wwv_flow_api.create_page_item(
 ,p_attribute_04=>'moonocolor'
 ,p_attribute_05=>'top'
 ,p_attribute_06=>'4'
+,p_attribute_09=>'html'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(8795875029610783)

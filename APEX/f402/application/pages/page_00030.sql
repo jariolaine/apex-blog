@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210414173304'
+,p_last_upd_yyyymmddhh24miss=>'20210415140114'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27412346667552217)
@@ -272,7 +272,7 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(37644907003287115)
-,p_name=>'Toggle button class'
+,p_name=>'Process Comments Report'
 ,p_event_sequence=>10
 ,p_triggering_element_type=>'REGION'
 ,p_triggering_region_id=>wwv_flow_api.id(27412346667552217)
@@ -290,6 +290,7 @@ wwv_flow_api.create_page_da_action(
 '$(this.triggeringElement).find("a[data-unread]").one("click", function(){',
 '  $(this).children("span").toggleClass("fa-envelope-o fa-envelope-open-o");',
 '});'))
+,p_da_action_comment=>'Attach one time click event listener to report links having data attribute. When report link is clicked change link icon class.'
 );
 wwv_flow_api.component_end;
 end;

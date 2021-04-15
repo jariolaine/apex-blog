@@ -37,8 +37,8 @@ wwv_flow_api.create_page(
 ,p_step_template=>wwv_flow_api.id(8456403392518180)
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210414190032'
+,p_last_updated_by=>'JARI.LAINE.O@GMAIL.COM'
+,p_last_upd_yyyymmddhh24miss=>'20210415133437'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9834087769215232)
@@ -136,7 +136,7 @@ wwv_flow_api.create_region_column(
 ,p_data_type=>'VARCHAR2'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_TEXT_FIELD'
-,p_heading=>'Name'
+,p_heading=>'Title'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>120
 ,p_value_alignment=>'LEFT'
@@ -156,6 +156,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
+,p_help_text=>'Describes what your category is about.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9636633508680604)
@@ -205,8 +206,8 @@ wwv_flow_api.create_region_column(
 ,p_default_expression=>'1'
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
-,p_help_text=>'Is category enabled or disabled. If you disable existing category, it will hide all post in this category from reades. Also category is not available anymore in "Category" field search when creating or changing post. Still you can use disabled catego'
-||'ry by typing it e.g. for new post. Post will not be visible for reades until you activate category or change post category one that is enabled.'
+,p_help_text=>'Is category enabled or disabled. If you disable existing category, it will hide all post in this category from readers. Also category is not available anymore in "Category" field search when creating or changing post. Still you can use disabled categ'
+||'ory by typing it e.g. for new post. Post will not be visible for reades until you activate category or change post category one that is enabled.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9831001078215202)
@@ -232,6 +233,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
+,p_help_text=>'Order of categories displayed in blog.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9832441775215216)
@@ -248,6 +250,7 @@ wwv_flow_api.create_region_column(
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.categoriesIG.initHandleColumn'
 ,p_enable_hide=>true
+,p_help_text=>'Order categories.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(15191238741050379)
@@ -315,6 +318,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'When category was created.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(15194115137050385)
@@ -342,6 +346,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'Who created category.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(15194693500050386)
@@ -369,6 +374,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'When category was last changed.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(15195326585050386)
@@ -396,6 +402,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'Who has changed category last.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(22958343224076040)
@@ -427,6 +434,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
+,p_help_text=>'Enter any comments or notes here. These notes not displayed for public.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(31246816612982908)
@@ -456,6 +464,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'Filter posts report by this category.'
 );
 wwv_flow_api.create_interactive_grid(
  p_id=>wwv_flow_api.id(15190504448050377)
@@ -646,7 +655,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(9834087769215232)
 ,p_button_name=>'CLOSE'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Close'
 ,p_button_position=>'REGION_TEMPLATE_CLOSE'
@@ -660,7 +669,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(9834087769215232)
 ,p_button_name=>'ADD_ROW'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Add'
 ,p_button_position=>'REGION_TEMPLATE_CREATE'
@@ -675,7 +684,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(9834087769215232)
 ,p_button_name=>'SAVE'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Save'
