@@ -26,7 +26,7 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210411152024'
+,p_last_upd_yyyymmddhh24miss=>'20210418094254'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(30430710498753130)
@@ -43,9 +43,8 @@ wwv_flow_api.create_report_region(
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select t1.blogger_name  as blogger_name',
 '  ,t1.blogger_desc      as blogger_desc',
-'from #OWNER#.blog_bloggers t1',
+'from #OWNER#.blog_v_bloggers t1',
 'where 1 = 1',
-'and t1.blogger_desc is not null',
 'order by t1.display_seq'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_query_row_template=>wwv_flow_api.id(30641878306098019)

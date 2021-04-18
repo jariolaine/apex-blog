@@ -10,7 +10,7 @@ create table blog_tags (
   changed_by varchar2( 256 char ) not null,
   is_active number( 1, 0 ) not null,
   tag varchar2( 256 char ) not null,
-  tag_unique varchar2( 256 char ) as ( upper( trim( tag ) ) ) virtual ,
+  tag_unique varchar2( 256 char ) as ( upper( trim( tag ) ) ) virtual not null,
   notes varchar2( 4000 byte ),
   constraint blog_tags_pk primary key( id ),
   constraint blog_tags_uk1 unique( tag ),

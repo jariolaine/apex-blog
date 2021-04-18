@@ -28,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210413113614'
+,p_last_upd_yyyymmddhh24miss=>'20210418113528'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -656,8 +656,8 @@ wwv_flow_api.create_page_validation(
 ,p_validation_name=>'Is email'
 ,p_validation_sequence=>60
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return #OWNER#.blog_cm.is_email(',
-'  p_value => :ATTRIBUTE_VALUE',
+'return #OWNER#.blog_comm.is_email(',
+'  p_email => :ATTRIBUTE_VALUE',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'

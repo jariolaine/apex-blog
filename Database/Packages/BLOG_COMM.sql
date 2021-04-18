@@ -11,6 +11,7 @@ as
 --    Jari Laine 11.05.2020 - Created
 --    Jari Laine 11.04.2021 - New procedure reply_notify
 --                            New functions validate_email and is_email_verified
+--    Jari Laine 18.04.2021 - New functions is_email
 --
 --  TO DO:
 --    #1  comment HTML validation could be improved
@@ -27,9 +28,18 @@ as
     p_max_length        in number default 4000
   ) return varchar2;
 --------------------------------------------------------------------------------
+  -- Called from:
+  --  admin app page 20012 validation "Is email"
+  --  inside function is_email_verified
+  function is_email(
+    p_email             in varchar2,
+    p_err_mesg          in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
+  ) return varchar2;
+--------------------------------------------------------------------------------
   function validate_email(
-    p_email             in varchar2
-  ) return boolean;
+    p_email             in varchar2,
+    p_err_mesg          in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
+  ) return varchar2;
 --------------------------------------------------------------------------------
   function is_email_verified(
     p_email             in varchar2
@@ -242,7 +252,9 @@ as
               ||
                 case
                 when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
-                then '<br>' || chr(10)
+                then
+                  -- br element backlash needed as comment is validated as XML
+                  '<br/>' || chr(10)
                 end
               || l_temp
             ;
@@ -293,6 +305,8 @@ as
     build_comment_html(
        p_comment => l_comment
     );
+
+    apex_debug.info('Formatted comment: %s', l_comment);
     -- return comment
     return l_comment;
 
@@ -345,55 +359,95 @@ as
   end validate_comment;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function is_email(
+    p_email     in varchar2,
+    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
+  ) return varchar2
+  as
+    l_err_mesg varchar2(32700);
+  begin
+    -- TO DO see item 3 from package specs
+
+    -- do some basic check for email address
+    if not regexp_like( p_email, '^.*\@.*\..*$' )
+    then
+      -- if validation fails prepare error message
+      l_err_mesg := apex_lang.message( p_err_mesg );
+
+      if l_err_mesg = apex_escape.html( p_err_mesg )
+      then
+        l_err_mesg := p_err_mesg;
+      end if;
+
+    end if;
+
+    return l_err_mesg;
+
+  end is_email;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   function validate_email(
-    p_email in varchar2
-  ) return boolean
+    p_email     in varchar2,
+    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
+  ) return varchar2
   as
     l_params    apex_exec.t_parameters;
     l_response  clob;
     l_json      json_object_t;
-    l_result    boolean;
+    l_err_mesg  varchar2(32700);
   begin
-    -- set result to false by default
-    l_result := false;
 
-    if not is_email_verified(p_email)
+    if not is_email_verified( p_email )
     then
-
-      -- set email as parameter for rest source
-      apex_exec.add_parameter( l_params, 'email', p_email );
-      -- call rest source to validate email
-      apex_exec.execute_rest_source(
-         p_static_id  => 'ABSTRACT_EMAIL_VALIDATION_API'
-        ,p_operation  => 'GET'
-        ,p_parameters => l_params
+      -- general check email format
+      l_err_mesg := is_email(
+         p_email    => p_email
+        ,p_err_mesg => p_err_mesg
       );
 
-      -- get response
-      l_response := apex_exec.get_parameter_clob( l_params, 'response' );
-      apex_debug.info( 'Email validation response status: %s response body: %s'
-        ,apex_web_service.g_status_code
-        ,l_response
-      );
-      if apex_web_service.g_status_code != 200
+      if l_err_mesg is null
       then
-        raise_application_error( -20002 ,  apex_lang.message( 'BLOG_EMAIL_VALIDATION_API_SQLERRM' ) );
+        -- set email as parameter for rest source
+        apex_exec.add_parameter( l_params, 'email', p_email );
+        -- call rest source to validate email
+        apex_exec.execute_rest_source(
+           p_static_id  => 'ABSTRACT_EMAIL_VALIDATION_API'
+          ,p_operation  => 'GET'
+          ,p_parameters => l_params
+        );
+
+        -- get response
+        l_response := apex_exec.get_parameter_clob( l_params, 'response' );
+        apex_debug.info( 'Email validation response status: %s response body: %s'
+          ,apex_web_service.g_status_code
+          ,l_response
+        );
+        if apex_web_service.g_status_code != 200
+        then
+          raise_application_error( -20002 ,  apex_lang.message( 'BLOG_EMAIL_VALIDATION_API_SQLERRM' ) );
+        end if;
+
+        -- convert response to json object
+        l_json := json_object_t( l_response );
+        -- check email deliverability
+        if not l_json.get('deliverability').to_string = '"DELIVERABLE"'
+        then
+          -- if email is not deliverable validation fails
+          -- prepare error message
+          l_err_mesg := apex_lang.message( p_err_mesg );
+
+          if l_err_mesg = apex_escape.html( p_err_mesg )
+          then
+            l_err_mesg := p_err_mesg;
+          end if;
+
+        end if;
+
       end if;
 
-      -- convert response to json object
-      l_json := json_object_t( l_response );
-      -- check email deliverability
-      if l_json.get('deliverability').to_string = '"DELIVERABLE"'
-      then
-        -- if email is deliverable return true
-        l_result := true;
-      end if;
-
-    else
-      l_result := true;
     end if;
 
-    return l_result;
+    return l_err_mesg;
 
   exception when others
   then

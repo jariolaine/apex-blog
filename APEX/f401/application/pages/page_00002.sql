@@ -26,7 +26,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210412135354'
+,p_last_upd_yyyymmddhh24miss=>'20210418130116'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -521,27 +521,6 @@ wwv_flow_api.create_page_da_action(
 ,p_action=>'NATIVE_REFRESH'
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_api.id(6915627356677149)
-);
-wwv_flow_api.create_page_da_event(
- p_id=>wwv_flow_api.id(6917083915677164)
-,p_name=>'Comments Refresh'
-,p_event_sequence=>30
-,p_triggering_element_type=>'REGION'
-,p_triggering_region_id=>wwv_flow_api.id(6915627356677149)
-,p_bind_type=>'bind'
-,p_bind_event_type=>'apexafterrefresh'
-,p_required_patch=>wwv_flow_api.id(27920818779089933)
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(6917183161677165)
-,p_event_id=>wwv_flow_api.id(6917083915677164)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_affected_elements_type=>'TRIGGERING_ELEMENT'
-,p_attribute_01=>'blog.UI.formatProgramCode(this.affectedElements.find("pre.z-program-code"));'
-,p_da_action_comment=>'Format comments program code when paginated.'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(27862651784256825)

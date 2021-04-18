@@ -37,8 +37,8 @@ wwv_flow_api.create_page(
 ,p_step_template=>wwv_flow_api.id(8456403392518180)
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
-,p_last_updated_by=>'JARI.LAINE.O@GMAIL.COM'
-,p_last_upd_yyyymmddhh24miss=>'20210415133437'
+,p_last_updated_by=>'LAINFJAR'
+,p_last_upd_yyyymmddhh24miss=>'20210415185532'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9834087769215232)
@@ -452,11 +452,8 @@ wwv_flow_api.create_region_column(
 ,p_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:RR,:IR_CATEGORY_ID:&ID.'
 ,p_link_text=>'<span aria-hidden="true" class="t-Icon fa fa-external-link"></span>'
 ,p_link_attributes=>'title="&BTN_POSTS_LINK."'
-,p_enable_filter=>true
-,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
+,p_enable_filter=>false
 ,p_filter_is_required=>false
-,p_filter_text_case=>'MIXED'
-,p_filter_lov_type=>'NONE'
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.categoriesIG.initLinkColumn '
 ,p_enable_sort_group=>false
@@ -693,17 +690,6 @@ wwv_flow_api.create_page_button(
 ,p_button_css_classes=>'js-actionButton'
 ,p_icon_css_classes=>'fa-save'
 ,p_button_cattributes=>'data-action="categories-ig-save"'
-);
-wwv_flow_api.create_page_item(
- p_id=>wwv_flow_api.id(9833343278215225)
-,p_name=>'P14_CATEGORY_TITLE'
-,p_item_sequence=>10
-,p_item_plug_id=>wwv_flow_api.id(15190060145050375)
-,p_use_cache_before_default=>'NO'
-,p_display_as=>'NATIVE_HIDDEN'
-,p_protection_level=>'S'
-,p_attribute_01=>'Y'
-,p_item_comment=>'Item stores category id when clicking report link. Link redirects to this page and stores id. By request branch before heder is fired and filters page 11 IR'
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(27863828688256837)

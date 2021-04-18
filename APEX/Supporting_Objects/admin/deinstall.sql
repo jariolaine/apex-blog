@@ -56,6 +56,7 @@ drop view blog_v_all_post_tags;
 drop view blog_v_all_settings;
 drop view blog_v_all_tags;
 drop view blog_v_archive_year;
+drop view blog_v_bloggers;
 drop view blog_v_categories;
 drop view blog_v_comments;
 drop view blog_v_dynamic_content;

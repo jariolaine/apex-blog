@@ -22,12 +22,16 @@ create table  blog_bloggers(
 	blogger_name varchar2( 256 char ) not null,
 	apex_username varchar2(  256 char ) not null,
 	email varchar2( 256 char ),
+  publish_desc number( 1, 0 ) not null,
 	blogger_desc varchar2( 4000 byte ),
+  show_desc number( 1, 0 ) as( is_active * publish_desc * case when blogger_desc is not null then 1 else 0 end ) virtual not null,
   constraint blog_bloggers_pk primary key( id ),
   constraint blog_bloggers_uk1 unique( apex_username ),
   constraint blog_bloggers_ck1 check( row_version > 0 ),
+  constraint blog_bloggers_ck2 check( is_active in( 0 , 1 ) ),
   constraint blog_bloggers_ck3 check( display_seq > 0 ),
-  constraint blog_bloggers_ck2 check( is_active in( 0 , 1 ) )
+  constraint blog_bloggers_ck4 check( publish_desc in( 0 , 1 ) ),
+  constraint blog_bloggers_ck4 check( show_desc in( 0 , 1 ) )
 )
 /
 --------------------------------------------------------
@@ -43,7 +47,7 @@ create table  blog_categories(
 	is_active number( 1, 0 ) not null,
 	display_seq number( 10, 0 ) not null,
 	title varchar2( 256 char ) not null,
-	title_unique varchar2( 256 char ) as( upper( trim( title ) ) ) virtual ,
+	title_unique varchar2( 256 char ) as( upper( trim( title ) ) ) virtual not null,
 	notes varchar2( 4000 byte ),
   constraint blog_categories_pk primary key( id ),
 	constraint blog_categories_uk1 unique( title ),
@@ -237,7 +241,7 @@ create table blog_link_groups(
   is_active number( 1, 0 ) not null,
   display_seq number( 10, 0 ) not null,
   title varchar2( 256 char ) not null,
-  title_unique varchar2( 256 char ) as ( upper( title ) ) virtual ,
+  title_unique varchar2( 256 char ) as ( upper( title ) ) virtual not null,
   notes varchar2( 4000 byte ),
   constraint blog_link_groups_pk primary key( id ),
   constraint blog_link_groups_uk1 unique( title_unique ),
@@ -289,9 +293,9 @@ create table  blog_posts(
 	first_paragraph varchar2( 4000 byte ) not null,
 	published_on timestamp( 6 ) with local time zone not null,
 	notes varchar2( 4000 byte ),
-  body_length number( 38, 0 ) as ( sys.dbms_lob.getlength( body_html ) ) virtual,
-	archive_year_month number( 6, 0 ) as ( to_number( to_char( published_on, 'YYYYMM' ) ) ) virtual ,
-	archive_year number( 4, 0 ) as ( to_number( to_char( published_on, 'YYYY' ) ) ) virtual ,
+  body_length number( 38, 0 ) as ( sys.dbms_lob.getlength( body_html ) ) virtual not null,
+	archive_year_month number( 6, 0 ) as ( to_number( to_char( published_on, 'YYYYMM' ) ) ) virtual not null,
+	archive_year number( 4, 0 ) as ( to_number( to_char( published_on, 'YYYY' ) ) ) virtual not null,
 	constraint blog_posts_pk primary key( id ),
   constraint blog_posts_ck1 check( row_version > 0 ),
   constraint blog_posts_ck2 check( is_active in( 0 , 1 ) )
@@ -367,7 +371,7 @@ create table blog_settings(
   post_expression varchar2( 4000 byte ),
   int_min number( 2,0 ),
   int_max number( 2,0 ),
-  help_message varchar2( 64 byte ),
+  help_message varchar2( 256 byte ),
   install_value varchar2( 4000 byte ),
   constraint blog_settings_pk primary key( id ),
   constraint blog_settings_uk1 unique( attribute_name ),
@@ -453,7 +457,7 @@ create table blog_tags (
   changed_by varchar2( 256 char ) not null,
   is_active number( 1, 0 ) not null,
   tag varchar2( 256 char ) not null,
-  tag_unique varchar2( 256 char ) as ( upper( trim( tag ) ) ) virtual ,
+  tag_unique varchar2( 256 char ) as ( upper( trim( tag ) ) ) virtual not null,
   notes varchar2( 4000 byte ),
   constraint blog_tags_pk primary key( id ),
   constraint blog_tags_uk1 unique( tag ),
@@ -770,6 +774,19 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_TAGS" ("ID", "ROW_VERSION", "CREATED_ON
   end                   as allowed_row_operation
 from blog_tags t1
 where 1 = 1
+/
+--------------------------------------------------------
+--  DDL for View BLOG_V_BLOGGERS
+--------------------------------------------------------
+CREATE OR REPLACE FORCE VIEW "BLOG_V_BLOGGERS" ("BLOGGER_ID", "DISPLAY_SEQ", "BLOGGER_NAME", "BLOGGER_DESC") AS
+select t1.id        as blogger_id
+  ,t1.display_seq   as display_seq
+  ,t1.blogger_name  as blogger_name
+  ,t1.blogger_desc  as blogger_desc
+from blog_bloggers t1
+where 1 = 1
+and t1.show_desc = 1
+with read only
 /
 --------------------------------------------------------
 --  DDL for View BLOG_V_COMMENTS
@@ -2063,10 +2080,10 @@ as
 --    Jari Laine 11.04.2021 - Procedure send_reply_notify moved to package BLOG_COMM
 --    Jari Laine 13.04.2021 - Changes to procedure post_authentication
 --                            Function get_footer_link_seq renamed to get_modal_page_seq
+--    Jari Laine 18.04.2021 - Function is_email moved to package BLOG_COMM
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
---    #3  email validation could improved
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2136,7 +2153,8 @@ as
   ) return boolean;
 --------------------------------------------------------------------------------
   -- Called from:
-  --  admin app page 12 and procedudre blog_cm.get_first_paragraph
+  --  admin app page 12
+  --  inside procedudre blog_cm.get_first_paragraph
   function remove_whitespace(
     p_string          in varchar2
   ) return varchar2;
@@ -2188,28 +2206,21 @@ as
     p_value           in varchar2,
     p_min             in number,
     p_max             in number,
-    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_INTEGER'
+    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_INTEGER'
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from:
   --  admin app page 20012 validation "Is URL"
   function is_url(
     p_value           in varchar2,
-    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_URL'
+    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_URL'
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from:
   --  admin app page 20012 validation "Is date format"
   function is_date_format(
     p_value           in varchar2,
-    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_DATE_FORMAT'
-  ) return varchar2;
---------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 20012 validation "Is email"
-  function is_email(
-    p_value           in varchar2,
-    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_EMAIL'
+    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_DATE_FORMAT'
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from:
@@ -2371,9 +2382,9 @@ as
 
     -- add new blogger
     insert into blog_bloggers
-    ( apex_username, is_active, display_seq, blogger_name, email )
+    ( apex_username, is_active, display_seq, blogger_name, email, publish_desc )
     values
-    ( p_username, 1, l_max, l_name, l_email )
+    ( p_username, 1, l_max, l_name, l_email, 0 )
     returning id, blogger_name into p_id, p_name
     ;
 
@@ -2994,7 +3005,7 @@ as
     p_value     in varchar2,
     p_min       in number,
     p_max       in number,
-    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_IS_INTEGER'
+    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_INTEGER'
   ) return varchar2
   as
     l_value     number;
@@ -3034,7 +3045,7 @@ as
 --------------------------------------------------------------------------------
   function is_url(
     p_value     in varchar2,
-    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_IS_URL'
+    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_URL'
   ) return varchar2
   as
     l_err_mesg varchar2(32700);
@@ -3061,7 +3072,7 @@ as
 --------------------------------------------------------------------------------
   function is_date_format(
     p_value     in varchar2,
-    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_IS_DATE_FORMAT'
+    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_DATE_FORMAT'
   ) return varchar2
   as
     l_err_mesg          varchar2(32700);
@@ -3092,35 +3103,6 @@ as
     -- return error message
     return l_err_mesg;
   end is_date_format;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function is_email(
-    p_value     in varchar2,
-    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_IS_EMAIL'
-  ) return varchar2
-  as
-    l_err_mesg varchar2(32700);
-  begin
-    -- TO DO see item 3 from package specs
-
-    -- do some basic check for email address
-    if not regexp_like(p_value, '^.*\@.*\..*$')
-    then
-      -- if validation fails prepare error message
-      l_err_mesg := apex_lang.message( p_err_mesg );
-
-      if l_err_mesg = apex_escape.html( p_err_mesg )
-      then
-        l_err_mesg := p_err_mesg;
-      end if;
-    else
-      -- if validation passes, clear error meassage
-      l_err_mesg := null;
-    end if;
-
-    return l_err_mesg;
-
-  end is_email;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure run_settings_post_expression(
@@ -3880,6 +3862,7 @@ as
 --    Jari Laine 11.05.2020 - Created
 --    Jari Laine 11.04.2021 - New procedure reply_notify
 --                            New functions validate_email and is_email_verified
+--    Jari Laine 18.04.2021 - New functions is_email
 --
 --  TO DO:
 --    #1  comment HTML validation could be improved
@@ -3896,9 +3879,18 @@ as
     p_max_length        in number default 4000
   ) return varchar2;
 --------------------------------------------------------------------------------
+  -- Called from:
+  --  admin app page 20012 validation "Is email"
+  --  inside function is_email_verified
+  function is_email(
+    p_email             in varchar2,
+    p_err_mesg          in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
+  ) return varchar2;
+--------------------------------------------------------------------------------
   function validate_email(
-    p_email             in varchar2
-  ) return boolean;
+    p_email             in varchar2,
+    p_err_mesg          in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
+  ) return varchar2;
 --------------------------------------------------------------------------------
   function is_email_verified(
     p_email             in varchar2
@@ -4111,7 +4103,9 @@ as
               ||
                 case
                 when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
-                then '<br>' || chr(10)
+                then
+                  -- br element backlash needed as comment is validated as XML
+                  '<br/>' || chr(10)
                 end
               || l_temp
             ;
@@ -4162,6 +4156,8 @@ as
     build_comment_html(
        p_comment => l_comment
     );
+
+    apex_debug.info('Formatted comment: %s', l_comment);
     -- return comment
     return l_comment;
 
@@ -4214,55 +4210,95 @@ as
   end validate_comment;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function is_email(
+    p_email     in varchar2,
+    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
+  ) return varchar2
+  as
+    l_err_mesg varchar2(32700);
+  begin
+    -- TO DO see item 3 from package specs
+
+    -- do some basic check for email address
+    if not regexp_like( p_email, '^.*\@.*\..*$' )
+    then
+      -- if validation fails prepare error message
+      l_err_mesg := apex_lang.message( p_err_mesg );
+
+      if l_err_mesg = apex_escape.html( p_err_mesg )
+      then
+        l_err_mesg := p_err_mesg;
+      end if;
+
+    end if;
+
+    return l_err_mesg;
+
+  end is_email;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   function validate_email(
-    p_email in varchar2
-  ) return boolean
+    p_email     in varchar2,
+    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
+  ) return varchar2
   as
     l_params    apex_exec.t_parameters;
     l_response  clob;
     l_json      json_object_t;
-    l_result    boolean;
+    l_err_mesg  varchar2(32700);
   begin
-    -- set result to false by default
-    l_result := false;
 
-    if not is_email_verified(p_email)
+    if not is_email_verified( p_email )
     then
-
-      -- set email as parameter for rest source
-      apex_exec.add_parameter( l_params, 'email', p_email );
-      -- call rest source to validate email
-      apex_exec.execute_rest_source(
-         p_static_id  => 'ABSTRACT_EMAIL_VALIDATION_API'
-        ,p_operation  => 'GET'
-        ,p_parameters => l_params
+      -- general check email format
+      l_err_mesg := is_email(
+         p_email    => p_email
+        ,p_err_mesg => p_err_mesg
       );
 
-      -- get response
-      l_response := apex_exec.get_parameter_clob( l_params, 'response' );
-      apex_debug.info( 'Email validation response status: %s response body: %s'
-        ,apex_web_service.g_status_code
-        ,l_response
-      );
-      if apex_web_service.g_status_code != 200
+      if l_err_mesg is null
       then
-        raise_application_error( -20002 ,  apex_lang.message( 'BLOG_EMAIL_VALIDATION_API_SQLERRM' ) );
+        -- set email as parameter for rest source
+        apex_exec.add_parameter( l_params, 'email', p_email );
+        -- call rest source to validate email
+        apex_exec.execute_rest_source(
+           p_static_id  => 'ABSTRACT_EMAIL_VALIDATION_API'
+          ,p_operation  => 'GET'
+          ,p_parameters => l_params
+        );
+
+        -- get response
+        l_response := apex_exec.get_parameter_clob( l_params, 'response' );
+        apex_debug.info( 'Email validation response status: %s response body: %s'
+          ,apex_web_service.g_status_code
+          ,l_response
+        );
+        if apex_web_service.g_status_code != 200
+        then
+          raise_application_error( -20002 ,  apex_lang.message( 'BLOG_EMAIL_VALIDATION_API_SQLERRM' ) );
+        end if;
+
+        -- convert response to json object
+        l_json := json_object_t( l_response );
+        -- check email deliverability
+        if not l_json.get('deliverability').to_string = '"DELIVERABLE"'
+        then
+          -- if email is not deliverable validation fails
+          -- prepare error message
+          l_err_mesg := apex_lang.message( p_err_mesg );
+
+          if l_err_mesg = apex_escape.html( p_err_mesg )
+          then
+            l_err_mesg := p_err_mesg;
+          end if;
+
+        end if;
+
       end if;
 
-      -- convert response to json object
-      l_json := json_object_t( l_response );
-      -- check email deliverability
-      if l_json.get('deliverability').to_string = '"DELIVERABLE"'
-      then
-        -- if email is deliverable return true
-        l_result := true;
-      end if;
-
-    else
-      l_result := true;
     end if;
 
-    return l_result;
+    return l_err_mesg;
 
   exception when others
   then

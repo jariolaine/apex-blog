@@ -17,6 +17,12 @@ wwv_flow_api.create_install_script(
 ,p_name=>'Metadata'
 ,p_sequence=>10
 ,p_script_type=>'INSTALL'
+,p_condition_type=>'NOT_EXISTS'
+,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from blog_settings',
+'where 1 = 1',
+'and attribute_name = ''G_APP_VERSION'''))
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_PAGES',

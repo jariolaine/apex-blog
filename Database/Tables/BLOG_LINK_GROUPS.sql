@@ -11,7 +11,7 @@ create table blog_link_groups(
   is_active number( 1, 0 ) not null,
   display_seq number( 10, 0 ) not null,
   title varchar2( 256 char ) not null,
-  title_unique varchar2( 256 char ) as ( upper( title ) ) virtual ,
+  title_unique varchar2( 256 char ) as ( upper( title ) ) virtual not null,
   notes varchar2( 4000 byte ),
   constraint blog_link_groups_pk primary key( id ),
   constraint blog_link_groups_uk1 unique( title_unique ),

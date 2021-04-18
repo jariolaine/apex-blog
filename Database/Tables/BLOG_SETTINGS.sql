@@ -17,7 +17,7 @@ create table blog_settings(
   post_expression varchar2( 4000 byte ),
   int_min number( 2,0 ),
   int_max number( 2,0 ),
-  help_message varchar2( 64 byte ),
+  help_message varchar2( 256 byte ),
   install_value varchar2( 4000 byte ),
   constraint blog_settings_pk primary key( id ),
   constraint blog_settings_uk1 unique( attribute_name ),

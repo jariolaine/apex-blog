@@ -341,22 +341,22 @@ wwv_flow_api.create_message(
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348583930349647)
-,p_name=>'BLOG_VALIDATION_ERR_IS_DATE_FORMAT'
+,p_name=>'BLOG_VALIDATION_ERR_DATE_FORMAT'
 ,p_message_text=>'Value is not valid date format.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(31492237727374134)
-,p_name=>'BLOG_VALIDATION_ERR_IS_EMAIL'
+,p_name=>'BLOG_VALIDATION_ERR_EMAIL'
 ,p_message_text=>'Not valid email address.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348168323345190)
-,p_name=>'BLOG_VALIDATION_ERR_IS_INTEGER'
+,p_name=>'BLOG_VALIDATION_ERR_INTEGER'
 ,p_message_text=>'Value must be integer between %0 and %1.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348379677347133)
-,p_name=>'BLOG_VALIDATION_ERR_IS_URL'
+,p_name=>'BLOG_VALIDATION_ERR_URL'
 ,p_message_text=>'URL must begin with http(s)://.'
 );
 wwv_flow_api.component_end;

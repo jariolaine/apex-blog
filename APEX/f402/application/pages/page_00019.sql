@@ -29,7 +29,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210415133545'
+,p_last_upd_yyyymmddhh24miss=>'20210415190200'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9879490963762847)
@@ -112,8 +112,8 @@ wwv_flow_api.create_region_column(
 ,p_default_expression=>'1'
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
-,p_help_text=>'Is tag enabled or disabled. If you disable existing tag, it will hidden form all post from readers. Also tag is not available anymore in "Tags" field search when creating or changing posts. Still you can use disabled tag by typing it e.g. for new pos'
-||'t. Tag will be hidden from reades until you activate tag.'
+,p_help_text=>'Is tag enabled or disabled. If you disable existing tag, it will be hidden form all post from readers. Also tag is not available anymore in "Tags" field search when creating or changing posts. Still you can use disabled tag by typing it e.g. for new '
+||'post. If enabling tag again it is then visible on all post where it is linked.'
 ,p_column_comment=>'Considere use switch in future. APEX 19.2 switch has bug: off value can''t be zero (0)'
 );
 wwv_flow_api.create_region_column(
@@ -381,18 +381,15 @@ wwv_flow_api.create_region_column(
 ,p_display_sequence=>150
 ,p_value_alignment=>'CENTER'
 ,p_stretch=>'N'
-,p_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:RR,:IRC_TAG_ID:\(&ID.)\'
+,p_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:RR,:IRC_TAG_ID:&ID.'
 ,p_link_text=>'<span aria-hidden="true" class="t-Icon fa fa-external-link"></span>'
 ,p_link_attributes=>'title="&BTN_POSTS_LINK."'
-,p_enable_filter=>true
-,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
+,p_enable_filter=>false
 ,p_filter_is_required=>false
-,p_filter_text_case=>'MIXED'
-,p_filter_lov_type=>'NONE'
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.tagsIG.initLinkColumn'
 ,p_enable_sort_group=>false
-,p_enable_hide=>false
+,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true

@@ -34,11 +34,11 @@ prompt APPLICATION 401 - Blog Public Pages
 --     Pages:                     14
 --       Items:                   31
 --       Computations:             5
---       Validations:              2
+--       Validations:              3
 --       Processes:               33
 --       Regions:                 31
 --       Buttons:                  7
---       Dynamic Actions:         10
+--       Dynamic Actions:          9
 --     Shared Components:
 --       Logic:
 --         Items:                  9
@@ -48,7 +48,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --         Lists:                  6
 --       Security:
 --         Authentication:         2
---         Authorization:          2
+--         Authorization:          1
 --       User Interface:
 --         Themes:                 1
 --         Templates:
@@ -71,6 +71,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --         Templates:              1
 --     Supporting Objects:  Included
 --       Install scripts:          1
+--       Validations:              1
 --   Version:         20.2.0.00.20
 --   Instance ID:     9502710254078678
 --
@@ -126,7 +127,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210415075216'
+,p_last_upd_yyyymmddhh24miss=>'20210418180536'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>107
 ,p_ui_type_name => null
@@ -701,19 +702,6 @@ wwv_flow_api.create_plugin_setting(
 ,p_plugin=>'PLUGIN_FI.JARIS.MATH_QUESTION_FIELD'
 ,p_attribute_01=>'Answer to question isn''t correct.'
 ,p_attribute_02=>'Ajax call returned error.'
-);
-end;
-/
-prompt --application/shared_components/security/authorizations/blog_auth_email_validation_api
-begin
-wwv_flow_api.create_security_scheme(
- p_id=>wwv_flow_api.id(37678540113813919)
-,p_name=>'BLOG_AUTH_EMAIL_VALIDATION_API'
-,p_scheme_type=>'NATIVE_FUNCTION_BODY'
-,p_attribute_01=>'return #OWNER#.blog_util.get_attribute_value( ''G_EMAIL_VALIDATION_API_KEY'' ) = ''YES'';'
-,p_error_message=>'You are not authorized use email validation API'
-,p_caching=>'NOCACHE'
-,p_comments=>'Authorization schema to check if Abstract email validation API key is set'
 );
 end;
 /
@@ -15095,7 +15083,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210412135354'
+,p_last_upd_yyyymmddhh24miss=>'20210418130116'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -15590,27 +15578,6 @@ wwv_flow_api.create_page_da_action(
 ,p_action=>'NATIVE_REFRESH'
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_api.id(6915627356677149)
-);
-wwv_flow_api.create_page_da_event(
- p_id=>wwv_flow_api.id(6917083915677164)
-,p_name=>'Comments Refresh'
-,p_event_sequence=>30
-,p_triggering_element_type=>'REGION'
-,p_triggering_region_id=>wwv_flow_api.id(6915627356677149)
-,p_bind_type=>'bind'
-,p_bind_event_type=>'apexafterrefresh'
-,p_required_patch=>wwv_flow_api.id(27920818779089933)
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(6917183161677165)
-,p_event_id=>wwv_flow_api.id(6917083915677164)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_affected_elements_type=>'TRIGGERING_ELEMENT'
-,p_attribute_01=>'blog.UI.formatProgramCode(this.affectedElements.find("pre.z-program-code"));'
-,p_da_action_comment=>'Format comments program code when paginated.'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(27862651784256825)
@@ -16685,7 +16652,7 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210411152024'
+,p_last_upd_yyyymmddhh24miss=>'20210418094254'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(30430710498753130)
@@ -16702,9 +16669,8 @@ wwv_flow_api.create_report_region(
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select t1.blogger_name  as blogger_name',
 '  ,t1.blogger_desc      as blogger_desc',
-'from #OWNER#.blog_bloggers t1',
+'from #OWNER#.blog_v_bloggers t1',
 'where 1 = 1',
-'and t1.blogger_desc is not null',
 'order by t1.display_seq'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_query_row_template=>wwv_flow_api.id(30641878306098019)
@@ -17315,7 +17281,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210412173657'
+,p_last_upd_yyyymmddhh24miss=>'20210418180535'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -17464,7 +17430,6 @@ wwv_flow_api.create_page_item(
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
-,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
 ,p_required_patch=>wwv_flow_api.id(33703543205326403)
 ,p_inline_help_text=>'Provide your email address if you wish receive followup notification when new reply is posted. <br>Your email address will not be published or shared.'
 ,p_attribute_01=>'N'
@@ -17482,7 +17447,7 @@ wwv_flow_api.create_page_item(
 ,p_prompt=>'Comment'
 ,p_display_as=>'NATIVE_TEXTAREA'
 ,p_cSize=>30
-,p_cMaxlength=>3000
+,p_cMaxlength=>2000
 ,p_cHeight=>5
 ,p_field_template=>wwv_flow_api.id(6855004103267413)
 ,p_item_css_classes=>'padding-top-none'
@@ -17600,7 +17565,7 @@ wwv_flow_api.create_page_computation(
 );
 wwv_flow_api.create_page_validation(
  p_id=>wwv_flow_api.id(26384992359542642)
-,p_validation_name=>'Validate Comment'
+,p_validation_name=>'Validate comment'
 ,p_validation_sequence=>20
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_comm.validate_comment(',
@@ -17613,21 +17578,35 @@ wwv_flow_api.create_page_validation(
 ,p_validation_comment=>'Validate formatted comment length and HTML. Return error text if validation fails'
 );
 wwv_flow_api.create_page_validation(
- p_id=>wwv_flow_api.id(36228247829379741)
-,p_validation_name=>'Validate Email'
+ p_id=>wwv_flow_api.id(37645903401287125)
+,p_validation_name=>'Validate email'
 ,p_validation_sequence=>30
+,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'return #OWNER#.blog_comm.is_email(',
+'  p_email => :P1001_EMAIL',
+');'))
+,p_validation2=>'PLSQL'
+,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
+,p_validation_condition=>'P1001_EMAIL'
+,p_validation_condition_type=>'ITEM_IS_NOT_NULL'
+,p_associated_item=>wwv_flow_api.id(6286425900551659)
+,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
+,p_required_patch=>-wwv_flow_api.id(37511226776078888)
+);
+wwv_flow_api.create_page_validation(
+ p_id=>wwv_flow_api.id(36228247829379741)
+,p_validation_name=>'Validate email using API'
+,p_validation_sequence=>40
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_comm.validate_email(',
 '  p_email => :P1001_EMAIL',
 ');'))
 ,p_validation2=>'PLSQL'
-,p_validation_type=>'FUNC_BODY_RETURNING_BOOLEAN'
-,p_error_message=>'&APP_TEXT$BLOG_VALIDATION_ERR_EMAIL.'
+,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
 ,p_validation_condition=>'P1001_EMAIL'
 ,p_validation_condition_type=>'ITEM_IS_NOT_NULL'
 ,p_associated_item=>wwv_flow_api.id(6286425900551659)
 ,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
-,p_security_scheme=>wwv_flow_api.id(37678540113813919)
 ,p_required_patch=>wwv_flow_api.id(37511226776078888)
 );
 wwv_flow_api.create_page_da_event(
@@ -18217,6 +18196,12 @@ wwv_flow_api.create_install_script(
 ,p_name=>'Metadata'
 ,p_sequence=>10
 ,p_script_type=>'INSTALL'
+,p_condition_type=>'NOT_EXISTS'
+,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from blog_settings',
+'where 1 = 1',
+'and attribute_name = ''G_APP_VERSION'''))
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_PAGES',
@@ -18343,7 +18328,19 @@ end;
 /
 prompt --application/deployment/checks
 begin
-null;
+wwv_flow_api.create_install_check(
+ p_id=>wwv_flow_api.id(38823841481522299)
+,p_install_id=>wwv_flow_api.id(20741295540297154)
+,p_name=>'Blog admin application installed'
+,p_sequence=>10
+,p_check_type=>'EXISTS'
+,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from user_tables',
+'where 1 = 1',
+'and table_name = ''BLOG_SETTINGS'''))
+,p_failure_message=>'Please install first application from file blog_administration.sql'
+);
 end;
 /
 prompt --application/deployment/buildoptions

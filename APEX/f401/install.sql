@@ -17,7 +17,6 @@ prompt --install
 @@application/shared_components/files/css_rss_xsl_css.sql
 @@application/shared_components/files/js_blog_js.sql
 @@application/plugin_settings.sql
-@@application/shared_components/security/authorizations/blog_auth_email_validation_api.sql
 @@application/shared_components/security/authorizations/administration_rights.sql
 @@application/shared_components/navigation/navigation_bar.sql
 @@application/shared_components/logic/application_processes/initiatize_items.sql

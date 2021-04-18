@@ -36,10 +36,10 @@ as
 --    Jari Laine 11.04.2021 - Procedure send_reply_notify moved to package BLOG_COMM
 --    Jari Laine 13.04.2021 - Changes to procedure post_authentication
 --                            Function get_footer_link_seq renamed to get_modal_page_seq
+--    Jari Laine 18.04.2021 - Function is_email moved to package BLOG_COMM
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
---    #3  email validation could improved
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -109,7 +109,8 @@ as
   ) return boolean;
 --------------------------------------------------------------------------------
   -- Called from:
-  --  admin app page 12 and procedudre blog_cm.get_first_paragraph
+  --  admin app page 12
+  --  inside procedudre blog_cm.get_first_paragraph
   function remove_whitespace(
     p_string          in varchar2
   ) return varchar2;
@@ -161,28 +162,21 @@ as
     p_value           in varchar2,
     p_min             in number,
     p_max             in number,
-    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_INTEGER'
+    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_INTEGER'
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from:
   --  admin app page 20012 validation "Is URL"
   function is_url(
     p_value           in varchar2,
-    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_URL'
+    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_URL'
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from:
   --  admin app page 20012 validation "Is date format"
   function is_date_format(
     p_value           in varchar2,
-    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_DATE_FORMAT'
-  ) return varchar2;
---------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 20012 validation "Is email"
-  function is_email(
-    p_value           in varchar2,
-    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_IS_EMAIL'
+    p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_DATE_FORMAT'
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from:
@@ -344,9 +338,9 @@ as
 
     -- add new blogger
     insert into blog_bloggers
-    ( apex_username, is_active, display_seq, blogger_name, email )
+    ( apex_username, is_active, display_seq, blogger_name, email, publish_desc )
     values
-    ( p_username, 1, l_max, l_name, l_email )
+    ( p_username, 1, l_max, l_name, l_email, 0 )
     returning id, blogger_name into p_id, p_name
     ;
 
@@ -967,7 +961,7 @@ as
     p_value     in varchar2,
     p_min       in number,
     p_max       in number,
-    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_IS_INTEGER'
+    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_INTEGER'
   ) return varchar2
   as
     l_value     number;
@@ -1007,7 +1001,7 @@ as
 --------------------------------------------------------------------------------
   function is_url(
     p_value     in varchar2,
-    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_IS_URL'
+    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_URL'
   ) return varchar2
   as
     l_err_mesg varchar2(32700);
@@ -1034,7 +1028,7 @@ as
 --------------------------------------------------------------------------------
   function is_date_format(
     p_value     in varchar2,
-    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_IS_DATE_FORMAT'
+    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_DATE_FORMAT'
   ) return varchar2
   as
     l_err_mesg          varchar2(32700);
@@ -1065,35 +1059,6 @@ as
     -- return error message
     return l_err_mesg;
   end is_date_format;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function is_email(
-    p_value     in varchar2,
-    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_IS_EMAIL'
-  ) return varchar2
-  as
-    l_err_mesg varchar2(32700);
-  begin
-    -- TO DO see item 3 from package specs
-
-    -- do some basic check for email address
-    if not regexp_like(p_value, '^.*\@.*\..*$')
-    then
-      -- if validation fails prepare error message
-      l_err_mesg := apex_lang.message( p_err_mesg );
-
-      if l_err_mesg = apex_escape.html( p_err_mesg )
-      then
-        l_err_mesg := p_err_mesg;
-      end if;
-    else
-      -- if validation passes, clear error meassage
-      l_err_mesg := null;
-    end if;
-
-    return l_err_mesg;
-
-  end is_email;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure run_settings_post_expression(
