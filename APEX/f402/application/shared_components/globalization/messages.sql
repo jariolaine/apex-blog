@@ -215,11 +215,6 @@ wwv_flow_api.create_message(
 ,p_message_text=>'No Record Selected'
 );
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(19058970469252490)
-,p_name=>'BLOG_PAR_CANONICAL_URL'
-,p_message_text=>'Canonical URL'
-);
-wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28322450890472128)
 ,p_name=>'BLOG_PAR_GROUP_GENERAL'
 ,p_message_text=>'General'
@@ -258,6 +253,11 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(24585402247704953)
 ,p_name=>'BLOG_PAR_G_ARCHIVE_DATE_FORMAT'
 ,p_message_text=>'Archive title date format'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19058970469252490)
+,p_name=>'BLOG_PAR_G_CANONICAL_URL'
+,p_message_text=>'Canonical URL'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19034721792903276)

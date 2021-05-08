@@ -44,7 +44,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   -- Called from:
-  --  admin app authentication schema Google
+  --  this function is not used
   procedure post_authentication(
     p_user_email      in varchar2 default null
   );
@@ -136,10 +136,12 @@ as
     p_sep             in varchar2 default ','
   );
 --------------------------------------------------------------------------------
-  -- this procedure is not used currently
+  -- Called from:
+  --  this procedure is not used currently
   procedure remove_unused_tags;
 --------------------------------------------------------------------------------
-  -- this procedure is not used / not ready
+  -- Called from:
+  --  this procedure is not used / not ready
   procedure save_post_preview(
     p_id              in varchar2,
     p_tags            in varchar2,
@@ -148,7 +150,8 @@ as
     p_body_html       in clob
   );
 --------------------------------------------------------------------------------
-  -- this procedure is not used / not ready
+  -- Called from:
+  --  this procedure is not used / not ready
   procedure purge_post_preview;
 ---------------------------- ----------------------------------------------------
   -- this procedure is not used / not ready
@@ -588,23 +591,45 @@ as
     l_first_p_start number;
     l_first_p_end   number;
     l_length        number;
+    l_next_p        number;
+    l_cnt           number;
   begin
 
-    l_first_p_end := instr( p_body_html, '<!--more-->' ) - 1;
-    if l_first_p_end > 0
-    then
-      l_first_p_start := 1;
-    else
-      -- get first paragraph start and end positions
-      l_first_p_start := instr( p_body_html, '<p>' );
-      l_first_p_end   := instr( p_body_html, '</p>', l_first_p_start ) + 3;
-    end if;
+    l_cnt := 1;
+    l_next_p := 1;
 
-    --post must have at least one paragraph
+    -- get first opening and closing tag positions
+    l_first_p_start := instr( p_body_html, '<p>' );
+    l_first_p_end   := instr( p_body_html, '</p>', l_first_p_start ) + 4;
+
+    -- check if there nested tags
+    while l_next_p > 0
+    loop
+      l_cnt := l_cnt + 1;
+
+      -- get string length between opening and closing tag
+      l_length  := l_first_p_end - l_first_p_start;
+      -- select contect between opening and closing tag
+      l_first_p := substr( p_body_html, l_first_p_start, l_length );
+
+      -- check if there is more opening tags inside selection
+      l_next_p := instr( l_first_p, '<p>', 1, l_cnt );
+
+      if l_next_p > 0
+      then
+        -- if another opening tag found, find next closing tag
+        l_first_p_end := instr( p_body_html, '</p>', 1, l_cnt ) + 4;
+      end if;
+
+      l_first_p := null;
+
+    end loop;
+
+
+    -- post must have at least one paragraph
     if l_first_p_start > 0 and l_first_p_end > 0 then
 
-      l_first_p_start := l_first_p_start - 1;
-      l_length        := l_first_p_end - l_first_p_start;
+      l_length := l_first_p_end - l_first_p_start;
 
       -- get first paragraph
       l_first_p := substr( p_body_html, l_first_p_start, l_length );

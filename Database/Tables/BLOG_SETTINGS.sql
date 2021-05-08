@@ -18,7 +18,6 @@ create table blog_settings(
   int_min number( 2,0 ),
   int_max number( 2,0 ),
   help_message varchar2( 256 byte ),
-  install_value varchar2( 4000 byte ),
   constraint blog_settings_pk primary key( id ),
   constraint blog_settings_uk1 unique( attribute_name ),
   constraint blog_settings_ck1 check( row_version > 0 ),

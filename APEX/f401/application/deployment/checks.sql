@@ -22,7 +22,7 @@ wwv_flow_api.create_install_check(
 'from user_tables',
 'where 1 = 1',
 'and table_name = ''BLOG_SETTINGS'''))
-,p_failure_message=>'Please install first application from file blog_administration.sql'
+,p_failure_message=>'Supporting object not installed. Please install application and supporting objects using file blog_administration.sql first.'
 );
 wwv_flow_api.component_end;
 end;

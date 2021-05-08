@@ -22,6 +22,6 @@ create table  blog_bloggers(
   constraint blog_bloggers_ck2 check( is_active in( 0 , 1 ) ),
   constraint blog_bloggers_ck3 check( display_seq > 0 ),
   constraint blog_bloggers_ck4 check( publish_desc in( 0 , 1 ) ),
-  constraint blog_bloggers_ck4 check( show_desc in( 0 , 1 ) )
+  constraint blog_bloggers_ck5 check( show_desc in( 0 , 1 ) )
 )
 /

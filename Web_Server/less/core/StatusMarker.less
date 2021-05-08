@@ -10,10 +10,9 @@
   padding: 8px 12px;
 }
 /*
-  Generate a triangle at the top left of report cells containing status marker
-  elements.
+  Generate a triangle at the top left or right of report cells containing status marker elements
 */
-.z-status-marker::after {
+.z-status-marker--left::before {
   position: absolute;
   top: 0;
   left: 0;
@@ -22,9 +21,21 @@
   height: 0;
   content: "";
 }
+.z-status-marker--right::after{
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 6px solid transparent;
+  width: 0;
+  height: 0;
+  content: "";
+}
 /*
   Colour the triangles according to the specified status class.
 */
-.z-status-marker.z-required::after {
+.z-status-marker--left.z-required::before {
   border-color: #c00 transparent transparent #c00;
+}
+.z-status-marker--right.z-required::after{
+  border-color: #c00 #c00 transparent transparent;
 }

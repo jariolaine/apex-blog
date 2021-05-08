@@ -88,8 +88,8 @@ wwv_flow_api.create_flow(
 ,p_name=>nvl(wwv_flow_application_install.get_application_name,'Blog Administration')
 ,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'402')
 ,p_application_group=>3742713376965422
-,p_application_group_name=>'Blog 4.0'
-,p_application_group_comment=>'APEX Blog applications. APEX version 20.1'
+,p_application_group_name=>'APEX Blog'
+,p_application_group_comment=>'APEX Blog applications'
 ,p_page_view_logging=>'YES'
 ,p_page_protection_enabled_y_n=>'Y'
 ,p_checksum_salt=>'B22C496AFD040C7B5F1E21FA4AC20C2D68FA779C3AF68FB8A6F3F4BB268E96B2'
@@ -128,9 +128,9 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'BLOG_FILE_UPLOAD_COLLECTION'
 ,p_substitution_value_01=>'BLOG_FILE_UPLOAD'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210418183424'
+,p_last_upd_yyyymmddhh24miss=>'20210508085546'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>208
+,p_files_version=>211
 ,p_ui_type_name => null
 ,p_print_server_type=>'INSTANCE'
 );
@@ -490,31 +490,37 @@ wwv_flow_api.g_varchar2_table(24) := '617267696E202E7A2D706F73743A6E6F74283A6669
 wwv_flow_api.g_varchar2_table(25) := '2E7A2D706F7374732D2D706167696E6174696F6E207B0A2020626F726465722D746F703A206E6F6E653B0A7D0A2E7A2D706F7374732D2D706167696E6174696F6E48696464656E202E7A2D706F7374732D2D706167696E6174696F6E207B0A2020646973';
 wwv_flow_api.g_varchar2_table(26) := '706C61793A206E6F6E6521696D706F7274616E743B0A20207669736962696C6974793A2068696464656E21696D706F7274616E743B0A7D0A406D65646961206F6E6C792073637265656E20616E6420286D61782D77696474683A20363430707829207B0A';
 wwv_flow_api.g_varchar2_table(27) := '20202E7A2D706F7374207B0A2020202070616464696E673A20312E3272656D3B0A202020206D617267696E2D626F74746F6D3A20312E3672656D3B0A20207D0A20202E7A2D706F73742D2D686561646572206831207B0A20202020666F6E742D73697A65';
-wwv_flow_api.g_varchar2_table(28) := '3A20312E34656D3B0A20207D0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A2047656E6572616C20637573746F6D207265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(29) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D436F6E74656E74202E7A2D436F6E74656E742D2D526F77207B0A2020626F726465723A2031707820736F6C6964207267626128302C20302C20302C20302E31293B0A2020626F726465722D726164';
-wwv_flow_api.g_varchar2_table(30) := '6975733A203470783B0A2020626F782D736861646F773A20302032707820347078202D327078207267626128302C20302C20302C20302E303735293B0A20206D617267696E2D626F74746F6D3A20312E3672656D3B0A7D0A2E7A2D436F6E74656E742D2D';
-wwv_flow_api.g_varchar2_table(31) := '526F77207B0A20206261636B67726F756E642D636F6C6F723A20236666666666663B0A7D0A2E7A2D436F6E74656E742D2D5469746C65207B0A2020626F726465722D626F74746F6D3A2031707820736F6C6964207267626128302C20302C20302C20302E';
-wwv_flow_api.g_varchar2_table(32) := '303735293B0A202070616464696E673A20312E3272656D3B0A20206D617267696E3A20303B0A2020666F6E742D73697A653A20312E3672656D3B0A2020666F6E742D7765696768743A203530303B0A20206C696E652D6865696768743A20322E3472656D';
-wwv_flow_api.g_varchar2_table(33) := '3B0A7D0A2E7A2D436F6E74656E742D2D426F6479207B0A202070616464696E673A20312E3672656D3B0A7D0A2E7A2D436F6E74656E742D2D537461636B6564202E7A2D436F6E74656E742D2D5469746C65207B0A2020626F726465722D746F703A203170';
-wwv_flow_api.g_varchar2_table(34) := '7820736F6C6964207267626128302C20302C20302C20302E303735293B0A7D0A2E7A2D436F6E74656E742D2D537461636B6564202E7A2D436F6E74656E742D2D526F773A66697273742D6368696C64202E7A2D436F6E74656E742D2D5469746C65207B0A';
-wwv_flow_api.g_varchar2_table(35) := '2020626F726465722D746F703A206E6F6E653B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A2050726F6772616D20636F646520666F726D617474696E670A2A2A2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(36) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A7072652E7A2D70726F6772616D2D636F6465207B0A2020666F6E742D66616D696C793A2053464D6F6E6F2D526567756C61722C204D656E6C6F2C204D6F6E61636F2C20436F6E736F';
-wwv_flow_api.g_varchar2_table(37) := '6C61732C20224C696265726174696F6E204D6F6E6F222C202242697473747265616D20566572612053616E73204D6F6E6F222C2022436F7572696572204E6577222C206D6F6E6F73706163653B0A2020636F6C6F723A20233236323632363B0A2020666F';
-wwv_flow_api.g_varchar2_table(38) := '6E742D73697A653A20312E3172656D3B0A20207461622D73697A653A20323B0A20206F766572666C6F772D783A206175746F3B0A2020646973706C61793A20626C6F636B3B0A202070616464696E673A2031656D20312E35656D3B0A20206D617267696E';
-wwv_flow_api.g_varchar2_table(39) := '3A20387078203870782031387078203870783B0A2020626F726465723A2031707820736F6C6964207267626128302C20302C20302C20302E303735293B0A2020626F726465722D6C6566743A20302E33656D20736F6C696420233663653236633B0A2020';
-wwv_flow_api.g_varchar2_table(40) := '626F726465722D7261646975733A203470783B0A20206261636B67726F756E642D636F6C6F723A207267626128302C20302C20302C20302E303135293B0A2020626F782D736861646F773A20302032707820347078202D327078207267626128302C2030';
-wwv_flow_api.g_varchar2_table(41) := '2C20302C20302E303735293B0A7D0A7072652E7A2D70726F6772616D2D636F646520636F6465207B0A2020666F6E742D66616D696C793A20696E68657269743B0A2020666F6E742D73697A653A20696E68657269743B0A7D0A2F2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(42) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20436F6D6D656E7473207265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D636F6D6D656E74202E74';
-wwv_flow_api.g_varchar2_table(43) := '2D436F6D6D656E74732D626F6479207B0A202077696474683A20303B0A7D0A2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D636F6D6D656E74207B0A20206F766572666C6F772D777261703A20627265616B2D776F72643B0A7D0A2F2A2A2A2A';
-wwv_flow_api.g_varchar2_table(44) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A204D6F646966696572730A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D746578742D7772617020';
-wwv_flow_api.g_varchar2_table(45) := '7B0A202077686974652D73706163653A207072652D777261703B0A7D0A2E7A2D68696464656E207B0A2020646973706C61793A206E6F6E6521696D706F7274616E743B0A20207669736962696C6974793A2068696464656E21696D706F7274616E743B0A';
-wwv_flow_api.g_varchar2_table(46) := '7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20537461747573204D61726B65720A2A204372656469747320746F206661633538363A0A2A2068747470733A2F2F636F6D6D756E6974792E6F';
-wwv_flow_api.g_varchar2_table(47) := '7261636C652E636F6D2F746563682F646576656C6F706572732F64697363757373696F6E2F636F6D6D656E742F31353633303633362F23436F6D6D656E745F31353633303633360A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(48) := '2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D7374617475732D6D61726B6572207B0A2020706F736974696F6E3A2072656C61746976653B0A20206D617267696E3A202D387078202D313270783B0A202070616464696E673A2038707820313270783B0A7D0A2F2A';
-wwv_flow_api.g_varchar2_table(49) := '0A202047656E6572617465206120747269616E676C652061742074686520746F70206C656674206F66207265706F72742063656C6C7320636F6E7461696E696E6720737461747573206D61726B65720A2020656C656D656E74732E0A2A2F0A2E7A2D7374';
-wwv_flow_api.g_varchar2_table(50) := '617475732D6D61726B65723A3A6166746572207B0A2020706F736974696F6E3A206162736F6C7574653B0A2020746F703A20303B0A20206C6566743A20303B0A2020626F726465723A2036707820736F6C6964207472616E73706172656E743B0A202077';
-wwv_flow_api.g_varchar2_table(51) := '696474683A20303B0A20206865696768743A20303B0A2020636F6E74656E743A2022223B0A7D0A2F2A0A2020436F6C6F75722074686520747269616E676C6573206163636F7264696E6720746F2074686520737065636966696564207374617475732063';
-wwv_flow_api.g_varchar2_table(52) := '6C6173732E0A2A2F0A2E7A2D7374617475732D6D61726B65722E7A2D72657175697265643A3A6166746572207B0A2020626F726465722D636F6C6F723A2023633030207472616E73706172656E74207472616E73706172656E7420236330303B0A7D0A';
+wwv_flow_api.g_varchar2_table(28) := '3A20312E34656D3B0A20207D0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20436C6173736963207265706F7274730A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(29) := '2A2A2A2A2A2A2A2A2A2A2A2F0A2E6E6F64617461666F756E64207B0A2020746578742D616C69676E3A2063656E7465723B0A2020636F6C6F723A20233236323632363B0A2020666F6E742D73697A653A20312E3272656D3B0A20206C696E652D68656967';
+wwv_flow_api.g_varchar2_table(30) := '68743A203272656D3B0A202070616464696E673A20322E3272656D3B0A7D0A2E706167696E6174696F6E207B0A2020746578742D616C69676E3A2072696768743B0A202077696474683A20313030253B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(31) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A2047656E6572616C20637573746F6D207265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D436F6E74656E74202E7A';
+wwv_flow_api.g_varchar2_table(32) := '2D436F6E74656E742D2D526F77207B0A2020626F726465723A2031707820736F6C6964207267626128302C20302C20302C20302E31293B0A2020626F726465722D7261646975733A203470783B0A2020626F782D736861646F773A203020327078203470';
+wwv_flow_api.g_varchar2_table(33) := '78202D327078207267626128302C20302C20302C20302E303735293B0A20206D617267696E2D626F74746F6D3A20312E3672656D3B0A7D0A2E7A2D436F6E74656E742D2D526F77207B0A20206261636B67726F756E642D636F6C6F723A20236666666666';
+wwv_flow_api.g_varchar2_table(34) := '663B0A7D0A2E7A2D436F6E74656E742D2D5469746C65207B0A2020626F726465722D626F74746F6D3A2031707820736F6C6964207267626128302C20302C20302C20302E303735293B0A202070616464696E673A20312E3272656D3B0A20206D61726769';
+wwv_flow_api.g_varchar2_table(35) := '6E3A20303B0A2020666F6E742D73697A653A20312E3672656D3B0A2020666F6E742D7765696768743A203530303B0A20206C696E652D6865696768743A20322E3472656D3B0A7D0A2E7A2D436F6E74656E742D2D426F6479207B0A202070616464696E67';
+wwv_flow_api.g_varchar2_table(36) := '3A20312E3672656D3B0A7D0A2E7A2D436F6E74656E742D2D537461636B6564202E7A2D436F6E74656E742D2D5469746C65207B0A2020626F726465722D746F703A2031707820736F6C6964207267626128302C20302C20302C20302E303735293B0A7D0A';
+wwv_flow_api.g_varchar2_table(37) := '2E7A2D436F6E74656E742D2D537461636B6564202E7A2D436F6E74656E742D2D526F773A66697273742D6368696C64202E7A2D436F6E74656E742D2D5469746C65207B0A2020626F726465722D746F703A206E6F6E653B0A7D0A2F2A2A2A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(38) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A2050726F6772616D20636F646520666F726D617474696E670A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A7072652E';
+wwv_flow_api.g_varchar2_table(39) := '7A2D70726F6772616D2D636F6465207B0A2020666F6E742D66616D696C793A2053464D6F6E6F2D526567756C61722C204D656E6C6F2C204D6F6E61636F2C20436F6E736F6C61732C20224C696265726174696F6E204D6F6E6F222C202242697473747265';
+wwv_flow_api.g_varchar2_table(40) := '616D20566572612053616E73204D6F6E6F222C2022436F7572696572204E6577222C206D6F6E6F73706163653B0A2020636F6C6F723A20233236323632363B0A2020666F6E742D73697A653A20312E3172656D3B0A20207461622D73697A653A20323B0A';
+wwv_flow_api.g_varchar2_table(41) := '20206F766572666C6F772D783A206175746F3B0A2020646973706C61793A20626C6F636B3B0A202070616464696E673A2031656D20312E35656D3B0A20206D617267696E3A20387078203870782031387078203870783B0A2020626F726465723A203170';
+wwv_flow_api.g_varchar2_table(42) := '7820736F6C6964207267626128302C20302C20302C20302E303735293B0A2020626F726465722D6C6566743A20302E33656D20736F6C696420233663653236633B0A2020626F726465722D7261646975733A203470783B0A20206261636B67726F756E64';
+wwv_flow_api.g_varchar2_table(43) := '2D636F6C6F723A207267626128302C20302C20302C20302E303135293B0A2020626F782D736861646F773A20302032707820347078202D327078207267626128302C20302C20302C20302E303735293B0A7D0A7072652E7A2D70726F6772616D2D636F64';
+wwv_flow_api.g_varchar2_table(44) := '6520636F6465207B0A2020666F6E742D66616D696C793A20696E68657269743B0A2020666F6E742D73697A653A20696E68657269743B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A2043';
+wwv_flow_api.g_varchar2_table(45) := '6F6D6D656E7473207265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D626F6479207B0A202077696474683A20303B0A7D0A2E';
+wwv_flow_api.g_varchar2_table(46) := '7A2D636F6D6D656E74202E742D436F6D6D656E74732D636F6D6D656E74207B0A20206F766572666C6F772D777261703A20627265616B2D776F72643B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(47) := '2A2A0A2A204D6F646966696572730A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D746578742D77726170207B0A202077686974652D73706163653A207072652D777261703B0A7D0A2E7A2D';
+wwv_flow_api.g_varchar2_table(48) := '68696464656E207B0A2020646973706C61793A206E6F6E6521696D706F7274616E743B0A20207669736962696C6974793A2068696464656E21696D706F7274616E743B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(49) := '2A2A2A2A2A2A2A2A2A0A2A20537461747573204D61726B65720A2A204372656469747320746F206661633538363A0A2A2068747470733A2F2F636F6D6D756E6974792E6F7261636C652E636F6D2F746563682F646576656C6F706572732F646973637573';
+wwv_flow_api.g_varchar2_table(50) := '73696F6E2F636F6D6D656E742F31353633303633362F23436F6D6D656E745F31353633303633360A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D7374617475732D6D61726B6572207B0A20';
+wwv_flow_api.g_varchar2_table(51) := '20706F736974696F6E3A2072656C61746976653B0A20206D617267696E3A202D387078202D313270783B0A202070616464696E673A2038707820313270783B0A7D0A2F2A0A202047656E6572617465206120747269616E676C652061742074686520746F';
+wwv_flow_api.g_varchar2_table(52) := '70206C656674206F72207269676874206F66207265706F72742063656C6C7320636F6E7461696E696E6720737461747573206D61726B657220656C656D656E74730A2A2F0A2E7A2D7374617475732D6D61726B65722D2D6C6566743A3A6265666F726520';
+wwv_flow_api.g_varchar2_table(53) := '7B0A2020706F736974696F6E3A206162736F6C7574653B0A2020746F703A20303B0A20206C6566743A20303B0A2020626F726465723A2036707820736F6C6964207472616E73706172656E743B0A202077696474683A20303B0A20206865696768743A20';
+wwv_flow_api.g_varchar2_table(54) := '303B0A2020636F6E74656E743A2022223B0A7D0A2E7A2D7374617475732D6D61726B65722D2D72696768743A3A6166746572207B0A2020706F736974696F6E3A206162736F6C7574653B0A2020746F703A20303B0A202072696768743A20303B0A202062';
+wwv_flow_api.g_varchar2_table(55) := '6F726465723A2036707820736F6C6964207472616E73706172656E743B0A202077696474683A20303B0A20206865696768743A20303B0A2020636F6E74656E743A2022223B0A7D0A2F2A0A2020436F6C6F75722074686520747269616E676C6573206163';
+wwv_flow_api.g_varchar2_table(56) := '636F7264696E6720746F20746865207370656369666965642073746174757320636C6173732E0A2A2F0A2E7A2D7374617475732D6D61726B65722D2D6C6566742E7A2D72657175697265643A3A6265666F7265207B0A2020626F726465722D636F6C6F72';
+wwv_flow_api.g_varchar2_table(57) := '3A2023633030207472616E73706172656E74207472616E73706172656E7420236330303B0A7D0A2E7A2D7374617475732D6D61726B65722D2D72696768742E7A2D72657175697265643A3A6166746572207B0A2020626F726465722D636F6C6F723A2023';
+wwv_flow_api.g_varchar2_table(58) := '6330302023633030207472616E73706172656E74207472616E73706172656E743B0A7D0A';
 wwv_flow_api.create_app_static_file(
  p_id=>wwv_flow_api.id(38626679310180032)
 ,p_file_name=>'css/admin.css'
@@ -11978,11 +11984,6 @@ wwv_flow_api.create_message(
 ,p_message_text=>'No Record Selected'
 );
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(19058970469252490)
-,p_name=>'BLOG_PAR_CANONICAL_URL'
-,p_message_text=>'Canonical URL'
-);
-wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28322450890472128)
 ,p_name=>'BLOG_PAR_GROUP_GENERAL'
 ,p_message_text=>'General'
@@ -12021,6 +12022,11 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(24585402247704953)
 ,p_name=>'BLOG_PAR_G_ARCHIVE_DATE_FORMAT'
 ,p_message_text=>'Archive title date format'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19058970469252490)
+,p_name=>'BLOG_PAR_G_CANONICAL_URL'
+,p_message_text=>'Canonical URL'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19034721792903276)
@@ -12218,7 +12224,6 @@ wwv_flow_api.create_authentication(
 ,p_invalid_session_type=>'LOGIN'
 ,p_use_secure_cookie_yn=>'N'
 ,p_ras_mode=>0
-,p_switch_in_session_yn=>'Y'
 );
 end;
 /
@@ -12235,7 +12240,6 @@ wwv_flow_api.create_authentication(
 ,p_attribute_11=>'Y'
 ,p_attribute_13=>'Y'
 ,p_invalid_session_type=>'LOGIN'
-,p_post_auth_process=>'blog_cm.post_authentication'
 ,p_use_secure_cookie_yn=>'N'
 ,p_ras_mode=>0
 ,p_switch_in_session_yn=>'Y'
@@ -12938,7 +12942,7 @@ wwv_flow_api.create_page(
 '</ol>',
 ''))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210415130744'
+,p_last_upd_yyyymmddhh24miss=>'20210419131247'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -13131,7 +13135,7 @@ wwv_flow_api.create_page_branch(
 ,p_branch_action=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:12::&success_msg=#SUCCESS_MSG#'
 ,p_branch_point=>'AFTER_PROCESSING'
 ,p_branch_type=>'REDIRECT_URL'
-,p_branch_sequence=>20
+,p_branch_sequence=>10
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(6929658376150992)
@@ -13480,7 +13484,7 @@ wwv_flow_api.create_page_item(
 );
 wwv_flow_api.create_page_computation(
  p_id=>wwv_flow_api.id(7077847981172776)
-,p_computation_sequence=>30
+,p_computation_sequence=>10
 ,p_computation_item=>'P12_POST_DESC'
 ,p_computation_type=>'EXPRESSION'
 ,p_computation_language=>'PLSQL'
@@ -13492,31 +13496,31 @@ wwv_flow_api.create_page_computation(
 );
 wwv_flow_api.create_page_computation(
  p_id=>wwv_flow_api.id(19020963247830233)
-,p_computation_sequence=>40
+,p_computation_sequence=>20
 ,p_computation_item=>'P12_IS_ACTIVE'
 ,p_computation_type=>'EXPRESSION'
 ,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_cm.request_to_post_status(',
-'  p_request    => :REQUEST',
+'  p_request => :REQUEST',
 ')'))
 ,p_required_patch=>wwv_flow_api.id(24687510906079791)
 ,p_computation_comment=>'When adding now post IS_ACTIVE is defined by button CREATE or CREATE_DRAFT. When updating use visible item P12_IS_ACTIVE_DISPLAY'
 );
 wwv_flow_api.create_page_computation(
  p_id=>wwv_flow_api.id(31618253990094018)
-,p_computation_sequence=>50
+,p_computation_sequence=>30
 ,p_computation_item=>'P12_FIRST_PARAGRAPH'
 ,p_computation_type=>'EXPRESSION'
 ,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_cm.get_first_paragraph(',
-'  p_body_html  => :P12_BODY_HTML',
+'  p_body_html => :P12_BODY_HTML',
 ')'))
 );
 wwv_flow_api.create_page_computation(
  p_id=>wwv_flow_api.id(36997318502037729)
-,p_computation_sequence=>60
+,p_computation_sequence=>40
 ,p_computation_item=>'P12_PUBLISHED_ON'
 ,p_computation_type=>'EXPRESSION'
 ,p_computation_language=>'PLSQL'
@@ -13527,7 +13531,7 @@ wwv_flow_api.create_page_computation(
 wwv_flow_api.create_page_validation(
  p_id=>wwv_flow_api.id(8793505538610781)
 ,p_validation_name=>'P12_VALID_FROM must be timestamp'
-,p_validation_sequence=>1
+,p_validation_sequence=>10
 ,p_validation=>'P12_PUBLISHED_ON'
 ,p_validation_type=>'ITEM_IS_TIMESTAMP'
 ,p_error_message=>'#LABEL# must be a valid timestamp.'
@@ -13537,7 +13541,7 @@ wwv_flow_api.create_page_validation(
 wwv_flow_api.create_page_validation(
  p_id=>wwv_flow_api.id(31618338103094019)
 ,p_validation_name=>'First paragraph'
-,p_validation_sequence=>11
+,p_validation_sequence=>20
 ,p_validation=>'P12_FIRST_PARAGRAPH'
 ,p_validation_type=>'ITEM_NOT_NULL'
 ,p_error_message=>'Post must have at least one paragraph.'
@@ -13753,7 +13757,7 @@ wwv_flow_api.create_page_process(
 ,p_process_point=>'AFTER_HEADER'
 ,p_region_id=>wwv_flow_api.id(8640589331194982)
 ,p_process_type=>'NATIVE_FORM_INIT'
-,p_process_name=>'Initialize Post'
+,p_process_name=>'Initialize form Post'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(27060510671689106)
@@ -13781,15 +13785,17 @@ wwv_flow_api.create_page_process(
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_when=>'DELETE'
+,p_process_when_type=>'REQUEST_NOT_EQUAL_CONDITION'
 ,p_process_comment=>'Add new category if not exists and get category id. If category exists return category id.'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(19355288927963204)
-,p_process_sequence=>40
+,p_process_sequence=>20
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_region_id=>wwv_flow_api.id(8640589331194982)
 ,p_process_type=>'NATIVE_FORM_DML'
-,p_process_name=>'Process Post'
+,p_process_name=>'Process form Post'
 ,p_attribute_01=>'REGION_SOURCE'
 ,p_attribute_05=>'Y'
 ,p_attribute_06=>'Y'
@@ -13798,7 +13804,7 @@ wwv_flow_api.create_page_process(
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(7077714087172775)
-,p_process_sequence=>50
+,p_process_sequence=>30
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Process Tags'
@@ -13815,7 +13821,7 @@ wwv_flow_api.create_page_process(
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26610837157511893)
-,p_process_sequence=>70
+,p_process_sequence=>40
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Purge Public Application Cache'
@@ -14564,7 +14570,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210412193503'
+,p_last_upd_yyyymmddhh24miss=>'20210425065554'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
@@ -20233,7 +20239,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210411052902'
+,p_last_upd_yyyymmddhh24miss=>'20210420170642'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8575301514518303)
@@ -20288,7 +20294,6 @@ wwv_flow_api.create_page_button(
 ,p_button_image_alt=>'&#x1D5A6;  Sign in with Google'
 ,p_button_position=>'REGION_TEMPLATE_NEXT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:1:&SESSION.:APEX_AUTHENTICATION=Google:&DEBUG.:::'
-,p_icon_css_classes=>'fa-envelope-user'
 ,p_required_patch=>wwv_flow_api.id(35675193135740905)
 );
 wwv_flow_api.create_page_item(
@@ -20987,11 +20992,11 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210418113528'
+,p_last_upd_yyyymmddhh24miss=>'20210508064708'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
-,p_plug_name=>'Preferences'
+,p_plug_name=>'Settings'
 ,p_region_name=>'preferences'
 ,p_region_css_classes=>'z-config-ig'
 ,p_region_template_options=>'#DEFAULT#'
@@ -21037,7 +21042,7 @@ wwv_flow_api.create_region_column(
 ,p_data_type=>'VARCHAR2'
 ,p_is_query_only=>true
 ,p_item_type=>'NATIVE_HIDDEN'
-,p_display_sequence=>150
+,p_display_sequence=>160
 ,p_attribute_01=>'Y'
 ,p_filter_is_required=>false
 ,p_use_as_row_header=>false
@@ -21055,9 +21060,9 @@ wwv_flow_api.create_region_column(
 ,p_item_type=>'NATIVE_HTML_EXPRESSION'
 ,p_heading=>'Required'
 ,p_heading_alignment=>'CENTER'
-,p_display_sequence=>140
+,p_display_sequence=>150
 ,p_value_alignment=>'CENTER'
-,p_attribute_01=>'<div class="z-status-marker &CELL_CLASS!ATTR.">&REQUIRED.</div>'
+,p_attribute_01=>'<div class="z-status-marker z-status-marker--left &CELL_CLASS!ATTR.">&REQUIRED.</div>'
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.configIG.initColumn'
 ,p_enable_sort_group=>false
@@ -21109,7 +21114,7 @@ wwv_flow_api.create_region_column(
 ,p_item_type=>'NATIVE_DISPLAY_ONLY'
 ,p_heading=>'Changed'
 ,p_heading_alignment=>'RIGHT'
-,p_display_sequence=>120
+,p_display_sequence=>130
 ,p_value_alignment=>'RIGHT'
 ,p_stretch=>'A'
 ,p_attribute_02=>'VALUE'
@@ -21134,7 +21139,7 @@ wwv_flow_api.create_region_column(
 ,p_item_type=>'NATIVE_DISPLAY_ONLY'
 ,p_heading=>'Changed By'
 ,p_heading_alignment=>'LEFT'
-,p_display_sequence=>130
+,p_display_sequence=>140
 ,p_value_alignment=>'LEFT'
 ,p_stretch=>'A'
 ,p_attribute_02=>'VALUE'
@@ -21185,8 +21190,12 @@ wwv_flow_api.create_region_column(
 ,p_value_alignment=>'LEFT'
 ,p_stretch=>'A'
 ,p_attribute_02=>'VALUE'
-,p_enable_filter=>false
+,p_enable_filter=>true
+,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
 ,p_filter_is_required=>false
+,p_filter_text_case=>'MIXED'
+,p_filter_exact_match=>true
+,p_filter_lov_type=>'DISTINCT'
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.configIG.initColumn'
 ,p_enable_sort_group=>false
@@ -21210,7 +21219,7 @@ wwv_flow_api.create_region_column(
 ,p_stretch=>'A'
 ,p_attribute_05=>'BOTH'
 ,p_is_required=>false
-,p_max_length=>16000
+,p_max_length=>4000
 ,p_enable_filter=>false
 ,p_filter_is_required=>false
 ,p_use_as_row_header=>false
@@ -21285,7 +21294,7 @@ wwv_flow_api.create_region_column(
 ,p_data_type=>'NUMBER'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_HIDDEN'
-,p_display_sequence=>160
+,p_display_sequence=>170
 ,p_attribute_01=>'Y'
 ,p_use_as_row_header=>false
 ,p_enable_sort_group=>true
@@ -21302,7 +21311,7 @@ wwv_flow_api.create_region_column(
 ,p_data_type=>'NUMBER'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_HIDDEN'
-,p_display_sequence=>170
+,p_display_sequence=>180
 ,p_attribute_01=>'Y'
 ,p_use_as_row_header=>false
 ,p_enable_sort_group=>true
@@ -21334,7 +21343,6 @@ wwv_flow_api.create_interactive_grid(
 ,p_define_chart_view=>false
 ,p_enable_download=>false
 ,p_download_formats=>null
-,p_enable_mail_download=>true
 ,p_fixed_header=>'NONE'
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false
@@ -22892,7 +22900,7 @@ wwv_flow_api.create_install(
 ,p_install_success_message=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'APEX Blog supporting objects have been installed successfully.',
 '',
-'For login to this application (Blog Administration Area), you must create APEX workspace user group "Bloggers" and assign APEX user to this group.'))
+'For login to Blog Administration Area, you must create APEX workspace user group "Bloggers" and assign APEX user to this group.'))
 ,p_install_failure_message=>'Installation of database objects and meta data has failed.'
 ,p_upgrade_message=>'The application installer has detected that this application''s supporting objects were previously installed.  This wizard will guide you through the process of upgrading these supporting objects.'
 ,p_upgrade_confirm_message=>'Please confirm that you would like to install this application''s supporting objects.'
@@ -23037,7 +23045,7 @@ wwv_flow_api.create_install_script(
 '  constraint blog_bloggers_ck2 check( is_active in( 0 , 1 ) ),',
 '  constraint blog_bloggers_ck3 check( display_seq > 0 ),',
 '  constraint blog_bloggers_ck4 check( publish_desc in( 0 , 1 ) ),',
-'  constraint blog_bloggers_ck4 check( show_desc in( 0 , 1 ) )',
+'  constraint blog_bloggers_ck5 check( show_desc in( 0 , 1 ) )',
 ')',
 '/',
 '--------------------------------------------------------',
@@ -23135,11 +23143,11 @@ wwv_flow_api.create_install_script(
 '  content_desc varchar2( 256 char ) not null,',
 '  content_html clob not null,',
 '  notes varchar2( 4000 byte ),',
+'  constraint blog_dynamic_content_pk primary key( id ),',
 '  constraint blog_dynamic_content_ck1 check( row_version > 0 ),',
 '  constraint blog_dynamic_content_ck2 check( is_active in( 0, 1 ) ),',
 '  constraint blog_dynamic_content_ck3 check( display_seq > 0 ),',
-'  constraint blog_dynamic_content_ck4 check( content_type in( ''FOOTER_LINK'' ) ),',
-'  constraint blog_dynamic_content_pk primary key( id )',
+'  constraint blog_dynamic_content_ck4 check( content_type in( ''FOOTER_LINK'' ) )',
 ')',
 '/',
 '--------------------------------------------------------',
@@ -23378,7 +23386,6 @@ wwv_flow_api.create_install_script(
 '  int_min number( 2,0 ),',
 '  int_max number( 2,0 ),',
 '  help_message varchar2( 256 byte ),',
-'  install_value varchar2( 4000 byte ),',
 '  constraint blog_settings_pk primary key( id ),',
 '  constraint blog_settings_uk1 unique( attribute_name ),',
 '  constraint blog_settings_ck1 check( row_version > 0 ),',
@@ -23722,7 +23729,7 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_SETTINGS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "DATA_TYPE", "GROUP_NAME", "ATTRIBUTE_DESC", "ATTRIBUTE_VALUE", "ATTRIBUT'
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "ATTRIBUTE_VALUE", "DATA_TYPE", "GROUP_NAME", "ATTRIBUTE_DESC", "ATTRIBUT'
 ||'E_GROUP", "POST_EXPRESSION", "INT_MIN", "INT_MAX") AS',
 '  select',
 '   t1.id                    as id',
@@ -23730,22 +23737,22 @@ wwv_flow_api.create_install_script(
 '  ,t1.created_on            as created_on',
 '  ,lower(t1.created_by)     as created_by',
 '  ,t1.changed_on            as changed_on',
-'  ,lower(t1'))
+'  ,lower(t1.changed_by)     as changed_by',
+'  ,t1.is'))
 );
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'.changed_by)     as changed_by',
-'  ,t1.is_nullable           as is_nullable',
+'_nullable           as is_nullable',
 '  ,t1.display_seq           as display_seq',
 '  ,t1.attribute_name        as attribute_name',
+'  ,t1.attribute_value       as attribute_value',
 '  ,t1.data_type             as data_type',
 '  ,t1.group_name            as group_name',
 '  ,apex_lang.message(',
 '    ''BLOG_PAR_''',
 '    || t1.attribute_name',
 '  )                         as attribute_desc',
-'  ,t1.attribute_value       as attribute_value',
 '  ,apex_lang.message(',
 '    t1.group_name',
 '  )                         as attribute_group',
@@ -24540,7 +24547,8 @@ wwv_flow_api.append_to_install_script(
 '    raise;',
 '',
 '  end get_attribute_value;',
-'---------------------------------------------------------------------'))
+'--------------------------------------------------------------------------------',
+'---------------------------'))
 );
 end;
 /
@@ -24548,8 +24556,7 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------',
-'--------------------------------------------------------------------------------',
+'-----------------------------------------------------',
 '  procedure initialize_items(',
 '    p_app_id in varchar2',
 '  )',
@@ -25020,8 +25027,6 @@ wwv_flow_api.append_to_install_script(
 '      where 1 = 1',
 '      and v1.content_id = p_content_id',
 '    ) loop',
-'',
-'      sys.htp.p( ''<h1>'' || c1.content_desc || ''</h1>'' );',
 '',
 '      sys.htp.p( c1.content_html );',
 '',
@@ -25504,7 +25509,12 @@ wwv_flow_api.append_to_install_script(
 '',
 '  end get_category_seq;',
 '--------------------------------------------------------------------------------',
-'-------------------------------------------------------------------------'))
+'--------------------------------------------------------------------------------',
+'  function get_link_grp_seq',
+'  return varchar2',
+'  as',
+'    l_max     number;',
+'    l_result  '))
 );
 null;
 end;
@@ -25513,12 +25523,7 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-------',
-'  function get_link_grp_seq',
-'  return varchar2',
-'  as',
-'    l_max     number;',
-'    l_result  varchar2(256);',
+'varchar2(256);',
 '  begin',
 '',
 '    -- fetch max link group display sequence',
@@ -25665,23 +25670,45 @@ wwv_flow_api.append_to_install_script(
 '    l_first_p_start number;',
 '    l_first_p_end   number;',
 '    l_length        number;',
+'    l_next_p        number;',
+'    l_cnt           number;',
 '  begin',
 '',
-'    l_first_p_end := instr( p_body_html, ''<!--more-->'' ) - 1;',
-'    if l_first_p_end > 0',
-'    then',
-'      l_first_p_start := 1;',
-'    else',
-'      -- get first paragraph start and end positions',
-'      l_first_p_start := instr( p_body_html, ''<p>'' );',
-'      l_first_p_end   := instr( p_body_html, ''</p>'', l_first_p_start ) + 3;',
-'    end if;',
+'    l_cnt := 1;',
+'    l_next_p := 1;',
 '',
-'    --post must have at least one paragraph',
+'    -- get first opening and closing tag positions',
+'    l_first_p_start := instr( p_body_html, ''<p>'' );',
+'    l_first_p_end   := instr( p_body_html, ''</p>'', l_first_p_start ) + 4;',
+'',
+'    -- check if there nested tags',
+'    while l_next_p > 0',
+'    loop',
+'      l_cnt := l_cnt + 1;',
+'',
+'      -- get string length between opening and closing tag',
+'      l_length  := l_first_p_end - l_first_p_start;',
+'      -- select contect between opening and closing tag',
+'      l_first_p := substr( p_body_html, l_first_p_start, l_length );',
+'',
+'      -- check if there is more opening tags inside selection',
+'      l_next_p := instr( l_first_p, ''<p>'', 1, l_cnt );',
+'',
+'      if l_next_p > 0',
+'      then',
+'        -- if another opening tag found, find next closing tag',
+'        l_first_p_end := instr( p_body_html, ''</p>'', 1, l_cnt ) + 4;',
+'      end if;',
+'',
+'      l_first_p := null;',
+'',
+'    end loop;',
+'',
+'',
+'    -- post must have at least one paragraph',
 '    if l_first_p_start > 0 and l_first_p_end > 0 then',
 '',
-'      l_first_p_start := l_first_p_start - 1;',
-'      l_length        := l_first_p_end - l_first_p_start;',
+'      l_length := l_first_p_end - l_first_p_start;',
 '',
 '      -- get first paragraph',
 '      l_first_p := substr( p_body_html, l_first_p_start, l_length );',
@@ -26301,7 +26328,12 @@ wwv_flow_api.append_to_install_script(
 '        || case when p_item.element_max_length  is not null',
 '            then ''maxlength="'' || p_item.element_max_length || ''" ''',
 '           end',
-'        || apex_plugin_util.get_element_attributes(p_item, l_name, ''text_field apex-item-text'')',
+'        ||',
+'          apex_plugin_util.get_element_attributes(',
+'             p_item           => p_item',
+'            ,p_name           => l_name',
+'            ,p_default_class  => ''text_field apex-item-text''',
+'          )',
 '        || ''value="" />''',
 '      );',
 '      sys.htp.p(''<span class="apex-item-icon ''',
@@ -26446,7 +26478,16 @@ wwv_flow_api.append_to_install_script(
 '--                            Added parameter p_canonical to functions returning URL',
 '--    Jari Laine 10.05.2020 - New function get_unsubscribe',
 '--    Jari Laine 19.05.2020 - Changed page and items name to "hard coded" values',
-'--                            and removed global constants from blog_util package',
+'--                            and removed global constants from blog_util '))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'package',
 '--    Jari Laine 23.05.2020 - Removed default from function get_tab parameter p_app_page_id',
 '--',
 '--------------------------------------------------------------------------------',
@@ -26458,16 +26499,7 @@ wwv_flow_api.append_to_install_script(
 '    p_request         in varchar2 default null,',
 '    p_clear_cache     in varchar2 default null,',
 '    p_canonical       in varchar2 default ''NO'',',
-'    p_plain_url       in varchar2'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' default ''YES'',',
+'    p_plain_url       in varchar2 default ''YES'',',
 '    p_encode_url      in varchar2 default ''NO''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
@@ -26592,7 +26624,7 @@ wwv_flow_api.append_to_install_script(
 '    return',
 '      case p_canonical',
 '      when ''YES''',
-'      then blog_util.get_attribute_value( ''CANONICAL_URL'' )',
+'      then blog_util.get_attribute_value( ''G_CANONICAL_URL'' )',
 '      end',
 '      ||',
 '      apex_page.get_url(',
@@ -26661,7 +26693,7 @@ wwv_flow_api.append_to_install_script(
 '    return',
 '      case p_canonical',
 '      when ''YES''',
-'      then blog_util.get_attribute_value( ''CANONICAL_URL'' )',
+'      then blog_util.get_attribute_value( ''G_CANONICAL_URL'' )',
 '      end',
 '      ||',
 '      case p_encode_url',
@@ -26717,7 +26749,7 @@ wwv_flow_api.append_to_install_script(
 '    return',
 '      case p_canonical',
 '      when ''YES''',
-'      then blog_util.get_attribute_value( ''CANONICAL_URL'' )',
+'      then blog_util.get_attribute_value( ''G_CANONICAL_URL'' )',
 '      end',
 '      ||',
 '      apex_page.get_url(',
@@ -26776,7 +26808,7 @@ wwv_flow_api.append_to_install_script(
 '    return',
 '      case p_canonical',
 '      when ''YES''',
-'      then blog_util.get_attribute_value( ''CANONICAL_URL'' )',
+'      then blog_util.get_attribute_value( ''G_CANONICAL_URL'' )',
 '      end',
 '      ||',
 '      apex_page.get_url(',
@@ -26811,7 +26843,7 @@ wwv_flow_api.append_to_install_script(
 '    return',
 '      case p_canonical',
 '      when ''YES''',
-'      then blog_util.get_attribute_value( ''CANONICAL_URL'' )',
+'      then blog_util.get_attribute_value( ''G_CANONICAL_URL'' )',
 '      end',
 '      ||',
 '      apex_page.get_url(',
@@ -26860,7 +26892,7 @@ wwv_flow_api.append_to_install_script(
 '        ,p_plain_url => true',
 '      );',
 '',
-'    return blog_util.get_attribute_value( ''CANONICAL_URL'' ) || l_url;',
+'    return blog_util.get_attribute_value( ''G_CANONICAL_URL'' ) || l_url;',
 '',
 '  end get_unsubscribe;',
 '--------------------------------------------------------------------------------',
@@ -27317,7 +27349,16 @@ wwv_flow_api.append_to_install_script(
 '        );',
 '        if apex_web_service.g_status_code != 200',
 '        then',
-'          raise_application_error( -20002 ,  apex_lang.message( ''BLOG_EMAIL_VALIDATION_API_SQLERRM'' ) );',
+'          raise_application_error( -20002 ,  apex_lang.message( ''BLOG_EMAIL_VALIDATION_API_SQLERRM'' '))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+') );',
 '        end if;',
 '',
 '        -- convert response to json object',
@@ -27342,16 +27383,7 @@ wwv_flow_api.append_to_install_script(
 '',
 '    return l_err_mesg;',
 '',
-'  except'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ion when others',
+'  exception when others',
 '  then',
 '    -- if something goes wrong',
 '    apex_debug.error( ''Email validation failed: %s'', sqlerrm );',
@@ -27364,17 +27396,20 @@ wwv_flow_api.append_to_install_script(
 '  ) return boolean',
 '  as',
 '    l_cnt     number;',
+'    l_email   varchar2(4000);',
 '    l_result  boolean;',
 '  begin',
 '    -- set result to false by default',
 '    l_result := false;',
+'',
+'    l_email := lower( trim( p_email ) );',
 '',
 '    -- get email count from table',
 '    select count(1) as cnt',
 '    into l_cnt',
 '    from blog_subscribers_email t1',
 '    where 1 = 1',
-'    and t1.email = lower( trim( p_email ) )',
+'    and t1.email = l_email',
 '    ;',
 '    if l_cnt = 1',
 '    then',
@@ -28233,7 +28268,16 @@ wwv_flow_api.append_to_install_script(
 '--  public app page 1003 Ajax Callback process "sitemap-index.xml"',
 '  procedure sitemap_index(',
 '    p_app_id        in varchar2,',
-'    p_app_page_id   in varchar2',
+'    p_app_page_id'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'   in varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
@@ -28249,16 +28293,7 @@ wwv_flow_api.append_to_install_script(
 '-- Called from:',
 '--  public app page 1003 Ajax Callback process "sitemap-categories.xml"',
 '  procedure sitemap_categories;',
-'---------------------'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  public app page 1003 Ajax Callback process "sitemap-archives.xml"',
 '  procedure sitemap_archives;',
@@ -28712,10 +28747,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -28723,9 +28758,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -28745,10 +28780,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -28756,9 +28791,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -28778,10 +28813,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -28789,9 +28824,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -28811,10 +28846,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -28822,9 +28857,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -28844,10 +28879,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -28855,9 +28890,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -28877,10 +28912,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -28888,9 +28923,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -28910,10 +28945,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -28921,9 +28956,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -28943,10 +28978,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -28954,9 +28989,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 '  :new.file_size := sys.dbms_lob.getlength( :new.blob_content );',
@@ -28978,10 +29013,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -28989,9 +29024,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -29011,10 +29046,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -29022,9 +29057,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -29044,10 +29079,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -29055,9 +29090,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -29077,10 +29112,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -29088,9 +29123,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -29113,10 +29148,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -29124,9 +29159,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -29146,20 +29181,29 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
-'    :new.row_version := :old.row_version + 1;',
+'    :new.row_version := :old'))
+);
+null;
+end;
+/
+begin
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -29173,16 +29217,7 @@ wwv_flow_api.append_to_install_script(
 'for each row',
 'begin',
 '',
-'  -- if categ'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ory change update post user datastore table',
+'  -- if category change update post user datastore table',
 '  if :new.title_unique != :old.title_unique',
 '  then',
 '',
@@ -29287,10 +29322,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -29298,9 +29333,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -29320,10 +29355,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -29331,9 +29366,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -29353,10 +29388,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -29364,9 +29399,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -29386,10 +29421,10 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
-'        :new.created_by',
-'      , sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      , sys_context( ''USERENV'',''PROXY_USER'' )',
-'      , sys_context( ''USERENV'',''SESSION_USER'' )',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -29397,9 +29432,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'      sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    , sys_context( ''USERENV'',''PROXY_USER'' )',
-'    , sys_context( ''USERENV'',''SESSION_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',
 'end;',
@@ -29589,8 +29624,8 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,install_value,attribute_value) values (''10'',''1'',''G_ADMIN_APP_ID'',''STRING'',''INTERNAL'',null,null,null,null,''blog_util.in'
-||'t_to_vc2(apex_application_install.get_application_id)'',blog_util.int_to_vc2(apex_application_install.get_application_id));',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''10'',''1'',''G_ADMIN_APP_ID'',''STRING'',''INTERNAL'',null,null,null,null,blog_util.int_to_vc2(apex_a'
+||'pplication_install.get_application_id));',
 '',
 ''))
 );

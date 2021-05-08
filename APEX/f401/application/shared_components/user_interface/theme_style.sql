@@ -114,7 +114,7 @@ wwv_flow_api.create_theme_style(
 ||'\n  padding: 0 0 0 1.6rem;\n}\n.z-author-badges {\n  display: flex;\n  flex-direction: column;\n}\n.z-author-badges > * {\n  margin: 1rem 0;\n}\n@media only screen and (max-width: 640px) {\n  .z-author-container {\n    flex-direction: column;\n    al'
 ||'ign-items: center;\n  }\n  .z-author-right {\n    padding: 1.6rem 0;\n  }\n  .z-author-badges {\n    padding: 1.6rem 0;\n    align-items: center;\n  }\n}\n/**************************************\n* Comments report\n***********************************'
 ||'***/\n.z-comment .t-Comments-body {\n  width: 0;\n}\n.z-comment .t-Comments-comment {\n  overflow-wrap: break-word;\n}\n/**************************************\n* Modifiers\n**************************************/\n.z-text-wrap {\n  white-space: pre-'
-||'wrap;\n}\n.z-hidden {\n  display: none!important;\n  visibility: hidden!important;\n}\n","vars":{"@g_Container-BorderRadius":"4px"}}'
+||'wrap;\n}\n.z-hidden {\n  display: none!important;\n  visibility: hidden!important;\n}\n","vars":{"@g_Container-BorderRadius":"4px","@g_Body-Content-Max-Width":"100%","@Head-Height":"48px"}}'
 ,p_theme_roller_output_file_url=>'#THEME_DB_IMAGES#24929941361992100.css'
 ,p_theme_roller_read_only=>false
 );

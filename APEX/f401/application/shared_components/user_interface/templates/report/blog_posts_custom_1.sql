@@ -15,7 +15,6 @@ wwv_flow_api.create_row_template(
  p_id=>wwv_flow_api.id(6894976353301648)
 ,p_row_template_name=>'Blog Posts (Custom 1)'
 ,p_internal_name=>'BLOG_POSTS_CUSTOM_1'
-,p_javascript_code_onload=>'/*blog.UI.formatProgramCode("pre.z-program-code");*/'
 ,p_row_template1=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<article class="z-post">',
 '  <header class="z-post--header">',

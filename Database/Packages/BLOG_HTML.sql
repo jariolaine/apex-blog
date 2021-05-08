@@ -20,7 +20,8 @@ as
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  -- called from pub app shortcut BLOG_META_ROBOTS_NOINDEX
+-- Called from:
+--  pub app shortcut BLOG_META_ROBOTS_NOINDEX
   function get_robots_noindex_meta return varchar2;
 --------------------------------------------------------------------------------
   function get_tag_anchor(
@@ -30,67 +31,78 @@ as
     p_button              in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- called from pub app shortcut BLOG_META_HOME_DESCRIPTION
+-- Called from:
+--  pub app shortcut BLOG_META_HOME_DESCRIPTION
   function get_description_meta(
     p_desc                in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- called from pub app shortcut BLOG_META_POST_DESCRIPTION
+-- Called from:
+--  pub app shortcut BLOG_META_POST_DESCRIPTION
   function get_post_description_meta(
     p_post_id             in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- called from pub app shortcut BLOG_CANONICAL_LINK_TAB
+-- Called from:
+--  pub app shortcut BLOG_CANONICAL_LINK_TAB
   function get_tab_canonical_link(
     p_app_page_id         in varchar2,
     p_app_id              in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- called from pub app shortcut BLOG_CANONICAL_LINK_POST
+-- Called from:
+--  pub app shortcut BLOG_CANONICAL_LINK_POST
   function get_post_canonical_link(
     p_post_id             in varchar2,
     p_app_id              in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- called from pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
+-- Called from:
+--  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
   function get_category_canonical_link(
     p_category_id         in varchar2,
     p_app_id              in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- called from pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
+-- Called from:
+--  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
   function get_archive_canonical_link(
     p_archive_id          in varchar2,
     p_app_id              in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- called from pub app shortcut BLOG_CANONICAL_LINK_TAG
+-- Called from:
+--  pub app shortcut BLOG_CANONICAL_LINK_TAG
   function get_tag_canonical_link(
     p_tag_id              in varchar2,
     p_app_id              in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- called from pub app shortcut BLOG_RSS_ANCHOR
+-- Called from:
+--  pub app shortcut BLOG_RSS_ANCHOR
   function get_rss_anchor(
     p_app_name            in varchar2,
     p_rss_url             in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- called from pub app shortcut BLOG_RSS_LINK
+-- Called from:
+--  pub app shortcut BLOG_RSS_LINK
   function get_rss_link(
     p_app_id              in varchar2,
     p_app_name            in varchar2,
     p_rss_url             in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- called from pub app classic report on pages 2, 3, 6, 14, 15
+-- Called from:
+--  pub app classic report on pages 2, 3, 6, 14, 15
   function get_post_tags(
     p_post_id             in number,
     p_app_id              in varchar2 default null,
     p_button              in varchar2 default 'YES'
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- not ready / not unused
+-- Called from:
+--  not ready / not unused
   function get_preview_tags(
     p_tags                in varchar2
   ) return varchar2;

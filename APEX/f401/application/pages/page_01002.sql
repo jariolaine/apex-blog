@@ -17,6 +17,7 @@ wwv_flow_api.create_page(
 ,p_name=>'Footer Links Dialog'
 ,p_alias=>'INFORMATION'
 ,p_page_mode=>'MODAL'
+,p_step_title=>'&P1002_PAGE_TITLE.'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8700188054171688)
 ,p_step_template=>wwv_flow_api.id(6762463719267365)
@@ -24,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210411083821'
+,p_last_upd_yyyymmddhh24miss=>'20210420173528'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41876461524408305)

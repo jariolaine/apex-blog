@@ -18,7 +18,6 @@ wwv_flow_api.create_authentication(
 ,p_invalid_session_type=>'LOGIN'
 ,p_use_secure_cookie_yn=>'N'
 ,p_ras_mode=>0
-,p_switch_in_session_yn=>'Y'
 );
 wwv_flow_api.component_end;
 end;

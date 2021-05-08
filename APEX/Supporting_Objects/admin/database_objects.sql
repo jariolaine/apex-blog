@@ -31,7 +31,7 @@ create table  blog_bloggers(
   constraint blog_bloggers_ck2 check( is_active in( 0 , 1 ) ),
   constraint blog_bloggers_ck3 check( display_seq > 0 ),
   constraint blog_bloggers_ck4 check( publish_desc in( 0 , 1 ) ),
-  constraint blog_bloggers_ck4 check( show_desc in( 0 , 1 ) )
+  constraint blog_bloggers_ck5 check( show_desc in( 0 , 1 ) )
 )
 /
 --------------------------------------------------------
@@ -129,11 +129,11 @@ create table blog_dynamic_content(
   content_desc varchar2( 256 char ) not null,
   content_html clob not null,
   notes varchar2( 4000 byte ),
+  constraint blog_dynamic_content_pk primary key( id ),
   constraint blog_dynamic_content_ck1 check( row_version > 0 ),
   constraint blog_dynamic_content_ck2 check( is_active in( 0, 1 ) ),
   constraint blog_dynamic_content_ck3 check( display_seq > 0 ),
-  constraint blog_dynamic_content_ck4 check( content_type in( 'FOOTER_LINK' ) ),
-  constraint blog_dynamic_content_pk primary key( id )
+  constraint blog_dynamic_content_ck4 check( content_type in( 'FOOTER_LINK' ) )
 )
 /
 --------------------------------------------------------
@@ -372,7 +372,6 @@ create table blog_settings(
   int_min number( 2,0 ),
   int_max number( 2,0 ),
   help_message varchar2( 256 byte ),
-  install_value varchar2( 4000 byte ),
   constraint blog_settings_pk primary key( id ),
   constraint blog_settings_uk1 unique( attribute_name ),
   constraint blog_settings_ck1 check( row_version > 0 ),
@@ -714,7 +713,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_SETTINGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "DATA_TYPE", "GROUP_NAME", "ATTRIBUTE_DESC", "ATTRIBUTE_VALUE", "ATTRIBUTE_GROUP", "POST_EXPRESSION", "INT_MIN", "INT_MAX") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "ATTRIBUTE_VALUE", "DATA_TYPE", "GROUP_NAME", "ATTRIBUTE_DESC", "ATTRIBUTE_GROUP", "POST_EXPRESSION", "INT_MIN", "INT_MAX") AS
   select
    t1.id                    as id
   ,t1.row_version           as row_version
@@ -725,13 +724,13 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATE
   ,t1.is_nullable           as is_nullable
   ,t1.display_seq           as display_seq
   ,t1.attribute_name        as attribute_name
+  ,t1.attribute_value       as attribute_value
   ,t1.data_type             as data_type
   ,t1.group_name            as group_name
   ,apex_lang.message(
     'BLOG_PAR_'
     || t1.attribute_name
   )                         as attribute_desc
-  ,t1.attribute_value       as attribute_value
   ,apex_lang.message(
     t1.group_name
   )                         as attribute_group
@@ -1997,8 +1996,6 @@ as
       and v1.content_id = p_content_id
     ) loop
 
-      sys.htp.p( '<h1>' || c1.content_desc || '</h1>' );
-
       sys.htp.p( c1.content_html );
 
       sys.htp.p(
@@ -2632,23 +2629,45 @@ as
     l_first_p_start number;
     l_first_p_end   number;
     l_length        number;
+    l_next_p        number;
+    l_cnt           number;
   begin
 
-    l_first_p_end := instr( p_body_html, '<!--more-->' ) - 1;
-    if l_first_p_end > 0
-    then
-      l_first_p_start := 1;
-    else
-      -- get first paragraph start and end positions
-      l_first_p_start := instr( p_body_html, '<p>' );
-      l_first_p_end   := instr( p_body_html, '</p>', l_first_p_start ) + 3;
-    end if;
+    l_cnt := 1;
+    l_next_p := 1;
 
-    --post must have at least one paragraph
+    -- get first opening and closing tag positions
+    l_first_p_start := instr( p_body_html, '<p>' );
+    l_first_p_end   := instr( p_body_html, '</p>', l_first_p_start ) + 4;
+
+    -- check if there nested tags
+    while l_next_p > 0
+    loop
+      l_cnt := l_cnt + 1;
+
+      -- get string length between opening and closing tag
+      l_length  := l_first_p_end - l_first_p_start;
+      -- select contect between opening and closing tag
+      l_first_p := substr( p_body_html, l_first_p_start, l_length );
+
+      -- check if there is more opening tags inside selection
+      l_next_p := instr( l_first_p, '<p>', 1, l_cnt );
+
+      if l_next_p > 0
+      then
+        -- if another opening tag found, find next closing tag
+        l_first_p_end := instr( p_body_html, '</p>', 1, l_cnt ) + 4;
+      end if;
+
+      l_first_p := null;
+
+    end loop;
+
+
+    -- post must have at least one paragraph
     if l_first_p_start > 0 and l_first_p_end > 0 then
 
-      l_first_p_start := l_first_p_start - 1;
-      l_length        := l_first_p_end - l_first_p_start;
+      l_length := l_first_p_end - l_first_p_start;
 
       -- get first paragraph
       l_first_p := substr( p_body_html, l_first_p_start, l_length );
@@ -3268,7 +3287,12 @@ as
         || case when p_item.element_max_length  is not null
             then 'maxlength="' || p_item.element_max_length || '" '
            end
-        || apex_plugin_util.get_element_attributes(p_item, l_name, 'text_field apex-item-text')
+        ||
+          apex_plugin_util.get_element_attributes(
+             p_item           => p_item
+            ,p_name           => l_name
+            ,p_default_class  => 'text_field apex-item-text'
+          )
         || 'value="" />'
       );
       sys.htp.p('<span class="apex-item-icon '
@@ -3550,7 +3574,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      then blog_util.get_attribute_value( 'G_CANONICAL_URL' )
       end
       ||
       apex_page.get_url(
@@ -3619,7 +3643,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      then blog_util.get_attribute_value( 'G_CANONICAL_URL' )
       end
       ||
       case p_encode_url
@@ -3675,7 +3699,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      then blog_util.get_attribute_value( 'G_CANONICAL_URL' )
       end
       ||
       apex_page.get_url(
@@ -3734,7 +3758,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      then blog_util.get_attribute_value( 'G_CANONICAL_URL' )
       end
       ||
       apex_page.get_url(
@@ -3769,7 +3793,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      then blog_util.get_attribute_value( 'G_CANONICAL_URL' )
       end
       ||
       apex_page.get_url(
@@ -3818,7 +3842,7 @@ as
         ,p_plain_url => true
       );
 
-    return blog_util.get_attribute_value( 'CANONICAL_URL' ) || l_url;
+    return blog_util.get_attribute_value( 'G_CANONICAL_URL' ) || l_url;
 
   end get_unsubscribe;
 --------------------------------------------------------------------------------
@@ -4313,17 +4337,20 @@ as
   ) return boolean
   as
     l_cnt     number;
+    l_email   varchar2(4000);
     l_result  boolean;
   begin
     -- set result to false by default
     l_result := false;
+
+    l_email := lower( trim( p_email ) );
 
     -- get email count from table
     select count(1) as cnt
     into l_cnt
     from blog_subscribers_email t1
     where 1 = 1
-    and t1.email = lower( trim( p_email ) )
+    and t1.email = l_email
     ;
     if l_cnt = 1
     then
@@ -5652,10 +5679,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -5663,9 +5690,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5685,10 +5712,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -5696,9 +5723,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5718,10 +5745,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -5729,9 +5756,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5751,10 +5778,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -5762,9 +5789,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5784,10 +5811,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -5795,9 +5822,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5817,10 +5844,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -5828,9 +5855,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5850,10 +5877,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -5861,9 +5888,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5883,10 +5910,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -5894,9 +5921,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
   :new.file_size := sys.dbms_lob.getlength( :new.blob_content );
@@ -5918,10 +5945,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -5929,9 +5956,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5951,10 +5978,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -5962,9 +5989,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -5984,10 +6011,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -5995,9 +6022,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -6017,10 +6044,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -6028,9 +6055,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -6053,10 +6080,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -6064,9 +6091,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -6086,10 +6113,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -6097,9 +6124,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -6218,10 +6245,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -6229,9 +6256,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -6251,10 +6278,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -6262,9 +6289,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -6284,10 +6311,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -6295,9 +6322,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;
@@ -6317,10 +6344,10 @@ begin
     :new.row_version  := coalesce( :new.row_version, 1 );
     :new.created_on   := coalesce( :new.created_on, localtimestamp );
     :new.created_by   := coalesce(
-        :new.created_by
-      , sys_context( 'APEX$SESSION', 'APP_USER' )
-      , sys_context( 'USERENV','PROXY_USER' )
-      , sys_context( 'USERENV','SESSION_USER' )
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV','PROXY_USER' )
+      ,sys_context( 'USERENV','SESSION_USER' )
     );
   elsif updating then
     :new.row_version := :old.row_version + 1;
@@ -6328,9 +6355,9 @@ begin
 
   :new.changed_on := localtimestamp;
   :new.changed_by := coalesce(
-      sys_context( 'APEX$SESSION', 'APP_USER' )
-    , sys_context( 'USERENV','PROXY_USER' )
-    , sys_context( 'USERENV','SESSION_USER' )
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV','PROXY_USER' )
+    ,sys_context( 'USERENV','SESSION_USER' )
   );
 
 end;

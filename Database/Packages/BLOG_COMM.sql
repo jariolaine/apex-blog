@@ -18,11 +18,15 @@ as
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  -- Called from:
+  --
   function format_comment(
     p_comment           in varchar2,
     p_remove_anchors    in boolean default false
   ) return varchar2;
 --------------------------------------------------------------------------------
+  -- Called from:
+  --
   function validate_comment(
     p_comment           in varchar2,
     p_max_length        in number default 4000
@@ -36,32 +40,43 @@ as
     p_err_mesg          in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function validate_email(
     p_email             in varchar2,
     p_err_mesg          in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function is_email_verified(
     p_email             in varchar2
   ) return boolean;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   procedure flag_comment(
     p_comment_id        in varchar2,
     p_flag              in varchar2
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--
   procedure unflag_comment(
     p_comment_id        in varchar2,
     p_flag              in varchar2
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--
   procedure new_comment_notify(
     p_post_id           in varchar2,
     p_app_name          in varchar2,
     p_email_template    in varchar2
   );
 --------------------------------------------------------------------------------
-  -- Called from: admin app pages 32
+  -- Called from:
+  --  admin app pages 32
   procedure reply_notify(
     p_app_id            in varchar2,
     p_app_name          in varchar2,
@@ -69,11 +84,15 @@ as
     p_email_template    in varchar2
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--
   procedure subscribe(
     p_post_id           in varchar2,
     p_email             in varchar2
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--
   procedure unsubscribe(
     p_subscription_id   in varchar2
   );
@@ -462,17 +481,20 @@ as
   ) return boolean
   as
     l_cnt     number;
+    l_email   varchar2(4000);
     l_result  boolean;
   begin
     -- set result to false by default
     l_result := false;
+
+    l_email := lower( trim( p_email ) );
 
     -- get email count from table
     select count(1) as cnt
     into l_cnt
     from blog_subscribers_email t1
     where 1 = 1
-    and t1.email = lower( trim( p_email ) )
+    and t1.email = l_email
     ;
     if l_cnt = 1
     then

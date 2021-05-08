@@ -33,27 +33,39 @@ as
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function apex_error_handler (
     p_error           in apex_error.t_error
   ) return apex_error.t_error_result;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function int_to_vc2(
     p_value           in number
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_attribute_value(
     p_attribute_name  in varchar2
   ) return varchar2 result_cache;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   procedure initialize_items(
     p_app_id          in varchar2
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_post_title(
     p_post_id         in varchar2,
     p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   procedure get_post_pagination(
     p_post_id         in varchar2,
     p_post_title      out nocopy varchar2,
@@ -63,15 +75,21 @@ as
     p_older_title     out nocopy varchar2
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_category_title(
     p_category_id     in varchar2,
     p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_tag(
     p_tag_id          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   procedure check_archive_exists(
     p_archive_id      in varchar2
   );
@@ -754,8 +772,6 @@ as
       where 1 = 1
       and v1.content_id = p_content_id
     ) loop
-
-      sys.htp.p( '<h1>' || c1.content_desc || '</h1>' );
 
       sys.htp.p( c1.content_html );
 

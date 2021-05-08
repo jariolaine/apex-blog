@@ -21,6 +21,8 @@ as
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_tab(
     p_app_page_id     in varchar2,
     p_app_id          in varchar2 default null,
@@ -32,6 +34,8 @@ as
     p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_post(
     p_post_id         in number,
     p_app_id          in varchar2 default null,
@@ -42,6 +46,8 @@ as
     p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_post(
     p_post_id         in varchar2,
     p_app_id          in varchar2 default null,
@@ -52,6 +58,8 @@ as
     p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_category(
     p_category_id     in number,
     p_app_id          in varchar2 default null,
@@ -62,6 +70,8 @@ as
     p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_category(
     p_category_id     in varchar2,
     p_app_id          in varchar2 default null,
@@ -72,6 +82,8 @@ as
     p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_archive(
     p_archive_id      in number,
     p_app_id          in varchar2 default null,
@@ -82,6 +94,8 @@ as
     p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_archive(
     p_archive_id      in varchar2,
     p_app_id          in varchar2 default null,
@@ -92,6 +106,8 @@ as
     p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_tag(
     p_tag_id          in number,
     p_app_id          in varchar2 default null,
@@ -102,12 +118,16 @@ as
     p_encode_url      in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_unsubscribe(
     p_app_id          in varchar2,
     p_post_id         in varchar2,
     p_subscription_id in number
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   procedure redirect_search(
     p_value           in varchar2,
     p_app_id          in varchar2 default null,
@@ -153,7 +173,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      then blog_util.get_attribute_value( 'G_CANONICAL_URL' )
       end
       ||
       apex_page.get_url(
@@ -222,7 +242,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      then blog_util.get_attribute_value( 'G_CANONICAL_URL' )
       end
       ||
       case p_encode_url
@@ -278,7 +298,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      then blog_util.get_attribute_value( 'G_CANONICAL_URL' )
       end
       ||
       apex_page.get_url(
@@ -337,7 +357,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      then blog_util.get_attribute_value( 'G_CANONICAL_URL' )
       end
       ||
       apex_page.get_url(
@@ -372,7 +392,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then blog_util.get_attribute_value( 'CANONICAL_URL' )
+      then blog_util.get_attribute_value( 'G_CANONICAL_URL' )
       end
       ||
       apex_page.get_url(
@@ -421,7 +441,7 @@ as
         ,p_plain_url => true
       );
 
-    return blog_util.get_attribute_value( 'CANONICAL_URL' ) || l_url;
+    return blog_util.get_attribute_value( 'G_CANONICAL_URL' ) || l_url;
 
   end get_unsubscribe;
 --------------------------------------------------------------------------------

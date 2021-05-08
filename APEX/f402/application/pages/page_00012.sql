@@ -70,7 +70,7 @@ wwv_flow_api.create_page(
 '</ol>',
 ''))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210415130744'
+,p_last_upd_yyyymmddhh24miss=>'20210419131247'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -263,7 +263,7 @@ wwv_flow_api.create_page_branch(
 ,p_branch_action=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:12::&success_msg=#SUCCESS_MSG#'
 ,p_branch_point=>'AFTER_PROCESSING'
 ,p_branch_type=>'REDIRECT_URL'
-,p_branch_sequence=>20
+,p_branch_sequence=>10
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(6929658376150992)
@@ -612,7 +612,7 @@ wwv_flow_api.create_page_item(
 );
 wwv_flow_api.create_page_computation(
  p_id=>wwv_flow_api.id(7077847981172776)
-,p_computation_sequence=>30
+,p_computation_sequence=>10
 ,p_computation_item=>'P12_POST_DESC'
 ,p_computation_type=>'EXPRESSION'
 ,p_computation_language=>'PLSQL'
@@ -624,31 +624,31 @@ wwv_flow_api.create_page_computation(
 );
 wwv_flow_api.create_page_computation(
  p_id=>wwv_flow_api.id(19020963247830233)
-,p_computation_sequence=>40
+,p_computation_sequence=>20
 ,p_computation_item=>'P12_IS_ACTIVE'
 ,p_computation_type=>'EXPRESSION'
 ,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_cm.request_to_post_status(',
-'  p_request    => :REQUEST',
+'  p_request => :REQUEST',
 ')'))
 ,p_required_patch=>wwv_flow_api.id(24687510906079791)
 ,p_computation_comment=>'When adding now post IS_ACTIVE is defined by button CREATE or CREATE_DRAFT. When updating use visible item P12_IS_ACTIVE_DISPLAY'
 );
 wwv_flow_api.create_page_computation(
  p_id=>wwv_flow_api.id(31618253990094018)
-,p_computation_sequence=>50
+,p_computation_sequence=>30
 ,p_computation_item=>'P12_FIRST_PARAGRAPH'
 ,p_computation_type=>'EXPRESSION'
 ,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_cm.get_first_paragraph(',
-'  p_body_html  => :P12_BODY_HTML',
+'  p_body_html => :P12_BODY_HTML',
 ')'))
 );
 wwv_flow_api.create_page_computation(
  p_id=>wwv_flow_api.id(36997318502037729)
-,p_computation_sequence=>60
+,p_computation_sequence=>40
 ,p_computation_item=>'P12_PUBLISHED_ON'
 ,p_computation_type=>'EXPRESSION'
 ,p_computation_language=>'PLSQL'
@@ -659,7 +659,7 @@ wwv_flow_api.create_page_computation(
 wwv_flow_api.create_page_validation(
  p_id=>wwv_flow_api.id(8793505538610781)
 ,p_validation_name=>'P12_VALID_FROM must be timestamp'
-,p_validation_sequence=>1
+,p_validation_sequence=>10
 ,p_validation=>'P12_PUBLISHED_ON'
 ,p_validation_type=>'ITEM_IS_TIMESTAMP'
 ,p_error_message=>'#LABEL# must be a valid timestamp.'
@@ -669,7 +669,7 @@ wwv_flow_api.create_page_validation(
 wwv_flow_api.create_page_validation(
  p_id=>wwv_flow_api.id(31618338103094019)
 ,p_validation_name=>'First paragraph'
-,p_validation_sequence=>11
+,p_validation_sequence=>20
 ,p_validation=>'P12_FIRST_PARAGRAPH'
 ,p_validation_type=>'ITEM_NOT_NULL'
 ,p_error_message=>'Post must have at least one paragraph.'
@@ -885,7 +885,7 @@ wwv_flow_api.create_page_process(
 ,p_process_point=>'AFTER_HEADER'
 ,p_region_id=>wwv_flow_api.id(8640589331194982)
 ,p_process_type=>'NATIVE_FORM_INIT'
-,p_process_name=>'Initialize Post'
+,p_process_name=>'Initialize form Post'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(27060510671689106)
@@ -913,15 +913,17 @@ wwv_flow_api.create_page_process(
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_when=>'DELETE'
+,p_process_when_type=>'REQUEST_NOT_EQUAL_CONDITION'
 ,p_process_comment=>'Add new category if not exists and get category id. If category exists return category id.'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(19355288927963204)
-,p_process_sequence=>40
+,p_process_sequence=>20
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_region_id=>wwv_flow_api.id(8640589331194982)
 ,p_process_type=>'NATIVE_FORM_DML'
-,p_process_name=>'Process Post'
+,p_process_name=>'Process form Post'
 ,p_attribute_01=>'REGION_SOURCE'
 ,p_attribute_05=>'Y'
 ,p_attribute_06=>'Y'
@@ -930,7 +932,7 @@ wwv_flow_api.create_page_process(
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(7077714087172775)
-,p_process_sequence=>50
+,p_process_sequence=>30
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Process Tags'
@@ -947,7 +949,7 @@ wwv_flow_api.create_page_process(
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26610837157511893)
-,p_process_sequence=>70
+,p_process_sequence=>40
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Purge Public Application Cache'

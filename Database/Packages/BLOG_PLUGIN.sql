@@ -110,7 +110,12 @@ as
         || case when p_item.element_max_length  is not null
             then 'maxlength="' || p_item.element_max_length || '" '
            end
-        || apex_plugin_util.get_element_attributes(p_item, l_name, 'text_field apex-item-text')
+        ||
+          apex_plugin_util.get_element_attributes(
+             p_item           => p_item
+            ,p_name           => l_name
+            ,p_default_class  => 'text_field apex-item-text'
+          )
         || 'value="" />'
       );
       sys.htp.p('<span class="apex-item-icon '

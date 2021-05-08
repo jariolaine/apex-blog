@@ -14,6 +14,14 @@ prompt --install
 @@application/shared_components/navigation/lists/footer_links.sql
 @@application/shared_components/files/app_icon_css.sql
 @@application/shared_components/files/app_icon_svg.sql
+@@application/shared_components/files/ico_apple_touch_icon_png.sql
+@@application/shared_components/files/ico_favicon_32x32_png.sql
+@@application/shared_components/files/ico_favicon_16x16_png.sql
+@@application/shared_components/files/ico_favicon_ico.sql
+@@application/shared_components/files/ico_site_webmanifest.sql
+@@application/shared_components/files/ico_android_chrome_192x192_png.sql
+@@application/shared_components/files/ico_android_chrome_512x512_png.sql
+@@application/shared_components/files/ico_about_txt.sql
 @@application/shared_components/files/css_rss_xsl_css.sql
 @@application/shared_components/files/js_blog_js.sql
 @@application/plugin_settings.sql
