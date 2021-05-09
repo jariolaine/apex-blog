@@ -35,6 +35,10 @@ wwv_flow_api.create_page_group(
 ,p_group_desc=>'Links and link groups'
 );
 wwv_flow_api.create_page_group(
+ p_id=>wwv_flow_api.id(43527387853454697)
+,p_group_name=>'Modal Pages'
+);
+wwv_flow_api.create_page_group(
  p_id=>wwv_flow_api.id(8929534050595858)
 ,p_group_name=>'Posts'
 ,p_group_desc=>'Posts, categories and tags'

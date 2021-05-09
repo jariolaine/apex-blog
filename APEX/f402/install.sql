@@ -8,6 +8,7 @@ prompt --install
 @@application/shared_components/navigation/lists/home.sql
 @@application/shared_components/navigation/lists/settings.sql
 @@application/shared_components/navigation/lists/public_application_links.sql
+@@application/shared_components/navigation/lists/activity_reports.sql
 @@application/shared_components/files/app_icon_svg.sql
 @@application/shared_components/files/app_icon_css.sql
 @@application/shared_components/files/css_admin_css.sql
@@ -44,6 +45,7 @@ prompt --install
 @@application/shared_components/user_interface/lovs/tags.sql
 @@application/shared_components/user_interface/lovs/tags_hidden.sql
 @@application/shared_components/user_interface/lovs/tags_visible.sql
+@@application/shared_components/user_interface/lovs/timeframe_4_weeks.sql
 @@application/shared_components/user_interface/lovs/yes_no.sql
 @@application/pages/page_groups.sql
 @@application/comments.sql
@@ -153,7 +155,11 @@ prompt --install
 @@application/pages/page_20011.sql
 @@application/pages/page_20012.sql
 @@application/pages/page_30010.sql
-@@application/pages/page_30011.sql
+@@application/pages/page_30020.sql
+@@application/pages/page_30021.sql
+@@application/pages/page_30022.sql
+@@application/pages/page_30023.sql
+@@application/pages/page_30024.sql
 @@application/deployment/definition.sql
 @@application/deployment/install/install_database_objects.sql
 @@application/deployment/install/install_text_index.sql

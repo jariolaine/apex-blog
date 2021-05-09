@@ -17,12 +17,13 @@ wwv_flow_api.create_page(
 ,p_name=>'Settings'
 ,p_alias=>'SETTINGS'
 ,p_step_title=>'Settings'
+,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8574375481518289)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201108165040'
+,p_last_upd_yyyymmddhh24miss=>'20210509044125'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(51691560566605050)

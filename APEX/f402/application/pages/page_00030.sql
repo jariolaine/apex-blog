@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210415140114'
+,p_last_upd_yyyymmddhh24miss=>'20210508112310'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27412346667552217)
@@ -291,6 +291,25 @@ wwv_flow_api.create_page_da_action(
 '  $(this).children("span").toggleClass("fa-envelope-o fa-envelope-open-o");',
 '});'))
 ,p_da_action_comment=>'Attach one time click event listener to report links having data attribute. When report link is clicked change link icon class.'
+);
+wwv_flow_api.create_page_da_event(
+ p_id=>wwv_flow_api.id(43467068897898202)
+,p_name=>'Process Comment'
+,p_event_sequence=>20
+,p_triggering_element_type=>'REGION'
+,p_triggering_region_id=>wwv_flow_api.id(27412346667552217)
+,p_bind_type=>'bind'
+,p_bind_event_type=>'apexafterclosedialog'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(43467195075898203)
+,p_event_id=>wwv_flow_api.id(43467068897898202)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_api.id(27412346667552217)
 );
 wwv_flow_api.component_end;
 end;

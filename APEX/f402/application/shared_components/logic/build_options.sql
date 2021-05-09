@@ -33,13 +33,6 @@ wwv_flow_api.create_build_option(
 ,p_build_option_comment=>'Features that are commented out for now.'
 );
 wwv_flow_api.create_build_option(
- p_id=>wwv_flow_api.id(24687510906079791)
-,p_build_option_name=>'Need Review'
-,p_build_option_status=>'INCLUDE'
-,p_default_on_export=>'INCLUDE'
-,p_build_option_comment=>'Objects that need to reviewed and changed in future.'
-);
-wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(35674953070739317)
 ,p_build_option_name=>'BLOG_ADM_FEATURE_APEX_AUTH'
 ,p_build_option_status=>'INCLUDE'

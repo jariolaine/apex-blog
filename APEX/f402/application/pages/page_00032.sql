@@ -15,7 +15,6 @@ wwv_flow_api.create_page(
  p_id=>32
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
 ,p_name=>'Reply/Edit Comment'
-,p_alias=>'REPLY-EDIT-COMMENT'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'&P31_POST_TITLE.'
 ,p_autocomplete_on_off=>'OFF'
@@ -24,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210413190715'
+,p_last_upd_yyyymmddhh24miss=>'20210508122011'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(76305240814166745)

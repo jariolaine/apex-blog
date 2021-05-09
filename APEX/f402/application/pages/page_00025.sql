@@ -19,10 +19,11 @@ wwv_flow_api.create_page(
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Modal Popup Pages'
 ,p_autocomplete_on_off=>'OFF'
+,p_group_id=>wwv_flow_api.id(43527387853454697)
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210413113445'
+,p_last_upd_yyyymmddhh24miss=>'20210508122126'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41939477197116306)

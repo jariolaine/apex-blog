@@ -21,8 +21,8 @@ wwv_flow_api.create_page(
 ,p_group_id=>wwv_flow_api.id(8929534050595858)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210415132437'
+,p_last_updated_by=>'JARI.LAINE.O@GMAIL.COM'
+,p_last_upd_yyyymmddhh24miss=>'20210508120519'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8596898648797585)
@@ -381,9 +381,10 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_display_rows=>10
+,p_view_mode=>'REPORT'
 ,p_report_columns=>'POST_TITLE:CATEGORY_TITLE:POST_STATUS:CHANGED_ON::TAG_ID'
-,p_sort_column_1=>'CREATED_ON'
-,p_sort_direction_1=>'DESC'
+,p_sort_column_1=>'PUBLISHED_ON'
+,p_sort_direction_1=>'DESC NULLS FIRST'
 ,p_sort_column_2=>'0'
 ,p_sort_direction_2=>'ASC'
 ,p_sort_column_3=>'0'

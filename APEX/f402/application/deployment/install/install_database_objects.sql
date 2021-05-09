@@ -995,8 +995,9 @@ wwv_flow_api.append_to_install_script(
 '--  DDL for View BLOG_V_ALL_POSTS',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LEN'
-||'GTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS',
-'  select',
+||'GTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "PUBLISHED_COMMENTS_COUNT", "NEW_COMMENTS_COUNT", "MODERATE_COMMENTS_COUNT", "DISABLED_COMMENTS_COUNT'
+||'", "POST_STATUS") AS',
+'select',
 '   t1.id                as id',
 '  ,t1.category_id       as category_id',
 '  ,t1.blogger_id        as blogger_id',
@@ -1052,6 +1053,53 @@ wwv_flow_api.append_to_install_script(
 '    where 1 = 1',
 '    and co.post_id  = t1.id',
 '  )                     as comments_count',
+'  ,(',
+'    select count( co.id )',
+'    from blog_comments co',
+'    where 1 = 1',
+'    and co.is_active = 1',
+'    and co.post_id  = t1.id',
+'  )                     as published_comments_count',
+'  ,(',
+'    select count( co.id )',
+'    from blog_comments co',
+'    where 1 = 1',
+'    and co.post_id  = t1.id',
+'    and exists(',
+'      select 1',
+'      from blog_comment_flags x1',
+'      where 1 = 1',
+'      and x1.flag = ''NEW''',
+'      and x1.comment_id = co.id',
+'    )',
+'  )                     as new_comments_count',
+'  ,(',
+'    select count( co.id )',
+'    from blog_comments co',
+'    where 1 = 1',
+'    and co.post_id  = t1.id',
+'    and exists(',
+'      select 1',
+'      from blog_comment_flags x1',
+'      where 1 = 1',
+'      and x1.flag = ''MODERATE''',
+'      and x1.comment_id = co.id',
+'    )',
+'  )                     as moderate_comments_count',
+'  ,(',
+'    select count( co.id )',
+'    from blog_comments co',
+'    where 1 = 1',
+'    and co.post_id  = t1.id',
+'    and co.is_active = 0',
+'    and not exists(',
+'      select 1',
+'      from blog_comment_flags x1',
+'      where 1 = 1',
+'      and x1.flag = ''MODERATE''',
+'      and x1.comment_id = co.id',
+'    )',
+'  )                     as disabled_comments_count',
 '  ,case',
 '    when t3.is_active = 0',
 '    then ''BLOGGER_DISABLED''',
@@ -1062,7 +1110,7 @@ wwv_flow_api.append_to_install_script(
 '    when t1.published_on > localtimestamp',
 '    then ''SCHEDULED''',
 '    else ''PUBLISHED''',
-'   end                  as post_status',
+'  end                  as post_status',
 'from blog_posts t1',
 'join blog_categories t2',
 '  on t1.category_id = t2.id',
@@ -1316,27 +1364,39 @@ wwv_flow_api.append_to_install_script(
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function apex_error_handler (',
 '    p_error           in apex_error.t_error',
 '  ) return apex_error.t_error_result;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function int_to_vc2(',
 '    p_value           in number',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function get_attribute_value(',
 '    p_attribute_name  in varchar2',
 '  ) return varchar2 result_cache;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  procedure initialize_items(',
 '    p_app_id          in varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function get_post_title(',
 '    p_post_id         in varchar2,',
 '    p_escape          in boolean',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  procedure get_post_pagination(',
 '    p_post_id         in varchar2,',
 '    p_post_title      out nocopy varchar2,',
@@ -1346,15 +1406,21 @@ wwv_flow_api.append_to_install_script(
 '    p_older_title     out nocopy varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function get_category_title(',
 '    p_category_id     in varchar2,',
 '    p_escape          in boolean',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function get_tag(',
 '    p_tag_id          in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  procedure check_archive_exists(',
 '    p_archive_id      in varchar2',
 '  );',
@@ -1514,7 +1580,25 @@ wwv_flow_api.append_to_install_script(
 '    return to_char( p_value,  ''fm99999999999999999999999999999999999999'' );',
 '  end int_to_vc2;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
+'----------'))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'----------------------------------------------------------------------',
 '  function get_attribute_value(',
 '    p_attribute_name in varchar2',
 '  ) return varchar2 result_cache',
@@ -1566,25 +1650,7 @@ wwv_flow_api.append_to_install_script(
 '',
 '  end get_attribute_value;',
 '--------------------------------------------------------------------------------',
-'---------------------------'))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '  procedure initialize_items(',
 '    p_app_id in varchar2',
 '  )',
@@ -2145,7 +2211,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  -- Called from:',
-'  --  admin app authentication schema Google',
+'  --  this function is not used',
 '  procedure post_authentication(',
 '    p_user_email      in varchar2 default null',
 '  );',
@@ -2237,10 +2303,12 @@ wwv_flow_api.append_to_install_script(
 '    p_sep             in varchar2 default '',''',
 '  );',
 '--------------------------------------------------------------------------------',
-'  -- this procedure is not used currently',
+'  -- Called from:',
+'  --  this procedure is not used currently',
 '  procedure remove_unused_tags;',
 '--------------------------------------------------------------------------------',
-'  -- this procedure is not used / not ready',
+'  -- Called from:',
+'  --  this procedure is not used / not ready',
 '  procedure save_post_preview(',
 '    p_id              in varchar2,',
 '    p_tags            in varchar2,',
@@ -2249,7 +2317,8 @@ wwv_flow_api.append_to_install_script(
 '    p_body_html       in clob',
 '  );',
 '--------------------------------------------------------------------------------',
-'  -- this procedure is not used / not ready',
+'  -- Called from:',
+'  --  this procedure is not used / not ready',
 '  procedure purge_post_preview;',
 '---------------------------- ----------------------------------------------------',
 '  -- this procedure is not used / not ready',
@@ -2495,7 +2564,25 @@ wwv_flow_api.append_to_install_script(
 '      ,blogger_name',
 '    into p_id, p_name',
 '    from blog_bloggers',
-'    where apex_username = p_username',
+'    '))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'where apex_username = p_username',
 '    ;',
 '',
 '  -- if user not found, check is user authorized use blog',
@@ -2542,25 +2629,7 @@ wwv_flow_api.append_to_install_script(
 '  return varchar2',
 '  as',
 '    l_max     number;',
-'    l_result  '))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'varchar2(256);',
+'    l_result  varchar2(256);',
 '  begin',
 '',
 '    -- fetch max link group display sequence',
@@ -3481,7 +3550,25 @@ wwv_flow_api.append_to_install_script(
 '',
 '    if not l_result then',
 '',
-'      p_result.message := apex_lang.message(',
+'      p_result.mess'))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'age := apex_lang.message(',
 '        p_name => p_plugin.attribute_01',
 '        ,p0 => p_item.plain_label',
 '      );',
@@ -3515,29 +3602,13 @@ wwv_flow_api.append_to_install_script(
 '--                            Added parameter p_canonical to functions returning URL',
 '--    Jari Laine 10.05.2020 - New function get_unsubscribe',
 '--    Jari Laine 19.05.2020 - Changed page and items name to "hard coded" values',
-'--                            and removed global constants from blog_util '))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'package',
+'--                            and removed global constants from blog_util package',
 '--    Jari Laine 23.05.2020 - Removed default from function get_tab parameter p_app_page_id',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function get_tab(',
 '    p_app_page_id     in varchar2,',
 '    p_app_id          in varchar2 default null,',
@@ -3549,6 +3620,8 @@ wwv_flow_api.append_to_install_script(
 '    p_encode_url      in varchar2 default ''NO''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function get_post(',
 '    p_post_id         in number,',
 '    p_app_id          in varchar2 default null,',
@@ -3559,6 +3632,8 @@ wwv_flow_api.append_to_install_script(
 '    p_encode_url      in varchar2 default ''NO''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function get_post(',
 '    p_post_id         in varchar2,',
 '    p_app_id          in varchar2 default null,',
@@ -3569,6 +3644,8 @@ wwv_flow_api.append_to_install_script(
 '    p_encode_url      in varchar2 default ''NO''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function get_category(',
 '    p_category_id     in number,',
 '    p_app_id          in varchar2 default null,',
@@ -3579,6 +3656,8 @@ wwv_flow_api.append_to_install_script(
 '    p_encode_url      in varchar2 default ''NO''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function get_category(',
 '    p_category_id     in varchar2,',
 '    p_app_id          in varchar2 default null,',
@@ -3589,6 +3668,8 @@ wwv_flow_api.append_to_install_script(
 '    p_encode_url      in varchar2 default ''NO''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function get_archive(',
 '    p_archive_id      in number,',
 '    p_app_id          in varchar2 default null,',
@@ -3599,6 +3680,8 @@ wwv_flow_api.append_to_install_script(
 '    p_encode_url      in varchar2 default ''NO''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function get_archive(',
 '    p_archive_id      in varchar2,',
 '    p_app_id          in varchar2 default null,',
@@ -3609,6 +3692,8 @@ wwv_flow_api.append_to_install_script(
 '    p_encode_url      in varchar2 default ''NO''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function get_tag(',
 '    p_tag_id          in number,',
 '    p_app_id          in varchar2 default null,',
@@ -3619,12 +3704,16 @@ wwv_flow_api.append_to_install_script(
 '    p_encode_url      in varchar2 default ''NO''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function get_unsubscribe(',
 '    p_app_id          in varchar2,',
 '    p_post_id         in varchar2,',
 '    p_subscription_id in number',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  procedure redirect_search(',
 '    p_value           in varchar2,',
 '    p_app_id          in varchar2 default null,',
@@ -3989,11 +4078,15 @@ wwv_flow_api.append_to_install_script(
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
+'  -- Called from:',
+'  --',
 '  function format_comment(',
 '    p_comment           in varchar2,',
 '    p_remove_anchors    in boolean default false',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'  -- Called from:',
+'  --',
 '  function validate_comment(',
 '    p_comment           in varchar2,',
 '    p_max_length        in number default 4000',
@@ -4007,32 +4100,43 @@ wwv_flow_api.append_to_install_script(
 '    p_err_mesg          in varchar2 default ''BLOG_VALIDATION_ERR_EMAIL''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function validate_email(',
 '    p_email             in varchar2,',
 '    p_err_mesg          in varchar2 default ''BLOG_VALIDATION_ERR_EMAIL''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  function is_email_verified(',
 '    p_email             in varchar2',
 '  ) return boolean;',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  procedure flag_comment(',
 '    p_comment_id        in varchar2,',
 '    p_flag              in varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  procedure unflag_comment(',
 '    p_comment_id        in varchar2,',
 '    p_flag              in varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  procedure new_comment_notify(',
 '    p_post_id           in varchar2,',
 '    p_app_name          in varchar2,',
 '    p_email_template    in varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
-'  -- Called from: admin app pages 32',
+'  -- Called from:',
+'  --  admin app pages 32',
 '  procedure reply_notify(',
 '    p_app_id            in varchar2,',
 '    p_app_name          in varchar2,',
@@ -4040,11 +4144,15 @@ wwv_flow_api.append_to_install_script(
 '    p_email_template    in varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  procedure subscribe(',
 '    p_post_id           in varchar2,',
 '    p_email             in varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
+'-- Called from:',
+'--',
 '  procedure unsubscribe(',
 '    p_subscription_id   in varchar2',
 '  );',
@@ -4337,7 +4445,25 @@ wwv_flow_api.append_to_install_script(
 '  as',
 '    l_err_mesg varchar2(32700);',
 '  begin',
-'    -- TO DO see item 3 from package specs',
+' '))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'   -- TO DO see item 3 from package specs',
 '',
 '    -- do some basic check for email address',
 '    if not regexp_like( p_email, ''^.*\@.*\..*$'' )',
@@ -4395,25 +4521,7 @@ wwv_flow_api.append_to_install_script(
 '        );',
 '        if apex_web_service.g_status_code != 200',
 '        then',
-'          raise_application_error( -20002 ,  apex_lang.message( ''BLOG_EMAIL_VALIDATION_API_SQLERRM'' '))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-') );',
+'          raise_application_error( -20002 ,  apex_lang.message( ''BLOG_EMAIL_VALIDATION_API_SQLERRM'' ) );',
 '        end if;',
 '',
 '        -- convert response to json object',
@@ -4743,7 +4851,8 @@ wwv_flow_api.append_to_install_script(
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  -- called from pub app shortcut BLOG_META_ROBOTS_NOINDEX',
+'-- Called from:',
+'--  pub app shortcut BLOG_META_ROBOTS_NOINDEX',
 '  function get_robots_noindex_meta return varchar2;',
 '--------------------------------------------------------------------------------',
 '  function get_tag_anchor(',
@@ -4753,67 +4862,78 @@ wwv_flow_api.append_to_install_script(
 '    p_button              in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- called from pub app shortcut BLOG_META_HOME_DESCRIPTION',
+'-- Called from:',
+'--  pub app shortcut BLOG_META_HOME_DESCRIPTION',
 '  function get_description_meta(',
 '    p_desc                in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- called from pub app shortcut BLOG_META_POST_DESCRIPTION',
+'-- Called from:',
+'--  pub app shortcut BLOG_META_POST_DESCRIPTION',
 '  function get_post_description_meta(',
 '    p_post_id             in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- called from pub app shortcut BLOG_CANONICAL_LINK_TAB',
+'-- Called from:',
+'--  pub app shortcut BLOG_CANONICAL_LINK_TAB',
 '  function get_tab_canonical_link(',
 '    p_app_page_id         in varchar2,',
 '    p_app_id              in varchar2 default null',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- called from pub app shortcut BLOG_CANONICAL_LINK_POST',
+'-- Called from:',
+'--  pub app shortcut BLOG_CANONICAL_LINK_POST',
 '  function get_post_canonical_link(',
 '    p_post_id             in varchar2,',
 '    p_app_id              in varchar2 default null',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- called from pub app shortcut BLOG_CANONICAL_LINK_CATEGORY',
+'-- Called from:',
+'--  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY',
 '  function get_category_canonical_link(',
 '    p_category_id         in varchar2,',
 '    p_app_id              in varchar2 default null',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- called from pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE',
+'-- Called from:',
+'--  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE',
 '  function get_archive_canonical_link(',
 '    p_archive_id          in varchar2,',
 '    p_app_id              in varchar2 default null',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- called from pub app shortcut BLOG_CANONICAL_LINK_TAG',
+'-- Called from:',
+'--  pub app shortcut BLOG_CANONICAL_LINK_TAG',
 '  function get_tag_canonical_link(',
 '    p_tag_id              in varchar2,',
 '    p_app_id              in varchar2 default null',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- called from pub app shortcut BLOG_RSS_ANCHOR',
+'-- Called from:',
+'--  pub app shortcut BLOG_RSS_ANCHOR',
 '  function get_rss_anchor(',
 '    p_app_name            in varchar2,',
 '    p_rss_url             in varchar2 default null',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- called from pub app shortcut BLOG_RSS_LINK',
+'-- Called from:',
+'--  pub app shortcut BLOG_RSS_LINK',
 '  function get_rss_link(',
 '    p_app_id              in varchar2,',
 '    p_app_name            in varchar2,',
 '    p_rss_url             in varchar2 default null',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- called from pub app classic report on pages 2, 3, 6, 14, 15',
+'-- Called from:',
+'--  pub app classic report on pages 2, 3, 6, 14, 15',
 '  function get_post_tags(',
 '    p_post_id             in number,',
 '    p_app_id              in varchar2 default null,',
 '    p_button              in varchar2 default ''YES''',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
-'  -- not ready / not unused',
+'-- Called from:',
+'--  not ready / not unused',
 '  function get_preview_tags(',
 '    p_tags                in varchar2',
 '  ) return varchar2;',
@@ -5281,6 +5401,24 @@ wwv_flow_api.append_to_install_script(
 'create or replace package "BLOG_XML"',
 'authid definer',
 'as',
+''))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '--',
@@ -5323,25 +5461,7 @@ wwv_flow_api.append_to_install_script(
 '--  public app page 1003 Ajax Callback process "sitemap-index.xml"',
 '  procedure sitemap_index(',
 '    p_app_id        in varchar2,',
-'    p_app_page_id'))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   in varchar2',
+'    p_app_page_id   in varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
@@ -6187,7 +6307,25 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )'))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'',
 '    ,sys_context( ''USERENV'',''PROXY_USER'' )',
 '    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
@@ -6251,25 +6389,7 @@ wwv_flow_api.append_to_install_script(
 '      ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
-'    :new.row_version := :old'))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',

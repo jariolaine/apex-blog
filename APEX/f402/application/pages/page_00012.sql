@@ -70,7 +70,7 @@ wwv_flow_api.create_page(
 '</ol>',
 ''))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210419131247'
+,p_last_upd_yyyymmddhh24miss=>'20210509030601'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -632,7 +632,6 @@ wwv_flow_api.create_page_computation(
 '#OWNER#.blog_cm.request_to_post_status(',
 '  p_request => :REQUEST',
 ')'))
-,p_required_patch=>wwv_flow_api.id(24687510906079791)
 ,p_computation_comment=>'When adding now post IS_ACTIVE is defined by button CREATE or CREATE_DRAFT. When updating use visible item P12_IS_ACTIVE_DISPLAY'
 );
 wwv_flow_api.create_page_computation(

@@ -1,8 +1,8 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "POST_STATUS") AS
-  select
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "PUBLISHED_COMMENTS_COUNT", "NEW_COMMENTS_COUNT", "MODERATE_COMMENTS_COUNT", "DISABLED_COMMENTS_COUNT", "POST_STATUS") AS
+select
    t1.id                as id
   ,t1.category_id       as category_id
   ,t1.blogger_id        as blogger_id
@@ -58,6 +58,53 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_I
     where 1 = 1
     and co.post_id  = t1.id
   )                     as comments_count
+  ,(
+    select count( co.id )
+    from blog_comments co
+    where 1 = 1
+    and co.is_active = 1
+    and co.post_id  = t1.id
+  )                     as published_comments_count
+  ,(
+    select count( co.id )
+    from blog_comments co
+    where 1 = 1
+    and co.post_id  = t1.id
+    and exists(
+      select 1
+      from blog_comment_flags x1
+      where 1 = 1
+      and x1.flag = 'NEW'
+      and x1.comment_id = co.id
+    )
+  )                     as new_comments_count
+  ,(
+    select count( co.id )
+    from blog_comments co
+    where 1 = 1
+    and co.post_id  = t1.id
+    and exists(
+      select 1
+      from blog_comment_flags x1
+      where 1 = 1
+      and x1.flag = 'MODERATE'
+      and x1.comment_id = co.id
+    )
+  )                     as moderate_comments_count
+  ,(
+    select count( co.id )
+    from blog_comments co
+    where 1 = 1
+    and co.post_id  = t1.id
+    and co.is_active = 0
+    and not exists(
+      select 1
+      from blog_comment_flags x1
+      where 1 = 1
+      and x1.flag = 'MODERATE'
+      and x1.comment_id = co.id
+    )
+  )                     as disabled_comments_count
   ,case
     when t3.is_active = 0
     then 'BLOGGER_DISABLED'
@@ -68,7 +115,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_I
     when t1.published_on > localtimestamp
     then 'SCHEDULED'
     else 'PUBLISHED'
-   end                  as post_status
+  end                  as post_status
 from blog_posts t1
 join blog_categories t2
   on t1.category_id = t2.id
