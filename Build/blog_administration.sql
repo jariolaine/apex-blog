@@ -36,7 +36,7 @@ prompt APPLICATION 402 - Blog Administration
 --       Computations:             8
 --       Validations:              9
 --       Processes:               50
---       Regions:                 81
+--       Regions:                 80
 --       Buttons:                 75
 --       Dynamic Actions:         31
 --     Shared Components:
@@ -130,7 +130,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509083622'
+,p_last_upd_yyyymmddhh24miss=>'20210509120730'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>211
 ,p_ui_type_name => null
@@ -432,7 +432,7 @@ wwv_flow_api.create_list_item(
 ,p_list_item_display_sequence=>20
 ,p_list_item_link_text=>'Page Views Metric'
 ,p_list_item_link_target=>'f?p=&APP_ID.:30021:&SESSION.::&DEBUG.:RR:::'
-,p_list_item_icon=>'fa-table-search'
+,p_list_item_icon=>'fa-file-clock'
 ,p_list_text_01=>'Summary and breakdown by page report of page view counts and elapsed time'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
@@ -459,7 +459,7 @@ wwv_flow_api.create_list_item(
 ,p_list_item_display_sequence=>50
 ,p_list_item_link_text=>'Application Error Log'
 ,p_list_item_link_target=>'f?p=&APP_ID.:30022:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-exclamation'
+,p_list_item_icon=>'fa-exclamation-triangle-o'
 ,p_list_text_01=>'Report of errors logged by this application'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
@@ -12394,7 +12394,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210508121559'
+,p_last_upd_yyyymmddhh24miss=>'20210509120730'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8582113239518316)
@@ -12408,38 +12408,12 @@ wwv_flow_api.create_page_plug(
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
-wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(41879278282408333)
-,p_plug_name=>'Blog URLs'
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--accent3:t-Region--scrollBody'
-,p_component_template_options=>'#DEFAULT#:u-colors'
-,p_plug_template=>wwv_flow_api.id(8496813422518209)
-,p_plug_display_sequence=>120
-,p_plug_display_point=>'BODY'
-,p_list_id=>wwv_flow_api.id(43181213072992711)
-,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>wwv_flow_api.id(8538547318518236)
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-);
-wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(43466980855898201)
-,p_plug_name=>'Dashboard'
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--hideHeader:t-Region--scrollBody'
-,p_plug_template=>wwv_flow_api.id(8496813422518209)
-,p_plug_display_sequence=>10
-,p_include_in_reg_disp_sel_yn=>'Y'
-,p_plug_display_point=>'BODY'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
-);
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(37646499764287130)
 ,p_name=>'Posts'
-,p_parent_plug_id=>wwv_flow_api.id(43466980855898201)
 ,p_template=>wwv_flow_api.id(8496813422518209)
-,p_display_sequence=>51
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--accent1:t-Region--stacked:t-Region--scrollBody'
+,p_display_sequence=>10
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--accent1:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-BadgeList--medium:t-BadgeList--dash:t-BadgeList--fixed:t-Report--hideNoPagination'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
@@ -12545,10 +12519,9 @@ wwv_flow_api.create_report_columns(
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(37647496544287140)
 ,p_name=>'Comments'
-,p_parent_plug_id=>wwv_flow_api.id(43466980855898201)
 ,p_template=>wwv_flow_api.id(8496813422518209)
-,p_display_sequence=>61
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--accent2:t-Region--stacked:t-Region--scrollBody'
+,p_display_sequence=>20
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--accent2:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-BadgeList--medium:t-BadgeList--dash:t-BadgeList--fixed:t-Report--hideNoPagination'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
@@ -12627,6 +12600,19 @@ wwv_flow_api.create_report_columns(
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 ,p_required_patch=>wwv_flow_api.id(24687280101070827)
+);
+wwv_flow_api.create_page_plug(
+ p_id=>wwv_flow_api.id(41879278282408333)
+,p_plug_name=>'Blog URLs'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--accent3:t-Region--scrollBody'
+,p_component_template_options=>'#DEFAULT#:u-colors'
+,p_plug_template=>wwv_flow_api.id(8496813422518209)
+,p_plug_display_sequence=>40
+,p_plug_display_point=>'BODY'
+,p_list_id=>wwv_flow_api.id(43181213072992711)
+,p_plug_source_type=>'NATIVE_LIST'
+,p_list_template_id=>wwv_flow_api.id(8538547318518236)
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
 end;
 /
@@ -18625,7 +18611,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210508112310'
+,p_last_upd_yyyymmddhh24miss=>'20210509091436'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27412346667552217)
@@ -22007,7 +21993,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509081634'
+,p_last_upd_yyyymmddhh24miss=>'20210509115411'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43823229274615012)
@@ -22066,22 +22052,26 @@ wwv_flow_api.create_jet_chart_series(
 ,p_data_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'with nw as (',
 '    -- APEX_ACTIVITY_LOG uses dates; convert system time to local time zone.',
-'    select from_tz( cast( sysdate as timestamp ), to_char( systimestamp, ''TZR'' ) ) at local as tm from dual',
+'  select from_tz( cast( sysdate as timestamp ), to_char( systimestamp, ''TZR'' ) ) at local as tm',
+'  from dual',
 '),',
 'window as (',
-'    select',
-'         trunc(nw.tm - ((level-1)/24),''HH'') start_tm,',
-'         trunc(nw.tm - ((level-2)/24),''HH'') end_tm,',
-'         trunc(sysdate-((level-1)/24),''HH'') log_start_tm,',
-'         trunc(sysdate-((level-2)/24),''HH'') log_end_tm',
-'    from nw',
-'    connect by level <= round( 24 * ( 1/24/60/60 * nvl(:P30020_TIMEFRAME,1) ) )',
+'  select',
+'    trunc(nw.tm - ((level-1)/24),''HH'')  as start_tm',
+'    ,trunc(nw.tm - ((level-2)/24),''HH'') as end_tm',
+'    ,trunc(sysdate-((level-1)/24),''HH'') as log_start_tm',
+'    ,trunc(sysdate-((level-2)/24),''HH'') as log_end_tm',
+'  from nw',
+'  connect by level <= round( 24 * ( 1/24/60/60 * nvl( :P30020_TIMEFRAME, 1 ) ) )',
 ')',
-'select  w.start_tm log_time,',
-'    (   select count(*)',
-'        from apex_activity_log l',
-'        where l.flow_id = :G_PUB_APP_ID',
-'            and l.time_stamp between w.log_start_tm and w.log_end_tm ) as value',
+'select  w.start_tm as log_time',
+'  ,(',
+'    select count(*)',
+'    from apex_activity_log l',
+'    where 1 = 1',
+'      and l.flow_id = :G_PUB_APP_ID',
+'      and l.time_stamp between w.log_start_tm and w.log_end_tm',
+'  ) as value',
 'from window w',
 'order by 1'))
 ,p_max_row_count=>350
@@ -22192,19 +22182,24 @@ wwv_flow_api.create_jet_chart_series(
 ,p_name=>'Series 1'
 ,p_data_source_type=>'SQL'
 ,p_data_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select x.step_id||''. ''||(',
-'    select page_name from apex_application_pages p where p.application_id = :G_PUB_APP_ID and page_id = x.step_id) label, ',
-'        value ',
-'from',
-'(',
-'select step_id,',
+'select x.step_id || ''. '' || (',
+'    select page_name ',
+'    from apex_application_pages p ',
+'    where 1 = 1',
+'      and p.application_id = :G_PUB_APP_ID ',
+'      and page_id = x.step_id',
+'  ) as label, ',
+'  x.value ',
+'from(',
+'  select step_id,',
 '    count(*) as value',
-'from apex_activity_log',
-'where flow_id = :G_PUB_APP_ID',
+'  from apex_activity_log',
+'  where 1 = 1',
+'    and flow_id = :G_PUB_APP_ID',
 '    and time_stamp >= sysdate - ( 1/24/60/60 * :P30020_TIMEFRAME )',
 '    and step_id is not null',
-'group by step_id',
-'order by 2 desc',
+'  group by step_id',
+'  order by 2 desc',
 ') x'))
 ,p_max_row_count=>10
 ,p_ajax_items_to_submit=>'P30020_TIMEFRAME'
@@ -22270,13 +22265,14 @@ wwv_flow_api.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'    sqlerrm label,',
-'    time_stamp value',
+'  sqlerrm label',
+'  ,time_stamp value',
 'from apex_activity_log',
 'where flow_id = :G_PUB_APP_ID',
-'and time_stamp >= sysdate - ( 1/24/60/60 * :P30020_TIMEFRAME )',
-'and sqlerrm is not null',
-'order by 2 desc, 1'))
+'  and time_stamp >= sysdate - ( 1/24/60/60 * :P30020_TIMEFRAME )',
+'  and sqlerrm is not null',
+'order by 2 desc',
+'  ,1'))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P30020_TIMEFRAME'
 ,p_query_row_template=>wwv_flow_api.id(8519378220518224)
@@ -22411,17 +22407,17 @@ wwv_flow_api.create_page(
  p_id=>30021
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
 ,p_name=>'Page Views Metric'
+,p_alias=>'PAGE-VIEWS-METRIC'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Page Views Metric'
 ,p_reload_on_submit=>'A'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'ON'
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
-,p_required_role=>'MUST_NOT_BE_PUBLIC_USER'
 ,p_protection_level=>'C'
 ,p_help_text=>'High level view of application logging information.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509083337'
+,p_last_upd_yyyymmddhh24miss=>'20210509120332'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(87874963598811882)
@@ -22590,10 +22586,9 @@ wwv_flow_api.create_report_columns(
 ,p_column_alias=>'VIEW_PCT_GRAPH'
 ,p_column_display_sequence=>80
 ,p_column_format=>'PCT_GRAPH:#DDDDDD:#5486C3:300'
-,p_heading_alignment=>'LEFT'
 ,p_display_as=>'WITHOUT_MODIFICATION'
 ,p_derived_column=>'N'
-,p_include_in_export=>'Y'
+,p_include_in_export=>'N'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(234595998306743405)
@@ -22785,8 +22780,8 @@ wwv_flow_api.create_page(
 '<p>This page provides an interactive report of all unexpected errors logged by this application.</p>',
 '<p>Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back t'
 ||'o the default settings.</p>'))
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509044055'
+,p_last_updated_by=>'JARI.LAINE.O@GMAIL.COM'
+,p_last_upd_yyyymmddhh24miss=>'20210509084735'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43861070470616959)
@@ -22895,8 +22890,18 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_report_columns=>'STEP_ID:ERR_TIME:SQLERRM:SQLERRM_COMPONENT_TYPE:SQLERRM_COMPONENT_NAME:'
-,p_sort_column_1=>'ERROR_TIME'
+,p_sort_column_1=>'ERR_TIME'
 ,p_sort_direction_1=>'DESC'
+,p_sort_column_2=>'0'
+,p_sort_direction_2=>'DESC'
+,p_sort_column_3=>'0'
+,p_sort_direction_3=>'ASC'
+,p_sort_column_4=>'0'
+,p_sort_direction_4=>'ASC'
+,p_sort_column_5=>'0'
+,p_sort_direction_5=>'ASC'
+,p_sort_column_6=>'0'
+,p_sort_direction_6=>'ASC'
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(43865642823616965)
@@ -23270,7 +23275,7 @@ wwv_flow_api.create_page(
 'Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back to t'
 ||'he default settings.</p>'))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509081723'
+,p_last_upd_yyyymmddhh24miss=>'20210509084937'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43843535329616316)

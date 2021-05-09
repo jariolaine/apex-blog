@@ -30,7 +30,7 @@ wwv_flow_api.create_list_item(
 ,p_list_item_display_sequence=>20
 ,p_list_item_link_text=>'Page Views Metric'
 ,p_list_item_link_target=>'f?p=&APP_ID.:30021:&SESSION.::&DEBUG.:RR:::'
-,p_list_item_icon=>'fa-table-search'
+,p_list_item_icon=>'fa-file-clock'
 ,p_list_text_01=>'Summary and breakdown by page report of page view counts and elapsed time'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
@@ -57,7 +57,7 @@ wwv_flow_api.create_list_item(
 ,p_list_item_display_sequence=>50
 ,p_list_item_link_text=>'Application Error Log'
 ,p_list_item_link_target=>'f?p=&APP_ID.:30022:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-exclamation'
+,p_list_item_icon=>'fa-exclamation-triangle-o'
 ,p_list_text_01=>'Report of errors logged by this application'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );

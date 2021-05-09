@@ -15,17 +15,17 @@ wwv_flow_api.create_page(
  p_id=>30021
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
 ,p_name=>'Page Views Metric'
+,p_alias=>'PAGE-VIEWS-METRIC'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Page Views Metric'
 ,p_reload_on_submit=>'A'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'ON'
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
-,p_required_role=>'MUST_NOT_BE_PUBLIC_USER'
 ,p_protection_level=>'C'
 ,p_help_text=>'High level view of application logging information.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509083337'
+,p_last_upd_yyyymmddhh24miss=>'20210509120332'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(87874963598811882)
@@ -194,10 +194,9 @@ wwv_flow_api.create_report_columns(
 ,p_column_alias=>'VIEW_PCT_GRAPH'
 ,p_column_display_sequence=>80
 ,p_column_format=>'PCT_GRAPH:#DDDDDD:#5486C3:300'
-,p_heading_alignment=>'LEFT'
 ,p_display_as=>'WITHOUT_MODIFICATION'
 ,p_derived_column=>'N'
-,p_include_in_export=>'Y'
+,p_include_in_export=>'N'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(234595998306743405)

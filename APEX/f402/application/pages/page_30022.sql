@@ -27,8 +27,8 @@ wwv_flow_api.create_page(
 '<p>This page provides an interactive report of all unexpected errors logged by this application.</p>',
 '<p>Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back t'
 ||'o the default settings.</p>'))
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509044055'
+,p_last_updated_by=>'JARI.LAINE.O@GMAIL.COM'
+,p_last_upd_yyyymmddhh24miss=>'20210509084735'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43861070470616959)
@@ -137,8 +137,18 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_report_columns=>'STEP_ID:ERR_TIME:SQLERRM:SQLERRM_COMPONENT_TYPE:SQLERRM_COMPONENT_NAME:'
-,p_sort_column_1=>'ERROR_TIME'
+,p_sort_column_1=>'ERR_TIME'
 ,p_sort_direction_1=>'DESC'
+,p_sort_column_2=>'0'
+,p_sort_direction_2=>'DESC'
+,p_sort_column_3=>'0'
+,p_sort_direction_3=>'ASC'
+,p_sort_column_4=>'0'
+,p_sort_direction_4=>'ASC'
+,p_sort_column_5=>'0'
+,p_sort_direction_5=>'ASC'
+,p_sort_column_6=>'0'
+,p_sort_direction_6=>'ASC'
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(43865642823616965)

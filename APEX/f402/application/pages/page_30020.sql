@@ -24,7 +24,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509081634'
+,p_last_upd_yyyymmddhh24miss=>'20210509115411'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43823229274615012)
@@ -83,22 +83,26 @@ wwv_flow_api.create_jet_chart_series(
 ,p_data_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'with nw as (',
 '    -- APEX_ACTIVITY_LOG uses dates; convert system time to local time zone.',
-'    select from_tz( cast( sysdate as timestamp ), to_char( systimestamp, ''TZR'' ) ) at local as tm from dual',
+'  select from_tz( cast( sysdate as timestamp ), to_char( systimestamp, ''TZR'' ) ) at local as tm',
+'  from dual',
 '),',
 'window as (',
-'    select',
-'         trunc(nw.tm - ((level-1)/24),''HH'') start_tm,',
-'         trunc(nw.tm - ((level-2)/24),''HH'') end_tm,',
-'         trunc(sysdate-((level-1)/24),''HH'') log_start_tm,',
-'         trunc(sysdate-((level-2)/24),''HH'') log_end_tm',
-'    from nw',
-'    connect by level <= round( 24 * ( 1/24/60/60 * nvl(:P30020_TIMEFRAME,1) ) )',
+'  select',
+'    trunc(nw.tm - ((level-1)/24),''HH'')  as start_tm',
+'    ,trunc(nw.tm - ((level-2)/24),''HH'') as end_tm',
+'    ,trunc(sysdate-((level-1)/24),''HH'') as log_start_tm',
+'    ,trunc(sysdate-((level-2)/24),''HH'') as log_end_tm',
+'  from nw',
+'  connect by level <= round( 24 * ( 1/24/60/60 * nvl( :P30020_TIMEFRAME, 1 ) ) )',
 ')',
-'select  w.start_tm log_time,',
-'    (   select count(*)',
-'        from apex_activity_log l',
-'        where l.flow_id = :G_PUB_APP_ID',
-'            and l.time_stamp between w.log_start_tm and w.log_end_tm ) as value',
+'select  w.start_tm as log_time',
+'  ,(',
+'    select count(*)',
+'    from apex_activity_log l',
+'    where 1 = 1',
+'      and l.flow_id = :G_PUB_APP_ID',
+'      and l.time_stamp between w.log_start_tm and w.log_end_tm',
+'  ) as value',
 'from window w',
 'order by 1'))
 ,p_max_row_count=>350
@@ -209,19 +213,24 @@ wwv_flow_api.create_jet_chart_series(
 ,p_name=>'Series 1'
 ,p_data_source_type=>'SQL'
 ,p_data_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select x.step_id||''. ''||(',
-'    select page_name from apex_application_pages p where p.application_id = :G_PUB_APP_ID and page_id = x.step_id) label, ',
-'        value ',
-'from',
-'(',
-'select step_id,',
+'select x.step_id || ''. '' || (',
+'    select page_name ',
+'    from apex_application_pages p ',
+'    where 1 = 1',
+'      and p.application_id = :G_PUB_APP_ID ',
+'      and page_id = x.step_id',
+'  ) as label, ',
+'  x.value ',
+'from(',
+'  select step_id,',
 '    count(*) as value',
-'from apex_activity_log',
-'where flow_id = :G_PUB_APP_ID',
+'  from apex_activity_log',
+'  where 1 = 1',
+'    and flow_id = :G_PUB_APP_ID',
 '    and time_stamp >= sysdate - ( 1/24/60/60 * :P30020_TIMEFRAME )',
 '    and step_id is not null',
-'group by step_id',
-'order by 2 desc',
+'  group by step_id',
+'  order by 2 desc',
 ') x'))
 ,p_max_row_count=>10
 ,p_ajax_items_to_submit=>'P30020_TIMEFRAME'
@@ -287,13 +296,14 @@ wwv_flow_api.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'    sqlerrm label,',
-'    time_stamp value',
+'  sqlerrm label',
+'  ,time_stamp value',
 'from apex_activity_log',
 'where flow_id = :G_PUB_APP_ID',
-'and time_stamp >= sysdate - ( 1/24/60/60 * :P30020_TIMEFRAME )',
-'and sqlerrm is not null',
-'order by 2 desc, 1'))
+'  and time_stamp >= sysdate - ( 1/24/60/60 * :P30020_TIMEFRAME )',
+'  and sqlerrm is not null',
+'order by 2 desc',
+'  ,1'))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P30020_TIMEFRAME'
 ,p_query_row_template=>wwv_flow_api.id(8519378220518224)
