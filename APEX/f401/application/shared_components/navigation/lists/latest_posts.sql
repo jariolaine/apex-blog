@@ -1,5 +1,16 @@
 prompt --application/shared_components/navigation/lists/latest_posts
 begin
+--   Manifest
+--     LIST: Latest Posts
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_list(
  p_id=>wwv_flow_api.id(6945203882938984)
 ,p_name=>'Latest Posts'
@@ -24,11 +35,12 @@ wwv_flow_api.create_list(
 '   || ''"''               as attribute2',
 'from #OWNER#.blog_v_posts_last20 v1',
 'where 1 = 1',
-'and v1.display_seq <= :G_LATEST_POSTS',
+'and v1.display_seq <= :G_LATEST_POST_ROWS',
 'order by v1.published_on desc',
 ''))
 ,p_list_status=>'PUBLIC'
 ,p_required_patch=>wwv_flow_api.id(8677319562925389)
 );
+wwv_flow_api.component_end;
 end;
 /

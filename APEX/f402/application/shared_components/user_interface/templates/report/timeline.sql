@@ -1,5 +1,16 @@
 prompt --application/shared_components/user_interface/templates/report/timeline
 begin
+--   Manifest
+--     ROW TEMPLATE: TIMELINE
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_row_template(
  p_id=>wwv_flow_api.id(8508568394518216)
 ,p_row_template_name=>'Timeline'
@@ -90,5 +101,6 @@ wwv_flow_api.create_row_template(
 ,p_reference_id=>1513373588340069864
 ,p_translate_this_template=>'N'
 );
+wwv_flow_api.component_end;
 end;
 /

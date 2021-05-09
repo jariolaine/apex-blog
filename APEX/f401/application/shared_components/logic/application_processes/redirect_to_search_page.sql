@@ -1,5 +1,16 @@
 prompt --application/shared_components/logic/application_processes/redirect_to_search_page
 begin
+--   Manifest
+--     APPLICATION PROCESS: Redirect to search page
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_flow_process(
  p_id=>wwv_flow_api.id(6988319204594678)
 ,p_process_sequence=>1
@@ -10,10 +21,12 @@ wwv_flow_api.create_flow_process(
 '#OWNER#.blog_url.redirect_search(',
 '  p_value => :P0_SEARCH',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_process_when=>'P0_SEARCH'
 ,p_process_when_type=>'REQUEST_EQUALS_CONDITION'
 ,p_required_patch=>wwv_flow_api.id(8667733481689180)
 ,p_process_comment=>'Redirect to search result when request is P0_SEARCH'
 );
+wwv_flow_api.component_end;
 end;
 /

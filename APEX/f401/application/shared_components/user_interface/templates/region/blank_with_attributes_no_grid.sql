@@ -1,5 +1,16 @@
 prompt --application/shared_components/user_interface/templates/region/blank_with_attributes_no_grid
 begin
+--   Manifest
+--     REGION TEMPLATE: BLANK_WITH_ATTRIBUTES_NO_GRID
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_plug_template(
  p_id=>wwv_flow_api.id(6781539027267375)
 ,p_layout=>'TABLE'
@@ -14,7 +25,7 @@ wwv_flow_api.create_plug_template(
 ,p_translate_this_template=>'N'
 );
 wwv_flow_api.create_plug_tmpl_display_point(
- p_id=>wwv_flow_api.id(15008976078305422)
+ p_id=>wwv_flow_api.id(9787432196720259)
 ,p_plug_template_id=>wwv_flow_api.id(6781539027267375)
 ,p_name=>'Body'
 ,p_placeholder=>'BODY'
@@ -22,12 +33,13 @@ wwv_flow_api.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_api.create_plug_tmpl_display_point(
- p_id=>wwv_flow_api.id(15009468492305423)
+ p_id=>wwv_flow_api.id(9787942604720259)
 ,p_plug_template_id=>wwv_flow_api.id(6781539027267375)
 ,p_name=>'Sub Regions'
 ,p_placeholder=>'SUB_REGIONS'
 ,p_has_grid_support=>false
 ,p_glv_new_row=>true
 );
+wwv_flow_api.component_end;
 end;
 /

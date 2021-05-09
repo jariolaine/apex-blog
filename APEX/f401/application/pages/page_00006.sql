@@ -1,5 +1,16 @@
 prompt --application/pages/page_00006
 begin
+--   Manifest
+--     PAGE: 00006
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_page(
  p_id=>6
 ,p_user_interface_id=>wwv_flow_api.id(6877050287267426)
@@ -13,7 +24,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200518152138'
+,p_last_upd_yyyymmddhh24miss=>'20201104132425'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(13706719753736206)
@@ -21,7 +32,7 @@ wwv_flow_api.create_report_region(
 ,p_region_name=>'page-content-container'
 ,p_template=>wwv_flow_api.id(6802870362267386)
 ,p_display_sequence=>20
-,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody:margin-bottom-lg'
+,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Report--hideNoPagination'
 ,p_grid_column_span=>9
 ,p_display_column=>1
@@ -140,7 +151,7 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>6
 ,p_column_heading=>'Value 01'
 ,p_use_as_row_header=>'N'
-,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.:RP:P14_CATEGORY_ID:#CATEGORY_ID#'
+,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.::P14_CATEGORY_ID:#CATEGORY_ID#'
 ,p_column_linktext=>'#VALUE_01#'
 ,p_heading_alignment=>'LEFT'
 ,p_derived_column=>'N'
@@ -239,7 +250,8 @@ wwv_flow_api.create_page_computation(
 ,p_computation_sequence=>10
 ,p_computation_item=>'P6_TAG_NAME'
 ,p_computation_point=>'BEFORE_HEADER'
-,p_computation_type=>'PLSQL_EXPRESSION'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_util.get_tag(',
 '  p_tag_id => :P6_TAG_ID',
@@ -247,5 +259,15 @@ wwv_flow_api.create_page_computation(
 ,p_computation_comment=>'Fetch tag name to item. Item is used in page and region title.'
 ,p_computation_error_message=>'Tag not found.'
 );
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(26065633574107834)
+,p_process_sequence=>10
+,p_process_point=>'BEFORE_HEADER'
+,p_process_type=>'NATIVE_RESET_PAGINATION'
+,p_process_name=>'Reset Tag Pagination'
+,p_attribute_01=>'THIS_PAGE'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_api.component_end;
 end;
 /

@@ -1,5 +1,16 @@
 prompt --application/shared_components/user_interface/templates/region/tabs_container
 begin
+--   Manifest
+--     REGION TEMPLATE: TABS_CONTAINER
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_plug_template(
  p_id=>wwv_flow_api.id(8503643388518213)
 ,p_layout=>'TABLE'
@@ -26,7 +37,7 @@ wwv_flow_api.create_plug_template(
 ,p_translate_this_template=>'N'
 );
 wwv_flow_api.create_plug_tmpl_display_point(
- p_id=>wwv_flow_api.id(13783144017214216)
+ p_id=>wwv_flow_api.id(28013431347030484)
 ,p_plug_template_id=>wwv_flow_api.id(8503643388518213)
 ,p_name=>'Region Body'
 ,p_placeholder=>'BODY'
@@ -34,12 +45,13 @@ wwv_flow_api.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_api.create_plug_tmpl_display_point(
- p_id=>wwv_flow_api.id(13783613298214216)
+ p_id=>wwv_flow_api.id(28013907265030484)
 ,p_plug_template_id=>wwv_flow_api.id(8503643388518213)
 ,p_name=>'Tabs'
 ,p_placeholder=>'SUB_REGIONS'
 ,p_has_grid_support=>false
 ,p_glv_new_row=>true
 );
+wwv_flow_api.component_end;
 end;
 /

@@ -11,8 +11,8 @@ create table blog_comments(
   is_active number( 1, 0 ) not null,
   post_id number( 38, 0 ) not null,
   parent_id number( 38, 0 ),
-  body_html varchar2( 4000 char ) not null,
   comment_by varchar2( 256 char ) not null,
+  body_html varchar2( 4000 byte ) not null,
   constraint blog_comments_pk primary key( id ),
   constraint blog_comment_ck2 check( is_active in( 0 , 1 ) ),
   constraint blog_comment_ck1 check( row_version > 0 )

@@ -1,5 +1,16 @@
 prompt --application/pages/page_00002
 begin
+--   Manifest
+--     PAGE: 00002
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_page(
  p_id=>2
 ,p_user_interface_id=>wwv_flow_api.id(6877050287267426)
@@ -15,7 +26,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200607045756'
+,p_last_upd_yyyymmddhh24miss=>'20210418130116'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -23,11 +34,10 @@ wwv_flow_api.create_report_region(
 ,p_region_name=>'comments'
 ,p_template=>wwv_flow_api.id(6802870362267386)
 ,p_display_sequence=>20
-,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody:margin-bottom-lg'
+,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Comments--basic:t-Comments--iconsRounded:t-Report--hideNoPagination'
 ,p_new_grid_row=>false
-,p_grid_column_span=>9
-,p_display_column=>1
+,p_new_grid_column=>false
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -170,11 +180,11 @@ wwv_flow_api.create_report_columns(
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(9653988616337837)
-,p_name=>'Post Container'
+,p_name=>'Post'
 ,p_template=>wwv_flow_api.id(6781372168267375)
 ,p_display_sequence=>10
 ,p_region_template_options=>'#DEFAULT#'
-,p_component_template_options=>'#DEFAULT#:z-posts z-post--noMargin:z-posts:z-posts--paginationHidden'
+,p_component_template_options=>'#DEFAULT#:z-posts:z-posts--paginationHidden'
 ,p_grid_column_span=>9
 ,p_display_column=>1
 ,p_display_point=>'BODY'
@@ -196,7 +206,7 @@ wwv_flow_api.create_report_region(
 'from #OWNER#.blog_v_posts v1',
 'where 1 = 1',
 'and v1.post_id = :P2_POST_ID',
-''))
+'order by v1.post_id'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_translate_title=>'N'
 ,p_query_row_template=>wwv_flow_api.id(6894976353301648)
@@ -241,7 +251,7 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>4
 ,p_column_heading=>'Category Title'
 ,p_use_as_row_header=>'N'
-,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.:RP:P14_CATEGORY_ID:#CATEGORY_ID#'
+,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.::P14_CATEGORY_ID:#CATEGORY_ID#'
 ,p_column_linktext=>'#CATEGORY_TITLE#'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -273,7 +283,6 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>8
 ,p_column_heading=>'Read More Link'
 ,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -289,13 +298,11 @@ wwv_flow_api.create_report_columns(
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27860638995256805)
 ,p_plug_name=>'Pagination'
-,p_region_css_classes=>'u-textCenter1'
-,p_region_template_options=>'#DEFAULT#:t-Region--removeHeader:t-Region--scrollBody:margin-top-lg:margin-bottom-lg'
+,p_region_template_options=>'#DEFAULT#:t-Region--removeHeader:t-Region--scrollBody'
 ,p_plug_template=>wwv_flow_api.id(6802870362267386)
 ,p_plug_display_sequence=>10
 ,p_plug_new_grid_row=>false
-,p_plug_grid_column_span=>9
-,p_plug_display_column=>1
+,p_plug_new_grid_column=>false
 ,p_plug_display_point=>'BODY'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -309,15 +316,15 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(27860638995256805)
 ,p_button_name=>'NEWER'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--link:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--link:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(6855239813267414)
 ,p_button_image_alt=>'&P2_NEWER_TITLE.'
 ,p_button_position=>'BOTTOM'
 ,p_button_alignment=>'LEFT'
-,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ALIAS.:&SESSION.::&DEBUG.:RP:P2_POST_ID:&P2_NEWER_ID.'
+,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ALIAS.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_NEWER_ID.'
 ,p_button_condition=>'P2_NEWER_ID'
 ,p_button_condition_type=>'ITEM_IS_NOT_NULL'
-,p_button_css_classes=>'z-text-wrap'
+,p_button_css_classes=>'z-text-wrap u-pullLeft padding-left-none'
 ,p_icon_css_classes=>'fa-angle-left'
 ,p_required_patch=>wwv_flow_api.id(27921011391085431)
 );
@@ -327,14 +334,14 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(27860638995256805)
 ,p_button_name=>'OLDER'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--link:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--link:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(6855239813267414)
 ,p_button_image_alt=>'&P2_OLDER_TITLE.'
 ,p_button_position=>'BOTTOM'
-,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ALIAS.:&SESSION.::&DEBUG.:RP:P2_POST_ID:&P2_OLDER_ID.'
+,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ALIAS.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_OLDER_ID.'
 ,p_button_condition=>'P2_OLDER_ID'
 ,p_button_condition_type=>'ITEM_IS_NOT_NULL'
-,p_button_css_classes=>'z-text-wrap'
+,p_button_css_classes=>'z-text-wrap u-pullRight padding-right-none'
 ,p_icon_css_classes=>'fa-angle-right'
 ,p_required_patch=>wwv_flow_api.id(27921011391085431)
 );
@@ -344,7 +351,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(6915627356677149)
 ,p_button_name=>'REPLY'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--noUI:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(6855239813267414)
 ,p_button_image_alt=>'Leave Reply'
 ,p_button_position=>'REGION_TEMPLATE_EDIT'
@@ -446,7 +453,8 @@ wwv_flow_api.create_page_computation(
 ,p_computation_sequence=>10
 ,p_computation_item=>'P2_POST_TITLE'
 ,p_computation_point=>'BEFORE_HEADER'
-,p_computation_type=>'PLSQL_EXPRESSION'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_util.get_post_title(',
 '   p_post_id => :P2_POST_ID',
@@ -514,27 +522,6 @@ wwv_flow_api.create_page_da_action(
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_api.id(6915627356677149)
 );
-wwv_flow_api.create_page_da_event(
- p_id=>wwv_flow_api.id(6917083915677164)
-,p_name=>'Comments Refresh'
-,p_event_sequence=>30
-,p_triggering_element_type=>'REGION'
-,p_triggering_region_id=>wwv_flow_api.id(6915627356677149)
-,p_bind_type=>'bind'
-,p_bind_event_type=>'apexafterrefresh'
-,p_required_patch=>wwv_flow_api.id(7073708623458378)
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(6917183161677165)
-,p_event_id=>wwv_flow_api.id(6917083915677164)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_affected_elements_type=>'TRIGGERING_ELEMENT'
-,p_attribute_01=>'blog.UI.formatProgramCode(this.affectedElements.find("pre.z-program-code"));'
-,p_da_action_comment=>'Format comments program code when paginated.'
-);
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(27862651784256825)
 ,p_process_sequence=>10
@@ -550,12 +537,22 @@ wwv_flow_api.create_page_process(
 '  ,p_older_id     => :P2_OLDER_ID',
 '  ,p_older_title  => :P2_OLDER_TITLE',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_process_error_message=>'Post not found.'
 ,p_required_patch=>wwv_flow_api.id(27921011391085431)
 );
 wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(31249019378982930)
+ p_id=>wwv_flow_api.id(26063395480107811)
 ,p_process_sequence=>20
+,p_process_point=>'BEFORE_HEADER'
+,p_process_type=>'NATIVE_RESET_PAGINATION'
+,p_process_name=>'Reset Comments Pagination'
+,p_attribute_01=>'THIS_PAGE'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(31249019378982930)
+,p_process_sequence=>30
 ,p_process_point=>'BEFORE_HEADER'
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Remove subscription'
@@ -563,10 +560,12 @@ wwv_flow_api.create_page_process(
 '#OWNER#.blog_comm.unsubscribe(',
 '  p_subscription_id => :P2_SUBSCRIPTION_ID',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'P2_SUBSCRIPTION_ID'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
 ,p_process_success_message=>'You have now unsubscribed from notifications for this post comments.'
 );
+wwv_flow_api.component_end;
 end;
 /

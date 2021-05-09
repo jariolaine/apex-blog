@@ -2,7 +2,8 @@
 --  DDL for View BLOG_V_ALL_LINK_GROUPS
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINK_GROUPS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "DISPLAY_SEQ", "TITLE", "TITLE_UNIQUE", "NOTES", "LINK_COUNT") AS
-  select t1.id          as id
+  select
+   t1.id                as id
   ,t1.row_version       as row_version
   ,t1.created_on        as created_on
   ,lower(t1.created_by) as created_by

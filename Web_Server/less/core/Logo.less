@@ -1,0 +1,29 @@
+@import url('_variables.less');
+/**************************************
+* Logo
+**************************************/
+.z-app-logo {
+  display: flex;
+  align-items: baseline;
+  .z-app-desc {
+    white-space: normal;
+    font-style: oblique;
+    font-size: 1.4rem;
+    margin-left: 0.6rem;
+  }
+}
+@media only screen and (max-width: 640px) {
+  .z-app-logo {
+    flex-direction: column;
+    .z-app-desc {
+      font-size: 1.2rem;
+      line-height: 1.6rem;
+      margin-left: 0;
+    }
+  }
+}
+@media (max-width: 340px){
+  .z-app-logo .z-app-desc {
+    display: none!important;
+  }
+}

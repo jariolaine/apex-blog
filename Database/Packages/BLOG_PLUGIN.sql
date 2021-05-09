@@ -52,15 +52,14 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function to_html_entities(
-    p_number in number,
-    p_format in varchar2
+    p_number in number
   ) return varchar2
   as
     l_string varchar2(4000);
     l_result varchar2(4000);
   begin
 
-    l_string := to_char( p_number, p_format );
+    l_string := blog_util.int_to_vc2( p_number );
     for i in 1 .. length( l_string )
     loop
       l_result := l_result || '&#' || ascii( substr( l_string, i, 1 ) );
@@ -111,7 +110,12 @@ as
         || case when p_item.element_max_length  is not null
             then 'maxlength="' || p_item.element_max_length || '" '
            end
-        || apex_plugin_util.get_element_attributes(p_item, l_name, 'text_field apex-item-text')
+        ||
+          apex_plugin_util.get_element_attributes(
+             p_item           => p_item
+            ,p_name           => l_name
+            ,p_default_class  => 'text_field apex-item-text'
+          )
         || 'value="" />'
       );
       sys.htp.p('<span class="apex-item-icon '
@@ -160,16 +164,16 @@ as
     l_num_2 := round( sys.dbms_random.value( l_min, l_max ) );
 
     l_data  := '<span class="z-question">';
-    l_data  := l_data || to_html_entities( l_num_1, blog_util.g_number_format );
+    l_data  := l_data || to_html_entities( l_num_1 );
     l_data  := l_data || '&nbsp;&#' || ascii('+') || '&nbsp;';
-    l_data  := l_data || to_html_entities( l_num_2, blog_util.g_number_format );
+    l_data  := l_data || to_html_entities( l_num_2 );
     l_data  := l_data || '&#' || ascii('?');
     l_data  := l_data || '</span>';
 
     -- set correct answer to item session state
     apex_util.set_session_state(
        p_name   => p_item.attribute_05
-      ,p_value  => to_char( l_num_1 + l_num_2 , blog_util.g_number_format )
+      ,p_value  => blog_util.int_to_vc2( l_num_1 + l_num_2 )
       ,p_commit => false
     );
 
@@ -184,12 +188,14 @@ as
   exception when others
   then
 
+    apex_debug.error( 'ajax_math_question_field error: %s', sqlerrm );
+
     l_err := apex_lang.message(
-      p_name => p_plugin.attribute_02
+       p_name => p_plugin.attribute_02
       ,p0 => p_item.plain_label
     );
-
-    sys.htp.prn( l_err );
+    raise_application_error( -20002 ,  l_err );
+    raise;
 
   end ajax_math_question_field;
 --------------------------------------------------------------------------------

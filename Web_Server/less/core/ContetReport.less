@@ -1,0 +1,40 @@
+@import url('_variables.less');
+/**************************************
+* General custom report
+**************************************/
+.z-Content {
+  .z-Content--Row {
+    border: @region-outer-border;
+    border-radius: @region-border-radius;
+    box-shadow: @region-box-shadow;
+    margin-bottom: @margin-medium;
+  }
+}
+.z-Content--Row {
+  background-color: @region-background;
+}
+.z-Content--Title {
+  border-bottom: @region-inner-border;
+  padding: 1.2rem;
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 2.4rem;
+}
+.z-Content--Body {
+  padding: 1.6rem;
+}
+.z-Content--Stacked {
+  .z-Content--Title {
+    border-top: @region-inner-border;
+  }
+}
+.z-Content--Stacked {
+  .z-Content--Row {
+    &:first-child {
+      .z-Content--Title {
+        border-top: none;
+      }
+    }
+  }
+}

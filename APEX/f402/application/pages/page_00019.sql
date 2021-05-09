@@ -1,10 +1,20 @@
 prompt --application/pages/page_00019
 begin
+--   Manifest
+--     PAGE: 00019
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_page(
  p_id=>19
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
 ,p_name=>'Add/Edit Tags'
-,p_alias=>'TAGS'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Tags'
 ,p_autocomplete_on_off=>'OFF'
@@ -19,13 +29,13 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524072857'
+,p_last_upd_yyyymmddhh24miss=>'20210415190200'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9879490963762847)
 ,p_plug_name=>'Add/Edit Tags'
 ,p_region_name=>'tags'
-,p_region_template_options=>'#DEFAULT#'
+,p_region_template_options=>'#DEFAULT#:margin-bottom-none'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8495746153518209)
 ,p_plug_display_sequence=>20
@@ -79,22 +89,19 @@ wwv_flow_api.create_region_column(
 ,p_source_expression=>'IS_ACTIVE'
 ,p_data_type=>'NUMBER'
 ,p_is_query_only=>false
-,p_item_type=>'NATIVE_SELECT_LIST'
+,p_item_type=>'NATIVE_YES_NO'
 ,p_heading=>'Status'
 ,p_heading_alignment=>'CENTER'
 ,p_display_sequence=>110
 ,p_value_alignment=>'CENTER'
-,p_stretch=>'N'
+,p_attribute_01=>'CUSTOM'
+,p_attribute_02=>'1'
+,p_attribute_03=>'Enabled'
+,p_attribute_04=>'0'
+,p_attribute_05=>'Disabled'
 ,p_is_required=>true
-,p_lov_type=>'SHARED'
-,p_lov_id=>wwv_flow_api.id(8819403626737334)
-,p_lov_display_extra=>false
-,p_lov_display_null=>false
 ,p_enable_filter=>true
-,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
 ,p_filter_is_required=>false
-,p_filter_text_case=>'MIXED'
-,p_filter_exact_match=>true
 ,p_filter_lov_type=>'LOV'
 ,p_use_as_row_header=>false
 ,p_enable_sort_group=>true
@@ -105,7 +112,8 @@ wwv_flow_api.create_region_column(
 ,p_default_expression=>'1'
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
-,p_required_patch=>wwv_flow_api.id(24687510906079791)
+,p_help_text=>'Is tag enabled or disabled. If you disable existing tag, it will be hidden form all post from readers. Also tag is not available anymore in "Tags" field search when creating or changing posts. Still you can use disabled tag by typing it e.g. for new '
+||'post. If enabling tag again it is then visible on all post where it is linked.'
 ,p_column_comment=>'Considere use switch in future. APEX 19.2 switch has bug: off value can''t be zero (0)'
 );
 wwv_flow_api.create_region_column(
@@ -150,6 +158,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'When tag was created.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9831882389215210)
@@ -176,6 +185,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'Who created tag.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9831961464215211)
@@ -201,6 +211,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'When tag was last changed.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9832067227215212)
@@ -227,6 +238,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'Who has changed tag last.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9832122403215213)
@@ -240,6 +252,7 @@ wwv_flow_api.create_region_column(
 ,p_heading_alignment=>'CENTER'
 ,p_display_sequence=>140
 ,p_value_alignment=>'CENTER'
+,p_stretch=>'N'
 ,p_attribute_02=>'VALUE'
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
@@ -251,6 +264,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'Number of post in this tag.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9880664286762850)
@@ -282,10 +296,11 @@ wwv_flow_api.create_region_column(
 ,p_data_type=>'VARCHAR2'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_TEXT_FIELD'
-,p_heading=>'Name'
+,p_heading=>'Title'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>120
 ,p_value_alignment=>'LEFT'
+,p_stretch=>'A'
 ,p_attribute_05=>'BOTH'
 ,p_is_required=>true
 ,p_max_length=>256
@@ -302,6 +317,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
+,p_help_text=>'Describes what your tag is about.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9883550380762854)
@@ -350,6 +366,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
+,p_help_text=>'Enter any comments or notes here. These notes not displayed for public.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(31246288515982902)
@@ -364,21 +381,19 @@ wwv_flow_api.create_region_column(
 ,p_display_sequence=>150
 ,p_value_alignment=>'CENTER'
 ,p_stretch=>'N'
-,p_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:RP,CIR:IRC_POST_TAGS:&TAG.'
+,p_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:RR,:IRC_TAG_ID:&ID.'
 ,p_link_text=>'<span aria-hidden="true" class="t-Icon fa fa-external-link"></span>'
-,p_link_attributes=>'title="&BTN_POSTS_LINK." aria-label="&BTN_POSTS_LINK."'
-,p_enable_filter=>true
-,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
+,p_link_attributes=>'title="&BTN_POSTS_LINK."'
+,p_enable_filter=>false
 ,p_filter_is_required=>false
-,p_filter_text_case=>'MIXED'
-,p_filter_lov_type=>'NONE'
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.tagsIG.initLinkColumn'
 ,p_enable_sort_group=>false
-,p_enable_hide=>false
+,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'Filter posts report by this tag.'
 );
 wwv_flow_api.create_interactive_grid(
  p_id=>wwv_flow_api.id(9879968674762848)
@@ -396,7 +411,7 @@ wwv_flow_api.create_interactive_grid(
 ,p_select_first_row=>false
 ,p_fixed_row_height=>true
 ,p_pagination_type=>'SCROLL'
-,p_show_total_row_count=>false
+,p_show_total_row_count=>true
 ,p_no_data_found_message=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
 ,p_show_toolbar=>true
 ,p_enable_save_public_report=>false
@@ -404,6 +419,7 @@ wwv_flow_api.create_interactive_grid(
 ,p_enable_flashback=>true
 ,p_define_chart_view=>false
 ,p_enable_download=>true
+,p_download_formats=>'CSV:HTML'
 ,p_enable_mail_download=>false
 ,p_fixed_header=>'REGION'
 ,p_fixed_header_max_height=>440
@@ -414,6 +430,7 @@ wwv_flow_api.create_interactive_grid(
 wwv_flow_api.create_ig_report(
  p_id=>wwv_flow_api.id(9880366681762849)
 ,p_interactive_grid_id=>wwv_flow_api.id(9879968674762848)
+,p_static_id=>'249323'
 ,p_type=>'PRIMARY'
 ,p_default_view=>'GRID'
 ,p_rows_per_page=>20
@@ -444,7 +461,7 @@ wwv_flow_api.create_ig_report_column(
 ,p_column_id=>wwv_flow_api.id(9882307270762853)
 ,p_is_visible=>true
 ,p_is_frozen=>false
-,p_width=>172
+,p_width=>182
 ,p_sort_order=>1
 ,p_sort_direction=>'ASC'
 ,p_sort_nulls=>'LAST'
@@ -468,11 +485,11 @@ wwv_flow_api.create_ig_report_column(
 wwv_flow_api.create_ig_report_column(
  p_id=>wwv_flow_api.id(9887755247798844)
 ,p_view_id=>wwv_flow_api.id(9880446044762849)
-,p_display_seq=>6
+,p_display_seq=>7
 ,p_column_id=>wwv_flow_api.id(9831582840215207)
 ,p_is_visible=>true
 ,p_is_frozen=>false
-,p_width=>86
+,p_width=>99
 );
 wwv_flow_api.create_ig_report_column(
  p_id=>wwv_flow_api.id(9894344813995126)
@@ -521,21 +538,21 @@ wwv_flow_api.create_ig_report_column(
 ,p_column_id=>wwv_flow_api.id(9832122403215213)
 ,p_is_visible=>true
 ,p_is_frozen=>false
-,p_width=>67
+,p_width=>58
 );
 wwv_flow_api.create_ig_report_column(
  p_id=>wwv_flow_api.id(23024143858640219)
 ,p_view_id=>wwv_flow_api.id(9880446044762849)
-,p_display_seq=>6
+,p_display_seq=>5
 ,p_column_id=>wwv_flow_api.id(22958615778076043)
 ,p_is_visible=>true
 ,p_is_frozen=>false
-,p_width=>217
+,p_width=>84
 );
 wwv_flow_api.create_ig_report_column(
  p_id=>wwv_flow_api.id(31257366860898992)
 ,p_view_id=>wwv_flow_api.id(9880446044762849)
-,p_display_seq=>14
+,p_display_seq=>7
 ,p_column_id=>wwv_flow_api.id(31246288515982902)
 ,p_is_visible=>true
 ,p_is_frozen=>false
@@ -559,13 +576,14 @@ wwv_flow_api.create_page_button(
 ,p_button_sequence=>30
 ,p_button_plug_id=>wwv_flow_api.id(19865705897627513)
 ,p_button_name=>'CLOSE'
-,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_action=>'REDIRECT_PAGE'
+,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Close'
 ,p_button_position=>'REGION_TEMPLATE_CLOSE'
+,p_button_redirect_url=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:::'
 ,p_warn_on_unsaved_changes=>null
-,p_icon_css_classes=>'fa-remove'
+,p_icon_css_classes=>'fa-close'
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(9834467087215236)
@@ -573,7 +591,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(19865705897627513)
 ,p_button_name=>'ADD_ROW'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Add'
 ,p_button_position=>'REGION_TEMPLATE_CREATE'
@@ -588,7 +606,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(19865705897627513)
 ,p_button_name=>'SAVE'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Save'
@@ -597,23 +615,6 @@ wwv_flow_api.create_page_button(
 ,p_button_css_classes=>'js-actionButton'
 ,p_icon_css_classes=>'fa-save'
 ,p_button_cattributes=>'data-action="tags-ig-save"'
-);
-wwv_flow_api.create_page_da_event(
- p_id=>wwv_flow_api.id(24930208886416362)
-,p_name=>'Close Dialog'
-,p_event_sequence=>10
-,p_triggering_element_type=>'BUTTON'
-,p_triggering_button_id=>wwv_flow_api.id(10031955247412282)
-,p_bind_type=>'bind'
-,p_bind_event_type=>'click'
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(24930606998416365)
-,p_event_id=>wwv_flow_api.id(24930208886416362)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_DIALOG_CLOSE'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(9884133660762856)
@@ -629,5 +630,6 @@ wwv_flow_api.create_page_process(
 ,p_attribute_08=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
+wwv_flow_api.component_end;
 end;
 /

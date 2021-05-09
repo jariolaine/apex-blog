@@ -1,4 +1,4 @@
-CREATE OR REPLACE package  "BLOG_UTIL"
+create or replace package "BLOG_UTIL"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -27,35 +27,45 @@ as
 --                            Changed apex_error_handler honor error display position when
 --                            ORA error is between -20999 and 20901
 --                            Changed procedure get_post_pagination to raises ORA -20901 when no data found
---    Jari Laine 19.05.2020   Removed global constants
+--    Jari Laine 19.05.2020 - Removed global constants
+--    Jari Laine 23.05.2020 - Modifications to remove ORDS depency
+--    Jari Laine 05.11.2020 - Procedure render_dynamic_content
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- Global constants
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-
-  g_number_format constant varchar2(40)   := 'fm99999999999999999999999999999999999999';
-
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
+-- Called from:
+--
   function apex_error_handler (
     p_error           in apex_error.t_error
   ) return apex_error.t_error_result;
 --------------------------------------------------------------------------------
+-- Called from:
+--
+  function int_to_vc2(
+    p_value           in number
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--
   function get_attribute_value(
     p_attribute_name  in varchar2
   ) return varchar2 result_cache;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   procedure initialize_items(
     p_app_id          in varchar2
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_post_title(
     p_post_id         in varchar2,
     p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   procedure get_post_pagination(
     p_post_id         in varchar2,
     p_post_title      out nocopy varchar2,
@@ -65,20 +75,43 @@ as
     p_older_title     out nocopy varchar2
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_category_title(
     p_category_id     in varchar2,
     p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_tag(
     p_tag_id          in varchar2
   ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--
+  procedure check_archive_exists(
+    p_archive_id      in varchar2
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1002 PL/SQL Dynamic Content Region "Content
+  procedure render_dynamic_content(
+    p_content_id      in varchar2,
+    p_date_format     in varchar2
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1003 Ajax Callback process "download"
+  procedure download_file (
+    p_file_name   in varchar2
+  );
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
 
 
-CREATE OR REPLACE package body "BLOG_UTIL"
+create or replace package body "BLOG_UTIL"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -106,7 +139,7 @@ as
     l_result          apex_error.t_error_result;
     l_reference_id    pls_integer;
     l_constraint_name varchar2(255);
-    l_err_msg         varchar2(32700);
+    l_err_mesg        varchar2(32700);
 
   begin
 
@@ -164,11 +197,11 @@ as
             p_error => p_error
           );
 
-        l_err_msg := apex_lang.message(l_constraint_name);
+        l_err_mesg := apex_lang.message(l_constraint_name);
 
         -- not every constraint has to be in our lookup table
-        if not l_err_msg = l_constraint_name then
-          l_result.message := l_err_msg;
+        if not l_err_mesg = l_constraint_name then
+          l_result.message := l_err_mesg;
           l_result.additional_info := null;
         end if;
 
@@ -206,6 +239,15 @@ as
     return l_result;
 
   end apex_error_handler;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function int_to_vc2(
+    p_value in number
+  ) return varchar2
+  as
+  begin
+    return to_char( p_value,  'fm99999999999999999999999999999999999999' );
+  end int_to_vc2;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_attribute_value(
@@ -278,7 +320,7 @@ as
     end if;
 
     l_app_id := to_number( p_app_id );
-    -- loop materialized view and set items values
+    -- Set items session state
     for c1 in (
       select
         i.item_name,
@@ -363,6 +405,11 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
+    -- show http error
+    owa_util.status_line( 404 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   when others
@@ -376,6 +423,11 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
+    -- show http error
+    owa_util.status_line( 400 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   end get_post_title;
@@ -410,31 +462,56 @@ as
 
     l_post_id := to_number( p_post_id );
 
-    select q1.post_title
-      ,q1.newer_id
-      ,q1.newer_title
-      ,q1.older_id
-      ,q1.older_title
-    into l_post_title, l_newer_id, l_newer_title, l_older_id, l_older_title
-    from (
-      select
-         v1.post_id
+    with q1 as(
+      select --+ inline
+        v1.post_id
         ,v1.post_title
-        ,lag( v1.post_id ) over(order by v1.published_on desc) as newer_id
-        ,lag( v1.post_title ) over(order by v1.published_on desc) as newer_title
-        ,lead( v1.post_id ) over(order by v1.published_on desc) as older_id
-        ,lead( v1.post_title ) over(order by v1.published_on desc) as older_title
+        ,(
+          select --+ first_rows(1)
+            lkp1.post_id
+          from blog_v_posts lkp1
+          where 1 = 1
+          and lkp1.published_on > v1.published_on
+          order by lkp1.published_on asc
+          fetch first 1 rows only
+        ) as newer_id
+        ,(
+          select --+ first_rows(1)
+            lkp2.post_id
+          from blog_v_posts lkp2
+          where 1 = 1
+          and lkp2.published_on < v1.published_on
+          order by lkp2.published_on desc
+          fetch first 1 rows only
+        ) as older_id
       from blog_v_posts v1
       where 1 = 1
-    ) q1
+      and v1.post_id = l_post_id
+    )
+    select q1.post_title
+      ,q1.newer_id
+      ,(
+        select lkp3.title
+        from blog_posts lkp3
+        where 1 = 1
+        and lkp3.id = q1.newer_id
+      ) as newer_title
+      ,q1.older_id
+      ,(
+        select lkp4.title
+        from blog_posts lkp4
+        where 1 = 1
+        and lkp4.id = q1.older_id
+      ) as older_title
+    into l_post_title, l_newer_id, l_newer_title, l_older_id, l_older_title
+    from q1
     where 1 = 1
-    and q1.post_id = l_post_id
     ;
 
     p_post_title  := l_post_title;
-    p_newer_id    := to_char( l_newer_id, g_number_format );
+    p_newer_id    := int_to_vc2( l_newer_id );
     p_newer_title := l_newer_title;
-    p_older_id    := to_char( l_older_id, g_number_format );
+    p_older_id    := int_to_vc2( l_older_id );
     p_older_title := l_older_title;
 
     apex_debug.info( 'Fetch post: %s next_id: %s prev_id: %s', p_post_id, p_newer_id, p_older_id );
@@ -449,9 +526,11 @@ as
       ,p2 => coalesce( p_post_id, '(null)' )
     );
 
-    -- We wan't show errors between -20999 and -20901 on APEX error page
-    -- see function apex_error_handler
-    raise_application_error(-20901, 'Post not found.');
+    -- show http error
+    owa_util.status_line( 404 );
+    apex_application.stop_apex_engine;
+
+    raise;
 
   when others
   then
@@ -466,6 +545,11 @@ as
       ,p5 => 'p_older_id'
       ,p6 => p_older_id
     );
+
+    -- show http error
+    owa_util.status_line( 400 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   end get_post_pagination;
@@ -518,6 +602,11 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
+    -- show http error
+    owa_util.status_line( 404 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   when others then
@@ -529,7 +618,13 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
+    -- show http error
+    owa_util.status_line( 400 );
+    apex_application.stop_apex_engine;
+
     raise;
+
   end get_category_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -572,6 +667,11 @@ as
       ,p1 => 'p_tag_id'
       ,p2 => coalesce( p_tag_id, '(null)' )
     );
+
+    -- show http error
+    owa_util.status_line( 404 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   when others
@@ -583,9 +683,135 @@ as
       ,p1 => 'p_tag_id'
       ,p2 => coalesce( p_tag_id, '(null)' )
     );
+
+    -- show http error
+    owa_util.status_line( 400 );
+    apex_application.stop_apex_engine;
+
     raise;
 
   end get_tag;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure check_archive_exists(
+    p_archive_id  in varchar2
+  )
+  as
+    l_archive_id  number;
+    l_value       number;
+  begin
+
+    apex_debug.enter(
+      'blog_util.check_archive_exists'
+      ,'p_archive_id'
+      ,p_archive_id
+    );
+
+    if p_archive_id is null then
+      raise no_data_found;
+    end if;
+
+    l_archive_id := to_number( p_archive_id );
+
+    -- fetch and return tag name
+    select t1.archive_year
+    into l_value
+    from blog_v_archive_year t1
+    where 1 = 1
+    and t1.archive_year = l_archive_id
+    ;
+    apex_debug.info( 'Fetch archive: %s return: %s', p_archive_id, l_value );
+
+  exception when no_data_found
+  then
+
+    apex_debug.warn(
+       p_message => 'No data found. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_archive_id'
+      ,p2 => coalesce( p_archive_id, '(null)' )
+    );
+
+    -- show http error
+    owa_util.status_line( 404 );
+    apex_application.stop_apex_engine;
+
+    raise;
+
+  when others
+  then
+
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_archive_id'
+      ,p2 => coalesce( p_archive_id, '(null)' )
+    );
+
+    -- show http error
+    owa_util.status_line( 400 );
+    apex_application.stop_apex_engine;
+
+    raise;
+
+  end check_archive_exists;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure render_dynamic_content(
+    p_content_id  in varchar2,
+    p_date_format in varchar2
+  )
+  as
+  begin
+
+    for c1 in(
+      select v1.content_desc
+        ,v1.content_html
+        ,v1.changed_on
+      from blog_v_dynamic_content v1
+      where 1 = 1
+      and v1.content_id = p_content_id
+    ) loop
+
+      sys.htp.p( c1.content_html );
+
+      sys.htp.p(
+          apex_lang.message(
+             'BLOG_INFO_LAST_UPDATED'
+            ,to_char( c1.changed_on, p_date_format )
+          )
+        );
+
+    end loop;
+
+  end render_dynamic_content;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure download_file (
+    p_file_name   in varchar2
+  )
+  as
+    l_file_t blog_v_files%rowtype;
+  begin
+
+    select *
+    into l_file_t
+    from blog_v_files t1
+    where 1 = 1
+    and t1.is_download = 0
+    and t1.file_name = p_file_name
+    ;
+
+    sys.owa_util.mime_header( coalesce ( l_file_t.mime_type, 'application/octet' ), false );
+    sys.htp.p( 'Cache-Control: public, max-age=3600' );
+    sys.owa_util.http_header_close;
+
+    sys.wpg_docload.download_file ( l_file_t.blob_content );
+
+  exception when no_data_found
+  then
+    owa_util.status_line( 404 );
+  end download_file;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";

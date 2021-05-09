@@ -1,5 +1,16 @@
 prompt --application/shared_components/navigation/lists/desktop_navigation_menu
 begin
+--   Manifest
+--     LIST: Desktop Navigation Menu
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_list(
  p_id=>wwv_flow_api.id(8450775247518171)
 ,p_name=>'Desktop Navigation Menu'
@@ -44,26 +55,26 @@ wwv_flow_api.create_list_item(
 ,p_list_item_display_sequence=>50
 ,p_list_item_link_text=>'Files'
 ,p_list_item_link_target=>'f?p=&APP_ID.:15:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-files-o'
+,p_list_item_icon=>'fa-database-file'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(28656742498953320)
-,p_list_item_display_sequence=>60
-,p_list_item_link_text=>'Stats'
-,p_list_item_link_target=>'f?p=&APP_ID.:301:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-line-chart'
-,p_required_patch=>wwv_flow_api.id(8935943081653812)
+ p_id=>wwv_flow_api.id(43905081397718896)
+,p_list_item_display_sequence=>70
+,p_list_item_link_text=>'Activity'
+,p_list_item_link_target=>'f?p=&APP_ID.:30010:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-area-chart'
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
-,p_list_item_current_for_pages=>'301'
+,p_list_item_current_for_pages=>'30010'
 );
 wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(24902524516683500)
-,p_list_item_display_sequence=>70
+,p_list_item_display_sequence=>80
 ,p_list_item_link_text=>'Settings'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20010:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-gear'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
+wwv_flow_api.component_end;
 end;
 /

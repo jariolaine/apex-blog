@@ -1,10 +1,20 @@
 prompt --application/pages/page_00023
 begin
+--   Manifest
+--     PAGE: 00023
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_page(
  p_id=>23
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
 ,p_name=>'Confirm Overwrite File(s)'
-,p_alias=>'OVERWRITE-FILES'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Confirm'
 ,p_autocomplete_on_off=>'OFF'
@@ -13,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200512192517'
+,p_last_upd_yyyymmddhh24miss=>'20210415075516'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(20788260829204935)
@@ -26,12 +36,13 @@ wwv_flow_api.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select file_name',
-'  ,file_desc',
-'from blog_v_temp_files',
+'select',
+'   v1.c001  as file_name',
+'  ,v1.c002  as file_desc',
+'from apex_collections v1',
 'where 1 = 1',
-'and id is not null',
-'order by seq_id'))
+'and v1.collection_name = :BLOG_FILE_UPLOAD_COLLECTION',
+'order by v1.seq_id'))
 ,p_ajax_enabled=>'Y'
 ,p_query_row_template=>wwv_flow_api.id(8519378220518224)
 ,p_query_num_rows=>15
@@ -141,7 +152,11 @@ wwv_flow_api.create_page_process(
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Process File Upload'
-,p_process_sql_clob=>'#OWNER#.blog_cm.merge_files;'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#OWNER#.blog_cm.merge_files(',
+'  p_collection_name  => :BLOG_FILE_UPLOAD_COLLECTION',
+');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.create_page_process(
@@ -153,5 +168,6 @@ wwv_flow_api.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_success_message=>'File(s) uploaded'
 );
+wwv_flow_api.component_end;
 end;
 /

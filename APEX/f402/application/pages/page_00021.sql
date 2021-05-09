@@ -1,10 +1,20 @@
 prompt --application/pages/page_00021
 begin
+--   Manifest
+--     PAGE: 00021
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_page(
  p_id=>21
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
 ,p_name=>'Confirm Link Group Delete'
-,p_alias=>'CONFIRM-LC-DELETE'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Confirm'
 ,p_autocomplete_on_off=>'OFF'
@@ -12,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200502190317'
+,p_last_upd_yyyymmddhh24miss=>'20210508121937'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(19303429631329496)
@@ -32,7 +42,7 @@ wwv_flow_api.create_report_region(
 ' order by DISPLAY_SEQ'))
 ,p_ajax_enabled=>'Y'
 ,p_query_row_template=>wwv_flow_api.id(8519378220518224)
-,p_query_num_rows=>10
+,p_query_num_rows=>5
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
 ,p_query_num_rows_type=>'NEXT_PREVIOUS_LINKS'
@@ -179,5 +189,6 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'Initialize form Link Group Delete'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
+wwv_flow_api.component_end;
 end;
 /

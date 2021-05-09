@@ -1,5 +1,16 @@
 prompt --application/pages/page_09999
 begin
+--   Manifest
+--     PAGE: 09999
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_page(
  p_id=>9999
 ,p_user_interface_id=>wwv_flow_api.id(6877050287267426)
@@ -15,7 +26,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200509072822'
+,p_last_upd_yyyymmddhh24miss=>'20201110165139'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(35972740955622136)
@@ -101,11 +112,12 @@ wwv_flow_api.create_page_item(
 ,p_item_sequence=>30
 ,p_item_plug_id=>wwv_flow_api.id(35972740955622136)
 ,p_prompt=>'Remember username'
-,p_display_as=>'NATIVE_TEXT_FIELD'
-,p_label_alignment=>'RIGHT'
+,p_display_as=>'NATIVE_CHECKBOX'
+,p_named_lov=>'LOGIN_REMEMBER_USERNAME'
+,p_lov=>'.'||wwv_flow_api.id(6882607828267435)||'.'
 ,p_field_template=>wwv_flow_api.id(6854381477267413)
 ,p_item_template_options=>'#DEFAULT#'
-,p_lov_display_extra=>'NO'
+,p_lov_display_extra=>'YES'
 ,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<p>',
 'If you select this checkbox, the application will save your username in a persistent browser cookie named "LOGIN_USERNAME_COOKIE".',
@@ -129,6 +141,7 @@ wwv_flow_api.create_page_process(
 'apex_authentication.send_login_username_cookie (',
 '    p_username => lower(:P9999_USERNAME),',
 '    p_consent  => :P9999_REMEMBER = ''Y'' );'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.create_page_process(
@@ -141,6 +154,7 @@ wwv_flow_api.create_page_process(
 'apex_authentication.login(',
 '    p_username => :P9999_USERNAME,',
 '    p_password => :P9999_PASSWORD );'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.create_page_process(
@@ -161,6 +175,8 @@ wwv_flow_api.create_page_process(
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 ':P9999_USERNAME := apex_authentication.get_login_username_cookie;',
 ':P9999_REMEMBER := case when :P9999_USERNAME is not null then ''Y'' end;'))
+,p_process_clob_language=>'PLSQL'
 );
+wwv_flow_api.component_end;
 end;
 /

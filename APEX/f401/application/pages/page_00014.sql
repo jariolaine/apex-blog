@@ -1,11 +1,22 @@
 prompt --application/pages/page_00014
 begin
+--   Manifest
+--     PAGE: 00014
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_page(
  p_id=>14
 ,p_user_interface_id=>wwv_flow_api.id(6877050287267426)
 ,p_name=>'Posts Under Category'
 ,p_alias=>'CATEGORY'
-,p_step_title=>'Category &P14_CATEGORY_TITLE. | &G_APP_NAME.'
+,p_step_title=>'&P14_CATEGORY_TITLE. | &G_APP_NAME.'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8697986188142973)
@@ -14,11 +25,11 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8635355820099640)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200519135655'
+,p_last_upd_yyyymmddhh24miss=>'20201115082844'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(40117793173805532)
-,p_name=>'Category &P14_CATEGORY_TITLE.'
+,p_name=>'&P14_CATEGORY_TITLE.'
 ,p_region_name=>'page-content-container'
 ,p_template=>wwv_flow_api.id(6802870362267386)
 ,p_display_sequence=>10
@@ -60,9 +71,10 @@ wwv_flow_api.create_report_region(
 '  from dual',
 ') labels',
 'where 1 = 1',
-'  and v1.category_id = :P14_CATEGORY_ID',
+'  and v1.category_id = :P14_CATEGORY_ID or :P14_CATEGORY_ID is null',
 'order by v1.category_seq',
 '  ,v1.published_on desc'))
+,p_translate_title=>'N'
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P14_CATEGORY_ID'
 ,p_query_row_template=>wwv_flow_api.id(6833829938267402)
@@ -225,7 +237,8 @@ wwv_flow_api.create_page_computation(
 ,p_computation_sequence=>10
 ,p_computation_item=>'P14_CATEGORY_TITLE'
 ,p_computation_point=>'BEFORE_HEADER'
-,p_computation_type=>'PLSQL_EXPRESSION'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_util.get_category_title(',
 '   p_category_id => :P14_CATEGORY_ID',
@@ -259,5 +272,15 @@ wwv_flow_api.create_page_da_action(
 '});'))
 ,p_da_action_comment=>'List anchors have data attribute where is category id. If that match to item P14_CATEGORY_ID value set is-current class to list'
 );
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(26065583579107833)
+,p_process_sequence=>10
+,p_process_point=>'BEFORE_HEADER'
+,p_process_type=>'NATIVE_RESET_PAGINATION'
+,p_process_name=>'Reset Category Pagination'
+,p_attribute_01=>'THIS_PAGE'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_api.component_end;
 end;
 /

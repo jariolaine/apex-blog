@@ -1,10 +1,20 @@
 prompt --application/pages/page_00014
 begin
+--   Manifest
+--     PAGE: 00014
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_page(
  p_id=>14
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
 ,p_name=>'Add/Edit Categories'
-,p_alias=>'CATEGORIES'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Categories'
 ,p_autocomplete_on_off=>'OFF'
@@ -28,7 +38,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524083016'
+,p_last_upd_yyyymmddhh24miss=>'20210415185532'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9834087769215232)
@@ -47,7 +57,7 @@ wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(15190060145050375)
 ,p_plug_name=>'Add/Edit Categories'
 ,p_region_name=>'categories'
-,p_region_template_options=>'#DEFAULT#'
+,p_region_template_options=>'#DEFAULT#:margin-bottom-none'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8495746153518209)
 ,p_plug_display_sequence=>20
@@ -126,7 +136,7 @@ wwv_flow_api.create_region_column(
 ,p_data_type=>'VARCHAR2'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_TEXT_FIELD'
-,p_heading=>'Name'
+,p_heading=>'Title'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>120
 ,p_value_alignment=>'LEFT'
@@ -146,6 +156,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
+,p_help_text=>'Describes what your category is about.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9636633508680604)
@@ -171,22 +182,20 @@ wwv_flow_api.create_region_column(
 ,p_source_expression=>'IS_ACTIVE'
 ,p_data_type=>'NUMBER'
 ,p_is_query_only=>false
-,p_item_type=>'NATIVE_SELECT_LIST'
+,p_item_type=>'NATIVE_YES_NO'
 ,p_heading=>'Status'
 ,p_heading_alignment=>'CENTER'
 ,p_display_sequence=>140
 ,p_value_alignment=>'CENTER'
 ,p_stretch=>'N'
+,p_attribute_01=>'CUSTOM'
+,p_attribute_02=>'1'
+,p_attribute_03=>'Enabled'
+,p_attribute_04=>'0'
+,p_attribute_05=>'Disabled'
 ,p_is_required=>true
-,p_lov_type=>'SHARED'
-,p_lov_id=>wwv_flow_api.id(8819403626737334)
-,p_lov_display_extra=>false
-,p_lov_display_null=>false
 ,p_enable_filter=>true
-,p_filter_operators=>'CASE_INSENSITIVE'
 ,p_filter_is_required=>false
-,p_filter_text_case=>'MIXED'
-,p_filter_exact_match=>true
 ,p_filter_lov_type=>'LOV'
 ,p_use_as_row_header=>false
 ,p_enable_sort_group=>true
@@ -197,10 +206,8 @@ wwv_flow_api.create_region_column(
 ,p_default_expression=>'1'
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
-,p_help_text=>'Is category enabled or disabled. If you disable existing category, it will hide all post in this category from reades. Also category is not available anymore in "Category" field search when creating or changing post. Still you can use disabled catego'
-||'ry by typing it e.g. for new post. Post will not be visible for reades until you activate category or change post category one that is enabled.'
-,p_required_patch=>wwv_flow_api.id(24687510906079791)
-,p_column_comment=>'Considere use switch in future. APEX 19.2 has bug in switch that off value can''t be zero (0)'
+,p_help_text=>'Is category enabled or disabled. If you disable existing category, it will hide all post in this category from readers. Also category is not available anymore in "Category" field search when creating or changing post. Still you can use disabled categ'
+||'ory by typing it e.g. for new post. Post will not be visible for reades until you activate category or change post category one that is enabled.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9831001078215202)
@@ -226,6 +233,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
+,p_help_text=>'Order of categories displayed in blog.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(9832441775215216)
@@ -242,6 +250,7 @@ wwv_flow_api.create_region_column(
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.categoriesIG.initHandleColumn'
 ,p_enable_hide=>true
+,p_help_text=>'Order categories.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(15191238741050379)
@@ -309,6 +318,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'When category was created.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(15194115137050385)
@@ -336,6 +346,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'Who created category.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(15194693500050386)
@@ -363,6 +374,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'When category was last changed.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(15195326585050386)
@@ -390,6 +402,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'Who has changed category last.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(22958343224076040)
@@ -421,6 +434,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
+,p_help_text=>'Enter any comments or notes here. These notes not displayed for public.'
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(31246816612982908)
@@ -435,14 +449,11 @@ wwv_flow_api.create_region_column(
 ,p_display_sequence=>160
 ,p_value_alignment=>'CENTER'
 ,p_stretch=>'N'
-,p_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:RP,CIR:IR_CATEGORY_TITLE:&TITLE.'
+,p_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:RR,:IR_CATEGORY_ID:&ID.'
 ,p_link_text=>'<span aria-hidden="true" class="t-Icon fa fa-external-link"></span>'
-,p_link_attributes=>'title="&BTN_POSTS_LINK." aria-label="&BTN_POSTS_LINK."'
-,p_enable_filter=>true
-,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
+,p_link_attributes=>'title="&BTN_POSTS_LINK."'
+,p_enable_filter=>false
 ,p_filter_is_required=>false
-,p_filter_text_case=>'MIXED'
-,p_filter_lov_type=>'NONE'
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.categoriesIG.initLinkColumn '
 ,p_enable_sort_group=>false
@@ -450,6 +461,7 @@ wwv_flow_api.create_region_column(
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
+,p_help_text=>'Filter posts report by this category.'
 );
 wwv_flow_api.create_interactive_grid(
  p_id=>wwv_flow_api.id(15190504448050377)
@@ -467,7 +479,7 @@ wwv_flow_api.create_interactive_grid(
 ,p_select_first_row=>false
 ,p_fixed_row_height=>true
 ,p_pagination_type=>'SCROLL'
-,p_show_total_row_count=>false
+,p_show_total_row_count=>true
 ,p_no_data_found_message=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
 ,p_show_toolbar=>true
 ,p_enable_save_public_report=>false
@@ -475,6 +487,7 @@ wwv_flow_api.create_interactive_grid(
 ,p_enable_flashback=>true
 ,p_define_chart_view=>false
 ,p_enable_download=>true
+,p_download_formats=>'CSV:HTML'
 ,p_enable_mail_download=>false
 ,p_fixed_header=>'REGION'
 ,p_fixed_header_max_height=>440
@@ -487,6 +500,7 @@ wwv_flow_api.create_interactive_grid(
 wwv_flow_api.create_ig_report(
  p_id=>wwv_flow_api.id(15190897476050378)
 ,p_interactive_grid_id=>wwv_flow_api.id(15190504448050377)
+,p_static_id=>'249317'
 ,p_type=>'PRIMARY'
 ,p_default_view=>'GRID'
 ,p_rows_per_page=>20
@@ -634,24 +648,25 @@ wwv_flow_api.create_ig_report_column(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(10046682855305207)
-,p_button_sequence=>30
+,p_button_sequence=>10
 ,p_button_plug_id=>wwv_flow_api.id(9834087769215232)
 ,p_button_name=>'CLOSE'
-,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_action=>'REDIRECT_PAGE'
+,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Close'
 ,p_button_position=>'REGION_TEMPLATE_CLOSE'
+,p_button_redirect_url=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:::'
 ,p_warn_on_unsaved_changes=>null
-,p_icon_css_classes=>'fa-remove'
+,p_icon_css_classes=>'fa-close'
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(10046059662301634)
-,p_button_sequence=>20
+,p_button_sequence=>30
 ,p_button_plug_id=>wwv_flow_api.id(9834087769215232)
 ,p_button_name=>'ADD_ROW'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Add'
 ,p_button_position=>'REGION_TEMPLATE_CREATE'
@@ -662,11 +677,11 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(10046320819303272)
-,p_button_sequence=>10
+,p_button_sequence=>20
 ,p_button_plug_id=>wwv_flow_api.id(9834087769215232)
 ,p_button_name=>'SAVE'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Save'
@@ -675,24 +690,6 @@ wwv_flow_api.create_page_button(
 ,p_button_css_classes=>'js-actionButton'
 ,p_icon_css_classes=>'fa-save'
 ,p_button_cattributes=>'data-action="categories-ig-save"'
-);
-wwv_flow_api.create_page_branch(
- p_id=>wwv_flow_api.id(9833138826215223)
-,p_branch_action=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:RP,14::&success_msg=#SUCCESS_MSG#'
-,p_branch_point=>'AFTER_PROCESSING'
-,p_branch_type=>'REDIRECT_URL'
-,p_branch_sequence=>10
-);
-wwv_flow_api.create_page_item(
- p_id=>wwv_flow_api.id(9833343278215225)
-,p_name=>'P14_CATEGORY_TITLE'
-,p_item_sequence=>10
-,p_item_plug_id=>wwv_flow_api.id(15190060145050375)
-,p_use_cache_before_default=>'NO'
-,p_display_as=>'NATIVE_HIDDEN'
-,p_protection_level=>'S'
-,p_attribute_01=>'Y'
-,p_item_comment=>'Item stores category id when clicking report link. Link redirects to this page and stores id. By request branch before heder is fired and filters page 11 IR'
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(27863828688256837)
@@ -715,24 +712,8 @@ wwv_flow_api.create_page_da_action(
 '   p_application => :G_PUB_APP_ID',
 '  ,p_page => 0',
 ');'))
+,p_attribute_05=>'PLSQL'
 ,p_wait_for_result=>'Y'
-);
-wwv_flow_api.create_page_da_event(
- p_id=>wwv_flow_api.id(27864053122256839)
-,p_name=>'Close Dialog'
-,p_event_sequence=>30
-,p_triggering_element_type=>'BUTTON'
-,p_triggering_button_id=>wwv_flow_api.id(10046682855305207)
-,p_bind_type=>'bind'
-,p_bind_event_type=>'click'
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(24906989070771808)
-,p_event_id=>wwv_flow_api.id(27864053122256839)
-,p_event_result=>'TRUE'
-,p_action_sequence=>20
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_DIALOG_CLOSE'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(4069842441688345)
@@ -748,5 +729,6 @@ wwv_flow_api.create_page_process(
 ,p_attribute_08=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
+wwv_flow_api.component_end;
 end;
 /

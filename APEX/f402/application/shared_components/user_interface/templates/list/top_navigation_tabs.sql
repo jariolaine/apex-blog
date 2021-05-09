@@ -1,5 +1,16 @@
 prompt --application/shared_components/user_interface/templates/list/top_navigation_tabs
 begin
+--   Manifest
+--     REGION TEMPLATE: TOP_NAVIGATION_TABS
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_list_template(
  p_id=>wwv_flow_api.id(8545507230518240)
 ,p_list_template_current=>'<li class="t-NavTabs-item #A03# is-active" id="#A01#"><a href="#LINK#" class="t-NavTabs-link #A04# " title="#TEXT_ESC_SC#"><span class="t-Icon #ICON_CSS_CLASSES#" aria-hidden="true"></span><span class="t-NavTabs-label">#TEXT_ESC_SC#</span><span class'
@@ -20,5 +31,6 @@ wwv_flow_api.create_list_template(
 ,p_a05_label=>'Badge Class'
 ,p_reference_id=>1453011561172885578
 );
+wwv_flow_api.component_end;
 end;
 /

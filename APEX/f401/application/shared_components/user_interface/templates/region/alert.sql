@@ -1,5 +1,16 @@
 prompt --application/shared_components/user_interface/templates/region/alert
 begin
+--   Manifest
+--     REGION TEMPLATE: ALERT
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_plug_template(
  p_id=>wwv_flow_api.id(6777727951267373)
 ,p_layout=>'TABLE'
@@ -33,7 +44,7 @@ wwv_flow_api.create_plug_template(
 ,p_template_comment=>'Red Theme'
 );
 wwv_flow_api.create_plug_tmpl_display_point(
- p_id=>wwv_flow_api.id(15000109951305417)
+ p_id=>wwv_flow_api.id(9778699192720251)
 ,p_plug_template_id=>wwv_flow_api.id(6777727951267373)
 ,p_name=>'Region Body'
 ,p_placeholder=>'BODY'
@@ -41,5 +52,6 @@ wwv_flow_api.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 ,p_max_fixed_grid_columns=>12
 );
+wwv_flow_api.component_end;
 end;
 /

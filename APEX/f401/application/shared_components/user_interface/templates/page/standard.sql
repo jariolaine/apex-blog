@@ -1,5 +1,16 @@
 prompt --application/shared_components/user_interface/templates/page/standard
 begin
+--   Manifest
+--     TEMPLATE: STANDARD
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_template(
  p_id=>wwv_flow_api.id(6775199272267372)
 ,p_theme_id=>42
@@ -27,9 +38,9 @@ wwv_flow_api.create_template(
 '<body class="t-PageBody t-PageBody--hideLeft t-PageBody--hideActions no-anim #PAGE_CSS_CLASSES#" #TEXT_DIRECTION# #ONLOAD# id="t_PageBody">',
 '<a href="#main" id="t_Body_skipToContent">&APP_TEXT$UI_PAGE_SKIP_TO_CONTENT.</a>',
 '#FORM_OPEN#',
-'<header class="t-Header" id="t_Header">',
+'<header class="t-Header" id="t_Header" role="banner">',
 '  #REGION_POSITION_07#',
-'  <div class="t-Header-branding" role="banner">',
+'  <div class="t-Header-branding">',
 '    <div class="t-Header-controls">',
 '      <button class="t-Button t-Button--icon t-Button--header t-Button--headerTree" aria-label="#EXPAND_COLLAPSE_NAV_LABEL#" title="#EXPAND_COLLAPSE_NAV_LABEL#" id="t_Button_navControl" type="button"><span class="t-Header-controlsIcon" aria-hidden="t'
 ||'rue"></span></button>',
@@ -180,7 +191,7 @@ wwv_flow_api.create_template(
 ,p_reference_id=>4070909157481059304
 );
 wwv_flow_api.create_page_tmpl_display_point(
- p_id=>wwv_flow_api.id(14992081623305408)
+ p_id=>wwv_flow_api.id(9770637916720242)
 ,p_page_template_id=>wwv_flow_api.id(6775199272267372)
 ,p_name=>'Content Body'
 ,p_placeholder=>'BODY'
@@ -189,7 +200,7 @@ wwv_flow_api.create_page_tmpl_display_point(
 ,p_max_fixed_grid_columns=>12
 );
 wwv_flow_api.create_page_tmpl_display_point(
- p_id=>wwv_flow_api.id(14992547702305408)
+ p_id=>wwv_flow_api.id(9771115788720242)
 ,p_page_template_id=>wwv_flow_api.id(6775199272267372)
 ,p_name=>'Breadcrumb Bar'
 ,p_placeholder=>'REGION_POSITION_01'
@@ -197,7 +208,7 @@ wwv_flow_api.create_page_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_api.create_page_tmpl_display_point(
- p_id=>wwv_flow_api.id(14993006386305408)
+ p_id=>wwv_flow_api.id(9771567191720242)
 ,p_page_template_id=>wwv_flow_api.id(6775199272267372)
 ,p_name=>'Inline Dialogs'
 ,p_placeholder=>'REGION_POSITION_04'
@@ -206,7 +217,7 @@ wwv_flow_api.create_page_tmpl_display_point(
 ,p_max_fixed_grid_columns=>12
 );
 wwv_flow_api.create_page_tmpl_display_point(
- p_id=>wwv_flow_api.id(14993556268305408)
+ p_id=>wwv_flow_api.id(9772043310720243)
 ,p_page_template_id=>wwv_flow_api.id(6775199272267372)
 ,p_name=>'Footer'
 ,p_placeholder=>'REGION_POSITION_05'
@@ -215,7 +226,7 @@ wwv_flow_api.create_page_tmpl_display_point(
 ,p_max_fixed_grid_columns=>12
 );
 wwv_flow_api.create_page_tmpl_display_point(
- p_id=>wwv_flow_api.id(14994061463305409)
+ p_id=>wwv_flow_api.id(9772513926720243)
 ,p_page_template_id=>wwv_flow_api.id(6775199272267372)
 ,p_name=>'Page Navigation'
 ,p_placeholder=>'REGION_POSITION_06'
@@ -223,7 +234,7 @@ wwv_flow_api.create_page_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_api.create_page_tmpl_display_point(
- p_id=>wwv_flow_api.id(14994521590305409)
+ p_id=>wwv_flow_api.id(9773033427720243)
 ,p_page_template_id=>wwv_flow_api.id(6775199272267372)
 ,p_name=>'Page Header'
 ,p_placeholder=>'REGION_POSITION_07'
@@ -231,7 +242,7 @@ wwv_flow_api.create_page_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_api.create_page_tmpl_display_point(
- p_id=>wwv_flow_api.id(14995073148305409)
+ p_id=>wwv_flow_api.id(9773531138720243)
 ,p_page_template_id=>wwv_flow_api.id(6775199272267372)
 ,p_name=>'Before Content Body'
 ,p_placeholder=>'REGION_POSITION_08'
@@ -239,5 +250,6 @@ wwv_flow_api.create_page_tmpl_display_point(
 ,p_glv_new_row=>true
 ,p_max_fixed_grid_columns=>12
 );
+wwv_flow_api.component_end;
 end;
 /

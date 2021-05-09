@@ -10,8 +10,9 @@ create table blog_comment_flags (
   changed_by varchar2( 256 char ) not null,
   comment_id number( 38, 0 ) not null,
   flag varchar2( 256 char ) not null,
-  notes varchar2(4000 char),
   constraint blog_comment_flags_pk primary key( id ),
-  constraint blog_comment_flags_ck1 check( row_version > 0 )
+  constraint blog_comment_flags_uk1 unique(comment_id, flag ),
+  constraint blog_comment_flags_ck1 check( row_version > 0 ),
+  constraint blog_comment_flags_ck2 check( flag in( 'NEW', 'MODERATE') )
 )
 /

@@ -1,5 +1,16 @@
 prompt --application/pages/page_01001
 begin
+--   Manifest
+--     PAGE: 01001
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_page(
  p_id=>1001
 ,p_user_interface_id=>wwv_flow_api.id(6877050287267426)
@@ -24,7 +35,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200519140153'
+,p_last_upd_yyyymmddhh24miss=>'20210418180535'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -46,7 +57,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_01'
-,p_plug_source=>'&APP_TEXT$BLOG_TXT_MODERATE_ENABLED.'
+,p_plug_source=>'&APP_TEXT$BLOG_MSG_MODERATE_ENABLED.'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_required_patch=>wwv_flow_api.id(28281277020489892)
 ,p_attribute_01=>'N'
@@ -62,7 +73,6 @@ wwv_flow_api.create_page_plug(
 ,p_plug_item_display_point=>'BELOW'
 ,p_query_type=>'TABLE'
 ,p_query_table=>'BLOG_COMMENTS'
-,p_query_where=>':P1001_ID is null'
 ,p_include_rowid_column=>false
 ,p_is_editable=>true
 ,p_edit_operations=>'i'
@@ -83,7 +93,7 @@ wwv_flow_api.create_page_button(
 ,p_button_position=>'REGION_TEMPLATE_CLOSE'
 ,p_button_execute_validations=>'N'
 ,p_warn_on_unsaved_changes=>null
-,p_icon_css_classes=>'fa-remove'
+,p_icon_css_classes=>'fa-chevron-left'
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(6283414650551656)
@@ -127,12 +137,13 @@ wwv_flow_api.create_page_item(
 ,p_source=>'COMMENT_BY'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_TEXT_FIELD'
-,p_cMaxlength=>1024
+,p_cMaxlength=>256
 ,p_field_template=>wwv_flow_api.id(6855004103267413)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
+,p_inline_help_text=>'Enter your name. The name is visible in the comments.'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'TEXT'
@@ -145,7 +156,7 @@ wwv_flow_api.create_page_item(
 ,p_item_plug_id=>wwv_flow_api.id(147769743184406827)
 ,p_prompt=>'Last Name'
 ,p_display_as=>'NATIVE_TEXT_FIELD'
-,p_cMaxlength=>80
+,p_cMaxlength=>256
 ,p_grid_column_css_classes=>'z-hidden'
 ,p_field_template=>wwv_flow_api.id(6855004103267413)
 ,p_item_template_options=>'#DEFAULT#'
@@ -166,17 +177,20 @@ wwv_flow_api.create_page_item(
 ,p_prompt=>'Email'
 ,p_display_as=>'NATIVE_TEXT_FIELD'
 ,p_cMaxlength=>256
+,p_display_when=>'#OWNER#.blog_util.get_attribute_value(''G_APP_EMAIL'') is not null'
+,p_display_when2=>'PLSQL'
+,p_display_when_type=>'EXPRESSION'
 ,p_field_template=>wwv_flow_api.id(6854643778267413)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
-,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
 ,p_required_patch=>wwv_flow_api.id(33703543205326403)
-,p_inline_help_text=>'Provide your email address if you wish receive followup notification when new reply is posted. <br />Your email address will not be published or shared.'
+,p_inline_help_text=>'Provide your email address if you wish receive followup notification when new reply is posted. <br>Your email address will not be published or shared.'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'EMAIL'
 ,p_attribute_05=>'BOTH'
+,p_item_comment=>'Application email must be set and feature "Sent email notification of new comments" enabled before users can subscribe to get email notifications'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(6289109968551661)
@@ -187,14 +201,14 @@ wwv_flow_api.create_page_item(
 ,p_prompt=>'Comment'
 ,p_display_as=>'NATIVE_TEXTAREA'
 ,p_cSize=>30
-,p_cMaxlength=>16000
+,p_cMaxlength=>2000
 ,p_cHeight=>5
 ,p_field_template=>wwv_flow_api.id(6855004103267413)
 ,p_item_css_classes=>'padding-top-none'
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
-,p_inline_help_text=>'You can use <strong>&lt;b&gt;</strong>, <strong>&lt;i&gt;</strong>, <strong>&lt;u&gt;</strong> and <strong>&lt;code&gt;</strong> HTML tags.<br /> Example, wrap program code to &lt;code&gt; &lt;&#x2f;code&gt; tag so it is easier to read.'
+,p_inline_help_text=>'You can use <strong>&lt;b&gt;</strong>, <strong>&lt;i&gt;</strong>, <strong>&lt;u&gt;</strong> and <strong>&lt;code&gt;</strong> HTML tags. Example, wrap program code to &lt;code&gt; &lt;&#x2f;code&gt; tag so it is easier to read.'
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'N'
 ,p_attribute_03=>'N'
@@ -264,6 +278,7 @@ wwv_flow_api.create_page_item(
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'US_ONLY'
 ,p_attribute_01=>'Y'
+,p_item_comment=>'If comments need to be moderated, computation set value to zero (0). Else use default value 1'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(31617298354094008)
@@ -278,13 +293,14 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_attribute_01=>'Y'
-,p_item_comment=>'This item is used by automatic form processing process. After submit computation stores formatted comment here.'
+,p_item_comment=>'This item is used on automatic form processing process. After submit computation stores formatted comment to item.'
 );
 wwv_flow_api.create_page_computation(
  p_id=>wwv_flow_api.id(31616932627094005)
 ,p_computation_sequence=>10
 ,p_computation_item=>'P1001_COMMENT_HTML'
-,p_computation_type=>'PLSQL_EXPRESSION'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_comm.format_comment(',
 '  p_comment => :P1001_COMMENT',
@@ -303,18 +319,49 @@ wwv_flow_api.create_page_computation(
 );
 wwv_flow_api.create_page_validation(
  p_id=>wwv_flow_api.id(26384992359542642)
-,p_validation_name=>'Validate Comment'
+,p_validation_name=>'Validate comment'
 ,p_validation_sequence=>20
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_comm.validate_comment(',
-'   p_comment         => :P1001_COMMENT_HTML',
-'  ,p_length_err_mesg => ''BLOG_VALIDATION_ERR_COMMENT_LENGTH''',
-'  ,p_parse_err_mesg  => ''BLOG_VALIDATION_ERR_COMMENT_HTML''',
+'  p_comment => :P1001_COMMENT_HTML',
 ');'))
+,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
 ,p_associated_item=>wwv_flow_api.id(6289109968551661)
 ,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
-,p_validation_comment=>'Validate formatted comment length and HTML'
+,p_validation_comment=>'Validate formatted comment length and HTML. Return error text if validation fails'
+);
+wwv_flow_api.create_page_validation(
+ p_id=>wwv_flow_api.id(37645903401287125)
+,p_validation_name=>'Validate email'
+,p_validation_sequence=>30
+,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'return #OWNER#.blog_comm.is_email(',
+'  p_email => :P1001_EMAIL',
+');'))
+,p_validation2=>'PLSQL'
+,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
+,p_validation_condition=>'P1001_EMAIL'
+,p_validation_condition_type=>'ITEM_IS_NOT_NULL'
+,p_associated_item=>wwv_flow_api.id(6286425900551659)
+,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
+,p_required_patch=>-wwv_flow_api.id(37511226776078888)
+);
+wwv_flow_api.create_page_validation(
+ p_id=>wwv_flow_api.id(36228247829379741)
+,p_validation_name=>'Validate email using API'
+,p_validation_sequence=>40
+,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'return #OWNER#.blog_comm.validate_email(',
+'  p_email => :P1001_EMAIL',
+');'))
+,p_validation2=>'PLSQL'
+,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
+,p_validation_condition=>'P1001_EMAIL'
+,p_validation_condition_type=>'ITEM_IS_NOT_NULL'
+,p_associated_item=>wwv_flow_api.id(6286425900551659)
+,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(37511226776078888)
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(2754144221851926)
@@ -349,8 +396,37 @@ wwv_flow_api.create_page_process(
 ,p_process_comment=>'Save comment'
 );
 wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(26970862080257336)
+ p_id=>wwv_flow_api.id(36228428060379743)
 ,p_process_sequence=>30
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Set new flag'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#OWNER#.blog_comm.flag_comment(',
+'   p_comment_id => :P1001_ID',
+'  ,p_flag       => ''NEW''',
+');'))
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(36228592519379744)
+,p_process_sequence=>40
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Set moderate flag'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#OWNER#.blog_comm.flag_comment(',
+'   p_comment_id => :P1001_ID',
+'  ,p_flag       => ''MODERATE''',
+');'))
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(28281277020489892)
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(26970862080257336)
+,p_process_sequence=>50
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Notify Blogger'
@@ -360,12 +436,13 @@ wwv_flow_api.create_page_process(
 '  ,p_app_name        => :G_APP_NAME',
 '  ,p_email_template  => ''BLOG_NEW_COMMENT_NOTIFY''',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_comment=>'Notify blogger about new comment for post'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(31248826734982928)
-,p_process_sequence=>40
+,p_process_sequence=>60
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Subscribe User'
@@ -374,15 +451,16 @@ wwv_flow_api.create_page_process(
 '   p_post_id  => :P1001_POST_ID',
 '  ,p_email    => :P1001_EMAIL',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'P1001_EMAIL'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
 ,p_required_patch=>wwv_flow_api.id(33703543205326403)
-,p_process_comment=>'Save user email for notification for replies to comment'
+,p_process_comment=>'Save user email for notification for new replies to comment if user provides email address and feature "Sent email notification of new comments" is enabled'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(31247931198982919)
-,p_process_sequence=>50
+,p_process_sequence=>70
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_SESSION_STATE'
 ,p_process_name=>'Clear items'
@@ -391,26 +469,26 @@ wwv_flow_api.create_page_process(
 ,p_process_comment=>'At least question answer item saves session state to disk. Clear all page items session state.'
 );
 wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(26385226571542645)
-,p_process_sequence=>60
+ p_id=>wwv_flow_api.id(31617539210094011)
+,p_process_sequence=>80
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'No Need to Moderate'
+,p_process_name=>'Comment will be moderated'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_success_message=>'Thanks for commenting. Your comment will be published after author has review it.'
+,p_required_patch=>wwv_flow_api.id(28281277020489892)
+,p_process_comment=>'Comments are moderated'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(26385226571542645)
+,p_process_sequence=>90
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_CLOSE_WINDOW'
+,p_process_name=>'Comment approved'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_success_message=>'Thanks for commenting.'
 ,p_required_patch=>-wwv_flow_api.id(28281277020489892)
-,p_process_comment=>'Comments need to be moderated'
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(31617539210094011)
-,p_process_sequence=>70
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'Need to Moderate'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_success_message=>'Thanks for commenting. Your comment will be published after author has review it.'
-,p_required_patch=>wwv_flow_api.id(7073708623458378)
-,p_process_comment=>'Comments not need to be moderated'
+,p_process_comment=>'Comments aren''t moderated'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26385626116542649)
@@ -432,5 +510,6 @@ wwv_flow_api.create_page_process(
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
 ,p_process_comment=>'Close dialog if not for human input field is not null'
 );
+wwv_flow_api.component_end;
 end;
 /

@@ -1,5 +1,16 @@
 prompt --application/shared_components/navigation/lists/desktop_navigation_bar
 begin
+--   Manifest
+--     LIST: Desktop Navigation Bar
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_list(
  p_id=>wwv_flow_api.id(8570714984518262)
 ,p_name=>'Desktop Navigation Bar'
@@ -33,15 +44,6 @@ wwv_flow_api.create_list_item(
 ,p_list_item_current_type=>'NEVER'
 );
 wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(8961345109589863)
-,p_list_item_display_sequence=>40
-,p_list_item_link_text=>'Preferences'
-,p_list_item_link_target=>'f?p=&APP_ID.:503:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-window-wrench'
-,p_parent_list_item_id=>wwv_flow_api.id(8582761687518324)
-,p_list_item_current_type=>'NEVER'
-);
-wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(8960833415552711)
 ,p_list_item_display_sequence=>60
 ,p_list_item_link_text=>'----'
@@ -58,5 +60,6 @@ wwv_flow_api.create_list_item(
 ,p_parent_list_item_id=>wwv_flow_api.id(8582761687518324)
 ,p_list_item_current_type=>'NEVER'
 );
+wwv_flow_api.component_end;
 end;
 /

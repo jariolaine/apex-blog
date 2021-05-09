@@ -1,12 +1,22 @@
 prompt --application/pages/page_00020
 begin
+--   Manifest
+--     PAGE: 00020
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_page(
  p_id=>20
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
 ,p_name=>'Add/Edit Link Group'
-,p_alias=>'LINK-GROUP'
 ,p_page_mode=>'MODAL'
-,p_step_title=>'Link Collection Properties'
+,p_step_title=>'Label Properties'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(4073365241705286)
 ,p_javascript_code=>'var htmldb_delete_message=''"DELETE_CONFIRM_MSG"'';'
@@ -14,7 +24,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200701113824'
+,p_last_upd_yyyymmddhh24miss=>'20210321134636'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25773887524573137)
@@ -31,7 +41,7 @@ wwv_flow_api.create_page_plug(
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25796304715779207)
-,p_plug_name=>'Link Group Properties'
+,p_plug_name=>'Links Label Properties'
 ,p_region_template_options=>'#DEFAULT#:t-Form--stretchInputs'
 ,p_plug_template=>wwv_flow_api.id(8475374748518195)
 ,p_plug_display_sequence=>20
@@ -46,36 +56,20 @@ wwv_flow_api.create_page_plug(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(18959983989678365)
-,p_button_sequence=>20
+,p_button_sequence=>50
 ,p_button_plug_id=>wwv_flow_api.id(25773887524573137)
-,p_button_name=>'CLOSE'
+,p_button_name=>'CANCEL'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
-,p_button_image_alt=>'Close'
+,p_button_image_alt=>'Cancel'
 ,p_button_position=>'REGION_TEMPLATE_CLOSE'
 ,p_warn_on_unsaved_changes=>null
-,p_icon_css_classes=>'fa-remove'
-);
-wwv_flow_api.create_page_button(
- p_id=>wwv_flow_api.id(18961139440678367)
-,p_button_sequence=>50
-,p_button_plug_id=>wwv_flow_api.id(25773887524573137)
-,p_button_name=>'CREATE'
-,p_button_action=>'SUBMIT'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
-,p_button_template_id=>wwv_flow_api.id(8549262062518244)
-,p_button_is_hot=>'Y'
-,p_button_image_alt=>'Save'
-,p_button_position=>'REGION_TEMPLATE_CREATE'
-,p_button_condition=>'P20_ID'
-,p_button_condition_type=>'ITEM_IS_NULL'
-,p_icon_css_classes=>'fa-save'
-,p_database_action=>'INSERT'
+,p_icon_css_classes=>'fa-chevron-left'
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(18960338133678366)
-,p_button_sequence=>30
+,p_button_sequence=>10
 ,p_button_plug_id=>wwv_flow_api.id(25773887524573137)
 ,p_button_name=>'DELETE'
 ,p_button_action=>'REDIRECT_URL'
@@ -92,7 +86,7 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(20749447668206603)
-,p_button_sequence=>40
+,p_button_sequence=>20
 ,p_button_plug_id=>wwv_flow_api.id(25773887524573137)
 ,p_button_name=>'DELETE_LINKS_EXISTS'
 ,p_button_action=>'REDIRECT_PAGE'
@@ -107,7 +101,7 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(18960784634678367)
-,p_button_sequence=>10
+,p_button_sequence=>30
 ,p_button_plug_id=>wwv_flow_api.id(25773887524573137)
 ,p_button_name=>'SAVE'
 ,p_button_action=>'SUBMIT'
@@ -115,11 +109,27 @@ wwv_flow_api.create_page_button(
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Save'
-,p_button_position=>'REGION_TEMPLATE_EDIT'
+,p_button_position=>'REGION_TEMPLATE_NEXT'
 ,p_button_condition=>'P20_ID'
 ,p_button_condition_type=>'ITEM_IS_NOT_NULL'
 ,p_icon_css_classes=>'fa-save'
 ,p_database_action=>'UPDATE'
+);
+wwv_flow_api.create_page_button(
+ p_id=>wwv_flow_api.id(18961139440678367)
+,p_button_sequence=>40
+,p_button_plug_id=>wwv_flow_api.id(25773887524573137)
+,p_button_name=>'CREATE'
+,p_button_action=>'SUBMIT'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_id=>wwv_flow_api.id(8549262062518244)
+,p_button_is_hot=>'Y'
+,p_button_image_alt=>'Save'
+,p_button_position=>'REGION_TEMPLATE_NEXT'
+,p_button_condition=>'P20_ID'
+,p_button_condition_type=>'ITEM_IS_NULL'
+,p_icon_css_classes=>'fa-save'
+,p_database_action=>'INSERT'
 );
 wwv_flow_api.create_page_branch(
  p_id=>wwv_flow_api.id(24908925697771828)
@@ -147,7 +157,8 @@ wwv_flow_api.create_page_item(
 ,p_item_plug_id=>wwv_flow_api.id(25796304715779207)
 ,p_item_source_plug_id=>wwv_flow_api.id(25796304715779207)
 ,p_item_default=>'#OWNER#.blog_cm.get_link_grp_seq'
-,p_item_default_type=>'PLSQL_EXPRESSION'
+,p_item_default_type=>'EXPRESSION'
+,p_item_default_language=>'PLSQL'
 ,p_prompt=>'Sequency'
 ,p_source=>'DISPLAY_SEQ'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
@@ -188,7 +199,6 @@ wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(18963492772678372)
 ,p_name=>'P20_IS_ACTIVE'
 ,p_source_data_type=>'VARCHAR2'
-,p_is_required=>true
 ,p_item_sequence=>30
 ,p_item_plug_id=>wwv_flow_api.id(25796304715779207)
 ,p_item_source_plug_id=>wwv_flow_api.id(25796304715779207)
@@ -196,21 +206,17 @@ wwv_flow_api.create_page_item(
 ,p_prompt=>'Status'
 ,p_source=>'IS_ACTIVE'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
-,p_display_as=>'NATIVE_RADIOGROUP'
-,p_named_lov=>'IS_ACTIVE'
-,p_lov=>'.'||wwv_flow_api.id(8819403626737334)||'.'
-,p_tag_css_classes=>'z-switch'
-,p_colspan=>3
+,p_display_as=>'NATIVE_YES_NO'
 ,p_field_template=>wwv_flow_api.id(8548970214518243)
-,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--radioButtonGroup'
+,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
-,p_lov_display_extra=>'NO'
 ,p_protection_level=>'S'
 ,p_restricted_characters=>'US_ONLY'
-,p_required_patch=>wwv_flow_api.id(24687510906079791)
-,p_attribute_01=>'2'
-,p_attribute_02=>'NONE'
-,p_item_comment=>'Because bug in APEX 19.2 switch not allow zero (0) as off value. Change to switch when bug is fixed'
+,p_attribute_01=>'CUSTOM'
+,p_attribute_02=>'1'
+,p_attribute_03=>'Enabled'
+,p_attribute_04=>'0'
+,p_attribute_05=>'Disabled'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(19359101523963243)
@@ -307,6 +313,7 @@ wwv_flow_api.create_page_process(
 '   p_application => :G_PUB_APP_ID',
 '  ,p_page => 10',
 ');'))
+,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.create_page_process(
@@ -317,5 +324,6 @@ wwv_flow_api.create_page_process(
 ,p_process_type=>'NATIVE_FORM_INIT'
 ,p_process_name=>'Initialize form Link Group Properties'
 );
+wwv_flow_api.component_end;
 end;
 /

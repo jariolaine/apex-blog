@@ -1,10 +1,20 @@
 prompt --application/shared_components/user_interface/templates/report/blog_posts_custom_1
 begin
+--   Manifest
+--     ROW TEMPLATE: BLOG_POSTS_CUSTOM_1
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_row_template(
  p_id=>wwv_flow_api.id(6894976353301648)
 ,p_row_template_name=>'Blog Posts (Custom 1)'
 ,p_internal_name=>'BLOG_POSTS_CUSTOM_1'
-,p_javascript_code_onload=>'blog.UI.formatProgramCode("pre.z-program-code");'
 ,p_row_template1=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<article class="z-post">',
 '  <header class="z-post--header">',
@@ -70,7 +80,7 @@ wwv_flow_api.create_row_template(
 ||' fa-chevron-left"></span></button>'
 ,p_theme_id=>42
 ,p_theme_class_id=>7
-,p_preset_template_options=>'z-posts'
 );
+wwv_flow_api.component_end;
 end;
 /

@@ -1,5 +1,16 @@
 prompt --application/pages/page_00012
 begin
+--   Manifest
+--     PAGE: 00012
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_page(
  p_id=>12
 ,p_user_interface_id=>wwv_flow_api.id(6877050287267426)
@@ -15,13 +26,13 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200531055721'
+,p_last_upd_yyyymmddhh24miss=>'20210418094254'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(30430710498753130)
 ,p_name=>'About Bloggers'
 ,p_template=>wwv_flow_api.id(6781372168267375)
-,p_display_sequence=>10
+,p_display_sequence=>20
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'#DEFAULT#:z-Content:t-Report--hideNoPagination'
 ,p_grid_column_span=>9
@@ -32,9 +43,8 @@ wwv_flow_api.create_report_region(
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select t1.blogger_name  as blogger_name',
 '  ,t1.blogger_desc      as blogger_desc',
-'from #OWNER#.blog_bloggers t1',
+'from #OWNER#.blog_v_bloggers t1',
 'where 1 = 1',
-'and t1.blogger_desc is not null',
 'order by t1.display_seq'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_query_row_template=>wwv_flow_api.id(30641878306098019)
@@ -69,5 +79,6 @@ wwv_flow_api.create_report_columns(
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
+wwv_flow_api.component_end;
 end;
 /

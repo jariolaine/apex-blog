@@ -1,10 +1,20 @@
 prompt --application/pages/page_20011
 begin
+--   Manifest
+--     PAGE: 20011
+--   Manifest End
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_api.create_page(
  p_id=>20011
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
 ,p_name=>'Configuration Options'
-,p_alias=>'CONFIGURATION-OPTIONS'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Configuration Options'
 ,p_autocomplete_on_off=>'OFF'
@@ -18,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20200524193913'
+,p_last_upd_yyyymmddhh24miss=>'20210414155336'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27063074415689131)
@@ -31,16 +41,15 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.feature_id         as feature_id',
-'  ,v1.build_option_id        as build_option_id',
-'  ,v1.application_id         as application_id',
-'  ,v1.allowed_row_operation  as allowed_row_operation',
-'  ,v1.display_seq            as display_seq',
-'  ,v1.feature_name           as feature_name',
-'  ,v1.feature_group          as feature_group',
-'  ,v1.build_option_status    as status',
-'  ,v1.last_updated_on        as last_updated',
-'  ,v1.last_updated_by        as last_updated_by',
+'select v1.id                as feature_id',
+'  ,v1.build_option_id       as build_option_id',
+'  ,v1.application_id        as application_id',
+'  ,v1.display_seq           as display_seq',
+'  ,v1.feature_name          as feature_name',
+'  ,v1.feature_group         as feature_group',
+'  ,v1.build_option_status   as status',
+'  ,v1.last_updated_on       as last_updated',
+'  ,v1.last_updated_by       as last_updated_by',
 'from #OWNER#.blog_v_all_features v1',
 'where 1 = 1',
 'and v1.application_id = :G_PUB_APP_ID',
@@ -117,20 +126,18 @@ wwv_flow_api.create_region_column(
 ,p_is_query_only=>true
 ,p_item_type=>'NATIVE_DISPLAY_ONLY'
 ,p_heading=>'Changed'
-,p_heading_alignment=>'LEFT'
+,p_heading_alignment=>'RIGHT'
 ,p_display_sequence=>100
-,p_value_alignment=>'LEFT'
+,p_value_alignment=>'RIGHT'
 ,p_stretch=>'A'
 ,p_attribute_02=>'VALUE'
 ,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
-,p_enable_filter=>true
+,p_enable_filter=>false
 ,p_filter_is_required=>false
-,p_filter_date_ranges=>'ALL'
-,p_filter_lov_type=>'DISTINCT'
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.configIG.initColumn'
 ,p_enable_sort_group=>false
-,p_enable_hide=>true
+,p_enable_hide=>false
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 ,p_escape_on_http_output=>true
@@ -197,23 +204,6 @@ wwv_flow_api.create_region_column(
 ,p_include_in_export=>false
 );
 wwv_flow_api.create_region_column(
- p_id=>wwv_flow_api.id(27272230658075401)
-,p_name=>'ALLOWED_ROW_OPERATION'
-,p_source_type=>'DB_COLUMN'
-,p_source_expression=>'ALLOWED_ROW_OPERATION'
-,p_data_type=>'VARCHAR2'
-,p_is_query_only=>false
-,p_item_type=>'NATIVE_HIDDEN'
-,p_display_sequence=>50
-,p_attribute_01=>'Y'
-,p_use_as_row_header=>false
-,p_enable_sort_group=>true
-,p_enable_control_break=>true
-,p_is_primary_key=>false
-,p_duplicate_value=>true
-,p_include_in_export=>false
-);
-wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(27863097078256829)
 ,p_name=>'FEATURE_GROUP'
 ,p_source_type=>'DB_COLUMN'
@@ -249,9 +239,9 @@ wwv_flow_api.create_region_column(
 ,p_is_query_only=>true
 ,p_item_type=>'NATIVE_DISPLAY_ONLY'
 ,p_heading=>'Sequence'
-,p_heading_alignment=>'LEFT'
+,p_heading_alignment=>'RIGHT'
 ,p_display_sequence=>60
-,p_value_alignment=>'LEFT'
+,p_value_alignment=>'RIGHT'
 ,p_attribute_02=>'VALUE'
 ,p_enable_filter=>false
 ,p_use_as_row_header=>false
@@ -284,7 +274,6 @@ wwv_flow_api.create_interactive_grid(
 ,p_internal_uid=>27063837092689139
 ,p_is_editable=>true
 ,p_edit_operations=>'u'
-,p_edit_row_operations_column=>'ALLOWED_ROW_OPERATION'
 ,p_lost_update_check_type=>'VALUES'
 ,p_submit_checked_rows=>false
 ,p_lazy_loading=>false
@@ -312,6 +301,7 @@ wwv_flow_api.create_interactive_grid(
 wwv_flow_api.create_ig_report(
  p_id=>wwv_flow_api.id(27234020761386684)
 ,p_interactive_grid_id=>wwv_flow_api.id(27063837092689139)
+,p_static_id=>'249339'
 ,p_type=>'PRIMARY'
 ,p_default_view=>'GRID'
 ,p_show_row_number=>false
@@ -391,14 +381,6 @@ wwv_flow_api.create_ig_report_column(
 ,p_is_frozen=>false
 );
 wwv_flow_api.create_ig_report_column(
- p_id=>wwv_flow_api.id(27278208878078387)
-,p_view_id=>wwv_flow_api.id(27234106973386684)
-,p_display_seq=>8
-,p_column_id=>wwv_flow_api.id(27272230658075401)
-,p_is_visible=>true
-,p_is_frozen=>false
-);
-wwv_flow_api.create_ig_report_column(
  p_id=>wwv_flow_api.id(28377689116437035)
 ,p_view_id=>wwv_flow_api.id(27234106973386684)
 ,p_display_seq=>0
@@ -436,7 +418,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(52996033344836443)
 ,p_button_name=>'CLOSE'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Close'
 ,p_button_position=>'REGION_TEMPLATE_CLOSE'
@@ -498,7 +480,28 @@ wwv_flow_api.create_page_da_action(
 '  ,p_page => 0',
 ');',
 ''))
+,p_attribute_05=>'PLSQL'
 ,p_wait_for_result=>'Y'
+);
+wwv_flow_api.create_page_da_event(
+ p_id=>wwv_flow_api.id(14806954183070103)
+,p_name=>'Set Edit Mode'
+,p_event_sequence=>30
+,p_bind_type=>'bind'
+,p_bind_event_type=>'ready'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(14807006401070104)
+,p_event_id=>wwv_flow_api.id(14806954183070103)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_api.id(27063074415689131)
+,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex.region(this.affectedElements[0].id).call("getActions").set("edit", true);',
+''))
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(27064721351689148)
@@ -514,8 +517,7 @@ wwv_flow_api.create_page_process(
 '  ,p_feature_id      => :FEATURE_ID',
 '  ,p_build_option_id => :BUILD_OPTION_ID',
 '  ,p_build_status    => :STATUS',
-');',
-''))
+');'))
 ,p_attribute_05=>'N'
 ,p_attribute_06=>'N'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
@@ -525,5 +527,6 @@ wwv_flow_api.create_page_process(
 ,p_exec_cond_for_each_row=>'Y'
 ,p_process_comment=>'Update build option value and run post expression'
 );
+wwv_flow_api.component_end;
 end;
 /
