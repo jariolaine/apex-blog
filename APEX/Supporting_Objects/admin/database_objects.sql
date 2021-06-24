@@ -1337,7 +1337,7 @@ as
 --
   function get_attribute_value(
     p_attribute_name  in varchar2
-  ) return varchar2 result_cache;
+  ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --
@@ -1540,7 +1540,7 @@ as
 --------------------------------------------------------------------------------
   function get_attribute_value(
     p_attribute_name in varchar2
-  ) return varchar2 result_cache
+  ) return varchar2
   as
     l_value varchar2(4000);
   begin
@@ -1697,7 +1697,6 @@ as
     -- show http error
     owa_util.status_line( 404 );
     apex_application.stop_apex_engine;
-
     raise;
 
   when others
@@ -1713,9 +1712,8 @@ as
     );
 
     -- show http error
-    owa_util.status_line( 400 );
+    owa_util.status_line( 404 );
     apex_application.stop_apex_engine;
-
     raise;
 
   end get_post_title;
@@ -1817,7 +1815,6 @@ as
     -- show http error
     owa_util.status_line( 404 );
     apex_application.stop_apex_engine;
-
     raise;
 
   when others
@@ -1835,9 +1832,8 @@ as
     );
 
     -- show http error
-    owa_util.status_line( 400 );
+    owa_util.status_line( 404 );
     apex_application.stop_apex_engine;
-
     raise;
 
   end get_post_pagination;
@@ -1894,7 +1890,6 @@ as
     -- show http error
     owa_util.status_line( 404 );
     apex_application.stop_apex_engine;
-
     raise;
 
   when others then
@@ -1908,9 +1903,8 @@ as
     );
 
     -- show http error
-    owa_util.status_line( 400 );
+    owa_util.status_line( 404 );
     apex_application.stop_apex_engine;
-
     raise;
 
   end get_category_title;
@@ -1959,7 +1953,6 @@ as
     -- show http error
     owa_util.status_line( 404 );
     apex_application.stop_apex_engine;
-
     raise;
 
   when others
@@ -1973,9 +1966,8 @@ as
     );
 
     -- show http error
-    owa_util.status_line( 400 );
+    owa_util.status_line( 404 );
     apex_application.stop_apex_engine;
-
     raise;
 
   end get_tag;
@@ -2023,7 +2015,6 @@ as
     -- show http error
     owa_util.status_line( 404 );
     apex_application.stop_apex_engine;
-
     raise;
 
   when others
@@ -2037,9 +2028,8 @@ as
     );
 
     -- show http error
-    owa_util.status_line( 400 );
+    owa_util.status_line( 404 );
     apex_application.stop_apex_engine;
-
     raise;
 
   end check_archive_exists;

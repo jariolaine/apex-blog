@@ -21,14 +21,14 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210505150251'
+,p_last_upd_yyyymmddhh24miss=>'20210519142536'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
 ,p_plug_name=>'Not Rendered Items'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(6781372168267375)
-,p_plug_display_sequence=>30
+,p_plug_display_sequence=>40
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -150,7 +150,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_name=>'Powered by / link to source code'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(6781539027267375)
-,p_plug_display_sequence=>20
+,p_plug_display_sequence=>30
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="z-app-source">',
@@ -165,13 +165,11 @@ wwv_flow_api.create_page_plug(
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(40726951471800848)
-,p_plug_name=>'Links'
+,p_plug_name=>'Modal Pages'
 ,p_region_template_options=>'#DEFAULT#'
-,p_component_template_options=>'#DEFAULT#:t-BadgeList--dash:t-BadgeList--fixed:t-BadgeList--medium'
-,p_plug_template=>wwv_flow_api.id(6781372168267375)
+,p_component_template_options=>'#DEFAULT#:t-BadgeList--dash:t-BadgeList--stacked:t-BadgeList--large'
+,p_plug_template=>wwv_flow_api.id(6781539027267375)
 ,p_plug_display_sequence=>10
-,p_plug_grid_column_span=>8
-,p_plug_display_column=>3
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_list_id=>wwv_flow_api.id(41857893903151708)
 ,p_plug_source_type=>'NATIVE_LIST'

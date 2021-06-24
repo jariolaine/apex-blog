@@ -14,21 +14,21 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_page(
  p_id=>20010
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
-,p_name=>'Settings'
-,p_alias=>'SETTINGS'
-,p_step_title=>'Settings'
+,p_name=>'Administration'
+,p_alias=>'ADMINISTRATION'
+,p_step_title=>'Administration'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8574375481518289)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509044125'
+,p_last_upd_yyyymmddhh24miss=>'20210510151626'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(51691560566605050)
-,p_plug_name=>'Options List'
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--removeHeader:t-Region--scrollBody'
+,p_plug_name=>'Configuration'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--accent2:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:u-colors:t-MediaList--iconsRounded'
 ,p_plug_template=>wwv_flow_api.id(8496813422518209)
 ,p_plug_display_sequence=>10
@@ -41,7 +41,7 @@ wwv_flow_api.create_page_plug(
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(52139368712075166)
-,p_plug_name=>'Settings'
+,p_plug_name=>'Administration'
 ,p_region_template_options=>'#DEFAULT#:t-HeroRegion--hideIcon'
 ,p_plug_template=>wwv_flow_api.id(8492139706518207)
 ,p_plug_display_sequence=>20
@@ -50,6 +50,19 @@ wwv_flow_api.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
+);
+wwv_flow_api.create_page_plug(
+ p_id=>wwv_flow_api.id(86412461422616765)
+,p_plug_name=>'Blog Public URLs'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--accent4:t-Region--scrollBody'
+,p_component_template_options=>'#DEFAULT#:u-colors'
+,p_plug_template=>wwv_flow_api.id(8496813422518209)
+,p_plug_display_sequence=>20
+,p_plug_display_point=>'BODY'
+,p_list_id=>wwv_flow_api.id(43181213072992711)
+,p_plug_source_type=>'NATIVE_LIST'
+,p_list_template_id=>wwv_flow_api.id(8538547318518236)
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
 wwv_flow_api.component_end;
 end;

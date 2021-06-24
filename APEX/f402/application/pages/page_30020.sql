@@ -24,7 +24,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509115411'
+,p_last_upd_yyyymmddhh24miss=>'20210624041607'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43823229274615012)
@@ -374,9 +374,11 @@ wwv_flow_api.create_page_item(
 ,p_name=>'P30020_TIMEFRAME'
 ,p_item_sequence=>10
 ,p_item_plug_id=>wwv_flow_api.id(43824074289615012)
+,p_item_default=>'BLOG_DEFAULT_TIMEFRAME'
+,p_item_default_type=>'ITEM'
 ,p_prompt=>'Timeframe'
 ,p_source=>'BLOG_DEFAULT_TIMEFRAME'
-,p_source_type=>'ITEM'
+,p_source_type=>'PREFERENCE'
 ,p_display_as=>'NATIVE_SELECT_LIST'
 ,p_named_lov=>'TIMEFRAME (4 WEEKS)'
 ,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(

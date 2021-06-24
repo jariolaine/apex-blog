@@ -29,7 +29,7 @@ wwv_flow_api.create_page(
 'Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back to t'
 ||'he default settings.</p>'))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509084937'
+,p_last_upd_yyyymmddhh24miss=>'20210624041903'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43843535329616316)
@@ -235,9 +235,11 @@ wwv_flow_api.create_page_item(
 ,p_name=>'P30024_TIMEFRAME'
 ,p_item_sequence=>10
 ,p_item_plug_id=>wwv_flow_api.id(43843621023616316)
+,p_item_default=>'BLOG_DEFAULT_TIMEFRAME'
+,p_item_default_type=>'ITEM'
 ,p_prompt=>'Timeframe'
 ,p_source=>'BLOG_DEFAULT_TIMEFRAME'
-,p_source_type=>'ITEM'
+,p_source_type=>'PREFERENCE'
 ,p_display_as=>'NATIVE_SELECT_LIST'
 ,p_named_lov=>'TIMEFRAME (4 WEEKS)'
 ,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(

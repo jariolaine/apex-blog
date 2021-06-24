@@ -1380,7 +1380,7 @@ wwv_flow_api.append_to_install_script(
 '--',
 '  function get_attribute_value(',
 '    p_attribute_name  in varchar2',
-'  ) return varchar2 result_cache;',
+'  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--',
@@ -1580,7 +1580,7 @@ wwv_flow_api.append_to_install_script(
 '    return to_char( p_value,  ''fm99999999999999999999999999999999999999'' );',
 '  end int_to_vc2;',
 '--------------------------------------------------------------------------------',
-'----------'))
+'-----------------------'))
 );
 null;
 wwv_flow_api.component_end;
@@ -1598,10 +1598,10 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----------------------------------------------------------------------',
+'---------------------------------------------------------',
 '  function get_attribute_value(',
 '    p_attribute_name in varchar2',
-'  ) return varchar2 result_cache',
+'  ) return varchar2',
 '  as',
 '    l_value varchar2(4000);',
 '  begin',
@@ -1758,7 +1758,6 @@ wwv_flow_api.append_to_install_script(
 '    -- show http error',
 '    owa_util.status_line( 404 );',
 '    apex_application.stop_apex_engine;',
-'',
 '    raise;',
 '',
 '  when others',
@@ -1774,9 +1773,8 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    owa_util.status_line( 400 );',
+'    owa_util.status_line( 404 );',
 '    apex_application.stop_apex_engine;',
-'',
 '    raise;',
 '',
 '  end get_post_title;',
@@ -1878,7 +1876,6 @@ wwv_flow_api.append_to_install_script(
 '    -- show http error',
 '    owa_util.status_line( 404 );',
 '    apex_application.stop_apex_engine;',
-'',
 '    raise;',
 '',
 '  when others',
@@ -1896,9 +1893,8 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    owa_util.status_line( 400 );',
+'    owa_util.status_line( 404 );',
 '    apex_application.stop_apex_engine;',
-'',
 '    raise;',
 '',
 '  end get_post_pagination;',
@@ -1955,7 +1951,6 @@ wwv_flow_api.append_to_install_script(
 '    -- show http error',
 '    owa_util.status_line( 404 );',
 '    apex_application.stop_apex_engine;',
-'',
 '    raise;',
 '',
 '  when others then',
@@ -1969,9 +1964,8 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    owa_util.status_line( 400 );',
+'    owa_util.status_line( 404 );',
 '    apex_application.stop_apex_engine;',
-'',
 '    raise;',
 '',
 '  end get_category_title;',
@@ -2020,7 +2014,6 @@ wwv_flow_api.append_to_install_script(
 '    -- show http error',
 '    owa_util.status_line( 404 );',
 '    apex_application.stop_apex_engine;',
-'',
 '    raise;',
 '',
 '  when others',
@@ -2034,9 +2027,8 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    owa_util.status_line( 400 );',
+'    owa_util.status_line( 404 );',
 '    apex_application.stop_apex_engine;',
-'',
 '    raise;',
 '',
 '  end get_tag;',
@@ -2084,7 +2076,6 @@ wwv_flow_api.append_to_install_script(
 '    -- show http error',
 '    owa_util.status_line( 404 );',
 '    apex_application.stop_apex_engine;',
-'',
 '    raise;',
 '',
 '  when others',
@@ -2098,9 +2089,8 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    owa_util.status_line( 400 );',
+'    owa_util.status_line( 404 );',
 '    apex_application.stop_apex_engine;',
-'',
 '    raise;',
 '',
 '  end check_archive_exists;',
@@ -2564,7 +2554,10 @@ wwv_flow_api.append_to_install_script(
 '      ,blogger_name',
 '    into p_id, p_name',
 '    from blog_bloggers',
-'    '))
+'    where apex_username = p_username',
+'    ;',
+'',
+'  -'))
 );
 null;
 wwv_flow_api.component_end;
@@ -2582,10 +2575,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'where apex_username = p_username',
-'    ;',
-'',
-'  -- if user not found, check is user authorized use blog',
+'- if user not found, check is user authorized use blog',
 '  exception when no_data_found',
 '  then',
 '    -- fetch user group name that is used for admin app authorization',
@@ -3550,7 +3540,8 @@ wwv_flow_api.append_to_install_script(
 '',
 '    if not l_result then',
 '',
-'      p_result.mess'))
+'      p_result.message := apex_lang.message(',
+'        p_name => p'))
 );
 null;
 wwv_flow_api.component_end;
@@ -3568,8 +3559,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'age := apex_lang.message(',
-'        p_name => p_plugin.attribute_01',
+'_plugin.attribute_01',
 '        ,p0 => p_item.plain_label',
 '      );',
 '',
@@ -4445,6 +4435,8 @@ wwv_flow_api.append_to_install_script(
 '  as',
 '    l_err_mesg varchar2(32700);',
 '  begin',
+'    -- TO DO see item 3 from package specs',
+'',
 ' '))
 );
 null;
@@ -4463,9 +4455,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   -- TO DO see item 3 from package specs',
-'',
-'    -- do some basic check for email address',
+'   -- do some basic check for email address',
 '    if not regexp_like( p_email, ''^.*\@.*\..*$'' )',
 '    then',
 '      -- if validation fails prepare error message',
@@ -5401,7 +5391,7 @@ wwv_flow_api.append_to_install_script(
 'create or replace package "BLOG_XML"',
 'authid definer',
 'as',
-''))
+'----------------------------------------------'))
 );
 null;
 wwv_flow_api.component_end;
@@ -5419,7 +5409,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'--------------------------------------------------------------------------------',
+'----------------------------------',
 '--------------------------------------------------------------------------------',
 '--',
 '--  DESCRIPTION',
@@ -6307,7 +6297,9 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )'))
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
+''))
 );
 null;
 wwv_flow_api.component_end;
@@ -6325,8 +6317,6 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
-'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
 '    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',

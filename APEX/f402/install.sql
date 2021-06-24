@@ -6,7 +6,7 @@ prompt --install
 @@application/shared_components/navigation/lists/desktop_navigation_menu.sql
 @@application/shared_components/navigation/lists/desktop_navigation_bar.sql
 @@application/shared_components/navigation/lists/home.sql
-@@application/shared_components/navigation/lists/settings.sql
+@@application/shared_components/navigation/lists/configuration.sql
 @@application/shared_components/navigation/lists/public_application_links.sql
 @@application/shared_components/navigation/lists/activity_reports.sql
 @@application/shared_components/files/app_icon_svg.sql
@@ -37,6 +37,7 @@ prompt --install
 @@application/shared_components/navigation/tabs/standard.sql
 @@application/shared_components/navigation/tabs/parent.sql
 @@application/shared_components/user_interface/lovs/categories.sql
+@@application/shared_components/user_interface/lovs/comment_flag.sql
 @@application/shared_components/user_interface/lovs/comment_status.sql
 @@application/shared_components/user_interface/lovs/is_active.sql
 @@application/shared_components/user_interface/lovs/link_status.sql

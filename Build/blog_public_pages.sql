@@ -132,7 +132,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509083643'
+,p_last_upd_yyyymmddhh24miss=>'20210624051457'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>115
 ,p_ui_type_name => null
@@ -542,11 +542,11 @@ wwv_flow_api.create_list(
 );
 end;
 /
-prompt --application/shared_components/navigation/lists/footer_links
+prompt --application/shared_components/navigation/lists/footer_links_to_modal_pages
 begin
 wwv_flow_api.create_list(
  p_id=>wwv_flow_api.id(41857893903151708)
-,p_name=>'Footer Links'
+,p_name=>'Footer Links to Modal Pages'
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select null                             as list_level',
@@ -15444,14 +15444,14 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210505150251'
+,p_last_upd_yyyymmddhh24miss=>'20210519142536'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
 ,p_plug_name=>'Not Rendered Items'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(6781372168267375)
-,p_plug_display_sequence=>30
+,p_plug_display_sequence=>40
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -15573,7 +15573,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_name=>'Powered by / link to source code'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(6781539027267375)
-,p_plug_display_sequence=>20
+,p_plug_display_sequence=>30
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="z-app-source">',
@@ -15588,13 +15588,11 @@ wwv_flow_api.create_page_plug(
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(40726951471800848)
-,p_plug_name=>'Links'
+,p_plug_name=>'Modal Pages'
 ,p_region_template_options=>'#DEFAULT#'
-,p_component_template_options=>'#DEFAULT#:t-BadgeList--dash:t-BadgeList--fixed:t-BadgeList--medium'
-,p_plug_template=>wwv_flow_api.id(6781372168267375)
+,p_component_template_options=>'#DEFAULT#:t-BadgeList--dash:t-BadgeList--stacked:t-BadgeList--large'
+,p_plug_template=>wwv_flow_api.id(6781539027267375)
 ,p_plug_display_sequence=>10
-,p_plug_grid_column_span=>8
-,p_plug_display_column=>3
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_list_id=>wwv_flow_api.id(41857893903151708)
 ,p_plug_source_type=>'NATIVE_LIST'
@@ -18050,7 +18048,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210418180535'
+,p_last_upd_yyyymmddhh24miss=>'20210522072836'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -18519,7 +18517,7 @@ wwv_flow_api.create_page_process(
 ,p_process_sequence=>10
 ,p_process_point=>'ON_SUBMIT_BEFORE_COMPUTATION'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'If Hidden Item not Null'
+,p_process_name=>'If Hidden Item P1001_LAST_NAME not Null'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'P1001_LAST_NAME'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
@@ -19009,7 +19007,7 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''20'',''1'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,null,null,blog_util.int_to_vc2(apex_app'
 ||'lication_install.get_application_id));',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,null,''Release 4.4-20210509'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,null,''Release 4.4-20210624'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''40'',''0'',''G_ADMIN_APP_AUTHZ_GROUP'',''STRING'',''INTERNAL'',null,null,null,null,''Bloggers'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''50'',''0'',''G_EMAIL_VALIDATION_API_KEY'',''STRING'',''INTERNAL'',null,null,null,null,''NO'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''60'',''1'',''G_RSS_XSL_CSS_URL'',''STRING'',''INTERNAL'',null,null,null,null,''css/rss-xsl.css'');',

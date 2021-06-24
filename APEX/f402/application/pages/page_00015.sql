@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509042735'
+,p_last_upd_yyyymmddhh24miss=>'20210509165406'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
@@ -282,7 +282,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_identifier=>'AO'
 ,p_column_label=>'Copy URL'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<button title="#BTN_COPY_URL#" type="button" class="t-Button t-Button--noLabel t-Button--icon t-Button--noUI" onclick="void(0);" data-clipboard-source="#RELATIVE_PATH#">',
+'<button title="#BTN_COPY_URL#" type="button" class="t-Button t-Button--noLabel t-Button--icon t-Button--small" onclick="void(0);" data-clipboard-source="#RELATIVE_PATH#">',
 '  <span class="t-Icon fa fa-clone" aria-hidden="true"></span>',
 '</button>'))
 ,p_allow_sorting=>'N'

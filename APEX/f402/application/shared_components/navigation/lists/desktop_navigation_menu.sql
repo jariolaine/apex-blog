@@ -70,7 +70,7 @@ wwv_flow_api.create_list_item(
 wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(24902524516683500)
 ,p_list_item_display_sequence=>80
-,p_list_item_link_text=>'Settings'
+,p_list_item_link_text=>'Administration'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20010:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-gear'
 ,p_list_item_current_type=>'TARGET_PAGE'

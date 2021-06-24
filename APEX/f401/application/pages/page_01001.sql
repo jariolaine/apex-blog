@@ -35,7 +35,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210418180535'
+,p_last_upd_yyyymmddhh24miss=>'20210522072836'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -504,7 +504,7 @@ wwv_flow_api.create_page_process(
 ,p_process_sequence=>10
 ,p_process_point=>'ON_SUBMIT_BEFORE_COMPUTATION'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'If Hidden Item not Null'
+,p_process_name=>'If Hidden Item P1001_LAST_NAME not Null'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'P1001_LAST_NAME'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'

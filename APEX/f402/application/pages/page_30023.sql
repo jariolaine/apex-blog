@@ -29,7 +29,7 @@ wwv_flow_api.create_page(
 'Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back to t'
 ||'he default settings.</p>'))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509083227'
+,p_last_upd_yyyymmddhh24miss=>'20210624041928'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43851444064616938)
@@ -270,7 +270,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_report_alias=>'438584'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'PAGE_NAME:MEDIAN_ELAPSED:WEIGHTED_PERFORMANCE:ERRORS:DISTINCT_USERS:APPLICATION_SESSIONS:PAGE_VIEWS:'
+,p_report_columns=>'PAGE_NAME:MEDIAN_ELAPSED:WEIGHTED_PERFORMANCE:ERRORS:APPLICATION_SESSIONS:PAGE_VIEWS:'
 ,p_sort_column_1=>'WEIGHTED_PERFORMANCE'
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'PAGE_VIEWS'
@@ -308,9 +308,11 @@ wwv_flow_api.create_page_item(
 ,p_name=>'P30023_TIMEFRAME'
 ,p_item_sequence=>10
 ,p_item_plug_id=>wwv_flow_api.id(43851502658616938)
+,p_item_default=>'BLOG_DEFAULT_TIMEFRAME'
+,p_item_default_type=>'ITEM'
 ,p_prompt=>'Timeframe'
 ,p_source=>'BLOG_DEFAULT_TIMEFRAME'
-,p_source_type=>'ITEM'
+,p_source_type=>'PREFERENCE'
 ,p_display_as=>'NATIVE_SELECT_LIST'
 ,p_named_lov=>'TIMEFRAME (4 WEEKS)'
 ,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(
