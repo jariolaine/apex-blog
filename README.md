@@ -1,12 +1,15 @@
 # APEX Blog
+![](https://img.shields.io/badge/Oracle_Database-19c-blue.svg)
+![](https://img.shields.io/badge/APEX-20.2-success.svg)
+
 
 Blog application built with Oracle Application Express (APEX).
 
 ## Install
 
 ### System Requirements
-* Oracle database version 19c or higher
-* Oracle Application Express version 20.2 or higher
+* Oracle database version 19c or later
+* Oracle Application Express version 20.2 or later
 
 ### Needed Privileges
 Ensure target schema associated to your APEX workspace has following system privileges and roles:
