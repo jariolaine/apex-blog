@@ -31,7 +31,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --   Exported By:     BLOG_040000
 --   Flashback:       0
 --   Export Type:     Application Export
---     Pages:                     14
+--     Pages:                     13
 --       Items:                   31
 --       Computations:             5
 --       Validations:              3
@@ -132,7 +132,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210624051457'
+,p_last_upd_yyyymmddhh24miss=>'20210908094436'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>115
 ,p_ui_type_name => null
@@ -15099,6 +15099,7 @@ wwv_flow_api.create_shortcut(
 'return #OWNER#.blog_html.get_rss_link(',
 '   p_app_id => :APP_ID',
 '  ,p_app_name => :G_APP_NAME',
+'  ,p_rss_url  => :G_RSS_URL',
 ');'))
 );
 end;
@@ -15126,6 +15127,7 @@ wwv_flow_api.create_shortcut(
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_rss_anchor(',
 '   p_app_name => :G_APP_NAME',
+'  ,p_rss_url  => :G_RSS_URL',
 ');'))
 );
 end;
@@ -15242,10 +15244,7 @@ wwv_flow_api.create_email_template(
 ,p_name=>'Blog new comment notification'
 ,p_static_id=>'BLOG_NEW_COMMENT_NOTIFY'
 ,p_subject=>'#APP_NAME# new comment notification'
-,p_html_body=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'New comment received in the post <a href="#POST_LINK#">#POST_TITLE#</a>.',
-'',
-''))
+,p_html_body=>'New comment received in the post <a href="#POST_LINK#">#POST_TITLE#</a>.'
 ,p_html_header=>'<b>Hello #BLOGGER_NAME#,</b>'
 ,p_html_footer=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'Best Regards,<br>',
@@ -15444,7 +15443,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210519142536'
+,p_last_upd_yyyymmddhh24miss=>'20210908094031'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
@@ -15473,7 +15472,7 @@ wwv_flow_api.create_page_plug(
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
-,p_plug_display_when_condition=>'1001,1002,1003,9999'
+,p_plug_display_when_condition=>'1001,1002,9999'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 ,p_plug_comment=>'Application right side column holding e.g. search, archives, categories list and latest posts list'
@@ -15582,7 +15581,7 @@ wwv_flow_api.create_page_plug(
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
-,p_plug_display_when_condition=>'1001,1002,1003,9999'
+,p_plug_display_when_condition=>'1001,1002,9999'
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'HTML'
 );
@@ -15599,7 +15598,7 @@ wwv_flow_api.create_page_plug(
 ,p_list_template_id=>wwv_flow_api.id(6833949072267402)
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
-,p_plug_display_when_condition=>'1001,1002,1003,9999'
+,p_plug_display_when_condition=>'1001,1002,9999'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41877798757408318)
@@ -15616,7 +15615,7 @@ wwv_flow_api.create_page_plug(
 ,p_list_template_id=>wwv_flow_api.id(6848962014267410)
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
-,p_plug_display_when_condition=>'1001,1002,1003,9999'
+,p_plug_display_when_condition=>'1001,1002,9999'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(6433577571894075)
@@ -15681,7 +15680,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210301164845'
+,p_last_upd_yyyymmddhh24miss=>'20210625054358'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6432040642894060)
@@ -15830,6 +15829,122 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'Reset Posts Pagination'
 ,p_attribute_01=>'THIS_PAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(51524519663781887)
+,p_process_sequence=>10
+,p_process_point=>'ON_DEMAND'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'download'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#OWNER#.blog_util.download_file (',
+'   p_file_name => :P11_FILE_NAME',
+');'))
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(51523384532776617)
+,p_process_sequence=>20
+,p_process_point=>'ON_DEMAND'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'rss.xml'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#OWNER#.blog_xml.rss(',
+'   p_rss_url  => :G_RSS_URL',
+'  ,p_app_name => :G_APP_NAME',
+'  ,p_app_desc => :G_APP_DESC',
+');'))
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(8635198962090938)
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(51523648055777688)
+,p_process_sequence=>30
+,p_process_point=>'ON_DEMAND'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'rss.xsl'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#OWNER#.blog_xml.rss_xsl(',
+'  p_ws_images => :APP_IMAGES',
+');'))
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(8635198962090938)
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(51523980684778480)
+,p_process_sequence=>40
+,p_process_point=>'ON_DEMAND'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'sitemap-index.xml'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#OWNER#.blog_xml.sitemap_index(',
+'   p_app_id        => :APP_ID',
+'  ,p_app_page_id   => :APP_PAGE_ID',
+');'))
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(51524255246780442)
+,p_process_sequence=>50
+,p_process_point=>'ON_DEMAND'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'sitemap-main.xml'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#OWNER#.blog_xml.sitemap_main(',
+'  p_app_id => :APP_ID',
+');'))
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(51525936049788336)
+,p_process_sequence=>60
+,p_process_point=>'ON_DEMAND'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'sitemap-posts.xml'
+,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_posts;'
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(51526299564789267)
+,p_process_sequence=>70
+,p_process_point=>'ON_DEMAND'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'sitemap-categories.xml'
+,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_categories;'
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(51526536777790009)
+,p_process_sequence=>80
+,p_process_point=>'ON_DEMAND'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'sitemap-archives.xml'
+,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_archives;'
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
+);
+wwv_flow_api.create_page_process(
+ p_id=>wwv_flow_api.id(51526814579790712)
+,p_process_sequence=>90
+,p_process_point=>'ON_DEMAND'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'sitemap-tags.xml'
+,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_tags;'
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
 end;
 /
@@ -18605,140 +18720,6 @@ wwv_flow_api.create_page_da_action(
 );
 end;
 /
-prompt --application/pages/page_01003
-begin
-wwv_flow_api.create_page(
- p_id=>1003
-,p_user_interface_id=>wwv_flow_api.id(6877050287267426)
-,p_name=>'Sitemap, RSS and File Download'
-,p_alias=>'PGM'
-,p_warn_on_unsaved_changes=>'N'
-,p_autocomplete_on_off=>'OFF'
-,p_group_id=>wwv_flow_api.id(8700188054171688)
-,p_page_template_options=>'#DEFAULT#'
-,p_page_is_public_y_n=>'Y'
-,p_browser_cache=>'Y'
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210411161932'
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(25877994435218885)
-,p_process_sequence=>10
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'rss.xml'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_xml.rss(',
-'   p_rss_url  => :G_RSS_URL',
-'  ,p_app_name => :G_APP_NAME',
-'  ,p_app_desc => :G_APP_DESC',
-');'))
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(8635198962090938)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(25878701784218886)
-,p_process_sequence=>20
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'rss.xsl'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_xml.rss_xsl(',
-'  p_ws_images => :APP_IMAGES',
-');'))
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(8635198962090938)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(25879146700218886)
-,p_process_sequence=>30
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'sitemap-index.xml'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_xml.sitemap_index(',
-'   p_app_id        => :APP_ID',
-'  ,p_app_page_id   => :APP_PAGE_ID',
-');'))
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(41172379976935637)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(25879509984218887)
-,p_process_sequence=>40
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'sitemap-main.xml'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_xml.sitemap_main(',
-'  p_app_id => :APP_ID',
-');'))
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(41172379976935637)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(25879915237218887)
-,p_process_sequence=>50
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'sitemap-posts.xml'
-,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_posts;'
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(41172379976935637)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(25880370517218887)
-,p_process_sequence=>60
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'sitemap-categories.xml'
-,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_categories;'
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(41172379976935637)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(25880786620218888)
-,p_process_sequence=>70
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'sitemap-archives.xml'
-,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_archives;'
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(41172379976935637)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(25881121455218888)
-,p_process_sequence=>80
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'sitemap-tags.xml'
-,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_tags;'
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(41172379976935637)
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(25881518543218888)
-,p_process_sequence=>90
-,p_process_point=>'ON_DEMAND'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'download'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_util.download_file (',
-'   p_file_name => :P11_FILE_NAME',
-');'))
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-);
-end;
-/
 prompt --application/pages/page_09999
 begin
 wwv_flow_api.create_page(
@@ -19007,13 +18988,12 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''20'',''1'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,null,null,blog_util.int_to_vc2(apex_app'
 ||'lication_install.get_application_id));',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,null,''Release 4.4-20210624'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,null,''Release 4.4-20210908'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''40'',''0'',''G_ADMIN_APP_AUTHZ_GROUP'',''STRING'',''INTERNAL'',null,null,null,null,''Bloggers'');',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''50'',''0'',''G_EMAIL_VALIDATION_API_KEY'',''STRING'',''INTERNAL'',null,null,null,null,''NO'');',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''60'',''1'',''G_RSS_XSL_CSS_URL'',''STRING'',''INTERNAL'',null,null,null,null,''css/rss-xsl.css'');',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''70'',''1'',''G_SITEMAP_URL'',''URL'',''INTERNAL'',null,null,null,null,apex_util.host_url(''SCRIPT'') ||'
-||' ''f?p='' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '':pgm::application_process=sitemap-index.xml'');',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''80'',''0'',''G_COMMENT_WATCH_MONTHS'',''INTEGER'',''INTERNAL'',null,''1'',''6'',null,''1'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''50'',''1'',''G_RSS_XSL_CSS_URL'',''STRING'',''INTERNAL'',null,null,null,null,''css/rss-xsl.css'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''60'',''1'',''G_SITEMAP_URL'',''URL'',''INTERNAL'',null,null,null,null,apex_util.host_url(''SCRIPT'') ||'
+||' ''f?p='' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '':home::application_process=sitemap-index.xml'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''70'',''0'',''G_COMMENT_WATCH_MONTHS'',''INTEGER'',''INTERNAL'',null,''1'',''6'',null,''1'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''120'',''0'',''G_LATEST_POST_ROWS'',''INTEGER'',''BLOG_PAR_GROUP_UI'',null,''1'',''20'',null,''5'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''130'',''0'',''G_APP_NAME'',''STRING'',''BLOG_PAR_GROUP_GENERAL'',null,null,null,null,''My Blog'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''140'',''0'',''G_APP_DESC'',''STRING'',''BLOG_PAR_GROUP_GENERAL'',null,null,null,null,''About Almost Ev'
@@ -19031,9 +19011,9 @@ wwv_flow_api.create_install_script(
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''220'',''0'',''G_CANONICAL_URL'',''URL'',''BLOG_PAR_GROUP_SEO'',''trim( rtrim( :ATTRIBUTE_VALUE, ''''/'''' '
 ||') )'',null,null,null,apex_util.host_url());',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''230'',''1'',''G_RSS_URL'',''URL'',''BLOG_PAR_GROUP_SEO'',null,null,null,null,apex_util.host_url(''SCRI'
-||'PT'') || ''f?p='' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '':pgm::application_process%3Drss.xml'');',
+||'PT'') || ''f?p='' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '':home::application_process%3Drss.xml'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''240'',''1'',''G_RSS_XSL_URL'',''URL'',''BLOG_PAR_GROUP_SEO'',null,null,null,null,apex_util.host_url('''
-||'SCRIPT'') || ''f?p='' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '':pgm::application_process%3Drss.xsl'');',
+||'SCRIPT'') || ''f?p='' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '':home::application_process%3Drss.xsl'');',
 '--',
 '--------------------------------------------------------',
 '--  Inserting into BLOG_INIT_ITEMS',

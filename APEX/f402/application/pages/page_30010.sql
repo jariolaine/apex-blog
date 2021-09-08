@@ -22,14 +22,14 @@ wwv_flow_api.create_page(
 ,p_group_id=>wwv_flow_api.id(28670259188910652)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210510151432'
+,p_last_upd_yyyymmddhh24miss=>'20210908091100'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(87799298844348764)
 ,p_plug_name=>'List of Reports'
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--accent4:t-Region--scrollBody'
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h2:t-ContentBlock--shadowBG'
 ,p_component_template_options=>'#DEFAULT#:u-colors'
-,p_plug_template=>wwv_flow_api.id(8496813422518209)
+,p_plug_template=>wwv_flow_api.id(8490381578518205)
 ,p_plug_display_sequence=>20
 ,p_plug_display_point=>'BODY'
 ,p_list_id=>wwv_flow_api.id(43889817309617069)
@@ -40,11 +40,11 @@ wwv_flow_api.create_page_plug(
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(87994934993010091)
-,p_name=>'Activity on Last 14 Days'
-,p_template=>wwv_flow_api.id(8496813422518209)
+,p_name=>'Last 14 Days'
+,p_template=>wwv_flow_api.id(8490381578518205)
 ,p_display_sequence=>10
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--accent2:t-Region--scrollBody'
-,p_component_template_options=>'#DEFAULT#:t-BadgeList--medium:t-BadgeList--dash:t-BadgeList--fixed:t-Report--hideNoPagination'
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h2:t-ContentBlock--shadowBG'
+,p_component_template_options=>'#DEFAULT#:u-colors:t-BadgeList--medium:t-BadgeList--circular:t-BadgeList--fixed:t-Report--hideNoPagination'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'

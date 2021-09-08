@@ -16,10 +16,7 @@ wwv_flow_api.create_email_template(
 ,p_name=>'Blog new comment notification'
 ,p_static_id=>'BLOG_NEW_COMMENT_NOTIFY'
 ,p_subject=>'#APP_NAME# new comment notification'
-,p_html_body=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'New comment received in the post <a href="#POST_LINK#">#POST_TITLE#</a>.',
-'',
-''))
+,p_html_body=>'New comment received in the post <a href="#POST_LINK#">#POST_TITLE#</a>.'
 ,p_html_header=>'<b>Hello #BLOGGER_NAME#,</b>'
 ,p_html_footer=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'Best Regards,<br>',

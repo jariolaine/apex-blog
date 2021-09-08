@@ -2193,6 +2193,7 @@ wwv_flow_api.append_to_install_script(
 '--    Jari Laine 11.04.2021 - Procedure send_reply_notify moved to package BLOG_COMM',
 '--    Jari Laine 13.04.2021 - Changes to procedure post_authentication',
 '--                            Function get_footer_link_seq renamed to get_modal_page_seq',
+'--                            Removed procedure run_feature_post_expression',
 '--    Jari Laine 18.04.2021 - Function is_email moved to package BLOG_COMM',
 '--',
 '--  TO DO:',
@@ -2552,12 +2553,7 @@ wwv_flow_api.append_to_install_script(
 '    -- fetch user id and name',
 '    select id',
 '      ,blogger_name',
-'    into p_id, p_name',
-'    from blog_bloggers',
-'    where apex_username = p_username',
-'    ;',
-'',
-'  -'))
+'    into p_id, p_nam'))
 );
 null;
 wwv_flow_api.component_end;
@@ -2575,7 +2571,12 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'- if user not found, check is user authorized use blog',
+'e',
+'    from blog_bloggers',
+'    where apex_username = p_username',
+'    ;',
+'',
+'  -- if user not found, check is user authorized use blog',
 '  exception when no_data_found',
 '  then',
 '    -- fetch user group name that is used for admin app authorization',
@@ -3538,10 +3539,7 @@ wwv_flow_api.append_to_install_script(
 '      l_result := false;',
 '    end if;',
 '',
-'    if not l_result then',
-'',
-'      p_result.message := apex_lang.message(',
-'        p_name => p'))
+'    if not l_res'))
 );
 null;
 wwv_flow_api.component_end;
@@ -3559,7 +3557,10 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_plugin.attribute_01',
+'ult then',
+'',
+'      p_result.message := apex_lang.message(',
+'        p_name => p_plugin.attribute_01',
 '        ,p0 => p_item.plain_label',
 '      );',
 '',
@@ -4433,11 +4434,7 @@ wwv_flow_api.append_to_install_script(
 '    p_err_mesg  in varchar2 default ''BLOG_VALIDATION_ERR_EMAIL''',
 '  ) return varchar2',
 '  as',
-'    l_err_mesg varchar2(32700);',
-'  begin',
-'    -- TO DO see item 3 from package specs',
-'',
-' '))
+'    l_err_me'))
 );
 null;
 wwv_flow_api.component_end;
@@ -4455,7 +4452,11 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   -- do some basic check for email address',
+'sg varchar2(32700);',
+'  begin',
+'    -- TO DO see item 3 from package specs',
+'',
+'    -- do some basic check for email address',
 '    if not regexp_like( p_email, ''^.*\@.*\..*$'' )',
 '    then',
 '      -- if validation fails prepare error message',
@@ -5388,10 +5389,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 'end "BLOG_HTML";',
 '/',
-'create or replace package "BLOG_XML"',
-'authid definer',
-'as',
-'----------------------------------------------'))
+'create or replace package "'))
 );
 null;
 wwv_flow_api.component_end;
@@ -5409,7 +5407,10 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----------------------------------',
+'BLOG_XML"',
+'authid definer',
+'as',
+'--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '--',
 '--  DESCRIPTION',
@@ -6297,9 +6298,7 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
-''))
+'     sys_contex'))
 );
 null;
 wwv_flow_api.component_end;
@@ -6317,6 +6316,8 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'t( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'',''PROXY_USER'' )',
 '    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
 '',

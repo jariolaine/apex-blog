@@ -2132,6 +2132,7 @@ as
 --    Jari Laine 11.04.2021 - Procedure send_reply_notify moved to package BLOG_COMM
 --    Jari Laine 13.04.2021 - Changes to procedure post_authentication
 --                            Function get_footer_link_seq renamed to get_modal_page_seq
+--                            Removed procedure run_feature_post_expression
 --    Jari Laine 18.04.2021 - Function is_email moved to package BLOG_COMM
 --
 --  TO DO:

@@ -148,7 +148,6 @@ prompt --install
 @@application/pages/page_00015.sql
 @@application/pages/page_01001.sql
 @@application/pages/page_01002.sql
-@@application/pages/page_01003.sql
 @@application/pages/page_09999.sql
 @@application/deployment/definition.sql
 @@application/deployment/install/install_metadata.sql
