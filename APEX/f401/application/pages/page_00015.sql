@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8670890848739263)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201108175532'
+,p_last_upd_yyyymmddhh24miss=>'20210920125128'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(58686289966142463)
@@ -35,8 +35,6 @@ wwv_flow_api.create_report_region(
 ,p_display_sequence=>10
 ,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody:margin-bottom-lg'
 ,p_component_template_options=>'#DEFAULT#:t-Report--hideNoPagination'
-,p_grid_column_span=>9
-,p_display_column=>1
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -47,11 +45,11 @@ wwv_flow_api.create_report_region(
 '     p_post_id => v1.post_id',
 '   )                   as search_link',
 '  ,v1.post_desc        as search_desc',
-'  ,labels.category     as label_01',
+'  ,d.category          as label_01',
 '  ,v1.category_title   as value_01',
-'  ,labels.posted_by    as label_02',
+'  ,d.posted_by         as label_02',
 '  ,v1.blogger_name     as value_02',
-'  ,labels.posted_on    as label_03',
+'  ,d.posted_on         as label_03',
 '  ,v1.published_on     as value_03',
 '  ,case when ',
 '     apex_util.savekey_vc2(',
@@ -60,18 +58,18 @@ wwv_flow_api.create_report_region(
 '         ,p_button => ''NO''',
 '       ) ',
 '     ) is not null',
-'   then labels.tags',
+'   then d.tags',
 '   end                  as label_04',
 '  ,apex_util.keyval_vc2 as value_04',
 'from #OWNER#.blog_v_posts v1',
 'cross join(',
 '  select',
-'     apex_lang.message( ''BLOG_TXT_TAGS'' )      as tags',
-'    ,apex_lang.message( ''BLOG_TXT_CATEGORY'' )  as category',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_BY'' ) as posted_by',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_ON'' ) as posted_on',
+'     apex_lang.message( ''BLOG_TXT_TAGS'' )       as tags',
+'    ,apex_lang.message( ''BLOG_TXT_CATEGORY'' )   as category',
+'    ,apex_lang.message( ''BLOG_TXT_POSTED_BY'' )  as posted_by',
+'    ,apex_lang.message( ''BLOG_TXT_POSTED_ON'' )  as posted_on',
 '  from dual',
-') labels',
+') d',
 'where 1 = 1',
 'and v1.archive_year = :P15_ARCHIVE_ID',
 'order by v1.published_on desc'))
@@ -258,19 +256,6 @@ wwv_flow_api.create_page_da_action(
 '});',
 ''))
 ,p_da_action_comment=>'List anchors have data attribute where is archive id. If that match to item P15_ARCHIVE_ID value set is-current class to list'
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(41878535403408326)
-,p_process_sequence=>10
-,p_process_point=>'BEFORE_HEADER'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Archive exists'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_util.check_archive_exists(',
-'  p_archive_id => :P15_ARCHIVE_ID',
-');'))
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26065829198107836)

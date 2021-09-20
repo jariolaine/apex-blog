@@ -1,7 +1,7 @@
-prompt --application/shared_components/navigation/lists/footer_links_to_modal_pages
+prompt --application/shared_components/navigation/lists/footer_modal_pages
 begin
 --   Manifest
---     LIST: Footer Links to Modal Pages
+--     LIST: Footer Modal Pages
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2020.10.01'
@@ -13,7 +13,7 @@ wwv_flow_api.component_begin (
 );
 wwv_flow_api.create_list(
  p_id=>wwv_flow_api.id(41857893903151708)
-,p_name=>'Footer Links to Modal Pages'
+,p_name=>'Footer Modal Pages'
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select null                             as list_level',

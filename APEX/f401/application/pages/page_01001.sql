@@ -14,10 +14,10 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_page(
  p_id=>1001
 ,p_user_interface_id=>wwv_flow_api.id(6877050287267426)
-,p_name=>'Leave Reply'
-,p_alias=>'REPLY'
+,p_name=>'Post a Comment'
+,p_alias=>'COMMENT'
 ,p_page_mode=>'MODAL'
-,p_step_title=>'Leave Reply'
+,p_step_title=>'Leave your comment'
 ,p_reload_on_submit=>'A'
 ,p_first_item=>'AUTO_FIRST_ITEM'
 ,p_autocomplete_on_off=>'OFF'
@@ -35,7 +35,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210522072836'
+,p_last_upd_yyyymmddhh24miss=>'20210919075752'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -65,9 +65,9 @@ wwv_flow_api.create_page_plug(
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(147769743184406827)
-,p_plug_name=>'Leave Reply'
-,p_region_template_options=>'#DEFAULT#:t-Region--removeHeader:t-Region--noBorder:t-Region--scrollBody'
-,p_plug_template=>wwv_flow_api.id(6802870362267386)
+,p_plug_name=>'Comment Form'
+,p_region_template_options=>'#DEFAULT#'
+,p_plug_template=>wwv_flow_api.id(6781372168267375)
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'BODY'
 ,p_plug_item_display_point=>'BELOW'
@@ -220,14 +220,13 @@ wwv_flow_api.create_page_item(
 ,p_name=>'P1001_QUESTION'
 ,p_item_sequence=>100
 ,p_item_plug_id=>wwv_flow_api.id(147769743184406827)
-,p_use_cache_before_default=>'NO'
 ,p_prompt=>'Answer to'
+,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'PLUGIN_FI.JARIS.MATH_QUESTION_FIELD'
 ,p_cMaxlength=>20
 ,p_field_template=>wwv_flow_api.id(6855004103267413)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_warn_on_unsaved_changes=>'I'
-,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_inline_help_text=>'Please answer this simple question before you submit comment.'
 ,p_attribute_01=>'1'
@@ -240,7 +239,6 @@ wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(26381104883542604)
 ,p_name=>'P1001_ANSWER'
 ,p_item_sequence=>20
-,p_item_plug_id=>wwv_flow_api.id(6433141607894071)
 ,p_use_cache_before_default=>'NO'
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_protection_level=>'I'

@@ -59,6 +59,16 @@ blockquote p {
   word-break: break-word;
 }
 /**************************************
+* Link list extra classes
+**************************************/
+.z-linkList a {
+  padding: 0.4rem 1.2rem;
+}
+.z-linkList a:hover {
+  color: #ffffff;
+  background-color: #006ed0;
+}
+/**************************************
 * Classic reports
 **************************************/
 .nodatafound {

@@ -33,6 +33,7 @@ wwv_flow_api.create_list(
 '  ,''data-blog-content-id="''',
 '   || v1.post_id',
 '   || ''"''               as attribute2',
+'  ,''z-linkList''         as attribute3',
 'from #OWNER#.blog_v_posts_last20 v1',
 'where 1 = 1',
 'and v1.display_seq <= :G_LATEST_POST_ROWS',

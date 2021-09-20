@@ -10,7 +10,7 @@ start with 100001
 --------------------------------------------------------
 --  DDL for Table BLOG_BLOGGERS
 --------------------------------------------------------
-create table  blog_bloggers(
+create table blog_bloggers(
   id number( 38, 0 ) not null,
 	row_version number( 38, 0 ) not null,
 	created_on timestamp( 6 ) with local time zone not null,
@@ -37,7 +37,7 @@ create table  blog_bloggers(
 --------------------------------------------------------
 --  DDL for Table BLOG_CATEGORIES
 --------------------------------------------------------
-create table  blog_categories(
+create table blog_categories(
   id number( 38, 0 ) not null,
 	row_version number( 38 ,0 ) not null,
 	created_on timestamp( 6 ) with local time zone not null,
@@ -150,6 +150,7 @@ create table blog_features(
   display_seq number( 10, 0 ) not null,
   build_option_name varchar2( 256 char ) not null,
   build_option_group varchar2( 256 char ) not null,
+  build_option_parent varchar2( 256 char ),
   help_message varchar2( 256 char ),
   constraint blog_features_pk primary key( id ),
   constraint blog_features_uk1 unique( build_option_name ),
@@ -277,7 +278,7 @@ create table blog_pages(
 --------------------------------------------------------
 --  DDL for Table BLOG_POSTS
 --------------------------------------------------------
-create table  blog_posts(
+create table blog_posts(
   id number( 38, 0 ) not null,
 	row_version number( 38, 0 ) not null,
 	created_on timestamp( 6 ) with local time zone not null,
@@ -338,7 +339,7 @@ create table blog_post_tags(
 --------------------------------------------------------
 --  DDL for Table BLOG_
 --------------------------------------------------------
-create table  blog_post_uds(
+create table blog_post_uds(
   id number( 38, 0 ) not null,
 	row_version number( 38, 0 ) not null,
 	created_on timestamp( 6 ) with local time zone not null,
@@ -585,14 +586,14 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_FEATURES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS_ACTIVE") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS_ACTIVE", "FEATURE_PARENT") AS
   select
    t2.id                        as id
   ,t1.application_id            as application_id
   ,t1.build_option_id           as build_option_id
   ,t2.display_seq               as display_seq
   ,apex_lang.message(
-    p_name => t2.build_option_name
+     p_name => t2.build_option_name
   )                             as feature_name
   ,apex_lang.message(
     p_name => t2.build_option_group
@@ -601,6 +602,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUI
   ,t1.last_updated_on           as last_updated_on
   ,lower( t1.last_updated_by )  as last_updated_by
   ,t2.is_active                 as is_active
+  ,t2.build_option_parent       as feature_parent
 from apex_application_build_options t1
 join blog_features t2
   on t1.build_option_name = t2.build_option_name
@@ -1371,7 +1373,7 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- public app page 6 Pre-Rendering Computations
   function get_tag(
     p_tag_id          in varchar2
   ) return varchar2;
@@ -3320,24 +3322,7 @@ as
 
     l_name := apex_plugin.get_input_name_for_page_item(false);
 
-    if p_param.is_readonly or p_param.is_printer_friendly then
-
-      -- emit hidden text field if necessary
-      apex_plugin_util.print_hidden_if_readonly (
-        p_item_name => p_item.name,
-        p_value => p_param.value,
-        p_is_readonly => p_param.is_readonly,
-        p_is_printer_friendly => p_param.is_printer_friendly
-      );
-      -- emit display span with the value
-      apex_plugin_util.print_display_only (
-        p_item_name => p_item.name,
-        p_display_value => p_param.value,
-        p_show_line_breaks => false,
-        p_escape => true,
-        p_attributes => p_item.element_attributes
-      );
-    else
+    if not (p_param.is_readonly or p_param.is_printer_friendly) then
 
       sys.htp.p('<input type="text" '
         || case when p_item.element_width is not null
@@ -3354,16 +3339,19 @@ as
           )
         || 'value="" />'
       );
-      sys.htp.p('<span class="apex-item-icon '
-        || p_item.icon_css_classes
-        || '" aria-hidden="true"></span>'
-      );
+
+      if p_item.icon_css_classes is not null
+      then
+        sys.htp.p('<span class="apex-item-icon fa '
+          || p_item.icon_css_classes
+          || '" aria-hidden="true"></span>'
+        );
+      end if;
 
       apex_javascript.add_onload_code (
         p_code => 'apex.server.plugin("' || apex_plugin.get_ajax_identifier || '",{},{'
         || 'dataType:"text",'
         || 'success:function(data){'
---        || '$(".z-question").html(data);'
         || '$(data).insertBefore($("#' || p_item.name || '_LABEL").children());'
         || '}});'
       );

@@ -23,7 +23,7 @@ wwv_flow_api.create_plugin(
 ,p_render_function=>'#OWNER#.blog_plugin.render_math_question_field'
 ,p_ajax_function=>'#OWNER#.blog_plugin.ajax_math_question_field'
 ,p_validation_function=>'#OWNER#.blog_plugin.validate_math_question_field'
-,p_standard_attributes=>'VISIBLE:FORM_ELEMENT:SESSION_STATE:READONLY:SOURCE:ELEMENT:WIDTH:PLACEHOLDER:ICON'
+,p_standard_attributes=>'VISIBLE:FORM_ELEMENT:SESSION_STATE:ELEMENT:WIDTH:PLACEHOLDER:ICON'
 ,p_substitute_attributes=>true
 ,p_subscribe_plugin_settings=>true
 ,p_version_identifier=>'1.0'

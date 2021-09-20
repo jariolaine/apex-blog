@@ -28,6 +28,9 @@
   display: none!important;
   visibility: hidden!important;
 }
+.z-config-ig span.z-feature--child {
+  margin-left: 1.6rem;
+}
 /**************************************
 * Elements
 **************************************/

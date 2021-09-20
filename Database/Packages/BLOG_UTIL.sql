@@ -83,7 +83,7 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- public app page 6 Pre-Rendering Computations
   function get_tag(
     p_tag_id          in varchar2
   ) return varchar2;

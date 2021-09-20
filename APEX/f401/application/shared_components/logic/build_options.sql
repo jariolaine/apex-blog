@@ -161,6 +161,20 @@ wwv_flow_api.create_build_option(
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Show/Hide modal pages links in footer'
 );
+wwv_flow_api.create_build_option(
+ p_id=>wwv_flow_api.id(60750107251132123)
+,p_build_option_name=>'BLOG_FEATURE_ARCHIVE_POST_COUNT'
+,p_build_option_status=>'INCLUDE'
+,p_on_upgrade_keep_status=>true
+,p_build_option_comment=>'Show/hide post archive count'
+);
+wwv_flow_api.create_build_option(
+ p_id=>wwv_flow_api.id(60984441774027659)
+,p_build_option_name=>'BLOG_FEATURE_CATEGORY_POST_COUNT'
+,p_build_option_status=>'INCLUDE'
+,p_on_upgrade_keep_status=>true
+,p_build_option_comment=>'Show/hide category post count'
+);
 wwv_flow_api.component_end;
 end;
 /

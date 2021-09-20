@@ -80,14 +80,24 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Archives'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(60752461687225986)
+,p_name=>'BLOG_FEATURE_ARCHIVE_POST_COUNT'
+,p_message_text=>'<span class="z-feature--child">Show post count</span>'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(8651520942348857)
 ,p_name=>'BLOG_FEATURE_CATEGORY'
 ,p_message_text=>'Categories'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(61048607162603249)
+,p_name=>'BLOG_FEATURE_CATEGORY_POST_COUNT'
+,p_message_text=>'<span class="z-feature--child">Show post count</span>'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(37513927722106952)
 ,p_name=>'BLOG_FEATURE_EMAIL_VALIDATION_API'
-,p_message_text=>'Validate email address using REST API call'
+,p_message_text=>'<span class="z-feature--child">Validate email address using REST API call</span>'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(24631921054971612)
@@ -97,27 +107,22 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28287948386327902)
 ,p_name=>'BLOG_FEATURE_GROUP_COMMENTS'
-,p_message_text=>'Comments'
+,p_message_text=>'<span class="z-hidden" aria-hidden="true">3. </span><span class="u-bold">Comments</span>'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(42619895282058203)
 ,p_name=>'BLOG_FEATURE_GROUP_MISC'
-,p_message_text=>'Miscellaneous'
+,p_message_text=>'<span class="z-hidden" aria-hidden="true">4. </span><span class="u-bold">Miscellaneous</span>'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28375527216531703)
 ,p_name=>'BLOG_FEATURE_GROUP_PAGE'
-,p_message_text=>'Tabs and Pages '
+,p_message_text=>'<span class="z-hidden" aria-hidden="true">1. </span><span class="u-bold">Pages<span>'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28288384519293388)
 ,p_name=>'BLOG_FEATURE_GROUP_RIGHT_COLUMN'
-,p_message_text=>'Right column'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(28288182390324870)
-,p_name=>'BLOG_FEATURE_GROUP_SEARCH'
-,p_message_text=>'Search'
+,p_message_text=>'<span class="z-hidden" aria-hidden="true">2. </span><span class="u-bold">Right column</span>'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(8674474933943719)
@@ -137,7 +142,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28283165676427890)
 ,p_name=>'BLOG_FEATURE_MODERATE_COMMENTS'
-,p_message_text=>'Comments need to moderated'
+,p_message_text=>'<span class="z-feature--child">Comments need to moderated</span>'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27923224953053769)
@@ -172,7 +177,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(33704880398366885)
 ,p_name=>'BLOG_FEATURE_SUBSCRIBE_COMMENTS'
-,p_message_text=>'Sent email notification of new comments'
+,p_message_text=>'<span class="z-feature--child">Sent email notification of new comments</span>'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(42044380079014521)
@@ -248,11 +253,6 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19034220207891682)
 ,p_name=>'BLOG_PAR_G_APP_NAME'
 ,p_message_text=>'Blog title'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(24585402247704953)
-,p_name=>'BLOG_PAR_G_ARCHIVE_DATE_FORMAT'
-,p_message_text=>'Archive title date format'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19058970469252490)

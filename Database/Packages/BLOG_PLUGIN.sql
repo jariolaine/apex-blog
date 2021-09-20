@@ -84,24 +84,7 @@ as
 
     l_name := apex_plugin.get_input_name_for_page_item(false);
 
-    if p_param.is_readonly or p_param.is_printer_friendly then
-
-      -- emit hidden text field if necessary
-      apex_plugin_util.print_hidden_if_readonly (
-        p_item_name => p_item.name,
-        p_value => p_param.value,
-        p_is_readonly => p_param.is_readonly,
-        p_is_printer_friendly => p_param.is_printer_friendly
-      );
-      -- emit display span with the value
-      apex_plugin_util.print_display_only (
-        p_item_name => p_item.name,
-        p_display_value => p_param.value,
-        p_show_line_breaks => false,
-        p_escape => true,
-        p_attributes => p_item.element_attributes
-      );
-    else
+    if not (p_param.is_readonly or p_param.is_printer_friendly) then
 
       sys.htp.p('<input type="text" '
         || case when p_item.element_width is not null
@@ -118,16 +101,19 @@ as
           )
         || 'value="" />'
       );
-      sys.htp.p('<span class="apex-item-icon '
-        || p_item.icon_css_classes
-        || '" aria-hidden="true"></span>'
-      );
+
+      if p_item.icon_css_classes is not null
+      then
+        sys.htp.p('<span class="apex-item-icon fa '
+          || p_item.icon_css_classes
+          || '" aria-hidden="true"></span>'
+        );
+      end if;
 
       apex_javascript.add_onload_code (
         p_code => 'apex.server.plugin("' || apex_plugin.get_ajax_identifier || '",{},{'
         || 'dataType:"text",'
         || 'success:function(data){'
---        || '$(".z-question").html(data);'
         || '$(data).insertBefore($("#' || p_item.name || '_LABEL").children());'
         || '}});'
       );

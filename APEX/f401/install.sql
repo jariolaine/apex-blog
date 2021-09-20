@@ -7,11 +7,11 @@ prompt --install
 @@application/shared_components/data_profiles/email_validation_api.sql
 @@application/shared_components/web_sources/abstract_email_validation_api.sql
 @@application/shared_components/navigation/lists/navigation_bar.sql
-@@application/shared_components/navigation/lists/categories.sql
+@@application/shared_components/navigation/lists/post_categories.sql
 @@application/shared_components/navigation/lists/latest_posts.sql
-@@application/shared_components/navigation/lists/archives.sql
+@@application/shared_components/navigation/lists/post_archives.sql
 @@application/shared_components/navigation/lists/navigation_menu.sql
-@@application/shared_components/navigation/lists/footer_links_to_modal_pages.sql
+@@application/shared_components/navigation/lists/footer_modal_pages.sql
 @@application/shared_components/files/app_icon_css.sql
 @@application/shared_components/files/app_icon_svg.sql
 @@application/shared_components/files/ico_apple_touch_icon_png.sql
