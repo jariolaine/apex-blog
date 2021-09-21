@@ -21,7 +21,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210920125159'
+,p_last_upd_yyyymmddhh24miss=>'20210921091306'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
@@ -146,37 +146,23 @@ wwv_flow_api.create_page_plug(
 ,p_plug_comment=>'Archives link list'
 );
 wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(31250153901982941)
-,p_plug_name=>'Powered by / link to source code'
-,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_api.id(6781539027267375)
-,p_plug_display_sequence=>30
-,p_plug_display_point=>'REGION_POSITION_05'
-,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<div class="z-app-source">',
-'Powered By <a href="https://github.com/jariolaine/apex-blog">APEX Blog</a>',
-'</div>'))
-,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
-,p_plug_display_when_condition=>'1001,1002,9999'
-,p_attribute_01=>'Y'
-,p_attribute_02=>'HTML'
-);
-wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(40726951471800848)
 ,p_plug_name=>'Modal Pages'
 ,p_region_template_options=>'#DEFAULT#'
-,p_component_template_options=>'#DEFAULT#:t-BadgeList--dash:t-BadgeList--stacked:t-BadgeList--large'
+,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(6781539027267375)
 ,p_plug_display_sequence=>20
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_list_id=>wwv_flow_api.id(41857893903151708)
 ,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>wwv_flow_api.id(6833949072267402)
+,p_list_template_id=>wwv_flow_api.id(61358318182072659)
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
 ,p_plug_display_when_condition=>'1001,1002,9999'
+,p_plug_footer=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<a class="z-copyright" href="https://github.com/jariolaine/apex-blog">',
+'Powered By APEX Blog',
+'</a>'))
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41877798757408318)

@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8667733481689180)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210919132533'
+,p_last_upd_yyyymmddhh24miss=>'20210921062811'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6979825819516521)
@@ -227,15 +227,6 @@ wwv_flow_api.create_report_columns(
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26065707389107835)
 ,p_process_sequence=>10
-,p_process_point=>'BEFORE_HEADER'
-,p_process_type=>'NATIVE_RESET_PAGINATION'
-,p_process_name=>'Reset Search Pagination'
-,p_attribute_01=>'THIS_PAGE'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(41168572642754635)
-,p_process_sequence=>20
 ,p_process_point=>'BEFORE_HEADER'
 ,p_process_type=>'NATIVE_RESET_PAGINATION'
 ,p_process_name=>'Reset Search Pagination'

@@ -87,6 +87,7 @@ prompt --install
 @@application/shared_components/user_interface/templates/list/top_navigation_tabs.sql
 @@application/shared_components/user_interface/templates/list/wizard_progress.sql
 @@application/shared_components/user_interface/templates/list/top_navigation_mega_menu.sql
+@@application/shared_components/user_interface/templates/list/footer_link_list_custom_2.sql
 @@application/shared_components/user_interface/templates/report/timeline.sql
 @@application/shared_components/user_interface/templates/report/media_list.sql
 @@application/shared_components/user_interface/templates/report/value_attribute_pairs_row.sql

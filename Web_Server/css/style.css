@@ -46,9 +46,6 @@ blockquote p {
 .z-tabs * {
   font-size: 102.8%;
 }
-.z-app-source {
-  padding: 0.6rem 0;
-}
 /**************************************
 * Media list report extra classes
 **************************************/
@@ -65,8 +62,56 @@ blockquote p {
   padding: 0.4rem 1.2rem;
 }
 .z-linkList a:hover {
-  color: #ffffff;
-  background-color: #006ed0;
+  background-color: #fafafa;
+}
+/**************************************
+* Footer Link List
+*
+* Credits:
+*   https://epicbootstrap.com/snippets/footer-basic
+*   https://jsfiddle.net/Grobbert/gmqth51o/1/
+**************************************/
+.z-footerList {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+  font-size: 1.8rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+.z-footerList li {
+  padding: 0 10px;
+  font-size: inherit;
+}
+.z-footerList a {
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.6;
+}
+.z-footerList a:hover {
+  opacity: 1;
+}
+@media only screen and (max-width: 640px) {
+  .z-footerList {
+    flex-direction: column;
+  }
+  .z-footerList li {
+    padding: 10px 0;
+  }
+}
+a.z-copyright {
+  display: block;
+  margin: 18px 0;
+  color: inherit;
+  font-size: 1.4rem;
+  text-align: center;
+  opacity: 0.6;
+}
+a.z-copyright:hover {
+  opacity: 1;
 }
 /**************************************
 * Classic reports

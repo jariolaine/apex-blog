@@ -130,7 +130,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210920125638'
+,p_last_upd_yyyymmddhh24miss=>'20210921055125'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>213
 ,p_ui_type_name => null
@@ -12061,7 +12061,7 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Ooops... We are sorry! Unexpected internal error have occurred.'
 );
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(38624054787092561)
+ p_id=>wwv_flow_api.id(61250680749871346)
 ,p_name=>'BLOG_HELP_POST_EDITOR'
 ,p_message_text=>'Refer online document <a target="_balank" href="https://ckeditor.com/docs/ckeditor4/latest/features/basicstyles.html">Basic Text Styles: Bold, Italic and More</a> how style your post.'
 );
