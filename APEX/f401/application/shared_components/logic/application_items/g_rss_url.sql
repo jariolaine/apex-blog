@@ -12,7 +12,7 @@ wwv_flow_api.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_api.create_flow_item(
- p_id=>wwv_flow_api.id(25891224972537037)
+ p_id=>wwv_flow_api.id(63047001622283372)
 ,p_name=>'G_RSS_URL'
 ,p_protection_level=>'I'
 );

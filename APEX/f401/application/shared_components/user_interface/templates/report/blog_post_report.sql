@@ -1,7 +1,7 @@
-prompt --application/shared_components/user_interface/templates/report/blog_posts_custom_1
+prompt --application/shared_components/user_interface/templates/report/blog_post_report
 begin
 --   Manifest
---     ROW TEMPLATE: BLOG_POSTS_CUSTOM_1
+--     ROW TEMPLATE: BLOG_POST_REPORT
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2020.10.01'
@@ -14,7 +14,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_row_template(
  p_id=>wwv_flow_api.id(6894976353301648)
 ,p_row_template_name=>'Blog Posts (Custom 1)'
-,p_internal_name=>'BLOG_POSTS_CUSTOM_1'
+,p_internal_name=>'BLOG_POST_REPORT'
 ,p_row_template1=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<article class="z-post">',
 '  <header class="z-post--header">',
@@ -80,6 +80,7 @@ wwv_flow_api.create_row_template(
 ||' fa-chevron-left"></span></button>'
 ,p_theme_id=>42
 ,p_theme_class_id=>7
+,p_translate_this_template=>'N'
 );
 wwv_flow_api.component_end;
 end;

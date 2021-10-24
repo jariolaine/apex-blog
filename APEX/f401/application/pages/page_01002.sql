@@ -21,12 +21,11 @@ wwv_flow_api.create_page(
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8700188054171688)
-,p_step_template=>wwv_flow_api.id(6762463719267365)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210919081538'
+,p_last_upd_yyyymmddhh24miss=>'20210921183142'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41876461524408305)
@@ -39,8 +38,9 @@ wwv_flow_api.create_page_plug(
 ,p_plug_item_display_point=>'BELOW'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_util.render_dynamic_content(',
-'   p_content_id  => :REQUEST',
-'  ,p_date_format => :G_POST_TITLE_DATE_FORMAT',
+'   p_content_id     => :REQUEST',
+'  ,p_date_format    => :G_POST_TITLE_DATE_FORMAT',
+'  ,p_content_title  => :P1002_PAGE_TITLE',
 ');',
 ''))
 ,p_plug_source_type=>'NATIVE_PLSQL'
@@ -65,10 +65,10 @@ wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(41879333719408334)
 ,p_name=>'P1002_PAGE_TITLE'
 ,p_item_sequence=>10
-,p_item_plug_id=>wwv_flow_api.id(41876461524408305)
+,p_item_plug_id=>wwv_flow_api.id(6433141607894071)
 ,p_display_as=>'NATIVE_HIDDEN'
-,p_is_persistent=>'U'
-,p_protection_level=>'S'
+,p_is_persistent=>'N'
+,p_protection_level=>'I'
 ,p_attribute_01=>'Y'
 );
 wwv_flow_api.create_page_da_event(
@@ -87,6 +87,22 @@ wwv_flow_api.create_page_da_action(
 ,p_action_sequence=>10
 ,p_execute_on_page_init=>'N'
 ,p_action=>'NATIVE_DIALOG_CANCEL'
+);
+wwv_flow_api.create_page_da_event(
+ p_id=>wwv_flow_api.id(43471134461898243)
+,p_name=>'Set Dialog Title'
+,p_event_sequence=>20
+,p_bind_type=>'bind'
+,p_bind_event_type=>'ready'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(43471253207898244)
+,p_event_id=>wwv_flow_api.id(43471134461898243)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_attribute_01=>'apex.util.getTopApex().jQuery(".ui-dialog-content").dialog("option", "title", "&P1002_PAGE_TITLE.");'
 );
 wwv_flow_api.component_end;
 end;

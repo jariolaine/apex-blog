@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_group_id=>wwv_flow_api.id(28670259188910652)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210908191300'
+,p_last_upd_yyyymmddhh24miss=>'20210929172538'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(87799298844348764)
@@ -49,16 +49,16 @@ wwv_flow_api.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select ls.page_views    ',
+'select ls.page_views          as page_views',
 '--  ,ls.distinct_pages',
 '--  ,ls.total_elapsed_time',
-'  ,ls.average_elapsed_time',
+'  ,ls.average_elapsed_time    as average_elapsed_time',
 '--  ,ls.minimum_elapsed_time',
 '--  ,ls.maximum_elapsed_time',
-'  ,ls.total_rows_queried',
+'  ,ls.total_rows_queried      as rows_queried',
 '--  ,ls.ip_addresses',
 '--  ,ls.agents',
-'  ,ls.apex_sessions',
+'  ,ls.apex_sessions           as apex_sessions',
 'from apex_workspace_log_summary ls',
 'where 1 = 1',
 '  and ls.application_id = :G_PUB_APP_ID',
@@ -98,22 +98,22 @@ wwv_flow_api.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(44528630791111893)
+ p_id=>wwv_flow_api.id(62673667196144801)
 ,p_query_column_id=>3
-,p_column_alias=>'TOTAL_ROWS_QUERIED'
+,p_column_alias=>'ROWS_QUERIED'
 ,p_column_display_sequence=>30
-,p_column_heading=>'Total Rows Queried'
+,p_column_heading=>'Rows Queried'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(44529033086111893)
+ p_id=>wwv_flow_api.id(62673850288144803)
 ,p_query_column_id=>4
 ,p_column_alias=>'APEX_SESSIONS'
 ,p_column_display_sequence=>40
-,p_column_heading=>'APEX Sessions'
+,p_column_heading=>'Sessions'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'

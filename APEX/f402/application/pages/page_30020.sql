@@ -24,7 +24,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210624041607'
+,p_last_upd_yyyymmddhh24miss=>'20210929172210'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43823229274615012)
@@ -349,7 +349,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(43823471899615012)
 ,p_button_name=>'VIEW_ACTIVITY_DETAILS'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--noUI'
+,p_button_template_options=>'#DEFAULT#:t-Button--simple'
 ,p_button_template_id=>wwv_flow_api.id(8549081018518243)
 ,p_button_image_alt=>'View Details'
 ,p_button_position=>'REGION_TEMPLATE_EDIT'
@@ -362,7 +362,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(43823859043615012)
 ,p_button_name=>'VIEW_RECENT_ERRORS'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--noUI'
+,p_button_template_options=>'#DEFAULT#:t-Button--simple'
 ,p_button_template_id=>wwv_flow_api.id(8549081018518243)
 ,p_button_image_alt=>'View Details'
 ,p_button_position=>'REGION_TEMPLATE_EDIT'

@@ -1,7 +1,7 @@
-prompt --application/shared_components/user_interface/templates/list/footer_link_list_custom_2
+prompt --application/shared_components/user_interface/templates/list/blog_footer_link_list
 begin
 --   Manifest
---     REGION TEMPLATE: FOOTER_LINK_LIST_CUSTOM_2
+--     REGION TEMPLATE: BLOG_FOOTER_LINK_LIST
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2020.10.01'
@@ -15,8 +15,8 @@ wwv_flow_api.create_list_template(
  p_id=>wwv_flow_api.id(61358318182072659)
 ,p_list_template_current=>'<li class="z-footerList--item"><a href="#LINK#">#TEXT#</a></li>'
 ,p_list_template_noncurrent=>'<li class="z-footerList--item"><a href="#LINK#">#TEXT#</a></li>'
-,p_list_template_name=>'Footer Link List (Custom1)'
-,p_internal_name=>'FOOTER_LINK_LIST_CUSTOM_2'
+,p_list_template_name=>'Blog Footer Link List (Custom 1)'
+,p_internal_name=>'BLOG_FOOTER_LINK_LIST'
 ,p_theme_id=>42
 ,p_theme_class_id=>9
 ,p_list_template_before_rows=>'<ul class="z-footerList #COMPONENT_CSS_CLASSES#" id="#LIST_ID#">'

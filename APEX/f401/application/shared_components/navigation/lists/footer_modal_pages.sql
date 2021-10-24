@@ -28,6 +28,7 @@ wwv_flow_api.create_list(
 'and v1.content_type = ''FOOTER_LINK''',
 'order by v1.display_seq'))
 ,p_list_status=>'PUBLIC'
+,p_required_patch=>wwv_flow_api.id(42618909236023987)
 );
 wwv_flow_api.component_end;
 end;

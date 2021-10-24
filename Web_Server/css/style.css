@@ -102,15 +102,17 @@ blockquote p {
     padding: 10px 0;
   }
 }
-a.z-copyright {
-  display: block;
+.z-copyright {
+  text-align: center;
   margin: 18px 0;
+}
+.z-copyright a {
+  display: block;
   color: inherit;
   font-size: 1.4rem;
-  text-align: center;
   opacity: 0.6;
 }
-a.z-copyright:hover {
+.z-copyright:hover a {
   opacity: 1;
 }
 /**************************************

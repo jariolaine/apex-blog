@@ -23,9 +23,10 @@ wwv_flow_api.create_user_interface(
 ,p_login_url=>'f?p=&APP_ID.:LOGIN:&SESSION.'
 ,p_theme_style_by_user_pref=>false
 ,p_global_page_id=>0
-,p_navigation_list_position=>'TOP'
-,p_navigation_list_template_id=>wwv_flow_api.id(6850610093267411)
-,p_nav_list_template_options=>'#DEFAULT#:js-tabLike'
+,p_navigation_list_id=>wwv_flow_api.id(61556680328292600)
+,p_navigation_list_position=>'SIDE'
+,p_navigation_list_template_id=>wwv_flow_api.id(6848614889267410)
+,p_nav_list_template_options=>'#DEFAULT#:js-defaultCollapsed:js-navCollapsed--default:t-TreeNav--styleA'
 ,p_javascript_file_urls=>'#APP_IMAGES#js/blog.js'
 ,p_nav_bar_type=>'LIST'
 ,p_nav_bar_list_id=>wwv_flow_api.id(6876779235267426)

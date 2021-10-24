@@ -21,15 +21,15 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210921091306'
+,p_last_upd_yyyymmddhh24miss=>'20211007101253'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
 ,p_plug_name=>'Not Rendered Items'
 ,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_api.id(6781372168267375)
+,p_plug_template=>wwv_flow_api.id(6781539027267375)
 ,p_plug_display_sequence=>40
-,p_plug_display_point=>'REGION_POSITION_05'
+,p_plug_display_point=>'BEFORE_FOOTER'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'NEVER'
@@ -118,9 +118,6 @@ wwv_flow_api.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'ITEM_IS_NOT_NULL'
 ,p_plug_display_when_condition=>'G_RSS_URL'
-,p_plug_caching=>'CACHE'
-,p_plug_caching_max_age_in_sec=>21600
-,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 ,p_required_patch=>wwv_flow_api.id(8635198962090938)
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'HTML'
@@ -148,6 +145,7 @@ wwv_flow_api.create_page_plug(
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(40726951471800848)
 ,p_plug_name=>'Modal Pages'
+,p_region_css_classes=>'margin-md'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(6781539027267375)
@@ -159,17 +157,13 @@ wwv_flow_api.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
 ,p_plug_display_when_condition=>'1001,1002,9999'
-,p_plug_footer=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<a class="z-copyright" href="https://github.com/jariolaine/apex-blog">',
-'Powered By APEX Blog',
-'</a>'))
+,p_plug_footer=>'"BLOG_POWERED_BY"'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41877798757408318)
 ,p_plug_name=>'Tabs'
-,p_region_css_classes=>'padding-left-md z-tabs'
 ,p_region_template_options=>'#DEFAULT#'
-,p_component_template_options=>'#DEFAULT#:t-Tabs--simple'
+,p_component_template_options=>'#DEFAULT#:t-Tabs--large:t-Tabs--simple'
 ,p_plug_template=>wwv_flow_api.id(6781539027267375)
 ,p_plug_display_sequence=>1
 ,p_plug_display_point=>'REGION_POSITION_01'

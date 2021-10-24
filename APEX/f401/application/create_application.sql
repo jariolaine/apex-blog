@@ -24,6 +24,9 @@ wwv_flow_api.create_flow(
 ,p_checksum_salt=>'A62184636C79274387CBB6C9840762CA531D62DEA8CD2BD8BA55E607E36A7AF2'
 ,p_bookmark_checksum_function=>'SH1'
 ,p_accept_old_checksums=>false
+,p_max_session_length_sec=>86400
+,p_max_session_idle_sec=>86400
+,p_session_timeout_warning_sec=>0
 ,p_compatibility_mode=>'19.2'
 ,p_flow_language=>'en'
 ,p_flow_language_derived_from=>'FLOW_PRIMARY_LANGUAGE'
@@ -60,9 +63,9 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210921094450'
+,p_last_upd_yyyymmddhh24miss=>'20211024071019'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>115
+,p_files_version=>120
 ,p_ui_type_name => null
 ,p_print_server_type=>'INSTANCE'
 );

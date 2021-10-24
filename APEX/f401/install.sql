@@ -10,8 +10,9 @@ prompt --install
 @@application/shared_components/navigation/lists/post_categories.sql
 @@application/shared_components/navigation/lists/latest_posts.sql
 @@application/shared_components/navigation/lists/post_archives.sql
-@@application/shared_components/navigation/lists/navigation_menu.sql
+@@application/shared_components/navigation/lists/tabs.sql
 @@application/shared_components/navigation/lists/footer_modal_pages.sql
+@@application/shared_components/navigation/lists/navigation_menu.sql
 @@application/shared_components/files/app_icon_css.sql
 @@application/shared_components/files/app_icon_svg.sql
 @@application/shared_components/files/ico_apple_touch_icon_png.sql
@@ -24,6 +25,7 @@ prompt --install
 @@application/shared_components/files/ico_about_txt.sql
 @@application/shared_components/files/css_rss_xsl_css.sql
 @@application/shared_components/files/js_blog_js.sql
+@@application/shared_components/files/css_style_css.sql
 @@application/plugin_settings.sql
 @@application/shared_components/security/authorizations/administration_rights.sql
 @@application/shared_components/navigation/navigation_bar.sql
@@ -87,7 +89,7 @@ prompt --install
 @@application/shared_components/user_interface/templates/list/top_navigation_tabs.sql
 @@application/shared_components/user_interface/templates/list/wizard_progress.sql
 @@application/shared_components/user_interface/templates/list/top_navigation_mega_menu.sql
-@@application/shared_components/user_interface/templates/list/footer_link_list_custom_2.sql
+@@application/shared_components/user_interface/templates/list/blog_footer_link_list.sql
 @@application/shared_components/user_interface/templates/report/timeline.sql
 @@application/shared_components/user_interface/templates/report/media_list.sql
 @@application/shared_components/user_interface/templates/report/value_attribute_pairs_row.sql
@@ -98,9 +100,9 @@ prompt --install
 @@application/shared_components/user_interface/templates/report/alerts.sql
 @@application/shared_components/user_interface/templates/report/cards.sql
 @@application/shared_components/user_interface/templates/report/search_results.sql
-@@application/shared_components/user_interface/templates/report/blog_posts_custom_1.sql
+@@application/shared_components/user_interface/templates/report/blog_post_report.sql
 @@application/shared_components/user_interface/templates/report/content_row.sql
-@@application/shared_components/user_interface/templates/report/blog_general_custom_2.sql
+@@application/shared_components/user_interface/templates/report/blog_content.sql
 @@application/shared_components/user_interface/templates/label/hidden.sql
 @@application/shared_components/user_interface/templates/label/optional.sql
 @@application/shared_components/user_interface/templates/label/optional_above.sql
@@ -131,6 +133,7 @@ prompt --install
 @@application/shared_components/user_interface/shortcuts/blog_canonical_link_tag.sql
 @@application/shared_components/user_interface/shortcuts/blog_canonical_link_archive.sql
 @@application/shared_components/user_interface/shortcuts/blog_canonical_link_tab.sql
+@@application/shared_components/user_interface/shortcuts/blog_powered_by.sql
 @@application/shared_components/email/templates/blog_new_comment_notify.sql
 @@application/shared_components/security/authentications/no_authentication.sql
 @@application/shared_components/security/authentications/application_express_authentication.sql
@@ -149,6 +152,7 @@ prompt --install
 @@application/pages/page_00015.sql
 @@application/pages/page_01001.sql
 @@application/pages/page_01002.sql
+@@application/pages/page_01003.sql
 @@application/pages/page_09999.sql
 @@application/deployment/definition.sql
 @@application/deployment/install/install_metadata.sql

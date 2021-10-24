@@ -1,7 +1,7 @@
-prompt --application/shared_components/user_interface/templates/report/blog_general_custom_2
+prompt --application/shared_components/user_interface/templates/report/blog_content
 begin
 --   Manifest
---     ROW TEMPLATE: BLOG_GENERAL_CUSTOM_2
+--     ROW TEMPLATE: BLOG_CONTENT
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2020.10.01'
@@ -14,7 +14,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_row_template(
  p_id=>wwv_flow_api.id(30641878306098019)
 ,p_row_template_name=>'Blog Content (Custom 2)'
-,p_internal_name=>'BLOG_GENERAL_CUSTOM_2'
+,p_internal_name=>'BLOG_CONTENT'
 ,p_row_template1=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="z-Content--Row">',
 '  <h3 class="z-Content--Title">',

@@ -20,7 +20,7 @@ wwv_flow_api.create_shortcut(
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_rss_anchor(',
 '   p_app_name => :G_APP_NAME',
-'  ,p_rss_url  => :G_RSS_URL',
+'  ,p_rss_url => :G_RSS_URL',
 ');'))
 );
 wwv_flow_api.component_end;
