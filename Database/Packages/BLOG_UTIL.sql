@@ -76,7 +76,7 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- public app page 14 Pre-Rendering Computations
   function get_category_title(
     p_category_id     in varchar2,
     p_escape          in boolean
@@ -88,23 +88,23 @@ as
     p_tag_id          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---
+-- Obsolete / not used
   procedure check_archive_exists(
     p_archive_id      in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
---  public app page 1002 PL/SQL Dynamic Content Region "Content
+--  public app page 1002 PL/SQL Dynamic Content Region "Content"
   procedure render_dynamic_content(
     p_content_id      in varchar2,
-    p_date_format     in varchar2
+    p_date_format     in varchar2,
+    p_content_title   out nocopy varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "download"
   procedure download_file (
-    p_file_name   in varchar2
+    p_file_name       in varchar2
   );
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
@@ -748,8 +748,9 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure render_dynamic_content(
-    p_content_id  in varchar2,
-    p_date_format in varchar2
+    p_content_id    in varchar2,
+    p_date_format   in varchar2,
+    p_content_title out nocopy varchar2
   )
   as
   begin
@@ -758,19 +759,25 @@ as
       select v1.content_desc
         ,v1.content_html
         ,v1.changed_on
+        ,v1.show_changed_on
       from blog_v_dynamic_content v1
       where 1 = 1
       and v1.content_id = p_content_id
     ) loop
 
+      p_content_title := c1.content_desc;
+
       sys.htp.p( c1.content_html );
 
-      sys.htp.p(
-          apex_lang.message(
-             'BLOG_INFO_LAST_UPDATED'
-            ,to_char( c1.changed_on, p_date_format )
-          )
-        );
+      if c1.show_changed_on = 1
+      then
+        sys.htp.p(
+            apex_lang.message(
+               'BLOG_INFO_LAST_UPDATED'
+              ,to_char( c1.changed_on, p_date_format )
+            )
+          );
+      end if;
 
     end loop;
 

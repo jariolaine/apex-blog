@@ -14,7 +14,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_install_check(
  p_id=>wwv_flow_api.id(64760872618475092)
 ,p_install_id=>wwv_flow_api.id(31706870664802069)
-,p_name=>'Role CTXAPP'
+,p_name=>'Application parsing schema has role CTXAPP'
 ,p_sequence=>10
 ,p_check_type=>'EXISTS'
 ,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(

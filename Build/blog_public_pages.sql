@@ -135,7 +135,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211024071019'
+,p_last_upd_yyyymmddhh24miss=>'20211024074152'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>120
 ,p_ui_type_name => null
@@ -18663,7 +18663,7 @@ begin
 wwv_flow_api.create_page(
  p_id=>1002
 ,p_user_interface_id=>wwv_flow_api.id(6877050287267426)
-,p_name=>'Footer Links Dialog'
+,p_name=>'Footer Link Modal Dialog'
 ,p_alias=>'INFORMATION'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'&P1002_PAGE_TITLE.'
@@ -18674,7 +18674,7 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210921183142'
+,p_last_upd_yyyymmddhh24miss=>'20211024074152'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41876461524408305)

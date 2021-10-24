@@ -127,13 +127,15 @@ create table blog_dynamic_content(
 	display_seq number( 10,0 ) not null enable,
   content_type varchar2( 256 char ) not null,
   content_desc varchar2( 256 char ) not null,
+  show_changed_on number( 1,0 ) not null enable,
   content_html clob not null,
   notes varchar2( 4000 byte ),
   constraint blog_dynamic_content_pk primary key( id ),
   constraint blog_dynamic_content_ck1 check( row_version > 0 ),
   constraint blog_dynamic_content_ck2 check( is_active in( 0, 1 ) ),
   constraint blog_dynamic_content_ck3 check( display_seq > 0 ),
-  constraint blog_dynamic_content_ck4 check( content_type in( 'FOOTER_LINK' ) )
+  constraint blog_dynamic_content_ck4 check( content_type in( 'FOOTER_LINK' ) ),
+  constraint blog_dynamic_content_ck5 check( show_changed_on in( 0, 1 ) )
 )
 /
 --------------------------------------------------------
@@ -567,7 +569,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_DYNAMIC_CONTENT
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "CONTENT_TYPE", "DISPLAY_SEQ", "CONTENT_DESC", "CONTENT_HTML") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "CONTENT_TYPE", "DISPLAY_SEQ", "SHOW_CHANGED_ON", "CONTENT_DESC", "CONTENT_HTML") AS
   select
    t1.id                as id
   ,t1.row_version       as row_version
@@ -578,6 +580,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VERSION", 
   ,t1.is_active         as is_active
   ,t1.content_type      as content_type
   ,t1.display_seq       as display_seq
+  ,t1.show_changed_on   as show_changed_on
   ,t1.content_desc      as content_desc
   ,t1.content_html      as content_html
 from blog_dynamic_content t1
@@ -816,14 +819,15 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_DYNAMIC_CONTENT
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_DYNAMIC_CONTENT" ("CONTENT_ID", "CONTENT_TYPE", "CHANGED_ON", "DISPLAY_SEQ", "CONTENT_DESC", "CONTENT_HTML") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_DYNAMIC_CONTENT" ("CONTENT_ID", "CONTENT_TYPE", "CHANGED_ON", "DISPLAY_SEQ", "SHOW_CHANGED_ON", "CONTENT_DESC", "CONTENT_HTML") AS
   select
-   t1.id            as content_id
-  ,t1.content_type  as content_type
-  ,t1.changed_on    as changed_on
-  ,t1.display_seq   as display_seq
-  ,t1.content_desc  as content_desc
-  ,t1.content_html  as content_html
+   t1.id              as content_id
+  ,t1.content_type    as content_type
+  ,t1.changed_on      as changed_on
+  ,t1.display_seq     as display_seq
+  ,t1.show_changed_on as show_changed_on
+  ,t1.content_desc    as content_desc
+  ,t1.content_html    as content_html
 from blog_dynamic_content t1
 where 1 = 1
 and t1.is_active = 1
@@ -1366,7 +1370,7 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- public app page 14 Pre-Rendering Computations
   function get_category_title(
     p_category_id     in varchar2,
     p_escape          in boolean
@@ -1378,23 +1382,23 @@ as
     p_tag_id          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---
+-- Obsolete / not used
   procedure check_archive_exists(
     p_archive_id      in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
---  public app page 1002 PL/SQL Dynamic Content Region "Content
+--  public app page 1002 PL/SQL Dynamic Content Region "Content"
   procedure render_dynamic_content(
     p_content_id      in varchar2,
-    p_date_format     in varchar2
+    p_date_format     in varchar2,
+    p_content_title   out nocopy varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "download"
   procedure download_file (
-    p_file_name   in varchar2
+    p_file_name       in varchar2
   );
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
@@ -2038,8 +2042,9 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure render_dynamic_content(
-    p_content_id  in varchar2,
-    p_date_format in varchar2
+    p_content_id    in varchar2,
+    p_date_format   in varchar2,
+    p_content_title out nocopy varchar2
   )
   as
   begin
@@ -2048,19 +2053,25 @@ as
       select v1.content_desc
         ,v1.content_html
         ,v1.changed_on
+        ,v1.show_changed_on
       from blog_v_dynamic_content v1
       where 1 = 1
       and v1.content_id = p_content_id
     ) loop
 
+      p_content_title := c1.content_desc;
+
       sys.htp.p( c1.content_html );
 
-      sys.htp.p(
-          apex_lang.message(
-             'BLOG_INFO_LAST_UPDATED'
-            ,to_char( c1.changed_on, p_date_format )
-          )
-        );
+      if c1.show_changed_on = 1
+      then
+        sys.htp.p(
+            apex_lang.message(
+               'BLOG_INFO_LAST_UPDATED'
+              ,to_char( c1.changed_on, p_date_format )
+            )
+          );
+      end if;
 
     end loop;
 
