@@ -131,7 +131,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211024081444'
+,p_last_upd_yyyymmddhh24miss=>'20211024105152'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>217
 ,p_ui_type_name => null
@@ -12024,12 +12024,12 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(25687100030320389)
 ,p_name=>'BLOG_FEATURE_SEARCH_FILES'
-,p_message_text=>'Search from files'
+,p_message_text=>'<span class="z-feature--child">Search from files</span>'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(25687386211322835)
 ,p_name=>'BLOG_FEATURE_SEARCH_LINKS'
-,p_message_text=>'Search from links'
+,p_message_text=>'<span class="z-feature--child">Search from links</span>'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(8666155895722574)
@@ -12433,7 +12433,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211007071035'
+,p_last_upd_yyyymmddhh24miss=>'20211024103321'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8582113239518316)
@@ -12453,7 +12453,7 @@ wwv_flow_api.create_report_region(
 ,p_template=>wwv_flow_api.id(8490381578518205)
 ,p_display_sequence=>10
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--fixed'
+,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--circular:t-BadgeList--fixed'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -22679,7 +22679,7 @@ wwv_flow_api.create_page(
 ,p_protection_level=>'C'
 ,p_help_text=>'High level view of application logging information.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210624041832'
+,p_last_upd_yyyymmddhh24miss=>'20211024103945'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(87874963598811882)
@@ -22698,9 +22698,9 @@ wwv_flow_api.create_page_plug(
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(234594294018743368)
 ,p_name=>'Breakdown by Page'
-,p_template=>wwv_flow_api.id(8496813422518209)
+,p_template=>wwv_flow_api.id(8490381578518205)
 ,p_display_sequence=>30
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
 ,p_component_template_options=>'#DEFAULT#:t-Report--stretch:t-Report--altRowsDefault:t-Report--rowHighlight:t-Report--inline'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
@@ -22855,10 +22855,10 @@ wwv_flow_api.create_report_columns(
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(234595998306743405)
 ,p_name=>'Summary'
-,p_template=>wwv_flow_api.id(8496813422518209)
+,p_template=>wwv_flow_api.id(8490381578518205)
 ,p_display_sequence=>10
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
-,p_component_template_options=>'#DEFAULT#:t-AVPList--variableLabelLarge:t-AVPList--rightAligned'
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
+,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--fixed'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -22878,7 +22878,7 @@ wwv_flow_api.create_report_region(
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P30021_TIMEFRAME'
-,p_query_row_template=>wwv_flow_api.id(8513980139518220)
+,p_query_row_template=>wwv_flow_api.id(8515750866518222)
 ,p_query_num_rows=>50
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_show_nulls_as=>'0'
@@ -22898,7 +22898,7 @@ wwv_flow_api.create_report_columns(
 ,p_query_column_id=>1
 ,p_column_alias=>'IP_ADDRESS'
 ,p_column_display_sequence=>3
-,p_column_heading=>'IP addresses:'
+,p_column_heading=>'IP addresses'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'999999999999990'
 ,p_heading_alignment=>'LEFT'
@@ -22911,7 +22911,7 @@ wwv_flow_api.create_report_columns(
 ,p_query_column_id=>2
 ,p_column_alias=>'DISTINCT_PAGES'
 ,p_column_display_sequence=>2
-,p_column_heading=>'Distinct pages viewed:'
+,p_column_heading=>'Distinct pages viewed'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'999999999999990'
 ,p_column_alignment=>'RIGHT'
@@ -22925,7 +22925,7 @@ wwv_flow_api.create_report_columns(
 ,p_query_column_id=>3
 ,p_column_alias=>'PAGE_VIEWS'
 ,p_column_display_sequence=>1
-,p_column_heading=>'Page views:'
+,p_column_heading=>'Page views'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'999999999999990'
 ,p_column_alignment=>'RIGHT'
@@ -22940,7 +22940,7 @@ wwv_flow_api.create_report_columns(
 ,p_query_column_id=>4
 ,p_column_alias=>'MIN_ELAPSED_TIME'
 ,p_column_display_sequence=>4
-,p_column_heading=>'Min elapsed (seconds):'
+,p_column_heading=>'Min elapsed (seconds)'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'999999999999990D000'
 ,p_heading_alignment=>'LEFT'
@@ -22952,7 +22952,7 @@ wwv_flow_api.create_report_columns(
 ,p_query_column_id=>5
 ,p_column_alias=>'AVG_ELAPSED_TIME'
 ,p_column_display_sequence=>5
-,p_column_heading=>'Avg elapsed  (seconds):'
+,p_column_heading=>'Avg elapsed  (seconds)'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'999999999999990D000'
 ,p_heading_alignment=>'LEFT'
@@ -22964,7 +22964,7 @@ wwv_flow_api.create_report_columns(
 ,p_query_column_id=>6
 ,p_column_alias=>'MAX_ELAPSED_TIME'
 ,p_column_display_sequence=>6
-,p_column_heading=>'Max elapsed  (seconds):'
+,p_column_heading=>'Max elapsed  (seconds)'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'999999999999990D000'
 ,p_heading_alignment=>'LEFT'
@@ -23044,8 +23044,8 @@ wwv_flow_api.create_page(
 '<p>This page provides an interactive report of all unexpected errors logged by this application.</p>',
 '<p>Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back t'
 ||'o the default settings.</p>'))
-,p_last_updated_by=>'JARI.LAINE.O@GMAIL.COM'
-,p_last_upd_yyyymmddhh24miss=>'20210509084735'
+,p_last_updated_by=>'LAINFJAR'
+,p_last_upd_yyyymmddhh24miss=>'20211024104135'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43861070470616959)
@@ -23173,7 +23173,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(43861070470616959)
 ,p_button_name=>'RESET_REPORT'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'t-Button--small:t-Button--noUI:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--simple:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
@@ -23202,7 +23202,7 @@ wwv_flow_api.create_page(
 'Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back to t'
 ||'he default settings.</p>'))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210624041928'
+,p_last_upd_yyyymmddhh24miss=>'20211024104112'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43851444064616938)
@@ -23469,7 +23469,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(43851444064616938)
 ,p_button_name=>'RESET_REPORT'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'t-Button--small:t-Button--noUI:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--simple:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
@@ -23541,14 +23541,14 @@ wwv_flow_api.create_page(
 'Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back to t'
 ||'he default settings.</p>'))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210624041903'
+,p_last_upd_yyyymmddhh24miss=>'20211024104347'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43843535329616316)
 ,p_plug_name=>'Page Views'
 ,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
 ,p_plug_template=>wwv_flow_api.id(8495746153518209)
-,p_plug_display_sequence=>10
+,p_plug_display_sequence=>20
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -23735,7 +23735,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(43843535329616316)
 ,p_button_name=>'RESET_REPORT'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'t-Button--small:t-Button--noUI:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--simple:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'

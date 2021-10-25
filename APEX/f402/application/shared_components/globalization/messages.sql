@@ -157,12 +157,12 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(25687100030320389)
 ,p_name=>'BLOG_FEATURE_SEARCH_FILES'
-,p_message_text=>'Search from files'
+,p_message_text=>'<span class="z-feature--child">Search from files</span>'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(25687386211322835)
 ,p_name=>'BLOG_FEATURE_SEARCH_LINKS'
-,p_message_text=>'Search from links'
+,p_message_text=>'<span class="z-feature--child">Search from links</span>'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(8666155895722574)

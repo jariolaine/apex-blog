@@ -135,7 +135,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211024074152'
+,p_last_upd_yyyymmddhh24miss=>'20211025124925'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>120
 ,p_ui_type_name => null
@@ -543,6 +543,10 @@ wwv_flow_api.create_list(
 '    then ''YES''',
 '    else ''NO''',
 '  end                   as is_current',
+'  ,null                 as image',
+'  ,null                 as image_attribute',
+'  ,null                 as image_alt_attribute',
+'  ,''page_'' || t1.id     as attribute1',
 'from #OWNER#.blog_pages t1',
 'where 1 = 1',
 'and t1.is_active = 1',
@@ -15087,8 +15091,8 @@ wwv_flow_api.create_build_option(
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(33703543205326403)
 ,p_build_option_name=>'BLOG_FEATURE_SUBSCRIBE_COMMENTS'
-,p_build_option_status=>'INCLUDE'
-,p_default_on_export=>'INCLUDE'
+,p_build_option_status=>'EXCLUDE'
+,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable / disable the ability to subscribe to email notification of new comments'
 );
@@ -16023,7 +16027,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210929180121'
+,p_last_upd_yyyymmddhh24miss=>'20211025061747'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -16301,6 +16305,9 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_point=>'BODY'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_plug_display_condition_type=>'EXPRESSION'
+,p_plug_display_when_condition=>'not( :P2_NEWER_ID is null and :P2_OLDER_ID is null )'
+,p_plug_display_when_cond2=>'PLSQL'
 ,p_required_patch=>wwv_flow_api.id(27921011391085431)
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
@@ -18769,7 +18776,7 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_browser_cache=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211004164936'
+,p_last_upd_yyyymmddhh24miss=>'20211024092637'
 );
 wwv_flow_api.create_page_branch(
  p_id=>wwv_flow_api.id(62674058371144805)
@@ -18793,6 +18800,7 @@ wwv_flow_api.create_page_process(
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(8635198962090938)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63037094013126597)
@@ -18806,6 +18814,7 @@ wwv_flow_api.create_page_process(
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(8635198962090938)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63037470481126597)
@@ -18820,6 +18829,7 @@ wwv_flow_api.create_page_process(
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63037810302126598)
@@ -18833,6 +18843,7 @@ wwv_flow_api.create_page_process(
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63038262775126598)
@@ -18843,6 +18854,7 @@ wwv_flow_api.create_page_process(
 ,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_posts;'
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63038641489126598)
@@ -18853,6 +18865,7 @@ wwv_flow_api.create_page_process(
 ,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_categories;'
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63039095924126598)
@@ -18863,6 +18876,7 @@ wwv_flow_api.create_page_process(
 ,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_archives;'
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63039494696126598)
@@ -18873,6 +18887,7 @@ wwv_flow_api.create_page_process(
 ,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_tags;'
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63039875243126599)
@@ -19145,10 +19160,10 @@ wwv_flow_api.create_install_script(
 'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''160'',''BLOG_FEATURE_ARCHIVE_POST_COUNT'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''BLOG_FEATURE_ARCHIVE'',null);',
 'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''200'',''BLOG_FEATURE_RSS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null);',
 'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''210'',''BLOG_FEATURE_LINKS'',''BLOG_FEATURE_GROUP_PAGE'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''220'',''BLOG_FEATURE_FILES'',''BLOG_FEATURE_GROUP_PAGE'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''230'',''BLOG_FEATURE_ABOUT'',''BLOG_FEATURE_GROUP_PAGE'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''240'',''BLOG_FEATURE_SEARCH_LINKS'',''BLOG_FEATURE_GROUP_MISC'',''BLOG_FEATURE_LINKS'',null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''250'',''BLOG_FEATURE_SEARCH_FILES'',''BLOG_FEATURE_GROUP_MISC'',''BLOG_FEATURE_FILES'',null);',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''220'',''BLOG_FEATURE_SEARCH_LINKS'',''BLOG_FEATURE_GROUP_PAGE'',''BLOG_FEATURE_LINKS'',null);',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''230'',''BLOG_FEATURE_FILES'',''BLOG_FEATURE_GROUP_PAGE'',null,null);',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''240'',''BLOG_FEATURE_SEARCH_FILES'',''BLOG_FEATURE_GROUP_PAGE'',''BLOG_FEATURE_FILES'',null);',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''250'',''BLOG_FEATURE_ABOUT'',''BLOG_FEATURE_GROUP_PAGE'',null,null);',
 'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''260'',''BLOG_FEATURE_MODAL_PAGES'',''BLOG_FEATURE_GROUP_MISC'',null,null);',
 'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''0'',''270'',''BLOG_FEATURE_SITEMAP'',''BLOG_FEATURE_GROUP_MISC'',null,null);',
 'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''1010'',''BLOG_ADM_FEATURE_APEX_AUTH'',''BLOG_FEATURE_GROUP_AUTH'',null,null);',
@@ -19159,11 +19174,11 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''20'',''1'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,null,null,blog_util.int_to_vc2(apex_app'
 ||'lication_install.get_application_id));',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,null,''Release 4.4.20211024'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,null,''Release 4.4.20211025'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''40'',''0'',''G_ADMIN_APP_AUTHZ_GROUP'',''STRING'',''INTERNAL'',null,null,null,null,''Bloggers'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''50'',''1'',''G_RSS_XSL_CSS_URL'',''STRING'',''INTERNAL'',null,null,null,null,''css/rss-xsl.css'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''60'',''1'',''G_SITEMAP_URL'',''URL'',''INTERNAL'',null,null,null,null,apex_util.host_url(''SCRIPT'') ||'
-||' ''f?p='' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '':home::application_process=sitemap-index.xml'');',
+||' ''f?p='' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '':pgm::application_process=sitemap-index.xml'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''70'',''0'',''G_COMMENT_WATCH_MONTHS'',''INTEGER'',''INTERNAL'',null,''1'',''6'',null,''1'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''120'',''0'',''G_LATEST_POST_ROWS'',''INTEGER'',''BLOG_PAR_GROUP_UI'',null,''1'',''20'',null,''5'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''130'',''0'',''G_APP_NAME'',''STRING'',''BLOG_PAR_GROUP_GENERAL'',null,null,null,null,''My Blog'');',
@@ -19180,9 +19195,9 @@ wwv_flow_api.create_install_script(
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''220'',''0'',''G_CANONICAL_URL'',''URL'',''BLOG_PAR_GROUP_SEO'',''trim( rtrim( :ATTRIBUTE_VALUE, ''''/'''' '
 ||') )'',null,null,null,apex_util.host_url());',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''230'',''1'',''G_RSS_URL'',''URL'',''BLOG_PAR_GROUP_SEO'',null,null,null,null,apex_util.host_url(''SCRI'
-||'PT'') || ''f?p='' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '':home::application_process%3Drss.xml'');',
+||'PT'') || ''f?p='' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '':pgm::application_process%3Drss.xml'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''240'',''1'',''G_RSS_XSL_URL'',''URL'',''BLOG_PAR_GROUP_SEO'',null,null,null,null,apex_util.host_url('''
-||'SCRIPT'') || ''f?p='' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '':home::application_process%3Drss.xsl'');',
+||'SCRIPT'') || ''f?p='' || blog_util.int_to_vc2(apex_application_install.get_application_id) || '':pgm::application_process%3Drss.xsl'');',
 '--',
 '--------------------------------------------------------',
 '--  Inserting into BLOG_INIT_ITEMS',

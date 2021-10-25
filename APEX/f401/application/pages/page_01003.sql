@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_browser_cache=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211004164936'
+,p_last_upd_yyyymmddhh24miss=>'20211024092637'
 );
 wwv_flow_api.create_page_branch(
  p_id=>wwv_flow_api.id(62674058371144805)
@@ -47,6 +47,7 @@ wwv_flow_api.create_page_process(
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(8635198962090938)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63037094013126597)
@@ -60,6 +61,7 @@ wwv_flow_api.create_page_process(
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(8635198962090938)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63037470481126597)
@@ -74,6 +76,7 @@ wwv_flow_api.create_page_process(
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63037810302126598)
@@ -87,6 +90,7 @@ wwv_flow_api.create_page_process(
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63038262775126598)
@@ -97,6 +101,7 @@ wwv_flow_api.create_page_process(
 ,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_posts;'
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63038641489126598)
@@ -107,6 +112,7 @@ wwv_flow_api.create_page_process(
 ,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_categories;'
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63039095924126598)
@@ -117,6 +123,7 @@ wwv_flow_api.create_page_process(
 ,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_archives;'
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63039494696126598)
@@ -127,6 +134,7 @@ wwv_flow_api.create_page_process(
 ,p_process_sql_clob=>'#OWNER#.blog_xml.sitemap_tags;'
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_api.id(41172379976935637)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(63039875243126599)

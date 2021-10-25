@@ -132,8 +132,8 @@ wwv_flow_api.create_build_option(
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(33703543205326403)
 ,p_build_option_name=>'BLOG_FEATURE_SUBSCRIBE_COMMENTS'
-,p_build_option_status=>'INCLUDE'
-,p_default_on_export=>'INCLUDE'
+,p_build_option_status=>'EXCLUDE'
+,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable / disable the ability to subscribe to email notification of new comments'
 );
