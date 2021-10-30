@@ -1,10 +1,3 @@
---------------------------------------------------------
---  Inserting into BLOG_PAGES
---------------------------------------------------------
-insert into blog_pages (is_active,display_seq,page_title,page_alias,page_type,build_option) values ('1','10','Home','HOME','TAB',null);
-insert into blog_pages (is_active,display_seq,page_title,page_alias,page_type,build_option) values ('1','20','Links','LINKS','TAB','BLOG_FEATURE_LINKS');
-insert into blog_pages (is_active,display_seq,page_title,page_alias,page_type,build_option) values ('1','30','Files','REPOSITORY','TAB','BLOG_FEATURE_FILES');
-insert into blog_pages (is_active,display_seq,page_title,page_alias,page_type,build_option) values ('1','40','About','ABOUT','TAB','BLOG_FEATURE_ABOUT');
 --
 --------------------------------------------------------
 --  Inserting into BLOG_FEATURES
@@ -35,7 +28,7 @@ insert into blog_features (is_active,display_seq,build_option_name,build_option_
 --  Inserting into BLOG_SETTINGS
 --------------------------------------------------------
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values ('20','1','G_PUB_APP_ID','STRING','INTERNAL',null,null,null,null,blog_util.int_to_vc2(apex_application_install.get_application_id));
-insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values ('30','0','G_APP_VERSION','STRING','INTERNAL',null,null,null,null,'Release 4.4.20211025');
+insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values ('30','0','G_APP_VERSION','STRING','INTERNAL',null,null,null,null,'Release 4.4.20211030');
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values ('40','0','G_ADMIN_APP_AUTHZ_GROUP','STRING','INTERNAL',null,null,null,null,'Bloggers');
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values ('50','1','G_RSS_XSL_CSS_URL','STRING','INTERNAL',null,null,null,null,'css/rss-xsl.css');
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values ('60','1','G_SITEMAP_URL','URL','INTERNAL',null,null,null,null,apex_util.host_url('SCRIPT') || 'f?p=' || blog_util.int_to_vc2(apex_application_install.get_application_id) || ':pgm::application_process=sitemap-index.xml');

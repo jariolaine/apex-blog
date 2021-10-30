@@ -19,11 +19,12 @@ wwv_flow_api.create_page(
 ,p_step_title=>'Sitemap, RSS and File Download'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
+,p_group_id=>wwv_flow_api.id(8700188054171688)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_browser_cache=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211024092637'
+,p_last_upd_yyyymmddhh24miss=>'20211030114325'
 );
 wwv_flow_api.create_page_branch(
  p_id=>wwv_flow_api.id(62674058371144805)
@@ -86,7 +87,8 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'sitemap-main.xml'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_xml.sitemap_main(',
-'  p_app_id => :APP_ID',
+'   p_app_id     => :APP_ID',
+'  ,p_page_group => ''Sitemap Main''',
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'

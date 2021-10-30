@@ -254,30 +254,6 @@ create table blog_link_groups(
 )
 /
 --------------------------------------------------------
---  DDL for Table BLOG_PAGES
---------------------------------------------------------
-create table blog_pages(
-  id number( 38, 0 ) not null,
-  row_version number( 38, 0 ) not null,
-  created_on timestamp( 6 ) with local time zone not null,
-  created_by varchar2( 256 char ) not null,
-  changed_on timestamp( 6 ) with local time zone not null,
-  changed_by varchar2( 256 char ) not null,
-  is_active number( 1, 0 ) not null,
-  display_seq number( 10, 0 ) not null,
-  page_title varchar2( 256 char ) not null,
-  page_alias varchar2( 256 char ) not null,
-  page_type varchar2( 256 char ) not null,
-  build_option varchar2( 256 char ),
-  constraint blog_pages_pk primary key( id ),
-  constraint blog_pages_uk1 unique( page_alias ),
-  constraint blog_pages_uk2 unique( page_type, page_alias ),
-  constraint blog_pages_ck1 check( row_version > 0 ),
-  constraint blog_pages_ck2 check( is_active in( 0, 1 ) ),
-  constraint blog_pages_ck3 check( display_seq > 0 )
-)
-/
---------------------------------------------------------
 --  DDL for Table BLOG_POSTS
 --------------------------------------------------------
 create table blog_posts(
@@ -3965,10 +3941,11 @@ as
 --    Jari Laine 11.04.2021 - New procedure reply_notify
 --                            New functions validate_email and is_email_verified
 --    Jari Laine 18.04.2021 - New functions is_email
+--    Jari Laine 30.10.2021 - Removed functions validate_email and is_email_verified
 --
 --  TO DO:
---    #1  comment HTML validation could be improved
---
+--    #1  comment HTML validation should be improved
+--    #2  email validation should be improved
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   -- Called from:
@@ -3986,25 +3963,11 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from:
-  --  admin app page 20012 validation "Is email"
-  --  inside function is_email_verified
+  --  public app page 1001 and admin app page 20012 validation
   function is_email(
     p_email             in varchar2,
     p_err_mesg          in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
   ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---
-  function validate_email(
-    p_email             in varchar2,
-    p_err_mesg          in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---
-  function is_email_verified(
-    p_email             in varchar2
-  ) return boolean;
 --------------------------------------------------------------------------------
 -- Called from:
 --
@@ -4356,108 +4319,6 @@ as
     return l_err_mesg;
 
   end is_email;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function validate_email(
-    p_email     in varchar2,
-    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
-  ) return varchar2
-  as
-    l_params    apex_exec.t_parameters;
-    l_response  clob;
-    l_json      json_object_t;
-    l_err_mesg  varchar2(32700);
-  begin
-
-    if not is_email_verified( p_email )
-    then
-      -- general check email format
-      l_err_mesg := is_email(
-         p_email    => p_email
-        ,p_err_mesg => p_err_mesg
-      );
-
-      if l_err_mesg is null
-      then
-        -- set email as parameter for rest source
-        apex_exec.add_parameter( l_params, 'email', p_email );
-        -- call rest source to validate email
-        apex_exec.execute_rest_source(
-           p_static_id  => 'ABSTRACT_EMAIL_VALIDATION_API'
-          ,p_operation  => 'GET'
-          ,p_parameters => l_params
-        );
-
-        -- get response
-        l_response := apex_exec.get_parameter_clob( l_params, 'response' );
-        apex_debug.info( 'Email validation response status: %s response body: %s'
-          ,apex_web_service.g_status_code
-          ,l_response
-        );
-        if apex_web_service.g_status_code != 200
-        then
-          raise_application_error( -20002 ,  apex_lang.message( 'BLOG_EMAIL_VALIDATION_API_SQLERRM' ) );
-        end if;
-
-        -- convert response to json object
-        l_json := json_object_t( l_response );
-        -- check email deliverability
-        if not l_json.get('deliverability').to_string = '"DELIVERABLE"'
-        then
-          -- if email is not deliverable validation fails
-          -- prepare error message
-          l_err_mesg := apex_lang.message( p_err_mesg );
-
-          if l_err_mesg = apex_escape.html( p_err_mesg )
-          then
-            l_err_mesg := p_err_mesg;
-          end if;
-
-        end if;
-
-      end if;
-
-    end if;
-
-    return l_err_mesg;
-
-  exception when others
-  then
-    -- if something goes wrong
-    apex_debug.error( 'Email validation failed: %s', sqlerrm );
-    raise;
-  end validate_email;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function is_email_verified(
-    p_email in varchar2
-  ) return boolean
-  as
-    l_cnt     number;
-    l_email   varchar2(4000);
-    l_result  boolean;
-  begin
-    -- set result to false by default
-    l_result := false;
-
-    l_email := lower( trim( p_email ) );
-
-    -- get email count from table
-    select count(1) as cnt
-    into l_cnt
-    from blog_subscribers_email t1
-    where 1 = 1
-    and t1.email = l_email
-    ;
-    if l_cnt = 1
-    then
-      -- email exists return true
-      l_result := true;
-    end if;
-    -- return result
-    return l_result;
-
-  end is_email_verified;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure flag_comment(
@@ -5296,6 +5157,7 @@ as
 --                              sitemap_categories
 --                              sitemap_archives
 --                              sitemap_atags
+--  Jari Laine 30.10.2021   - Changed procedure sitemap_main to use view apex_application_pages
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -5324,7 +5186,8 @@ as
 -- Called from:
 --  public app page 1003 Ajax Callback process "sitemap-main.xml"
   procedure sitemap_main(
-    p_app_id        in varchar2
+    p_app_id        in varchar2,
+    p_page_group    in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -5583,7 +5446,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure sitemap_main(
-    p_app_id in varchar2
+    p_app_id      in varchar2,
+    p_page_group  in varchar2
   )
   as
     l_xml blob;
@@ -5597,26 +5461,26 @@ as
           xmlagg(
             xmlelement( "url"
               ,xmlelement( "loc", blog_url.get_tab(
-                                     p_app_page_id => t1.page_alias
+                                     p_app_page_id => v1.page_alias
                                     ,p_canonical => 'YES'
                                   )
               )
-            ) order by t1.display_seq
+            ) order by v1.page_id
           )
         )
       )
     as blob encoding 'UTF-8' indent size=2)
     into l_xml
-    from blog_pages t1
+    from apex_application_pages v1
     where 1 = 1
-      and t1.is_active = 1
-      and t1.page_type = 'TAB'
+      and v1.application_id = p_app_id
+      and v1.page_group = p_page_group
       and case
-        when t1.build_option is null
+        when v1.build_option is null
         then 'INCLUDE'
         else  apex_util.get_build_option_status(
                  p_application_id    => p_app_id
-                ,p_build_option_name => t1.build_option
+                ,p_build_option_name => v1.build_option
               )
       end = 'INCLUDE'
     ;
@@ -6112,39 +5976,6 @@ CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_LINK_GROUPS_TRG"
 before
 insert or
 update on blog_link_groups
-for each row
-begin
-
-  if inserting then
-    :new.id           := coalesce( :new.id, blog_seq.nextval );
-    :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := coalesce( :new.created_on, localtimestamp );
-    :new.created_by   := coalesce(
-      :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV','PROXY_USER' )
-      ,sys_context( 'USERENV','SESSION_USER' )
-    );
-  elsif updating then
-    :new.row_version := :old.row_version + 1;
-  end if;
-
-  :new.changed_on := localtimestamp;
-  :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV','PROXY_USER' )
-    ,sys_context( 'USERENV','SESSION_USER' )
-  );
-
-end;
-/
---------------------------------------------------------
---  DDL for Trigger BLOG_PAGES_TRG
---------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_PAGES_TRG"
-before
-insert or
-update on blog_pages
 for each row
 begin
 

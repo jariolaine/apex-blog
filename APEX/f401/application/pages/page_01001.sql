@@ -21,9 +21,8 @@ wwv_flow_api.create_page(
 ,p_reload_on_submit=>'A'
 ,p_first_item=>'AUTO_FIRST_ITEM'
 ,p_autocomplete_on_off=>'OFF'
-,p_group_id=>wwv_flow_api.id(8697986188142973)
+,p_group_id=>wwv_flow_api.id(65048103982446247)
 ,p_html_page_header=>'"BLOG_META_ROBOTS_NOINDEX"'
-,p_step_template=>wwv_flow_api.id(6762463719267365)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_required_patch=>wwv_flow_api.id(7073708623458378)
 ,p_page_is_public_y_n=>'Y'
@@ -35,7 +34,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210929175604'
+,p_last_upd_yyyymmddhh24miss=>'20211030120051'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -221,6 +220,7 @@ wwv_flow_api.create_page_item(
 ,p_item_sequence=>100
 ,p_item_plug_id=>wwv_flow_api.id(147769743184406827)
 ,p_prompt=>'Answer to'
+,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'PLUGIN_FI.JARIS.MATH_QUESTION_FIELD'
 ,p_cMaxlength=>20
 ,p_field_template=>wwv_flow_api.id(6855004103267413)
@@ -344,22 +344,6 @@ wwv_flow_api.create_page_validation(
 ,p_associated_item=>wwv_flow_api.id(6286425900551659)
 ,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
 ,p_required_patch=>-wwv_flow_api.id(37511226776078888)
-);
-wwv_flow_api.create_page_validation(
- p_id=>wwv_flow_api.id(36228247829379741)
-,p_validation_name=>'Validate email using API'
-,p_validation_sequence=>40
-,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return #OWNER#.blog_comm.validate_email(',
-'  p_email => :P1001_EMAIL',
-');'))
-,p_validation2=>'PLSQL'
-,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
-,p_validation_condition=>'P1001_EMAIL'
-,p_validation_condition_type=>'ITEM_IS_NOT_NULL'
-,p_associated_item=>wwv_flow_api.id(6286425900551659)
-,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(37511226776078888)
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(2754144221851926)

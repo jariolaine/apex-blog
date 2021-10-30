@@ -21,6 +21,7 @@ as
 --                              sitemap_categories
 --                              sitemap_archives
 --                              sitemap_atags
+--  Jari Laine 30.10.2021   - Changed procedure sitemap_main to use view apex_application_pages
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -49,7 +50,8 @@ as
 -- Called from:
 --  public app page 1003 Ajax Callback process "sitemap-main.xml"
   procedure sitemap_main(
-    p_app_id        in varchar2
+    p_app_id        in varchar2,
+    p_page_group    in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -308,7 +310,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure sitemap_main(
-    p_app_id in varchar2
+    p_app_id      in varchar2,
+    p_page_group  in varchar2
   )
   as
     l_xml blob;
@@ -322,26 +325,26 @@ as
           xmlagg(
             xmlelement( "url"
               ,xmlelement( "loc", blog_url.get_tab(
-                                     p_app_page_id => t1.page_alias
+                                     p_app_page_id => v1.page_alias
                                     ,p_canonical => 'YES'
                                   )
               )
-            ) order by t1.display_seq
+            ) order by v1.page_id
           )
         )
       )
     as blob encoding 'UTF-8' indent size=2)
     into l_xml
-    from blog_pages t1
+    from apex_application_pages v1
     where 1 = 1
-      and t1.is_active = 1
-      and t1.page_type = 'TAB'
+      and v1.application_id = p_app_id
+      and v1.page_group = p_page_group
       and case
-        when t1.build_option is null
+        when v1.build_option is null
         then 'INCLUDE'
         else  apex_util.get_build_option_status(
                  p_application_id    => p_app_id
-                ,p_build_option_name => t1.build_option
+                ,p_build_option_name => v1.build_option
               )
       end = 'INCLUDE'
     ;

@@ -95,7 +95,6 @@ wwv_flow_api.create_install(
 'drop table blog_init_items;',
 'drop table blog_links;',
 'drop table blog_link_groups;',
-'drop table blog_pages;',
 'drop table blog_posts;',
 'drop table blog_post_preview;',
 'drop table blog_post_tags;',

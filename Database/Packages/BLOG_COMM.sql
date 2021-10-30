@@ -12,10 +12,11 @@ as
 --    Jari Laine 11.04.2021 - New procedure reply_notify
 --                            New functions validate_email and is_email_verified
 --    Jari Laine 18.04.2021 - New functions is_email
+--    Jari Laine 30.10.2021 - Removed functions validate_email and is_email_verified
 --
 --  TO DO:
---    #1  comment HTML validation could be improved
---
+--    #1  comment HTML validation should be improved
+--    #2  email validation should be improved
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   -- Called from:
@@ -33,25 +34,11 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from:
-  --  admin app page 20012 validation "Is email"
-  --  inside function is_email_verified
+  --  public app page 1001 and admin app page 20012 validation
   function is_email(
     p_email             in varchar2,
     p_err_mesg          in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
   ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---
-  function validate_email(
-    p_email             in varchar2,
-    p_err_mesg          in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---
-  function is_email_verified(
-    p_email             in varchar2
-  ) return boolean;
 --------------------------------------------------------------------------------
 -- Called from:
 --
@@ -403,108 +390,6 @@ as
     return l_err_mesg;
 
   end is_email;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function validate_email(
-    p_email     in varchar2,
-    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
-  ) return varchar2
-  as
-    l_params    apex_exec.t_parameters;
-    l_response  clob;
-    l_json      json_object_t;
-    l_err_mesg  varchar2(32700);
-  begin
-
-    if not is_email_verified( p_email )
-    then
-      -- general check email format
-      l_err_mesg := is_email(
-         p_email    => p_email
-        ,p_err_mesg => p_err_mesg
-      );
-
-      if l_err_mesg is null
-      then
-        -- set email as parameter for rest source
-        apex_exec.add_parameter( l_params, 'email', p_email );
-        -- call rest source to validate email
-        apex_exec.execute_rest_source(
-           p_static_id  => 'ABSTRACT_EMAIL_VALIDATION_API'
-          ,p_operation  => 'GET'
-          ,p_parameters => l_params
-        );
-
-        -- get response
-        l_response := apex_exec.get_parameter_clob( l_params, 'response' );
-        apex_debug.info( 'Email validation response status: %s response body: %s'
-          ,apex_web_service.g_status_code
-          ,l_response
-        );
-        if apex_web_service.g_status_code != 200
-        then
-          raise_application_error( -20002 ,  apex_lang.message( 'BLOG_EMAIL_VALIDATION_API_SQLERRM' ) );
-        end if;
-
-        -- convert response to json object
-        l_json := json_object_t( l_response );
-        -- check email deliverability
-        if not l_json.get('deliverability').to_string = '"DELIVERABLE"'
-        then
-          -- if email is not deliverable validation fails
-          -- prepare error message
-          l_err_mesg := apex_lang.message( p_err_mesg );
-
-          if l_err_mesg = apex_escape.html( p_err_mesg )
-          then
-            l_err_mesg := p_err_mesg;
-          end if;
-
-        end if;
-
-      end if;
-
-    end if;
-
-    return l_err_mesg;
-
-  exception when others
-  then
-    -- if something goes wrong
-    apex_debug.error( 'Email validation failed: %s', sqlerrm );
-    raise;
-  end validate_email;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function is_email_verified(
-    p_email in varchar2
-  ) return boolean
-  as
-    l_cnt     number;
-    l_email   varchar2(4000);
-    l_result  boolean;
-  begin
-    -- set result to false by default
-    l_result := false;
-
-    l_email := lower( trim( p_email ) );
-
-    -- get email count from table
-    select count(1) as cnt
-    into l_cnt
-    from blog_subscribers_email t1
-    where 1 = 1
-    and t1.email = l_email
-    ;
-    if l_cnt = 1
-    then
-      -- email exists return true
-      l_result := true;
-    end if;
-    -- return result
-    return l_result;
-
-  end is_email_verified;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure flag_comment(
