@@ -102,6 +102,15 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
+--
+  procedure download_file (
+    p_blob_content    in out nocopy blob,
+    p_mime_type       in varchar2 default null,
+    p_cache_control   in varchar2 default null,
+    p_charset         in varchar2 default null
+  );
+--------------------------------------------------------------------------------
+-- Called from:
 --  public app page 1003 Ajax Callback process "download"
   procedure download_file (
     p_file_name       in varchar2
@@ -124,7 +133,14 @@ as
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- none
+  procedure raise_http_error(
+    p_error_code  in number
+  )
+  as
+  begin
+    owa_util.status_line( p_error_code );
+    apex_application.stop_apex_engine;
+  end raise_http_error;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -407,8 +423,7 @@ as
     );
 
     -- show http error
-    owa_util.status_line( 404 );
-    apex_application.stop_apex_engine;
+    raise_http_error( p_error_code => 404 );
     raise;
 
   when others
@@ -424,8 +439,7 @@ as
     );
 
     -- show http error
-    owa_util.status_line( 404 );
-    apex_application.stop_apex_engine;
+    raise_http_error( p_error_code => 404 );
     raise;
 
   end get_post_title;
@@ -525,8 +539,7 @@ as
     );
 
     -- show http error
-    owa_util.status_line( 404 );
-    apex_application.stop_apex_engine;
+    raise_http_error( p_error_code => 404 );
     raise;
 
   when others
@@ -544,8 +557,7 @@ as
     );
 
     -- show http error
-    owa_util.status_line( 404 );
-    apex_application.stop_apex_engine;
+    raise_http_error( p_error_code => 404 );
     raise;
 
   end get_post_pagination;
@@ -600,8 +612,7 @@ as
     );
 
     -- show http error
-    owa_util.status_line( 404 );
-    apex_application.stop_apex_engine;
+    raise_http_error( p_error_code => 404 );
     raise;
 
   when others then
@@ -615,8 +626,7 @@ as
     );
 
     -- show http error
-    owa_util.status_line( 404 );
-    apex_application.stop_apex_engine;
+    raise_http_error( p_error_code => 404 );
     raise;
 
   end get_category_title;
@@ -663,8 +673,7 @@ as
     );
 
     -- show http error
-    owa_util.status_line( 404 );
-    apex_application.stop_apex_engine;
+    raise_http_error( p_error_code => 404 );
     raise;
 
   when others
@@ -678,8 +687,7 @@ as
     );
 
     -- show http error
-    owa_util.status_line( 404 );
-    apex_application.stop_apex_engine;
+    raise_http_error( p_error_code => 404 );
     raise;
 
   end get_tag;
@@ -725,8 +733,7 @@ as
     );
 
     -- show http error
-    owa_util.status_line( 404 );
-    apex_application.stop_apex_engine;
+    raise_http_error( p_error_code => 404 );
     raise;
 
   when others
@@ -740,8 +747,7 @@ as
     );
 
     -- show http error
-    owa_util.status_line( 404 );
-    apex_application.stop_apex_engine;
+    raise_http_error( p_error_code => 404 );
     raise;
 
   end check_archive_exists;
@@ -785,6 +791,33 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure download_file (
+    p_blob_content  in out nocopy blob,
+    p_mime_type     in varchar2 default null,
+    p_cache_control in varchar2 default null,
+    p_charset       in varchar2 default null
+  )
+  as
+  begin
+
+    sys.owa_util.mime_header(
+      ccontent_type   => coalesce ( p_mime_type, 'application/octet' )
+      ,bclose_header  => false
+      ,ccharset       => p_charset
+    );
+
+    if p_cache_control is not null
+    then
+      sys.htp.p( 'Cache-Control: ' || p_cache_control );
+    end if;
+
+    sys.owa_util.http_header_close;
+
+    sys.wpg_docload.download_file ( p_blob_content );
+
+  end download_file;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure download_file (
     p_file_name   in varchar2
   )
   as
@@ -799,15 +832,18 @@ as
     and t1.file_name = p_file_name
     ;
 
-    sys.owa_util.mime_header( coalesce ( l_file_t.mime_type, 'application/octet' ), false );
-    sys.htp.p( 'Cache-Control: public, max-age=3600' );
-    sys.owa_util.http_header_close;
-
-    sys.wpg_docload.download_file ( l_file_t.blob_content );
+    download_file(
+      p_mime_type       => l_file_t.mime_type
+      ,p_cache_control  => 'max-age=3600, public'
+      ,p_blob_content   => l_file_t.blob_content
+    );
 
   exception when no_data_found
   then
-    owa_util.status_line( 404 );
+
+    raise_http_error( p_error_code => 404 );
+    raise;
+
   end download_file;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

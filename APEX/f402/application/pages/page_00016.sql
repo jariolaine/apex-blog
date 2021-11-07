@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509170044'
+,p_last_upd_yyyymmddhh24miss=>'20211030124158'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6788182287545486)
@@ -115,6 +115,7 @@ wwv_flow_api.create_page_item(
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
+,p_inline_help_text=>'File is visible under public application "Files" page.'
 ,p_attribute_01=>'CUSTOM'
 ,p_attribute_02=>'1'
 ,p_attribute_03=>'Enabled'
@@ -139,6 +140,7 @@ wwv_flow_api.create_page_item(
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
+,p_inline_help_text=>'File description displayed in public application "Files" page.'
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'N'
 ,p_attribute_03=>'N'
@@ -176,6 +178,7 @@ wwv_flow_api.create_page_item(
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
+,p_inline_help_text=>'Enable/disable public access to file.'
 ,p_attribute_01=>'CUSTOM'
 ,p_attribute_02=>'1'
 ,p_attribute_03=>'Enabled'
@@ -223,6 +226,7 @@ wwv_flow_api.create_page_item(
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
+,p_inline_help_text=>'Enter any comments or notes here. These notes not displayed for public.'
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'N'
 ,p_attribute_03=>'N'

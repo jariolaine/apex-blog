@@ -135,7 +135,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211030121718'
+,p_last_upd_yyyymmddhh24miss=>'20211107113208'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>120
 ,p_ui_type_name => null
@@ -15399,7 +15399,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211030115114'
+,p_last_upd_yyyymmddhh24miss=>'20211030130749'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
@@ -15555,9 +15555,6 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_condition_type=>'EXPRESSION'
 ,p_plug_display_when_condition=>':APP_PAGE_ID < 1000'
 ,p_plug_display_when_cond2=>'PLSQL'
-,p_plug_caching=>'CACHE'
-,p_plug_caching_max_age_in_sec=>21600
-,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(6433577571894075)
@@ -18915,7 +18912,7 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''20'',''1'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,null,null,blog_util.int_to_vc2(apex_app'
 ||'lication_install.get_application_id));',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,null,''Release 4.4.20211030'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,null,''Release 4.4.20211107'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''40'',''0'',''G_ADMIN_APP_AUTHZ_GROUP'',''STRING'',''INTERNAL'',null,null,null,null,''Bloggers'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''50'',''1'',''G_RSS_XSL_CSS_URL'',''STRING'',''INTERNAL'',null,null,null,null,''css/rss-xsl.css'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,group_name,post_expression,int_min,int_max,help_message,attribute_value) values (''60'',''1'',''G_SITEMAP_URL'',''URL'',''INTERNAL'',null,null,null,null,apex_util.host_url(''SCRIPT'') ||'

@@ -184,11 +184,12 @@ as
     from blog_v_posts_last20 posts
     ;
 
-    owa_util.mime_header( 'application/xml', false, 'UTF-8' );
-    sys.htp.p( 'cache-control: max-age=3600, public' );
-    sys.owa_util.http_header_close;
-
-    wpg_docload.download_file( l_rss );
+    blog_util.download_file(
+      p_blob_content    => l_rss
+      ,p_mime_type      => 'application/xml'
+      ,p_cache_control  => 'max-age=3600, public'
+      ,p_charset        => 'UTF-8'
+    );
 
   end rss;
 --------------------------------------------------------------------------------
@@ -249,11 +250,12 @@ as
     from dual
     ;
 
-    owa_util.mime_header( 'application/xml', false, 'UTF-8' );
-    sys.htp.p( 'cache-control: max-age=315360000, immutable, public' );
-    sys.owa_util.http_header_close;
-
-    wpg_docload.download_file( l_xsl );
+    blog_util.download_file(
+      p_blob_content    => l_xsl
+      ,p_mime_type      => 'application/xml'
+      ,p_cache_control  => 'max-age=315360000, immutable, public'
+      ,p_charset        => 'UTF-8'
+    );
 
   end rss_xsl;
 --------------------------------------------------------------------------------
@@ -300,11 +302,12 @@ as
         ) = 'INCLUDE'
     ;
 
-    owa_util.mime_header( 'application/xml', false, 'UTF-8' );
-    sys.htp.p( 'cache-control: max-age=3600, public' );
-    sys.owa_util.http_header_close;
-
-    wpg_docload.download_file( l_xml );
+    blog_util.download_file(
+      p_blob_content    => l_xml
+      ,p_mime_type      => 'application/xml'
+      ,p_cache_control  => 'max-age=3600, public'
+      ,p_charset        => 'UTF-8'
+    );
 
   end sitemap_index;
 --------------------------------------------------------------------------------
@@ -349,11 +352,12 @@ as
       end = 'INCLUDE'
     ;
 
-    owa_util.mime_header( 'application/xml', false, 'UTF-8' );
-    sys.htp.p( 'cache-control: max-age=3600, public' );
-    sys.owa_util.http_header_close;
-
-    wpg_docload.download_file( l_xml );
+    blog_util.download_file(
+      p_blob_content    => l_xml
+      ,p_mime_type      => 'application/xml'
+      ,p_cache_control  => 'max-age=3600, public'
+      ,p_charset        => 'UTF-8'
+    );
 
   end sitemap_main;
 --------------------------------------------------------------------------------
@@ -385,11 +389,12 @@ as
     from blog_v_posts posts
     ;
 
-    owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p('cache-control: max-age=3600, public' );
-    sys.owa_util.http_header_close;
-
-    wpg_docload.download_file(l_xml);
+    blog_util.download_file(
+      p_blob_content    => l_xml
+      ,p_mime_type      => 'application/xml'
+      ,p_cache_control  => 'max-age=3600, public'
+      ,p_charset        => 'UTF-8'
+    );
 
   end sitemap_posts;
 --------------------------------------------------------------------------------
@@ -420,11 +425,12 @@ as
     from blog_v_categories cat
     ;
 
-    owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p( 'cache-control: max-age=3600, public' );
-    sys.owa_util.http_header_close;
-
-    wpg_docload.download_file( l_xml );
+    blog_util.download_file(
+      p_blob_content    => l_xml
+      ,p_mime_type      => 'application/xml'
+      ,p_cache_control  => 'max-age=3600, public'
+      ,p_charset        => 'UTF-8'
+    );
 
   end sitemap_categories;
 --------------------------------------------------------------------------------
@@ -455,11 +461,12 @@ as
     from blog_v_archive_year arc
     ;
 
-    owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p( 'cache-control: max-age=3600, public' );
-    sys.owa_util.http_header_close;
-
-    wpg_docload.download_file( l_xml );
+    blog_util.download_file(
+      p_blob_content    => l_xml
+      ,p_mime_type      => 'application/xml'
+      ,p_cache_control  => 'max-age=3600, public'
+      ,p_charset        => 'UTF-8'
+    );
 
   end sitemap_archives;
 --------------------------------------------------------------------------------
@@ -490,11 +497,12 @@ as
     from blog_v_tags tags
     ;
 
-    owa_util.mime_header('application/xml', false, 'UTF-8');
-    sys.htp.p( 'cache-control: max-age=3600, public' );
-    sys.owa_util.http_header_close;
-
-    wpg_docload.download_file( l_xml );
+    blog_util.download_file(
+      p_blob_content    => l_xml
+      ,p_mime_type      => 'application/xml'
+      ,p_cache_control  => 'max-age=3600, public'
+      ,p_charset        => 'UTF-8'
+    );
 
   end sitemap_tags;
 --------------------------------------------------------------------------------

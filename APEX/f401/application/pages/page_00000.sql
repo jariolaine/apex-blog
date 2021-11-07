@@ -21,7 +21,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211030115114'
+,p_last_upd_yyyymmddhh24miss=>'20211030130749'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
@@ -177,9 +177,6 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_condition_type=>'EXPRESSION'
 ,p_plug_display_when_condition=>':APP_PAGE_ID < 1000'
 ,p_plug_display_when_cond2=>'PLSQL'
-,p_plug_caching=>'CACHE'
-,p_plug_caching_max_age_in_sec=>21600
-,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(6433577571894075)

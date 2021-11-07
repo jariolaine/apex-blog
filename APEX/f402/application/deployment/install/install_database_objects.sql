@@ -1415,6 +1415,15 @@ wwv_flow_api.append_to_install_script(
 '  );',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
+'--',
+'  procedure download_file (',
+'    p_blob_content    in out nocopy blob,',
+'    p_mime_type       in varchar2 default null,',
+'    p_cache_control   in varchar2 default null,',
+'    p_charset         in varchar2 default null',
+'  );',
+'--------------------------------------------------------------------------------',
+'-- Called from:',
 '--  public app page 1003 Ajax Callback process "download"',
 '  procedure download_file (',
 '    p_file_name       in varchar2',
@@ -1437,7 +1446,14 @@ wwv_flow_api.append_to_install_script(
 '-- Private procedures and functions',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'-- none',
+'  procedure raise_http_error(',
+'    p_error_code  in number',
+'  )',
+'  as',
+'  begin',
+'    owa_util.status_line( p_error_code );',
+'    apex_application.stop_apex_engine;',
+'  end raise_http_error;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Global functions and procedures',
@@ -1562,7 +1578,25 @@ wwv_flow_api.append_to_install_script(
 '    return to_char( p_value,  ''fm99999999999999999999999999999999999999'' );',
 '  end int_to_vc2;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
+'------------------------------------------'))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'--------------------------------------',
 '  function get_attribute_value(',
 '    p_attribute_name in varchar2',
 '  ) return varchar2',
@@ -1584,25 +1618,7 @@ wwv_flow_api.append_to_install_script(
 '    select attribute_value',
 '    into l_value',
 '    from blog_settings',
-'    wh'))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ere attribute_name = p_attribute_name',
+'    where attribute_name = p_attribute_name',
 '    ;',
 '',
 '    apex_debug.info( ''Fetch attribute %s return: %s'', p_attribute_name, l_value );',
@@ -1738,8 +1754,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    owa_util.status_line( 404 );',
-'    apex_application.stop_apex_engine;',
+'    raise_http_error( p_error_code => 404 );',
 '    raise;',
 '',
 '  when others',
@@ -1755,8 +1770,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    owa_util.status_line( 404 );',
-'    apex_application.stop_apex_engine;',
+'    raise_http_error( p_error_code => 404 );',
 '    raise;',
 '',
 '  end get_post_title;',
@@ -1856,8 +1870,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    owa_util.status_line( 404 );',
-'    apex_application.stop_apex_engine;',
+'    raise_http_error( p_error_code => 404 );',
 '    raise;',
 '',
 '  when others',
@@ -1875,8 +1888,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    owa_util.status_line( 404 );',
-'    apex_application.stop_apex_engine;',
+'    raise_http_error( p_error_code => 404 );',
 '    raise;',
 '',
 '  end get_post_pagination;',
@@ -1931,8 +1943,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    owa_util.status_line( 404 );',
-'    apex_application.stop_apex_engine;',
+'    raise_http_error( p_error_code => 404 );',
 '    raise;',
 '',
 '  when others then',
@@ -1946,8 +1957,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    owa_util.status_line( 404 );',
-'    apex_application.stop_apex_engine;',
+'    raise_http_error( p_error_code => 404 );',
 '    raise;',
 '',
 '  end get_category_title;',
@@ -1994,8 +2004,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    owa_util.status_line( 404 );',
-'    apex_application.stop_apex_engine;',
+'    raise_http_error( p_error_code => 404 );',
 '    raise;',
 '',
 '  when others',
@@ -2009,8 +2018,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    owa_util.status_line( 404 );',
-'    apex_application.stop_apex_engine;',
+'    raise_http_error( p_error_code => 404 );',
 '    raise;',
 '',
 '  end get_tag;',
@@ -2056,8 +2064,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    owa_util.status_line( 404 );',
-'    apex_application.stop_apex_engine;',
+'    raise_http_error( p_error_code => 404 );',
 '    raise;',
 '',
 '  when others',
@@ -2071,8 +2078,7 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    owa_util.status_line( 404 );',
-'    apex_application.stop_apex_engine;',
+'    raise_http_error( p_error_code => 404 );',
 '    raise;',
 '',
 '  end check_archive_exists;',
@@ -2116,6 +2122,33 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure download_file (',
+'    p_blob_content  in out nocopy blob,',
+'    p_mime_type     in varchar2 default null,',
+'    p_cache_control in varchar2 default null,',
+'    p_charset       in varchar2 default null',
+'  )',
+'  as',
+'  begin',
+'',
+'    sys.owa_util.mime_header(',
+'      ccontent_type   => coalesce ( p_mime_type, ''application/octet'' )',
+'      ,bclose_header  => false',
+'      ,ccharset       => p_charset',
+'    );',
+'',
+'    if p_cache_control is not null',
+'    then',
+'      sys.htp.p( ''Cache-Control: '' || p_cache_control );',
+'    end if;',
+'',
+'    sys.owa_util.http_header_close;',
+'',
+'    sys.wpg_docload.download_file ( p_blob_content );',
+'',
+'  end download_file;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  procedure download_file (',
 '    p_file_name   in varchar2',
 '  )',
 '  as',
@@ -2130,15 +2163,18 @@ wwv_flow_api.append_to_install_script(
 '    and t1.file_name = p_file_name',
 '    ;',
 '',
-'    sys.owa_util.mime_header( coalesce ( l_file_t.mime_type, ''application/octet'' ), false );',
-'    sys.htp.p( ''Cache-Control: public, max-age=3600'' );',
-'    sys.owa_util.http_header_close;',
-'',
-'    sys.wpg_docload.download_file ( l_file_t.blob_content );',
+'    download_file(',
+'      p_mime_type       => l_file_t.mime_type',
+'      ,p_cache_control  => ''max-age=3600, public''',
+'      ,p_blob_content   => l_file_t.blob_content',
+'    );',
 '',
 '  exception when no_data_found',
 '  then',
-'    owa_util.status_line( 404 );',
+'',
+'    raise_http_error( p_error_code => 404 );',
+'    raise;',
+'',
 '  end download_file;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -2519,7 +2555,25 @@ wwv_flow_api.append_to_install_script(
 '',
 '    -- Enable user groups',
 '    apex_authorization.enable_dynamic_groups (',
-'      p_group_names => l_group_names',
+'      p_group_names => '))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'l_group_names',
 '    );',
 '',
 '  exception when others',
@@ -2552,25 +2606,7 @@ wwv_flow_api.append_to_install_script(
 '  then',
 '    -- fetch user group name that is used for admin app authorization',
 '    l_authz_grp := blog_util.get_attribute_value( ''G_ADMIN_APP_AUTHZ_GROUP'' );',
-'    -- ve'))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'rify user is authorized',
+'    -- verify user is authorized',
 '    if apex_util.current_user_in_group( l_authz_grp )',
 '    then',
 '      -- if user is authorized add user to blog_bloggers table',
@@ -3508,7 +3544,25 @@ wwv_flow_api.append_to_install_script(
 '      l_answer  := p_param.value;',
 '',
 '      -- Check is answer correct',
-'      l_result  := case when l_value = l_answer then true else false end;',
+'      l_result  := case when l_v'))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'alue = l_answer then true else false end;',
 '',
 '    else',
 '      l_result := false;',
@@ -3543,25 +3597,7 @@ wwv_flow_api.append_to_install_script(
 '--',
 '--  MODIFIED (DD.MM.YYYY)',
 '--    Jari Laine 22.04.2019 - Created',
-'--    '))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'Jari Laine 09.05.2020 - Functions that are called only from APEX',
+'--    Jari Laine 09.05.2020 - Functions that are called only from APEX',
 '--                            number return value and number input parameters changed to varchar2.',
 '--                            Functions that are also used in query',
 '--                            another signature with varchar2 input and return values created for APEX',
@@ -4404,7 +4440,25 @@ wwv_flow_api.append_to_install_script(
 '    if not regexp_like( p_email, ''^.*\@.*\..*$'' )',
 '    then',
 '      -- if validation fails prepare error message',
-'      l_err_mesg := apex_lang.message( p_err_mesg );',
+'      '))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'l_err_mesg := apex_lang.message( p_err_mesg );',
 '',
 '      if l_err_mesg = apex_escape.html( p_err_mesg )',
 '      then',
@@ -4440,25 +4494,7 @@ wwv_flow_api.append_to_install_script(
 '  as',
 '  begin',
 '    delete from blog_comment_flags',
-'    wh'))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ere 1 = 1',
+'    where 1 = 1',
 '      and comment_id = p_comment_id',
 '      and flag = p_flag',
 '    ;',
@@ -5321,7 +5357,25 @@ wwv_flow_api.append_to_install_script(
 '--  public app page 1003 Ajax Callback process "sitemap-tags.xml"',
 '  procedure sitemap_tags;',
 '--------------------------------------------------------------------------------',
-'end "BLOG_XML";',
+'end "BLOG'))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'_XML";',
 '/',
 '',
 'create or replace package body "BLOG_XML"',
@@ -5340,25 +5394,7 @@ wwv_flow_api.append_to_install_script(
 '-- none',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'-- Global functions a'))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'nd procedures',
+'-- Global functions and procedures',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure rss(',
@@ -5453,11 +5489,12 @@ wwv_flow_api.append_to_install_script(
 '    from blog_v_posts_last20 posts',
 '    ;',
 '',
-'    owa_util.mime_header( ''application/xml'', false, ''UTF-8'' );',
-'    sys.htp.p( ''cache-control: max-age=3600, public'' );',
-'    sys.owa_util.http_header_close;',
-'',
-'    wpg_docload.download_file( l_rss );',
+'    blog_util.download_file(',
+'      p_blob_content    => l_rss',
+'      ,p_mime_type      => ''application/xml''',
+'      ,p_cache_control  => ''max-age=3600, public''',
+'      ,p_charset        => ''UTF-8''',
+'    );',
 '',
 '  end rss;',
 '--------------------------------------------------------------------------------',
@@ -5518,11 +5555,12 @@ wwv_flow_api.append_to_install_script(
 '    from dual',
 '    ;',
 '',
-'    owa_util.mime_header( ''application/xml'', false, ''UTF-8'' );',
-'    sys.htp.p( ''cache-control: max-age=315360000, immutable, public'' );',
-'    sys.owa_util.http_header_close;',
-'',
-'    wpg_docload.download_file( l_xsl );',
+'    blog_util.download_file(',
+'      p_blob_content    => l_xsl',
+'      ,p_mime_type      => ''application/xml''',
+'      ,p_cache_control  => ''max-age=315360000, immutable, public''',
+'      ,p_charset        => ''UTF-8''',
+'    );',
 '',
 '  end rss_xsl;',
 '--------------------------------------------------------------------------------',
@@ -5569,11 +5607,12 @@ wwv_flow_api.append_to_install_script(
 '        ) = ''INCLUDE''',
 '    ;',
 '',
-'    owa_util.mime_header( ''application/xml'', false, ''UTF-8'' );',
-'    sys.htp.p( ''cache-control: max-age=3600, public'' );',
-'    sys.owa_util.http_header_close;',
-'',
-'    wpg_docload.download_file( l_xml );',
+'    blog_util.download_file(',
+'      p_blob_content    => l_xml',
+'      ,p_mime_type      => ''application/xml''',
+'      ,p_cache_control  => ''max-age=3600, public''',
+'      ,p_charset        => ''UTF-8''',
+'    );',
 '',
 '  end sitemap_index;',
 '--------------------------------------------------------------------------------',
@@ -5618,11 +5657,12 @@ wwv_flow_api.append_to_install_script(
 '      end = ''INCLUDE''',
 '    ;',
 '',
-'    owa_util.mime_header( ''application/xml'', false, ''UTF-8'' );',
-'    sys.htp.p( ''cache-control: max-age=3600, public'' );',
-'    sys.owa_util.http_header_close;',
-'',
-'    wpg_docload.download_file( l_xml );',
+'    blog_util.download_file(',
+'      p_blob_content    => l_xml',
+'      ,p_mime_type      => ''application/xml''',
+'      ,p_cache_control  => ''max-age=3600, public''',
+'      ,p_charset        => ''UTF-8''',
+'    );',
 '',
 '  end sitemap_main;',
 '--------------------------------------------------------------------------------',
@@ -5654,11 +5694,12 @@ wwv_flow_api.append_to_install_script(
 '    from blog_v_posts posts',
 '    ;',
 '',
-'    owa_util.mime_header(''application/xml'', false, ''UTF-8'');',
-'    sys.htp.p(''cache-control: max-age=3600, public'' );',
-'    sys.owa_util.http_header_close;',
-'',
-'    wpg_docload.download_file(l_xml);',
+'    blog_util.download_file(',
+'      p_blob_content    => l_xml',
+'      ,p_mime_type      => ''application/xml''',
+'      ,p_cache_control  => ''max-age=3600, public''',
+'      ,p_charset        => ''UTF-8''',
+'    );',
 '',
 '  end sitemap_posts;',
 '--------------------------------------------------------------------------------',
@@ -5689,11 +5730,12 @@ wwv_flow_api.append_to_install_script(
 '    from blog_v_categories cat',
 '    ;',
 '',
-'    owa_util.mime_header(''application/xml'', false, ''UTF-8'');',
-'    sys.htp.p( ''cache-control: max-age=3600, public'' );',
-'    sys.owa_util.http_header_close;',
-'',
-'    wpg_docload.download_file( l_xml );',
+'    blog_util.download_file(',
+'      p_blob_content    => l_xml',
+'      ,p_mime_type      => ''application/xml''',
+'      ,p_cache_control  => ''max-age=3600, public''',
+'      ,p_charset        => ''UTF-8''',
+'    );',
 '',
 '  end sitemap_categories;',
 '--------------------------------------------------------------------------------',
@@ -5724,11 +5766,12 @@ wwv_flow_api.append_to_install_script(
 '    from blog_v_archive_year arc',
 '    ;',
 '',
-'    owa_util.mime_header(''application/xml'', false, ''UTF-8'');',
-'    sys.htp.p( ''cache-control: max-age=3600, public'' );',
-'    sys.owa_util.http_header_close;',
-'',
-'    wpg_docload.download_file( l_xml );',
+'    blog_util.download_file(',
+'      p_blob_content    => l_xml',
+'      ,p_mime_type      => ''application/xml''',
+'      ,p_cache_control  => ''max-age=3600, public''',
+'      ,p_charset        => ''UTF-8''',
+'    );',
 '',
 '  end sitemap_archives;',
 '--------------------------------------------------------------------------------',
@@ -5759,11 +5802,12 @@ wwv_flow_api.append_to_install_script(
 '    from blog_v_tags tags',
 '    ;',
 '',
-'    owa_util.mime_header(''application/xml'', false, ''UTF-8'');',
-'    sys.htp.p( ''cache-control: max-age=3600, public'' );',
-'    sys.owa_util.http_header_close;',
-'',
-'    wpg_docload.download_file( l_xml );',
+'    blog_util.download_file(',
+'      p_blob_content    => l_xml',
+'      ,p_mime_type      => ''application/xml''',
+'      ,p_cache_control  => ''max-age=3600, public''',
+'      ,p_charset        => ''UTF-8''',
+'    );',
 '',
 '  end sitemap_tags;',
 '--------------------------------------------------------------------------------',
@@ -6288,7 +6332,25 @@ wwv_flow_api.append_to_install_script(
 '',
 '  if l_update',
 '  then',
-'    update blog_post_uds t1',
+'    update blog_post_u'))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2020.10.01'
+,p_release=>'20.2.0.00.20'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ds t1',
 '      set dummy = dummy',
 '    where 1 = 1',
 '    and exists(',
@@ -6327,25 +6389,7 @@ wwv_flow_api.append_to_install_script(
 '    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
-'  :n'))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ew.changed_on := localtimestamp;',
+'  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
 '     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
 '    ,sys_context( ''USERENV'',''PROXY_USER'' )',
