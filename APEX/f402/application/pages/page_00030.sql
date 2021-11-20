@@ -4,8 +4,8 @@ begin
 --     PAGE: 00030
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210929172841'
+,p_last_upd_yyyymmddhh24miss=>'20211114100314'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27412346667552217)
@@ -71,7 +71,7 @@ wwv_flow_api.create_page_plug(
 '--  ,v1.icon_modifier  as icon_modifier',
 'from blog_v_all_comments v1',
 'cross join (',
-'  select apex_lang.message(''BLOG_BTN_TITLE_OPEN'') as title_open',
+'  select apex_lang.message( ''BLOG_BTN_TITLE_OPEN'' ) as title_open',
 '  from dual',
 ') btn'))
 ,p_plug_source_type=>'NATIVE_IR'
@@ -87,6 +87,7 @@ wwv_flow_api.create_worksheet(
 ,p_pagination_type=>'ROWS_X_TO_Y'
 ,p_pagination_display_pos=>'BOTTOM_RIGHT'
 ,p_report_list_mode=>'TABS'
+,p_lazy_loading=>false
 ,p_show_detail_link=>'C'
 ,p_download_formats=>'CSV:HTML:EMAIL:XLSX:PDF:RTF'
 ,p_detail_link=>'f?p=&APP_ID.:31:&SESSION.::&DEBUG.:RP,:P31_POST_ID,P31_ID:#POST_ID#,#COMMENT_ID#'

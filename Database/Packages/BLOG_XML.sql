@@ -21,14 +21,14 @@ as
 --                              sitemap_categories
 --                              sitemap_archives
 --                              sitemap_atags
---  Jari Laine 30.10.2021   - Changed procedure sitemap_main to use view apex_application_pages
+--    Jari Laine 30.10.2021  - Changed procedure sitemap_main to use view apex_application_pages
+--    Jari Laine 13.11.2021  - Changed procedure rss
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "rss.xml"
   procedure rss(
-    p_rss_url   in varchar2,
     p_app_name  in varchar2,
     p_app_desc  in varchar2,
     p_lang      in varchar2 default 'en'
@@ -93,7 +93,6 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss(
-    p_rss_url   in varchar2,
     p_app_name  in varchar2,
     p_app_desc  in varchar2,
     p_lang      in varchar2 default 'en'
@@ -111,10 +110,7 @@ as
   begin
 
     -- RSS feed URL
-    l_rss_url   := coalesce(
-       p_rss_url
-      ,blog_util.get_attribute_value( 'G_RSS_URL' )
-    );
+    l_rss_url   := blog_url.get_rss;
     -- blog name
     l_app_name := coalesce(
        p_app_name
@@ -131,7 +127,7 @@ as
       ,p_canonical => 'YES'
     );
     -- rss transformations (XSLT)
-    l_xsl_url := blog_util.get_attribute_value( 'G_RSS_XSL_URL' );
+    l_xsl_url := blog_url.get_rss_xsl;
 
     -- generate RSS
     select xmlserialize( content xmlconcat(

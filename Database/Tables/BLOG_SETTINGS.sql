@@ -10,9 +10,10 @@ create table blog_settings(
   changed_by varchar2( 256 char ) not null,
   is_nullable number( 1, 0 ) not null,
   display_seq number( 10, 0 ) not null,
-  group_name varchar2( 256 char ) not null,
-  attribute_name varchar2( 256 char ) not null,
-  data_type varchar2( 256 char ) not null,
+  attribute_group_message varchar2( 256 char ) not null,
+  attribute_name varchar2( 128 char ) not null,
+  attribute_message varchar2(256 char) generated always as ('BLOG_SETTING_' || attribute_name) virtual not null,
+  data_type varchar2( 64 char ) not null,
   attribute_value varchar2( 4000 byte ),
   post_expression varchar2( 4000 byte ),
   int_min number( 2,0 ),
@@ -29,11 +30,11 @@ create table blog_settings(
     attribute_value is not null
   ),
   constraint blog_settings_ck5 check(
-    group_name in(
-       'BLOG_PAR_GROUP_GENERAL'
-      ,'BLOG_PAR_GROUP_REPORTS'
-      ,'BLOG_PAR_GROUP_SEO'
-      ,'BLOG_PAR_GROUP_UI'
+    attribute_group_message in(
+       'BLOG_SETTING_GROUP_GENERAL'
+      ,'BLOG_SETTING_GROUP_REPORTS'
+      ,'BLOG_SETTING_GROUP_SEO'
+      ,'BLOG_SETTING_GROUP_UI'
       ,'INTERNAL'
     )
   ),
@@ -54,9 +55,9 @@ create table blog_settings(
     round( to_number( attribute_value ) ) = to_number( attribute_value )
   ),
   constraint blog_settings_ck8 check(
-      data_type != 'DATE_FORMAT' or
-      data_type = 'DATE_FORMAT' and
-      to_char( created_on, attribute_value ) is not null
+    data_type != 'DATE_FORMAT' or
+    data_type = 'DATE_FORMAT' and
+    to_char( created_on, attribute_value ) is not null
   ),
   constraint blog_settings_ck9 check(
     data_type != 'URL' or

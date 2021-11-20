@@ -356,7 +356,9 @@ as
     if l_err_mesg is not null
     then
       -- prepare return validation error message
-      l_result := apex_lang.message( l_err_mesg );
+      l_result := apex_lang.message(
+        p_name => l_err_mesg
+      );
     end if;
     -- return validation result
     -- if validation fails we return error message stored to variable
@@ -378,9 +380,13 @@ as
     if not regexp_like( p_email, '^.*\@.*\..*$' )
     then
       -- if validation fails prepare error message
-      l_err_mesg := apex_lang.message( p_err_mesg );
+      l_err_mesg := apex_lang.message(
+        p_name => p_err_mesg
+      );
 
-      if l_err_mesg = apex_escape.html( p_err_mesg )
+      if l_err_mesg = apex_escape.html(
+        p_string => p_err_mesg
+      )
       then
         l_err_mesg := p_err_mesg;
       end if;

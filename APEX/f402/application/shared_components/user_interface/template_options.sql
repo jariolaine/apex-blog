@@ -4,8 +4,8 @@ begin
 --     THEME OPTIONS: 402
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -959,8 +959,8 @@ end;
 /
 begin
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -1941,8 +1941,8 @@ end;
 /
 begin
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -2955,18 +2955,6 @@ wwv_flow_api.create_template_option(
 ,p_help_text=>'Stack badges on top of each other'
 ,p_is_advanced=>'N'
 );
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
 wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(8531654387518232)
 ,p_theme_id=>42
@@ -2978,6 +2966,18 @@ wwv_flow_api.create_template_option(
 ,p_group_id=>wwv_flow_api.id(27775026292030283)
 ,p_template_types=>'LIST'
 ,p_is_advanced=>'N'
+);
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(8531872175518232)
@@ -3921,18 +3921,6 @@ wwv_flow_api.create_template_option(
 ,p_template_types=>'LIST'
 ,p_help_text=>'Display icons when the navigation menu is collapsed for large screens.'
 );
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
 wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(13860771842214322)
 ,p_theme_id=>42
@@ -3943,6 +3931,18 @@ wwv_flow_api.create_template_option(
 ,p_css_classes=>'js-menu-callout'
 ,p_template_types=>'LIST'
 ,p_help_text=>'Use this option to add display a callout for the menu.'
+);
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_api.create_template_option(
  p_id=>wwv_flow_api.id(13915434421214403)

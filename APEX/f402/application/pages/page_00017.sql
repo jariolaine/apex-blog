@@ -4,8 +4,8 @@ begin
 --     PAGE: 00017
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -41,7 +41,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210929173804'
+,p_last_upd_yyyymmddhh24miss=>'20211114100140'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6849894493100859)
@@ -96,6 +96,7 @@ wwv_flow_api.create_worksheet(
 ,p_pagination_type=>'ROWS_X_TO_Y'
 ,p_pagination_display_pos=>'BOTTOM_RIGHT'
 ,p_report_list_mode=>'TABS'
+,p_lazy_loading=>false
 ,p_show_detail_link=>'C'
 ,p_download_formats=>'CSV:HTML:EMAIL:XLSX:PDF:RTF'
 ,p_detail_link=>'f?p=&APP_ID.:18:&SESSION.::&DEBUG.:RP,18:P18_ID:#ID#'
@@ -304,6 +305,7 @@ wwv_flow_api.create_report_region(
 ,p_display_when_condition=>'P17_LINK_GROUP_ID'
 ,p_display_condition_type=>'ITEM_IS_NOT_NULL'
 ,p_ajax_enabled=>'Y'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(13914913032214402)
 ,p_query_num_rows=>1
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -462,7 +464,7 @@ wwv_flow_api.create_report_region(
 '  ,case when coalesce( to_number( :P17_LINK_GROUP_ID ), 0 ) = id',
 '   then ''is-active'' ',
 '   end  as list_class',
-'  ,substr( v1.title, 1, 50) || ( case when length( v1.title ) > 50 then ''...'' end ) as list_title',
+'  ,substr( v1.title, 1, 50 ) || ( case when length( v1.title ) > 50 then ''...'' end ) as list_title',
 '  ,null as list_text',
 '  ,null as list_badge',
 '',
@@ -472,11 +474,12 @@ wwv_flow_api.create_report_region(
 'where 1 = 1',
 'and (',
 '  :P17_SEARCH is null or ',
-'  v1.title_unique like ''%'' || upper(:P17_SEARCH) || ''%''',
+'  v1.title_unique like ''%'' || upper( :P17_SEARCH ) || ''%''',
 ')',
 'order by v1.display_seq'))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P17_SEARCH'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(8509130466518217)
 ,p_query_num_rows=>1000
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'

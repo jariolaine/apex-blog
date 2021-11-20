@@ -4,8 +4,8 @@ begin
 --     PAGE: 00014
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -38,7 +38,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210415185532'
+,p_last_upd_yyyymmddhh24miss=>'20211114100026'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9834087769215232)
@@ -79,7 +79,7 @@ wwv_flow_api.create_page_plug(
 '  ,btn.posts_link           as btn_posts_link',
 'from #OWNER#.blog_v_all_categories v1',
 'cross join (',
-'  select apex_lang.message(''BLOG_BTN_TITLE_VIEW_POSTS'') as posts_link',
+'  select apex_lang.message( ''BLOG_BTN_TITLE_VIEW_POSTS'' ) as posts_link',
 '  from dual',
 ') btn',
 'where 1 = 1'))
@@ -100,6 +100,7 @@ wwv_flow_api.create_region_column(
 ,p_value_alignment=>'CENTER'
 ,p_stretch=>'N'
 ,p_attribute_02=>'VALUE'
+,p_attribute_05=>'PLAIN'
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
 ,p_filter_lov_type=>'DISTINCT'
@@ -108,7 +109,6 @@ wwv_flow_api.create_region_column(
 ,p_enable_hide=>false
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
-,p_escape_on_http_output=>true
 ,p_help_text=>'Number of post in this category.'
 );
 wwv_flow_api.create_region_column(
@@ -188,7 +188,7 @@ wwv_flow_api.create_region_column(
 ,p_display_sequence=>140
 ,p_value_alignment=>'CENTER'
 ,p_stretch=>'N'
-,p_attribute_01=>'CUSTOM'
+,p_attribute_01=>'N'
 ,p_attribute_02=>'1'
 ,p_attribute_03=>'Enabled'
 ,p_attribute_04=>'0'
@@ -305,6 +305,7 @@ wwv_flow_api.create_region_column(
 ,p_display_sequence=>60
 ,p_value_alignment=>'RIGHT'
 ,p_attribute_02=>'VALUE'
+,p_attribute_05=>'PLAIN'
 ,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
@@ -317,7 +318,6 @@ wwv_flow_api.create_region_column(
 ,p_enable_pivot=>false
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
-,p_escape_on_http_output=>true
 ,p_help_text=>'When category was created.'
 );
 wwv_flow_api.create_region_column(
@@ -333,6 +333,7 @@ wwv_flow_api.create_region_column(
 ,p_display_sequence=>70
 ,p_value_alignment=>'LEFT'
 ,p_attribute_02=>'VALUE'
+,p_attribute_05=>'PLAIN'
 ,p_enable_filter=>true
 ,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
 ,p_filter_is_required=>false
@@ -345,7 +346,6 @@ wwv_flow_api.create_region_column(
 ,p_enable_pivot=>false
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
-,p_escape_on_http_output=>true
 ,p_help_text=>'Who created category.'
 );
 wwv_flow_api.create_region_column(
@@ -361,6 +361,7 @@ wwv_flow_api.create_region_column(
 ,p_display_sequence=>80
 ,p_value_alignment=>'RIGHT'
 ,p_attribute_02=>'VALUE'
+,p_attribute_05=>'PLAIN'
 ,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
@@ -373,7 +374,6 @@ wwv_flow_api.create_region_column(
 ,p_enable_pivot=>false
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
-,p_escape_on_http_output=>true
 ,p_help_text=>'When category was last changed.'
 );
 wwv_flow_api.create_region_column(
@@ -389,6 +389,7 @@ wwv_flow_api.create_region_column(
 ,p_display_sequence=>90
 ,p_value_alignment=>'LEFT'
 ,p_attribute_02=>'VALUE'
+,p_attribute_05=>'PLAIN'
 ,p_enable_filter=>true
 ,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
 ,p_filter_is_required=>false
@@ -401,7 +402,6 @@ wwv_flow_api.create_region_column(
 ,p_enable_pivot=>false
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
-,p_escape_on_http_output=>true
 ,p_help_text=>'Who has changed category last.'
 );
 wwv_flow_api.create_region_column(
@@ -421,7 +421,7 @@ wwv_flow_api.create_region_column(
 ,p_attribute_03=>'N'
 ,p_attribute_04=>'BOTH'
 ,p_is_required=>false
-,p_max_length=>16000
+,p_max_length=>4000
 ,p_enable_filter=>true
 ,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
 ,p_filter_is_required=>false

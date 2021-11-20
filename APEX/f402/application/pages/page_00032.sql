@@ -4,8 +4,8 @@ begin
 --     PAGE: 00032
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -58,6 +58,7 @@ wwv_flow_api.create_report_region(
 ,p_display_when_condition=>'P32_ID'
 ,p_display_condition_type=>'ITEM_IS_NULL'
 ,p_ajax_enabled=>'Y'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(8521917209518225)
 ,p_query_num_rows=>1
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -408,6 +409,7 @@ wwv_flow_api.create_page_item(
 ,p_attribute_04=>'moonocolor'
 ,p_attribute_05=>'top'
 ,p_attribute_06=>'4'
+,p_attribute_09=>'HTML'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(45887036864413658)

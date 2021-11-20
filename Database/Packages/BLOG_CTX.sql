@@ -38,55 +38,7 @@ as
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function generate_search(
-    p_search  in varchar2,
-    p_feature in varchar2,
-    p_combine in varchar2
-  ) return varchar2
-  as
-    l_query        varchar2(32767);
-    l_clean_token  varchar2(1000);
-    l_tokens       apex_application_global.vc_arr2;
-  begin
-
-    l_tokens := apex_util.string_to_table( p_search, ' ' );
-
-    for i in 1..l_tokens.count
-    loop
-      -- remove special characters; irrelevant for full text search
-      l_clean_token := lower( regexp_replace( l_tokens( i ), '[<>{}/()*%&!$?.:,;\+#]', '' ) );
-
-      if ltrim( rtrim( l_clean_token ) ) is not null
-      then
-        if p_feature = 'FUZZY'
-        then
-          l_query := l_query || 'FUZZY({' || l_clean_token || '}, 50, 500) ';
-        elsif p_feature = 'WILDCARD_RIGHT'
-        then
-          l_query := l_query || l_clean_token || '% ';
-        else
-          l_query := l_query || '{' || l_clean_token || '} ';
-        end if;
-        if p_combine = 'OR'
-        then
-          l_query := l_query || ' or ';
-        else
-          l_query := l_query || ' and ';
-        end if;
-      end if;
-
-    end loop;
-
-    if p_combine = 'AND'
-    then
-      l_query := substr( l_query, 1, length( l_query ) - 5 );
-    else
-      l_query := substr( l_query, 1, length( l_query ) - 4 );
-    end if;
-
-    return ltrim( rtrim( l_query ));
-
-  end generate_search;
+-- None
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global procedures and functions
@@ -112,7 +64,7 @@ as
       || '<POST_CATEGORY>' || l_row.category_title || '</POST_CATEGORY>'
       || '<POST_DESCRIPTION>' || l_row.post_desc || '</POST_DESCRIPTION>'
       || '<POST_BODY>' || l_row.body_html || '</POST_BODY>'
-      || '<POST_TAGS>' || l_row.visible_tags|| '</POST_TAGS>'
+      || '<POST_TAGS>' || l_row.visible_tags || '</POST_TAGS>'
     ;
 
   end generate_post_datastore;
@@ -122,12 +74,12 @@ as
     p_search in varchar2
   ) return varchar2
   as
-    c_xml constant varchar2(32767) := '<query><textquery><progression>' ||
-                                        '<seq>  #SEARCH#  </seq>' ||
-                                        '<seq> ?#SEARCH#  </seq>' ||
-                                        '<seq>  #SEARCH#% </seq>' ||
-                                        '<seq> %#SEARCH#% </seq>' ||
-                                      '</progression></textquery></query>';
+    c_xml constant varchar2(32767)  := '<query><textquery><progression>'
+                                    ||    '<seq>  #SEARCH#  </seq>'
+                                    ||    '<seq> ?#SEARCH#  </seq>'
+                                    ||    '<seq>  #SEARCH#% </seq>'
+                                    ||    '<seq> %#SEARCH#% </seq>'
+                                    || '</progression></textquery></query>';
     l_search varchar2(32767) := p_search;
   begin
 

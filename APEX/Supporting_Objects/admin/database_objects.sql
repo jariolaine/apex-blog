@@ -343,9 +343,10 @@ create table blog_settings(
   changed_by varchar2( 256 char ) not null,
   is_nullable number( 1, 0 ) not null,
   display_seq number( 10, 0 ) not null,
-  group_name varchar2( 256 char ) not null,
-  attribute_name varchar2( 256 char ) not null,
-  data_type varchar2( 256 char ) not null,
+  attribute_group_message varchar2( 256 char ) not null,
+  attribute_name varchar2( 128 char ) not null,
+  attribute_message varchar2(256 char) generated always as ('BLOG_SETTING_' || attribute_name) virtual not null,
+  data_type varchar2( 64 char ) not null,
   attribute_value varchar2( 4000 byte ),
   post_expression varchar2( 4000 byte ),
   int_min number( 2,0 ),
@@ -362,11 +363,11 @@ create table blog_settings(
     attribute_value is not null
   ),
   constraint blog_settings_ck5 check(
-    group_name in(
-       'BLOG_PAR_GROUP_GENERAL'
-      ,'BLOG_PAR_GROUP_REPORTS'
-      ,'BLOG_PAR_GROUP_SEO'
-      ,'BLOG_PAR_GROUP_UI'
+    attribute_group_message in(
+       'BLOG_SETTING_GROUP_GENERAL'
+      ,'BLOG_SETTING_GROUP_REPORTS'
+      ,'BLOG_SETTING_GROUP_SEO'
+      ,'BLOG_SETTING_GROUP_UI'
       ,'INTERNAL'
     )
   ),
@@ -387,9 +388,9 @@ create table blog_settings(
     round( to_number( attribute_value ) ) = to_number( attribute_value )
   ),
   constraint blog_settings_ck8 check(
-      data_type != 'DATE_FORMAT' or
-      data_type = 'DATE_FORMAT' and
-      to_char( created_on, attribute_value ) is not null
+    data_type != 'DATE_FORMAT' or
+    data_type = 'DATE_FORMAT' and
+    to_char( created_on, attribute_value ) is not null
   ),
   constraint blog_settings_ck9 check(
     data_type != 'URL' or
@@ -565,11 +566,12 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_FEATURES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS_ACTIVE", "FEATURE_PARENT") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "BUILD_OPTION_NAME", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS_ACTIVE", "FEATURE_PARENT", "HELP_MESSAGE") AS
   select
    t2.id                        as id
   ,t1.application_id            as application_id
   ,t1.build_option_id           as build_option_id
+  ,t2.build_option_name         as build_option_name
   ,t2.display_seq               as display_seq
   ,apex_lang.message(
      p_name => t2.build_option_name
@@ -582,6 +584,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUI
   ,lower( t1.last_updated_by )  as last_updated_by
   ,t2.is_active                 as is_active
   ,t2.build_option_parent       as feature_parent
+  ,t2.help_message              as help_message
 from apex_application_build_options t1
 join blog_features t2
   on t1.build_option_name = t2.build_option_name
@@ -694,30 +697,31 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_SETTINGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "ATTRIBUTE_VALUE", "DATA_TYPE", "GROUP_NAME", "ATTRIBUTE_DESC", "ATTRIBUTE_GROUP", "POST_EXPRESSION", "INT_MIN", "INT_MAX") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "ATTRIBUTE_VALUE", "DATA_TYPE", "ATTRIBUTE_MESSAGE", "ATTRIBUTE_DESC", "ATTRIBUTE_GROUP_MESSAGE", "ATTRIBUTE_GROUP", "POST_EXPRESSION", "INT_MIN", "INT_MAX", "HELP_MESSAGE") AS
   select
-   t1.id                    as id
-  ,t1.row_version           as row_version
-  ,t1.created_on            as created_on
-  ,lower(t1.created_by)     as created_by
-  ,t1.changed_on            as changed_on
-  ,lower(t1.changed_by)     as changed_by
-  ,t1.is_nullable           as is_nullable
-  ,t1.display_seq           as display_seq
-  ,t1.attribute_name        as attribute_name
-  ,t1.attribute_value       as attribute_value
-  ,t1.data_type             as data_type
-  ,t1.group_name            as group_name
+   t1.id                      as id
+  ,t1.row_version             as row_version
+  ,t1.created_on              as created_on
+  ,lower(t1.created_by)       as created_by
+  ,t1.changed_on              as changed_on
+  ,lower(t1.changed_by)       as changed_by
+  ,t1.is_nullable             as is_nullable
+  ,t1.display_seq             as display_seq
+  ,t1.attribute_name          as attribute_name
+  ,t1.attribute_value         as attribute_value
+  ,t1.data_type               as data_type
+  ,t1.attribute_message       as attribute_message
   ,apex_lang.message(
-    'BLOG_PAR_'
-    || t1.attribute_name
-  )                         as attribute_desc
+    p_name => t1.attribute_message
+  )                           as attribute_desc
+  ,t1.attribute_group_message as attribute_group_message
   ,apex_lang.message(
-    t1.group_name
-  )                         as attribute_group
-  ,t1.post_expression       as post_expression
-  ,t1.int_min               as int_min
-  ,t1.int_max               as int_max
+    p_name => t1.attribute_group_message
+  )                           as attribute_group
+  ,t1.post_expression         as post_expression
+  ,t1.int_min                 as int_min
+  ,t1.int_max                 as int_max
+  ,t1.help_message            as help_message
 from blog_settings t1
 where 1 = 1
 /
@@ -1165,55 +1169,7 @@ as
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function generate_search(
-    p_search  in varchar2,
-    p_feature in varchar2,
-    p_combine in varchar2
-  ) return varchar2
-  as
-    l_query        varchar2(32767);
-    l_clean_token  varchar2(1000);
-    l_tokens       apex_application_global.vc_arr2;
-  begin
-
-    l_tokens := apex_util.string_to_table( p_search, ' ' );
-
-    for i in 1..l_tokens.count
-    loop
-      -- remove special characters; irrelevant for full text search
-      l_clean_token := lower( regexp_replace( l_tokens( i ), '[<>{}/()*%&!$?.:,;\+#]', '' ) );
-
-      if ltrim( rtrim( l_clean_token ) ) is not null
-      then
-        if p_feature = 'FUZZY'
-        then
-          l_query := l_query || 'FUZZY({' || l_clean_token || '}, 50, 500) ';
-        elsif p_feature = 'WILDCARD_RIGHT'
-        then
-          l_query := l_query || l_clean_token || '% ';
-        else
-          l_query := l_query || '{' || l_clean_token || '} ';
-        end if;
-        if p_combine = 'OR'
-        then
-          l_query := l_query || ' or ';
-        else
-          l_query := l_query || ' and ';
-        end if;
-      end if;
-
-    end loop;
-
-    if p_combine = 'AND'
-    then
-      l_query := substr( l_query, 1, length( l_query ) - 5 );
-    else
-      l_query := substr( l_query, 1, length( l_query ) - 4 );
-    end if;
-
-    return ltrim( rtrim( l_query ));
-
-  end generate_search;
+-- None
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global procedures and functions
@@ -1239,7 +1195,7 @@ as
       || '<POST_CATEGORY>' || l_row.category_title || '</POST_CATEGORY>'
       || '<POST_DESCRIPTION>' || l_row.post_desc || '</POST_DESCRIPTION>'
       || '<POST_BODY>' || l_row.body_html || '</POST_BODY>'
-      || '<POST_TAGS>' || l_row.visible_tags|| '</POST_TAGS>'
+      || '<POST_TAGS>' || l_row.visible_tags || '</POST_TAGS>'
     ;
 
   end generate_post_datastore;
@@ -1249,12 +1205,12 @@ as
     p_search in varchar2
   ) return varchar2
   as
-    c_xml constant varchar2(32767) := '<query><textquery><progression>' ||
-                                        '<seq>  #SEARCH#  </seq>' ||
-                                        '<seq> ?#SEARCH#  </seq>' ||
-                                        '<seq>  #SEARCH#% </seq>' ||
-                                        '<seq> %#SEARCH#% </seq>' ||
-                                      '</progression></textquery></query>';
+    c_xml constant varchar2(32767)  := '<query><textquery><progression>'
+                                    ||    '<seq>  #SEARCH#  </seq>'
+                                    ||    '<seq> ?#SEARCH#  </seq>'
+                                    ||    '<seq>  #SEARCH#% </seq>'
+                                    ||    '<seq> %#SEARCH#% </seq>'
+                                    || '</progression></textquery></query>';
     l_search varchar2(32767) := p_search;
   begin
 
@@ -1328,14 +1284,14 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- public app page 2
   function get_post_title(
     p_post_id         in varchar2,
     p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- public app page 2
   procedure get_post_pagination(
     p_post_id         in varchar2,
     p_post_title      out nocopy varchar2,
@@ -1446,7 +1402,9 @@ as
       if not p_error.is_common_runtime_error then
         -- Change the message to the generic error message which doesn't expose
         -- any sensitive information.
-        l_result.message := apex_lang.message(l_genereric_error);
+        l_result.message := apex_lang.message(
+          p_name => l_genereric_error
+        );
         l_result.additional_info := null;
       end if;
 
@@ -1483,7 +1441,9 @@ as
             p_error => p_error
           );
 
-        l_err_mesg := apex_lang.message(l_constraint_name);
+        l_err_mesg := apex_lang.message(
+          p_name => l_constraint_name
+        );
 
         -- not every constraint has to be in our lookup table
         if not l_err_mesg = l_constraint_name then
@@ -2049,8 +2009,8 @@ as
       then
         sys.htp.p(
             apex_lang.message(
-               'BLOG_INFO_LAST_UPDATED'
-              ,to_char( c1.changed_on, p_date_format )
+              p_name => 'BLOG_MSG_LAST_UPDATED'
+              ,p0 => to_char( c1.changed_on, p_date_format )
             )
           );
       end if;
@@ -2159,20 +2119,21 @@ as
 --                            Function get_footer_link_seq renamed to get_modal_page_seq
 --                            Removed procedure run_feature_post_expression
 --    Jari Laine 18.04.2021 - Function is_email moved to package BLOG_COMM
+--    Jari Laine 14.11.2021 - New function get_help_link
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  this function is not used
+-- Called from:
+--  this function is not used
   procedure post_authentication(
     p_user_email      in varchar2 default null
   );
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app application processes
+-- Called from:
+--  admin app application processes
   procedure get_blogger_details(
     p_app_id          in varchar2,
     p_username        in varchar2,
@@ -2180,90 +2141,90 @@ as
     p_name            out nocopy varchar2
   );
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 14
+-- Called from:
+--  admin app page 14
   function get_category_seq return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 20
+-- Called from:
+--  admin app page 20
   function get_link_grp_seq return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page xx
+-- Called from:
+--  admin app page xx
   function get_modal_page_seq return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 18
+-- Called from:
+--  admin app page 18
   function get_link_seq(
     p_link_group_id   in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 12
+-- Called from:
+--  admin app page 12
   function get_post_tags(
     p_post_id         in varchar2,
     p_sep             in varchar2 default ','
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 12
+-- Called from:
+--  admin app page 12
   function get_category_title(
     p_category_id     in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 12
+-- Called from:
+--  admin app page 12
   function get_first_paragraph(
     p_body_html       in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 12
+-- Called from:
+--  admin app page 12
   function request_to_post_status(
     p_request         in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 22 Processing process "Close Dialog" condition
+-- Called from:
+--  admin app page 22 Processing process "Close Dialog" condition
   function file_upload(
     p_file_name       in varchar2,
     p_collection_name in varchar2
   ) return boolean;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 12
-  --  inside procedudre blog_cm.get_first_paragraph
+-- Called from:
+--  admin app page 12
+--  inside procedudre blog_cm.get_first_paragraph
   function remove_whitespace(
     p_string          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 23 and procedure blog_cm.file_upload
+-- Called from:
+--  admin app page 23 and procedure blog_cm.file_upload
   procedure merge_files(
     p_collection_name in varchar2
   );
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 12 Processing process "Process Category"
+-- Called from:
+--  admin app page 12 Processing process "Process Category"
   procedure add_category(
     p_title           in varchar2,
     p_category_id     out nocopy number
   );
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 12
+-- Called from:
+--  admin app page 12
   procedure add_post_tags(
     p_post_id         in varchar2,
     p_tags            in varchar2,
     p_sep             in varchar2 default ','
   );
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  this procedure is not used currently
+-- Called from:
+--  this procedure is not used currently
   procedure remove_unused_tags;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  this procedure is not used / not ready
+-- Called from:
+--  this procedure is not used / not ready
   procedure save_post_preview(
     p_id              in varchar2,
     p_tags            in varchar2,
@@ -2272,17 +2233,17 @@ as
     p_body_html       in clob
   );
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  this procedure is not used / not ready
+-- Called from:
+--  this procedure is not used / not ready
   procedure purge_post_preview;
 ---------------------------- ----------------------------------------------------
-  -- this procedure is not used / not ready
+-- this procedure is not used / not ready
   procedure purge_post_preview_job(
     p_drop_job        in boolean default false
   );
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 20012 validation "Is Integer"
+-- Called from:
+--  admin app page 20012 validation "Is Integer"
   function is_integer(
     p_value           in varchar2,
     p_min             in number,
@@ -2290,35 +2251,44 @@ as
     p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_INTEGER'
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 20012 validation "Is URL"
+-- Called from:
+--  admin app page 20012 validation "Is URL"
   function is_url(
     p_value           in varchar2,
     p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_URL'
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 20012 validation "Is date format"
+-- Called from:
+--  admin app page 20012 validation "Is date format"
   function is_date_format(
     p_value           in varchar2,
     p_err_mesg        in varchar2 default 'BLOG_VALIDATION_ERR_DATE_FORMAT'
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 20012 Processing process "Run post expression"
+-- Called from:
+--  admin app page 20012 Processing process "Run post expression"
   procedure run_settings_post_expression(
     p_id              in number,
     p_value           in out nocopy varchar2
   );
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app page 20011 Processing process "Features - Save Interactive Grid Data"
+-- Called from:
+--  admin app page 20011 Processing process "Features - Save Interactive Grid Data"
   procedure update_feature(
     p_app_id          in number,
     p_feature_id      in number,
     p_build_option_id in number,
     p_build_status    in varchar2
   );
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 20012 and 20011
+  function get_help_link(
+    p_app_page_id         in varchar2,
+    p_request             in varchar2,
+    p_items               in varchar2,
+    p_values              in varchar2
+  ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_CM";
 /
@@ -3118,7 +3088,11 @@ as
     if p_value is not null
     then
       -- prepare validation error message
-      l_err_mesg := apex_lang.message( p_err_mesg, p_min, p_max );
+      l_err_mesg := apex_lang.message(
+        p_name => p_err_mesg
+        ,p0 => p_min
+        ,p1 => p_max
+      );
 
       if l_err_mesg = apex_escape.html( p_err_mesg )
       then
@@ -3157,9 +3131,13 @@ as
     if not regexp_like(p_value, '^https?\:\/\/.*$')
     then
       -- if validation fails prepare error message
-      l_err_mesg := apex_lang.message( p_err_mesg );
+      l_err_mesg := apex_lang.message(
+        p_name => p_err_mesg
+      );
 
-      if l_err_mesg = apex_escape.html( p_err_mesg )
+      if l_err_mesg = apex_escape.html(
+        p_string => p_err_mesg
+      )
       then
         l_err_mesg := p_err_mesg;
       end if;
@@ -3184,9 +3162,13 @@ as
   begin
 
     -- prepare validation error message
-    l_err_mesg := apex_lang.message( p_err_mesg );
+    l_err_mesg := apex_lang.message(
+      p_name => p_err_mesg
+    );
 
-    if l_err_mesg = apex_escape.html( p_err_mesg )
+    if l_err_mesg = apex_escape.html(
+      p_string => p_err_mesg
+    )
     then
       l_err_mesg := p_err_mesg;
     end if;
@@ -3255,6 +3237,37 @@ as
     );
 
   end update_feature;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_help_link(
+    p_app_page_id in varchar2,
+    p_request     in varchar2,
+    p_items       in varchar2,
+    p_values      in varchar2
+  ) return varchar2
+  as
+    l_button varchar2(4000);
+  begin
+  if p_request is not null
+  then
+  l_button := '<a title="'
+    || apex_lang.message(
+      p_name => 'BLOG_BTN_TITLE_HELP'
+    )
+    || '" class="t-Button t-Button--noLabel t-Button--icon t-Button--link" href="'
+    || apex_page.get_url(
+      p_page      => p_app_page_id
+      ,p_request  => p_request
+      ,p_items    => p_items
+      ,p_values   => p_values
+    )
+    || '">'
+    || '<span aria-hidden="true" class="t-Icon fa fa-question-circle-o"></span>'
+    || '</a>'
+    ;
+  end if;
+  return l_button;
+end get_help_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_CM";
@@ -3509,6 +3522,7 @@ as
 --    Jari Laine 19.05.2020 - Changed page and items name to "hard coded" values
 --                            and removed global constants from blog_util package
 --    Jari Laine 23.05.2020 - Removed default from function get_tab parameter p_app_page_id
+--    Jari Laine 13.11.2021 - New funtions get_sitemap_index, get_rss and get get_rss_xsl
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3615,6 +3629,27 @@ as
     p_app_id          in varchar2,
     p_post_id         in varchar2,
     p_subscription_id in number
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--
+  function get_rss(
+    p_app_id          in varchar2 default null,
+    p_app_page_id     in varchar2 default 'PGM'
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--
+  function get_rss_xsl(
+    p_app_id          in varchar2 default null,
+    p_app_page_id     in varchar2 default 'PGM'
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--
+  function get_sitemap_index(
+    p_app_id          in varchar2 default null,
+    p_app_page_id     in varchar2 default 'PGM'
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
@@ -3935,6 +3970,81 @@ as
     return blog_util.get_attribute_value( 'G_CANONICAL_URL' ) || l_url;
 
   end get_unsubscribe;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_rss(
+    p_app_id      in varchar2 default null,
+    p_app_page_id in varchar2 default 'PGM'
+  ) return varchar2
+  as
+    l_rss_url varchar2(4000);
+  begin
+
+    -- Fetch RSS URL override from settings
+    l_rss_url := blog_util.get_attribute_value( 'G_RSS_URL' );
+    -- If there isn't override custruct URL
+    if l_rss_url is null
+    then
+      l_rss_url := blog_util.get_attribute_value( 'G_CANONICAL_URL' )
+        || apex_page.get_url(
+          p_application => p_app_id
+          ,p_page => p_app_page_id
+          ,p_session => null
+          ,p_request => 'application_process=rss.xml'
+        );
+    end if;
+
+    return l_rss_url;
+
+  end get_rss;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_rss_xsl(
+    p_app_id      in varchar2 default null,
+    p_app_page_id in varchar2 default 'PGM'
+  ) return varchar2
+  as
+    l_xsl_url varchar2(4000);
+  begin
+
+    -- Fetch XSL URL override from settings
+    l_xsl_url := blog_util.get_attribute_value( 'G_RSS_XSL_URL' );
+    -- If there isn't override custruct XSL
+    if l_xsl_url is null
+    then
+      l_xsl_url := blog_util.get_attribute_value( 'G_CANONICAL_URL' )
+        || apex_page.get_url(
+          p_application => p_app_id
+          ,p_page => p_app_page_id
+          ,p_session => null
+          ,p_request => 'application_process=rss.xsl'
+        );
+    end if;
+
+    return l_xsl_url;
+
+  end get_rss_xsl;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_sitemap_index(
+    p_app_id      in varchar2 default null,
+    p_app_page_id in varchar2 default 'PGM'
+  ) return varchar2
+  as
+    l_sitemap_url varchar2(4000);
+  begin
+
+    l_sitemap_url := blog_util.get_attribute_value( 'G_CANONICAL_URL' )
+      || apex_page.get_url(
+        p_application => p_app_id
+        ,p_page => p_app_page_id
+        ,p_session => null
+        ,p_request => 'application_process=sitemap-index.xsl'
+      );
+
+    return l_sitemap_url;
+
+  end get_sitemap_index;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure redirect_search(
@@ -4321,7 +4431,9 @@ as
     if l_err_mesg is not null
     then
       -- prepare return validation error message
-      l_result := apex_lang.message( l_err_mesg );
+      l_result := apex_lang.message(
+        p_name => l_err_mesg
+      );
     end if;
     -- return validation result
     -- if validation fails we return error message stored to variable
@@ -4343,9 +4455,13 @@ as
     if not regexp_like( p_email, '^.*\@.*\..*$' )
     then
       -- if validation fails prepare error message
-      l_err_mesg := apex_lang.message( p_err_mesg );
+      l_err_mesg := apex_lang.message(
+        p_name => p_err_mesg
+      );
 
-      if l_err_mesg = apex_escape.html( p_err_mesg )
+      if l_err_mesg = apex_escape.html(
+        p_string => p_err_mesg
+      )
       then
         l_err_mesg := p_err_mesg;
       end if;
@@ -4620,6 +4736,8 @@ as
 --    Jari Laine 19.05.2020 - Removed obsolete function get_search_button
 --    Jari Laine 06.07.2020 - Added parameter p_rss_url to functions get_rss_link and get_rss_anchor
 --                            Removed parameter p_build_option_status from function get_rss_link
+--    Jari Laine 13.11.2021 - Changes to funtion get_rss_anchor and get get_rss_link
+--                          - Removed obsolete function
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4684,16 +4802,14 @@ as
 -- Called from:
 --  pub app shortcut BLOG_RSS_ANCHOR
   function get_rss_anchor(
-    p_app_name            in varchar2,
-    p_rss_url             in varchar2 default null
+    p_app_name            in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_RSS_LINK
   function get_rss_link(
     p_app_id              in varchar2,
-    p_app_name            in varchar2,
-    p_rss_url             in varchar2 default null
+    p_app_name            in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
@@ -4702,12 +4818,6 @@ as
     p_post_id             in number,
     p_app_id              in varchar2 default null,
     p_button              in varchar2 default 'YES'
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  not ready / not unused
-  function get_preview_tags(
-    p_tags                in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_HTML";
@@ -4727,41 +4837,7 @@ as
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure get_tag_anchor(
-    p_tag_id  in number,
-    p_app_id  in varchar2,
-    p_tag     in varchar2,
-    p_button  in varchar2,
-    p_tags    in out nocopy varchar2
-  )
-  as
-  begin
-    -- generate HTML for tag
-    if p_tag is null then
-      p_tags := p_tags;
-    else
-      -- generate button
-      if p_button = 'YES' then
-        p_tags := p_tags
-          ||  get_tag_anchor(
-                p_tag_id  => p_tag_id
-                ,p_app_id => p_app_id
-                ,p_tag    => p_tag
-                ,p_button => p_button
-              );
-      else
-      -- generate anchor tag
-        p_tags := p_tags
-          ||  case when p_tags is not null then ',' end
-          ||  get_tag_anchor(
-                p_tag_id  => p_tag_id
-                ,p_app_id => p_app_id
-                ,p_tag    => p_tag
-                ,p_button => p_button
-              );
-      end if;
-    end if;
-  end get_tag_anchor;
+-- none
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -5025,8 +5101,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss_anchor(
-    p_app_name in varchar2,
-    p_rss_url  in varchar2 default null
+    p_app_name    in varchar2
   ) return varchar2
   as
     l_rss_url     varchar2(4000);
@@ -5035,31 +5110,24 @@ as
   begin
 
     -- get rss title
-    l_rss_title := apex_lang.message( 'BLOG_RSS_TITLE', p_app_name );
+    l_rss_title := apex_lang.message(
+      p_name => 'BLOG_RSS_TITLE'
+      ,p0 => p_app_name
+    );
 
     -- get rss url
-    l_rss_url := case
-      when p_rss_url is null
-      then blog_util.get_attribute_value( 'G_RSS_URL' )
-      else p_rss_url
-      end
-    ;
+    l_rss_url :=  blog_url.get_rss;
 
     -- generate RSS anchor
-    if l_rss_url is not null
-    then
-      l_rss_anchor :=
-        '<a href="'
-        || l_rss_url
-        || '" rel="alternate" type="application/rss+xml" aria-label="'
-        || l_rss_title
-        || '" class="t-Button t-Button--noLabel t-Button--icon t-Button--link">'
-        || '<span aria-hidden="true" class="fa fa-rss-square fa-3x fa-lg u-color-8-text"></span>'
-        || '</a>'
-      ;
-    else
-      apex_debug.warn('RSS URL is empty. RSS anchor not generated.');
-    end if;
+    l_rss_anchor :=
+      '<a href="'
+      || l_rss_url
+      || '" rel="alternate" type="application/rss+xml" aria-label="'
+      || apex_escape.html_attribute(l_rss_title)
+      || '" class="t-Button t-Button--noLabel t-Button--icon t-Button--link">'
+      || '<span aria-hidden="true" class="fa fa-rss-square fa-3x fa-lg u-color-8-text"></span>'
+      || '</a>'
+    ;
 
     return l_rss_anchor;
 
@@ -5067,9 +5135,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss_link(
-    p_app_id    in varchar2,
-    p_app_name  in varchar2,
-    p_rss_url   in varchar2 default null
+    p_app_id      in varchar2,
+    p_app_name    in varchar2
   ) return varchar2
   as
     l_app_id    number;
@@ -5085,28 +5152,23 @@ as
     ) = 'INCLUDE'
     then
       -- get rss url
-      l_rss_url := case
-        when p_rss_url is null
-        then blog_util.get_attribute_value( 'G_RSS_URL' )
-        else p_rss_url
-        end
-      ;
+      l_rss_url := blog_url.get_rss;
 
-      -- generate link for rss
-      if l_rss_url is not null
-      then
-        l_rss_title := apex_lang.message( 'BLOG_RSS_TITLE', p_app_name );
-        --l_rss_title := apex_escape.html_attribute( l_rss_title );
-        l_rss_url :=
-          '<link rel="alternate" type="application/rss+xml" href="'
-          || l_rss_url
-          || '" title="'
-          || l_rss_title
-          || '"/>'
-        ;
-      else
-        apex_debug.warn('RSS  URL is empty. RSS link for header not generated.');
-      end if;
+    -- generate link for rss
+      l_rss_title := apex_lang.message(
+        p_name => 'BLOG_RSS_TITLE'
+        ,p0 => p_app_name
+      );
+      --l_rss_title := apex_escape.html_attribute( l_rss_title );
+      l_rss_url :=
+        '<link rel="alternate" type="application/rss+xml" href="'
+        || l_rss_url
+        || '" title="'
+        || apex_escape.html_attribute(
+          p_string => l_rss_title
+        )
+        || '"/>'
+      ;
 
     end if;
 
@@ -5142,32 +5204,6 @@ as
   end get_post_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_preview_tags(
-    p_tags in varchar2
-  ) return varchar2
-  as
-    l_tags      varchar2(32700);
-    l_tags_tab  apex_t_varchar2;
-  begin
-
-    l_tags_tab := apex_string.split( p_tags, ',' );
-    -- Loop tags to generate tags links
-    for i in 1 .. l_tags_tab.count
-    loop
-      get_tag_anchor(
-         p_tag_id => null
-        ,p_app_id => null
-        ,p_tag    => trim(l_tags_tab(i))
-        ,p_button => 'YES'
-        ,p_tags   => l_tags
-      );
-    end loop;
-
-    return l_tags;
-
-  end get_preview_tags;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
 end "BLOG_HTML";
 /
 create or replace package "BLOG_XML"
@@ -5193,14 +5229,14 @@ as
 --                              sitemap_categories
 --                              sitemap_archives
 --                              sitemap_atags
---  Jari Laine 30.10.2021   - Changed procedure sitemap_main to use view apex_application_pages
+--    Jari Laine 30.10.2021  - Changed procedure sitemap_main to use view apex_application_pages
+--    Jari Laine 13.11.2021  - Changed procedure rss
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "rss.xml"
   procedure rss(
-    p_rss_url   in varchar2,
     p_app_name  in varchar2,
     p_app_desc  in varchar2,
     p_lang      in varchar2 default 'en'
@@ -5265,7 +5301,6 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss(
-    p_rss_url   in varchar2,
     p_app_name  in varchar2,
     p_app_desc  in varchar2,
     p_lang      in varchar2 default 'en'
@@ -5283,10 +5318,7 @@ as
   begin
 
     -- RSS feed URL
-    l_rss_url   := coalesce(
-       p_rss_url
-      ,blog_util.get_attribute_value( 'G_RSS_URL' )
-    );
+    l_rss_url   := blog_url.get_rss;
     -- blog name
     l_app_name := coalesce(
        p_app_name
@@ -5303,7 +5335,7 @@ as
       ,p_canonical => 'YES'
     );
     -- rss transformations (XSLT)
-    l_xsl_url := blog_util.get_attribute_value( 'G_RSS_XSL_URL' );
+    l_xsl_url := blog_url.get_rss_xsl;
 
     -- generate RSS
     select xmlserialize( content xmlconcat(

@@ -4,8 +4,8 @@ begin
 --     PAGE: 00000
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -21,7 +21,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211030130749'
+,p_last_upd_yyyymmddhh24miss=>'20211113101501'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
@@ -116,10 +116,9 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_point=>'BODY'
 ,p_plug_source=>'"BLOG_RSS_ANCHOR"'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_plug_display_condition_type=>'ITEM_IS_NOT_NULL'
-,p_plug_display_when_condition=>'G_RSS_URL'
 ,p_plug_caching=>'CACHE'
 ,p_plug_caching_max_age_in_sec=>21600
+,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 ,p_required_patch=>wwv_flow_api.id(8635198962090938)
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'HTML'

@@ -4,8 +4,8 @@ begin
 --     PAGE: 30020
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -113,29 +113,6 @@ wwv_flow_api.create_jet_chart_series(
 ,p_items_label_rendered=>false
 );
 wwv_flow_api.create_jet_chart_axis(
- p_id=>wwv_flow_api.id(43826047485615041)
-,p_chart_id=>wwv_flow_api.id(43823380955615012)
-,p_axis=>'y'
-,p_is_rendered=>'on'
-,p_format_type=>'decimal'
-,p_decimal_places=>0
-,p_format_scaling=>'auto'
-,p_scaling=>'linear'
-,p_baseline_scaling=>'zero'
-,p_position=>'auto'
-,p_major_tick_rendered=>'auto'
-,p_minor_tick_rendered=>'auto'
-,p_tick_label_rendered=>'on'
-,p_zoom_order_seconds=>false
-,p_zoom_order_minutes=>false
-,p_zoom_order_hours=>false
-,p_zoom_order_days=>false
-,p_zoom_order_weeks=>false
-,p_zoom_order_months=>false
-,p_zoom_order_quarters=>false
-,p_zoom_order_years=>false
-);
-wwv_flow_api.create_jet_chart_axis(
  p_id=>wwv_flow_api.id(43826627171615043)
 ,p_chart_id=>wwv_flow_api.id(43823380955615012)
 ,p_axis=>'x'
@@ -149,6 +126,29 @@ wwv_flow_api.create_jet_chart_axis(
 ,p_tick_label_rendered=>'on'
 ,p_tick_label_rotation=>'auto'
 ,p_tick_label_position=>'outside'
+,p_zoom_order_seconds=>false
+,p_zoom_order_minutes=>false
+,p_zoom_order_hours=>false
+,p_zoom_order_days=>false
+,p_zoom_order_weeks=>false
+,p_zoom_order_months=>false
+,p_zoom_order_quarters=>false
+,p_zoom_order_years=>false
+);
+wwv_flow_api.create_jet_chart_axis(
+ p_id=>wwv_flow_api.id(43826047485615041)
+,p_chart_id=>wwv_flow_api.id(43823380955615012)
+,p_axis=>'y'
+,p_is_rendered=>'on'
+,p_format_type=>'decimal'
+,p_decimal_places=>0
+,p_format_scaling=>'auto'
+,p_scaling=>'linear'
+,p_baseline_scaling=>'zero'
+,p_position=>'auto'
+,p_major_tick_rendered=>'auto'
+,p_minor_tick_rendered=>'auto'
+,p_tick_label_rendered=>'on'
 ,p_zoom_order_seconds=>false
 ,p_zoom_order_minutes=>false
 ,p_zoom_order_hours=>false
@@ -306,6 +306,7 @@ wwv_flow_api.create_report_region(
 '  ,1'))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P30020_TIMEFRAME'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(8519378220518224)
 ,p_query_num_rows=>20
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'

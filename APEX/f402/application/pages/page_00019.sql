@@ -4,8 +4,8 @@ begin
 --     PAGE: 00019
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -29,7 +29,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210415190200'
+,p_last_upd_yyyymmddhh24miss=>'20211114100206'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9879490963762847)
@@ -54,10 +54,9 @@ wwv_flow_api.create_page_plug(
 '  ,v1.posts_count           as posts_count',
 '  ,v1.allowed_row_operation as allowed_row_operation',
 '  ,btn.posts_link           as btn_posts_link',
-'',
 'from #OWNER#.blog_v_all_tags v1',
 'cross join (',
-'  select apex_lang.message(''BLOG_BTN_TITLE_VIEW_POSTS'') as posts_link',
+'  select apex_lang.message( ''BLOG_BTN_TITLE_VIEW_POSTS'' ) as posts_link',
 '  from dual',
 ') btn',
 'where 1 = 1'))
@@ -94,7 +93,7 @@ wwv_flow_api.create_region_column(
 ,p_heading_alignment=>'CENTER'
 ,p_display_sequence=>110
 ,p_value_alignment=>'CENTER'
-,p_attribute_01=>'CUSTOM'
+,p_attribute_01=>'N'
 ,p_attribute_02=>'1'
 ,p_attribute_03=>'Enabled'
 ,p_attribute_04=>'0'
@@ -147,6 +146,7 @@ wwv_flow_api.create_region_column(
 ,p_display_sequence=>70
 ,p_value_alignment=>'LEFT'
 ,p_attribute_02=>'VALUE'
+,p_attribute_05=>'PLAIN'
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
 ,p_filter_date_ranges=>'ALL'
@@ -157,7 +157,6 @@ wwv_flow_api.create_region_column(
 ,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
-,p_escape_on_http_output=>true
 ,p_help_text=>'When tag was created.'
 );
 wwv_flow_api.create_region_column(
@@ -173,6 +172,7 @@ wwv_flow_api.create_region_column(
 ,p_display_sequence=>80
 ,p_value_alignment=>'LEFT'
 ,p_attribute_02=>'VALUE'
+,p_attribute_05=>'PLAIN'
 ,p_enable_filter=>true
 ,p_filter_operators=>'C'
 ,p_filter_is_required=>false
@@ -184,7 +184,6 @@ wwv_flow_api.create_region_column(
 ,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
-,p_escape_on_http_output=>true
 ,p_help_text=>'Who created tag.'
 );
 wwv_flow_api.create_region_column(
@@ -200,6 +199,7 @@ wwv_flow_api.create_region_column(
 ,p_display_sequence=>90
 ,p_value_alignment=>'LEFT'
 ,p_attribute_02=>'VALUE'
+,p_attribute_05=>'PLAIN'
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
 ,p_filter_date_ranges=>'ALL'
@@ -210,7 +210,6 @@ wwv_flow_api.create_region_column(
 ,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
-,p_escape_on_http_output=>true
 ,p_help_text=>'When tag was last changed.'
 );
 wwv_flow_api.create_region_column(
@@ -226,6 +225,7 @@ wwv_flow_api.create_region_column(
 ,p_display_sequence=>100
 ,p_value_alignment=>'LEFT'
 ,p_attribute_02=>'VALUE'
+,p_attribute_05=>'PLAIN'
 ,p_enable_filter=>true
 ,p_filter_operators=>'C'
 ,p_filter_is_required=>false
@@ -237,7 +237,6 @@ wwv_flow_api.create_region_column(
 ,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
-,p_escape_on_http_output=>true
 ,p_help_text=>'Who has changed tag last.'
 );
 wwv_flow_api.create_region_column(
@@ -254,6 +253,7 @@ wwv_flow_api.create_region_column(
 ,p_value_alignment=>'CENTER'
 ,p_stretch=>'N'
 ,p_attribute_02=>'VALUE'
+,p_attribute_05=>'PLAIN'
 ,p_enable_filter=>true
 ,p_filter_is_required=>false
 ,p_filter_lov_type=>'NONE'
@@ -263,7 +263,6 @@ wwv_flow_api.create_region_column(
 ,p_enable_hide=>false
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
-,p_escape_on_http_output=>true
 ,p_help_text=>'Number of post in this tag.'
 );
 wwv_flow_api.create_region_column(
@@ -303,7 +302,7 @@ wwv_flow_api.create_region_column(
 ,p_stretch=>'A'
 ,p_attribute_05=>'BOTH'
 ,p_is_required=>true
-,p_max_length=>256
+,p_max_length=>1024
 ,p_enable_filter=>true
 ,p_filter_operators=>'C:CASE_INSENSITIVE:S'
 ,p_filter_is_required=>false
@@ -354,7 +353,7 @@ wwv_flow_api.create_region_column(
 ,p_attribute_03=>'N'
 ,p_attribute_04=>'BOTH'
 ,p_is_required=>false
-,p_max_length=>16000
+,p_max_length=>4000
 ,p_enable_filter=>true
 ,p_filter_operators=>'C:CASE_INSENSITIVE'
 ,p_filter_is_required=>false

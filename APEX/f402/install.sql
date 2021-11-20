@@ -5,7 +5,6 @@ prompt --install
 @@application/shared_components/credentials/google_oauth2.sql
 @@application/shared_components/navigation/lists/desktop_navigation_menu.sql
 @@application/shared_components/navigation/lists/desktop_navigation_bar.sql
-@@application/shared_components/navigation/lists/home.sql
 @@application/shared_components/navigation/lists/configuration.sql
 @@application/shared_components/navigation/lists/public_application_links.sql
 @@application/shared_components/navigation/lists/activity_reports.sql
@@ -156,6 +155,7 @@ prompt --install
 @@application/pages/page_20010.sql
 @@application/pages/page_20011.sql
 @@application/pages/page_20012.sql
+@@application/pages/page_20100.sql
 @@application/pages/page_30010.sql
 @@application/pages/page_30020.sql
 @@application/pages/page_30021.sql

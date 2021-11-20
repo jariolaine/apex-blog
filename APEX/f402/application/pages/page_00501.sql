@@ -4,8 +4,8 @@ begin
 --     PAGE: 00501
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -213,6 +213,7 @@ wwv_flow_api.create_page_item(
 ,p_attribute_04=>'moonocolor'
 ,p_attribute_05=>'top'
 ,p_attribute_06=>'4'
+,p_attribute_09=>'HTML'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(27061385140689114)
@@ -250,6 +251,7 @@ wwv_flow_api.create_page_item(
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'VALUE'
 ,p_attribute_04=>'N'
+,p_attribute_05=>'PLAIN'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(37645870035287124)
@@ -269,7 +271,7 @@ wwv_flow_api.create_page_item(
 ,p_protection_level=>'S'
 ,p_restricted_characters=>'US_ONLY'
 ,p_help_text=>'Publish description in blog About page.'
-,p_attribute_01=>'CUSTOM'
+,p_attribute_01=>'N'
 ,p_attribute_02=>'1'
 ,p_attribute_03=>'Yes'
 ,p_attribute_04=>'0'

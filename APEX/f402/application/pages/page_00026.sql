@@ -4,8 +4,8 @@ begin
 --     PAGE: 00026
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -198,7 +198,7 @@ wwv_flow_api.create_page_item(
 ,p_protection_level=>'B'
 ,p_restricted_characters=>'US_ONLY'
 ,p_help_text=>'Enable or disable link.'
-,p_attribute_01=>'CUSTOM'
+,p_attribute_01=>'N'
 ,p_attribute_02=>'1'
 ,p_attribute_03=>'Enabled'
 ,p_attribute_04=>'0'
@@ -274,7 +274,7 @@ wwv_flow_api.create_page_item(
 ,p_attribute_03=>'Y'
 ,p_attribute_05=>'top'
 ,p_attribute_06=>'4'
-,p_attribute_09=>'html'
+,p_attribute_09=>'HTML'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(64761748434771401)
@@ -294,7 +294,7 @@ wwv_flow_api.create_page_item(
 ,p_protection_level=>'B'
 ,p_restricted_characters=>'US_ONLY'
 ,p_help_text=>'Include last modified date after content. '
-,p_attribute_01=>'CUSTOM'
+,p_attribute_01=>'N'
 ,p_attribute_02=>'1'
 ,p_attribute_03=>'Enabled'
 ,p_attribute_04=>'0'

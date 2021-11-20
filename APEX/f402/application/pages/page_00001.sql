@@ -4,8 +4,8 @@ begin
 --     PAGE: 00001
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211024103321'
+,p_last_upd_yyyymmddhh24miss=>'20211113103635'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8582113239518316)
@@ -42,7 +42,7 @@ wwv_flow_api.create_report_region(
 ,p_template=>wwv_flow_api.id(8490381578518205)
 ,p_display_sequence=>10
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--circular:t-BadgeList--fixed'
+,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--fixed'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -79,6 +79,7 @@ wwv_flow_api.create_report_region(
 'from blog_v_all_posts'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(8515750866518222)
 ,p_query_num_rows=>15
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -164,6 +165,7 @@ wwv_flow_api.create_report_region(
 'from blog_v_all_posts'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(8515750866518222)
 ,p_query_num_rows=>15
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'

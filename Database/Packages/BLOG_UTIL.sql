@@ -58,14 +58,14 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- public app page 2
   function get_post_title(
     p_post_id         in varchar2,
     p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- public app page 2
   procedure get_post_pagination(
     p_post_id         in varchar2,
     p_post_title      out nocopy varchar2,
@@ -176,7 +176,9 @@ as
       if not p_error.is_common_runtime_error then
         -- Change the message to the generic error message which doesn't expose
         -- any sensitive information.
-        l_result.message := apex_lang.message(l_genereric_error);
+        l_result.message := apex_lang.message(
+          p_name => l_genereric_error
+        );
         l_result.additional_info := null;
       end if;
 
@@ -213,7 +215,9 @@ as
             p_error => p_error
           );
 
-        l_err_mesg := apex_lang.message(l_constraint_name);
+        l_err_mesg := apex_lang.message(
+          p_name => l_constraint_name
+        );
 
         -- not every constraint has to be in our lookup table
         if not l_err_mesg = l_constraint_name then
@@ -779,8 +783,8 @@ as
       then
         sys.htp.p(
             apex_lang.message(
-               'BLOG_INFO_LAST_UPDATED'
-              ,to_char( c1.changed_on, p_date_format )
+              p_name => 'BLOG_MSG_LAST_UPDATED'
+              ,p0 => to_char( c1.changed_on, p_date_format )
             )
           );
       end if;

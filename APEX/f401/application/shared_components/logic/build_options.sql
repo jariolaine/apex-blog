@@ -4,8 +4,8 @@ begin
 --     BUILD OPTIONS: 401
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -136,14 +136,6 @@ wwv_flow_api.create_build_option(
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable / disable the ability to subscribe to email notification of new comments'
-);
-wwv_flow_api.create_build_option(
- p_id=>wwv_flow_api.id(37511226776078888)
-,p_build_option_name=>'BLOG_FEATURE_EMAIL_VALIDATION_API'
-,p_build_option_status=>'EXCLUDE'
-,p_default_on_export=>'EXCLUDE'
-,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Enable/disable comment subscription email address validation using Abstract email validation API'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(41172379976935637)

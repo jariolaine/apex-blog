@@ -4,8 +4,8 @@ begin
 --     APPLICATION ITEM: G_APP_NAME
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -15,6 +15,7 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(8615126468915955)
 ,p_name=>'G_APP_NAME'
 ,p_protection_level=>'I'
+,p_escape_on_http_output=>'N'
 ,p_item_comment=>'Application name'
 );
 wwv_flow_api.component_end;
