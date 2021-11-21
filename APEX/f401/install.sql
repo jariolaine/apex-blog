@@ -95,6 +95,7 @@ prompt --install
 @@application/shared_components/user_interface/templates/report/search_results.sql
 @@application/shared_components/user_interface/templates/report/blog_post_report.sql
 @@application/shared_components/user_interface/templates/report/content_row.sql
+@@application/shared_components/user_interface/templates/report/contextual_info.sql
 @@application/shared_components/user_interface/templates/report/blog_content.sql
 @@application/shared_components/user_interface/templates/label/hidden.sql
 @@application/shared_components/user_interface/templates/label/optional.sql

@@ -103,6 +103,7 @@ prompt --install
 @@application/shared_components/user_interface/templates/report/cards.sql
 @@application/shared_components/user_interface/templates/report/search_results.sql
 @@application/shared_components/user_interface/templates/report/content_row.sql
+@@application/shared_components/user_interface/templates/report/contextual_info.sql
 @@application/shared_components/user_interface/templates/label/hidden.sql
 @@application/shared_components/user_interface/templates/label/optional.sql
 @@application/shared_components/user_interface/templates/label/optional_above.sql

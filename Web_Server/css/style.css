@@ -49,19 +49,16 @@ blockquote p {
 /**************************************
 * Media list report extra classes
 **************************************/
-.z-border-radius {
-  border-radius: 4px;
-}
 .z-MediaList--files .t-MediaList-title {
   word-break: break-word;
 }
 /**************************************
 * Link list extra classes
 **************************************/
-.z-linkList a {
+.z-linkList {
   padding: 0.4rem 1.2rem;
 }
-.z-linkList a:hover {
+.z-linkList:hover {
   background-color: #fafafa;
 }
 /**************************************
@@ -120,7 +117,7 @@ blockquote p {
 **************************************/
 .nodatafound {
   text-align: center;
-  color: #262626;
+  color: var(--ut-component-text-default-color);
   font-size: 1.2rem;
   line-height: 2rem;
   padding: 2.2rem;
@@ -134,11 +131,13 @@ blockquote p {
 **************************************/
 .z-post {
   font-size: 112%;
-  background-color: #ffffff;
+  background-color: var(--ut-component-background-color);
   margin-bottom: 1.6rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);
+  border-width: var(--ut-component-border-width);
+  border-style: solid;
+  border-color: var(--ut-component-border-color);
+  border-radius: var(--ut-component-border-radius);
+  box-shadow: var(--ut-shadow-sm);
   padding: 1.6rem;
 }
 .z-post--header {
@@ -167,7 +166,9 @@ blockquote p {
   width: 100%;
   clear: both;
   margin: 2rem 0 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.075);
+  border-top-width: var(--ut-component-inner-border-width);
+  border-top-style: solid;
+  border-top-color: var(--ut-component-inner-border-color);
 }
 .z-post--footer {
   width: 100%;
@@ -178,10 +179,12 @@ blockquote p {
   margin-bottom: 16px;
 }
 .z-posts--paginationBorder .z-posts--pagination {
-  background-color: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);
-  border-radius: 4px;
+  background-color: var(--ut-component-background-color);
+  border-width: var(--ut-component-border-width);
+  border-style: solid;
+  border-color: var(--ut-component-border-color);
+  border-radius: var(--ut-component-border-radius);
+  box-shadow: var(--ut-shadow-sm);
   padding: 0.4rem;
 }
 .z-post--largeMargin .z-post {
@@ -216,16 +219,20 @@ blockquote p {
 * General custom report
 **************************************/
 .z-Content .z-Content--Row {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);
+  border-width: var(--ut-component-border-width);
+  border-style: solid;
+  border-color: var(--ut-component-border-color);
+  border-radius: var(--ut-component-border-radius);
+  box-shadow: var(--ut-shadow-sm);
   margin-bottom: 1.6rem;
 }
 .z-Content--Row {
-  background-color: #ffffff;
+  background-color: var(--ut-component-background-color);
 }
 .z-Content--Title {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.075);
+  border-bottom-width: var(--ut-component-inner-border-width);
+  border-bottom-style: solid;
+  border-bottom-color: var(--ut-component-inner-border-color);
   padding: 1.2rem;
   margin: 0;
   font-size: 1.6rem;
@@ -236,7 +243,9 @@ blockquote p {
   padding: 1.6rem;
 }
 .z-Content--Stacked .z-Content--Title {
-  border-top: 1px solid rgba(0, 0, 0, 0.075);
+  border-top-width: var(--ut-component-inner-border-width);
+  border-top-style: solid;
+  border-top-color: var(--ut-component-inner-border-color);
 }
 .z-Content--Stacked .z-Content--Row:first-child .z-Content--Title {
   border-top: none;
