@@ -385,7 +385,8 @@ create table blog_settings(
     data_type = 'INTEGER' and
     int_min is not null and
     int_max is not null and
-    round( to_number( attribute_value ) ) = to_number( attribute_value )
+    round( to_number( attribute_value ) ) = to_number( attribute_value ) and
+    to_number( attribute_value ) between int_min and int_max
   ),
   constraint blog_settings_ck8 check(
     data_type != 'DATE_FORMAT' or
