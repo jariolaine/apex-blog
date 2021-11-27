@@ -64,9 +64,9 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211121192151'
+,p_last_upd_yyyymmddhh24miss=>'20211127073716'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>121
+,p_files_version=>122
 ,p_ui_type_name => null
 ,p_print_server_type=>'INSTANCE'
 );

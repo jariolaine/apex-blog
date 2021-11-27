@@ -30,7 +30,7 @@ wwv_flow_api.create_theme_style(
  p_id=>wwv_flow_api.id(14387173912883924)
 ,p_theme_id=>42
 ,p_name=>'Vita'
-,p_is_current=>false
+,p_is_current=>true
 ,p_is_public=>true
 ,p_is_accessible=>true
 ,p_theme_roller_input_file_urls=>'#THEME_IMAGES#less/theme/Vita.less'
@@ -73,96 +73,6 @@ wwv_flow_api.create_theme_style(
 ,p_theme_roller_output_file_url=>'#THEME_IMAGES#css/Vita-Slate#MIN#.css?v=#APEX_VERSION#'
 ,p_theme_roller_read_only=>true
 ,p_reference_id=>3291983347983194966
-);
-wwv_flow_api.create_theme_style(
- p_id=>wwv_flow_api.id(14945244063922516)
-,p_theme_id=>42
-,p_name=>'Vita (Blog)'
-,p_is_current=>true
-,p_is_public=>true
-,p_is_accessible=>true
-,p_theme_roller_input_file_urls=>'#THEME_IMAGES#less/theme/Vita.less'
-,p_theme_roller_config=>'{"classes":[],"vars":{"@g_Nav_Style":"dark","@g_Container-BorderRadius":"6px"},"customCSS":"/**************************************\n* Elements\n**************************************/\nblockquote::before {\n  content: open-quote;\n  font-size: 2.2re'
-||'m;\n}\nblockquote::after {\n  content: close-quote;\n  font-size: 2.2rem;\n}\nblockquote p {\n  display: inline;\n}\n/**************************************\n* Logo\n**************************************/\n.z-app-logo {\n  display: flex;\n  align-it'
-||'ems: baseline;\n}\n.z-app-logo .z-app-desc {\n  white-space: normal;\n  font-style: oblique;\n  font-size: 1.4rem;\n  margin-left: 0.6rem;\n}\n@media only screen and (max-width: 640px) {\n  .z-app-logo {\n    flex-direction: column;\n  }\n  .z-app-lo'
-||'go .z-app-desc {\n    font-size: 1.2rem;\n    line-height: 1.6rem;\n    margin-left: 0;\n  }\n}\n@media (max-width: 340px) {\n  .z-app-logo .z-app-desc {\n    display: none!important;\n  }\n}\n/**************************************\n* Region\n******'
-||'********************************/\n.z-tabs * {\n  font-size: 102.8%;\n}\n/**************************************\n* Media list report extra classes\n**************************************/\n.z-MediaList--files .t-MediaList-title {\n  word-break: brea'
-||'k-word;\n}\n/**************************************\n* Link list extra classes\n**************************************/\n.z-linkList {\n  padding: 0.4rem 1.2rem;\n}\n.z-linkList:hover {\n  background-color: #fafafa;\n}\n/*****************************'
-||'*********\n* Footer Link List\n*\n* Credits:\n*   https://epicbootstrap.com/snippets/footer-basic\n*   https://jsfiddle.net/Grobbert/gmqth51o/1/\n**************************************/\n.z-footerList {\n  display: flex;\n  justify-content: center;\n'
-||'  align-items: center;\n  padding: 0;\n  list-style: none;\n  text-align: center;\n  font-size: 1.8rem;\n  line-height: 1.6;\n  margin-bottom: 0;\n}\n.z-footerList li {\n  padding: 0 10px;\n  font-size: inherit;\n}\n.z-footerList a {\n  color: inheri'
-||'t;\n  text-decoration: none;\n  opacity: 0.6;\n}\n.z-footerList a:hover {\n  opacity: 1;\n}\n@media only screen and (max-width: 640px) {\n  .z-footerList {\n    flex-direction: column;\n  }\n  .z-footerList li {\n    padding: 10px 0;\n  }\n}\n.z-copy'
-||'right {\n  text-align: center;\n  margin: 18px 0;\n}\n.z-copyright a {\n  display: block;\n  color: inherit;\n  font-size: 1.4rem;\n  opacity: 0.6;\n}\n.z-copyright:hover a {\n  opacity: 1;\n}\n/**************************************\n* Classic repor'
-||'ts\n**************************************/\n.nodatafound {\n  text-align: center;\n  color: var(--ut-component-text-default-color);\n  font-size: 1.2rem;\n  line-height: 2rem;\n  padding: 2.2rem;\n}\n.pagination {\n  text-align: right;\n  width: 100'
-||'%;\n}\n/**************************************\n* Post report\n**************************************/\n.z-post {\n  font-size: 112%;\n  background-color: var(--ut-component-background-color);\n  margin-bottom: 1.6rem;\n  border-width: var(--ut-compo'
-||'nent-border-width);\n  border-style: solid;\n  border-color: var(--ut-component-border-color);\n  border-radius: var(--ut-component-border-radius);\n  box-shadow: var(--ut-shadow-sm);\n  padding: 1.6rem;\n}\n.z-post--header {\n  clear: both;\n}\n.z-p'
-||'ost--header h1 {\n  font-size: 1.6em;\n  margin: 0 0 0.2rem;\n}\n.z-post--header h2 {\n  font-size: 1em;\n  margin: 0 0 1.8rem;\n}\n.z-post--header h3 {\n  font-size: 1em;\n  margin: 0 0 0.2rem;\n}\n.z-post--body img {\n  max-width: 100%;\n  height: '
-||'auto;\n}\n.z-post--body br {\n  clear: none!important;\n}\n.z-post--tags {\n  width: 100%;\n  clear: both;\n  margin: 2rem 0 0;\n  border-top-width: var(--ut-component-inner-border-width);\n  border-top-style: solid;\n  border-top-color: var(--ut-com'
-||'ponent-inner-border-color);\n}\n.z-post--footer {\n  width: 100%;\n  clear: both;\n  margin: 1.2rem 0 0;\n}\n.z-posts--pagination {\n  margin-bottom: 16px;\n}\n.z-posts--paginationBorder .z-posts--pagination {\n  background-color: var(--ut-component-'
-||'background-color);\n  border-width: var(--ut-component-border-width);\n  border-style: solid;\n  border-color: var(--ut-component-border-color);\n  border-radius: var(--ut-component-border-radius);\n  box-shadow: var(--ut-shadow-sm);\n  padding: 0.4r'
-||'em;\n}\n.z-post--largeMargin .z-post {\n  margin-bottom: 3.2rem;\n}\n.z-post--smallMargin .z-post {\n  margin-bottom: 0.8rem;\n}\n.z-post--noMargin .z-post {\n  margin-bottom: 0;\n}\n.z-post--noMargin .z-post:not(:first-child) {\n  border-top: none;\'
-||'n}\n.z-post--noMargin.z-posts--paginationBorder .z-posts--pagination {\n  border-top: none;\n}\n.z-posts--paginationHidden .z-posts--pagination {\n  display: none!important;\n  visibility: hidden!important;\n}\n@media only screen and (max-width: 640p'
-||'x) {\n  .z-post {\n    padding: 1.2rem;\n    margin-bottom: 1.6rem;\n  }\n  .z-post--header h1 {\n    font-size: 1.4em;\n  }\n}\n/**************************************\n* General custom report\n**************************************/\n.z-Content .z-'
-||'Content--Row {\n  border-width: var(--ut-component-border-width);\n  border-style: solid;\n  border-color: var(--ut-component-border-color);\n  border-radius: var(--ut-component-border-radius);\n  box-shadow: var(--ut-shadow-sm);\n  margin-bottom: 1.'
-||'6rem;\n}\n.z-Content--Row {\n  background-color: var(--ut-component-background-color);\n}\n.z-Content--Title {\n  border-bottom-width: var(--ut-component-inner-border-width);\n  border-bottom-style: solid;\n  border-bottom-color: var(--ut-component-i'
-||'nner-border-color);\n  padding: 1.2rem;\n  margin: 0;\n  font-size: 1.6rem;\n  font-weight: 500;\n  line-height: 2.4rem;\n}\n.z-Content--Body {\n  padding: 1.6rem;\n}\n.z-Content--Stacked .z-Content--Title {\n  border-top-width: var(--ut-component-in'
-||'ner-border-width);\n  border-top-style: solid;\n  border-top-color: var(--ut-component-inner-border-color);\n}\n.z-Content--Stacked .z-Content--Row:first-child .z-Content--Title {\n  border-top: none;\n}\n/**************************************\n* Pr'
-||'ogram code formatting\n**************************************/\npre.z-program-code {\n  font-family: SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Bitstream Vera Sans Mono\", \"Courier New\", monospace;\n  color: #262626;\n  font-si'
-||'ze: 1.1rem;\n  tab-size: 2;\n  overflow-x: auto;\n  display: block;\n  padding: 1em 1.5em;\n  margin: 8px 8px 18px 8px;\n  border: 1px solid rgba(0, 0, 0, 0.075);\n  border-left: 0.3em solid #6ce26c;\n  border-radius: 4px;\n  background-color: rgba(0'
-||', 0, 0, 0.015);\n  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);\n}\npre.z-program-code code {\n  font-family: inherit;\n  font-size: inherit;\n}\n/**************************************\n* About content\n**************************************/\n.'
-||'z-author-container {\n  display: flex;\n}\n.z-author-left {\n  order: 1;\n  display: flex;\n  flex-direction: column;\n}\n.z-author-right {\n  order: 2;\n  padding: 0 0 0 1.6rem;\n}\n.z-author-badges {\n  display: flex;\n  flex-direction: column;\n}\'
-||'n.z-author-badges > * {\n  margin: 1rem 0;\n}\n@media only screen and (max-width: 640px) {\n  .z-author-container {\n    flex-direction: column;\n    align-items: center;\n  }\n  .z-author-right {\n    padding: 1.6rem 0;\n  }\n  .z-author-badges {\n '
-||'   padding: 1.6rem 0;\n    align-items: center;\n  }\n}\n/**************************************\n* Comments report\n**************************************/\n.z-comment .t-Comments-body {\n  width: 0;\n}\n.z-comment .t-Comments-comment {\n  overflow-'
-||'wrap: break-word;\n}\n/**************************************\n* Modifiers\n**************************************/\n.z-text-wrap {\n  white-space: pre-wrap;\n}\n.z-hidden {\n  display: none!important;\n  visibility: hidden!important;\n}\n","useCusto'
-||'mLess":"N"}'
-,p_theme_roller_output_file_url=>'#THEME_DB_IMAGES#14945244063922516.css'
-,p_theme_roller_read_only=>false
-);
-wwv_flow_api.create_theme_style(
- p_id=>wwv_flow_api.id(15514588522180247)
-,p_theme_id=>42
-,p_name=>'Redwood Light (Blog)'
-,p_css_file_urls=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#IMAGE_PREFIX#libraries/oracle-fonts/oraclesans-apex#MIN#.css?v=#APEX_VERSION#',
-'#THEME_IMAGES#css/Redwood#MIN#.css?v=#APEX_VERSION#'))
-,p_css_classes=>' rw-layout--contained'
-,p_is_current=>false
-,p_is_public=>true
-,p_is_accessible=>false
-,p_theme_roller_input_file_urls=>'#THEME_IMAGES#less/theme/Redwood-Theme.less'
-,p_theme_roller_config=>'{"classes":["rw-layout--fixed t-PageBody--scrollTitle","rw-pillar--neutral","rw-layout--fixed t-PageBody--scrollTitle","rw-layout--fixed t-PageBody--scrollTitle","rw-layout--contained"],"vars":{},"customCSS":"/**************************************\n'
-||'* Elements\n**************************************/\nblockquote::before {\n  content: open-quote;\n  font-size: 2.2rem;\n}\nblockquote::after {\n  content: close-quote;\n  font-size: 2.2rem;\n}\nblockquote p {\n  display: inline;\n}\n/***************'
-||'***********************\n* Logo\n**************************************/\n.z-app-logo {\n  display: flex;\n  align-items: baseline;\n}\n.z-app-logo .z-app-desc {\n  white-space: normal;\n  font-style: oblique;\n  font-size: 1.4rem;\n  margin-left: 0.'
-||'6rem;\n}\n@media only screen and (max-width: 640px) {\n  .z-app-logo {\n    flex-direction: column;\n  }\n  .z-app-logo .z-app-desc {\n    font-size: 1.2rem;\n    line-height: 1.6rem;\n    margin-left: 0;\n  }\n}\n@media (max-width: 340px) {\n  .z-ap'
-||'p-logo .z-app-desc {\n    display: none!important;\n  }\n}\n/**************************************\n* Region\n**************************************/\n.z-tabs * {\n  font-size: 102.8%;\n}\n/**************************************\n* Media list report'
-||' extra classes\n**************************************/\n.z-MediaList--files .t-MediaList-title {\n  word-break: break-word;\n}\n/**************************************\n* Link list extra classes\n**************************************/\n.z-linkList '
-||'{\n  padding: 0.4rem 1.2rem;\n}\n.z-linkList:hover {\n  background-color: #fafafa;\n}\n/**************************************\n* Footer Link List\n*\n* Credits:\n*   https://epicbootstrap.com/snippets/footer-basic\n*   https://jsfiddle.net/Grobbert/'
-||'gmqth51o/1/\n**************************************/\n.z-footerList {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  padding: 0;\n  list-style: none;\n  text-align: center;\n  font-size: 1.8rem;\n  line-height: 1.6;\n  margi'
-||'n-bottom: 0;\n}\n.z-footerList li {\n  padding: 0 10px;\n  font-size: inherit;\n}\n.z-footerList a {\n  color: inherit;\n  text-decoration: none;\n  opacity: 0.6;\n}\n.z-footerList a:hover {\n  opacity: 1;\n}\n@media only screen and (max-width: 640px'
-||') {\n  .z-footerList {\n    flex-direction: column;\n  }\n  .z-footerList li {\n    padding: 10px 0;\n  }\n}\n.z-copyright {\n  text-align: center;\n  margin: 18px 0;\n}\n.z-copyright a {\n  display: block;\n  color: inherit;\n  font-size: 1.4rem;\n '
-||' opacity: 0.6;\n}\n.z-copyright:hover a {\n  opacity: 1;\n}\n/**************************************\n* Classic reports\n**************************************/\n.nodatafound {\n  text-align: center;\n  color: var(--ut-component-text-default-color);\'
-||'n  font-size: 1.2rem;\n  line-height: 2rem;\n  padding: 2.2rem;\n}\n.pagination {\n  text-align: right;\n  width: 100%;\n}\n/**************************************\n* Post report\n**************************************/\n.z-post {\n  font-size: 112%;'
-||'\n  background-color: var(--ut-component-background-color);\n  margin-bottom: 1.6rem;\n  border-width: var(--ut-component-border-width);\n  border-style: solid;\n  border-color: var(--ut-component-border-color);\n  border-radius: var(--ut-component-b'
-||'order-radius);\n  box-shadow: var(--ut-shadow-sm);\n  padding: 1.6rem;\n}\n.z-post--header {\n  clear: both;\n}\n.z-post--header h1 {\n  font-size: 1.6em;\n  margin: 0 0 0.2rem;\n}\n.z-post--header h2 {\n  font-size: 1em;\n  margin: 0 0 1.8rem;\n}\n.'
-||'z-post--header h3 {\n  font-size: 1em;\n  margin: 0 0 0.2rem;\n}\n.z-post--body img {\n  max-width: 100%;\n  height: auto;\n}\n.z-post--body br {\n  clear: none!important;\n}\n.z-post--tags {\n  width: 100%;\n  clear: both;\n  margin: 2rem 0 0;\n  bo'
-||'rder-top-width: var(--ut-component-inner-border-width);\n  border-top-style: solid;\n  border-top-color: var(--ut-component-inner-border-color);\n}\n.z-post--footer {\n  width: 100%;\n  clear: both;\n  margin: 1.2rem 0 0;\n}\n.z-posts--pagination {\n'
-||'  margin-bottom: 16px;\n}\n.z-posts--paginationBorder .z-posts--pagination {\n  background-color: var(--ut-component-background-color);\n  border-width: var(--ut-component-border-width);\n  border-style: solid;\n  border-color: var(--ut-component-bor'
-||'der-color);\n  border-radius: var(--ut-component-border-radius);\n  box-shadow: var(--ut-shadow-sm);\n  padding: 0.4rem;\n}\n.z-post--largeMargin .z-post {\n  margin-bottom: 3.2rem;\n}\n.z-post--smallMargin .z-post {\n  margin-bottom: 0.8rem;\n}\n.z-'
-||'post--noMargin .z-post {\n  margin-bottom: 0;\n}\n.z-post--noMargin .z-post:not(:first-child) {\n  border-top: none;\n}\n.z-post--noMargin.z-posts--paginationBorder .z-posts--pagination {\n  border-top: none;\n}\n.z-posts--paginationHidden .z-posts--'
-||'pagination {\n  display: none!important;\n  visibility: hidden!important;\n}\n@media only screen and (max-width: 640px) {\n  .z-post {\n    padding: 1.2rem;\n    margin-bottom: 1.6rem;\n  }\n  .z-post--header h1 {\n    font-size: 1.4em;\n  }\n}\n/***'
-||'***********************************\n* General custom report\n**************************************/\n.z-Content .z-Content--Row {\n  border-width: var(--ut-component-border-width);\n  border-style: solid;\n  border-color: var(--ut-component-border-'
-||'color);\n  border-radius: var(--ut-component-border-radius);\n  box-shadow: var(--ut-shadow-sm);\n  margin-bottom: 1.6rem;\n}\n.z-Content--Row {\n  background-color: var(--ut-component-background-color);\n}\n.z-Content--Title {\n  border-bottom-width'
-||': var(--ut-component-inner-border-width);\n  border-bottom-style: solid;\n  border-bottom-color: var(--ut-component-inner-border-color);\n  padding: 1.2rem;\n  margin: 0;\n  font-size: 1.6rem;\n  font-weight: 500;\n  line-height: 2.4rem;\n}\n.z-Conte'
-||'nt--Body {\n  padding: 1.6rem;\n}\n.z-Content--Stacked .z-Content--Title {\n  border-top-width: var(--ut-component-inner-border-width);\n  border-top-style: solid;\n  border-top-color: var(--ut-component-inner-border-color);\n}\n.z-Content--Stacked .'
-||'z-Content--Row:first-child .z-Content--Title {\n  border-top: none;\n}\n/**************************************\n* Program code formatting\n**************************************/\npre.z-program-code {\n  font-family: SFMono-Regular, Menlo, Monaco, C'
-||'onsolas, \"Liberation Mono\", \"Bitstream Vera Sans Mono\", \"Courier New\", monospace;\n  color: #262626;\n  font-size: 1.1rem;\n  tab-size: 2;\n  overflow-x: auto;\n  display: block;\n  padding: 1em 1.5em;\n  margin: 8px 8px 18px 8px;\n  border: 1p'
-||'x solid rgba(0, 0, 0, 0.075);\n  border-left: 0.3em solid #6ce26c;\n  border-radius: 4px;\n  background-color: rgba(0, 0, 0, 0.015);\n  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);\n}\npre.z-program-code code {\n  font-family: inherit;\n  font-si'
-||'ze: inherit;\n}\n/**************************************\n* About content\n**************************************/\n.z-author-container {\n  display: flex;\n}\n.z-author-left {\n  order: 1;\n  display: flex;\n  flex-direction: column;\n}\n.z-author-r'
-||'ight {\n  order: 2;\n  padding: 0 0 0 1.6rem;\n}\n.z-author-badges {\n  display: flex;\n  flex-direction: column;\n}\n.z-author-badges > * {\n  margin: 1rem 0;\n}\n@media only screen and (max-width: 640px) {\n  .z-author-container {\n    flex-directi'
-||'on: column;\n    align-items: center;\n  }\n  .z-author-right {\n    padding: 1.6rem 0;\n  }\n  .z-author-badges {\n    padding: 1.6rem 0;\n    align-items: center;\n  }\n}\n/**************************************\n* Comments report\n****************'
-||'**********************/\n.z-comment .t-Comments-body {\n  width: 0;\n}\n.z-comment .t-Comments-comment {\n  overflow-wrap: break-word;\n}\n/**************************************\n* Modifiers\n**************************************/\n.z-text-wrap {\n'
-||'  white-space: pre-wrap;\n}\n.z-hidden {\n  display: none!important;\n  visibility: hidden!important;\n}\n","useCustomLess":"N"}'
-,p_theme_roller_output_file_url=>'#THEME_DB_IMAGES#15514588522180247.css'
-,p_theme_roller_read_only=>false
 );
 wwv_flow_api.component_end;
 end;

@@ -364,8 +364,8 @@ wwv_flow_api.create_install_script(
 '  is_nullable number( 1, 0 ) not null,',
 '  display_seq number( 10, 0 ) not null,',
 '  attribute_group_message varchar2( 256 char ) not null,',
+'  attribute_message varchar2( 256 char ) generated always as ( ''BLOG_SETTING_'' || attribute_name ) virtual not null,',
 '  attribute_name varchar2( 128 char ) not null,',
-'  attribute_message varchar2(256 char) generated always as (''BLOG_SETTING_'' || attribute_name) virtual not null,',
 '  data_type varchar2( 64 char ) not null,',
 '  attribute_value varchar2( 4000 byte ),',
 '  post_expression varchar2( 4000 byte ),',
@@ -737,7 +737,7 @@ wwv_flow_api.create_install_script(
 '  ,t1.data_type               as data_type',
 '  ,t1.attribute_message       as attribute_message',
 '  ,apex_lang.message(',
-'    p_name => t1.attri'))
+'    p_name => t1.a'))
 );
 wwv_flow_api.component_end;
 end;
@@ -754,7 +754,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'bute_message',
+'ttribute_message',
 '  )                           as attribute_desc',
 '  ,t1.attribute_group_message as attribute_group_message',
 '  ,apex_lang.message(',
@@ -1571,7 +1571,7 @@ wwv_flow_api.append_to_install_script(
 '  exception when no_data_found',
 '  then',
 '',
-'    apex_debug'))
+'    apex_d'))
 );
 null;
 wwv_flow_api.component_end;
@@ -1589,7 +1589,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'.warn(',
+'ebug.warn(',
 '       p_message => ''No data found. %s( %s => %s )''',
 '      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
 '      ,p1 => ''p_attribute_name''',
@@ -2538,7 +2538,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure get_blogger_details(',
-'    p_app_id '))
+'    p_app'))
 );
 null;
 wwv_flow_api.component_end;
@@ -2556,7 +2556,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   in varchar2,',
+'_id    in varchar2,',
 '    p_username  in varchar2,',
 '    p_id        out nocopy number,',
 '    p_name      out nocopy varchar2',
@@ -3539,7 +3539,7 @@ wwv_flow_api.append_to_install_script(
 '    raise;',
 '',
 '  end ajax_math_question_field;',
-'-------------------------------------'))
+'---------------------------------'))
 );
 null;
 wwv_flow_api.component_end;
@@ -3557,7 +3557,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-------------------------------------------',
+'-----------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure validate_math_question_field(',
 '    p_item   in            apex_plugin.t_item,',
@@ -4420,7 +4420,7 @@ wwv_flow_api.append_to_install_script(
 '',
 '      else',
 '        -- append text if row is not empty',
-'     '))
+' '))
 );
 null;
 wwv_flow_api.component_end;
@@ -4438,7 +4438,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   if l_temp is not null',
+'       if l_temp is not null',
 '        then',
 '          -- if we are in first row',
 '          if p_comment is null',
@@ -5353,7 +5353,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  public app page 1003 Ajax Callback process "rss.xml"',
-'  procedure rs'))
+'  procedur'))
 );
 null;
 wwv_flow_api.component_end;
@@ -5371,7 +5371,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'s(',
+'e rss(',
 '    p_app_name  in varchar2,',
 '    p_app_desc  in varchar2,',
 '    p_lang      in varchar2 default ''en''',
@@ -6284,7 +6284,7 @@ wwv_flow_api.append_to_install_script(
 '/',
 '--------------------------------------------------------',
 '--  DDL for Trigger BLOG_POST_UDS_CATEGORIES_TRG',
-'--------------------------------------------------------'))
+'-----------------------------------------------------'))
 );
 null;
 wwv_flow_api.component_end;
@@ -6302,7 +6302,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'---',
 'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_CATEGORIES_TRG"',
 'after',
 'update on blog_categories',
