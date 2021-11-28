@@ -15,7 +15,6 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(6966958999192709)
 ,p_name=>'G_DATE_FORMAT'
 ,p_protection_level=>'I'
-,p_escape_on_http_output=>'N'
 ,p_item_comment=>'Date format used e.g. on reports'
 );
 wwv_flow_api.component_end;

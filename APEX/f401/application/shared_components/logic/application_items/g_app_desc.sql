@@ -15,7 +15,6 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(6966805581190300)
 ,p_name=>'G_APP_DESC'
 ,p_protection_level=>'I'
-,p_escape_on_http_output=>'N'
 ,p_item_comment=>'Application description'
 );
 wwv_flow_api.component_end;

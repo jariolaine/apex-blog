@@ -3,19 +3,21 @@
 * Program code formatting
 **************************************/
 pre.z-program-code {
+  clear: both;
   font-family: @code-font;
-  color: @code-text-color;
+  color: var(--ut-component-badge-text-color);
   font-size: @code-font-size;
   tab-size: @code-tab-size;
   overflow-x: auto;
   display: block;
   padding: @code-padding;
   margin: @code-margin;
-  border: @code-border;
+  border-width: var(--ut-component-inner-border-width);
+  border-style: solid;
+  border-color: var(--ut-component-inner-border-color);
   border-left: @code-border-left;
-  border-radius: @code-border-radius;
-  background-color: @code-bg-color;
-  box-shadow: @code-box-shadow;
+  border-radius: var(--ut-component-badge-border-radius);
+  background-color: var(--ut-component-badge-background-color);
   code{
     font-family: inherit;
     font-size: inherit;

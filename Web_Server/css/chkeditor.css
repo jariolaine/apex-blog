@@ -35,8 +35,7 @@
 }
 /* Editor program code */
 pre.z-program-code {
-  color: #262626;
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
+  font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace" !important;
   background-color: #eeeeee;
   border-left: 0.4em solid #6ce26c !important;
   padding-left: 0.8em;

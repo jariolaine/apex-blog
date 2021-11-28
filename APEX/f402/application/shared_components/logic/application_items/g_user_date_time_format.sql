@@ -15,7 +15,6 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(9007343053756881)
 ,p_name=>'G_USER_DATE_TIME_FORMAT'
 ,p_protection_level=>'I'
-,p_escape_on_http_output=>'N'
 ,p_item_comment=>'Application date time format'
 );
 wwv_flow_api.component_end;

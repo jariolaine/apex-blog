@@ -41,12 +41,6 @@ blockquote p {
   }
 }
 /**************************************
-* Region
-**************************************/
-.z-tabs * {
-  font-size: 102.8%;
-}
-/**************************************
 * Media list report extra classes
 **************************************/
 .z-MediaList--files .t-MediaList-title {
@@ -255,19 +249,21 @@ blockquote p {
 * Program code formatting
 **************************************/
 pre.z-program-code {
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
-  color: #262626;
+  clear: both;
+  font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace";
+  color: var(--ut-component-badge-text-color);
   font-size: 1.1rem;
   tab-size: 2;
   overflow-x: auto;
   display: block;
   padding: 1em 1.5em;
   margin: 8px 8px 18px 8px;
-  border: 1px solid rgba(0, 0, 0, 0.075);
-  border-left: 0.3em solid #6ce26c;
-  border-radius: 4px;
-  background-color: rgba(0, 0, 0, 0.015);
-  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);
+  border-width: var(--ut-component-inner-border-width);
+  border-style: solid;
+  border-color: var(--ut-component-inner-border-color);
+  border-left: 0.4em solid #6ce26c;
+  border-radius: var(--ut-component-badge-border-radius);
+  background-color: var(--ut-component-badge-background-color);
 }
 pre.z-program-code code {
   font-family: inherit;

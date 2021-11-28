@@ -21,8 +21,9 @@ wwv_flow_api.create_flow(
 ,p_application_group_comment=>'APEX Blog applications'
 ,p_page_view_logging=>'YES'
 ,p_page_protection_enabled_y_n=>'Y'
-,p_checksum_salt=>'A62184636C79274387CBB6C9840762CA531D62DEA8CD2BD8BA55E607E36A7AF2'
-,p_bookmark_checksum_function=>'SH1'
+,p_checksum_salt=>'79ABAEFD7AD8D73AC0DC0A616F42577F97F051356BED99D8EBB45C92C0F77585'
+,p_checksum_salt_last_reset=>'20211127075325'
+,p_bookmark_checksum_function=>'SH512'
 ,p_accept_old_checksums=>false
 ,p_max_session_length_sec=>86400
 ,p_max_session_idle_sec=>86400
@@ -57,16 +58,15 @@ wwv_flow_api.create_flow(
 ,p_exact_substitutions_only=>'Y'
 ,p_browser_cache=>'N'
 ,p_browser_frame=>'D'
-,p_referrer_policy=>'strict-origin-when-cross-origin'
 ,p_deep_linking=>'Y'
 ,p_rejoin_existing_sessions=>'P'
 ,p_csv_encoding=>'Y'
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211127073716'
+,p_last_upd_yyyymmddhh24miss=>'20211128121126'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>122
+,p_files_version=>126
 ,p_ui_type_name => null
 ,p_print_server_type=>'INSTANCE'
 );

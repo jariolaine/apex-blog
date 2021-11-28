@@ -213,7 +213,7 @@ wwv_flow_api.create_message(
 ,p_name=>'BLOG_HELP_G_RSS_URL'
 ,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<span class="u-bold">%0:</span>',
-'<p>Specify custom RSS feed URL. If empty, default pubic application RSS feed is used.</p>'))
+'<p>Specify custom RSS feed URL. If empty, default public application RSS feed is used.</p>'))
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(61250680749871346)

@@ -15,7 +15,7 @@ wwv_flow_api.create_shortcut(
  p_id=>wwv_flow_api.id(63949057880193518)
 ,p_shortcut_name=>'SIGN_IN_USING_ANOTHER_IDENTITY_PROVIDER'
 ,p_shortcut_type=>'HTML_TEXT'
-,p_shortcut=>'<p class="u-textCenter u-bold margin-top-lg">Sign in Using Another Identity Provider</p>'
+,p_shortcut=>'<div class="z-hr-section">OR</div>'
 );
 wwv_flow_api.component_end;
 end;
