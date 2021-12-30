@@ -21,37 +21,38 @@ as
 --                              sitemap_categories
 --                              sitemap_archives
 --                              sitemap_atags
---    Jari Laine 30.10.2021  - Changed procedure sitemap_main to use view apex_application_pages
---    Jari Laine 13.11.2021  - Changed procedure rss
+--    Jari Laine 30.10.2021 - Changed procedure sitemap_main to use view apex_application_pages
+--    Jari Laine 13.11.2021 - Changed procedure rss
+--    Jari Laine 30.12.2021 - Changed procedure rss_xsl. CSS file name moved to application settings
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "rss.xml"
   procedure rss(
-    p_app_name  in varchar2,
-    p_app_desc  in varchar2,
-    p_lang      in varchar2 default 'en'
+    p_app_name    in varchar2,
+    p_app_desc    in varchar2,
+    p_lang        in varchar2 default 'en'
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "rss.xsl"
   procedure rss_xsl(
-    p_ws_images in varchar2
+    p_ws_images   in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "sitemap-index.xml"
   procedure sitemap_index(
-    p_app_id        in varchar2,
-    p_app_page_id   in varchar2
+    p_app_id      in varchar2,
+    p_app_page_id in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "sitemap-main.xml"
   procedure sitemap_main(
-    p_app_id        in varchar2,
-    p_page_group    in varchar2
+    p_app_id      in varchar2,
+    p_page_group  in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -202,7 +203,7 @@ as
     l_css := apex_util.host_url('APEX_PATH');
     l_css := substr( l_css, instr( l_css, '/', 1, 3 ) );
     l_css := l_css || p_ws_images;
-    l_css := l_css || blog_util.get_attribute_value( 'G_RSS_XSL_CSS_URL' );
+    l_css := l_css || apex_app_setting.get_value( 'BLOG_RSS_XSL_CSS' );
 
     l_xml :=
       sys.xmltype.createxml('

@@ -11,7 +11,13 @@ wwv_flow_api.component_begin (
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-null;
+wwv_flow_api.create_app_setting(
+ p_id=>wwv_flow_api.id(19760760551290112)
+,p_name=>'BLOG_RSS_XSL_CSS'
+,p_value=>'css/rss-xsl.min.css'
+,p_is_required=>'Y'
+,p_comments=>'RSS feed HTML transformation CSS'
+);
 wwv_flow_api.component_end;
 end;
 /

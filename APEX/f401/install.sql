@@ -10,6 +10,9 @@ prompt --install
 @@application/shared_components/navigation/lists/navigation_menu.sql
 @@application/shared_components/files/app_icon_css.sql
 @@application/shared_components/files/app_icon_svg.sql
+@@application/shared_components/files/css_style_min_css.sql
+@@application/shared_components/files/js_blog_min_js.sql
+@@application/shared_components/files/css_rss_xsl_min_css.sql
 @@application/shared_components/files/ico_apple_touch_icon_png.sql
 @@application/shared_components/files/ico_favicon_32x32_png.sql
 @@application/shared_components/files/ico_favicon_16x16_png.sql
@@ -39,6 +42,7 @@ prompt --install
 @@application/shared_components/user_interface/lovs/login_remember_username.sql
 @@application/pages/page_groups.sql
 @@application/comments.sql
+@@application/shared_components/navigation/breadcrumbs/breadcrumb.sql
 @@application/shared_components/navigation/breadcrumbentry.sql
 @@application/shared_components/user_interface/templates/page/master_detail.sql
 @@application/shared_components/user_interface/templates/page/modal_dialog.sql

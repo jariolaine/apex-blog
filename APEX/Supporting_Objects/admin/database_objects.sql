@@ -1257,6 +1257,7 @@ as
 --    Jari Laine 19.05.2020 - Removed global constants
 --    Jari Laine 23.05.2020 - Modifications to remove ORDS depency
 --    Jari Laine 05.11.2020 - Procedure render_dynamic_content
+--    Jari Laine 18.12.2021 - Procedure redirect_search
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1341,6 +1342,14 @@ as
 --  public app page 1003 Ajax Callback process "download"
   procedure download_file (
     p_file_name       in varchar2
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+-- public app application process Redirect to search page
+  procedure redirect_search(
+    p_value           in varchar2,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null
   );
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
@@ -2078,6 +2087,30 @@ as
   end download_file;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  procedure redirect_search(
+    p_value         in varchar2,
+    p_app_id        in varchar2 default null,
+    p_session       in varchar2 default null
+  )
+  as
+  begin
+    -- Get search page URL and redirect if there there is string for search
+    --if p_value is not null then
+      apex_util.redirect_url (
+        apex_page.get_url(
+           p_application => p_app_id
+          ,p_page        => 'SEARCH'
+          ,p_session     => p_session
+--          ,p_clear_cache => 'RP'
+          ,p_items       => 'P0_SEARCH'
+          ,p_values      => p_value
+          ,p_plain_url   => true
+        )
+      );
+    --end if;
+  end redirect_search;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
 CREATE OR REPLACE package "BLOG_CM"
@@ -2497,7 +2530,7 @@ as
   exception when no_data_found
   then
     -- fetch user group name that is used for admin app authorization
-    l_authz_grp := blog_util.get_attribute_value( 'G_ADMIN_APP_AUTHZ_GROUP' );
+    l_authz_grp := apex_app_setting.get_value( 'ADMIN_APP_AUTHZ_GROUP' );
     -- verify user is authorized
     if apex_util.current_user_in_group( l_authz_grp )
     then
@@ -3524,6 +3557,7 @@ as
 --                            and removed global constants from blog_util package
 --    Jari Laine 23.05.2020 - Removed default from function get_tab parameter p_app_page_id
 --    Jari Laine 13.11.2021 - New funtions get_sitemap_index, get_rss and get get_rss_xsl
+--    Jari Laine 18.12.2021 - Moved procedure redirect_search to package blog_util.
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3652,14 +3686,6 @@ as
     p_app_id          in varchar2 default null,
     p_app_page_id     in varchar2 default 'PGM'
   ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---
-  procedure redirect_search(
-    p_value           in varchar2,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null
-  );
 --------------------------------------------------------------------------------
 end "BLOG_URL";
 /
@@ -4040,36 +4066,12 @@ as
         p_application => p_app_id
         ,p_page => p_app_page_id
         ,p_session => null
-        ,p_request => 'application_process=sitemap-index.xsl'
+        ,p_request => 'application_process=sitemap-index.xml'
       );
 
     return l_sitemap_url;
 
   end get_sitemap_index;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure redirect_search(
-    p_value         in varchar2,
-    p_app_id        in varchar2 default null,
-    p_session       in varchar2 default null
-  )
-  as
-  begin
-    -- Get search page URL and redirect if there there is string for search
-    --if p_value is not null then
-      apex_util.redirect_url (
-        apex_page.get_url(
-           p_application => p_app_id
-          ,p_page        => 'SEARCH'
-          ,p_session     => p_session
---          ,p_clear_cache => 'RP'
-          ,p_items       => 'P0_SEARCH'
-          ,p_values      => p_value
-          ,p_plain_url   => true
-        )
-      );
-    --end if;
-  end redirect_search;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_URL";
@@ -4746,6 +4748,8 @@ as
 --  pub app shortcut BLOG_META_ROBOTS_NOINDEX
   function get_robots_noindex_meta return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_tag_anchor(
     p_tag_id              in number,
     p_app_id              in varchar2,
@@ -5230,37 +5234,38 @@ as
 --                              sitemap_categories
 --                              sitemap_archives
 --                              sitemap_atags
---    Jari Laine 30.10.2021  - Changed procedure sitemap_main to use view apex_application_pages
---    Jari Laine 13.11.2021  - Changed procedure rss
+--    Jari Laine 30.10.2021 - Changed procedure sitemap_main to use view apex_application_pages
+--    Jari Laine 13.11.2021 - Changed procedure rss
+--    Jari Laine 30.12.2021 - Changed procedure rss_xsl. CSS file name moved to application settings
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "rss.xml"
   procedure rss(
-    p_app_name  in varchar2,
-    p_app_desc  in varchar2,
-    p_lang      in varchar2 default 'en'
+    p_app_name    in varchar2,
+    p_app_desc    in varchar2,
+    p_lang        in varchar2 default 'en'
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "rss.xsl"
   procedure rss_xsl(
-    p_ws_images in varchar2
+    p_ws_images   in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "sitemap-index.xml"
   procedure sitemap_index(
-    p_app_id        in varchar2,
-    p_app_page_id   in varchar2
+    p_app_id      in varchar2,
+    p_app_page_id in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "sitemap-main.xml"
   procedure sitemap_main(
-    p_app_id        in varchar2,
-    p_page_group    in varchar2
+    p_app_id      in varchar2,
+    p_page_group  in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -5411,7 +5416,7 @@ as
     l_css := apex_util.host_url('APEX_PATH');
     l_css := substr( l_css, instr( l_css, '/', 1, 3 ) );
     l_css := l_css || p_ws_images;
-    l_css := l_css || blog_util.get_attribute_value( 'G_RSS_XSL_CSS_URL' );
+    l_css := l_css || apex_app_setting.get_value( 'BLOG_RSS_XSL_CSS' );
 
     l_xml :=
       sys.xmltype.createxml('

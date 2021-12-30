@@ -32,9 +32,8 @@ wwv_flow_api.create_page(
 ,p_rejoin_existing_sessions=>'N'
 ,p_read_only_when_type=>'ITEM_IS_NULL'
 ,p_read_only_when=>'P1001_POST_ID'
-,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211121092717'
+,p_last_upd_yyyymmddhh24miss=>'20211230181250'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -343,7 +342,6 @@ wwv_flow_api.create_page_validation(
 ,p_validation_condition_type=>'ITEM_IS_NOT_NULL'
 ,p_associated_item=>wwv_flow_api.id(6286425900551659)
 ,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
-,p_required_patch=>-wwv_flow_api.id(37511226776078888)
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(2754144221851926)

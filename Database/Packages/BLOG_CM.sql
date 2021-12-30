@@ -415,7 +415,7 @@ as
   exception when no_data_found
   then
     -- fetch user group name that is used for admin app authorization
-    l_authz_grp := blog_util.get_attribute_value( 'G_ADMIN_APP_AUTHZ_GROUP' );
+    l_authz_grp := apex_app_setting.get_value( 'ADMIN_APP_AUTHZ_GROUP' );
     -- verify user is authorized
     if apex_util.current_user_in_group( l_authz_grp )
     then

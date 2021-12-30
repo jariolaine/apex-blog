@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211121093645'
+,p_last_upd_yyyymmddhh24miss=>'20211211091016'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(76305240814166745)
@@ -193,7 +193,7 @@ wwv_flow_api.create_report_columns(
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(106502470509454426)
 ,p_plug_name=>'Comment'
-,p_region_template_options=>'#DEFAULT#'
+,p_region_template_options=>'#DEFAULT#:t-Form--stretchInputs'
 ,p_plug_template=>wwv_flow_api.id(8475374748518195)
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'BODY'

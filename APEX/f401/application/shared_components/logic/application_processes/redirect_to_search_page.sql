@@ -18,7 +18,7 @@ wwv_flow_api.create_flow_process(
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Redirect to search page'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_url.redirect_search(',
+'#OWNER#.blog_util.redirect_search(',
 '  p_value => :P0_SEARCH',
 ');'))
 ,p_process_clob_language=>'PLSQL'

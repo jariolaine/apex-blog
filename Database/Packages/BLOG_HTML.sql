@@ -26,6 +26,8 @@ as
 --  pub app shortcut BLOG_META_ROBOTS_NOINDEX
   function get_robots_noindex_meta return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--
   function get_tag_anchor(
     p_tag_id              in number,
     p_app_id              in varchar2,

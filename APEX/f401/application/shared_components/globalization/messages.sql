@@ -25,11 +25,6 @@ wwv_flow_api.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(37505555105749125)
-,p_name=>'BLOG_EMAIL_VALIDATION_API_SQLERRM'
-,p_message_text=>'Email validation REST API returned error.'
-);
-wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(7036756648298659)
 ,p_name=>'BLOG_GENERIC_ERROR'
 ,p_message_text=>'Ooops... We are sorry! Unexpected internal error have occurred. Please try again later.'

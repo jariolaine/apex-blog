@@ -19,6 +19,7 @@ as
 --                            and removed global constants from blog_util package
 --    Jari Laine 23.05.2020 - Removed default from function get_tab parameter p_app_page_id
 --    Jari Laine 13.11.2021 - New funtions get_sitemap_index, get_rss and get get_rss_xsl
+--    Jari Laine 18.12.2021 - Moved procedure redirect_search to package blog_util.
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -147,14 +148,6 @@ as
     p_app_id          in varchar2 default null,
     p_app_page_id     in varchar2 default 'PGM'
   ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---
-  procedure redirect_search(
-    p_value           in varchar2,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null
-  );
 --------------------------------------------------------------------------------
 end "BLOG_URL";
 /
@@ -535,36 +528,12 @@ as
         p_application => p_app_id
         ,p_page => p_app_page_id
         ,p_session => null
-        ,p_request => 'application_process=sitemap-index.xsl'
+        ,p_request => 'application_process=sitemap-index.xml'
       );
 
     return l_sitemap_url;
 
   end get_sitemap_index;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure redirect_search(
-    p_value         in varchar2,
-    p_app_id        in varchar2 default null,
-    p_session       in varchar2 default null
-  )
-  as
-  begin
-    -- Get search page URL and redirect if there there is string for search
-    --if p_value is not null then
-      apex_util.redirect_url (
-        apex_page.get_url(
-           p_application => p_app_id
-          ,p_page        => 'SEARCH'
-          ,p_session     => p_session
---          ,p_clear_cache => 'RP'
-          ,p_items       => 'P0_SEARCH'
-          ,p_values      => p_value
-          ,p_plain_url   => true
-        )
-      );
-    --end if;
-  end redirect_search;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_URL";

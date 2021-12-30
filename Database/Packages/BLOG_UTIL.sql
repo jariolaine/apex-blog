@@ -30,6 +30,7 @@ as
 --    Jari Laine 19.05.2020 - Removed global constants
 --    Jari Laine 23.05.2020 - Modifications to remove ORDS depency
 --    Jari Laine 05.11.2020 - Procedure render_dynamic_content
+--    Jari Laine 18.12.2021 - Procedure redirect_search
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -114,6 +115,14 @@ as
 --  public app page 1003 Ajax Callback process "download"
   procedure download_file (
     p_file_name       in varchar2
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+-- public app application process Redirect to search page
+  procedure redirect_search(
+    p_value           in varchar2,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null
   );
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
@@ -849,6 +858,30 @@ as
     raise;
 
   end download_file;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure redirect_search(
+    p_value         in varchar2,
+    p_app_id        in varchar2 default null,
+    p_session       in varchar2 default null
+  )
+  as
+  begin
+    -- Get search page URL and redirect if there there is string for search
+    --if p_value is not null then
+      apex_util.redirect_url (
+        apex_page.get_url(
+           p_application => p_app_id
+          ,p_page        => 'SEARCH'
+          ,p_session     => p_session
+--          ,p_clear_cache => 'RP'
+          ,p_items       => 'P0_SEARCH'
+          ,p_values      => p_value
+          ,p_plain_url   => true
+        )
+      );
+    --end if;
+  end redirect_search;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";

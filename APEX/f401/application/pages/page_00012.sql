@@ -24,9 +24,8 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_required_patch=>wwv_flow_api.id(30111637437970455)
 ,p_page_is_public_y_n=>'Y'
-,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210921175154'
+,p_last_upd_yyyymmddhh24miss=>'20211216132014'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(30430710498753130)
