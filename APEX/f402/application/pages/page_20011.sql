@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.6'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -14,9 +14,9 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_page(
  p_id=>20011
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
-,p_name=>'Configuration Options'
+,p_name=>'Features'
 ,p_page_mode=>'MODAL'
-,p_step_title=>'Configuration Options'
+,p_step_title=>'Features'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8574375481518289)
 ,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -25,10 +25,10 @@ wwv_flow_api.create_page(
 '  ,btnSave: "btn-ig-save"',
 '});'))
 ,p_step_template=>wwv_flow_api.id(8456403392518180)
-,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
+,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211114131525'
+,p_last_upd_yyyymmddhh24miss=>'20220209232053'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27063074415689131)
@@ -48,14 +48,14 @@ wwv_flow_api.create_page_plug(
 '  ,v1.feature_name          as feature_name',
 '  ,v1.feature_group         as feature_group',
 '  ,v1.build_option_status   as status',
-'  ,#OWNER#.blog_cm.get_help_link(',
-'    p_app_page_id => 20100',
-'    ,p_request    => v1.help_message',
-'    ,p_items      => ''P20100_LABEL''',
-'    ,p_values     => v1.build_option_name',
-'  )                         as help_message',
+'  ,v1.help_message          as help_message',
 '  ,v1.last_updated_on       as last_updated',
 '  ,v1.last_updated_by       as last_updated_by',
+'  ,v1.build_option_name     as build_option_name',
+'  ,case',
+'    when v1.feature_parent is not null',
+'    then ''z-feature--child''',
+'  end                       as feature_name_class',
 'from #OWNER#.blog_v_all_features v1',
 'where 1 = 1',
 'and v1.application_id = :G_PUB_APP_ID',
@@ -78,23 +78,18 @@ wwv_flow_api.create_region_column(
 ,p_source_expression=>'FEATURE_NAME'
 ,p_data_type=>'VARCHAR2'
 ,p_is_query_only=>true
-,p_item_type=>'NATIVE_DISPLAY_ONLY'
+,p_item_type=>'NATIVE_HTML_EXPRESSION'
 ,p_heading=>'Option'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>80
 ,p_value_alignment=>'LEFT'
 ,p_stretch=>'A'
-,p_attribute_02=>'VALUE'
-,p_attribute_05=>'HTML'
-,p_enable_filter=>true
-,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
+,p_attribute_01=>'<span class="&FEATURE_NAME_CLASS.">&FEATURE_NAME.</span>'
 ,p_filter_is_required=>false
-,p_filter_text_case=>'MIXED'
-,p_filter_lov_type=>'NONE'
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.configIG.initColumn'
 ,p_enable_sort_group=>false
-,p_enable_hide=>true
+,p_enable_hide=>false
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 );
@@ -110,24 +105,21 @@ wwv_flow_api.create_region_column(
 ,p_heading_alignment=>'CENTER'
 ,p_display_sequence=>100
 ,p_value_alignment=>'CENTER'
-,p_stretch=>'N'
+,p_stretch=>'A'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'Include'
 ,p_attribute_03=>'Enabled'
 ,p_attribute_04=>'Exclude'
 ,p_attribute_05=>'Disabled'
 ,p_is_required=>false
-,p_enable_filter=>true
-,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
+,p_enable_filter=>false
 ,p_filter_is_required=>false
-,p_filter_text_case=>'MIXED'
-,p_filter_lov_type=>'NONE'
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.configIG.initColumn'
 ,p_enable_sort_group=>false
-,p_enable_hide=>true
+,p_enable_hide=>false
 ,p_is_primary_key=>false
-,p_duplicate_value=>true
+,p_duplicate_value=>false
 ,p_include_in_export=>true
 );
 wwv_flow_api.create_region_column(
@@ -230,17 +222,14 @@ wwv_flow_api.create_region_column(
 ,p_value_alignment=>'LEFT'
 ,p_stretch=>'A'
 ,p_attribute_02=>'VALUE'
-,p_attribute_05=>'HTML'
-,p_enable_filter=>true
-,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
+,p_attribute_05=>'PLAIN'
+,p_enable_filter=>false
 ,p_filter_is_required=>false
-,p_filter_text_case=>'MIXED'
-,p_filter_lov_type=>'NONE'
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.configIG.initColumn'
 ,p_enable_sort_group=>true
 ,p_enable_control_break=>true
-,p_enable_hide=>true
+,p_enable_hide=>false
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
 );
@@ -263,7 +252,7 @@ wwv_flow_api.create_region_column(
 ,p_use_as_row_header=>false
 ,p_enable_sort_group=>true
 ,p_enable_control_break=>true
-,p_enable_hide=>true
+,p_enable_hide=>false
 ,p_is_primary_key=>false
 ,p_include_in_export=>false
 );
@@ -291,19 +280,54 @@ wwv_flow_api.create_region_column(
 ,p_source_expression=>'HELP_MESSAGE'
 ,p_data_type=>'VARCHAR2'
 ,p_is_query_only=>true
-,p_item_type=>'NATIVE_DISPLAY_ONLY'
+,p_item_type=>'NATIVE_LINK'
 ,p_heading=>'Help'
 ,p_heading_alignment=>'CENTER'
 ,p_display_sequence=>90
 ,p_value_alignment=>'CENTER'
-,p_stretch=>'N'
-,p_attribute_02=>'VALUE'
-,p_attribute_05=>'HTML'
+,p_stretch=>'A'
+,p_link_target=>'f?p=&APP_ID.:20100:&SESSION.:&HELP_MESSAGE.:&DEBUG.::P20100_LABEL:&BUILD_OPTION_NAME.'
+,p_link_text=>'<span aria-hidden="true" class="t-Icon fa fa-question-circle-o"></span>'
+,p_link_attributes=>'title="&BTN_TITLE_HELP." aria-label="&BTN_TITLE_HELP." class="t-Button t-Button--noLabel t-Button--icon t-Button--link"'
 ,p_enable_filter=>false
 ,p_filter_is_required=>false
 ,p_use_as_row_header=>false
+,p_javascript_code=>'blog.admin.configIG.initColumn'
 ,p_enable_sort_group=>false
 ,p_enable_hide=>false
+,p_is_primary_key=>false
+,p_include_in_export=>false
+,p_escape_on_http_output=>true
+);
+wwv_flow_api.create_region_column(
+ p_id=>wwv_flow_api.id(65303021591080933)
+,p_name=>'FEATURE_NAME_CLASS'
+,p_source_type=>'DB_COLUMN'
+,p_source_expression=>'FEATURE_NAME_CLASS'
+,p_data_type=>'VARCHAR2'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_HIDDEN'
+,p_display_sequence=>130
+,p_attribute_01=>'Y'
+,p_use_as_row_header=>false
+,p_enable_sort_group=>true
+,p_enable_control_break=>true
+,p_is_primary_key=>false
+,p_include_in_export=>false
+);
+wwv_flow_api.create_region_column(
+ p_id=>wwv_flow_api.id(65303190340080934)
+,p_name=>'BUILD_OPTION_NAME'
+,p_source_type=>'DB_COLUMN'
+,p_source_expression=>'BUILD_OPTION_NAME'
+,p_data_type=>'VARCHAR2'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_HIDDEN'
+,p_display_sequence=>140
+,p_attribute_01=>'Y'
+,p_filter_is_required=>false
+,p_use_as_row_header=>false
+,p_enable_sort_group=>false
 ,p_is_primary_key=>false
 ,p_include_in_export=>false
 );
@@ -375,13 +399,29 @@ wwv_flow_api.create_ig_report_column(
 ,p_is_frozen=>false
 );
 wwv_flow_api.create_ig_report_column(
+ p_id=>wwv_flow_api.id(19868643284695907)
+,p_view_id=>wwv_flow_api.id(27234106973386684)
+,p_display_seq=>10
+,p_column_id=>wwv_flow_api.id(65303021591080933)
+,p_is_visible=>true
+,p_is_frozen=>false
+);
+wwv_flow_api.create_ig_report_column(
+ p_id=>wwv_flow_api.id(19870445556005929)
+,p_view_id=>wwv_flow_api.id(27234106973386684)
+,p_display_seq=>11
+,p_column_id=>wwv_flow_api.id(65303190340080934)
+,p_is_visible=>true
+,p_is_frozen=>false
+);
+wwv_flow_api.create_ig_report_column(
  p_id=>wwv_flow_api.id(27234600908386689)
 ,p_view_id=>wwv_flow_api.id(27234106973386684)
 ,p_display_seq=>2
 ,p_column_id=>wwv_flow_api.id(27063954758689140)
 ,p_is_visible=>true
 ,p_is_frozen=>false
-,p_width=>278
+,p_width=>277
 );
 wwv_flow_api.create_ig_report_column(
  p_id=>wwv_flow_api.id(27235173961386695)
@@ -399,7 +439,7 @@ wwv_flow_api.create_ig_report_column(
 ,p_column_id=>wwv_flow_api.id(27064171681689142)
 ,p_is_visible=>true
 ,p_is_frozen=>false
-,p_width=>97
+,p_width=>112
 );
 wwv_flow_api.create_ig_report_column(
  p_id=>wwv_flow_api.id(27236148784386699)
@@ -444,7 +484,7 @@ wwv_flow_api.create_ig_report_column(
 ,p_column_id=>wwv_flow_api.id(65300131732080904)
 ,p_is_visible=>true
 ,p_is_frozen=>false
-,p_width=>55
+,p_width=>69
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(52996033344836443)
@@ -567,7 +607,6 @@ wwv_flow_api.create_page_process(
 ,p_attribute_04=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_cm.update_feature(',
 '   p_app_id          => :APPLICATION_ID',
-'  ,p_feature_id      => :FEATURE_ID',
 '  ,p_build_option_id => :BUILD_OPTION_ID',
 '  ,p_build_status    => :STATUS',
 ');'))

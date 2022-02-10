@@ -23,20 +23,20 @@ a {
   color: #006ed0;
   text-decoration: none;
 }
-.title a {
+.z-rss--title {
   color: inherit;
   font-size: 2.4rem;
 }
-.description {
+.z-rss--description {
   margin-bottom: 32px;
 }
-.z-post {
+.z-rss--post {
   margin-bottom: 32px;
 }
-.z-post--header h2 {
+.z-rss--postHeader {
   font-size: 1.6rem;
   font-weight: 500;
 }
-.z-post--body {
+.z-rss--postDesc {
   margin: 0;
 }

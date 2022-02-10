@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.6'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -70,7 +70,7 @@ wwv_flow_api.create_page(
 '</ol>',
 ''))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509030601'
+,p_last_upd_yyyymmddhh24miss=>'20220110071201'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -375,18 +375,22 @@ wwv_flow_api.create_page_item(
 ,p_item_plug_id=>wwv_flow_api.id(8640589331194982)
 ,p_item_source_plug_id=>wwv_flow_api.id(8640589331194982)
 ,p_prompt=>'Set Date and Time'
-,p_format_mask=>'&G_USER_INPUT_DATE_TIME_FORMAT.'
+,p_format_mask=>'&G_USER_INPUT_DATE_TIME_FORMAT.  HH24:MI'
 ,p_source=>'PUBLISHED_ON'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
-,p_display_as=>'NATIVE_DATE_PICKER'
+,p_display_as=>'NATIVE_DATE_PICKER_JET'
+,p_cSize=>30
 ,p_field_template=>wwv_flow_api.id(8548656595518243)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
 ,p_help_text=>'Date when post will be published.'
-,p_attribute_04=>'button'
-,p_attribute_05=>'N'
-,p_attribute_07=>'MONTH'
+,p_attribute_01=>'Y'
+,p_attribute_02=>'POPUP'
+,p_attribute_03=>'NONE'
+,p_attribute_06=>'NONE'
+,p_attribute_09=>'N'
+,p_attribute_11=>'Y'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(8793863471610782)

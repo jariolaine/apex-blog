@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.6'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -28,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211121093645'
+,p_last_upd_yyyymmddhh24miss=>'20220209232254'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -48,12 +48,7 @@ wwv_flow_api.create_page_plug(
 '  ,v1.attribute_group           as attribute_group',
 '  ,v1.attribute_desc            as attribute_name',
 '  ,v1.attribute_value           as attribute_value',
-'  ,#OWNER#.blog_cm.get_help_link(',
-'    p_app_page_id => 20100',
-'    ,p_request    => v1.help_message',
-'    ,p_items      => ''P20100_LABEL''',
-'    ,p_values     => v1.attribute_message',
-'  )                             as help_message',
+'  ,v1.help_message              as help_message',
 '  ,case v1.is_nullable',
 '    when 0',
 '    then apex_lang.lang(''Yes'')',
@@ -67,9 +62,17 @@ wwv_flow_api.create_page_plug(
 '    when 0',
 '    then ''z-required''',
 '  end                           as cell_class',
-'  ,int_min                      as int_min',
-'  ,int_max                      as int_max',
+'  ,v1.int_min                   as int_min',
+'  ,v1.int_max                   as int_max',
+'  ,v1.attribute_message         as attribute_message',
+'  ,btn.title_help               as btn_title_help',
 'from #OWNER#.blog_v_all_settings v1',
+'cross join (',
+'  select apex_lang.message(',
+'      p_name => ''BLOG_BTN_TITLE_HELP''',
+'    ) as title_help',
+'  from dual',
+') btn',
 'where 1 = 1',
 'and v1.attribute_group_message != ''INTERNAL'''))
 ,p_plug_source_type=>'NATIVE_IG'
@@ -103,7 +106,7 @@ wwv_flow_api.create_region_column(
 ,p_heading_alignment=>'CENTER'
 ,p_display_sequence=>130
 ,p_value_alignment=>'CENTER'
-,p_stretch=>'N'
+,p_stretch=>'A'
 ,p_attribute_01=>'<div class="z-status-marker z-status-marker--left &CELL_CLASS!ATTR.">&REQUIRED.</div>'
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.configIG.initColumn'
@@ -207,6 +210,7 @@ wwv_flow_api.create_region_column(
 ,p_heading_alignment=>'RIGHT'
 ,p_display_sequence=>80
 ,p_value_alignment=>'RIGHT'
+,p_stretch=>'A'
 ,p_attribute_02=>'VALUE'
 ,p_attribute_05=>'PLAIN'
 ,p_enable_filter=>false
@@ -370,19 +374,52 @@ wwv_flow_api.create_region_column(
 ,p_source_expression=>'HELP_MESSAGE'
 ,p_data_type=>'VARCHAR2'
 ,p_is_query_only=>true
-,p_item_type=>'NATIVE_DISPLAY_ONLY'
+,p_item_type=>'NATIVE_LINK'
 ,p_heading=>'Help'
 ,p_heading_alignment=>'CENTER'
 ,p_display_sequence=>120
 ,p_value_alignment=>'CENTER'
-,p_stretch=>'N'
-,p_attribute_02=>'VALUE'
-,p_attribute_05=>'HTML'
+,p_stretch=>'A'
+,p_link_target=>'f?p=&APP_ID.:20100:&SESSION.:&HELP_MESSAGE.:&DEBUG.::P20100_LABEL:&ATTRIBUTE_MESSAGE.'
+,p_link_text=>'<span aria-hidden="true" class="t-Icon fa fa-question-circle-o"></span>'
+,p_link_attributes=>'title="&BTN_TITLE_HELP." aria-label="&BTN_TITLE_HELP." class="t-Button t-Button--noLabel t-Button--icon t-Button--link"'
 ,p_enable_filter=>false
 ,p_filter_is_required=>false
 ,p_use_as_row_header=>false
+,p_javascript_code=>'blog.admin.configIG.initColumn'
 ,p_enable_sort_group=>false
 ,p_enable_hide=>false
+,p_is_primary_key=>false
+,p_include_in_export=>false
+,p_escape_on_http_output=>true
+);
+wwv_flow_api.create_region_column(
+ p_id=>wwv_flow_api.id(65302727332080930)
+,p_name=>'ATTRIBUTE_MESSAGE'
+,p_source_type=>'DB_COLUMN'
+,p_source_expression=>'ATTRIBUTE_MESSAGE'
+,p_data_type=>'VARCHAR2'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_HIDDEN'
+,p_display_sequence=>210
+,p_attribute_01=>'Y'
+,p_use_as_row_header=>false
+,p_enable_sort_group=>false
+,p_is_primary_key=>false
+,p_include_in_export=>false
+);
+wwv_flow_api.create_region_column(
+ p_id=>wwv_flow_api.id(65302922619080932)
+,p_name=>'BTN_TITLE_HELP'
+,p_source_type=>'DB_COLUMN'
+,p_source_expression=>'BTN_TITLE_HELP'
+,p_data_type=>'VARCHAR2'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_HIDDEN'
+,p_display_sequence=>220
+,p_attribute_01=>'Y'
+,p_use_as_row_header=>false
+,p_enable_sort_group=>false
 ,p_is_primary_key=>false
 ,p_include_in_export=>false
 );
@@ -400,9 +437,8 @@ wwv_flow_api.create_interactive_grid(
 ,p_select_first_row=>false
 ,p_fixed_row_height=>true
 ,p_pagination_type=>'SCROLL'
-,p_show_total_row_count=>false
-,p_show_toolbar=>false
-,p_toolbar_buttons=>null
+,p_show_total_row_count=>true
+,p_show_toolbar=>true
 ,p_enable_save_public_report=>false
 ,p_enable_subscriptions=>true
 ,p_enable_flashback=>false
@@ -431,6 +467,22 @@ wwv_flow_api.create_ig_report_view(
 ,p_srv_exclude_null_values=>false
 ,p_srv_only_display_columns=>true
 ,p_edit_mode=>false
+);
+wwv_flow_api.create_ig_report_column(
+ p_id=>wwv_flow_api.id(19859316506373364)
+,p_view_id=>wwv_flow_api.id(27305179764698519)
+,p_display_seq=>14
+,p_column_id=>wwv_flow_api.id(65302727332080930)
+,p_is_visible=>true
+,p_is_frozen=>false
+);
+wwv_flow_api.create_ig_report_column(
+ p_id=>wwv_flow_api.id(19863933456439475)
+,p_view_id=>wwv_flow_api.id(27305179764698519)
+,p_display_seq=>16
+,p_column_id=>wwv_flow_api.id(65302922619080932)
+,p_is_visible=>true
+,p_is_frozen=>false
 );
 wwv_flow_api.create_ig_report_column(
  p_id=>wwv_flow_api.id(27305635511698520)

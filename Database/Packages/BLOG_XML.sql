@@ -24,6 +24,7 @@ as
 --    Jari Laine 30.10.2021 - Changed procedure sitemap_main to use view apex_application_pages
 --    Jari Laine 13.11.2021 - Changed procedure rss
 --    Jari Laine 30.12.2021 - Changed procedure rss_xsl. CSS file name moved to application settings
+--    Jari Laine 05.01.2021 - Added parameter p_css_file to procedure rss_xsl
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -38,7 +39,8 @@ as
 -- Called from:
 --  public app page 1003 Ajax Callback process "rss.xsl"
   procedure rss_xsl(
-    p_ws_images   in varchar2
+    p_ws_images   in varchar2,
+    p_css_file    in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -192,7 +194,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss_xsl(
-    p_ws_images in varchar2
+    p_ws_images in varchar2,
+    p_css_file  in varchar2
   )
   as
     l_css varchar2(1024);
@@ -203,7 +206,7 @@ as
     l_css := apex_util.host_url('APEX_PATH');
     l_css := substr( l_css, instr( l_css, '/', 1, 3 ) );
     l_css := l_css || p_ws_images;
-    l_css := l_css || apex_app_setting.get_value( 'BLOG_RSS_XSL_CSS' );
+    l_css := l_css || p_css_file;
 
     l_xml :=
       sys.xmltype.createxml('
@@ -222,12 +225,12 @@ as
               <link rel="stylesheet" type="text/css" href="' || l_css || '" />
             </head>
             <body>
-              <h1 class="title"><a href="{ link }"><xsl:value-of select="title" /></a></h1>
-              <p class="description"><xsl:value-of select="description" /></p>
+              <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>
+              <p class="z-rss--description"><xsl:value-of select="description" /></p>
               <xsl:for-each select="./item">
-                <article class="z-post">
-                  <header class="z-post--header">
-                    <h2><a href="{ link }"><xsl:value-of select="title" /></a></h2>
+                <article class="z-rss--post">
+                  <header>
+                    <h2 class="z-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h2>
                   </header>
                   <p class="z-post--body"><xsl:value-of select="description" /></p>
                 </article>
@@ -333,7 +336,8 @@ as
           )
         )
       )
-    as blob encoding 'UTF-8' indent size=2)
+      as blob encoding 'UTF-8' indent size=2
+    )
     into l_xml
     from apex_application_pages v1
     where 1 = 1

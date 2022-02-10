@@ -14,7 +14,7 @@ whenever sqlerror exit sql.sqlcode rollback
 begin
 wwv_flow_api.import_begin (
  p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.6'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -43,7 +43,6 @@ prompt APPLICATION 401 - Blog Public Pages
 --       Logic:
 --         Items:                  7
 --         Processes:              2
---         App Settings:           1
 --         Build Options:         20
 --       Navigation:
 --         Lists:                  6
@@ -75,7 +74,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --     Supporting Objects:  Included
 --       Install scripts:          1
 --       Validations:              1
---   Version:         21.1.6
+--   Version:         21.1.7
 --   Instance ID:     9502710254078678
 --
 
@@ -141,9 +140,9 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211230192002'
+,p_last_upd_yyyymmddhh24miss=>'20220210134929'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>137
+,p_files_version=>145
 ,p_ui_type_name => null
 ,p_print_server_type=>'INSTANCE'
 );
@@ -460,15 +459,16 @@ wwv_flow_api.g_varchar2_table(40) := '6E742D2D5469746C657B626F726465722D746F703A
 wwv_flow_api.g_varchar2_table(41) := '436F6E736F6C6173222C224C696265726174696F6E204D6F6E6F222C2242697473747265616D20566572612053616E73204D6F6E6F222C22436F7572696572204E6577222C226D6F6E6F7370616365223B636F6C6F723A766172282D2D75742D636F6D70';
 wwv_flow_api.g_varchar2_table(42) := '6F6E656E742D62616467652D746578742D636F6C6F72293B666F6E742D73697A653A312E3172656D3B7461622D73697A653A323B6F766572666C6F772D783A6175746F3B646973706C61793A626C6F636B3B70616464696E673A31656D20312E35656D3B';
 wwv_flow_api.g_varchar2_table(43) := '6D617267696E3A387078203870782031387078203870783B626F726465722D77696474683A766172282D2D75742D636F6D706F6E656E742D696E6E65722D626F726465722D7769647468293B626F726465722D7374796C653A736F6C69643B626F726465';
-wwv_flow_api.g_varchar2_table(44) := '722D636F6C6F723A766172282D2D75742D636F6D706F6E656E742D696E6E65722D626F726465722D636F6C6F72293B626F726465722D6C6566743A2E34656D20736F6C696420233663653236633B626F726465722D7261646975733A766172282D2D7574';
-wwv_flow_api.g_varchar2_table(45) := '2D636F6D706F6E656E742D62616467652D626F726465722D726164697573293B6261636B67726F756E642D636F6C6F723A766172282D2D75742D636F6D706F6E656E742D62616467652D6261636B67726F756E642D636F6C6F72297D7072652E7A2D7072';
-wwv_flow_api.g_varchar2_table(46) := '6F6772616D2D636F646520636F64657B666F6E742D66616D696C793A696E68657269743B666F6E742D73697A653A696E68657269747D2E7A2D617574686F722D636F6E7461696E65727B646973706C61793A666C65787D2E7A2D617574686F722D6C6566';
-wwv_flow_api.g_varchar2_table(47) := '747B6F726465723A313B646973706C61793A666C65783B666C65782D646972656374696F6E3A636F6C756D6E7D2E7A2D617574686F722D72696768747B6F726465723A323B70616464696E673A302030203020312E3672656D7D2E7A2D617574686F722D';
-wwv_flow_api.g_varchar2_table(48) := '6261646765737B646973706C61793A666C65783B666C65782D646972656374696F6E3A636F6C756D6E7D2E7A2D617574686F722D6261646765733E2A7B6D617267696E3A3172656D20307D406D65646961206F6E6C792073637265656E20616E6420286D';
-wwv_flow_api.g_varchar2_table(49) := '61782D77696474683A3634307078297B2E7A2D617574686F722D636F6E7461696E65727B666C65782D646972656374696F6E3A636F6C756D6E3B616C69676E2D6974656D733A63656E7465727D2E7A2D617574686F722D72696768747B70616464696E67';
-wwv_flow_api.g_varchar2_table(50) := '3A312E3672656D20307D2E7A2D617574686F722D6261646765737B70616464696E673A312E3672656D20303B616C69676E2D6974656D733A63656E7465727D7D2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D626F64797B77696474683A307D';
-wwv_flow_api.g_varchar2_table(51) := '2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D636F6D6D656E747B6F766572666C6F772D777261703A627265616B2D776F72647D2E7A2D746578742D777261707B77686974652D73706163653A7072652D777261707D2E7A2D68696464656E7B';
-wwv_flow_api.g_varchar2_table(52) := '646973706C61793A6E6F6E6521696D706F7274616E743B7669736962696C6974793A68696464656E21696D706F7274616E747D';
+wwv_flow_api.g_varchar2_table(44) := '722D636F6C6F723A766172282D2D75742D636F6D706F6E656E742D696E6E65722D626F726465722D636F6C6F72293B626F726465722D6C6566742D77696474683A2E34656D3B626F726465722D6C6566742D7374796C653A736F6C69643B626F72646572';
+wwv_flow_api.g_varchar2_table(45) := '2D6C6566742D636F6C6F723A766172282D2D752D636F6C6F722D3335293B626F726465722D7261646975733A766172282D2D75742D636F6D706F6E656E742D62616467652D626F726465722D726164697573293B6261636B67726F756E642D636F6C6F72';
+wwv_flow_api.g_varchar2_table(46) := '3A766172282D2D75742D636F6D706F6E656E742D62616467652D6261636B67726F756E642D636F6C6F72297D7072652E7A2D70726F6772616D2D636F646520636F64657B666F6E742D66616D696C793A696E68657269743B666F6E742D73697A653A696E';
+wwv_flow_api.g_varchar2_table(47) := '68657269747D2E7A2D617574686F722D636F6E7461696E65727B646973706C61793A666C65787D2E7A2D617574686F722D6C6566747B6F726465723A313B646973706C61793A666C65783B666C65782D646972656374696F6E3A636F6C756D6E7D2E7A2D';
+wwv_flow_api.g_varchar2_table(48) := '617574686F722D72696768747B6F726465723A323B70616464696E673A302030203020312E3672656D7D2E7A2D617574686F722D6261646765737B646973706C61793A666C65783B666C65782D646972656374696F6E3A636F6C756D6E7D2E7A2D617574';
+wwv_flow_api.g_varchar2_table(49) := '686F722D6261646765733E2A7B6D617267696E3A3172656D20307D406D65646961206F6E6C792073637265656E20616E6420286D61782D77696474683A3634307078297B2E7A2D617574686F722D636F6E7461696E65727B666C65782D64697265637469';
+wwv_flow_api.g_varchar2_table(50) := '6F6E3A636F6C756D6E3B616C69676E2D6974656D733A63656E7465727D2E7A2D617574686F722D72696768747B70616464696E673A312E3672656D20307D2E7A2D617574686F722D6261646765737B70616464696E673A312E3672656D20303B616C6967';
+wwv_flow_api.g_varchar2_table(51) := '6E2D6974656D733A63656E7465727D7D2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D626F64797B77696474683A307D2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D636F6D6D656E747B6F766572666C6F772D777261703A627265';
+wwv_flow_api.g_varchar2_table(52) := '616B2D776F72647D2E7A2D746578742D777261707B77686974652D73706163653A7072652D777261707D2E7A2D68696464656E7B646973706C61793A6E6F6E6521696D706F7274616E743B7669736962696C6974793A68696464656E21696D706F727461';
+wwv_flow_api.g_varchar2_table(53) := '6E747D';
 wwv_flow_api.create_app_static_file(
  p_id=>wwv_flow_api.id(19513274305362587)
 ,p_file_name=>'css/style.min.css'
@@ -501,9 +501,9 @@ wwv_flow_api.g_varchar2_table := wwv_flow_api.empty_varchar2_table;
 wwv_flow_api.g_varchar2_table(1) := '68746D6C7B666F6E742D73697A653A36322E35257D68746D6C7B666F6E742D66616D696C793A73616E732D73657269667D626F64797B666F6E742D66616D696C793A2D6170706C652D73797374656D2C426C696E6B4D616353797374656D466F6E742C22';
 wwv_flow_api.g_varchar2_table(2) := '5365676F65205549222C526F626F746F2C4F787967656E2C5562756E74752C43616E746172656C6C2C22466972612053616E73222C2244726F69642053616E73222C2248656C766574696361204E657565222C73616E732D73657269663B666F6E742D73';
 wwv_flow_api.g_varchar2_table(3) := '697A653A312E3472656D3B6C696E652D6865696768743A3272656D3B6261636B67726F756E642D636F6C6F723A236664666466643B636F6C6F723A233234323432343B6D617267696E3A313670787D406D65646961286D696E2D77696474683A38303070';
-wwv_flow_api.g_varchar2_table(4) := '78297B626F64797B6D617267696E3A31367078206175746F3B6D61782D77696474683A37363070783B70616464696E673A3020313670787D7D617B636F6C6F723A233030366564303B746578742D6465636F726174696F6E3A6E6F6E657D2E7469746C65';
-wwv_flow_api.g_varchar2_table(5) := '20617B636F6C6F723A696E68657269743B666F6E742D73697A653A322E3472656D7D2E6465736372697074696F6E7B6D617267696E2D626F74746F6D3A333270787D2E7A2D706F73747B6D617267696E2D626F74746F6D3A333270787D2E7A2D706F7374';
-wwv_flow_api.g_varchar2_table(6) := '2D2D6865616465722068327B666F6E742D73697A653A312E3672656D3B666F6E742D7765696768743A3530307D2E7A2D706F73742D2D626F64797B6D617267696E3A307D';
+wwv_flow_api.g_varchar2_table(4) := '78297B626F64797B6D617267696E3A31367078206175746F3B6D61782D77696474683A37363070783B70616464696E673A3020313670787D7D617B636F6C6F723A233030366564303B746578742D6465636F726174696F6E3A6E6F6E657D2E7A2D727373';
+wwv_flow_api.g_varchar2_table(5) := '2D2D7469746C657B636F6C6F723A696E68657269743B666F6E742D73697A653A322E3472656D7D2E7A2D7273732D2D6465736372697074696F6E7B6D617267696E2D626F74746F6D3A333270787D2E7A2D7273732D2D706F73747B6D617267696E2D626F';
+wwv_flow_api.g_varchar2_table(6) := '74746F6D3A333270787D2E7A2D7273732D2D706F73744865616465727B666F6E742D73697A653A312E3672656D3B666F6E742D7765696768743A3530307D2E7A2D7273732D2D706F7374446573637B6D617267696E3A307D';
 wwv_flow_api.create_app_static_file(
  p_id=>wwv_flow_api.id(19760172016137489)
 ,p_file_name=>'css/rss-xsl.min.css'
@@ -1287,10 +1287,10 @@ wwv_flow_api.g_varchar2_table(1) := '68746D6C207B0A2020666F6E742D73697A653A20363
 wwv_flow_api.g_varchar2_table(2) := '2C20426C696E6B4D616353797374656D466F6E742C20225365676F65205549222C20526F626F746F2C204F787967656E2C205562756E74752C2043616E746172656C6C2C2022466972612053616E73222C202244726F69642053616E73222C202248656C';
 wwv_flow_api.g_varchar2_table(3) := '766574696361204E657565222C2073616E732D73657269663B0A2020666F6E742D73697A653A20312E3472656D3B0A20206C696E652D6865696768743A203272656D3B0A20206261636B67726F756E642D636F6C6F723A20236664666466643B0A202063';
 wwv_flow_api.g_varchar2_table(4) := '6F6C6F723A20233234323432343B0A20206D617267696E3A20313670783B0A7D0A406D6564696120286D696E2D77696474683A20383030707829207B0A2020626F6479207B0A202020206D617267696E3A2031367078206175746F3B0A202020206D6178';
-wwv_flow_api.g_varchar2_table(5) := '2D77696474683A2037363070783B0A2020202070616464696E673A2030707820313670783B0A20207D0A7D0A61207B0A2020636F6C6F723A20233030366564303B0A2020746578742D6465636F726174696F6E3A206E6F6E653B0A7D0A2E7469746C6520';
-wwv_flow_api.g_varchar2_table(6) := '61207B0A2020636F6C6F723A20696E68657269743B0A2020666F6E742D73697A653A20322E3472656D3B0A7D0A2E6465736372697074696F6E207B0A20206D617267696E2D626F74746F6D3A20333270783B0A7D0A2E7A2D706F7374207B0A20206D6172';
-wwv_flow_api.g_varchar2_table(7) := '67696E2D626F74746F6D3A20333270783B0A7D0A2E7A2D706F73742D2D686561646572206832207B0A2020666F6E742D73697A653A20312E3672656D3B0A2020666F6E742D7765696768743A203530303B0A7D0A2E7A2D706F73742D2D626F6479207B0A';
-wwv_flow_api.g_varchar2_table(8) := '20206D617267696E3A20303B0A7D0A';
+wwv_flow_api.g_varchar2_table(5) := '2D77696474683A2037363070783B0A2020202070616464696E673A2030707820313670783B0A20207D0A7D0A61207B0A2020636F6C6F723A20233030366564303B0A2020746578742D6465636F726174696F6E3A206E6F6E653B0A7D0A2E7A2D7273732D';
+wwv_flow_api.g_varchar2_table(6) := '2D7469746C65207B0A2020636F6C6F723A20696E68657269743B0A2020666F6E742D73697A653A20322E3472656D3B0A7D0A2E7A2D7273732D2D6465736372697074696F6E207B0A20206D617267696E2D626F74746F6D3A20333270783B0A7D0A2E7A2D';
+wwv_flow_api.g_varchar2_table(7) := '7273732D2D706F7374207B0A20206D617267696E2D626F74746F6D3A20333270783B0A7D0A2E7A2D7273732D2D706F7374486561646572207B0A2020666F6E742D73697A653A20312E3672656D3B0A2020666F6E742D7765696768743A203530303B0A7D';
+wwv_flow_api.g_varchar2_table(8) := '0A2E7A2D7273732D2D706F737444657363207B0A20206D617267696E3A20303B0A7D0A';
 wwv_flow_api.create_app_static_file(
  p_id=>wwv_flow_api.id(42961659162402615)
 ,p_file_name=>'css/rss-xsl.css'
@@ -1388,20 +1388,20 @@ wwv_flow_api.g_varchar2_table(58) := '6561723A20626F74683B0A2020666F6E742D66616D
 wwv_flow_api.g_varchar2_table(59) := '7265616D20566572612053616E73204D6F6E6F222C2022436F7572696572204E6577222C20226D6F6E6F7370616365223B0A2020636F6C6F723A20766172282D2D75742D636F6D706F6E656E742D62616467652D746578742D636F6C6F72293B0A202066';
 wwv_flow_api.g_varchar2_table(60) := '6F6E742D73697A653A20312E3172656D3B0A20207461622D73697A653A20323B0A20206F766572666C6F772D783A206175746F3B0A2020646973706C61793A20626C6F636B3B0A202070616464696E673A2031656D20312E35656D3B0A20206D61726769';
 wwv_flow_api.g_varchar2_table(61) := '6E3A20387078203870782031387078203870783B0A2020626F726465722D77696474683A20766172282D2D75742D636F6D706F6E656E742D696E6E65722D626F726465722D7769647468293B0A2020626F726465722D7374796C653A20736F6C69643B0A';
-wwv_flow_api.g_varchar2_table(62) := '2020626F726465722D636F6C6F723A20766172282D2D75742D636F6D706F6E656E742D696E6E65722D626F726465722D636F6C6F72293B0A2020626F726465722D6C6566743A20302E34656D20736F6C696420233663653236633B0A2020626F72646572';
-wwv_flow_api.g_varchar2_table(63) := '2D7261646975733A20766172282D2D75742D636F6D706F6E656E742D62616467652D626F726465722D726164697573293B0A20206261636B67726F756E642D636F6C6F723A20766172282D2D75742D636F6D706F6E656E742D62616467652D6261636B67';
-wwv_flow_api.g_varchar2_table(64) := '726F756E642D636F6C6F72293B0A7D0A7072652E7A2D70726F6772616D2D636F646520636F6465207B0A2020666F6E742D66616D696C793A20696E68657269743B0A2020666F6E742D73697A653A20696E68657269743B0A7D0A2F2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(65) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A2041626F757420636F6E74656E740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D617574686F722D636F6E74';
-wwv_flow_api.g_varchar2_table(66) := '61696E6572207B0A2020646973706C61793A20666C65783B0A7D0A2E7A2D617574686F722D6C656674207B0A20206F726465723A20313B0A2020646973706C61793A20666C65783B0A2020666C65782D646972656374696F6E3A20636F6C756D6E3B0A7D';
-wwv_flow_api.g_varchar2_table(67) := '0A2E7A2D617574686F722D7269676874207B0A20206F726465723A20323B0A202070616464696E673A20302030203020312E3672656D3B0A7D0A2E7A2D617574686F722D626164676573207B0A2020646973706C61793A20666C65783B0A2020666C6578';
-wwv_flow_api.g_varchar2_table(68) := '2D646972656374696F6E3A20636F6C756D6E3B0A7D0A2E7A2D617574686F722D626164676573203E202A207B0A20206D617267696E3A203172656D20303B0A7D0A406D65646961206F6E6C792073637265656E20616E6420286D61782D77696474683A20';
-wwv_flow_api.g_varchar2_table(69) := '363430707829207B0A20202E7A2D617574686F722D636F6E7461696E6572207B0A20202020666C65782D646972656374696F6E3A20636F6C756D6E3B0A20202020616C69676E2D6974656D733A2063656E7465723B0A20207D0A20202E7A2D617574686F';
-wwv_flow_api.g_varchar2_table(70) := '722D7269676874207B0A2020202070616464696E673A20312E3672656D20303B0A20207D0A20202E7A2D617574686F722D626164676573207B0A2020202070616464696E673A20312E3672656D20303B0A20202020616C69676E2D6974656D733A206365';
-wwv_flow_api.g_varchar2_table(71) := '6E7465723B0A20207D0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A20436F6D6D656E7473207265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(72) := '2A2A2A2A2A2A2A2A2F0A2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D626F6479207B0A202077696474683A20303B0A7D0A2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D636F6D6D656E74207B0A20206F766572666C6F772D7772';
-wwv_flow_api.g_varchar2_table(73) := '61703A20627265616B2D776F72643B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A204D6F646966696572730A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
-wwv_flow_api.g_varchar2_table(74) := '2A2A2A2A2A2A2A2A2F0A2E7A2D746578742D77726170207B0A202077686974652D73706163653A207072652D777261703B0A7D0A2E7A2D68696464656E207B0A2020646973706C61793A206E6F6E6521696D706F7274616E743B0A20207669736962696C';
-wwv_flow_api.g_varchar2_table(75) := '6974793A2068696464656E21696D706F7274616E743B0A7D0A';
+wwv_flow_api.g_varchar2_table(62) := '2020626F726465722D636F6C6F723A20766172282D2D75742D636F6D706F6E656E742D696E6E65722D626F726465722D636F6C6F72293B0A2020626F726465722D6C6566742D77696474683A20302E34656D3B0A2020626F726465722D6C6566742D7374';
+wwv_flow_api.g_varchar2_table(63) := '796C653A20736F6C69643B0A2020626F726465722D6C6566742D636F6C6F723A20766172282D2D752D636F6C6F722D3335293B0A2020626F726465722D7261646975733A20766172282D2D75742D636F6D706F6E656E742D62616467652D626F72646572';
+wwv_flow_api.g_varchar2_table(64) := '2D726164697573293B0A20206261636B67726F756E642D636F6C6F723A20766172282D2D75742D636F6D706F6E656E742D62616467652D6261636B67726F756E642D636F6C6F72293B0A7D0A7072652E7A2D70726F6772616D2D636F646520636F646520';
+wwv_flow_api.g_varchar2_table(65) := '7B0A2020666F6E742D66616D696C793A20696E68657269743B0A2020666F6E742D73697A653A20696E68657269743B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A2041626F757420636F';
+wwv_flow_api.g_varchar2_table(66) := '6E74656E740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D617574686F722D636F6E7461696E6572207B0A2020646973706C61793A20666C65783B0A7D0A2E7A2D617574686F722D6C6566';
+wwv_flow_api.g_varchar2_table(67) := '74207B0A20206F726465723A20313B0A2020646973706C61793A20666C65783B0A2020666C65782D646972656374696F6E3A20636F6C756D6E3B0A7D0A2E7A2D617574686F722D7269676874207B0A20206F726465723A20323B0A202070616464696E67';
+wwv_flow_api.g_varchar2_table(68) := '3A20302030203020312E3672656D3B0A7D0A2E7A2D617574686F722D626164676573207B0A2020646973706C61793A20666C65783B0A2020666C65782D646972656374696F6E3A20636F6C756D6E3B0A7D0A2E7A2D617574686F722D626164676573203E';
+wwv_flow_api.g_varchar2_table(69) := '202A207B0A20206D617267696E3A203172656D20303B0A7D0A406D65646961206F6E6C792073637265656E20616E6420286D61782D77696474683A20363430707829207B0A20202E7A2D617574686F722D636F6E7461696E6572207B0A20202020666C65';
+wwv_flow_api.g_varchar2_table(70) := '782D646972656374696F6E3A20636F6C756D6E3B0A20202020616C69676E2D6974656D733A2063656E7465723B0A20207D0A20202E7A2D617574686F722D7269676874207B0A2020202070616464696E673A20312E3672656D20303B0A20207D0A20202E';
+wwv_flow_api.g_varchar2_table(71) := '7A2D617574686F722D626164676573207B0A2020202070616464696E673A20312E3672656D20303B0A20202020616C69676E2D6974656D733A2063656E7465723B0A20207D0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(72) := '2A2A2A2A2A2A2A2A2A2A2A0A2A20436F6D6D656E7473207265706F72740A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D626F6479207B0A';
+wwv_flow_api.g_varchar2_table(73) := '202077696474683A20303B0A7D0A2E7A2D636F6D6D656E74202E742D436F6D6D656E74732D636F6D6D656E74207B0A20206F766572666C6F772D777261703A20627265616B2D776F72643B0A7D0A2F2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A';
+wwv_flow_api.g_varchar2_table(74) := '2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A0A2A204D6F646966696572730A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2F0A2E7A2D746578742D77726170207B0A202077686974652D73706163653A20';
+wwv_flow_api.g_varchar2_table(75) := '7072652D777261703B0A7D0A2E7A2D68696464656E207B0A2020646973706C61793A206E6F6E6521696D706F7274616E743B0A20207669736962696C6974793A2068696464656E21696D706F7274616E743B0A7D0A';
 wwv_flow_api.create_app_static_file(
  p_id=>wwv_flow_api.id(64756233564329013)
 ,p_file_name=>'css/style.css'
@@ -1607,13 +1607,7 @@ end;
 /
 prompt --application/shared_components/logic/application_settings
 begin
-wwv_flow_api.create_app_setting(
- p_id=>wwv_flow_api.id(19760760551290112)
-,p_name=>'BLOG_RSS_XSL_CSS'
-,p_value=>'css/rss-xsl.min.css'
-,p_is_required=>'Y'
-,p_comments=>'RSS feed HTML transformation CSS'
-);
+null;
 end;
 /
 prompt --application/shared_components/navigation/tabs/standard
@@ -12947,6 +12941,7 @@ wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(60750107251132123)
 ,p_build_option_name=>'BLOG_FEATURE_ARCHIVE_POST_COUNT'
 ,p_build_option_status=>'INCLUDE'
+,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Show/hide post archive count'
 );
@@ -12954,6 +12949,7 @@ wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(60984441774027659)
 ,p_build_option_name=>'BLOG_FEATURE_CATEGORY_POST_COUNT'
 ,p_build_option_status=>'INCLUDE'
+,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Show/hide category post count'
 );
@@ -13460,7 +13456,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211127074804'
+,p_last_upd_yyyymmddhh24miss=>'20220208081821'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
@@ -15143,7 +15139,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(24626889314854172)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211128081422'
+,p_last_upd_yyyymmddhh24miss=>'20220129072636'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25312085512124215)
@@ -16669,7 +16665,7 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_browser_cache=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211230190735'
+,p_last_upd_yyyymmddhh24miss=>'20220105135913'
 );
 wwv_flow_api.create_page_branch(
  p_id=>wwv_flow_api.id(62674058371144805)
@@ -16702,7 +16698,8 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'rss.xsl'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_xml.rss_xsl(',
-'  p_ws_images => :APP_IMAGES',
+'   p_ws_images  => :APP_IMAGES',
+'  ,p_css_file   => ''css/rss-xsl.min.css''',
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
@@ -17027,59 +17024,52 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_FEATURES',
 '--------------------------------------------------------',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''10'',''BLOG_FEATURE_ALLOW_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''20'',''BLOG_FEATURE_MODERATE_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',''BLOG_FEATURE_ALLOW_COMMENTS'',null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''30'',''BLOG_FEATURE_SUBSCRIBE_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',''BLOG_FEATURE_ALLOW_COMMENTS'',null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''50'',''BLOG_FEATURE_POST_PAGINATION'',''BLOG_FEATURE_GROUP_MISC'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''60'',''BLOG_FEATURE_SEARCH_POSTS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''70'',''BLOG_FEATURE_LATEST_POSTS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''100'',''BLOG_FEATURE_CATEGORY'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''110'',''BLOG_FEATURE_CATEGORY_POST_COUNT'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''BLOG_FEATURE_CATEGORY'',null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''150'',''BLOG_FEATURE_ARCHIVE'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''160'',''BLOG_FEATURE_ARCHIVE_POST_COUNT'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''BLOG_FEATURE_ARCHIVE'',null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''200'',''BLOG_FEATURE_RSS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''210'',''BLOG_FEATURE_LINKS'',''BLOG_FEATURE_GROUP_PAGE'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''220'',''BLOG_FEATURE_SEARCH_LINKS'',''BLOG_FEATURE_GROUP_PAGE'',''BLOG_FEATURE_LINKS'',null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''230'',''BLOG_FEATURE_FILES'',''BLOG_FEATURE_GROUP_PAGE'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''240'',''BLOG_FEATURE_SEARCH_FILES'',''BLOG_FEATURE_GROUP_PAGE'',''BLOG_FEATURE_FILES'',null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''250'',''BLOG_FEATURE_ABOUT'',''BLOG_FEATURE_GROUP_PAGE'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''260'',''BLOG_FEATURE_MODAL_PAGES'',''BLOG_FEATURE_GROUP_MISC'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''0'',''270'',''BLOG_FEATURE_SITEMAP'',''BLOG_FEATURE_GROUP_MISC'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''1010'',''BLOG_ADM_FEATURE_APEX_AUTH'',''BLOG_FEATURE_GROUP_AUTH'',null,null);',
-'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''1020'',''BLOG_ADM_FEATURE_GOOGLE_AUTH'',''BLOG_FEATURE_GROUP_AUTH'',null,null);',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''10'',''BLOG_FEATURE_ALLOW_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',null,''BLOG_HELP_FEATURE_ALLOW_COMMENTS'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''20'',''BLOG_FEATURE_MODERATE_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',''BLOG_FEATURE_ALLOW_COMMENTS'',''BLOG_HELP_FEATURE_M'
+||'ODERATE_COMMENTS'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''30'',''BLOG_FEATURE_SUBSCRIBE_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',''BLOG_FEATURE_ALLOW_COMMENTS'',''BLOG_HELP_FEATURE_'
+||'SUBSCRIBE_COMMENTS'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''50'',''BLOG_FEATURE_POST_PAGINATION'',''BLOG_FEATURE_GROUP_MISC'',null,''BLOG_HELP_FEATURE_POST_PAGINATION'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''60'',''BLOG_FEATURE_SEARCH_POSTS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,''BLOG_HELP_FEATURE_SEARCH_POSTS'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''70'',''BLOG_FEATURE_LATEST_POSTS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,''BLOG_HELP_FEATURE_LATEST_POSTS'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''100'',''BLOG_FEATURE_CATEGORY'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,''BLOG_HELP_FEATURE_CATEGORY'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''110'',''BLOG_FEATURE_CATEGORY_POST_COUNT'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''BLOG_FEATURE_CATEGORY'',''BLOG_HELP_FEATURE_'
+||'CATEGORY_POST_COUNT'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''150'',''BLOG_FEATURE_ARCHIVE'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,''BLOG_HELP_FEATURE_ARCHIVE'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''160'',''BLOG_FEATURE_ARCHIVE_POST_COUNT'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''BLOG_FEATURE_ARCHIVE'',''BLOG_HELP_FEATURE_AR'
+||'CHIVE_POST_COUNT'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''200'',''BLOG_FEATURE_RSS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,''BLOG_HELP_FEATURE_RSS'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''210'',''BLOG_FEATURE_LINKS'',''BLOG_FEATURE_GROUP_PAGE'',null,''BLOG_HELP_FEATURE_LINKS'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''220'',''BLOG_FEATURE_SEARCH_LINKS'',''BLOG_FEATURE_GROUP_PAGE'',''BLOG_FEATURE_LINKS'',''BLOG_HELP_FEATURE_SEARCH_LINKS'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''230'',''BLOG_FEATURE_FILES'',''BLOG_FEATURE_GROUP_PAGE'',null,''BLOG_HELP_FEATURE_FILES'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''240'',''BLOG_FEATURE_SEARCH_FILES'',''BLOG_FEATURE_GROUP_PAGE'',''BLOG_FEATURE_FILES'',''BLOG_HELP_FEATURE_SEARCH_FILES'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''250'',''BLOG_FEATURE_ABOUT'',''BLOG_FEATURE_GROUP_PAGE'',null,''BLOG_HELP_FEATURE_ABOUT'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''260'',''BLOG_FEATURE_MODAL_PAGES'',''BLOG_FEATURE_GROUP_MISC'',null,''BLOG_HELP_FEATURE_MODAL_PAGES'');',
+'insert into blog_features (is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values (''1'',''270'',''BLOG_FEATURE_SITEMAP'',''BLOG_FEATURE_GROUP_MISC'',null,''BLOG_HELP_FEATURE_SITEMAP'');',
 '--',
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,help_message,attribute_value) values (''20'',''1'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,null,null,blog_util.int_to'
-||'_vc2(apex_application_install.get_application_id));',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,help_message,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,null,''Release 4.4.20'
-||'211230'');',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,help_message,attribute_value) values (''70'',''0'',''G_COMMENT_WATCH_MONTHS'',''INTEGER'',''INTERNAL'',null,''1'',''6'',null,''1'');',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,help_message,attribute_value) values (''130'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,null'
-||',''My Blog'');',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,help_message,attribute_value) values (''140'',''0'',''G_APP_DESC'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,null'
-||',''About Almost Everything'');',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,help_message,attribute_value) values (''150'',''1'',''G_APP_EMAIL'',''EMAIL'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,''BLO'
-||'G_HELP_G_APP_EMAIL'',null);',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,help_message,attribute_value) values (''160'',''0'',''G_DATE_FORMAT'',''DATE_FORMAT'',''BLOG_SETTING_GROUP_UI'',null,null,null,n'
-||'ull,''fmDD Mon YYYY'');',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,help_message,attribute_value) values (''170'',''0'',''G_POST_TITLE_DATE_FORMAT'',''DATE_FORMAT'',''BLOG_SETTING_GROUP_UI'',null,'
-||'null,null,null,''fmDay, Month DD, YYYY'');',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,help_message,attribute_value) values (''200'',''0'',''P1_REPORT_ROWS'',''INTEGER'',''BLOG_SETTING_GROUP_REPORTS'',null,''1'',''50'','
-||'null,''5'');',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,help_message,attribute_value) values (''210'',''0'',''P2_REPORT_ROWS'',''INTEGER'',''BLOG_SETTING_GROUP_REPORTS'',null,''1'',''50'','
-||'null,''10'');',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,help_message,attribute_value) values (''230'',''0'',''G_LATEST_POST_ROWS'',''INTEGER'',''BLOG_SETTING_GROUP_REPORTS'',null,''1'','''
-||'20'',null,''5'');',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,help_message,attribute_value) values (''240'',''0'',''G_SEARCH_ROWS'',''INTEGER'',''BLOG_SETTING_GROUP_REPORTS'',null,''1'',''50'',n'
-||'ull,''10'');',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,help_message,attribute_value) values (''300'',''0'',''G_CANONICAL_URL'',''URL'',''BLOG_SETTING_GROUP_SEO'',''trim( rtrim( :ATTRIB'
-||'UTE_VALUE, ''''/'''' ) )'',null,null,''BLOG_HELP_G_CANONICAL_URL'',apex_util.host_url());',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,help_message,attribute_value) values (''310'',''1'',''G_RSS_URL'',''URL'',''BLOG_SETTING_GROUP_SEO'',null,null,null,''BLOG_HELP_G'
-||'_RSS_URL'',null);',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,help_message,attribute_value) values (''320'',''1'',''G_RSS_XSL_URL'',''URL'',''BLOG_SETTING_GROUP_SEO'',null,null,null,null,nul'
-||'l);',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''20'',''1'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,null,blog_util.int_to_vc2(apex_applicat'
+||'ion_install.get_application_id));',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,''Release 4.4.20220210'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''70'',''0'',''G_COMMENT_WATCH_MONTHS'',''INTEGER'',''INTERNAL'',null,''1'',''6'',''1'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''130'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,''My Blog'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''140'',''0'',''G_APP_DESC'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,''About Almost Eve'
+||'rything'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''150'',''1'',''G_APP_EMAIL'',''EMAIL'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,null);',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''160'',''0'',''G_DATE_FORMAT'',''DATE_FORMAT'',''BLOG_SETTING_GROUP_UI'',null,null,null,''fmDD Mon YYYY'
+||''');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''170'',''0'',''G_POST_TITLE_DATE_FORMAT'',''DATE_FORMAT'',''BLOG_SETTING_GROUP_UI'',null,null,null,''fm'
+||'Day, Month DD, YYYY'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''200'',''0'',''P1_REPORT_ROWS'',''INTEGER'',''BLOG_SETTING_GROUP_REPORTS'',null,''1'',''50'',''5'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''210'',''0'',''P2_REPORT_ROWS'',''INTEGER'',''BLOG_SETTING_GROUP_REPORTS'',null,''1'',''50'',''10'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''230'',''0'',''G_LATEST_POST_ROWS'',''INTEGER'',''BLOG_SETTING_GROUP_REPORTS'',null,''1'',''20'',''5'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''240'',''0'',''G_SEARCH_ROWS'',''INTEGER'',''BLOG_SETTING_GROUP_REPORTS'',null,''1'',''50'',''10'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''300'',''0'',''G_CANONICAL_URL'',''URL'',''BLOG_SETTING_GROUP_SEO'',''trim( rtrim( :ATTRIBUTE_VALUE, '''''
+||'/'''' ) )'',null,null,apex_util.host_url());',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''310'',''1'',''G_RSS_URL'',''URL'',''BLOG_SETTING_GROUP_SEO'',null,null,null,null);',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''320'',''1'',''G_RSS_XSL_URL'',''URL'',''BLOG_SETTING_GROUP_SEO'',null,null,null,null);',
 '--',
 '--------------------------------------------------------',
 '--  Inserting into BLOG_INIT_ITEMS',

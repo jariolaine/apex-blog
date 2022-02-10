@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.6'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -170,10 +170,10 @@ wwv_flow_api.create_install_script(
 '  changed_by varchar2( 256 char ) not null,',
 '  is_active number( 1, 0 ) not null,',
 '  display_seq number( 10, 0 ) not null,',
-'  build_option_name varchar2( 256 char ) not null,',
+'  build_option_name varchar2( 128 char ) not null,',
 '  build_option_group varchar2( 256 char ) not null,',
 '  build_option_parent varchar2( 256 char ),',
-'  help_message varchar2( 256 char ),',
+'  help_message varchar2( 256 char ) not null,',
 '  constraint blog_features_pk primary key( id ),',
 '  constraint blog_features_uk1 unique( build_option_name ),',
 '  constraint blog_features_ck1 check( row_version > 0 ),',
@@ -364,14 +364,14 @@ wwv_flow_api.create_install_script(
 '  is_nullable number( 1, 0 ) not null,',
 '  display_seq number( 10, 0 ) not null,',
 '  attribute_group_message varchar2( 256 char ) not null,',
-'  attribute_message varchar2( 256 char ) generated always as ( ''BLOG_SETTING_'' || attribute_name ) virtual not null,',
 '  attribute_name varchar2( 128 char ) not null,',
 '  data_type varchar2( 64 char ) not null,',
 '  attribute_value varchar2( 4000 byte ),',
 '  post_expression varchar2( 4000 byte ),',
 '  int_min number( 2,0 ),',
 '  int_max number( 2,0 ),',
-'  help_message varchar2( 256 byte ),',
+'  attribute_message varchar2( 256 char ) generated always as ( ''BLOG_SETTING_'' || attribute_name ) virtual not null,',
+'  help_message varchar2( 256 char ) generated always as ( ''BLOG_HELP_'' || attribute_name ) virtual not null,',
 '  constraint blog_settings_pk primary key( id ),',
 '  constraint blog_settings_uk1 unique( attribute_name ),',
 '  constraint blog_settings_ck1 check( row_version > 0 ),',
@@ -735,9 +735,7 @@ wwv_flow_api.create_install_script(
 '  ,t1.attribute_name          as attribute_name',
 '  ,t1.attribute_value         as attribute_value',
 '  ,t1.data_type               as data_type',
-'  ,t1.attribute_message       as attribute_message',
-'  ,apex_lang.message(',
-'    p_name => t1.a'))
+'  ,t1.attrib'))
 );
 wwv_flow_api.component_end;
 end;
@@ -745,7 +743,7 @@ end;
 begin
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.6'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -754,7 +752,9 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ttribute_message',
+'ute_message       as attribute_message',
+'  ,apex_lang.message(',
+'    p_name => t1.attribute_message',
 '  )                           as attribute_desc',
 '  ,t1.attribute_group_message as attribute_group_message',
 '  ,apex_lang.message(',
@@ -1559,11 +1559,7 @@ wwv_flow_api.append_to_install_script(
 '',
 '    apex_debug.enter(',
 '      ''blog_util.get_attribute_value''',
-'      ,''p_attribute_name''',
-'      ,p_attribute_name',
-'    );',
-'',
-'    if p_attribute_name is null'))
+'      ,''p_at'))
 );
 null;
 wwv_flow_api.component_end;
@@ -1572,7 +1568,7 @@ end;
 begin
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.6'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -1581,7 +1577,11 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' then',
+'tribute_name''',
+'      ,p_attribute_name',
+'    );',
+'',
+'    if p_attribute_name is null then',
 '      raise no_data_found;',
 '    end if;',
 '',
@@ -2215,7 +2215,7 @@ wwv_flow_api.append_to_install_script(
 '--                            Function get_footer_link_seq renamed to get_modal_page_seq',
 '--                            Removed procedure run_feature_post_expression',
 '--    Jari Laine 18.04.2021 - Function is_email moved to package BLOG_COMM',
-'--    Jari Laine 14.11.2021 - New function get_help_link',
+'--    Jari Laine 05.01.2022 - Removed unused parameters and variables from procedures: post_authentication, update_feature, get_blogger_details and add_blogger',
 '--',
 '--  TO DO:',
 '--    #1  check constraint name that raised dup_val_on_index error',
@@ -2223,10 +2223,8 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
-'--  this function is not used',
-'  procedure post_authentication(',
-'    p_user_email      in varchar2 default null',
-'  );',
+'--  admin app application authentication scheme Google',
+'  procedure post_authentication;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  admin app application processes',
@@ -2372,19 +2370,9 @@ wwv_flow_api.append_to_install_script(
 '--  admin app page 20011 Processing process "Features - Save Interactive Grid Data"',
 '  procedure update_feature(',
 '    p_app_id          in number,',
-'    p_feature_id      in number,',
 '    p_build_option_id in number,',
 '    p_build_status    in varchar2',
 '  );',
-'--------------------------------------------------------------------------------',
-'-- Called from:',
-'--  admin app page 20012 and 20011',
-'  function get_help_link(',
-'    p_app_page_id         in varchar2,',
-'    p_request             in varchar2,',
-'    p_items               in varchar2,',
-'    p_values              in varchar2',
-'  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 'end "BLOG_CM";',
 '/',
@@ -2498,15 +2486,12 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure add_blogger(',
-'    p_app_id    in varchar2,',
 '    p_username  in varchar2,',
 '    p_id        out nocopy number,',
 '    p_name      out nocopy varchar2',
 '  )',
 '  as',
 '    l_max   number;',
-'    l_autz  varchar2(256);',
-'    l_name  varchar2(256);',
 '    l_email varchar2(256);',
 '  begin',
 '',
@@ -2518,25 +2503,29 @@ wwv_flow_api.append_to_install_script(
 '',
 '    l_max := next_seq( l_max );',
 '',
-'    -- fetch user information from APEX users',
-'    select email',
-'      ,v1.first_name || '' '' || v1.last_name as full_name',
-'    into l_email, l_name',
-'    from apex_workspace_apex_users v1',
-'    where 1 = 1',
-'    and v1.user_name = p_username',
-'    ;',
+'    -- get APEX user email',
+'    l_email := apex_util.get_email( p_username => p_username );',
+'',
+'    -- get APEX user first and last name for blogger name',
+'    p_name := apex_string.format(',
+'       p_message  => ''%s %s''',
+'      ,p0         => apex_util.get_first_name( p_username => p_username )',
+'      ,p1         => apex_util.get_last_name( p_username => p_username )',
+'    );',
 '',
 '    -- add new blogger',
 '    insert into blog_bloggers',
-'    ( apex_username, is_active, display_seq, blogger_name, email, publish_desc )',
+'    ( is_active, publish_desc, display_seq, apex_username, blogger_name, email)',
 '    values',
-'    ( p_username, 1, l_max, l_name, l_email, 0 )',
-'    returning id, blogger_name into p_id, p_name',
+'    ( 1, 0, l_max, p_username, p_name, l_email)',
+'    returning id into p_id',
 '    ;',
 '',
 '  end add_blogger;',
-'-------------------------------------------------------------------'))
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'-- Global functions and procedures',
+'----------------------------------------------------------------------'))
 );
 null;
 wwv_flow_api.component_end;
@@ -2545,7 +2534,7 @@ end;
 begin
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.6'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -2554,14 +2543,9 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-------------',
+'----------',
 '--------------------------------------------------------------------------------',
-'-- Global functions and procedures',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure post_authentication(',
-'    p_user_email in varchar2 default null',
-'  )',
+'  procedure post_authentication',
 '  as',
 '    l_group_names apex_t_varchar2;',
 '  begin',
@@ -2595,6 +2579,7 @@ wwv_flow_api.append_to_install_script(
 '    p_name      out nocopy varchar2',
 '  )',
 '  as',
+'    l_app_id    number;',
 '    l_authz_grp varchar2(256);',
 '  begin',
 '',
@@ -2609,18 +2594,27 @@ wwv_flow_api.append_to_install_script(
 '  -- if user not found, check is user authorized use blog',
 '  exception when no_data_found',
 '  then',
-'    -- fetch user group name that is used for admin app authorization',
-'    l_authz_grp := apex_app_setting.get_value( ''ADMIN_APP_AUTHZ_GROUP'' );',
+'',
+'    l_app_id := to_number( p_app_id );',
+'',
+'    -- fetch application authorization scheme name',
+'    select authorization_scheme',
+'    into l_authz_grp',
+'    from apex_applications',
+'    where 1 = 1',
+'    and application_id = l_app_id',
+'    ;',
+'',
 '    -- verify user is authorized',
 '    if apex_util.current_user_in_group( l_authz_grp )',
 '    then',
 '      -- if user is authorized add user to blog_bloggers table',
 '      add_blogger(',
-'         p_app_id => p_app_id',
-'        ,p_username => p_username',
+'         p_username => p_username',
 '        ,p_id => p_id',
 '        ,p_name => p_name',
 '      );',
+'',
 '    end if;',
 '',
 '  end get_blogger_details;',
@@ -3099,6 +3093,7 @@ wwv_flow_api.append_to_install_script(
 '      where 1 = 1',
 '      and x1.tag_id = t1.id',
 '    );',
+'',
 '  end remove_unused_tags;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -3133,6 +3128,7 @@ wwv_flow_api.append_to_install_script(
 '      ,p_body_html',
 '    )',
 '    ;',
+'',
 '  end save_post_preview;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -3149,6 +3145,7 @@ wwv_flow_api.append_to_install_script(
 '      where 1 = 1',
 '      and s.apex_session_id = p.id',
 '    );',
+'',
 '  end purge_post_preview;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -3336,7 +3333,6 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  procedure update_feature(',
 '    p_app_id          in number,',
-'    p_feature_id      in number,',
 '    p_build_option_id in number,',
 '    p_build_status    in varchar2',
 '  )',
@@ -3351,37 +3347,6 @@ wwv_flow_api.append_to_install_script(
 '    );',
 '',
 '  end update_feature;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function get_help_link(',
-'    p_app_page_id in varchar2,',
-'    p_request     in varchar2,',
-'    p_items       in varchar2,',
-'    p_values      in varchar2',
-'  ) return varchar2',
-'  as',
-'    l_button varchar2(4000);',
-'  begin',
-'  if p_request is not null',
-'  then',
-'  l_button := ''<a title="''',
-'    || apex_lang.message(',
-'      p_name => ''BLOG_BTN_TITLE_HELP''',
-'    )',
-'    || ''" class="t-Button t-Button--noLabel t-Button--icon t-Button--link" href="''',
-'    || apex_page.get_url(',
-'      p_page      => p_app_page_id',
-'      ,p_request  => p_request',
-'      ,p_items    => p_items',
-'      ,p_values   => p_values',
-'    )',
-'    || ''">''',
-'    || ''<span aria-hidden="true" class="t-Icon fa fa-question-circle-o"></span>''',
-'    || ''</a>''',
-'    ;',
-'  end if;',
-'  return l_button;',
-'end get_help_link;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 'end "BLOG_CM";',
@@ -3534,25 +3499,7 @@ wwv_flow_api.append_to_install_script(
 '    l_num_1 := round( sys.dbms_random.value( l_min, l_max ) );',
 '',
 '    l_min   := to_number( p_item.attribute_03 );',
-'    l_max   := to_number( p_item.'))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.6'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'attribute_04 );',
+'    l_max   := to_number( p_item.attribute_04 );',
 '    l_num_2 := round( sys.dbms_random.value( l_min, l_max ) );',
 '',
 '    l_data  := ''<span class="z-question">'';',
@@ -3586,7 +3533,25 @@ wwv_flow_api.append_to_install_script(
 '       p_name => p_plugin.attribute_02',
 '      ,p0 => p_item.plain_label',
 '    );',
-'    raise_application_error( -20002 ,  l_err );',
+'    raise_application_error( -20002 ,  l'))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'_err );',
 '    raise;',
 '',
 '  end ajax_math_question_field;',
@@ -4413,24 +4378,6 @@ wwv_flow_api.append_to_install_script(
 '        -- close p tag, insert code block',
 '        -- and open p tag again for text',
 '        p_comment := p_comment',
-''))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.6'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '          || ''</p>''',
 '          || chr(10)',
 '          || l_code_tab(l_code_row)',
@@ -4471,7 +4418,25 @@ wwv_flow_api.append_to_install_script(
 '    p_comment := replace( p_comment, ''<p></p>'' );',
 '',
 '  end build_comment_html;',
-'--------------------------------------------------------------------------------',
+'----------------------------'))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'----------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Global functions and procedures',
 '--------------------------------------------------------------------------------',
@@ -5352,25 +5317,8 @@ wwv_flow_api.append_to_install_script(
 '--                              sitemap_atags',
 '--    Jari Laine 30.10.2021 - Changed procedure sitemap_main to use view apex_application_pages',
 '--    Jari Laine 13.11.2021 - Changed procedure rss',
-'--    Jari Laine 30.12.2021 - Changed proc'))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.6'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'edure rss_xsl. CSS file name moved to application settings',
+'--    Jari Laine 30.12.2021 - Changed procedure rss_xsl. CSS file name moved to application settings',
+'--    Jari Laine 05.01.2021 - Added parameter p_css_file to procedure rss_xsl',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -5385,7 +5333,8 @@ wwv_flow_api.append_to_install_script(
 '-- Called from:',
 '--  public app page 1003 Ajax Callback process "rss.xsl"',
 '  procedure rss_xsl(',
-'    p_ws_images   in varchar2',
+'    p_ws_images   in varchar2,',
+'    p_css_file    in varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
@@ -5396,7 +5345,25 @@ wwv_flow_api.append_to_install_script(
 '  );',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
-'--  public app page 1003 Ajax Callback process "sitemap-main.xml"',
+'-'))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'-  public app page 1003 Ajax Callback process "sitemap-main.xml"',
 '  procedure sitemap_main(',
 '    p_app_id      in varchar2,',
 '    p_page_group  in varchar2',
@@ -5539,7 +5506,8 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure rss_xsl(',
-'    p_ws_images in varchar2',
+'    p_ws_images in varchar2,',
+'    p_css_file  in varchar2',
 '  )',
 '  as',
 '    l_css varchar2(1024);',
@@ -5550,7 +5518,7 @@ wwv_flow_api.append_to_install_script(
 '    l_css := apex_util.host_url(''APEX_PATH'');',
 '    l_css := substr( l_css, instr( l_css, ''/'', 1, 3 ) );',
 '    l_css := l_css || p_ws_images;',
-'    l_css := l_css || apex_app_setting.get_value( ''BLOG_RSS_XSL_CSS'' );',
+'    l_css := l_css || p_css_file;',
 '',
 '    l_xml :=',
 '      sys.xmltype.createxml(''',
@@ -5569,12 +5537,12 @@ wwv_flow_api.append_to_install_script(
 '              <link rel="stylesheet" type="text/css" href="'' || l_css || ''" />',
 '            </head>',
 '            <body>',
-'              <h1 class="title"><a href="{ link }"><xsl:value-of select="title" /></a></h1>',
-'              <p class="description"><xsl:value-of select="description" /></p>',
+'              <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>',
+'              <p class="z-rss--description"><xsl:value-of select="description" /></p>',
 '              <xsl:for-each select="./item">',
-'                <article class="z-post">',
-'                  <header class="z-post--header">',
-'                    <h2><a href="{ link }"><xsl:value-of select="title" /></a></h2>',
+'                <article class="z-rss--post">',
+'                  <header>',
+'                    <h2 class="z-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h2>',
 '                  </header>',
 '                  <p class="z-post--body"><xsl:value-of select="description" /></p>',
 '                </article>',
@@ -5680,7 +5648,8 @@ wwv_flow_api.append_to_install_script(
 '          )',
 '        )',
 '      )',
-'    as blob encoding ''UTF-8'' indent size=2)',
+'      as blob encoding ''UTF-8'' indent size=2',
+'    )',
 '    into l_xml',
 '    from apex_application_pages v1',
 '    where 1 = 1',
@@ -6280,25 +6249,7 @@ wwv_flow_api.append_to_install_script(
 '',
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
-'     sy'))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.6'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'s_context( ''APEX$SESSION'', ''APP_USER'' )',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
 '    ,sys_context( ''USERENV'',''PROXY_USER'' )',
 '    ,sys_context( ''USERENV'',''SESSION_USER'' )',
 '  );',
@@ -6337,7 +6288,25 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for Trigger BLOG_POST_UDS_POSTS_TRG',
 '--------------------------------------------------------',
-'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_POSTS_TRG"',
+'CREATE OR REPLACE EDI'))
+);
+null;
+wwv_flow_api.component_end;
+end;
+/
+begin
+wwv_flow_api.component_begin (
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_api.append_to_install_script(
+ p_id=>wwv_flow_api.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'TIONABLE TRIGGER "BLOG_POST_UDS_POSTS_TRG"',
 'after',
 'insert or',
 'update on blog_posts',

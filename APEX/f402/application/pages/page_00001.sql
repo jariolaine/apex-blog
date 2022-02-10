@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.6'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211207091113'
+,p_last_upd_yyyymmddhh24miss=>'20220209110317'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8582113239518316)
@@ -39,10 +39,10 @@ wwv_flow_api.create_page_plug(
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(37646499764287130)
 ,p_name=>'Posts'
-,p_template=>wwv_flow_api.id(8490381578518205)
+,p_template=>wwv_flow_api.id(8496813422518209)
 ,p_display_sequence=>10
-,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--flex'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
+,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols'
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -148,10 +148,11 @@ wwv_flow_api.create_report_columns(
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(37647496544287140)
 ,p_name=>'Comments'
-,p_template=>wwv_flow_api.id(8490381578518205)
+,p_template=>wwv_flow_api.id(8496813422518209)
 ,p_display_sequence=>20
-,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--flex'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
+,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols'
+,p_new_grid_row=>false
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -234,9 +235,9 @@ wwv_flow_api.create_report_columns(
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(145874845182292377)
 ,p_plug_name=>'Blog Public URLs'
-,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:u-colors:t-MediaList--large force-fa-lg:t-MediaList--iconsRounded'
-,p_plug_template=>wwv_flow_api.id(8490381578518205)
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
+,p_component_template_options=>'#DEFAULT#:u-colors:t-MediaList--iconsRounded'
+,p_plug_template=>wwv_flow_api.id(8496813422518209)
 ,p_plug_display_sequence=>50
 ,p_plug_display_point=>'BODY'
 ,p_list_id=>wwv_flow_api.id(43181213072992711)
