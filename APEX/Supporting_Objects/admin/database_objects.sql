@@ -1333,6 +1333,7 @@ as
 --
   procedure download_file (
     p_blob_content    in out nocopy blob,
+    p_file_name       in varchar2 default null,
     p_mime_type       in varchar2 default null,
     p_cache_control   in varchar2 default null,
     p_charset         in varchar2 default null
@@ -2031,10 +2032,11 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure download_file (
-    p_blob_content  in out nocopy blob,
-    p_mime_type     in varchar2 default null,
-    p_cache_control in varchar2 default null,
-    p_charset       in varchar2 default null
+    p_blob_content    in out nocopy blob,
+    p_file_name       in varchar2 default null,
+    p_mime_type       in varchar2 default null,
+    p_cache_control   in varchar2 default null,
+    p_charset         in varchar2 default null
   )
   as
   begin
@@ -2045,9 +2047,21 @@ as
       ,ccharset       => p_charset
     );
 
+    apex_debug.info( 'Set response headers' );
+    if p_file_name is not null
+    then
+      apex_debug.info( 'Content-Disposition: attachment; filename="%s"', p_file_name );
+      sys.htp.p(
+        apex_string.format( 'Content-Disposition: attachment; filename="%s"', p_file_name )
+      );
+    end if;
+
     if p_cache_control is not null
     then
-      sys.htp.p( 'Cache-Control: ' || p_cache_control );
+      apex_debug.info( 'Cache-Control: %s', p_cache_control );
+      sys.htp.p(
+        apex_string.format( 'Cache-Control: %s', p_cache_control )
+      );
     end if;
 
     sys.owa_util.http_header_close;
@@ -2058,7 +2072,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure download_file (
-    p_file_name   in varchar2
+    p_file_name in varchar2
   )
   as
     l_file_t blog_v_files%rowtype;
@@ -2068,14 +2082,22 @@ as
     into l_file_t
     from blog_v_files t1
     where 1 = 1
-    and t1.is_download = 0
+    --and t1.is_download = 0
     and t1.file_name = p_file_name
     ;
 
+    apex_debug.info(
+      p_message => 'File name: %s, file size: %s, mime type: %s'
+      ,p0 => l_file_t.file_name
+      ,p1 => l_file_t.file_size
+      ,p2 => l_file_t.mime_type
+    );
+
     download_file(
-      p_mime_type       => l_file_t.mime_type
-      ,p_cache_control  => 'max-age=3600, public'
-      ,p_blob_content   => l_file_t.blob_content
+      p_blob_content    => l_file_t.blob_content
+      ,p_file_name      => l_file_t.file_name
+      ,p_mime_type      => l_file_t.mime_type
+      ,p_cache_control  => case when l_file_t.is_download = 0 then 'max-age=3600, public' end
     );
 
   exception when no_data_found
@@ -3335,7 +3357,13 @@ as
     l_string := blog_util.int_to_vc2( p_number );
     for i in 1 .. length( l_string )
     loop
-      l_result := l_result || '&#' || ascii( substr( l_string, i, 1 ) );
+      l_result :=
+        apex_string.format(
+          p_message => '%s&#%s'
+          ,p0 => l_result
+          ,p1 => ascii( substr( l_string, i, 1 ) )
+        )
+      ;
     end loop;
     return l_result;
 
@@ -3422,13 +3450,15 @@ as
     l_max   := to_number( p_item.attribute_04 );
     l_num_2 := round( sys.dbms_random.value( l_min, l_max ) );
 
-    l_data  := '<span class="z-question">';
-    l_data  := l_data || to_html_entities( l_num_1 );
-    l_data  := l_data || '&nbsp;&#' || ascii('+') || '&nbsp;';
-    l_data  := l_data || to_html_entities( l_num_2 );
-    l_data  := l_data || '&#' || ascii('?');
-    l_data  := l_data || '</span>';
-
+    l_data  :=
+      apex_string.format(
+        p_message =>'<span class="z-question">%s&nbsp;&#%s&nbsp;%s&#%s</span>'
+        ,p0 => to_html_entities( l_num_1 )
+        ,p1 => ascii('+')
+        ,p2 => to_html_entities( l_num_2 )
+        ,p3 => ascii('?')
+      )
+    ;
     -- set correct answer to item session state
     apex_util.set_session_state(
        p_name   => p_item.attribute_05
@@ -4223,17 +4253,24 @@ as
         -- store code tag content to collection and wrap it to pre tag having class
         apex_string.push(
            p_table => p_code_tab
-          ,p_value => '<pre class="' || c_code_css_class || '">'
-            || substr(p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6)
-            || '</pre>'
+          ,p_value =>
+            apex_string.format(
+              p_message => '<pre class="%s">%s</pre>'
+              ,p0 => c_code_css_class
+              ,p1 => substr(p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6)
+            )
         );
 
         -- substitude handled code tag
-        p_comment := rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )
-          || chr(10)
-          || 'CODE#' || i
-          || chr(10)
-          || ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )
+        p_comment :=
+          apex_string.format(
+            p_message => '%s%sCODE#%s%s%s'
+            ,p0 => rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )
+            ,p1 => chr(10)
+            ,p2 => i
+            ,p3 => chr(10)
+            ,p4 => ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )
+          )
         ;
 
       end loop;
@@ -4279,12 +4316,12 @@ as
         l_code_row := regexp_substr( l_temp, '[0-9]+' );
         -- close p tag, insert code block
         -- and open p tag again for text
-        p_comment := p_comment
-          || '</p>'
-          || chr(10)
-          || l_code_tab(l_code_row)
-          || chr(10)
-          || '<p>'
+        p_comment :=
+          apex_string.format(
+            p_message => '%s</p>%s<p>'
+            ,p0 => p_comment
+            ,p1 => l_code_tab(l_code_row)
+          )
         ;
 
       else
@@ -4297,15 +4334,17 @@ as
             p_comment := l_temp;
           else
             -- check if p tag is opened, then insert br for new line
-            p_comment := p_comment
-              ||
-                case
-                when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
-                then
-                  -- br element backlash needed as comment is validated as XML
-                  '<br/>' || chr(10)
-                end
-              || l_temp
+            p_comment :=
+              apex_string.format(
+                p_message => '%s%s%s'
+                ,p0 => p_comment
+                ,p1 =>
+                  case
+                  when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
+                  then '<br/>' -- br element backlash needed as comment is validated as XML
+                  end
+                ,p2 => l_temp
+              )
             ;
           end if;
         end if;
@@ -4315,7 +4354,7 @@ as
     end loop;
 
     -- wrap comment to p tag.
-    p_comment := '<p>' || p_comment || '</p>';
+    p_comment := apex_string.format( '<p>%s</p>', p_comment );
     -- there might be empty p, if comment ends code tag, remove that
     p_comment := replace( p_comment, '<p></p>' );
 
@@ -4385,9 +4424,10 @@ as
       -- TO DO see item 1 from package specs
       begin
         l_xml := xmltype.createxml(
-            '<root><row>'
-          || p_comment
-          || '</row></root>'
+          apex_string.format(
+            p_message => '<comment>%s</comment>'
+            ,p0 => p_comment
+          )
         );
       exception when xml_parsing_failed then
         -- set error message
@@ -4842,38 +4882,23 @@ as
         ,p_app_id => p_app_id
       );
 
-
-      if p_button = 'YES' then
-        -- generate button
-        l_tag := '<a href="'
-          || l_url
-          || '"'
-          || ' class="t-Button'
-          || ' t-Button--icon'
-          || ' t-Button--noUI'
---          || ' t-Button--small'
---          || ' t-Button--hot'
---          || ' t-Button--link'
---          || ' t-Button--simple'
-          || ' t-Button--iconLeft'
-          || ' margin-top-sm'
-          || '">'
-          || '<span class="t-Icon fa fa-tag" aria-hidden="true"></span>'
-          || l_tag
-          || '</a>'
-        ;
-
-      else
-        -- generate anchor tag
-        l_tag := '<a href="'
-          || l_url
-          || '"'
-          || ' class="margin-bottom-md margin-left-sm">'
-          || l_tag
-          || '</a>'
-        ;
-
-      end if;
+        -- generate button or anchor
+      l_tag :=
+        apex_string.format(
+          p_message => '<a href="%s" class="%s">%s%s</a>'
+          ,p0 => l_url
+          ,p1 =>
+            case p_button when 'YES'
+              then 't-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-sm'
+              else 'margin-bottom-md margin-left-sm'
+            end
+          ,p2 =>
+            case p_button when 'YES'
+              then '<span class="t-Icon fa fa-tag" aria-hidden="true"></span>'
+            end
+          ,p3 => l_tag
+        )
+      ;
 
     end if;
 
@@ -4891,9 +4916,10 @@ as
     -- generate description meta tag
     if p_desc is not null then
       l_html :=
-        '<meta name="description" content="'
-        || apex_escape.html_attribute( p_desc )
-        || '"/>'
+        apex_string.format(
+          p_message => '<meta name="description" content="%s" />'
+          ,p0 => apex_escape.html_attribute( p_desc )
+        )
       ;
     else
       apex_debug.warn('Description meta tag not generated.');
@@ -4936,13 +4962,15 @@ as
     -- generate canonical link for tab
     if p_app_page_id is not null then
       l_html :=
-        '<link rel="canonical" href="'
-        || blog_url.get_tab(
-           p_app_id       => p_app_id
-          ,p_app_page_id  => p_app_page_id
-          ,p_canonical    => 'YES'
+        apex_string.format(
+          p_message =>'<link rel="canonical" href="%s" />'
+          ,p0 =>
+            blog_url.get_tab(
+               p_app_id       => p_app_id
+              ,p_app_page_id  => p_app_page_id
+              ,p_canonical    => 'YES'
+            )
         )
-        || '" />'
       ;
     else
       -- if p_app_page_id is not defined then generate
@@ -4966,14 +4994,16 @@ as
     -- generate canonical link for post
     if p_post_id is not null then
       l_html :=
-        '<link rel="canonical" href="'
-        || blog_url.get_post(
-           p_post_id      => p_post_id
-          ,p_app_id       => p_app_id
-          ,p_session      => ''
-          ,p_canonical    => 'YES'
+        apex_string.format(
+          p_message =>'<link rel="canonical" href="%s" />'
+          ,p0 =>
+            blog_url.get_post(
+              p_post_id      => p_post_id
+              ,p_app_id       => p_app_id
+              ,p_session      => ''
+              ,p_canonical    => 'YES'
+            )
         )
-        || '" />'
       ;
     else
       apex_debug.warn('Canonical link tag not generated for post.');
@@ -4996,14 +5026,16 @@ as
     if p_category_id is not null
     then
       l_html :=
-        '<link rel="canonical" href="'
-        || blog_url.get_category(
-           p_category_id  => p_category_id
-          ,p_app_id       => p_app_id
-          ,p_session      => ''
-          ,p_canonical    => 'YES'
+        apex_string.format(
+          p_message =>'<link rel="canonical" href="%s" />'
+          ,p0 =>
+            blog_url.get_category(
+               p_category_id  => p_category_id
+              ,p_app_id       => p_app_id
+              ,p_session      => ''
+              ,p_canonical    => 'YES'
+            )
         )
-        || '" />'
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for category.');
@@ -5026,14 +5058,16 @@ as
     if p_archive_id is not null
     then
       l_html :=
-        '<link rel="canonical" href="'
-        || blog_url.get_archive(
-           p_archive_id => p_archive_id
-          ,p_app_id     => p_app_id
-          ,p_session    => ''
-          ,p_canonical  => 'YES'
+        apex_string.format(
+          p_message =>'<link rel="canonical" href="%s" />'
+          ,p0 =>
+            blog_url.get_archive(
+               p_archive_id => p_archive_id
+              ,p_app_id     => p_app_id
+              ,p_session    => ''
+              ,p_canonical  => 'YES'
+            )
         )
-        || '" />'
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for archive.');
@@ -5050,23 +5084,29 @@ as
     p_app_id        in varchar2 default null
   ) return varchar2
   as
+    l_html varchar2(32700);
   begin
     -- generate canonical link for tags
     if p_tag_id is not null then
-      return
-        '<link rel="canonical" href="'
-        || blog_url.get_tag(
-           p_tag_id       => p_tag_id
-          ,p_app_id       => p_app_id
-          ,p_session      => ''
-          ,p_canonical    => 'YES'
+      l_html :=
+        apex_string.format(
+          p_message =>'<link rel="canonical" href="%s" />'
+          ,p0 =>
+            blog_url.get_tag(
+               p_tag_id       => p_tag_id
+              ,p_app_id       => p_app_id
+              ,p_session      => ''
+              ,p_canonical    => 'YES'
+            )
         )
-        || '" />'
       ;
     else
       apex_debug.warn('Canonical link tag not generated for tag.');
-      return get_robots_noindex_meta;
+      l_html := get_robots_noindex_meta;
     end if;
+
+    return l_html;
+
   end get_tag_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -5090,13 +5130,13 @@ as
 
     -- generate RSS anchor
     l_rss_anchor :=
-      '<a href="'
-      || l_rss_url
-      || '" rel="alternate" type="application/rss+xml" aria-label="'
-      || apex_escape.html_attribute(l_rss_title)
-      || '" class="t-Button t-Button--noLabel t-Button--icon t-Button--link">'
-      || '<span aria-hidden="true" class="fa fa-rss-square fa-3x fa-lg u-color-8-text"></span>'
-      || '</a>'
+      apex_string.format(
+        p_message => '<a href="%s" aria-label="%s" class="%s" rel="alternate" type="application/rss+xml">%s</a>'
+        ,p0 => l_rss_url
+        ,p1 => apex_escape.html_attribute(l_rss_title)
+        ,p2 => 't-Button t-Button--noLabel t-Button--icon t-Button--link'
+        ,p3 => '<span aria-hidden="true" class="fa fa-rss-square fa-3x fa-lg u-color-8-text"></span>'
+      )
     ;
 
     return l_rss_anchor;
@@ -5131,13 +5171,14 @@ as
       );
       --l_rss_title := apex_escape.html_attribute( l_rss_title );
       l_rss_url :=
-        '<link rel="alternate" type="application/rss+xml" href="'
-        || l_rss_url
-        || '" title="'
-        || apex_escape.html_attribute(
-          p_string => l_rss_title
+        apex_string.format(
+          p_message => '<link href="%s" title="%s" rel="alternate" type="application/rss+xml" />'
+          ,p0 => l_rss_url
+          ,p1 =>
+            apex_escape.html_attribute(
+              p_string => l_rss_title
+            )
         )
-        || '"/>'
       ;
 
     end if;
@@ -5313,7 +5354,12 @@ as
     -- generate RSS
     select xmlserialize( content xmlconcat(
       case when l_xsl_url is not null
-      then xmlpi("xml-stylesheet",'type="text/xsl" href="' || l_xsl_url ||'" media="screen"')
+      then xmlpi("xml-stylesheet",
+          apex_string.format(
+            p_message => 'type="text/xsl" href="%s" media="screen"'
+            ,p0 => l_xsl_url
+          ) 
+        )
       end,
       xmlelement(
         "rss", xmlattributes(
@@ -5376,48 +5422,51 @@ as
     p_css_file  in varchar2
   )
   as
-    l_css varchar2(1024);
+    l_host_url varchar2(1024);
     l_xml xmltype;
     l_xsl blob;
   begin
 
-    l_css := apex_util.host_url('APEX_PATH');
-    l_css := substr( l_css, instr( l_css, '/', 1, 3 ) );
-    l_css := l_css || p_ws_images;
-    l_css := l_css || p_css_file;
+    l_host_url := apex_util.host_url('APEX_PATH');
+    l_host_url := substr( l_host_url, instr( l_host_url, '/', 1, 3 ) );
 
     l_xml :=
-      sys.xmltype.createxml('
-        <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-          <!-- This causes the HTML doctype (<!doctype hmlt>) to be rendered. -->
-          <xsl:output method="html" doctype-system="about:legacy-compat" indent="yes" />
-          <!-- Start matching at the Channel node within the XML RSS feed. -->
-          <xsl:template match="/rss/channel">
-            <html lang="en">
-            <head>
-              <meta charset="utf-8" />
-              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-              <title>
-                <xsl:value-of select="title" />
-              </title>
-              <link rel="stylesheet" type="text/css" href="' || l_css || '" />
-            </head>
-            <body>
-              <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>
-              <p class="z-rss--description"><xsl:value-of select="description" /></p>
-              <xsl:for-each select="./item">
-                <article class="z-rss--post">
-                  <header>
-                    <h2 class="z-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h2>
-                  </header>
-                  <p class="z-post--body"><xsl:value-of select="description" /></p>
-                </article>
-              </xsl:for-each>
-            </body>
-            </html>
-          </xsl:template>
-        </xsl:stylesheet>
-      ')
+      sys.xmltype.createxml(
+        apex_string.format(
+          p_message => '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+              <!-- This causes the HTML doctype (<!doctype hmlt>) to be rendered. -->
+              <xsl:output method="html" doctype-system="about:legacy-compat" indent="yes" />
+              <!-- Start matching at the Channel node within the XML RSS feed. -->
+              <xsl:template match="/rss/channel">
+                <html lang="en">
+                <head>
+                  <meta charset="utf-8" />
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                  <title>
+                    <xsl:value-of select="title" />
+                  </title>
+                  <link rel="stylesheet" type="text/css" href="%s%s%s" />
+                </head>
+                <body>
+                  <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>
+                  <p class="z-rss--description"><xsl:value-of select="description" /></p>
+                  <xsl:for-each select="./item">
+                    <article class="z-rss--post">
+                      <header>
+                        <h2 class="z-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h2>
+                      </header>
+                      <p class="z-post--body"><xsl:value-of select="description" /></p>
+                    </article>
+                  </xsl:for-each>
+                </body>
+                </html>
+              </xsl:template>
+            </xsl:stylesheet>'
+          ,p0 => l_host_url
+          ,p1 => p_ws_images
+          ,p2 => p_css_file
+        )
+      )
     ;
 
     select xmlserialize(

@@ -155,38 +155,23 @@ as
         ,p_app_id => p_app_id
       );
 
-
-      if p_button = 'YES' then
-        -- generate button
-        l_tag := '<a href="'
-          || l_url
-          || '"'
-          || ' class="t-Button'
-          || ' t-Button--icon'
-          || ' t-Button--noUI'
---          || ' t-Button--small'
---          || ' t-Button--hot'
---          || ' t-Button--link'
---          || ' t-Button--simple'
-          || ' t-Button--iconLeft'
-          || ' margin-top-sm'
-          || '">'
-          || '<span class="t-Icon fa fa-tag" aria-hidden="true"></span>'
-          || l_tag
-          || '</a>'
-        ;
-
-      else
-        -- generate anchor tag
-        l_tag := '<a href="'
-          || l_url
-          || '"'
-          || ' class="margin-bottom-md margin-left-sm">'
-          || l_tag
-          || '</a>'
-        ;
-
-      end if;
+        -- generate button or anchor
+      l_tag :=
+        apex_string.format(
+          p_message => '<a href="%s" class="%s">%s%s</a>'
+          ,p0 => l_url
+          ,p1 =>
+            case p_button when 'YES'
+              then 't-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-sm'
+              else 'margin-bottom-md margin-left-sm'
+            end
+          ,p2 =>
+            case p_button when 'YES'
+              then '<span class="t-Icon fa fa-tag" aria-hidden="true"></span>'
+            end
+          ,p3 => l_tag
+        )
+      ;
 
     end if;
 
@@ -204,9 +189,10 @@ as
     -- generate description meta tag
     if p_desc is not null then
       l_html :=
-        '<meta name="description" content="'
-        || apex_escape.html_attribute( p_desc )
-        || '"/>'
+        apex_string.format(
+          p_message => '<meta name="description" content="%s" />'
+          ,p0 => apex_escape.html_attribute( p_desc )
+        )
       ;
     else
       apex_debug.warn('Description meta tag not generated.');
@@ -249,13 +235,15 @@ as
     -- generate canonical link for tab
     if p_app_page_id is not null then
       l_html :=
-        '<link rel="canonical" href="'
-        || blog_url.get_tab(
-           p_app_id       => p_app_id
-          ,p_app_page_id  => p_app_page_id
-          ,p_canonical    => 'YES'
+        apex_string.format(
+          p_message =>'<link rel="canonical" href="%s" />'
+          ,p0 =>
+            blog_url.get_tab(
+               p_app_id       => p_app_id
+              ,p_app_page_id  => p_app_page_id
+              ,p_canonical    => 'YES'
+            )
         )
-        || '" />'
       ;
     else
       -- if p_app_page_id is not defined then generate
@@ -279,14 +267,16 @@ as
     -- generate canonical link for post
     if p_post_id is not null then
       l_html :=
-        '<link rel="canonical" href="'
-        || blog_url.get_post(
-           p_post_id      => p_post_id
-          ,p_app_id       => p_app_id
-          ,p_session      => ''
-          ,p_canonical    => 'YES'
+        apex_string.format(
+          p_message =>'<link rel="canonical" href="%s" />'
+          ,p0 =>
+            blog_url.get_post(
+              p_post_id      => p_post_id
+              ,p_app_id       => p_app_id
+              ,p_session      => ''
+              ,p_canonical    => 'YES'
+            )
         )
-        || '" />'
       ;
     else
       apex_debug.warn('Canonical link tag not generated for post.');
@@ -309,14 +299,16 @@ as
     if p_category_id is not null
     then
       l_html :=
-        '<link rel="canonical" href="'
-        || blog_url.get_category(
-           p_category_id  => p_category_id
-          ,p_app_id       => p_app_id
-          ,p_session      => ''
-          ,p_canonical    => 'YES'
+        apex_string.format(
+          p_message =>'<link rel="canonical" href="%s" />'
+          ,p0 =>
+            blog_url.get_category(
+               p_category_id  => p_category_id
+              ,p_app_id       => p_app_id
+              ,p_session      => ''
+              ,p_canonical    => 'YES'
+            )
         )
-        || '" />'
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for category.');
@@ -339,14 +331,16 @@ as
     if p_archive_id is not null
     then
       l_html :=
-        '<link rel="canonical" href="'
-        || blog_url.get_archive(
-           p_archive_id => p_archive_id
-          ,p_app_id     => p_app_id
-          ,p_session    => ''
-          ,p_canonical  => 'YES'
+        apex_string.format(
+          p_message =>'<link rel="canonical" href="%s" />'
+          ,p0 =>
+            blog_url.get_archive(
+               p_archive_id => p_archive_id
+              ,p_app_id     => p_app_id
+              ,p_session    => ''
+              ,p_canonical  => 'YES'
+            )
         )
-        || '" />'
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for archive.');
@@ -363,23 +357,29 @@ as
     p_app_id        in varchar2 default null
   ) return varchar2
   as
+    l_html varchar2(32700);
   begin
     -- generate canonical link for tags
     if p_tag_id is not null then
-      return
-        '<link rel="canonical" href="'
-        || blog_url.get_tag(
-           p_tag_id       => p_tag_id
-          ,p_app_id       => p_app_id
-          ,p_session      => ''
-          ,p_canonical    => 'YES'
+      l_html :=
+        apex_string.format(
+          p_message =>'<link rel="canonical" href="%s" />'
+          ,p0 =>
+            blog_url.get_tag(
+               p_tag_id       => p_tag_id
+              ,p_app_id       => p_app_id
+              ,p_session      => ''
+              ,p_canonical    => 'YES'
+            )
         )
-        || '" />'
       ;
     else
       apex_debug.warn('Canonical link tag not generated for tag.');
-      return get_robots_noindex_meta;
+      l_html := get_robots_noindex_meta;
     end if;
+
+    return l_html;
+
   end get_tag_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -403,13 +403,13 @@ as
 
     -- generate RSS anchor
     l_rss_anchor :=
-      '<a href="'
-      || l_rss_url
-      || '" rel="alternate" type="application/rss+xml" aria-label="'
-      || apex_escape.html_attribute(l_rss_title)
-      || '" class="t-Button t-Button--noLabel t-Button--icon t-Button--link">'
-      || '<span aria-hidden="true" class="fa fa-rss-square fa-3x fa-lg u-color-8-text"></span>'
-      || '</a>'
+      apex_string.format(
+        p_message => '<a href="%s" aria-label="%s" class="%s" rel="alternate" type="application/rss+xml">%s</a>'
+        ,p0 => l_rss_url
+        ,p1 => apex_escape.html_attribute(l_rss_title)
+        ,p2 => 't-Button t-Button--noLabel t-Button--icon t-Button--link'
+        ,p3 => '<span aria-hidden="true" class="fa fa-rss-square fa-3x fa-lg u-color-8-text"></span>'
+      )
     ;
 
     return l_rss_anchor;
@@ -444,13 +444,14 @@ as
       );
       --l_rss_title := apex_escape.html_attribute( l_rss_title );
       l_rss_url :=
-        '<link rel="alternate" type="application/rss+xml" href="'
-        || l_rss_url
-        || '" title="'
-        || apex_escape.html_attribute(
-          p_string => l_rss_title
+        apex_string.format(
+          p_message => '<link href="%s" title="%s" rel="alternate" type="application/rss+xml" />'
+          ,p0 => l_rss_url
+          ,p1 =>
+            apex_escape.html_attribute(
+              p_string => l_rss_title
+            )
         )
-        || '"/>'
       ;
 
     end if;

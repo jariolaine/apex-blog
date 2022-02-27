@@ -200,9 +200,19 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Is public commenting allowed on blog posts.'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21499163815310526)
+,p_name=>'BLOG_HELP_FEATURE_FILES'
+,p_message_text=>'Show "Files" tab in public pages.'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21481638153374207)
 ,p_name=>'BLOG_HELP_FEATURE_LATEST_POSTS'
 ,p_message_text=>'Show link list to the latest blog posts.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21498914254307400)
+,p_name=>'BLOG_HELP_FEATURE_LINKS'
+,p_message_text=>'Show "Links" tab in public pages.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21481968660385994)
@@ -217,12 +227,22 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21481423437369380)
 ,p_name=>'BLOG_HELP_FEATURE_POST_PAGINATION'
-,p_message_text=>'Show links to previous and / or newer blog posts.'
+,p_message_text=>'Show links to previous and / or newer posts.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21500166358341864)
+,p_name=>'BLOG_HELP_FEATURE_SEARCH_FILES'
+,p_message_text=>'Allow search and show search field in "Files" page.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21499316517316056)
+,p_name=>'BLOG_HELP_FEATURE_SEARCH_LINKS'
+,p_message_text=>'Allow search and show search field in "Links" page.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21482145994393818)
 ,p_name=>'BLOG_HELP_FEATURE_SITEMAP'
-,p_message_text=>'Generate sitemap index and simepas for public application pages.'
+,p_message_text=>'Generate sitemap index and sitemaps for public pages.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21481269068360471)
@@ -254,7 +274,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19897213779441945)
 ,p_name=>'BLOG_HELP_G_DATE_FORMAT'
-,p_message_text=>'Public application date format.'
+,p_message_text=>'Public pages date format.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19895931361259762)

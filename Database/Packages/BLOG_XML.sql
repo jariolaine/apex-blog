@@ -135,7 +135,12 @@ as
     -- generate RSS
     select xmlserialize( content xmlconcat(
       case when l_xsl_url is not null
-      then xmlpi("xml-stylesheet",'type="text/xsl" href="' || l_xsl_url ||'" media="screen"')
+      then xmlpi("xml-stylesheet",
+          apex_string.format(
+            p_message => 'type="text/xsl" href="%s" media="screen"'
+            ,p0 => l_xsl_url
+          ) 
+        )
       end,
       xmlelement(
         "rss", xmlattributes(
@@ -198,48 +203,51 @@ as
     p_css_file  in varchar2
   )
   as
-    l_css varchar2(1024);
+    l_host_url varchar2(1024);
     l_xml xmltype;
     l_xsl blob;
   begin
 
-    l_css := apex_util.host_url('APEX_PATH');
-    l_css := substr( l_css, instr( l_css, '/', 1, 3 ) );
-    l_css := l_css || p_ws_images;
-    l_css := l_css || p_css_file;
+    l_host_url := apex_util.host_url('APEX_PATH');
+    l_host_url := substr( l_host_url, instr( l_host_url, '/', 1, 3 ) );
 
     l_xml :=
-      sys.xmltype.createxml('
-        <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-          <!-- This causes the HTML doctype (<!doctype hmlt>) to be rendered. -->
-          <xsl:output method="html" doctype-system="about:legacy-compat" indent="yes" />
-          <!-- Start matching at the Channel node within the XML RSS feed. -->
-          <xsl:template match="/rss/channel">
-            <html lang="en">
-            <head>
-              <meta charset="utf-8" />
-              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-              <title>
-                <xsl:value-of select="title" />
-              </title>
-              <link rel="stylesheet" type="text/css" href="' || l_css || '" />
-            </head>
-            <body>
-              <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>
-              <p class="z-rss--description"><xsl:value-of select="description" /></p>
-              <xsl:for-each select="./item">
-                <article class="z-rss--post">
-                  <header>
-                    <h2 class="z-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h2>
-                  </header>
-                  <p class="z-post--body"><xsl:value-of select="description" /></p>
-                </article>
-              </xsl:for-each>
-            </body>
-            </html>
-          </xsl:template>
-        </xsl:stylesheet>
-      ')
+      sys.xmltype.createxml(
+        apex_string.format(
+          p_message => '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+              <!-- This causes the HTML doctype (<!doctype hmlt>) to be rendered. -->
+              <xsl:output method="html" doctype-system="about:legacy-compat" indent="yes" />
+              <!-- Start matching at the Channel node within the XML RSS feed. -->
+              <xsl:template match="/rss/channel">
+                <html lang="en">
+                <head>
+                  <meta charset="utf-8" />
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                  <title>
+                    <xsl:value-of select="title" />
+                  </title>
+                  <link rel="stylesheet" type="text/css" href="%s%s%s" />
+                </head>
+                <body>
+                  <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>
+                  <p class="z-rss--description"><xsl:value-of select="description" /></p>
+                  <xsl:for-each select="./item">
+                    <article class="z-rss--post">
+                      <header>
+                        <h2 class="z-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h2>
+                      </header>
+                      <p class="z-post--body"><xsl:value-of select="description" /></p>
+                    </article>
+                  </xsl:for-each>
+                </body>
+                </html>
+              </xsl:template>
+            </xsl:stylesheet>'
+          ,p0 => l_host_url
+          ,p1 => p_ws_images
+          ,p2 => p_css_file
+        )
+      )
     ;
 
     select xmlserialize(

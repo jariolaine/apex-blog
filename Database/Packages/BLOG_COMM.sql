@@ -180,17 +180,24 @@ as
         -- store code tag content to collection and wrap it to pre tag having class
         apex_string.push(
            p_table => p_code_tab
-          ,p_value => '<pre class="' || c_code_css_class || '">'
-            || substr(p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6)
-            || '</pre>'
+          ,p_value =>
+            apex_string.format(
+              p_message => '<pre class="%s">%s</pre>'
+              ,p0 => c_code_css_class
+              ,p1 => substr(p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6)
+            )
         );
 
         -- substitude handled code tag
-        p_comment := rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )
-          || chr(10)
-          || 'CODE#' || i
-          || chr(10)
-          || ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )
+        p_comment :=
+          apex_string.format(
+            p_message => '%s%sCODE#%s%s%s'
+            ,p0 => rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )
+            ,p1 => chr(10)
+            ,p2 => i
+            ,p3 => chr(10)
+            ,p4 => ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )
+          )
         ;
 
       end loop;
@@ -236,12 +243,12 @@ as
         l_code_row := regexp_substr( l_temp, '[0-9]+' );
         -- close p tag, insert code block
         -- and open p tag again for text
-        p_comment := p_comment
-          || '</p>'
-          || chr(10)
-          || l_code_tab(l_code_row)
-          || chr(10)
-          || '<p>'
+        p_comment :=
+          apex_string.format(
+            p_message => '%s</p>%s<p>'
+            ,p0 => p_comment
+            ,p1 => l_code_tab(l_code_row)
+          )
         ;
 
       else
@@ -254,15 +261,17 @@ as
             p_comment := l_temp;
           else
             -- check if p tag is opened, then insert br for new line
-            p_comment := p_comment
-              ||
-                case
-                when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
-                then
-                  -- br element backlash needed as comment is validated as XML
-                  '<br/>' || chr(10)
-                end
-              || l_temp
+            p_comment :=
+              apex_string.format(
+                p_message => '%s%s%s'
+                ,p0 => p_comment
+                ,p1 =>
+                  case
+                  when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
+                  then '<br/>' -- br element backlash needed as comment is validated as XML
+                  end
+                ,p2 => l_temp
+              )
             ;
           end if;
         end if;
@@ -272,7 +281,7 @@ as
     end loop;
 
     -- wrap comment to p tag.
-    p_comment := '<p>' || p_comment || '</p>';
+    p_comment := apex_string.format( '<p>%s</p>', p_comment );
     -- there might be empty p, if comment ends code tag, remove that
     p_comment := replace( p_comment, '<p></p>' );
 
@@ -342,9 +351,10 @@ as
       -- TO DO see item 1 from package specs
       begin
         l_xml := xmltype.createxml(
-            '<root><row>'
-          || p_comment
-          || '</row></root>'
+          apex_string.format(
+            p_message => '<comment>%s</comment>'
+            ,p0 => p_comment
+          )
         );
       exception when xml_parsing_failed then
         -- set error message

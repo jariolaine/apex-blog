@@ -267,6 +267,7 @@ pre.z-program-code {
   border-left-color: var(--u-color-35);
   border-radius: var(--ut-component-badge-border-radius);
   background-color: var(--ut-component-badge-background-color);
+  box-shadow: var(--ut-shadow-sm);
 }
 pre.z-program-code code {
   font-family: inherit;

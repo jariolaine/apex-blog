@@ -106,6 +106,7 @@ as
 --
   procedure download_file (
     p_blob_content    in out nocopy blob,
+    p_file_name       in varchar2 default null,
     p_mime_type       in varchar2 default null,
     p_cache_control   in varchar2 default null,
     p_charset         in varchar2 default null
@@ -804,10 +805,11 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure download_file (
-    p_blob_content  in out nocopy blob,
-    p_mime_type     in varchar2 default null,
-    p_cache_control in varchar2 default null,
-    p_charset       in varchar2 default null
+    p_blob_content    in out nocopy blob,
+    p_file_name       in varchar2 default null,
+    p_mime_type       in varchar2 default null,
+    p_cache_control   in varchar2 default null,
+    p_charset         in varchar2 default null
   )
   as
   begin
@@ -818,9 +820,21 @@ as
       ,ccharset       => p_charset
     );
 
+    apex_debug.info( 'Set response headers' );
+    if p_file_name is not null
+    then
+      apex_debug.info( 'Content-Disposition: attachment; filename="%s"', p_file_name );
+      sys.htp.p(
+        apex_string.format( 'Content-Disposition: attachment; filename="%s"', p_file_name )
+      );
+    end if;
+
     if p_cache_control is not null
     then
-      sys.htp.p( 'Cache-Control: ' || p_cache_control );
+      apex_debug.info( 'Cache-Control: %s', p_cache_control );
+      sys.htp.p(
+        apex_string.format( 'Cache-Control: %s', p_cache_control )
+      );
     end if;
 
     sys.owa_util.http_header_close;
@@ -831,7 +845,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure download_file (
-    p_file_name   in varchar2
+    p_file_name in varchar2
   )
   as
     l_file_t blog_v_files%rowtype;
@@ -841,14 +855,22 @@ as
     into l_file_t
     from blog_v_files t1
     where 1 = 1
-    and t1.is_download = 0
+    --and t1.is_download = 0
     and t1.file_name = p_file_name
     ;
 
+    apex_debug.info(
+      p_message => 'File name: %s, file size: %s, mime type: %s'
+      ,p0 => l_file_t.file_name
+      ,p1 => l_file_t.file_size
+      ,p2 => l_file_t.mime_type
+    );
+
     download_file(
-      p_mime_type       => l_file_t.mime_type
-      ,p_cache_control  => 'max-age=3600, public'
-      ,p_blob_content   => l_file_t.blob_content
+      p_blob_content    => l_file_t.blob_content
+      ,p_file_name      => l_file_t.file_name
+      ,p_mime_type      => l_file_t.mime_type
+      ,p_cache_control  => case when l_file_t.is_download = 0 then 'max-age=3600, public' end
     );
 
   exception when no_data_found

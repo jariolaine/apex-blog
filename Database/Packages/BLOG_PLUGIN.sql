@@ -62,7 +62,13 @@ as
     l_string := blog_util.int_to_vc2( p_number );
     for i in 1 .. length( l_string )
     loop
-      l_result := l_result || '&#' || ascii( substr( l_string, i, 1 ) );
+      l_result :=
+        apex_string.format(
+          p_message => '%s&#%s'
+          ,p0 => l_result
+          ,p1 => ascii( substr( l_string, i, 1 ) )
+        )
+      ;
     end loop;
     return l_result;
 
@@ -149,13 +155,15 @@ as
     l_max   := to_number( p_item.attribute_04 );
     l_num_2 := round( sys.dbms_random.value( l_min, l_max ) );
 
-    l_data  := '<span class="z-question">';
-    l_data  := l_data || to_html_entities( l_num_1 );
-    l_data  := l_data || '&nbsp;&#' || ascii('+') || '&nbsp;';
-    l_data  := l_data || to_html_entities( l_num_2 );
-    l_data  := l_data || '&#' || ascii('?');
-    l_data  := l_data || '</span>';
-
+    l_data  :=
+      apex_string.format(
+        p_message =>'<span class="z-question">%s&nbsp;&#%s&nbsp;%s&#%s</span>'
+        ,p0 => to_html_entities( l_num_1 )
+        ,p1 => ascii('+')
+        ,p2 => to_html_entities( l_num_2 )
+        ,p3 => ascii('?')
+      )
+    ;
     -- set correct answer to item session state
     apex_util.set_session_state(
        p_name   => p_item.attribute_05
