@@ -70,7 +70,7 @@ wwv_flow_api.create_page(
 '</ol>',
 ''))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220110071201'
+,p_last_upd_yyyymmddhh24miss=>'20220310150430'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -464,7 +464,7 @@ wwv_flow_api.create_page_item(
 ,p_inline_help_text=>'&APP_TEXT$BLOG_HELP_POST_EDITOR!RAW.'
 ,p_plugin_init_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'function ( options ) {',
-'  options.contentsCss = [ "&APP_IMAGES.css/chkeditor.css" ];',
+'  options.contentsCss = [ "&APP_IMAGES.css/chkeditor.min.css" ];',
 '  options = blog.admin.editorInit( options );',
 '  return options;',
 '}'))

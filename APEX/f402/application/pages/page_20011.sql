@@ -28,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220209232053'
+,p_last_upd_yyyymmddhh24miss=>'20220310175058'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27063074415689131)
@@ -53,8 +53,9 @@ wwv_flow_api.create_page_plug(
 '  ,v1.last_updated_by       as last_updated_by',
 '  ,v1.build_option_name     as build_option_name',
 '  ,case',
-'    when v1.feature_parent is not null',
-'    then ''z-feature--child''',
+'    when v1.feature_parent is null',
+'    then ''z-feature''',
+'    else ''z-feature--child''',
 '  end                       as feature_name_class',
 'from #OWNER#.blog_v_all_features v1',
 'where 1 = 1',

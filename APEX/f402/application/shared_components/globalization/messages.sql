@@ -195,9 +195,34 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Ooops... We are sorry! Unexpected internal error have occurred.'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21952495135451489)
+,p_name=>'BLOG_HELP_FEATURE_ABOUT'
+,p_message_text=>'Show "About" tab in public pages.'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21480702253327342)
 ,p_name=>'BLOG_HELP_FEATURE_ALLOW_COMMENTS'
 ,p_message_text=>'Is public commenting allowed on blog posts.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21968614313753451)
+,p_name=>'BLOG_HELP_FEATURE_ARCHIVE'
+,p_message_text=>'Show link list to the archives.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21968854038758598)
+,p_name=>'BLOG_HELP_FEATURE_ARCHIVE_POST_COUNT'
+,p_message_text=>'Show post count in the archive.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21968269442744987)
+,p_name=>'BLOG_HELP_FEATURE_CATEGORY'
+,p_message_text=>'Show link list to the categories.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21968490295748783)
+,p_name=>'BLOG_HELP_FEATURE_CATEGORY_POST_COUNT'
+,p_message_text=>'Show post count in the category.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21499163815310526)
@@ -230,6 +255,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Show links to previous and / or newer posts.'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21969179471767472)
+,p_name=>'BLOG_HELP_FEATURE_RSS'
+,p_message_text=>'Show link to the RSS feed.'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21500166358341864)
 ,p_name=>'BLOG_HELP_FEATURE_SEARCH_FILES'
 ,p_message_text=>'Allow search and show search field in "Files" page.'
@@ -238,6 +268,11 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21499316517316056)
 ,p_name=>'BLOG_HELP_FEATURE_SEARCH_LINKS'
 ,p_message_text=>'Allow search and show search field in "Links" page.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21968065227738854)
+,p_name=>'BLOG_HELP_FEATURE_SEARCH_POSTS'
+,p_message_text=>'Allow search and show search field in right column.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21482145994393818)

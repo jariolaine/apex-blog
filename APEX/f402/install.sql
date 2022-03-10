@@ -12,6 +12,7 @@ prompt --install
 @@application/shared_components/files/app_icon_css.sql
 @@application/shared_components/files/css_admin_min_css.sql
 @@application/shared_components/files/js_admin_min_js.sql
+@@application/shared_components/files/css_chkeditor_min_css.sql
 @@application/shared_components/files/css_admin_css.sql
 @@application/shared_components/files/js_admin_js.sql
 @@application/shared_components/files/css_chkeditor_css.sql
