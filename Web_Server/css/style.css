@@ -85,14 +85,6 @@ blockquote p {
 .z-footerList a:hover {
   opacity: 1;
 }
-@media only screen and (max-width: 640px) {
-  .z-footerList {
-    flex-direction: column;
-  }
-  .z-footerList li {
-    padding: 10px 0;
-  }
-}
 .z-copyright {
   text-align: center;
   margin: 18px 0;
@@ -105,6 +97,14 @@ blockquote p {
 }
 .z-copyright:hover a {
   opacity: 1;
+}
+@media only screen and (max-width: 640px) {
+  .z-footerList {
+    flex-direction: column;
+  }
+  .z-footerList li {
+    padding: 10px 0;
+  }
 }
 /**************************************
 * Classic reports
@@ -291,9 +291,7 @@ pre.z-program-code code {
 .z-author-badges {
   display: flex;
   flex-direction: column;
-}
-.z-author-badges > * {
-  margin: 1rem 0;
+  padding: 1rem 0;
 }
 @media only screen and (max-width: 640px) {
   .z-author-container {

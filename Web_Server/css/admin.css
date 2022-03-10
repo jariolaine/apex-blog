@@ -207,9 +207,12 @@ pre.z-program-code {
   border-width: var(--ut-component-inner-border-width);
   border-style: solid;
   border-color: var(--ut-component-inner-border-color);
-  border-left: 0.4em solid #6ce26c;
+  border-left-width: 0.4em;
+  border-left-style: solid;
+  border-left-color: var(--u-color-35);
   border-radius: var(--ut-component-badge-border-radius);
   background-color: var(--ut-component-badge-background-color);
+  box-shadow: var(--ut-shadow-sm);
 }
 pre.z-program-code code {
   font-family: inherit;
