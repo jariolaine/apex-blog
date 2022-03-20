@@ -25,36 +25,39 @@ as
 --    Jari Laine 13.11.2021 - Changed procedure rss
 --    Jari Laine 30.12.2021 - Changed procedure rss_xsl. CSS file name moved to application settings
 --    Jari Laine 05.01.2021 - Added parameter p_css_file to procedure rss_xsl
+--    Jari Laine 13.03.2022 - Added parameter p_process_nae to procedure sitemap_index
+--                            Removed build option check from query producing XML in procedure sitemap_index
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "rss.xml"
   procedure rss(
-    p_app_name    in varchar2,
-    p_app_desc    in varchar2,
-    p_lang        in varchar2 default 'en'
+    p_app_name      in varchar2,
+    p_app_desc      in varchar2,
+    p_lang          in varchar2 default 'en'
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "rss.xsl"
   procedure rss_xsl(
-    p_ws_images   in varchar2,
-    p_css_file    in varchar2
+    p_ws_images     in varchar2,
+    p_css_file      in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "sitemap-index.xml"
   procedure sitemap_index(
-    p_app_id      in varchar2,
-    p_app_page_id in varchar2
+    p_app_id        in varchar2,
+    p_app_page_id   in varchar2,
+    p_process_name  in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "sitemap-main.xml"
   procedure sitemap_main(
-    p_app_id      in varchar2,
-    p_page_group  in varchar2
+    p_app_id        in varchar2,
+    p_page_group    in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -139,7 +142,7 @@ as
           apex_string.format(
             p_message => 'type="text/xsl" href="%s" media="screen"'
             ,p0 => l_xsl_url
-          ) 
+          )
         )
       end,
       xmlelement(
@@ -270,7 +273,8 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_index(
     p_app_id        in varchar2,
-    p_app_page_id   in varchar2
+    p_app_page_id   in varchar2,
+    p_process_name  in varchar2
   )
   as
     l_xml     blob;
@@ -300,14 +304,10 @@ as
     into l_xml
     from apex_application_page_proc t1
     where 1 = 1
-    and t1.process_name != 'sitemap-index.xml'
-    and t1.application_id = p_app_id
-    and t1.page_id = p_app_page_id
-    and t1.build_option = l_build_option
-    and apex_util.get_build_option_status(
-           p_application_id    => p_app_id
-          ,p_build_option_name => l_build_option
-        ) = 'INCLUDE'
+      and t1.process_name != p_process_name
+      and t1.application_id = p_app_id
+      and t1.page_id = p_app_page_id
+      and t1.build_option = l_build_option
     ;
 
     blog_util.download_file(

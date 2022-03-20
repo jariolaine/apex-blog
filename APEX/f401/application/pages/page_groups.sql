@@ -27,7 +27,7 @@ wwv_flow_api.create_page_group(
 wwv_flow_api.create_page_group(
  p_id=>wwv_flow_api.id(20718112665951240)
 ,p_group_name=>'Sitemap Main'
-,p_group_desc=>'Pages accessed from tab'
+,p_group_desc=>'Pages accessed from tab and included to sitemap-main'
 );
 wwv_flow_api.component_end;
 end;

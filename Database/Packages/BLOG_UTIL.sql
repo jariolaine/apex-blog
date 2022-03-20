@@ -144,11 +144,12 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure raise_http_error(
-    p_error_code  in number
+    p_error_code  in number,
+    p_message     in varchar2
   )
   as
   begin
-    owa_util.status_line( p_error_code );
+    owa_util.status_line( p_error_code, apex_lang.message( p_message ) );
     apex_application.stop_apex_engine;
   end raise_http_error;
 --------------------------------------------------------------------------------
@@ -364,7 +365,9 @@ as
 
     end loop;
 
-  exception when no_data_found then
+  exception
+  when no_data_found
+  then
 
     apex_debug.warn(
        p_message => 'No data found. %s( %s => %s )'
@@ -374,7 +377,8 @@ as
     );
     raise;
 
-  when others then
+  when others
+  then
 
     apex_debug.error(
        p_message => 'Unhandled error. %s( %s => %s )'
@@ -437,7 +441,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   when others
@@ -453,7 +460,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   end get_post_title;
@@ -553,7 +563,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   when others
@@ -571,7 +584,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   end get_post_pagination;
@@ -626,7 +642,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   when others then
@@ -640,7 +659,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   end get_category_title;
@@ -687,7 +709,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   when others
@@ -701,7 +726,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   end get_tag;
@@ -747,7 +775,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   when others
@@ -761,7 +792,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   end check_archive_exists;
@@ -876,7 +910,10 @@ as
   exception when no_data_found
   then
 
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   end download_file;

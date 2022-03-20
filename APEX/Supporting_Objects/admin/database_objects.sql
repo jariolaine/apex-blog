@@ -150,7 +150,7 @@ create table blog_features(
   changed_by varchar2( 256 char ) not null,
   is_active number( 1, 0 ) not null,
   display_seq number( 10, 0 ) not null,
-  build_option_name varchar2( 128 char ) not null,
+  build_option_name varchar2( 256 char ) not null,
   build_option_group varchar2( 256 char ) not null,
   build_option_parent varchar2( 256 char ),
   help_message varchar2( 256 char ) not null,
@@ -1371,11 +1371,12 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure raise_http_error(
-    p_error_code  in number
+    p_error_code  in number,
+    p_message     in varchar2
   )
   as
   begin
-    owa_util.status_line( p_error_code );
+    owa_util.status_line( p_error_code, apex_lang.message( p_message ) );
     apex_application.stop_apex_engine;
   end raise_http_error;
 --------------------------------------------------------------------------------
@@ -1591,7 +1592,9 @@ as
 
     end loop;
 
-  exception when no_data_found then
+  exception
+  when no_data_found
+  then
 
     apex_debug.warn(
        p_message => 'No data found. %s( %s => %s )'
@@ -1601,7 +1604,8 @@ as
     );
     raise;
 
-  when others then
+  when others
+  then
 
     apex_debug.error(
        p_message => 'Unhandled error. %s( %s => %s )'
@@ -1664,7 +1668,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   when others
@@ -1680,7 +1687,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   end get_post_title;
@@ -1780,7 +1790,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   when others
@@ -1798,7 +1811,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   end get_post_pagination;
@@ -1853,7 +1869,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   when others then
@@ -1867,7 +1886,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   end get_category_title;
@@ -1914,7 +1936,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   when others
@@ -1928,7 +1953,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   end get_tag;
@@ -1974,7 +2002,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   when others
@@ -1988,7 +2019,10 @@ as
     );
 
     -- show http error
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   end check_archive_exists;
@@ -2103,7 +2137,10 @@ as
   exception when no_data_found
   then
 
-    raise_http_error( p_error_code => 404 );
+    raise_http_error(
+      p_error_code => 404
+      ,p_message => 'BLOG_HTTP_404_ERROR'
+    );
     raise;
 
   end download_file;
@@ -5244,36 +5281,39 @@ as
 --    Jari Laine 13.11.2021 - Changed procedure rss
 --    Jari Laine 30.12.2021 - Changed procedure rss_xsl. CSS file name moved to application settings
 --    Jari Laine 05.01.2021 - Added parameter p_css_file to procedure rss_xsl
+--    Jari Laine 13.03.2022 - Added parameter p_process_nae to procedure sitemap_index
+--                            Removed build option check from query producing XML in procedure sitemap_index
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "rss.xml"
   procedure rss(
-    p_app_name    in varchar2,
-    p_app_desc    in varchar2,
-    p_lang        in varchar2 default 'en'
+    p_app_name      in varchar2,
+    p_app_desc      in varchar2,
+    p_lang          in varchar2 default 'en'
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "rss.xsl"
   procedure rss_xsl(
-    p_ws_images   in varchar2,
-    p_css_file    in varchar2
+    p_ws_images     in varchar2,
+    p_css_file      in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "sitemap-index.xml"
   procedure sitemap_index(
-    p_app_id      in varchar2,
-    p_app_page_id in varchar2
+    p_app_id        in varchar2,
+    p_app_page_id   in varchar2,
+    p_process_name  in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "sitemap-main.xml"
   procedure sitemap_main(
-    p_app_id      in varchar2,
-    p_page_group  in varchar2
+    p_app_id        in varchar2,
+    p_page_group    in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -5358,7 +5398,7 @@ as
           apex_string.format(
             p_message => 'type="text/xsl" href="%s" media="screen"'
             ,p0 => l_xsl_url
-          ) 
+          )
         )
       end,
       xmlelement(
@@ -5489,7 +5529,8 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_index(
     p_app_id        in varchar2,
-    p_app_page_id   in varchar2
+    p_app_page_id   in varchar2,
+    p_process_name  in varchar2
   )
   as
     l_xml     blob;
@@ -5519,14 +5560,10 @@ as
     into l_xml
     from apex_application_page_proc t1
     where 1 = 1
-    and t1.process_name != 'sitemap-index.xml'
-    and t1.application_id = p_app_id
-    and t1.page_id = p_app_page_id
-    and t1.build_option = l_build_option
-    and apex_util.get_build_option_status(
-           p_application_id    => p_app_id
-          ,p_build_option_name => l_build_option
-        ) = 'INCLUDE'
+      and t1.process_name != p_process_name
+      and t1.application_id = p_app_id
+      and t1.page_id = p_app_page_id
+      and t1.build_option = l_build_option
     ;
 
     blog_util.download_file(
@@ -6409,46 +6446,35 @@ end;
   ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK1" FOREIGN KEY ("POST_ID")
 	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
 
-
   ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK2" FOREIGN KEY ("PARENT_ID")
 	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE SET NULL ENABLE;
-
 
   ALTER TABLE "BLOG_COMMENT_FLAGS" ADD CONSTRAINT "BLOG_COMMENT_FLAGS_FK1" FOREIGN KEY ("COMMENT_ID")
 	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE CASCADE ENABLE;
 
-
   ALTER TABLE "BLOG_COMMENT_SUBSCRIBERS" ADD CONSTRAINT "BLOG_COMMENT_SUBSCRIBERS_FK1" FOREIGN KEY ("POST_ID")
 	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
-
 
   ALTER TABLE "BLOG_COMMENT_SUBSCRIBERS" ADD CONSTRAINT "BLOG_COMMENT_SUBSCRIBERS_FK2" FOREIGN KEY ("EMAIL_ID")
 	  REFERENCES "BLOG_SUBSCRIBERS_EMAIL" ("ID") ON DELETE CASCADE ENABLE;
 
-
   ALTER TABLE "BLOG_INIT_ITEMS" ADD CONSTRAINT "BLOG_INIT_ITEMS_FK1" FOREIGN KEY ("ITEM_NAME")
 	  REFERENCES "BLOG_SETTINGS" ("ATTRIBUTE_NAME") ENABLE;
-
 
   ALTER TABLE "BLOG_LINKS" ADD CONSTRAINT "BLOG_LINKS_FK1" FOREIGN KEY ("LINK_GROUP_ID")
 	  REFERENCES "BLOG_LINK_GROUPS" ("ID") ON DELETE CASCADE ENABLE;
 
-
   ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK1" FOREIGN KEY ("BLOGGER_ID")
 	  REFERENCES "BLOG_BLOGGERS" ("ID") ENABLE;
-
 
   ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK2" FOREIGN KEY ("CATEGORY_ID")
 	  REFERENCES "BLOG_CATEGORIES" ("ID") ENABLE;
 
-
   ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK1" FOREIGN KEY ("POST_ID")
 	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
 
-
   ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK2" FOREIGN KEY ("TAG_ID")
 	  REFERENCES "BLOG_TAGS" ("ID") ENABLE;
-
 
   ALTER TABLE "BLOG_POST_UDS" ADD CONSTRAINT "BLOG_POST_UDS_FK1" FOREIGN KEY ("POST_ID")
 	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;

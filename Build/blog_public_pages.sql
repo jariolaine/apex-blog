@@ -67,7 +67,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --         Shortcuts:             11
 --         Plug-ins:               1
 --       Globalization:
---         Messages:              13
+--         Messages:              14
 --       Reports:
 --       E-Mail:
 --         Templates:              1
@@ -140,7 +140,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220310183350'
+,p_last_upd_yyyymmddhh24miss=>'20220320095519'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>151
 ,p_ui_type_name => null
@@ -1654,7 +1654,7 @@ wwv_flow_api.create_page_group(
 wwv_flow_api.create_page_group(
  p_id=>wwv_flow_api.id(20718112665951240)
 ,p_group_name=>'Sitemap Main'
-,p_group_desc=>'Pages accessed from tab'
+,p_group_desc=>'Pages accessed from tab and included to sitemap-main'
 );
 end;
 /
@@ -12967,6 +12967,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Ooops... We are sorry! Unexpected internal error have occurred. Please try again later.'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(22220857391063954)
+,p_name=>'BLOG_HTTP_404_ERROR'
+,p_message_text=>'Not Found'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(41895368735673735)
 ,p_name=>'BLOG_MSG_LAST_UPDATED'
 ,p_message_text=>'<p>Document was last updated on %0.</p>'
@@ -16567,7 +16572,7 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_browser_cache=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220105135913'
+,p_last_upd_yyyymmddhh24miss=>'20220313080255'
 );
 wwv_flow_api.create_page_branch(
  p_id=>wwv_flow_api.id(62674058371144805)
@@ -16615,8 +16620,9 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'sitemap-index.xml'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_xml.sitemap_index(',
-'   p_app_id        => :APP_ID',
-'  ,p_app_page_id   => :APP_PAGE_ID',
+'   p_app_id       => :APP_ID',
+'  ,p_app_page_id  => :APP_PAGE_ID',
+'  ,p_process_name => ''sitemap-index.xml'' ',
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
@@ -16954,7 +16960,7 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''20'',''1'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,null,blog_util.int_to_vc2(apex_applicat'
 ||'ion_install.get_application_id));',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,''Release 4.4.20220310'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,''Release 4.4.20220320'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''70'',''0'',''G_COMMENT_WATCH_MONTHS'',''INTEGER'',''INTERNAL'',null,''1'',''6'',''1'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''130'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,''My Blog'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''140'',''0'',''G_APP_DESC'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,''About Almost Eve'

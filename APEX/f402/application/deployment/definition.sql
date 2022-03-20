@@ -136,10 +136,11 @@ wwv_flow_api.create_install(
 '--  Drop text index preferences',
 '--------------------------------------------------------',
 'begin',
-'ctx_ddl.drop_preference( ''BLOG_POST_UDS_DS'');',
-'ctx_ddl.drop_preference( ''BLOG_POST_UDS_LX'');',
+'ctx_ddl.drop_preference( ''BLOG_POST_UDS_DS'' );',
+'ctx_ddl.drop_preference( ''BLOG_POST_UDS_LX'' );',
 'end;',
 '/',
+'',
 ''))
 ,p_required_free_kb=>200
 ,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'

@@ -77,7 +77,8 @@ end;
 --  Drop text index preferences
 --------------------------------------------------------
 begin
-ctx_ddl.drop_preference( 'BLOG_POST_UDS_DS');
-ctx_ddl.drop_preference( 'BLOG_POST_UDS_LX');
+ctx_ddl.drop_preference( 'BLOG_POST_UDS_DS' );
+ctx_ddl.drop_preference( 'BLOG_POST_UDS_LX' );
 end;
 /
+
