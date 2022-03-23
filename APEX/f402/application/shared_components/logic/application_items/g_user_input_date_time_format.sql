@@ -15,6 +15,7 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(19066396643849216)
 ,p_name=>'G_USER_INPUT_DATE_TIME_FORMAT'
 ,p_protection_level=>'I'
+,p_item_comment=>'Date input fields format'
 );
 wwv_flow_api.component_end;
 end;

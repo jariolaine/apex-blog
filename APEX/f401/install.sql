@@ -27,7 +27,7 @@ prompt --install
 @@application/plugin_settings.sql
 @@application/shared_components/security/authorizations/administration_rights.sql
 @@application/shared_components/navigation/navigation_bar.sql
-@@application/shared_components/logic/application_processes/initiatize_items.sql
+@@application/shared_components/logic/application_processes/initialize_items.sql
 @@application/shared_components/logic/application_processes/redirect_to_search_page.sql
 @@application/shared_components/logic/application_items/g_app_desc.sql
 @@application/shared_components/logic/application_items/g_app_name.sql

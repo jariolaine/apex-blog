@@ -25,7 +25,7 @@ insert into blog_features (is_active,display_seq,build_option_name,build_option_
 --  Inserting into BLOG_SETTINGS
 --------------------------------------------------------
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values ('20','1','G_PUB_APP_ID','STRING','INTERNAL',null,null,null,blog_util.int_to_vc2(apex_application_install.get_application_id));
-insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values ('30','0','G_APP_VERSION','STRING','INTERNAL',null,null,null,'Release 4.4.20220320');
+insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values ('30','0','G_APP_VERSION','STRING','INTERNAL',null,null,null,'Release 4.4.20220323');
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values ('70','0','G_COMMENT_WATCH_MONTHS','INTEGER','INTERNAL',null,'1','6','1');
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values ('130','0','G_APP_NAME','STRING','BLOG_SETTING_GROUP_GENERAL',null,null,null,'My Blog');
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values ('140','0','G_APP_DESC','STRING','BLOG_SETTING_GROUP_GENERAL',null,null,null,'About Almost Everything');
@@ -51,7 +51,7 @@ from apex_application_items ai
 join blog_settings s
   on ai.item_name = s.attribute_name
 where 1 = 1
-and ai.application_id = apex_application_install.get_application_id
+  and ai.application_id = apex_application_install.get_application_id
   union all
 select 1              as is_active
   ,pi.application_id  as application_id
@@ -60,7 +60,7 @@ from apex_application_page_items pi
 join blog_settings s
   on pi.item_name = s.attribute_name
 where 1 = 1
-and pi.application_id = apex_application_install.get_application_id
+  and pi.application_id = apex_application_install.get_application_id
   union all
 select 1              as is_active
   ,ai.application_id  as application_id
@@ -69,7 +69,7 @@ from apex_application_items ai
 join blog_settings s
   on ai.item_name = s.attribute_name
 where 1 = 1
-and ai.application_id = blog_util.get_attribute_value( 'G_ADMIN_APP_ID' )
+  and ai.application_id = blog_util.get_attribute_value( 'G_ADMIN_APP_ID' )
   union all
 select 1              as is_active
   ,pi.application_id  as application_id
@@ -78,6 +78,6 @@ from apex_application_page_items pi
 join blog_settings s
   on pi.item_name = s.attribute_name
 where 1 = 1
-and pi.application_id = blog_util.get_attribute_value( 'G_ADMIN_APP_ID' )
+  and pi.application_id = blog_util.get_attribute_value( 'G_ADMIN_APP_ID' )
 ;
 

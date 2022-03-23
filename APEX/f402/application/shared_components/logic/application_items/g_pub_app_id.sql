@@ -15,6 +15,7 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(4233652519065297)
 ,p_name=>'G_PUB_APP_ID'
 ,p_protection_level=>'I'
+,p_item_comment=>'Public application id'
 );
 wwv_flow_api.component_end;
 end;

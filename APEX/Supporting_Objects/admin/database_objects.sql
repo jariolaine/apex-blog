@@ -847,6 +847,7 @@ from blog_init_items i
 join blog_settings s
   on i.item_name = s.attribute_name
 where 1 = 1
+and i.is_active = 1
 with read only
 /
 --------------------------------------------------------

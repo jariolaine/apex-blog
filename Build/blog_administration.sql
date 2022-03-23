@@ -132,7 +132,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220320095617'
+,p_last_upd_yyyymmddhh24miss=>'20220323175852'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>242
 ,p_ui_type_name => null
@@ -983,6 +983,7 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(6653797369625590)
 ,p_name=>'G_APP_DESC'
 ,p_protection_level=>'I'
+,p_item_comment=>'Application description'
 );
 end;
 /
@@ -1002,6 +1003,7 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(26223563841171496)
 ,p_name=>'G_APP_VERSION'
 ,p_protection_level=>'I'
+,p_item_comment=>'Application version'
 );
 end;
 /
@@ -1011,6 +1013,7 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(8905163685110392)
 ,p_name=>'G_BLOGGER_ID'
 ,p_protection_level=>'I'
+,p_item_comment=>'User ID'
 );
 end;
 /
@@ -1020,6 +1023,7 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(27184479427659749)
 ,p_name=>'G_BLOGGER_NAME'
 ,p_protection_level=>'I'
+,p_item_comment=>'User full name'
 );
 end;
 /
@@ -1039,6 +1043,7 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(4233652519065297)
 ,p_name=>'G_PUB_APP_ID'
 ,p_protection_level=>'I'
+,p_item_comment=>'Public application id'
 );
 end;
 /
@@ -1058,6 +1063,7 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(19066396643849216)
 ,p_name=>'G_USER_INPUT_DATE_TIME_FORMAT'
 ,p_protection_level=>'I'
+,p_item_comment=>'Date input fields format'
 );
 end;
 /
@@ -25843,6 +25849,7 @@ wwv_flow_api.append_to_install_script(
 'join blog_settings s',
 '  on i.item_name = s.attribute_name',
 'where 1 = 1',
+'and i.is_active = 1',
 'with read only',
 '/',
 '--------------------------------------------------------',
@@ -26509,9 +26516,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  function get_attribute_value(',
 '    p_attribute_name in varchar2',
-'  ) return varchar2',
-'  as',
-' '))
+'  ) ret'))
 );
 end;
 /
@@ -26519,7 +26524,9 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   l_value varchar2(4000);',
+'urn varchar2',
+'  as',
+'    l_value varchar2(4000);',
 '  begin',
 '',
 '    apex_debug.enter(',
@@ -27482,8 +27489,7 @@ wwv_flow_api.append_to_install_script(
 '    and not exists(',
 '      select 1',
 '      from table( p_tag_tab ) x1',
-'      where 1 = 1',
-'      and x'))
+'      whe'))
 );
 null;
 end;
@@ -27492,7 +27498,8 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'1.column_value = t1.tag_id',
+'re 1 = 1',
+'      and x1.column_value = t1.tag_id',
 '    );',
 '',
 '  end cleanup_post_tags;',
@@ -28483,7 +28490,7 @@ wwv_flow_api.append_to_install_script(
 '    p_item   in            apex_plugin.t_item,',
 '    p_plugin in            apex_plugin.t_plugin,',
 '    p_param  in            apex_plugin.t_item_ajax_param,',
-'    p_result in out nocopy apex_p'))
+'    p_result'))
 );
 null;
 end;
@@ -28492,7 +28499,7 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'lugin.t_item_ajax_result',
+' in out nocopy apex_plugin.t_item_ajax_result',
 '  )',
 '  as',
 '    l_err   varchar2(4000);',
@@ -29358,7 +29365,7 @@ wwv_flow_api.append_to_install_script(
 '      ,p_code_tab => l_code_tab',
 '    );',
 '',
-'    -- split comment to co'))
+'    -'))
 );
 null;
 end;
@@ -29367,7 +29374,7 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'llection by new line character',
+'- split comment to collection by new line character',
 '    l_comment_tab := apex_string.split( p_comment, chr(10) );',
 '',
 '    -- comment is stored to collection',
@@ -30291,8 +30298,7 @@ wwv_flow_api.append_to_install_script(
 'create or replace package "BLOG_XML"',
 'authid definer',
 'as',
-'--------------------------------------------------------------------------------',
-'---------'))
+'----------------------------------------------------------------------'))
 );
 null;
 end;
@@ -30301,7 +30307,8 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------------------------------------------------------------------',
+'----------',
+'--------------------------------------------------------------------------------',
 '--',
 '--  DESCRIPTION',
 '--    Procedure and functions to generate and output RSS feed and sitemap',
@@ -31185,7 +31192,7 @@ wwv_flow_api.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for Trigger BLOG_POSTS_TRG',
 '--------------------------------------------------------',
-'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_TR'))
+'CREATE OR REPLACE EDITIONABLE T'))
 );
 null;
 end;
@@ -31194,7 +31201,7 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'G"',
+'RIGGER "BLOG_POSTS_TRG"',
 'before',
 'insert or',
 'update on blog_posts',

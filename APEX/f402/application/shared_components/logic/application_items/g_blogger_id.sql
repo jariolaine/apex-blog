@@ -15,6 +15,7 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(8905163685110392)
 ,p_name=>'G_BLOGGER_ID'
 ,p_protection_level=>'I'
+,p_item_comment=>'User ID'
 );
 wwv_flow_api.component_end;
 end;

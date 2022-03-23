@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(6905258727754156)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211128074840'
+,p_last_upd_yyyymmddhh24miss=>'20220322153331'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25312381302124218)
@@ -75,11 +75,11 @@ wwv_flow_api.create_report_region(
 'from blog_v_links v1',
 'where 1 = 1',
 'and (',
-'  :P10_FILE_NAME is null or(',
-'    :P10_FILE_NAME is not null',
+'  :P10_LINK_SEARCH is null or(',
+'    :P10_LINK_SEARCH is not null',
 '    and(',
-'      instr( upper( v1.link_title ), upper( :P10_FILE_NAME ) ) > 0 or',
-'      instr( upper( v1.link_desc ), upper( :P10_FILE_NAME ) ) > 0',
+'      instr( upper( v1.link_title ), upper( :P10_LINK_SEARCH ) ) > 0 or',
+'      instr( upper( v1.link_desc ), upper( :P10_LINK_SEARCH ) ) > 0',
 '    )',
 '  )',
 ')',
@@ -87,7 +87,7 @@ wwv_flow_api.create_report_region(
 '  ,v1.display_seq'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
-,p_ajax_items_to_submit=>'P10_FILE_NAME'
+,p_ajax_items_to_submit=>'P10_LINK_SEARCH'
 ,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(6815219261267393)
 ,p_query_headings_type=>'QUERY_COLUMNS'
@@ -205,7 +205,7 @@ wwv_flow_api.create_page_plug(
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(25675531094209086)
-,p_name=>'P10_FILE_NAME'
+,p_name=>'P10_LINK_SEARCH'
 ,p_item_sequence=>10
 ,p_item_plug_id=>wwv_flow_api.id(25311756072124212)
 ,p_use_cache_before_default=>'NO'
@@ -232,7 +232,7 @@ wwv_flow_api.create_page_da_event(
 ,p_name=>'Perform Search'
 ,p_event_sequence=>20
 ,p_triggering_element_type=>'ITEM'
-,p_triggering_element=>'P10_FILE_NAME'
+,p_triggering_element=>'P10_LINK_SEARCH'
 ,p_triggering_condition_type=>'JAVASCRIPT_EXPRESSION'
 ,p_triggering_expression=>'this.browserEvent.which === apex.jQuery.ui.keyCode.ENTER'
 ,p_bind_type=>'bind'
