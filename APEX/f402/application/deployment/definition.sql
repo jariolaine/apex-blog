@@ -102,6 +102,7 @@ wwv_flow_api.create_install(
 'drop table blog_settings;',
 'drop table blog_subscribers_email;',
 'drop table blog_tags;',
+'drop type blog_t_post;',
 'drop view blog_v_all_categories;',
 'drop view blog_v_all_comments;',
 'drop view blog_v_all_dynamic_content;',

@@ -26,7 +26,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220322155036'
+,p_last_upd_yyyymmddhh24miss=>'20220324200814'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -307,26 +307,11 @@ wwv_flow_api.create_page_plug(
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'EXPRESSION'
-,p_plug_display_when_condition=>'not( :P2_NEWER_ID is null and :P2_OLDER_ID is null )'
+,p_plug_display_when_condition=>'not( :P2_NEWER_POST_ID is null and :P2_OLDER_POST_ID is null )'
 ,p_plug_display_when_cond2=>'PLSQL'
 ,p_required_patch=>wwv_flow_api.id(27921011391085431)
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
-);
-wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(65302607457080929)
-,p_plug_name=>'Breadcrumb'
-,p_region_template_options=>'#DEFAULT#:t-BreadcrumbRegion--useBreadcrumbTitle'
-,p_component_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_api.id(6812256103267391)
-,p_plug_display_sequence=>1
-,p_include_in_reg_disp_sel_yn=>'Y'
-,p_plug_display_point=>'REGION_POSITION_01'
-,p_menu_id=>wwv_flow_api.id(19664324329980679)
-,p_plug_source_type=>'NATIVE_BREADCRUMB'
-,p_menu_template_id=>wwv_flow_api.id(6855961171267414)
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_required_patch=>wwv_flow_api.id(27920818779089933)
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(27862487912256823)
@@ -339,7 +324,7 @@ wwv_flow_api.create_page_button(
 ,p_button_image_alt=>'&P2_NEWER_POST_TITLE.'
 ,p_button_position=>'BOTTOM'
 ,p_button_alignment=>'LEFT'
-,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ALIAS.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_NEWER_ID.'
+,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ALIAS.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_NEWER_POST_ID.'
 ,p_button_condition=>'P2_NEWER_POST_ID'
 ,p_button_condition_type=>'ITEM_IS_NOT_NULL'
 ,p_button_css_classes=>'z-text-wrap u-pullLeft padding-left-none'
@@ -356,7 +341,7 @@ wwv_flow_api.create_page_button(
 ,p_button_template_id=>wwv_flow_api.id(6855239813267414)
 ,p_button_image_alt=>'&P2_OLDER_POST_TITLE.'
 ,p_button_position=>'BOTTOM'
-,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ALIAS.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_OLDER_ID.'
+,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ALIAS.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_OLDER_POST_ID.'
 ,p_button_condition=>'P2_OLDER_POST_ID'
 ,p_button_condition_type=>'ITEM_IS_NOT_NULL'
 ,p_button_css_classes=>'z-text-wrap u-pullRight padding-right-none'

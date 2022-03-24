@@ -25,14 +25,9 @@ wwv_flow_api.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(31240293691117226)
-,p_name=>'BLOG_BTN_ARIA_LABEL_COPY_TO_CLIPBOARD'
-,p_message_text=>'Copy Full URL to Clipboard'
-);
-wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(31239116333152817)
 ,p_name=>'BLOG_BTN_TITLE_COPY_TO_CLIPBOARD'
-,p_message_text=>'Copy to clipboard'
+,p_message_text=>'Copy Full URL to Clipboard'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(31260830488872355)

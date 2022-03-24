@@ -28,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220209232254'
+,p_last_upd_yyyymmddhh24miss=>'20220323184741'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -382,7 +382,7 @@ wwv_flow_api.create_region_column(
 ,p_stretch=>'A'
 ,p_link_target=>'f?p=&APP_ID.:20100:&SESSION.:&HELP_MESSAGE.:&DEBUG.::P20100_LABEL:&ATTRIBUTE_MESSAGE.'
 ,p_link_text=>'<span aria-hidden="true" class="t-Icon fa fa-question-circle-o"></span>'
-,p_link_attributes=>'title="&BTN_TITLE_HELP." aria-label="&BTN_TITLE_HELP." class="t-Button t-Button--noLabel t-Button--icon t-Button--link"'
+,p_link_attributes=>'title="&BTN_TITLE_HELP." aria-label="&BTN_TITLE_HELP." class="t-Button t-Button--noLabel t-Button--icon t-Button--link padding-none"'
 ,p_enable_filter=>false
 ,p_filter_is_required=>false
 ,p_use_as_row_header=>false

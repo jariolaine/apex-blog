@@ -8,6 +8,14 @@ increment by 1
 start with 100001
 /
 --------------------------------------------------------
+--  DDL for Type BLOG_T_POST
+--------------------------------------------------------
+CREATE OR REPLACE TYPE "BLOG_T_POST" as object(
+  post_id number(38,0),
+  post_title varchar2(256 char)
+);
+/
+--------------------------------------------------------
 --  DDL for Table BLOG_BLOGGERS
 --------------------------------------------------------
 create table blog_bloggers(
@@ -1517,9 +1525,9 @@ as
   begin
 
     apex_debug.enter(
-      'blog_util.get_attribute_value'
-      ,'p_attribute_name'
-      ,p_attribute_name
+      p_routine_name  => 'blog_util.get_attribute_value'
+      ,p_name01       => 'p_attribute_name'
+      ,p_value01      => p_attribute_name
     );
 
     if p_attribute_name is null then
@@ -1533,7 +1541,12 @@ as
     where attribute_name = p_attribute_name
     ;
 
-    apex_debug.info( 'Fetch attribute %s return: %s', p_attribute_name, l_value );
+    apex_debug.info(
+      p_message => 'Fetch attribute %s return: %s'
+      ,p0 => p_attribute_name
+      ,p1 => l_value
+    );
+
     return l_value;
 
   exception when no_data_found
@@ -1569,9 +1582,9 @@ as
   begin
 
     apex_debug.enter(
-      'blog_util.initialize_items'
-      ,'p_app_id'
-      ,p_app_id
+      p_routine_name  => 'blog_util.initialize_items'
+      ,p_name01       => 'p_app_id'
+      ,p_value01      => p_app_id
     );
 
     if p_app_id is null then
@@ -1588,8 +1601,18 @@ as
       where i.application_id = l_app_id
     ) loop
 
-      apex_debug.info( 'Initialize application id: %s item: %s value: %s', p_app_id, c1.item_name, c1.item_value );
-      apex_util.set_session_state( c1.item_name, c1.item_value, false );
+      apex_debug.info(
+        p_message => 'Initialize application id: %s item: %s value: %s'
+        ,p0 => p_app_id
+        ,p1 => c1.item_name
+        ,p2 => c1.item_value
+      );
+
+      apex_util.set_session_state(
+        p_name    => c1.item_name
+        ,p_value  => c1.item_value
+        ,p_commit => false
+      );
 
     end loop;
 
@@ -1629,11 +1652,11 @@ as
   begin
 
     apex_debug.enter(
-      'blog_util.get_post_title'
-      ,'p_post_id'
-      ,p_post_id
-      ,'p_escape'
-      ,apex_debug.tochar(p_escape)
+      p_routine_name  => 'blog_util.get_post_title'
+      ,p_name01       => 'p_post_id'
+      ,p_value01      => p_post_id
+      ,p_name02       => 'p_escape'
+      ,p_value02      => apex_debug.tochar(p_escape)
     );
 
     if p_post_id is null then
@@ -1648,7 +1671,13 @@ as
     from blog_v_posts v1
     where v1.post_id = l_post_id
     ;
-    apex_debug.info( 'Fetch post: %s return: %s', p_post_id, l_value );
+
+    apex_debug.info(
+      p_message => 'Fetch post: %s return: %s'
+      ,p0 => p_post_id
+      ,p1 => l_value
+    );
+
     -- espace html and return string
     return case when p_escape
       then apex_escape.html(l_value)
@@ -1708,16 +1737,14 @@ as
   as
     l_post_id     number;
     l_post_title  varchar2(512);
-    l_newer_id    number;
-    l_newer_title varchar2(512);
-    l_older_id    number;
-    l_older_title varchar2(512);
+    l_newer       blog_t_post;
+    l_older       blog_t_post;
   begin
 
     apex_debug.enter(
-      'blog_util.pagination'
-      ,'p_post_id'
-      ,p_post_id
+      p_routine_name  => 'blog_util.pagination'
+      ,p_name01       => 'p_post_id'
+      ,p_value01      => p_post_id
     );
 
     if p_post_id is null then
@@ -1726,59 +1753,42 @@ as
 
     l_post_id := to_number( p_post_id );
 
-    with q1 as(
-      select --+ inline
-        v1.post_id
-        ,v1.post_title
-        ,(
-          select --+ first_rows(1)
-            lkp1.post_id
-          from blog_v_posts lkp1
-          where 1 = 1
-          and lkp1.published_on > v1.published_on
-          order by lkp1.published_on asc
-          fetch first 1 rows only
-        ) as newer_id
-        ,(
-          select --+ first_rows(1)
-            lkp2.post_id
-          from blog_v_posts lkp2
-          where 1 = 1
-          and lkp2.published_on < v1.published_on
-          order by lkp2.published_on desc
-          fetch first 1 rows only
-        ) as older_id
-      from blog_v_posts v1
-      where 1 = 1
-      and v1.post_id = l_post_id
-    )
-    select q1.post_title
-      ,q1.newer_id
+    select
+      v1.post_title
       ,(
-        select lkp3.title
-        from blog_posts lkp3
+        select blog_t_post(lkp1.post_id, lkp1.post_title)
+        from blog_v_posts lkp1
         where 1 = 1
-        and lkp3.id = q1.newer_id
-      ) as newer_title
-      ,q1.older_id
+        and lkp1.published_on > v1.published_on
+        order by lkp1.published_on asc
+        fetch first 1 rows only
+      ) newer
       ,(
-        select lkp4.title
-        from blog_posts lkp4
+        select blog_t_post(lkp2.post_id, lkp2.post_title)
+        from blog_v_posts lkp2
         where 1 = 1
-        and lkp4.id = q1.older_id
-      ) as older_title
-    into l_post_title, l_newer_id, l_newer_title, l_older_id, l_older_title
-    from q1
+        and lkp2.published_on < v1.published_on
+        order by lkp2.published_on desc
+        fetch first 1 rows only
+      ) as older_id
+    into l_post_title, l_newer, l_older
+    from blog_v_posts v1
     where 1 = 1
+    and post_id = l_post_id
     ;
 
     p_post_title  := l_post_title;
-    p_newer_id    := int_to_vc2( l_newer_id );
-    p_newer_title := l_newer_title;
-    p_older_id    := int_to_vc2( l_older_id );
-    p_older_title := l_older_title;
+    p_newer_id    := int_to_vc2( l_newer.post_id );
+    p_newer_title := l_newer.post_title;
+    p_older_id    := int_to_vc2( l_older.post_id );
+    p_older_title := l_older.post_title;
 
-    apex_debug.info( 'Fetch post: %s next_id: %s prev_id: %s', p_post_id, p_newer_id, p_older_id );
+    apex_debug.info(
+      p_message => 'Fetch post: %s next_id: %s prev_id: %s'
+      ,p0 => p_post_id
+      ,p1 => p_newer_id
+      ,p2 => p_older_id
+    );
 
   exception when no_data_found
   then
@@ -1831,11 +1841,11 @@ as
   begin
 
     apex_debug.enter(
-      'blog_util.get_category_title'
-      ,'p_category_id'
-      ,p_category_id
-      ,'p_escape'
-      ,apex_debug.tochar(p_escape)
+      p_routine_name  => 'blog_util.get_category_title'
+      ,p_name01       => 'p_category_id'
+      ,p_value01      => p_category_id
+      ,p_name02       => 'p_escape'
+      ,p_value02      => apex_debug.tochar(p_escape)
     );
 
     if p_category_id is null then
@@ -1850,7 +1860,13 @@ as
     from blog_v_categories v1
     where v1.category_id = l_category_id
     ;
-    apex_debug.info( 'Fetch category: %s return: %s', p_category_id, l_title );
+
+    apex_debug.info(
+      p_message => 'Fetch category: %s return: %s'
+      ,p0 => p_category_id
+      ,p1 => l_title
+    );
+
     -- espace html and return string
     return case when p_escape
       then apex_escape.html(l_title)
@@ -1905,9 +1921,9 @@ as
   begin
 
     apex_debug.enter(
-      'blog_util.get_tag'
-      ,'p_tag_id'
-      ,p_tag_id
+      p_routine_name  => 'blog_util.get_tag'
+      ,p_name01       => 'p_tag_id'
+      ,p_value01      => p_tag_id
     );
 
     if p_tag_id is null then
@@ -1923,9 +1939,16 @@ as
     where 1 = 1
     and t1.tag_id = l_tag_id
     ;
-    apex_debug.info( 'Fetch tag: %s return: %s', p_tag_id, l_value );
+
+    apex_debug.info(
+      p_message => 'Fetch tag: %s return: %s'
+      ,p0 => p_tag_id
+      ,p1 => l_value
+    );
+
     -- espace html and return string
     return apex_escape.html( l_value );
+
   exception when no_data_found
   then
 
@@ -1972,9 +1995,9 @@ as
   begin
 
     apex_debug.enter(
-      'blog_util.check_archive_exists'
-      ,'p_archive_id'
-      ,p_archive_id
+      p_routine_name  => 'blog_util.check_archive_exists'
+      ,p_name01       => 'p_archive_id'
+      ,p_value01      => p_archive_id
     );
 
     if p_archive_id is null then
@@ -1990,7 +2013,12 @@ as
     where 1 = 1
     and t1.archive_year = l_archive_id
     ;
-    apex_debug.info( 'Fetch archive: %s return: %s', p_archive_id, l_value );
+
+    apex_debug.info(
+      p_message => 'Fetch archive: %s return: %s'
+      ,p0 => p_archive_id
+      ,p1 => l_value
+    );
 
   exception when no_data_found
   then
@@ -2054,9 +2082,13 @@ as
       if c1.show_changed_on = 1
       then
         sys.htp.p(
-            apex_lang.message(
-              p_name => 'BLOG_MSG_LAST_UPDATED'
-              ,p0 => to_char( c1.changed_on, p_date_format )
+            apex_string.format(
+              p_message => '<p>%s</p>'
+              ,p0 =>
+                apex_lang.message(
+                  p_name => 'BLOG_MSG_LAST_UPDATED'
+                  ,p0 => to_char( c1.changed_on, p_date_format )
+                )
             )
           );
       end if;
@@ -2082,20 +2114,35 @@ as
       ,ccharset       => p_charset
     );
 
-    apex_debug.info( 'Set response headers' );
+    apex_debug.info(
+      p_message => 'Set response headers'
+    );
+
     if p_file_name is not null
     then
-      apex_debug.info( 'Content-Disposition: attachment; filename="%s"', p_file_name );
+      apex_debug.info(
+        p_message => 'Content-Disposition: attachment; filename="%s"'
+        ,p0 => p_file_name
+      );
       sys.htp.p(
-        apex_string.format( 'Content-Disposition: attachment; filename="%s"', p_file_name )
+        apex_string.format(
+          p_message => 'Content-Disposition: attachment; filename="%s"'
+          ,p0 => p_file_name
+        )
       );
     end if;
 
     if p_cache_control is not null
     then
-      apex_debug.info( 'Cache-Control: %s', p_cache_control );
+      apex_debug.info(
+        p_message => 'Cache-Control: %s'
+        ,p0 => p_cache_control
+      );
       sys.htp.p(
-        apex_string.format( 'Cache-Control: %s', p_cache_control )
+        apex_string.format(
+          p_message => 'Cache-Control: %s'
+          ,p0 => p_cache_control
+        )
       );
     end if;
 

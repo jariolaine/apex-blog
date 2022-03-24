@@ -37,7 +37,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(41895368735673735)
 ,p_name=>'BLOG_MSG_LAST_UPDATED'
-,p_message_text=>'<p>Document was last updated on %0.</p>'
+,p_message_text=>'Document was last updated on %0.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(31915575291785585)

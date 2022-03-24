@@ -36,7 +36,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --       Computations:             5
 --       Validations:              2
 --       Processes:               31
---       Regions:                 30
+--       Regions:                 29
 --       Buttons:                  7
 --       Dynamic Actions:         10
 --     Shared Components:
@@ -140,7 +140,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220323175916'
+,p_last_upd_yyyymmddhh24miss=>'20220324201654'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>151
 ,p_ui_type_name => null
@@ -12975,7 +12975,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(41895368735673735)
 ,p_name=>'BLOG_MSG_LAST_UPDATED'
-,p_message_text=>'<p>Document was last updated on %0.</p>'
+,p_message_text=>'Document was last updated on %0.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(31915575291785585)
@@ -13832,7 +13832,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220322155036'
+,p_last_upd_yyyymmddhh24miss=>'20220324200814'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -14113,26 +14113,11 @@ wwv_flow_api.create_page_plug(
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'EXPRESSION'
-,p_plug_display_when_condition=>'not( :P2_NEWER_ID is null and :P2_OLDER_ID is null )'
+,p_plug_display_when_condition=>'not( :P2_NEWER_POST_ID is null and :P2_OLDER_POST_ID is null )'
 ,p_plug_display_when_cond2=>'PLSQL'
 ,p_required_patch=>wwv_flow_api.id(27921011391085431)
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
-);
-wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(65302607457080929)
-,p_plug_name=>'Breadcrumb'
-,p_region_template_options=>'#DEFAULT#:t-BreadcrumbRegion--useBreadcrumbTitle'
-,p_component_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_api.id(6812256103267391)
-,p_plug_display_sequence=>1
-,p_include_in_reg_disp_sel_yn=>'Y'
-,p_plug_display_point=>'REGION_POSITION_01'
-,p_menu_id=>wwv_flow_api.id(19664324329980679)
-,p_plug_source_type=>'NATIVE_BREADCRUMB'
-,p_menu_template_id=>wwv_flow_api.id(6855961171267414)
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_required_patch=>wwv_flow_api.id(27920818779089933)
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(27862487912256823)
@@ -14145,7 +14130,7 @@ wwv_flow_api.create_page_button(
 ,p_button_image_alt=>'&P2_NEWER_POST_TITLE.'
 ,p_button_position=>'BOTTOM'
 ,p_button_alignment=>'LEFT'
-,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ALIAS.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_NEWER_ID.'
+,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ALIAS.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_NEWER_POST_ID.'
 ,p_button_condition=>'P2_NEWER_POST_ID'
 ,p_button_condition_type=>'ITEM_IS_NOT_NULL'
 ,p_button_css_classes=>'z-text-wrap u-pullLeft padding-left-none'
@@ -14162,7 +14147,7 @@ wwv_flow_api.create_page_button(
 ,p_button_template_id=>wwv_flow_api.id(6855239813267414)
 ,p_button_image_alt=>'&P2_OLDER_POST_TITLE.'
 ,p_button_position=>'BOTTOM'
-,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ALIAS.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_OLDER_ID.'
+,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ALIAS.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_OLDER_POST_ID.'
 ,p_button_condition=>'P2_OLDER_POST_ID'
 ,p_button_condition_type=>'ITEM_IS_NOT_NULL'
 ,p_button_css_classes=>'z-text-wrap u-pullRight padding-right-none'
@@ -16972,7 +16957,7 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''20'',''1'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,null,blog_util.int_to_vc2(apex_applicat'
 ||'ion_install.get_application_id));',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,''Release 4.4.20220323'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,''Release 4.4.20220324'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''70'',''0'',''G_COMMENT_WATCH_MONTHS'',''INTEGER'',''INTERNAL'',null,''1'',''6'',''1'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''130'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,''My Blog'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''140'',''0'',''G_APP_DESC'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,''About Almost Eve'
