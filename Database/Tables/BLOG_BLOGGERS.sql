@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for Table BLOG_BLOGGERS
 --------------------------------------------------------
-create table  blog_bloggers(
+create table blog_bloggers(
   id number( 38, 0 ) not null,
 	row_version number( 38, 0 ) not null,
 	created_on timestamp( 6 ) with local time zone not null,

@@ -1,11 +1,11 @@
-prompt --application/shared_components/navigation/lists/categories
+prompt --application/shared_components/navigation/lists/post_categories
 begin
 --   Manifest
---     LIST: Categories
+--     LIST: Post Categories
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -13,7 +13,7 @@ wwv_flow_api.component_begin (
 );
 wwv_flow_api.create_list(
  p_id=>wwv_flow_api.id(6941496811819617)
-,p_name=>'Categories'
+,p_name=>'Post Categories'
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
@@ -27,14 +27,23 @@ wwv_flow_api.create_list(
 '  ,null                 as image',
 '  ,null                 as image_attribute',
 '  ,null                 as image_alt_attribute',
-'--,v1.post_count        as attribute1',
-'  ,null                 as attribute1',
+'  ,case d.post_count',
+'    when ''INCLUDE'' then v1.posts_count        ',
+'  end                   as attribute1',
 '   -- add category id to data attribute',
 '   -- we can use it in dynamic action to set current list item',
 '  ,''data-blog-content-id="''',
 '   || v1.category_id',
 '   || ''"''               as attribute2',
+'  ,''z-linkList''         as attribute3',
 'from #OWNER#.blog_v_categories v1',
+'cross join(',
+'  select apex_util.get_build_option_status(',
+'     p_application_id => :APP_ID',
+'    ,p_build_option_name => ''BLOG_FEATURE_CATEGORY_POST_COUNT''',
+'  ) as post_count',
+'  from dual',
+') d',
 'where 1 = 1',
 'order by v1.display_seq',
 ''))

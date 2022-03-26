@@ -2,12 +2,18 @@
 /**************************************
 * Post editor
 **************************************/
-#P12_BODY_HTML_CONTAINER .t-Form-helpButton{
-  display:none;
-  visible:hidden
-}
-#P12_BODY_HTML_CONTAINER{
+#P12_BODY_HTML_CONTAINER {
   padding-right: 2.2rem;
+  .t-Form-helpButton{
+    display:none;
+    visibility: hidden;
+  }
+}
+/**************************************
+* IR files
+**************************************/
+td[headers="COPY_URL"] {
+  padding: 0;
 }
 /**************************************
 * IR post report
@@ -27,7 +33,12 @@
 /**************************************
 * Settings and features Interactive Grid
 **************************************/
-.z-config-ig span.a-GV-breakLabel {
-	display: none!important;
-  visibility: hidden!important;
+.z-config-ig {
+  span.a-GV-breakLabel {
+  	display: none!important;
+    visibility: hidden!important;
+  }
+  span.z-feature--child {
+    margin-left: 1.6rem;
+  }
 }

@@ -1,0 +1,52 @@
+@import url('_variables.less');
+/**************************************
+* Footer Link List
+*
+* Credits:
+*   https://epicbootstrap.com/snippets/footer-basic
+*   https://jsfiddle.net/Grobbert/gmqth51o/1/
+**************************************/
+.z-footerList {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+  font-size: 1.8rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+  li {
+    padding: 0 10px;
+    font-size: inherit;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+    opacity: 0.6;
+  }
+  a:hover {
+    opacity: 1;
+  }
+}
+.z-copyright {
+  text-align: center;
+  margin: 18px 0;
+  a {
+    display: block;
+    color: inherit;
+    font-size: 1.4rem;
+    opacity: 0.6;
+  }
+  &:hover a {
+    opacity: 1;
+  }
+}
+@media only screen and (max-width: 640px) {
+  .z-footerList {
+    flex-direction: column;
+    li {
+      padding: 10px 0;
+    }
+  }
+}

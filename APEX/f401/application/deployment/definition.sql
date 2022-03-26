@@ -4,8 +4,8 @@ begin
 --     INSTALL: 401
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -18,7 +18,7 @@ wwv_flow_api.create_install(
 ,p_license_message=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<pre>The MIT License (MIT)',
 '',
-'Copyright (c) 2021 Jari Laine',
+'Copyright (c) 2021, 2022 Jari Laine',
 '',
 'Permission is hereby granted, free of charge, to any person obtaining a copy of',
 'this software and associated documentation files (the "Software"), to deal in',
@@ -51,8 +51,8 @@ wwv_flow_api.create_install(
 ,p_upgrade_success_message=>'Your application''s supporting objects have been installed.'
 ,p_upgrade_failure_message=>'Installation of database objects and seed data has failed.'
 ,p_deinstall_success_message=>'Deinstallation complete.'
-,p_required_free_kb=>100
-,p_required_sys_privs=>'CREATE MATERIALIZED VIEW:CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
+,p_required_free_kb=>200
+,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
 );
 wwv_flow_api.component_end;
 end;

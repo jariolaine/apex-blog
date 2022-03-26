@@ -4,8 +4,8 @@ begin
 --     PAGE: 00032
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210508122011'
+,p_last_upd_yyyymmddhh24miss=>'20220310181252'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(76305240814166745)
@@ -58,6 +58,7 @@ wwv_flow_api.create_report_region(
 ,p_display_when_condition=>'P32_ID'
 ,p_display_condition_type=>'ITEM_IS_NULL'
 ,p_ajax_enabled=>'Y'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(8521917209518225)
 ,p_query_num_rows=>1
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -192,7 +193,7 @@ wwv_flow_api.create_report_columns(
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(106502470509454426)
 ,p_plug_name=>'Comment'
-,p_region_template_options=>'#DEFAULT#'
+,p_region_template_options=>'#DEFAULT#:t-Form--stretchInputs'
 ,p_plug_template=>wwv_flow_api.id(8475374748518195)
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'BODY'
@@ -268,17 +269,7 @@ wwv_flow_api.create_page_branch(
 ,p_branch_action=>'f?p=&APP_ID.:30:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
 ,p_branch_point=>'AFTER_PROCESSING'
 ,p_branch_type=>'REDIRECT_URL'
-,p_branch_when_button_id=>wwv_flow_api.id(45881981213413652)
 ,p_branch_sequence=>10
-);
-wwv_flow_api.create_page_branch(
- p_id=>wwv_flow_api.id(37644385404287109)
-,p_branch_name=>'Go to Page 31'
-,p_branch_action=>'f?p=&APP_ID.:31:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
-,p_branch_point=>'AFTER_PROCESSING'
-,p_branch_type=>'REDIRECT_URL'
-,p_branch_when_button_id=>wwv_flow_api.id(45722332769325205)
-,p_branch_sequence=>20
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(37643835188287104)
@@ -399,7 +390,7 @@ wwv_flow_api.create_page_item(
 ,p_protection_level=>'S'
 ,p_plugin_init_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'function ( options ) {',
-'  options.contentsCss = [ "&APP_IMAGES.css/chkeditor.css" ];',
+'  options.contentsCss = [ "&APP_IMAGES.css/chkeditor.min.css" ];',
 '  options = blog.admin.editorInit( options );',
 '  return options;',
 '}'))
@@ -408,6 +399,7 @@ wwv_flow_api.create_page_item(
 ,p_attribute_04=>'moonocolor'
 ,p_attribute_05=>'top'
 ,p_attribute_06=>'4'
+,p_attribute_09=>'HTML'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(45887036864413658)

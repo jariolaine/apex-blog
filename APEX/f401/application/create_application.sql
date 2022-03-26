@@ -4,8 +4,8 @@ begin
 --     FLOW: 401
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -16,14 +16,20 @@ wwv_flow_api.create_flow(
 ,p_owner=>nvl(wwv_flow_application_install.get_schema,'BLOG_040000')
 ,p_name=>nvl(wwv_flow_application_install.get_application_name,'Blog Public Pages')
 ,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'BLOG')
-,p_application_group=>3742713376965422
+,p_application_group=>wwv_flow_api.id(3742713376965422)
 ,p_application_group_name=>'APEX Blog'
 ,p_application_group_comment=>'APEX Blog applications'
 ,p_page_view_logging=>'YES'
 ,p_page_protection_enabled_y_n=>'Y'
-,p_checksum_salt=>'A62184636C79274387CBB6C9840762CA531D62DEA8CD2BD8BA55E607E36A7AF2'
-,p_bookmark_checksum_function=>'SH1'
+,p_checksum_salt=>'79ABAEFD7AD8D73AC0DC0A616F42577F97F051356BED99D8EBB45C92C0F77585'
+,p_checksum_salt_last_reset=>'20211127075325'
+,p_bookmark_checksum_function=>'SH512'
 ,p_accept_old_checksums=>false
+,p_max_session_length_sec=>86400
+,p_on_max_session_timeout_url=>'#HOME_LINK#'
+,p_max_session_idle_sec=>86400
+,p_on_max_idle_timeout_url=>'#HOME_LINK#'
+,p_session_timeout_warning_sec=>0
 ,p_compatibility_mode=>'19.2'
 ,p_flow_language=>'en'
 ,p_flow_language_derived_from=>'FLOW_PRIMARY_LANGUAGE'
@@ -60,9 +66,9 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509083643'
+,p_last_upd_yyyymmddhh24miss=>'20220326070029'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>115
+,p_files_version=>151
 ,p_ui_type_name => null
 ,p_print_server_type=>'INSTANCE'
 );

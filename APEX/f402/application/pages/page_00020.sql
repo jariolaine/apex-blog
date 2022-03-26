@@ -4,8 +4,8 @@ begin
 --     PAGE: 00020
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -24,7 +24,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210321134636'
+,p_last_upd_yyyymmddhh24miss=>'20211030124334'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25773887524573137)
@@ -212,7 +212,7 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
 ,p_restricted_characters=>'US_ONLY'
-,p_attribute_01=>'CUSTOM'
+,p_attribute_01=>'N'
 ,p_attribute_02=>'1'
 ,p_attribute_03=>'Enabled'
 ,p_attribute_04=>'0'
@@ -266,6 +266,7 @@ wwv_flow_api.create_page_item(
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
+,p_inline_help_text=>'Enter any comments or notes here. These notes not displayed for public.'
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'N'
 ,p_attribute_03=>'N'

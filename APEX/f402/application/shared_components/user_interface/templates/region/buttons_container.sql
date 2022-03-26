@@ -4,8 +4,8 @@ begin
 --     REGION TEMPLATE: BUTTONS_CONTAINER
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -19,7 +19,7 @@ wwv_flow_api.create_plug_template(
 '  <div class="t-ButtonRegion-wrap">',
 '    <div class="t-ButtonRegion-col t-ButtonRegion-col--left"><div class="t-ButtonRegion-buttons">#PREVIOUS##CLOSE##DELETE#</div></div>',
 '    <div class="t-ButtonRegion-col t-ButtonRegion-col--content">',
-'      <h2 class="t-ButtonRegion-title" id="#REGION_STATIC_ID#_heading">#TITLE#</h2>',
+'      <h2 class="t-ButtonRegion-title" id="#REGION_STATIC_ID#_heading" data-apex-heading>#TITLE#</h2>',
 '      #BODY#',
 '      <div class="t-ButtonRegion-buttons">#CHANGE#</div>',
 '    </div>',
@@ -40,7 +40,7 @@ wwv_flow_api.create_plug_template(
 ,p_template_comment=>'Red Theme'
 );
 wwv_flow_api.create_plug_tmpl_display_point(
- p_id=>wwv_flow_api.id(27935252634030421)
+ p_id=>wwv_flow_api.id(15270563253940932)
 ,p_plug_template_id=>wwv_flow_api.id(8476383962518195)
 ,p_name=>'Region Body'
 ,p_placeholder=>'BODY'
@@ -49,7 +49,7 @@ wwv_flow_api.create_plug_tmpl_display_point(
 ,p_max_fixed_grid_columns=>12
 );
 wwv_flow_api.create_plug_tmpl_display_point(
- p_id=>wwv_flow_api.id(27935712091030422)
+ p_id=>wwv_flow_api.id(15271071821940932)
 ,p_plug_template_id=>wwv_flow_api.id(8476383962518195)
 ,p_name=>'Sub Regions'
 ,p_placeholder=>'SUB_REGIONS'

@@ -4,8 +4,8 @@ begin
 --     PAGE: 30024
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -29,14 +29,14 @@ wwv_flow_api.create_page(
 'Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back to t'
 ||'he default settings.</p>'))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509084937'
+,p_last_upd_yyyymmddhh24miss=>'20211024104347'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43843535329616316)
 ,p_plug_name=>'Page Views'
 ,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
 ,p_plug_template=>wwv_flow_api.id(8495746153518209)
-,p_plug_display_sequence=>10
+,p_plug_display_sequence=>20
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -83,6 +83,7 @@ wwv_flow_api.create_worksheet(
 ,p_pagination_type=>'ROWS_X_TO_Y'
 ,p_pagination_display_pos=>'BOTTOM_RIGHT'
 ,p_report_list_mode=>'TABS'
+,p_lazy_loading=>false
 ,p_show_detail_link=>'N'
 ,p_download_formats=>'CSV:HTML:EMAIL:XLSX:PDF:RTF'
 ,p_owner=>'LAINFJAR'
@@ -223,7 +224,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(43843535329616316)
 ,p_button_name=>'RESET_REPORT'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'t-Button--small:t-Button--noUI:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--simple:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
@@ -235,9 +236,11 @@ wwv_flow_api.create_page_item(
 ,p_name=>'P30024_TIMEFRAME'
 ,p_item_sequence=>10
 ,p_item_plug_id=>wwv_flow_api.id(43843621023616316)
+,p_item_default=>'BLOG_DEFAULT_TIMEFRAME'
+,p_item_default_type=>'ITEM'
 ,p_prompt=>'Timeframe'
 ,p_source=>'BLOG_DEFAULT_TIMEFRAME'
-,p_source_type=>'ITEM'
+,p_source_type=>'PREFERENCE'
 ,p_display_as=>'NATIVE_SELECT_LIST'
 ,p_named_lov=>'TIMEFRAME (4 WEEKS)'
 ,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(

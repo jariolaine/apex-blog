@@ -4,8 +4,8 @@ begin
 --     PAGE: 09999
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210420170642'
+,p_last_upd_yyyymmddhh24miss=>'20211218033632'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8575301514518303)
@@ -56,6 +56,35 @@ wwv_flow_api.create_page_plug(
 ,p_plug_query_num_rows=>15
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
+wwv_flow_api.create_page_plug(
+ p_id=>wwv_flow_api.id(59284401267356420)
+,p_plug_name=>'Another Identity Provider'
+,p_parent_plug_id=>wwv_flow_api.id(8575301514518303)
+,p_region_css_classes=>'t-Login-buttons'
+,p_region_template_options=>'#DEFAULT#'
+,p_plug_template=>wwv_flow_api.id(8475374748518195)
+,p_plug_display_sequence=>10
+,p_plug_display_point=>'BODY'
+,p_plug_source=>'"SIGN_IN_USING_ANOTHER_IDENTITY_PROVIDER"'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_required_patch=>wwv_flow_api.id(35675193135740905)
+,p_attribute_01=>'Y'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_api.create_page_button(
+ p_id=>wwv_flow_api.id(30587556497457048)
+,p_button_sequence=>10
+,p_button_plug_id=>wwv_flow_api.id(59284401267356420)
+,p_button_name=>'LOGIN_GOOGLE'
+,p_button_action=>'REDIRECT_PAGE'
+,p_button_template_options=>'#DEFAULT#:t-Button--danger'
+,p_button_template_id=>wwv_flow_api.id(8549115324518244)
+,p_button_image_alt=>'Sign in with Google'
+,p_button_position=>'REGION_TEMPLATE_NEXT'
+,p_button_redirect_url=>'f?p=&APP_ID.:HOME:&SESSION.:APEX_AUTHENTICATION=Google:&DEBUG.:::'
+,p_button_css_classes=>'u-bold'
+,p_required_patch=>wwv_flow_api.id(35675193135740905)
+);
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(8578072273518308)
 ,p_button_sequence=>40
@@ -68,19 +97,6 @@ wwv_flow_api.create_page_button(
 ,p_button_image_alt=>'Sign in'
 ,p_button_position=>'REGION_TEMPLATE_NEXT'
 ,p_required_patch=>wwv_flow_api.id(35674953070739317)
-);
-wwv_flow_api.create_page_button(
- p_id=>wwv_flow_api.id(30587556497457048)
-,p_button_sequence=>50
-,p_button_plug_id=>wwv_flow_api.id(8575301514518303)
-,p_button_name=>'LOGIN_GOOGLE'
-,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--danger'
-,p_button_template_id=>wwv_flow_api.id(8549115324518244)
-,p_button_image_alt=>'&#x1D5A6;  Sign in with Google'
-,p_button_position=>'REGION_TEMPLATE_NEXT'
-,p_button_redirect_url=>'f?p=&APP_ID.:1:&SESSION.:APEX_AUTHENTICATION=Google:&DEBUG.:::'
-,p_required_patch=>wwv_flow_api.id(35675193135740905)
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(8575764844518304)

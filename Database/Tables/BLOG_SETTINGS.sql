@@ -10,14 +10,15 @@ create table blog_settings(
   changed_by varchar2( 256 char ) not null,
   is_nullable number( 1, 0 ) not null,
   display_seq number( 10, 0 ) not null,
-  group_name varchar2( 256 char ) not null,
-  attribute_name varchar2( 256 char ) not null,
-  data_type varchar2( 256 char ) not null,
+  attribute_group_message varchar2( 256 char ) not null,
+  attribute_name varchar2( 128 char ) not null,
+  data_type varchar2( 64 char ) not null,
   attribute_value varchar2( 4000 byte ),
   post_expression varchar2( 4000 byte ),
   int_min number( 2,0 ),
   int_max number( 2,0 ),
-  help_message varchar2( 256 byte ),
+  attribute_message varchar2( 256 char ) generated always as ( 'BLOG_SETTING_' || attribute_name ) virtual not null,
+  help_message varchar2( 256 char ) generated always as ( 'BLOG_HELP_' || attribute_name ) virtual not null,
   constraint blog_settings_pk primary key( id ),
   constraint blog_settings_uk1 unique( attribute_name ),
   constraint blog_settings_ck1 check( row_version > 0 ),
@@ -29,11 +30,11 @@ create table blog_settings(
     attribute_value is not null
   ),
   constraint blog_settings_ck5 check(
-    group_name in(
-       'BLOG_PAR_GROUP_GENERAL'
-      ,'BLOG_PAR_GROUP_REPORTS'
-      ,'BLOG_PAR_GROUP_SEO'
-      ,'BLOG_PAR_GROUP_UI'
+    attribute_group_message in(
+       'BLOG_SETTING_GROUP_GENERAL'
+      ,'BLOG_SETTING_GROUP_REPORTS'
+      ,'BLOG_SETTING_GROUP_SEO'
+      ,'BLOG_SETTING_GROUP_UI'
       ,'INTERNAL'
     )
   ),
@@ -51,12 +52,13 @@ create table blog_settings(
     data_type = 'INTEGER' and
     int_min is not null and
     int_max is not null and
-    round( to_number( attribute_value ) ) = to_number( attribute_value )
+    round( to_number( attribute_value ) ) = to_number( attribute_value ) and
+    to_number( attribute_value ) between int_min and int_max
   ),
   constraint blog_settings_ck8 check(
-      data_type != 'DATE_FORMAT' or
-      data_type = 'DATE_FORMAT' and
-      to_char( created_on, attribute_value ) is not null
+    data_type != 'DATE_FORMAT' or
+    data_type = 'DATE_FORMAT' and
+    to_char( created_on, attribute_value ) is not null
   ),
   constraint blog_settings_ck9 check(
     data_type != 'URL' or

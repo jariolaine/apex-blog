@@ -4,8 +4,8 @@ begin
 --     PAGE: 00012
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -24,9 +24,8 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_required_patch=>wwv_flow_api.id(30111637437970455)
 ,p_page_is_public_y_n=>'Y'
-,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210418094254'
+,p_last_upd_yyyymmddhh24miss=>'20211216132014'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(30430710498753130)
@@ -35,8 +34,6 @@ wwv_flow_api.create_report_region(
 ,p_display_sequence=>20
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'#DEFAULT#:z-Content:t-Report--hideNoPagination'
-,p_grid_column_span=>9
-,p_display_column=>1
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -47,6 +44,7 @@ wwv_flow_api.create_report_region(
 'where 1 = 1',
 'order by t1.display_seq'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(30641878306098019)
 ,p_query_headings_type=>'NO_HEADINGS'
 ,p_query_num_rows=>500

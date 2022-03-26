@@ -4,8 +4,8 @@ begin
 --     PAGE: 30022
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -27,8 +27,8 @@ wwv_flow_api.create_page(
 '<p>This page provides an interactive report of all unexpected errors logged by this application.</p>',
 '<p>Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back t'
 ||'o the default settings.</p>'))
-,p_last_updated_by=>'JARI.LAINE.O@GMAIL.COM'
-,p_last_upd_yyyymmddhh24miss=>'20210509084735'
+,p_last_updated_by=>'LAINFJAR'
+,p_last_upd_yyyymmddhh24miss=>'20211024104135'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43861070470616959)
@@ -62,6 +62,7 @@ wwv_flow_api.create_worksheet(
 ,p_pagination_type=>'ROWS_X_TO_Y'
 ,p_pagination_display_pos=>'BOTTOM_RIGHT'
 ,p_report_list_mode=>'TABS'
+,p_lazy_loading=>false
 ,p_show_detail_link=>'N'
 ,p_download_formats=>'CSV:HTML:EMAIL:XLSX:PDF:RTF'
 ,p_owner=>'LAINFJAR'
@@ -156,7 +157,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(43861070470616959)
 ,p_button_name=>'RESET_REPORT'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'t-Button--small:t-Button--noUI:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--simple:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'

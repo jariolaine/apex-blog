@@ -4,8 +4,8 @@ begin
 --     PAGE: 01001
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -14,16 +14,15 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_page(
  p_id=>1001
 ,p_user_interface_id=>wwv_flow_api.id(6877050287267426)
-,p_name=>'Leave Reply'
-,p_alias=>'REPLY'
+,p_name=>'Post a Comment'
+,p_alias=>'COMMENT'
 ,p_page_mode=>'MODAL'
-,p_step_title=>'Leave Reply'
+,p_step_title=>'Leave your comment'
 ,p_reload_on_submit=>'A'
 ,p_first_item=>'AUTO_FIRST_ITEM'
 ,p_autocomplete_on_off=>'OFF'
-,p_group_id=>wwv_flow_api.id(8697986188142973)
+,p_group_id=>wwv_flow_api.id(65048103982446247)
 ,p_html_page_header=>'"BLOG_META_ROBOTS_NOINDEX"'
-,p_step_template=>wwv_flow_api.id(6762463719267365)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_required_patch=>wwv_flow_api.id(7073708623458378)
 ,p_page_is_public_y_n=>'Y'
@@ -33,9 +32,8 @@ wwv_flow_api.create_page(
 ,p_rejoin_existing_sessions=>'N'
 ,p_read_only_when_type=>'ITEM_IS_NULL'
 ,p_read_only_when=>'P1001_POST_ID'
-,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210418180535'
+,p_last_upd_yyyymmddhh24miss=>'20211230181250'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -52,7 +50,7 @@ wwv_flow_api.create_page_plug(
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(31617719508094013)
 ,p_plug_name=>'Moderated'
-,p_region_template_options=>'#DEFAULT#:t-Alert--horizontal:t-Alert--defaultIcons:t-Alert--info:t-Alert--removeHeading:margin-bottom-none'
+,p_region_template_options=>'#DEFAULT#:t-Alert--horizontal:t-Alert--defaultIcons:t-Alert--info:t-Alert--removeHeading js-removeLandmark:margin-bottom-none'
 ,p_plug_template=>wwv_flow_api.id(6777727951267373)
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
@@ -65,9 +63,9 @@ wwv_flow_api.create_page_plug(
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(147769743184406827)
-,p_plug_name=>'Leave Reply'
-,p_region_template_options=>'#DEFAULT#:t-Region--removeHeader:t-Region--noBorder:t-Region--scrollBody'
-,p_plug_template=>wwv_flow_api.id(6802870362267386)
+,p_plug_name=>'Comment Form'
+,p_region_template_options=>'#DEFAULT#'
+,p_plug_template=>wwv_flow_api.id(6781372168267375)
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'BODY'
 ,p_plug_item_display_point=>'BELOW'
@@ -220,14 +218,13 @@ wwv_flow_api.create_page_item(
 ,p_name=>'P1001_QUESTION'
 ,p_item_sequence=>100
 ,p_item_plug_id=>wwv_flow_api.id(147769743184406827)
-,p_use_cache_before_default=>'NO'
 ,p_prompt=>'Answer to'
+,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'PLUGIN_FI.JARIS.MATH_QUESTION_FIELD'
 ,p_cMaxlength=>20
 ,p_field_template=>wwv_flow_api.id(6855004103267413)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_warn_on_unsaved_changes=>'I'
-,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_inline_help_text=>'Please answer this simple question before you submit comment.'
 ,p_attribute_01=>'1'
@@ -345,23 +342,6 @@ wwv_flow_api.create_page_validation(
 ,p_validation_condition_type=>'ITEM_IS_NOT_NULL'
 ,p_associated_item=>wwv_flow_api.id(6286425900551659)
 ,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
-,p_required_patch=>-wwv_flow_api.id(37511226776078888)
-);
-wwv_flow_api.create_page_validation(
- p_id=>wwv_flow_api.id(36228247829379741)
-,p_validation_name=>'Validate email using API'
-,p_validation_sequence=>40
-,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return #OWNER#.blog_comm.validate_email(',
-'  p_email => :P1001_EMAIL',
-');'))
-,p_validation2=>'PLSQL'
-,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
-,p_validation_condition=>'P1001_EMAIL'
-,p_validation_condition_type=>'ITEM_IS_NOT_NULL'
-,p_associated_item=>wwv_flow_api.id(6286425900551659)
-,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
-,p_required_patch=>wwv_flow_api.id(37511226776078888)
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(2754144221851926)
@@ -504,7 +484,7 @@ wwv_flow_api.create_page_process(
 ,p_process_sequence=>10
 ,p_process_point=>'ON_SUBMIT_BEFORE_COMPUTATION'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'If Hidden Item not Null'
+,p_process_name=>'If Hidden Item P1001_LAST_NAME not Null'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'P1001_LAST_NAME'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'

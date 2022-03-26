@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for Table BLOG_CATEGORIES
 --------------------------------------------------------
-create table  blog_categories(
+create table blog_categories(
   id number( 38, 0 ) not null,
 	row_version number( 38 ,0 ) not null,
 	created_on timestamp( 6 ) with local time zone not null,

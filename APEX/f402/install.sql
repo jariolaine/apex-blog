@@ -5,12 +5,14 @@ prompt --install
 @@application/shared_components/credentials/google_oauth2.sql
 @@application/shared_components/navigation/lists/desktop_navigation_menu.sql
 @@application/shared_components/navigation/lists/desktop_navigation_bar.sql
-@@application/shared_components/navigation/lists/home.sql
-@@application/shared_components/navigation/lists/settings.sql
+@@application/shared_components/navigation/lists/configuration.sql
 @@application/shared_components/navigation/lists/public_application_links.sql
 @@application/shared_components/navigation/lists/activity_reports.sql
 @@application/shared_components/files/app_icon_svg.sql
 @@application/shared_components/files/app_icon_css.sql
+@@application/shared_components/files/css_admin_min_css.sql
+@@application/shared_components/files/js_admin_min_js.sql
+@@application/shared_components/files/css_chkeditor_min_css.sql
 @@application/shared_components/files/css_admin_css.sql
 @@application/shared_components/files/js_admin_js.sql
 @@application/shared_components/files/css_chkeditor_css.sql
@@ -37,6 +39,7 @@ prompt --install
 @@application/shared_components/navigation/tabs/standard.sql
 @@application/shared_components/navigation/tabs/parent.sql
 @@application/shared_components/user_interface/lovs/categories.sql
+@@application/shared_components/user_interface/lovs/comment_flag.sql
 @@application/shared_components/user_interface/lovs/comment_status.sql
 @@application/shared_components/user_interface/lovs/is_active.sql
 @@application/shared_components/user_interface/lovs/link_status.sql
@@ -103,6 +106,7 @@ prompt --install
 @@application/shared_components/user_interface/templates/report/cards.sql
 @@application/shared_components/user_interface/templates/report/search_results.sql
 @@application/shared_components/user_interface/templates/report/content_row.sql
+@@application/shared_components/user_interface/templates/report/contextual_info.sql
 @@application/shared_components/user_interface/templates/label/hidden.sql
 @@application/shared_components/user_interface/templates/label/optional.sql
 @@application/shared_components/user_interface/templates/label/optional_above.sql
@@ -124,6 +128,7 @@ prompt --install
 @@application/shared_components/globalization/messages.sql
 @@application/shared_components/globalization/dyntranslations.sql
 @@application/shared_components/user_interface/shortcuts/delete_confirm_msg.sql
+@@application/shared_components/user_interface/shortcuts/sign_in_using_another_identity_provider.sql
 @@application/shared_components/email/templates/blog_reply_to_comment_notify.sql
 @@application/shared_components/security/authentications/application_express_authentication.sql
 @@application/shared_components/security/authentications/google.sql
@@ -154,6 +159,7 @@ prompt --install
 @@application/pages/page_20010.sql
 @@application/pages/page_20011.sql
 @@application/pages/page_20012.sql
+@@application/pages/page_20100.sql
 @@application/pages/page_30010.sql
 @@application/pages/page_30020.sql
 @@application/pages/page_30021.sql

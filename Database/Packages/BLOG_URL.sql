@@ -5,7 +5,7 @@ as
 --------------------------------------------------------------------------------
 --
 --  DESCRIPTION
---    Generate URL or redirect
+--    Generate URL
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 22.04.2019 - Created
@@ -18,6 +18,8 @@ as
 --    Jari Laine 19.05.2020 - Changed page and items name to "hard coded" values
 --                            and removed global constants from blog_util package
 --    Jari Laine 23.05.2020 - Removed default from function get_tab parameter p_app_page_id
+--    Jari Laine 13.11.2021 - New funtions get_sitemap_index, get_rss and get get_rss_xsl
+--    Jari Laine 18.12.2021 - Moved procedure redirect_search to package blog_util.
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -128,11 +130,24 @@ as
 --------------------------------------------------------------------------------
 -- Called from:
 --
-  procedure redirect_search(
-    p_value           in varchar2,
+  function get_rss(
     p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null
-  );
+    p_app_page_id     in varchar2 default 'PGM'
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--
+  function get_rss_xsl(
+    p_app_id          in varchar2 default null,
+    p_app_page_id     in varchar2 default 'PGM'
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--
+  function get_sitemap_index(
+    p_app_id          in varchar2 default null,
+    p_app_page_id     in varchar2 default 'PGM'
+  ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_URL";
 /
@@ -446,28 +461,79 @@ as
   end get_unsubscribe;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure redirect_search(
-    p_value         in varchar2,
-    p_app_id        in varchar2 default null,
-    p_session       in varchar2 default null
-  )
+  function get_rss(
+    p_app_id      in varchar2 default null,
+    p_app_page_id in varchar2 default 'PGM'
+  ) return varchar2
   as
+    l_rss_url varchar2(4000);
   begin
-    -- Get search page URL and redirect if there there is string for search
-    --if p_value is not null then
-      apex_util.redirect_url (
-        apex_page.get_url(
-           p_application => p_app_id
-          ,p_page        => 'SEARCH'
-          ,p_session     => p_session
---          ,p_clear_cache => 'RP'
-          ,p_items       => 'P0_SEARCH'
-          ,p_values      => p_value
-          ,p_plain_url   => true
-        )
+
+    -- Fetch RSS URL override from settings
+    l_rss_url := blog_util.get_attribute_value( 'G_RSS_URL' );
+    -- If there isn't override custruct URL
+    if l_rss_url is null
+    then
+      l_rss_url := blog_util.get_attribute_value( 'G_CANONICAL_URL' )
+        || apex_page.get_url(
+          p_application => p_app_id
+          ,p_page => p_app_page_id
+          ,p_session => null
+          ,p_request => 'application_process=rss.xml'
+        );
+    end if;
+
+    return l_rss_url;
+
+  end get_rss;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_rss_xsl(
+    p_app_id      in varchar2 default null,
+    p_app_page_id in varchar2 default 'PGM'
+  ) return varchar2
+  as
+    l_xsl_url varchar2(4000);
+  begin
+
+    -- Fetch XSL URL override from settings
+    l_xsl_url := blog_util.get_attribute_value( 'G_RSS_XSL_URL' );
+    -- If there isn't override custruct XSL
+    if l_xsl_url is null
+    then
+      l_xsl_url := blog_util.get_attribute_value( 'G_CANONICAL_URL' )
+        || apex_page.get_url(
+          p_application => p_app_id
+          ,p_page => p_app_page_id
+          ,p_session => null
+          ,p_request => 'application_process=rss.xsl'
+        );
+    end if;
+
+    return l_xsl_url;
+
+  end get_rss_xsl;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_sitemap_index(
+    p_app_id      in varchar2 default null,
+    p_app_page_id in varchar2 default 'PGM'
+  ) return varchar2
+  as
+    l_sitemap_url varchar2(4000);
+  begin
+
+    l_sitemap_url := blog_util.get_attribute_value( 'G_CANONICAL_URL' )
+      || apex_page.get_url(
+        p_application => p_app_id
+        ,p_page => p_app_page_id
+        ,p_session => null
+        ,p_request => 'application_process=sitemap-index.xml'
       );
-    --end if;
-  end redirect_search;
+
+    return l_sitemap_url;
+
+  end get_sitemap_index;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_URL";

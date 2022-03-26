@@ -4,8 +4,8 @@ begin
 --     MESSAGES: 402
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -17,27 +17,27 @@ end;
 /
 begin
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(31240293691117226)
-,p_name=>'BLOG_BTN_ARIA_LABEL_COPY_TO_CLIPBOARD'
-,p_message_text=>'Copy Full URL to Clipboard'
-);
-wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(31239116333152817)
 ,p_name=>'BLOG_BTN_TITLE_COPY_TO_CLIPBOARD'
-,p_message_text=>'Copy to clipboard'
+,p_message_text=>'Copy Full URL to Clipboard'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(31260830488872355)
 ,p_name=>'BLOG_BTN_TITLE_EDIT'
 ,p_message_text=>'Edit'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(65330915785227244)
+,p_name=>'BLOG_BTN_TITLE_HELP'
+,p_message_text=>'Help'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(38326544290801225)
@@ -80,14 +80,19 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Archives'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(60752461687225986)
+,p_name=>'BLOG_FEATURE_ARCHIVE_POST_COUNT'
+,p_message_text=>'Show archive post count'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(8651520942348857)
 ,p_name=>'BLOG_FEATURE_CATEGORY'
 ,p_message_text=>'Categories'
 );
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(37513927722106952)
-,p_name=>'BLOG_FEATURE_EMAIL_VALIDATION_API'
-,p_message_text=>'Validate email address using REST API call'
+ p_id=>wwv_flow_api.id(61048607162603249)
+,p_name=>'BLOG_FEATURE_CATEGORY_POST_COUNT'
+,p_message_text=>'Show category post count'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(24631921054971612)
@@ -107,17 +112,12 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28375527216531703)
 ,p_name=>'BLOG_FEATURE_GROUP_PAGE'
-,p_message_text=>'Tabs and Pages '
+,p_message_text=>'Pages'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28288384519293388)
 ,p_name=>'BLOG_FEATURE_GROUP_RIGHT_COLUMN'
 ,p_message_text=>'Right column'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(28288182390324870)
-,p_name=>'BLOG_FEATURE_GROUP_SEARCH'
-,p_message_text=>'Search'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(8674474933943719)
@@ -190,7 +190,159 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Ooops... We are sorry! Unexpected internal error have occurred.'
 );
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(38624054787092561)
+ p_id=>wwv_flow_api.id(21952495135451489)
+,p_name=>'BLOG_HELP_FEATURE_ABOUT'
+,p_message_text=>'Show "About" tab in public pages.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21480702253327342)
+,p_name=>'BLOG_HELP_FEATURE_ALLOW_COMMENTS'
+,p_message_text=>'Is public commenting allowed on blog posts.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21968614313753451)
+,p_name=>'BLOG_HELP_FEATURE_ARCHIVE'
+,p_message_text=>'Show link list to the archives.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21968854038758598)
+,p_name=>'BLOG_HELP_FEATURE_ARCHIVE_POST_COUNT'
+,p_message_text=>'Show post count in the archive.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21968269442744987)
+,p_name=>'BLOG_HELP_FEATURE_CATEGORY'
+,p_message_text=>'Show link list to the categories.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21968490295748783)
+,p_name=>'BLOG_HELP_FEATURE_CATEGORY_POST_COUNT'
+,p_message_text=>'Show post count in the category.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21499163815310526)
+,p_name=>'BLOG_HELP_FEATURE_FILES'
+,p_message_text=>'Show "Files" tab in public pages.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21481638153374207)
+,p_name=>'BLOG_HELP_FEATURE_LATEST_POSTS'
+,p_message_text=>'Show link list to the latest blog posts.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21498914254307400)
+,p_name=>'BLOG_HELP_FEATURE_LINKS'
+,p_message_text=>'Show "Links" tab in public pages.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21481968660385994)
+,p_name=>'BLOG_HELP_FEATURE_MODAL_PAGES'
+,p_message_text=>'Show modal pages links in blog footer.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21480924593335899)
+,p_name=>'BLOG_HELP_FEATURE_MODERATE_COMMENTS'
+,p_message_text=>'Comments must be moderated before they are be published.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21481423437369380)
+,p_name=>'BLOG_HELP_FEATURE_POST_PAGINATION'
+,p_message_text=>'Show links to previous and / or newer posts.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21969179471767472)
+,p_name=>'BLOG_HELP_FEATURE_RSS'
+,p_message_text=>'Show link to the RSS feed.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21500166358341864)
+,p_name=>'BLOG_HELP_FEATURE_SEARCH_FILES'
+,p_message_text=>'Allow search and show search field in "Files" page.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21499316517316056)
+,p_name=>'BLOG_HELP_FEATURE_SEARCH_LINKS'
+,p_message_text=>'Allow search and show search field in "Links" page.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21968065227738854)
+,p_name=>'BLOG_HELP_FEATURE_SEARCH_POSTS'
+,p_message_text=>'Allow search and show search field in right column.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21482145994393818)
+,p_name=>'BLOG_HELP_FEATURE_SITEMAP'
+,p_message_text=>'Generate sitemap index and sitemaps for public pages.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(21481269068360471)
+,p_name=>'BLOG_HELP_FEATURE_SUBSCRIBE_COMMENTS'
+,p_message_text=>'Email notification of new comments.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19894083253206015)
+,p_name=>'BLOG_HELP_G_APP_DESC'
+,p_message_text=>'Description of this blog.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(65335091944381875)
+,p_name=>'BLOG_HELP_G_APP_EMAIL'
+,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Email address from which notifications will be sent, for example',
+'notification of new comments. If blank, no notifications will be sent.'))
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19893743625198161)
+,p_name=>'BLOG_HELP_G_APP_NAME'
+,p_message_text=>'Name of this blog.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(65392119713598778)
+,p_name=>'BLOG_HELP_G_CANONICAL_URL'
+,p_message_text=>'Sever URL part used for pages header link rel="canonical". Example https://example.com.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19897213779441945)
+,p_name=>'BLOG_HELP_G_DATE_FORMAT'
+,p_message_text=>'Public pages date format.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19895931361259762)
+,p_name=>'BLOG_HELP_G_LATEST_POST_ROWS'
+,p_message_text=>'The number of post displayed on the latest post list.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19897443841446602)
+,p_name=>'BLOG_HELP_G_POST_TITLE_DATE_FORMAT'
+,p_message_text=>'Date format for blog posts header.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(65369256313682348)
+,p_name=>'BLOG_HELP_G_RSS_URL'
+,p_message_text=>'Specify custom RSS feed URL. If empty, default public application RSS feed is used.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19898492601459176)
+,p_name=>'BLOG_HELP_G_RSS_XSL_URL'
+,p_message_text=>'RSS feed custom XSL transformations (XSLT) URL for public application default RSS feed.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19896387769414873)
+,p_name=>'BLOG_HELP_G_SEARCH_ROWS'
+,p_message_text=>'The number of Search results per report page.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19894253687211234)
+,p_name=>'BLOG_HELP_P1_REPORT_ROWS'
+,p_message_text=>'The number of posts per report page displayed on the home page.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19895088592241687)
+,p_name=>'BLOG_HELP_P2_REPORT_ROWS'
+,p_message_text=>'The number of comments per report page displayed on the post page.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(61250680749871346)
 ,p_name=>'BLOG_HELP_POST_EDITOR'
 ,p_message_text=>'Refer online document <a target="_balank" href="https://ckeditor.com/docs/ckeditor4/latest/features/basicstyles.html">Basic Text Styles: Bold, Italic and More</a> how style your post.'
 );
@@ -215,91 +367,6 @@ wwv_flow_api.create_message(
 ,p_message_text=>'No Record Selected'
 );
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(28322450890472128)
-,p_name=>'BLOG_PAR_GROUP_GENERAL'
-,p_message_text=>'General'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(28322663848470765)
-,p_name=>'BLOG_PAR_GROUP_REPORTS'
-,p_message_text=>'Reports'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(28293831052157093)
-,p_name=>'BLOG_PAR_GROUP_SEO'
-,p_message_text=>'URL'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(28294042511155745)
-,p_name=>'BLOG_PAR_GROUP_UI'
-,p_message_text=>'UI'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(19033676653882936)
-,p_name=>'BLOG_PAR_G_APP_DESC'
-,p_message_text=>'Blog description'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(31491518632426334)
-,p_name=>'BLOG_PAR_G_APP_EMAIL'
-,p_message_text=>'Blog email address'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(19034220207891682)
-,p_name=>'BLOG_PAR_G_APP_NAME'
-,p_message_text=>'Blog title'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(24585402247704953)
-,p_name=>'BLOG_PAR_G_ARCHIVE_DATE_FORMAT'
-,p_message_text=>'Archive title date format'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(19058970469252490)
-,p_name=>'BLOG_PAR_G_CANONICAL_URL'
-,p_message_text=>'Canonical URL'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(19034721792903276)
-,p_name=>'BLOG_PAR_G_DATE_FORMAT'
-,p_message_text=>'Date format'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(40622046631847902)
-,p_name=>'BLOG_PAR_G_LATEST_POST_ROWS'
-,p_message_text=>'The number of posts in latest post list'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(19032802687865238)
-,p_name=>'BLOG_PAR_G_POST_TITLE_DATE_FORMAT'
-,p_message_text=>'Posts header date format'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(19059158261254628)
-,p_name=>'BLOG_PAR_G_RSS_URL'
-,p_message_text=>'RSS feed URL'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(41188745372769280)
-,p_name=>'BLOG_PAR_G_RSS_XSL_URL'
-,p_message_text=>'RSS feed XSL transformations (XSLT) URL'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(19033812989887423)
-,p_name=>'BLOG_PAR_G_SEARCH_ROWS'
-,p_message_text=>'The number of Search results per report page'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(19034096614890228)
-,p_name=>'BLOG_PAR_P1_REPORT_ROWS'
-,p_message_text=>'The number of posts per report page displayed on the home page'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(19034454873898260)
-,p_name=>'BLOG_PAR_P2_REPORT_ROWS'
-,p_message_text=>'The number of  comments per report page'
-);
-wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(7002883853109006)
 ,p_name=>'BLOG_POSTS_FK2'
 ,p_message_text=>'Posts found from this category. Move posts to other category and then delete category.'
@@ -318,6 +385,86 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(42685075385703287)
 ,p_name=>'BLOG_PUB_APP_LINK_SITEMAP'
 ,p_message_text=>'Sitemap'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(28322450890472128)
+,p_name=>'BLOG_SETTING_GROUP_GENERAL'
+,p_message_text=>'General'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(28322663848470765)
+,p_name=>'BLOG_SETTING_GROUP_REPORTS'
+,p_message_text=>'Reports'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(28293831052157093)
+,p_name=>'BLOG_SETTING_GROUP_SEO'
+,p_message_text=>'URL'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(28294042511155745)
+,p_name=>'BLOG_SETTING_GROUP_UI'
+,p_message_text=>'UI'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19033676653882936)
+,p_name=>'BLOG_SETTING_G_APP_DESC'
+,p_message_text=>'Blog description'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(31491518632426334)
+,p_name=>'BLOG_SETTING_G_APP_EMAIL'
+,p_message_text=>'Blog email address'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19034220207891682)
+,p_name=>'BLOG_SETTING_G_APP_NAME'
+,p_message_text=>'Blog name'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19058970469252490)
+,p_name=>'BLOG_SETTING_G_CANONICAL_URL'
+,p_message_text=>'Canonical server URL'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19034721792903276)
+,p_name=>'BLOG_SETTING_G_DATE_FORMAT'
+,p_message_text=>'Date format'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(40622046631847902)
+,p_name=>'BLOG_SETTING_G_LATEST_POST_ROWS'
+,p_message_text=>'Number of latest posts'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19032802687865238)
+,p_name=>'BLOG_SETTING_G_POST_TITLE_DATE_FORMAT'
+,p_message_text=>'Posts header date format'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19059158261254628)
+,p_name=>'BLOG_SETTING_G_RSS_URL'
+,p_message_text=>'Custom RSS feed URL'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(41188745372769280)
+,p_name=>'BLOG_SETTING_G_RSS_XSL_URL'
+,p_message_text=>'RSS feed custom XSL'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19033812989887423)
+,p_name=>'BLOG_SETTING_G_SEARCH_ROWS'
+,p_message_text=>'Number of search results'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19034096614890228)
+,p_name=>'BLOG_SETTING_P1_REPORT_ROWS'
+,p_message_text=>'Number of post on home page'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19034454873898260)
+,p_name=>'BLOG_SETTING_P2_REPORT_ROWS'
+,p_message_text=>'Number of comments'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(10038391422712576)

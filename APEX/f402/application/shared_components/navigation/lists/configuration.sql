@@ -1,11 +1,11 @@
-prompt --application/shared_components/navigation/lists/settings
+prompt --application/shared_components/navigation/lists/configuration
 begin
 --   Manifest
---     LIST: Settings
+--     LIST: Configuration
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -13,16 +13,16 @@ wwv_flow_api.component_begin (
 );
 wwv_flow_api.create_list(
  p_id=>wwv_flow_api.id(24798726331419823)
-,p_name=>'Settings'
+,p_name=>'Configuration'
 ,p_list_status=>'PUBLIC'
 );
 wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(24798939439419824)
 ,p_list_item_display_sequence=>10
-,p_list_item_link_text=>'Basic Settings'
+,p_list_item_link_text=>'Settings'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20012:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-layout-header-sidebar-right'
-,p_list_text_01=>'Setup title, description and other basic settings for application.'
+,p_list_text_01=>'Set the application name, description, and other settings.'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_api.create_list_item(

@@ -16,9 +16,7 @@
 .z-author-badges {
   display: flex;
   flex-direction: column;
-}
-.z-author-badges > * {
-  margin: 1rem 0;
+  padding: 1rem 0;
 }
 @media only screen and (max-width: 640px) {
   .z-author-container {
@@ -35,10 +33,9 @@
 }
 /* Editor program code */
 pre.z-program-code {
-  color: #262626;
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
+  font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace" !important;
   background-color: #eeeeee;
-  border-left: 2px solid #6ce26c !important;
+  border-left: 0.4em solid #6ce26c !important;
   padding-left: 0.8em;
   white-space: pre;
 }

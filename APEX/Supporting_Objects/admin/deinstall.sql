@@ -36,7 +36,6 @@ drop table blog_files;
 drop table blog_init_items;
 drop table blog_links;
 drop table blog_link_groups;
-drop table blog_pages;
 drop table blog_posts;
 drop table blog_post_preview;
 drop table blog_post_tags;
@@ -44,6 +43,7 @@ drop table blog_post_uds;
 drop table blog_settings;
 drop table blog_subscribers_email;
 drop table blog_tags;
+drop type blog_t_post;
 drop view blog_v_all_categories;
 drop view blog_v_all_comments;
 drop view blog_v_all_dynamic_content;
@@ -78,7 +78,8 @@ end;
 --  Drop text index preferences
 --------------------------------------------------------
 begin
-ctx_ddl.drop_preference( 'BLOG_POST_UDS_DS');
-ctx_ddl.drop_preference( 'BLOG_POST_UDS_LX');
+ctx_ddl.drop_preference( 'BLOG_POST_UDS_DS' );
+ctx_ddl.drop_preference( 'BLOG_POST_UDS_LX' );
 end;
 /
+

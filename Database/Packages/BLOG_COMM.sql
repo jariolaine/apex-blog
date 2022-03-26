@@ -5,56 +5,43 @@ as
 --------------------------------------------------------------------------------
 --
 --  DESCRIPTION
---    Procedure and functions for comments
+--    Procedure and functions for post comments
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 11.05.2020 - Created
 --    Jari Laine 11.04.2021 - New procedure reply_notify
 --                            New functions validate_email and is_email_verified
 --    Jari Laine 18.04.2021 - New functions is_email
+--    Jari Laine 30.10.2021 - Removed functions validate_email and is_email_verified
 --
 --  TO DO:
---    #1  comment HTML validation could be improved
---
+--    #1  comment HTML validation should be improved
+--    #2  email validation should be improved
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   -- Called from:
-  --
+  --  public app page 1001
   function format_comment(
     p_comment           in varchar2,
     p_remove_anchors    in boolean default false
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from:
-  --
+  --  public app page 1001
   function validate_comment(
     p_comment           in varchar2,
     p_max_length        in number default 4000
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from:
-  --  admin app page 20012 validation "Is email"
-  --  inside function is_email_verified
+  --  public app page 1001 and admin app page 20012 validation
   function is_email(
     p_email             in varchar2,
     p_err_mesg          in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
-  function validate_email(
-    p_email             in varchar2,
-    p_err_mesg          in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---
-  function is_email_verified(
-    p_email             in varchar2
-  ) return boolean;
---------------------------------------------------------------------------------
--- Called from:
---
+--  public app page 1001 
   procedure flag_comment(
     p_comment_id        in varchar2,
     p_flag              in varchar2
@@ -68,7 +55,7 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
---
+--  public app page 1001
   procedure new_comment_notify(
     p_post_id           in varchar2,
     p_app_name          in varchar2,
@@ -85,14 +72,14 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
---
+--  public app page 1001
   procedure subscribe(
     p_post_id           in varchar2,
     p_email             in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
---
+--  public app page 2
   procedure unsubscribe(
     p_subscription_id   in varchar2
   );
@@ -193,17 +180,24 @@ as
         -- store code tag content to collection and wrap it to pre tag having class
         apex_string.push(
            p_table => p_code_tab
-          ,p_value => '<pre class="' || c_code_css_class || '">'
-            || substr(p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6)
-            || '</pre>'
+          ,p_value =>
+            apex_string.format(
+              p_message => '<pre class="%s">%s</pre>'
+              ,p0 => c_code_css_class
+              ,p1 => substr(p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6)
+            )
         );
 
         -- substitude handled code tag
-        p_comment := rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )
-          || chr(10)
-          || 'CODE#' || i
-          || chr(10)
-          || ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )
+        p_comment :=
+          apex_string.format(
+            p_message => '%s%sCODE#%s%s%s'
+            ,p0 => rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )
+            ,p1 => chr(10)
+            ,p2 => i
+            ,p3 => chr(10)
+            ,p4 => ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )
+          )
         ;
 
       end loop;
@@ -249,12 +243,12 @@ as
         l_code_row := regexp_substr( l_temp, '[0-9]+' );
         -- close p tag, insert code block
         -- and open p tag again for text
-        p_comment := p_comment
-          || '</p>'
-          || chr(10)
-          || l_code_tab(l_code_row)
-          || chr(10)
-          || '<p>'
+        p_comment :=
+          apex_string.format(
+            p_message => '%s</p>%s<p>'
+            ,p0 => p_comment
+            ,p1 => l_code_tab(l_code_row)
+          )
         ;
 
       else
@@ -267,15 +261,17 @@ as
             p_comment := l_temp;
           else
             -- check if p tag is opened, then insert br for new line
-            p_comment := p_comment
-              ||
-                case
-                when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
-                then
-                  -- br element backlash needed as comment is validated as XML
-                  '<br/>' || chr(10)
-                end
-              || l_temp
+            p_comment :=
+              apex_string.format(
+                p_message => '%s%s%s'
+                ,p0 => p_comment
+                ,p1 =>
+                  case
+                  when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
+                  then '<br/>' -- br element backlash needed as comment is validated as XML
+                  end
+                ,p2 => l_temp
+              )
             ;
           end if;
         end if;
@@ -285,7 +281,7 @@ as
     end loop;
 
     -- wrap comment to p tag.
-    p_comment := '<p>' || p_comment || '</p>';
+    p_comment := apex_string.format( '<p>%s</p>', p_comment );
     -- there might be empty p, if comment ends code tag, remove that
     p_comment := replace( p_comment, '<p></p>' );
 
@@ -355,9 +351,10 @@ as
       -- TO DO see item 1 from package specs
       begin
         l_xml := xmltype.createxml(
-            '<root><row>'
-          || p_comment
-          || '</row></root>'
+          apex_string.format(
+            p_message => '<comment>%s</comment>'
+            ,p0 => p_comment
+          )
         );
       exception when xml_parsing_failed then
         -- set error message
@@ -369,7 +366,9 @@ as
     if l_err_mesg is not null
     then
       -- prepare return validation error message
-      l_result := apex_lang.message( l_err_mesg );
+      l_result := apex_lang.message(
+        p_name => l_err_mesg
+      );
     end if;
     -- return validation result
     -- if validation fails we return error message stored to variable
@@ -391,9 +390,13 @@ as
     if not regexp_like( p_email, '^.*\@.*\..*$' )
     then
       -- if validation fails prepare error message
-      l_err_mesg := apex_lang.message( p_err_mesg );
+      l_err_mesg := apex_lang.message(
+        p_name => p_err_mesg
+      );
 
-      if l_err_mesg = apex_escape.html( p_err_mesg )
+      if l_err_mesg = apex_escape.html(
+        p_string => p_err_mesg
+      )
       then
         l_err_mesg := p_err_mesg;
       end if;
@@ -403,108 +406,6 @@ as
     return l_err_mesg;
 
   end is_email;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function validate_email(
-    p_email     in varchar2,
-    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
-  ) return varchar2
-  as
-    l_params    apex_exec.t_parameters;
-    l_response  clob;
-    l_json      json_object_t;
-    l_err_mesg  varchar2(32700);
-  begin
-
-    if not is_email_verified( p_email )
-    then
-      -- general check email format
-      l_err_mesg := is_email(
-         p_email    => p_email
-        ,p_err_mesg => p_err_mesg
-      );
-
-      if l_err_mesg is null
-      then
-        -- set email as parameter for rest source
-        apex_exec.add_parameter( l_params, 'email', p_email );
-        -- call rest source to validate email
-        apex_exec.execute_rest_source(
-           p_static_id  => 'ABSTRACT_EMAIL_VALIDATION_API'
-          ,p_operation  => 'GET'
-          ,p_parameters => l_params
-        );
-
-        -- get response
-        l_response := apex_exec.get_parameter_clob( l_params, 'response' );
-        apex_debug.info( 'Email validation response status: %s response body: %s'
-          ,apex_web_service.g_status_code
-          ,l_response
-        );
-        if apex_web_service.g_status_code != 200
-        then
-          raise_application_error( -20002 ,  apex_lang.message( 'BLOG_EMAIL_VALIDATION_API_SQLERRM' ) );
-        end if;
-
-        -- convert response to json object
-        l_json := json_object_t( l_response );
-        -- check email deliverability
-        if not l_json.get('deliverability').to_string = '"DELIVERABLE"'
-        then
-          -- if email is not deliverable validation fails
-          -- prepare error message
-          l_err_mesg := apex_lang.message( p_err_mesg );
-
-          if l_err_mesg = apex_escape.html( p_err_mesg )
-          then
-            l_err_mesg := p_err_mesg;
-          end if;
-
-        end if;
-
-      end if;
-
-    end if;
-
-    return l_err_mesg;
-
-  exception when others
-  then
-    -- if something goes wrong
-    apex_debug.error( 'Email validation failed: %s', sqlerrm );
-    raise;
-  end validate_email;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function is_email_verified(
-    p_email in varchar2
-  ) return boolean
-  as
-    l_cnt     number;
-    l_email   varchar2(4000);
-    l_result  boolean;
-  begin
-    -- set result to false by default
-    l_result := false;
-
-    l_email := lower( trim( p_email ) );
-
-    -- get email count from table
-    select count(1) as cnt
-    into l_cnt
-    from blog_subscribers_email t1
-    where 1 = 1
-    and t1.email = l_email
-    ;
-    if l_cnt = 1
-    then
-      -- email exists return true
-      l_result := true;
-    end if;
-    -- return result
-    return l_result;
-
-  end is_email_verified;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure flag_comment(

@@ -4,8 +4,8 @@ begin
 --     PAGE: 00031
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210508113120'
+,p_last_upd_yyyymmddhh24miss=>'20220310144129'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(37645474034287120)
@@ -84,6 +84,7 @@ wwv_flow_api.create_report_region(
 'order by v1.id'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(8521917209518225)
 ,p_query_num_rows=>1
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -483,7 +484,7 @@ wwv_flow_api.create_page_da_action(
 ,p_event_result=>'TRUE'
 ,p_action_sequence=>10
 ,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_DIALOG_CLOSE'
+,p_action=>'NATIVE_DIALOG_CANCEL'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(36228807113379747)

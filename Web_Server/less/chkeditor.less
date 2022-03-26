@@ -19,10 +19,9 @@
 .z-author-badges {
   display: flex;
   flex-direction: column;
+  padding: 1rem 0;
 }
-.z-author-badges > * {
-  margin: 1rem 0;
-}
+
 @media only screen and (max-width: 640px) {
   .z-author-container {
     flex-direction: column;
@@ -39,10 +38,9 @@
 
 /* Editor program code */
 pre.z-program-code{
-  color: @code-text-color;
-  font-family: @code-font;
+  font-family: @code-font!important;
   background-color: #eeeeee;
-  border-left: @code-margin-border-right!important;
+  border-left: 0.4em solid #6ce26c !important;
   padding-left: 0.8em;
   white-space: pre;
 }

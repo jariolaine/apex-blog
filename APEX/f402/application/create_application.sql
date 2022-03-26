@@ -4,8 +4,8 @@ begin
 --     FLOW: 402
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -16,7 +16,7 @@ wwv_flow_api.create_flow(
 ,p_owner=>nvl(wwv_flow_application_install.get_schema,'BLOG_040000')
 ,p_name=>nvl(wwv_flow_application_install.get_application_name,'Blog Administration')
 ,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'402')
-,p_application_group=>3742713376965422
+,p_application_group=>wwv_flow_api.id(3742713376965422)
 ,p_application_group_name=>'APEX Blog'
 ,p_application_group_comment=>'APEX Blog applications'
 ,p_page_view_logging=>'YES'
@@ -34,6 +34,7 @@ wwv_flow_api.create_flow(
 ,p_documentation_banner=>'https://github.com/jariolaine/apex-blog'
 ,p_authentication=>'PLUGIN'
 ,p_authentication_id=>wwv_flow_api.id(24462639138097628)
+,p_populate_roles=>'A'
 ,p_application_tab_set=>1
 ,p_logo_type=>'T'
 ,p_logo_text=>'&G_APP_NAME.'
@@ -59,9 +60,9 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509120730'
+,p_last_upd_yyyymmddhh24miss=>'20220326070046'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>211
+,p_files_version=>242
 ,p_ui_type_name => null
 ,p_print_server_type=>'INSTANCE'
 );

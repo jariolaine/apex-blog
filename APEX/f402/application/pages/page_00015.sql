@@ -4,8 +4,8 @@ begin
 --     PAGE: 00015
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -15,14 +15,14 @@ wwv_flow_api.create_page(
  p_id=>15
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
 ,p_name=>'Files'
-,p_alias=>'FILES'
+,p_alias=>'FILE-REPOSITORY'
 ,p_step_title=>'Files'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(18976025248736506)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210509042735'
+,p_last_upd_yyyymmddhh24miss=>'20220323185110'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
@@ -64,7 +64,6 @@ wwv_flow_api.create_page_plug(
 '  ,v1.notes               as notes',
 '  ,v1.file_size           as file_download',
 '  ,btn.copy_url           as btn_copy_url',
-'  ,btn.copy_url_label     as btn_copy_url_label',
 '  ,btn.title_edit         as btn_title_edit',
 '  ,case v1.is_active',
 '    when 0',
@@ -75,17 +74,16 @@ wwv_flow_api.create_page_plug(
 '   end                    as file_status_icon',
 '  ,case v1.is_download',
 '    when 0',
-'    then ''fa-minus-circle-o''',
+'    then ''fa-eye-slash''',
 '    when 1',
-'    then ''fa-check-circle-o u-hot-text''',
+'    then ''fa-eye u-hot-text''',
 '    else ''fa-question-circle-o''',
 '   end                    as file_repository_icon',
 'from blog_v_all_files v1',
 'cross join(',
 '  select',
-'     apex_lang.message(''BLOG_BTN_TITLE_COPY_TO_CLIPBOARD'') as copy_url',
-'    ,apex_lang.message(''BLOG_BTN_ARIA_LABEL_COPY_TO_CLIPBOARD'') as copy_url_label',
-'    ,apex_lang.message(''BLOG_BTN_TITLE_EDIT'') as title_edit',
+'     apex_lang.message( ''BLOG_BTN_TITLE_COPY_TO_CLIPBOARD'' ) as copy_url',
+'    ,apex_lang.message( ''BLOG_BTN_TITLE_EDIT'' ) as title_edit',
 '  from dual',
 ') btn',
 'where 1 = 1',
@@ -129,6 +127,7 @@ wwv_flow_api.create_worksheet(
 ,p_pagination_type=>'ROWS_X_TO_Y'
 ,p_pagination_display_pos=>'BOTTOM_RIGHT'
 ,p_report_list_mode=>'TABS'
+,p_lazy_loading=>false
 ,p_show_detail_link=>'C'
 ,p_download_formats=>'CSV:HTML:EMAIL:XLSX:PDF:RTF'
 ,p_detail_link=>'f?p=&APP_ID.:16:&SESSION.::&DEBUG.:RP,16:P16_ID:#ID#'
@@ -188,7 +187,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_db_column_name=>'IS_DOWNLOAD'
 ,p_display_order=>60
 ,p_column_identifier=>'H'
-,p_column_label=>'Show in Public Files'
+,p_column_label=>'Public File'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<span aria-hidden="true" title="#IS_DOWNLOAD#" class="fa #FILE_REPOSITORY_ICON#"></span>',
 '<span class="u-VisuallyHidden">#IS_DOWNLOAD#</span>',
@@ -199,15 +198,6 @@ wwv_flow_api.create_worksheet_column(
 ,p_rpt_named_lov=>wwv_flow_api.id(6747712589074152)
 ,p_rpt_show_filter_lov=>'1'
 ,p_help_text=>'File is visible on public page files report.'
-);
-wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(18411298167271002)
-,p_db_column_name=>'FILE_NAME'
-,p_display_order=>70
-,p_column_identifier=>'AC'
-,p_column_label=>'File Name'
-,p_column_type=>'STRING'
-,p_heading_alignment=>'LEFT'
 );
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(18411133134271001)
@@ -261,7 +251,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_db_column_name=>'FILE_DOWNLOAD'
 ,p_display_order=>140
 ,p_column_identifier=>'AL'
-,p_column_label=>'Download'
+,p_column_label=>'File Name'
 ,p_allow_sorting=>'N'
 ,p_allow_filtering=>'N'
 ,p_allow_highlighting=>'N'
@@ -272,17 +262,17 @@ wwv_flow_api.create_worksheet_column(
 ,p_allow_group_by=>'N'
 ,p_allow_pivot=>'N'
 ,p_column_type=>'NUMBER'
-,p_column_alignment=>'CENTER'
-,p_format_mask=>'DOWNLOAD:BLOG_V_ALL_FILES:BLOB_CONTENT:ID::MIME_TYPE:FILE_NAME:CHANGED_ON:FILE_CHARSET:attachment:<span class="fa fa-download" aria-hidden="true"></span>:'
+,p_heading_alignment=>'LEFT'
+,p_format_mask=>'DOWNLOAD:BLOG_V_ALL_FILES:BLOB_CONTENT:ID::MIME_TYPE:FILE_NAME:CHANGED_ON:FILE_CHARSET:attachment:#FILE_NAME#:'
 );
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(30432633807753149)
 ,p_db_column_name=>'BTN_COPY_URL'
-,p_display_order=>150
+,p_display_order=>160
 ,p_column_identifier=>'AO'
 ,p_column_label=>'Copy URL'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<button title="#BTN_COPY_URL#" type="button" class="t-Button t-Button--noLabel t-Button--icon t-Button--noUI" onclick="void(0);" data-clipboard-source="#RELATIVE_PATH#">',
+'<button title="#BTN_COPY_URL#" type="button" class="t-Button t-Button--noLabel t-Button--icon t-Button--link padding-none" onclick="void(0);" data-clipboard-source="#RELATIVE_PATH#">',
 '  <span class="t-Icon fa fa-clone" aria-hidden="true"></span>',
 '</button>'))
 ,p_allow_sorting=>'N'
@@ -296,20 +286,21 @@ wwv_flow_api.create_worksheet_column(
 ,p_allow_pivot=>'N'
 ,p_column_type=>'STRING'
 ,p_column_alignment=>'CENTER'
+,p_static_id=>'COPY_URL'
 );
 wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(30432732757753150)
-,p_db_column_name=>'BTN_COPY_URL_LABEL'
-,p_display_order=>160
-,p_column_identifier=>'AP'
-,p_column_label=>'Btn Copy Url Label'
+ p_id=>wwv_flow_api.id(18411298167271002)
+,p_db_column_name=>'FILE_NAME'
+,p_display_order=>170
+,p_column_identifier=>'AC'
+,p_column_label=>'File Name'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
 );
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(31246563637982905)
 ,p_db_column_name=>'BTN_TITLE_EDIT'
-,p_display_order=>170
+,p_display_order=>180
 ,p_column_identifier=>'AQ'
 ,p_column_label=>'Btn Title Edit'
 ,p_column_type=>'STRING'
@@ -318,7 +309,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(42033869947918102)
 ,p_db_column_name=>'FILE_STATUS_ICON'
-,p_display_order=>180
+,p_display_order=>190
 ,p_column_identifier=>'AR'
 ,p_column_label=>'File Status Icon'
 ,p_column_type=>'STRING'
@@ -327,7 +318,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(24943446663671415)
 ,p_db_column_name=>'FILE_REPOSITORY_ICON'
-,p_display_order=>190
+,p_display_order=>200
 ,p_column_identifier=>'AS'
 ,p_column_label=>'File Repository Icon'
 ,p_column_type=>'STRING'
@@ -342,7 +333,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_view_mode=>'DETAIL'
-,p_report_columns=>'FILE_NAME:FILE_SIZE:CHANGED_ON:IS_ACTIVE:IS_DOWNLOAD:BTN_COPY_URL:FILE_DOWNLOAD:'
+,p_report_columns=>'FILE_DOWNLOAD:FILE_SIZE:CHANGED_ON:IS_ACTIVE:IS_DOWNLOAD:BTN_COPY_URL'
 ,p_sort_column_1=>'FILE_NAME'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'CHANGED_ON'
@@ -390,7 +381,7 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(6729285879951908)
 ,p_button_name=>'RESET_REPORT'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--small:t-Button--noUI:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--simple:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'

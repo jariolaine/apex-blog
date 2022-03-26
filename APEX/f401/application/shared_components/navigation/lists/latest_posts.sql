@@ -4,8 +4,8 @@ begin
 --     LIST: Latest Posts
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -33,9 +33,11 @@ wwv_flow_api.create_list(
 '  ,''data-blog-content-id="''',
 '   || v1.post_id',
 '   || ''"''               as attribute2',
+'  ,''z-linkList''         as attribute3',
 'from #OWNER#.blog_v_posts_last20 v1',
 'where 1 = 1',
-'and v1.display_seq <= :G_LATEST_POST_ROWS',
+'-- Use function to get max row count. Region is cached',
+'and v1.display_seq <= #OWNER#.blog_util.get_attribute_value( ''G_LATEST_POST_ROWS'' )',
 'order by v1.published_on desc',
 ''))
 ,p_list_status=>'PUBLIC'

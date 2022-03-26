@@ -62,7 +62,13 @@ as
     l_string := blog_util.int_to_vc2( p_number );
     for i in 1 .. length( l_string )
     loop
-      l_result := l_result || '&#' || ascii( substr( l_string, i, 1 ) );
+      l_result :=
+        apex_string.format(
+          p_message => '%s&#%s'
+          ,p0 => l_result
+          ,p1 => ascii( substr( l_string, i, 1 ) )
+        )
+      ;
     end loop;
     return l_result;
 
@@ -84,24 +90,7 @@ as
 
     l_name := apex_plugin.get_input_name_for_page_item(false);
 
-    if p_param.is_readonly or p_param.is_printer_friendly then
-
-      -- emit hidden text field if necessary
-      apex_plugin_util.print_hidden_if_readonly (
-        p_item_name => p_item.name,
-        p_value => p_param.value,
-        p_is_readonly => p_param.is_readonly,
-        p_is_printer_friendly => p_param.is_printer_friendly
-      );
-      -- emit display span with the value
-      apex_plugin_util.print_display_only (
-        p_item_name => p_item.name,
-        p_display_value => p_param.value,
-        p_show_line_breaks => false,
-        p_escape => true,
-        p_attributes => p_item.element_attributes
-      );
-    else
+    if not (p_param.is_readonly or p_param.is_printer_friendly) then
 
       sys.htp.p('<input type="text" '
         || case when p_item.element_width is not null
@@ -118,16 +107,19 @@ as
           )
         || 'value="" />'
       );
-      sys.htp.p('<span class="apex-item-icon '
-        || p_item.icon_css_classes
-        || '" aria-hidden="true"></span>'
-      );
+
+      if p_item.icon_css_classes is not null
+      then
+        sys.htp.p('<span class="apex-item-icon fa '
+          || p_item.icon_css_classes
+          || '" aria-hidden="true"></span>'
+        );
+      end if;
 
       apex_javascript.add_onload_code (
         p_code => 'apex.server.plugin("' || apex_plugin.get_ajax_identifier || '",{},{'
         || 'dataType:"text",'
         || 'success:function(data){'
---        || '$(".z-question").html(data);'
         || '$(data).insertBefore($("#' || p_item.name || '_LABEL").children());'
         || '}});'
       );
@@ -163,13 +155,15 @@ as
     l_max   := to_number( p_item.attribute_04 );
     l_num_2 := round( sys.dbms_random.value( l_min, l_max ) );
 
-    l_data  := '<span class="z-question">';
-    l_data  := l_data || to_html_entities( l_num_1 );
-    l_data  := l_data || '&nbsp;&#' || ascii('+') || '&nbsp;';
-    l_data  := l_data || to_html_entities( l_num_2 );
-    l_data  := l_data || '&#' || ascii('?');
-    l_data  := l_data || '</span>';
-
+    l_data  :=
+      apex_string.format(
+        p_message =>'<span class="z-question">%s&nbsp;&#%s&nbsp;%s&#%s</span>'
+        ,p0 => to_html_entities( l_num_1 )
+        ,p1 => ascii('+')
+        ,p2 => to_html_entities( l_num_2 )
+        ,p3 => ascii('?')
+      )
+    ;
     -- set correct answer to item session state
     apex_util.set_session_state(
        p_name   => p_item.attribute_05

@@ -4,11 +4,13 @@
 **************************************/
 .z-post {
   font-size: 112%;
-  background-color: @region-background;
+  background-color: var(--ut-component-background-color);
   margin-bottom: @margin-medium;
-  border: @region-outer-border;
-  border-radius: @region-border-radius;
-  box-shadow: @region-box-shadow;
+  border-width: var(--ut-component-border-width);
+  border-style: solid;
+  border-color: var(--ut-component-border-color);
+  border-radius: var(--ut-component-border-radius);
+  box-shadow: var(--ut-shadow-sm);
   padding: @post-padding;
 }
 .z-post--header {
@@ -39,7 +41,9 @@
   width: 100%;
   clear: both;
   margin: 2rem 0 0;
-  border-top: @region-inner-border;
+  border-top-width: var(--ut-component-inner-border-width);
+  border-top-style: solid;
+  border-top-color: var(--ut-component-inner-border-color);
 }
 .z-post--footer {
   width: 100%;
@@ -51,10 +55,12 @@
 }
 .z-posts--paginationBorder {
   .z-posts--pagination {
-    background-color: @region-background;
-    border: @region-outer-border;
-    box-shadow: @region-box-shadow;
-    border-radius: @region-border-radius;
+    background-color: var(--ut-component-background-color);
+    border-width: var(--ut-component-border-width);
+    border-style: solid;
+    border-color: var(--ut-component-border-color);
+    border-radius: var(--ut-component-border-radius);
+    box-shadow: var(--ut-shadow-sm);
     padding: 0.4rem;
   }
 }

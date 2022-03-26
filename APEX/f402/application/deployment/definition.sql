@@ -4,8 +4,8 @@ begin
 --     INSTALL: 402
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -18,7 +18,7 @@ wwv_flow_api.create_install(
 ,p_license_message=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<pre>The MIT License (MIT)',
 '',
-'Copyright (c) 2021 Jari Laine',
+'Copyright (c) 2021, 2022 Jari Laine',
 '',
 'Permission is hereby granted, free of charge, to any person obtaining a copy of',
 'this software and associated documentation files (the "Software"), to deal in',
@@ -95,7 +95,6 @@ wwv_flow_api.create_install(
 'drop table blog_init_items;',
 'drop table blog_links;',
 'drop table blog_link_groups;',
-'drop table blog_pages;',
 'drop table blog_posts;',
 'drop table blog_post_preview;',
 'drop table blog_post_tags;',
@@ -103,6 +102,7 @@ wwv_flow_api.create_install(
 'drop table blog_settings;',
 'drop table blog_subscribers_email;',
 'drop table blog_tags;',
+'drop type blog_t_post;',
 'drop view blog_v_all_categories;',
 'drop view blog_v_all_comments;',
 'drop view blog_v_all_dynamic_content;',
@@ -137,10 +137,11 @@ wwv_flow_api.create_install(
 '--  Drop text index preferences',
 '--------------------------------------------------------',
 'begin',
-'ctx_ddl.drop_preference( ''BLOG_POST_UDS_DS'');',
-'ctx_ddl.drop_preference( ''BLOG_POST_UDS_LX'');',
+'ctx_ddl.drop_preference( ''BLOG_POST_UDS_DS'' );',
+'ctx_ddl.drop_preference( ''BLOG_POST_UDS_LX'' );',
 'end;',
 '/',
+'',
 ''))
 ,p_required_free_kb=>200
 ,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'

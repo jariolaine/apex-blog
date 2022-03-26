@@ -4,8 +4,8 @@ begin
 --     USER INTERFACES: 401
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -23,10 +23,12 @@ wwv_flow_api.create_user_interface(
 ,p_login_url=>'f?p=&APP_ID.:LOGIN:&SESSION.'
 ,p_theme_style_by_user_pref=>false
 ,p_global_page_id=>0
+,p_navigation_list_id=>wwv_flow_api.id(61556680328292600)
 ,p_navigation_list_position=>'TOP'
 ,p_navigation_list_template_id=>wwv_flow_api.id(6850610093267411)
 ,p_nav_list_template_options=>'#DEFAULT#:js-tabLike'
-,p_javascript_file_urls=>'#APP_IMAGES#js/blog.js'
+,p_css_file_urls=>'#APP_IMAGES#css/style#MIN#.css'
+,p_javascript_file_urls=>'#APP_IMAGES#js/blog#MIN#.js'
 ,p_nav_bar_type=>'LIST'
 ,p_nav_bar_list_id=>wwv_flow_api.id(6876779235267426)
 ,p_nav_bar_list_template_id=>wwv_flow_api.id(6848359906267410)

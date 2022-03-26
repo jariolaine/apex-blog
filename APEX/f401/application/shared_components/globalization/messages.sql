@@ -4,8 +4,8 @@ begin
 --     MESSAGES: 401
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -17,17 +17,12 @@ end;
 /
 begin
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(37505555105749125)
-,p_name=>'BLOG_EMAIL_VALIDATION_API_SQLERRM'
-,p_message_text=>'Email validation REST API returned error.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(7036756648298659)
@@ -35,9 +30,14 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Ooops... We are sorry! Unexpected internal error have occurred. Please try again later.'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(22220857391063954)
+,p_name=>'BLOG_HTTP_404_ERROR'
+,p_message_text=>'Not Found'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(41895368735673735)
-,p_name=>'BLOG_INFO_LAST_UPDATED'
-,p_message_text=>'<p>Document was last updated on %0.</p>'
+,p_name=>'BLOG_MSG_LAST_UPDATED'
+,p_message_text=>'Document was last updated on %0.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(31915575291785585)

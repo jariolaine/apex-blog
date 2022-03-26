@@ -4,8 +4,8 @@ begin
 --     PAGE: 00026
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2020.10.01'
-,p_release=>'20.2.0.00.20'
+ p_version_yyyy_mm_dd=>'2021.04.15'
+,p_release=>'21.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20210508122144'
+,p_last_upd_yyyymmddhh24miss=>'20211024080443'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41929607444116285)
@@ -197,7 +197,8 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'B'
 ,p_restricted_characters=>'US_ONLY'
-,p_attribute_01=>'CUSTOM'
+,p_help_text=>'Enable or disable link.'
+,p_attribute_01=>'N'
 ,p_attribute_02=>'1'
 ,p_attribute_03=>'Enabled'
 ,p_attribute_04=>'0'
@@ -225,6 +226,7 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'B'
 ,p_restricted_characters=>'US_ONLY'
+,p_help_text=>'Link display sequence.'
 ,p_attribute_03=>'right'
 );
 wwv_flow_api.create_page_item(
@@ -272,7 +274,31 @@ wwv_flow_api.create_page_item(
 ,p_attribute_03=>'Y'
 ,p_attribute_05=>'top'
 ,p_attribute_06=>'4'
-,p_attribute_09=>'html'
+,p_attribute_09=>'HTML'
+);
+wwv_flow_api.create_page_item(
+ p_id=>wwv_flow_api.id(64761748434771401)
+,p_name=>'P26_SHOW_CHANGED_ON'
+,p_source_data_type=>'NUMBER'
+,p_is_required=>true
+,p_item_sequence=>40
+,p_item_plug_id=>wwv_flow_api.id(41876660153408307)
+,p_item_source_plug_id=>wwv_flow_api.id(41929607444116285)
+,p_prompt=>'Show Last Modified Date'
+,p_source=>'SHOW_CHANGED_ON'
+,p_source_type=>'REGION_SOURCE_COLUMN'
+,p_display_as=>'NATIVE_YES_NO'
+,p_field_template=>wwv_flow_api.id(8548970214518243)
+,p_item_template_options=>'#DEFAULT#'
+,p_is_persistent=>'N'
+,p_protection_level=>'B'
+,p_restricted_characters=>'US_ONLY'
+,p_help_text=>'Include last modified date after content. '
+,p_attribute_01=>'N'
+,p_attribute_02=>'1'
+,p_attribute_03=>'Enabled'
+,p_attribute_04=>'0'
+,p_attribute_05=>'Disabled'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(41938421768116304)

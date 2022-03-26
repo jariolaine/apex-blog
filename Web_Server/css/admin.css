@@ -1,12 +1,18 @@
 /**************************************
 * Post editor
 **************************************/
-#P12_BODY_HTML_CONTAINER .t-Form-helpButton {
-  display: none;
-  visible: hidden;
-}
 #P12_BODY_HTML_CONTAINER {
   padding-right: 2.2rem;
+}
+#P12_BODY_HTML_CONTAINER .t-Form-helpButton {
+  display: none;
+  visibility: hidden;
+}
+/**************************************
+* IR files
+**************************************/
+td[headers="COPY_URL"] {
+  padding: 0;
 }
 /**************************************
 * IR post report
@@ -28,6 +34,9 @@
   display: none!important;
   visibility: hidden!important;
 }
+.z-config-ig span.z-feature--child {
+  margin-left: 1.6rem;
+}
 /**************************************
 * Elements
 **************************************/
@@ -47,11 +56,13 @@ blockquote p {
 **************************************/
 .z-post {
   font-size: 112%;
-  background-color: #ffffff;
+  background-color: var(--ut-component-background-color);
   margin-bottom: 1.6rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);
+  border-width: var(--ut-component-border-width);
+  border-style: solid;
+  border-color: var(--ut-component-border-color);
+  border-radius: var(--ut-component-border-radius);
+  box-shadow: var(--ut-shadow-sm);
   padding: 1.6rem;
 }
 .z-post--header {
@@ -80,7 +91,9 @@ blockquote p {
   width: 100%;
   clear: both;
   margin: 2rem 0 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.075);
+  border-top-width: var(--ut-component-inner-border-width);
+  border-top-style: solid;
+  border-top-color: var(--ut-component-inner-border-color);
 }
 .z-post--footer {
   width: 100%;
@@ -91,10 +104,12 @@ blockquote p {
   margin-bottom: 16px;
 }
 .z-posts--paginationBorder .z-posts--pagination {
-  background-color: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);
-  border-radius: 4px;
+  background-color: var(--ut-component-background-color);
+  border-width: var(--ut-component-border-width);
+  border-style: solid;
+  border-color: var(--ut-component-border-color);
+  border-radius: var(--ut-component-border-radius);
+  box-shadow: var(--ut-shadow-sm);
   padding: 0.4rem;
 }
 .z-post--largeMargin .z-post {
@@ -130,7 +145,7 @@ blockquote p {
 **************************************/
 .nodatafound {
   text-align: center;
-  color: #262626;
+  color: var(--ut-component-text-default-color);
   font-size: 1.2rem;
   line-height: 2rem;
   padding: 2.2rem;
@@ -143,16 +158,22 @@ blockquote p {
 * General custom report
 **************************************/
 .z-Content .z-Content--Row {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);
+  border-width: var(--ut-component-border-width);
+  border-style: solid;
+  border-color: var(--ut-component-border-color);
+  border-radius: var(--ut-component-border-radius);
+  box-shadow: var(--ut-shadow-sm);
   margin-bottom: 1.6rem;
 }
 .z-Content--Row {
-  background-color: #ffffff;
+  background-color: var(--ut-component-background-color);
+  overflow: hidden;
 }
 .z-Content--Title {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.075);
+  border-bottom-width: var(--ut-component-inner-border-width);
+  border-bottom-style: solid;
+  border-bottom-color: var(--ut-component-inner-border-color);
+  background-color: var(--ut-region-header-background-color);
   padding: 1.2rem;
   margin: 0;
   font-size: 1.6rem;
@@ -163,7 +184,9 @@ blockquote p {
   padding: 1.6rem;
 }
 .z-Content--Stacked .z-Content--Title {
-  border-top: 1px solid rgba(0, 0, 0, 0.075);
+  border-top-width: var(--ut-component-inner-border-width);
+  border-top-style: solid;
+  border-top-color: var(--ut-component-inner-border-color);
 }
 .z-Content--Stacked .z-Content--Row:first-child .z-Content--Title {
   border-top: none;
@@ -172,19 +195,24 @@ blockquote p {
 * Program code formatting
 **************************************/
 pre.z-program-code {
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
-  color: #262626;
+  clear: both;
+  font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace";
+  color: var(--ut-component-badge-text-color);
   font-size: 1.1rem;
   tab-size: 2;
   overflow-x: auto;
   display: block;
   padding: 1em 1.5em;
   margin: 8px 8px 18px 8px;
-  border: 1px solid rgba(0, 0, 0, 0.075);
-  border-left: 0.3em solid #6ce26c;
-  border-radius: 4px;
-  background-color: rgba(0, 0, 0, 0.015);
-  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.075);
+  border-width: var(--ut-component-inner-border-width);
+  border-style: solid;
+  border-color: var(--ut-component-inner-border-color);
+  border-left-width: 0.4em;
+  border-left-style: solid;
+  border-left-color: var(--u-color-35);
+  border-radius: var(--ut-component-badge-border-radius);
+  background-color: var(--ut-component-badge-background-color);
+  box-shadow: var(--ut-shadow-sm);
 }
 pre.z-program-code code {
   font-family: inherit;
@@ -248,4 +276,25 @@ pre.z-program-code code {
 }
 .z-status-marker--right.z-required::after {
   border-color: #c00 #c00 transparent transparent;
+}
+.z-hr-section {
+  display: flex;
+  flex-basis: 100%;
+  align-items: center;
+  margin: 8px 0px;
+}
+.z-hr-section::before,
+.z-hr-section::after {
+  content: "";
+  flex-grow: 1;
+  background: rgba(0, 0, 0, 0.35);
+  height: 1px;
+  font-size: 0px;
+  line-height: 0px;
+}
+.z-hr-section:before {
+  margin-right: 8px;
+}
+.z-hr-section::after {
+  margin-left: 8px;
 }
