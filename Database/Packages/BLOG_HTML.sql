@@ -18,7 +18,7 @@ as
 --    Jari Laine 06.07.2020 - Added parameter p_rss_url to functions get_rss_link and get_rss_anchor
 --                            Removed parameter p_build_option_status from function get_rss_link
 --    Jari Laine 13.11.2021 - Changes to funtion get_rss_anchor and get get_rss_link
---                          - Removed obsolete function
+--                          - Removed obsolete functions
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

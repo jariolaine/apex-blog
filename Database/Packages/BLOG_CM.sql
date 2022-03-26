@@ -5,7 +5,7 @@ as
 --------------------------------------------------------------------------------
 --
 --  DESCRIPTION
---    Content and configuration management API
+--    Procedures and functions for admin application
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 26.04.2019 - Created

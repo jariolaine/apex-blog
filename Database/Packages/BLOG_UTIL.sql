@@ -31,42 +31,47 @@ as
 --    Jari Laine 23.05.2020 - Modifications to remove ORDS depency
 --    Jari Laine 05.11.2020 - Procedure render_dynamic_content
 --    Jari Laine 18.12.2021 - Procedure redirect_search
+--    Jari Laine 24.03.2022 - Parameter names to apex_debug procedure calls
+--                          - Changes to procedure get_post_pagination and render_dynamic_content
+--    Jari Laine 25.03.2022 - Added more comments
+--                          - Changed variable names to more descriptive
+--                          - Removed obsolete procedure check_archive_exists
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Called from:
---
+--  public and admin application definition Error Handling Function
   function apex_error_handler (
     p_error           in apex_error.t_error
   ) return apex_error.t_error_result;
 --------------------------------------------------------------------------------
 -- Called from:
---
+--  inside package and from other packages
   function int_to_vc2(
     p_value           in number
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+--  other packages, public and admin application
   function get_attribute_value(
     p_attribute_name  in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+--  public and admin application process Initialize Items
   procedure initialize_items(
     p_app_id          in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
--- public app page 2
+--  public app page 2
   function get_post_title(
     p_post_id         in varchar2,
     p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
--- public app page 2
+--  public app page 2
   procedure get_post_pagination(
     p_post_id         in varchar2,
     p_post_title      out nocopy varchar2,
@@ -77,22 +82,17 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
--- public app page 14 Pre-Rendering Computations
+--  public app page 14 Pre-Rendering Computations
   function get_category_title(
     p_category_id     in varchar2,
     p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
--- public app page 6 Pre-Rendering Computations
+--  public app page 6 Pre-Rendering Computations
   function get_tag(
     p_tag_id          in varchar2
   ) return varchar2;
---------------------------------------------------------------------------------
--- Obsolete / not used
-  procedure check_archive_exists(
-    p_archive_id      in varchar2
-  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1002 PL/SQL Dynamic Content Region "Content"
@@ -103,7 +103,7 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
---
+--  inside package and package BLOG_XML
   procedure download_file (
     p_blob_content    in out nocopy blob,
     p_file_name       in varchar2 default null,
@@ -119,7 +119,7 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
--- public app application process Redirect to search page
+--  public app application process Redirect to search page
   procedure redirect_search(
     p_value           in varchar2,
     p_app_id          in varchar2 default null,
@@ -149,7 +149,9 @@ as
   )
   as
   begin
+    -- output HTTP status
     owa_util.status_line( p_error_code, apex_lang.message( p_message ) );
+    -- stop APEX
     apex_application.stop_apex_engine;
   end raise_http_error;
 --------------------------------------------------------------------------------
@@ -277,6 +279,7 @@ as
   ) return varchar2
   as
   begin
+    -- convert number to string without decimals
     return to_char( p_value,  'fm99999999999999999999999999999999999999' );
   end int_to_vc2;
 --------------------------------------------------------------------------------
@@ -294,6 +297,7 @@ as
       ,p_value01      => p_attribute_name
     );
 
+    -- raise no data found error if parameter p_attribute_name is null
     if p_attribute_name is null then
       raise no_data_found;
     end if;
@@ -311,9 +315,12 @@ as
       ,p1 => l_value
     );
 
+    -- return attribute value
     return l_value;
 
-  exception when no_data_found
+  -- Handle error cases
+  exception
+  when no_data_found
   then
 
     apex_debug.warn(
@@ -351,12 +358,16 @@ as
       ,p_value01      => p_app_id
     );
 
+    -- raise no data found error if parameter p_app_id_name is null
     if p_app_id is null then
       raise no_data_found;
     end if;
 
+    -- conver application id string to number
     l_app_id := to_number( p_app_id );
-    -- Set items session state
+
+    -- set items session state
+    -- fetch items and values that session state need to be set
     for c1 in (
       select
         i.item_name,
@@ -372,6 +383,7 @@ as
         ,p2 => c1.item_value
       );
 
+      -- set item session state and no commit
       apex_util.set_session_state(
         p_name    => c1.item_name
         ,p_value  => c1.item_value
@@ -380,6 +392,7 @@ as
 
     end loop;
 
+  -- handle errors
   exception
   when no_data_found
   then
@@ -411,8 +424,8 @@ as
     p_escape      in boolean
   ) return varchar2
   as
-    l_value   varchar2(4000);
-    l_post_id number;
+    l_post_title  varchar2(4000);
+    l_post_id     number;
   begin
 
     apex_debug.enter(
@@ -423,15 +436,17 @@ as
       ,p_value02      => apex_debug.tochar(p_escape)
     );
 
+    -- raise no data found error if parameter p_post_id is null
     if p_post_id is null then
       raise no_data_found;
     end if;
 
+    -- conver post id string to number
     l_post_id := to_number( p_post_id );
 
-    -- fetch and return post title
+    -- fetch post title
     select v1.post_title
-    into l_value
+    into l_post_title
     from blog_v_posts v1
     where v1.post_id = l_post_id
     ;
@@ -439,16 +454,18 @@ as
     apex_debug.info(
       p_message => 'Fetch post: %s return: %s'
       ,p0 => p_post_id
-      ,p1 => l_value
+      ,p1 => l_post_title
     );
 
-    -- espace html and return string
+    -- espace html from post title if parameter p_escape is true
+    -- return post title
     return case when p_escape
-      then apex_escape.html(l_value)
-      else l_value
+      then apex_escape.html( l_post_title )
+      else l_post_title
       end
     ;
 
+  -- handle errors
   exception when no_data_found
   then
 
@@ -511,36 +528,41 @@ as
       ,p_value01      => p_post_id
     );
 
+    -- raise no data found error if parameter p_post_id is null
     if p_post_id is null then
       raise no_data_found;
     end if;
 
+    -- conver post id string to number
     l_post_id := to_number( p_post_id );
 
+    -- fetch post title by post id
+    -- also fetch older and newer post id and title
     select
       v1.post_title
       ,(
         select blog_t_post( lkp1.post_id, lkp1.post_title )
         from blog_v_posts lkp1
         where 1 = 1
-        and lkp1.published_on > v1.published_on
+          and lkp1.published_on > v1.published_on
         order by lkp1.published_on asc
         fetch first 1 rows only
-      ) newer
+      ) as newer_post
       ,(
         select blog_t_post( lkp2.post_id, lkp2.post_title )
         from blog_v_posts lkp2
         where 1 = 1
-        and lkp2.published_on < v1.published_on
+          and lkp2.published_on < v1.published_on
         order by lkp2.published_on desc
         fetch first 1 rows only
-      ) as older_id
+      ) as older_post
     into l_post_title, l_newer, l_older
     from blog_v_posts v1
     where 1 = 1
-    and post_id = l_post_id
+      and post_id = l_post_id
     ;
 
+    -- set procedure out parameters
     p_post_title  := l_post_title;
     p_newer_id    := int_to_vc2( l_newer.post_id );
     p_newer_title := l_newer.post_title;
@@ -554,7 +576,9 @@ as
       ,p2 => p_older_id
     );
 
-  exception when no_data_found
+  -- handle errors
+  exception
+  when no_data_found
   then
 
     apex_debug.warn(
@@ -600,8 +624,8 @@ as
     p_escape      in boolean
   ) return varchar2
   as
-    l_category_id number;
-    l_title       varchar2(4000);
+    l_category_id   number;
+    l_category_name varchar2(4000);
   begin
 
     apex_debug.enter(
@@ -612,15 +636,17 @@ as
       ,p_value02      => apex_debug.tochar(p_escape)
     );
 
+    -- raise no data found error if parameter p_category_id is null
     if p_category_id is null then
       raise no_data_found;
     end if;
 
+    -- conver category id string to number
     l_category_id := to_number( p_category_id );
 
-    -- fetch and return category name
+    -- fetch category name
     select v1.category_title
-    into l_title
+    into l_category_name
     from blog_v_categories v1
     where v1.category_id = l_category_id
     ;
@@ -628,17 +654,20 @@ as
     apex_debug.info(
       p_message => 'Fetch category: %s return: %s'
       ,p0 => p_category_id
-      ,p1 => l_title
+      ,p1 => l_category_name
     );
 
-    -- espace html and return string
+    -- espace html from category name if parameter p_escape is true
+    -- return category name
     return case when p_escape
-      then apex_escape.html(l_title)
-      else l_title
+      then apex_escape.html( l_category_name )
+      else l_category_name
       end
     ;
 
-  exception when no_data_found then
+  -- handle errors
+  exception
+  when no_data_found then
 
     apex_debug.warn(
        p_message => 'No data found. %s( %s => %s, %s => %s )'
@@ -680,8 +709,8 @@ as
     p_tag_id in varchar2
   ) return varchar2
   as
-    l_tag_id  number;
-    l_value   varchar2(4000);
+    l_tag_id    number;
+    l_tag_name  varchar2(4000);
   begin
 
     apex_debug.enter(
@@ -690,15 +719,17 @@ as
       ,p_value01      => p_tag_id
     );
 
+    -- raise no data found error if parameter p_tag_id is null
     if p_tag_id is null then
       raise no_data_found;
     end if;
 
+    -- conver tag id string to number
     l_tag_id := to_number( p_tag_id );
 
-    -- fetch and return tag name
+    -- fetch tag name
     select t1.tag
-    into l_value
+    into l_tag_name
     from blog_v_tags t1
     where 1 = 1
     and t1.tag_id = l_tag_id
@@ -707,13 +738,15 @@ as
     apex_debug.info(
       p_message => 'Fetch tag: %s return: %s'
       ,p0 => p_tag_id
-      ,p1 => l_value
+      ,p1 => l_tag_name
     );
 
-    -- espace html and return string
-    return apex_escape.html( l_value );
+    -- espace html and return tag name
+    return apex_escape.html( l_tag_name );
 
-  exception when no_data_found
+  -- handle errors
+  exception
+  when no_data_found
   then
 
     apex_debug.warn(
@@ -750,77 +783,6 @@ as
   end get_tag;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure check_archive_exists(
-    p_archive_id  in varchar2
-  )
-  as
-    l_archive_id  number;
-    l_value       number;
-  begin
-
-    apex_debug.enter(
-      p_routine_name  => 'blog_util.check_archive_exists'
-      ,p_name01       => 'p_archive_id'
-      ,p_value01      => p_archive_id
-    );
-
-    if p_archive_id is null then
-      raise no_data_found;
-    end if;
-
-    l_archive_id := to_number( p_archive_id );
-
-    -- fetch and return tag name
-    select t1.archive_year
-    into l_value
-    from blog_v_archive_year t1
-    where 1 = 1
-    and t1.archive_year = l_archive_id
-    ;
-
-    apex_debug.info(
-      p_message => 'Fetch archive: %s return: %s'
-      ,p0 => p_archive_id
-      ,p1 => l_value
-    );
-
-  exception when no_data_found
-  then
-
-    apex_debug.warn(
-       p_message => 'No data found. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_archive_id'
-      ,p2 => coalesce( p_archive_id, '(null)' )
-    );
-
-    -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
-    raise;
-
-  when others
-  then
-
-    apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_archive_id'
-      ,p2 => coalesce( p_archive_id, '(null)' )
-    );
-
-    -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
-    raise;
-
-  end check_archive_exists;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   procedure render_dynamic_content(
     p_content_id    in varchar2,
     p_date_format   in varchar2,
@@ -829,6 +791,7 @@ as
   as
   begin
 
+    -- fetch content
     for c1 in(
       select v1.content_desc
         ,v1.content_html
@@ -839,10 +802,13 @@ as
       and v1.content_id = p_content_id
     ) loop
 
+      -- set content description to procedure out parameter
       p_content_title := c1.content_desc;
 
+      -- output content HTML
       sys.htp.p( c1.content_html );
 
+      -- output when content is changed if show_changed_on column value is 1
       if c1.show_changed_on = 1
       then
         sys.htp.p(
@@ -872,6 +838,7 @@ as
   as
   begin
 
+    -- open and set HTTP headers
     sys.owa_util.mime_header(
       ccontent_type   => coalesce ( p_mime_type, 'application/octet' )
       ,bclose_header  => false
@@ -910,8 +877,10 @@ as
       );
     end if;
 
+    -- close HTTP header
     sys.owa_util.http_header_close;
 
+    -- output file
     sys.wpg_docload.download_file ( p_blob_content );
 
   end download_file;
@@ -924,6 +893,7 @@ as
     l_file_t blog_v_files%rowtype;
   begin
 
+    -- fetch file
     select *
     into l_file_t
     from blog_v_files t1
@@ -939,6 +909,7 @@ as
       ,p2 => l_file_t.mime_type
     );
 
+    -- output file
     download_file(
       p_blob_content    => l_file_t.blob_content
       ,p_file_name      => l_file_t.file_name
@@ -946,7 +917,9 @@ as
       ,p_cache_control  => case when l_file_t.is_download = 0 then 'max-age=3600, public' end
     );
 
-  exception when no_data_found
+  -- handle errors
+  exception
+  when no_data_found
   then
 
     raise_http_error(
@@ -965,20 +938,18 @@ as
   )
   as
   begin
-    -- Get search page URL and redirect if there there is string for search
-    --if p_value is not null then
-      apex_util.redirect_url (
-        apex_page.get_url(
-           p_application => p_app_id
-          ,p_page        => 'SEARCH'
-          ,p_session     => p_session
+    -- Get search page URL and redirect
+    apex_util.redirect_url (
+      apex_page.get_url(
+         p_application => p_app_id
+        ,p_page        => 'SEARCH'
+        ,p_session     => p_session
 --          ,p_clear_cache => 'RP'
-          ,p_items       => 'P0_SEARCH'
-          ,p_values      => p_value
-          ,p_plain_url   => true
-        )
-      );
-    --end if;
+        ,p_items       => 'P0_SEARCH'
+        ,p_values      => p_value
+        ,p_plain_url   => true
+      )
+    );
   end redirect_search;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

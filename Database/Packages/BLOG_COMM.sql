@@ -5,7 +5,7 @@ as
 --------------------------------------------------------------------------------
 --
 --  DESCRIPTION
---    Procedure and functions for comments
+--    Procedure and functions for post comments
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 11.05.2020 - Created
@@ -20,14 +20,14 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   -- Called from:
-  --
+  --  public app page 1001
   function format_comment(
     p_comment           in varchar2,
     p_remove_anchors    in boolean default false
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from:
-  --
+  --  public app page 1001
   function validate_comment(
     p_comment           in varchar2,
     p_max_length        in number default 4000
@@ -41,7 +41,7 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+--  public app page 1001 
   procedure flag_comment(
     p_comment_id        in varchar2,
     p_flag              in varchar2
@@ -55,7 +55,7 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
---
+--  public app page 1001
   procedure new_comment_notify(
     p_post_id           in varchar2,
     p_app_name          in varchar2,
@@ -72,14 +72,14 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
---
+--  public app page 1001
   procedure subscribe(
     p_post_id           in varchar2,
     p_email             in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
---
+--  public app page 2
   procedure unsubscribe(
     p_subscription_id   in varchar2
   );

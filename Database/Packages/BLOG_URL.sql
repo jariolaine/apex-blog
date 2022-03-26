@@ -5,7 +5,7 @@ as
 --------------------------------------------------------------------------------
 --
 --  DESCRIPTION
---    Generate URL or redirect
+--    Generate URL
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 22.04.2019 - Created

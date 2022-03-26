@@ -5,7 +5,7 @@ as
 --------------------------------------------------------------------------------
 --
 --  DESCRIPTION
---    Procedures and functions Oracle text
+--    Procedures and functions for Oracle text
 --
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 22.06.2020 - Created

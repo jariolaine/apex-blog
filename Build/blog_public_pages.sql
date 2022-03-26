@@ -140,7 +140,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220324201654'
+,p_last_upd_yyyymmddhh24miss=>'20220326061228'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>151
 ,p_ui_type_name => null
@@ -13832,7 +13832,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220324200814'
+,p_last_upd_yyyymmddhh24miss=>'20220325135737'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -13848,35 +13848,23 @@ wwv_flow_api.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'with comments as (',
-'  select ',
-'     ceil(row_number() over(order by v1.created_on desc) / :P2_REPORT_ROWS) as rn',
-'    ,v1.created_on',
-'    ,v1.comment_by',
-'    ,v1.comment_body',
-'    ,v1.user_icon',
-'    ,v1.icon_modifier',
-'  from blog_v_comments v1',
-'  where 1 = 1',
-'    and v1.post_id = :P2_POST_ID',
-')',
 'select',
 '   null             as actions',
-'  ,q1.comment_by    as user_name',
-'  ,q1.comment_body  as comment_text',
-'  ,q1.created_on    as comment_date',
-'  ,q1.user_icon     as user_icon',
-'  ,q1.icon_modifier as icon_modifier',
-'--  ,null             as comment_modifiers',
+'  ,v1.comment_by    as user_name',
+'  ,v1.comment_body  as comment_text',
+'  ,v1.created_on    as comment_date',
+'  ,v1.user_icon     as user_icon',
+'  ,v1.icon_modifier as icon_modifier',
 '  ,''z-comment''      as comment_modifiers',
 '  ,null             as attribute_1',
 '  ,null             as attribute_2',
 '  ,null             as attribute_3',
 '  ,null             as attribute_4',
-'from comments q1',
+'from blog_v_comments v1',
 'where 1 = 1',
-'order by q1.rn',
-'  ,q1.created_on desc'))
+'  and v1.post_id = :P2_POST_ID',
+'order by v1.created_on desc',
+''))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P2_POST_ID'
 ,p_lazy_loading=>false
@@ -16957,7 +16945,7 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''20'',''1'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,null,blog_util.int_to_vc2(apex_applicat'
 ||'ion_install.get_application_id));',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,''Release 4.4.20220324'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,''Release 4.4.20220326'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''70'',''0'',''G_COMMENT_WATCH_MONTHS'',''INTEGER'',''INTERNAL'',null,''1'',''6'',''1'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''130'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,''My Blog'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''140'',''0'',''G_APP_DESC'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,''About Almost Eve'
