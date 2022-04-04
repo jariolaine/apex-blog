@@ -26,7 +26,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220325135737'
+,p_last_upd_yyyymmddhh24miss=>'20220331181308'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -106,7 +106,7 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>4
 ,p_column_heading=>'Comment Date'
 ,p_use_as_row_header=>'N'
-,p_column_format=>'&G_DATE_FORMAT.'
+,p_column_format=>'&G_APP_DATE_FORMAT.'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -187,13 +187,14 @@ wwv_flow_api.create_report_region(
 '  ,v1.published_on   as published_on',
 '  ,v1.body_html      as body_html',
 '  ,null              as read_more_link',
+'  -- fetch tags',
 '  ,#OWNER#.blog_html.get_post_tags(',
 '    p_post_id => v1.post_id',
 '  )                  as tags_html',
 'from #OWNER#.blog_v_posts v1',
 'where 1 = 1',
 'and v1.post_id = :P2_POST_ID',
-'order by v1.post_id'))
+'--order by v1.published_on'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_translate_title=>'N'
 ,p_lazy_loading=>false
@@ -364,7 +365,7 @@ wwv_flow_api.create_page_item(
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(6914099568677134)
 ,p_name=>'P2_POST_TITLE'
-,p_item_sequence=>10
+,p_item_sequence=>20
 ,p_item_plug_id=>wwv_flow_api.id(6433141607894071)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
@@ -375,7 +376,7 @@ wwv_flow_api.create_page_item(
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(24468562639361505)
 ,p_name=>'P2_REPORT_ROWS'
-,p_item_sequence=>20
+,p_item_sequence=>30
 ,p_item_plug_id=>wwv_flow_api.id(6433141607894071)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_protection_level=>'I'
@@ -386,7 +387,7 @@ wwv_flow_api.create_page_item(
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(27862178100256820)
 ,p_name=>'P2_NEWER_POST_ID'
-,p_item_sequence=>40
+,p_item_sequence=>50
 ,p_item_plug_id=>wwv_flow_api.id(6433141607894071)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
@@ -398,7 +399,7 @@ wwv_flow_api.create_page_item(
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(27862251117256821)
 ,p_name=>'P2_OLDER_POST_ID'
-,p_item_sequence=>60
+,p_item_sequence=>70
 ,p_item_plug_id=>wwv_flow_api.id(6433141607894071)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
@@ -410,7 +411,7 @@ wwv_flow_api.create_page_item(
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(31250009146982940)
 ,p_name=>'P2_SUBSCRIPTION_ID'
-,p_item_sequence=>30
+,p_item_sequence=>90
 ,p_item_plug_id=>wwv_flow_api.id(6433141607894071)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
@@ -421,7 +422,7 @@ wwv_flow_api.create_page_item(
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(31617872589094014)
 ,p_name=>'P2_NEWER_POST_TITLE'
-,p_item_sequence=>50
+,p_item_sequence=>60
 ,p_item_plug_id=>wwv_flow_api.id(6433141607894071)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
@@ -432,7 +433,7 @@ wwv_flow_api.create_page_item(
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(31617991042094015)
 ,p_name=>'P2_OLDER_POST_TITLE'
-,p_item_sequence=>70
+,p_item_sequence=>80
 ,p_item_plug_id=>wwv_flow_api.id(6433141607894071)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
@@ -557,6 +558,7 @@ wwv_flow_api.create_page_process(
 ,p_process_when=>'P2_SUBSCRIPTION_ID'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
 ,p_process_success_message=>'You have now unsubscribed from notifications for this post comments.'
+,p_process_comment=>'Remove user subscription to get notifications from comments'
 );
 wwv_flow_api.component_end;
 end;

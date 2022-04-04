@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8667733481689180)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211121092717'
+,p_last_upd_yyyymmddhh24miss=>'20220328175023'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6979825819516521)
@@ -41,27 +41,32 @@ wwv_flow_api.create_report_region(
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select v1.category_id    as category_id',
 '  ,v1.post_title         as search_title',
+'  -- fetch URL for post',
 '  ,#OWNER#.blog_url.get_post(',
 '     p_post_id => v1.post_id',
 '   )                     as search_link',
 '  ,v1.post_desc          as search_desc',
-'  ,labels.category       as label_01',
+'  ,txt.category          as label_01',
 '  ,v1.category_title     as value_01',
-'  ,labels.posted_by      as label_02',
+'  ,txt.posted_by         as label_02',
 '  ,v1.blogger_name       as value_02',
-'  ,labels.posted_on      as label_03',
+'  ,txt.posted_on         as label_03',
 '  ,v1.published_on       as value_03',
 '  ,case when ',
+'  -- output label if there is tags',
 '   apex_util.savekey_vc2(',
+'    -- fetch tags and stote to variable',
 '     p_val => #OWNER#.blog_html.get_post_tags(',
 '        p_post_id => v1.post_id',
 '       ,p_button => ''NO''',
 '     ) ',
 '   ) is not null',
-'   then labels.tags',
+'   then txt.tags',
 '   end                   as label_04',
+'  -- get tags from variable',
 '  ,apex_util.keyval_vc2  as value_04',
 'from #OWNER#.blog_v_posts v1',
+'-- get APEX messages for labels',
 'cross join(',
 '  select ',
 '     apex_lang.message( ''BLOG_TXT_TAGS'' )       as tags',
@@ -69,7 +74,7 @@ wwv_flow_api.create_report_region(
 '    ,apex_lang.message( ''BLOG_TXT_POSTED_BY'' )  as posted_by',
 '    ,apex_lang.message( ''BLOG_TXT_POSTED_ON'' )  as posted_on',
 '  from dual',
-') labels',
+') txt',
 'where 1 = 1',
 'and :P0_SEARCH is not null',
 'and contains( v1.ctx_search, #OWNER#.blog_ctx.get_post_search( :P0_SEARCH ), 1 ) > 0',
@@ -199,7 +204,7 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>10
 ,p_column_heading=>'Value 03'
 ,p_use_as_row_header=>'N'
-,p_column_format=>'&G_DATE_FORMAT.'
+,p_column_format=>'&G_APP_DATE_FORMAT.'
 ,p_heading_alignment=>'LEFT'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'

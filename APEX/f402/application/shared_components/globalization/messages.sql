@@ -172,7 +172,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(33704880398366885)
 ,p_name=>'BLOG_FEATURE_SUBSCRIBE_COMMENTS'
-,p_message_text=>'Sent email notification of new comments'
+,p_message_text=>'Email notification of new comments for users'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(42044380079014521)
@@ -277,7 +277,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21481269068360471)
 ,p_name=>'BLOG_HELP_FEATURE_SUBSCRIBE_COMMENTS'
-,p_message_text=>'Email notification of new comments.'
+,p_message_text=>'Users can enter their email address and receive an email notification when their comment is answered.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19894083253206015)

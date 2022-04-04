@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211024080443'
+,p_last_upd_yyyymmddhh24miss=>'20220401142706'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41929607444116285)
@@ -268,7 +268,7 @@ wwv_flow_api.create_page_item(
 ,p_cMaxlength=>32700
 ,p_cHeight=>20
 ,p_field_template=>wwv_flow_api.id(8548365426518242)
-,p_item_template_options=>'#DEFAULT#'
+,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--stretchInputs'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'B'
 ,p_attribute_03=>'Y'

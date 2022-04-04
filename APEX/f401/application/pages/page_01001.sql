@@ -33,7 +33,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when_type=>'ITEM_IS_NULL'
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211230181250'
+,p_last_upd_yyyymmddhh24miss=>'20220402062552'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -334,7 +334,8 @@ wwv_flow_api.create_page_validation(
 ,p_validation_sequence=>30
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_comm.is_email(',
-'  p_email => :P1001_EMAIL',
+'  p_email     => :P1001_EMAIL',
+'  ,p_err_mesg => ''BLOG_VALIDATION_ERR_EMAIL''',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -380,14 +381,15 @@ wwv_flow_api.create_page_process(
 ,p_process_sequence=>30
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Set new flag'
+,p_process_name=>'Set unread flag'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_comm.flag_comment(',
 '   p_comment_id => :P1001_ID',
-'  ,p_flag       => ''NEW''',
+'  ,p_flag       => ''UNREAD''',
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_comment=>'Mark new comment as unread'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(36228592519379744)
@@ -403,13 +405,14 @@ wwv_flow_api.create_page_process(
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_api.id(28281277020489892)
+,p_process_comment=>'Mark new comment to be moderated if feature "Comments need to moderated" ia enabled'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26970862080257336)
 ,p_process_sequence=>50
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Notify Blogger'
+,p_process_name=>'Notify blogger'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_comm.new_comment_notify(',
 '   p_post_id         => :P1001_POST_ID',
@@ -425,7 +428,7 @@ wwv_flow_api.create_page_process(
 ,p_process_sequence=>60
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Subscribe User'
+,p_process_name=>'Subscribe user'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_comm.subscribe(',
 '   p_post_id  => :P1001_POST_ID',

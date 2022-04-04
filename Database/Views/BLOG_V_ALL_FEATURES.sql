@@ -9,7 +9,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUI
   ,t2.build_option_name         as build_option_name
   ,t2.display_seq               as display_seq
   ,apex_lang.message(
-     p_name => t2.build_option_name
+    p_name => t2.build_option_name
   )                             as feature_name
   ,apex_lang.message(
     p_name => t2.build_option_group

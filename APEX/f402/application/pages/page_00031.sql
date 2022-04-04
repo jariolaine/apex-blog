@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220310144129'
+,p_last_upd_yyyymmddhh24miss=>'20220402061436'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(37645474034287120)
@@ -491,11 +491,11 @@ wwv_flow_api.create_page_process(
 ,p_process_sequence=>10
 ,p_process_point=>'AFTER_FOOTER'
 ,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Unflag new'
+,p_process_name=>'Unflag unread'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_comm.unflag_comment(',
 '   p_comment_id => :P31_ID',
-'  ,p_flag       => ''NEW''',
+'  ,p_flag       => ''UNREAD''',
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
@@ -533,11 +533,11 @@ wwv_flow_api.create_page_process(
 ,p_process_sequence=>40
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Flag new'
+,p_process_name=>'Flag unread'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_comm.flag_comment(',
 '   p_comment_id => :P31_ID',
-'  ,p_flag       => ''NEW''',
+'  ,p_flag       => ''UNREAD''',
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'

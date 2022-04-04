@@ -70,7 +70,7 @@ wwv_flow_api.create_page(
 '</ol>',
 ''))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220310150430'
+,p_last_upd_yyyymmddhh24miss=>'20220326110126'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -656,7 +656,7 @@ wwv_flow_api.create_page_computation(
 ,p_computation_item=>'P12_PUBLISHED_ON'
 ,p_computation_type=>'EXPRESSION'
 ,p_computation_language=>'PLSQL'
-,p_computation=>'to_char( localtimestamp, :G_USER_INPUT_DATE_TIME_FORMAT )'
+,p_computation=>'to_char( localtimestamp, apex_string.format( ''%s HH24:MI'', :G_USER_INPUT_DATE_TIME_FORMAT ) )'
 ,p_compute_when=>'P12_PUBLISHED_ON'
 ,p_compute_when_type=>'ITEM_IS_NULL'
 );

@@ -18,7 +18,7 @@ wwv_flow_api.create_flow_computation(
 ,p_computation_point=>'AFTER_LOGIN'
 ,p_computation_type=>'STATIC_ASSIGNMENT'
 ,p_computation_processed=>'REPLACE_EXISTING'
-,p_computation=>'DD.MM.YYYY HH24:MI'
+,p_computation=>'DD.MM.YYYY'
 ,p_compute_when=>'G_USER_INPUT_DATE_TIME_FORMAT'
 ,p_compute_when_type=>'ITEM_IS_NULL'
 );

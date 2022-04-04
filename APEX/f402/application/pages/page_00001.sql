@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220209110317'
+,p_last_upd_yyyymmddhh24miss=>'20220402143119'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8582113239518316)
@@ -159,7 +159,7 @@ wwv_flow_api.create_report_region(
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
 '   sum(comments_count)            as num_comments',
-'  ,sum(new_comments_count)        as num_new_comments',
+'  ,sum(unread_comments_count)     as num_unread_comments',
 '  ,sum(moderate_comments_count)   as num_moderate_comments',
 '  ,sum(published_comments_count)  as num_published_comments',
 '  ,sum(disabled_comments_count)   as num_disabled_comments',
@@ -188,9 +188,9 @@ wwv_flow_api.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(37648207243287148)
+ p_id=>wwv_flow_api.id(20999739862414724)
 ,p_query_column_id=>2
-,p_column_alias=>'NUM_NEW_COMMENTS'
+,p_column_alias=>'NUM_UNREAD_COMMENTS'
 ,p_column_display_sequence=>30
 ,p_column_heading=>'Unread'
 ,p_use_as_row_header=>'N'

@@ -15,7 +15,7 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(7029499271806601)
 ,p_name=>'G_POST_TITLE_DATE_FORMAT'
 ,p_protection_level=>'I'
-,p_item_comment=>'Post title date format. Used e.g. in posts reports.'
+,p_item_comment=>'Post title date format. Used e.g. in posts reports. The value is set in the application process "Initialize Items"'
 );
 wwv_flow_api.component_end;
 end;

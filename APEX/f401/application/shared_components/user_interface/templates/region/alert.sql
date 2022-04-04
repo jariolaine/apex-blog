@@ -44,7 +44,7 @@ wwv_flow_api.create_plug_template(
 ,p_template_comment=>'Red Theme'
 );
 wwv_flow_api.create_plug_tmpl_display_point(
- p_id=>wwv_flow_api.id(14695635143884124)
+ p_id=>wwv_flow_api.id(22944007247786538)
 ,p_plug_template_id=>wwv_flow_api.id(6777727951267373)
 ,p_name=>'Region Body'
 ,p_placeholder=>'BODY'

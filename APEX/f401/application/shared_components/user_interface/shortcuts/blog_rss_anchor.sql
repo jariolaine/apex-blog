@@ -16,10 +16,11 @@ wwv_flow_api.create_shortcut(
 ,p_shortcut_name=>'BLOG_RSS_ANCHOR'
 ,p_shortcut_type=>'FUNCTION_BODY'
 ,p_shortcut_language=>'PLSQL'
-,p_comments=>'Used in global page (page 0) region'
+,p_comments=>'Get RSS feed link. Used in global page (page 0) region.'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_rss_anchor(',
 '   p_app_name => :G_APP_NAME',
+'  ,p_message  => ''BLOG_RSS_TITLE''',
 ');'))
 );
 wwv_flow_api.component_end;

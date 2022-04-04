@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8670890848739263)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211121092717'
+,p_last_upd_yyyymmddhh24miss=>'20220328175123'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(58686289966142463)
@@ -51,15 +51,19 @@ wwv_flow_api.create_report_region(
 '  ,v1.blogger_name     as value_02',
 '  ,d.posted_on         as label_03',
 '  ,v1.published_on     as value_03',
+'  -- output label if there is tags',
 '  ,case when ',
+'    -- fetch tags and stote to variable',
 '     apex_util.savekey_vc2(',
-'       p_val => #OWNER#.blog_html.get_post_tags(',
+'       p_val =>',
+'        #OWNER#.blog_html.get_post_tags(',
 '          p_post_id => v1.post_id',
-'         ,p_button => ''NO''',
-'       ) ',
+'          ,p_button => ''NO''',
+'        ) ',
 '     ) is not null',
 '   then d.tags',
 '   end                  as label_04',
+'  -- get tags from variable',
 '  ,apex_util.keyval_vc2 as value_04',
 'from #OWNER#.blog_v_posts v1',
 'cross join(',
@@ -88,7 +92,7 @@ wwv_flow_api.create_report_region(
 ,p_prn_output=>'N'
 ,p_sort_null=>'L'
 ,p_plug_query_strip_html=>'Y'
-,p_comment=>'Report to show search result'
+,p_comment=>'Report to show posts by year (archive)'
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(29629899442985356)
@@ -195,7 +199,7 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>10
 ,p_column_heading=>'Value 03'
 ,p_use_as_row_header=>'N'
-,p_column_format=>'&G_DATE_FORMAT.'
+,p_column_format=>'&G_APP_DATE_FORMAT.'
 ,p_heading_alignment=>'LEFT'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'

@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211030115240'
+,p_last_upd_yyyymmddhh24miss=>'20220402063944'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41876461524408305)
@@ -39,7 +39,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_util.render_dynamic_content(',
 '   p_content_id     => :REQUEST',
-'  ,p_date_format    => :G_POST_TITLE_DATE_FORMAT',
+'  ,p_date_format    => :G_APP_DATE_FORMAT',
 '  ,p_content_title  => :P1002_PAGE_TITLE',
 ');',
 ''))

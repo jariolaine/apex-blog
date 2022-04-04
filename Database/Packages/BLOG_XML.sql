@@ -217,7 +217,8 @@ as
     l_xml :=
       sys.xmltype.createxml(
         apex_string.format(
-          p_message => '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+          p_message => '
+            <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
               <!-- This causes the HTML doctype (<!doctype hmlt>) to be rendered. -->
               <xsl:output method="html" doctype-system="about:legacy-compat" indent="yes" />
               <!-- Start matching at the Channel node within the XML RSS feed. -->

@@ -16,7 +16,7 @@ wwv_flow_api.create_shortcut(
 ,p_shortcut_name=>'BLOG_META_POST_DESCRIPTION'
 ,p_shortcut_type=>'FUNCTION_BODY'
 ,p_shortcut_language=>'PLSQL'
-,p_comments=>'Used in page 2 page html header'
+,p_comments=>'Get meta tag for post. Used in page 2 page html header.'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_post_description_meta(',
 '  p_post_id => :P2_POST_ID',

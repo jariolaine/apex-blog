@@ -42,7 +42,7 @@ wwv_flow_api.create_plug_template(
 ,p_translate_this_template=>'N'
 );
 wwv_flow_api.create_plug_tmpl_display_point(
- p_id=>wwv_flow_api.id(14767341321884186)
+ p_id=>wwv_flow_api.id(23007013572786598)
 ,p_plug_template_id=>wwv_flow_api.id(6799730463267385)
 ,p_name=>'Region Body'
 ,p_placeholder=>'BODY'

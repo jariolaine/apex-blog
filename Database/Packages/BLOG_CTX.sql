@@ -60,11 +60,11 @@ as
     ;
 
     tlob :=
-      '<POST_TITLE>' || l_row.title || '</POST_TITLE>'
-      || '<POST_CATEGORY>' || l_row.category_title || '</POST_CATEGORY>'
-      || '<POST_DESCRIPTION>' || l_row.post_desc || '</POST_DESCRIPTION>'
-      || '<POST_BODY>' || l_row.body_html || '</POST_BODY>'
-      || '<POST_TAGS>' || l_row.visible_tags || '</POST_TAGS>'
+      '<POST_TITLE>' || l_row.title || '</POST_TITLE>' ||
+      '<POST_CATEGORY>' || l_row.category_title || '</POST_CATEGORY>' ||
+      '<POST_DESCRIPTION>' || l_row.post_desc || '</POST_DESCRIPTION>' ||
+      '<POST_BODY>' || l_row.body_html || '</POST_BODY>' ||
+      '<POST_TAGS>' || l_row.visible_tags || '</POST_TAGS>'
     ;
 
   end generate_post_datastore;

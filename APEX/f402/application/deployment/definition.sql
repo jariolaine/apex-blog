@@ -50,11 +50,6 @@ wwv_flow_api.create_install(
 ,p_upgrade_confirm_message=>'Please confirm that you would like to install this application''s supporting objects.'
 ,p_upgrade_success_message=>'Your application''s supporting objects have been installed.'
 ,p_upgrade_failure_message=>'Installation of database objects and seed data has failed.'
-,p_get_version_sql_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select 1',
-'from user_tables',
-'where 1 = 1',
-'and table_name = ''BLOG_SETTINGS'''))
 ,p_deinstall_success_message=>'Deinstallation complete.'
 ,p_deinstall_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',

@@ -15,7 +15,7 @@ wwv_flow_api.create_flow_item(
  p_id=>wwv_flow_api.id(6967171655194779)
 ,p_name=>'G_SEARCH_ROWS'
 ,p_protection_level=>'I'
-,p_item_comment=>'Search report rows to display per report page'
+,p_item_comment=>'Search report rows to display per report page. The value is set in the application process "Initialize Items"'
 );
 wwv_flow_api.component_end;
 end;

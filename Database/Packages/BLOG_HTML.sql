@@ -19,6 +19,8 @@ as
 --                            Removed parameter p_build_option_status from function get_rss_link
 --    Jari Laine 13.11.2021 - Changes to funtion get_rss_anchor and get get_rss_link
 --                          - Removed obsolete functions
+--    Jari Laine 27.03.2022 - Added parameter p_build_option and p_message to function get_rss_link
+--                          - Added parameter p_message to function get_rss_anchor
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -29,78 +31,81 @@ as
 -- Called from:
 --
   function get_tag_anchor(
-    p_tag_id              in number,
-    p_app_id              in varchar2,
-    p_tag                 in varchar2,
-    p_button              in varchar2
+    p_tag_id        in number,
+    p_app_id        in varchar2,
+    p_tag           in varchar2,
+    p_button        in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_META_HOME_DESCRIPTION
   function get_description_meta(
-    p_desc                in varchar2
+    p_desc          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_META_POST_DESCRIPTION
   function get_post_description_meta(
-    p_post_id             in varchar2
+    p_post_id       in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAB
   function get_tab_canonical_link(
-    p_app_page_id         in varchar2,
-    p_app_id              in varchar2 default null
+    p_app_page_id   in varchar2,
+    p_app_id        in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_POST
   function get_post_canonical_link(
-    p_post_id             in varchar2,
-    p_app_id              in varchar2 default null
+    p_post_id       in varchar2,
+    p_app_id        in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
   function get_category_canonical_link(
-    p_category_id         in varchar2,
-    p_app_id              in varchar2 default null
+    p_category_id   in varchar2,
+    p_app_id        in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
   function get_archive_canonical_link(
-    p_archive_id          in varchar2,
-    p_app_id              in varchar2 default null
+    p_archive_id    in varchar2,
+    p_app_id        in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAG
   function get_tag_canonical_link(
-    p_tag_id              in varchar2,
-    p_app_id              in varchar2 default null
+    p_tag_id        in varchar2,
+    p_app_id        in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_RSS_ANCHOR
   function get_rss_anchor(
-    p_app_name            in varchar2
+    p_app_name      in varchar2,
+    p_message       in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_RSS_LINK
   function get_rss_link(
-    p_app_id              in varchar2,
-    p_app_name            in varchar2
+    p_app_id        in varchar2,
+    p_app_name      in varchar2,
+    p_message       in varchar2,
+    p_build_option  in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app classic report on pages 2, 3, 6, 14, 15
   function get_post_tags(
-    p_post_id             in number,
-    p_app_id              in varchar2 default null,
-    p_button              in varchar2 default 'YES'
+    p_post_id       in number,
+    p_app_id        in varchar2 default null,
+    p_button        in varchar2 default 'YES'
   ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_HTML";
@@ -158,18 +163,22 @@ as
         -- generate button or anchor
       l_tag :=
         apex_string.format(
-          p_message => '<a href="%s" class="%s">%s%s</a>'
+          p_message => '<a href="%s" class="%s">%s</a>'
           ,p0 => l_url
           ,p1 =>
             case p_button when 'YES'
-              then 't-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-sm'
+              then 't-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-md'
               else 'margin-bottom-md margin-left-sm'
             end
           ,p2 =>
             case p_button when 'YES'
-              then '<span class="t-Icon fa fa-tag" aria-hidden="true"></span>'
+              then
+                apex_string.format(
+                  p_message => '<span class="t-Icon fa fa-tag" aria-hidden="true"></span><span class="t-Button-label">%s</span>'
+                  ,p0 => l_tag
+                )
+              else l_tag
             end
-          ,p3 => l_tag
         )
       ;
 
@@ -251,7 +260,7 @@ as
       apex_debug.warn( 'Canonical link tag not generated for tab.');
       l_html := get_robots_noindex_meta;
     end if;
-
+    -- return generated HTML
     return l_html;
 
   end get_tab_canonical_link;
@@ -282,7 +291,7 @@ as
       apex_debug.warn('Canonical link tag not generated for post.');
       l_html := get_robots_noindex_meta;
     end if;
-
+    -- return generated HTML
     return l_html;
 
   end get_post_canonical_link;
@@ -314,7 +323,7 @@ as
       apex_debug.warn( 'Canonical link tag not generated for category.');
       l_html := get_robots_noindex_meta;
     end if;
-
+    -- return generated HTML
     return l_html;
 
   end get_category_canonical_link;
@@ -346,7 +355,7 @@ as
       apex_debug.warn( 'Canonical link tag not generated for archive.');
       l_html := get_robots_noindex_meta;
     end if;
-
+    -- return generated HTML
     return l_html;
 
   end get_archive_canonical_link;
@@ -360,7 +369,8 @@ as
     l_html varchar2(32700);
   begin
     -- generate canonical link for tags
-    if p_tag_id is not null then
+    if p_tag_id is not null
+    then
       l_html :=
         apex_string.format(
           p_message =>'<link rel="canonical" href="%s" />'
@@ -374,17 +384,19 @@ as
         )
       ;
     else
-      apex_debug.warn('Canonical link tag not generated for tag.');
+      apex_debug.warn( 'Canonical link tag not generated for tag.' );
       l_html := get_robots_noindex_meta;
     end if;
 
+    -- return generated HTML
     return l_html;
 
   end get_tag_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss_anchor(
-    p_app_name    in varchar2
+    p_app_name    in varchar2,
+    p_message     in varchar2
   ) return varchar2
   as
     l_rss_url     varchar2(4000);
@@ -393,10 +405,12 @@ as
   begin
 
     -- get rss title
-    l_rss_title := apex_lang.message(
-      p_name => 'BLOG_RSS_TITLE'
-      ,p0 => p_app_name
-    );
+    l_rss_title :=
+      apex_lang.message(
+        p_name => p_message
+        ,p0 => p_app_name
+      )
+    ;
 
     -- get rss url
     l_rss_url :=  blog_url.get_rss;
@@ -404,22 +418,22 @@ as
     -- generate RSS anchor
     l_rss_anchor :=
       apex_string.format(
-        p_message => '<a href="%s" aria-label="%s" class="%s" rel="alternate" type="application/rss+xml">%s</a>'
+        p_message => '<a href="%s" aria-label="%s" class="t-Button t-Button--noLabel t-Button--icon t-Button--link" rel="alternate" type="application/rss+xml"><span aria-hidden="true" class="fa fa-rss-square fa-3x fa-lg u-color-8-text"></span></a>'
         ,p0 => l_rss_url
         ,p1 => apex_escape.html_attribute(l_rss_title)
-        ,p2 => 't-Button t-Button--noLabel t-Button--icon t-Button--link'
-        ,p3 => '<span aria-hidden="true" class="fa fa-rss-square fa-3x fa-lg u-color-8-text"></span>'
       )
     ;
-
+    -- return generated HTML
     return l_rss_anchor;
 
   end get_rss_anchor;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss_link(
-    p_app_id      in varchar2,
-    p_app_name    in varchar2
+    p_app_id        in varchar2,
+    p_app_name      in varchar2,
+    p_message       in varchar2,
+    p_build_option  in varchar2
   ) return varchar2
   as
     l_app_id    number;
@@ -429,20 +443,21 @@ as
 
     l_app_id := to_number( p_app_id );
 
+    -- check build option should HTML generated
     if apex_util.get_build_option_status(
        p_application_id     => l_app_id
-      ,p_build_option_name  => 'BLOG_FEATURE_RSS'
+      ,p_build_option_name  => p_build_option
     ) = 'INCLUDE'
     then
       -- get rss url
       l_rss_url := blog_url.get_rss;
 
-    -- generate link for rss
+    -- generate link for RSS
       l_rss_title := apex_lang.message(
-        p_name => 'BLOG_RSS_TITLE'
+        p_name => p_message
         ,p0 => p_app_name
       );
-      --l_rss_title := apex_escape.html_attribute( l_rss_title );
+      -- generate HTML
       l_rss_url :=
         apex_string.format(
           p_message => '<link href="%s" title="%s" rel="alternate" type="application/rss+xml" />'
@@ -455,7 +470,7 @@ as
       ;
 
     end if;
-
+    -- return generated HTML
     return l_rss_url;
 
   end get_rss_link;
@@ -469,6 +484,7 @@ as
   as
     l_tags varchar2(32700);
   begin
+
     -- generate html for post tags
     select listagg(
       get_tag_anchor(
@@ -476,13 +492,15 @@ as
         ,p_app_id => p_app_id
         ,p_tag    => v1.tag
         ,p_button => p_button
-      ), case when p_button != 'YES' then ', ' end)
-    within group(order by v1.display_seq) as tags
+      )
+      , case when p_button != 'YES' then ', ' end
+    ) within group( order by v1.display_seq ) as tags
     into l_tags
     from blog_v_post_tags v1
     where 1 = 1
     and v1.post_id = p_post_id
     ;
+    -- return generated HTML
     return l_tags;
 
   end get_post_tags;

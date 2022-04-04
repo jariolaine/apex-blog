@@ -37,11 +37,11 @@ as
   --  public app page 1001 and admin app page 20012 validation
   function is_email(
     p_email             in varchar2,
-    p_err_mesg          in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
+    p_err_mesg          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---  public app page 1001 
+--  public app page 1001
   procedure flag_comment(
     p_comment_id        in varchar2,
     p_flag              in varchar2
@@ -182,7 +182,7 @@ as
            p_table => p_code_tab
           ,p_value =>
             apex_string.format(
-              p_message => '<pre class="%s">%s</pre>'
+               p_message => '<pre class="%s">%s</pre>'
               ,p0 => c_code_css_class
               ,p1 => substr(p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6)
             )
@@ -191,7 +191,7 @@ as
         -- substitude handled code tag
         p_comment :=
           apex_string.format(
-            p_message => '%s%sCODE#%s%s%s'
+             p_message => '%s%sCODE#%s%s%s'
             ,p0 => rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )
             ,p1 => chr(10)
             ,p2 => i
@@ -245,7 +245,7 @@ as
         -- and open p tag again for text
         p_comment :=
           apex_string.format(
-            p_message => '%s</p>%s<p>'
+             p_message => '%s</p>%s<p>'
             ,p0 => p_comment
             ,p1 => l_code_tab(l_code_row)
           )
@@ -263,7 +263,7 @@ as
             -- check if p tag is opened, then insert br for new line
             p_comment :=
               apex_string.format(
-                p_message => '%s%s%s'
+                 p_message => '%s%s%s'
                 ,p0 => p_comment
                 ,p1 =>
                   case
@@ -352,7 +352,7 @@ as
       begin
         l_xml := xmltype.createxml(
           apex_string.format(
-            p_message => '<comment>%s</comment>'
+             p_message => '<comment>%s</comment>'
             ,p0 => p_comment
           )
         );
@@ -379,7 +379,7 @@ as
 --------------------------------------------------------------------------------
   function is_email(
     p_email     in varchar2,
-    p_err_mesg  in varchar2 default 'BLOG_VALIDATION_ERR_EMAIL'
+    p_err_mesg  in varchar2
   ) return varchar2
   as
     l_err_mesg varchar2(32700);
@@ -538,7 +538,7 @@ as
         ,'POST_LINK'        value
             blog_url.get_post(
                p_app_id     => p_app_id
-              ,p_post_id    => v1.id
+              ,p_post_id    => p_post_id
               ,p_canonical  => 'YES'
             )
         ,'UNSUBSCRIBE_LINK' value
@@ -554,6 +554,10 @@ as
       join blog_v_all_posts v1
         on t1.post_id = v1.id
       where 1 = 1
+        and t1.is_active
+          * t2.is_active
+          * case v1.post_status when 'PUBLISHED' then 1 else 0 end
+          = 1
         and v1.id = l_post_id
         -- send notification if subscription is created less than months ago specified in settings
         and t1.subscription_date > l_watch_end
@@ -617,9 +621,9 @@ as
       -- insert post to email relation
       begin
         insert into
-          blog_comment_subscribers( post_id, email_id, subscription_date )
+          blog_comment_subscribers( post_id, email_id, subscription_date, is_active )
         values
-          ( p_post_id, l_email_id, trunc( sysdate ) )
+          ( p_post_id, l_email_id, trunc( sysdate ), 1 )
         ;
       -- if subscription already exists update subscription
       exception when dup_val_on_index
@@ -627,6 +631,7 @@ as
         update blog_comment_subscribers
           set subscription_date = trunc( sysdate )
         where 1 = 1
+        and is_active = 1
         and post_id = p_post_id
         and email_id = l_email_id
         ;

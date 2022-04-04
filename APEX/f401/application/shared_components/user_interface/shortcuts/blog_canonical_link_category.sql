@@ -16,7 +16,7 @@ wwv_flow_api.create_shortcut(
 ,p_shortcut_name=>'BLOG_CANONICAL_LINK_CATEGORY'
 ,p_shortcut_type=>'FUNCTION_BODY'
 ,p_shortcut_language=>'PLSQL'
-,p_comments=>'Used in page 14 page html header'
+,p_comments=>'Get canonical link for category. Used in page 14 page html header.'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_category_canonical_link(',
 '  p_category_id => :P14_CATEGORY_ID',
