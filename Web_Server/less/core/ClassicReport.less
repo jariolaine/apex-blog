@@ -5,11 +5,32 @@
 .nodatafound {
   text-align: center;
   color: var(--ut-component-text-default-color);
-  font-size: 1.2rem;
-  line-height: 2rem;
-  padding: 2.2rem;
+  font-size: 1rem;
+  padding: 1rem;
 }
 .pagination {
   text-align: right;
   width: 100%;
+}
+
+/**************************************
+* APEX 21.2:
+*   fix search engine style pagination
+**************************************/
+.t-Report-paginationText strong {
+  display: inline-block;
+  vertical-align: top;
+  border-radius: var(--ut-report-pagination-link-border-radius, 0.125rem);
+  -webkit-padding-before: var(--ut-report-pagination-link-padding-y, 0.25rem);
+  padding-block-start: var(--ut-report-pagination-link-padding-y, 0.25rem);
+  -webkit-padding-after: var(--ut-report-pagination-link-padding-y, 0.25rem);
+  padding-block-end: var(--ut-report-pagination-link-padding-y, 0.25rem);
+  -webkit-padding-start: var(--ut-report-pagination-link-padding-x, 0.5rem);
+  padding-inline-start: var(--ut-report-pagination-link-padding-x, 0.5rem);
+  -webkit-padding-end: var(--ut-report-pagination-link-padding-x, 0.5rem);
+  padding-inline-end: var(--ut-report-pagination-link-padding-x, 0.5rem);
+  background-color: var(--ut-report-pagination-link-background-color);
+  color: var(--ut-report-pagination-link-text-color);
+  --ut-report-pagination-link-background-color: var(--ut-report-pagination-link-hover-background-color, var(--ut-palette-primary));
+  --ut-report-pagination-link-text-color: var(--ut-report-pagination-link-hover-text-color, var(--ut-palette-primary-contrast));
 }

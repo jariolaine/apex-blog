@@ -3,7 +3,6 @@
 * Post report
 **************************************/
 .z-post {
-  font-size: 112%;
   background-color: var(--ut-component-background-color);
   margin-bottom: @margin-medium;
   border-width: var(--ut-component-border-width);
@@ -17,15 +16,15 @@
 	clear: both;
 	h1 {
 		font-size: @post-title-font-size;
-		margin: 0 0 0.2rem;
+		margin: 0 0 0.125rem;
 	}
 	h2 {
 		font-size: @post-category-font-size	;
-		margin: 0 0 1.8rem;
+		margin: 0 0 1.625rem;
 	}
 	h3 {
 		font-size: @post-date-font-size;
-		margin: 0 0 0.2rem;
+		margin: 0 0 0.125rem;
 	}
 }
 .z-post--body {
@@ -48,10 +47,10 @@
 .z-post--footer {
   width: 100%;
   clear: both;
-  margin: 1.2rem 0 0;
+  margin: 1rem 0 0;
 }
 .z-posts--pagination{
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 }
 .z-posts--paginationBorder {
   .z-posts--pagination {
@@ -61,7 +60,7 @@
     border-color: var(--ut-component-border-color);
     border-radius: var(--ut-component-border-radius);
     box-shadow: var(--ut-shadow-sm);
-    padding: 0.4rem;
+    padding: 0.25rem;
   }
 }
 .z-post--largeMargin {
@@ -95,10 +94,15 @@
 }
 @media only screen and (max-width: 640px) {
   .z-post {
-    padding: @post-padding - 0.4rem;
+    padding: @post-padding - 0.25rem;
 		margin-bottom: @margin-medium;
   }
   .z-post--header h1 {
-    font-size: @post-title-font-size - 0.2em;
+    font-size: @post-title-font-size - 0.25em;
   }
+/*
+  .z-post--tags {
+    text-align: center;
+  }
+*/
 }
