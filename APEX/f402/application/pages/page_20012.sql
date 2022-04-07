@@ -28,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220328134001'
+,p_last_upd_yyyymmddhh24miss=>'20220407074004'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -45,7 +45,7 @@ wwv_flow_api.create_page_plug(
 '  ,v1.row_version               as row_version',
 '  ,v1.display_seq               as display_seq',
 '  ,v1.attribute_group           as attribute_group',
-'  ,v1.attribute_desc            as attribute_name',
+'  ,v1.attribute_desc            as attribute_desc',
 '  ,v1.attribute_value           as attribute_value',
 '  ,v1.help_message              as help_message',
 '  ,case v1.is_nullable',
@@ -64,14 +64,14 @@ wwv_flow_api.create_page_plug(
 '  ,v1.int_min                   as int_min',
 '  ,v1.int_max                   as int_max',
 '  ,v1.attribute_message         as attribute_message',
-'  ,btn.title_help               as btn_title_help',
+'  ,(',
+'    select ',
+'        apex_lang.message(',
+'          p_name => ''BLOG_BTN_TITLE_HELP''',
+'        ) ',
+'      from dual',
+'  )                             as btn_title_help',
 'from #OWNER#.blog_v_all_settings v1',
-'cross join (',
-'  select apex_lang.message(',
-'      p_name => ''BLOG_BTN_TITLE_HELP''',
-'    ) as title_help',
-'  from dual',
-') btn',
 'where 1 = 1',
 'and v1.attribute_group_message != ''INTERNAL'''))
 ,p_plug_source_type=>'NATIVE_IG'
@@ -223,13 +223,13 @@ wwv_flow_api.create_region_column(
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(27274156249075420)
-,p_name=>'ATTRIBUTE_NAME'
+,p_name=>'ATTRIBUTE_DESC'
 ,p_source_type=>'DB_COLUMN'
-,p_source_expression=>'ATTRIBUTE_NAME'
+,p_source_expression=>'ATTRIBUTE_DESC'
 ,p_data_type=>'VARCHAR2'
 ,p_is_query_only=>true
 ,p_item_type=>'NATIVE_DISPLAY_ONLY'
-,p_heading=>'Attribute Name'
+,p_heading=>'Name'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>100
 ,p_value_alignment=>'LEFT'
@@ -257,7 +257,7 @@ wwv_flow_api.create_region_column(
 ,p_data_type=>'VARCHAR2'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_TEXT_FIELD'
-,p_heading=>'Attribute Value'
+,p_heading=>'Value'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>110
 ,p_value_alignment=>'LEFT'
@@ -852,7 +852,7 @@ wwv_flow_api.create_page_process(
 ,p_attribute_01=>'REGION_SOURCE'
 ,p_attribute_05=>'Y'
 ,p_attribute_06=>'Y'
-,p_attribute_08=>'Y'
+,p_attribute_08=>'N'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.component_end;

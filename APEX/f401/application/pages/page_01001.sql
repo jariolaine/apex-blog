@@ -33,7 +33,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when_type=>'ITEM_IS_NULL'
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220402062552'
+,p_last_upd_yyyymmddhh24miss=>'20220407072350'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -57,6 +57,15 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_point=>'REGION_POSITION_01'
 ,p_plug_source=>'&APP_TEXT$BLOG_MSG_MODERATE_ENABLED.'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_plug_display_condition_type=>'EXPRESSION'
+,p_plug_display_when_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#OWNER#.blog_util.get_attribute_value(''G_APP_EMAIL'') is not null',
+'and',
+'apex_util.get_build_option_status(',
+'   p_application_id     => :APP_ID',
+'  ,p_build_option_name  => ''BLOG_FEATURE_SUBSCRIBE_COMMENTS''',
+') = ''INCLUDE'''))
+,p_plug_display_when_cond2=>'PLSQL'
 ,p_required_patch=>wwv_flow_api.id(28281277020489892)
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
