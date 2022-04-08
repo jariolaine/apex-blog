@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.2'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_protection_level=>'C'
 ,p_help_text=>'High level view of application logging information.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220406203815'
+,p_last_upd_yyyymmddhh24miss=>'20220408155746'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(87874963598811882)
@@ -83,7 +83,6 @@ wwv_flow_api.create_report_region(
 ,p_query_num_rows=>50
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_show_nulls_as=>' - '
-,p_query_no_data_found=>'No data found.'
 ,p_query_row_count_max=>500
 ,p_csv_output=>'N'
 ,p_prn_output=>'N'
@@ -228,7 +227,6 @@ wwv_flow_api.create_report_region(
 ,p_query_num_rows=>50
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_show_nulls_as=>'0'
-,p_query_no_data_found=>'no data found'
 ,p_query_row_count_max=>500
 ,p_csv_output=>'N'
 ,p_prn_output=>'N'

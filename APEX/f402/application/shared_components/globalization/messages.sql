@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.2'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -18,7 +18,7 @@ end;
 begin
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.2'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -362,11 +362,6 @@ wwv_flow_api.create_message(
 ,p_message_text=>'No Records Found'
 );
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(27165806843666535)
-,p_name=>'BLOG_MSG_NO_RECORDS_SELECTED'
-,p_message_text=>'No Record Selected'
-);
-wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(7002883853109006)
 ,p_name=>'BLOG_POSTS_FK2'
 ,p_message_text=>'Posts found from this category. Move posts to other category and then delete category.'
@@ -470,21 +465,6 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(10038391422712576)
 ,p_name=>'BLOG_TAGS_UK1'
 ,p_message_text=>'Tag with same name already exists.'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(31462883913733496)
-,p_name=>'BLOG_TXT_CHANGED_BY'
-,p_message_text=>'Changed by'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(31462641396734939)
-,p_name=>'BLOG_TXT_CHANGED_ON'
-,p_message_text=>'Changed'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(31444183113959558)
-,p_name=>'BLOG_TXT_STATUS'
-,p_message_text=>'Status'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348583930349647)

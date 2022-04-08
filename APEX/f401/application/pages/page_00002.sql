@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.2'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -26,7 +26,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220331181308'
+,p_last_upd_yyyymmddhh24miss=>'20220408151301'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -63,7 +63,7 @@ wwv_flow_api.create_report_region(
 ,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(6828031165267399)
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_query_no_data_found=>'No comments yet on this post'
+,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_COMMENTS.'
 ,p_query_num_rows_item=>'P2_REPORT_ROWS'
 ,p_query_num_rows_type=>'NEXT_PREVIOUS_LINKS'
 ,p_pagination_display_position=>'BOTTOM_RIGHT'

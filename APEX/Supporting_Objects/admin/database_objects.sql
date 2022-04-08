@@ -121,7 +121,7 @@ create table blog_comment_subscribers(
   subscription_date date not null,
   constraint blog_comment_subscribers_pk primary key( id ),
   constraint blog_comment_subscribers_uk1 unique( post_id, email_id ),
-  constraint blog_comment_subscribers_ck1 check( row_version > 0 )
+  constraint blog_comment_subscribers_ck1 check( row_version > 0 ),
   constraint blog_comment_subscribers_ck2 check( is_active in( 0, 1 ) )
 )
 /

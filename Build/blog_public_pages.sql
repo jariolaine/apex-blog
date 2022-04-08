@@ -37,7 +37,7 @@ whenever sqlerror exit sql.sqlcode rollback
 begin
 wwv_flow_api.import_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.2'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -90,14 +90,14 @@ prompt APPLICATION 401 - Blog Public Pages
 --         Shortcuts:             11
 --         Plug-ins:               1
 --       Globalization:
---         Messages:              14
+--         Messages:              15
 --       Reports:
 --       E-Mail:
 --         Templates:              1
 --     Supporting Objects:  Included
 --       Install scripts:          1
 --       Validations:              1
---   Version:         21.2.2
+--   Version:         21.2.5
 --   Instance ID:     9502710254078678
 --
 
@@ -163,7 +163,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220407091625'
+,p_last_upd_yyyymmddhh24miss=>'20220408160704'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>222
 ,p_ui_type_name => null
@@ -15150,6 +15150,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Comment moderation has been enabled. All comments must be approved by the blog author.'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(10467340621519122)
+,p_name=>'BLOG_MSG_NO_COMMENTS'
+,p_message_text=>'No comments yet on this post'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(26263231362694367)
 ,p_name=>'BLOG_MSG_NO_DATA_FOUND'
 ,p_message_text=>'No Records Found'
@@ -16000,7 +16005,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220331181308'
+,p_last_upd_yyyymmddhh24miss=>'20220408151301'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -16037,7 +16042,7 @@ wwv_flow_api.create_report_region(
 ,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(6828031165267399)
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_query_no_data_found=>'No comments yet on this post'
+,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_COMMENTS.'
 ,p_query_num_rows_item=>'P2_REPORT_ROWS'
 ,p_query_num_rows_type=>'NEXT_PREVIOUS_LINKS'
 ,p_pagination_display_position=>'BOTTOM_RIGHT'
@@ -19142,9 +19147,9 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''20'',''1'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,null,blog_util.int_to_vc2(apex_applicat'
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''20'',''0'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,null,blog_util.int_to_vc2(apex_applicat'
 ||'ion_install.get_application_id));',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,''Release 21.2.20220407'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,''Release 21.2.20220408'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''70'',''0'',''G_COMMENT_WATCH_MONTHS'',''INTEGER'',''INTERNAL'',null,''1'',''6'',''1'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''130'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,''My Blog'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''140'',''0'',''G_APP_DESC'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,''About Almost Eve'

@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.2'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -18,7 +18,7 @@ end;
 begin
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.2'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -43,6 +43,11 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(31915575291785585)
 ,p_name=>'BLOG_MSG_MODERATE_ENABLED'
 ,p_message_text=>'Comment moderation has been enabled. All comments must be approved by the blog author.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(10467340621519122)
+,p_name=>'BLOG_MSG_NO_COMMENTS'
+,p_message_text=>'No comments yet on this post'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(26263231362694367)
