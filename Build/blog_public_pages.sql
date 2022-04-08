@@ -163,7 +163,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220408160704'
+,p_last_upd_yyyymmddhh24miss=>'20220408212551'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>222
 ,p_ui_type_name => null
@@ -14969,7 +14969,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide link lists page'
+,p_build_option_comment=>'Enable/disable link lists page'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(7073708623458378)
@@ -14977,7 +14977,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Allow/disallow commenting to posts'
+,p_build_option_comment=>'Enable/disable commenting to posts'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(7122597691878829)
@@ -14992,7 +14992,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide "Subscribe in a Reader" link and page header link tag'
+,p_build_option_comment=>'Enable/disable "Subscribe in a Reader" link and page header link tag'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(8635355820099640)
@@ -15000,7 +15000,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide categories list and page'
+,p_build_option_comment=>'Enable/disable categories list'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(8667733481689180)
@@ -15008,7 +15008,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Allow/disallow search from posts'
+,p_build_option_comment=>'Enable/disable search from posts'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(8670890848739263)
@@ -15016,7 +15016,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide posts archives list and page'
+,p_build_option_comment=>'Enable/disable posts archives list'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(8677319562925389)
@@ -15024,7 +15024,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide latest posts list'
+,p_build_option_comment=>'Enable/disable latest posts list'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(24626889314854172)
@@ -15032,7 +15032,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/Hide files repository page'
+,p_build_option_comment=>'Enable/disable files repository page'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(25684564406281886)
@@ -15040,7 +15040,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Allow/disallow search from files'
+,p_build_option_comment=>'Enable/disable search from files'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(25684767186283357)
@@ -15048,7 +15048,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Allow/disallow search from links'
+,p_build_option_comment=>'Enable/disable search from links'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(27920818779089933)
@@ -15063,7 +15063,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Single post pagination'
+,p_build_option_comment=>'Enable/disable post pagination in page 2'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(28281277020489892)
@@ -15071,7 +15071,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Enable/disable comments need moderated'
+,p_build_option_comment=>'Enable/disable comments moderation'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(30111637437970455)
@@ -15079,7 +15079,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide about page'
+,p_build_option_comment=>'Enable/disable about page'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(33703543205326403)
@@ -15087,7 +15087,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'EXCLUDE'
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Enable / disable the ability to subscribe to email notification of new comments'
+,p_build_option_comment=>'Enable/disable the ability to subscribe to email notification of new comments'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(41172379976935637)
@@ -15103,7 +15103,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/Hide modal pages links in footer'
+,p_build_option_comment=>'Enable/disable modal pages links in footer'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(60750107251132123)
@@ -15111,7 +15111,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide post archive count'
+,p_build_option_comment=>'Enable/disable post archive count in list'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(60984441774027659)
@@ -15119,7 +15119,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide category post count'
+,p_build_option_comment=>'Enable/disable category post count in list'
 );
 end;
 /
@@ -19149,7 +19149,7 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''20'',''0'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,null,blog_util.int_to_vc2(apex_applicat'
 ||'ion_install.get_application_id));',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,''Release 21.2.20220408'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''30'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,''Release 21.2.20220409'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''70'',''0'',''G_COMMENT_WATCH_MONTHS'',''INTEGER'',''INTERNAL'',null,''1'',''6'',''1'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''130'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,''My Blog'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''140'',''0'',''G_APP_DESC'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,''About Almost Eve'

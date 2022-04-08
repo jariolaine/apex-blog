@@ -155,7 +155,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220408160641'
+,p_last_upd_yyyymmddhh24miss=>'20220408212448'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>264
 ,p_ui_type_name => null
@@ -21006,7 +21006,7 @@ wwv_flow_api.create_page(
 ,p_group_id=>wwv_flow_api.id(43527387853454697)
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
-,p_last_updated_by=>'JARI.LAINE.O@GMAIL.COM'
+,p_last_updated_by=>'LAINFJAR'
 ,p_last_upd_yyyymmddhh24miss=>'20220407074747'
 );
 wwv_flow_api.create_page_plug(
@@ -21611,7 +21611,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211114100314'
+,p_last_upd_yyyymmddhh24miss=>'20220408183327'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27412346667552217)
@@ -21636,7 +21636,7 @@ wwv_flow_api.create_page_plug(
 '    when ''UNREAD''',
 '      then ''fa-envelope-o''',
 '    when ''REPLY''',
-'    then ''fa-reply''',
+'    then ''fa-send-o''',
 '    when ''READ''',
 '    then ''fa-envelope-open-o''',
 '  end                 as edit_icon',
@@ -24089,6 +24089,7 @@ wwv_flow_api.create_interactive_grid(
 ,p_define_chart_view=>false
 ,p_enable_download=>false
 ,p_download_formats=>null
+,p_enable_mail_download=>true
 ,p_fixed_header=>'NONE'
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false
@@ -24392,7 +24393,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220407074004'
+,p_last_upd_yyyymmddhh24miss=>'20220408185429'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -24800,8 +24801,9 @@ wwv_flow_api.create_interactive_grid(
 ,p_select_first_row=>false
 ,p_fixed_row_height=>true
 ,p_pagination_type=>'SCROLL'
-,p_show_total_row_count=>true
-,p_show_toolbar=>true
+,p_show_total_row_count=>false
+,p_show_toolbar=>false
+,p_toolbar_buttons=>null
 ,p_enable_save_public_report=>false
 ,p_enable_subscriptions=>true
 ,p_enable_flashback=>false
@@ -25269,6 +25271,7 @@ wwv_flow_api.create_report_region(
 '  ) as help',
 'from dual'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(15490716552941099)
 ,p_query_num_rows=>1
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -25566,6 +25569,8 @@ wwv_flow_api.create_jet_chart_series(
 ,p_items_label_column_name=>'LOG_TIME'
 ,p_assigned_to_y2=>'off'
 ,p_items_label_rendered=>false
+,p_items_label_display_as=>'PERCENT'
+,p_threshold_display=>'onIndicator'
 );
 wwv_flow_api.create_jet_chart_axis(
  p_id=>wwv_flow_api.id(43826627171615043)
@@ -25692,6 +25697,8 @@ wwv_flow_api.create_jet_chart_series(
 ,p_items_label_column_name=>'LABEL'
 ,p_assigned_to_y2=>'off'
 ,p_items_label_rendered=>false
+,p_items_label_display_as=>'PERCENT'
+,p_threshold_display=>'onIndicator'
 );
 wwv_flow_api.create_jet_chart_axis(
  p_id=>wwv_flow_api.id(43831022574615049)
@@ -30122,7 +30129,7 @@ wwv_flow_api.append_to_install_script(
 '  as',
 '  begin',
 '    -- remove whitespace characters from string',
-'    return trim( replace( regexp_replace( p_string, ''\s+'', '' '' ), ''  '', '' '' ) );',
+'    return trim( regexp_replace( p_string, ''\s+'', '' '' ) );',
 '  end remove_whitespace;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -30640,7 +30647,8 @@ wwv_flow_api.append_to_install_script(
 '  )',
 '  as',
 '    l_answer  varchar2(4000);',
-'    l_value   varchar2(4000);'))
+'    l_value   varchar2(4000);',
+'    l_result  boolean'))
 );
 null;
 end;
@@ -30649,8 +30657,7 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
-'    l_result  boolean;',
+';',
 '  begin',
 '',
 '    if p_param.value is not null then',
@@ -31513,7 +31520,7 @@ wwv_flow_api.append_to_install_script(
 '  end build_comment_html;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'-- Global'))
+'-- Global functions and procedu'))
 );
 null;
 end;
@@ -31522,7 +31529,7 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' functions and procedures',
+'res',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function format_comment(',
@@ -32427,7 +32434,7 @@ wwv_flow_api.append_to_install_script(
 '--    Jari Laine 30.10.2021 - Changed procedure sitemap_main to use view apex_application_pages',
 '--    Jari Laine 13.11.2021 - Changed procedure rss',
 '--    Jari Laine 30.12.2021 - Changed procedure rss_xsl. CSS file name moved to application settings',
-'-- '))
+'--    Jari Laine 05.01.20'))
 );
 null;
 end;
@@ -32436,7 +32443,7 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   Jari Laine 05.01.2021 - Added parameter p_css_file to procedure rss_xsl',
+'21 - Added parameter p_css_file to procedure rss_xsl',
 '--    Jari Laine 13.03.2022 - Added parameter p_process_nae to procedure sitemap_index',
 '--                            Removed build option check from query producing XML in procedure sitemap_index',
 '--',
@@ -33343,7 +33350,7 @@ wwv_flow_api.append_to_install_script(
 'begin',
 '',
 '  if inserting then',
-'    :new.id  '))
+'    :new.id           := coalesce( '))
 );
 null;
 end;
@@ -33352,7 +33359,7 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'         := coalesce( :new.id, blog_seq.nextval );',
+':new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',

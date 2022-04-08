@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_group_id=>wwv_flow_api.id(43527387853454697)
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
-,p_last_updated_by=>'JARI.LAINE.O@GMAIL.COM'
+,p_last_updated_by=>'LAINFJAR'
 ,p_last_upd_yyyymmddhh24miss=>'20220407074747'
 );
 wwv_flow_api.create_page_plug(

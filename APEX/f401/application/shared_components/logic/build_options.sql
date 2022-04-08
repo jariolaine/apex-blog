@@ -17,7 +17,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide link lists page'
+,p_build_option_comment=>'Enable/disable link lists page'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(7073708623458378)
@@ -25,7 +25,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Allow/disallow commenting to posts'
+,p_build_option_comment=>'Enable/disable commenting to posts'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(7122597691878829)
@@ -40,7 +40,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide "Subscribe in a Reader" link and page header link tag'
+,p_build_option_comment=>'Enable/disable "Subscribe in a Reader" link and page header link tag'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(8635355820099640)
@@ -48,7 +48,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide categories list and page'
+,p_build_option_comment=>'Enable/disable categories list'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(8667733481689180)
@@ -56,7 +56,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Allow/disallow search from posts'
+,p_build_option_comment=>'Enable/disable search from posts'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(8670890848739263)
@@ -64,7 +64,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide posts archives list and page'
+,p_build_option_comment=>'Enable/disable posts archives list'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(8677319562925389)
@@ -72,7 +72,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide latest posts list'
+,p_build_option_comment=>'Enable/disable latest posts list'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(24626889314854172)
@@ -80,7 +80,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/Hide files repository page'
+,p_build_option_comment=>'Enable/disable files repository page'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(25684564406281886)
@@ -88,7 +88,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Allow/disallow search from files'
+,p_build_option_comment=>'Enable/disable search from files'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(25684767186283357)
@@ -96,7 +96,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Allow/disallow search from links'
+,p_build_option_comment=>'Enable/disable search from links'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(27920818779089933)
@@ -111,7 +111,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Single post pagination'
+,p_build_option_comment=>'Enable/disable post pagination in page 2'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(28281277020489892)
@@ -119,7 +119,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Enable/disable comments need moderated'
+,p_build_option_comment=>'Enable/disable comments moderation'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(30111637437970455)
@@ -127,7 +127,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide about page'
+,p_build_option_comment=>'Enable/disable about page'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(33703543205326403)
@@ -135,7 +135,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'EXCLUDE'
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Enable / disable the ability to subscribe to email notification of new comments'
+,p_build_option_comment=>'Enable/disable the ability to subscribe to email notification of new comments'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(41172379976935637)
@@ -151,7 +151,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/Hide modal pages links in footer'
+,p_build_option_comment=>'Enable/disable modal pages links in footer'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(60750107251132123)
@@ -159,7 +159,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide post archive count'
+,p_build_option_comment=>'Enable/disable post archive count in list'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(60984441774027659)
@@ -167,7 +167,7 @@ wwv_flow_api.create_build_option(
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
-,p_build_option_comment=>'Show/hide category post count'
+,p_build_option_comment=>'Enable/disable category post count in list'
 );
 wwv_flow_api.component_end;
 end;

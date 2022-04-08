@@ -3009,7 +3009,7 @@ wwv_flow_api.append_to_install_script(
 '  as',
 '  begin',
 '    -- remove whitespace characters from string',
-'    return trim( replace( regexp_replace( p_string, ''\s+'', '' '' ), ''  '', '' '' ) );',
+'    return trim( regexp_replace( p_string, ''\s+'', '' '' ) );',
 '  end remove_whitespace;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -3527,7 +3527,8 @@ wwv_flow_api.append_to_install_script(
 '  )',
 '  as',
 '    l_answer  varchar2(4000);',
-'    l_value   varchar2(4000);'))
+'    l_value   varchar2(4000);',
+'    l_result  boolean'))
 );
 null;
 wwv_flow_api.component_end;
@@ -3545,8 +3546,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
-'    l_result  boolean;',
+';',
 '  begin',
 '',
 '    if p_param.value is not null then',
@@ -4409,7 +4409,7 @@ wwv_flow_api.append_to_install_script(
 '  end build_comment_html;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'-- Global'))
+'-- Global functions and procedu'))
 );
 null;
 wwv_flow_api.component_end;
@@ -4427,7 +4427,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' functions and procedures',
+'res',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function format_comment(',
@@ -5332,7 +5332,7 @@ wwv_flow_api.append_to_install_script(
 '--    Jari Laine 30.10.2021 - Changed procedure sitemap_main to use view apex_application_pages',
 '--    Jari Laine 13.11.2021 - Changed procedure rss',
 '--    Jari Laine 30.12.2021 - Changed procedure rss_xsl. CSS file name moved to application settings',
-'-- '))
+'--    Jari Laine 05.01.20'))
 );
 null;
 wwv_flow_api.component_end;
@@ -5350,7 +5350,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   Jari Laine 05.01.2021 - Added parameter p_css_file to procedure rss_xsl',
+'21 - Added parameter p_css_file to procedure rss_xsl',
 '--    Jari Laine 13.03.2022 - Added parameter p_process_nae to procedure sitemap_index',
 '--                            Removed build option check from query producing XML in procedure sitemap_index',
 '--',
@@ -6257,7 +6257,7 @@ wwv_flow_api.append_to_install_script(
 'begin',
 '',
 '  if inserting then',
-'    :new.id  '))
+'    :new.id           := coalesce( '))
 );
 null;
 wwv_flow_api.component_end;
@@ -6275,7 +6275,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'         := coalesce( :new.id, blog_seq.nextval );',
+':new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',

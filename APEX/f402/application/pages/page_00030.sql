@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211114100314'
+,p_last_upd_yyyymmddhh24miss=>'20220408183327'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27412346667552217)
@@ -47,7 +47,7 @@ wwv_flow_api.create_page_plug(
 '    when ''UNREAD''',
 '      then ''fa-envelope-o''',
 '    when ''REPLY''',
-'    then ''fa-reply''',
+'    then ''fa-send-o''',
 '    when ''READ''',
 '    then ''fa-envelope-open-o''',
 '  end                 as edit_icon',

@@ -732,7 +732,7 @@ as
   as
   begin
     -- remove whitespace characters from string
-    return trim( replace( regexp_replace( p_string, '\s+', ' ' ), '  ', ' ' ) );
+    return trim( regexp_replace( p_string, '\s+', ' ' ) );
   end remove_whitespace;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

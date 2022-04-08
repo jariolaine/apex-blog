@@ -57,6 +57,7 @@ wwv_flow_api.create_report_region(
 '  ) as help',
 'from dual'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(15490716552941099)
 ,p_query_num_rows=>1
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
