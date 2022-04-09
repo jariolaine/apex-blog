@@ -45,7 +45,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATE
        from blog_comment_flags f1
        where 1 = 1
          and f1.comment_id = t1.id
-         and f1.flag = 'NEW'
+         and f1.flag = 'UNREAD'
      )
      then 'UNREAD'
      when t1.parent_id is not null

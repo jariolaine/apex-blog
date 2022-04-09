@@ -4,8 +4,8 @@ begin
 --     LIST: Latest Posts
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.7'
+ p_version_yyyy_mm_dd=>'2021.10.15'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -29,7 +29,7 @@ wwv_flow_api.create_list(
 '  ,null                 as image_alt_attribute',
 '  ,null                 as attribute1',
 '   -- add post id to data attribute',
-'   -- we can use it in dynamic action to set current list item',
+'   -- we can use it then in dynamic action to set class for current list item',
 '  ,''data-blog-content-id="''',
 '   || v1.post_id',
 '   || ''"''               as attribute2',
@@ -37,7 +37,10 @@ wwv_flow_api.create_list(
 'from #OWNER#.blog_v_posts_last20 v1',
 'where 1 = 1',
 '-- Use function to get max row count. Region is cached',
-'and v1.display_seq <= #OWNER#.blog_util.get_attribute_value( ''G_LATEST_POST_ROWS'' )',
+'and v1.display_seq <= (',
+'  select #OWNER#.blog_util.get_attribute_value( ''G_LATEST_POST_ROWS'' )',
+'  from dual',
+')',
 'order by v1.published_on desc',
 ''))
 ,p_list_status=>'PUBLIC'

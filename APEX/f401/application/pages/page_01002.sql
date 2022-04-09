@@ -4,8 +4,8 @@ begin
 --     PAGE: 01002
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.7'
+ p_version_yyyy_mm_dd=>'2021.10.15'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211030115240'
+,p_last_upd_yyyymmddhh24miss=>'20220402063944'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41876461524408305)
@@ -34,12 +34,11 @@ wwv_flow_api.create_page_plug(
 ,p_plug_template=>wwv_flow_api.id(6781372168267375)
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
-,p_plug_display_point=>'BODY'
 ,p_plug_item_display_point=>'BELOW'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_util.render_dynamic_content(',
 '   p_content_id     => :REQUEST',
-'  ,p_date_format    => :G_POST_TITLE_DATE_FORMAT',
+'  ,p_date_format    => :G_APP_DATE_FORMAT',
 '  ,p_content_title  => :P1002_PAGE_TITLE',
 ');',
 ''))
@@ -69,6 +68,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 );
 wwv_flow_api.create_page_da_event(

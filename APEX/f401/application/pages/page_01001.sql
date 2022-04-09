@@ -4,8 +4,8 @@ begin
 --     PAGE: 01001
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.7'
+ p_version_yyyy_mm_dd=>'2021.10.15'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -33,7 +33,7 @@ wwv_flow_api.create_page(
 ,p_read_only_when_type=>'ITEM_IS_NULL'
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211230181250'
+,p_last_upd_yyyymmddhh24miss=>'20220407072350'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27990916738607115)
@@ -57,6 +57,15 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_point=>'REGION_POSITION_01'
 ,p_plug_source=>'&APP_TEXT$BLOG_MSG_MODERATE_ENABLED.'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_plug_display_condition_type=>'EXPRESSION'
+,p_plug_display_when_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#OWNER#.blog_util.get_attribute_value(''G_APP_EMAIL'') is not null',
+'and',
+'apex_util.get_build_option_status(',
+'   p_application_id     => :APP_ID',
+'  ,p_build_option_name  => ''BLOG_FEATURE_SUBSCRIBE_COMMENTS''',
+') = ''INCLUDE'''))
+,p_plug_display_when_cond2=>'PLSQL'
 ,p_required_patch=>wwv_flow_api.id(28281277020489892)
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
@@ -67,7 +76,6 @@ wwv_flow_api.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(6781372168267375)
 ,p_plug_display_sequence=>10
-,p_plug_display_point=>'BODY'
 ,p_plug_item_display_point=>'BELOW'
 ,p_query_type=>'TABLE'
 ,p_query_table=>'BLOG_COMMENTS'
@@ -88,7 +96,7 @@ wwv_flow_api.create_page_button(
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(6855239813267414)
 ,p_button_image_alt=>'Cancel'
-,p_button_position=>'REGION_TEMPLATE_CLOSE'
+,p_button_position=>'CLOSE'
 ,p_button_execute_validations=>'N'
 ,p_warn_on_unsaved_changes=>null
 ,p_icon_css_classes=>'fa-chevron-left'
@@ -103,7 +111,7 @@ wwv_flow_api.create_page_button(
 ,p_button_template_id=>wwv_flow_api.id(6855239813267414)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Submit'
-,p_button_position=>'REGION_TEMPLATE_NEXT'
+,p_button_position=>'NEXT'
 ,p_icon_css_classes=>'fa-send-o'
 ,p_database_action=>'INSERT'
 );
@@ -121,6 +129,7 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
 ,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 );
 wwv_flow_api.create_page_item(
@@ -142,6 +151,7 @@ wwv_flow_api.create_page_item(
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
 ,p_inline_help_text=>'Enter your name. The name is visible in the comments.'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'TEXT'
@@ -161,6 +171,7 @@ wwv_flow_api.create_page_item(
 ,p_warn_on_unsaved_changes=>'I'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'TEXT'
@@ -184,6 +195,7 @@ wwv_flow_api.create_page_item(
 ,p_protection_level=>'I'
 ,p_required_patch=>wwv_flow_api.id(33703543205326403)
 ,p_inline_help_text=>'Provide your email address if you wish receive followup notification when new reply is posted. <br>Your email address will not be published or shared.'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'EMAIL'
@@ -207,6 +219,7 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_inline_help_text=>'You can use <strong>&lt;b&gt;</strong>, <strong>&lt;i&gt;</strong>, <strong>&lt;u&gt;</strong> and <strong>&lt;code&gt;</strong> HTML tags. Example, wrap program code to &lt;code&gt; &lt;&#x2f;code&gt; tag so it is easier to read.'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'N'
 ,p_attribute_03=>'N'
@@ -242,6 +255,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 );
 wwv_flow_api.create_page_item(
@@ -258,6 +272,7 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 );
 wwv_flow_api.create_page_item(
@@ -274,6 +289,7 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 ,p_item_comment=>'If comments need to be moderated, computation set value to zero (0). Else use default value 1'
 );
@@ -289,6 +305,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 ,p_item_comment=>'This item is used on automatic form processing process. After submit computation stores formatted comment to item.'
 );
@@ -334,7 +351,8 @@ wwv_flow_api.create_page_validation(
 ,p_validation_sequence=>30
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_comm.is_email(',
-'  p_email => :P1001_EMAIL',
+'  p_email     => :P1001_EMAIL',
+'  ,p_err_mesg => ''BLOG_VALIDATION_ERR_EMAIL''',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -380,14 +398,15 @@ wwv_flow_api.create_page_process(
 ,p_process_sequence=>30
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Set new flag'
+,p_process_name=>'Set unread flag'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_comm.flag_comment(',
 '   p_comment_id => :P1001_ID',
-'  ,p_flag       => ''NEW''',
+'  ,p_flag       => ''UNREAD''',
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_comment=>'Mark new comment as unread'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(36228592519379744)
@@ -403,13 +422,14 @@ wwv_flow_api.create_page_process(
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_api.id(28281277020489892)
+,p_process_comment=>'Mark new comment to be moderated if feature "Comments need to moderated" ia enabled'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(26970862080257336)
 ,p_process_sequence=>50
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Notify Blogger'
+,p_process_name=>'Notify blogger'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_comm.new_comment_notify(',
 '   p_post_id         => :P1001_POST_ID',
@@ -425,7 +445,7 @@ wwv_flow_api.create_page_process(
 ,p_process_sequence=>60
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Subscribe User'
+,p_process_name=>'Subscribe user'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_comm.subscribe(',
 '   p_post_id  => :P1001_POST_ID',

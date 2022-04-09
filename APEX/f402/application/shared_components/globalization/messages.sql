@@ -4,8 +4,8 @@ begin
 --     MESSAGES: 402
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.7'
+ p_version_yyyy_mm_dd=>'2021.10.15'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -17,8 +17,8 @@ end;
 /
 begin
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.7'
+ p_version_yyyy_mm_dd=>'2021.10.15'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -172,7 +172,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(33704880398366885)
 ,p_name=>'BLOG_FEATURE_SUBSCRIBE_COMMENTS'
-,p_message_text=>'Sent email notification of new comments'
+,p_message_text=>'Email notification of new comments for users'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(42044380079014521)
@@ -272,12 +272,17 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21482145994393818)
 ,p_name=>'BLOG_HELP_FEATURE_SITEMAP'
-,p_message_text=>'Generate sitemap index and sitemaps for public pages.'
+,p_message_text=>'Generate sitemap index and sitemaps for public pages. See sitemap URL from this application home page.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21481269068360471)
 ,p_name=>'BLOG_HELP_FEATURE_SUBSCRIBE_COMMENTS'
-,p_message_text=>'Email notification of new comments.'
+,p_message_text=>'When commenting on a blog post, users can enter their email address and receive an email notification when their comment is answered. The application email address must also be filled in the application settings to send the email.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19897213779441945)
+,p_name=>'BLOG_HELP_G_APP_DATE_FORMAT'
+,p_message_text=>'Public pages date format.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19894083253206015)
@@ -300,11 +305,6 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(65392119713598778)
 ,p_name=>'BLOG_HELP_G_CANONICAL_URL'
 ,p_message_text=>'Sever URL part used for pages header link rel="canonical". Example https://example.com.'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(19897213779441945)
-,p_name=>'BLOG_HELP_G_DATE_FORMAT'
-,p_message_text=>'Public pages date format.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19895931361259762)
@@ -362,11 +362,6 @@ wwv_flow_api.create_message(
 ,p_message_text=>'No Records Found'
 );
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(27165806843666535)
-,p_name=>'BLOG_MSG_NO_RECORDS_SELECTED'
-,p_message_text=>'No Record Selected'
-);
-wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(7002883853109006)
 ,p_name=>'BLOG_POSTS_FK2'
 ,p_message_text=>'Posts found from this category. Move posts to other category and then delete category.'
@@ -407,6 +402,11 @@ wwv_flow_api.create_message(
 ,p_message_text=>'UI'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(19034721792903276)
+,p_name=>'BLOG_SETTING_G_APP_DATE_FORMAT'
+,p_message_text=>'Date format'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19033676653882936)
 ,p_name=>'BLOG_SETTING_G_APP_DESC'
 ,p_message_text=>'Blog description'
@@ -425,11 +425,6 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19058970469252490)
 ,p_name=>'BLOG_SETTING_G_CANONICAL_URL'
 ,p_message_text=>'Canonical server URL'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(19034721792903276)
-,p_name=>'BLOG_SETTING_G_DATE_FORMAT'
-,p_message_text=>'Date format'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(40622046631847902)
@@ -470,21 +465,6 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(10038391422712576)
 ,p_name=>'BLOG_TAGS_UK1'
 ,p_message_text=>'Tag with same name already exists.'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(31462883913733496)
-,p_name=>'BLOG_TXT_CHANGED_BY'
-,p_message_text=>'Changed by'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(31462641396734939)
-,p_name=>'BLOG_TXT_CHANGED_ON'
-,p_message_text=>'Changed'
-);
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(31444183113959558)
-,p_name=>'BLOG_TXT_STATUS'
-,p_message_text=>'Status'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348583930349647)

@@ -1,8 +1,8 @@
 prompt --application/plugin_settings
 begin
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.7'
+ p_version_yyyy_mm_dd=>'2021.10.15'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -29,6 +29,17 @@ wwv_flow_api.create_plugin_setting(
 ,p_attribute_01=>'MONTH-PICKER:YEAR-PICKER'
 ,p_attribute_02=>'VISIBLE'
 ,p_attribute_03=>'15'
+,p_attribute_04=>'FOCUS'
+);
+wwv_flow_api.create_plugin_setting(
+ p_id=>wwv_flow_api.id(1645404156260511)
+,p_plugin_type=>'ITEM TYPE'
+,p_plugin=>'NATIVE_GEOCODED_ADDRESS'
+,p_attribute_01=>'RELAX_HOUSE_NUMBER'
+,p_attribute_02=>'N'
+,p_attribute_03=>'POPUP:ITEM'
+,p_attribute_04=>'default'
+,p_attribute_06=>'LIST'
 );
 wwv_flow_api.create_plugin_setting(
  p_id=>wwv_flow_api.id(6753928467267359)

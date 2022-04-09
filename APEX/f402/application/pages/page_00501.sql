@@ -4,8 +4,8 @@ begin
 --     PAGE: 00501
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.7'
+ p_version_yyyy_mm_dd=>'2021.10.15'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -32,7 +32,6 @@ wwv_flow_api.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-Form--stretchInputs'
 ,p_plug_template=>wwv_flow_api.id(8475374748518195)
 ,p_plug_display_sequence=>30
-,p_plug_display_point=>'BODY'
 ,p_query_type=>'TABLE'
 ,p_query_table=>'BLOG_BLOGGERS'
 ,p_query_where=>'id = :G_BLOGGER_ID'
@@ -51,7 +50,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_sequence=>50
 ,p_plug_new_grid_row=>false
 ,p_plug_display_column=>10
-,p_plug_display_point=>'BODY'
+,p_plug_display_point=>'SUB_REGIONS'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
@@ -63,7 +62,7 @@ wwv_flow_api.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--hideHeader:t-Region--textContent:t-Region--scrollBody'
 ,p_plug_template=>wwv_flow_api.id(8496813422518209)
 ,p_plug_display_sequence=>10
-,p_plug_display_point=>'BODY'
+,p_plug_display_point=>'SUB_REGIONS'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
@@ -75,7 +74,7 @@ wwv_flow_api.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--noUI:t-Region--scrollBody:t-Form--stretchInputs'
 ,p_plug_template=>wwv_flow_api.id(8496813422518209)
 ,p_plug_display_sequence=>20
-,p_plug_display_point=>'BODY'
+,p_plug_display_point=>'SUB_REGIONS'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
@@ -90,7 +89,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_template=>wwv_flow_api.id(8475523710518195)
 ,p_plug_display_sequence=>40
 ,p_plug_grid_column_css_classes=>'padding-right-none'
-,p_plug_display_point=>'BODY'
+,p_plug_display_point=>'SUB_REGIONS'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
@@ -117,7 +116,7 @@ wwv_flow_api.create_page_button(
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Cancel'
-,p_button_position=>'REGION_TEMPLATE_CLOSE'
+,p_button_position=>'CLOSE'
 ,p_warn_on_unsaved_changes=>null
 ,p_icon_css_classes=>'fa-chevron-left'
 );
@@ -131,7 +130,7 @@ wwv_flow_api.create_page_button(
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Save'
-,p_button_position=>'REGION_TEMPLATE_CREATE'
+,p_button_position=>'CREATE'
 ,p_icon_css_classes=>'fa-save'
 ,p_database_action=>'UPDATE'
 );
@@ -154,6 +153,7 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
 ,p_help_text=>'Your name.'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'TEXT'
@@ -177,6 +177,7 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
 ,p_help_text=>'Email address for notification emails. Leave blank if you wish not receive notification emails.'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'TEXT'
@@ -200,6 +201,7 @@ wwv_flow_api.create_page_item(
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
+,p_encrypt_session_state_yn=>'N'
 ,p_plugin_init_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'function ( options ) {',
 '  options.contentsCss = ["&APP_IMAGES.css/chkeditor.min.css"];',
@@ -229,6 +231,7 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
 ,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 );
 wwv_flow_api.create_page_item(
@@ -248,6 +251,7 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_required_patch=>wwv_flow_api.id(24687280101070827)
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'VALUE'
 ,p_attribute_04=>'N'
@@ -271,6 +275,7 @@ wwv_flow_api.create_page_item(
 ,p_protection_level=>'S'
 ,p_restricted_characters=>'US_ONLY'
 ,p_help_text=>'Publish description in blog About page.'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'1'
 ,p_attribute_03=>'Yes'
@@ -300,6 +305,7 @@ wwv_flow_api.create_page_item(
 ,p_item_template_options=>'#DEFAULT#'
 ,p_lov_display_extra=>'NO'
 ,p_help_text=>'Activity reports default timeframe.'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'NONE'
 ,p_attribute_02=>'N'
 );
@@ -319,6 +325,7 @@ wwv_flow_api.create_page_item(
 ,p_item_template_options=>'#DEFAULT#'
 ,p_protection_level=>'S'
 ,p_help_text=>'Date format used in reports.'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'TEXT'
@@ -345,6 +352,7 @@ wwv_flow_api.create_page_item(
 ,p_item_template_options=>'#DEFAULT#'
 ,p_protection_level=>'S'
 ,p_help_text=>'Date format used in input fields.'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'TEXT'

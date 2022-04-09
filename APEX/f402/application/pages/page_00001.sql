@@ -4,8 +4,8 @@ begin
 --     PAGE: 00001
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.7'
+ p_version_yyyy_mm_dd=>'2021.10.15'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220209110317'
+,p_last_upd_yyyymmddhh24miss=>'20220402143119'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8582113239518316)
@@ -43,7 +43,6 @@ wwv_flow_api.create_report_region(
 ,p_display_sequence=>10
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols'
-,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -153,13 +152,12 @@ wwv_flow_api.create_report_region(
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols'
 ,p_new_grid_row=>false
-,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
 '   sum(comments_count)            as num_comments',
-'  ,sum(new_comments_count)        as num_new_comments',
+'  ,sum(unread_comments_count)     as num_unread_comments',
 '  ,sum(moderate_comments_count)   as num_moderate_comments',
 '  ,sum(published_comments_count)  as num_published_comments',
 '  ,sum(disabled_comments_count)   as num_disabled_comments',
@@ -188,9 +186,9 @@ wwv_flow_api.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(37648207243287148)
+ p_id=>wwv_flow_api.id(20999739862414724)
 ,p_query_column_id=>2
-,p_column_alias=>'NUM_NEW_COMMENTS'
+,p_column_alias=>'NUM_UNREAD_COMMENTS'
 ,p_column_display_sequence=>30
 ,p_column_heading=>'Unread'
 ,p_use_as_row_header=>'N'
@@ -239,7 +237,6 @@ wwv_flow_api.create_page_plug(
 ,p_component_template_options=>'#DEFAULT#:u-colors:t-MediaList--iconsRounded'
 ,p_plug_template=>wwv_flow_api.id(8496813422518209)
 ,p_plug_display_sequence=>50
-,p_plug_display_point=>'BODY'
 ,p_list_id=>wwv_flow_api.id(43181213072992711)
 ,p_plug_source_type=>'NATIVE_LIST'
 ,p_list_template_id=>wwv_flow_api.id(8538547318518236)

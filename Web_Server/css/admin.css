@@ -2,7 +2,7 @@
 * Post editor
 **************************************/
 #P12_BODY_HTML_CONTAINER {
-  padding-right: 2.2rem;
+  padding-right: 1.5rem;
 }
 #P12_BODY_HTML_CONTAINER .t-Form-helpButton {
   display: none;
@@ -18,13 +18,13 @@ td[headers="COPY_URL"] {
 * IR post report
 **************************************/
 .z-post--IR {
-  margin: 3.2rem 1.6rem;
+  margin: 2em 1rem;
 }
 /**************************************
 * Interactive Reports link column
 **************************************/
 .z-IR--iconLinks tr > :first-child {
-  padding: 0.4em;
+  padding: 0.25rem;
   width: 0.1%;
 }
 /**************************************
@@ -35,7 +35,13 @@ td[headers="COPY_URL"] {
   visibility: hidden!important;
 }
 .z-config-ig span.z-feature--child {
-  margin-left: 1.6rem;
+  margin-left: 1rem;
+}
+/**************************************
+* Page Views Metric Bar column
+**************************************/
+#VIEW_PCT_GRAPH {
+  width: 20%;
 }
 /**************************************
 * Elements
@@ -55,30 +61,29 @@ blockquote p {
 * Post report
 **************************************/
 .z-post {
-  font-size: 112%;
   background-color: var(--ut-component-background-color);
-  margin-bottom: 1.6rem;
+  margin-bottom: 1rem;
   border-width: var(--ut-component-border-width);
   border-style: solid;
   border-color: var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
-  padding: 1.6rem;
+  padding: 1rem;
 }
 .z-post--header {
   clear: both;
 }
 .z-post--header h1 {
-  font-size: 1.6em;
-  margin: 0 0 0.2rem;
+  font-size: 1.625em;
+  margin: 0 0 0.125rem;
 }
 .z-post--header h2 {
   font-size: 1em;
-  margin: 0 0 1.8rem;
+  margin: 0 0 1.625rem;
 }
 .z-post--header h3 {
   font-size: 1em;
-  margin: 0 0 0.2rem;
+  margin: 0 0 0.125rem;
 }
 .z-post--body img {
   max-width: 100%;
@@ -98,10 +103,10 @@ blockquote p {
 .z-post--footer {
   width: 100%;
   clear: both;
-  margin: 1.2rem 0 0;
+  margin: 1rem 0 0;
 }
 .z-posts--pagination {
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 }
 .z-posts--paginationBorder .z-posts--pagination {
   background-color: var(--ut-component-background-color);
@@ -110,13 +115,13 @@ blockquote p {
   border-color: var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
-  padding: 0.4rem;
+  padding: 0.25rem;
 }
 .z-post--largeMargin .z-post {
-  margin-bottom: 3.2rem;
+  margin-bottom: 2rem;
 }
 .z-post--smallMargin .z-post {
-  margin-bottom: 0.8rem;
+  margin-bottom: 5rem;
 }
 .z-post--noMargin .z-post {
   margin-bottom: 0;
@@ -133,12 +138,17 @@ blockquote p {
 }
 @media only screen and (max-width: 640px) {
   .z-post {
-    padding: 1.2rem;
-    margin-bottom: 1.6rem;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
   }
   .z-post--header h1 {
-    font-size: 1.4em;
+    font-size: 1.375em;
   }
+  /*
+  .z-post--tags {
+    text-align: center;
+  }
+*/
 }
 /**************************************
 * Classic reports
@@ -146,13 +156,33 @@ blockquote p {
 .nodatafound {
   text-align: center;
   color: var(--ut-component-text-default-color);
-  font-size: 1.2rem;
-  line-height: 2rem;
-  padding: 2.2rem;
+  font-size: 1rem;
+  padding: 1rem;
 }
 .pagination {
   text-align: right;
   width: 100%;
+}
+/**************************************
+* APEX 21.2:
+*   fix search engine style pagination
+**************************************/
+.t-Report-paginationText strong {
+  display: inline-block;
+  vertical-align: top;
+  border-radius: var(--ut-report-pagination-link-border-radius, 0.125rem);
+  -webkit-padding-before: var(--ut-report-pagination-link-padding-y, 0.25rem);
+  padding-block-start: var(--ut-report-pagination-link-padding-y, 0.25rem);
+  -webkit-padding-after: var(--ut-report-pagination-link-padding-y, 0.25rem);
+  padding-block-end: var(--ut-report-pagination-link-padding-y, 0.25rem);
+  -webkit-padding-start: var(--ut-report-pagination-link-padding-x, 0.5rem);
+  padding-inline-start: var(--ut-report-pagination-link-padding-x, 0.5rem);
+  -webkit-padding-end: var(--ut-report-pagination-link-padding-x, 0.5rem);
+  padding-inline-end: var(--ut-report-pagination-link-padding-x, 0.5rem);
+  background-color: var(--ut-report-pagination-link-background-color);
+  color: var(--ut-report-pagination-link-text-color);
+  --ut-report-pagination-link-background-color: var(--ut-report-pagination-link-hover-background-color, var(--ut-palette-primary));
+  --ut-report-pagination-link-text-color: var(--ut-report-pagination-link-hover-text-color, var(--ut-palette-primary-contrast));
 }
 /**************************************
 * General custom report
@@ -163,25 +193,24 @@ blockquote p {
   border-color: var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
-  margin-bottom: 1.6rem;
+  margin-bottom: 1rem;
 }
 .z-Content--Row {
   background-color: var(--ut-component-background-color);
   overflow: hidden;
 }
 .z-Content--Title {
+  font-size: var(--ut-region-header-font-size, 1rem);
+  font-weight: 500;
   border-bottom-width: var(--ut-component-inner-border-width);
   border-bottom-style: solid;
   border-bottom-color: var(--ut-component-inner-border-color);
   background-color: var(--ut-region-header-background-color);
-  padding: 1.2rem;
+  padding: var(--ut-region-header-padding-x, 0.75rem);
   margin: 0;
-  font-size: 1.6rem;
-  font-weight: 500;
-  line-height: 2.4rem;
 }
 .z-Content--Body {
-  padding: 1.6rem;
+  padding: 1rem;
 }
 .z-Content--Stacked .z-Content--Title {
   border-top-width: var(--ut-component-inner-border-width);
@@ -197,8 +226,8 @@ blockquote p {
 pre.z-program-code {
   clear: both;
   font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace";
+  font-size: 0.75rem;
   color: var(--ut-component-badge-text-color);
-  font-size: 1.1rem;
   tab-size: 2;
   overflow-x: auto;
   display: block;
@@ -207,7 +236,7 @@ pre.z-program-code {
   border-width: var(--ut-component-inner-border-width);
   border-style: solid;
   border-color: var(--ut-component-inner-border-color);
-  border-left-width: 0.4em;
+  border-left-width: 0.25rem;
   border-left-style: solid;
   border-left-color: var(--u-color-35);
   border-radius: var(--ut-component-badge-border-radius);

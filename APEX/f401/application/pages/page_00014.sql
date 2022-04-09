@@ -4,8 +4,8 @@ begin
 --     PAGE: 00014
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.7'
+ p_version_yyyy_mm_dd=>'2021.10.15'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8635355820099640)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211121092717'
+,p_last_upd_yyyymmddhh24miss=>'20220328175105'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(40117793173805532)
@@ -35,7 +35,6 @@ wwv_flow_api.create_report_region(
 ,p_display_sequence=>10
 ,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody:margin-bottom-lg'
 ,p_component_template_options=>'#DEFAULT#:t-Report--hideNoPagination'
-,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -48,15 +47,19 @@ wwv_flow_api.create_report_region(
 '  ,v1.blogger_name        as value_01',
 '  ,labels.posted_on       as label_02',
 '  ,v1.published_on        as value_02',
-'  ,case when ',
+'  -- output label if there is tags',
+'  ,case when',
+'    -- fetch tags and stote to variable',
 '     apex_util.savekey_vc2(',
-'       p_val => #OWNER#.blog_html.get_post_tags(',
+'       p_val =>',
+'        #OWNER#.blog_html.get_post_tags(',
 '          p_post_id => v1.post_id',
 '         ,p_button => ''NO''',
 '       ) ',
 '     ) is not null',
 '   then labels.tags',
 '   end                    as label_03',
+'  -- get tags from variable',
 '  ,apex_util.keyval_vc2   as value_03',
 '  ,null                   as label_04',
 '  ,null                   as value_04',
@@ -164,7 +167,7 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>7
 ,p_column_heading=>'Value 02'
 ,p_use_as_row_header=>'N'
-,p_column_format=>'&G_DATE_FORMAT.'
+,p_column_format=>'&G_APP_DATE_FORMAT.'
 ,p_heading_alignment=>'LEFT'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -218,6 +221,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
 ,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 ,p_item_comment=>'Category ID to filter report'
 );
@@ -229,6 +233,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 );
 wwv_flow_api.create_page_computation(

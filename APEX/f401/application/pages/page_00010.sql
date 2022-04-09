@@ -4,8 +4,8 @@ begin
 --     PAGE: 00010
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.7'
+ p_version_yyyy_mm_dd=>'2021.10.15'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(6905258727754156)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220322153331'
+,p_last_upd_yyyymmddhh24miss=>'20220406204951'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25312381302124218)
@@ -34,20 +34,8 @@ wwv_flow_api.create_page_plug(
 ,p_plug_template=>wwv_flow_api.id(6781372168267375)
 ,p_plug_display_sequence=>30
 ,p_include_in_reg_disp_sel_yn=>'Y'
-,p_plug_display_point=>'BODY'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_plug_caching=>'CACHE'
-,p_plug_caching_max_age_in_sec=>60
-,p_plug_cache_when_cond_type=>'EXPRESSION'
-,p_plug_cache_when_condition_e1=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex_util.get_build_option_status(',
-'   p_application_id => :APP_ID',
-'  ,p_build_option_name => ''BLOG_FEATURE_SEARCH_LINKS''',
-') = ''EXCLUDE''',
-''))
-,p_plug_cache_when_condition_e2=>'PLSQL'
-,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
@@ -59,7 +47,7 @@ wwv_flow_api.create_report_region(
 ,p_display_sequence=>20
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--hideHeader:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--stack:t-MediaList--iconsRounded:t-Report--hideNoPagination'
-,p_display_point=>'BODY'
+,p_display_point=>'SUB_REGIONS'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -197,7 +185,7 @@ wwv_flow_api.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-Region--hideHeader:t-Region--scrollBody:t-Form--noPadding:t-Form--large:t-Form--stretchInputs'
 ,p_plug_template=>wwv_flow_api.id(6802870362267386)
 ,p_plug_display_sequence=>10
-,p_plug_display_point=>'BODY'
+,p_plug_display_point=>'SUB_REGIONS'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_required_patch=>wwv_flow_api.id(25684767186283357)
 ,p_attribute_01=>'N'
@@ -222,6 +210,7 @@ wwv_flow_api.create_page_item(
 ,p_is_persistent=>'N'
 ,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
 ,p_required_patch=>wwv_flow_api.id(25684767186283357)
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'SEARCH'

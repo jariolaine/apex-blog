@@ -4,8 +4,8 @@ begin
 --     PAGE: 20012
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.7'
+ p_version_yyyy_mm_dd=>'2021.10.15'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -28,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220323184741'
+,p_last_upd_yyyymmddhh24miss=>'20220408185429'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -39,14 +39,13 @@ wwv_flow_api.create_page_plug(
 ,p_plug_template=>wwv_flow_api.id(8495746153518209)
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
-,p_plug_display_point=>'BODY'
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select v1.id                    as id',
 '  ,v1.row_version               as row_version',
 '  ,v1.display_seq               as display_seq',
 '  ,v1.attribute_group           as attribute_group',
-'  ,v1.attribute_desc            as attribute_name',
+'  ,v1.attribute_desc            as attribute_desc',
 '  ,v1.attribute_value           as attribute_value',
 '  ,v1.help_message              as help_message',
 '  ,case v1.is_nullable',
@@ -65,14 +64,14 @@ wwv_flow_api.create_page_plug(
 '  ,v1.int_min                   as int_min',
 '  ,v1.int_max                   as int_max',
 '  ,v1.attribute_message         as attribute_message',
-'  ,btn.title_help               as btn_title_help',
+'  ,(',
+'    select ',
+'        apex_lang.message(',
+'          p_name => ''BLOG_BTN_TITLE_HELP''',
+'        ) ',
+'      from dual',
+'  )                             as btn_title_help',
 'from #OWNER#.blog_v_all_settings v1',
-'cross join (',
-'  select apex_lang.message(',
-'      p_name => ''BLOG_BTN_TITLE_HELP''',
-'    ) as title_help',
-'  from dual',
-') btn',
 'where 1 = 1',
 'and v1.attribute_group_message != ''INTERNAL'''))
 ,p_plug_source_type=>'NATIVE_IG'
@@ -224,13 +223,13 @@ wwv_flow_api.create_region_column(
 );
 wwv_flow_api.create_region_column(
  p_id=>wwv_flow_api.id(27274156249075420)
-,p_name=>'ATTRIBUTE_NAME'
+,p_name=>'ATTRIBUTE_DESC'
 ,p_source_type=>'DB_COLUMN'
-,p_source_expression=>'ATTRIBUTE_NAME'
+,p_source_expression=>'ATTRIBUTE_DESC'
 ,p_data_type=>'VARCHAR2'
 ,p_is_query_only=>true
 ,p_item_type=>'NATIVE_DISPLAY_ONLY'
-,p_heading=>'Attribute Name'
+,p_heading=>'Name'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>100
 ,p_value_alignment=>'LEFT'
@@ -258,7 +257,7 @@ wwv_flow_api.create_region_column(
 ,p_data_type=>'VARCHAR2'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_TEXT_FIELD'
-,p_heading=>'Attribute Value'
+,p_heading=>'Value'
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>110
 ,p_value_alignment=>'LEFT'
@@ -437,8 +436,9 @@ wwv_flow_api.create_interactive_grid(
 ,p_select_first_row=>false
 ,p_fixed_row_height=>true
 ,p_pagination_type=>'SCROLL'
-,p_show_total_row_count=>true
-,p_show_toolbar=>true
+,p_show_total_row_count=>false
+,p_show_toolbar=>false
+,p_toolbar_buttons=>null
 ,p_enable_save_public_report=>false
 ,p_enable_subscriptions=>true
 ,p_enable_flashback=>false
@@ -653,7 +653,7 @@ wwv_flow_api.create_page_button(
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Close'
-,p_button_position=>'REGION_TEMPLATE_CLOSE'
+,p_button_position=>'CLOSE'
 ,p_warn_on_unsaved_changes=>null
 ,p_icon_css_classes=>'fa-remove'
 );
@@ -667,7 +667,7 @@ wwv_flow_api.create_page_button(
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Save'
-,p_button_position=>'REGION_TEMPLATE_NEXT'
+,p_button_position=>'NEXT'
 ,p_warn_on_unsaved_changes=>null
 ,p_button_css_classes=>'js-actionButton'
 ,p_icon_css_classes=>'fa-save'
@@ -695,9 +695,10 @@ wwv_flow_api.create_page_validation(
 ,p_validation_sequence=>30
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_cm.is_integer(',
-'   p_value => :ATTRIBUTE_VALUE',
-'  ,p_min => :INT_MIN',
-'  ,p_max => :INT_MAX',
+'   p_value    => :ATTRIBUTE_VALUE',
+'  ,p_min      => :INT_MIN',
+'  ,p_max      => :INT_MAX',
+'  ,p_err_mesg => ''BLOG_VALIDATION_ERR_INTEGER''',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -715,7 +716,8 @@ wwv_flow_api.create_page_validation(
 ,p_validation_sequence=>40
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_cm.is_date_format(',
-'  p_value => :ATTRIBUTE_VALUE',
+'  p_value     => :ATTRIBUTE_VALUE',
+'  ,p_err_mesg => ''BLOG_VALIDATION_ERR_DATE_FORMAT''',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -733,7 +735,8 @@ wwv_flow_api.create_page_validation(
 ,p_validation_sequence=>50
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_cm.is_url(',
-'  p_value => :ATTRIBUTE_VALUE',
+'  p_value     => :ATTRIBUTE_VALUE',
+'  ,p_err_mesg => ''BLOG_VALIDATION_ERR_URL''',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -751,7 +754,8 @@ wwv_flow_api.create_page_validation(
 ,p_validation_sequence=>60
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_comm.is_email(',
-'  p_email => :ATTRIBUTE_VALUE',
+'  p_email     => :ATTRIBUTE_VALUE',
+'  ,p_err_mesg => ''BLOG_VALIDATION_ERR_EMAIL''',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -849,7 +853,7 @@ wwv_flow_api.create_page_process(
 ,p_attribute_01=>'REGION_SOURCE'
 ,p_attribute_05=>'Y'
 ,p_attribute_06=>'Y'
-,p_attribute_08=>'Y'
+,p_attribute_08=>'N'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.component_end;

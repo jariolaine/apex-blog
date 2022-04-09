@@ -33,9 +33,9 @@
 }
 /* Editor program code */
 pre.z-program-code {
-  font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace" !important;
   background-color: #eeeeee;
-  border-left: 0.4em solid #6ce26c !important;
-  padding-left: 0.8em;
   white-space: pre;
+  font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace" !important;
+  border-left: 0.4rem solid #6ce26c !important;
+  padding-left: 0.8rem!important;
 }

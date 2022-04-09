@@ -4,8 +4,8 @@ begin
 --     PAGE: 09999
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.7'
+ p_version_yyyy_mm_dd=>'2021.10.15'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -34,7 +34,6 @@ wwv_flow_api.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8496352815518209)
 ,p_plug_display_sequence=>10
-,p_plug_display_point=>'BODY'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
@@ -49,7 +48,7 @@ wwv_flow_api.create_page_plug(
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8475374748518195)
 ,p_plug_display_sequence=>20
-,p_plug_display_point=>'BODY'
+,p_plug_display_point=>'SUB_REGIONS'
 ,p_plug_source=>'apex_lang.emit_language_selector_list;'
 ,p_plug_source_type=>'NATIVE_PLSQL'
 ,p_translate_title=>'N'
@@ -64,7 +63,7 @@ wwv_flow_api.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8475374748518195)
 ,p_plug_display_sequence=>10
-,p_plug_display_point=>'BODY'
+,p_plug_display_point=>'SUB_REGIONS'
 ,p_plug_source=>'"SIGN_IN_USING_ANOTHER_IDENTITY_PROVIDER"'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_required_patch=>wwv_flow_api.id(35675193135740905)
@@ -80,7 +79,7 @@ wwv_flow_api.create_page_button(
 ,p_button_template_options=>'#DEFAULT#:t-Button--danger'
 ,p_button_template_id=>wwv_flow_api.id(8549115324518244)
 ,p_button_image_alt=>'Sign in with Google'
-,p_button_position=>'REGION_TEMPLATE_NEXT'
+,p_button_position=>'NEXT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:HOME:&SESSION.:APEX_AUTHENTICATION=Google:&DEBUG.:::'
 ,p_button_css_classes=>'u-bold'
 ,p_required_patch=>wwv_flow_api.id(35675193135740905)
@@ -95,7 +94,7 @@ wwv_flow_api.create_page_button(
 ,p_button_template_id=>wwv_flow_api.id(8549115324518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Sign in'
-,p_button_position=>'REGION_TEMPLATE_NEXT'
+,p_button_position=>'NEXT'
 ,p_required_patch=>wwv_flow_api.id(35674953070739317)
 );
 wwv_flow_api.create_page_item(
@@ -112,6 +111,7 @@ wwv_flow_api.create_page_item(
 ,p_item_icon_css_classes=>'fa-user'
 ,p_item_template_options=>'#DEFAULT#'
 ,p_required_patch=>wwv_flow_api.id(35674953070739317)
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'TEXT'
@@ -132,6 +132,7 @@ wwv_flow_api.create_page_item(
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_required_patch=>wwv_flow_api.id(35674953070739317)
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 );
 wwv_flow_api.create_page_item(
@@ -158,6 +159,7 @@ wwv_flow_api.create_page_item(
 'the application will overwrite it with an empty value.',
 'You can also use your browser''s developer tools to completely remove the cookie.',
 '</p>'))
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'1'
 );
 wwv_flow_api.create_page_process(

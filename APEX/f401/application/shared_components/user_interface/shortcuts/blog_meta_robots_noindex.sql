@@ -4,8 +4,8 @@ begin
 --     SHORTCUT: BLOG_META_ROBOTS_NOINDEX
 --   Manifest End
 wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.04.15'
-,p_release=>'21.1.7'
+ p_version_yyyy_mm_dd=>'2021.10.15'
+,p_release=>'21.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -16,7 +16,7 @@ wwv_flow_api.create_shortcut(
 ,p_shortcut_name=>'BLOG_META_ROBOTS_NOINDEX'
 ,p_shortcut_type=>'FUNCTION_BODY'
 ,p_shortcut_language=>'PLSQL'
-,p_comments=>'Used in page 3, 1001 and 9999 page html header'
+,p_comments=>'Get meta tag robots noindex. Used in page 3, 1001 and 9999 page html header.'
 ,p_shortcut=>'return #OWNER#.blog_html.get_robots_noindex_meta;'
 );
 wwv_flow_api.component_end;
