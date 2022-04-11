@@ -82,4 +82,17 @@ ctx_ddl.drop_preference( 'BLOG_POST_UDS_DS' );
 ctx_ddl.drop_preference( 'BLOG_POST_UDS_LX' );
 end;
 /
+--------------------------------------------------------
+--  Drop view BLOG_V_VERSION if exists
+--------------------------------------------------------
+begin
+  for c1 in(
+    select 1
+    from user_views
+    where view_name = 'BLOG_V_VERSION'
+  ) loop
+    execute immediate 'drop view blog_v_version';
+  end loop;
+end;
+/
 

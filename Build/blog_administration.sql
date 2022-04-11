@@ -155,7 +155,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220411092148'
+,p_last_upd_yyyymmddhh24miss=>'20220411132935'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>264
 ,p_ui_type_name => null
@@ -27157,6 +27157,19 @@ wwv_flow_api.create_install(
 'ctx_ddl.drop_preference( ''BLOG_POST_UDS_LX'' );',
 'end;',
 '/',
+'--------------------------------------------------------',
+'--  Drop view BLOG_V_VERSION if exists',
+'--------------------------------------------------------',
+'begin',
+'  for c1 in(',
+'    select 1',
+'    from user_views',
+'    where view_name = ''BLOG_V_VERSION''',
+'  ) loop',
+'    execute immediate ''drop view blog_v_version'';',
+'  end loop;',
+'end;',
+'/',
 '',
 ''))
 ,p_required_free_kb=>200
@@ -33815,7 +33828,7 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''10'',''0'',''G_ADMIN_APP_ID'',''STRING'',''INTERNAL'',null,null,null,blog_util.int_to_vc2(apex_applic'
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''30'',''0'',''G_ADMIN_APP_ID'',''STRING'',''INTERNAL'',null,null,null,blog_util.int_to_vc2(apex_applic'
 ||'ation_install.get_application_id));',
 '',
 ''))
