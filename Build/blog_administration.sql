@@ -93,7 +93,7 @@ prompt APPLICATION 402 - Blog Administration
 --       E-Mail:
 --         Templates:              1
 --     Supporting Objects:  Included
---       Install scripts:          3
+--       Install scripts:          4
 --       Validations:              1
 --   Version:         21.2.5
 --   Instance ID:     9502710254078678
@@ -122,7 +122,7 @@ wwv_flow_api.create_flow(
 ,p_accept_old_checksums=>false
 ,p_compatibility_mode=>'21.2'
 ,p_flow_language=>'en'
-,p_flow_language_derived_from=>'FLOW_PREFERENCE'
+,p_flow_language_derived_from=>'BROWSER'
 ,p_allow_feedback_yn=>'Y'
 ,p_direction_right_to_left=>'N'
 ,p_flow_image_prefix => nvl(wwv_flow_application_install.get_image_prefix,'')
@@ -155,7 +155,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220408212448'
+,p_last_upd_yyyymmddhh24miss=>'20220411092148'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>264
 ,p_ui_type_name => null
@@ -15336,7 +15336,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220402143119'
+,p_last_upd_yyyymmddhh24miss=>'20220410030418'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8582113239518316)
@@ -27030,7 +27030,6 @@ prompt --application/deployment/definition
 begin
 wwv_flow_api.create_install(
  p_id=>wwv_flow_api.id(31706870664802069)
-,p_include_in_export_yn=>'I'
 ,p_welcome_message=>'This application installer will guide you through the process of creating database objects and meta data necessary to run the APEX Blog application.'
 ,p_license_message=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<pre>The MIT License (MIT)',
@@ -27067,6 +27066,11 @@ wwv_flow_api.create_install(
 ,p_upgrade_confirm_message=>'Please confirm that you would like to install this application''s supporting objects.'
 ,p_upgrade_success_message=>'Your application''s supporting objects have been installed.'
 ,p_upgrade_failure_message=>'Installation of database objects and seed data has failed.'
+,p_get_version_sql_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from user_tables',
+'where 1 = 1',
+'and table_name = ''BLOG_SETTINGS'''))
 ,p_deinstall_success_message=>'Deinstallation complete.'
 ,p_deinstall_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',
@@ -27156,7 +27160,31 @@ wwv_flow_api.create_install(
 '',
 ''))
 ,p_required_free_kb=>200
-,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
+,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE TYPE :CREATE VIEW'
+);
+end;
+/
+prompt --application/deployment/install/upgrade_create_view_blog_v_version
+begin
+wwv_flow_api.create_install_script(
+ p_id=>wwv_flow_api.id(10802378553752854)
+,p_install_id=>wwv_flow_api.id(31706870664802069)
+,p_name=>'Create view BLOG_V_VERSION'
+,p_sequence=>10
+,p_script_type=>'UPGRADE'
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'--------------------------------------------------------',
+'--  DDL for View BLOG_V_VERSION',
+'--------------------------------------------------------',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_VERSION" ("APPLICATION_VERSION", "APPLICATION_DATE") AS',
+'select',
+'  attribute_value                             as application_version',
+'  ,to_number( substr( attribute_value, -8 ) ) as application_date',
+'from blog_settings',
+'where 1 = 1',
+'and attribute_name = ''G_APP_VERSION''',
+'/',
+''))
 );
 end;
 /

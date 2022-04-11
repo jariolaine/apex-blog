@@ -168,6 +168,7 @@ prompt --install
 @@application/pages/page_30023.sql
 @@application/pages/page_30024.sql
 @@application/deployment/definition.sql
+@@application/deployment/install/upgrade_create_view_blog_v_version.sql
 @@application/deployment/install/install_database_objects.sql
 @@application/deployment/install/install_text_index.sql
 @@application/deployment/install/install_metadata.sql

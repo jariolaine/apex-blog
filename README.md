@@ -33,6 +33,14 @@ APEX workspace administrator privileges are required to create a user group for 
 ### Post Install
 Create a "Bloggers" workspace user group. Add APEX users to the group who are authorized to use the blog admin application. See [Using Groups to Manage Application Express Users](https://docs.oracle.com/en/database/oracle/application-express/21.2/aeadm/managing-users-in-a-workspace.html#GUID-0FD7B406-8A83-40C0-A3E7-EF19BBDEA5A4)
 
-# License
+## Upgrade
+Existing application version must be Release v4.4.20220326 or later.
 
+### Import Applications
+1. Access your target APEX workspace
+2. Select the Application Builder
+3. Import and install *blog_administration.sql* and select upgrade supporting objects.
+4. Import and install *blog_public_pages.sql* and select upgrade supporting objects.
+
+# License
 This code is released under [MIT license](https://github.com/jariolaine/apex-blog/blob/master/LICENSE) by Jari Laine.
