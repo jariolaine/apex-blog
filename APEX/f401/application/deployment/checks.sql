@@ -14,7 +14,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_install_check(
  p_id=>wwv_flow_api.id(38823841481522299)
 ,p_install_id=>wwv_flow_api.id(20741295540297154)
-,p_name=>'Blog admin application installed'
+,p_name=>'Blog administration application installed'
 ,p_sequence=>10
 ,p_check_type=>'EXISTS'
 ,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -22,7 +22,7 @@ wwv_flow_api.create_install_check(
 'from user_tables',
 'where 1 = 1',
 'and table_name = ''BLOG_SETTINGS'''))
-,p_failure_message=>'Supporting object not installed. Please install application and supporting objects using file blog_administration.sql first.'
+,p_failure_message=>'Supporting object not installed. Please install administration application and supporting objects using file blog_administration.sql first.'
 );
 wwv_flow_api.component_end;
 end;

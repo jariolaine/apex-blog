@@ -32,12 +32,12 @@ wwv_flow_api.create_flow(
 ,p_session_timeout_warning_sec=>0
 ,p_compatibility_mode=>'21.2'
 ,p_flow_language=>'en'
-,p_flow_language_derived_from=>'FLOW_PRIMARY_LANGUAGE'
+,p_flow_language_derived_from=>'BROWSER'
 ,p_direction_right_to_left=>'N'
 ,p_flow_image_prefix => nvl(wwv_flow_application_install.get_image_prefix,'')
 ,p_documentation_banner=>'https://github.com/jariolaine/apex-blog'
 ,p_authentication=>'PLUGIN'
-,p_authentication_id=>wwv_flow_api.id(25278990329788475)
+,p_authentication_id=>wwv_flow_api.id(23563845949734140)
 ,p_application_tab_set=>1
 ,p_logo_type=>'C'
 ,p_logo=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -66,7 +66,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220408212551'
+,p_last_upd_yyyymmddhh24miss=>'20220411092305'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>222
 ,p_ui_type_name => null

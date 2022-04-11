@@ -13,7 +13,6 @@ wwv_flow_api.component_begin (
 );
 wwv_flow_api.create_install(
  p_id=>wwv_flow_api.id(31706870664802069)
-,p_include_in_export_yn=>'I'
 ,p_welcome_message=>'This application installer will guide you through the process of creating database objects and meta data necessary to run the APEX Blog application.'
 ,p_license_message=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<pre>The MIT License (MIT)',
@@ -50,6 +49,11 @@ wwv_flow_api.create_install(
 ,p_upgrade_confirm_message=>'Please confirm that you would like to install this application''s supporting objects.'
 ,p_upgrade_success_message=>'Your application''s supporting objects have been installed.'
 ,p_upgrade_failure_message=>'Installation of database objects and seed data has failed.'
+,p_get_version_sql_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from user_tables',
+'where 1 = 1',
+'and table_name = ''BLOG_SETTINGS'''))
 ,p_deinstall_success_message=>'Deinstallation complete.'
 ,p_deinstall_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',
@@ -139,7 +143,7 @@ wwv_flow_api.create_install(
 '',
 ''))
 ,p_required_free_kb=>200
-,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
+,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE TYPE :CREATE VIEW'
 );
 wwv_flow_api.component_end;
 end;
