@@ -36,6 +36,8 @@ Create a "Bloggers" workspace user group. Add APEX users to the group who are au
 ## Upgrade
 Existing application version must be Release v4.4.20220326 or later.
 
+Before starting the upgrade, backup the application parsing schema data and objects.
+
 ### Import Applications
 1. Access your target APEX workspace
 2. Select the Application Builder
