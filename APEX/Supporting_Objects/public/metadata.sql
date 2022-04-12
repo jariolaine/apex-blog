@@ -24,7 +24,7 @@ insert into blog_features (is_active,display_seq,build_option_name,build_option_
 --------------------------------------------------------
 --  Inserting into BLOG_SETTINGS
 --------------------------------------------------------
-insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values ('10','0','G_APP_VERSION','STRING','INTERNAL',null,null,null,'Release 21.2.20220411');
+insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values ('10','0','G_APP_VERSION','STRING','INTERNAL',null,null,null,'Release 21.2.20220412');
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values ('20','0','G_PUB_APP_ID','STRING','INTERNAL',null,null,null,blog_util.int_to_vc2(apex_application_install.get_application_id));
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values ('40','0','G_COMMENT_WATCH_MONTHS','INTEGER','INTERNAL',null,'1','6','1');
 insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values ('110','0','G_APP_NAME','STRING','BLOG_SETTING_GROUP_GENERAL',null,null,null,'My Blog');

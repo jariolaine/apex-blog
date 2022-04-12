@@ -66,7 +66,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220411135119'
+,p_last_upd_yyyymmddhh24miss=>'20220412131249'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>222
 ,p_ui_type_name => null
@@ -75,7 +75,6 @@ wwv_flow_api.create_flow(
 ,p_copyright_banner=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'The MIT License (MIT)',
 '',
-'Name: #APP_NAME#',
 'Copyright (c) 2021, #YEAR#, Jari Laine',
 '',
 'Permission is hereby granted, free of charge, to any person obtaining a copy of',

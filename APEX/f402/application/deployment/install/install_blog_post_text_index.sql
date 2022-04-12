@@ -1,7 +1,7 @@
-prompt --application/deployment/install/install_text_index
+prompt --application/deployment/install/install_blog_post_text_index
 begin
 --   Manifest
---     INSTALL: INSTALL-Text index
+--     INSTALL: INSTALL-Blog post text index
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
@@ -14,7 +14,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_install_script(
  p_id=>wwv_flow_api.id(41212685070708550)
 ,p_install_id=>wwv_flow_api.id(31706870664802069)
-,p_name=>'Text index'
+,p_name=>'Blog post text index'
 ,p_sequence=>20
 ,p_script_type=>'INSTALL'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(

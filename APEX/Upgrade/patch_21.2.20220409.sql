@@ -1,37 +1,51 @@
 --------------------------------------------------------
 --  Changes to table BLOG_COMMENT_FLAGS
 --------------------------------------------------------
--- drop constarint BLOG_COMMENT_FLAGS_CK2
+-- Drop constarint BLOG_COMMENT_FLAGS_CK2
 alter table blog_comment_flags drop
-  constraint blog_comment_flags_ck2;
+  constraint blog_comment_flags_ck2
+;
 -- Update table BLOG_COMMENT_FLAGS
 update blog_comment_flags
   set flag = 'UNREAD'
 where 1 = 1
   and flag = 'NEW'
 ;
--- Add check constraint BLOG_COMMENT_FLAGS_CK2
+-- Add new check constraint BLOG_COMMENT_FLAGS_CK2
 alter table blog_comment_flags add
   constraint blog_comment_flags_ck2 check ( flag in( 'UNREAD', 'MODERATE' ) )
 ;
 
 --------------------------------------------------------
---  Changes to table  BLOG_COMMENT_SUBSCRIBERS
+--  Changes to table BLOG_COMMENT_SUBSCRIBERS
 --------------------------------------------------------
--- Add new column IS_ACTIVE
-alter table blog_comment_subscribers add is_active number( 1, 0 )
-;
--- Update default value to column IS_ACTIVE
-update blog_comment_subscribers
-  set is_active = 1
-;
--- Add not null constraint to column IS_ACTIVE
-alter table blog_comment_subscribers modify is_active not null
-;
--- Add check constarint BLOG_COMMENT_SUBSCRIBERS_CK2
-alter table blog_comment_subscribers add
-  constraint blog_comment_subscribers_ck2 check ( is_active in( 0, 1 ) )
-;
+declare
+  column_exists exception;
+  pragma exception_init ( column_exists, -1430 );
+begin
+  -- Add new column IS_ACTIVE
+  execute immediate
+    'alter table blog_comment_subscribers add is_active number( 1, 0 )'
+  ;
+  -- Update default value to column IS_ACTIVE
+  update blog_comment_subscribers
+    set is_active = 1
+  ;
+  -- Add not null constraint to column IS_ACTIVE
+  execute immediate
+    'alter table blog_comment_subscribers modify is_active not null'
+  ;
+  -- Add check constarint BLOG_COMMENT_SUBSCRIBERS_CK2
+  execute immediate
+    'alter table blog_comment_subscribers add
+      constraint blog_comment_subscribers_ck2 check ( is_active in( 0, 1 ) )'
+  ;
+-- Handle excepion ff column already exists
+-- Column might exists if application is installed from development Git branch
+exception when column_exists then
+  null;
+end;
+/
 
 --------------------------------------------------------
 --  Update metadata
@@ -68,17 +82,13 @@ alter table blog_init_items modify
 ;
 
 --------------------------------------------------------
---  Insert patch version
+--  Insert patch version info to BLOG_SETTINGS
 --------------------------------------------------------
-insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,attribute_value)
-  values ('10','0','PATCH_20220409','STRING','INTERNAL','Patch 21.2.20220409')
-;
-
---------------------------------------------------------
---  Update application version
---------------------------------------------------------
-update blog_settings
-  set attribute_value = 'Release 21.2.20220411'
-where 1 = 1
-  and attribute_name = 'G_APP_VERSION'
-;
+begin
+  insert into blog_settings (display_seq, is_nullable, attribute_name, data_type, attribute_group_message, attribute_value)
+    values (10, 0, 'PATCH_20220409', 'STRING', 'INTERNAL', 'Patch 21.2.20220409')
+  ;
+exception when dup_val_on_index then
+  null;
+end;
+/

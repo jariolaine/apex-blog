@@ -34,9 +34,6 @@ td[headers="COPY_URL"] {
   display: none!important;
   visibility: hidden!important;
 }
-.z-config-ig span.z-feature--child {
-  margin-left: 1rem;
-}
 /**************************************
 * Page Views Metric Bar column
 **************************************/
@@ -48,14 +45,9 @@ td[headers="COPY_URL"] {
 **************************************/
 blockquote::before {
   content: open-quote;
-  font-size: 2.2rem;
 }
 blockquote::after {
   content: close-quote;
-  font-size: 2.2rem;
-}
-blockquote p {
-  display: inline;
 }
 /**************************************
 * Post report

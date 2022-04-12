@@ -1,7 +1,7 @@
-prompt --application/deployment/install/upgrade_recreate_views_and_packages
+prompt --application/deployment/install/upgrade_database_objects_upgrade
 begin
 --   Manifest
---     INSTALL: UPGRADE-Recreate Views and Packages
+--     INSTALL: UPGRADE-Database objects upgrade
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
@@ -14,7 +14,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_install_script(
  p_id=>wwv_flow_api.id(11011362486329675)
 ,p_install_id=>wwv_flow_api.id(20741295540297154)
-,p_name=>'Recreate Views and Packages'
+,p_name=>'Database objects upgrade'
 ,p_sequence=>20
 ,p_script_type=>'UPGRADE'
 ,p_condition_type=>'EXISTS'
@@ -146,13 +146,14 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_FEATURES',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "BUILD_OPTION_NAME", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS_ACTIVE", "FEATURE_PAR'
-||'ENT", "HELP_MESSAGE") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "BUILD_OPTION_NAME", "BUILD_OPTION_GROUP", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS'
+||'_ACTIVE", "FEATURE_PARENT", "HELP_MESSAGE") AS',
 '  select',
 '   t2.id                        as id',
 '  ,t1.application_id            as application_id',
 '  ,t1.build_option_id           as build_option_id',
 '  ,t2.build_option_name         as build_option_name',
+'  ,t2.build_option_group        as build_option_group',
 '  ,t2.display_seq               as display_seq',
 '  ,apex_lang.message(',
 '    p_name => t2.build_option_name',
@@ -801,8 +802,7 @@ wwv_flow_api.create_install_script(
 '  function get_post_tags(',
 '    p_post_id         in varchar2,',
 '    p_sep             in varchar2 default '',''',
-'  ) return varchar2;',
-'----------------------------------------------------------------------------'))
+'  ) return varchar2;'))
 );
 wwv_flow_api.component_end;
 end;
@@ -819,7 +819,8 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----',
+'',
+'--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  admin app page 12',
 '  function get_category_title(',
@@ -1812,8 +1813,7 @@ wwv_flow_api.append_to_install_script(
 '  -- Called from:',
 '  --  public app page 1001',
 '  function validate_comment(',
-'    p_comment           in varchar2,',
-'    p_max_length        in number default 4000'))
+'    p_c'))
 );
 null;
 wwv_flow_api.component_end;
@@ -1831,7 +1831,8 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'omment           in varchar2,',
+'    p_max_length        in number default 4000',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '  -- Called from:',
@@ -2698,11 +2699,7 @@ wwv_flow_api.append_to_install_script(
 '    p_app_id  in varchar2,',
 '    p_tag     in varchar2,',
 '    p_button  in varchar2',
-'  ) return varchar2',
-'  as',
-'    l_tag varchar2(4000);',
-'    l_url varchar2(4000);',
-'  beg'))
+'  ) retur'))
 );
 null;
 wwv_flow_api.component_end;
@@ -2720,7 +2717,11 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'in',
+'n varchar2',
+'  as',
+'    l_tag varchar2(4000);',
+'    l_url varchar2(4000);',
+'  begin',
 '',
 '    -- generate HTML for tag',
 '    if p_tag is not null then',
@@ -3590,9 +3591,7 @@ wwv_flow_api.append_to_install_script(
 '',
 '  end get_post;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function get_category(',
-'    p_category_id in'))
+'---------------------------------------------------'))
 );
 null;
 wwv_flow_api.component_end;
@@ -3610,7 +3609,9 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' number,',
+'-----------------------------',
+'  function get_category(',
+'    p_category_id in number,',
 '    p_app_id      in varchar2 default null,',
 '    p_session     in varchar2 default null,',
 '    p_clear_cache in varchar2 default null,',
@@ -4498,10 +4499,7 @@ wwv_flow_api.append_to_install_script(
 '  end get_post_pagination;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  function get_category_title(',
-'    p_category_id in varchar2,',
-'    p_escape      in boolean',
-'  ) return va'))
+'  function get_category_title('))
 );
 null;
 wwv_flow_api.component_end;
@@ -4519,7 +4517,10 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'rchar2',
+'',
+'    p_category_id in varchar2,',
+'    p_escape      in boolean',
+'  ) return varchar2',
 '  as',
 '    l_category_id   number;',
 '    l_category_name varchar2(4000);',

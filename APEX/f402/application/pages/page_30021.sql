@@ -21,11 +21,12 @@ wwv_flow_api.create_page(
 ,p_reload_on_submit=>'A'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'ON'
+,p_group_id=>wwv_flow_api.id(28670259188910652)
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
 ,p_help_text=>'High level view of application logging information.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220408155746'
+,p_last_upd_yyyymmddhh24miss=>'20220412074403'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(87874963598811882)
@@ -207,13 +208,10 @@ wwv_flow_api.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select',
-'  count( distinct( l.ip_address ) ) as ip_address,',
-'  count( distinct( l.page_id ) )    as distinct_pages,',
-'  count(1)                          as page_views,',
-'  min( l.elapsed_time )             as min_elapsed_time,',
-'  avg( l.elapsed_time )             as avg_elapsed_time,',
-'  max( l.elapsed_time )             as max_elapsed_time',
+'select count(1)           as page_views',
+'  ,min( l.elapsed_time )  as min_elapsed_time',
+'  ,avg( l.elapsed_time )  as avg_elapsed_time',
+'  ,max( l.elapsed_time )  as max_elapsed_time',
 'from apex_workspace_activity_log l',
 'where 1 = 1',
 'and l.application_id = :G_PUB_APP_ID',
@@ -238,35 +236,8 @@ wwv_flow_api.create_report_region(
 ,p_plug_query_strip_html=>'Y'
 );
 wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(43933428550963906)
-,p_query_column_id=>1
-,p_column_alias=>'IP_ADDRESS'
-,p_column_display_sequence=>3
-,p_column_heading=>'IP addresses'
-,p_use_as_row_header=>'N'
-,p_column_format=>'999999999999990'
-,p_heading_alignment=>'LEFT'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-,p_required_patch=>wwv_flow_api.id(24687280101070827)
-);
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(43933827736963907)
-,p_query_column_id=>2
-,p_column_alias=>'DISTINCT_PAGES'
-,p_column_display_sequence=>2
-,p_column_heading=>'Distinct pages viewed'
-,p_use_as_row_header=>'N'
-,p_column_format=>'999999999999990'
-,p_column_alignment=>'RIGHT'
-,p_heading_alignment=>'LEFT'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-,p_required_patch=>wwv_flow_api.id(24687280101070827)
-);
-wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(43934201366963907)
-,p_query_column_id=>3
+,p_query_column_id=>1
 ,p_column_alias=>'PAGE_VIEWS'
 ,p_column_display_sequence=>1
 ,p_column_heading=>'Page views'
@@ -281,7 +252,7 @@ wwv_flow_api.create_report_columns(
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(43934668464963907)
-,p_query_column_id=>4
+,p_query_column_id=>2
 ,p_column_alias=>'MIN_ELAPSED_TIME'
 ,p_column_display_sequence=>4
 ,p_column_heading=>'Min elapsed (seconds)'
@@ -293,7 +264,7 @@ wwv_flow_api.create_report_columns(
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(43935098408963907)
-,p_query_column_id=>5
+,p_query_column_id=>3
 ,p_column_alias=>'AVG_ELAPSED_TIME'
 ,p_column_display_sequence=>5
 ,p_column_heading=>'Avg elapsed  (seconds)'
@@ -305,7 +276,7 @@ wwv_flow_api.create_report_columns(
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(43935465423963907)
-,p_query_column_id=>6
+,p_query_column_id=>4
 ,p_column_alias=>'MAX_ELAPSED_TIME'
 ,p_column_display_sequence=>6
 ,p_column_heading=>'Max elapsed  (seconds)'

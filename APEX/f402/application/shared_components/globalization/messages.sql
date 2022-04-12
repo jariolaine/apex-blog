@@ -399,7 +399,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28294042511155745)
 ,p_name=>'BLOG_SETTING_GROUP_UI'
-,p_message_text=>'UI'
+,p_message_text=>'Appearance'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19034721792903276)

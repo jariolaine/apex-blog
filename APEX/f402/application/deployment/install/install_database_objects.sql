@@ -1,7 +1,7 @@
 prompt --application/deployment/install/install_database_objects
 begin
 --   Manifest
---     INSTALL: INSTALL-Database Objects
+--     INSTALL: INSTALL-Database objects
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
@@ -14,7 +14,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_install_id=>wwv_flow_api.id(31706870664802069)
-,p_name=>'Database Objects'
+,p_name=>'Database objects'
 ,p_sequence=>10
 ,p_script_type=>'INSTALL'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -347,7 +347,7 @@ wwv_flow_api.create_install_script(
 ')',
 '/',
 '--------------------------------------------------------',
-'--  DDL for Table BLOG_',
+'--  DDL for Table BLOG_POST_UDS',
 '--------------------------------------------------------',
 'create table blog_post_uds(',
 '  id number( 38, 0 ) not null,',
@@ -357,7 +357,7 @@ wwv_flow_api.create_install_script(
 '	changed_on timestamp( 6 ) with local time zone not null,',
 '	changed_by varchar2( 256 char ) not null,',
 '  post_id number( 38, 0 ) not null,',
-'  dummy char( 1 ) default ''X'' not null,',
+'  dummy char( 1 byte ) default ''X'' not null,',
 '	constraint blog_post_uds_pk primary key( id ),',
 '  constraint blog_post_uds_uk1 unique( post_id ),',
 '  constraint blog_post_uds_ck1 check( row_version > 0 )',
@@ -600,13 +600,14 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_FEATURES',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "BUILD_OPTION_NAME", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS_ACTIVE", "FEATURE_PAR'
-||'ENT", "HELP_MESSAGE") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "BUILD_OPTION_NAME", "BUILD_OPTION_GROUP", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS'
+||'_ACTIVE", "FEATURE_PARENT", "HELP_MESSAGE") AS',
 '  select',
 '   t2.id                        as id',
 '  ,t1.application_id            as application_id',
 '  ,t1.build_option_id           as build_option_id',
 '  ,t2.build_option_name         as build_option_name',
+'  ,t2.build_option_group        as build_option_group',
 '  ,t2.display_seq               as display_seq',
 '  ,apex_lang.message(',
 '    p_name => t2.build_option_name',
@@ -736,9 +737,7 @@ wwv_flow_api.create_install_script(
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "ATTRIBUTE_VALUE", "DATA_TYPE", "ATTRIBUTE_MESSAGE", "ATTRIBUTE_DESC", "A'
 ||'TTRIBUTE_GROUP_MESSAGE", "ATTRIBUTE_GROUP", "POST_EXPRESSION", "INT_MIN", "INT_MAX", "HELP_MESSAGE") AS',
 '  select',
-'   t1.id                      as id',
-'  ,t1.row_version             as row_version',
-'  ,t1.created_on           '))
+'   t1.id            '))
 );
 wwv_flow_api.component_end;
 end;
@@ -755,7 +754,9 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   as created_on',
+'          as id',
+'  ,t1.row_version             as row_version',
+'  ,t1.created_on              as created_on',
 '  ,lower(t1.created_by)       as created_by',
 '  ,t1.changed_on              as changed_on',
 '  ,lower(t1.changed_by)       as changed_by',
@@ -1539,8 +1540,7 @@ wwv_flow_api.append_to_install_script(
 '      end if;',
 '',
 '      -- If no associated page item/tabular form column has been set, we can use',
-'      -- apex_error.auto_set_associated_item to automatically guess the affected',
-'      -- error field by examine the ORA error for constrai'))
+'      -- apex_error.auto_set_associated_item to au'))
 );
 null;
 wwv_flow_api.component_end;
@@ -1558,7 +1558,8 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'nt names or column names.',
+'tomatically guess the affected',
+'      -- error field by examine the ORA error for constraint names or column names.',
 '      if l_result.page_item_name is null',
 '      and l_result.column_alias is null then',
 '',
@@ -2516,12 +2517,7 @@ wwv_flow_api.append_to_install_script(
 '    update blog_post_tags',
 '    set display_seq = p_display_seq',
 '    where 1 = 1',
-'    and post_id = p_post_id',
-'    and tag_id = p_tag_id',
-'    and display_seq != p_display_seq',
-'    ;',
-'',
-'  en'))
+'    and post_id ='))
 );
 null;
 wwv_flow_api.component_end;
@@ -2539,7 +2535,12 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'d add_tag_to_post;',
+' p_post_id',
+'    and tag_id = p_tag_id',
+'    and display_seq != p_display_seq',
+'    ;',
+'',
+'  end add_tag_to_post;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure cleanup_post_tags(',
@@ -3524,11 +3525,7 @@ wwv_flow_api.append_to_install_script(
 '    p_plugin in            apex_plugin.t_plugin,',
 '    p_param  in            apex_plugin.t_item_validation_param,',
 '    p_result in out nocopy apex_plugin.t_item_validation_result',
-'  )',
-'  as',
-'    l_answer  varchar2(4000);',
-'    l_value   varchar2(4000);',
-'    l_result  boolean'))
+'  )'))
 );
 null;
 wwv_flow_api.component_end;
@@ -3546,7 +3543,11 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-';',
+'',
+'  as',
+'    l_answer  varchar2(4000);',
+'    l_value   varchar2(4000);',
+'    l_result  boolean;',
 '  begin',
 '',
 '    if p_param.value is not null then',
@@ -4408,8 +4409,7 @@ wwv_flow_api.append_to_install_script(
 '',
 '  end build_comment_html;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'-- Global functions and procedu'))
+'-----------------------'))
 );
 null;
 wwv_flow_api.component_end;
@@ -4427,7 +4427,8 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'res',
+'---------------------------------------------------------',
+'-- Global functions and procedures',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function format_comment(',
@@ -5331,8 +5332,7 @@ wwv_flow_api.append_to_install_script(
 '--                              sitemap_atags',
 '--    Jari Laine 30.10.2021 - Changed procedure sitemap_main to use view apex_application_pages',
 '--    Jari Laine 13.11.2021 - Changed procedure rss',
-'--    Jari Laine 30.12.2021 - Changed procedure rss_xsl. CSS file name moved to application settings',
-'--    Jari Laine 05.01.20'))
+'--    Jari Laine 30.12.2021 - Changed'))
 );
 null;
 wwv_flow_api.component_end;
@@ -5350,7 +5350,8 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'21 - Added parameter p_css_file to procedure rss_xsl',
+' procedure rss_xsl. CSS file name moved to application settings',
+'--    Jari Laine 05.01.2021 - Added parameter p_css_file to procedure rss_xsl',
 '--    Jari Laine 13.03.2022 - Added parameter p_process_nae to procedure sitemap_index',
 '--                            Removed build option check from query producing XML in procedure sitemap_index',
 '--',
@@ -6252,12 +6253,7 @@ wwv_flow_api.append_to_install_script(
 'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_TAGS_TRG"',
 'before',
 'insert or',
-'update on blog_post_tags',
-'for each row',
-'begin',
-'',
-'  if inserting then',
-'    :new.id           := coalesce( '))
+'update on blog_'))
 );
 null;
 wwv_flow_api.component_end;
@@ -6275,7 +6271,12 @@ wwv_flow_api.component_begin (
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-':new.id, blog_seq.nextval );',
+'post_tags',
+'for each row',
+'begin',
+'',
+'  if inserting then',
+'    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',

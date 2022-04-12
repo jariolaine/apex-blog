@@ -1,7 +1,6 @@
 --------------------------------------------------------------------------------
 -- The MIT License (MIT)
 -- 
--- Name: Blog Public Pages
 -- Copyright (c) 2021, 2022, Jari Laine
 -- 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -95,7 +94,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --       E-Mail:
 --         Templates:              1
 --     Supporting Objects:  Included
---       Install scripts:          3
+--       Install scripts:          4
 --       Validations:              3
 --   Version:         21.2.5
 --   Instance ID:     9502710254078678
@@ -163,7 +162,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220411135119'
+,p_last_upd_yyyymmddhh24miss=>'20220412131249'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>222
 ,p_ui_type_name => null
@@ -172,7 +171,6 @@ wwv_flow_api.create_flow(
 ,p_copyright_banner=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'The MIT License (MIT)',
 '',
-'Name: #APP_NAME#',
 'Copyright (c) 2021, #YEAR#, Jari Laine',
 '',
 'Permission is hereby granted, free of charge, to any person obtaining a copy of',
@@ -1723,8 +1721,8 @@ wwv_flow_api.create_page_group(
 );
 wwv_flow_api.create_page_group(
  p_id=>wwv_flow_api.id(8697986188142973)
-,p_group_name=>'Results'
-,p_group_desc=>'Pages showing results of search, categories, tags and single post'
+,p_group_name=>'Report'
+,p_group_desc=>'Pages showing report of search, categories, tags and single post'
 );
 wwv_flow_api.create_page_group(
  p_id=>wwv_flow_api.id(20718112665951240)
@@ -15837,7 +15835,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220406081338'
+,p_last_upd_yyyymmddhh24miss=>'20220411152539'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6432040642894060)
@@ -19108,7 +19106,7 @@ wwv_flow_api.create_install(
 'and view_name = ''BLOG_V_VERSION'''))
 ,p_deinstall_success_message=>'Deinstallation complete.'
 ,p_required_free_kb=>200
-,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
+,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE TYPE :CREATE VIEW'
 );
 end;
 /
@@ -19151,7 +19149,7 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,''Release 21.2.20220411'');',
+'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,''Release 21.2.20220412'');',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''20'',''0'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,null,blog_util.int_to_vc2(apex_applicat'
 ||'ion_install.get_application_id));',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''40'',''0'',''G_COMMENT_WATCH_MONTHS'',''INTEGER'',''INTERNAL'',null,''1'',''6'',''1'');',
@@ -19230,42 +19228,56 @@ wwv_flow_api.create_install_script(
 'select 1',
 'from blog_v_version',
 'where 1 = 1',
-'and application_date between 20220326 and 20220409'))
+'and application_date < 20220411'))
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',
 '--  Changes to table BLOG_COMMENT_FLAGS',
 '--------------------------------------------------------',
-'-- drop constarint BLOG_COMMENT_FLAGS_CK2',
+'-- Drop constarint BLOG_COMMENT_FLAGS_CK2',
 'alter table blog_comment_flags drop',
-'  constraint blog_comment_flags_ck2;',
+'  constraint blog_comment_flags_ck2',
+';',
 '-- Update table BLOG_COMMENT_FLAGS',
 'update blog_comment_flags',
 '  set flag = ''UNREAD''',
 'where 1 = 1',
 '  and flag = ''NEW''',
 ';',
-'-- Add check constraint BLOG_COMMENT_FLAGS_CK2',
+'-- Add new check constraint BLOG_COMMENT_FLAGS_CK2',
 'alter table blog_comment_flags add',
 '  constraint blog_comment_flags_ck2 check ( flag in( ''UNREAD'', ''MODERATE'' ) )',
 ';',
 '',
 '--------------------------------------------------------',
-'--  Changes to table  BLOG_COMMENT_SUBSCRIBERS',
+'--  Changes to table BLOG_COMMENT_SUBSCRIBERS',
 '--------------------------------------------------------',
-'-- Add new column IS_ACTIVE',
-'alter table blog_comment_subscribers add is_active number( 1, 0 )',
-';',
-'-- Update default value to column IS_ACTIVE',
-'update blog_comment_subscribers',
-'  set is_active = 1',
-';',
-'-- Add not null constraint to column IS_ACTIVE',
-'alter table blog_comment_subscribers modify is_active not null',
-';',
-'-- Add check constarint BLOG_COMMENT_SUBSCRIBERS_CK2',
-'alter table blog_comment_subscribers add',
-'  constraint blog_comment_subscribers_ck2 check ( is_active in( 0, 1 ) )',
-';',
+'declare',
+'  column_exists exception;',
+'  pragma exception_init ( column_exists, -1430 );',
+'begin',
+'  -- Add new column IS_ACTIVE',
+'  execute immediate',
+'    ''alter table blog_comment_subscribers add is_active number( 1, 0 )''',
+'  ;',
+'  -- Update default value to column IS_ACTIVE',
+'  update blog_comment_subscribers',
+'    set is_active = 1',
+'  ;',
+'  -- Add not null constraint to column IS_ACTIVE',
+'  execute immediate',
+'    ''alter table blog_comment_subscribers modify is_active not null''',
+'  ;',
+'  -- Add check constarint BLOG_COMMENT_SUBSCRIBERS_CK2',
+'  execute immediate',
+'    ''alter table blog_comment_subscribers add',
+'      constraint blog_comment_subscribers_ck2 check ( is_active in( 0, 1 ) )''',
+'  ;',
+'-- Handle excepion ff column already exists',
+'-- Column might exists if application is installed from development Git branch',
+'exception when column_exists then',
+'  null;',
+'end;',
+'/',
 '',
 '--------------------------------------------------------',
 '--  Update metadata',
@@ -19302,30 +19314,26 @@ wwv_flow_api.create_install_script(
 ';',
 '',
 '--------------------------------------------------------',
-'--  Insert patch version',
+'--  Insert patch version info to BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,attribute_value)',
-'  values (''10'',''0'',''PATCH_20220409'',''STRING'',''INTERNAL'',''Patch 21.2.20220409'')',
-';',
-'',
-'--------------------------------------------------------',
-'--  Update application version',
-'--------------------------------------------------------',
-'update blog_settings',
-'  set attribute_value = ''Release 21.2.20220411''',
-'where 1 = 1',
-'  and attribute_name = ''G_APP_VERSION''',
-';',
+'begin',
+'  insert into blog_settings (display_seq, is_nullable, attribute_name, data_type, attribute_group_message, attribute_value)',
+'    values (10, 0, ''PATCH_20220409'', ''STRING'', ''INTERNAL'', ''Patch 21.2.20220409'')',
+'  ;',
+'exception when dup_val_on_index then',
+'  null;',
+'end;',
+'/',
 ''))
 );
 end;
 /
-prompt --application/deployment/install/upgrade_recreate_views_and_packages
+prompt --application/deployment/install/upgrade_database_objects_upgrade
 begin
 wwv_flow_api.create_install_script(
  p_id=>wwv_flow_api.id(11011362486329675)
 ,p_install_id=>wwv_flow_api.id(20741295540297154)
-,p_name=>'Recreate Views and Packages'
+,p_name=>'Database objects upgrade'
 ,p_sequence=>20
 ,p_script_type=>'UPGRADE'
 ,p_condition_type=>'EXISTS'
@@ -19457,13 +19465,14 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_FEATURES',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "BUILD_OPTION_NAME", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS_ACTIVE", "FEATURE_PAR'
-||'ENT", "HELP_MESSAGE") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "BUILD_OPTION_NAME", "BUILD_OPTION_GROUP", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS'
+||'_ACTIVE", "FEATURE_PARENT", "HELP_MESSAGE") AS',
 '  select',
 '   t2.id                        as id',
 '  ,t1.application_id            as application_id',
 '  ,t1.build_option_id           as build_option_id',
 '  ,t2.build_option_name         as build_option_name',
+'  ,t2.build_option_group        as build_option_group',
 '  ,t2.display_seq               as display_seq',
 '  ,apex_lang.message(',
 '    p_name => t2.build_option_name',
@@ -20112,8 +20121,7 @@ wwv_flow_api.create_install_script(
 '  function get_post_tags(',
 '    p_post_id         in varchar2,',
 '    p_sep             in varchar2 default '',''',
-'  ) return varchar2;',
-'----------------------------------------------------------------------------'))
+'  ) return varchar2;'))
 );
 end;
 /
@@ -20121,7 +20129,8 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----',
+'',
+'--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  admin app page 12',
 '  function get_category_title(',
@@ -21114,8 +21123,7 @@ wwv_flow_api.append_to_install_script(
 '  -- Called from:',
 '  --  public app page 1001',
 '  function validate_comment(',
-'    p_comment           in varchar2,',
-'    p_max_length        in number default 4000'))
+'    p_c'))
 );
 null;
 end;
@@ -21124,7 +21132,8 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'omment           in varchar2,',
+'    p_max_length        in number default 4000',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '  -- Called from:',
@@ -21991,11 +22000,7 @@ wwv_flow_api.append_to_install_script(
 '    p_app_id  in varchar2,',
 '    p_tag     in varchar2,',
 '    p_button  in varchar2',
-'  ) return varchar2',
-'  as',
-'    l_tag varchar2(4000);',
-'    l_url varchar2(4000);',
-'  beg'))
+'  ) retur'))
 );
 null;
 end;
@@ -22004,7 +22009,11 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'in',
+'n varchar2',
+'  as',
+'    l_tag varchar2(4000);',
+'    l_url varchar2(4000);',
+'  begin',
 '',
 '    -- generate HTML for tag',
 '    if p_tag is not null then',
@@ -22874,9 +22883,7 @@ wwv_flow_api.append_to_install_script(
 '',
 '  end get_post;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function get_category(',
-'    p_category_id in'))
+'---------------------------------------------------'))
 );
 null;
 end;
@@ -22885,7 +22892,9 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' number,',
+'-----------------------------',
+'  function get_category(',
+'    p_category_id in number,',
 '    p_app_id      in varchar2 default null,',
 '    p_session     in varchar2 default null,',
 '    p_clear_cache in varchar2 default null,',
@@ -23773,10 +23782,7 @@ wwv_flow_api.append_to_install_script(
 '  end get_post_pagination;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  function get_category_title(',
-'    p_category_id in varchar2,',
-'    p_escape      in boolean',
-'  ) return va'))
+'  function get_category_title('))
 );
 null;
 end;
@@ -23785,7 +23791,10 @@ begin
 wwv_flow_api.append_to_install_script(
  p_id=>wwv_flow_api.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'rchar2',
+'',
+'    p_category_id in varchar2,',
+'    p_escape      in boolean',
+'  ) return varchar2',
 '  as',
 '    l_category_id   number;',
 '    l_category_name varchar2(4000);',
@@ -24644,12 +24653,34 @@ wwv_flow_api.append_to_install_script(
 null;
 end;
 /
+prompt --application/deployment/install/upgrade_update_version_info
+begin
+wwv_flow_api.create_install_script(
+ p_id=>wwv_flow_api.id(11258222492508804)
+,p_install_id=>wwv_flow_api.id(20741295540297154)
+,p_name=>'Update version info'
+,p_sequence=>30
+,p_script_type=>'UPGRADE'
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'--------------------------------------------------------',
+'--  Update application version',
+'--------------------------------------------------------',
+'update blog_settings',
+'  set attribute_value = ''Release 21.2.20220412''',
+'where 1 = 1',
+'  and attribute_name = ''G_APP_VERSION''',
+';',
+'',
+''))
+);
+end;
+/
 prompt --application/deployment/checks
 begin
 wwv_flow_api.create_install_check(
  p_id=>wwv_flow_api.id(38823841481522299)
 ,p_install_id=>wwv_flow_api.id(20741295540297154)
-,p_name=>'Blog administration application installed'
+,p_name=>'Supporting objects installed'
 ,p_sequence=>10
 ,p_check_type=>'EXISTS'
 ,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -24657,12 +24688,12 @@ wwv_flow_api.create_install_check(
 'from user_tables',
 'where 1 = 1',
 'and table_name = ''BLOG_SETTINGS'''))
-,p_failure_message=>'Supporting object not installed. Please install administration application and supporting objects using file blog_administration.sql first.'
+,p_failure_message=>'The required supporting objects are not installed. Please install administration application and supporting objects using file blog_administration.sql.'
 );
 wwv_flow_api.create_install_check(
  p_id=>wwv_flow_api.id(11013705994514070)
 ,p_install_id=>wwv_flow_api.id(20741295540297154)
-,p_name=>'Application upgrade precheck'
+,p_name=>'Pre-check for application update'
 ,p_sequence=>20
 ,p_check_type=>'EXISTS'
 ,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -24682,7 +24713,7 @@ wwv_flow_api.create_install_check(
 wwv_flow_api.create_install_check(
  p_id=>wwv_flow_api.id(11014025569539865)
 ,p_install_id=>wwv_flow_api.id(20741295540297154)
-,p_name=>'Installed application version'
+,p_name=>'Application update is supported'
 ,p_sequence=>30
 ,p_check_type=>'EXISTS'
 ,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(

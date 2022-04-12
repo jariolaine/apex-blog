@@ -14,7 +14,7 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_install_check(
  p_id=>wwv_flow_api.id(38823841481522299)
 ,p_install_id=>wwv_flow_api.id(20741295540297154)
-,p_name=>'Blog administration application installed'
+,p_name=>'Supporting objects installed'
 ,p_sequence=>10
 ,p_check_type=>'EXISTS'
 ,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -22,12 +22,12 @@ wwv_flow_api.create_install_check(
 'from user_tables',
 'where 1 = 1',
 'and table_name = ''BLOG_SETTINGS'''))
-,p_failure_message=>'Supporting object not installed. Please install administration application and supporting objects using file blog_administration.sql first.'
+,p_failure_message=>'The required supporting objects are not installed. Please install administration application and supporting objects using file blog_administration.sql.'
 );
 wwv_flow_api.create_install_check(
  p_id=>wwv_flow_api.id(11013705994514070)
 ,p_install_id=>wwv_flow_api.id(20741295540297154)
-,p_name=>'Application upgrade precheck'
+,p_name=>'Pre-check for application update'
 ,p_sequence=>20
 ,p_check_type=>'EXISTS'
 ,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -47,7 +47,7 @@ wwv_flow_api.create_install_check(
 wwv_flow_api.create_install_check(
  p_id=>wwv_flow_api.id(11014025569539865)
 ,p_install_id=>wwv_flow_api.id(20741295540297154)
-,p_name=>'Installed application version'
+,p_name=>'Application update is supported'
 ,p_sequence=>30
 ,p_check_type=>'EXISTS'
 ,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(

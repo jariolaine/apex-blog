@@ -34,7 +34,7 @@ wwv_flow_api.create_build_option(
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(35674953070739317)
-,p_build_option_name=>'BLOG_ADM_AUTH_APEX'
+,p_build_option_name=>'Use APEX authentication'
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
@@ -42,7 +42,7 @@ wwv_flow_api.create_build_option(
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(35675193135740905)
-,p_build_option_name=>'BLOG_ADM_AUTH_GOOGLE'
+,p_build_option_name=>'Use Google authentication'
 ,p_build_option_status=>'EXCLUDE'
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
