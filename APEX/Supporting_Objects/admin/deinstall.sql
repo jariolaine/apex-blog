@@ -67,32 +67,31 @@ drop view blog_v_posts;
 drop view blog_v_posts_last20;
 drop view blog_v_post_tags;
 drop view blog_v_tags;
+drop view blog_v_version;
 --------------------------------------------------------
 --  Drop text index section groups
 --------------------------------------------------------
 begin
-ctx_ddl.drop_section_group( 'BLOG_POST_UDS_SG' );
+  ctx_ddl.drop_section_group( 'BLOG_POST_UDS_SG' );
 end;
 /
 --------------------------------------------------------
 --  Drop text index preferences
 --------------------------------------------------------
 begin
-ctx_ddl.drop_preference( 'BLOG_POST_UDS_DS' );
-ctx_ddl.drop_preference( 'BLOG_POST_UDS_LX' );
+  ctx_ddl.drop_preference( 'BLOG_POST_UDS_DS' );
+  ctx_ddl.drop_preference( 'BLOG_POST_UDS_LX' );
 end;
 /
 --------------------------------------------------------
---  Drop view BLOG_V_VERSION if exists
+--  Drop view BLOG_V_VERSION
 --------------------------------------------------------
+declare
+  view_not_exists exception;
+  pragma exception_init ( view_not_exists, -942 );
 begin
-  for c1 in(
-    select 1
-    from user_views
-    where view_name = 'BLOG_V_VERSION'
-  ) loop
-    execute immediate 'drop view blog_v_version';
-  end loop;
+  execute immediate 'drop view blog_v_version';
+exception when view_not_exists then
+  null;
 end;
 /
-

@@ -21,8 +21,8 @@ wwv_flow_api.create_page_group(
 );
 wwv_flow_api.create_page_group(
  p_id=>wwv_flow_api.id(8697986188142973)
-,p_group_name=>'Results'
-,p_group_desc=>'Pages showing results of search, categories, tags and single post'
+,p_group_name=>'Report'
+,p_group_desc=>'Pages showing report of search, categories, tags and single post'
 );
 wwv_flow_api.create_page_group(
  p_id=>wwv_flow_api.id(20718112665951240)

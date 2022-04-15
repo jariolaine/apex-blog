@@ -18,13 +18,11 @@ wwv_flow_api.create_install_script(
 ,p_sequence=>30
 ,p_script_type=>'INSTALL'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'--',
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
 'insert into blog_settings (display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values (''30'',''0'',''G_ADMIN_APP_ID'',''STRING'',''INTERNAL'',null,null,null,blog_util.int_to_vc2(apex_applic'
 ||'ation_install.get_application_id));',
-'',
 ''))
 );
 wwv_flow_api.component_end;

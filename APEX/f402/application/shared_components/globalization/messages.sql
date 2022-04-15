@@ -55,6 +55,16 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Category with same name already exists.'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11497889124886694)
+,p_name=>'BLOG_COMMENTS_FK1'
+,p_message_text=>'There are comments in this post. Please delete the comments first.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11496972742855356)
+,p_name=>'BLOG_COMMENTS_FK2'
+,p_message_text=>'This comment has been replied. Please delete the reply first.'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(22951494877017022)
 ,p_name=>'BLOG_CONFIRM_FILE_OVERWRITE'
 ,p_message_text=>'Following file(s) already exists. Please confirm file overwrite.'
@@ -137,7 +147,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28283165676427890)
 ,p_name=>'BLOG_FEATURE_MODERATE_COMMENTS'
-,p_message_text=>'Comments need to moderated'
+,p_message_text=>'Comments need to approve'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27923224953053769)
@@ -242,7 +252,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21480924593335899)
 ,p_name=>'BLOG_HELP_FEATURE_MODERATE_COMMENTS'
-,p_message_text=>'Comments must be moderated before they are be published.'
+,p_message_text=>'Comments must be approved manually before they are be published.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21481423437369380)
@@ -303,8 +313,8 @@ wwv_flow_api.create_message(
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(65392119713598778)
-,p_name=>'BLOG_HELP_G_CANONICAL_URL'
-,p_message_text=>'Sever URL part used for pages header link rel="canonical". Example https://example.com.'
+,p_name=>'BLOG_HELP_G_CANONICAL_HOST'
+,p_message_text=>'Protocol and host used for pages header link rel="canonical", RSS feed and sitemap. Example https://example.com. If empty, current URL protocol and host is used.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19895931361259762)
@@ -399,7 +409,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28294042511155745)
 ,p_name=>'BLOG_SETTING_GROUP_UI'
-,p_message_text=>'UI'
+,p_message_text=>'Appearance'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19034721792903276)
@@ -423,8 +433,8 @@ wwv_flow_api.create_message(
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19058970469252490)
-,p_name=>'BLOG_SETTING_G_CANONICAL_URL'
-,p_message_text=>'Canonical server URL'
+,p_name=>'BLOG_SETTING_G_CANONICAL_HOST'
+,p_message_text=>'Canonical protocol and host for URLs'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(40622046631847902)

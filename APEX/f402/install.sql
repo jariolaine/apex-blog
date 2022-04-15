@@ -39,7 +39,6 @@ prompt --install
 @@application/shared_components/navigation/tabs/standard.sql
 @@application/shared_components/navigation/tabs/parent.sql
 @@application/shared_components/user_interface/lovs/categories.sql
-@@application/shared_components/user_interface/lovs/comment_flag.sql
 @@application/shared_components/user_interface/lovs/comment_status.sql
 @@application/shared_components/user_interface/lovs/is_active.sql
 @@application/shared_components/user_interface/lovs/link_status.sql
@@ -170,7 +169,7 @@ prompt --install
 @@application/deployment/definition.sql
 @@application/deployment/install/upgrade_create_view_blog_v_version.sql
 @@application/deployment/install/install_database_objects.sql
-@@application/deployment/install/install_text_index.sql
+@@application/deployment/install/install_blog_post_text_index.sql
 @@application/deployment/install/install_metadata.sql
 @@application/deployment/checks.sql
 @@application/deployment/buildoptions.sql

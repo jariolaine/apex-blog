@@ -13,10 +13,13 @@ as
 --                            New functions validate_email and is_email_verified
 --    Jari Laine 18.04.2021 - New functions is_email
 --    Jari Laine 30.10.2021 - Removed functions validate_email and is_email_verified
+--    Jari Laine 13.04.2022 - Posibility add multiple flags using procedure flag_comment
+--                            Posibility remove multiple flags using procedure unflag_comment
 --
 --  TO DO:
 --    #1  comment HTML validation should be improved
 --    #2  email validation should be improved
+--
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   -- Called from:
@@ -44,14 +47,14 @@ as
 --  public app page 1001
   procedure flag_comment(
     p_comment_id        in varchar2,
-    p_flag              in varchar2
+    p_flags             in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --
   procedure unflag_comment(
     p_comment_id        in varchar2,
-    p_flag              in varchar2
+    p_flags             in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -410,30 +413,50 @@ as
 --------------------------------------------------------------------------------
   procedure flag_comment(
     p_comment_id  in varchar2,
-    p_flag        in varchar2
+    p_flags       in varchar2
   )
   as
+    l_flags apex_t_varchar2;
   begin
-    insert into blog_comment_flags( comment_id, flag)
-      values( p_comment_id, p_flag)
-    ;
-  exception when dup_val_on_index
-  then
-    null;
+
+    l_flags := apex_string.split( p_flags, ':' );
+
+    for i in 1 .. l_flags.count
+    loop
+
+      begin
+        insert into blog_comment_flags( comment_id, flag )
+          values( p_comment_id, l_flags(i) )
+        ;
+      exception when dup_val_on_index
+      then
+        null;
+      end;
+
+    end loop;
+
   end flag_comment;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure unflag_comment(
     p_comment_id  in varchar2,
-    p_flag        in varchar2
+    p_flags       in varchar2
   )
   as
+    l_flags apex_t_varchar2;
   begin
-    delete from blog_comment_flags
-    where 1 = 1
-      and comment_id = p_comment_id
-      and flag = p_flag
-    ;
+
+    l_flags := apex_string.split( p_flags, ':' );
+
+    for i in 1 .. l_flags.count
+    loop
+      delete from blog_comment_flags
+      where 1 = 1
+        and comment_id = p_comment_id
+        and flag = l_flags(i)
+      ;
+    end loop;
+
   end unflag_comment;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

@@ -20,7 +20,7 @@ wwv_flow_api.create_page(
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8574375481518289)
 ,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog.admin.tagsIG.initOnPageLoad({',
+'blog.admin.configIG.initOnPageLoad({',
 '  regionID: "features"',
 '  ,btnSave: "btn-ig-save"',
 '});'))
@@ -28,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220407074046'
+,p_last_upd_yyyymmddhh24miss=>'20220414182822'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27063074415689131)
@@ -45,7 +45,11 @@ wwv_flow_api.create_page_plug(
 '  ,v1.application_id        as application_id',
 '  ,v1.display_seq           as display_seq',
 '  ,v1.feature_name          as feature_name',
-'  ,v1.feature_group         as feature_group',
+'  ,apex_string.format(',
+'     p_message => ''<span data-sort-order="%s" class="u-bold">%s</span>''',
+'    ,p0 => v1.feature_group_seq',
+'    ,p1 => apex_escape.html( v1.feature_group )',
+'  )                         as feature_group',
 '  ,v1.build_option_status   as status',
 '  ,v1.help_message          as help_message',
 '  ,v1.last_updated_on       as last_updated',
@@ -53,17 +57,23 @@ wwv_flow_api.create_page_plug(
 '  ,v1.build_option_name     as build_option_name',
 '  ,case',
 '    when v1.feature_parent is null',
-'    then ''z-feature''',
-'    else ''z-feature--child''',
+'    then ''margin-left-none''',
+'    else ''margin-left-md''',
 '  end                       as feature_name_class',
 'from #OWNER#.blog_v_all_features v1',
 'where 1 = 1',
 'and v1.application_id = :G_PUB_APP_ID',
-'and case when apex_util.get_build_option_status(',
-'   p_application_id    => :G_PUB_APP_ID',
-'  ,p_build_option_name => v1.feature_parent',
-') = ''EXCLUDE''',
-'  then 0',
+'and case',
+'  when v1.feature_parent is not null',
+'    then case',
+'      when ',
+'        apex_util.get_build_option_status(',
+'           p_application_id     => v1.application_id ',
+'          ,p_build_option_name  => v1.feature_parent',
+'        ) = ''INCLUDE''',
+'      then 1',
+'      else 0',
+'    end',
 '  else v1.is_active',
 'end = 1',
 '',
@@ -83,6 +93,7 @@ wwv_flow_api.create_region_column(
 ,p_heading_alignment=>'LEFT'
 ,p_display_sequence=>80
 ,p_value_alignment=>'LEFT'
+,p_value_css_classes=>'padding-left-md'
 ,p_stretch=>'A'
 ,p_attribute_01=>'<span class="&FEATURE_NAME_CLASS.">&FEATURE_NAME.</span>'
 ,p_filter_is_required=>false
@@ -221,8 +232,7 @@ wwv_flow_api.create_region_column(
 ,p_display_sequence=>70
 ,p_value_alignment=>'LEFT'
 ,p_stretch=>'A'
-,p_attribute_02=>'VALUE'
-,p_attribute_05=>'PLAIN'
+,p_attribute_05=>'HTML'
 ,p_enable_filter=>false
 ,p_filter_is_required=>false
 ,p_use_as_row_header=>false
@@ -252,7 +262,7 @@ wwv_flow_api.create_region_column(
 ,p_use_as_row_header=>false
 ,p_enable_sort_group=>true
 ,p_enable_control_break=>true
-,p_enable_hide=>false
+,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>false
 );
@@ -353,7 +363,6 @@ wwv_flow_api.create_interactive_grid(
 ,p_define_chart_view=>false
 ,p_enable_download=>false
 ,p_download_formats=>null
-,p_enable_mail_download=>true
 ,p_fixed_header=>'NONE'
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false

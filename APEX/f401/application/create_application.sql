@@ -47,10 +47,10 @@ wwv_flow_api.create_flow(
 '</span>'))
 ,p_app_builder_icon_name=>'app-icon.svg'
 ,p_favicons=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<link rel="apple-touch-icon" sizes="180x180" href="#APP_IMAGES#ico/apple-touch-icon.png">',
-'<link rel="icon" type="image/png" sizes="32x32" href="#APP_IMAGES#ico/favicon-32x32.png">',
-'<link rel="icon" type="image/png" sizes="16x16" href="#APP_IMAGES#ico/favicon-16x16.png">',
-'<link rel="shortcut icon" href="#APP_IMAGES#ico/favicon.ico">'))
+'<link rel="apple-touch-icon" sizes="180x180" href="#APP_FILES#ico/apple-touch-icon.png">',
+'<link rel="icon" type="image/png" sizes="32x32" href="#APP_FILES#ico/favicon-32x32.png">',
+'<link rel="icon" type="image/png" sizes="16x16" href="#APP_FILES#ico/favicon-16x16.png">',
+'<link rel="shortcut icon" href="#APP_FILES#ico/favicon.ico">'))
 ,p_public_user=>'APEX_PUBLIC_USER'
 ,p_proxy_server=>nvl(wwv_flow_application_install.get_proxy,'')
 ,p_no_proxy_domains=>nvl(wwv_flow_application_install.get_no_proxy_domains,'')
@@ -66,16 +66,15 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220411135119'
+,p_last_upd_yyyymmddhh24miss=>'20220415062826'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>222
+,p_files_version=>234
 ,p_ui_type_name => null
 ,p_print_server_type=>'INSTANCE'
 ,p_is_pwa=>'N'
 ,p_copyright_banner=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'The MIT License (MIT)',
 '',
-'Name: #APP_NAME#',
 'Copyright (c) 2021, #YEAR#, Jari Laine',
 '',
 'Permission is hereby granted, free of charge, to any person obtaining a copy of',

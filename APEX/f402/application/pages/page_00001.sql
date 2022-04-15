@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220410030418'
+,p_last_upd_yyyymmddhh24miss=>'20220412074117'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8582113239518316)
@@ -69,12 +69,6 @@ wwv_flow_api.create_report_region(
 '      else 0',
 '    end',
 '   )                              as num_scheduled_posts',
-'  ,sum(',
-'    case when post_status not in( ''PUBLISHED'', ''DRAFT'', ''SCHEDULED'')',
-'      then 1',
-'      else 0',
-'    end',
-'   )                              as num_disabled_posts',
 'from blog_v_all_posts'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
@@ -132,18 +126,6 @@ wwv_flow_api.create_report_columns(
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(37647322674287139)
-,p_query_column_id=>5
-,p_column_alias=>'NUM_DISABLED_POSTS'
-,p_column_display_sequence=>70
-,p_column_heading=>'Disabled'
-,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-,p_required_patch=>wwv_flow_api.id(24687280101070827)
-);
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(37647496544287140)
 ,p_name=>'Comments'
@@ -160,7 +142,6 @@ wwv_flow_api.create_report_region(
 '  ,sum(unread_comments_count)     as num_unread_comments',
 '  ,sum(moderate_comments_count)   as num_moderate_comments',
 '  ,sum(published_comments_count)  as num_published_comments',
-'  ,sum(disabled_comments_count)   as num_disabled_comments',
 'from blog_v_all_posts'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
@@ -217,18 +198,6 @@ wwv_flow_api.create_report_columns(
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
-);
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(37648440064287150)
-,p_query_column_id=>5
-,p_column_alias=>'NUM_DISABLED_COMMENTS'
-,p_column_display_sequence=>50
-,p_column_heading=>'Disabled'
-,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-,p_required_patch=>wwv_flow_api.id(24687280101070827)
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(145874845182292377)

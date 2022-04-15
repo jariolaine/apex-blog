@@ -115,6 +115,7 @@ blockquote::after {
 /**************************************
 * APEX 21.2:
 *   fix search engine style pagination
+*   https://community.oracle.com/tech/developers/discussion/4494954/bug-ut-21-2-search-engine-pagination-misalignment
 **************************************/
 .t-Report-paginationText strong {
   display: inline-block;
@@ -149,17 +150,17 @@ blockquote::after {
 .z-post--header {
   clear: both;
 }
-.z-post--header h1 {
+.z-post--header .z-post--title {
   font-size: 1.625em;
-  margin: 0 0 0.125rem;
+  margin: 0 0 0.25rem;
 }
-.z-post--header h2 {
+.z-post--header .z-post--category {
   font-size: 1em;
-  margin: 0 0 1.625rem;
+  margin: 0 0 2rem;
 }
-.z-post--header h3 {
+.z-post--header .z-post--date {
   font-size: 1em;
-  margin: 0 0 0.125rem;
+  margin: 0 0 0.25rem;
 }
 .z-post--body img {
   max-width: 100%;
@@ -217,7 +218,7 @@ blockquote::after {
     padding: 0.75rem;
     margin-bottom: 1rem;
   }
-  .z-post--header h1 {
+  .z-post--header .z-post--title {
     font-size: 1.375em;
   }
   /*

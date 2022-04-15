@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211218033632'
+,p_last_upd_yyyymmddhh24miss=>'20220414072623'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8575301514518303)
@@ -47,7 +47,7 @@ wwv_flow_api.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8475374748518195)
-,p_plug_display_sequence=>20
+,p_plug_display_sequence=>40
 ,p_plug_display_point=>'SUB_REGIONS'
 ,p_plug_source=>'apex_lang.emit_language_selector_list;'
 ,p_plug_source_type=>'NATIVE_PLSQL'
@@ -56,15 +56,35 @@ wwv_flow_api.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
 wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(59284401267356420)
+ p_id=>wwv_flow_api.id(20999976530414726)
 ,p_plug_name=>'Another Identity Provider'
 ,p_parent_plug_id=>wwv_flow_api.id(8575301514518303)
-,p_region_css_classes=>'t-Login-buttons'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_api.id(8475374748518195)
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'SUB_REGIONS'
 ,p_plug_source=>'"SIGN_IN_USING_ANOTHER_IDENTITY_PROVIDER"'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_plug_display_condition_type=>'EXPRESSION'
+,p_plug_display_when_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex_util.get_build_option_status(',
+'   p_application_id     => :APP_ID',
+'  ,p_build_option_name  => ''Use APEX authentication''',
+') = ''INCLUDE'''))
+,p_plug_display_when_cond2=>'PLSQL'
+,p_required_patch=>wwv_flow_api.id(35675193135740905)
+,p_attribute_01=>'Y'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_api.create_page_plug(
+ p_id=>wwv_flow_api.id(59284401267356420)
+,p_plug_name=>'Google Authentication'
+,p_parent_plug_id=>wwv_flow_api.id(8575301514518303)
+,p_region_css_classes=>'t-Login-buttons'
+,p_region_template_options=>'#DEFAULT#'
+,p_plug_template=>wwv_flow_api.id(8475374748518195)
+,p_plug_display_sequence=>20
+,p_plug_display_point=>'SUB_REGIONS'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_required_patch=>wwv_flow_api.id(35675193135740905)
 ,p_attribute_01=>'Y'

@@ -10,23 +10,60 @@
   }
 }
 /**************************************
+* Page views metric bar column
+**************************************/
+#VIEW_PCT_GRAPH{
+  width: 20%;
+}
+/**************************************
 * IR files
 **************************************/
 td[headers="COPY_URL"] {
   padding: 0;
 }
 /**************************************
-* IR post report
+* Posts IR detail view
 **************************************/
 .z-post--IR {
-  margin: 2em 1rem
+  font-size: 1rem;
+  margin: 2em 1rem;
+}
+/**************************************
+* Comments IR detail view
+**************************************/
+.z-comment-IR {
+  display: flex;
+  margin: 2em 1rem;
+  padding: @post-padding;
+  background-color: var(--ut-component-background-color);
+  border:var(--ut-component-border-width) solid var(--ut-component-border-color);
+  border-radius: var(--ut-component-border-radius);
+  box-shadow: var(--ut-shadow-sm);
+  .z-commentContainer {
+    margin-left: 1rem;
+    width: 100%;
+    overflow: hidden;
+    .z-commentTitle {
+      font-size: 1.5em;
+      color: var(--ut-component-text-title-color);
+    }
+    .z-commentSubtitle {
+      font-size: 0.875rem;
+      color: var(--ut-component-text-subtitle-color);
+      margin: 0.5rem 0 1.625rem;
+    }
+    .z-commentBody {
+      font-size: 0.875rem;
+      color: var(--ut-component-text-default-color);
+    }
+  }
 }
 /**************************************
 * Interactive Reports link column
 **************************************/
 .z-IR--iconLinks {
 	tr > :first-child {
-		padding: 0.25rem;
+		padding: 0.25rem 0.5rem;
 		width: 0.1%;
 	}
 }
@@ -38,13 +75,4 @@ td[headers="COPY_URL"] {
   	display: none!important;
     visibility: hidden!important;
   }
-  span.z-feature--child {
-    margin-left: 1rem;
-  }
-}
-/**************************************
-* Page Views Metric Bar column
-**************************************/
-#VIEW_PCT_GRAPH{
-  width: 20%;
 }

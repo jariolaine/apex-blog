@@ -28,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220406081338'
+,p_last_upd_yyyymmddhh24miss=>'20220415045806'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6432040642894060)
@@ -50,6 +50,7 @@ wwv_flow_api.create_report_region(
 '  ,v1.first_paragraph as body_html',
 '  ,txt.read_more      as read_more_link',
 '  ,null               as tags_html',
+'  ,v1.published_on    as pubdate',
 'from #OWNER#.blog_v_posts v1',
 'cross join(',
 '  select',
@@ -155,6 +156,17 @@ wwv_flow_api.create_report_columns(
 ,p_column_display_sequence=>8
 ,p_hidden_column=>'Y'
 ,p_derived_column=>'N'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(11415615306329114)
+,p_query_column_id=>9
+,p_column_alias=>'PUBDATE'
+,p_column_display_sequence=>18
+,p_column_heading=>'Pubdate'
+,p_use_as_row_header=>'N'
+,p_column_format=>'YYYY-MM-DD'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(24468458324361504)

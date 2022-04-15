@@ -32,7 +32,7 @@ wwv_flow_api.create_static_lov_data(
 wwv_flow_api.create_static_lov_data(
  p_id=>wwv_flow_api.id(37641623635238837)
 ,p_lov_disp_sequence=>3
-,p_lov_disp_value=>'Need Moderate'
+,p_lov_disp_value=>'Not approved'
 ,p_lov_return_value=>'MODERATE'
 );
 wwv_flow_api.component_end;

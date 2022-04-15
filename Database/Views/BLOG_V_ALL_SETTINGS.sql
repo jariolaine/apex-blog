@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_SETTINGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "ATTRIBUTE_VALUE", "DATA_TYPE", "ATTRIBUTE_MESSAGE", "ATTRIBUTE_DESC", "ATTRIBUTE_GROUP_MESSAGE", "ATTRIBUTE_GROUP", "POST_EXPRESSION", "INT_MIN", "INT_MAX", "HELP_MESSAGE") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "ATTRIBUTE_VALUE", "DATA_TYPE", "ATTRIBUTE_MESSAGE", "ATTRIBUTE_DESC", "ATTRIBUTE_GROUP_MESSAGE", "ATTRIBUTE_GROUP", "ATTRIBUTE_GROUP_SEQ", "POST_EXPRESSION", "INT_MIN", "INT_MAX", "HELP_MESSAGE") AS
   select
    t1.id                      as id
   ,t1.row_version             as row_version
@@ -22,6 +22,12 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATE
   ,apex_lang.message(
     p_name => t1.attribute_group_message
   )                           as attribute_group
+  ,(
+    select min( lkp.display_seq )
+    from blog_settings lkp
+    where 1 = 1
+      and lkp.attribute_group_message = t1.attribute_group_message
+  )                           as attribute_group_seq
   ,t1.post_expression         as post_expression
   ,t1.int_min                 as int_min
   ,t1.int_max                 as int_max

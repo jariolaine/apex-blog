@@ -20,8 +20,13 @@ as
 --    Jari Laine 23.05.2020 - Removed default from function get_tab parameter p_app_page_id
 --    Jari Laine 13.11.2021 - New funtions get_sitemap_index, get_rss and get get_rss_xsl
 --    Jari Laine 18.12.2021 - Moved procedure redirect_search to package blog_util.
+--    Jari Laine 14.03.2022 - New function get_canonical_host
 --
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Called from:
+--
+  function get_canonical_host return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --
@@ -172,6 +177,26 @@ as
 -- Global procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function get_canonical_host
+  return varchar2
+  as
+    l_url varchar2(4000);
+  begin
+
+    -- get canonical host from blog settings
+    l_url :=  blog_util.get_attribute_value( 'G_CANONICAL_HOST' );
+
+    -- if host not found from settings, use APEX provided value
+    if l_url is null
+    then
+      l_url := apex_util.host_url();
+    end if;
+
+    return l_url;
+
+  end get_canonical_host;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   function get_tab(
     p_app_page_id in varchar2,
     p_app_id      in varchar2 default null,
@@ -188,7 +213,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then blog_util.get_attribute_value( 'G_CANONICAL_URL' )
+      then blog_url.get_canonical_host
       end
       ||
       apex_page.get_url(
@@ -257,7 +282,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then blog_util.get_attribute_value( 'G_CANONICAL_URL' )
+      then blog_url.get_canonical_host
       end
       ||
       case p_encode_url
@@ -313,7 +338,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then blog_util.get_attribute_value( 'G_CANONICAL_URL' )
+      then blog_url.get_canonical_host
       end
       ||
       apex_page.get_url(
@@ -372,7 +397,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then blog_util.get_attribute_value( 'G_CANONICAL_URL' )
+      then blog_url.get_canonical_host
       end
       ||
       apex_page.get_url(
@@ -407,7 +432,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then blog_util.get_attribute_value( 'G_CANONICAL_URL' )
+      then blog_url.get_canonical_host
       end
       ||
       apex_page.get_url(
@@ -456,7 +481,7 @@ as
         ,p_plain_url => true
       );
 
-    return blog_util.get_attribute_value( 'G_CANONICAL_URL' ) || l_url;
+    return blog_url.get_canonical_host || l_url;
 
   end get_unsubscribe;
 --------------------------------------------------------------------------------
@@ -474,7 +499,7 @@ as
     -- If there isn't override custruct URL
     if l_rss_url is null
     then
-      l_rss_url := blog_util.get_attribute_value( 'G_CANONICAL_URL' )
+      l_rss_url := blog_url.get_canonical_host
         || apex_page.get_url(
           p_application => p_app_id
           ,p_page => p_app_page_id
@@ -501,7 +526,7 @@ as
     -- If there isn't override custruct XSL
     if l_xsl_url is null
     then
-      l_xsl_url := blog_util.get_attribute_value( 'G_CANONICAL_URL' )
+      l_xsl_url := blog_url.get_canonical_host
         || apex_page.get_url(
           p_application => p_app_id
           ,p_page => p_app_page_id
@@ -523,7 +548,7 @@ as
     l_sitemap_url varchar2(4000);
   begin
 
-    l_sitemap_url := blog_util.get_attribute_value( 'G_CANONICAL_URL' )
+    l_sitemap_url := blog_url.get_canonical_host
       || apex_page.get_url(
         p_application => p_app_id
         ,p_page => p_app_page_id

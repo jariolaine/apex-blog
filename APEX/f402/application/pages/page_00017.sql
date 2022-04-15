@@ -38,16 +38,16 @@ wwv_flow_api.create_page(
 '  flex-shrink: 0;',
 '}'))
 ,p_step_template=>wwv_flow_api.id(8457924893518181)
-,p_page_template_options=>'#DEFAULT#'
+,p_page_template_options=>'#DEFAULT#:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220408155746'
+,p_last_upd_yyyymmddhh24miss=>'20220412162706'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6849894493100859)
 ,p_plug_name=>'Link Details'
 ,p_region_css_classes=>'z-IR--iconLinks'
-,p_region_template_options=>'#DEFAULT#'
+,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
 ,p_plug_template=>wwv_flow_api.id(8495746153518209)
 ,p_plug_display_sequence=>20
 ,p_query_type=>'SQL'

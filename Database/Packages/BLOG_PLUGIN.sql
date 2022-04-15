@@ -10,6 +10,7 @@ as
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 22.04.2019 - Created
 --    Jari Laine 03.01.2020 - Comments to package specs
+--    Jari Laine 13.04.2022 - Bug fix to procedure validate_math_question_field error message handling
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -225,7 +226,7 @@ as
         ,p0 => p_item.plain_label
       );
 
-      if p_result.message = apex_escape.html(p_plugin.attribute_01) then
+      if p_result.message = apex_escape.html( upper( p_plugin.attribute_01 ) ) then
         p_result.message := p_plugin.attribute_01;
       end if;
 

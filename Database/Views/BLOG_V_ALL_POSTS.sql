@@ -74,7 +74,7 @@ select
       select 1
       from blog_comment_flags x1
       where 1 = 1
-      and x1.flag = 'UNREAD'
+      and x1.flag in( 'NEW', 'UNREAD' )
       and x1.comment_id = co.id
     )
   )                     as unread_comments_count
