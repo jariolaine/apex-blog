@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220412070203'
+,p_last_upd_yyyymmddhh24miss=>'20220414072623'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8575301514518303)

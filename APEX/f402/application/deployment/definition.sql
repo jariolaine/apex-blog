@@ -153,7 +153,6 @@ wwv_flow_api.create_install(
 '  null;',
 'end;',
 '/',
-'',
 ''))
 ,p_required_free_kb=>200
 ,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE TYPE :CREATE VIEW'

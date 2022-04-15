@@ -13,6 +13,6 @@ create table blog_comment_flags (
   constraint blog_comment_flags_pk primary key( id ),
   constraint blog_comment_flags_uk1 unique( comment_id, flag ),
   constraint blog_comment_flags_ck1 check( row_version > 0 ),
-  constraint blog_comment_flags_ck2 check( flag in( 'UNREAD', 'MODERATE') )
+  constraint blog_comment_flags_ck2 check( flag in( 'NEW', 'UNREAD', 'MODERATE' ) )
 )
 /

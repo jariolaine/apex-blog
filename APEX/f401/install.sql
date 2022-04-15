@@ -155,6 +155,7 @@ prompt --install
 @@application/deployment/definition.sql
 @@application/deployment/install/install_metadata.sql
 @@application/deployment/install/upgrade_patch_21_2_20220409.sql
+@@application/deployment/install/upgrade_patch_21_2_20220415.sql
 @@application/deployment/install/upgrade_database_objects_upgrade.sql
 @@application/deployment/install/upgrade_update_version_info.sql
 @@application/deployment/checks.sql

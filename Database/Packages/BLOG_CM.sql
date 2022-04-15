@@ -40,7 +40,8 @@ as
 --    Jari Laine 18.04.2021 - Function is_email moved to package BLOG_COMM
 --    Jari Laine 05.01.2022 - Removed unused parameters and variables from procedures: post_authentication, update_feature, get_blogger_details and add_blogger
 --    Jari Laine 27.03.2022 - Fixed bug on function get_first_paragraph when search nested elements
---                          - Removed obsolete procedures remove_unused_tags, purge_post_preview, purge_post_preview_job and save_post_preview
+--                            Removed obsolete procedures remove_unused_tags, purge_post_preview, purge_post_preview_job and save_post_preview
+--    Jari Laine 13.04.2022 - Bug fix to functions is_integer, is_url and is_date_format error message handling
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -900,7 +901,7 @@ as
         ,p1 => p_max
       );
 
-      if l_err_mesg = apex_escape.html( p_err_mesg )
+      if l_err_mesg = apex_escape.html( upper( p_err_mesg ) )
       then
         l_err_mesg := p_err_mesg;
       end if;
@@ -941,9 +942,7 @@ as
         p_name => p_err_mesg
       );
 
-      if l_err_mesg = apex_escape.html(
-        p_string => p_err_mesg
-      )
+      if l_err_mesg = apex_escape.html( upper( p_err_mesg ) )
       then
         l_err_mesg := p_err_mesg;
       end if;
@@ -972,9 +971,7 @@ as
       p_name => p_err_mesg
     );
 
-    if l_err_mesg = apex_escape.html(
-      p_string => p_err_mesg
-    )
+    if l_err_mesg = apex_escape.html( upper( p_err_mesg ) )
     then
       l_err_mesg := p_err_mesg;
     end if;

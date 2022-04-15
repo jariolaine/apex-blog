@@ -12,6 +12,30 @@ wwv_flow_api.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_api.create_dynamic_translation(
+ p_id=>wwv_flow_api.id(11746848860755354)
+,p_language=>'en'
+,p_from=>'New'
+,p_to=>'New'
+);
+wwv_flow_api.create_dynamic_translation(
+ p_id=>wwv_flow_api.id(11746907828757443)
+,p_language=>'en'
+,p_from=>'Unread'
+,p_to=>'Unread'
+);
+wwv_flow_api.create_dynamic_translation(
+ p_id=>wwv_flow_api.id(11747065673759313)
+,p_language=>'en'
+,p_from=>'Reply'
+,p_to=>'Reply'
+);
+wwv_flow_api.create_dynamic_translation(
+ p_id=>wwv_flow_api.id(11747184176760928)
+,p_language=>'en'
+,p_from=>'Read'
+,p_to=>'Read'
+);
+wwv_flow_api.create_dynamic_translation(
  p_id=>wwv_flow_api.id(17104002252498177)
 ,p_language=>'en'
 ,p_from=>'Disabled'
@@ -20,32 +44,20 @@ wwv_flow_api.create_dynamic_translation(
 wwv_flow_api.create_dynamic_translation(
  p_id=>wwv_flow_api.id(17104199513501849)
 ,p_language=>'en'
-,p_from=>'Edit Group'
-,p_to=>'Edit Group'
-);
-wwv_flow_api.create_dynamic_translation(
- p_id=>wwv_flow_api.id(17104268210504866)
-,p_language=>'en'
-,p_from=>'Add Link'
-,p_to=>'Add Link'
-);
-wwv_flow_api.create_dynamic_translation(
- p_id=>wwv_flow_api.id(17104369868507363)
-,p_language=>'en'
-,p_from=>'Category'
-,p_to=>'Category'
+,p_from=>'Enabled'
+,p_to=>'Enabled'
 );
 wwv_flow_api.create_dynamic_translation(
  p_id=>wwv_flow_api.id(17104494341511257)
 ,p_language=>'en'
-,p_from=>'Posts in category'
-,p_to=>'Posts in category'
+,p_from=>'Yes'
+,p_to=>'Yes'
 );
 wwv_flow_api.create_dynamic_translation(
  p_id=>wwv_flow_api.id(17104566945514541)
 ,p_language=>'en'
-,p_from=>'Select Group'
-,p_to=>'Select Group'
+,p_from=>'No'
+,p_to=>'No'
 );
 wwv_flow_api.component_end;
 end;

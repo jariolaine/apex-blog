@@ -14,21 +14,21 @@ wwv_flow_api.component_begin (
 wwv_flow_api.create_page(
  p_id=>20012
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
-,p_name=>'Basic Settings'
+,p_name=>'Settings'
 ,p_page_mode=>'MODAL'
-,p_step_title=>'Basic Settings'
+,p_step_title=>'Settings'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8574375481518289)
 ,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog.admin.configIG.initOnPageLoad({',
-'  regionID: "features"',
+'  regionID: "preferences"',
 '  ,btnSave: "btn-ig-save"',
 '});'))
 ,p_step_template=>wwv_flow_api.id(8456403392518180)
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220412125559'
+,p_last_upd_yyyymmddhh24miss=>'20220414182445'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -46,14 +46,7 @@ wwv_flow_api.create_page_plug(
 '  ,v1.display_seq               as display_seq',
 '  ,apex_string.format(',
 '     p_message => ''<span data-sort-order="%s" class="u-bold">%s</span>''',
-'    ,p0 =>',
-'      case v1.attribute_group_message',
-'        when ''BLOG_SETTING_GROUP_GENERAL'' then 1',
-'        when ''BLOG_SETTING_GROUP_REPORTS'' then 2',
-'        when ''BLOG_SETTING_GROUP_UI''      then 3',
-'        when ''BLOG_SETTING_GROUP_SEO''     then 4',
-'                                          else 999',
-'      end',
+'    ,p0 => v1.attribute_group_seq',
 '    ,p1 => apex_escape.html( v1.attribute_group )',
 '  )                             as attribute_group',
 '  ,v1.attribute_desc            as attribute_desc',
@@ -227,7 +220,7 @@ wwv_flow_api.create_region_column(
 ,p_filter_is_required=>false
 ,p_use_as_row_header=>false
 ,p_enable_sort_group=>true
-,p_enable_control_break=>false
+,p_enable_control_break=>true
 ,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>false

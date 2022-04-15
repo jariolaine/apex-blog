@@ -11,16 +11,7 @@ wwv_flow_api.component_begin (
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-wwv_flow_api.create_install_build_option(
- p_id=>wwv_flow_api.id(11210705905028046)
-,p_install_id=>wwv_flow_api.id(31706870664802069)
-,p_build_opt_id=>wwv_flow_api.id(35674953070739317)
-);
-wwv_flow_api.create_install_build_option(
- p_id=>wwv_flow_api.id(11210810464028046)
-,p_install_id=>wwv_flow_api.id(31706870664802069)
-,p_build_opt_id=>wwv_flow_api.id(35675193135740905)
-);
+null;
 wwv_flow_api.component_end;
 end;
 /

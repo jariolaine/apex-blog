@@ -28,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220412125624'
+,p_last_upd_yyyymmddhh24miss=>'20220414182822'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27063074415689131)
@@ -47,14 +47,7 @@ wwv_flow_api.create_page_plug(
 '  ,v1.feature_name          as feature_name',
 '  ,apex_string.format(',
 '     p_message => ''<span data-sort-order="%s" class="u-bold">%s</span>''',
-'    ,p0 =>',
-'      case v1.build_option_group',
-'        when ''BLOG_FEATURE_GROUP_PAGE''          then 1',
-'        when ''BLOG_FEATURE_GROUP_RIGHT_COLUMN''  then 2',
-'        when ''BLOG_FEATURE_GROUP_COMMENTS''      then 3',
-'        when ''BLOG_FEATURE_GROUP_MISC''          then 4',
-'                                                else 999',
-'      end',
+'    ,p0 => v1.feature_group_seq',
 '    ,p1 => apex_escape.html( v1.feature_group )',
 '  )                         as feature_group',
 '  ,v1.build_option_status   as status',
@@ -70,11 +63,17 @@ wwv_flow_api.create_page_plug(
 'from #OWNER#.blog_v_all_features v1',
 'where 1 = 1',
 'and v1.application_id = :G_PUB_APP_ID',
-'and case when apex_util.get_build_option_status(',
-'   p_application_id    => :G_PUB_APP_ID',
-'  ,p_build_option_name => v1.feature_parent',
-') = ''EXCLUDE''',
-'  then 0',
+'and case',
+'  when v1.feature_parent is not null',
+'    then case',
+'      when ',
+'        apex_util.get_build_option_status(',
+'           p_application_id     => v1.application_id ',
+'          ,p_build_option_name  => v1.feature_parent',
+'        ) = ''INCLUDE''',
+'      then 1',
+'      else 0',
+'    end',
 '  else v1.is_active',
 'end = 1',
 '',
@@ -263,7 +262,7 @@ wwv_flow_api.create_region_column(
 ,p_use_as_row_header=>false
 ,p_enable_sort_group=>true
 ,p_enable_control_break=>true
-,p_enable_hide=>false
+,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>false
 );

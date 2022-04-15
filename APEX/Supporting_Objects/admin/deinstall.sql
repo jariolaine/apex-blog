@@ -95,4 +95,3 @@ exception when view_not_exists then
   null;
 end;
 /
-

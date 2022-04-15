@@ -24,7 +24,7 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_browser_cache=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220313080255'
+,p_last_upd_yyyymmddhh24miss=>'20220412213659'
 );
 wwv_flow_api.create_page_branch(
  p_id=>wwv_flow_api.id(62674058371144805)
@@ -57,7 +57,7 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'rss.xsl'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_xml.rss_xsl(',
-'   p_ws_images  => :APP_IMAGES',
+'   p_ws_images  => :APP_FILES',
 '  ,p_css_file   => ''css/rss-xsl.min.css''',
 ');'))
 ,p_process_clob_language=>'PLSQL'

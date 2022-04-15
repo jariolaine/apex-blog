@@ -1,22 +1,4 @@
 --------------------------------------------------------
---  Changes to table BLOG_COMMENT_FLAGS
---------------------------------------------------------
--- Drop constarint BLOG_COMMENT_FLAGS_CK2
-alter table blog_comment_flags drop
-  constraint blog_comment_flags_ck2
-;
--- Update table BLOG_COMMENT_FLAGS
-update blog_comment_flags
-  set flag = 'UNREAD'
-where 1 = 1
-  and flag = 'NEW'
-;
--- Add new check constraint BLOG_COMMENT_FLAGS_CK2
-alter table blog_comment_flags add
-  constraint blog_comment_flags_ck2 check ( flag in( 'UNREAD', 'MODERATE' ) )
-;
-
---------------------------------------------------------
 --  Changes to table BLOG_COMMENT_SUBSCRIBERS
 --------------------------------------------------------
 declare
@@ -59,16 +41,6 @@ update blog_settings
   set attribute_name = 'G_APP_DATE_FORMAT'
 where 1 = 1
   and attribute_name = 'G_DATE_FORMAT'
-;
-update blog_settings
-  set is_nullable = 0
-where 1 = 1
-  and attribute_name = 'G_ADMIN_APP_ID'
-;
-update blog_settings
-  set is_nullable = 0
-where 1 = 1
-  and attribute_name = 'G_PUB_APP_ID'
 ;
 -- Update BLOG_INIT_ITEMS
 update blog_init_items

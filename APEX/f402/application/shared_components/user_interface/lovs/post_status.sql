@@ -38,13 +38,13 @@ wwv_flow_api.create_static_lov_data(
 wwv_flow_api.create_static_lov_data(
  p_id=>wwv_flow_api.id(3948151956719951)
 ,p_lov_disp_sequence=>40
-,p_lov_disp_value=>'Category is disabled'
+,p_lov_disp_value=>'Category disabled'
 ,p_lov_return_value=>'CATEGORY_DISABLED'
 );
 wwv_flow_api.create_static_lov_data(
  p_id=>wwv_flow_api.id(3947832275719950)
 ,p_lov_disp_sequence=>50
-,p_lov_disp_value=>'Blogger is disable'
+,p_lov_disp_value=>'Blogger disable'
 ,p_lov_return_value=>'BLOGGER_DISABLED'
 );
 wwv_flow_api.component_end;

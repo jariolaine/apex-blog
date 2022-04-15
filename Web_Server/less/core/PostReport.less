@@ -14,17 +14,17 @@
 }
 .z-post--header {
 	clear: both;
-	h1 {
+	.z-post--title {
 		font-size: @post-title-font-size;
-		margin: 0 0 0.125rem;
+		margin: 0 0 0.25rem;
 	}
-	h2 {
+	.z-post--category {
 		font-size: @post-category-font-size	;
-		margin: 0 0 1.625rem;
+		margin: 0 0 2rem;
 	}
-	h3 {
+	.z-post--date {
 		font-size: @post-date-font-size;
-		margin: 0 0 0.125rem;
+		margin: 0 0 0.25rem;
 	}
 }
 .z-post--body {
@@ -97,8 +97,11 @@
     padding: @post-padding - 0.25rem;
 		margin-bottom: @margin-medium;
   }
-  .z-post--header h1 {
-    font-size: @post-title-font-size - 0.25em;
+  .z-post--header {
+
+  	.z-post--title {
+      font-size: @post-title-font-size - 0.25em;
+    }
   }
 /*
   .z-post--tags {

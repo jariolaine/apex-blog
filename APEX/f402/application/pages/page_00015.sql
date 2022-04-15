@@ -19,16 +19,16 @@ wwv_flow_api.create_page(
 ,p_step_title=>'Files'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(18976025248736506)
-,p_page_template_options=>'#DEFAULT#'
+,p_page_template_options=>'#DEFAULT#:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220323185110'
+,p_last_upd_yyyymmddhh24miss=>'20220413064105'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
 ,p_plug_name=>'Files Report'
 ,p_region_css_classes=>'z-IR--iconLinks'
-,p_region_template_options=>'#DEFAULT#'
+,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
 ,p_plug_template=>wwv_flow_api.id(8495746153518209)
 ,p_plug_display_sequence=>10
 ,p_query_type=>'SQL'
@@ -199,9 +199,18 @@ wwv_flow_api.create_worksheet_column(
 ,p_help_text=>'File is visible on public page files report.'
 );
 wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(18411298167271002)
+,p_db_column_name=>'FILE_NAME'
+,p_display_order=>70
+,p_column_identifier=>'AC'
+,p_column_label=>'File Name'
+,p_column_type=>'STRING'
+,p_display_text_as=>'WITHOUT_MODIFICATION'
+);
+wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(18411133134271001)
 ,p_db_column_name=>'RELATIVE_PATH'
-,p_display_order=>90
+,p_display_order=>80
 ,p_column_identifier=>'AB'
 ,p_column_label=>'Reference'
 ,p_column_type=>'STRING'
@@ -210,7 +219,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(6733375673951913)
 ,p_db_column_name=>'MIME_TYPE'
-,p_display_order=>100
+,p_display_order=>90
 ,p_column_identifier=>'J'
 ,p_column_label=>'Mime Type'
 ,p_column_type=>'STRING'
@@ -219,7 +228,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(6733714896951913)
 ,p_db_column_name=>'FILE_SIZE'
-,p_display_order=>110
+,p_display_order=>100
 ,p_column_identifier=>'K'
 ,p_column_label=>'Size'
 ,p_column_type=>'NUMBER'
@@ -230,7 +239,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(6734910327951914)
 ,p_db_column_name=>'FILE_DESC'
-,p_display_order=>120
+,p_display_order=>110
 ,p_column_identifier=>'N'
 ,p_column_label=>'Description'
 ,p_column_type=>'STRING'
@@ -239,7 +248,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(22958417982076041)
 ,p_db_column_name=>'NOTES'
-,p_display_order=>130
+,p_display_order=>120
 ,p_column_identifier=>'AH'
 ,p_column_label=>'Notes'
 ,p_column_type=>'STRING'
@@ -248,26 +257,18 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(25310682340124201)
 ,p_db_column_name=>'FILE_DOWNLOAD'
-,p_display_order=>140
+,p_display_order=>130
 ,p_column_identifier=>'AL'
-,p_column_label=>'File Name'
-,p_allow_sorting=>'N'
-,p_allow_filtering=>'N'
-,p_allow_highlighting=>'N'
-,p_allow_ctrl_breaks=>'N'
-,p_allow_aggregations=>'N'
-,p_allow_computations=>'N'
-,p_allow_charting=>'N'
-,p_allow_group_by=>'N'
-,p_allow_pivot=>'N'
+,p_column_label=>'Download'
 ,p_column_type=>'NUMBER'
-,p_heading_alignment=>'LEFT'
-,p_format_mask=>'DOWNLOAD:BLOG_V_ALL_FILES:BLOB_CONTENT:ID::MIME_TYPE:FILE_NAME:CHANGED_ON:FILE_CHARSET:attachment:#FILE_NAME#:'
+,p_column_alignment=>'CENTER'
+,p_format_mask=>'DOWNLOAD:BLOG_V_ALL_FILES:BLOB_CONTENT:ID::MIME_TYPE:FILE_NAME:CHANGED_ON:FILE_CHARSET:attachment:<span aria-label="#FILE_NAME# #FILE_SIZE#" title="#FILE_NAME# #FILE_SIZE#" class="fa fa-download" aria-hidden="true"></span>:'
+,p_static_id=>'DOWNLOAD'
 );
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(30432633807753149)
 ,p_db_column_name=>'BTN_COPY_URL'
-,p_display_order=>160
+,p_display_order=>140
 ,p_column_identifier=>'AO'
 ,p_column_label=>'Copy URL'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -288,18 +289,9 @@ wwv_flow_api.create_worksheet_column(
 ,p_static_id=>'COPY_URL'
 );
 wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(18411298167271002)
-,p_db_column_name=>'FILE_NAME'
-,p_display_order=>170
-,p_column_identifier=>'AC'
-,p_column_label=>'File Name'
-,p_column_type=>'STRING'
-,p_display_text_as=>'HIDDEN'
-);
-wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(31246563637982905)
 ,p_db_column_name=>'BTN_TITLE_EDIT'
-,p_display_order=>180
+,p_display_order=>160
 ,p_column_identifier=>'AQ'
 ,p_column_label=>'Btn Title Edit'
 ,p_column_type=>'STRING'
@@ -308,7 +300,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(42033869947918102)
 ,p_db_column_name=>'FILE_STATUS_ICON'
-,p_display_order=>190
+,p_display_order=>170
 ,p_column_identifier=>'AR'
 ,p_column_label=>'File Status Icon'
 ,p_column_type=>'STRING'
@@ -317,7 +309,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(24943446663671415)
 ,p_db_column_name=>'FILE_REPOSITORY_ICON'
-,p_display_order=>200
+,p_display_order=>180
 ,p_column_identifier=>'AS'
 ,p_column_label=>'File Repository Icon'
 ,p_column_type=>'STRING'
@@ -332,7 +324,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_view_mode=>'DETAIL'
-,p_report_columns=>'FILE_DOWNLOAD:FILE_SIZE:CHANGED_ON:IS_ACTIVE:IS_DOWNLOAD:BTN_COPY_URL'
+,p_report_columns=>'FILE_NAME:FILE_SIZE:CHANGED_ON:IS_ACTIVE:IS_DOWNLOAD:BTN_COPY_URL:FILE_DOWNLOAD:'
 ,p_sort_column_1=>'FILE_NAME'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'CHANGED_ON'
@@ -449,7 +441,7 @@ wwv_flow_api.create_page_da_action(
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(27862886676256827)
-,p_name=>'Clipboard'
+,p_name=>'After IR refresh'
 ,p_event_sequence=>30
 ,p_triggering_element_type=>'REGION'
 ,p_triggering_region_id=>wwv_flow_api.id(6729285879951908)
@@ -465,15 +457,14 @@ wwv_flow_api.create_page_da_action(
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_affected_elements_type=>'TRIGGERING_ELEMENT'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'this.affectedElements.find("[data-clipboard-source]").click(function(){  ',
+'this.affectedElements.find("td[headers=DOWNLOAD] a").removeAttr("alt title").end()',
+'.find("[data-clipboard-source]").click(function(){  ',
 '  var $temp = $("<input>");',
 '  $("body").append($temp);',
 '  $temp.val($(this).data("clipboard-source")).select();',
 '  document.execCommand("copy");',
 '  $temp.remove();',
-'});',
-'',
-''))
+'});'))
 );
 wwv_flow_api.component_end;
 end;
