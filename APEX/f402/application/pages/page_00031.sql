@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220413110533'
+,p_last_upd_yyyymmddhh24miss=>'20220416184623'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(37645474034287120)
@@ -320,9 +320,13 @@ wwv_flow_api.create_page_button(
 ,p_button_image_alt=>'Reply'
 ,p_button_position=>'EDIT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:32:&SESSION.::&DEBUG.:RP,32::'
-,p_button_condition=>':P31_IS_ACTIVE = 1 and :P31_PARENT_ID is null'
-,p_button_condition2=>'PLSQL'
-,p_button_condition_type=>'EXPRESSION'
+,p_button_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from blog_v_comments v1',
+'where 1 = 1',
+'and v1.parent_id is null',
+'and v1.comment_id = :P31_ID'))
+,p_button_condition_type=>'EXISTS'
 ,p_icon_css_classes=>'fa-reply'
 );
 wwv_flow_api.create_page_branch(
@@ -332,8 +336,6 @@ wwv_flow_api.create_page_branch(
 ,p_branch_point=>'AFTER_PROCESSING'
 ,p_branch_type=>'REDIRECT_URL'
 ,p_branch_sequence=>20
-,p_branch_condition_type=>'REQUEST_NOT_IN_CONDITION'
-,p_branch_condition=>'APPROVE,EDIT'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(36229163139379750)
@@ -532,6 +534,7 @@ wwv_flow_api.create_page_process(
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_api.id(37643515449287101)
+,p_process_success_message=>'&nbsp;Comment approved.'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(37644715711287113)
@@ -547,6 +550,7 @@ wwv_flow_api.create_page_process(
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_api.id(37644640037287112)
+,p_process_success_message=>'Comment flagged as unread.'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(45722775698325209)

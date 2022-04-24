@@ -19,6 +19,13 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "IS_ACTIVE", "POST
   )               as icon_modifier
 from blog_comments t1
 where 1 = 1
-and t1.is_active = 1
+  and t1.is_active = 1
+  and not exists(
+    select 1
+    from blog_comment_flags x1
+    where 1 = 1
+      and x1.comment_id = t1.id
+      and x1.flag = 'MODERATE'
+  )
 with read only
 /

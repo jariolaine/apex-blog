@@ -29,7 +29,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220407082216'
+,p_last_upd_yyyymmddhh24miss=>'20220416160726'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9879490963762847)
@@ -54,6 +54,7 @@ wwv_flow_api.create_page_plug(
 '  ,v1.allowed_row_operation as allowed_row_operation',
 '  ,btn.posts_link           as btn_posts_link',
 'from #OWNER#.blog_v_all_tags v1',
+'-- link to posts button title',
 'cross join (',
 '  select apex_lang.message( ''BLOG_BTN_TITLE_VIEW_POSTS'' ) as posts_link',
 '  from dual',

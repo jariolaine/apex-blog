@@ -15,15 +15,15 @@
     });
   });
 
-	/**
-	* @module blog.UI
-	**/
-	blog.UI = {
+  /**
+  * @module blog.UI
+  **/
+  blog.UI = {
 
     /**
-	  * @function setListCurrentItem
-	  * @example blog.UI.setListCurrentItem({ affectedElements: this.affectedElements, pageItem: "PX_ITEM" });
-	  **/
+    * @function setListCurrentItem
+    * @example blog.UI.setListCurrentItem({ affectedElements: this.affectedElements, pageItem: "PX_ITEM" });
+    **/
     setListCurrentItem: function(options){
 
       options = $.extend({
@@ -32,20 +32,24 @@
       }, options );
 
       options.affectedElements.find( "li" ).filter( function(){
-        var dataValue = $(this).children( "a" ).data( options.dataAttrName ),
+
+        var lDataValue = $(this).children( "a" ).data( options.dataAttrName ),
             result = false
         ;
-        if( dataValue ){
+
+        if( lDataValue ){
           result = $v_CheckValueAgainst(
              options.pageItem
-            ,dataValue
+            ,lDataValue
           );
         }
+
         return result;
+
       }).addClass( options.currentClass );
 
     }
 
-	};
+  };
 
 })(apex.jQuery, blog);

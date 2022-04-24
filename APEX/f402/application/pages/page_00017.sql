@@ -41,7 +41,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220412162706'
+,p_last_upd_yyyymmddhh24miss=>'20220416160645'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6849894493100859)
@@ -60,12 +60,12 @@ wwv_flow_api.create_page_plug(
 '  ,v1.link_status as link_status',
 '  ,case v1.link_status',
 '    when ''GROUP_DISABLED''',
-'    then ''fa-stop-circle-o u-danger-text''',
+'    then ''fa-minus-circle u-danger-text''',
 '    when ''DISABLED''',
-'    then ''fa-minus-circle-o u-danger-text''',
+'    then ''fa-minus-circle u-danger-text''',
 '    when ''ENABLED''',
-'    then ''fa-check-circle-o u-success-text''',
-'    else ''fa-question-circle-o''',
+'    then ''fa-check-circle u-success-text''',
+'    else ''fa-question-circle''',
 '   end            as link_status_icon',
 '  ,v1.display_seq as display_seq',
 '  ,v1.title       as title',
@@ -74,6 +74,7 @@ wwv_flow_api.create_page_plug(
 '  ,v1.notes       as notes',
 '  ,btn.title_edit as btn_title_edit',
 'from blog_v_all_links v1',
+'-- link column button title',
 'cross join (',
 '  select apex_lang.message(''BLOG_BTN_TITLE_EDIT'') as title_edit',
 '  from dual',
@@ -180,7 +181,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
-,p_rpt_named_lov=>wwv_flow_api.id(36215367226602541)
+,p_rpt_named_lov=>wwv_flow_api.id(11786653039490200)
 ,p_rpt_show_filter_lov=>'1'
 );
 wwv_flow_api.create_worksheet_column(
@@ -283,8 +284,8 @@ wwv_flow_api.create_report_region(
 '  ,display_seq     as selection',
 '  ,case v1.is_active',
 '   when 1',
-'    then ''fa fa-check-circle-o u-success-text''',
-'    else ''fa fa-minus-circle-o u-danger-text''',
+'    then ''fa fa-check-circle u-success-text''',
+'    else ''fa fa-minus-circle u-danger-text''',
 '   end             as icon_class',
 '  ,null            as icon_html',
 '  ,v1.title        as title',
@@ -296,13 +297,16 @@ wwv_flow_api.create_report_region(
 '   end             as misc',
 '  ,null            as actions',
 'from blog_v_all_link_groups v1',
+'-- status icon title',
 'cross join (',
-'  select apex_lang.lang(''Enabled'')  as status_enabled',
-'    ,apex_lang.lang(''Disabled'')     as status_disabled',
+'  select',
+'     apex_lang.message( ''BLOG_LOV_IS_ACTIVE_ENABLED'' )  as status_enabled',
+'    ,apex_lang.message( ''BLOG_LOV_IS_ACTIVE_DISABLED'' ) as status_disabled',
 '  from dual',
 ') txt',
 'where 1 = 1',
-'and v1.id = :P17_LINK_GROUP_ID'))
+'and v1.id = :P17_LINK_GROUP_ID',
+''))
 ,p_display_when_condition=>'P17_LINK_GROUP_ID'
 ,p_display_condition_type=>'ITEM_IS_NOT_NULL'
 ,p_ajax_enabled=>'Y'
@@ -334,7 +338,7 @@ wwv_flow_api.create_report_columns(
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
 ,p_display_as=>'TEXT_FROM_LOV_ESC'
-,p_named_lov=>wwv_flow_api.id(8819403626737334)
+,p_named_lov=>wwv_flow_api.id(11784376262412448)
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -569,8 +573,6 @@ wwv_flow_api.create_report_columns(
 ,p_column_heading=>'List Text'
 ,p_use_as_row_header=>'N'
 ,p_heading_alignment=>'LEFT'
-,p_display_as=>'TEXT_FROM_LOV_ESC'
-,p_named_lov=>wwv_flow_api.id(8819403626737334)
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -582,8 +584,6 @@ wwv_flow_api.create_report_columns(
 ,p_column_heading=>'List Badge'
 ,p_use_as_row_header=>'N'
 ,p_heading_alignment=>'LEFT'
-,p_display_as=>'TEXT_FROM_LOV_ESC'
-,p_named_lov=>wwv_flow_api.id(8819403626737334)
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );

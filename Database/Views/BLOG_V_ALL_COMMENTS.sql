@@ -25,18 +25,15 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATE
       select 1
       from blog_comment_flags f1
       where 1 = 1
-        and t1.is_active = 0
         and f1.comment_id = t1.id
         and f1.flag = 'MODERATE'
     )
     then 'MODERATE'
     else
       case t1.is_active
-        when 0
-        then 'DISABLED'
         when 1
         then 'ENABLED'
-        else 'UNKNOWN'
+        else 'DISABLED'
       end
    end              as status
    ,case

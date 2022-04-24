@@ -41,8 +41,8 @@ wwv_flow_api.create_message(
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(38326544290801225)
-,p_name=>'BLOG_BTN_TITLE_OPEN'
-,p_message_text=>'Open'
+,p_name=>'BLOG_BTN_TITLE_OPEN_COMMENT'
+,p_message_text=>'Open Comment'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(26356711295747260)
@@ -217,7 +217,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21968854038758598)
 ,p_name=>'BLOG_HELP_FEATURE_ARCHIVE_POST_COUNT'
-,p_message_text=>'Show post count in the archive.'
+,p_message_text=>'Show post count in the archive list.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21968269442744987)
@@ -227,7 +227,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21968490295748783)
 ,p_name=>'BLOG_HELP_FEATURE_CATEGORY_POST_COUNT'
-,p_message_text=>'Show post count in the category.'
+,p_message_text=>'Show post count in the category list.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(21499163815310526)
@@ -317,9 +317,41 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Protocol and host used for pages header link rel="canonical", RSS feed and sitemap. Example https://example.com. If empty, current URL protocol and host is used.'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(12033403413143883)
+,p_name=>'BLOG_HELP_G_COMMENT_WATCH_MONTHS'
+,p_message_text=>'How many months will a user receive an email notification of new replies after they last comment on a post. The value must be an integer between %0 and %1.'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19895931361259762)
 ,p_name=>'BLOG_HELP_G_LATEST_POST_ROWS'
-,p_message_text=>'The number of post displayed on the latest post list.'
+,p_message_text=>'The number of post displayed on the latest post list. The value must be an integer between %0 and %1.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(12338282619659168)
+,p_name=>'BLOG_HELP_G_MAX_AGE_DOWNLOAD'
+,p_message_text=>'Cache-Control HTTP response header max-age for files that are available for download on the "Files" page of the public application. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must b'
+||'e an integer between %0 and %1.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(12339961160737270)
+,p_name=>'BLOG_HELP_G_MAX_AGE_FILE'
+,p_message_text=>'Cache-Control HTTP response header max-age for files that are not downloadable on the "Files" page of the public application. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an i'
+||'nteger between %0 and %1.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(12339542583729722)
+,p_name=>'BLOG_HELP_G_MAX_AGE_RSS'
+,p_message_text=>'RSS feed Cache-Control HTTP response header max-age. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an integer between %0 and %1.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(12339734667736379)
+,p_name=>'BLOG_HELP_G_MAX_AGE_RSS_XSL'
+,p_message_text=>'RSS feed XSL Cache-Control HTTP response header max-age. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an integer between %0 and %1.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(12340277586750046)
+,p_name=>'BLOG_HELP_G_MAX_AGE_SITEMAP'
+,p_message_text=>'Sitemap Cache-Control HTTP response header max-age. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an integer between %0 and %1.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19897443841446602)
@@ -339,17 +371,17 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19896387769414873)
 ,p_name=>'BLOG_HELP_G_SEARCH_ROWS'
-,p_message_text=>'The number of Search results per report page.'
+,p_message_text=>'The number of Search results per report page. The value must be an integer between %0 and %1.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19894253687211234)
 ,p_name=>'BLOG_HELP_P1_REPORT_ROWS'
-,p_message_text=>'The number of posts per report page displayed on the home page.'
+,p_message_text=>'The number of posts per report page displayed on the home page. The value must be an integer between %0 and %1.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19895088592241687)
 ,p_name=>'BLOG_HELP_P2_REPORT_ROWS'
-,p_message_text=>'The number of comments per report page displayed on the post page.'
+,p_message_text=>'The number of comments per report page displayed on the post page. The value must be an integer between %0 and %1.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(61250680749871346)
@@ -360,6 +392,101 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(23116114610465857)
 ,p_name=>'BLOG_LINK_GROUPS_UK1'
 ,p_message_text=>'Label with same name already exists.'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11806175851595252)
+,p_name=>'BLOG_LOV_COMMENT_FLAG_NEW'
+,p_message_text=>'New'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11806971482595261)
+,p_name=>'BLOG_LOV_COMMENT_FLAG_READ'
+,p_message_text=>'Read'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11806625459595261)
+,p_name=>'BLOG_LOV_COMMENT_FLAG_REPLY'
+,p_message_text=>'Reply'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11806336851595261)
+,p_name=>'BLOG_LOV_COMMENT_FLAG_UNREAD'
+,p_message_text=>'Unread'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11807543691595262)
+,p_name=>'BLOG_LOV_COMMENT_STATUS_DISABLED'
+,p_message_text=>'Disabled'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11807206377595261)
+,p_name=>'BLOG_LOV_COMMENT_STATUS_ENABLED'
+,p_message_text=>'Enabled'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11807801060595262)
+,p_name=>'BLOG_LOV_COMMENT_STATUS_MODERATE'
+,p_message_text=>'Not Approved'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11808452983595262)
+,p_name=>'BLOG_LOV_IS_ACTIVE_DISABLED'
+,p_message_text=>'Disabled'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11808101526595262)
+,p_name=>'BLOG_LOV_IS_ACTIVE_ENABLED'
+,p_message_text=>'Enabled'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11809055803595263)
+,p_name=>'BLOG_LOV_LINK_STATUS_DISABLED'
+,p_message_text=>'Disabled'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11808799753595263)
+,p_name=>'BLOG_LOV_LINK_STATUS_ENABLED'
+,p_message_text=>'Enabled'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11809382608595264)
+,p_name=>'BLOG_LOV_LINK_STATUS_LABEL_DISABLED'
+,p_message_text=>'Label is Disabled'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11810829232595266)
+,p_name=>'BLOG_LOV_POST_STATUS_BLOGGER_DISABLED'
+,p_message_text=>'Blogger is Disabled'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11810576248595265)
+,p_name=>'BLOG_LOV_POST_STATUS_CATEGORY_DISABLED'
+,p_message_text=>'Category is Disabled'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11810274491595265)
+,p_name=>'BLOG_LOV_POST_STATUS_DRAFT'
+,p_message_text=>'Draft'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11809630217595264)
+,p_name=>'BLOG_LOV_POST_STATUS_PUBLISHED'
+,p_message_text=>'Published'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11809934906595265)
+,p_name=>'BLOG_LOV_POST_STATUS_SCHEDULED'
+,p_message_text=>'Scheduled'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11811143035595266)
+,p_name=>'BLOG_LOV_YES_NO_NO'
+,p_message_text=>'No'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(11811433591595266)
+,p_name=>'BLOG_LOV_YES_NO_YES'
+,p_message_text=>'Yes'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(40637327457556920)
@@ -390,6 +517,16 @@ wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(42685075385703287)
 ,p_name=>'BLOG_PUB_APP_LINK_SITEMAP'
 ,p_message_text=>'Sitemap'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(12004799006885141)
+,p_name=>'BLOG_SETTING_GROUP_COMMENTS'
+,p_message_text=>'Comments'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(12336445174569114)
+,p_name=>'BLOG_SETTING_GROUP_FILES'
+,p_message_text=>'Files'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(28322450890472128)
@@ -437,9 +574,39 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Canonical protocol and host for URLs'
 );
 wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(12004960061893955)
+,p_name=>'BLOG_SETTING_G_COMMENT_WATCH_MONTHS'
+,p_message_text=>'Month(s) user email notification subscription is valid'
+);
+wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(40622046631847902)
 ,p_name=>'BLOG_SETTING_G_LATEST_POST_ROWS'
 ,p_message_text=>'Number of latest posts'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(12336887427579011)
+,p_name=>'BLOG_SETTING_G_MAX_AGE_DOWNLOAD'
+,p_message_text=>'Downloads cache max age'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(12337047070580585)
+,p_name=>'BLOG_SETTING_G_MAX_AGE_FILE'
+,p_message_text=>'Inline files cache max age'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(12336626913574559)
+,p_name=>'BLOG_SETTING_G_MAX_AGE_RSS'
+,p_message_text=>'RSS feed cache max age'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(12337953363617184)
+,p_name=>'BLOG_SETTING_G_MAX_AGE_RSS_XSL'
+,p_message_text=>'RSS feed XSL cache max age'
+);
+wwv_flow_api.create_message(
+ p_id=>wwv_flow_api.id(12337238231582028)
+,p_name=>'BLOG_SETTING_G_MAX_AGE_SITEMAP'
+,p_message_text=>'Sitemaps cache max age'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19032802687865238)
@@ -489,7 +656,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348168323345190)
 ,p_name=>'BLOG_VALIDATION_ERR_INTEGER'
-,p_message_text=>'Value must be integer between %0 and %1.'
+,p_message_text=>'The value must be an integer between %0 and %1.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(27348379677347133)

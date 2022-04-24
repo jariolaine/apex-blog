@@ -70,7 +70,7 @@ wwv_flow_api.create_page(
 '</ol>',
 ''))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220412214022'
+,p_last_upd_yyyymmddhh24miss=>'20220416100004'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8640589331194982)
@@ -282,8 +282,8 @@ wwv_flow_api.create_page_item(
 '  ,title        as display_value',
 '  ,case is_active',
 '  when 1',
-'  then apex_lang.lang(''Enabled'')',
-'  else apex_lang.lang(''Disabled'')',
+'  then apex_lang.message( ''BLOG_LOV_IS_ACTIVE_ENABLED'' )',
+'  else apex_lang.message( ''BLOG_LOV_IS_ACTIVE_DISABLED'' )',
 '  end           as status',
 '  ,display_seq  as display_seq',
 'from #OWNER#.blog_v_all_categories',
@@ -494,7 +494,7 @@ wwv_flow_api.create_page_item(
 ,p_source_type=>'EXPRESSION'
 ,p_source_language=>'PLSQL'
 ,p_display_as=>'NATIVE_POPUP_LOV'
-,p_named_lov=>'TAGS'
+,p_named_lov=>'POST_TAGS'
 ,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
 '   v1.tag        as return_value',
@@ -502,8 +502,8 @@ wwv_flow_api.create_page_item(
 '  ,v1.tag_unique as display_seq',
 '  ,case v1.is_active',
 '  when 1',
-'  then apex_lang.lang(''Enabled'')',
-'  else apex_lang.lang(''Disabled'')',
+'  then apex_lang.message( ''BLOG_LOV_IS_ACTIVE_ENABLED'' )',
+'  else apex_lang.message( ''BLOG_LOV_IS_ACTIVE_DISABLED'' )',
 '  end            as status',
 'from #OWNER#.blog_v_all_tags v1',
 'where 1 = 1',

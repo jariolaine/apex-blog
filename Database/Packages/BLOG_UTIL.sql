@@ -36,6 +36,7 @@ as
 --    Jari Laine 25.03.2022 - Added more comments
 --                          - Changed variable names to more descriptive
 --                          - Removed obsolete procedure check_archive_exists
+--    Jari Laine 19.04.2022 - Changes to procedures download_file
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -106,9 +107,9 @@ as
 --  inside package and package BLOG_XML
   procedure download_file (
     p_blob_content    in out nocopy blob,
-    p_file_name       in varchar2 default null,
-    p_mime_type       in varchar2 default null,
-    p_cache_control   in varchar2 default null,
+    p_mime_type       in varchar2,
+    p_header_names    in apex_t_varchar2,
+    p_header_values   in apex_t_varchar2,
     p_charset         in varchar2 default null
   );
 --------------------------------------------------------------------------------
@@ -144,13 +145,12 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure raise_http_error(
-    p_error_code  in number,
-    p_message     in varchar2
+    p_error_code  in number
   )
   as
   begin
     -- output HTTP status
-    owa_util.status_line( p_error_code, apex_lang.message( p_message ) );
+    owa_util.status_line( p_error_code );
     -- stop APEX
     apex_application.stop_apex_engine;
   end raise_http_error;
@@ -479,10 +479,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   when others
@@ -498,10 +495,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   end get_post_title;
@@ -589,10 +583,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   when others
@@ -610,10 +601,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   end get_post_pagination;
@@ -679,10 +667,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   when others then
@@ -696,10 +681,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   end get_category_title;
@@ -757,10 +739,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   when others
@@ -774,10 +753,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   end get_tag;
@@ -830,15 +806,18 @@ as
 --------------------------------------------------------------------------------
   procedure download_file (
     p_blob_content    in out nocopy blob,
-    p_file_name       in varchar2 default null,
-    p_mime_type       in varchar2 default null,
-    p_cache_control   in varchar2 default null,
+    p_mime_type       in varchar2,
+    p_header_names    in apex_t_varchar2,
+    p_header_values   in apex_t_varchar2,
     p_charset         in varchar2 default null
   )
   as
   begin
 
-    -- open and set HTTP headers
+    -- init HTTP buffer
+    sys.htp.init;
+
+    -- open HTTP header
     sys.owa_util.mime_header(
       ccontent_type   => coalesce ( p_mime_type, 'application/octet' )
       ,bclose_header  => false
@@ -849,33 +828,25 @@ as
       p_message => 'Set response headers'
     );
 
-    if p_file_name is not null
-    then
-      apex_debug.info(
-        p_message => 'Content-Disposition: attachment; filename="%s"'
-        ,p0 => p_file_name
-      );
-      sys.htp.p(
-        apex_string.format(
-          p_message => 'Content-Disposition: attachment; filename="%s"'
-          ,p0 => p_file_name
-        )
-      );
-    end if;
+    -- set response headers
+    for i in 1 .. p_header_names.count
+    loop
 
-    if p_cache_control is not null
-    then
       apex_debug.info(
-        p_message => 'Cache-Control: %s'
-        ,p0 => p_cache_control
+         p_message => 'Header name: %s , header value: %s'
+        ,p0 => p_header_names(i)
+        ,p1 => p_header_values(i)
       );
+      -- output HTTP header
       sys.htp.p(
         apex_string.format(
-          p_message => 'Cache-Control: %s'
-          ,p0 => p_cache_control
+           p_message => '%s: %s'
+          ,p0 => p_header_names(i)
+          ,p1 => p_header_values(i)
         )
       );
-    end if;
+
+    end loop;
 
     -- close HTTP header
     sys.owa_util.http_header_close;
@@ -890,7 +861,9 @@ as
     p_file_name in varchar2
   )
   as
-    l_file_t blog_v_files%rowtype;
+    l_file_t        blog_v_files%rowtype;
+    l_header_names  apex_t_varchar2;
+    l_header_values apex_t_varchar2;
   begin
 
     -- fetch file
@@ -907,14 +880,81 @@ as
       ,p0 => l_file_t.file_name
       ,p1 => l_file_t.file_size
       ,p2 => l_file_t.mime_type
+      ,p3 => l_file_t.file_charset
     );
 
-    -- output file
+    -- Add Last-Modified header
+    apex_string.push(
+        p_table => l_header_names
+       ,p_value => 'Last-Modified'
+    );
+    apex_string.push(
+       p_table => l_header_values
+      ,p_value =>
+        to_char(
+          sys_extract_utc( l_file_t.changed_on )
+          ,'Dy, DD Mon YYYY HH24:MI:SS "GMT"'
+          ,'NLS_DATE_LANGUAGE=ENGLISH'
+        )
+    );
+
+    -- Compare request If-Modified-Since header to Last-Modified
+    -- If values are equal then set status header and exit from procedure
+    if sys.owa_util.get_cgi_env('HTTP_IF_MODIFIED_SINCE') = l_header_values(1)
+    then
+      sys.owa_util.status_line( 304 );
+      apex_debug.info(
+         p_message => 'File not sent. If-Modified-Since: %s'
+        ,p0 => l_header_values(1)
+      );
+      return;
+    end if;
+
+    -- Add Cache-Control header
+    apex_string.push(
+        p_table => l_header_names
+       ,p_value => 'Cache-Control'
+    );
+    apex_string.push(
+       p_table => l_header_values
+      ,p_value =>
+        apex_string.format(
+           p_message => 'max-age=%s'
+          ,p0 =>
+            case l_file_t.is_download
+              when 1
+              then get_attribute_value( 'G_MAX_AGE_DOWNLOAD' )
+              else get_attribute_value( 'G_MAX_AGE_FILE' )
+            end
+        )
+    );
+
+    -- add Content-Disposition header
+    apex_string.push(
+      p_table => l_header_names
+     ,p_value => 'Content-Disposition'
+    );
+    apex_string.push(
+      p_table => l_header_values
+     ,p_value =>
+        apex_string.format(
+           p_message => '%s; filename="%s"'
+          ,p0 =>
+            case l_file_t.is_download
+              when 1
+              then 'attachment'
+              else 'inline'
+            end
+          ,p1 => l_file_t.file_name
+        )
+    );
+
+    -- download file
     download_file(
       p_blob_content    => l_file_t.blob_content
-      ,p_file_name      => l_file_t.file_name
       ,p_mime_type      => l_file_t.mime_type
-      ,p_cache_control  => case when l_file_t.is_download = 0 then 'max-age=3600, public' end
+      ,p_header_names   => l_header_names
+      ,p_header_values  => l_header_values
     );
 
   -- handle errors
@@ -922,10 +962,7 @@ as
   when no_data_found
   then
 
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   end download_file;

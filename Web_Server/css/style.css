@@ -159,7 +159,7 @@ blockquote::after {
   margin: 0 0 2rem;
 }
 .z-post--header .z-post--date {
-  font-size: 1em;
+  font-size: 1.125em;
   margin: 0 0 0.25rem;
 }
 .z-post--body img {
@@ -198,7 +198,7 @@ blockquote::after {
   margin-bottom: 2rem;
 }
 .z-post--smallMargin .z-post {
-  margin-bottom: 5rem;
+  margin-bottom: 0.5rem;
 }
 .z-post--noMargin .z-post {
   margin-bottom: 0;

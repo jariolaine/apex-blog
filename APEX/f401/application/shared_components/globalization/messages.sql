@@ -30,11 +30,6 @@ wwv_flow_api.create_message(
 ,p_message_text=>'Ooops... We are sorry! Unexpected internal error have occurred. Please try again later.'
 );
 wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(22220857391063954)
-,p_name=>'BLOG_HTTP_404_ERROR'
-,p_message_text=>'Not Found'
-);
-wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(41895368735673735)
 ,p_name=>'BLOG_MSG_LAST_UPDATED'
 ,p_message_text=>'Document was last updated on %0.'

@@ -27,18 +27,13 @@ wwv_flow_api.create_page(
 '  ,btnAddRow: "categories-ig-selection-add-row",',
 '});'))
 ,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'.z-sortable-handle:hover{',
-'  cursor: grab;',
-'}',
-'.ui-sortable-helper{',
-'  display: inline-flex;',
-'}',
+'',
 ''))
 ,p_step_template=>wwv_flow_api.id(8456403392518180)
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211114100026'
+,p_last_upd_yyyymmddhh24miss=>'20220416201111'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9834087769215232)
@@ -77,6 +72,7 @@ wwv_flow_api.create_page_plug(
 '  ,v1.allowed_row_operation as allowed_row_operation',
 '  ,btn.posts_link           as btn_posts_link',
 'from #OWNER#.blog_v_all_categories v1',
+'-- link to posts button title',
 'cross join (',
 '  select apex_lang.message( ''BLOG_BTN_TITLE_VIEW_POSTS'' ) as posts_link',
 '  from dual',

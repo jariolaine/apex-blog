@@ -26,7 +26,7 @@ wwv_flow_api.create_page(
 ,p_protection_level=>'C'
 ,p_help_text=>'High level view of application logging information.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220412074403'
+,p_last_upd_yyyymmddhh24miss=>'20220418081653'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(87874963598811882)
@@ -53,7 +53,12 @@ wwv_flow_api.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'with q1 as(',
-'  select l.page_name',
+'  select ',
+'    case l.page_id',
+'      when 1003',
+'      then replace( lower( l.request_value ), ''application_process='' ) ',
+'      else l.page_name',
+'    end as page_name',
 '    ,l.page_id',
 '    ,l.elapsed_time',
 '    ,count(1) over() as all_pages_view_cnt',
@@ -61,7 +66,7 @@ wwv_flow_api.create_report_region(
 '  where 1 = 1',
 '  and l.application_id = :G_PUB_APP_ID',
 '  and l.page_id is not null',
-'  and l.view_date >= sysdate -( 1 / 24 / 60 / 60 * :P30021_TIMEFRAME )',
+'  and l.view_date >= sysdate - ( 1 / 24 / 60 / 60 * :P30021_TIMEFRAME )',
 ')',
 'select q1.page_id                             as page_id',
 '  ,q1.page_name                               as page_name',
@@ -170,6 +175,7 @@ wwv_flow_api.create_report_columns(
 ,p_default_sort_column_sequence=>1
 ,p_default_sort_dir=>'desc'
 ,p_disable_sort_column=>'N'
+,p_sum_column=>'Y'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -216,7 +222,7 @@ wwv_flow_api.create_report_region(
 'where 1 = 1',
 'and l.application_id = :G_PUB_APP_ID',
 'and l.page_id is not null',
-'and l.view_date >= sysdate -( 1 / 24 / 60 / 60 * :P30021_TIMEFRAME )'))
+'and l.view_date >= sysdate - ( 1 / 24 / 60 / 60 * :P30021_TIMEFRAME )'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P30021_TIMEFRAME'

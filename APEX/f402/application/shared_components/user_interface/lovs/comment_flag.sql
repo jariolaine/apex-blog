@@ -1,7 +1,7 @@
-prompt --application/shared_components/user_interface/lovs/post_status
+prompt --application/shared_components/user_interface/lovs/comment_flag
 begin
 --   Manifest
---     POST_STATUS
+--     COMMENT_FLAG
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
@@ -12,8 +12,8 @@ wwv_flow_api.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_api.create_list_of_values(
- p_id=>wwv_flow_api.id(11795802617710966)
-,p_lov_name=>'POST_STATUS'
+ p_id=>wwv_flow_api.id(11794321487687925)
+,p_lov_name=>'COMMENT_FLAG'
 ,p_lov_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
 '   v1.display_value as display_value',
@@ -21,7 +21,7 @@ wwv_flow_api.create_list_of_values(
 '  ,v1.display_seq   as display_seq',
 'from #OWNER#.blog_v_lov v1',
 'where 1 = 1',
-'and lov_name = ''POST_STATUS'''))
+'and lov_name = ''COMMENT_FLAG'''))
 ,p_source_type=>'SQL'
 ,p_location=>'LOCAL'
 ,p_use_local_sync_table=>false
