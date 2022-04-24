@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220412074117'
+,p_last_upd_yyyymmddhh24miss=>'20220416054053'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8582113239518316)
@@ -182,7 +182,7 @@ wwv_flow_api.create_report_columns(
 ,p_query_column_id=>3
 ,p_column_alias=>'NUM_MODERATE_COMMENTS'
 ,p_column_display_sequence=>40
-,p_column_heading=>'Need Moderate'
+,p_column_heading=>'Not Approved'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'

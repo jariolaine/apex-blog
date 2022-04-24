@@ -13,19 +13,19 @@
   padding: @post-padding;
 }
 .z-post--header {
-	clear: both;
-	.z-post--title {
-		font-size: @post-title-font-size;
-		margin: 0 0 0.25rem;
-	}
-	.z-post--category {
-		font-size: @post-category-font-size	;
-		margin: 0 0 2rem;
-	}
-	.z-post--date {
-		font-size: @post-date-font-size;
-		margin: 0 0 0.25rem;
-	}
+  clear: both;
+  .z-post--title {
+    font-size: @post-title-font-size;
+    margin: 0 0 0.25rem;
+  }
+  .z-post--category {
+    font-size: @post-category-font-size  ;
+    margin: 0 0 2rem;
+  }
+  .z-post--date {
+    font-size: @post-date-font-size;
+    margin: 0 0 0.25rem;
+  }
 }
 .z-post--body {
   img {
@@ -74,32 +74,32 @@
   }
 }
 .z-post--noMargin {
-	.z-post {
+  .z-post {
     margin-bottom: @margin-none;
-		&:not(:first-child){
-			border-top: none;
-		}
-	}
+    &:not(:first-child){
+      border-top: none;
+    }
+  }
 }
 .z-post--noMargin.z-posts--paginationBorder {
   .z-posts--pagination {
-		border-top: none;
-	}
+    border-top: none;
+  }
 }
 .z-posts--paginationHidden {
-	.z-posts--pagination {
+  .z-posts--pagination {
     display: none!important;
     visibility: hidden!important;
-	}
+  }
 }
 @media only screen and (max-width: 640px) {
   .z-post {
     padding: @post-padding - 0.25rem;
-		margin-bottom: @margin-medium;
+    margin-bottom: @margin-medium;
   }
   .z-post--header {
 
-  	.z-post--title {
+    .z-post--title {
       font-size: @post-title-font-size - 0.25em;
     }
   }

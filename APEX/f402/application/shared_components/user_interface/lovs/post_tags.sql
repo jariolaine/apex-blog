@@ -1,7 +1,7 @@
-prompt --application/shared_components/user_interface/lovs/tags
+prompt --application/shared_components/user_interface/lovs/post_tags
 begin
 --   Manifest
---     TAGS
+--     POST_TAGS
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
@@ -13,7 +13,7 @@ wwv_flow_api.component_begin (
 );
 wwv_flow_api.create_list_of_values(
  p_id=>wwv_flow_api.id(7140542412077627)
-,p_lov_name=>'TAGS'
+,p_lov_name=>'POST_TAGS'
 ,p_lov_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
 '   v1.tag        as return_value',
@@ -21,14 +21,15 @@ wwv_flow_api.create_list_of_values(
 '  ,v1.tag_unique as display_seq',
 '  ,case v1.is_active',
 '  when 1',
-'  then apex_lang.lang(''Enabled'')',
-'  else apex_lang.lang(''Disabled'')',
+'  then apex_lang.message( ''BLOG_LOV_IS_ACTIVE_ENABLED'' )',
+'  else apex_lang.message( ''BLOG_LOV_IS_ACTIVE_DISABLED'' )',
 '  end            as status',
 'from #OWNER#.blog_v_all_tags v1',
 'where 1 = 1',
 ''))
 ,p_source_type=>'SQL'
 ,p_location=>'LOCAL'
+,p_use_local_sync_table=>false
 ,p_return_column_name=>'RETURN_VALUE'
 ,p_display_column_name=>'DISPLAY_VALUE'
 ,p_group_column_name=>'STATUS'

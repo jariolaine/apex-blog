@@ -1,3 +1,4 @@
+--  Patch 21.2.20220415
 --------------------------------------------------------
 --  Modify constraint BLOG_COMMENT_FLAGS_CK2
 --------------------------------------------------------
@@ -23,9 +24,6 @@ alter table blog_comments add constraint blog_comments_fk2 foreign key (parent_i
 --  Update metadata
 --------------------------------------------------------
 -- update BLOG_SETTINGS
-update blog_settings
- where attribute_name = 'G_APP_VERSION'
-;
 update blog_settings
   set display_seq = 20
   ,is_nullable = 0
@@ -53,10 +51,6 @@ update blog_settings
  where attribute_name = 'G_APP_EMAIL'
 ;
 update blog_settings
-  set display_seq = 210
- where attribute_name = 'G_APP_DATE_FORMAT'
-;
-update blog_settings
   set display_seq = 220
  where attribute_name = 'G_POST_TITLE_DATE_FORMAT'
 ;
@@ -75,20 +69,6 @@ update blog_settings
 update blog_settings
   set display_seq = 340
  where attribute_name = 'G_SEARCH_ROWS'
-;
-update blog_settings
-  set display_seq = 410
-    ,is_nullable = 1
-    ,attribute_name = 'G_CANONICAL_HOST'
- where attribute_name = 'G_CANONICAL_URL'
-;
-update blog_settings
-  set display_seq = 420
- where attribute_name = 'G_RSS_URL'
-;
-update blog_settings
-  set display_seq = 430
- where attribute_name = 'G_RSS_XSL_URL'
 ;
 -- update BLOG_FEATURES
 update blog_features
@@ -167,9 +147,10 @@ update blog_features
 --  Insert patch version info to BLOG_SETTINGS
 --------------------------------------------------------
 begin
-  insert into blog_settings (display_seq, is_nullable, attribute_name, data_type, attribute_group_message, attribute_value)
-    values (10, 0, 'PATCH_20220415', 'STRING', 'INTERNAL', 'Patch 21.2.20220415')
+  insert into blog_settings(display_seq, is_nullable, attribute_name, data_type, attribute_group_message, attribute_value)
+    values(10, 0, 'PATCH_20220415', 'STRING', 'INTERNAL', 'Patch 21.2.20220415')
   ;
+-- Handle exception if patch version already inserted
 exception when dup_val_on_index then
   null;
 end;

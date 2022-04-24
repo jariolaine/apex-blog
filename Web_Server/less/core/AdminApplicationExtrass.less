@@ -16,6 +16,15 @@
   width: 20%;
 }
 /**************************************
+* Categories IG
+**************************************/
+.z-sortable-handle:hover {
+  cursor: move;
+}
+.ui-sortable-helper{
+  display: inline-flex;
+}
+/**************************************
 * IR files
 **************************************/
 td[headers="COPY_URL"] {
@@ -40,7 +49,7 @@ td[headers="COPY_URL"] {
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
   .z-commentContainer {
-    margin-left: 1rem;
+    margin: 0 1rem;
     width: 100%;
     overflow: hidden;
     .z-commentTitle {
@@ -62,17 +71,17 @@ td[headers="COPY_URL"] {
 * Interactive Reports link column
 **************************************/
 .z-IR--iconLinks {
-	tr > :first-child {
-		padding: 0.25rem 0.5rem;
-		width: 0.1%;
-	}
+  tr > :first-child {
+    padding: 0.25rem 0.5rem;
+    width: 0.1%;
+  }
 }
 /**************************************
 * Settings and features Interactive Grid
 **************************************/
 .z-config-ig {
   span.a-GV-breakLabel {
-  	display: none!important;
+    display: none!important;
     visibility: hidden!important;
   }
 }

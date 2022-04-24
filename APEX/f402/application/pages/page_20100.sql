@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_dialog_chained=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220407073026'
+,p_last_upd_yyyymmddhh24miss=>'20220417065141'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(65300325259080906)
@@ -49,13 +49,26 @@ wwv_flow_api.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'  apex_lang.message(',
-'    p_name => :P20100_LABEL',
-'  ) as label',
+'  v1.attribute_desc   as label',
 '  ,apex_lang.message(',
-'    p_name => :REQUEST',
-'  ) as help',
-'from dual'))
+'    p_name => v1.help_message',
+'    ,p0 => v1.int_min',
+'    ,p1 => v1.int_max',
+'  )                   as help',
+'from blog_v_all_settings v1',
+'where 1 = 1',
+'  and :REQUEST = ''SETTINGS''',
+'  and v1.id = :P20100_ID',
+'union all',
+'select',
+'  v1.feature_name     as label',
+'  ,apex_lang.message(',
+'    p_name => v1.help_message',
+'  )                   as help',
+'from blog_v_all_features v1',
+'where 1 = 1',
+'  and :REQUEST = ''FEATURES''',
+'  and v1.id = :P20100_ID'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(15490716552941099)
@@ -104,7 +117,7 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(65303552545080938)
-,p_name=>'P20100_LABEL'
+,p_name=>'P20100_ID'
 ,p_item_sequence=>10
 ,p_item_plug_id=>wwv_flow_api.id(65303253150080935)
 ,p_display_as=>'NATIVE_HIDDEN'

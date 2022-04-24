@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220407074747'
+,p_last_upd_yyyymmddhh24miss=>'20220416160829'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(41939477197116306)
@@ -45,6 +45,7 @@ wwv_flow_api.create_page_plug(
 '   ,v1.show_changed_on  as show_changed_on',
 '   ,btn.title_edit      as btn_title_edit',
 'from blog_v_all_dynamic_content v1',
+'-- link column button title',
 'cross join (',
 '  select apex_lang.message( ''BLOG_BTN_TITLE_EDIT'' ) as title_edit',
 '  from dual',
@@ -169,7 +170,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
-,p_rpt_named_lov=>wwv_flow_api.id(8819403626737334)
+,p_rpt_named_lov=>wwv_flow_api.id(11784376262412448)
 ,p_rpt_show_filter_lov=>'1'
 );
 wwv_flow_api.create_worksheet_column(
@@ -181,7 +182,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
-,p_rpt_named_lov=>wwv_flow_api.id(8819403626737334)
+,p_rpt_named_lov=>wwv_flow_api.id(11784376262412448)
 ,p_rpt_show_filter_lov=>'1'
 );
 wwv_flow_api.create_worksheet_column(

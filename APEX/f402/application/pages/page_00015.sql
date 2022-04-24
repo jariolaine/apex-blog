@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220413064105'
+,p_last_upd_yyyymmddhh24miss=>'20220423054136'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
@@ -66,10 +66,10 @@ wwv_flow_api.create_page_plug(
 '  ,btn.title_edit         as btn_title_edit',
 '  ,case v1.is_active',
 '    when 0',
-'    then ''fa-minus-circle-o u-danger-text''',
+'    then ''fa-minus-circle u-danger-text''',
 '    when 1',
-'    then ''fa-check-circle-o u-success-text''',
-'    else ''fa-question-circle-o''',
+'    then ''fa-check-circle u-success-text''',
+'    else ''fa-question-circle''',
 '   end                    as file_status_icon',
 '  ,case v1.is_download',
 '    when 0',
@@ -79,6 +79,7 @@ wwv_flow_api.create_page_plug(
 '    else ''fa-question-circle-o''',
 '   end                    as file_repository_icon',
 'from blog_v_all_files v1',
+'-- links button title',
 'cross join(',
 '  select',
 '     apex_lang.message( ''BLOG_BTN_TITLE_COPY_TO_CLIPBOARD'' ) as copy_url',
@@ -178,7 +179,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
-,p_rpt_named_lov=>wwv_flow_api.id(8819403626737334)
+,p_rpt_named_lov=>wwv_flow_api.id(11784376262412448)
 ,p_rpt_show_filter_lov=>'1'
 );
 wwv_flow_api.create_worksheet_column(
@@ -186,7 +187,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_db_column_name=>'IS_DOWNLOAD'
 ,p_display_order=>60
 ,p_column_identifier=>'H'
-,p_column_label=>'Public File'
+,p_column_label=>'Download'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<span aria-hidden="true" title="#IS_DOWNLOAD#" class="fa #FILE_REPOSITORY_ICON#"></span>',
 '<span class="u-VisuallyHidden">#IS_DOWNLOAD#</span>',
@@ -194,9 +195,9 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
-,p_rpt_named_lov=>wwv_flow_api.id(6747712589074152)
+,p_rpt_named_lov=>wwv_flow_api.id(11789591131543819)
 ,p_rpt_show_filter_lov=>'1'
-,p_help_text=>'File is visible on public page files report.'
+,p_help_text=>'Is file available for download in public application "Files" page.'
 );
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(18411298167271002)
@@ -381,7 +382,7 @@ wwv_flow_api.create_page_button(
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(25132454760432506)
-,p_name=>'Process Upload'
+,p_name=>'Process File Upload'
 ,p_event_sequence=>10
 ,p_triggering_element_type=>'REGION'
 ,p_triggering_region_id=>wwv_flow_api.id(24910787972771846)
@@ -411,7 +412,7 @@ wwv_flow_api.create_page_da_action(
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(26969189313257319)
-,p_name=>'Process Update'
+,p_name=>'Process File Attributes Update'
 ,p_event_sequence=>20
 ,p_triggering_element_type=>'REGION'
 ,p_triggering_region_id=>wwv_flow_api.id(6729285879951908)
@@ -459,9 +460,9 @@ wwv_flow_api.create_page_da_action(
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'this.affectedElements.find("td[headers=DOWNLOAD] a").removeAttr("alt title").end()',
 '.find("[data-clipboard-source]").click(function(){  ',
-'  var $temp = $("<input>");',
+'  var $temp = $("<input/>",{"class":"z-hidden","value":$(this).data("clipboard-source")});',
 '  $("body").append($temp);',
-'  $temp.val($(this).data("clipboard-source")).select();',
+'  $temp.select();',
 '  document.execCommand("copy");',
 '  $temp.remove();',
 '});'))

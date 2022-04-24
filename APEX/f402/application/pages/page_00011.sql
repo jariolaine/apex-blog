@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220413182901'
+,p_last_upd_yyyymmddhh24miss=>'20220416160237'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8596898648797585)
@@ -33,52 +33,61 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_sequence=>20
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.id              as post_id',
-'  ,v1.category_id         as category_id',
-'  ,v1.created_on          as created_on',
-'  ,v1.created_by          as created_by',
-'  ,v1.changed_on          as changed_on',
-'  ,v1.changed_by          as changed_by',
-'  ,v1.blogger_name        as blogger_name',
-'  ,v1.category_title      as category_title',
-'  ,v1.title               as post_title',
-'  ,v1.post_desc           as post_desc',
-'  ,v1.tag_id              as tag_id',
-'  ,v1.post_tags           as post_tags',
-'  ,v1.visible_tags        as visible_tags',
-'  ,v1.hidden_tags         as hidden_tags',
-'  ,v1.body_length         as body_length',
-'  ,v1.published_display   as published_on',
-'  ,v1.notes               as notes',
-'  ,v1.comments_count      as comments_count',
-'  ,v1.post_status         as post_status',
-'  ,v1.ctx_search          as ctx_search',
+'select v1.id                as post_id',
+'  ,v1.category_id           as category_id',
+'  ,v1.created_on            as created_on',
+'  ,v1.created_by            as created_by',
+'  ,v1.changed_on            as changed_on',
+'  ,v1.changed_by            as changed_by',
+'  ,v1.blogger_name          as blogger_name',
+'  ,v1.category_title        as category_title',
+'  ,v1.title                 as post_title',
+'  ,v1.post_desc             as post_desc',
+'  ,v1.tag_id                as tag_id',
+'  ,v1.post_tags             as post_tags',
+'  ,v1.visible_tags          as visible_tags',
+'  ,v1.hidden_tags           as hidden_tags',
+'  ,v1.body_length           as body_length',
+'  ,v1.published_display     as published_on',
+'  ,v1.notes                 as notes',
+'  ,v1.comments_count        as comments_count',
+'  ,status_lov.display_value as post_status',
+'  ,v1.ctx_search            as ctx_search',
 '  ,case v1.post_status',
 '    when ''BLOGGER_DISABLED''',
-'    then ''fa-stop-circle-o u-danger-text''',
+'    then ''fa-stop-circle u-danger-text''',
 '    when ''CATEGORY_DISABLED''',
-'    then ''fa-minus-circle-o u-danger-text''',
+'    then ''fa-minus-circle u-danger-text''',
 '    when ''DRAFT''',
-'    then ''fa-pause-circle-o u-warning-text''',
+'    then ''fa-pause-circle u-warning-text''',
 '    when ''SCHEDULED''',
 '    then ''fa-clock-o u-info-text''',
 '    when ''PUBLISHED''',
-'    then ''fa-check-circle-o u-success-text''',
-'    else ''fa-question-circle-o''',
-'   end                    as post_status_icon',
-'  ,btn.title_edit         as btn_title_edit',
+'    then ''fa-check-circle u-success-text''',
+'    else ''fa-question-circle''',
+'   end                      as post_status_icon',
+'  ,btn.title_edit           as btn_title_edit',
 '  ,apex_page.get_url(',
 '     p_page   => 12',
 '    ,p_clear_cache => 12',
 '    ,p_items  => ''P12_ID''',
 '    ,p_values => v1.id',
-'   ) as edit_url',
+'   )                        as edit_url',
 '  ,v1.body_html',
 '  ,to_char(',
 '     v1.published_on',
 '    ,:G_POST_TITLE_DATE_FORMAT',
-'  )                       as detail_view_published',
+'  )                         as detail_view_published',
 'from blog_v_all_posts v1',
+'-- because APEX bug that IR not use LOV values ',
+'join (',
+'  select lov.display_value',
+'    ,lov.return_value',
+'  from #OWNER#.blog_v_lov lov',
+'  where 1 = 1',
+'  and lov.lov_name = ''POST_STATUS''',
+') status_lov on status_lov.return_value = v1.post_status',
+'-- link column button title',
 'cross join (',
 '  select apex_lang.message( ''BLOG_BTN_TITLE_EDIT'' ) as title_edit',
 '  from dual',
@@ -217,7 +226,10 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_identifier=>'AF'
 ,p_column_label=>'Blogger'
 ,p_column_type=>'STRING'
+,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_heading_alignment=>'LEFT'
+,p_rpt_named_lov=>wwv_flow_api.id(11799190347841995)
+,p_rpt_show_filter_lov=>'1'
 );
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3880100059180118)
@@ -327,7 +339,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
-,p_rpt_named_lov=>wwv_flow_api.id(7400955148112919)
+,p_rpt_named_lov=>wwv_flow_api.id(11795802617710966)
 ,p_rpt_show_filter_lov=>'1'
 );
 wwv_flow_api.create_worksheet_column(

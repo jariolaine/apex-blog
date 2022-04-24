@@ -27,7 +27,7 @@ wwv_flow_api.create_install_check(
 wwv_flow_api.create_install_check(
  p_id=>wwv_flow_api.id(11013705994514070)
 ,p_install_id=>wwv_flow_api.id(20741295540297154)
-,p_name=>'Pre-check for application update'
+,p_name=>'Pre-check if upgrading application'
 ,p_sequence=>20
 ,p_check_type=>'EXISTS'
 ,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(

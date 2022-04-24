@@ -19,14 +19,15 @@ wwv_flow_api.create_list_of_values(
 '  ,title        as display_value',
 '  ,case is_active',
 '  when 1',
-'  then apex_lang.lang(''Enabled'')',
-'  else apex_lang.lang(''Disabled'')',
+'  then apex_lang.message( ''BLOG_LOV_IS_ACTIVE_ENABLED'' )',
+'  else apex_lang.message( ''BLOG_LOV_IS_ACTIVE_DISABLED'' )',
 '  end           as status',
 '  ,display_seq  as display_seq',
 'from #OWNER#.blog_v_all_categories',
 'where 1 = 1'))
 ,p_source_type=>'SQL'
 ,p_location=>'LOCAL'
+,p_use_local_sync_table=>false
 ,p_return_column_name=>'RETURN_VALUE'
 ,p_display_column_name=>'DISPLAY_VALUE'
 ,p_group_column_name=>'STATUS'

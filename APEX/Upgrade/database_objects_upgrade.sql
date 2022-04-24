@@ -59,18 +59,15 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATE
       select 1
       from blog_comment_flags f1
       where 1 = 1
-        and t1.is_active = 0
         and f1.comment_id = t1.id
         and f1.flag = 'MODERATE'
     )
     then 'MODERATE'
     else
       case t1.is_active
-        when 0
-        then 'DISABLED'
         when 1
         then 'ENABLED'
-        else 'UNKNOWN'
+        else 'DISABLED'
       end
    end              as status
    ,case
@@ -529,7 +526,14 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "IS_ACTIVE", "POST
   )               as icon_modifier
 from blog_comments t1
 where 1 = 1
-and t1.is_active = 1
+  and t1.is_active = 1
+  and not exists(
+    select 1
+    from blog_comment_flags x1
+    where 1 = 1
+      and x1.comment_id = t1.id
+      and x1.flag = 'MODERATE'
+  )
 with read only
 /
 --------------------------------------------------------
@@ -603,6 +607,21 @@ join blog_link_groups t2
   on t1.link_group_id = t2.id
 where 1 = 1
 and t1.is_active * t2.is_active > 0
+with read only
+/
+--------------------------------------------------------
+--  DDL for View BLOG_V_LOV
+--------------------------------------------------------
+CREATE OR REPLACE FORCE VIEW "BLOG_V_LOV" ("LOV_NAME", "DISPLAY_SEQ", "RETURN_VALUE", "DISPLAY_MESSAGE", "DISPLAY_VALUE") AS
+  select
+   t1.lov_name                              as lov_name
+  ,t1.display_seq                           as display_seq
+  ,t1.return_value                          as return_value
+  ,t1.display_message                       as display_message
+  ,apex_lang.message( t1.display_message )  as display_value
+from blog_list_of_values t1
+where 1 = 1
+and t1.is_active = 1
 with read only
 /
 --------------------------------------------------------
@@ -3875,6 +3894,7 @@ as
 --    Jari Laine 25.03.2022 - Added more comments
 --                          - Changed variable names to more descriptive
 --                          - Removed obsolete procedure check_archive_exists
+--    Jari Laine 19.04.2022 - Changes to procedures download_file
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3945,9 +3965,9 @@ as
 --  inside package and package BLOG_XML
   procedure download_file (
     p_blob_content    in out nocopy blob,
-    p_file_name       in varchar2 default null,
-    p_mime_type       in varchar2 default null,
-    p_cache_control   in varchar2 default null,
+    p_mime_type       in varchar2,
+    p_header_names    in apex_t_varchar2,
+    p_header_values   in apex_t_varchar2,
     p_charset         in varchar2 default null
   );
 --------------------------------------------------------------------------------
@@ -3983,13 +4003,12 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure raise_http_error(
-    p_error_code  in number,
-    p_message     in varchar2
+    p_error_code  in number
   )
   as
   begin
     -- output HTTP status
-    owa_util.status_line( p_error_code, apex_lang.message( p_message ) );
+    owa_util.status_line( p_error_code );
     -- stop APEX
     apex_application.stop_apex_engine;
   end raise_http_error;
@@ -4318,10 +4337,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   when others
@@ -4337,10 +4353,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   end get_post_title;
@@ -4428,10 +4441,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   when others
@@ -4449,10 +4459,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   end get_post_pagination;
@@ -4518,10 +4525,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   when others then
@@ -4535,10 +4539,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   end get_category_title;
@@ -4596,10 +4597,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   when others
@@ -4613,10 +4611,7 @@ as
     );
 
     -- show http error
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   end get_tag;
@@ -4669,15 +4664,18 @@ as
 --------------------------------------------------------------------------------
   procedure download_file (
     p_blob_content    in out nocopy blob,
-    p_file_name       in varchar2 default null,
-    p_mime_type       in varchar2 default null,
-    p_cache_control   in varchar2 default null,
+    p_mime_type       in varchar2,
+    p_header_names    in apex_t_varchar2,
+    p_header_values   in apex_t_varchar2,
     p_charset         in varchar2 default null
   )
   as
   begin
 
-    -- open and set HTTP headers
+    -- init HTTP buffer
+    sys.htp.init;
+
+    -- open HTTP header
     sys.owa_util.mime_header(
       ccontent_type   => coalesce ( p_mime_type, 'application/octet' )
       ,bclose_header  => false
@@ -4688,33 +4686,25 @@ as
       p_message => 'Set response headers'
     );
 
-    if p_file_name is not null
-    then
-      apex_debug.info(
-        p_message => 'Content-Disposition: attachment; filename="%s"'
-        ,p0 => p_file_name
-      );
-      sys.htp.p(
-        apex_string.format(
-          p_message => 'Content-Disposition: attachment; filename="%s"'
-          ,p0 => p_file_name
-        )
-      );
-    end if;
+    -- set response headers
+    for i in 1 .. p_header_names.count
+    loop
 
-    if p_cache_control is not null
-    then
       apex_debug.info(
-        p_message => 'Cache-Control: %s'
-        ,p0 => p_cache_control
+         p_message => 'Header name: %s , header value: %s'
+        ,p0 => p_header_names(i)
+        ,p1 => p_header_values(i)
       );
+      -- output HTTP header
       sys.htp.p(
         apex_string.format(
-          p_message => 'Cache-Control: %s'
-          ,p0 => p_cache_control
+           p_message => '%s: %s'
+          ,p0 => p_header_names(i)
+          ,p1 => p_header_values(i)
         )
       );
-    end if;
+
+    end loop;
 
     -- close HTTP header
     sys.owa_util.http_header_close;
@@ -4729,7 +4719,9 @@ as
     p_file_name in varchar2
   )
   as
-    l_file_t blog_v_files%rowtype;
+    l_file_t        blog_v_files%rowtype;
+    l_header_names  apex_t_varchar2;
+    l_header_values apex_t_varchar2;
   begin
 
     -- fetch file
@@ -4746,14 +4738,81 @@ as
       ,p0 => l_file_t.file_name
       ,p1 => l_file_t.file_size
       ,p2 => l_file_t.mime_type
+      ,p3 => l_file_t.file_charset
     );
 
-    -- output file
+    -- Add Last-Modified header
+    apex_string.push(
+        p_table => l_header_names
+       ,p_value => 'Last-Modified'
+    );
+    apex_string.push(
+       p_table => l_header_values
+      ,p_value =>
+        to_char(
+          sys_extract_utc( l_file_t.changed_on )
+          ,'Dy, DD Mon YYYY HH24:MI:SS "GMT"'
+          ,'NLS_DATE_LANGUAGE=ENGLISH'
+        )
+    );
+
+    -- Compare request If-Modified-Since header to Last-Modified
+    -- If values are equal then set status header and exit from procedure
+    if sys.owa_util.get_cgi_env('HTTP_IF_MODIFIED_SINCE') = l_header_values(1)
+    then
+      sys.owa_util.status_line( 304 );
+      apex_debug.info(
+         p_message => 'File not sent. If-Modified-Since: %s'
+        ,p0 => l_header_values(1)
+      );
+      return;
+    end if;
+
+    -- Add Cache-Control header
+    apex_string.push(
+        p_table => l_header_names
+       ,p_value => 'Cache-Control'
+    );
+    apex_string.push(
+       p_table => l_header_values
+      ,p_value =>
+        apex_string.format(
+           p_message => 'max-age=%s'
+          ,p0 =>
+            case l_file_t.is_download
+              when 1
+              then get_attribute_value( 'G_MAX_AGE_DOWNLOAD' )
+              else get_attribute_value( 'G_MAX_AGE_FILE' )
+            end
+        )
+    );
+
+    -- add Content-Disposition header
+    apex_string.push(
+      p_table => l_header_names
+     ,p_value => 'Content-Disposition'
+    );
+    apex_string.push(
+      p_table => l_header_values
+     ,p_value =>
+        apex_string.format(
+           p_message => '%s; filename="%s"'
+          ,p0 =>
+            case l_file_t.is_download
+              when 1
+              then 'attachment'
+              else 'inline'
+            end
+          ,p1 => l_file_t.file_name
+        )
+    );
+
+    -- download file
     download_file(
       p_blob_content    => l_file_t.blob_content
-      ,p_file_name      => l_file_t.file_name
       ,p_mime_type      => l_file_t.mime_type
-      ,p_cache_control  => case when l_file_t.is_download = 0 then 'max-age=3600, public' end
+      ,p_header_names   => l_header_names
+      ,p_header_values  => l_header_values
     );
 
   -- handle errors
@@ -4761,10 +4820,7 @@ as
   when no_data_found
   then
 
-    raise_http_error(
-      p_error_code => 404
-      ,p_message => 'BLOG_HTTP_404_ERROR'
-    );
+    raise_http_error( 404 );
     raise;
 
   end download_file;
@@ -4823,6 +4879,7 @@ as
 --    Jari Laine 05.01.2021 - Added parameter p_css_file to procedure rss_xsl
 --    Jari Laine 13.03.2022 - Added parameter p_process_nae to procedure sitemap_index
 --                            Removed build option check from query producing XML in procedure sitemap_index
+--    Jari Laine 19.04.2022 - Changes relating procedure blog_util.download_file
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4908,6 +4965,9 @@ as
     l_home_url      varchar2(4000);
     l_app_name      varchar2(4000);
     l_app_desc      varchar2(4000);
+    l_cache_control varchar2(256);
+    l_last_modified varchar2(256);
+    l_max_published timestamp;
     l_rss_version   constant varchar2(5) := '2.0';
   begin
 
@@ -4932,65 +4992,90 @@ as
     l_xsl_url := blog_url.get_rss_xsl;
 
     -- generate RSS
-    select xmlserialize( content xmlconcat(
-      case when l_xsl_url is not null
-      then xmlpi("xml-stylesheet",
-          apex_string.format(
-            p_message => 'type="text/xsl" href="%s" media="screen"'
-            ,p0 => l_xsl_url
-          )
-        )
-      end,
-      xmlelement(
-        "rss", xmlattributes(
-           l_rss_version as "version"
-          ,'http://purl.org/dc/elements/1.1/' as "xmlns:dc"
-          ,'http://www.w3.org/2005/Atom'      as "xmlns:atom"
-        )
-        ,xmlelement(
-          "channel"
-          ,xmlelement(
-             "atom:link"
-            ,xmlattributes(
-               'self'                         as "rel"
-              ,l_rss_url                      as "href"
-              ,'application/rss+xml'          as "type"
+    select xmlserialize(
+      content xmlconcat(
+        case when l_xsl_url is not null
+          then xmlpi( "xml-stylesheet",
+            apex_string.format(
+               p_message => 'type="text/xsl" href="%s" media="screen"'
+              ,p0 => l_xsl_url
             )
           )
-          ,xmlforest(
-             l_app_name                       as "title"
-            ,l_home_url                       as "link"
-            ,l_app_desc                       as "description"
-            ,p_lang                           as "language"
+        end,
+        xmlelement(
+          "rss", xmlattributes(
+             l_rss_version                      as "version"
+            ,'http://purl.org/dc/elements/1.1/' as "xmlns:dc"
+            ,'http://www.w3.org/2005/Atom'      as "xmlns:atom"
           )
-          ,xmlagg(
-            xmlelement(
-               "item"
-              ,xmlelement( "title",       posts.post_title )
-              ,xmlelement( "dc:creator",  posts.blogger_name )
-              ,xmlelement( "category",    posts.category_title )
-              ,xmlelement( "link",        blog_url.get_post(
-                                             p_post_id    => posts.post_id
-                                            ,p_canonical  => 'YES'
-                                          )
+          ,xmlelement(
+            "channel"
+            ,xmlelement(
+              "atom:link"
+              ,xmlattributes(
+                'self'                  as "rel"
+                ,l_rss_url              as "href"
+                ,'application/rss+xml'  as "type"
               )
-              ,xmlelement( "description", posts.post_desc )
-              ,xmlelement( "pubDate", to_char( sys_extract_utc( posts.published_on ), 'Dy, DD Mon YYYY HH24:MI:SS "GMT"' ) )
-              ,xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id )
-            ) order by posts.published_on desc
+            )
+            ,xmlforest(
+              l_app_name  as "title"
+              ,l_home_url as "link"
+              ,l_app_desc as "description"
+              ,p_lang     as "language"
+            )
+            ,xmlagg(
+              xmlelement(
+                "item"
+                ,xmlelement( "title",       posts.post_title )
+                ,xmlelement( "dc:creator",  posts.blogger_name )
+                ,xmlelement( "category",    posts.category_title )
+                ,xmlelement( "link",
+                  blog_url.get_post(
+                     p_post_id    => posts.post_id
+                    ,p_canonical  => 'YES'
+                  )
+                )
+                ,xmlelement( "description", posts.post_desc )
+                ,xmlelement( "pubDate",
+                  to_char(
+                     sys_extract_utc( posts.published_on )
+                    ,'Dy, DD Mon YYYY HH24:MI:SS "GMT"'
+                    ,'NLS_DATE_LANGUAGE=ENGLISH'
+                  )
+                )
+                ,xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id )
+              ) order by posts.published_on desc
+            )
           )
         )
       )
+      as blob encoding 'UTF-8' indent size=2
     )
-    as blob encoding 'UTF-8' indent size=2)
-    into l_rss
+    ,max( posts.published_on ) as max_published
+    into l_rss, l_max_published
     from blog_v_posts_last20 posts
     ;
 
+    l_cache_control :=
+      apex_string.format(
+         p_message => 'max-age=%s'
+        ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_RSS' )
+      )
+    ;
+    l_last_modified :=
+      to_char(
+         sys_extract_utc( l_max_published )
+        ,'Dy, DD Mon YYYY HH24:MI:SS "GMT"'
+        ,'NLS_DATE_LANGUAGE=ENGLISH'
+      )
+    ;
+
     blog_util.download_file(
-      p_blob_content    => l_rss
+       p_blob_content   => l_rss
       ,p_mime_type      => 'application/xml'
-      ,p_cache_control  => 'max-age=3600, public'
+      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition', 'Last-Modified' )
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xml"', l_last_modified  )
       ,p_charset        => 'UTF-8'
     );
 
@@ -5002,12 +5087,13 @@ as
     p_css_file  in varchar2
   )
   as
-    l_host_url varchar2(1024);
-    l_xml xmltype;
-    l_xsl blob;
+    l_xml           xmltype;
+    l_xsl           blob;
+    l_host_url      varchar2(1024);
+    l_cache_control varchar2(256);
   begin
 
-    l_host_url := apex_util.host_url('APEX_PATH');
+    l_host_url := apex_util.host_url( 'APEX_PATH' );
     l_host_url := substr( l_host_url, instr( l_host_url, '/', 1, 3 ) );
 
     l_xml :=
@@ -5058,10 +5144,18 @@ as
     from dual
     ;
 
+    l_cache_control :=
+      apex_string.format(
+         p_message => 'max-age=%s'
+        ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_RSS_XSL' )
+      )
+    ;
+
     blog_util.download_file(
-      p_blob_content    => l_xsl
+       p_blob_content   => l_xsl
       ,p_mime_type      => 'application/xml'
-      ,p_cache_control  => 'max-age=315360000, immutable, public'
+      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xsl"' )
       ,p_charset        => 'UTF-8'
     );
 
@@ -5074,9 +5168,10 @@ as
     p_process_name  in varchar2
   )
   as
-    l_xml     blob;
-    l_url     varchar2(4000);
-    l_build_option constant varchar2(256) := 'BLOG_FEATURE_SITEMAP';
+    l_xml           blob;
+    l_url           varchar2(4000);
+    l_cache_control varchar2(256);
+    l_build_option  constant varchar2(256) := 'BLOG_FEATURE_SITEMAP';
   begin
 
     l_url := blog_url.get_tab(
@@ -5097,7 +5192,8 @@ as
           )
         )
       )
-    as blob encoding 'UTF-8' indent size=2)
+      as blob encoding 'UTF-8' indent size=2
+    )
     into l_xml
     from apex_application_page_proc t1
     where 1 = 1
@@ -5107,10 +5203,18 @@ as
       and t1.build_option = l_build_option
     ;
 
+    l_cache_control :=
+      apex_string.format(
+         p_message => 'max-age=%s'
+        ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_SITEMAP' )
+      )
+    ;
+
     blog_util.download_file(
-      p_blob_content    => l_xml
+       p_blob_content   => l_xml
       ,p_mime_type      => 'application/xml'
-      ,p_cache_control  => 'max-age=3600, public'
+      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-index.xml"' )
       ,p_charset        => 'UTF-8'
     );
 
@@ -5122,7 +5226,8 @@ as
     p_page_group  in varchar2
   )
   as
-    l_xml blob;
+    l_xml   blob;
+    l_cache_control varchar2(256);
   begin
 
     select xmlserialize( document
@@ -5132,10 +5237,11 @@ as
         (
           xmlagg(
             xmlelement( "url"
-              ,xmlelement( "loc", blog_url.get_tab(
-                                     p_app_page_id => v1.page_alias
-                                    ,p_canonical => 'YES'
-                                  )
+              ,xmlelement( "loc",
+                blog_url.get_tab(
+                   p_app_page_id => v1.page_alias
+                  ,p_canonical => 'YES'
+                )
               )
             ) order by v1.page_id
           )
@@ -5151,17 +5257,26 @@ as
       and case
         when v1.build_option is null
         then 'INCLUDE'
-        else  apex_util.get_build_option_status(
-                 p_application_id    => p_app_id
-                ,p_build_option_name => v1.build_option
-              )
+        else
+          apex_util.get_build_option_status(
+             p_application_id    => p_app_id
+            ,p_build_option_name => v1.build_option
+          )
       end = 'INCLUDE'
     ;
 
+    l_cache_control :=
+      apex_string.format(
+         p_message => 'max-age=%s'
+        ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_SITEMAP' )
+      )
+    ;
+
     blog_util.download_file(
-      p_blob_content    => l_xml
+       p_blob_content   => l_xml
       ,p_mime_type      => 'application/xml'
-      ,p_cache_control  => 'max-age=3600, public'
+      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-main.xml"' )
       ,p_charset        => 'UTF-8'
     );
 
@@ -5170,7 +5285,8 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_posts
   as
-    l_xml blob;
+    l_xml           blob;
+    l_cache_control varchar2(256);
   begin
 
     select xmlserialize( document
@@ -5180,25 +5296,35 @@ as
         (
           xmlagg(
             xmlelement( "url"
-              ,xmlelement( "loc", blog_url.get_post(
-                                     p_post_id    => posts.post_id
-                                    ,p_canonical  => 'YES'
-                                  )
+              ,xmlelement( "loc",
+                blog_url.get_post(
+                   p_post_id    => posts.post_id
+                  ,p_canonical  => 'YES'
+                )
               )
               ,XMLElement( "lastmod", to_char( sys_extract_utc( greatest( posts.published_on, posts.changed_on ) ), 'YYYY-MM-DD"T"HH24:MI:SS"+00:00""' ) )
             ) order by posts.published_on desc
           )
         )
       )
-    as blob encoding 'UTF-8' indent size=2)
+      as blob encoding 'UTF-8' indent size=2
+    )
     into l_xml
     from blog_v_posts posts
     ;
 
+    l_cache_control :=
+      apex_string.format(
+         p_message => 'max-age=%s'
+        ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_SITEMAP' )
+      )
+    ;
+
     blog_util.download_file(
-      p_blob_content    => l_xml
+       p_blob_content   => l_xml
       ,p_mime_type      => 'application/xml'
-      ,p_cache_control  => 'max-age=3600, public'
+      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-posts.xml"' )
       ,p_charset        => 'UTF-8'
     );
 
@@ -5207,7 +5333,8 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_categories
   as
-    l_xml blob;
+    l_xml           blob;
+    l_cache_control varchar2(256);
   begin
 
     select xmlserialize( document
@@ -5217,24 +5344,34 @@ as
         (
           xmlagg(
             xmlelement( "url"
-              ,xmlelement( "loc", blog_url.get_category(
-                                     p_category_id  => cat.category_id
-                                    ,p_canonical    => 'YES'
-                                  )
+              ,xmlelement( "loc",
+                blog_url.get_category(
+                   p_category_id  => cat.category_id
+                  ,p_canonical    => 'YES'
+                )
               )
             ) order by cat.display_seq desc
           )
         )
       )
-    as blob encoding 'UTF-8' indent size=2)
+      as blob encoding 'UTF-8' indent size=2
+    )
     into l_xml
     from blog_v_categories cat
     ;
 
+    l_cache_control :=
+      apex_string.format(
+         p_message => 'max-age=%s'
+        ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_SITEMAP' )
+      )
+    ;
+
     blog_util.download_file(
-      p_blob_content    => l_xml
+       p_blob_content   => l_xml
       ,p_mime_type      => 'application/xml'
-      ,p_cache_control  => 'max-age=3600, public'
+      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-categories.xml"' )
       ,p_charset        => 'UTF-8'
     );
 
@@ -5243,7 +5380,8 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_archives
   as
-    l_xml blob;
+    l_xml           blob;
+    l_cache_control varchar2(256);
   begin
 
     select xmlserialize( document
@@ -5253,24 +5391,34 @@ as
         (
           xmlagg(
             xmlelement( "url"
-              ,xmlelement( "loc", blog_url.get_archive(
-                                     p_archive_id => arc.archive_year
-                                    ,p_canonical  => 'YES'
-                                  )
+              ,xmlelement( "loc",
+                blog_url.get_archive(
+                   p_archive_id => arc.archive_year
+                  ,p_canonical  => 'YES'
+                )
               )
             ) order by arc.archive_year desc
           )
         )
       )
-    as blob encoding 'UTF-8' indent size=2)
+      as blob encoding 'UTF-8' indent size=2
+    )
     into l_xml
     from blog_v_archive_year arc
     ;
 
+    l_cache_control :=
+      apex_string.format(
+         p_message => 'max-age=%s'
+        ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_SITEMAP' )
+      )
+    ;
+
     blog_util.download_file(
-      p_blob_content    => l_xml
+       p_blob_content   => l_xml
       ,p_mime_type      => 'application/xml'
-      ,p_cache_control  => 'max-age=3600, public'
+      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-archives.xml"' )
       ,p_charset        => 'UTF-8'
     );
 
@@ -5279,7 +5427,8 @@ as
 --------------------------------------------------------------------------------
   procedure sitemap_tags
   as
-    l_xml blob;
+    l_xml           blob;
+    l_cache_control varchar2(256);
   begin
 
     select xmlserialize( document
@@ -5298,15 +5447,24 @@ as
           )
         )
       )
-    as blob encoding 'UTF-8' indent size=2)
+      as blob encoding 'UTF-8' indent size=2
+    )
     into l_xml
     from blog_v_tags tags
     ;
 
+    l_cache_control :=
+      apex_string.format(
+         p_message => 'max-age=%s'
+        ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_SITEMAP' )
+      )
+    ;
+
     blog_util.download_file(
-      p_blob_content    => l_xml
+       p_blob_content   => l_xml
       ,p_mime_type      => 'application/xml'
-      ,p_cache_control  => 'max-age=3600, public'
+      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-tags.xml"' )
       ,p_charset        => 'UTF-8'
     );
 

@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220415061423'
+,p_last_upd_yyyymmddhh24miss=>'20220421064421'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27412346667552217)
@@ -33,27 +33,24 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.id        as comment_id',
-'  ,v1.post_id       as post_id',
-'  ,v1.parent_id     as parent_id',
-'  ,v1.created_on    as created_on',
-'  ,v1.changed_on    as changed_on',
-'  ,v1.changed_by    as changed_by',
-'  ,v1.comment_by    as comment_by',
-'  ,v1.post_title    as post_title',
-'  ,v1.status        as status',
-'  -- because APEX bug that IR not use LOV values in detail view',
-'  ,apex_lang.lang(',
-'    initcap( v1.flag )',
-'  )                 as flag',
+'select v1.id                as comment_id',
+'  ,v1.post_id               as post_id',
+'  ,v1.parent_id             as parent_id',
+'  ,v1.created_on            as created_on',
+'  ,v1.changed_on            as changed_on',
+'  ,v1.changed_by            as changed_by',
+'  ,v1.comment_by            as comment_by',
+'  ,v1.post_title            as post_title',
+'  ,status_lov.display_value as status',
+'  ,flag_lov.display_value   as flag',
 '  ,case v1.status ',
-'    when ''ENABLED'' then',
-'      ''fa-check-circle-o u-success-text''',
 '    when ''MODERATE'' then',
-'      ''fa-exclamation-triangle-o u-warning-text''',
+'      ''fa-exclamation-circle u-warning-text''',
+'    when ''ENABLED'' then',
+'      ''fa-check-circle u-success-text''',
 '    else',
-'      ''fa-minus-circle-o u-danger-text''',
-'  end               as status_icon',
+'      ''fa-minus-circle u-danger-text''',
+'  end                       as status_icon',
 '  ,case v1.flag',
 '    when ''REPLY'' then',
 '      ''fa-send-o''',
@@ -63,22 +60,47 @@ wwv_flow_api.create_page_plug(
 '      ''fa-envelope-o''',
 '    else',
 '      ''fa-envelope-open-o''',
-'  end               as flag_icon',
-'  ,btn.title_open   as title_open',
-'  ,case v1.flag',
-'    when ''NEW'' then',
-'      ''true''',
-'    when ''UNREAD'' then',
+'  end                       as flag_icon',
+'  ,btn.title_open           as title_open',
+'  ,case ',
+'    when v1.flag in( ''NEW'', ''UNREAD'' )',
+'    then',
 '      ''true''',
 '    else',
 '      ''false''',
-'  end               as btn_data',
-'  ,v1.body_html     as comment_body',
-'--  ,v1.user_icon     as user_icon',
-'--  ,v1.icon_modifier as icon_modifier',
+'  end                       as btn_data_unread',
+'  ,v1.body_html             as comment_body',
+'  ,apex_page.get_url(',
+'     p_page   => 31',
+'    ,p_clear_cache => 31',
+'    ,p_items  => ''P31_ID,P31_POST_ID''',
+'    ,p_values => ',
+'      apex_string.format(',
+'         p_message => ''%s,%s''',
+'        ,p0 => v1.id',
+'        ,p1 => v1.post_id',
+'      )',
+'   )                        as edit_url',
 'from blog_v_all_comments v1',
+'-- because APEX bug that IR not use LOV values in detail view',
+'join (',
+'  select lov.display_value',
+'    ,lov.return_value',
+'  from #OWNER#.blog_v_lov lov',
+'  where 1 = 1',
+'  and lov.lov_name = ''COMMENT_STATUS''',
+') status_lov on status_lov.return_value = v1.status',
+'-- because APEX bug that IR not use LOV values in detail view',
+'join (',
+'  select lov.display_value',
+'    ,return_value',
+'  from #OWNER#.blog_v_lov lov',
+'  where 1 = 1',
+'  and lov.lov_name = ''COMMENT_FLAG''',
+') flag_lov on flag_lov.return_value = v1.flag',
+'-- link column button title',
 'cross join (',
-'  select apex_lang.message( ''BLOG_BTN_TITLE_OPEN'' ) as title_open',
+'  select apex_lang.message( ''BLOG_BTN_TITLE_OPEN_COMMENT'' ) as title_open',
 '  from dual',
 ') btn'))
 ,p_plug_source_type=>'NATIVE_IR'
@@ -100,19 +122,28 @@ wwv_flow_api.create_worksheet(
 ,p_show_notify=>'Y'
 ,p_download_formats=>'CSV:HTML:XLSX:PDF'
 ,p_enable_mail_download=>'Y'
-,p_detail_link=>'f?p=&APP_ID.:31:&SESSION.::&DEBUG.:RP,:P31_POST_ID,P31_ID:#POST_ID#,#COMMENT_ID#'
+,p_detail_link=>'#EDIT_URL#'
 ,p_detail_link_text=>'<span class="t-Icon fa fa-pencil" aria-hidden="true"></span>'
-,p_detail_link_attr=>'data-unread="#BTN_DATA#" data-id="#COMMENT_ID#" title="#TITLE_OPEN#"" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
+,p_detail_link_attr=>'data-unread="#BTN_DATA_UNREAD#" data-id="CF#COMMENT_ID#" title="#TITLE_OPEN#"" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
 ,p_detail_view_enabled_yn=>'Y'
 ,p_detail_view_for_each_row=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="z-comment-IR">',
 '  <div class="z-commentIcon">',
-'    <span arial-label="#FLAG#" title="#FLAG#" class="t-Icon fa fa-lg #FLAG_ICON#"></span>',
+'    <span arial-label="#FLAG#" title="#FLAG#" class="t-Icon fa fa-lg #FLAG_ICON#" id="CF#COMMENT_ID#"></span>',
 '  </div>',
 '  <div class="z-commentContainer">',
-'    <div class="z-commentTitle">#POST_TITLE#</div>',
-'    <div class="z-commentSubtitle">#COMMENT_BY# #CREATED_ON#</div>',
-'    <div class="z-commentBody">#COMMENT_BODY#</div>',
+'    <div class="z-commentTitle">',
+'      <a href="#EDIT_URL#" data-unread="#BTN_DATA_UNREAD#" data-id="CF#COMMENT_ID#">#POST_TITLE#</a>',
+'    </div>',
+'    <div class="z-commentSubtitle">',
+'      #COMMENT_BY# &middot; #CREATED_ON#',
+'    </div>',
+'    <div class="z-commentBody">',
+'      #COMMENT_BODY#',
+'    </div>',
+'  </div>',
+'  <div class="z-commentStatus">',
+'    <span arial-label="#STATUS#" title="#STATUS#" class="t-Icon fa fa-lg #STATUS_ICON#"></span>',
 '  </div>',
 '</div>'))
 ,p_owner=>'LAINFJAR'
@@ -208,7 +239,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
-,p_rpt_named_lov=>wwv_flow_api.id(37640650714238823)
+,p_rpt_named_lov=>wwv_flow_api.id(11795273774701730)
 ,p_rpt_show_filter_lov=>'1'
 );
 wwv_flow_api.create_worksheet_column(
@@ -217,11 +248,12 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_order=>100
 ,p_column_identifier=>'T'
 ,p_column_label=>'Flag'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<span aria-hidden="true" title="#FLAG#" class="fa #FLAG_ICON#" id="flag_#COMMENT_ID#"></span>',
-'<span class="u-VisuallyHidden">#FLAG#</span>'))
+,p_column_html_expression=>'<span aria-label="#FLAG#" title="#FLAG#" class="fa #FLAG_ICON#" id="CF#COMMENT_ID#"></span>'
 ,p_column_type=>'STRING'
+,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
+,p_rpt_named_lov=>wwv_flow_api.id(11794321487687925)
+,p_rpt_show_filter_lov=>'1'
 );
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(36229030214379749)
@@ -251,11 +283,11 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
 wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(11415287425329110)
-,p_db_column_name=>'BTN_DATA'
+ p_id=>wwv_flow_api.id(21076424539846833)
+,p_db_column_name=>'BTN_DATA_UNREAD'
 ,p_display_order=>150
-,p_column_identifier=>'Y'
-,p_column_label=>'Button data'
+,p_column_identifier=>'AB'
+,p_column_label=>'Btn Data Unread'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
@@ -268,6 +300,15 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
 );
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(11416096664329118)
+,p_db_column_name=>'EDIT_URL'
+,p_display_order=>170
+,p_column_identifier=>'Z'
+,p_column_label=>'Edit Url'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+);
 wwv_flow_api.create_worksheet_rpt(
  p_id=>wwv_flow_api.id(27416916886555549)
 ,p_application_user=>'APXWS_DEFAULT'
@@ -277,7 +318,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_view_mode=>'REPORT'
-,p_report_columns=>'POST_TITLE:COMMENT_BY:CREATED_ON:FLAG:STATUS:TITLE_OPEN'
+,p_report_columns=>'POST_TITLE:COMMENT_BY:CREATED_ON:FLAG:STATUS:TITLE_OPEN:EDIT_URL:BTN_DATA_UNREAD'
 ,p_sort_column_1=>'CREATED_ON'
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'0'
@@ -335,7 +376,7 @@ wwv_flow_api.create_page_da_action(
 ,p_affected_elements_type=>'TRIGGERING_ELEMENT'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'this.affectedElements.find("a[data-unread=true]").one("click", function(){',
-'  $("#flag_" + $(this).data("id")).removeClass("fa-envelope-o fa-envelope-arrow-down").addClass("fa-envelope-open-o");',
+'  $($x($(this).data("id"))).removeClass("fa-envelope-o fa-envelope-arrow-down").addClass("fa-envelope-open-o");',
 '});'))
 ,p_da_action_comment=>'Attach one time click event listener to report links having data attribute. When report link is clicked change link icon class.'
 );

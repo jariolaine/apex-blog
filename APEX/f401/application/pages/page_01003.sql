@@ -24,7 +24,7 @@ wwv_flow_api.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_browser_cache=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220412213659'
+,p_last_upd_yyyymmddhh24miss=>'20220422061057'
 );
 wwv_flow_api.create_page_branch(
  p_id=>wwv_flow_api.id(62674058371144805)
@@ -42,9 +42,10 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'rss.xml'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_xml.rss(',
-'  p_app_name => :G_APP_NAME',
+'    p_app_name => :G_APP_NAME',
 '  ,p_app_desc => :G_APP_DESC',
-');'))
+');',
+''))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_api.id(8635198962090938)
@@ -57,7 +58,7 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'rss.xsl'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_xml.rss_xsl(',
-'   p_ws_images  => :APP_FILES',
+'    p_ws_images  => :APP_FILES',
 '  ,p_css_file   => ''css/rss-xsl.min.css''',
 ');'))
 ,p_process_clob_language=>'PLSQL'
@@ -72,7 +73,7 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'sitemap-index.xml'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_xml.sitemap_index(',
-'   p_app_id       => :APP_ID',
+'    p_app_id       => :APP_ID',
 '  ,p_app_page_id  => :APP_PAGE_ID',
 '  ,p_process_name => ''sitemap-index.xml'' ',
 ');'))
@@ -88,7 +89,7 @@ wwv_flow_api.create_page_process(
 ,p_process_name=>'sitemap-main.xml'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_xml.sitemap_main(',
-'   p_app_id     => :APP_ID',
+'  p_app_id     => :APP_ID',
 '  ,p_page_group => ''Sitemap Main''',
 ');'))
 ,p_process_clob_language=>'PLSQL'

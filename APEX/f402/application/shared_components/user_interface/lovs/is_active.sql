@@ -12,22 +12,25 @@ wwv_flow_api.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_api.create_list_of_values(
- p_id=>wwv_flow_api.id(8819403626737334)
+ p_id=>wwv_flow_api.id(11784376262412448)
 ,p_lov_name=>'IS_ACTIVE'
-,p_lov_query=>'.'||wwv_flow_api.id(8819403626737334)||'.'
-,p_location=>'STATIC'
-);
-wwv_flow_api.create_static_lov_data(
- p_id=>wwv_flow_api.id(8820136575737336)
-,p_lov_disp_sequence=>10
-,p_lov_disp_value=>'Disabled'
-,p_lov_return_value=>'0'
-);
-wwv_flow_api.create_static_lov_data(
- p_id=>wwv_flow_api.id(8819764758737336)
-,p_lov_disp_sequence=>20
-,p_lov_disp_value=>'Enabled'
-,p_lov_return_value=>'1'
+,p_lov_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select',
+'   v1.display_value             as display_value',
+'  ,to_number( v1.return_value)  as return_value',
+'  ,v1.display_seq               as display_seq',
+'from #OWNER#.blog_v_lov v1',
+'where 1 = 1',
+'and lov_name = ''IS_ACTIVE'''))
+,p_source_type=>'SQL'
+,p_location=>'LOCAL'
+,p_use_local_sync_table=>false
+,p_query_table=>'BLOG_V_LOV'
+,p_return_column_name=>'RETURN_VALUE'
+,p_display_column_name=>'DISPLAY_VALUE'
+,p_group_sort_direction=>'ASC'
+,p_default_sort_column_name=>'DISPLAY_SEQ'
+,p_default_sort_direction=>'ASC'
 );
 wwv_flow_api.component_end;
 end;

@@ -15,6 +15,15 @@
   width: 20%;
 }
 /**************************************
+* Categories IG
+**************************************/
+.z-sortable-handle:hover {
+  cursor: move;
+}
+.ui-sortable-helper {
+  display: inline-flex;
+}
+/**************************************
 * IR files
 **************************************/
 td[headers="COPY_URL"] {
@@ -40,7 +49,7 @@ td[headers="COPY_URL"] {
   box-shadow: var(--ut-shadow-sm);
 }
 .z-comment-IR .z-commentContainer {
-  margin-left: 1rem;
+  margin: 0 1rem;
   width: 100%;
   overflow: hidden;
 }
@@ -105,7 +114,7 @@ blockquote::after {
   margin: 0 0 2rem;
 }
 .z-post--header .z-post--date {
-  font-size: 1em;
+  font-size: 1.125em;
   margin: 0 0 0.25rem;
 }
 .z-post--body img {
@@ -144,7 +153,7 @@ blockquote::after {
   margin-bottom: 2rem;
 }
 .z-post--smallMargin .z-post {
-  margin-bottom: 5rem;
+  margin-bottom: 0.5rem;
 }
 .z-post--noMargin .z-post {
   margin-bottom: 0;
