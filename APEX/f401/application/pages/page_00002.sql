@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -26,7 +26,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220424034345'
+,p_last_upd_yyyymmddhh24miss=>'20220507091049'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6915627356677149)
@@ -186,8 +186,36 @@ wwv_flow_api.create_report_region(
 '  ,v1.body_html       as body_html',
 '  ,null               as read_more_link',
 '  -- fetch tags',
-'  ,#OWNER#.blog_html.get_post_tags(',
-'    p_post_id => v1.post_id',
+'  ,(',
+'    select',
+'      xmlserialize( content',
+'        xmlagg(',
+'          xmlelement( "a"',
+'            ,xmlattributes(',
+'              #OWNER#.blog_url.get_tag(',
+'                p_tag_id => lkp.tag_id',
+'                ,p_app_id => :APP_ID',
+'              ) as "href"',
+'              ,''t-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-md'' as "class"',
+'            )',
+'            ,xmlelement( "span"',
+'              ,xmlattributes(',
+'                ''t-Icon fa fa-tag''  as "class"',
+'                ,''true''             as "aria-hidden"',
+'              )',
+'            )',
+'            ,xmlelement( "span"',
+'              ,xmlattributes(',
+'                ''t-Button-label''    as "class"',
+'              )',
+'              ,lkp.tag',
+'            )',
+'          ) order by lkp.display_seq',
+'        )',
+'      ) as tags_html',
+'    from #OWNER#.blog_v_post_tags lkp',
+'    where 1 = 1',
+'      and lkp.post_id = v1.post_id',
 '  )                   as tags_html',
 '  ,v1.published_on    as pubdate',
 '  ,txt.posted_on      as txt_posted_on',

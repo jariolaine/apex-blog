@@ -20,7 +20,7 @@ as
 --                            New procedures:
 --                              sitemap_categories
 --                              sitemap_archives
---                              sitemap_atags
+--                              sitemap_tags
 --    Jari Laine 30.10.2021 - Changed procedure sitemap_main to use view apex_application_pages
 --    Jari Laine 13.11.2021 - Changed procedure rss
 --    Jari Laine 30.12.2021 - Changed procedure rss_xsl. CSS file name moved to application settings
@@ -28,6 +28,11 @@ as
 --    Jari Laine 13.03.2022 - Added parameter p_process_nae to procedure sitemap_index
 --                            Removed build option check from query producing XML in procedure sitemap_index
 --    Jari Laine 19.04.2022 - Changes relating procedure blog_util.download_file
+--    Jari Laine 26.04.2022 - Added element lastmod to XML to functions:
+--                              sitemap_categories
+--                              sitemap_archives
+--                              sitemap_tags
+--    Jari Laine 28.04.2020 - Changed rss_xsl
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -243,6 +248,7 @@ as
 
     l_host_url := apex_util.host_url( 'APEX_PATH' );
     l_host_url := substr( l_host_url, instr( l_host_url, '/', 1, 3 ) );
+    l_host_url := l_host_url || p_ws_images || p_css_file;
 
     l_xml :=
       sys.xmltype.createxml(
@@ -260,15 +266,15 @@ as
                   <title>
                     <xsl:value-of select="title" />
                   </title>
-                  <link rel="stylesheet" type="text/css" href="%s%s%s" />
+                  <link rel="stylesheet" type="text/css" href="%s" />
                 </head>
                 <body>
                   <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>
-                  <p class="z-rss--description"><xsl:value-of select="description" /></p>
+                  <h2 class="z-rss--description"><xsl:value-of select="description" /></h2>
                   <xsl:for-each select="./item">
                     <article class="z-rss--post">
                       <header>
-                        <h2 class="z-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h2>
+                        <h3 class="z-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h3>
                       </header>
                       <p class="z-post--body"><xsl:value-of select="description" /></p>
                     </article>
@@ -278,8 +284,6 @@ as
               </xsl:template>
             </xsl:stylesheet>'
           ,p0 => l_host_url
-          ,p1 => p_ws_images
-          ,p2 => p_css_file
         )
       )
     ;
@@ -450,7 +454,14 @@ as
                   ,p_canonical  => 'YES'
                 )
               )
-              ,XMLElement( "lastmod", to_char( sys_extract_utc( greatest( posts.published_on, posts.changed_on ) ), 'YYYY-MM-DD"T"HH24:MI:SS"+00:00""' ) )
+              ,xmlelement( "lastmod",
+                to_char(
+                  sys_extract_utc(
+                    greatest( posts.published_on, posts.changed_on )
+                  )
+                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
+                )
+              )
             ) order by posts.published_on desc
           )
         )
@@ -496,6 +507,12 @@ as
                 blog_url.get_category(
                    p_category_id  => cat.category_id
                   ,p_canonical    => 'YES'
+                )
+              )
+              ,xmlelement( "lastmod",
+                to_char(
+                  sys_extract_utc( cat.changed_on )
+                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
                 )
               )
             ) order by cat.display_seq desc
@@ -545,6 +562,12 @@ as
                   ,p_canonical  => 'YES'
                 )
               )
+              ,xmlelement( "lastmod",
+                to_char(
+                  sys_extract_utc( arc.changed_on )
+                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
+                )
+              )
             ) order by arc.archive_year desc
           )
         )
@@ -586,12 +609,19 @@ as
         (
           xmlagg(
             xmlelement( "url"
-              ,xmlelement( "loc", blog_url.get_tag(
-                                     p_tag_id     => tags.tag_id
-                                    ,p_canonical  => 'YES'
-                                  )
+              ,xmlelement( "loc",
+                blog_url.get_tag(
+                   p_tag_id     => tags.tag_id
+                  ,p_canonical  => 'YES'
+                )
               )
-            )
+              ,xmlelement( "lastmod",
+                to_char(
+                  sys_extract_utc( tags.changed_on )
+                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
+                )
+              )
+            ) order by tags.changed_on
           )
         )
       )

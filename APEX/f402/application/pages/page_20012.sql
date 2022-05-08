@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -28,7 +28,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220419093144'
+,p_last_upd_yyyymmddhh24miss=>'20220508053321'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27272383079075402)
@@ -53,12 +53,8 @@ wwv_flow_api.create_page_plug(
 '  ,v1.attribute_desc        as attribute_desc',
 '  ,v1.attribute_value       as attribute_value',
 '-- help button',
-'  ,(',
-'    select ',
-'      apex_lang.message(',
-'        p_name => ''BLOG_BTN_TITLE_HELP'' ',
-'      )',
-'    from dual',
+'  ,apex_lang.message(',
+'    p_name => ''BLOG_BTN_TITLE_HELP'' ',
 '  )                         as help_btn',
 '-- required column fom LOV',
 '  ,(',
@@ -66,7 +62,7 @@ wwv_flow_api.create_page_plug(
 '    from blog_v_lov lov',
 '    where 1 = 1',
 '    and lov.lov_name = ''YES_NO''',
-'    and lov.return_value = v1.is_nullable',
+'    and lov.return_value = ( v1.is_nullable - 1 ) * -1',
 '  )                         as required',
 '  ,v1.changed_by            as changed_by',
 '  ,v1.changed_on            as changed_on',
@@ -271,8 +267,12 @@ wwv_flow_api.create_region_column(
 ,p_stretch=>'A'
 ,p_attribute_02=>'VALUE'
 ,p_attribute_05=>'PLAIN'
-,p_enable_filter=>false
+,p_enable_filter=>true
+,p_filter_operators=>'C:S:CASE_INSENSITIVE:REGEXP'
 ,p_filter_is_required=>false
+,p_filter_text_case=>'MIXED'
+,p_filter_exact_match=>true
+,p_filter_lov_type=>'DISTINCT'
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.configIG.initColumn'
 ,p_enable_sort_group=>false

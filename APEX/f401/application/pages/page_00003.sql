@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(8667733481689180)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220328175023'
+,p_last_upd_yyyymmddhh24miss=>'20220507091147'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(6979825819516521)
@@ -38,45 +38,64 @@ wwv_flow_api.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.category_id    as category_id',
-'  ,v1.post_title         as search_title',
+'select v1.category_id     as category_id',
+'  ,v1.post_title          as search_title',
 '  -- fetch URL for post',
 '  ,#OWNER#.blog_url.get_post(',
 '     p_post_id => v1.post_id',
-'   )                     as search_link',
-'  ,v1.post_desc          as search_desc',
-'  ,txt.category          as label_01',
-'  ,v1.category_title     as value_01',
-'  ,txt.posted_by         as label_02',
-'  ,v1.blogger_name       as value_02',
-'  ,txt.posted_on         as label_03',
-'  ,v1.published_on       as value_03',
-'  ,case when ',
+'   )                      as search_link',
+'  ,v1.post_desc           as search_desc',
+'  ,labels.category        as label_01',
+'  ,v1.category_title      as value_01',
+'  ,labels.posted_by       as label_02',
+'  ,v1.blogger_name        as value_02',
+'  ,labels.posted_on       as label_03',
+'  ,v1.published_on        as value_03',
 '  -- output label if there is tags',
-'   apex_util.savekey_vc2(',
+'  ,case when',
 '    -- fetch tags and stote to variable',
-'     p_val => #OWNER#.blog_html.get_post_tags(',
-'        p_post_id => v1.post_id',
-'       ,p_button => ''NO''',
-'     ) ',
-'   ) is not null',
-'   then txt.tags',
-'   end                   as label_04',
+'    apex_util.savekey_vc2(',
+'      p_val => (',
+'        select',
+'          listagg(',
+'            xmlserialize( content',
+'              xmlelement( "a"',
+'                ,xmlattributes(',
+'                  #OWNER#.blog_url.get_tag(',
+'                     p_tag_id => lkp.tag_id',
+'                    ,p_app_id => :APP_ID',
+'                  )                                                 as "href"',
+'                  ,''margin-bottom-md margin-left-sm z-search--tags'' as "class"',
+'                )',
+'                ,lkp.tag',
+'              )',
+'            )',
+'            ,'',''',
+'          ) within group( order by lkp.display_seq )',
+'        from #OWNER#.blog_v_post_tags lkp',
+'        where 1 = 1',
+'          and lkp.post_id = v1.post_id',
+'       )',
+'    ) is not null',
+'    then labels.tags end  as label_04',
 '  -- get tags from variable',
-'  ,apex_util.keyval_vc2  as value_04',
+'  ,apex_util.keyval_vc2   as value_04',
 'from #OWNER#.blog_v_posts v1',
+'join #OWNER#.blog_post_uds t1',
+'  on v1.post_id = t1.post_id',
 '-- get APEX messages for labels',
 'cross join(',
-'  select ',
-'     apex_lang.message( ''BLOG_TXT_TAGS'' )       as tags',
-'    ,apex_lang.message( ''BLOG_TXT_CATEGORY'' )   as category',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_BY'' )  as posted_by',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_ON'' )  as posted_on',
+'  select',
+'     apex_lang.message( ''BLOG_TXT_TAGS'' )           as tags',
+'    ,apex_lang.message( ''BLOG_TXT_CATEGORY'' )       as category',
+'    ,apex_lang.message( ''BLOG_TXT_POSTED_BY'' )      as posted_by',
+'    ,apex_lang.message( ''BLOG_TXT_POSTED_ON'' )      as posted_on',
+'    ,#OWNER#.blog_ctx.get_post_search( :P0_SEARCH ) as search_string',
 '  from dual',
-') txt',
+') labels',
 'where 1 = 1',
-'and :P0_SEARCH is not null',
-'and contains( v1.ctx_search, #OWNER#.blog_ctx.get_post_search( :P0_SEARCH ), 1 ) > 0',
+'  and labels.search_string is not null',
+'  and contains( t1.dummy, labels.search_string, 1 ) > 0',
 'order by score(1) desc',
 '  ,v1.published_on desc'))
 ,p_ajax_enabled=>'Y'

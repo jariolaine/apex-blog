@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -129,13 +129,6 @@ wwv_flow_api.create_install(
 'drop view blog_v_post_tags;',
 'drop view blog_v_tags;',
 'drop view blog_v_version;',
-'--------------------------------------------------------',
-'--  Drop text index section groups',
-'--------------------------------------------------------',
-'begin',
-'  ctx_ddl.drop_section_group( ''BLOG_POST_UDS_SG'' );',
-'end;',
-'/',
 '--------------------------------------------------------',
 '--  Drop text index preferences',
 '--------------------------------------------------------',

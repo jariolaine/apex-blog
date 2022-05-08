@@ -1,0 +1,67 @@
+@import url('_variables.less');
+/**************************************
+* Tag Cloud
+*
+* Credits:
+*   https://dev.to/alvaromontoro/create-a-tag-cloud-with-html-and-css-1e90
+**************************************/
+ul.z-tagCloud {
+  a[data-weight="1"] { --z-tag-size: 1; }
+  a[data-weight="2"] { --z-tag-size: 2; }
+  a[data-weight="3"] { --z-tag-size: 3; }
+  a[data-weight="4"] { --z-tag-size: 4; }
+  a[data-weight="5"] { --z-tag-size: 5; }
+  a[data-weight="6"] { --z-tag-size: 6; }
+  a[data-weight="7"] { --z-tag-size: 7; }
+  a[data-weight="8"] { --z-tag-size: 8; }
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  line-height: 2rem;
+  margin: 0;
+  padding: 0.5rem;
+  .z-tagCloud-link {
+    display: flex;
+    padding: 0.5rem;
+    text-decoration: none;
+    position: relative;
+    font-size: ~"calc(var(--z-tag-size) * 0.125rem - -0.75rem)";
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 0;
+      height: 100%;
+      background-color: var(--ut-linkslist-hover-background-color, var(--ut-component-highlight-background-color));
+      transform: translate(-50%, 0);
+      transition: width 0.25s;
+    }
+    &:hover, &:focus {
+      &::before {
+        width: 100%
+      }
+    }
+  }
+  .z-tagCloud-badge {
+    background-color: var(--ut-component-badge-background-color);
+    color: var(--ut-component-badge-text-color);
+    border-radius: var(--ut-component-badge-border-radius);
+    font-size: 0.75rem;
+    text-align: center;
+    vertical-align: bottom;
+    margin-left: 0.25rem;
+    padding: 0 0.5rem;
+    &:empty {
+      display: none;
+    }
+  }
+}
+
+@media (prefers-reduced-motion) {
+  ul.z-tagCloud * {
+    transition: none !important;
+  }
+}

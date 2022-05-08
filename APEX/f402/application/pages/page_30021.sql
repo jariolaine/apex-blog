@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -26,7 +26,7 @@ wwv_flow_api.create_page(
 ,p_protection_level=>'C'
 ,p_help_text=>'High level view of application logging information.'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220418081653'
+,p_last_upd_yyyymmddhh24miss=>'20220507110337'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(87874963598811882)
@@ -70,6 +70,7 @@ wwv_flow_api.create_report_region(
 ')',
 'select q1.page_id                             as page_id',
 '  ,q1.page_name                               as page_name',
+'  ,median( q1.elapsed_time )                  as median_elap',
 '  ,min( q1.elapsed_time )                     as min_elap',
 '  ,avg( q1.elapsed_time )                     as avg_elap',
 '  ,max( q1.elapsed_time )                     as max_elap',
@@ -121,10 +122,24 @@ wwv_flow_api.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(43939282391963910)
+ p_id=>wwv_flow_api.id(12509673034984002)
 ,p_query_column_id=>3
-,p_column_alias=>'MIN_ELAP'
+,p_column_alias=>'MEDIAN_ELAP'
 ,p_column_display_sequence=>30
+,p_column_heading=>'Median Elapsed'
+,p_use_as_row_header=>'N'
+,p_column_format=>'999999999999990D000'
+,p_column_alignment=>'RIGHT'
+,p_heading_alignment=>'RIGHT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_api.create_report_columns(
+ p_id=>wwv_flow_api.id(43939282391963910)
+,p_query_column_id=>4
+,p_column_alias=>'MIN_ELAP'
+,p_column_display_sequence=>40
 ,p_column_heading=>'Min Elapsed'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'999999999999990D000'
@@ -136,9 +151,9 @@ wwv_flow_api.create_report_columns(
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(43939681650963910)
-,p_query_column_id=>4
+,p_query_column_id=>5
 ,p_column_alias=>'AVG_ELAP'
-,p_column_display_sequence=>40
+,p_column_display_sequence=>50
 ,p_column_heading=>'Avg Elapsed'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'999999999999990D000'
@@ -150,9 +165,9 @@ wwv_flow_api.create_report_columns(
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(43940065880963911)
-,p_query_column_id=>5
+,p_query_column_id=>6
 ,p_column_alias=>'MAX_ELAP'
-,p_column_display_sequence=>50
+,p_column_display_sequence=>60
 ,p_column_heading=>'Max Elapsed'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'999999999999990D000'
@@ -164,9 +179,9 @@ wwv_flow_api.create_report_columns(
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(43940492174963911)
-,p_query_column_id=>6
+,p_query_column_id=>7
 ,p_column_alias=>'VIEW_CNT'
-,p_column_display_sequence=>60
+,p_column_display_sequence=>70
 ,p_column_heading=>'View Count'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'999999999999990'
@@ -181,9 +196,9 @@ wwv_flow_api.create_report_columns(
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(43940873337963911)
-,p_query_column_id=>7
+,p_query_column_id=>8
 ,p_column_alias=>'VIEW_PCT'
-,p_column_display_sequence=>70
+,p_column_display_sequence=>80
 ,p_column_heading=>'View %'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'999999999999990D00'
@@ -196,9 +211,9 @@ wwv_flow_api.create_report_columns(
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(43941236197963912)
-,p_query_column_id=>8
+,p_query_column_id=>9
 ,p_column_alias=>'VIEW_PCT_GRAPH'
-,p_column_display_sequence=>80
+,p_column_display_sequence=>90
 ,p_column_format=>'PCT_GRAPH:#DDDDDD:#5486C3:'
 ,p_display_as=>'WITHOUT_MODIFICATION'
 ,p_derived_column=>'N'
@@ -313,6 +328,7 @@ wwv_flow_api.create_page_item(
 ,p_field_template=>wwv_flow_api.id(8548464988518243)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_lov_display_extra=>'NO'
+,p_restricted_characters=>'US_ONLY'
 ,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'NONE'
 ,p_attribute_02=>'N'

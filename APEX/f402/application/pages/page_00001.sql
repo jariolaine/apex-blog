@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220416054053'
+,p_last_upd_yyyymmddhh24miss=>'20220426085033'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8582113239518316)
@@ -47,28 +47,28 @@ wwv_flow_api.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'  count(1)                        as num_posts',
+'  count(id)             as num_posts',
 '  ,sum(',
 '    case post_status',
 '    when ''PUBLISHED''',
 '      then 1',
 '      else 0',
 '    end',
-'   )                              as num_published_posts',
+'   )                    as num_published_posts',
 '  ,sum(',
 '    case post_status',
 '    when ''DRAFT''',
 '      then 1',
 '      else 0',
 '    end',
-'   )                              as num_draft_posts',
+'   )                    as num_draft_posts',
 '  ,sum(',
 '    case post_status',
 '    when ''SCHEDULED''',
 '      then 1',
 '      else 0',
 '    end',
-'   )                              as num_scheduled_posts',
+'   )                    as num_scheduled_posts',
 'from blog_v_all_posts'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'

@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -21,7 +21,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220419105353'
+,p_last_upd_yyyymmddhh24miss=>'20220503062841'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6433141607894071)
@@ -112,7 +112,7 @@ wwv_flow_api.create_page_plug(
 ,p_parent_plug_id=>wwv_flow_api.id(6433383599894073)
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_plug_template=>wwv_flow_api.id(6802870362267386)
-,p_plug_display_sequence=>80
+,p_plug_display_sequence=>100
 ,p_plug_display_point=>'SUB_REGIONS'
 ,p_plug_source=>'"BLOG_RSS_ANCHOR"'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -125,21 +125,33 @@ wwv_flow_api.create_page_plug(
 ,p_plug_comment=>'Holds "Subscribe in a Reader" button shortcut'
 );
 wwv_flow_api.create_page_plug(
+ p_id=>wwv_flow_api.id(25734481162476838)
+,p_plug_name=>'Tags'
+,p_parent_plug_id=>wwv_flow_api.id(6433383599894073)
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
+,p_component_template_options=>'#DEFAULT#'
+,p_plug_template=>wwv_flow_api.id(6802870362267386)
+,p_plug_display_sequence=>70
+,p_plug_display_point=>'SUB_REGIONS'
+,p_list_id=>wwv_flow_api.id(13220237658425595)
+,p_plug_source_type=>'NATIVE_LIST'
+,p_list_template_id=>wwv_flow_api.id(13219456187408808)
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_required_patch=>wwv_flow_api.id(13229141933919002)
+);
+wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(28587492454643033)
 ,p_plug_name=>'Archives'
 ,p_parent_plug_id=>wwv_flow_api.id(6433383599894073)
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-LinksList--showBadge'
 ,p_plug_template=>wwv_flow_api.id(6802870362267386)
-,p_plug_display_sequence=>70
+,p_plug_display_sequence=>80
 ,p_plug_display_point=>'SUB_REGIONS'
 ,p_list_id=>wwv_flow_api.id(30076925956418880)
 ,p_plug_source_type=>'NATIVE_LIST'
 ,p_list_template_id=>wwv_flow_api.id(6842938924267407)
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_plug_caching=>'CACHE'
-,p_plug_caching_max_age_in_sec=>604800
-,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 ,p_required_patch=>wwv_flow_api.id(8670890848739263)
 ,p_plug_comment=>'Archives link list'
 );
@@ -155,6 +167,7 @@ wwv_flow_api.create_page_plug(
 ,p_list_id=>wwv_flow_api.id(41857893903151708)
 ,p_plug_source_type=>'NATIVE_LIST'
 ,p_list_template_id=>wwv_flow_api.id(61358318182072659)
+,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
 ,p_plug_display_when_condition=>'1001,1002,9999'

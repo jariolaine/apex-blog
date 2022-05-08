@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "CTX_SEARCH", "COMMENTS_COUNT") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "CATEGORY_CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "COMMENTS_COUNT") AS
   select
    t1.id                  as post_id
   ,t3.id                  as category_id
@@ -14,10 +14,10 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
   ,t1.body_html           as body_html
   ,t1.published_on        as published_on
   ,t1.changed_on          as changed_on
+  ,t2.changed_on          as category_changed_on
   ,t1.archive_year_month  as archive_year_month
   ,t1.archive_year        as archive_year
   ,t3.display_seq         as category_seq
-  ,t4.dummy               as ctx_search
   ,(
     select count( l1.id )
     from blog_comments l1
@@ -30,12 +30,10 @@ join blog_bloggers t2
   on t1.blogger_id  = t2.id
 join blog_categories t3
   on t1.category_id = t3.id
-join blog_post_uds t4
-  on t1.id = t4.post_id
 where 1 = 1
-and t1.is_active = 1
-and t2.is_active = 1
-and t3.is_active = 1
-and t1.published_on <= localtimestamp
+  and t1.is_active = 1
+  and t2.is_active = 1
+  and t3.is_active = 1
+  and t1.published_on <= localtimestamp
 with read only
 /
