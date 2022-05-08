@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -16,13 +16,13 @@ wwv_flow_api.create_list(
 ,p_name=>'Footer Modal Pages'
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select null                             as list_level',
-'  ,v1.content_desc                      as list_label',
+'select null                       as list_level',
+'  ,v1.content_desc                as list_label',
 '  ,apex_page.get_url(',
 '     p_page     => 1002',
 '    ,p_request  => v1.content_id',
-'  )                                     as list_target',
-'  ,''N''                                  as is_current',
+'  )                               as list_target',
+'  ,''N''                            as is_current',
 'from #OWNER#.blog_v_dynamic_content v1',
 'where 1 = 1',
 '  and v1.content_type = ''FOOTER_LINK''',

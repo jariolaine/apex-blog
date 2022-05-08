@@ -1,3 +1,4 @@
+-- Database objects upgrade
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_CATEGORIES
 --------------------------------------------------------
@@ -237,150 +238,27 @@ from blog_link_groups t1
 where 1 = 1
 /
 --------------------------------------------------------
---  DDL for View BLOG_V_ALL_POSTS
---------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "PUBLISHED_COMMENTS_COUNT", "UNREAD_COMMENTS_COUNT", "MODERATE_COMMENTS_COUNT", "DISABLED_COMMENTS_COUNT", "POST_STATUS") AS
-select
-   t1.id                as id
-  ,t1.category_id       as category_id
-  ,t1.blogger_id        as blogger_id
-  ,t1.row_version       as row_version
-  ,t1.created_on        as created_on
-  ,lower(t1.created_by) as created_by
-  ,t1.changed_on        as changed_on
-  ,lower(t1.changed_by) as changed_by
-  ,t3.blogger_name      as blogger_name
-  ,t3.email             as blogger_email
-  ,t2.title             as category_title
-  ,t1.title             as title
-  ,t1.post_desc         as post_desc
-  ,t1.body_html         as body_html
-  ,t1.body_length       as body_length
-  ,t1.published_on      as published_on
-  ,t1.notes             as notes
-  ,t4.rowid             as ctx_rid
-  ,t4.dummy             as ctx_search
-  ,case t1.is_active * t2.is_active * t3.is_active
-    when 1
-    then t1.published_on
-   end                  as published_display
-   ,(
-     select listagg( tags.tag_id, ':' )  within group( order by tags.display_seq )
-     from blog_v_all_post_tags tags
-     where 1 = 1
-     and tags.post_id = t1.id
-   )                     as tag_id
-  ,(
-    select listagg( tags.tag, ', ' )  within group( order by tags.display_seq )
-    from blog_v_all_post_tags tags
-    where 1 = 1
-    and tags.post_id = t1.id
-  )                     as post_tags
-  ,(
-    select listagg( tags.tag, ', ' )  within group( order by tags.display_seq )
-    from blog_v_all_post_tags tags
-    where 1 = 1
-    and tags.post_id = t1.id
-    and tags.is_active = 1
-  )                     as visible_tags
-  ,(
-    select listagg( tags.tag, ', ' )  within group( order by tags.display_seq )
-    from blog_v_all_post_tags tags
-    where 1 = 1
-    and tags.post_id = t1.id
-    and tags.is_active = 0
-  )                     as hidden_tags
-  ,(
-    select count( co.id )
-    from blog_comments co
-    where 1 = 1
-    and co.post_id  = t1.id
-  )                     as comments_count
-  ,(
-    select count( co.id )
-    from blog_comments co
-    where 1 = 1
-    and co.is_active = 1
-    and co.post_id  = t1.id
-  )                     as published_comments_count
-  ,(
-    select count( co.id )
-    from blog_comments co
-    where 1 = 1
-    and co.post_id  = t1.id
-    and exists(
-      select 1
-      from blog_comment_flags x1
-      where 1 = 1
-      and x1.flag in( 'NEW', 'UNREAD' )
-      and x1.comment_id = co.id
-    )
-  )                     as unread_comments_count
-  ,(
-    select count( co.id )
-    from blog_comments co
-    where 1 = 1
-    and co.post_id  = t1.id
-    and exists(
-      select 1
-      from blog_comment_flags x1
-      where 1 = 1
-      and x1.flag = 'MODERATE'
-      and x1.comment_id = co.id
-    )
-  )                     as moderate_comments_count
-  ,(
-    select count( co.id )
-    from blog_comments co
-    where 1 = 1
-    and co.post_id  = t1.id
-    and co.is_active = 0
-    and not exists(
-      select 1
-      from blog_comment_flags x1
-      where 1 = 1
-      and x1.flag = 'MODERATE'
-      and x1.comment_id = co.id
-    )
-  )                     as disabled_comments_count
-  ,case
-    when t3.is_active = 0
-    then 'BLOGGER_DISABLED'
-    when t2.is_active = 0
-    then 'CATEGORY_DISABLED'
-    when t1.is_active = 0
-    then 'DRAFT'
-    when t1.published_on > localtimestamp
-    then 'SCHEDULED'
-    else 'PUBLISHED'
-  end                  as post_status
-from blog_posts t1
-join blog_categories t2
-  on t1.category_id = t2.id
-join blog_bloggers t3
-  on t1.blogger_id = t3.id
-join blog_post_uds t4
-  on t1.id = t4.post_id
-where 1 = 1
-/
---------------------------------------------------------
---  DDL for View BLOG_V_ALL_POSTS_TAGS
+--  DDL for View BLOG_V_ALL_POST_TAGS
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POST_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG") AS
   select
-   t2.id                        as id
-  ,t2.row_version               as row_version
-  ,t2.created_on                as created_on
-  ,lower(t2.created_by)         as created_by
-  ,t2.changed_on                as changed_on
-  ,lower(t2.changed_by)         as changed_by
-  ,t1.is_active * t2.is_active  as is_active
-  ,t2.post_id                   as post_id
-  ,t2.tag_id                    as tag_id
-  ,t2.display_seq               as display_seq
-  ,t1.tag                       as tag
-from blog_tags t1
-join blog_post_tags t2 on t1.id = t2.tag_id
+   t1.id                        as id
+  ,t1.row_version               as row_version
+  ,t1.created_on                as created_on
+  ,lower(t1.created_by)         as created_by
+  ,t1.changed_on                as changed_on
+  ,lower(t1.changed_by)         as changed_by
+  ,t1.is_active                 as is_active
+  ,t1.post_id                   as post_id
+  ,t1.tag_id                    as tag_id
+  ,t1.display_seq               as display_seq
+  ,(
+    select lkp.tag
+    from blog_tags lkp
+    where 1 = 1
+    and lkp.id = t1.tag_id
+  )                             as tag
+from blog_post_tags t1
 where 1 = 1
 /
 --------------------------------------------------------
@@ -455,18 +333,6 @@ from blog_tags t1
 where 1 = 1
 /
 --------------------------------------------------------
---  DDL for View BLOG_V_ARCHIVE_YEAR
---------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ARCHIVE_YEAR" ("ARCHIVE_YEAR", "POST_COUNT") AS
-select
-   t1.archive_year      as archive_year
-  ,count( t1.post_id )  as post_count
-from blog_v_posts t1
-where 1 = 1
-group by t1.archive_year
-with read only
-/
---------------------------------------------------------
 --  DDL for View BLOG_V_BLOGGERS
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_BLOGGERS" ("BLOGGER_ID", "DISPLAY_SEQ", "BLOGGER_NAME", "BLOGGER_DESC") AS
@@ -477,32 +343,6 @@ select t1.id        as blogger_id
 from blog_bloggers t1
 where 1 = 1
 and t1.show_desc = 1
-with read only
-/
---------------------------------------------------------
---  DDL for View BLOG_V_CATEGORIES
---------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CREATED_ON", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT") AS
-  select
-   t1.id            as category_id
-  ,t1.created_on    as created_on
-  ,t1.title         as category_title
-  ,t1.display_seq   as display_seq
-  ,(
-    select count(1)
-    from blog_v_posts l1
-    where 1 = 1
-    and l1.category_id = t1.id
-   )                as posts_count
-from blog_categories t1
-where 1 = 1
-and t1.is_active = 1
-and exists (
-  select 1
-  from blog_v_posts x1
-  where 1 = 1
-  and x1.category_id  = t1.id
-)
 with read only
 /
 --------------------------------------------------------
@@ -627,7 +467,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "CTX_SEARCH", "COMMENTS_COUNT") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "CATEGORY_CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "COMMENTS_COUNT") AS
   select
    t1.id                  as post_id
   ,t3.id                  as category_id
@@ -640,10 +480,10 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
   ,t1.body_html           as body_html
   ,t1.published_on        as published_on
   ,t1.changed_on          as changed_on
+  ,t2.changed_on          as category_changed_on
   ,t1.archive_year_month  as archive_year_month
   ,t1.archive_year        as archive_year
   ,t3.display_seq         as category_seq
-  ,t4.dummy               as ctx_search
   ,(
     select count( l1.id )
     from blog_comments l1
@@ -656,13 +496,224 @@ join blog_bloggers t2
   on t1.blogger_id  = t2.id
 join blog_categories t3
   on t1.category_id = t3.id
+where 1 = 1
+  and t1.is_active = 1
+  and t2.is_active = 1
+  and t3.is_active = 1
+  and t1.published_on <= localtimestamp
+with read only
+/
+--------------------------------------------------------
+--  DDL for View BLOG_V_POSTS_TAGS
+--------------------------------------------------------
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POST_TAGS" ("POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG") AS
+  select
+   t2.post_id     as post_id
+  ,t2.tag_id      as tag_id
+  ,t2.display_seq as display_seq
+  ,t1.tag         as tag
+from blog_tags t1
+join blog_post_tags t2 on t1.id = t2.tag_id
+where 1 = 1
+  and t1.is_active = 1
+  and t2.is_active = 1
+with read only
+/
+--------------------------------------------------------
+--  DDL for View BLOG_V_ALL_POSTS
+--------------------------------------------------------
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "PUBLISHED_COMMENTS_COUNT", "UNREAD_COMMENTS_COUNT", "MODERATE_COMMENTS_COUNT", "DISABLED_COMMENTS_COUNT", "POST_STATUS", "TAGS_HTML") AS
+select
+   t1.id                as id
+  ,t1.category_id       as category_id
+  ,t1.blogger_id        as blogger_id
+  ,t1.row_version       as row_version
+  ,t1.created_on        as created_on
+  ,lower(t1.created_by) as created_by
+  ,t1.changed_on        as changed_on
+  ,lower(t1.changed_by) as changed_by
+  ,t3.blogger_name      as blogger_name
+  ,t3.email             as blogger_email
+  ,t2.title             as category_title
+  ,t1.title             as title
+  ,t1.post_desc         as post_desc
+  ,t1.body_html         as body_html
+  ,t1.body_length       as body_length
+  ,t1.published_on      as published_on
+  ,t1.notes             as notes
+  ,t4.rowid             as ctx_rid
+  ,t4.dummy             as ctx_search
+  ,case t1.is_active * t2.is_active * t3.is_active
+    when 1
+    then t1.published_on
+   end                  as published_display
+   ,(
+     select listagg( tags.tag_id, ':' )  within group( order by tags.display_seq )
+     from blog_v_all_post_tags tags
+     where 1 = 1
+     and tags.post_id = t1.id
+   )                     as tag_id
+  ,(
+    select listagg( tags.tag, ', ' )  within group( order by tags.display_seq )
+    from blog_v_all_post_tags tags
+    where 1 = 1
+    and tags.post_id = t1.id
+  )                     as post_tags
+  ,(
+    select listagg( tags.tag, ', ' )  within group( order by tags.display_seq )
+    from blog_v_all_post_tags tags
+    where 1 = 1
+    and tags.post_id = t1.id
+    and tags.is_active = 1
+  )                     as visible_tags
+  ,(
+    select listagg( tags.tag, ', ' )  within group( order by tags.display_seq )
+    from blog_v_all_post_tags tags
+    where 1 = 1
+    and tags.post_id = t1.id
+    and tags.is_active = 0
+  )                     as hidden_tags
+  ,(
+    select count( co.id )
+    from blog_comments co
+    where 1 = 1
+    and co.post_id  = t1.id
+  )                     as comments_count
+  ,(
+    select count( co.id )
+    from blog_comments co
+    where 1 = 1
+    and co.is_active = 1
+    and co.post_id  = t1.id
+  )                     as published_comments_count
+  ,(
+    select count( co.id )
+    from blog_comments co
+    where 1 = 1
+    and co.post_id  = t1.id
+    and exists(
+      select 1
+      from blog_comment_flags x1
+      where 1 = 1
+      and x1.flag in( 'NEW', 'UNREAD' )
+      and x1.comment_id = co.id
+    )
+  )                     as unread_comments_count
+  ,(
+    select count( co.id )
+    from blog_comments co
+    where 1 = 1
+    and co.post_id  = t1.id
+    and exists(
+      select 1
+      from blog_comment_flags x1
+      where 1 = 1
+      and x1.flag = 'MODERATE'
+      and x1.comment_id = co.id
+    )
+  )                     as moderate_comments_count
+  ,(
+    select count( co.id )
+    from blog_comments co
+    where 1 = 1
+    and co.post_id  = t1.id
+    and co.is_active = 0
+    and not exists(
+      select 1
+      from blog_comment_flags x1
+      where 1 = 1
+      and x1.flag = 'MODERATE'
+      and x1.comment_id = co.id
+    )
+  )                     as disabled_comments_count
+  ,case
+    when t3.is_active = 0
+    then 'BLOGGER_DISABLED'
+    when t2.is_active = 0
+    then 'CATEGORY_DISABLED'
+    when t1.is_active = 0
+    then 'DRAFT'
+    when t1.published_on > localtimestamp
+    then 'SCHEDULED'
+    else 'PUBLISHED'
+  end                   as post_status
+-- Post tags for detail view
+  ,(
+    select
+      xmlserialize( content
+        xmlagg(
+          xmlelement( "span"
+            ,xmlattributes(
+              't-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-md' as "class"
+            )
+            ,xmlelement( "span"
+              ,xmlattributes(
+                't-Icon fa fa-tag'  as "class"
+                ,'true'             as "aria-hidden"
+              )
+            )
+            ,xmlelement( "span"
+              ,xmlattributes(
+                't-Button-label'    as "class"
+              )
+              ,lkp.tag
+            )
+          ) order by lkp.display_seq
+        )
+      ) as tags_html
+    from blog_v_post_tags lkp
+    where 1 = 1
+      and lkp.post_id = t1.id
+  )                     as tags_html
+from blog_posts t1
+join blog_categories t2
+  on t1.category_id = t2.id
+join blog_bloggers t3
+  on t1.blogger_id = t3.id
 join blog_post_uds t4
   on t1.id = t4.post_id
 where 1 = 1
-and t1.is_active = 1
-and t2.is_active = 1
-and t3.is_active = 1
-and t1.published_on <= localtimestamp
+/
+--------------------------------------------------------
+--  DDL for View BLOG_V_ARCHIVE_YEAR
+--------------------------------------------------------
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ARCHIVE_YEAR" ("ARCHIVE_YEAR", "POST_COUNT", "CHANGED_ON") AS
+select
+   v1.archive_year      as archive_year
+  ,count( v1.post_id )  as post_count
+  ,max(
+    greatest(
+       v1.published_on
+      ,v1.changed_on
+      ,v1.category_changed_on
+    )
+  )                     as changed_on
+from blog_v_posts v1
+where 1 = 1
+group by v1.archive_year
+with read only
+/
+--------------------------------------------------------
+--  DDL for View BLOG_V_CATEGORIES
+--------------------------------------------------------
+CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT", "CHANGED_ON") AS
+  select
+   v1.category_id     as category_id
+  ,v1.category_title  as category_title
+  ,v1.category_seq    as display_seq
+  ,count(v1.post_id)  as posts_count
+  ,max(
+    greatest(
+       v1.published_on
+      ,v1.changed_on
+      ,v1.category_changed_on
+    )
+  )                   as changed_on
+from blog_v_posts v1
+where 1 = 1
+group by v1.category_id
+  ,v1.category_title
+  ,v1.category_seq
 with read only
 /
 --------------------------------------------------------
@@ -694,31 +745,1199 @@ and qry.rn <= 20
 with read only
 /
 --------------------------------------------------------
---  DDL for View BLOG_V_POSTS_TAGS
---------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POST_TAGS" ("POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG") AS
-  select
-   t2.post_id     as post_id
-  ,t2.tag_id      as tag_id
-  ,t2.display_seq as display_seq
-  ,t1.tag         as tag
-from blog_tags t1
-join blog_post_tags t2 on t1.id = t2.tag_id
-where 1 = 1
-and t1.is_active * t2.is_active > 0
-with read only
-/
---------------------------------------------------------
 --  DDL for View BLOG_V_TAGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "POSTS_COUNT", "CHANGED_ON") AS
   select
-   t1.id  as tag_id
-  ,t1.tag as tag
+   t1.id                as tag_id
+  ,t1.tag               as tag
+  ,count(v1.post_id)    as posts_count
+  ,max(
+    greatest(
+       t1.changed_on
+      ,t2.changed_on
+      ,v1.published_on
+      ,v1.changed_on
+      ,v1.category_changed_on
+    )
+  )                     as changed_on
 from blog_tags t1
+join blog_post_tags t2 on t1.id = t2.tag_id
+join blog_v_posts   v1 on t2.post_id = v1.post_id
 where 1 = 1
-and t1.is_active = 1
+  and t1.is_active = 1
+  and t2.is_active = 1
+group by t1.id
+  ,t1.tag
 with read only
+/
+CREATE OR REPLACE package  "BLOG_CTX"
+authid definer
+as
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--
+--  DESCRIPTION
+--    Procedures and functions for Oracle text
+--
+--  MODIFIED (DD.MM.YYYY)
+--    Jari Laine 22.06.2020 - Created
+--    Jari Laine 30.04.2022 - Changed procedure generate_post_datastore to use XML functions
+--    Jari Laine 02.05.2022 - Improved text search query function get_post_search returns
+--
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure generate_post_datastore(
+    rid       in rowid,
+    tlob      in out nocopy clob
+  );
+--------------------------------------------------------------------------------
+  function get_post_search(
+    p_search  in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
+end "BLOG_CTX";
+/
+
+
+CREATE OR REPLACE package body "BLOG_CTX"
+as
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Private constants and variables
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- none
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Private procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- none
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Global procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure generate_post_datastore(
+    rid   in rowid,
+    tlob  in out nocopy clob
+  )
+  as
+  begin
+
+    select
+      xmlserialize( content
+        xmlconcat(
+           xmlelement( "title", v1.title )
+          ,xmlelement( "category", v1.category_title )
+          ,xmlelement( "description", v1.post_desc )
+          ,case
+            when v1.visible_tags is not null
+              then xmlelement( "tags", v1.visible_tags )
+          end
+        )
+      ) || '<body>' || v1.body_html || '</body>'
+    into tlob
+    from blog_v_all_posts v1
+    where 1 = 1
+      and v1.ctx_rid = rid
+    ;
+
+  end generate_post_datastore;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_post_search(
+    p_search in varchar2
+  ) return varchar2
+  as
+    c_xml constant varchar2(32767)
+      := '<query><textquery><progression>'
+      ||    '<seq>#NORMAL#</seq>'
+      ||    '<seq>#WILDCARD#</seq>'
+      ||    '<seq>#FUZZY#</seq>'
+      || '</progression></textquery></query>'
+    ;
+
+    l_search    varchar2(32767);
+    l_tokens    apex_t_varchar2;
+
+    function generate_query(
+      p_feature in varchar2,
+      p_combine in varchar2 default null
+    ) return varchar2
+    as
+      l_token   varchar2(32767);
+      l_query   varchar2(32767);
+    begin
+
+      for i in 1 .. l_tokens.count
+      loop
+
+        l_token := trim( l_tokens(i) );
+
+        if l_token is not null
+        then
+
+            l_query :=
+              apex_string.format(
+                p_message =>
+                  case p_feature
+                  when 'FUZZY' then '%s fuzzy({%s}, 55, 500) %s '
+                  when 'WILDCARD' then '%s {%s}%% %s '
+                  else '%s {%s} %s ' end
+                ,p0 => l_query
+                ,p1 => l_token
+                ,p2 => case p_combine when 'OR' then 'or' else 'and' end
+              )
+            ;
+
+        end if;
+
+      end loop;
+
+      if p_combine = 'AND' then
+          l_query := substr( l_query, 1, length( l_query ) - 5 );
+      else
+          l_query := substr( l_query, 1, length( l_query ) - 4 );
+      end if;
+
+      return trim( l_query );
+
+    end generate_query;
+
+  begin
+
+    if substr( p_search, 1, 8 ) = 'ORATEXT:'
+    then
+      l_search := substr( p_search, 9 );
+    else
+
+      -- remove special characters; irrelevant for full text search
+      l_search := trim( regexp_replace( lower( p_search ), '[<>{}/()*%&!$?.:,;\+#]' ) );
+
+      if l_search is not null
+      then
+
+        l_tokens := apex_string.split( l_search, ' ' );
+
+        l_search := c_xml;
+        l_search := replace( l_search, '#NORMAL#', generate_query( 'NORMAL' ) );
+        l_search := replace( l_search, '#WILDCARD#', generate_query( 'WILDCARD' ) );
+        l_search := replace( l_search, '#FUZZY#', generate_query( 'FUZZY' ) );
+
+      end if;
+
+    end if;
+
+    return l_search;
+
+  end get_post_search;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+end "BLOG_CTX";
+/
+create or replace package "BLOG_UTIL"
+authid definer
+as
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--
+--  DESCRIPTION
+--    Procedure and functions for public application
+--
+--  MODIFIED (DD.MM.YYYY)
+--    Jari Laine 22.04.2019 - Created
+--    Jari Laine 28.03.2020 - Signature 2 of get_year_month function
+--    Jari Laine 15.04.2020 - function validate_comment
+--    Jari Laine 26.04.2020 - Changed validate_comment us apex_util.savekey_vc2
+--                            and removed custom functions that was doing same thing
+--    Jari Laine 08.05.2020 - Functions get_year_month are obsolete
+--                            application changed to group archives by year
+--    Jari Laine 10.05.2020 - Procedure new_comment_notify to notify blogger about new comments
+--                            Procedure subscribe to subscribe comment reply
+--                            Procedure unsubscribe for unsubscribe comment reply
+--    Jari Laine 11.05.2020 - Procedures and functions relating comments moved to package blog_comm
+--    Jari Laine 17.05.2020 - Added out parameters p_older_title and p_newer_title to procedure get_post_pagination
+--                            Materialized view blog_items_init changed to view
+--                            Removed function get_item_init_value
+--    Jari Laine 18.05.2020 - Moved ORDS specific global constants
+--    Jari Laine 19.05.2020 - Changed apex_debug to warn in no_data_found exception handlers
+--                            Changed apex_error_handler honor error display position when
+--                            ORA error is between -20999 and 20901
+--                            Changed procedure get_post_pagination to raises ORA -20901 when no data found
+--    Jari Laine 19.05.2020 - Removed global constants
+--    Jari Laine 23.05.2020 - Modifications to remove ORDS depency
+--    Jari Laine 05.11.2020 - Procedure render_dynamic_content
+--    Jari Laine 18.12.2021 - Procedure redirect_search
+--    Jari Laine 24.03.2022 - Parameter names to apex_debug procedure calls
+--                          - Changes to procedure get_post_pagination and render_dynamic_content
+--    Jari Laine 25.03.2022 - Added more comments
+--                          - Changed variable names to more descriptive
+--                          - Removed obsolete procedure check_archive_exists
+--    Jari Laine 19.04.2022 - Changes to procedures download_file
+--    Jari Laine 26.04.2022 - Parameter p_escape to function get_tag
+--
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Called from:
+--  public and admin application definition Error Handling Function
+  function apex_error_handler (
+    p_error           in apex_error.t_error
+  ) return apex_error.t_error_result;
+--------------------------------------------------------------------------------
+-- Called from:
+--  inside package and from other packages
+  function int_to_vc2(
+    p_value           in number
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  other packages, public and admin application
+  function get_attribute_value(
+    p_attribute_name  in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  public and admin application process Initialize Items
+  procedure initialize_items(
+    p_app_id          in varchar2
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+--  public app page 2
+  function get_post_title(
+    p_post_id         in varchar2,
+    p_escape          in boolean
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  public app page 2
+  procedure get_post_pagination(
+    p_post_id         in varchar2,
+    p_post_title      out nocopy varchar2,
+    p_newer_id        out nocopy varchar2,
+    p_newer_title     out nocopy varchar2,
+    p_older_id        out nocopy varchar2,
+    p_older_title     out nocopy varchar2
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+--  public app page 14 Pre-Rendering Computations
+  function get_category_title(
+    p_category_id     in varchar2,
+    p_escape          in boolean
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  public app page 6 Pre-Rendering Computations
+  function get_tag(
+    p_tag_id          in varchar2,
+    p_escape          in boolean
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1002 PL/SQL Dynamic Content Region "Content"
+  procedure render_dynamic_content(
+    p_content_id      in varchar2,
+    p_date_format     in varchar2,
+    p_content_title   out nocopy varchar2
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+--  inside package and package BLOG_XML
+  procedure download_file (
+    p_blob_content    in out nocopy blob,
+    p_mime_type       in varchar2,
+    p_header_names    in apex_t_varchar2,
+    p_header_values   in apex_t_varchar2,
+    p_charset         in varchar2 default null
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1003 Ajax Callback process "download"
+  procedure download_file (
+    p_file_name       in varchar2
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+--  public app application process Redirect to search page
+  procedure redirect_search(
+    p_value           in varchar2,
+    p_app_id          in varchar2 default null,
+    p_session         in varchar2 default null
+  );
+--------------------------------------------------------------------------------
+end "BLOG_UTIL";
+/
+
+
+create or replace package body "BLOG_UTIL"
+as
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Private constants and variables
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- none
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Private procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure raise_http_error(
+    p_error_code  in number
+  )
+  as
+  begin
+    -- output HTTP status
+    owa_util.status_line( p_error_code );
+    -- stop APEX
+    apex_application.stop_apex_engine;
+  end raise_http_error;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Global functions and procedures
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function apex_error_handler(
+    p_error in apex_error.t_error
+  ) return apex_error.t_error_result
+  as
+    l_genereric_error constant varchar2(255) := 'BLOG_GENERIC_ERROR';
+
+    l_result          apex_error.t_error_result;
+    l_reference_id    pls_integer;
+    l_constraint_name varchar2(255);
+    l_err_mesg        varchar2(32700);
+
+  begin
+
+    -- This function must be used to ensure initialization is compatible
+    -- with future changes to t_error_result.
+    l_result :=
+      apex_error.init_error_result(
+        p_error => p_error
+      );
+
+    -- If it's an internal error raised by APEX, like an invalid statement or
+    -- code which can't be executed, the error text might contain security sensitive
+    -- information. To avoid this security problem we can rewrite the error to
+    -- a generic error message and log the original error message for further
+    -- investigation by the help desk.
+    if p_error.is_internal_error then
+
+      if not p_error.is_common_runtime_error then
+        -- Change the message to the generic error message which doesn't expose
+        -- any sensitive information.
+        l_result.message := apex_lang.message(
+          p_name => l_genereric_error
+        );
+        l_result.additional_info := null;
+      end if;
+
+    else
+
+      -- Don't change display position for specific ORA eror codes
+      if not p_error.ora_sqlcode between -20999 and -20901
+      then
+        -- Always show the error as inline error
+        l_result.display_location := case
+          when l_result.display_location = apex_error.c_on_error_page
+          then apex_error.c_inline_in_notification
+          else l_result.display_location
+          end
+       ;
+      end if;
+
+      -- If it's a constraint violation like
+      --
+      --   -) ORA-02292 ORA-02291 ORA-02290 ORA-02091 ORA-00001: unique constraint violated
+      --   -) : transaction rolled back (-> can hide a deferred constraint)
+      --   -) : check constraint violated
+      --   -) : integrity constraint violated - parent key not found
+      --   -) : integrity constraint violated - child record found
+      --
+      -- we try to get a friendly error message from our constraint lookup configuration.
+      -- If we don't find the constraint in our lookup table we fallback to
+      -- the original ORA error message.
+
+      if p_error.ora_sqlcode in (-1, -2091, -2290, -2291, -2292) then
+
+        l_constraint_name :=
+          apex_error.extract_constraint_name(
+            p_error => p_error
+          );
+
+        l_err_mesg := apex_lang.message(
+          p_name => l_constraint_name
+        );
+
+        -- not every constraint has to be in our lookup table
+        if not l_err_mesg = l_constraint_name then
+          l_result.message := l_err_mesg;
+          l_result.additional_info := null;
+        end if;
+
+      end if;
+
+      -- If an ORA error has been raised, for example a raise_application_error(-20xxx, '...')
+      -- in a table trigger or in a PL/SQL package called by a process and we
+      -- haven't found the error in our lookup table, then we just want to see
+      -- the actual error text and not the full error stack with all the ORA error numbers.
+      if p_error.ora_sqlcode is not null
+      and l_result.message = p_error.message
+      then
+        l_result.message :=
+          apex_error.get_first_ora_error_text (
+            p_error => p_error
+          );
+        l_result.additional_info := null;
+      end if;
+
+      -- If no associated page item/tabular form column has been set, we can use
+      -- apex_error.auto_set_associated_item to automatically guess the affected
+      -- error field by examine the ORA error for constraint names or column names.
+      if l_result.page_item_name is null
+      and l_result.column_alias is null then
+
+        apex_error.auto_set_associated_item (
+           p_error => p_error
+          ,p_error_result => l_result
+        );
+
+      end if;
+
+    end if;
+
+    return l_result;
+
+  end apex_error_handler;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function int_to_vc2(
+    p_value in number
+  ) return varchar2
+  as
+  begin
+    -- convert number to string without decimals
+    return to_char( p_value,  'fm99999999999999999999999999999999999999' );
+  end int_to_vc2;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_attribute_value(
+    p_attribute_name in varchar2
+  ) return varchar2
+  as
+    l_value varchar2(4000);
+  begin
+
+    apex_debug.enter(
+      p_routine_name  => 'blog_util.get_attribute_value'
+      ,p_name01       => 'p_attribute_name'
+      ,p_value01      => p_attribute_name
+    );
+
+    -- raise no data found error if parameter p_attribute_name is null
+    if p_attribute_name is null then
+      raise no_data_found;
+    end if;
+
+    -- fetch and return value from settings table
+    select attribute_value
+    into l_value
+    from blog_settings
+    where attribute_name = p_attribute_name
+    ;
+
+    apex_debug.info(
+      p_message => 'Fetch attribute %s return: %s'
+      ,p0 => p_attribute_name
+      ,p1 => l_value
+    );
+
+    -- return attribute value
+    return l_value;
+
+  -- Handle error cases
+  exception
+  when no_data_found
+  then
+
+    apex_debug.warn(
+       p_message => 'No data found. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_attribute_name'
+      ,p2 => coalesce( p_attribute_name, '(null)' )
+    );
+    raise;
+
+  when others
+  then
+
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_attribute_name'
+      ,p2 => coalesce( p_attribute_name, '(null)' )
+    );
+    raise;
+
+  end get_attribute_value;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure initialize_items(
+    p_app_id in varchar2
+  )
+  as
+    l_app_id number;
+  begin
+
+    apex_debug.enter(
+      p_routine_name  => 'blog_util.initialize_items'
+      ,p_name01       => 'p_app_id'
+      ,p_value01      => p_app_id
+    );
+
+    -- raise no data found error if parameter p_app_id_name is null
+    if p_app_id is null then
+      raise no_data_found;
+    end if;
+
+    -- conver application id string to number
+    l_app_id := to_number( p_app_id );
+
+    -- set items session state
+    -- fetch items and values that session state need to be set
+    for c1 in (
+      select
+        i.item_name,
+        i.item_value
+      from blog_v_init_items i
+      where i.application_id = l_app_id
+    ) loop
+
+      apex_debug.info(
+        p_message => 'Initialize application id: %s item: %s value: %s'
+        ,p0 => p_app_id
+        ,p1 => c1.item_name
+        ,p2 => c1.item_value
+      );
+
+      -- set item session state and no commit
+      apex_util.set_session_state(
+        p_name    => c1.item_name
+        ,p_value  => c1.item_value
+        ,p_commit => false
+      );
+
+    end loop;
+
+  -- handle errors
+  exception
+  when no_data_found
+  then
+
+    apex_debug.warn(
+       p_message => 'No data found. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_app_id'
+      ,p2 => coalesce( p_app_id, '(null)' )
+    );
+    raise;
+
+  when others
+  then
+
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_app_id'
+      ,p2 => coalesce( p_app_id, '(null)' )
+    );
+    raise;
+
+  end initialize_items;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_post_title(
+    p_post_id     in varchar2,
+    p_escape      in boolean
+  ) return varchar2
+  as
+    l_post_title  varchar2(4000);
+    l_post_id     number;
+  begin
+
+    apex_debug.enter(
+      p_routine_name  => 'blog_util.get_post_title'
+      ,p_name01       => 'p_post_id'
+      ,p_value01      => p_post_id
+      ,p_name02       => 'p_escape'
+      ,p_value02      => apex_debug.tochar(p_escape)
+    );
+
+    -- raise no data found error if parameter p_post_id is null
+    if p_post_id is null then
+      raise no_data_found;
+    end if;
+
+    -- conver post id string to number
+    l_post_id := to_number( p_post_id );
+
+    -- fetch post title
+    select v1.post_title
+    into l_post_title
+    from blog_v_posts v1
+    where v1.post_id = l_post_id
+    ;
+
+    apex_debug.info(
+      p_message => 'Fetch post: %s return: %s'
+      ,p0 => p_post_id
+      ,p1 => l_post_title
+    );
+
+    -- espace html from post title if parameter p_escape is true
+    -- return post title
+    return case when p_escape
+      then apex_escape.html( l_post_title )
+      else l_post_title
+      end
+    ;
+
+  -- handle errors
+  exception when no_data_found
+  then
+
+    apex_debug.warn(
+       p_message => 'No data found. %s( %s => %s, %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_post_id'
+      ,p2 => coalesce( p_post_id, '(null)' )
+      ,p3 => 'p_escape'
+      ,p4 => apex_debug.tochar( p_escape )
+    );
+
+    -- show http error
+    raise_http_error( 404 );
+    raise;
+
+  when others
+  then
+
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s, %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_post_id'
+      ,p2 => coalesce( p_post_id, '(null)' )
+      ,p3 => 'p_escape'
+      ,p4 => apex_debug.tochar( p_escape )
+    );
+
+    -- show http error
+    raise_http_error( 404 );
+    raise;
+
+  end get_post_title;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure get_post_pagination(
+    p_post_id         in varchar2,
+    p_post_title      out nocopy varchar2,
+    p_newer_id        out nocopy varchar2,
+    p_newer_title     out nocopy varchar2,
+    p_older_id        out nocopy varchar2,
+    p_older_title     out nocopy varchar2
+  )
+  as
+    l_post_id     number;
+    l_post_title  varchar2(512);
+    l_newer       blog_t_post;
+    l_older       blog_t_post;
+  begin
+
+    apex_debug.enter(
+      p_routine_name  => 'blog_util.pagination'
+      ,p_name01       => 'p_post_id'
+      ,p_value01      => p_post_id
+    );
+
+    -- raise no data found error if parameter p_post_id is null
+    if p_post_id is null then
+      raise no_data_found;
+    end if;
+
+    -- conver post id string to number
+    l_post_id := to_number( p_post_id );
+
+    -- fetch post title by post id
+    -- also fetch older and newer post id and title
+    select
+      v1.post_title
+      ,(
+        select blog_t_post( lkp1.post_id, lkp1.post_title )
+        from blog_v_posts lkp1
+        where 1 = 1
+          and lkp1.published_on > v1.published_on
+        order by lkp1.published_on asc
+        fetch first 1 rows only
+      ) as newer_post
+      ,(
+        select blog_t_post( lkp2.post_id, lkp2.post_title )
+        from blog_v_posts lkp2
+        where 1 = 1
+          and lkp2.published_on < v1.published_on
+        order by lkp2.published_on desc
+        fetch first 1 rows only
+      ) as older_post
+    into l_post_title, l_newer, l_older
+    from blog_v_posts v1
+    where 1 = 1
+      and post_id = l_post_id
+    ;
+
+    -- set procedure out parameters
+    p_post_title  := l_post_title;
+    p_newer_id    := int_to_vc2( l_newer.post_id );
+    p_newer_title := l_newer.post_title;
+    p_older_id    := int_to_vc2( l_older.post_id );
+    p_older_title := l_older.post_title;
+
+    apex_debug.info(
+      p_message => 'Fetch post: %s next_id: %s prev_id: %s'
+      ,p0 => p_post_id
+      ,p1 => p_newer_id
+      ,p2 => p_older_id
+    );
+
+  -- handle errors
+  exception
+  when no_data_found
+  then
+
+    apex_debug.warn(
+       p_message => 'No data found. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_post_id'
+      ,p2 => coalesce( p_post_id, '(null)' )
+    );
+
+    -- show http error
+    raise_http_error( 404 );
+    raise;
+
+  when others
+  then
+
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s, %s => %s, %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_post_id'
+      ,p2 => coalesce( p_post_id, '(null)' )
+      ,p3 => 'p_newer_id'
+      ,p4 => p_newer_id
+      ,p5 => 'p_older_id'
+      ,p6 => p_older_id
+    );
+
+    -- show http error
+    raise_http_error( 404 );
+    raise;
+
+  end get_post_pagination;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_category_title(
+    p_category_id in varchar2,
+    p_escape      in boolean
+  ) return varchar2
+  as
+    l_category_id   number;
+    l_category_name varchar2(4000);
+  begin
+
+    apex_debug.enter(
+      p_routine_name  => 'blog_util.get_category_title'
+      ,p_name01       => 'p_category_id'
+      ,p_value01      => p_category_id
+      ,p_name02       => 'p_escape'
+      ,p_value02      => apex_debug.tochar(p_escape)
+    );
+
+    -- raise no data found error if parameter p_category_id is null
+    if p_category_id is null then
+      raise no_data_found;
+    end if;
+
+    -- conver category id string to number
+    l_category_id := to_number( p_category_id );
+
+    -- fetch category name
+    select v1.category_title
+    into l_category_name
+    from blog_v_categories v1
+    where v1.category_id = l_category_id
+    ;
+
+    apex_debug.info(
+      p_message => 'Fetch category: %s return: %s'
+      ,p0 => p_category_id
+      ,p1 => l_category_name
+    );
+
+    -- espace html from category name if parameter p_escape is true
+    -- return category name
+    return case when p_escape
+      then apex_escape.html( l_category_name )
+      else l_category_name
+      end
+    ;
+
+  -- handle errors
+  exception
+  when no_data_found then
+
+    apex_debug.warn(
+       p_message => 'No data found. %s( %s => %s, %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_category_id'
+      ,p2 => coalesce( p_category_id, '(null)' )
+      ,p3 => 'p_escape'
+      ,p4 => apex_debug.tochar( p_escape )
+    );
+
+    -- show http error
+    raise_http_error( 404 );
+    raise;
+
+  when others then
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s, %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_category_id'
+      ,p2 => coalesce( p_category_id, '(null)' )
+      ,p3 => 'p_escape'
+      ,p4 => apex_debug.tochar( p_escape )
+    );
+
+    -- show http error
+    raise_http_error( 404 );
+    raise;
+
+  end get_category_title;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_tag(
+    p_tag_id in varchar2,
+    p_escape in boolean
+  ) return varchar2
+  as
+    l_tag_id    number;
+    l_tag_name  varchar2(4000);
+  begin
+
+    apex_debug.enter(
+      p_routine_name  => 'blog_util.get_tag'
+      ,p_name01       => 'p_tag_id'
+      ,p_value01      => p_tag_id
+    );
+
+    -- raise no data found error if parameter p_tag_id is null
+    if p_tag_id is null then
+      raise no_data_found;
+    end if;
+
+    -- conver tag id string to number
+    l_tag_id := to_number( p_tag_id );
+
+    -- fetch tag name
+    select t1.tag
+    into l_tag_name
+    from blog_v_tags t1
+    where 1 = 1
+    and t1.tag_id = l_tag_id
+    ;
+
+    apex_debug.info(
+      p_message => 'Fetch tag: %s return: %s'
+      ,p0 => p_tag_id
+      ,p1 => l_tag_name
+    );
+
+    -- espace html from tag name if parameter p_escape is true
+    -- return category name
+    return case when p_escape
+      then apex_escape.html( l_tag_name )
+      else l_tag_name
+      end
+    ;
+
+  -- handle errors
+  exception
+  when no_data_found
+  then
+
+    apex_debug.warn(
+       p_message => 'No data found. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_tag_id'
+      ,p2 => coalesce( p_tag_id, '(null)' )
+    );
+
+    -- show http error
+    raise_http_error( 404 );
+    raise;
+
+  when others
+  then
+
+    apex_debug.error(
+       p_message => 'Unhandled error. %s( %s => %s )'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => 'p_tag_id'
+      ,p2 => coalesce( p_tag_id, '(null)' )
+    );
+
+    -- show http error
+    raise_http_error( 404 );
+    raise;
+
+  end get_tag;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure render_dynamic_content(
+    p_content_id    in varchar2,
+    p_date_format   in varchar2,
+    p_content_title out nocopy varchar2
+  )
+  as
+  begin
+
+    -- fetch content
+    for c1 in(
+      select v1.content_desc
+        ,v1.content_html
+        ,v1.changed_on
+        ,v1.show_changed_on
+      from blog_v_dynamic_content v1
+      where 1 = 1
+      and v1.content_id = p_content_id
+    ) loop
+
+      -- set content description to procedure out parameter
+      p_content_title := c1.content_desc;
+
+      -- output content HTML
+      sys.htp.p( c1.content_html );
+
+      -- output when content is changed if show_changed_on column value is 1
+      if c1.show_changed_on = 1
+      then
+        sys.htp.p(
+            apex_string.format(
+              p_message => '<p>%s</p>'
+              ,p0 =>
+                apex_lang.message(
+                  p_name => 'BLOG_MSG_LAST_UPDATED'
+                  ,p0 => to_char( c1.changed_on, p_date_format )
+                )
+            )
+          );
+      end if;
+
+    end loop;
+
+  end render_dynamic_content;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure download_file (
+    p_blob_content    in out nocopy blob,
+    p_mime_type       in varchar2,
+    p_header_names    in apex_t_varchar2,
+    p_header_values   in apex_t_varchar2,
+    p_charset         in varchar2 default null
+  )
+  as
+  begin
+
+    -- init HTTP buffer
+    sys.htp.init;
+
+    -- open HTTP header
+    sys.owa_util.mime_header(
+      ccontent_type   => coalesce ( p_mime_type, 'application/octet' )
+      ,bclose_header  => false
+      ,ccharset       => p_charset
+    );
+
+    apex_debug.info(
+      p_message => 'Set response headers'
+    );
+
+    -- set response headers
+    for i in 1 .. p_header_names.count
+    loop
+
+      apex_debug.info(
+         p_message => 'Header name: %s , header value: %s'
+        ,p0 => p_header_names(i)
+        ,p1 => p_header_values(i)
+      );
+      -- output HTTP header
+      sys.htp.p(
+        apex_string.format(
+           p_message => '%s: %s'
+          ,p0 => p_header_names(i)
+          ,p1 => p_header_values(i)
+        )
+      );
+
+    end loop;
+
+    -- close HTTP header
+    sys.owa_util.http_header_close;
+
+    -- output file
+    sys.wpg_docload.download_file ( p_blob_content );
+
+  end download_file;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure download_file (
+    p_file_name in varchar2
+  )
+  as
+    l_file_t        blog_v_files%rowtype;
+    l_header_names  apex_t_varchar2;
+    l_header_values apex_t_varchar2;
+  begin
+
+    -- fetch file
+    select *
+    into l_file_t
+    from blog_v_files t1
+    where 1 = 1
+    --and t1.is_download = 0
+    and t1.file_name = p_file_name
+    ;
+
+    apex_debug.info(
+      p_message => 'File name: %s, file size: %s, mime type: %s'
+      ,p0 => l_file_t.file_name
+      ,p1 => l_file_t.file_size
+      ,p2 => l_file_t.mime_type
+      ,p3 => l_file_t.file_charset
+    );
+
+    -- Add Last-Modified header
+    apex_string.push(
+        p_table => l_header_names
+       ,p_value => 'Last-Modified'
+    );
+    apex_string.push(
+       p_table => l_header_values
+      ,p_value =>
+        to_char(
+          sys_extract_utc( l_file_t.changed_on )
+          ,'Dy, DD Mon YYYY HH24:MI:SS "GMT"'
+          ,'NLS_DATE_LANGUAGE=ENGLISH'
+        )
+    );
+
+    -- Compare request If-Modified-Since header to Last-Modified
+    -- If values are equal then set status header and exit from procedure
+    if sys.owa_util.get_cgi_env('HTTP_IF_MODIFIED_SINCE') = l_header_values(1)
+    then
+      sys.owa_util.status_line( 304 );
+      apex_debug.info(
+         p_message => 'File not sent. If-Modified-Since: %s'
+        ,p0 => l_header_values(1)
+      );
+      return;
+    end if;
+
+    -- Add Cache-Control header
+    apex_string.push(
+        p_table => l_header_names
+       ,p_value => 'Cache-Control'
+    );
+    apex_string.push(
+       p_table => l_header_values
+      ,p_value =>
+        apex_string.format(
+           p_message => 'max-age=%s'
+          ,p0 =>
+            case l_file_t.is_download
+              when 1
+              then get_attribute_value( 'G_MAX_AGE_DOWNLOAD' )
+              else get_attribute_value( 'G_MAX_AGE_FILE' )
+            end
+        )
+    );
+
+    -- add Content-Disposition header
+    apex_string.push(
+      p_table => l_header_names
+     ,p_value => 'Content-Disposition'
+    );
+    apex_string.push(
+      p_table => l_header_values
+     ,p_value =>
+        apex_string.format(
+           p_message => '%s; filename="%s"'
+          ,p0 =>
+            case l_file_t.is_download
+              when 1
+              then 'attachment'
+              else 'inline'
+            end
+          ,p1 => l_file_t.file_name
+        )
+    );
+
+    -- download file
+    download_file(
+      p_blob_content    => l_file_t.blob_content
+      ,p_mime_type      => l_file_t.mime_type
+      ,p_header_names   => l_header_names
+      ,p_header_values  => l_header_values
+    );
+
+  -- handle errors
+  exception
+  when no_data_found
+  then
+
+    raise_http_error( 404 );
+    raise;
+
+  end download_file;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure redirect_search(
+    p_value         in varchar2,
+    p_app_id        in varchar2 default null,
+    p_session       in varchar2 default null
+  )
+  as
+  begin
+    -- Get search page URL and redirect
+    apex_util.redirect_url (
+      apex_page.get_url(
+         p_application => p_app_id
+        ,p_page        => 'SEARCH'
+        ,p_session     => p_session
+--          ,p_clear_cache => 'RP'
+        ,p_items       => 'P0_SEARCH'
+        ,p_values      => p_value
+        ,p_plain_url   => true
+      )
+    );
+  end redirect_search;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+end "BLOG_UTIL";
 /
 CREATE OR REPLACE package "BLOG_CM"
 authid definer
@@ -742,9 +1961,9 @@ as
 --                            function is called now from APEX application conputation
 --    Jari Laine 19.05.2020 - Removed obsolete function get_post_title
 --    Jari Laine 24.05.2020 - Added procedures:
---                            run_settings_post_expression
---                            run_feature_post_expression
---                            update_feature
+--                              run_settings_post_expression
+--                              run_feature_post_expression
+--                              update_feature
 --    Jari Laine 22.06.2020 - Bug fix to function is_integer
 --                            Added parameters p_min and p_max to function is_integer
 --    Jari Laine 30.09.2020 - Added procedure google_post_authentication
@@ -764,6 +1983,15 @@ as
 --    Jari Laine 27.03.2022 - Fixed bug on function get_first_paragraph when search nested elements
 --                            Removed obsolete procedures remove_unused_tags, purge_post_preview, purge_post_preview_job and save_post_preview
 --    Jari Laine 13.04.2022 - Bug fix to functions is_integer, is_url and is_date_format error message handling
+--    Jari Laine 01.05.2022 - Simple logic to function request_to_post_status
+--    Jari Laine 07.05.2022 - Added procedure remove_unused_tags and remove_unused_categories
+--                            Chenged private procedure add_tag to public
+--                            Removed obsolete functions get_post_tags and get_category_title
+--                            New procedures:
+--                              resequence_link_groups
+--                              resequence_links
+--                              categories_links
+--                              tags_links
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -799,19 +2027,6 @@ as
 --  admin app page 18
   function get_link_seq(
     p_link_group_id   in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  admin app page 12
-  function get_post_tags(
-    p_post_id         in varchar2,
-    p_sep             in varchar2 default ','
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  admin app page 12
-  function get_category_title(
-    p_category_id     in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
@@ -854,11 +2069,36 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
+--  admin app page 14
+  procedure remove_unused_categories;
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 14
+  procedure resequence_categories;
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 24 and inside this package
+  procedure add_tag(
+    p_tag             in varchar2,
+    p_tag_id          out nocopy number
+  );
+--------------------------------------------------------------------------------
+-- Called from:
 --  admin app page 12
   procedure add_post_tags(
     p_post_id         in varchar2,
     p_tags            in varchar2,
     p_sep             in varchar2 default ','
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 19
+  procedure remove_unused_tags;
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 24
+  procedure resequence_tags(
+    p_post_id         in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -899,6 +2139,16 @@ as
     p_build_status    in varchar2
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 17
+  procedure resequence_link_groups;
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 17
+  procedure resequence_links(
+    p_link_group_id in varchar2
+  );
+--------------------------------------------------------------------------------
 end "BLOG_CM";
 /
 
@@ -923,40 +2173,6 @@ as
   begin
     return ceil( coalesce( p_max + 1, 1 ) / 10 ) * 10;
   end next_seq;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure add_tag(
-    p_tag     in varchar2,
-    p_tag_id  out nocopy number
-  )
-  as
-    l_value varchar2(256);
-  begin
-
-    p_tag_id  := null;
-    l_value := remove_whitespace( p_tag );
-
-    -- if tag is not null then fetch id
-    if l_value is not null then
-
-      begin
-        select id
-        into p_tag_id
-        from blog_v_all_tags
-        where 1 = 1
-        and tag_unique = upper( l_value )
-        ;
-      -- if tag not exists insert and return id
-      exception when no_data_found then
-        insert into blog_tags( is_active, tag )
-        values ( 1, l_value )
-        returning id into p_tag_id
-        ;
-      end;
-
-    end if;
-
-  end add_tag;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure add_tag_to_post(
@@ -1223,90 +2439,18 @@ as
   as
   begin
 
-    -- one reason for this function is that APEX 19.2 has bug in switch.
-    -- switch not allow return value zero (0)
-
     -- conver APEX request to post status (blog_posts.is_active)
     return case p_request
-      when 'CREATE_DRAFT'
-      then '0'
       when 'CREATE'
       then '1'
-      when 'SAVE_DRAFT'
-      then '0'
-      when 'SAVE_AND_PUBLISH'
-      then '1'
-      when 'REVERT_DRAFT'
-      then '0'
       when 'SAVE'
+      then '1'
+      when 'SAVE_AND_PUBLISH'
       then '1'
       else '0'
     end;
 
   end request_to_post_status;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_post_tags(
-    p_post_id in varchar2,
-    p_sep     in varchar2 default ','
-  ) return varchar2
-  as
-    l_post_id number;
-    l_tags    varchar2(32700);
-  begin
-
-    -- conver post id string to number
-    l_post_id := to_number( p_post_id );
-
-    -- fetch comma separated list of post tags
-    select listagg( v1.tag, p_sep) within group( order by v1.display_seq ) as tags
-    into l_tags
-    from blog_v_all_post_tags v1
-    where 1 = 1
-    and v1.post_id = l_post_id
-    ;
-    -- return post tags
-    return l_tags;
-
-  -- return null if post don't have tags
-  exception
-  when no_data_found then
-    return null;
-  end get_post_tags;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_category_title(
-    p_category_id in varchar2
-  ) return varchar2
-  as
-    l_category_id number;
-    l_title       varchar2(4000);
-  begin
-
-    -- raise no data found if category id is null
-    if p_category_id is null
-    then
-      raise no_data_found;
-    end if;
-
-    -- conver category id string to number
-    l_category_id := to_number( p_category_id );
-
-    -- fetch category name
-    select t1.title
-    into l_title
-    from blog_v_all_categories t1
-    where t1.id = l_category_id
-    ;
-    -- return category name
-    return l_title;
-
-  -- return null category not found
-  exception
-  when no_data_found
-  then
-    return null;
-  end get_category_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_first_paragraph(
@@ -1537,6 +2681,76 @@ as
   end add_category;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  procedure remove_unused_categories
+  as
+  begin
+    -- cleanup categories that aren't linked to any post
+    delete from blog_categories t1
+    where 1 = 1
+    and not exists(
+      select 1
+      from blog_posts x1
+      where 1 = 1
+      and x1.category_id = t1.id
+    );
+
+  end remove_unused_categories;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure resequence_categories
+  as
+  begin
+
+    merge into blog_categories t1
+    using (
+      select id
+        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+      from blog_categories
+      where 1 = 1
+    ) v1
+    on ( t1.id = v1.id )
+    when matched then
+      update set t1.display_seq = v1.rn
+        where t1.display_seq != v1.rn
+    ;
+
+  end resequence_categories;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure add_tag(
+    p_tag     in varchar2,
+    p_tag_id  out nocopy number
+  )
+  as
+    l_value varchar2(256);
+  begin
+
+    p_tag_id  := null;
+    l_value   := remove_whitespace( p_tag );
+
+    -- if tag is not null then fetch id
+    if l_value is not null then
+
+      begin
+        select id
+        into p_tag_id
+        from blog_v_all_tags
+        where 1 = 1
+        and tag_unique = upper( l_value )
+        ;
+      -- if tag not exists insert and return id
+      exception when no_data_found then
+        insert into blog_tags( is_active, tag )
+        values ( 1, l_value )
+        returning id into p_tag_id
+        ;
+      end;
+
+    end if;
+
+  end add_tag;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure add_post_tags(
     p_post_id in varchar2,
     p_tags    in varchar2,
@@ -1561,17 +2775,14 @@ as
     for i in 1 .. l_tag_tab.count
     loop
 
-      -- reset variable holding tag id
-      l_tag_id := null;
-
       -- add tag to repository and return id
       add_tag(
          p_tag    => l_tag_tab(i)
         ,p_tag_id => l_tag_id
       );
 
-      -- if tag was added to repository
-      -- create relationships between tag and post
+      -- if the tag has been added or is already in the repository
+      -- create relationships to post
       if l_tag_id is not null
       then
 
@@ -1601,6 +2812,47 @@ as
     );
 
   end add_post_tags;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure remove_unused_tags
+  as
+  begin
+    -- cleanup tags that aren't linked to any post
+    delete from blog_tags t1
+    where 1 = 1
+    and not exists(
+      select 1
+      from blog_post_tags x1
+      where 1 = 1
+      and x1.tag_id = t1.id
+    );
+  end remove_unused_tags;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure resequence_tags(
+    p_post_id in varchar2
+  )
+  as
+    l_post_id number;
+  begin
+
+    l_post_id := to_number( p_post_id );
+
+    merge into blog_post_tags t1
+    using (
+      select id
+        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+      from blog_post_tags
+      where 1 = 1
+      and post_id = l_post_id
+    ) v1
+    on ( t1.id = v1.id )
+    when matched then
+      update set t1.display_seq = v1.rn
+        where t1.display_seq != v1.rn
+    ;
+
+  end resequence_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function is_integer(
@@ -1763,1294 +3015,53 @@ as
   end update_feature;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  procedure resequence_link_groups
+  as
+  begin
+
+    merge into blog_link_groups t1
+    using (
+      select id
+        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+      from blog_link_groups
+      where 1 = 1
+    ) v1
+    on ( t1.id = v1.id )
+    when matched then
+      update set t1.display_seq = v1.rn
+        where t1.display_seq != v1.rn
+    ;
+
+  end resequence_link_groups;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure resequence_links(
+    p_link_group_id in varchar2
+  )
+  as
+    l_link_group_id number;
+  begin
+
+    l_link_group_id := to_number( p_link_group_id );
+
+    merge into blog_links t1
+    using (
+      select id
+        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+      from blog_links
+      where 1 = 1
+      and link_group_id = l_link_group_id
+    ) v1
+    on ( t1.id = v1.id )
+    when matched then
+      update set t1.display_seq = v1.rn
+        where t1.display_seq != v1.rn
+    ;
+
+  end resequence_links;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 end "BLOG_CM";
-/
-CREATE OR REPLACE package  "BLOG_COMM"
-authid definer
-as
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---
---  DESCRIPTION
---    Procedure and functions for post comments
---
---  MODIFIED (DD.MM.YYYY)
---    Jari Laine 11.05.2020 - Created
---    Jari Laine 11.04.2021 - New procedure reply_notify
---                            New functions validate_email and is_email_verified
---    Jari Laine 18.04.2021 - New functions is_email
---    Jari Laine 30.10.2021 - Removed functions validate_email and is_email_verified
---    Jari Laine 13.04.2022 - Posibility add multiple flags using procedure flag_comment
---                            Posibility remove multiple flags using procedure unflag_comment
---
---  TO DO:
---    #1  comment HTML validation should be improved
---    #2  email validation should be improved
---
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  -- Called from:
-  --  public app page 1001
-  function format_comment(
-    p_comment           in varchar2,
-    p_remove_anchors    in boolean default false
-  ) return varchar2;
---------------------------------------------------------------------------------
-  -- Called from:
-  --  public app page 1001
-  function validate_comment(
-    p_comment           in varchar2,
-    p_max_length        in number default 4000
-  ) return varchar2;
---------------------------------------------------------------------------------
-  -- Called from:
-  --  public app page 1001 and admin app page 20012 validation
-  function is_email(
-    p_email             in varchar2,
-    p_err_mesg          in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  public app page 1001
-  procedure flag_comment(
-    p_comment_id        in varchar2,
-    p_flags             in varchar2
-  );
---------------------------------------------------------------------------------
--- Called from:
---
-  procedure unflag_comment(
-    p_comment_id        in varchar2,
-    p_flags             in varchar2
-  );
---------------------------------------------------------------------------------
--- Called from:
---  public app page 1001
-  procedure new_comment_notify(
-    p_post_id           in varchar2,
-    p_app_name          in varchar2,
-    p_email_template    in varchar2
-  );
---------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app pages 32
-  procedure reply_notify(
-    p_app_id            in varchar2,
-    p_app_name          in varchar2,
-    p_post_id           in varchar2,
-    p_email_template    in varchar2
-  );
---------------------------------------------------------------------------------
--- Called from:
---  public app page 1001
-  procedure subscribe(
-    p_post_id           in varchar2,
-    p_email             in varchar2
-  );
---------------------------------------------------------------------------------
--- Called from:
---  public app page 2
-  procedure unsubscribe(
-    p_subscription_id   in varchar2
-  );
---------------------------------------------------------------------------------
-end "BLOG_COMM";
-/
-
-
-CREATE OR REPLACE package body "BLOG_COMM"
-as
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Private constants and variables
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  c_whitelist_tags      constant varchar2(256)  := '<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>';
-  c_code_css_class      constant varchar2(256)  := 'z-program-code';
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Private procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure remove_ascii(
-    p_string in out nocopy varchar2
-  )
-  as
-  begin
-    -- remove unwanted ascii codes
-    for i in 0 .. 31
-    loop
-      if i != 10 then
-        p_string := trim( replace( p_string, chr(i) ) );
-      end if;
-    end loop;
-  end remove_ascii;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure remove_anchor(
-    p_string in out nocopy varchar2
-  )
-  as
-  begin
-    -- remove anchor tags
-    p_string := regexp_replace( p_string, '<a[^>]*>(.*?)<\/a>', '', 1, 0, 'i' );
-  end remove_anchor;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure escape_html(
-    p_string in out nocopy varchar2
-  )
-  as
-  begin
-
-    -- change all hash marks so we can escape those
-    -- after calling apex_escape.html_whitelist
-    -- escape of hash marks needed to prevent APEX substitutions
-    p_string := replace( p_string, '#', '#HashMark#' );
-
-    -- escape comment html
-    p_string := apex_escape.html_whitelist(
-       p_html            => p_string
-      ,p_whitelist_tags  => c_whitelist_tags
-    );
-
-    -- escape hash marks
-    p_string := replace( p_string, '#HashMark#', '&#x23;' );
-
-  end escape_html;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure build_code_tab(
-    p_comment   in out nocopy varchar2,
-    p_code_tab  in out nocopy apex_t_varchar2
-  )
-  as
-
-    l_code_cnt  pls_integer := 0;
-    l_start_pos pls_integer := 0;
-    l_end_pos   pls_integer := 0;
-
-  begin
-
-    -- check code open tag count
-    l_code_cnt := regexp_count( p_comment, '\<code\>', 1, 'i' );
-
-    -- process code tags if open and close count match ( pre check is for valid HTML )
-    if l_code_cnt = regexp_count( p_comment, '\<\/code\>', 1, 'i' )
-    then
-
-      -- collect content inside code tags to collection
-      for i in 1 .. l_code_cnt
-      loop
-
-        -- get code start and end position
-        l_start_pos := instr( lower( p_comment ), '<code>' );
-        l_end_pos := instr( lower( p_comment ), '</code>' );
-
-        -- store code tag content to collection and wrap it to pre tag having class
-        apex_string.push(
-           p_table => p_code_tab
-          ,p_value =>
-            apex_string.format(
-               p_message => '<pre class="%s">%s</pre>'
-              ,p0 => c_code_css_class
-              ,p1 => substr(p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6)
-            )
-        );
-
-        -- substitude handled code tag
-        p_comment :=
-          apex_string.format(
-             p_message => '%s%sCODE#%s%s%s'
-            ,p0 => rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )
-            ,p1 => chr(10)
-            ,p2 => i
-            ,p3 => chr(10)
-            ,p4 => ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )
-          )
-        ;
-
-      end loop;
-
-    end if;
-
-  end build_code_tab;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure build_comment_html(
-    p_comment in out nocopy varchar2
-  )
-  as
-    l_temp        varchar2(32700);
-    l_code_row    number;
-    l_code_tab    apex_t_varchar2;
-    l_comment_tab apex_t_varchar2;
-  begin
-
-    -- process code tags
-    build_code_tab(
-       p_comment => p_comment
-      ,p_code_tab => l_code_tab
-    );
-
-    -- split comment to collection by new line character
-    l_comment_tab := apex_string.split( p_comment, chr(10) );
-
-    -- comment is stored to collection
-    -- start building comment with prober html tags
-    p_comment := null;
-
-    -- Format comment
-    for i in 1 .. l_comment_tab.count
-    loop
-
-      l_temp := trim( l_comment_tab(i) );
-
-      -- check if row is code block
-      if regexp_like( l_temp, '^CODE\#[0-9]+$' )
-      then
-        -- get code block row number
-        l_code_row := regexp_substr( l_temp, '[0-9]+' );
-        -- close p tag, insert code block
-        -- and open p tag again for text
-        p_comment :=
-          apex_string.format(
-             p_message => '%s</p>%s<p>'
-            ,p0 => p_comment
-            ,p1 => l_code_tab(l_code_row)
-          )
-        ;
-
-      else
-        -- append text if row is not empty
-        if l_temp is not null
-        then
-          -- if we are in first row
-          if p_comment is null
-          then
-            p_comment := l_temp;
-          else
-            -- check if p tag is opened, then insert br for new line
-            p_comment :=
-              apex_string.format(
-                 p_message => '%s%s%s'
-                ,p0 => p_comment
-                ,p1 =>
-                  case
-                  when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
-                  then '<br/>' -- br element backlash needed as comment is validated as XML
-                  end
-                ,p2 => l_temp
-              )
-            ;
-          end if;
-        end if;
-
-      end if;
-
-    end loop;
-
-    -- wrap comment to p tag.
-    p_comment := apex_string.format( '<p>%s</p>', p_comment );
-    -- there might be empty p, if comment ends code tag, remove that
-    p_comment := replace( p_comment, '<p></p>' );
-
-  end build_comment_html;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Global functions and procedures
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function format_comment(
-    p_comment         in varchar2,
-    p_remove_anchors  in boolean default false
-  ) return varchar2
-  as
-    l_comment varchar2(32700);
-  begin
-
-    l_comment := p_comment;
-
-    -- remove unwanted ascii codes
-    remove_ascii(
-       p_string => l_comment
-    );
-    -- remove all anchors
-    if p_remove_anchors
-    then
-      remove_anchor(
-        p_string => l_comment
-      );
-    end if;
-    -- escape HTML
-    escape_html(
-       p_string => l_comment
-    );
-    -- build comment HTML
-    build_comment_html(
-       p_comment => l_comment
-    );
-
-    apex_debug.info('Formatted comment: %s', l_comment);
-    -- return comment
-    return l_comment;
-
-  end format_comment;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function validate_comment(
-    p_comment         in varchar2,
-    p_max_length      in number default 4000
-  ) return varchar2
-  as
-    l_xml       xmltype;
-    l_result    varchar2(32700);
-    l_err_mesg  varchar2(32700);
-
-    xml_parsing_failed exception;
-    pragma exception_init( xml_parsing_failed, -31011 );
-  begin
-
-    -- check formatted comment length
-    if lengthb( p_comment ) > p_max_length
-    then
-      -- set error message
-      l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_LENGTH';
-    else
-      -- check HTML is valid
-      -- TO DO see item 1 from package specs
-      begin
-        l_xml := xmltype.createxml(
-          apex_string.format(
-             p_message => '<comment>%s</comment>'
-            ,p0 => p_comment
-          )
-        );
-      exception when xml_parsing_failed then
-        -- set error message
-        l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_HTML';
-      end;
-
-    end if;
-
-    if l_err_mesg is not null
-    then
-      -- prepare return validation error message
-      l_result := apex_lang.message(
-        p_name => l_err_mesg
-      );
-    end if;
-    -- return validation result
-    -- if validation fails we return error message stored to variable
-    return l_result;
-
-  end validate_comment;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function is_email(
-    p_email     in varchar2,
-    p_err_mesg  in varchar2
-  ) return varchar2
-  as
-    l_err_mesg varchar2(32700);
-  begin
-    -- TO DO see item 3 from package specs
-
-    -- do some basic check for email address
-    if not regexp_like( p_email, '^.*\@.*\..*$' )
-    then
-      -- if validation fails prepare error message
-      l_err_mesg := apex_lang.message(
-        p_name => p_err_mesg
-      );
-
-      if l_err_mesg = apex_escape.html(
-        p_string => p_err_mesg
-      )
-      then
-        l_err_mesg := p_err_mesg;
-      end if;
-
-    end if;
-
-    return l_err_mesg;
-
-  end is_email;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure flag_comment(
-    p_comment_id  in varchar2,
-    p_flags       in varchar2
-  )
-  as
-    l_flags apex_t_varchar2;
-  begin
-
-    l_flags := apex_string.split( p_flags, ':' );
-
-    for i in 1 .. l_flags.count
-    loop
-
-      begin
-        insert into blog_comment_flags( comment_id, flag )
-          values( p_comment_id, l_flags(i) )
-        ;
-      exception when dup_val_on_index
-      then
-        null;
-      end;
-
-    end loop;
-
-  end flag_comment;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure unflag_comment(
-    p_comment_id  in varchar2,
-    p_flags       in varchar2
-  )
-  as
-    l_flags apex_t_varchar2;
-  begin
-
-    l_flags := apex_string.split( p_flags, ':' );
-
-    for i in 1 .. l_flags.count
-    loop
-      delete from blog_comment_flags
-      where 1 = 1
-        and comment_id = p_comment_id
-        and flag = l_flags(i)
-      ;
-    end loop;
-
-  end unflag_comment;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure new_comment_notify(
-    p_post_id         in varchar2,
-    p_app_name        in varchar2,
-    p_email_template  in varchar2
-  )
-  as
-    l_post_id   number;
-    l_app_email varchar2(4000);
-  begin
-
-    l_post_id   := to_number( p_post_id );
-
-    -- fetch application email address
-    l_app_email := blog_util.get_attribute_value('G_APP_EMAIL');
-    -- if application email address is not set, exit from procedure
-    if l_app_email is null
-    then
-      apex_debug.info('application email address is not set');
-      return;
-    end if;
-
-    -- get values for APEX email template
-    -- send notify email if blog email address is set
-    -- and blogger has set email
-    for c1 in(
-      select v1.blogger_email
-        ,json_object (
-           'APP_NAME'     value p_app_name
-          ,'BLOGGER_NAME' value v1.blogger_name
-          ,'POST_TITLE'   value v1.title
-          ,'POST_LINK'    value
-              blog_url.get_post(
-                 p_post_id => v1.id
-                ,p_canonical => 'YES'
-              )
-        ) as placeholders
-      from blog_v_all_posts v1
-      where 1 = 1
-      and v1.id = l_post_id
-      and v1.blogger_email is not null
-    ) loop
-
-      apex_debug.info(
-        'Send email to: %s from: %s template: %s placeholders: %s'
-        ,c1.blogger_email
-        ,l_app_email
-        ,p_email_template
-        ,c1.placeholders
-      );
-      -- send notify email
-      apex_mail.send (
-         p_to                 => c1.blogger_email
-        ,p_from               => l_app_email
-        ,p_template_static_id => p_email_template
-        ,p_placeholders       => c1.placeholders
-      );
-    end loop;
-
-  end new_comment_notify;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure reply_notify(
-    p_app_id          in varchar2,
-    p_app_name        in varchar2,
-    p_post_id         in varchar2,
-    p_email_template  in varchar2
-  )
-  as
-    l_watch_end     date;
-    l_post_id       number;
-    l_watch_months  number;
-    l_app_email     varchar2(4000);
-  begin
-
-    l_post_id := to_number( p_post_id );
-
-    -- fetch application email address
-    l_app_email := blog_util.get_attribute_value( 'G_APP_EMAIL' );
-    -- if application email address is not set, exit from procedure
-    if l_app_email is null
-    then
-      apex_debug.info('application email address is not set');
-      return;
-    end if;
-
-    -- fetch comment watch expires
-    l_watch_months := to_number(
-        blog_util.get_attribute_value( 'G_COMMENT_WATCH_MONTHS' )
-      ) * -1
-    ;
-    l_watch_end := add_months( trunc( sysdate ), l_watch_months );
-
-    -- send notify users that have subscribed to replies to comment
-    for c1 in(
-      select t2.email
-      ,json_object (
-         'APP_NAME'         value p_app_name
-        ,'POST_TITLE'       value v1.title
-        ,'POST_LINK'        value
-            blog_url.get_post(
-               p_app_id     => p_app_id
-              ,p_post_id    => p_post_id
-              ,p_canonical  => 'YES'
-            )
-        ,'UNSUBSCRIBE_LINK' value
-            blog_url.get_unsubscribe(
-               p_app_id          => p_app_id
-              ,p_post_id         => p_post_id
-              ,p_subscription_id => t1.id
-            )
-       ) as placeholders
-      from blog_comment_subscribers t1
-      join blog_subscribers_email t2
-        on t1.email_id = t2.id
-      join blog_v_all_posts v1
-        on t1.post_id = v1.id
-      where 1 = 1
-        and t1.is_active
-          * t2.is_active
-          * case v1.post_status when 'PUBLISHED' then 1 else 0 end
-          = 1
-        and v1.id = l_post_id
-        -- send notification if subscription is created less than months ago specified in settings
-        and t1.subscription_date > l_watch_end
-    ) loop
-
-      apex_debug.info(
-        'Send email to: %s from: %s template: %s placeholders: %s'
-        ,c1.email
-        ,l_app_email
-        ,p_email_template
-        ,c1.placeholders
-      );
-      -- send notify email
-      apex_mail.send (
-         p_from => l_app_email
-        ,p_to   => c1.email
-        ,p_template_static_id => p_email_template
-        ,p_placeholders => c1.placeholders
-      );
-
-    end loop;
-
-  end reply_notify;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure subscribe(
-    p_post_id in varchar2,
-    p_email   in varchar2
-  )
-  as
-    l_email     varchar2(256);
-    l_post_id   number;
-    l_email_id  number;
-  begin
-
-    l_email   := trim( lower( p_email ) );
-    l_post_id := to_number( p_post_id );
-
-    -- subscribe user to get notify on reply to comment
-    if p_email is not null
-    and p_post_id is not null
-    then
-      -- check if email address already exists and fetch id
-      begin
-        select id
-        into l_email_id
-        from blog_subscribers_email
-        where 1 = 1
-        and email = l_email
-        ;
-      -- if email address not exists, insert and return id
-      exception when no_data_found
-      then
-        insert into
-            blog_subscribers_email( email, is_active )
-        values
-          ( l_email, 1 )
-        returning id into l_email_id
-        ;
-      end;
-      -- insert post to email relation
-      begin
-        insert into
-          blog_comment_subscribers( post_id, email_id, subscription_date, is_active )
-        values
-          ( p_post_id, l_email_id, trunc( sysdate ), 1 )
-        ;
-      -- if subscription already exists update subscription
-      exception when dup_val_on_index
-      then
-        update blog_comment_subscribers
-          set subscription_date = trunc( sysdate )
-        where 1 = 1
-        and is_active = 1
-        and post_id = p_post_id
-        and email_id = l_email_id
-        ;
-      end;
-    end if;
-
-  end subscribe;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure unsubscribe(
-    p_subscription_id in varchar2
-  )
-  as
-  begin
-    -- remove user subscribtion to get notify from replies
-    delete
-      from blog_comment_subscribers
-    where 1 = 1
-      and id = p_subscription_id
-    ;
-  end unsubscribe;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-end "BLOG_COMM";
-/
-CREATE OR REPLACE package  "BLOG_CTX"
-authid definer
-as
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---
---  DESCRIPTION
---    Procedures and functions for Oracle text
---
---  MODIFIED (DD.MM.YYYY)
---    Jari Laine 22.06.2020 - Created
---
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure generate_post_datastore(
-    rid       in rowid,
-    tlob      in out nocopy clob
-  );
---------------------------------------------------------------------------------
-  function get_post_search(
-    p_search  in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
-end "BLOG_CTX";
-/
-
-
-CREATE OR REPLACE package body "BLOG_CTX"
-as
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Private constants and variables
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- none
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Private procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- None
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Global procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure generate_post_datastore(
-    rid   in rowid,
-    tlob  in out nocopy clob
-  )
-  as
-    l_row blog_v_all_posts%rowtype;
-  begin
-
-    select *
-    into l_row
-    from blog_v_all_posts
-    where 1 = 1
-    and ctx_rid = rid
-    ;
-
-    tlob :=
-      '<POST_TITLE>' || l_row.title || '</POST_TITLE>' ||
-      '<POST_CATEGORY>' || l_row.category_title || '</POST_CATEGORY>' ||
-      '<POST_DESCRIPTION>' || l_row.post_desc || '</POST_DESCRIPTION>' ||
-      '<POST_BODY>' || l_row.body_html || '</POST_BODY>' ||
-      '<POST_TAGS>' || l_row.visible_tags || '</POST_TAGS>'
-    ;
-
-  end generate_post_datastore;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_post_search(
-    p_search in varchar2
-  ) return varchar2
-  as
-    c_xml constant varchar2(32767)  := '<query><textquery><progression>'
-                                    ||    '<seq>  #SEARCH#  </seq>'
-                                    ||    '<seq> ?#SEARCH#  </seq>'
-                                    ||    '<seq>  #SEARCH#% </seq>'
-                                    ||    '<seq> %#SEARCH#% </seq>'
-                                    || '</progression></textquery></query>';
-    l_search varchar2(32767) := p_search;
-  begin
-
-    -- remove special characters; irrelevant for full text search
-    l_search := regexp_replace( l_search, '[<>{}/()*%&!$?.:,;\+#]', '' );
-
-    return replace( c_xml, '#SEARCH#', l_search );
-
-  end get_post_search;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-end "BLOG_CTX";
-/
-CREATE OR REPLACE package "BLOG_HTML"
-authid definer
-as
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---
---  DESCRIPTION
---    Functions to generate and return HTML code
---
---  MODIFIED (DD.MM.YYYY)
---    Jari Laine 22.04.2019 - Created
---    Jari Laine 29.04.2020 - New function get_robots_noindex_meta
---                            Functions to generate canonical link outputs robot noindex meta tag
---                            if proper link can't be generated
---                            Added apex_debug to functions generating meta and canonical link
---    Jari Laine 10.05.2020 - Utilize blog_url functions p_canonical
---    Jari Laine 19.05.2020 - Removed obsolete function get_search_button
---    Jari Laine 06.07.2020 - Added parameter p_rss_url to functions get_rss_link and get_rss_anchor
---                            Removed parameter p_build_option_status from function get_rss_link
---    Jari Laine 13.11.2021 - Changes to funtion get_rss_anchor and get get_rss_link
---                          - Removed obsolete functions
---    Jari Laine 27.03.2022 - Added parameter p_build_option and p_message to function get_rss_link
---                          - Added parameter p_message to function get_rss_anchor
---
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_META_ROBOTS_NOINDEX
-  function get_robots_noindex_meta return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---
-  function get_tag_anchor(
-    p_tag_id        in number,
-    p_app_id        in varchar2,
-    p_tag           in varchar2,
-    p_button        in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_META_HOME_DESCRIPTION
-  function get_description_meta(
-    p_desc          in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_META_POST_DESCRIPTION
-  function get_post_description_meta(
-    p_post_id       in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_CANONICAL_LINK_TAB
-  function get_tab_canonical_link(
-    p_app_page_id   in varchar2,
-    p_app_id        in varchar2 default null
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_CANONICAL_LINK_POST
-  function get_post_canonical_link(
-    p_post_id       in varchar2,
-    p_app_id        in varchar2 default null
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
-  function get_category_canonical_link(
-    p_category_id   in varchar2,
-    p_app_id        in varchar2 default null
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
-  function get_archive_canonical_link(
-    p_archive_id    in varchar2,
-    p_app_id        in varchar2 default null
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_CANONICAL_LINK_TAG
-  function get_tag_canonical_link(
-    p_tag_id        in varchar2,
-    p_app_id        in varchar2 default null
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_RSS_ANCHOR
-  function get_rss_anchor(
-    p_app_name      in varchar2,
-    p_message       in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_RSS_LINK
-  function get_rss_link(
-    p_app_id        in varchar2,
-    p_app_name      in varchar2,
-    p_message       in varchar2,
-    p_build_option  in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  pub app classic report on pages 2, 3, 6, 14, 15
-  function get_post_tags(
-    p_post_id       in number,
-    p_app_id        in varchar2 default null,
-    p_button        in varchar2 default 'YES'
-  ) return varchar2;
---------------------------------------------------------------------------------
-end "BLOG_HTML";
-/
-
-
-CREATE OR REPLACE package body "BLOG_HTML"
-as
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Private constants and variables
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- none
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Private procedures and functions
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- none
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Global functions and procedures
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_robots_noindex_meta return varchar2
-  as
-  begin
-    return '<meta name="robots" value="noindex" />';
-  end get_robots_noindex_meta;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_tag_anchor(
-    p_tag_id  in number,
-    p_app_id  in varchar2,
-    p_tag     in varchar2,
-    p_button  in varchar2
-  ) return varchar2
-  as
-    l_tag varchar2(4000);
-    l_url varchar2(4000);
-  begin
-
-    -- generate HTML for tag
-    if p_tag is not null then
-
-      l_tag := apex_escape.html( p_tag );
-
-      -- get URL for tag
-      l_url :=  blog_url.get_tag(
-        p_tag_id => p_tag_id
-        ,p_app_id => p_app_id
-      );
-
-        -- generate button or anchor
-      l_tag :=
-        apex_string.format(
-          p_message => '<a href="%s" class="%s">%s</a>'
-          ,p0 => l_url
-          ,p1 =>
-            case p_button when 'YES'
-              then 't-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-md'
-              else 'margin-bottom-md margin-left-sm'
-            end
-          ,p2 =>
-            case p_button when 'YES'
-              then
-                apex_string.format(
-                  p_message => '<span class="t-Icon fa fa-tag" aria-hidden="true"></span><span class="t-Button-label">%s</span>'
-                  ,p0 => l_tag
-                )
-              else l_tag
-            end
-        )
-      ;
-
-    end if;
-
-    return l_tag;
-
-  end get_tag_anchor;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_description_meta(
-    p_desc in varchar2
-  ) return varchar2
-  as
-    l_html varchar2(32700);
-  begin
-    -- generate description meta tag
-    if p_desc is not null then
-      l_html :=
-        apex_string.format(
-          p_message => '<meta name="description" content="%s" />'
-          ,p0 => apex_escape.html_attribute( p_desc )
-        )
-      ;
-    else
-      apex_debug.warn('Description meta tag not generated.');
-    end if;
-
-    return l_html;
-
-  end get_description_meta;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_post_description_meta(
-    p_post_id in varchar2
-  ) return varchar2
-  as
-    l_post_desc varchar2(32700);
-  begin
-    -- generate description meta tag for post
-    select v1.post_desc
-    into l_post_desc
-    from blog_v_posts v1
-    where 1= 1
-    and v1.post_id = p_post_id
-    ;
-    return get_description_meta(
-      p_desc => l_post_desc
-    );
-  exception when no_data_found then
-    apex_debug.warn( 'No data found to generate description meta tag for post id %s', p_post_id );
-    return null;
-  end get_post_description_meta;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_tab_canonical_link(
-    p_app_page_id     in varchar2,
-    p_app_id          in varchar2 default null
-  ) return varchar2
-  as
-    l_html varchar2(32700);
-  begin
-    -- generate canonical link for tab
-    if p_app_page_id is not null then
-      l_html :=
-        apex_string.format(
-          p_message =>'<link rel="canonical" href="%s" />'
-          ,p0 =>
-            blog_url.get_tab(
-               p_app_id       => p_app_id
-              ,p_app_page_id  => p_app_page_id
-              ,p_canonical    => 'YES'
-            )
-        )
-      ;
-    else
-      -- if p_app_page_id is not defined then generate
-      -- robots no index meta tag
-      apex_debug.warn( 'Canonical link tag not generated for tab.');
-      l_html := get_robots_noindex_meta;
-    end if;
-    -- return generated HTML
-    return l_html;
-
-  end get_tab_canonical_link;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_post_canonical_link(
-    p_post_id       in varchar2,
-    p_app_id        in varchar2 default null
-  ) return varchar2
-  as
-    l_html varchar2(32700);
-  begin
-    -- generate canonical link for post
-    if p_post_id is not null then
-      l_html :=
-        apex_string.format(
-          p_message =>'<link rel="canonical" href="%s" />'
-          ,p0 =>
-            blog_url.get_post(
-              p_post_id      => p_post_id
-              ,p_app_id       => p_app_id
-              ,p_session      => ''
-              ,p_canonical    => 'YES'
-            )
-        )
-      ;
-    else
-      apex_debug.warn('Canonical link tag not generated for post.');
-      l_html := get_robots_noindex_meta;
-    end if;
-    -- return generated HTML
-    return l_html;
-
-  end get_post_canonical_link;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_category_canonical_link(
-    p_category_id   in varchar2,
-    p_app_id        in varchar2 default null
-  ) return varchar2
-  as
-    l_html varchar2(32700);
-  begin
-    -- generate canonical link for category
-    if p_category_id is not null
-    then
-      l_html :=
-        apex_string.format(
-          p_message =>'<link rel="canonical" href="%s" />'
-          ,p0 =>
-            blog_url.get_category(
-               p_category_id  => p_category_id
-              ,p_app_id       => p_app_id
-              ,p_session      => ''
-              ,p_canonical    => 'YES'
-            )
-        )
-      ;
-    else
-      apex_debug.warn( 'Canonical link tag not generated for category.');
-      l_html := get_robots_noindex_meta;
-    end if;
-    -- return generated HTML
-    return l_html;
-
-  end get_category_canonical_link;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_archive_canonical_link(
-    p_archive_id    in varchar2,
-    p_app_id        in varchar2 default null
-  ) return varchar2
-  as
-    l_html varchar2(32700);
-  begin
-      -- generate canonical link for archives
-    if p_archive_id is not null
-    then
-      l_html :=
-        apex_string.format(
-          p_message =>'<link rel="canonical" href="%s" />'
-          ,p0 =>
-            blog_url.get_archive(
-               p_archive_id => p_archive_id
-              ,p_app_id     => p_app_id
-              ,p_session    => ''
-              ,p_canonical  => 'YES'
-            )
-        )
-      ;
-    else
-      apex_debug.warn( 'Canonical link tag not generated for archive.');
-      l_html := get_robots_noindex_meta;
-    end if;
-    -- return generated HTML
-    return l_html;
-
-  end get_archive_canonical_link;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_tag_canonical_link(
-    p_tag_id        in varchar2,
-    p_app_id        in varchar2 default null
-  ) return varchar2
-  as
-    l_html varchar2(32700);
-  begin
-    -- generate canonical link for tags
-    if p_tag_id is not null
-    then
-      l_html :=
-        apex_string.format(
-          p_message =>'<link rel="canonical" href="%s" />'
-          ,p0 =>
-            blog_url.get_tag(
-               p_tag_id       => p_tag_id
-              ,p_app_id       => p_app_id
-              ,p_session      => ''
-              ,p_canonical    => 'YES'
-            )
-        )
-      ;
-    else
-      apex_debug.warn( 'Canonical link tag not generated for tag.' );
-      l_html := get_robots_noindex_meta;
-    end if;
-
-    -- return generated HTML
-    return l_html;
-
-  end get_tag_canonical_link;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_rss_anchor(
-    p_app_name    in varchar2,
-    p_message     in varchar2
-  ) return varchar2
-  as
-    l_rss_url     varchar2(4000);
-    l_rss_title   varchar2(4000);
-    l_rss_anchor  varchar2(4000);
-  begin
-
-    -- get rss title
-    l_rss_title :=
-      apex_lang.message(
-        p_name => p_message
-        ,p0 => p_app_name
-      )
-    ;
-
-    -- get rss url
-    l_rss_url :=  blog_url.get_rss;
-
-    -- generate RSS anchor
-    l_rss_anchor :=
-      apex_string.format(
-        p_message => '<a href="%s" aria-label="%s" class="t-Button t-Button--noLabel t-Button--icon t-Button--link" rel="alternate" type="application/rss+xml"><span aria-hidden="true" class="fa fa-rss-square fa-3x fa-lg u-color-8-text"></span></a>'
-        ,p0 => l_rss_url
-        ,p1 => apex_escape.html_attribute(l_rss_title)
-      )
-    ;
-    -- return generated HTML
-    return l_rss_anchor;
-
-  end get_rss_anchor;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_rss_link(
-    p_app_id        in varchar2,
-    p_app_name      in varchar2,
-    p_message       in varchar2,
-    p_build_option  in varchar2
-  ) return varchar2
-  as
-    l_app_id    number;
-    l_rss_url   varchar2(4000);
-    l_rss_title varchar2(4000);
-  begin
-
-    l_app_id := to_number( p_app_id );
-
-    -- check build option should HTML generated
-    if apex_util.get_build_option_status(
-       p_application_id     => l_app_id
-      ,p_build_option_name  => p_build_option
-    ) = 'INCLUDE'
-    then
-      -- get rss url
-      l_rss_url := blog_url.get_rss;
-
-    -- generate link for RSS
-      l_rss_title := apex_lang.message(
-        p_name => p_message
-        ,p0 => p_app_name
-      );
-      -- generate HTML
-      l_rss_url :=
-        apex_string.format(
-          p_message => '<link href="%s" title="%s" rel="alternate" type="application/rss+xml" />'
-          ,p0 => l_rss_url
-          ,p1 =>
-            apex_escape.html_attribute(
-              p_string => l_rss_title
-            )
-        )
-      ;
-
-    end if;
-    -- return generated HTML
-    return l_rss_url;
-
-  end get_rss_link;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_post_tags(
-    p_post_id in number,
-    p_app_id  in varchar2 default null,
-    p_button  in varchar2 default 'YES'
-  ) return varchar2
-  as
-    l_tags varchar2(32700);
-  begin
-
-    -- generate html for post tags
-    select listagg(
-      get_tag_anchor(
-         p_tag_id => v1.tag_id
-        ,p_app_id => p_app_id
-        ,p_tag    => v1.tag
-        ,p_button => p_button
-      )
-      , case when p_button != 'YES' then ', ' end
-    ) within group( order by v1.display_seq ) as tags
-    into l_tags
-    from blog_v_post_tags v1
-    where 1 = 1
-    and v1.post_id = p_post_id
-    ;
-    -- return generated HTML
-    return l_tags;
-
-  end get_post_tags;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-end "BLOG_HTML";
 /
 CREATE OR REPLACE package  "BLOG_PLUGIN"
 authid definer
@@ -3856,140 +3867,787 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_URL";
 /
-create or replace package "BLOG_UTIL"
+CREATE OR REPLACE package  "BLOG_COMM"
 authid definer
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 --
 --  DESCRIPTION
---    Procedure and functions for public application
+--    Procedure and functions for post comments
 --
 --  MODIFIED (DD.MM.YYYY)
---    Jari Laine 22.04.2019 - Created
---    Jari Laine 28.03.2020 - Signature 2 of get_year_month function
---    Jari Laine 15.04.2020 - function validate_comment
---    Jari Laine 26.04.2020 - Changed validate_comment us apex_util.savekey_vc2
---                            and removed custom functions that was doing same thing
---    Jari Laine 08.05.2020 - Functions get_year_month are obsolete
---                            application changed to group archives by year
---    Jari Laine 10.05.2020 - Procedure new_comment_notify to notify blogger about new comments
---                            Procedure subscribe to subscribe comment reply
---                            Procedure unsubscribe for unsubscribe comment reply
---    Jari Laine 11.05.2020 - Procedures and functions relating comments moved to package blog_comm
---    Jari Laine 17.05.2020 - Added out parameters p_older_title and p_newer_title to procedure get_post_pagination
---                            Materialized view blog_items_init changed to view
---                            Removed function get_item_init_value
---    Jari Laine 18.05.2020 - Moved ORDS specific global constants
---    Jari Laine 19.05.2020 - Changed apex_debug to warn in no_data_found exception handlers
---                            Changed apex_error_handler honor error display position when
---                            ORA error is between -20999 and 20901
---                            Changed procedure get_post_pagination to raises ORA -20901 when no data found
---    Jari Laine 19.05.2020 - Removed global constants
---    Jari Laine 23.05.2020 - Modifications to remove ORDS depency
---    Jari Laine 05.11.2020 - Procedure render_dynamic_content
---    Jari Laine 18.12.2021 - Procedure redirect_search
---    Jari Laine 24.03.2022 - Parameter names to apex_debug procedure calls
---                          - Changes to procedure get_post_pagination and render_dynamic_content
---    Jari Laine 25.03.2022 - Added more comments
---                          - Changed variable names to more descriptive
---                          - Removed obsolete procedure check_archive_exists
---    Jari Laine 19.04.2022 - Changes to procedures download_file
+--    Jari Laine 11.05.2020 - Created
+--    Jari Laine 11.04.2021 - New procedure reply_notify
+--                            New functions validate_email and is_email_verified
+--    Jari Laine 18.04.2021 - New functions is_email
+--    Jari Laine 30.10.2021 - Removed functions validate_email and is_email_verified
+--    Jari Laine 13.04.2022 - Posibility add multiple flags using procedure flag_comment
+--                            Posibility remove multiple flags using procedure unflag_comment
+--
+--  TO DO:
+--    #1  comment HTML validation should be improved
+--    #2  email validation should be improved
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- Called from:
---  public and admin application definition Error Handling Function
-  function apex_error_handler (
-    p_error           in apex_error.t_error
-  ) return apex_error.t_error_result;
+  -- Called from:
+  --  public app page 1001
+  function format_comment(
+    p_comment           in varchar2,
+    p_remove_anchors    in boolean default false
+  ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  inside package and from other packages
-  function int_to_vc2(
-    p_value           in number
+  -- Called from:
+  --  public app page 1001
+  function validate_comment(
+    p_comment           in varchar2,
+    p_max_length        in number default 4000
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  -- Called from:
+  --  public app page 1001 and admin app page 20012 validation
+  function is_email(
+    p_email             in varchar2,
+    p_err_mesg          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---  other packages, public and admin application
-  function get_attribute_value(
-    p_attribute_name  in varchar2
-  ) return varchar2;
+--  public app page 1001
+  procedure flag_comment(
+    p_comment_id        in varchar2,
+    p_flags             in varchar2
+  );
 --------------------------------------------------------------------------------
 -- Called from:
---  public and admin application process Initialize Items
-  procedure initialize_items(
-    p_app_id          in varchar2
+--
+  procedure unflag_comment(
+    p_comment_id        in varchar2,
+    p_flags             in varchar2
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1001
+  procedure new_comment_notify(
+    p_post_id           in varchar2,
+    p_app_name          in varchar2,
+    p_email_template    in varchar2
+  );
+--------------------------------------------------------------------------------
+  -- Called from:
+  --  admin app pages 32
+  procedure reply_notify(
+    p_app_id            in varchar2,
+    p_app_name          in varchar2,
+    p_post_id           in varchar2,
+    p_email_template    in varchar2
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1001
+  procedure subscribe(
+    p_post_id           in varchar2,
+    p_email             in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 2
-  function get_post_title(
-    p_post_id         in varchar2,
-    p_escape          in boolean
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  public app page 2
-  procedure get_post_pagination(
-    p_post_id         in varchar2,
-    p_post_title      out nocopy varchar2,
-    p_newer_id        out nocopy varchar2,
-    p_newer_title     out nocopy varchar2,
-    p_older_id        out nocopy varchar2,
-    p_older_title     out nocopy varchar2
+  procedure unsubscribe(
+    p_subscription_id   in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 14 Pre-Rendering Computations
-  function get_category_title(
-    p_category_id     in varchar2,
-    p_escape          in boolean
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  public app page 6 Pre-Rendering Computations
-  function get_tag(
-    p_tag_id          in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  public app page 1002 PL/SQL Dynamic Content Region "Content"
-  procedure render_dynamic_content(
-    p_content_id      in varchar2,
-    p_date_format     in varchar2,
-    p_content_title   out nocopy varchar2
-  );
---------------------------------------------------------------------------------
--- Called from:
---  inside package and package BLOG_XML
-  procedure download_file (
-    p_blob_content    in out nocopy blob,
-    p_mime_type       in varchar2,
-    p_header_names    in apex_t_varchar2,
-    p_header_values   in apex_t_varchar2,
-    p_charset         in varchar2 default null
-  );
---------------------------------------------------------------------------------
--- Called from:
---  public app page 1003 Ajax Callback process "download"
-  procedure download_file (
-    p_file_name       in varchar2
-  );
---------------------------------------------------------------------------------
--- Called from:
---  public app application process Redirect to search page
-  procedure redirect_search(
-    p_value           in varchar2,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null
-  );
---------------------------------------------------------------------------------
-end "BLOG_UTIL";
+end "BLOG_COMM";
 /
 
 
-create or replace package body "BLOG_UTIL"
+CREATE OR REPLACE package body "BLOG_COMM"
+as
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Private constants and variables
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  c_whitelist_tags      constant varchar2(256)  := '<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>';
+  c_code_css_class      constant varchar2(256)  := 'z-program-code';
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Private procedures and functions
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure remove_ascii(
+    p_string in out nocopy varchar2
+  )
+  as
+  begin
+    -- remove unwanted ascii codes
+    for i in 0 .. 31
+    loop
+      if i != 10 then
+        p_string := trim( replace( p_string, chr(i) ) );
+      end if;
+    end loop;
+  end remove_ascii;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure remove_anchor(
+    p_string in out nocopy varchar2
+  )
+  as
+  begin
+    -- remove anchor tags
+    p_string := regexp_replace( p_string, '<a[^>]*>(.*?)<\/a>', '', 1, 0, 'i' );
+  end remove_anchor;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure escape_html(
+    p_string in out nocopy varchar2
+  )
+  as
+  begin
+
+    -- change all hash marks so we can escape those
+    -- after calling apex_escape.html_whitelist
+    -- escape of hash marks needed to prevent APEX substitutions
+    p_string := replace( p_string, '#', '#HashMark#' );
+
+    -- escape comment html
+    p_string := apex_escape.html_whitelist(
+       p_html            => p_string
+      ,p_whitelist_tags  => c_whitelist_tags
+    );
+
+    -- escape hash marks
+    p_string := replace( p_string, '#HashMark#', '&#x23;' );
+
+  end escape_html;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure build_code_tab(
+    p_comment   in out nocopy varchar2,
+    p_code_tab  in out nocopy apex_t_varchar2
+  )
+  as
+
+    l_code_cnt  pls_integer := 0;
+    l_start_pos pls_integer := 0;
+    l_end_pos   pls_integer := 0;
+
+  begin
+
+    -- check code open tag count
+    l_code_cnt := regexp_count( p_comment, '\<code\>', 1, 'i' );
+
+    -- process code tags if open and close count match ( pre check is for valid HTML )
+    if l_code_cnt = regexp_count( p_comment, '\<\/code\>', 1, 'i' )
+    then
+
+      -- collect content inside code tags to collection
+      for i in 1 .. l_code_cnt
+      loop
+
+        -- get code start and end position
+        l_start_pos := instr( lower( p_comment ), '<code>' );
+        l_end_pos := instr( lower( p_comment ), '</code>' );
+
+        -- store code tag content to collection and wrap it to pre tag having class
+        apex_string.push(
+           p_table => p_code_tab
+          ,p_value =>
+            apex_string.format(
+               p_message => '<pre class="%s">%s</pre>'
+              ,p0 => c_code_css_class
+              ,p1 => substr(p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6)
+            )
+        );
+
+        -- substitude handled code tag
+        p_comment :=
+          apex_string.format(
+             p_message => '%s%sCODE#%s%s%s'
+            ,p0 => rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )
+            ,p1 => chr(10)
+            ,p2 => i
+            ,p3 => chr(10)
+            ,p4 => ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )
+          )
+        ;
+
+      end loop;
+
+    end if;
+
+  end build_code_tab;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure build_comment_html(
+    p_comment in out nocopy varchar2
+  )
+  as
+    l_temp        varchar2(32700);
+    l_code_row    number;
+    l_code_tab    apex_t_varchar2;
+    l_comment_tab apex_t_varchar2;
+  begin
+
+    -- process code tags
+    build_code_tab(
+       p_comment => p_comment
+      ,p_code_tab => l_code_tab
+    );
+
+    -- split comment to collection by new line character
+    l_comment_tab := apex_string.split( p_comment, chr(10) );
+
+    -- comment is stored to collection
+    -- start building comment with prober html tags
+    p_comment := null;
+
+    -- Format comment
+    for i in 1 .. l_comment_tab.count
+    loop
+
+      l_temp := trim( l_comment_tab(i) );
+
+      -- check if row is code block
+      if regexp_like( l_temp, '^CODE\#[0-9]+$' )
+      then
+        -- get code block row number
+        l_code_row := regexp_substr( l_temp, '[0-9]+' );
+        -- close p tag, insert code block
+        -- and open p tag again for text
+        p_comment :=
+          apex_string.format(
+             p_message => '%s</p>%s<p>'
+            ,p0 => p_comment
+            ,p1 => l_code_tab(l_code_row)
+          )
+        ;
+
+      else
+        -- append text if row is not empty
+        if l_temp is not null
+        then
+          -- if we are in first row
+          if p_comment is null
+          then
+            p_comment := l_temp;
+          else
+            -- check if p tag is opened, then insert br for new line
+            p_comment :=
+              apex_string.format(
+                 p_message => '%s%s%s'
+                ,p0 => p_comment
+                ,p1 =>
+                  case
+                  when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
+                  then '<br/>' -- br element backlash needed as comment is validated as XML
+                  end
+                ,p2 => l_temp
+              )
+            ;
+          end if;
+        end if;
+
+      end if;
+
+    end loop;
+
+    -- wrap comment to p tag.
+    p_comment := apex_string.format( '<p>%s</p>', p_comment );
+    -- there might be empty p, if comment ends code tag, remove that
+    p_comment := replace( p_comment, '<p></p>' );
+
+  end build_comment_html;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Global functions and procedures
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function format_comment(
+    p_comment         in varchar2,
+    p_remove_anchors  in boolean default false
+  ) return varchar2
+  as
+    l_comment varchar2(32700);
+  begin
+
+    l_comment := p_comment;
+
+    -- remove unwanted ascii codes
+    remove_ascii(
+       p_string => l_comment
+    );
+    -- remove all anchors
+    if p_remove_anchors
+    then
+      remove_anchor(
+        p_string => l_comment
+      );
+    end if;
+    -- escape HTML
+    escape_html(
+       p_string => l_comment
+    );
+    -- build comment HTML
+    build_comment_html(
+       p_comment => l_comment
+    );
+
+    apex_debug.info('Formatted comment: %s', l_comment);
+    -- return comment
+    return l_comment;
+
+  end format_comment;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function validate_comment(
+    p_comment         in varchar2,
+    p_max_length      in number default 4000
+  ) return varchar2
+  as
+    l_xml       xmltype;
+    l_result    varchar2(32700);
+    l_err_mesg  varchar2(32700);
+
+    xml_parsing_failed exception;
+    pragma exception_init( xml_parsing_failed, -31011 );
+  begin
+
+    -- check formatted comment length
+    if lengthb( p_comment ) > p_max_length
+    then
+      -- set error message
+      l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_LENGTH';
+    else
+      -- check HTML is valid
+      -- TO DO see item 1 from package specs
+      begin
+        l_xml := xmltype.createxml(
+          apex_string.format(
+             p_message => '<comment>%s</comment>'
+            ,p0 => p_comment
+          )
+        );
+      exception when xml_parsing_failed then
+        -- set error message
+        l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_HTML';
+      end;
+
+    end if;
+
+    if l_err_mesg is not null
+    then
+      -- prepare return validation error message
+      l_result := apex_lang.message(
+        p_name => l_err_mesg
+      );
+    end if;
+    -- return validation result
+    -- if validation fails we return error message stored to variable
+    return l_result;
+
+  end validate_comment;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function is_email(
+    p_email     in varchar2,
+    p_err_mesg  in varchar2
+  ) return varchar2
+  as
+    l_err_mesg varchar2(32700);
+  begin
+    -- TO DO see item 3 from package specs
+
+    -- do some basic check for email address
+    if not regexp_like( p_email, '^.*\@.*\..*$' )
+    then
+      -- if validation fails prepare error message
+      l_err_mesg := apex_lang.message(
+        p_name => p_err_mesg
+      );
+
+      if l_err_mesg = apex_escape.html(
+        p_string => p_err_mesg
+      )
+      then
+        l_err_mesg := p_err_mesg;
+      end if;
+
+    end if;
+
+    return l_err_mesg;
+
+  end is_email;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure flag_comment(
+    p_comment_id  in varchar2,
+    p_flags       in varchar2
+  )
+  as
+    l_flags apex_t_varchar2;
+  begin
+
+    l_flags := apex_string.split( p_flags, ':' );
+
+    for i in 1 .. l_flags.count
+    loop
+
+      begin
+        insert into blog_comment_flags( comment_id, flag )
+          values( p_comment_id, l_flags(i) )
+        ;
+      exception when dup_val_on_index
+      then
+        null;
+      end;
+
+    end loop;
+
+  end flag_comment;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure unflag_comment(
+    p_comment_id  in varchar2,
+    p_flags       in varchar2
+  )
+  as
+    l_flags apex_t_varchar2;
+  begin
+
+    l_flags := apex_string.split( p_flags, ':' );
+
+    for i in 1 .. l_flags.count
+    loop
+      delete from blog_comment_flags
+      where 1 = 1
+        and comment_id = p_comment_id
+        and flag = l_flags(i)
+      ;
+    end loop;
+
+  end unflag_comment;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure new_comment_notify(
+    p_post_id         in varchar2,
+    p_app_name        in varchar2,
+    p_email_template  in varchar2
+  )
+  as
+    l_post_id   number;
+    l_app_email varchar2(4000);
+  begin
+
+    l_post_id   := to_number( p_post_id );
+
+    -- fetch application email address
+    l_app_email := blog_util.get_attribute_value('G_APP_EMAIL');
+    -- if application email address is not set, exit from procedure
+    if l_app_email is null
+    then
+      apex_debug.info('application email address is not set');
+      return;
+    end if;
+
+    -- get values for APEX email template
+    -- send notify email if blog email address is set
+    -- and blogger has set email
+    for c1 in(
+      select v1.blogger_email
+        ,json_object (
+           'APP_NAME'     value p_app_name
+          ,'BLOGGER_NAME' value v1.blogger_name
+          ,'POST_TITLE'   value v1.title
+          ,'POST_LINK'    value
+              blog_url.get_post(
+                 p_post_id => v1.id
+                ,p_canonical => 'YES'
+              )
+        ) as placeholders
+      from blog_v_all_posts v1
+      where 1 = 1
+      and v1.id = l_post_id
+      and v1.blogger_email is not null
+    ) loop
+
+      apex_debug.info(
+        'Send email to: %s from: %s template: %s placeholders: %s'
+        ,c1.blogger_email
+        ,l_app_email
+        ,p_email_template
+        ,c1.placeholders
+      );
+      -- send notify email
+      apex_mail.send (
+         p_to                 => c1.blogger_email
+        ,p_from               => l_app_email
+        ,p_template_static_id => p_email_template
+        ,p_placeholders       => c1.placeholders
+      );
+    end loop;
+
+  end new_comment_notify;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure reply_notify(
+    p_app_id          in varchar2,
+    p_app_name        in varchar2,
+    p_post_id         in varchar2,
+    p_email_template  in varchar2
+  )
+  as
+    l_watch_end     date;
+    l_post_id       number;
+    l_watch_months  number;
+    l_app_email     varchar2(4000);
+  begin
+
+    l_post_id := to_number( p_post_id );
+
+    -- fetch application email address
+    l_app_email := blog_util.get_attribute_value( 'G_APP_EMAIL' );
+    -- if application email address is not set, exit from procedure
+    if l_app_email is null
+    then
+      apex_debug.info('application email address is not set');
+      return;
+    end if;
+
+    -- fetch comment watch expires
+    l_watch_months := to_number(
+        blog_util.get_attribute_value( 'G_COMMENT_WATCH_MONTHS' )
+      ) * -1
+    ;
+    l_watch_end := add_months( trunc( sysdate ), l_watch_months );
+
+    -- send notify users that have subscribed to replies to comment
+    for c1 in(
+      select t2.email
+      ,json_object (
+         'APP_NAME'         value p_app_name
+        ,'POST_TITLE'       value v1.title
+        ,'POST_LINK'        value
+            blog_url.get_post(
+               p_app_id     => p_app_id
+              ,p_post_id    => p_post_id
+              ,p_canonical  => 'YES'
+            )
+        ,'UNSUBSCRIBE_LINK' value
+            blog_url.get_unsubscribe(
+               p_app_id          => p_app_id
+              ,p_post_id         => p_post_id
+              ,p_subscription_id => t1.id
+            )
+       ) as placeholders
+      from blog_comment_subscribers t1
+      join blog_subscribers_email t2
+        on t1.email_id = t2.id
+      join blog_v_all_posts v1
+        on t1.post_id = v1.id
+      where 1 = 1
+        and t1.is_active
+          * t2.is_active
+          * case v1.post_status when 'PUBLISHED' then 1 else 0 end
+          = 1
+        and v1.id = l_post_id
+        -- send notification if subscription is created less than months ago specified in settings
+        and t1.subscription_date > l_watch_end
+    ) loop
+
+      apex_debug.info(
+        'Send email to: %s from: %s template: %s placeholders: %s'
+        ,c1.email
+        ,l_app_email
+        ,p_email_template
+        ,c1.placeholders
+      );
+      -- send notify email
+      apex_mail.send (
+         p_from => l_app_email
+        ,p_to   => c1.email
+        ,p_template_static_id => p_email_template
+        ,p_placeholders => c1.placeholders
+      );
+
+    end loop;
+
+  end reply_notify;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure subscribe(
+    p_post_id in varchar2,
+    p_email   in varchar2
+  )
+  as
+    l_email     varchar2(256);
+    l_post_id   number;
+    l_email_id  number;
+  begin
+
+    l_email   := trim( lower( p_email ) );
+    l_post_id := to_number( p_post_id );
+
+    -- subscribe user to get notify on reply to comment
+    if p_email is not null
+    and p_post_id is not null
+    then
+      -- check if email address already exists and fetch id
+      begin
+        select id
+        into l_email_id
+        from blog_subscribers_email
+        where 1 = 1
+        and email = l_email
+        ;
+      -- if email address not exists, insert and return id
+      exception when no_data_found
+      then
+        insert into
+            blog_subscribers_email( email, is_active )
+        values
+          ( l_email, 1 )
+        returning id into l_email_id
+        ;
+      end;
+      -- insert post to email relation
+      begin
+        insert into
+          blog_comment_subscribers( post_id, email_id, subscription_date, is_active )
+        values
+          ( p_post_id, l_email_id, trunc( sysdate ), 1 )
+        ;
+      -- if subscription already exists update subscription
+      exception when dup_val_on_index
+      then
+        update blog_comment_subscribers
+          set subscription_date = trunc( sysdate )
+        where 1 = 1
+        and is_active = 1
+        and post_id = p_post_id
+        and email_id = l_email_id
+        ;
+      end;
+    end if;
+
+  end subscribe;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure unsubscribe(
+    p_subscription_id in varchar2
+  )
+  as
+  begin
+    -- remove user subscribtion to get notify from replies
+    delete
+      from blog_comment_subscribers
+    where 1 = 1
+      and id = p_subscription_id
+    ;
+  end unsubscribe;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+end "BLOG_COMM";
+/
+CREATE OR REPLACE package "BLOG_HTML"
+authid definer
+as
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--
+--  DESCRIPTION
+--    Functions to generate and return HTML code
+--
+--  MODIFIED (DD.MM.YYYY)
+--    Jari Laine 22.04.2019 - Created
+--    Jari Laine 29.04.2020 - New function get_robots_noindex_meta
+--                            Functions to generate canonical link outputs robot noindex meta tag
+--                            if proper link can't be generated
+--                            Added apex_debug to functions generating meta and canonical link
+--    Jari Laine 10.05.2020 - Utilize blog_url functions p_canonical
+--    Jari Laine 19.05.2020 - Removed obsolete function get_search_button
+--    Jari Laine 06.07.2020 - Added parameter p_rss_url to functions get_rss_link and get_rss_anchor
+--                            Removed parameter p_build_option_status from function get_rss_link
+--    Jari Laine 13.11.2021 - Changes to funtion get_rss_anchor and get get_rss_link
+--                          - Removed obsolete functions
+--    Jari Laine 27.03.2022 - Added parameter p_build_option and p_message to function get_rss_link
+--                          - Added parameter p_message to function get_rss_anchor
+--    Jari Laine 27.04.2022 - Removed obsolete functions get_tag_anchor and get_post_tags
+--
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Called from:
+--  pub app shortcut BLOG_META_ROBOTS_NOINDEX
+  function get_robots_noindex_meta return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  pub app shortcut BLOG_META_HOME_DESCRIPTION
+  function get_description_meta(
+    p_desc          in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  pub app shortcut BLOG_META_POST_DESCRIPTION
+  function get_post_description_meta(
+    p_post_id       in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  pub app shortcut BLOG_CANONICAL_LINK_TAB
+  function get_tab_canonical_link(
+    p_app_page_id   in varchar2,
+    p_app_id        in varchar2 default null
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  pub app shortcut BLOG_CANONICAL_LINK_POST
+  function get_post_canonical_link(
+    p_post_id       in varchar2,
+    p_app_id        in varchar2 default null
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
+  function get_category_canonical_link(
+    p_category_id   in varchar2,
+    p_app_id        in varchar2 default null
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
+  function get_archive_canonical_link(
+    p_archive_id    in varchar2,
+    p_app_id        in varchar2 default null
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  pub app shortcut BLOG_CANONICAL_LINK_TAG
+  function get_tag_canonical_link(
+    p_tag_id        in varchar2,
+    p_app_id        in varchar2 default null
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  pub app shortcut BLOG_RSS_ANCHOR
+  function get_rss_anchor(
+    p_app_name      in varchar2,
+    p_message       in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  pub app shortcut BLOG_RSS_LINK
+  function get_rss_link(
+    p_app_id        in varchar2,
+    p_app_name      in varchar2,
+    p_message       in varchar2,
+    p_build_option  in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
+end "BLOG_HTML";
+/
+
+
+CREATE OR REPLACE package body "BLOG_HTML"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4002,853 +4660,313 @@ as
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure raise_http_error(
-    p_error_code  in number
-  )
-  as
-  begin
-    -- output HTTP status
-    owa_util.status_line( p_error_code );
-    -- stop APEX
-    apex_application.stop_apex_engine;
-  end raise_http_error;
+-- none
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function apex_error_handler(
-    p_error in apex_error.t_error
-  ) return apex_error.t_error_result
+  function get_robots_noindex_meta return varchar2
   as
-    l_genereric_error constant varchar2(255) := 'BLOG_GENERIC_ERROR';
-
-    l_result          apex_error.t_error_result;
-    l_reference_id    pls_integer;
-    l_constraint_name varchar2(255);
-    l_err_mesg        varchar2(32700);
-
   begin
-
-    -- This function must be used to ensure initialization is compatible
-    -- with future changes to t_error_result.
-    l_result :=
-      apex_error.init_error_result(
-        p_error => p_error
-      );
-
-    -- If it's an internal error raised by APEX, like an invalid statement or
-    -- code which can't be executed, the error text might contain security sensitive
-    -- information. To avoid this security problem we can rewrite the error to
-    -- a generic error message and log the original error message for further
-    -- investigation by the help desk.
-    if p_error.is_internal_error then
-
-      if not p_error.is_common_runtime_error then
-        -- Change the message to the generic error message which doesn't expose
-        -- any sensitive information.
-        l_result.message := apex_lang.message(
-          p_name => l_genereric_error
-        );
-        l_result.additional_info := null;
-      end if;
-
+    return '<meta name="robots" value="noindex" />';
+  end get_robots_noindex_meta;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_description_meta(
+    p_desc in varchar2
+  ) return varchar2
+  as
+    l_html varchar2(32700);
+  begin
+    -- generate description meta tag
+    if p_desc is not null then
+      l_html :=
+        apex_string.format(
+          p_message => '<meta name="description" content="%s" />'
+          ,p0 => apex_escape.html_attribute( p_desc )
+        )
+      ;
     else
-
-      -- Don't change display position for specific ORA eror codes
-      if not p_error.ora_sqlcode between -20999 and -20901
-      then
-        -- Always show the error as inline error
-        l_result.display_location := case
-          when l_result.display_location = apex_error.c_on_error_page
-          then apex_error.c_inline_in_notification
-          else l_result.display_location
-          end
-       ;
-      end if;
-
-      -- If it's a constraint violation like
-      --
-      --   -) ORA-02292 ORA-02291 ORA-02290 ORA-02091 ORA-00001: unique constraint violated
-      --   -) : transaction rolled back (-> can hide a deferred constraint)
-      --   -) : check constraint violated
-      --   -) : integrity constraint violated - parent key not found
-      --   -) : integrity constraint violated - child record found
-      --
-      -- we try to get a friendly error message from our constraint lookup configuration.
-      -- If we don't find the constraint in our lookup table we fallback to
-      -- the original ORA error message.
-
-      if p_error.ora_sqlcode in (-1, -2091, -2290, -2291, -2292) then
-
-        l_constraint_name :=
-          apex_error.extract_constraint_name(
-            p_error => p_error
-          );
-
-        l_err_mesg := apex_lang.message(
-          p_name => l_constraint_name
-        );
-
-        -- not every constraint has to be in our lookup table
-        if not l_err_mesg = l_constraint_name then
-          l_result.message := l_err_mesg;
-          l_result.additional_info := null;
-        end if;
-
-      end if;
-
-      -- If an ORA error has been raised, for example a raise_application_error(-20xxx, '...')
-      -- in a table trigger or in a PL/SQL package called by a process and we
-      -- haven't found the error in our lookup table, then we just want to see
-      -- the actual error text and not the full error stack with all the ORA error numbers.
-      if p_error.ora_sqlcode is not null
-      and l_result.message = p_error.message
-      then
-        l_result.message :=
-          apex_error.get_first_ora_error_text (
-            p_error => p_error
-          );
-        l_result.additional_info := null;
-      end if;
-
-      -- If no associated page item/tabular form column has been set, we can use
-      -- apex_error.auto_set_associated_item to automatically guess the affected
-      -- error field by examine the ORA error for constraint names or column names.
-      if l_result.page_item_name is null
-      and l_result.column_alias is null then
-
-        apex_error.auto_set_associated_item (
-           p_error => p_error
-          ,p_error_result => l_result
-        );
-
-      end if;
-
+      apex_debug.warn('Description meta tag not generated.');
     end if;
 
-    return l_result;
+    return l_html;
 
-  end apex_error_handler;
+  end get_description_meta;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function int_to_vc2(
-    p_value in number
+  function get_post_description_meta(
+    p_post_id in varchar2
   ) return varchar2
   as
+    l_post_desc varchar2(32700);
   begin
-    -- convert number to string without decimals
-    return to_char( p_value,  'fm99999999999999999999999999999999999999' );
-  end int_to_vc2;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_attribute_value(
-    p_attribute_name in varchar2
-  ) return varchar2
-  as
-    l_value varchar2(4000);
-  begin
-
-    apex_debug.enter(
-      p_routine_name  => 'blog_util.get_attribute_value'
-      ,p_name01       => 'p_attribute_name'
-      ,p_value01      => p_attribute_name
+    -- generate description meta tag for post
+    select v1.post_desc
+    into l_post_desc
+    from blog_v_posts v1
+    where 1= 1
+    and v1.post_id = p_post_id
+    ;
+    return get_description_meta(
+      p_desc => l_post_desc
     );
+  exception when no_data_found then
+    apex_debug.warn( 'No data found to generate description meta tag for post id %s', p_post_id );
+    return null;
+  end get_post_description_meta;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_tab_canonical_link(
+    p_app_page_id     in varchar2,
+    p_app_id          in varchar2 default null
+  ) return varchar2
+  as
+    l_html varchar2(32700);
+  begin
+    -- generate canonical link for tab
+    if p_app_page_id is not null then
+      l_html :=
+        apex_string.format(
+          p_message =>'<link rel="canonical" href="%s" />'
+          ,p0 =>
+            blog_url.get_tab(
+               p_app_id       => p_app_id
+              ,p_app_page_id  => p_app_page_id
+              ,p_canonical    => 'YES'
+            )
+        )
+      ;
+    else
+      -- if p_app_page_id is not defined then generate
+      -- robots no index meta tag
+      apex_debug.warn( 'Canonical link tag not generated for tab.');
+      l_html := get_robots_noindex_meta;
+    end if;
+    -- return generated HTML
+    return l_html;
 
-    -- raise no data found error if parameter p_attribute_name is null
-    if p_attribute_name is null then
-      raise no_data_found;
+  end get_tab_canonical_link;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_post_canonical_link(
+    p_post_id       in varchar2,
+    p_app_id        in varchar2 default null
+  ) return varchar2
+  as
+    l_html varchar2(32700);
+  begin
+    -- generate canonical link for post
+    if p_post_id is not null then
+      l_html :=
+        apex_string.format(
+          p_message =>'<link rel="canonical" href="%s" />'
+          ,p0 =>
+            blog_url.get_post(
+              p_post_id      => p_post_id
+              ,p_app_id       => p_app_id
+              ,p_session      => ''
+              ,p_canonical    => 'YES'
+            )
+        )
+      ;
+    else
+      apex_debug.warn('Canonical link tag not generated for post.');
+      l_html := get_robots_noindex_meta;
+    end if;
+    -- return generated HTML
+    return l_html;
+
+  end get_post_canonical_link;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_category_canonical_link(
+    p_category_id   in varchar2,
+    p_app_id        in varchar2 default null
+  ) return varchar2
+  as
+    l_html varchar2(32700);
+  begin
+    -- generate canonical link for category
+    if p_category_id is not null
+    then
+      l_html :=
+        apex_string.format(
+          p_message =>'<link rel="canonical" href="%s" />'
+          ,p0 =>
+            blog_url.get_category(
+               p_category_id  => p_category_id
+              ,p_app_id       => p_app_id
+              ,p_session      => ''
+              ,p_canonical    => 'YES'
+            )
+        )
+      ;
+    else
+      apex_debug.warn( 'Canonical link tag not generated for category.');
+      l_html := get_robots_noindex_meta;
+    end if;
+    -- return generated HTML
+    return l_html;
+
+  end get_category_canonical_link;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_archive_canonical_link(
+    p_archive_id    in varchar2,
+    p_app_id        in varchar2 default null
+  ) return varchar2
+  as
+    l_html varchar2(32700);
+  begin
+      -- generate canonical link for archives
+    if p_archive_id is not null
+    then
+      l_html :=
+        apex_string.format(
+          p_message =>'<link rel="canonical" href="%s" />'
+          ,p0 =>
+            blog_url.get_archive(
+               p_archive_id => p_archive_id
+              ,p_app_id     => p_app_id
+              ,p_session    => ''
+              ,p_canonical  => 'YES'
+            )
+        )
+      ;
+    else
+      apex_debug.warn( 'Canonical link tag not generated for archive.');
+      l_html := get_robots_noindex_meta;
+    end if;
+    -- return generated HTML
+    return l_html;
+
+  end get_archive_canonical_link;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_tag_canonical_link(
+    p_tag_id        in varchar2,
+    p_app_id        in varchar2 default null
+  ) return varchar2
+  as
+    l_html varchar2(32700);
+  begin
+    -- generate canonical link for tags
+    if p_tag_id is not null
+    then
+      l_html :=
+        apex_string.format(
+          p_message =>'<link rel="canonical" href="%s" />'
+          ,p0 =>
+            blog_url.get_tag(
+               p_tag_id       => p_tag_id
+              ,p_app_id       => p_app_id
+              ,p_session      => ''
+              ,p_canonical    => 'YES'
+            )
+        )
+      ;
+    else
+      apex_debug.warn( 'Canonical link tag not generated for tag.' );
+      l_html := get_robots_noindex_meta;
     end if;
 
-    -- fetch and return value from settings table
-    select attribute_value
-    into l_value
-    from blog_settings
-    where attribute_name = p_attribute_name
+    -- return generated HTML
+    return l_html;
+
+  end get_tag_canonical_link;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_rss_anchor(
+    p_app_name    in varchar2,
+    p_message     in varchar2
+  ) return varchar2
+  as
+    l_rss_url     varchar2(4000);
+    l_rss_title   varchar2(4000);
+    l_rss_anchor  varchar2(4000);
+  begin
+
+    -- get rss title
+    l_rss_title :=
+      apex_lang.message(
+        p_name => p_message
+        ,p0 => p_app_name
+      )
     ;
 
-    apex_debug.info(
-      p_message => 'Fetch attribute %s return: %s'
-      ,p0 => p_attribute_name
-      ,p1 => l_value
-    );
+    -- get rss url
+    l_rss_url :=  blog_url.get_rss;
 
-    -- return attribute value
-    return l_value;
+    -- generate RSS anchor
+    l_rss_anchor :=
+      apex_string.format(
+        p_message =>
+          '<a href="%s" aria-label="%s" rel="alternate" type="%s" class="%s">'
+          || '<span aria-hidden="true" class="%s"></span>'
+          || '</a>'
+        ,p0 => l_rss_url
+        ,p1 => apex_escape.html_attribute(l_rss_title)
+        ,p2 => 'application/rss+xml'
+        ,p3 => 't-Button t-Button--noLabel t-Button--icon t-Button--link'
+        ,p4 => 'fa fa-rss-square fa-3x fa-lg u-color-8-text'
+      )
+    ;
+    -- return generated HTML
+    return l_rss_anchor;
 
-  -- Handle error cases
-  exception
-  when no_data_found
-  then
-
-    apex_debug.warn(
-       p_message => 'No data found. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_attribute_name'
-      ,p2 => coalesce( p_attribute_name, '(null)' )
-    );
-    raise;
-
-  when others
-  then
-
-    apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_attribute_name'
-      ,p2 => coalesce( p_attribute_name, '(null)' )
-    );
-    raise;
-
-  end get_attribute_value;
+  end get_rss_anchor;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure initialize_items(
-    p_app_id in varchar2
-  )
+  function get_rss_link(
+    p_app_id        in varchar2,
+    p_app_name      in varchar2,
+    p_message       in varchar2,
+    p_build_option  in varchar2
+  ) return varchar2
   as
-    l_app_id number;
+    l_app_id    number;
+    l_rss_url   varchar2(4000);
+    l_rss_title varchar2(4000);
   begin
 
-    apex_debug.enter(
-      p_routine_name  => 'blog_util.initialize_items'
-      ,p_name01       => 'p_app_id'
-      ,p_value01      => p_app_id
-    );
-
-    -- raise no data found error if parameter p_app_id_name is null
-    if p_app_id is null then
-      raise no_data_found;
-    end if;
-
-    -- conver application id string to number
     l_app_id := to_number( p_app_id );
 
-    -- set items session state
-    -- fetch items and values that session state need to be set
-    for c1 in (
-      select
-        i.item_name,
-        i.item_value
-      from blog_v_init_items i
-      where i.application_id = l_app_id
-    ) loop
-
-      apex_debug.info(
-        p_message => 'Initialize application id: %s item: %s value: %s'
-        ,p0 => p_app_id
-        ,p1 => c1.item_name
-        ,p2 => c1.item_value
-      );
-
-      -- set item session state and no commit
-      apex_util.set_session_state(
-        p_name    => c1.item_name
-        ,p_value  => c1.item_value
-        ,p_commit => false
-      );
-
-    end loop;
-
-  -- handle errors
-  exception
-  when no_data_found
-  then
-
-    apex_debug.warn(
-       p_message => 'No data found. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_app_id'
-      ,p2 => coalesce( p_app_id, '(null)' )
-    );
-    raise;
-
-  when others
-  then
-
-    apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_app_id'
-      ,p2 => coalesce( p_app_id, '(null)' )
-    );
-    raise;
-
-  end initialize_items;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_post_title(
-    p_post_id     in varchar2,
-    p_escape      in boolean
-  ) return varchar2
-  as
-    l_post_title  varchar2(4000);
-    l_post_id     number;
-  begin
-
-    apex_debug.enter(
-      p_routine_name  => 'blog_util.get_post_title'
-      ,p_name01       => 'p_post_id'
-      ,p_value01      => p_post_id
-      ,p_name02       => 'p_escape'
-      ,p_value02      => apex_debug.tochar(p_escape)
-    );
-
-    -- raise no data found error if parameter p_post_id is null
-    if p_post_id is null then
-      raise no_data_found;
-    end if;
-
-    -- conver post id string to number
-    l_post_id := to_number( p_post_id );
-
-    -- fetch post title
-    select v1.post_title
-    into l_post_title
-    from blog_v_posts v1
-    where v1.post_id = l_post_id
-    ;
-
-    apex_debug.info(
-      p_message => 'Fetch post: %s return: %s'
-      ,p0 => p_post_id
-      ,p1 => l_post_title
-    );
-
-    -- espace html from post title if parameter p_escape is true
-    -- return post title
-    return case when p_escape
-      then apex_escape.html( l_post_title )
-      else l_post_title
-      end
-    ;
-
-  -- handle errors
-  exception when no_data_found
-  then
-
-    apex_debug.warn(
-       p_message => 'No data found. %s( %s => %s, %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_post_id'
-      ,p2 => coalesce( p_post_id, '(null)' )
-      ,p3 => 'p_escape'
-      ,p4 => apex_debug.tochar( p_escape )
-    );
-
-    -- show http error
-    raise_http_error( 404 );
-    raise;
-
-  when others
-  then
-
-    apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s, %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_post_id'
-      ,p2 => coalesce( p_post_id, '(null)' )
-      ,p3 => 'p_escape'
-      ,p4 => apex_debug.tochar( p_escape )
-    );
-
-    -- show http error
-    raise_http_error( 404 );
-    raise;
-
-  end get_post_title;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure get_post_pagination(
-    p_post_id         in varchar2,
-    p_post_title      out nocopy varchar2,
-    p_newer_id        out nocopy varchar2,
-    p_newer_title     out nocopy varchar2,
-    p_older_id        out nocopy varchar2,
-    p_older_title     out nocopy varchar2
-  )
-  as
-    l_post_id     number;
-    l_post_title  varchar2(512);
-    l_newer       blog_t_post;
-    l_older       blog_t_post;
-  begin
-
-    apex_debug.enter(
-      p_routine_name  => 'blog_util.pagination'
-      ,p_name01       => 'p_post_id'
-      ,p_value01      => p_post_id
-    );
-
-    -- raise no data found error if parameter p_post_id is null
-    if p_post_id is null then
-      raise no_data_found;
-    end if;
-
-    -- conver post id string to number
-    l_post_id := to_number( p_post_id );
-
-    -- fetch post title by post id
-    -- also fetch older and newer post id and title
-    select
-      v1.post_title
-      ,(
-        select blog_t_post( lkp1.post_id, lkp1.post_title )
-        from blog_v_posts lkp1
-        where 1 = 1
-          and lkp1.published_on > v1.published_on
-        order by lkp1.published_on asc
-        fetch first 1 rows only
-      ) as newer_post
-      ,(
-        select blog_t_post( lkp2.post_id, lkp2.post_title )
-        from blog_v_posts lkp2
-        where 1 = 1
-          and lkp2.published_on < v1.published_on
-        order by lkp2.published_on desc
-        fetch first 1 rows only
-      ) as older_post
-    into l_post_title, l_newer, l_older
-    from blog_v_posts v1
-    where 1 = 1
-      and post_id = l_post_id
-    ;
-
-    -- set procedure out parameters
-    p_post_title  := l_post_title;
-    p_newer_id    := int_to_vc2( l_newer.post_id );
-    p_newer_title := l_newer.post_title;
-    p_older_id    := int_to_vc2( l_older.post_id );
-    p_older_title := l_older.post_title;
-
-    apex_debug.info(
-      p_message => 'Fetch post: %s next_id: %s prev_id: %s'
-      ,p0 => p_post_id
-      ,p1 => p_newer_id
-      ,p2 => p_older_id
-    );
-
-  -- handle errors
-  exception
-  when no_data_found
-  then
-
-    apex_debug.warn(
-       p_message => 'No data found. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_post_id'
-      ,p2 => coalesce( p_post_id, '(null)' )
-    );
-
-    -- show http error
-    raise_http_error( 404 );
-    raise;
-
-  when others
-  then
-
-    apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s, %s => %s, %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_post_id'
-      ,p2 => coalesce( p_post_id, '(null)' )
-      ,p3 => 'p_newer_id'
-      ,p4 => p_newer_id
-      ,p5 => 'p_older_id'
-      ,p6 => p_older_id
-    );
-
-    -- show http error
-    raise_http_error( 404 );
-    raise;
-
-  end get_post_pagination;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_category_title(
-    p_category_id in varchar2,
-    p_escape      in boolean
-  ) return varchar2
-  as
-    l_category_id   number;
-    l_category_name varchar2(4000);
-  begin
-
-    apex_debug.enter(
-      p_routine_name  => 'blog_util.get_category_title'
-      ,p_name01       => 'p_category_id'
-      ,p_value01      => p_category_id
-      ,p_name02       => 'p_escape'
-      ,p_value02      => apex_debug.tochar(p_escape)
-    );
-
-    -- raise no data found error if parameter p_category_id is null
-    if p_category_id is null then
-      raise no_data_found;
-    end if;
-
-    -- conver category id string to number
-    l_category_id := to_number( p_category_id );
-
-    -- fetch category name
-    select v1.category_title
-    into l_category_name
-    from blog_v_categories v1
-    where v1.category_id = l_category_id
-    ;
-
-    apex_debug.info(
-      p_message => 'Fetch category: %s return: %s'
-      ,p0 => p_category_id
-      ,p1 => l_category_name
-    );
-
-    -- espace html from category name if parameter p_escape is true
-    -- return category name
-    return case when p_escape
-      then apex_escape.html( l_category_name )
-      else l_category_name
-      end
-    ;
-
-  -- handle errors
-  exception
-  when no_data_found then
-
-    apex_debug.warn(
-       p_message => 'No data found. %s( %s => %s, %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_category_id'
-      ,p2 => coalesce( p_category_id, '(null)' )
-      ,p3 => 'p_escape'
-      ,p4 => apex_debug.tochar( p_escape )
-    );
-
-    -- show http error
-    raise_http_error( 404 );
-    raise;
-
-  when others then
-    apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s, %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_category_id'
-      ,p2 => coalesce( p_category_id, '(null)' )
-      ,p3 => 'p_escape'
-      ,p4 => apex_debug.tochar( p_escape )
-    );
-
-    -- show http error
-    raise_http_error( 404 );
-    raise;
-
-  end get_category_title;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_tag(
-    p_tag_id in varchar2
-  ) return varchar2
-  as
-    l_tag_id    number;
-    l_tag_name  varchar2(4000);
-  begin
-
-    apex_debug.enter(
-      p_routine_name  => 'blog_util.get_tag'
-      ,p_name01       => 'p_tag_id'
-      ,p_value01      => p_tag_id
-    );
-
-    -- raise no data found error if parameter p_tag_id is null
-    if p_tag_id is null then
-      raise no_data_found;
-    end if;
-
-    -- conver tag id string to number
-    l_tag_id := to_number( p_tag_id );
-
-    -- fetch tag name
-    select t1.tag
-    into l_tag_name
-    from blog_v_tags t1
-    where 1 = 1
-    and t1.tag_id = l_tag_id
-    ;
-
-    apex_debug.info(
-      p_message => 'Fetch tag: %s return: %s'
-      ,p0 => p_tag_id
-      ,p1 => l_tag_name
-    );
-
-    -- espace html and return tag name
-    return apex_escape.html( l_tag_name );
-
-  -- handle errors
-  exception
-  when no_data_found
-  then
-
-    apex_debug.warn(
-       p_message => 'No data found. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_tag_id'
-      ,p2 => coalesce( p_tag_id, '(null)' )
-    );
-
-    -- show http error
-    raise_http_error( 404 );
-    raise;
-
-  when others
-  then
-
-    apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_tag_id'
-      ,p2 => coalesce( p_tag_id, '(null)' )
-    );
-
-    -- show http error
-    raise_http_error( 404 );
-    raise;
-
-  end get_tag;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure render_dynamic_content(
-    p_content_id    in varchar2,
-    p_date_format   in varchar2,
-    p_content_title out nocopy varchar2
-  )
-  as
-  begin
-
-    -- fetch content
-    for c1 in(
-      select v1.content_desc
-        ,v1.content_html
-        ,v1.changed_on
-        ,v1.show_changed_on
-      from blog_v_dynamic_content v1
-      where 1 = 1
-      and v1.content_id = p_content_id
-    ) loop
-
-      -- set content description to procedure out parameter
-      p_content_title := c1.content_desc;
-
-      -- output content HTML
-      sys.htp.p( c1.content_html );
-
-      -- output when content is changed if show_changed_on column value is 1
-      if c1.show_changed_on = 1
-      then
-        sys.htp.p(
-            apex_string.format(
-              p_message => '<p>%s</p>'
-              ,p0 =>
-                apex_lang.message(
-                  p_name => 'BLOG_MSG_LAST_UPDATED'
-                  ,p0 => to_char( c1.changed_on, p_date_format )
-                )
-            )
-          );
-      end if;
-
-    end loop;
-
-  end render_dynamic_content;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure download_file (
-    p_blob_content    in out nocopy blob,
-    p_mime_type       in varchar2,
-    p_header_names    in apex_t_varchar2,
-    p_header_values   in apex_t_varchar2,
-    p_charset         in varchar2 default null
-  )
-  as
-  begin
-
-    -- init HTTP buffer
-    sys.htp.init;
-
-    -- open HTTP header
-    sys.owa_util.mime_header(
-      ccontent_type   => coalesce ( p_mime_type, 'application/octet' )
-      ,bclose_header  => false
-      ,ccharset       => p_charset
-    );
-
-    apex_debug.info(
-      p_message => 'Set response headers'
-    );
-
-    -- set response headers
-    for i in 1 .. p_header_names.count
-    loop
-
-      apex_debug.info(
-         p_message => 'Header name: %s , header value: %s'
-        ,p0 => p_header_names(i)
-        ,p1 => p_header_values(i)
-      );
-      -- output HTTP header
-      sys.htp.p(
-        apex_string.format(
-           p_message => '%s: %s'
-          ,p0 => p_header_names(i)
-          ,p1 => p_header_values(i)
-        )
-      );
-
-    end loop;
-
-    -- close HTTP header
-    sys.owa_util.http_header_close;
-
-    -- output file
-    sys.wpg_docload.download_file ( p_blob_content );
-
-  end download_file;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure download_file (
-    p_file_name in varchar2
-  )
-  as
-    l_file_t        blog_v_files%rowtype;
-    l_header_names  apex_t_varchar2;
-    l_header_values apex_t_varchar2;
-  begin
-
-    -- fetch file
-    select *
-    into l_file_t
-    from blog_v_files t1
-    where 1 = 1
-    --and t1.is_download = 0
-    and t1.file_name = p_file_name
-    ;
-
-    apex_debug.info(
-      p_message => 'File name: %s, file size: %s, mime type: %s'
-      ,p0 => l_file_t.file_name
-      ,p1 => l_file_t.file_size
-      ,p2 => l_file_t.mime_type
-      ,p3 => l_file_t.file_charset
-    );
-
-    -- Add Last-Modified header
-    apex_string.push(
-        p_table => l_header_names
-       ,p_value => 'Last-Modified'
-    );
-    apex_string.push(
-       p_table => l_header_values
-      ,p_value =>
-        to_char(
-          sys_extract_utc( l_file_t.changed_on )
-          ,'Dy, DD Mon YYYY HH24:MI:SS "GMT"'
-          ,'NLS_DATE_LANGUAGE=ENGLISH'
-        )
-    );
-
-    -- Compare request If-Modified-Since header to Last-Modified
-    -- If values are equal then set status header and exit from procedure
-    if sys.owa_util.get_cgi_env('HTTP_IF_MODIFIED_SINCE') = l_header_values(1)
+    -- check build option should HTML generated
+    if apex_util.get_build_option_status(
+       p_application_id     => l_app_id
+      ,p_build_option_name  => p_build_option
+    ) = 'INCLUDE'
     then
-      sys.owa_util.status_line( 304 );
-      apex_debug.info(
-         p_message => 'File not sent. If-Modified-Since: %s'
-        ,p0 => l_header_values(1)
+      -- get rss url
+      l_rss_url := blog_url.get_rss;
+
+    -- generate link for RSS
+      l_rss_title := apex_lang.message(
+        p_name => p_message
+        ,p0 => p_app_name
       );
-      return;
+      -- generate HTML
+      l_rss_url :=
+        apex_string.format(
+          p_message => '<link href="%s" title="%s" rel="alternate" type="application/rss+xml" />'
+          ,p0 => l_rss_url
+          ,p1 =>
+            apex_escape.html_attribute(
+              p_string => l_rss_title
+            )
+        )
+      ;
+
     end if;
+    -- return generated HTML
+    return l_rss_url;
 
-    -- Add Cache-Control header
-    apex_string.push(
-        p_table => l_header_names
-       ,p_value => 'Cache-Control'
-    );
-    apex_string.push(
-       p_table => l_header_values
-      ,p_value =>
-        apex_string.format(
-           p_message => 'max-age=%s'
-          ,p0 =>
-            case l_file_t.is_download
-              when 1
-              then get_attribute_value( 'G_MAX_AGE_DOWNLOAD' )
-              else get_attribute_value( 'G_MAX_AGE_FILE' )
-            end
-        )
-    );
-
-    -- add Content-Disposition header
-    apex_string.push(
-      p_table => l_header_names
-     ,p_value => 'Content-Disposition'
-    );
-    apex_string.push(
-      p_table => l_header_values
-     ,p_value =>
-        apex_string.format(
-           p_message => '%s; filename="%s"'
-          ,p0 =>
-            case l_file_t.is_download
-              when 1
-              then 'attachment'
-              else 'inline'
-            end
-          ,p1 => l_file_t.file_name
-        )
-    );
-
-    -- download file
-    download_file(
-      p_blob_content    => l_file_t.blob_content
-      ,p_mime_type      => l_file_t.mime_type
-      ,p_header_names   => l_header_names
-      ,p_header_values  => l_header_values
-    );
-
-  -- handle errors
-  exception
-  when no_data_found
-  then
-
-    raise_http_error( 404 );
-    raise;
-
-  end download_file;
+  end get_rss_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure redirect_search(
-    p_value         in varchar2,
-    p_app_id        in varchar2 default null,
-    p_session       in varchar2 default null
-  )
-  as
-  begin
-    -- Get search page URL and redirect
-    apex_util.redirect_url (
-      apex_page.get_url(
-         p_application => p_app_id
-        ,p_page        => 'SEARCH'
-        ,p_session     => p_session
---          ,p_clear_cache => 'RP'
-        ,p_items       => 'P0_SEARCH'
-        ,p_values      => p_value
-        ,p_plain_url   => true
-      )
-    );
-  end redirect_search;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-end "BLOG_UTIL";
+end "BLOG_HTML";
 /
 create or replace package "BLOG_XML"
 authid definer
@@ -4872,7 +4990,7 @@ as
 --                            New procedures:
 --                              sitemap_categories
 --                              sitemap_archives
---                              sitemap_atags
+--                              sitemap_tags
 --    Jari Laine 30.10.2021 - Changed procedure sitemap_main to use view apex_application_pages
 --    Jari Laine 13.11.2021 - Changed procedure rss
 --    Jari Laine 30.12.2021 - Changed procedure rss_xsl. CSS file name moved to application settings
@@ -4880,6 +4998,11 @@ as
 --    Jari Laine 13.03.2022 - Added parameter p_process_nae to procedure sitemap_index
 --                            Removed build option check from query producing XML in procedure sitemap_index
 --    Jari Laine 19.04.2022 - Changes relating procedure blog_util.download_file
+--    Jari Laine 26.04.2022 - Added element lastmod to XML to functions:
+--                              sitemap_categories
+--                              sitemap_archives
+--                              sitemap_tags
+--    Jari Laine 28.04.2020 - Changed rss_xsl
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -5095,6 +5218,7 @@ as
 
     l_host_url := apex_util.host_url( 'APEX_PATH' );
     l_host_url := substr( l_host_url, instr( l_host_url, '/', 1, 3 ) );
+    l_host_url := l_host_url || p_ws_images || p_css_file;
 
     l_xml :=
       sys.xmltype.createxml(
@@ -5112,15 +5236,15 @@ as
                   <title>
                     <xsl:value-of select="title" />
                   </title>
-                  <link rel="stylesheet" type="text/css" href="%s%s%s" />
+                  <link rel="stylesheet" type="text/css" href="%s" />
                 </head>
                 <body>
                   <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>
-                  <p class="z-rss--description"><xsl:value-of select="description" /></p>
+                  <h2 class="z-rss--description"><xsl:value-of select="description" /></h2>
                   <xsl:for-each select="./item">
                     <article class="z-rss--post">
                       <header>
-                        <h2 class="z-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h2>
+                        <h3 class="z-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h3>
                       </header>
                       <p class="z-post--body"><xsl:value-of select="description" /></p>
                     </article>
@@ -5130,8 +5254,6 @@ as
               </xsl:template>
             </xsl:stylesheet>'
           ,p0 => l_host_url
-          ,p1 => p_ws_images
-          ,p2 => p_css_file
         )
       )
     ;
@@ -5302,7 +5424,14 @@ as
                   ,p_canonical  => 'YES'
                 )
               )
-              ,XMLElement( "lastmod", to_char( sys_extract_utc( greatest( posts.published_on, posts.changed_on ) ), 'YYYY-MM-DD"T"HH24:MI:SS"+00:00""' ) )
+              ,xmlelement( "lastmod",
+                to_char(
+                  sys_extract_utc(
+                    greatest( posts.published_on, posts.changed_on )
+                  )
+                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
+                )
+              )
             ) order by posts.published_on desc
           )
         )
@@ -5348,6 +5477,12 @@ as
                 blog_url.get_category(
                    p_category_id  => cat.category_id
                   ,p_canonical    => 'YES'
+                )
+              )
+              ,xmlelement( "lastmod",
+                to_char(
+                  sys_extract_utc( cat.changed_on )
+                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
                 )
               )
             ) order by cat.display_seq desc
@@ -5397,6 +5532,12 @@ as
                   ,p_canonical  => 'YES'
                 )
               )
+              ,xmlelement( "lastmod",
+                to_char(
+                  sys_extract_utc( arc.changed_on )
+                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
+                )
+              )
             ) order by arc.archive_year desc
           )
         )
@@ -5438,12 +5579,19 @@ as
         (
           xmlagg(
             xmlelement( "url"
-              ,xmlelement( "loc", blog_url.get_tag(
-                                     p_tag_id     => tags.tag_id
-                                    ,p_canonical  => 'YES'
-                                  )
+              ,xmlelement( "loc",
+                blog_url.get_tag(
+                   p_tag_id     => tags.tag_id
+                  ,p_canonical  => 'YES'
+                )
               )
-            )
+              ,xmlelement( "lastmod",
+                to_char(
+                  sys_extract_utc( tags.changed_on )
+                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
+                )
+              )
+            ) order by tags.changed_on
           )
         )
       )

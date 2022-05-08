@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -29,7 +29,7 @@ wwv_flow_api.create_page(
 'Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back to t'
 ||'he default settings.</p>'))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211024104347'
+,p_last_upd_yyyymmddhh24miss=>'20220507110352'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43843535329616316)
@@ -40,34 +40,29 @@ wwv_flow_api.create_page_plug(
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select ',
-'  step_id         as page',
-'  ,(',
-'    select page_name',
-'    from apex_application_pages p',
-'    where 1 = 1',
-'    and p.page_id = l.step_id',
-'    and p.application_id = :G_PUB_APP_ID',
-'  )               as page_name',
-'  ,userid_lc      as user_id',
-'  ,time_stamp     as timestamp',
-'  ,elap           as elapsed',
-'  ,decode(',
-'    page_mode',
-'    ,''P'',''Partial''',
-'    ,''D'',''Full''',
-'    ,page_mode',
-'  )               as page_mode',
-'  ,component_name as component_name',
-'  ,num_rows       as num_rows',
-'  ,ir_search      as ir_search',
-'  ,sqlerrm        as error',
-'from apex_activity_log l',
+'  l.page_id                   as page',
+'  ,case l.page_id',
+'    when 1003',
+'    then replace( lower( l.request_value ), ''application_process='' ) ',
+'    else l.page_name',
+'  end                         as page_name',
+'--  ,lower( l.apex_user )       as user_id',
+'  ,cast(',
+'    l.view_timestamp as timestamp with local time zone',
+'  )                           as timestamp',
+'  ,l.elapsed_time             as elapsed',
+'  ,l.page_view_mode           as page_mode',
+'  ,l.error_on_component_name  as component_name',
+'  ,l.rows_queried             as num_rows',
+'--  ,l.ir_search                as ir_search',
+'  ,l.error_message            as error',
+'from apex_workspace_activity_log l',
 'where 1 = 1',
-'  and flow_id = :G_PUB_APP_ID',
-'  and time_stamp >= sysdate - ( 1/24/60/60 * :P30024_TIMEFRAME )',
-'  and userid is not null',
-'  and step_id is not null',
-'order by time_stamp desc'))
+'  and l.application_id = :G_PUB_APP_ID',
+'  and l.view_timestamp >= sysdate - ( 1/24/60/60 * :P30024_TIMEFRAME )',
+'  and l.apex_user is not null',
+'  and l.page_id is not null',
+''))
 ,p_plug_source_type=>'NATIVE_IR'
 ,p_ajax_items_to_submit=>'P30024_TIMEFRAME'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -111,15 +106,6 @@ wwv_flow_api.create_worksheet_column(
 ,p_heading_alignment=>'LEFT'
 );
 wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(43844853532616929)
-,p_db_column_name=>'USER_ID'
-,p_display_order=>30
-,p_column_identifier=>'B'
-,p_column_label=>'User'
-,p_column_type=>'STRING'
-,p_heading_alignment=>'LEFT'
-);
-wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(43845262629616929)
 ,p_db_column_name=>'TIMESTAMP'
 ,p_display_order=>40
@@ -127,8 +113,8 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_label=>'Timestamp'
 ,p_column_type=>'DATE'
 ,p_heading_alignment=>'LEFT'
-,p_format_mask=>'since'
-,p_tz_dependent=>'N'
+,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
+,p_tz_dependent=>'Y'
 );
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(43845674406616930)
@@ -174,17 +160,6 @@ wwv_flow_api.create_worksheet_column(
 ,p_tz_dependent=>'N'
 );
 wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(43847677284616932)
-,p_db_column_name=>'IR_SEARCH'
-,p_display_order=>90
-,p_column_identifier=>'I'
-,p_column_label=>'IR Search'
-,p_column_type=>'STRING'
-,p_heading_alignment=>'LEFT'
-,p_format_mask=>'999G999G999G999G999G990'
-,p_tz_dependent=>'N'
-);
-wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(43848056750616932)
 ,p_db_column_name=>'ERROR'
 ,p_display_order=>100
@@ -201,7 +176,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_report_alias=>'438488'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'PAGE_NAME:TIMESTAMP:ELAPSED:PAGE_MODE:'
+,p_report_columns=>'PAGE_NAME:TIMESTAMP:ELAPSED:PAGE_MODE:NUM_ROWS:'
 ,p_sort_column_1=>'TIMESTAMP'
 ,p_sort_direction_1=>'DESC'
 );
@@ -225,8 +200,8 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(43843535329616316)
 ,p_button_name=>'RESET_REPORT'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--simple:t-Button--iconLeft'
-,p_button_template_id=>wwv_flow_api.id(8549262062518244)
+,p_button_template_options=>'#DEFAULT#'
+,p_button_template_id=>wwv_flow_api.id(8549081018518243)
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:&APP_PAGE_ID.,RR::'
@@ -253,6 +228,7 @@ wwv_flow_api.create_page_item(
 ,p_field_template=>wwv_flow_api.id(8548464988518243)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_lov_display_extra=>'NO'
+,p_restricted_characters=>'US_ONLY'
 ,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'NONE'
 ,p_attribute_02=>'N'

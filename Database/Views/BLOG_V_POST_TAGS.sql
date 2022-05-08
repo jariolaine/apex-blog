@@ -10,6 +10,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POST_TAGS" ("POST_ID", "TAG_ID", "DISPLAY_S
 from blog_tags t1
 join blog_post_tags t2 on t1.id = t2.tag_id
 where 1 = 1
-and t1.is_active * t2.is_active > 0
+  and t1.is_active = 1
+  and t2.is_active = 1
 with read only
 /

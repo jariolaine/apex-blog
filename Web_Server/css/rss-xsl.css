@@ -34,8 +34,8 @@ a {
   margin-bottom: 32px;
 }
 .z-rss--postHeader {
-  font-size: 1.6rem;
-  font-weight: 500;
+  font-weight: normal;
+  margin-bottom: 0;
 }
 .z-rss--postDesc {
   margin: 0;

@@ -20,9 +20,9 @@ as
 --                            function is called now from APEX application conputation
 --    Jari Laine 19.05.2020 - Removed obsolete function get_post_title
 --    Jari Laine 24.05.2020 - Added procedures:
---                            run_settings_post_expression
---                            run_feature_post_expression
---                            update_feature
+--                              run_settings_post_expression
+--                              run_feature_post_expression
+--                              update_feature
 --    Jari Laine 22.06.2020 - Bug fix to function is_integer
 --                            Added parameters p_min and p_max to function is_integer
 --    Jari Laine 30.09.2020 - Added procedure google_post_authentication
@@ -42,6 +42,15 @@ as
 --    Jari Laine 27.03.2022 - Fixed bug on function get_first_paragraph when search nested elements
 --                            Removed obsolete procedures remove_unused_tags, purge_post_preview, purge_post_preview_job and save_post_preview
 --    Jari Laine 13.04.2022 - Bug fix to functions is_integer, is_url and is_date_format error message handling
+--    Jari Laine 01.05.2022 - Simple logic to function request_to_post_status
+--    Jari Laine 07.05.2022 - Added procedure remove_unused_tags and remove_unused_categories
+--                            Chenged private procedure add_tag to public
+--                            Removed obsolete functions get_post_tags and get_category_title
+--                            New procedures:
+--                              resequence_link_groups
+--                              resequence_links
+--                              categories_links
+--                              tags_links
 --
 --  TO DO:
 --    #1  check constraint name that raised dup_val_on_index error
@@ -77,19 +86,6 @@ as
 --  admin app page 18
   function get_link_seq(
     p_link_group_id   in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  admin app page 12
-  function get_post_tags(
-    p_post_id         in varchar2,
-    p_sep             in varchar2 default ','
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  admin app page 12
-  function get_category_title(
-    p_category_id     in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
@@ -132,11 +128,36 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
+--  admin app page 14
+  procedure remove_unused_categories;
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 14
+  procedure resequence_categories;
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 24 and inside this package
+  procedure add_tag(
+    p_tag             in varchar2,
+    p_tag_id          out nocopy number
+  );
+--------------------------------------------------------------------------------
+-- Called from:
 --  admin app page 12
   procedure add_post_tags(
     p_post_id         in varchar2,
     p_tags            in varchar2,
     p_sep             in varchar2 default ','
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 19
+  procedure remove_unused_tags;
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 24
+  procedure resequence_tags(
+    p_post_id         in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -177,6 +198,16 @@ as
     p_build_status    in varchar2
   );
 --------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 17
+  procedure resequence_link_groups;
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 17
+  procedure resequence_links(
+    p_link_group_id in varchar2
+  );
+--------------------------------------------------------------------------------
 end "BLOG_CM";
 /
 
@@ -201,40 +232,6 @@ as
   begin
     return ceil( coalesce( p_max + 1, 1 ) / 10 ) * 10;
   end next_seq;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure add_tag(
-    p_tag     in varchar2,
-    p_tag_id  out nocopy number
-  )
-  as
-    l_value varchar2(256);
-  begin
-
-    p_tag_id  := null;
-    l_value := remove_whitespace( p_tag );
-
-    -- if tag is not null then fetch id
-    if l_value is not null then
-
-      begin
-        select id
-        into p_tag_id
-        from blog_v_all_tags
-        where 1 = 1
-        and tag_unique = upper( l_value )
-        ;
-      -- if tag not exists insert and return id
-      exception when no_data_found then
-        insert into blog_tags( is_active, tag )
-        values ( 1, l_value )
-        returning id into p_tag_id
-        ;
-      end;
-
-    end if;
-
-  end add_tag;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure add_tag_to_post(
@@ -501,90 +498,18 @@ as
   as
   begin
 
-    -- one reason for this function is that APEX 19.2 has bug in switch.
-    -- switch not allow return value zero (0)
-
     -- conver APEX request to post status (blog_posts.is_active)
     return case p_request
-      when 'CREATE_DRAFT'
-      then '0'
       when 'CREATE'
       then '1'
-      when 'SAVE_DRAFT'
-      then '0'
-      when 'SAVE_AND_PUBLISH'
-      then '1'
-      when 'REVERT_DRAFT'
-      then '0'
       when 'SAVE'
+      then '1'
+      when 'SAVE_AND_PUBLISH'
       then '1'
       else '0'
     end;
 
   end request_to_post_status;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_post_tags(
-    p_post_id in varchar2,
-    p_sep     in varchar2 default ','
-  ) return varchar2
-  as
-    l_post_id number;
-    l_tags    varchar2(32700);
-  begin
-
-    -- conver post id string to number
-    l_post_id := to_number( p_post_id );
-
-    -- fetch comma separated list of post tags
-    select listagg( v1.tag, p_sep) within group( order by v1.display_seq ) as tags
-    into l_tags
-    from blog_v_all_post_tags v1
-    where 1 = 1
-    and v1.post_id = l_post_id
-    ;
-    -- return post tags
-    return l_tags;
-
-  -- return null if post don't have tags
-  exception
-  when no_data_found then
-    return null;
-  end get_post_tags;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_category_title(
-    p_category_id in varchar2
-  ) return varchar2
-  as
-    l_category_id number;
-    l_title       varchar2(4000);
-  begin
-
-    -- raise no data found if category id is null
-    if p_category_id is null
-    then
-      raise no_data_found;
-    end if;
-
-    -- conver category id string to number
-    l_category_id := to_number( p_category_id );
-
-    -- fetch category name
-    select t1.title
-    into l_title
-    from blog_v_all_categories t1
-    where t1.id = l_category_id
-    ;
-    -- return category name
-    return l_title;
-
-  -- return null category not found
-  exception
-  when no_data_found
-  then
-    return null;
-  end get_category_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_first_paragraph(
@@ -815,6 +740,76 @@ as
   end add_category;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  procedure remove_unused_categories
+  as
+  begin
+    -- cleanup categories that aren't linked to any post
+    delete from blog_categories t1
+    where 1 = 1
+    and not exists(
+      select 1
+      from blog_posts x1
+      where 1 = 1
+      and x1.category_id = t1.id
+    );
+
+  end remove_unused_categories;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure resequence_categories
+  as
+  begin
+
+    merge into blog_categories t1
+    using (
+      select id
+        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+      from blog_categories
+      where 1 = 1
+    ) v1
+    on ( t1.id = v1.id )
+    when matched then
+      update set t1.display_seq = v1.rn
+        where t1.display_seq != v1.rn
+    ;
+
+  end resequence_categories;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure add_tag(
+    p_tag     in varchar2,
+    p_tag_id  out nocopy number
+  )
+  as
+    l_value varchar2(256);
+  begin
+
+    p_tag_id  := null;
+    l_value   := remove_whitespace( p_tag );
+
+    -- if tag is not null then fetch id
+    if l_value is not null then
+
+      begin
+        select id
+        into p_tag_id
+        from blog_v_all_tags
+        where 1 = 1
+        and tag_unique = upper( l_value )
+        ;
+      -- if tag not exists insert and return id
+      exception when no_data_found then
+        insert into blog_tags( is_active, tag )
+        values ( 1, l_value )
+        returning id into p_tag_id
+        ;
+      end;
+
+    end if;
+
+  end add_tag;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure add_post_tags(
     p_post_id in varchar2,
     p_tags    in varchar2,
@@ -839,17 +834,14 @@ as
     for i in 1 .. l_tag_tab.count
     loop
 
-      -- reset variable holding tag id
-      l_tag_id := null;
-
       -- add tag to repository and return id
       add_tag(
          p_tag    => l_tag_tab(i)
         ,p_tag_id => l_tag_id
       );
 
-      -- if tag was added to repository
-      -- create relationships between tag and post
+      -- if the tag has been added or is already in the repository
+      -- create relationships to post
       if l_tag_id is not null
       then
 
@@ -879,6 +871,47 @@ as
     );
 
   end add_post_tags;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure remove_unused_tags
+  as
+  begin
+    -- cleanup tags that aren't linked to any post
+    delete from blog_tags t1
+    where 1 = 1
+    and not exists(
+      select 1
+      from blog_post_tags x1
+      where 1 = 1
+      and x1.tag_id = t1.id
+    );
+  end remove_unused_tags;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure resequence_tags(
+    p_post_id in varchar2
+  )
+  as
+    l_post_id number;
+  begin
+
+    l_post_id := to_number( p_post_id );
+
+    merge into blog_post_tags t1
+    using (
+      select id
+        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+      from blog_post_tags
+      where 1 = 1
+      and post_id = l_post_id
+    ) v1
+    on ( t1.id = v1.id )
+    when matched then
+      update set t1.display_seq = v1.rn
+        where t1.display_seq != v1.rn
+    ;
+
+  end resequence_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function is_integer(
@@ -1039,6 +1072,52 @@ as
     );
 
   end update_feature;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure resequence_link_groups
+  as
+  begin
+
+    merge into blog_link_groups t1
+    using (
+      select id
+        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+      from blog_link_groups
+      where 1 = 1
+    ) v1
+    on ( t1.id = v1.id )
+    when matched then
+      update set t1.display_seq = v1.rn
+        where t1.display_seq != v1.rn
+    ;
+
+  end resequence_link_groups;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure resequence_links(
+    p_link_group_id in varchar2
+  )
+  as
+    l_link_group_id number;
+  begin
+
+    l_link_group_id := to_number( p_link_group_id );
+
+    merge into blog_links t1
+    using (
+      select id
+        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+      from blog_links
+      where 1 = 1
+      and link_group_id = l_link_group_id
+    ) v1
+    on ( t1.id = v1.id )
+    when matched then
+      update set t1.display_seq = v1.rn
+        where t1.display_seq != v1.rn
+    ;
+
+  end resequence_links;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_CM";

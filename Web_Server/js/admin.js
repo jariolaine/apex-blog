@@ -20,13 +20,13 @@ var blog = blog || {};
   **/
   blog.admin = {
     /**
-    * @module blog.admin.categoriesIG
+    * @module blog.admin.dialogIG
     **/
-    categoriesIG : {
+    dialogIG : {
       /**
       * @function initRegion
-      * @summary categories IG region initialization code
-      * @desc put blog.admin.categoriesIG.initRegion in region Advanced: JavaScript Initialization Code
+      * @summary Dialog IG region initialization code
+      * @desc put blog.admin.dialogIG.initRegion in region Advanced: JavaScript Initialization Code
       * @version 1.0
       **/
       initRegion: function(options) {
@@ -36,32 +36,17 @@ var blog = blog || {};
         toolbarData.toolbarRemove("save");
         toolbarData.toolbarRemove("selection-add-row");
 
-        options = $.extend({
-          toolbarData: toolbarData,
-          defaultModelOptions: {
-            sequenceField: blog.admin.categoriesIG.options.sequenceField,
-            sequenceStep: blog.admin.categoriesIG.options.sequenceStep
-          },
-          defaultGridViewOptions: {
-            reorderColumns: false
-          }
-        }, options);
-
-        return options;
-      },
-      /**
-      * @function initHandleColumn
-      * @summary categories IG handle column Initialization code
-      * @desc put blog.admin.categoriesIG.initHandleColumn in column Advanced: JavaScript Initialization Code
-      * @version 1.0
-      **/
-      initHandleColumn: function(options) {
+        if( blog.admin.dialogIG.options.sequenceField != "undefined" ){
+          options = $.extend({
+            defaultModelOptions: {
+              sequenceField: blog.admin.dialogIG.options.sequenceField,
+              sequenceStep: blog.admin.dialogIG.options.sequenceStep
+            }
+          }, options);
+        }
 
         options = $.extend({
-          defaultGridColumnOptions: {
-            virtual: true,
-            noHeaderActivate: true
-          }
+          toolbarData: toolbarData
         }, options);
 
         return options;
@@ -69,8 +54,8 @@ var blog = blog || {};
       },
       /**
       * @function initLinkColumn
-      * @summary categories IG link column Initialization code
-      * @desc put blog.admin.categoriesIG.initLinkColumn in column Advanced: JavaScript Initialization Code
+      * @summary Dialog IG link column Initialization code
+      * @desc put blog.admin.dialogIG.initLinkColumn in column Advanced: JavaScript Initialization Code
       * @version 1.0
       **/
       initLinkColumn: function(options) {
@@ -86,142 +71,23 @@ var blog = blog || {};
       },
       /**
       * @function initOnPageLoad
-      * @summary categories page initialization code
-      * @desc put blog.admin.categoriesIG.initOnPageLoad in page JavaScript: Function and Global Variable Declaration
-      * @version 1.0
-      **/
-      initOnPageLoad: function(options){
-
-        blog.admin.categoriesIG.options = $.extend({
-          sequenceField: options.sequenceField
-          ,sequenceStep: "10"
-        }, blog.admin.categoriesIG.options);
-
-        $(function(){
-
-          var IG$ = $($x(options.regionID));
-
-          apex.actions.add([
-            {
-              name: options.btnSave
-              ,action: function() {
-                region(options.regionID).call("getActions").invoke("save");
-              }
-            }
-            ,{
-              name: options.btnAddRow
-              ,action: function() {
-                region(options.regionID).call("getActions").invoke("selection-add-row");
-              }
-            }
-          ]);
-
-          IG$.on("interactivegridviewchange interactivegridreportsettingschange", function(event, ui) {
-
-            var view = region(this.id).call("getViews","grid");
-
-            view.view$.find(".a-GV-w-scroll").sortable({
-              cursor: "move"
-              ,handle: ".z-sortable-handle"
-              ,contaiment: "parent"
-              ,tolerance: "pointer"
-              ,scroll: false
-              ,items: "tbody>tr"
-              ,axis: "y"
-              ,opacity: 0.6
-              ,placeholder: "a-GV-cell"
-              ,helper: function(event, ui){
-                ui.children().each(function(){
-                  $(this).width($(this).width()).addClass("u-color-1")
-                })
-                return ui;
-              }
-              ,stop: function(event, ui){
-                var model = view.model
-                    ,item$ = $(ui.item)
-                    // get moved record
-                    ,item = (item$.length) ? model.getRecord(item$.data("id")) : null
-                    // get next or previous row from visible table
-                    // depending is record moved up or down
-                    ,after$ = (ui.originalPosition.top > ui.position.top) ? item$.next("") : item$.prev("")
-                    ,after = (after$.length) ? model.getRecord(after$.data("id")) : null
-                ;
-                // remove helper class, if row isn't actually moved
-                item$.children().removeClass("u-color-1");
-                // if record and place where record moved is found
-                if(item && after){
-                  if(ui.originalPosition.top > ui.position.top){
-                    // if record is moved upwards, we need get previous record from model
-                    // because if IG is paginated row should not moved at index 0
-                    after = model.recordAt(model.indexOf(after) - 1);
-                  }
-                  // move record
-                  if(item !== after){
-                    // cancel sortable, and let IG moveRecords method handle actual move
-                    $(this).sortable("cancel");
-                    model.moveRecords([item], null, after);
-                  }
-                }
-              }
-            });//.disableSelection();
-          });
-        });
-
-      }
-    },
-    /**
-    * @module blog.admin.tagsIG
-    **/
-    tagsIG : {
-      /**
-      * @function initRegion
-      * @summary tags IG region initialization code
-      * @desc put blog.admin.tagsIG.initRegion in region Advanced: JavaScript Initialization Code
-      * @version 1.0
-      **/
-      initRegion: function(options) {
-
-        var toolbarData = $.apex.interactiveGrid.copyDefaultToolbar();
-
-        toolbarData.toolbarRemove("save");
-        toolbarData.toolbarRemove("selection-add-row");
-
-        options = $.extend({
-          toolbarData: toolbarData,
-          defaultGridViewOptions: {
-            reorderColumns: false
-          }
-        }, options);
-
-        return options;
-
-      },
-      /**
-      * @function initLinkColumn
-      * @summary tags IG link column initialization code
-      * @desc put blog.admin.tagsIG.initLinkColumn in column Advanced: JavaScript Initialization Code
-      * @version 1.0
-      **/
-      initLinkColumn: function(options) {
-
-        options = $.extend({
-          defaultGridColumnOptions: {
-            noHeaderActivate: true
-          }
-        }, options);
-
-        return options;
-
-      },
-      /**
-      * @function initOnPageLoad
-      * @summary tags IG page initialization code
-      * @desc put blog.admin.tagsIG.initOnPageLoad in page JavaScript: Function and Global Variable Declaration
+      * @summary Dialog IG initialization code
+      * @desc put blog.admin.dialogIG.initOnPageLoad in page JavaScript: Function and Global Variable Declaration
       * @version 1.0
       **/
       initOnPageLoad: function(options){
 
         $(function(){
+
+          options = $.extend({
+            btnSave: "ig-save"
+            ,btnAddRow: "ig-selection-add-row"
+          }, options);
+
+          blog.admin.dialogIG.options = $.extend({
+            sequenceField: options.sequenceField
+            ,sequenceStep: 10
+          }, blog.admin.dialogIG.options);
 
           apex.actions.add([
             {
@@ -239,6 +105,7 @@ var blog = blog || {};
           ]);
 
         });
+
       }
     },
     /**
