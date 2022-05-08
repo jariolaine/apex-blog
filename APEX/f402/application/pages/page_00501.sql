@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -19,12 +19,11 @@ wwv_flow_api.create_page(
 ,p_step_title=>'My Profile'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8928435152589675)
-,p_javascript_code=>'var htmldb_delete_message=''"DELETE_CONFIRM_MSG"'';'
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_dialog_chained=>'N'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220412214103'
+,p_last_upd_yyyymmddhh24miss=>'20220507034300'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8857181938695778)
@@ -304,6 +303,7 @@ wwv_flow_api.create_page_item(
 ,p_field_template=>wwv_flow_api.id(8548656595518243)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_lov_display_extra=>'NO'
+,p_protection_level=>'S'
 ,p_help_text=>'Activity reports default timeframe.'
 ,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'NONE'
@@ -333,8 +333,8 @@ wwv_flow_api.create_page_item(
 ,p_show_quick_picks=>'Y'
 ,p_quick_pick_label_01=>'SINCE'
 ,p_quick_pick_value_01=>'SINCE'
-,p_quick_pick_label_02=>'DD.MM.YYYY HH24:MI'
-,p_quick_pick_value_02=>'DD.MM.YYYY HH24:MI'
+,p_quick_pick_label_02=>'DD.MM.YYYY HH24:MI:SS'
+,p_quick_pick_value_02=>'DD.MM.YYYY HH24:MI:SS'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(45751319514491572)

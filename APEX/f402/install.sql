@@ -3,8 +3,8 @@ prompt --install
 @@application/delete_application.sql
 @@application/create_application.sql
 @@application/shared_components/credentials/google_oauth2.sql
-@@application/shared_components/navigation/lists/desktop_navigation_menu.sql
-@@application/shared_components/navigation/lists/desktop_navigation_bar.sql
+@@application/shared_components/navigation/lists/navigation_menu.sql
+@@application/shared_components/navigation/lists/navigation_bar.sql
 @@application/shared_components/navigation/lists/configuration.sql
 @@application/shared_components/navigation/lists/public_application_links.sql
 @@application/shared_components/navigation/lists/activity_reports.sql
@@ -45,10 +45,11 @@ prompt --install
 @@application/shared_components/user_interface/lovs/is_active.sql
 @@application/shared_components/user_interface/lovs/link_status.sql
 @@application/shared_components/user_interface/lovs/login_remember_username.sql
-@@application/shared_components/user_interface/lovs/post_hidden_tags.sql
 @@application/shared_components/user_interface/lovs/post_status.sql
 @@application/shared_components/user_interface/lovs/post_tags.sql
-@@application/shared_components/user_interface/lovs/post_visible_tags.sql
+@@application/shared_components/user_interface/lovs/post_tags_hidden.sql
+@@application/shared_components/user_interface/lovs/post_tags_visible.sql
+@@application/shared_components/user_interface/lovs/tags.sql
 @@application/shared_components/user_interface/lovs/timeframe_4_weeks.sql
 @@application/shared_components/user_interface/lovs/yes_no.sql
 @@application/pages/page_groups.sql
@@ -150,6 +151,7 @@ prompt --install
 @@application/pages/page_00021.sql
 @@application/pages/page_00022.sql
 @@application/pages/page_00023.sql
+@@application/pages/page_00024.sql
 @@application/pages/page_00025.sql
 @@application/pages/page_00026.sql
 @@application/pages/page_00030.sql
@@ -169,6 +171,7 @@ prompt --install
 @@application/pages/page_30022.sql
 @@application/pages/page_30023.sql
 @@application/pages/page_30024.sql
+@@application/pages/page_30025.sql
 @@application/deployment/definition.sql
 @@application/deployment/install/upgrade_create_view_blog_v_version.sql
 @@application/deployment/install/install_database_objects.sql

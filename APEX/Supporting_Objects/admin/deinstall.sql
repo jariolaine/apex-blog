@@ -72,13 +72,6 @@ drop view blog_v_post_tags;
 drop view blog_v_tags;
 drop view blog_v_version;
 --------------------------------------------------------
---  Drop text index section groups
---------------------------------------------------------
-begin
-  ctx_ddl.drop_section_group( 'BLOG_POST_UDS_SG' );
-end;
-/
---------------------------------------------------------
 --  Drop text index preferences
 --------------------------------------------------------
 begin

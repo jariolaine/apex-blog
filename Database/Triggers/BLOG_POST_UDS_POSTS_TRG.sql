@@ -6,8 +6,6 @@ after
 insert or
 update on blog_posts
 for each row
-declare
-  l_update boolean;
 begin
 
   if inserting

@@ -24,47 +24,6 @@ begin
     ,attribute_value  => 'CLOB'
   );
 
-  ctx_ddl.create_section_group(
-    group_name        => 'BLOG_POST_UDS_SG'
-    ,group_type       => 'XML_SECTION_GROUP'
-  );
-
-  ctx_ddl.add_field_section(
-    group_name        => 'BLOG_POST_UDS_SG'
-    ,section_name     => 'TITLE'
-    ,tag              => 'POST_TITLE'
-    ,visible          => true
-  );
-
-  ctx_ddl.add_field_section(
-    group_name        => 'BLOG_POST_UDS_SG'
-    ,section_name     => 'CATEGORY'
-    ,tag              => 'POST_CATEGORY'
-    ,visible          => true
-  );
-
-  ctx_ddl.add_field_section(
-    group_name        => 'BLOG_POST_UDS_SG'
-    ,section_name     => 'DESCRIPTION'
-    ,tag              => 'POST_DESCRIPTION'
-    ,visible          => true
-  );
-
-  ctx_ddl.add_field_section(
-    group_name        => 'BLOG_POST_UDS_SG'
-    ,section_name     => 'BODY'
-    ,tag              => 'POST_BODY'
-    ,visible          => true
-  );
-
-  ctx_ddl.add_field_section(
-     group_name       => 'BLOG_POST_UDS_SG'
-    ,section_name     => 'TAGS'
-    ,tag              => 'POST_TAGS'
-    ,visible          => true
-  );
-
-
   ctx_ddl.create_preference(
     preference_name   => 'BLOG_POST_UDS_LX'
     ,object_name      => 'BASIC_LEXER'
@@ -90,15 +49,15 @@ begin
 
 end;
 /
-
 --------------------------------------------------------
 --  Create text index
 --------------------------------------------------------
 create index blog_post_uds_ctx on blog_post_uds (dummy)
 indextype is ctxsys.context parameters (
-  'section group  BLOG_POST_UDS_SG
-   datastore      BLOG_POST_UDS_DS
-   lexer          BLOG_POST_UDS_LX
+  'datastore      blog_post_uds_ds
+   lexer          blog_post_uds_lx
+   section group  ctxsys.auto_section_group
    stoplist       ctxsys.empty_stoplist
+   filter         ctxsys.null_filter
    sync           (on commit)'
 );

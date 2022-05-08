@@ -21,21 +21,13 @@ as
 --                          - Removed obsolete functions
 --    Jari Laine 27.03.2022 - Added parameter p_build_option and p_message to function get_rss_link
 --                          - Added parameter p_message to function get_rss_anchor
+--    Jari Laine 27.04.2022 - Removed obsolete functions get_tag_anchor and get_post_tags
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_META_ROBOTS_NOINDEX
   function get_robots_noindex_meta return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---
-  function get_tag_anchor(
-    p_tag_id        in number,
-    p_app_id        in varchar2,
-    p_tag           in varchar2,
-    p_button        in varchar2
-  ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_META_HOME_DESCRIPTION
@@ -100,14 +92,6 @@ as
     p_build_option  in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app classic report on pages 2, 3, 6, 14, 15
-  function get_post_tags(
-    p_post_id       in number,
-    p_app_id        in varchar2 default null,
-    p_button        in varchar2 default 'YES'
-  ) return varchar2;
---------------------------------------------------------------------------------
 end "BLOG_HTML";
 /
 
@@ -136,57 +120,6 @@ as
   begin
     return '<meta name="robots" value="noindex" />';
   end get_robots_noindex_meta;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_tag_anchor(
-    p_tag_id  in number,
-    p_app_id  in varchar2,
-    p_tag     in varchar2,
-    p_button  in varchar2
-  ) return varchar2
-  as
-    l_tag varchar2(4000);
-    l_url varchar2(4000);
-  begin
-
-    -- generate HTML for tag
-    if p_tag is not null then
-
-      l_tag := apex_escape.html( p_tag );
-
-      -- get URL for tag
-      l_url :=  blog_url.get_tag(
-        p_tag_id => p_tag_id
-        ,p_app_id => p_app_id
-      );
-
-        -- generate button or anchor
-      l_tag :=
-        apex_string.format(
-          p_message => '<a href="%s" class="%s">%s</a>'
-          ,p0 => l_url
-          ,p1 =>
-            case p_button when 'YES'
-              then 't-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-md'
-              else 'margin-bottom-md margin-left-sm'
-            end
-          ,p2 =>
-            case p_button when 'YES'
-              then
-                apex_string.format(
-                  p_message => '<span class="t-Icon fa fa-tag" aria-hidden="true"></span><span class="t-Button-label">%s</span>'
-                  ,p0 => l_tag
-                )
-              else l_tag
-            end
-        )
-      ;
-
-    end if;
-
-    return l_tag;
-
-  end get_tag_anchor;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_description_meta(
@@ -418,9 +351,15 @@ as
     -- generate RSS anchor
     l_rss_anchor :=
       apex_string.format(
-        p_message => '<a href="%s" aria-label="%s" class="t-Button t-Button--noLabel t-Button--icon t-Button--link" rel="alternate" type="application/rss+xml"><span aria-hidden="true" class="fa fa-rss-square fa-3x fa-lg u-color-8-text"></span></a>'
+        p_message =>
+          '<a href="%s" aria-label="%s" rel="alternate" type="%s" class="%s">'
+          || '<span aria-hidden="true" class="%s"></span>'
+          || '</a>'
         ,p0 => l_rss_url
         ,p1 => apex_escape.html_attribute(l_rss_title)
+        ,p2 => 'application/rss+xml'
+        ,p3 => 't-Button t-Button--noLabel t-Button--icon t-Button--link'
+        ,p4 => 'fa fa-rss-square fa-3x fa-lg u-color-8-text'
       )
     ;
     -- return generated HTML
@@ -474,36 +413,6 @@ as
     return l_rss_url;
 
   end get_rss_link;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function get_post_tags(
-    p_post_id in number,
-    p_app_id  in varchar2 default null,
-    p_button  in varchar2 default 'YES'
-  ) return varchar2
-  as
-    l_tags varchar2(32700);
-  begin
-
-    -- generate html for post tags
-    select listagg(
-      get_tag_anchor(
-         p_tag_id => v1.tag_id
-        ,p_app_id => p_app_id
-        ,p_tag    => v1.tag
-        ,p_button => p_button
-      )
-      , case when p_button != 'YES' then ', ' end
-    ) within group( order by v1.display_seq ) as tags
-    into l_tags
-    from blog_v_post_tags v1
-    where 1 = 1
-    and v1.post_id = p_post_id
-    ;
-    -- return generated HTML
-    return l_tags;
-
-  end get_post_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_HTML";

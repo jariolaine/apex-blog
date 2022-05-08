@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220416160237'
+,p_last_upd_yyyymmddhh24miss=>'20220508044813'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8596898648797585)
@@ -34,6 +34,7 @@ wwv_flow_api.create_page_plug(
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select v1.id                as post_id',
+'  ,v1.ctx_search            as ctx_search',
 '  ,v1.category_id           as category_id',
 '  ,v1.created_on            as created_on',
 '  ,v1.created_by            as created_by',
@@ -44,7 +45,6 @@ wwv_flow_api.create_page_plug(
 '  ,v1.title                 as post_title',
 '  ,v1.post_desc             as post_desc',
 '  ,v1.tag_id                as tag_id',
-'  ,v1.post_tags             as post_tags',
 '  ,v1.visible_tags          as visible_tags',
 '  ,v1.hidden_tags           as hidden_tags',
 '  ,v1.body_length           as body_length',
@@ -52,7 +52,7 @@ wwv_flow_api.create_page_plug(
 '  ,v1.notes                 as notes',
 '  ,v1.comments_count        as comments_count',
 '  ,status_lov.display_value as post_status',
-'  ,v1.ctx_search            as ctx_search',
+'  ,btn.title_tags           as btn_title_tags',
 '  ,case v1.post_status',
 '    when ''BLOGGER_DISABLED''',
 '    then ''fa-stop-circle u-danger-text''',
@@ -73,11 +73,15 @@ wwv_flow_api.create_page_plug(
 '    ,p_items  => ''P12_ID''',
 '    ,p_values => v1.id',
 '   )                        as edit_url',
+'-- Post HTML for detail view',
 '  ,v1.body_html',
+'-- Post date for detail view',
 '  ,to_char(',
 '     v1.published_on',
 '    ,:G_POST_TITLE_DATE_FORMAT',
 '  )                         as detail_view_published',
+'-- Tags HTML for detail view',
+'  ,v1.tags_html             as tags_html',
 'from blog_v_all_posts v1',
 '-- because APEX bug that IR not use LOV values ',
 'join (',
@@ -89,7 +93,9 @@ wwv_flow_api.create_page_plug(
 ') status_lov on status_lov.return_value = v1.post_status',
 '-- link column button title',
 'cross join (',
-'  select apex_lang.message( ''BLOG_BTN_TITLE_EDIT'' ) as title_edit',
+'  select',
+'     apex_lang.message( ''BLOG_BTN_TITLE_EDIT'' ) as title_edit',
+'    ,apex_lang.message( ''BLOG_BTN_TITLE_TAGS'' ) as title_tags',
 '  from dual',
 ') btn',
 ''))
@@ -104,7 +110,6 @@ wwv_flow_api.create_worksheet(
 ,p_max_row_count_message=>'The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.'
 ,p_no_data_found_message=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
 ,p_oracle_text_index_column=>'CTX_SEARCH'
-,p_show_nulls_as=>'-'
 ,p_pagination_type=>'ROWS_X_TO_Y'
 ,p_pagination_display_pos=>'BOTTOM_RIGHT'
 ,p_report_list_mode=>'TABS'
@@ -124,7 +129,11 @@ wwv_flow_api.create_worksheet(
 '    <div class="z-post--category">#CATEGORY_TITLE#</div>',
 '  </header>',
 '  <div class="z-post--body">#BODY_HTML#</div>',
-'  <footer class="z-post--footer"></footer>',
+'  <footer class="z-post--footer">',
+'    <div class="z-post--tags">',
+'      #TAGS_HTML#',
+'    </div>',
+'  </footer>',
 '</article>'))
 ,p_owner=>'LAINFJAR'
 ,p_internal_uid=>4850446289826818
@@ -259,21 +268,6 @@ wwv_flow_api.create_worksheet_column(
 ,p_heading_alignment=>'LEFT'
 );
 wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(3880617009180123)
-,p_db_column_name=>'POST_TAGS'
-,p_display_order=>140
-,p_column_identifier=>'AL'
-,p_column_label=>'Tags'
-,p_column_type=>'STRING'
-,p_display_text_as=>'LOV_ESCAPE_SC'
-,p_heading_alignment=>'LEFT'
-,p_rpt_named_lov=>wwv_flow_api.id(7140542412077627)
-,p_rpt_show_filter_lov=>'2'
-,p_column_comment=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'09.04.2020 - Currently shows also disabled tags.',
-'09.04.2020 - Added visible and hidden tags columns'))
-);
-wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(24471943643361539)
 ,p_db_column_name=>'VISIBLE_TAGS'
 ,p_display_order=>150
@@ -283,7 +277,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_heading_alignment=>'LEFT'
 ,p_rpt_named_lov=>wwv_flow_api.id(24779831361886842)
-,p_rpt_show_filter_lov=>'2'
+,p_rpt_show_filter_lov=>'1'
 );
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(24471868067361538)
@@ -343,9 +337,21 @@ wwv_flow_api.create_worksheet_column(
 ,p_rpt_show_filter_lov=>'1'
 );
 wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(13625357587077813)
+,p_db_column_name=>'BTN_TITLE_TAGS'
+,p_display_order=>210
+,p_column_identifier=>'BQ'
+,p_column_label=>'Tags'
+,p_column_link=>'f?p=&APP_ID.:24:&SESSION.::&DEBUG.::P24_POST_ID:#POST_ID#'
+,p_column_linktext=>'<span aria-hidden="true" class="t-Icon fa fa-tag"></span>'
+,p_column_link_attr=>'title="#BTN_TITLE_TAGS#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
+,p_column_type=>'STRING'
+,p_column_alignment=>'CENTER'
+);
+wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(31618832374094024)
 ,p_db_column_name=>'POST_STATUS_ICON'
-,p_display_order=>210
+,p_display_order=>220
 ,p_column_identifier=>'BL'
 ,p_column_label=>'Post Status Icon'
 ,p_column_type=>'STRING'
@@ -354,7 +360,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(31246733855982907)
 ,p_db_column_name=>'BTN_TITLE_EDIT'
-,p_display_order=>220
+,p_display_order=>230
 ,p_column_identifier=>'BK'
 ,p_column_label=>'Btn Title Edit'
 ,p_column_type=>'STRING'
@@ -363,7 +369,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(25132885666432510)
 ,p_db_column_name=>'EDIT_URL'
-,p_display_order=>230
+,p_display_order=>240
 ,p_column_identifier=>'BD'
 ,p_column_label=>'Edit Url'
 ,p_column_type=>'STRING'
@@ -372,7 +378,7 @@ wwv_flow_api.create_worksheet_column(
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(3880372195180120)
 ,p_db_column_name=>'BODY_HTML'
-,p_display_order=>240
+,p_display_order=>250
 ,p_column_identifier=>'AI'
 ,p_column_label=>'Body Html'
 ,p_column_type=>'CLOB'
@@ -387,6 +393,15 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(21076848274846837)
+,p_db_column_name=>'TAGS_HTML'
+,p_display_order=>270
+,p_column_identifier=>'BP'
+,p_column_label=>'Tags Html'
+,p_column_type=>'CLOB'
+,p_display_text_as=>'HIDDEN'
+);
 wwv_flow_api.create_worksheet_rpt(
  p_id=>wwv_flow_api.id(8604892694799317)
 ,p_application_user=>'APXWS_DEFAULT'
@@ -395,7 +410,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_view_mode=>'REPORT'
-,p_report_columns=>'POST_TITLE:CATEGORY_TITLE:POST_STATUS:CHANGED_ON::TAG_ID:DETAIL_VIEW_PUBLISHED'
+,p_report_columns=>'POST_TITLE:CATEGORY_TITLE:VISIBLE_TAGS:BTN_TITLE_TAGS:PUBLISHED_ON:POST_STATUS'
 ,p_sort_column_1=>'PUBLISHED_ON'
 ,p_sort_direction_1=>'DESC NULLS FIRST'
 ,p_sort_column_2=>'0'
@@ -442,7 +457,7 @@ wwv_flow_api.create_page_button(
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
-,p_button_image_alt=>'Tags'
+,p_button_image_alt=>'All Tags'
 ,p_button_position=>'NEXT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:19:&SESSION.::&DEBUG.:::'
 ,p_icon_css_classes=>'fa-tags'
@@ -467,8 +482,8 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(8596898648797585)
 ,p_button_name=>'RESET_REPORT'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--simple:t-Button--iconLeft'
-,p_button_template_id=>wwv_flow_api.id(8549262062518244)
+,p_button_template_options=>'#DEFAULT#'
+,p_button_template_id=>wwv_flow_api.id(8549081018518243)
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:RP,&APP_PAGE_ID.,RIR::'

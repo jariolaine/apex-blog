@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220423054136'
+,p_last_upd_yyyymmddhh24miss=>'20220505044838'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
@@ -65,18 +65,14 @@ wwv_flow_api.create_page_plug(
 '  ,btn.copy_url           as btn_copy_url',
 '  ,btn.title_edit         as btn_title_edit',
 '  ,case v1.is_active',
-'    when 0',
-'    then ''fa-minus-circle u-danger-text''',
 '    when 1',
 '    then ''fa-check-circle u-success-text''',
-'    else ''fa-question-circle''',
+'    else ''fa-minus-circle u-danger-text''',
 '   end                    as file_status_icon',
 '  ,case v1.is_download',
-'    when 0',
-'    then ''fa-eye-slash''',
 '    when 1',
-'    then ''fa-eye u-hot-text''',
-'    else ''fa-question-circle-o''',
+'    then ''fa-check''',
+'    else ''fa-minus''',
 '   end                    as file_repository_icon',
 'from blog_v_all_files v1',
 '-- links button title',
@@ -187,7 +183,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_db_column_name=>'IS_DOWNLOAD'
 ,p_display_order=>60
 ,p_column_identifier=>'H'
-,p_column_label=>'Download'
+,p_column_label=>'Attachment'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<span aria-hidden="true" title="#IS_DOWNLOAD#" class="fa #FILE_REPOSITORY_ICON#"></span>',
 '<span class="u-VisuallyHidden">#IS_DOWNLOAD#</span>',
@@ -325,7 +321,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_view_mode=>'DETAIL'
-,p_report_columns=>'FILE_NAME:FILE_SIZE:CHANGED_ON:IS_ACTIVE:IS_DOWNLOAD:BTN_COPY_URL:FILE_DOWNLOAD:'
+,p_report_columns=>'FILE_NAME:FILE_SIZE:IS_DOWNLOAD:BTN_COPY_URL:FILE_DOWNLOAD:CHANGED_ON:IS_ACTIVE:'
 ,p_sort_column_1=>'FILE_NAME'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'CHANGED_ON'
@@ -373,8 +369,8 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(6729285879951908)
 ,p_button_name=>'RESET_REPORT'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--simple:t-Button--iconLeft'
-,p_button_template_id=>wwv_flow_api.id(8549262062518244)
+,p_button_template_options=>'#DEFAULT#'
+,p_button_template_id=>wwv_flow_api.id(8549081018518243)
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:RP,&APP_PAGE_ID.,RIR::'

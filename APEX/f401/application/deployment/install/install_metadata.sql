@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -21,7 +21,7 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,''Release 21.2.20220424'');',
+'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,null,''Release 21.2.20220508'');',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values(''20'',''0'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,null,blog_util.int_to_vc2(apex_applicatio'
 ||'n_install.get_application_id));',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values(''110'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,''My Blog'');',
@@ -64,7 +64,10 @@ wwv_flow_api.create_install_script(
 'insert into blog_features(is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values(''1'',''250'',''BLOG_FEATURE_ARCHIVE'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,''BLOG_HELP_FEATURE_ARCHIVE'');',
 'insert into blog_features(is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values(''1'',''260'',''BLOG_FEATURE_ARCHIVE_POST_COUNT'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''BLOG_FEATURE_ARCHIVE'',''BLOG_HELP_FEATURE_ARCH'
 ||'IVE_POST_COUNT'');',
-'insert into blog_features(is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values(''1'',''270'',''BLOG_FEATURE_RSS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,''BLOG_HELP_FEATURE_RSS'');',
+'insert into blog_features(is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values(''1'',''270'',''BLOG_FEATURE_TAG_CLOUD'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,''BLOG_HELP_FEATURE_TAG_CLOUD'');',
+'insert into blog_features(is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values(''1'',''280'',''BLOG_FEATURE_TAG_CLOUD_POST_COUNT'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''BLOG_FEATURE_TAG_CLOUD'',''BLOG_HELP_FEATURE_'
+||'TAG_CLOUD_POST_COUNT'');',
+'insert into blog_features(is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values(''1'',''290'',''BLOG_FEATURE_RSS'',''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,''BLOG_HELP_FEATURE_RSS'');',
 'insert into blog_features(is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values(''1'',''310'',''BLOG_FEATURE_ALLOW_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',null,''BLOG_HELP_FEATURE_ALLOW_COMMENTS'');',
 'insert into blog_features(is_active,display_seq,build_option_name,build_option_group,build_option_parent,help_message) values(''1'',''320'',''BLOG_FEATURE_MODERATE_COMMENTS'',''BLOG_FEATURE_GROUP_COMMENTS'',''BLOG_FEATURE_ALLOW_COMMENTS'',''BLOG_HELP_FEATURE_MO'
 ||'DERATE_COMMENTS'');',

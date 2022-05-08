@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -24,7 +24,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220408155746'
+,p_last_upd_yyyymmddhh24miss=>'20220507110256'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43823229274615012)
@@ -127,14 +127,6 @@ wwv_flow_api.create_jet_chart_axis(
 ,p_tick_label_rendered=>'on'
 ,p_tick_label_rotation=>'auto'
 ,p_tick_label_position=>'outside'
-,p_zoom_order_seconds=>false
-,p_zoom_order_minutes=>false
-,p_zoom_order_hours=>false
-,p_zoom_order_days=>false
-,p_zoom_order_weeks=>false
-,p_zoom_order_months=>false
-,p_zoom_order_quarters=>false
-,p_zoom_order_years=>false
 );
 wwv_flow_api.create_jet_chart_axis(
  p_id=>wwv_flow_api.id(43826047485615041)
@@ -213,33 +205,31 @@ wwv_flow_api.create_jet_chart_series(
 ,p_name=>'Series 1'
 ,p_data_source_type=>'SQL'
 ,p_data_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select x.step_id || ''. '' || (',
-'    select page_name ',
-'    from apex_application_pages p ',
-'    where 1 = 1',
-'      and p.application_id = :G_PUB_APP_ID ',
-'      and page_id = x.step_id',
-'  ) as label, ',
-'  x.value ',
-'from(',
-'  select step_id,',
-'    count(*) as value',
-'  from apex_activity_log',
-'  where 1 = 1',
-'    and flow_id = :G_PUB_APP_ID',
-'    and time_stamp >= sysdate - ( 1/24/60/60 * :P30020_TIMEFRAME )',
-'    and step_id is not null',
-'  group by step_id',
-'  order by 2 desc',
-') x'))
-,p_max_row_count=>10
+'select',
+'  case l.page_id',
+'    when 1003',
+'    then replace( lower( l.request_value ), ''application_process='' )',
+'    else l.page_name',
+'  end       as label',
+'  ,count(*) as value',
+'from apex_workspace_activity_log l',
+'where 1 = 1',
+'and l.application_id = :G_PUB_APP_ID',
+'and l.page_id is not null',
+'and l.view_date >= sysdate - ( 1/24/60/60 * :P30020_TIMEFRAME )',
+'group by',
+'  case l.page_id',
+'    when 1003',
+'    then replace( lower( l.request_value ), ''application_process='' )',
+'    else l.page_name',
+'  end',
+'order by 2 desc'))
+,p_max_row_count=>20
 ,p_ajax_items_to_submit=>'P30020_TIMEFRAME'
 ,p_items_value_column_name=>'VALUE'
 ,p_items_label_column_name=>'LABEL'
 ,p_assigned_to_y2=>'off'
 ,p_items_label_rendered=>false
-,p_items_label_display_as=>'PERCENT'
-,p_threshold_display=>'onIndicator'
 );
 wwv_flow_api.create_jet_chart_axis(
  p_id=>wwv_flow_api.id(43831022574615049)
@@ -297,21 +287,26 @@ wwv_flow_api.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'  sqlerrm label',
-'  ,time_stamp value',
-'from apex_activity_log',
-'where flow_id = :G_PUB_APP_ID',
-'  and time_stamp >= sysdate - ( 1/24/60/60 * :P30020_TIMEFRAME )',
-'  and sqlerrm is not null',
+'  error_message   label',
+'  ,view_timestamp value',
+'from apex_workspace_activity_log',
+'where application_id = :G_PUB_APP_ID',
+'  and view_date >= sysdate - ( 1/24/60/60 * :P30020_TIMEFRAME )',
+'  and error_message is not null',
 'order by 2 desc',
 '  ,1'))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P30020_TIMEFRAME'
 ,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(8519378220518224)
-,p_query_num_rows=>20
+,p_query_headings_type=>'NO_HEADINGS'
+,p_query_num_rows=>10
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_row_count_max=>500
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'Y'
 );
 wwv_flow_api.create_report_columns(
  p_id=>wwv_flow_api.id(43832727529615083)
@@ -391,6 +386,7 @@ wwv_flow_api.create_page_item(
 ,p_field_template=>wwv_flow_api.id(8548464988518243)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_lov_display_extra=>'NO'
+,p_restricted_characters=>'US_ONLY'
 ,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'NONE'
 ,p_attribute_02=>'N'

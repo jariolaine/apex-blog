@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "PUBLISHED_COMMENTS_COUNT", "UNREAD_COMMENTS_COUNT", "MODERATE_COMMENTS_COUNT", "DISABLED_COMMENTS_COUNT", "POST_STATUS") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "PUBLISHED_COMMENTS_COUNT", "UNREAD_COMMENTS_COUNT", "MODERATE_COMMENTS_COUNT", "DISABLED_COMMENTS_COUNT", "POST_STATUS", "TAGS_HTML") AS
 select
    t1.id                as id
   ,t1.category_id       as category_id
@@ -115,7 +115,35 @@ select
     when t1.published_on > localtimestamp
     then 'SCHEDULED'
     else 'PUBLISHED'
-  end                  as post_status
+  end                   as post_status
+-- Post tags for detail view
+  ,(
+    select
+      xmlserialize( content
+        xmlagg(
+          xmlelement( "span"
+            ,xmlattributes(
+              't-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-md' as "class"
+            )
+            ,xmlelement( "span"
+              ,xmlattributes(
+                't-Icon fa fa-tag'  as "class"
+                ,'true'             as "aria-hidden"
+              )
+            )
+            ,xmlelement( "span"
+              ,xmlattributes(
+                't-Button-label'    as "class"
+              )
+              ,lkp.tag
+            )
+          ) order by lkp.display_seq
+        )
+      ) as tags_html
+    from blog_v_post_tags lkp
+    where 1 = 1
+      and lkp.post_id = t1.id
+  )                     as tags_html
 from blog_posts t1
 join blog_categories t2
   on t1.category_id = t2.id

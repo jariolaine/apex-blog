@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -16,20 +16,18 @@ wwv_flow_api.create_page(
 ,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
 ,p_name=>'Add/Edit Tags'
 ,p_page_mode=>'MODAL'
-,p_step_title=>'Tags'
+,p_step_title=>'All Tags'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8929534050595858)
 ,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog.admin.tagsIG.initOnPageLoad({',
+'blog.admin.dialogIG.initOnPageLoad({',
 '  regionID: "tags"',
-'  ,btnSave: "tags-ig-save"',
-'  ,btnAddRow: "tags-ig-selection-add-row",',
 '});'))
 ,p_step_template=>wwv_flow_api.id(8456403392518180)
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220416160726'
+,p_last_upd_yyyymmddhh24miss=>'20220507104109'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9879490963762847)
@@ -380,13 +378,13 @@ wwv_flow_api.create_region_column(
 ,p_display_sequence=>150
 ,p_value_alignment=>'CENTER'
 ,p_stretch=>'N'
-,p_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:RR,:IRC_TAG_ID:&ID.'
+,p_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:CR,:IRC_TAG_ID:&ID.'
 ,p_link_text=>'<span aria-hidden="true" class="t-Icon fa fa-external-link"></span>'
 ,p_link_attributes=>'title="&BTN_POSTS_LINK."'
 ,p_enable_filter=>false
 ,p_filter_is_required=>false
 ,p_use_as_row_header=>false
-,p_javascript_code=>'blog.admin.tagsIG.initLinkColumn'
+,p_javascript_code=>'blog.admin.dialogIG.initLinkColumn'
 ,p_enable_sort_group=>false
 ,p_enable_hide=>true
 ,p_is_primary_key=>false
@@ -424,7 +422,7 @@ wwv_flow_api.create_interactive_grid(
 ,p_fixed_header_max_height=>440
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false
-,p_javascript_code=>'blog.admin.tagsIG.initRegion'
+,p_javascript_code=>'blog.admin.dialogIG.initRegion'
 );
 wwv_flow_api.create_ig_report(
  p_id=>wwv_flow_api.id(9880366681762849)
@@ -560,7 +558,7 @@ wwv_flow_api.create_ig_report_column(
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(19865705897627513)
 ,p_plug_name=>'Buttons'
-,p_region_template_options=>'#DEFAULT#:t-ButtonRegion--slimPadding'
+,p_region_template_options=>'#DEFAULT#:t-ButtonRegion--slimPadding:t-ButtonRegion--noBorder'
 ,p_plug_template=>wwv_flow_api.id(8476383962518195)
 ,p_plug_display_sequence=>40
 ,p_include_in_reg_disp_sel_yn=>'Y'
@@ -585,6 +583,21 @@ wwv_flow_api.create_page_button(
 ,p_icon_css_classes=>'fa-close'
 );
 wwv_flow_api.create_page_button(
+ p_id=>wwv_flow_api.id(12513014096984036)
+,p_button_sequence=>10
+,p_button_plug_id=>wwv_flow_api.id(19865705897627513)
+,p_button_name=>'DELETE_UNUSED'
+,p_button_action=>'DEFINED_BY_DA'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>wwv_flow_api.id(8549262062518244)
+,p_button_image_alt=>'Delete Unused'
+,p_button_position=>'DELETE'
+,p_warn_on_unsaved_changes=>null
+,p_confirm_message=>'&APP_TEXT$BLOG_CONFIRM_DELETE_UNUSED_TAGS.'
+,p_confirm_style=>'danger'
+,p_icon_css_classes=>'fa-trash-o'
+);
+wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(9834467087215236)
 ,p_button_sequence=>20
 ,p_button_plug_id=>wwv_flow_api.id(19865705897627513)
@@ -593,15 +606,15 @@ wwv_flow_api.create_page_button(
 ,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Add'
-,p_button_position=>'CREATE'
+,p_button_position=>'NEXT'
 ,p_warn_on_unsaved_changes=>null
 ,p_button_css_classes=>'js-actionButton'
 ,p_icon_css_classes=>'fa-plus'
-,p_button_cattributes=>'data-action="tags-ig-selection-add-row"'
+,p_button_cattributes=>'data-action="ig-selection-add-row"'
 );
 wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(9834216605215234)
-,p_button_sequence=>10
+,p_button_sequence=>30
 ,p_button_plug_id=>wwv_flow_api.id(19865705897627513)
 ,p_button_name=>'SAVE'
 ,p_button_action=>'DEFINED_BY_DA'
@@ -613,7 +626,37 @@ wwv_flow_api.create_page_button(
 ,p_warn_on_unsaved_changes=>null
 ,p_button_css_classes=>'js-actionButton'
 ,p_icon_css_classes=>'fa-save'
-,p_button_cattributes=>'data-action="tags-ig-save"'
+,p_button_cattributes=>'data-action="ig-save"'
+);
+wwv_flow_api.create_page_da_event(
+ p_id=>wwv_flow_api.id(13627898180077838)
+,p_name=>'Delete unused'
+,p_event_sequence=>10
+,p_triggering_element_type=>'BUTTON'
+,p_triggering_button_id=>wwv_flow_api.id(12513014096984036)
+,p_bind_type=>'bind'
+,p_bind_event_type=>'click'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(13627941005077839)
+,p_event_id=>wwv_flow_api.id(13627898180077838)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_EXECUTE_PLSQL_CODE'
+,p_attribute_01=>'#OWNER#.blog_cm.remove_unused_tags;'
+,p_attribute_05=>'PLSQL'
+,p_wait_for_result=>'Y'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(13628021134077840)
+,p_event_id=>wwv_flow_api.id(13627898180077838)
+,p_event_result=>'TRUE'
+,p_action_sequence=>20
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_api.id(9879490963762847)
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(9884133660762856)
