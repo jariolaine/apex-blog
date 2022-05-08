@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -29,7 +29,7 @@ wwv_flow_api.create_page(
 'Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back to t'
 ||'he default settings.</p>'))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20211024104112'
+,p_last_upd_yyyymmddhh24miss=>'20220507110410'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43851444064616938)
@@ -39,46 +39,51 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select step_id                    as page',
-'  ,(',
-'    select p.page_name',
-'    from apex_application_pages p',
-'    where 1 = 1',
-'    and p.page_id = l.step_id',
-'    and p.application_id = :G_PUB_APP_ID',
-'  )                               as page_name',
-'  ,median( elap )                 as median_elapsed',
-'  ,count( * ) * median( l.elap )  as weighted_performance',
+'select ',
+'  l.page_id                               as page',
+'  ,case l.page_id',
+'    when 1003',
+'    then replace( lower( l.request_value ), ''application_process='' ) ',
+'    else l.page_name',
+'  end                                     as page_name',
+'  ,median( l.elapsed_time )               as median_elapsed',
+'  ,count( * ) * median( l.elapsed_time )  as weighted_performance',
 '  ,sum(',
-'    case when l.sqlerrm is null then 0',
+'    case when l.error_message is null then 0',
 '    else 1',
 '    end',
-'  )                               as errors',
-'  ,count( distinct l.userid )     as distinct_users',
-'  ,count( distinct l.session_id ) as application_sessions',
-'  ,count( * )                     as page_views',
-'  ,sum( nvl( l.num_rows, 0 ) )    as total_rows',
+'  )                                       as errors',
+'--  ,count( distinct l.apex_user )          as distinct_users',
+'  ,count( distinct l.apex_session_id )    as application_sessions',
+'  ,count( * )                             as page_views',
+'  ,sum( nvl( l.rows_queried, 0 ) )        as total_rows',
 '  ,sum( ',
-'    case l.page_mode',
-'      when ''P'' then 1',
+'    case l.page_view_mode',
+'      when ''Partial Page'' then 1',
 '      else 0',
 '    end',
-'  )                               as partial_page_views',
+'  )                                       as partial_page_views',
 '  ,sum( ',
-'    case l.page_mode',
-'      when ''D'' then 1',
+'    case l.page_view_mode',
+'      when ''Dynamic'' then 1',
 '      else 0',
 '    end',
-'  )                               as full_page_views',
-'  ,max( l.elap )                  as max_elapsed',
-'  ,min( l.elap )                  as min_elapsed',
-'  ,avg( l.elap )                  as avg_elapsed',
-'from apex_activity_log l',
+'  )                                       as full_page_views',
+'  ,max( l.elapsed_time )                  as max_elapsed',
+'  ,min( l.elapsed_time )                  as min_elapsed',
+'  ,avg( l.elapsed_time )                  as avg_elapsed',
+'from apex_workspace_activity_log l',
 'where 1 = 1',
-'  and l.flow_id = :G_PUB_APP_ID',
-'  and l.time_stamp >= sysdate -( 1 / 24 / 60 / 60 * :P30023_TIMEFRAME )',
-'  and l.userid is not null',
-'group by step_id'))
+'  and l.application_id = :G_PUB_APP_ID',
+'  and l.view_date >= sysdate - ( 1/24/60/60 * :P30023_TIMEFRAME )',
+'  and l.apex_user is not null',
+'  and l.page_id is not null',
+'group by l.page_id',
+'  ,case l.page_id',
+'    when 1003',
+'    then replace( lower( l.request_value ), ''application_process='' ) ',
+'    else l.page_name',
+'  end'))
 ,p_plug_source_type=>'NATIVE_IR'
 ,p_ajax_items_to_submit=>'P30023_TIMEFRAME'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -156,18 +161,6 @@ wwv_flow_api.create_worksheet_column(
 ,p_heading_alignment=>'RIGHT'
 ,p_column_alignment=>'RIGHT'
 ,p_format_mask=>'999G999G999G999G999G990'
-);
-wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(43854465655616948)
-,p_db_column_name=>'DISTINCT_USERS'
-,p_display_order=>65
-,p_column_identifier=>'F'
-,p_column_label=>'Distinct Users'
-,p_column_type=>'NUMBER'
-,p_heading_alignment=>'RIGHT'
-,p_column_alignment=>'RIGHT'
-,p_format_mask=>'999G999G999G999G999G999G990'
-,p_tz_dependent=>'N'
 );
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(43854828660616948)
@@ -272,7 +265,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_report_alias=>'438584'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'PAGE_NAME:MEDIAN_ELAPSED:WEIGHTED_PERFORMANCE:ERRORS:APPLICATION_SESSIONS:PAGE_VIEWS:'
+,p_report_columns=>'PAGE_NAME:MEDIAN_ELAPSED:AVG_ELAPSED:MAX_ELAPSED:MIN_ELAPSED:WEIGHTED_PERFORMANCE:ERRORS:APPLICATION_SESSIONS:PAGE_VIEWS:'
 ,p_sort_column_1=>'WEIGHTED_PERFORMANCE'
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'PAGE_VIEWS'
@@ -298,8 +291,8 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(43851444064616938)
 ,p_button_name=>'RESET_REPORT'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--simple:t-Button--iconLeft'
-,p_button_template_id=>wwv_flow_api.id(8549262062518244)
+,p_button_template_options=>'#DEFAULT#'
+,p_button_template_id=>wwv_flow_api.id(8549081018518243)
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:&APP_PAGE_ID.,RR::'
@@ -326,6 +319,7 @@ wwv_flow_api.create_page_item(
 ,p_field_template=>wwv_flow_api.id(8548464988518243)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_lov_display_extra=>'NO'
+,p_restricted_characters=>'US_ONLY'
 ,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'NONE'
 ,p_attribute_02=>'N'

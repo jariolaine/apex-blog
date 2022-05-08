@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -21,10 +21,14 @@ wwv_flow_api.create_page(
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(8697986188142973)
 ,p_html_page_header=>'"BLOG_CANONICAL_LINK_TAG"'
+,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'/*',
+' var(--ut-component-highlight-background-color)',
+'*/'))
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220328175038'
+,p_last_upd_yyyymmddhh24miss=>'20220507091431'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(13706719753736206)
@@ -37,24 +41,45 @@ wwv_flow_api.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.category_id  as category_id',
-'  ,v1.post_title       as search_title',
+'select v1.category_id   as category_id',
+'  ,v1.post_title        as search_title',
 '  ,#OWNER#.blog_url.get_post(',
 '     p_post_id => v1.post_id',
-'   )                   as search_link',
-'  ,v1.post_desc        as search_desc',
-'  ,labels.category     as label_01',
-'  ,v1.category_title   as value_01',
-'  ,labels.posted_by    as label_02',
-'  ,v1.blogger_name     as value_02',
-'  ,labels.posted_on    as label_03',
-'  ,v1.published_on     as value_03',
-'  ,labels.tags         as label_04',
-'  ,#OWNER#.blog_html.get_post_tags(',
-'    p_post_id => v1.post_id',
-'    ,p_button => ''NO''',
-'   )                   as value_04',
+'   )                    as search_link',
+'  ,v1.post_desc         as search_desc',
+'  ,labels.category      as label_01',
+'  ,v1.category_title    as value_01',
+'  ,labels.posted_by     as label_02',
+'  ,v1.blogger_name      as value_02',
+'  ,labels.posted_on     as label_03',
+'  ,v1.published_on      as value_03',
+'  ,labels.tags          as label_04',
+'  ,tags.html            as value_04',
 'from #OWNER#.blog_v_posts v1',
+'join(',
+'  select lkp.post_id',
+'    ,listagg(',
+'      xmlserialize( content',
+'        xmlelement( "a"',
+'          ,xmlattributes(',
+'            #OWNER#.blog_url.get_tag(',
+'              p_tag_id  => lkp.tag_id',
+'              ,p_app_id => :APP_ID',
+'            )                                                 as "href"',
+'            ,''margin-bottom-md margin-left-sm z-search--tags'' as "class"',
+'          )',
+'          ,lkp.tag',
+'        )',
+'      )',
+'      ,'',''',
+'    ) within group( order by lkp.display_seq ) as html',
+'  from #OWNER#.blog_post_tags t1',
+'  join #OWNER#.blog_v_post_tags lkp on t1.post_id = lkp.post_id',
+'  where 1 = 1',
+'    and t1.is_active = 1',
+'    and t1.tag_id = :P6_TAG_ID',
+'  group by lkp.post_id',
+') tags on v1.post_id = tags.post_id',
 'cross join(',
 '  select',
 '     apex_lang.message( ''BLOG_TXT_TAGS'' )       as tags',
@@ -64,13 +89,6 @@ wwv_flow_api.create_report_region(
 '  from dual',
 ') labels',
 'where 1 = 1',
-'and exists(',
-'  select 1',
-'  from #OWNER#.blog_v_post_tags x1',
-'  where 1 = 1',
-'  and x1.tag_id = :P6_TAG_ID',
-'  and x1.post_id = v1.post_id',
-')',
 'order by v1.published_on desc'))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P6_TAG_ID'
@@ -254,7 +272,8 @@ wwv_flow_api.create_page_computation(
 ,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_util.get_tag(',
-'  p_tag_id => :P6_TAG_ID',
+'   p_tag_id => :P6_TAG_ID',
+'  ,p_escape => false',
 ')'))
 ,p_computation_comment=>'Fetch tag name to item. Item is used in page and region title.'
 ,p_computation_error_message=>'Tag not found.'

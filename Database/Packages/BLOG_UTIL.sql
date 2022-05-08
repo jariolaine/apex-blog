@@ -37,6 +37,7 @@ as
 --                          - Changed variable names to more descriptive
 --                          - Removed obsolete procedure check_archive_exists
 --    Jari Laine 19.04.2022 - Changes to procedures download_file
+--    Jari Laine 26.04.2022 - Parameter p_escape to function get_tag
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -92,7 +93,8 @@ as
 -- Called from:
 --  public app page 6 Pre-Rendering Computations
   function get_tag(
-    p_tag_id          in varchar2
+    p_tag_id          in varchar2,
+    p_escape          in boolean
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
@@ -688,7 +690,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tag(
-    p_tag_id in varchar2
+    p_tag_id in varchar2,
+    p_escape in boolean
   ) return varchar2
   as
     l_tag_id    number;
@@ -723,8 +726,13 @@ as
       ,p1 => l_tag_name
     );
 
-    -- espace html and return tag name
-    return apex_escape.html( l_tag_name );
+    -- espace html from tag name if parameter p_escape is true
+    -- return category name
+    return case when p_escape
+      then apex_escape.html( l_tag_name )
+      else l_tag_name
+      end
+    ;
 
   -- handle errors
   exception

@@ -5,6 +5,7 @@ prompt --install
 @@application/shared_components/navigation/lists/navigation_bar.sql
 @@application/shared_components/navigation/lists/post_categories.sql
 @@application/shared_components/navigation/lists/latest_posts.sql
+@@application/shared_components/navigation/lists/post_tags.sql
 @@application/shared_components/navigation/lists/post_archives.sql
 @@application/shared_components/navigation/lists/footer_modal_pages.sql
 @@application/shared_components/navigation/lists/navigation_menu.sql
@@ -87,6 +88,7 @@ prompt --install
 @@application/shared_components/user_interface/templates/list/top_navigation_tabs.sql
 @@application/shared_components/user_interface/templates/list/wizard_progress.sql
 @@application/shared_components/user_interface/templates/list/top_navigation_mega_menu.sql
+@@application/shared_components/user_interface/templates/list/blog_tag_cloud.sql
 @@application/shared_components/user_interface/templates/list/blog_footer_link_list.sql
 @@application/shared_components/user_interface/templates/report/timeline.sql
 @@application/shared_components/user_interface/templates/report/media_list.sql
@@ -157,7 +159,9 @@ prompt --install
 @@application/deployment/install/upgrade_patch_21_2_20220409.sql
 @@application/deployment/install/upgrade_patch_21_2_20220415.sql
 @@application/deployment/install/upgrade_patch_21_2_20220421.sql
+@@application/deployment/install/upgrade_patch_21_2_20220508.sql
 @@application/deployment/install/upgrade_database_objects_upgrade.sql
+@@application/deployment/install/upgrade_rereate_text_index.sql
 @@application/deployment/install/upgrade_update_version_info.sql
 @@application/deployment/checks.sql
 @@application/deployment/buildoptions.sql

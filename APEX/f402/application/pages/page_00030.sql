@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220421064421'
+,p_last_upd_yyyymmddhh24miss=>'20220505045345'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27412346667552217)
@@ -44,22 +44,20 @@ wwv_flow_api.create_page_plug(
 '  ,status_lov.display_value as status',
 '  ,flag_lov.display_value   as flag',
 '  ,case v1.status ',
-'    when ''MODERATE'' then',
-'      ''fa-exclamation-circle u-warning-text''',
-'    when ''ENABLED'' then',
-'      ''fa-check-circle u-success-text''',
-'    else',
-'      ''fa-minus-circle u-danger-text''',
+'    when ''MODERATE'' ',
+'    then ''fa-exclamation-circle u-warning-text''',
+'    when ''ENABLED''',
+'    then ''fa-check-circle u-success-text''',
+'    else ''fa-minus-circle u-danger-text''',
 '  end                       as status_icon',
 '  ,case v1.flag',
-'    when ''REPLY'' then',
-'      ''fa-send-o''',
-'    when ''NEW'' then',
-'      ''fa-envelope-arrow-down''',
-'    when ''UNREAD'' then',
-'      ''fa-envelope-o''',
-'    else',
-'      ''fa-envelope-open-o''',
+'    when ''REPLY''',
+'    then ''fa-send-o''',
+'    when ''NEW''',
+'    then ''fa-envelope-arrow-down''',
+'    when ''UNREAD''',
+'    then ''fa-envelope-o''',
+'    else ''fa-envelope-open-o''',
 '  end                       as flag_icon',
 '  ,btn.title_open           as title_open',
 '  ,case ',
@@ -318,7 +316,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_view_mode=>'REPORT'
-,p_report_columns=>'POST_TITLE:COMMENT_BY:CREATED_ON:FLAG:STATUS:TITLE_OPEN:EDIT_URL:BTN_DATA_UNREAD'
+,p_report_columns=>'POST_TITLE:COMMENT_BY:FLAG:CREATED_ON:STATUS:'
 ,p_sort_column_1=>'CREATED_ON'
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'0'
@@ -350,8 +348,8 @@ wwv_flow_api.create_page_button(
 ,p_button_plug_id=>wwv_flow_api.id(27412346667552217)
 ,p_button_name=>'RESET_REPORT'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--simple:t-Button--iconLeft'
-,p_button_template_id=>wwv_flow_api.id(8549262062518244)
+,p_button_template_options=>'#DEFAULT#'
+,p_button_template_id=>wwv_flow_api.id(8549081018518243)
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:RP,&APP_PAGE_ID.,RIR::'

@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_api.component_begin (
  p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.5'
+,p_release=>'21.2.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -73,6 +73,22 @@ wwv_flow_api.create_build_option(
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable latest posts list'
+);
+wwv_flow_api.create_build_option(
+ p_id=>wwv_flow_api.id(13228264961862184)
+,p_build_option_name=>'BLOG_FEATURE_TAG_CLOUD_POST_COUNT'
+,p_build_option_status=>'INCLUDE'
+,p_default_on_export=>'INCLUDE'
+,p_on_upgrade_keep_status=>true
+,p_build_option_comment=>'Enable/disable tag post count in list'
+);
+wwv_flow_api.create_build_option(
+ p_id=>wwv_flow_api.id(13229141933919002)
+,p_build_option_name=>'BLOG_FEATURE_TAG_CLOUD'
+,p_build_option_status=>'INCLUDE'
+,p_default_on_export=>'INCLUDE'
+,p_on_upgrade_keep_status=>true
+,p_build_option_comment=>'Enable/disable tag cloud list'
 );
 wwv_flow_api.create_build_option(
  p_id=>wwv_flow_api.id(24626889314854172)

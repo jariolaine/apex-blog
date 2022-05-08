@@ -16,6 +16,7 @@ Ensure target schema associated to your APEX workspace has following system priv
 * CREATE INDEXTYPE
 * CREATE PROCEDURE
 * CREATE SEQUENCE
+* CREATE TYPE
 * CREATE TABLE
 * CREATE TRIGGER
 * CREATE VIEW
