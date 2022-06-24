@@ -41,7 +41,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220505043449'
+,p_last_upd_yyyymmddhh24miss=>'20220510053906'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6849894493100859)
@@ -69,7 +69,7 @@ wwv_flow_api.create_page_plug(
 '  ,v1.link_url    as link_url',
 '  ,v1.notes       as notes',
 '  ,btn.title_edit as btn_title_edit',
-'from blog_v_all_links v1',
+'from #OWNER#.blog_v_all_links v1',
 '-- link column button title',
 'cross join (',
 '  select apex_lang.message(''BLOG_BTN_TITLE_EDIT'') as title_edit',
@@ -295,7 +295,7 @@ wwv_flow_api.create_report_region(
 '    ,p0 => v1.display_seq    ',
 '  )                 as misc',
 '  ,null             as actions',
-'from blog_v_all_link_groups v1',
+'from #OWNER#.blog_v_all_link_groups v1',
 '-- status icon title',
 'cross join (',
 '  select',
@@ -469,7 +469,7 @@ wwv_flow_api.create_report_region(
 '',
 '--  ,v1.is_active as list_text',
 '--  ,v1.link_count as list_badge',
-'from blog_v_all_link_groups v1',
+'from #OWNER#.blog_v_all_link_groups v1',
 'where 1 = 1',
 'and (',
 '  :P17_SEARCH is null or ',
@@ -756,17 +756,6 @@ wwv_flow_api.create_page_da_action(
 ,p_action=>'NATIVE_REFRESH'
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_api.id(6849894493100859)
-);
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(25070066102044605)
-,p_event_id=>wwv_flow_api.id(25069146414044604)
-,p_event_result=>'TRUE'
-,p_action_sequence=>20
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex.message.showPageSuccess(this.data.successMessage.text);',
-''))
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(25070418411047483)

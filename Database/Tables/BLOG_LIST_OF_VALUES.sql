@@ -13,7 +13,6 @@ create table blog_list_of_values(
   lov_name varchar2( 256 char ) not null,
   return_value varchar2(  256 char ) not null,
   display_message varchar2( 256 char ) not null,
-  notes varchar2( 4000 byte ),
   constraint blog_list_of_values_pk primary key( id ),
   constraint blog_list_of_values_uk1 unique( lov_name, return_value ),
   constraint blog_list_of_values_ck1 check( row_version > 0 ),

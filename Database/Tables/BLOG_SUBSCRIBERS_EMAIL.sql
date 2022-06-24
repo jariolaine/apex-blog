@@ -10,7 +10,6 @@ create table blog_subscribers_email(
   changed_by varchar2( 256 char ) not null,
   is_active number( 1, 0 ) not null,
   email varchar2( 256 char ) not null,
-  notes varchar2( 4000 byte ),
   constraint blog_subscribers_email_pk primary key( id ),
   constraint blog_subscribers_email_uk1 unique( email ),
   constraint blog_subscribers_email_ck1 check( row_version > 0 ),

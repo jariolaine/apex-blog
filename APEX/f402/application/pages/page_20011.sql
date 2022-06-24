@@ -21,14 +21,13 @@ wwv_flow_api.create_page(
 ,p_group_id=>wwv_flow_api.id(8574375481518289)
 ,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog.admin.configIG.initOnPageLoad({',
-'  regionID: "features"',
-'  ,btnSave: "btn-ig-save"',
+'  regionId: "features"',
 '});'))
 ,p_step_template=>wwv_flow_api.id(8456403392518180)
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220419093339'
+,p_last_upd_yyyymmddhh24miss=>'20220509183344'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27063074415689131)
@@ -507,14 +506,17 @@ wwv_flow_api.create_page_button(
 ,p_button_sequence=>30
 ,p_button_plug_id=>wwv_flow_api.id(52996033344836443)
 ,p_button_name=>'SAVE'
-,p_button_action=>'SUBMIT'
+,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Save'
 ,p_button_position=>'NEXT'
+,p_warn_on_unsaved_changes=>null
+,p_button_css_classes=>'js-actionButton'
 ,p_icon_css_classes=>'fa-save'
-,p_button_cattributes=>'data-action="btn-ig-save"'
+,p_button_cattributes=>'data-action="ig-save"'
+,p_database_action=>'UPDATE'
 );
 wwv_flow_api.create_page_branch(
  p_id=>wwv_flow_api.id(43470169235898233)
@@ -551,10 +553,19 @@ wwv_flow_api.create_page_da_event(
 ,p_bind_event_type=>'NATIVE_IG|REGION TYPE|interactivegridsave'
 );
 wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(28391961651211232)
+ p_id=>wwv_flow_api.id(13944613114359340)
 ,p_event_id=>wwv_flow_api.id(28391543520211237)
 ,p_event_result=>'TRUE'
 ,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'TRIGGERING_ELEMENT'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(28391961651211232)
+,p_event_id=>wwv_flow_api.id(28391543520211237)
+,p_event_result=>'TRUE'
+,p_action_sequence=>20
 ,p_execute_on_page_init=>'N'
 ,p_action=>'NATIVE_EXECUTE_PLSQL_CODE'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -564,7 +575,7 @@ wwv_flow_api.create_page_da_action(
 ');',
 ''))
 ,p_attribute_05=>'PLSQL'
-,p_wait_for_result=>'Y'
+,p_wait_for_result=>'N'
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(14806954183070103)
@@ -609,21 +620,6 @@ wwv_flow_api.create_page_process(
 ,p_exec_cond_for_each_row=>'Y'
 ,p_process_success_message=>'Changes saved'
 ,p_process_comment=>'Update build option value and run post expression'
-);
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(43471045958898242)
-,p_process_sequence=>30
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Purge Public Application Cache'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex_util.cache_purge_by_page(',
-'   p_application => :G_PUB_APP_ID',
-'  ,p_page => 0',
-');',
-''))
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_api.component_end;
 end;

@@ -20,10 +20,11 @@ wwv_flow_api.create_page(
 ,p_step_title=>'Error Debug Log'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_api.id(28670259188910652)
-,p_page_template_options=>'#DEFAULT#'
+,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
+,p_dialog_chained=>'N'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220504193349'
+,p_last_upd_yyyymmddhh24miss=>'20220612070059'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(56682839747382561)
@@ -180,19 +181,6 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_sort_direction_6=>'ASC'
 );
 wwv_flow_api.create_page_button(
- p_id=>wwv_flow_api.id(12511663428984022)
-,p_button_sequence=>10
-,p_button_plug_id=>wwv_flow_api.id(56682839747382561)
-,p_button_name=>'BACK'
-,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--simple:t-Button--iconLeft'
-,p_button_template_id=>wwv_flow_api.id(8549262062518244)
-,p_button_image_alt=>'Back'
-,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
-,p_button_redirect_url=>'f?p=&APP_ID.:30022:&SESSION.::&DEBUG.:::'
-,p_icon_css_classes=>'fa-chevron-left'
-);
-wwv_flow_api.create_page_button(
  p_id=>wwv_flow_api.id(12825415966765632)
 ,p_button_sequence=>20
 ,p_button_plug_id=>wwv_flow_api.id(56682839747382561)
@@ -213,6 +201,7 @@ wwv_flow_api.create_page_item(
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_protection_level=>'S'
 ,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 );
 wwv_flow_api.component_end;

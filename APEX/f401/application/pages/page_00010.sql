@@ -25,7 +25,7 @@ wwv_flow_api.create_page(
 ,p_required_patch=>wwv_flow_api.id(6905258727754156)
 ,p_page_is_public_y_n=>'Y'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220428094401'
+,p_last_upd_yyyymmddhh24miss=>'20220510054932'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(25312381302124218)
@@ -60,7 +60,7 @@ wwv_flow_api.create_report_region(
 '  ,''target="_blank"''      as link_attr',
 '  ,null                   as link_class',
 '  ,v1.group_title         as list_badge',
-'from blog_v_links v1',
+'from #OWNER#.blog_v_links v1',
 'where 1 = 1',
 'and (',
 '  :P10_LINK_SEARCH is null or(',

@@ -21,13 +21,13 @@ wwv_flow_api.create_page(
 ,p_group_id=>wwv_flow_api.id(8929534050595858)
 ,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog.admin.dialogIG.initOnPageLoad({',
-'  regionID: "tags"',
+'  regionId: "tags"',
 '});'))
 ,p_step_template=>wwv_flow_api.id(8456403392518180)
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220507104109'
+,p_last_upd_yyyymmddhh24miss=>'20220509183333'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9879490963762847)
@@ -573,12 +573,11 @@ wwv_flow_api.create_page_button(
 ,p_button_sequence=>30
 ,p_button_plug_id=>wwv_flow_api.id(19865705897627513)
 ,p_button_name=>'CLOSE'
-,p_button_action=>'REDIRECT_PAGE'
+,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_api.id(8549262062518244)
 ,p_button_image_alt=>'Close'
 ,p_button_position=>'CLOSE'
-,p_button_redirect_url=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:::'
 ,p_warn_on_unsaved_changes=>null
 ,p_icon_css_classes=>'fa-close'
 );
@@ -641,7 +640,7 @@ wwv_flow_api.create_page_da_action(
  p_id=>wwv_flow_api.id(13627941005077839)
 ,p_event_id=>wwv_flow_api.id(13627898180077838)
 ,p_event_result=>'TRUE'
-,p_action_sequence=>10
+,p_action_sequence=>20
 ,p_execute_on_page_init=>'N'
 ,p_action=>'NATIVE_EXECUTE_PLSQL_CODE'
 ,p_attribute_01=>'#OWNER#.blog_cm.remove_unused_tags;'
@@ -652,11 +651,28 @@ wwv_flow_api.create_page_da_action(
  p_id=>wwv_flow_api.id(13628021134077840)
 ,p_event_id=>wwv_flow_api.id(13627898180077838)
 ,p_event_result=>'TRUE'
-,p_action_sequence=>20
+,p_action_sequence=>30
 ,p_execute_on_page_init=>'N'
 ,p_action=>'NATIVE_REFRESH'
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_api.id(9879490963762847)
+);
+wwv_flow_api.create_page_da_event(
+ p_id=>wwv_flow_api.id(13945127167359345)
+,p_name=>'Close Dialog'
+,p_event_sequence=>20
+,p_triggering_element_type=>'BUTTON'
+,p_triggering_button_id=>wwv_flow_api.id(10031955247412282)
+,p_bind_type=>'bind'
+,p_bind_event_type=>'click'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(13945249675359346)
+,p_event_id=>wwv_flow_api.id(13945127167359345)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_DIALOG_CLOSE'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(9884133660762856)

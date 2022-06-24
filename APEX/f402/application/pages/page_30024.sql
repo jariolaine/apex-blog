@@ -29,7 +29,7 @@ wwv_flow_api.create_page(
 'Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back to t'
 ||'he default settings.</p>'))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220507110352'
+,p_last_upd_yyyymmddhh24miss=>'20220612072242'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43843535329616316)
@@ -46,20 +46,20 @@ wwv_flow_api.create_page_plug(
 '    then replace( lower( l.request_value ), ''application_process='' ) ',
 '    else l.page_name',
 '  end                         as page_name',
-'--  ,lower( l.apex_user )       as user_id',
-'  ,cast(',
-'    l.view_timestamp as timestamp with local time zone',
-'  )                           as timestamp',
+'  ,l.apex_session_id          as session_id',
+'  ,l.view_timestamp ',
+'    at time zone sessiontimezone',
+'                              as timestamp',
 '  ,l.elapsed_time             as elapsed',
 '  ,l.page_view_mode           as page_mode',
-'  ,l.error_on_component_name  as component_name',
 '  ,l.rows_queried             as num_rows',
-'--  ,l.ir_search                as ir_search',
+'  ,l.error_on_component_name  as component_name',
 '  ,l.error_message            as error',
+'  ,l.ecid                     as ecid',
 'from apex_workspace_activity_log l',
 'where 1 = 1',
 '  and l.application_id = :G_PUB_APP_ID',
-'  and l.view_timestamp >= sysdate - ( 1/24/60/60 * :P30024_TIMEFRAME )',
+'  and l.view_date >= sysdate - ( 1/24/60/60 * :P30024_TIMEFRAME )',
 '  and l.apex_user is not null',
 '  and l.page_id is not null',
 ''))
@@ -106,6 +106,17 @@ wwv_flow_api.create_worksheet_column(
 ,p_heading_alignment=>'LEFT'
 );
 wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(15611713783559116)
+,p_db_column_name=>'SESSION_ID'
+,p_display_order=>30
+,p_column_identifier=>'L'
+,p_column_label=>'Session ID'
+,p_column_link=>'f?p=&APP_ID.:30026:&SESSION.::&DEBUG.::P30026_APEX_SESSION_ID:#SESSION_ID#'
+,p_column_linktext=>'#SESSION_ID#'
+,p_column_type=>'NUMBER'
+,p_column_alignment=>'RIGHT'
+);
+wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(43845262629616929)
 ,p_db_column_name=>'TIMESTAMP'
 ,p_display_order=>40
@@ -114,7 +125,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'DATE'
 ,p_heading_alignment=>'LEFT'
 ,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
-,p_tz_dependent=>'Y'
+,p_tz_dependent=>'N'
 );
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(43845674406616930)
@@ -138,36 +149,41 @@ wwv_flow_api.create_worksheet_column(
 ,p_tz_dependent=>'N'
 );
 wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(43846886763616931)
-,p_db_column_name=>'COMPONENT_NAME'
-,p_display_order=>70
-,p_column_identifier=>'G'
-,p_column_label=>'Component Name'
-,p_column_type=>'STRING'
-,p_heading_alignment=>'LEFT'
-,p_tz_dependent=>'N'
-);
-wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(43847245422616932)
 ,p_db_column_name=>'NUM_ROWS'
-,p_display_order=>80
+,p_display_order=>70
 ,p_column_identifier=>'H'
 ,p_column_label=>'Num Rows'
 ,p_column_type=>'NUMBER'
 ,p_heading_alignment=>'RIGHT'
 ,p_column_alignment=>'RIGHT'
 ,p_format_mask=>'999G999G999G999G999G990'
-,p_tz_dependent=>'N'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(43846886763616931)
+,p_db_column_name=>'COMPONENT_NAME'
+,p_display_order=>80
+,p_column_identifier=>'G'
+,p_column_label=>'Component Name'
+,p_column_type=>'STRING'
+,p_heading_alignment=>'LEFT'
 );
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(43848056750616932)
 ,p_db_column_name=>'ERROR'
-,p_display_order=>100
+,p_display_order=>90
 ,p_column_identifier=>'J'
 ,p_column_label=>'Error'
 ,p_column_type=>'STRING'
 ,p_heading_alignment=>'LEFT'
-,p_tz_dependent=>'N'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(15611446653559113)
+,p_db_column_name=>'ECID'
+,p_display_order=>100
+,p_column_identifier=>'K'
+,p_column_label=>'Ecid'
+,p_column_type=>'STRING'
 );
 wwv_flow_api.create_worksheet_rpt(
  p_id=>wwv_flow_api.id(43848788526616934)
@@ -176,7 +192,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_report_alias=>'438488'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'PAGE_NAME:TIMESTAMP:ELAPSED:PAGE_MODE:NUM_ROWS:'
+,p_report_columns=>'PAGE_NAME:SESSION_ID:TIMESTAMP:ELAPSED:PAGE_MODE:NUM_ROWS:'
 ,p_sort_column_1=>'TIMESTAMP'
 ,p_sort_direction_1=>'DESC'
 );

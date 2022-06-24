@@ -172,6 +172,7 @@ prompt --install
 @@application/pages/page_30023.sql
 @@application/pages/page_30024.sql
 @@application/pages/page_30025.sql
+@@application/pages/page_30026.sql
 @@application/deployment/definition.sql
 @@application/deployment/install/upgrade_create_view_blog_v_version.sql
 @@application/deployment/install/install_database_objects.sql

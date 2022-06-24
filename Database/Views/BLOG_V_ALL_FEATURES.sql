@@ -23,7 +23,11 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUI
   ,lower( t1.last_updated_by )  as last_updated_by
   ,t2.is_active                 as is_active
   ,t2.build_option_parent       as feature_parent
-  ,t2.help_message              as help_message
+  ,regexp_replace(
+    t2.build_option_name
+    ,'^(BLOG)'
+    ,'\1_HELP'
+  )                             as help_message
 from apex_application_build_options t1
 join blog_features t2
   on t1.build_option_name = t2.build_option_name

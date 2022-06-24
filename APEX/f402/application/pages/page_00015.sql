@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220505044838'
+,p_last_upd_yyyymmddhh24miss=>'20220510053752'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(6729285879951908)
@@ -74,7 +74,7 @@ wwv_flow_api.create_page_plug(
 '    then ''fa-check''',
 '    else ''fa-minus''',
 '   end                    as file_repository_icon',
-'from blog_v_all_files v1',
+'from #OWNER#.blog_v_all_files v1',
 '-- links button title',
 'cross join(',
 '  select',
@@ -395,17 +395,6 @@ wwv_flow_api.create_page_da_action(
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_api.id(6729285879951908)
 );
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(25132647522432508)
-,p_event_id=>wwv_flow_api.id(25132454760432506)
-,p_event_result=>'TRUE'
-,p_action_sequence=>20
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex.message.showPageSuccess(this.data.successMessage.text);',
-''))
-);
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(26969189313257319)
 ,p_name=>'Process File Attributes Update'
@@ -425,17 +414,6 @@ wwv_flow_api.create_page_da_action(
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_api.id(6729285879951908)
 );
-wwv_flow_api.create_page_da_action(
- p_id=>wwv_flow_api.id(26969233998257320)
-,p_event_id=>wwv_flow_api.id(26969189313257319)
-,p_event_result=>'TRUE'
-,p_action_sequence=>20
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex.message.showPageSuccess(this.data.successMessage.text);',
-''))
-);
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(27862886676256827)
 ,p_name=>'After IR refresh'
@@ -453,15 +431,7 @@ wwv_flow_api.create_page_da_action(
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_affected_elements_type=>'TRIGGERING_ELEMENT'
-,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'this.affectedElements.find("td[headers=DOWNLOAD] a").removeAttr("alt title").end()',
-'.find("[data-clipboard-source]").click(function(){  ',
-'  var $temp = $("<input/>",{"class":"z-hidden","value":$(this).data("clipboard-source")});',
-'  $("body").append($temp);',
-'  $temp.select();',
-'  document.execCommand("copy");',
-'  $temp.remove();',
-'});'))
+,p_attribute_01=>'blog.admin.filesIrAfterRefresh( this.affectedElements );'
 );
 wwv_flow_api.component_end;
 end;

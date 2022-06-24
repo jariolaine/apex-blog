@@ -160,6 +160,7 @@ prompt --install
 @@application/deployment/install/upgrade_patch_21_2_20220415.sql
 @@application/deployment/install/upgrade_patch_21_2_20220421.sql
 @@application/deployment/install/upgrade_patch_21_2_20220508.sql
+@@application/deployment/install/upgrade_patch_21_2_20220612.sql
 @@application/deployment/install/upgrade_database_objects_upgrade.sql
 @@application/deployment/install/upgrade_rereate_text_index.sql
 @@application/deployment/install/upgrade_update_version_info.sql

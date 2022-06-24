@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220508044813'
+,p_last_upd_yyyymmddhh24miss=>'20220510055057'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8596898648797585)
@@ -82,7 +82,7 @@ wwv_flow_api.create_page_plug(
 '  )                         as detail_view_published',
 '-- Tags HTML for detail view',
 '  ,v1.tags_html             as tags_html',
-'from blog_v_all_posts v1',
+'from #OWNER#.blog_v_all_posts v1',
 '-- because APEX bug that IR not use LOV values ',
 'join (',
 '  select lov.display_value',
@@ -488,6 +488,44 @@ wwv_flow_api.create_page_button(
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:RP,&APP_PAGE_ID.,RIR::'
 ,p_icon_css_classes=>'fa-undo-alt'
+);
+wwv_flow_api.create_page_da_event(
+ p_id=>wwv_flow_api.id(13944956080359343)
+,p_name=>'Opened from Tab'
+,p_event_sequence=>10
+,p_triggering_element_type=>'REGION'
+,p_triggering_region_id=>wwv_flow_api.id(24910908943771848)
+,p_bind_type=>'bind'
+,p_bind_event_type=>'apexafterclosedialog'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(13945095580359344)
+,p_event_id=>wwv_flow_api.id(13944956080359343)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_api.id(8596898648797585)
+);
+wwv_flow_api.create_page_da_event(
+ p_id=>wwv_flow_api.id(13945452969359348)
+,p_name=>'Opened from Report'
+,p_event_sequence=>20
+,p_triggering_element_type=>'REGION'
+,p_triggering_region_id=>wwv_flow_api.id(8596898648797585)
+,p_bind_type=>'bind'
+,p_bind_event_type=>'apexafterclosedialog'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(13945573412359349)
+,p_event_id=>wwv_flow_api.id(13945452969359348)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_api.id(8596898648797585)
 );
 wwv_flow_api.component_end;
 end;

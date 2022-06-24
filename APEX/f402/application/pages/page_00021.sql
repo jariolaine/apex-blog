@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220508045924'
+,p_last_upd_yyyymmddhh24miss=>'20220510054120'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(19303429631329496)
@@ -34,11 +34,11 @@ wwv_flow_api.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select TITLE,',
-'       LINK_DESC',
-'  from BLOG_V_ALL_LINKS',
-' where link_group_id = :P21_ID',
-' order by DISPLAY_SEQ'))
+'select v1.title',
+'  ,v1.link_desc',
+'from #OWNER#.blog_v_all_links v1',
+'where v1.link_group_id = :P21_ID',
+'order by v1.display_seq'))
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_api.id(8519378220518224)

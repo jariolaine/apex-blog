@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220505045345'
+,p_last_upd_yyyymmddhh24miss=>'20220510054249'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(27412346667552217)
@@ -79,7 +79,7 @@ wwv_flow_api.create_page_plug(
 '        ,p1 => v1.post_id',
 '      )',
 '   )                        as edit_url',
-'from blog_v_all_comments v1',
+'from #OWNER#.blog_v_all_comments v1',
 '-- because APEX bug that IR not use LOV values in detail view',
 'join (',
 '  select lov.display_value',
@@ -372,10 +372,7 @@ wwv_flow_api.create_page_da_action(
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_affected_elements_type=>'TRIGGERING_ELEMENT'
-,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'this.affectedElements.find("a[data-unread=true]").one("click", function(){',
-'  $($x($(this).data("id"))).removeClass("fa-envelope-o fa-envelope-arrow-down").addClass("fa-envelope-open-o");',
-'});'))
+,p_attribute_01=>'blog.admin.commentsIrAfterRefresh( this.affectedElements );'
 ,p_da_action_comment=>'Attach one time click event listener to report links having data attribute. When report link is clicked change link icon class.'
 );
 wwv_flow_api.create_page_da_event(

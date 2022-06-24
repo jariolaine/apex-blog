@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220504160442'
+,p_last_upd_yyyymmddhh24miss=>'20220510055112'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(37645474034287120)
@@ -322,7 +322,7 @@ wwv_flow_api.create_page_button(
 ,p_button_redirect_url=>'f?p=&APP_ID.:32:&SESSION.::&DEBUG.:RP,32::'
 ,p_button_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select 1',
-'from blog_v_comments v1',
+'from #OWNER#.blog_v_comments v1',
 'where 1 = 1',
 'and v1.parent_id is null',
 'and v1.comment_id = :P31_ID'))

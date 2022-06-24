@@ -11,15 +11,6 @@ td[headers="COPY_URL"] {
   padding: 0;
 }
 /**************************************
-* Categories IG
-**************************************/
-.z-sortable-handle:hover {
-  cursor: move;
-}
-.ui-sortable-helper {
-  display: inline-flex;
-}
-/**************************************
 * Posts IR detail view
 **************************************/
 .z-post--IR {
@@ -246,17 +237,15 @@ pre.z-program-code code {
 }
 /**************************************
 * Status Marker
+*
 * Credits to fac586:
-* https://community.oracle.com/tech/developers/discussion/comment/15630636/#Comment_15630636
+*   https://community.oracle.com/tech/developers/discussion/comment/15630636/#Comment_15630636
 **************************************/
 .z-status-marker {
   position: relative;
   margin: -8px -12px;
   padding: 8px 12px;
 }
-/*
-  Generate a triangle at the top left or right of report cells containing status marker elements
-*/
 .z-status-marker--left::before {
   position: absolute;
   top: 0;
@@ -265,6 +254,9 @@ pre.z-program-code code {
   width: 0;
   height: 0;
   content: "";
+}
+.z-status-marker--left.z-required::before {
+  border-color: var(--u-color-9) transparent transparent var(--u-color-9);
 }
 .z-status-marker--right::after {
   position: absolute;
@@ -275,15 +267,12 @@ pre.z-program-code code {
   height: 0;
   content: "";
 }
-/*
-  Colour the triangles according to the specified status class.
-*/
-.z-status-marker--left.z-required::before {
+.z-status-marker--right.z-required::before {
   border-color: var(--u-color-9) transparent transparent var(--u-color-9);
 }
-.z-status-marker--right.z-required::after {
-  border-color: var(--u-color-9) var(--u-color-9) transparent transparent;
-}
+/**************************************
+* Login page horizontal ruler
+**************************************/
 .z-hr-section {
   display: flex;
   flex-basis: 100%;

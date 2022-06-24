@@ -24,7 +24,7 @@ wwv_flow_api.create_page(
 ,p_dialog_chained=>'N'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220507034128'
+,p_last_upd_yyyymmddhh24miss=>'20220510054544'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(65300325259080906)
@@ -56,7 +56,7 @@ wwv_flow_api.create_report_region(
 '    ,p0 => v1.int_min',
 '    ,p1 => v1.int_max',
 '  )                   as help',
-'from blog_v_all_settings v1',
+'from #OWNER#.blog_v_all_settings v1',
 'where 1 = 1',
 '  and :REQUEST = ''SETTINGS''',
 '  and v1.id = :P20100_ID',
@@ -66,7 +66,7 @@ wwv_flow_api.create_report_region(
 '  ,apex_lang.message(',
 '    p_name => v1.help_message',
 '  )                   as help',
-'from blog_v_all_features v1',
+'from #OWNER#.blog_v_all_features v1',
 'where 1 = 1',
 '  and :REQUEST = ''FEATURES''',
 '  and v1.id = :P20100_ID'))

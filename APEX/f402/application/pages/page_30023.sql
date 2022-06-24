@@ -29,7 +29,7 @@ wwv_flow_api.create_page(
 'Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back to t'
 ||'he default settings.</p>'))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220507110410'
+,p_last_upd_yyyymmddhh24miss=>'20220612063531'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43851444064616938)
@@ -265,7 +265,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_report_alias=>'438584'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'PAGE_NAME:MEDIAN_ELAPSED:AVG_ELAPSED:MAX_ELAPSED:MIN_ELAPSED:WEIGHTED_PERFORMANCE:ERRORS:APPLICATION_SESSIONS:PAGE_VIEWS:'
+,p_report_columns=>'PAGE_NAME:MAX_ELAPSED:AVG_ELAPSED:MIN_ELAPSED:MEDIAN_ELAPSED:WEIGHTED_PERFORMANCE:ERRORS:APPLICATION_SESSIONS:PAGE_VIEWS:'
 ,p_sort_column_1=>'WEIGHTED_PERFORMANCE'
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'PAGE_VIEWS'

@@ -327,12 +327,12 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19897213779441945)
 ,p_name=>'BLOG_HELP_G_APP_DATE_FORMAT'
-,p_message_text=>'Public pages date format.'
+,p_message_text=>'Public pages date format. Changes to this settings only take effect in new sessions of the public application.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19894083253206015)
 ,p_name=>'BLOG_HELP_G_APP_DESC'
-,p_message_text=>'Description of this blog.'
+,p_message_text=>'Description of this blog. Changes to this settings only take effect in new sessions of the public application.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(65335091944381875)
@@ -344,7 +344,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19893743625198161)
 ,p_name=>'BLOG_HELP_G_APP_NAME'
-,p_message_text=>'Name of this blog.'
+,p_message_text=>'Name of this blog. Changes to this settings only take effect in new sessions of the public application.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(65392119713598778)
@@ -391,7 +391,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19897443841446602)
 ,p_name=>'BLOG_HELP_G_POST_TITLE_DATE_FORMAT'
-,p_message_text=>'Date format for blog posts header.'
+,p_message_text=>'Date format for blog posts header. Changes to this settings only take effect in new sessions of the public application.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(65369256313682348)
@@ -406,17 +406,17 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19896387769414873)
 ,p_name=>'BLOG_HELP_G_SEARCH_ROWS'
-,p_message_text=>'The number of Search results per report page. The value must be an integer between %0 and %1.'
+,p_message_text=>'The number of Search results per report page. The value must be an integer between %0 and %1. Changes to this settings only take effect in new sessions of the public application.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19894253687211234)
 ,p_name=>'BLOG_HELP_P1_REPORT_ROWS'
-,p_message_text=>'The number of posts per report page displayed on the home page. The value must be an integer between %0 and %1.'
+,p_message_text=>'The number of posts per report page displayed on the home page. The value must be an integer between %0 and %1. Changes to this settings only take effect in new sessions of the public application.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(19895088592241687)
 ,p_name=>'BLOG_HELP_P2_REPORT_ROWS'
-,p_message_text=>'The number of comments per report page displayed on the post page. The value must be an integer between %0 and %1.'
+,p_message_text=>'The number of comments per report page displayed on the post page. The value must be an integer between %0 and %1. Changes to this settings only take effect in new sessions of the public application.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(61250680749871346)
@@ -526,7 +526,7 @@ wwv_flow_api.create_message(
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(40637327457556920)
 ,p_name=>'BLOG_MSG_BASIC_SETTINGS_INFO'
-,p_message_text=>'Changes to settings only take effect for new sessions in the public application.'
+,p_message_text=>'Changes to some settings only take effect for new sessions in the public application.'
 );
 wwv_flow_api.create_message(
  p_id=>wwv_flow_api.id(25114336930810124)

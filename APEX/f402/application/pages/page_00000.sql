@@ -21,7 +21,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'D'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20201005151902'
+,p_last_upd_yyyymmddhh24miss=>'20220509164345'
 );
 wwv_flow_api.create_page_da_event(
  p_id=>wwv_flow_api.id(33486264261421407)
@@ -39,7 +39,7 @@ wwv_flow_api.create_page_da_action(
 ,p_action_sequence=>10
 ,p_execute_on_page_init=>'N'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_attribute_01=>'apex.message.showPageSuccess(this.data.successMessage.text);'
+,p_attribute_01=>'blog.admin.getDialogMessage( this.data.successMessage );'
 );
 wwv_flow_api.component_end;
 end;

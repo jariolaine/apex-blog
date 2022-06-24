@@ -23,7 +23,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220504191732'
+,p_last_upd_yyyymmddhh24miss=>'20220510054419'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(11416108930329119)
@@ -36,12 +36,12 @@ wwv_flow_api.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   attribute_value  as attribute_value',
-'  ,created_on       as created_on',
-'  ,changed_on       as changed_on',
-'from blog_settings',
+'   t1.attribute_value as attribute_value',
+'  ,t1.created_on      as created_on',
+'  ,t1.changed_on      as changed_on',
+'from #OWNER#.blog_settings t1',
 'where 1 = 1',
-'  and attribute_name = ''G_APP_VERSION''',
+'  and t1.attribute_name = ''G_APP_VERSION''',
 ''))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_query_row_template=>wwv_flow_api.id(8519378220518224)
@@ -79,8 +79,14 @@ wwv_flow_api.create_report_columns(
 ,p_query_column_id=>3
 ,p_column_alias=>'CHANGED_ON'
 ,p_column_display_sequence=>50
-,p_hidden_column=>'Y'
+,p_column_heading=>'Changed On'
+,p_use_as_row_header=>'N'
+,p_column_format=>'&G_USER_DATE_TIME_FORMAT.'
+,p_column_alignment=>'RIGHT'
+,p_heading_alignment=>'RIGHT'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_api.create_report_region(
  p_id=>wwv_flow_api.id(12513918318984045)
@@ -93,13 +99,13 @@ wwv_flow_api.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   attribute_value  as attribute_value',
-'  ,created_on       as created_on',
-'  ,changed_on       as changed_on',
-'from blog_settings',
+'   t1.attribute_value as attribute_value',
+'  ,t1.created_on      as created_on',
+'  ,t1.changed_on      as changed_on',
+'from #OWNER#.blog_settings t1',
 'where 1 = 1',
-'  and attribute_name like ''PATCH%''',
-'order by created_on desc'))
+'  and t1.attribute_name like ''PATCH%''',
+'order by t1.attribute_name desc'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_query_row_template=>wwv_flow_api.id(8519378220518224)
 ,p_query_headings_type=>'NO_HEADINGS'

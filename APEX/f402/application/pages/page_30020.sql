@@ -24,7 +24,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220507110256'
+,p_last_upd_yyyymmddhh24miss=>'20220612063021'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43823229274615012)
@@ -80,38 +80,30 @@ wwv_flow_api.create_jet_chart_series(
 ,p_name=>'Series 1'
 ,p_data_source_type=>'SQL'
 ,p_data_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'with nw as (',
-'    -- APEX_ACTIVITY_LOG uses dates; convert system time to local time zone.',
-'  select from_tz( cast( sysdate as timestamp ), to_char( systimestamp, ''TZR'' ) ) at local as tm',
-'  from dual',
-'),',
-'window as (',
+'with window as (',
 '  select',
-'    trunc(nw.tm - ((level-1)/24),''HH'')  as start_tm',
-'    ,trunc(nw.tm - ((level-2)/24),''HH'') as end_tm',
-'    ,trunc(sysdate-((level-1)/24),''HH'') as log_start_tm',
-'    ,trunc(sysdate-((level-2)/24),''HH'') as log_end_tm',
-'  from nw',
+'     trunc( current_timestamp - ( ( level - 1 ) / 24 ), ''HH'' )  as start_tm',
+'    ,trunc( current_timestamp - ( ( level - 2 ) / 24 ), ''HH'' )  as end_tm',
+'  from dual',
 '  connect by level <= round( 24 * ( 1/24/60/60 * nvl( :P30020_TIMEFRAME, 1 ) ) )',
 ')',
 'select  w.start_tm as log_time',
 '  ,(',
 '    select count(*)',
-'    from apex_activity_log l',
+'    from apex_workspace_activity_log l',
 '    where 1 = 1',
-'      and l.flow_id = :G_PUB_APP_ID',
-'      and l.time_stamp between w.log_start_tm and w.log_end_tm',
+'      and l.application_id = :G_PUB_APP_ID',
+'      and l.view_timestamp at time zone sessiontimezone between w.start_tm and w.end_tm',
 '  ) as value',
 'from window w',
-'order by 1'))
+'order by 1',
+''))
 ,p_max_row_count=>350
 ,p_ajax_items_to_submit=>'P30020_TIMEFRAME'
 ,p_items_value_column_name=>'VALUE'
 ,p_items_label_column_name=>'LOG_TIME'
 ,p_assigned_to_y2=>'off'
 ,p_items_label_rendered=>false
-,p_items_label_display_as=>'PERCENT'
-,p_threshold_display=>'onIndicator'
 );
 wwv_flow_api.create_jet_chart_axis(
  p_id=>wwv_flow_api.id(43826627171615043)
@@ -287,8 +279,8 @@ wwv_flow_api.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'  error_message   label',
-'  ,view_timestamp value',
+'   error_message  as label',
+'  ,view_timestamp as value',
 'from apex_workspace_activity_log',
 'where application_id = :G_PUB_APP_ID',
 '  and view_date >= sysdate - ( 1/24/60/60 * :P30020_TIMEFRAME )',

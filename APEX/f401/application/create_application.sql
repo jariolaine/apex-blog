@@ -26,9 +26,9 @@ wwv_flow_api.create_flow(
 ,p_bookmark_checksum_function=>'SH512'
 ,p_accept_old_checksums=>false
 ,p_max_session_length_sec=>86400
-,p_on_max_session_timeout_url=>'#HOME_LINK#'
-,p_max_session_idle_sec=>86400
-,p_on_max_idle_timeout_url=>'#HOME_LINK#'
+,p_on_max_session_timeout_url=>'#LOGOUT_URL#'
+,p_max_session_idle_sec=>43200
+,p_on_max_idle_timeout_url=>'#LOGOUT_URL#'
 ,p_session_timeout_warning_sec=>0
 ,p_compatibility_mode=>'21.2'
 ,p_flow_language=>'en'
@@ -66,7 +66,7 @@ wwv_flow_api.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220508055239'
+,p_last_upd_yyyymmddhh24miss=>'20220624052336'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>351
 ,p_ui_type_name => null

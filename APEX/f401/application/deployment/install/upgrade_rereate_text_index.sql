@@ -15,7 +15,7 @@ wwv_flow_api.create_install_script(
  p_id=>wwv_flow_api.id(13344011176158522)
 ,p_install_id=>wwv_flow_api.id(20741295540297154)
 ,p_name=>'Rereate text index'
-,p_sequence=>60
+,p_sequence=>70
 ,p_script_type=>'UPGRADE'
 ,p_condition_type=>'EXISTS'
 ,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(

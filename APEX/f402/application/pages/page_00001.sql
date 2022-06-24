@@ -22,7 +22,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220426085033'
+,p_last_upd_yyyymmddhh24miss=>'20220510055035'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(8582113239518316)
@@ -69,7 +69,7 @@ wwv_flow_api.create_report_region(
 '      else 0',
 '    end',
 '   )                    as num_scheduled_posts',
-'from blog_v_all_posts'))
+'from #OWNER#.blog_v_all_posts'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
@@ -142,7 +142,7 @@ wwv_flow_api.create_report_region(
 '  ,sum(unread_comments_count)     as num_unread_comments',
 '  ,sum(moderate_comments_count)   as num_moderate_comments',
 '  ,sum(published_comments_count)  as num_published_comments',
-'from blog_v_all_posts'))
+'from #OWNER#.blog_v_all_posts'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false

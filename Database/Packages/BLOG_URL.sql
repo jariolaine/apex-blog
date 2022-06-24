@@ -184,7 +184,7 @@ as
   begin
 
     -- get canonical host from blog settings
-    l_url :=  blog_util.get_attribute_value( 'G_CANONICAL_HOST' );
+    l_url := blog_util.get_attribute_value( 'G_CANONICAL_HOST' );
 
     -- if host not found from settings, use APEX provided value
     if l_url is null
@@ -192,7 +192,7 @@ as
       l_url := apex_util.host_url();
     end if;
 
-    return l_url;
+    return rtrim( l_url, '/' );
 
   end get_canonical_host;
 --------------------------------------------------------------------------------

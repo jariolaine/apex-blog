@@ -28,7 +28,7 @@ wwv_flow_api.create_page(
 '<p>Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back t'
 ||'o the default settings.</p>'))
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220507110844'
+,p_last_upd_yyyymmddhh24miss=>'20220612065305'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(43861070470616959)
@@ -42,15 +42,21 @@ wwv_flow_api.create_page_plug(
 '  ,l.apex_user                as user_id',
 '  ,l.apex_session_id          as session_id',
 '  ,l.debug_page_view_id       as debug_id',
-'  ,cast(',
-'    l.view_timestamp as timestamp with local time zone',
-'  )                           as error_time',
+'  ,l.view_timestamp ',
+'    at time zone sessiontimezone',
+'                              as error_time',
 '  ,l.error_message            as error_message',
 '  ,l.error_on_component_type  as component_type',
 '  ,l.error_on_component_name  as component_name',
+'  ,l.page_view_mode           as view_mode',
+'  ,l.page_view_type           as view_type',
+'  ,l.request_value            as request',
+'  ,l.log_context              as context',
+'  ,l.application_info         as info',
+'  ,l.ecid                     as ecid',
 'from apex_workspace_activity_log l',
 'where l.application_id = :G_PUB_APP_ID',
-'and l.view_timestamp >= sysdate - ( 1/24/60/60 * :P30022_TIMEFRAME )',
+'and l.view_date >= sysdate - ( 1/24/60/60 * :P30022_TIMEFRAME )',
 'and l.error_message is not null',
 ''))
 ,p_plug_source_type=>'NATIVE_IR'
@@ -98,6 +104,8 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_order=>30
 ,p_column_identifier=>'I'
 ,p_column_label=>'Session'
+,p_column_link=>'f?p=&APP_ID.:30026:&SESSION.::&DEBUG.::P30026_APEX_SESSION_ID:#SESSION_ID#'
+,p_column_linktext=>'#SESSION_ID#'
 ,p_column_type=>'NUMBER'
 ,p_column_alignment=>'RIGHT'
 );
@@ -121,7 +129,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'DATE'
 ,p_column_alignment=>'CENTER'
 ,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
-,p_tz_dependent=>'Y'
+,p_tz_dependent=>'N'
 );
 wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(12510130561984007)
@@ -147,6 +155,54 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_label=>'Component Name'
 ,p_column_type=>'STRING'
 );
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(15610888098559107)
+,p_db_column_name=>'VIEW_MODE'
+,p_display_order=>90
+,p_column_identifier=>'O'
+,p_column_label=>'View Mode'
+,p_column_type=>'STRING'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(15610983036559108)
+,p_db_column_name=>'VIEW_TYPE'
+,p_display_order=>100
+,p_column_identifier=>'P'
+,p_column_label=>'View Type'
+,p_column_type=>'STRING'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(15611007518559109)
+,p_db_column_name=>'REQUEST'
+,p_display_order=>110
+,p_column_identifier=>'Q'
+,p_column_label=>'Request'
+,p_column_type=>'STRING'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(15611193794559110)
+,p_db_column_name=>'CONTEXT'
+,p_display_order=>120
+,p_column_identifier=>'R'
+,p_column_label=>'Context'
+,p_column_type=>'STRING'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(15611252520559111)
+,p_db_column_name=>'INFO'
+,p_display_order=>130
+,p_column_identifier=>'S'
+,p_column_label=>'Info'
+,p_column_type=>'STRING'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(15611312389559112)
+,p_db_column_name=>'ECID'
+,p_display_order=>140
+,p_column_identifier=>'T'
+,p_column_label=>'Ecid'
+,p_column_type=>'STRING'
+);
 wwv_flow_api.create_worksheet_rpt(
  p_id=>wwv_flow_api.id(43864765565616964)
 ,p_application_user=>'APXWS_DEFAULT'
@@ -154,7 +210,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_report_alias=>'438648'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'PAGE_ID:DEBUG_ID:ERROR_TIME:ERROR_MESSAGE:COMPONENT_TYPE:COMPONENT_NAME:'
+,p_report_columns=>'PAGE_ID:SESSION_ID:DEBUG_ID:ERROR_TIME:ERROR_MESSAGE:COMPONENT_TYPE:COMPONENT_NAME:'
 ,p_sort_column_1=>'ERROR_TIME'
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'ERR_TIME'
