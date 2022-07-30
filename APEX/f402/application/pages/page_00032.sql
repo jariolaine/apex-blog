@@ -228,9 +228,9 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_image_alt=>'Reply'
 ,p_button_position=>'CREATE'
 ,p_button_condition=>'P32_ID'
-,p_button_condition_type=>'ITEM_IS_NOT_NULL'
-,p_icon_css_classes=>'fa-save'
-,p_database_action=>'UPDATE'
+,p_button_condition_type=>'ITEM_IS_NULL'
+,p_icon_css_classes=>'fa-send-o'
+,p_database_action=>'INSERT'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(45722332769325205)

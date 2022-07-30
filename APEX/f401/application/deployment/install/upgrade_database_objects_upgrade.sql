@@ -1351,10 +1351,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '      raise no_data_found;',
 '    end if;',
 '',
-'    -- raise no data found error if parameter p_attribute_name is null',
-'    if p_attribute_name is null then',
-'      raise no_data_found;',
-'    end if;',
+'    -- conver application id string to number',
+'    l_app_id := to_number( p_app_id );',
 '',
 '    -- set items session state',
 '    -- fetch items and values that session state need to be set',
@@ -1431,13 +1429,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '      raise no_data_found;',
 '    end if;',
 '',
-'    apex_debug.warn(',
-'       p_message => ''No data found. %s( %s => %s )''',
-'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => ''p_app_id''',
-'      ,p2 => coalesce( p_app_id, ''(null)'' )',
-'    );',
-'    raise;',
+'    -- conver post id string to number',
+'    l_post_id := to_number( p_post_id );',
 '',
 '    -- fetch post title',
 '    select v1.post_title',
@@ -1800,8 +1793,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '          );',
 '      end if;',
 '',
-'  when others',
-'  then',
+'    end loop;',
 '',
 '  end render_dynamic_content;',
 '--------------------------------------------------------------------------------',
@@ -2016,14 +2008,6 @@ wwv_flow_imp_shared.append_to_install_script(
 'authid definer',
 'as',
 '--------------------------------------------------------------------------------',
-'-- Called from:',
-'--  admin app application processes',
-'  procedure get_blogger_details(',
-'    p_app_id          in varchar2,',
-'    p_username        in varchar2,',
-'    p_id              out nocopy number,',
-'    p_name            out nocopy varchar2',
-'  );',
 '--------------------------------------------------------------------------------',
 '--',
 '--  DESCRIPTION',
@@ -2563,15 +2547,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '      l_first_p := null;',
 '',
-'    -- fetch max link group display sequence',
-'    select max( v1.display_seq ) as display_seq',
-'    into l_max_seq',
-'    from blog_v_all_link_groups v1',
-'    ;',
-'    -- get next link group display sequence',
-'    l_next_seq := blog_util.int_to_vc2( next_seq( l_max_seq ) );',
-'    -- return next link group display sequence',
-'    return l_next_seq;',
+'    end loop;',
 '',
 '',
 '    -- post must have at least one paragraph',
@@ -3741,25 +3717,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_archive_id  in number,',
 '    p_app_id      in varchar2 default null,',
 '    p_session     in varchar2 default null,',
-'    p_clear_cache '))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.6'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'in varchar2 default null,',
+'    p_clear_cache in varchar2 default null,',
 '    p_canonical   in varchar2 default ''NO'',',
 '    p_plain_url   in varchar2 default ''YES'',',
 '    p_encode_url  in varchar2 default ''NO''',
@@ -4093,10 +4051,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_string in out nocopy varchar2',
 '  )',
 '  as',
-'    l_temp        varchar2(32700);',
-'    l_code_row    number;',
-'    l_code_tab    apex_t_varchar2;',
-'    l_comment_tab apex_t_varchar2;',
 '  begin',
 '    -- remove unwanted ascii codes',
 '    for i in 0 .. 31',
@@ -4207,7 +4161,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_code_tab    apex_t_varchar2;',
 '    l_comment_tab apex_t_varchar2;',
 '  begin',
-'    -- TO DO see item 3 from package specs',
 '',
 '    -- process code tags',
 '    build_code_tab(',
@@ -5025,26 +4978,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_rss_title   varchar2(4000);',
 '    l_rss_anchor  varchar2(4000);',
 '  begin',
-'    -- generate canonical link for post',
-'    if p_post_id is not null then',
-'      l_html :=',
-'        apex_string.format(',
-'          p_message =>''<link rel="canonical" href="%s" />''',
-'          ,p0 =>',
-'            blog_url.get_post(',
-'              p_post_id      => p_post_id',
-'              ,p_app_id       => p_app_id',
-'              ,p_session      => ''''',
-'              ,p_canonical    => ''YES''',
-'            )',
-'        )',
-'      ;',
-'    else',
-'      apex_debug.warn(''Canonical link tag not generated for post.'');',
-'      l_html := get_robots_noindex_meta;',
-'    end if;',
-'    -- return generated HTML',
-'    return l_html;',
 '',
 '    -- get rss title',
 '    l_rss_title :=',
@@ -5656,25 +5589,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_cache_control :=',
 '      apex_string.format(',
 '         p_message => ''max-age=%s''',
-'        ,p0 => blog_util.get_attri'))
-);
-null;
-wwv_flow_api.component_end;
-end;
-/
-begin
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.6'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'bute_value( ''G_MAX_AGE_SITEMAP'' )',
+'        ,p0 => blog_util.get_attribute_value( ''G_MAX_AGE_SITEMAP'' )',
 '      )',
 '    ;',
 '',

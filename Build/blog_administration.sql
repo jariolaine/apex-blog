@@ -16016,15 +16016,6 @@ wwv_flow_imp_shared.create_message(
 );
 end;
 /
-begin
-wwv_flow_api.create_message(
- p_id=>wwv_flow_api.id(13426245642418133)
-,p_name=>'DELETE_CONFIRM_MSG'
-,p_message_text=>'Would you like to perform this delete action?'
-);
-null;
-end;
-/
 prompt --application/shared_components/globalization/dyntranslations
 begin
 null;
@@ -17699,7 +17690,7 @@ wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(27060086137689101)
 ,p_event_id=>wwv_flow_imp.id(26972190915257349)
 ,p_event_result=>'FALSE'
-,p_action_sequence=>40
+,p_action_sequence=>30
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_SHOW'
 ,p_affected_elements_type=>'ITEM'
@@ -17709,7 +17700,7 @@ wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(27060832304689109)
 ,p_event_id=>wwv_flow_imp.id(26972190915257349)
 ,p_event_result=>'TRUE'
-,p_action_sequence=>40
+,p_action_sequence=>30
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_DISABLE'
 ,p_affected_elements_type=>'BUTTON'
@@ -17719,7 +17710,7 @@ wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(27061047061689111)
 ,p_event_id=>wwv_flow_imp.id(26972190915257349)
 ,p_event_result=>'FALSE'
-,p_action_sequence=>50
+,p_action_sequence=>40
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_ENABLE'
 ,p_affected_elements_type=>'BUTTON'
@@ -17741,7 +17732,7 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_event_result=>'FALSE'
 ,p_action_sequence=>50
 ,p_execute_on_page_init=>'Y'
-,p_action=>'NATIVE_HIDE'
+,p_action=>'NATIVE_ENABLE'
 ,p_affected_elements_type=>'BUTTON'
 ,p_affected_button_id=>wwv_flow_imp.id(19020291458830226)
 );
@@ -17759,7 +17750,7 @@ wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(27060769226689108)
 ,p_event_id=>wwv_flow_imp.id(26972190915257349)
 ,p_event_result=>'TRUE'
-,p_action_sequence=>70
+,p_action_sequence=>60
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_HIDE'
 ,p_affected_elements_type=>'BUTTON'
@@ -17779,7 +17770,7 @@ wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(30246791271830729)
 ,p_event_id=>wwv_flow_imp.id(26972190915257349)
 ,p_event_result=>'TRUE'
-,p_action_sequence=>80
+,p_action_sequence=>70
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_HIDE'
 ,p_affected_elements_type=>'BUTTON'
@@ -17809,7 +17800,7 @@ wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(30246912469830731)
 ,p_event_id=>wwv_flow_imp.id(26972190915257349)
 ,p_event_result=>'FALSE'
-,p_action_sequence=>100
+,p_action_sequence=>90
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_SHOW'
 ,p_affected_elements_type=>'BUTTON'
@@ -17819,7 +17810,7 @@ wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(30247330857830735)
 ,p_event_id=>wwv_flow_imp.id(26972190915257349)
 ,p_event_result=>'FALSE'
-,p_action_sequence=>110
+,p_action_sequence=>100
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_SHOW'
 ,p_affected_elements_type=>'BUTTON'
@@ -17924,7 +17915,6 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
-null;
 end;
 /
 prompt --application/pages/page_00014
@@ -24651,9 +24641,9 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_image_alt=>'Reply'
 ,p_button_position=>'CREATE'
 ,p_button_condition=>'P32_ID'
-,p_button_condition_type=>'ITEM_IS_NOT_NULL'
-,p_icon_css_classes=>'fa-save'
-,p_database_action=>'UPDATE'
+,p_button_condition_type=>'ITEM_IS_NULL'
+,p_icon_css_classes=>'fa-send-o'
+,p_database_action=>'INSERT'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(45722332769325205)
@@ -29826,214 +29816,6 @@ wwv_flow_imp_page.create_page_item(
 );
 end;
 /
-prompt --application/pages/page_30025
-begin
-wwv_flow_api.create_page(
- p_id=>30025
-,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
-,p_name=>'Error Debug Log'
-,p_alias=>'ERROR-DEBUG-LOG'
-,p_page_mode=>'MODAL'
-,p_step_title=>'Error Debug Log'
-,p_autocomplete_on_off=>'OFF'
-,p_group_id=>wwv_flow_api.id(28670259188910652)
-,p_page_template_options=>'#DEFAULT#'
-,p_protection_level=>'C'
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220504193349'
-);
-wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(56682839747382561)
-,p_plug_name=>'Error Debug Log'
-,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
-,p_plug_template=>wwv_flow_api.id(8495746153518209)
-,p_plug_display_sequence=>10
-,p_query_type=>'SQL'
-,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select page_id        as page_id',
-'  ,session_id         as session_id',
-'  ,apex_user          as user_id',
-'  ,page_view_id       as page_view_id',
-'  ,message_level      as message_level',
-'  ,cast(',
-'    message_timestamp as timestamp with local time zone',
-'  )                   as message_timestamp',
-'  ,elapsed_time       as elapsed_time',
-'  ,execution_time     as execution_time',
-'  ,message            as message',
-'  ,call_stack         as call_stack',
-'from apex_debug_messages',
-'where 1 = 1',
-'and page_view_id = :P30025_DEBUG_ID'))
-,p_plug_source_type=>'NATIVE_IR'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_prn_content_disposition=>'ATTACHMENT'
-,p_prn_page_header=>'Application Error Log'
-);
-wwv_flow_api.create_worksheet(
- p_id=>wwv_flow_api.id(56683755401382562)
-,p_name=>'Application Error Log'
-,p_max_row_count=>'1000000'
-,p_max_row_count_message=>'The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.'
-,p_no_data_found_message=>'No data found.'
-,p_pagination_type=>'ROWS_X_TO_Y'
-,p_pagination_display_pos=>'BOTTOM_RIGHT'
-,p_report_list_mode=>'TABS'
-,p_lazy_loading=>false
-,p_show_detail_link=>'N'
-,p_download_formats=>'CSV:HTML:XLSX:PDF'
-,p_enable_mail_download=>'Y'
-,p_owner=>'LAINFJAR'
-,p_internal_uid=>56683755401382562
-);
-wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(12822065515765618)
-,p_db_column_name=>'PAGE_ID'
-,p_display_order=>10
-,p_column_identifier=>'G'
-,p_column_label=>'Page'
-,p_column_type=>'NUMBER'
-,p_column_alignment=>'RIGHT'
-);
-wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(12822383577765619)
-,p_db_column_name=>'USER_ID'
-,p_display_order=>20
-,p_column_identifier=>'H'
-,p_column_label=>'User Name'
-,p_column_type=>'STRING'
-);
-wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(12822771163765619)
-,p_db_column_name=>'SESSION_ID'
-,p_display_order=>30
-,p_column_identifier=>'I'
-,p_column_label=>'Session'
-,p_column_type=>'NUMBER'
-,p_column_alignment=>'RIGHT'
-);
-wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(12510758783984013)
-,p_db_column_name=>'PAGE_VIEW_ID'
-,p_display_order=>40
-,p_column_identifier=>'O'
-,p_column_label=>'Debug'
-,p_column_type=>'NUMBER'
-,p_column_alignment=>'RIGHT'
-);
-wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(12510841849984014)
-,p_db_column_name=>'MESSAGE_LEVEL'
-,p_display_order=>50
-,p_column_identifier=>'P'
-,p_column_label=>'Message Level'
-,p_column_type=>'NUMBER'
-,p_column_alignment=>'RIGHT'
-);
-wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(12510921849984015)
-,p_db_column_name=>'MESSAGE_TIMESTAMP'
-,p_display_order=>60
-,p_column_identifier=>'Q'
-,p_column_label=>'Timestamp'
-,p_column_type=>'DATE'
-,p_column_alignment=>'CENTER'
-,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
-,p_tz_dependent=>'Y'
-);
-wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(12511022054984016)
-,p_db_column_name=>'ELAPSED_TIME'
-,p_display_order=>70
-,p_column_identifier=>'R'
-,p_column_label=>'Elapsed Time'
-,p_column_type=>'NUMBER'
-,p_column_alignment=>'RIGHT'
-);
-wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(12511155858984017)
-,p_db_column_name=>'EXECUTION_TIME'
-,p_display_order=>80
-,p_column_identifier=>'S'
-,p_column_label=>'Execution Time'
-,p_column_type=>'NUMBER'
-,p_column_alignment=>'RIGHT'
-);
-wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(12511249447984018)
-,p_db_column_name=>'MESSAGE'
-,p_display_order=>90
-,p_column_identifier=>'T'
-,p_column_label=>'Message'
-,p_column_type=>'STRING'
-);
-wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(12511345459984019)
-,p_db_column_name=>'CALL_STACK'
-,p_display_order=>100
-,p_column_identifier=>'U'
-,p_column_label=>'Call Stack'
-,p_column_type=>'STRING'
-);
-wwv_flow_api.create_worksheet_rpt(
- p_id=>wwv_flow_api.id(56686534842382566)
-,p_application_user=>'APXWS_DEFAULT'
-,p_report_seq=>10
-,p_report_alias=>'438648'
-,p_status=>'PUBLIC'
-,p_is_default=>'Y'
-,p_report_columns=>'MESSAGE_TIMESTAMP:ELAPSED_TIME:EXECUTION_TIME:MESSAGE:CALL_STACK:'
-,p_sort_column_1=>'MESSAGE_TIMESTAMP'
-,p_sort_direction_1=>'ASC'
-,p_sort_column_2=>'ERROR_TIME'
-,p_sort_direction_2=>'DESC'
-,p_sort_column_3=>'ERR_TIME'
-,p_sort_direction_3=>'DESC'
-,p_sort_column_4=>'0'
-,p_sort_direction_4=>'DESC'
-,p_sort_column_5=>'0'
-,p_sort_direction_5=>'ASC'
-,p_sort_column_6=>'0'
-,p_sort_direction_6=>'ASC'
-);
-wwv_flow_api.create_page_button(
- p_id=>wwv_flow_api.id(12511663428984022)
-,p_button_sequence=>10
-,p_button_plug_id=>wwv_flow_api.id(56682839747382561)
-,p_button_name=>'BACK'
-,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--simple:t-Button--iconLeft'
-,p_button_template_id=>wwv_flow_api.id(8549262062518244)
-,p_button_image_alt=>'Back'
-,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
-,p_button_redirect_url=>'f?p=&APP_ID.:30022:&SESSION.::&DEBUG.:::'
-,p_icon_css_classes=>'fa-chevron-left'
-);
-wwv_flow_api.create_page_button(
- p_id=>wwv_flow_api.id(12825415966765632)
-,p_button_sequence=>20
-,p_button_plug_id=>wwv_flow_api.id(56682839747382561)
-,p_button_name=>'RESET_REPORT'
-,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>wwv_flow_api.id(8549081018518243)
-,p_button_image_alt=>'Reset Report'
-,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
-,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:&APP_PAGE_ID.,RR::'
-,p_icon_css_classes=>'fa-undo-alt'
-);
-wwv_flow_api.create_page_item(
- p_id=>wwv_flow_api.id(12511527263984021)
-,p_name=>'P30025_DEBUG_ID'
-,p_item_sequence=>10
-,p_item_plug_id=>wwv_flow_api.id(56682839747382561)
-,p_display_as=>'NATIVE_HIDDEN'
-,p_protection_level=>'S'
-,p_restricted_characters=>'US_ONLY'
-,p_attribute_01=>'Y'
-);
-end;
-/
 prompt --application/deployment/definition
 begin
 wwv_flow_imp_shared.create_install(
@@ -31789,16 +31571,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '-- Global functions and procedures',
 '--------------------------------------------------------------------------------',
-'-------------------'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '  function apex_error_handler(',
 '    p_error in apex_error.t_error',
 '  ) return apex_'))
@@ -33472,76 +33245,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end add_tag;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure remove_unused_categories',
-'  as',
-'  begin',
-'    -- cleanup categories that aren''t linked to any post',
-'    delete from blog_categories t1',
-'    where 1 = 1',
-'    and not exists(',
-'      select 1',
-'      from blog_posts x1',
-'      where 1 = 1',
-'      and x1.category_id = t1.id',
-'    );',
-'',
-'  end remove_unused_categories;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure resequence_categories',
-'  as',
-'  begin',
-'',
-'    merge into blog_categories t1',
-'    using (',
-'      select id',
-'        ,row_number() over( order by display_seq, created_on ) * 10 as rn',
-'      from blog_categories',
-'      where 1 = 1',
-'    ) v1',
-'    on ( t1.id = v1.id )',
-'    when matched then',
-'      update set t1.display_seq = v1.rn',
-'        where t1.display_seq != v1.rn',
-'    ;',
-'',
-'  end resequence_categories;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure add_tag(',
-'    p_tag     in varchar2,',
-'    p_tag_id  out nocopy number',
-'  )',
-'  as',
-'    l_value varchar2(256);',
-'  begin',
-'',
-'    p_tag_id  := null;',
-'    l_value   := remove_whitespace( p_tag );',
-'',
-'    -- if tag is not null then fetch id',
-'    if l_value is not null then',
-'',
-'      begin',
-'        select id',
-'        into p_tag_id',
-'        from blog_v_all_tags',
-'        where 1 = 1',
-'        and tag_unique = upper( l_value )',
-'        ;',
-'      -- if tag not exists insert and return id',
-'      exception when no_data_found then',
-'        insert into blog_tags( is_active, tag )',
-'        values ( 1, l_value )',
-'        returning id into p_tag_id',
-'        ;',
-'      end;',
-'',
-'    end if;',
-'',
-'  end add_tag;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
 '  procedure add_post_tags(',
 '    p_post_id in varchar2,',
 '    p_tags    in varchar2,',
@@ -33853,16 +33556,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  );',
 '--------------------------------------------------------------------------------',
 '  procedure validate_math_question_field(',
-'    p_item    in'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'            apex_plugin.t_item,',
+'    p_item    in            apex_plugin.t_item,',
 '    p_plugin  in            apex_plugin.t_plugin,',
 '    p_param   in            apex_plugin.t_item_validation_param,',
 '    p_result  in out nocopy apex_plugin.t_item_validation_result',
@@ -34747,16 +34441,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  c_whitelist_tags      constant varchar2(256)  := ''<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>'';',
 '  c_code_css_class      constant varchar2(256)  := ''z-program-code'';',
 '--------------------------------------------------------------------------------',
-'---------------------------------------'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------------------------------------',
+'--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -35713,16 +35398,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end get_rss_anchor;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'--------------------------------------------------------------------------------',
 '  function get_rss_link(',
 '    p_app_id        in varchar2,',
 '    p_app_name      in varchar2,',
@@ -36643,16 +36319,7 @@ wwv_flow_imp_shared.append_to_install_script(
 'begin',
 '',
 '  if inserting then',
-'    :new.id           := coalesce( :new.id, blog_seq.nextval );'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',

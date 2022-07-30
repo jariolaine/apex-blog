@@ -347,48 +347,6 @@ wwv_flow_imp_shared.create_list(
 );
 end;
 /
-prompt --application/shared_components/navigation/lists/post_tags
-begin
-wwv_flow_api.create_list(
- p_id=>wwv_flow_api.id(13220237658425595)
-,p_name=>'Post Tags'
-,p_list_type=>'SQL_QUERY'
-,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select',
-'   1                                    as link_level',
-'  ,v1.tag                               as link_text',
-'  ,#OWNER#.blog_url.get_tag(',
-'     p_tag_id => v1.tag_id',
-'   )                                    as target_url',
-'  ,''NO''                                 as is_current',
-'  ,null                                 as image',
-'  ,null                                 as image_attribute',
-'  ,null                                 as image_alt_attribute',
-'  ,case d.post_count',
-'    when ''INCLUDE'' then v1.posts_count',
-'  end                                   as attribute1',
-'  ,width_bucket(',
-'     v1.posts_count',
-'    ,min( v1.posts_count ) over()',
-'    ,max( v1.posts_count ) over() + 1',
-'    ,8',
-'  )                                     as attribute2',
-'from #OWNER#.blog_v_tags v1',
-'cross join(',
-'  select',
-'    apex_util.get_build_option_status(',
-'       p_application_id     => :APP_ID',
-'      ,p_build_option_name  => ''BLOG_FEATURE_TAG_CLOUD_POST_COUNT''',
-'    ) as post_count',
-'  from dual',
-') d',
-'where 1 = 1',
-'order by v1.tag'))
-,p_list_status=>'PUBLIC'
-,p_required_patch=>wwv_flow_api.id(13229141933919002)
-);
-end;
-/
 prompt --application/shared_components/navigation/lists/post_archives
 begin
 wwv_flow_imp_shared.create_list(
@@ -20832,10 +20790,7 @@ wwv_flow_imp_shared.create_install_script(
 '  ,qry.category_title as category_title',
 'from qry',
 'where 1 = 1',
-'  and t1.is_active = 1',
-'  and t2.is_active = 1',
-'  and t3.is_active = 1',
-'  and t1.published_on <= localtimestamp',
+'and qry.rn <= 20',
 'with read only',
 '/',
 '--------------------------------------------------------',
@@ -21848,8 +21803,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '          );',
 '      end if;',
 '',
-'  when others',
-'  then',
+'    end loop;',
 '',
 '  end render_dynamic_content;',
 '--------------------------------------------------------------------------------',
@@ -22055,9 +22009,6 @@ wwv_flow_imp_shared.append_to_install_script(
 'authid definer',
 'as',
 '--------------------------------------------------------------------------------',
-'-- Called from:',
-'--  admin app page 20',
-'  function get_link_grp_seq return varchar2;',
 '--------------------------------------------------------------------------------',
 '--',
 '--  DESCRIPTION',
@@ -22110,11 +22061,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '--    Jari Laine 09.05.2022 - Removed obsolete procedure run_settings_post_expression',
 '--',
 '--------------------------------------------------------------------------------',
-'-- Called from:',
-'--  admin app page 18',
-'  function get_link_seq(',
-'    p_link_group_id   in varchar2',
-'  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  admin app application authentication scheme Google',
@@ -22706,9 +22652,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_string  in varchar2',
 '  ) return varchar2',
 '  as',
-'    l_file_exists boolean;',
-'    l_file_names  apex_t_varchar2;',
-'    l_file_name   varchar2(256);',
 '  begin',
 '    -- remove whitespace characters from string',
 '    return trim( regexp_replace( p_string, ''\s+'', '' '' ) );',
@@ -23766,16 +23709,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_archive_id  in number,',
 '    p_app_id      in varchar2 default null,',
 '    p_session     in varchar2 default null,',
-'    p_clear_cache '))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'in varchar2 default null,',
+'    p_clear_cache in varchar2 default null,',
 '    p_canonical   in varchar2 default ''NO'',',
 '    p_plain_url   in varchar2 default ''YES'',',
 '    p_encode_url  in varchar2 default ''NO''',
@@ -25629,16 +25563,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_cache_control :=',
 '      apex_string.format(',
 '         p_message => ''max-age=%s''',
-'        ,p0 => blog_util.get_attri'))
-);
-null;
-end;
-/
-begin
-wwv_flow_api.append_to_install_script(
- p_id=>wwv_flow_api.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'bute_value( ''G_MAX_AGE_SITEMAP'' )',
+'        ,p0 => blog_util.get_attribute_value( ''G_MAX_AGE_SITEMAP'' )',
 '      )',
 '    ;',
 '',

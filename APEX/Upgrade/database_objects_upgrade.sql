@@ -1307,11 +1307,8 @@ as
       raise no_data_found;
     end if;
 
-        -- not every constraint has to be in our lookup table
-        if not l_err_mesg = l_constraint_name then
-          l_result.message := l_err_mesg;
-          l_result.additional_info := null;
-        end if;
+    -- conver application id string to number
+    l_app_id := to_number( p_app_id );
 
     -- set items session state
     -- fetch items and values that session state need to be set
@@ -1576,8 +1573,8 @@ as
       raise no_data_found;
     end if;
 
-    -- conver application id string to number
-    l_app_id := to_number( p_app_id );
+    -- conver category id string to number
+    l_category_id := to_number( p_category_id );
 
     -- fetch category name
     select v1.category_title
@@ -2490,15 +2487,6 @@ as
 
     end loop;
 
-    -- fetch max link group display sequence
-    select max( v1.display_seq ) as display_seq
-    into l_max_seq
-    from blog_v_all_dynamic_content v1
-    ;
-    -- get next link group display sequence
-    l_next_seq := blog_util.int_to_vc2( next_seq( l_max_seq ) );
-    -- return next link group display sequence
-    return l_next_seq;
 
     -- post must have at least one paragraph
     if l_first_p_start > 0 and l_first_p_end > 0 then
