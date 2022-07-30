@@ -3,24 +3,24 @@ begin
 --   Manifest
 --     REGION TEMPLATE: MEDIA_LIST
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.6'
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-wwv_flow_api.create_list_template(
- p_id=>wwv_flow_api.id(8538547318518236)
+wwv_flow_imp_shared.create_list_template(
+ p_id=>wwv_flow_imp.id(8538547318518236)
 ,p_list_template_current=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<li class="t-MediaList-item is-active #A04#" aria-current="page">',
+'<li class="t-MediaList-item is-active #A04#">',
 '  <a href="#LINK#" class="t-MediaList-itemWrap #A05#" #A03#>',
 '    <div class="t-MediaList-iconWrap" aria-hidden="true">',
 '      <span class="t-MediaList-icon u-color #A06#"><span class="t-Icon #ICON_CSS_CLASSES#" #IMAGE_ATTR#></span></span>',
 '    </div>',
 '    <div class="t-MediaList-body">',
-'      <h3 class="t-MediaList-title">#TEXT#</h3>',
+'      <h3 class="t-MediaList-title" aria-current="page">#TEXT#</h3>',
 '      <p class="t-MediaList-desc">#A01#</p>',
 '    </div>',
 '    <div class="t-MediaList-badgeWrap">',
@@ -58,6 +58,6 @@ wwv_flow_api.create_list_template(
 ,p_a06_label=>'Icon Color Class'
 ,p_reference_id=>2066548068783481421
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

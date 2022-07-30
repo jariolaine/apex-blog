@@ -3,16 +3,16 @@ begin
 --   Manifest
 --     LIST: Post Tags
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.6'
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-wwv_flow_api.create_list(
- p_id=>wwv_flow_api.id(13220237658425595)
+wwv_flow_imp_shared.create_list(
+ p_id=>wwv_flow_imp.id(13220237658425595)
 ,p_name=>'Post Tags'
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -47,8 +47,8 @@ wwv_flow_api.create_list(
 'where 1 = 1',
 'order by v1.tag'))
 ,p_list_status=>'PUBLIC'
-,p_required_patch=>wwv_flow_api.id(13229141933919002)
+,p_required_patch=>wwv_flow_imp.id(13229141933919002)
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

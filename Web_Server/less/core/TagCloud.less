@@ -5,15 +5,7 @@
 * Credits:
 *   https://dev.to/alvaromontoro/create-a-tag-cloud-with-html-and-css-1e90
 **************************************/
-ul.z-tagCloud {
-  a[data-weight="1"] { --z-tag-size: 1; }
-  a[data-weight="2"] { --z-tag-size: 2; }
-  a[data-weight="3"] { --z-tag-size: 3; }
-  a[data-weight="4"] { --z-tag-size: 4; }
-  a[data-weight="5"] { --z-tag-size: 5; }
-  a[data-weight="6"] { --z-tag-size: 6; }
-  a[data-weight="7"] { --z-tag-size: 7; }
-  a[data-weight="8"] { --z-tag-size: 8; }
+.z-tagCloud {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
@@ -23,6 +15,30 @@ ul.z-tagCloud {
   margin: 0;
   padding: 0.5rem;
   .z-tagCloud-link {
+    &[data-weight="1"] {
+      --z-tag-size: 1;
+    }
+    &[data-weight="2"] {
+      --z-tag-size: 2;
+    }
+    &[data-weight="3"] {
+      --z-tag-size: 3;
+    }
+    &[data-weight="4"] {
+      --z-tag-size: 4;
+    }
+    &[data-weight="5"] {
+      --z-tag-size: 5;
+    }
+    &[data-weight="6"] {
+      --z-tag-size: 6;
+    }
+    &[data-weight="7"] {
+      --z-tag-size: 7;
+    }
+    &[data-weight="8"] {
+      --z-tag-size: 8;
+    }
     display: flex;
     padding: 0.5rem;
     text-decoration: none;

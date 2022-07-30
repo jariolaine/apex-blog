@@ -9,39 +9,39 @@
   position: relative;
   margin: -8px -12px;
   padding: 8px 12px;
-}
-// Generate a triangle at the top left or right of report cells containing status marker elements
-.z-status-marker--left {
-  &::before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    border: 6px solid transparent;
-    width: 0;
-    height: 0;
-    content: "";
-  }
-  &.z-required {
+  // Generate a triangle at the top left or right of report cells containing status marker elements
+  &.z-status-marker--left {
     &::before {
-      // Colour the triangles according to the specified status class
-      border-color: var(--u-color-9) transparent transparent var(--u-color-9);
+      position: absolute;
+      top: 0;
+      left: 0;
+      border: 6px solid transparent;
+      width: 0;
+      height: 0;
+      content: "";
+    }
+    &.z-required {
+      &::before {
+        // Colour the triangles according to the specified status class
+        border-color: var(--u-color-9) transparent transparent var(--u-color-9);
+      }
     }
   }
-}
-.z-status-marker--right {
-  &::after{
-    position: absolute;
-    top: 0;
-    right: 0;
-    border: 6px solid transparent;
-    width: 0;
-    height: 0;
-    content: "";
-  }
-  &.z-required {
-    &::before {
-      // Colour the triangles according to the specified status class
-      border-color: var(--u-color-9) transparent transparent var(--u-color-9);
+  &.z-status-marker--right {
+    &::after{
+      position: absolute;
+      top: 0;
+      right: 0;
+      border: 6px solid transparent;
+      width: 0;
+      height: 0;
+      content: "";
+    }
+    &.z-required {
+      &::after {
+        // Colour the triangles according to the specified status class
+        border-color: var(--u-color-9) var(--u-color-9) transparent transparent;
+      }
     }
   }
 }

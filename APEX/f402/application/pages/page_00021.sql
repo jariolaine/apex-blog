@@ -3,31 +3,32 @@ begin
 --   Manifest
 --     PAGE: 00021
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.6'
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-wwv_flow_api.create_page(
+wwv_flow_imp_page.create_page(
  p_id=>21
-,p_user_interface_id=>wwv_flow_api.id(8571044485518264)
+,p_user_interface_id=>wwv_flow_imp.id(8571044485518264)
 ,p_name=>'Confirm Link Group Delete'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Confirm'
 ,p_autocomplete_on_off=>'OFF'
-,p_group_id=>wwv_flow_api.id(4073365241705286)
+,p_group_id=>wwv_flow_imp.id(4073365241705286)
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
+,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220510054120'
+,p_last_upd_yyyymmddhh24miss=>'20220717085055'
 );
-wwv_flow_api.create_report_region(
- p_id=>wwv_flow_api.id(19303429631329496)
+wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(19303429631329496)
 ,p_name=>'Links to be Deleted'
-,p_template=>wwv_flow_api.id(8496813422518209)
+,p_template=>wwv_flow_imp.id(8496813422518209)
 ,p_display_sequence=>20
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--hideHeader:t-Region--noBorder:t-Region--scrollBody:margin-bottom-none'
 ,p_component_template_options=>'#DEFAULT#:t-Report--stretch:t-Report--staticRowColors:t-Report--rowHighlightOff:t-Report--hideNoPagination'
@@ -41,7 +42,7 @@ wwv_flow_api.create_report_region(
 'order by v1.display_seq'))
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
-,p_query_row_template=>wwv_flow_api.id(8519378220518224)
+,p_query_row_template=>wwv_flow_imp.id(8519378220518224)
 ,p_query_num_rows=>5
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
@@ -54,8 +55,8 @@ wwv_flow_api.create_report_region(
 ,p_sort_null=>'L'
 ,p_plug_query_strip_html=>'Y'
 );
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(20749380551206602)
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(20749380551206602)
 ,p_query_column_id=>1
 ,p_column_alias=>'TITLE'
 ,p_column_display_sequence=>1
@@ -65,8 +66,8 @@ wwv_flow_api.create_report_columns(
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
-wwv_flow_api.create_report_columns(
- p_id=>wwv_flow_api.id(19305460519329503)
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(19305460519329503)
 ,p_query_column_id=>2
 ,p_column_alias=>'LINK_DESC'
 ,p_column_display_sequence=>2
@@ -76,11 +77,11 @@ wwv_flow_api.create_report_columns(
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
-wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(23107718889422614)
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(23107718889422614)
 ,p_plug_name=>'Confirm Link Collection Deletion'
 ,p_region_template_options=>'#DEFAULT#:t-Alert--horizontal:t-Alert--defaultIcons:t-Alert--warning:t-Alert--removeHeading js-removeLandmark:margin-bottom-none'
-,p_plug_template=>wwv_flow_api.id(8471603023518189)
+,p_plug_template=>wwv_flow_imp.id(8471603023518189)
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_01'
@@ -92,11 +93,11 @@ wwv_flow_api.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_header=>'&APP_TEXT$BLOG_CONFIRM_LINK_GROUP_DELETE.'
 );
-wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(45092328064996858)
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(45092328064996858)
 ,p_plug_name=>'Buttons'
 ,p_region_template_options=>'#DEFAULT#:t-ButtonRegion--slimPadding:t-ButtonRegion--noBorder'
-,p_plug_template=>wwv_flow_api.id(8476383962518195)
+,p_plug_template=>wwv_flow_imp.id(8476383962518195)
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_03'
@@ -105,51 +106,51 @@ wwv_flow_api.create_page_plug(
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
-wwv_flow_api.create_page_button(
- p_id=>wwv_flow_api.id(19319505952423724)
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(19319505952423724)
 ,p_button_sequence=>10
-,p_button_plug_id=>wwv_flow_api.id(45092328064996858)
+,p_button_plug_id=>wwv_flow_imp.id(45092328064996858)
 ,p_button_name=>'DELETE'
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
-,p_button_template_id=>wwv_flow_api.id(8549262062518244)
+,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Permanent Delete Link(s)'
 ,p_button_position=>'NEXT'
 ,p_button_execute_validations=>'N'
-,p_confirm_message=>'&APP_TEXT$DELETE_CONFIRM_MSG.'
+,p_confirm_message=>'&APP_TEXT$DELETE_MSG!RAW.'
 ,p_confirm_style=>'danger'
 ,p_icon_css_classes=>'fa-trash-o'
 ,p_database_action=>'DELETE'
 );
-wwv_flow_api.create_page_button(
- p_id=>wwv_flow_api.id(19318775281423723)
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(19318775281423723)
 ,p_button_sequence=>20
-,p_button_plug_id=>wwv_flow_api.id(45092328064996858)
+,p_button_plug_id=>wwv_flow_imp.id(45092328064996858)
 ,p_button_name=>'CANCEL'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
-,p_button_template_id=>wwv_flow_api.id(8549262062518244)
+,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Cancel'
 ,p_button_position=>'PREVIOUS'
 ,p_button_redirect_url=>'f?p=&APP_ID.:20:&SESSION.::&DEBUG.:RP,21:P20_ID:\&P21_ID.\'
 ,p_icon_css_classes=>'fa-chevron-left'
 );
-wwv_flow_api.create_page_branch(
- p_id=>wwv_flow_api.id(19362911523013749)
+wwv_flow_imp_page.create_page_branch(
+ p_id=>wwv_flow_imp.id(19362911523013749)
 ,p_branch_name=>'Record Deleted'
 ,p_branch_action=>'f?p=&APP_ID.:17:&SESSION.::&DEBUG.:RP,17,RIR::&success_msg=#SUCCESS_MSG#'
 ,p_branch_point=>'AFTER_PROCESSING'
 ,p_branch_type=>'REDIRECT_URL'
 ,p_branch_sequence=>40
 );
-wwv_flow_api.create_page_item(
- p_id=>wwv_flow_api.id(23107964784422616)
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(23107964784422616)
 ,p_name=>'P21_ID'
 ,p_source_data_type=>'NUMBER'
 ,p_is_primary_key=>true
 ,p_item_sequence=>10
-,p_item_plug_id=>wwv_flow_api.id(23107718889422614)
-,p_item_source_plug_id=>wwv_flow_api.id(23107718889422614)
+,p_item_plug_id=>wwv_flow_imp.id(23107718889422614)
+,p_item_source_plug_id=>wwv_flow_imp.id(23107718889422614)
 ,p_source=>'ID'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_HIDDEN'
@@ -158,13 +159,13 @@ wwv_flow_api.create_page_item(
 ,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 );
-wwv_flow_api.create_page_item(
- p_id=>wwv_flow_api.id(23108092674422617)
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(23108092674422617)
 ,p_name=>'P21_ROW_VERSION'
 ,p_source_data_type=>'NUMBER'
 ,p_item_sequence=>20
-,p_item_plug_id=>wwv_flow_api.id(23107718889422614)
-,p_item_source_plug_id=>wwv_flow_api.id(23107718889422614)
+,p_item_plug_id=>wwv_flow_imp.id(23107718889422614)
+,p_item_source_plug_id=>wwv_flow_imp.id(23107718889422614)
 ,p_source=>'ROW_VERSION'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_HIDDEN'
@@ -174,11 +175,11 @@ wwv_flow_api.create_page_item(
 ,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 );
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(23109285545422629)
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(23109285545422629)
 ,p_process_sequence=>10
 ,p_process_point=>'AFTER_SUBMIT'
-,p_region_id=>wwv_flow_api.id(23107718889422614)
+,p_region_id=>wwv_flow_imp.id(23107718889422614)
 ,p_process_type=>'NATIVE_FORM_DML'
 ,p_process_name=>'Process Form Link Group Delete'
 ,p_attribute_01=>'TABLE'
@@ -188,15 +189,15 @@ wwv_flow_api.create_page_process(
 ,p_attribute_08=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
-wwv_flow_api.create_page_process(
- p_id=>wwv_flow_api.id(23107819071422615)
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(23107819071422615)
 ,p_process_sequence=>10
 ,p_process_point=>'BEFORE_HEADER'
-,p_region_id=>wwv_flow_api.id(23107718889422614)
+,p_region_id=>wwv_flow_imp.id(23107718889422614)
 ,p_process_type=>'NATIVE_FORM_INIT'
 ,p_process_name=>'Initialize form Link Group Delete'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

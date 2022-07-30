@@ -3,18 +3,19 @@ begin
 --   Manifest
 --     REPORT LAYOUT: Blog new comment notification
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.6'
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-wwv_flow_api.create_email_template(
- p_id=>wwv_flow_api.id(31484344164259065)
+wwv_flow_imp_shared.create_email_template(
+ p_id=>wwv_flow_imp.id(31484344164259065)
 ,p_name=>'Blog new comment notification'
 ,p_static_id=>'BLOG_NEW_COMMENT_NOTIFY'
+,p_version_number=>1
 ,p_subject=>'#APP_NAME# new comment notification'
 ,p_html_body=>'New comment received in the post <a href="#POST_LINK#">#POST_TITLE#</a>.'
 ,p_html_header=>'<b>Hello #BLOGGER_NAME#,</b>'
@@ -31,6 +32,6 @@ wwv_flow_api.create_email_template(
 'Best Regards,',
 '#APP_NAME#'))
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

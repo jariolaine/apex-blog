@@ -2636,23 +2636,18 @@ as
 
     -- merge tag
     merge into blog_post_tags t1
-    using (
-      select p_post_id  as post_id
-        ,p_tag_id       as tag_id
-        ,p_display_seq  as display_seq
-      from dual
-    ) q1 on (
-          t1.post_id  = q1.post_id
-      and t1.tag_id   = q1.tag_id
+    using dual on (
+      t1.post_id  = p_post_id
+      and t1.tag_id  = p_tag_id
     )
     when matched then
     -- update display sequence if it changed
-      update set t1.display_seq = q1.display_seq
-        where t1.display_seq != q1.display_seq
+      update set t1.display_seq = p_display_seq
+        where t1.display_seq != p_display_seq
     -- insert post id, tag id and display sequency to table
     when not matched then
       insert ( is_active, post_id, tag_id, display_seq )
-        values ( 1, q1.post_id, q1.tag_id, q1.display_seq )
+        values ( 1, p_post_id, p_tag_id, p_display_seq )
     ;
 
   end add_tag_to_post;
@@ -3107,30 +3102,45 @@ as
     p_category_id out nocopy number
   )
   as
-    l_next_seq  number;
-    l_title     varchar2(512);
+    l_next_seq      number;
+    l_title         varchar2(512);
+    l_title_unique  varchar2(512);
   begin
 
     -- remove whitespace from category title
     l_title := remove_whitespace( p_title );
+    l_title_unique := upper( l_title );
 
     -- check if category already exists and fetch id
+    begin
+      select v1.id
+      into p_category_id
+      from blog_v_all_categories v1
+      where 1 = 1
+      and v1.title_unique = l_title_unique
+      ;
+    -- if category not exists insert and return id
+    exception
+    when no_data_found
+    then
+      -- get next sequence value
+      l_next_seq := get_category_seq;
+      -- insert category and return id for out parameter.
+      insert into blog_categories
+        ( is_active, display_seq, title )
+          values( 1, l_next_seq, l_title )
+      returning id into p_category_id
+      ;
+    end;
+  -- fetch category id if it was inserted in other session but not commited
+  exception
+  when dup_val_on_index
+  then
     select v1.id
     into p_category_id
     from blog_v_all_categories v1
     where 1 = 1
-    and v1.title_unique = upper( l_title )
-    ;
-  -- if category not exists insert and return id
-  exception
-  when no_data_found
-  then
-    -- get next sequence value
-    l_next_seq := get_category_seq;
-    -- insert category and return id for out parameter.
-    insert into blog_categories ( is_active, display_seq, title )
-    values( 1, l_next_seq, l_title )
-    returning id into p_category_id
+      and v1.title_unique = l_title_unique
     ;
   end add_category;
 --------------------------------------------------------------------------------

@@ -3,16 +3,16 @@ begin
 --   Manifest
 --     REGION TEMPLATE: CARDS
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.6'
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-wwv_flow_api.create_list_template(
- p_id=>wwv_flow_api.id(6838012936267404)
+wwv_flow_imp_shared.create_list_template(
+ p_id=>wwv_flow_imp.id(6838012936267404)
 ,p_list_template_current=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<li class="t-Cards-item is-active #A04#" aria-current="page">',
 '  <div class="t-Card">',
@@ -63,6 +63,6 @@ wwv_flow_api.create_list_template(
 ,p_a07_label=>'Subtitle'
 ,p_reference_id=>2885322685880632508
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

@@ -3,17 +3,17 @@ begin
 --   Manifest
 --     INSTALL: UPGRADE-Rereate text index
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.6'
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-wwv_flow_api.create_install_script(
- p_id=>wwv_flow_api.id(13344011176158522)
-,p_install_id=>wwv_flow_api.id(20741295540297154)
+wwv_flow_imp_shared.create_install_script(
+ p_id=>wwv_flow_imp.id(13344011176158522)
+,p_install_id=>wwv_flow_imp.id(20741295540297154)
 ,p_name=>'Rereate text index'
 ,p_sequence=>70
 ,p_script_type=>'UPGRADE'
@@ -37,6 +37,6 @@ wwv_flow_api.create_install_script(
 ');',
 ''))
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

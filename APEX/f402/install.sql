@@ -2,14 +2,15 @@ prompt --install
 @@application/set_environment.sql
 @@application/delete_application.sql
 @@application/create_application.sql
-@@application/shared_components/credentials/google_oauth2.sql
+@@workspace/credentials/google_oauth2.sql
 @@application/shared_components/navigation/lists/navigation_menu.sql
 @@application/shared_components/navigation/lists/navigation_bar.sql
 @@application/shared_components/navigation/lists/configuration.sql
 @@application/shared_components/navigation/lists/public_application_links.sql
 @@application/shared_components/navigation/lists/activity_reports.sql
-@@application/shared_components/files/app_icon_svg.sql
-@@application/shared_components/files/app_icon_css.sql
+@@application/shared_components/files/icons_app_icon_32_png.sql
+@@application/shared_components/files/icons_app_icon_192_png.sql
+@@application/shared_components/files/icons_app_icon_512_png.sql
 @@application/shared_components/files/css_admin_min_css.sql
 @@application/shared_components/files/js_admin_min_js.sql
 @@application/shared_components/files/css_chkeditor_min_css.sql
@@ -18,7 +19,6 @@ prompt --install
 @@application/shared_components/files/css_chkeditor_css.sql
 @@application/plugin_settings.sql
 @@application/shared_components/security/authorizations/bloggers.sql
-@@application/shared_components/security/authorizations/administration_rights.sql
 @@application/shared_components/navigation/navigation_bar.sql
 @@application/shared_components/logic/application_processes/get_blogger_details.sql
 @@application/shared_components/logic/application_processes/initialize_items.sql
@@ -85,6 +85,7 @@ prompt --install
 @@application/shared_components/user_interface/templates/region/title_bar.sql
 @@application/shared_components/user_interface/templates/region/wizard_container.sql
 @@application/shared_components/user_interface/templates/region/inline_drawer.sql
+@@application/shared_components/user_interface/templates/region/image.sql
 @@application/shared_components/user_interface/templates/region/cards_container.sql
 @@application/shared_components/user_interface/templates/list/badge_list.sql
 @@application/shared_components/user_interface/templates/list/cards.sql
@@ -130,7 +131,6 @@ prompt --install
 @@application/shared_components/logic/build_options.sql
 @@application/shared_components/globalization/messages.sql
 @@application/shared_components/globalization/dyntranslations.sql
-@@application/shared_components/user_interface/shortcuts/delete_confirm_msg.sql
 @@application/shared_components/user_interface/shortcuts/sign_in_using_another_identity_provider.sql
 @@application/shared_components/email/templates/blog_reply_to_comment_notify.sql
 @@application/shared_components/security/authentications/application_express_authentication.sql
