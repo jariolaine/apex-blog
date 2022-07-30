@@ -3,16 +3,16 @@ begin
 --   Manifest
 --     REGION TEMPLATE: MENU_POPUP
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.6'
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-wwv_flow_api.create_list_template(
- p_id=>wwv_flow_api.id(6847975075267409)
+wwv_flow_imp_shared.create_list_template(
+ p_id=>wwv_flow_imp.id(6847975075267409)
 ,p_list_template_current=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<li data-id="#A01#" data-disabled="#A02#" data-hide="#A03#" data-shortcut="#A05#" data-icon="#ICON_CSS_CLASSES#"><a href="#LINK#" title="#A04#" target="#A06#">#TEXT_ESC_SC#</a></li>',
 ''))
@@ -47,6 +47,6 @@ wwv_flow_api.create_list_template(
 ,p_a06_label=>'Link Target'
 ,p_reference_id=>3492264004432431646
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

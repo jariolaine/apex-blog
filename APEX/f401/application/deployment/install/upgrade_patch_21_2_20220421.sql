@@ -3,17 +3,17 @@ begin
 --   Manifest
 --     INSTALL: UPGRADE-Patch 21.2.20220421
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.6'
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-wwv_flow_api.create_install_script(
- p_id=>wwv_flow_api.id(11764958305217871)
-,p_install_id=>wwv_flow_api.id(20741295540297154)
+wwv_flow_imp_shared.create_install_script(
+ p_id=>wwv_flow_imp.id(11764958305217871)
+,p_install_id=>wwv_flow_imp.id(20741295540297154)
 ,p_name=>'Patch 21.2.20220421'
 ,p_sequence=>30
 ,p_script_type=>'UPGRADE'
@@ -193,6 +193,6 @@ wwv_flow_api.create_install_script(
 ';',
 ''))
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

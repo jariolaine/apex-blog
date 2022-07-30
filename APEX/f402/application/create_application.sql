@@ -3,20 +3,20 @@ begin
 --   Manifest
 --     FLOW: 402
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.6'
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-wwv_flow_api.create_flow(
+wwv_flow_imp.create_flow(
  p_id=>wwv_flow.g_flow_id
 ,p_owner=>nvl(wwv_flow_application_install.get_schema,'BLOG_040000')
 ,p_name=>nvl(wwv_flow_application_install.get_application_name,'Blog Administration')
 ,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'BLOG_ADMIN')
-,p_application_group=>wwv_flow_api.id(3742713376965422)
+,p_application_group=>wwv_flow_imp.id(3742713376965422)
 ,p_application_group_name=>'APEX Blog'
 ,p_application_group_comment=>'APEX Blog applications'
 ,p_page_view_logging=>'YES'
@@ -38,12 +38,11 @@ wwv_flow_api.create_flow(
 'Because APEX 21.2 bug added to application JavaScripts',
 '#APEX_FILES#libraries/apex/#MIN_DIRECTORY#widget.datepicker#MIN#.js'))
 ,p_authentication=>'PLUGIN'
-,p_authentication_id=>wwv_flow_api.id(24462639138097628)
+,p_authentication_id=>wwv_flow_imp.id(24462639138097628)
 ,p_populate_roles=>'A'
 ,p_application_tab_set=>1
 ,p_logo_type=>'T'
 ,p_logo_text=>'&G_APP_NAME.'
-,p_app_builder_icon_name=>'app-icon.svg'
 ,p_public_user=>'APEX_PUBLIC_USER'
 ,p_proxy_server=>nvl(wwv_flow_application_install.get_proxy,'')
 ,p_no_proxy_domains=>nvl(wwv_flow_application_install.get_no_proxy_domains,'')
@@ -54,20 +53,21 @@ wwv_flow_api.create_flow(
 ,p_browser_cache=>'N'
 ,p_browser_frame=>'D'
 ,p_runtime_api_usage=>'T:O'
-,p_security_scheme=>wwv_flow_api.id(28359530175115492)
+,p_security_scheme=>wwv_flow_imp.id(28359530175115492)
 ,p_rejoin_existing_sessions=>'N'
 ,p_csv_encoding=>'Y'
 ,p_auto_time_zone=>'Y'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
+,p_tokenize_row_search=>'N'
 ,p_friendly_url=>'N'
 ,p_substitution_string_01=>'BLOG_FILE_UPLOAD_COLLECTION'
 ,p_substitution_value_01=>'BLOG_FILE_UPLOAD'
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220508055120'
+,p_last_upd_yyyymmddhh24miss=>'20220730112952'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>376
+,p_files_version=>425
 ,p_ui_type_name => null
 ,p_print_server_type=>'INSTANCE'
 ,p_is_pwa=>'N'
@@ -93,6 +93,6 @@ wwv_flow_api.create_flow(
 'IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN',
 'CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.'))
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

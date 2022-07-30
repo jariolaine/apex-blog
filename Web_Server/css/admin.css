@@ -5,26 +5,25 @@
   width: 20%;
 }
 /**************************************
-* IR files
-**************************************/
-td[headers="COPY_URL"] {
-  padding: 0;
-}
-/**************************************
-* Categories IG
-**************************************/
-.z-sortable-handle:hover {
-  cursor: move;
-}
-.ui-sortable-helper {
-  display: inline-flex;
-}
-/**************************************
 * Posts IR detail view
 **************************************/
 .z-post--IR {
   font-size: 1rem;
   margin: 2em 1rem;
+}
+/**************************************
+* Interactive Reports link column
+**************************************/
+.z-IR--iconLinks tr > :first-child {
+  padding: 0.25rem 0.5rem;
+  width: 0.1%;
+}
+/**************************************
+* Settings and features Interactive Grid
+**************************************/
+.z-config-ig span.a-GV-breakLabel {
+  display: none!important;
+  visibility: hidden!important;
 }
 /**************************************
 * Interactive Reports link column
@@ -187,28 +186,6 @@ blockquote::after {
   margin-inline-start: 0!important;
 }
 /**************************************
-* APEX 21.2:
-*   fix search engine style pagination
-*   https://community.oracle.com/tech/developers/discussion/4494954/bug-ut-21-2-search-engine-pagination-misalignment
-**************************************/
-.t-Report-paginationText strong {
-  display: inline-block;
-  vertical-align: top;
-  border-radius: var(--ut-report-pagination-link-border-radius, 0.125rem);
-  -webkit-padding-before: var(--ut-report-pagination-link-padding-y, 0.25rem);
-  padding-block-start: var(--ut-report-pagination-link-padding-y, 0.25rem);
-  -webkit-padding-after: var(--ut-report-pagination-link-padding-y, 0.25rem);
-  padding-block-end: var(--ut-report-pagination-link-padding-y, 0.25rem);
-  -webkit-padding-start: var(--ut-report-pagination-link-padding-x, 0.5rem);
-  padding-inline-start: var(--ut-report-pagination-link-padding-x, 0.5rem);
-  -webkit-padding-end: var(--ut-report-pagination-link-padding-x, 0.5rem);
-  padding-inline-end: var(--ut-report-pagination-link-padding-x, 0.5rem);
-  background-color: var(--ut-report-pagination-link-background-color);
-  color: var(--ut-report-pagination-link-text-color);
-  --ut-report-pagination-link-background-color: var(--ut-report-pagination-link-hover-background-color, var(--ut-palette-primary));
-  --ut-report-pagination-link-text-color: var(--ut-report-pagination-link-hover-text-color, var(--ut-palette-primary-contrast));
-}
-/**************************************
 * Program code formatting
 **************************************/
 pre.z-program-code {
@@ -246,18 +223,16 @@ pre.z-program-code code {
 }
 /**************************************
 * Status Marker
+*
 * Credits to fac586:
-* https://community.oracle.com/tech/developers/discussion/comment/15630636/#Comment_15630636
+*   https://community.oracle.com/tech/developers/discussion/comment/15630636/#Comment_15630636
 **************************************/
 .z-status-marker {
   position: relative;
   margin: -8px -12px;
   padding: 8px 12px;
 }
-/*
-  Generate a triangle at the top left or right of report cells containing status marker elements
-*/
-.z-status-marker--left::before {
+.z-status-marker.z-status-marker--left::before {
   position: absolute;
   top: 0;
   left: 0;
@@ -266,7 +241,10 @@ pre.z-program-code code {
   height: 0;
   content: "";
 }
-.z-status-marker--right::after {
+.z-status-marker.z-status-marker--left.z-required::before {
+  border-color: var(--u-color-9) transparent transparent var(--u-color-9);
+}
+.z-status-marker.z-status-marker--right::after {
   position: absolute;
   top: 0;
   right: 0;
@@ -275,15 +253,12 @@ pre.z-program-code code {
   height: 0;
   content: "";
 }
-/*
-  Colour the triangles according to the specified status class.
-*/
-.z-status-marker--left.z-required::before {
-  border-color: var(--u-color-9) transparent transparent var(--u-color-9);
-}
-.z-status-marker--right.z-required::after {
+.z-status-marker.z-status-marker--right.z-required::after {
   border-color: var(--u-color-9) var(--u-color-9) transparent transparent;
 }
+/**************************************
+* Login page horizontal ruler
+**************************************/
 .z-hr-section {
   display: flex;
   flex-basis: 100%;

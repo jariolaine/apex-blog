@@ -3,17 +3,17 @@ begin
 --   Manifest
 --     INSTALL: INSTALL-Metadata
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.6'
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-wwv_flow_api.create_install_script(
- p_id=>wwv_flow_api.id(31708826557645262)
-,p_install_id=>wwv_flow_api.id(31706870664802069)
+wwv_flow_imp_shared.create_install_script(
+ p_id=>wwv_flow_imp.id(31708826557645262)
+,p_install_id=>wwv_flow_imp.id(31706870664802069)
 ,p_name=>'Metadata'
 ,p_sequence=>30
 ,p_script_type=>'INSTALL'
@@ -21,10 +21,10 @@ wwv_flow_api.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,post_expression,int_min,int_max,attribute_value) values(''30'',''0'',''G_ADMIN_APP_ID'',''STRING'',''INTERNAL'',null,null,null,blog_util.int_to_vc2(apex_applicat'
-||'ion_install.get_application_id));',
+'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''30'',''0'',''G_ADMIN_APP_ID'',''STRING'',''INTERNAL'',null,null,blog_util.int_to_vc2(apex_application_install.get_appli'
+||'cation_id));',
 ''))
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

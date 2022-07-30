@@ -3,16 +3,16 @@ begin
 --   Manifest
 --     SHORTCUT: BLOG_CANONICAL_LINK_POST
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.6'
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-wwv_flow_api.create_shortcut(
- p_id=>wwv_flow_api.id(14610353218419017)
+wwv_flow_imp_shared.create_shortcut(
+ p_id=>wwv_flow_imp.id(14610353218419017)
 ,p_shortcut_name=>'BLOG_CANONICAL_LINK_POST'
 ,p_shortcut_type=>'FUNCTION_BODY'
 ,p_shortcut_language=>'PLSQL'
@@ -22,6 +22,6 @@ wwv_flow_api.create_shortcut(
 '  p_post_id => :P2_POST_ID',
 ');'))
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

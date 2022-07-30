@@ -3,20 +3,20 @@ begin
 --   Manifest
 --     FLOW: 401
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.6'
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-wwv_flow_api.create_flow(
+wwv_flow_imp.create_flow(
  p_id=>wwv_flow.g_flow_id
 ,p_owner=>nvl(wwv_flow_application_install.get_schema,'BLOG_040000')
 ,p_name=>nvl(wwv_flow_application_install.get_application_name,'Blog Public Pages')
 ,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'BLOG')
-,p_application_group=>wwv_flow_api.id(3742713376965422)
+,p_application_group=>wwv_flow_imp.id(3742713376965422)
 ,p_application_group_name=>'APEX Blog'
 ,p_application_group_comment=>'APEX Blog applications'
 ,p_page_view_logging=>'YES'
@@ -26,9 +26,9 @@ wwv_flow_api.create_flow(
 ,p_bookmark_checksum_function=>'SH512'
 ,p_accept_old_checksums=>false
 ,p_max_session_length_sec=>86400
-,p_on_max_session_timeout_url=>'#HOME_LINK#'
-,p_max_session_idle_sec=>86400
-,p_on_max_idle_timeout_url=>'#HOME_LINK#'
+,p_on_max_session_timeout_url=>'#LOGOUT_URL#'
+,p_max_session_idle_sec=>43200
+,p_on_max_idle_timeout_url=>'#LOGOUT_URL#'
 ,p_session_timeout_warning_sec=>0
 ,p_compatibility_mode=>'21.2'
 ,p_flow_language=>'en'
@@ -37,7 +37,7 @@ wwv_flow_api.create_flow(
 ,p_flow_image_prefix => nvl(wwv_flow_application_install.get_image_prefix,'')
 ,p_documentation_banner=>'https://github.com/jariolaine/apex-blog'
 ,p_authentication=>'PLUGIN'
-,p_authentication_id=>wwv_flow_api.id(23563845949734140)
+,p_authentication_id=>wwv_flow_imp.id(25278990329788475)
 ,p_application_tab_set=>1
 ,p_logo_type=>'C'
 ,p_logo=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -45,12 +45,6 @@ wwv_flow_api.create_flow(
 '  <span class="z-app-name">&G_APP_NAME.</span>',
 '  <span class="z-app-desc">&G_APP_DESC.</span>',
 '</span>'))
-,p_app_builder_icon_name=>'app-icon.svg'
-,p_favicons=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<link rel="apple-touch-icon" sizes="180x180" href="#APP_FILES#ico/apple-touch-icon.png">',
-'<link rel="icon" type="image/png" sizes="32x32" href="#APP_FILES#ico/favicon-32x32.png">',
-'<link rel="icon" type="image/png" sizes="16x16" href="#APP_FILES#ico/favicon-16x16.png">',
-'<link rel="shortcut icon" href="#APP_FILES#ico/favicon.ico">'))
 ,p_public_user=>'APEX_PUBLIC_USER'
 ,p_proxy_server=>nvl(wwv_flow_application_install.get_proxy,'')
 ,p_no_proxy_domains=>nvl(wwv_flow_application_install.get_no_proxy_domains,'')
@@ -65,10 +59,11 @@ wwv_flow_api.create_flow(
 ,p_csv_encoding=>'Y'
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
+,p_tokenize_row_search=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220508055239'
+,p_last_upd_yyyymmddhh24miss=>'20220730113104'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>351
+,p_files_version=>368
 ,p_ui_type_name => null
 ,p_print_server_type=>'INSTANCE'
 ,p_is_pwa=>'N'
@@ -94,6 +89,6 @@ wwv_flow_api.create_flow(
 'IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN',
 'CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.'))
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

@@ -14,7 +14,6 @@ create table blog_settings(
   attribute_name varchar2( 128 char ) not null,
   data_type varchar2( 64 char ) not null,
   attribute_value varchar2( 4000 byte ),
-  post_expression varchar2( 4000 byte ),
   int_min number( 10,0 ),
   int_max number( 10,0 ),
   attribute_message varchar2( 256 char ) generated always as ( 'BLOG_SETTING_' || attribute_name ) virtual not null,

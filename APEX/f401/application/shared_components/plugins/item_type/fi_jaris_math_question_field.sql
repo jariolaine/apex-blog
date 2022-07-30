@@ -3,16 +3,16 @@ begin
 --   Manifest
 --     PLUGIN: FI.JARIS.MATH_QUESTION_FIELD
 --   Manifest End
-wwv_flow_api.component_begin (
- p_version_yyyy_mm_dd=>'2021.10.15'
-,p_release=>'21.2.6'
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-wwv_flow_api.create_plugin(
- p_id=>wwv_flow_api.id(68115044491002031)
+wwv_flow_imp_shared.create_plugin(
+ p_id=>wwv_flow_imp.id(68115044491002031)
 ,p_plugin_type=>'ITEM TYPE'
 ,p_name=>'FI.JARIS.MATH_QUESTION_FIELD'
 ,p_display_name=>'Math Question Field'
@@ -28,9 +28,9 @@ wwv_flow_api.create_plugin(
 ,p_subscribe_plugin_settings=>true
 ,p_version_identifier=>'1.0'
 );
-wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(61849465817064829)
-,p_plugin_id=>wwv_flow_api.id(68115044491002031)
+wwv_flow_imp_shared.create_plugin_attribute(
+ p_id=>wwv_flow_imp.id(61849465817064829)
+,p_plugin_id=>wwv_flow_imp.id(68115044491002031)
 ,p_attribute_scope=>'APPLICATION'
 ,p_attribute_sequence=>1
 ,p_display_sequence=>10
@@ -42,9 +42,9 @@ wwv_flow_api.create_plugin_attribute(
 ,p_default_value=>'Answer to question isn''t correct.'
 ,p_is_translatable=>true
 );
-wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(14501292973487759)
-,p_plugin_id=>wwv_flow_api.id(68115044491002031)
+wwv_flow_imp_shared.create_plugin_attribute(
+ p_id=>wwv_flow_imp.id(14501292973487759)
+,p_plugin_id=>wwv_flow_imp.id(68115044491002031)
 ,p_attribute_scope=>'APPLICATION'
 ,p_attribute_sequence=>2
 ,p_display_sequence=>20
@@ -56,9 +56,9 @@ wwv_flow_api.create_plugin_attribute(
 ,p_default_value=>'Ajax call returned error.'
 ,p_is_translatable=>true
 );
-wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(68115749255002032)
-,p_plugin_id=>wwv_flow_api.id(68115044491002031)
+wwv_flow_imp_shared.create_plugin_attribute(
+ p_id=>wwv_flow_imp.id(68115749255002032)
+,p_plugin_id=>wwv_flow_imp.id(68115044491002031)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>1
 ,p_display_sequence=>20
@@ -70,9 +70,9 @@ wwv_flow_api.create_plugin_attribute(
 ,p_max_length=>10
 ,p_is_translatable=>false
 );
-wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(68116207240002032)
-,p_plugin_id=>wwv_flow_api.id(68115044491002031)
+wwv_flow_imp_shared.create_plugin_attribute(
+ p_id=>wwv_flow_imp.id(68116207240002032)
+,p_plugin_id=>wwv_flow_imp.id(68115044491002031)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>2
 ,p_display_sequence=>30
@@ -84,9 +84,9 @@ wwv_flow_api.create_plugin_attribute(
 ,p_max_length=>10
 ,p_is_translatable=>false
 );
-wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(68116582706002032)
-,p_plugin_id=>wwv_flow_api.id(68115044491002031)
+wwv_flow_imp_shared.create_plugin_attribute(
+ p_id=>wwv_flow_imp.id(68116582706002032)
+,p_plugin_id=>wwv_flow_imp.id(68115044491002031)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>3
 ,p_display_sequence=>40
@@ -98,9 +98,9 @@ wwv_flow_api.create_plugin_attribute(
 ,p_max_length=>10
 ,p_is_translatable=>false
 );
-wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(68116999025002033)
-,p_plugin_id=>wwv_flow_api.id(68115044491002031)
+wwv_flow_imp_shared.create_plugin_attribute(
+ p_id=>wwv_flow_imp.id(68116999025002033)
+,p_plugin_id=>wwv_flow_imp.id(68115044491002031)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>4
 ,p_display_sequence=>50
@@ -112,9 +112,9 @@ wwv_flow_api.create_plugin_attribute(
 ,p_max_length=>10
 ,p_is_translatable=>false
 );
-wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(26783885395659297)
-,p_plugin_id=>wwv_flow_api.id(68115044491002031)
+wwv_flow_imp_shared.create_plugin_attribute(
+ p_id=>wwv_flow_imp.id(26783885395659297)
+,p_plugin_id=>wwv_flow_imp.id(68115044491002031)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>5
 ,p_display_sequence=>60
@@ -124,6 +124,6 @@ wwv_flow_api.create_plugin_attribute(
 ,p_supported_component_types=>'APEX_APPLICATION_PAGE_ITEMS'
 ,p_is_translatable=>false
 );
-wwv_flow_api.component_end;
+wwv_flow_imp.component_end;
 end;
 /

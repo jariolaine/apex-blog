@@ -147,7 +147,11 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUI
   ,lower( t1.last_updated_by )  as last_updated_by
   ,t2.is_active                 as is_active
   ,t2.build_option_parent       as feature_parent
-  ,t2.help_message              as help_message
+  ,regexp_replace(
+    t2.build_option_name
+    ,'^(BLOG)'
+    ,'\1_HELP'
+  )                             as help_message
 from apex_application_build_options t1
 join blog_features t2
   on t1.build_option_name = t2.build_option_name
@@ -264,7 +268,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_SETTINGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "ATTRIBUTE_VALUE", "DATA_TYPE", "ATTRIBUTE_MESSAGE", "ATTRIBUTE_DESC", "ATTRIBUTE_GROUP_MESSAGE", "ATTRIBUTE_GROUP", "ATTRIBUTE_GROUP_SEQ", "POST_EXPRESSION", "INT_MIN", "INT_MAX", "HELP_MESSAGE") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "ATTRIBUTE_VALUE", "DATA_TYPE", "ATTRIBUTE_MESSAGE", "ATTRIBUTE_DESC", "ATTRIBUTE_GROUP_MESSAGE", "ATTRIBUTE_GROUP", "ATTRIBUTE_GROUP_SEQ", "INT_MIN", "INT_MAX", "HELP_MESSAGE") AS
   select
    t1.id                      as id
   ,t1.row_version             as row_version
@@ -291,7 +295,6 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATE
     where 1 = 1
       and lkp.attribute_group_message = t1.attribute_group_message
   )                           as attribute_group_seq
-  ,t1.post_expression         as post_expression
   ,t1.int_min                 as int_min
   ,t1.int_max                 as int_max
   ,t1.help_message            as help_message
@@ -1304,8 +1307,11 @@ as
       raise no_data_found;
     end if;
 
-    -- conver application id string to number
-    l_app_id := to_number( p_app_id );
+        -- not every constraint has to be in our lookup table
+        if not l_err_mesg = l_constraint_name then
+          l_result.message := l_err_mesg;
+          l_result.additional_info := null;
+        end if;
 
     -- set items session state
     -- fetch items and values that session state need to be set
@@ -1570,8 +1576,8 @@ as
       raise no_data_found;
     end if;
 
-    -- conver category id string to number
-    l_category_id := to_number( p_category_id );
+    -- conver application id string to number
+    l_app_id := to_number( p_app_id );
 
     -- fetch category name
     select v1.category_title
@@ -1990,11 +1996,9 @@ as
 --                            New procedures:
 --                              resequence_link_groups
 --                              resequence_links
---                              categories_links
---                              tags_links
---
---  TO DO:
---    #1  check constraint name that raised dup_val_on_index error
+--                              resequence_categories
+--                              resequence_tags
+--    Jari Laine 09.05.2022 - Removed obsolete procedure run_settings_post_expression
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2125,13 +2129,6 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 20012 Processing process "Run post expression"
-  procedure run_settings_post_expression(
-    p_id              in number,
-    p_value           in out nocopy varchar2
-  );
---------------------------------------------------------------------------------
--- Called from:
 --  admin app page 20011 Processing process "Features - Save Interactive Grid Data"
   procedure update_feature(
     p_app_id          in number,
@@ -2183,22 +2180,20 @@ as
   as
   begin
 
-    -- insert post id, tag id and display sequency to table.
-    -- use unique constraint violation to skip existing records.
-    insert into blog_post_tags( is_active, post_id, tag_id, display_seq )
-    values ( 1, p_post_id, p_tag_id, p_display_seq )
-    ;
-
-  -- TO DO see item 1 from package specs
-  exception when dup_val_on_index then
-
+    -- merge tag
+    merge into blog_post_tags t1
+    using dual on (
+      t1.post_id  = p_post_id
+      and t1.tag_id  = p_tag_id
+    )
+    when matched then
     -- update display sequence if it changed
-    update blog_post_tags
-    set display_seq = p_display_seq
-    where 1 = 1
-    and post_id = p_post_id
-    and tag_id = p_tag_id
-    and display_seq != p_display_seq
+      update set t1.display_seq = p_display_seq
+        where t1.display_seq != p_display_seq
+    -- insert post id, tag id and display sequency to table
+    when not matched then
+      insert ( is_active, post_id, tag_id, display_seq )
+        values ( 1, p_post_id, p_tag_id, p_display_seq )
     ;
 
   end add_tag_to_post;
@@ -2495,6 +2490,15 @@ as
 
     end loop;
 
+    -- fetch max link group display sequence
+    select max( v1.display_seq ) as display_seq
+    into l_max_seq
+    from blog_v_all_dynamic_content v1
+    ;
+    -- get next link group display sequence
+    l_next_seq := blog_util.int_to_vc2( next_seq( l_max_seq ) );
+    -- return next link group display sequence
+    return l_next_seq;
 
     -- post must have at least one paragraph
     if l_first_p_start > 0 and l_first_p_end > 0 then
@@ -2653,30 +2657,45 @@ as
     p_category_id out nocopy number
   )
   as
-    l_next_seq  number;
-    l_title     varchar2(512);
+    l_next_seq      number;
+    l_title         varchar2(512);
+    l_title_unique  varchar2(512);
   begin
 
     -- remove whitespace from category title
     l_title := remove_whitespace( p_title );
+    l_title_unique := upper( l_title );
 
     -- check if category already exists and fetch id
+    begin
+      select v1.id
+      into p_category_id
+      from blog_v_all_categories v1
+      where 1 = 1
+      and v1.title_unique = l_title_unique
+      ;
+    -- if category not exists insert and return id
+    exception
+    when no_data_found
+    then
+      -- get next sequence value
+      l_next_seq := get_category_seq;
+      -- insert category and return id for out parameter.
+      insert into blog_categories
+        ( is_active, display_seq, title )
+          values( 1, l_next_seq, l_title )
+      returning id into p_category_id
+      ;
+    end;
+  -- fetch category id if it was inserted in other session but not commited
+  exception
+  when dup_val_on_index
+  then
     select v1.id
     into p_category_id
     from blog_v_all_categories v1
     where 1 = 1
-    and v1.title_unique = upper( l_title )
-    ;
-  -- if category not exists insert and return id
-  exception
-  when no_data_found
-  then
-    -- get next sequence value
-    l_next_seq := get_category_seq;
-    -- insert category and return id for out parameter.
-    insert into blog_categories ( is_active, display_seq, title )
-    values( 1, l_next_seq, l_title )
-    returning id into p_category_id
+      and v1.title_unique = l_title_unique
     ;
   end add_category;
 --------------------------------------------------------------------------------
@@ -2920,9 +2939,7 @@ as
       then
         l_err_mesg := p_err_mesg;
       end if;
-    else
-      -- if validation passes, clear error meassage
-      l_err_mesg := null;
+
     end if;
 
     return l_err_mesg;
@@ -2965,36 +2982,6 @@ as
     -- return error message
     return l_err_mesg;
   end is_date_format;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure run_settings_post_expression(
-    p_id    in number,
-    p_value in out nocopy varchar2
-  )
-  as
-    l_exp varchar2(32700);
-  begin
-
-    -- trim value
-    p_value := trim( p_value );
-
-    -- fetch post exporession
-    select v1.post_expression
-    into l_exp
-    from blog_v_all_settings v1
-    where 1 = 1
-      and v1.post_expression is not null
-      and v1.id = p_id
-    ;
-    -- get expression result
-    p_value := apex_plugin_util.get_plsql_expression_result(
-      p_plsql_expression => l_exp
-    );
-
-  exception when no_data_found
-  then
-    null;
-  end run_settings_post_expression;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure update_feature(
@@ -3488,7 +3475,7 @@ as
   begin
 
     -- get canonical host from blog settings
-    l_url :=  blog_util.get_attribute_value( 'G_CANONICAL_HOST' );
+    l_url := blog_util.get_attribute_value( 'G_CANONICAL_HOST' );
 
     -- if host not found from settings, use APEX provided value
     if l_url is null
@@ -3496,7 +3483,7 @@ as
       l_url := apex_util.host_url();
     end if;
 
-    return l_url;
+    return rtrim( l_url, '/' );
 
   end get_canonical_host;
 --------------------------------------------------------------------------------

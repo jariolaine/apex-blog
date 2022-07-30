@@ -110,28 +110,6 @@ blockquote::after {
   margin-inline-start: 0!important;
 }
 /**************************************
-* APEX 21.2:
-*   fix search engine style pagination
-*   https://community.oracle.com/tech/developers/discussion/4494954/bug-ut-21-2-search-engine-pagination-misalignment
-**************************************/
-.t-Report-paginationText strong {
-  display: inline-block;
-  vertical-align: top;
-  border-radius: var(--ut-report-pagination-link-border-radius, 0.125rem);
-  -webkit-padding-before: var(--ut-report-pagination-link-padding-y, 0.25rem);
-  padding-block-start: var(--ut-report-pagination-link-padding-y, 0.25rem);
-  -webkit-padding-after: var(--ut-report-pagination-link-padding-y, 0.25rem);
-  padding-block-end: var(--ut-report-pagination-link-padding-y, 0.25rem);
-  -webkit-padding-start: var(--ut-report-pagination-link-padding-x, 0.5rem);
-  padding-inline-start: var(--ut-report-pagination-link-padding-x, 0.5rem);
-  -webkit-padding-end: var(--ut-report-pagination-link-padding-x, 0.5rem);
-  padding-inline-end: var(--ut-report-pagination-link-padding-x, 0.5rem);
-  background-color: var(--ut-report-pagination-link-background-color);
-  color: var(--ut-report-pagination-link-text-color);
-  --ut-report-pagination-link-background-color: var(--ut-report-pagination-link-hover-background-color, var(--ut-palette-primary));
-  --ut-report-pagination-link-text-color: var(--ut-report-pagination-link-hover-text-color, var(--ut-palette-primary-contrast));
-}
-/**************************************
 * Post report
 **************************************/
 .z-post {
@@ -287,6 +265,7 @@ pre.z-program-code code {
 **************************************/
 .z-author-container {
   display: flex;
+  gap: 1rem;
 }
 .z-author-left {
   order: 1;
@@ -295,11 +274,11 @@ pre.z-program-code code {
 }
 .z-author-right {
   order: 2;
-  padding: 0 0 0 1rem;
 }
 .z-author-badges {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
   padding: 1rem 0;
 }
 @media only screen and (max-width: 640px) {
@@ -307,11 +286,7 @@ pre.z-program-code code {
     flex-direction: column;
     align-items: center;
   }
-  .z-author-right {
-    padding: 1rem 0;
-  }
   .z-author-badges {
-    padding: 1rem 0;
     align-items: center;
   }
 }
@@ -336,7 +311,7 @@ pre.z-program-code code {
 * Credits:
 *   https://dev.to/alvaromontoro/create-a-tag-cloud-with-html-and-css-1e90
 **************************************/
-ul.z-tagCloud {
+.z-tagCloud {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
@@ -346,38 +321,38 @@ ul.z-tagCloud {
   margin: 0;
   padding: 0.5rem;
 }
-ul.z-tagCloud a[data-weight="1"] {
-  --z-tag-size: 1;
-}
-ul.z-tagCloud a[data-weight="2"] {
-  --z-tag-size: 2;
-}
-ul.z-tagCloud a[data-weight="3"] {
-  --z-tag-size: 3;
-}
-ul.z-tagCloud a[data-weight="4"] {
-  --z-tag-size: 4;
-}
-ul.z-tagCloud a[data-weight="5"] {
-  --z-tag-size: 5;
-}
-ul.z-tagCloud a[data-weight="6"] {
-  --z-tag-size: 6;
-}
-ul.z-tagCloud a[data-weight="7"] {
-  --z-tag-size: 7;
-}
-ul.z-tagCloud a[data-weight="8"] {
-  --z-tag-size: 8;
-}
-ul.z-tagCloud .z-tagCloud-link {
+.z-tagCloud .z-tagCloud-link {
   display: flex;
   padding: 0.5rem;
   text-decoration: none;
   position: relative;
   font-size: calc(var(--z-tag-size) * 0.125rem - -0.75rem);
 }
-ul.z-tagCloud .z-tagCloud-link::before {
+.z-tagCloud .z-tagCloud-link[data-weight="1"] {
+  --z-tag-size: 1;
+}
+.z-tagCloud .z-tagCloud-link[data-weight="2"] {
+  --z-tag-size: 2;
+}
+.z-tagCloud .z-tagCloud-link[data-weight="3"] {
+  --z-tag-size: 3;
+}
+.z-tagCloud .z-tagCloud-link[data-weight="4"] {
+  --z-tag-size: 4;
+}
+.z-tagCloud .z-tagCloud-link[data-weight="5"] {
+  --z-tag-size: 5;
+}
+.z-tagCloud .z-tagCloud-link[data-weight="6"] {
+  --z-tag-size: 6;
+}
+.z-tagCloud .z-tagCloud-link[data-weight="7"] {
+  --z-tag-size: 7;
+}
+.z-tagCloud .z-tagCloud-link[data-weight="8"] {
+  --z-tag-size: 8;
+}
+.z-tagCloud .z-tagCloud-link::before {
   content: "";
   position: absolute;
   top: 0;
@@ -388,11 +363,11 @@ ul.z-tagCloud .z-tagCloud-link::before {
   transform: translate(-50%, 0);
   transition: width 0.25s;
 }
-ul.z-tagCloud .z-tagCloud-link:hover::before,
-ul.z-tagCloud .z-tagCloud-link:focus::before {
+.z-tagCloud .z-tagCloud-link:hover::before,
+.z-tagCloud .z-tagCloud-link:focus::before {
   width: 100%;
 }
-ul.z-tagCloud .z-tagCloud-badge {
+.z-tagCloud .z-tagCloud-badge {
   background-color: var(--ut-component-badge-background-color);
   color: var(--ut-component-badge-text-color);
   border-radius: var(--ut-component-badge-border-radius);
@@ -402,7 +377,7 @@ ul.z-tagCloud .z-tagCloud-badge {
   margin-left: 0.25rem;
   padding: 0 0.5rem;
 }
-ul.z-tagCloud .z-tagCloud-badge:empty {
+.z-tagCloud .z-tagCloud-badge:empty {
   display: none;
 }
 @media (prefers-reduced-motion) {
