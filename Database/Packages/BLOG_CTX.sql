@@ -1,4 +1,4 @@
-CREATE OR REPLACE package  "BLOG_CTX"
+create or replace package "BLOG_CTX"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ end "BLOG_CTX";
 /
 
 
-CREATE OR REPLACE package body "BLOG_CTX"
+create or replace package body "BLOG_CTX"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

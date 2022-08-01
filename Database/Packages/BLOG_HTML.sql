@@ -1,4 +1,4 @@
-CREATE OR REPLACE package "BLOG_HTML"
+create or replace package "BLOG_HTML"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ end "BLOG_HTML";
 /
 
 
-CREATE OR REPLACE package body "BLOG_HTML"
+create or replace package body "BLOG_HTML"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

@@ -29,7 +29,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220507091431'
+,p_last_upd_yyyymmddhh24miss=>'20220801121601'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(13706719753736206)
@@ -55,32 +55,8 @@ wwv_flow_imp_page.create_report_region(
 '  ,labels.posted_on     as label_03',
 '  ,v1.published_on      as value_03',
 '  ,labels.tags          as label_04',
-'  ,tags.html            as value_04',
+'  ,v1.tags_html         as value_04',
 'from #OWNER#.blog_v_posts v1',
-'join(',
-'  select lkp.post_id',
-'    ,listagg(',
-'      xmlserialize( content',
-'        xmlelement( "a"',
-'          ,xmlattributes(',
-'            #OWNER#.blog_url.get_tag(',
-'              p_tag_id  => lkp.tag_id',
-'              ,p_app_id => :APP_ID',
-'            )                                                 as "href"',
-'            ,''margin-bottom-md margin-left-sm z-search--tags'' as "class"',
-'          )',
-'          ,lkp.tag',
-'        )',
-'      )',
-'      ,'',''',
-'    ) within group( order by lkp.display_seq ) as html',
-'  from #OWNER#.blog_post_tags t1',
-'  join #OWNER#.blog_v_post_tags lkp on t1.post_id = lkp.post_id',
-'  where 1 = 1',
-'    and t1.is_active = 1',
-'    and t1.tag_id = :P6_TAG_ID',
-'  group by lkp.post_id',
-') tags on v1.post_id = tags.post_id',
 'cross join(',
 '  select',
 '     apex_lang.message( ''BLOG_TXT_TAGS'' )       as tags',
@@ -90,6 +66,14 @@ wwv_flow_imp_page.create_report_region(
 '  from dual',
 ') labels',
 'where 1 = 1',
+'and exists(',
+'  select 1',
+'  from #OWNER#.blog_post_tags x1',
+'  where 1 = 1',
+'    and x1.is_active = 1',
+'    and x1.tag_id = :P6_TAG_ID',
+'    and x1.post_id = v1.post_id',
+')',
 'order by v1.published_on desc'))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P6_TAG_ID'

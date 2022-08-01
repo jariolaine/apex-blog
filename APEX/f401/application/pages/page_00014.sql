@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220722114301'
+,p_last_upd_yyyymmddhh24miss=>'20220801121728'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(40117793173805532)
@@ -49,30 +49,7 @@ wwv_flow_imp_page.create_report_region(
 '  ,v1.published_on        as value_02',
 '  -- output label if there is tags',
 '  ,case when',
-'    apex_util.savekey_vc2(',
-'      -- fetch tags and stote to variable',
-'      (',
-'        select',
-'          listagg(',
-'            xmlserialize( content',
-'              xmlelement( "a"',
-'                ,xmlattributes(',
-'                  #OWNER#.blog_url.get_tag(',
-'                     p_tag_id => lkp.tag_id',
-'                    ,p_app_id => :APP_ID',
-'                  )                                                 as "href"',
-'                  ,''margin-bottom-md margin-left-sm z-search--tags'' as "class"',
-'                )',
-'                ,lkp.tag',
-'              )',
-'            )',
-'            ,'',''',
-'          ) within group( order by lkp.display_seq )',
-'        from #OWNER#.blog_v_post_tags lkp',
-'        where 1 = 1',
-'          and lkp.post_id = v1.post_id',
-'      )',
-'    ) is not null',
+'    apex_util.savekey_vc2( v1.tags_html ) is not null',
 '    then labels.tags',
 '  end                     as label_03',
 '  -- get tags from variable',

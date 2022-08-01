@@ -1,4 +1,4 @@
-CREATE OR REPLACE package  "BLOG_PLUGIN"
+create or replace package "BLOG_PLUGIN"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ end "BLOG_PLUGIN";
 /
 
 
-CREATE OR REPLACE package body "BLOG_PLUGIN"
+create or replace package body "BLOG_PLUGIN"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

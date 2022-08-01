@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "CATEGORY_CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "COMMENTS_COUNT") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "CATEGORY_CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "COMMENTS_COUNT", "TAGS_HTML") AS
   select
    t1.id                  as post_id
   ,t3.id                  as category_id
@@ -25,6 +25,26 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
     and l1.is_active = 1
     and l1.post_id  = t1.id
   )                       as comments_count
+  ,(
+    select
+      listagg(
+        xmlserialize( content
+          xmlelement( "a"
+            ,xmlattributes(
+              blog_url.get_tag(
+                 p_tag_id => lkp.tag_id
+              )                                                 as "href"
+              ,'margin-bottom-md margin-left-sm z-search--tags' as "class"
+            )
+            ,lkp.tag
+          )
+        )
+        ,','
+      ) within group( order by lkp.display_seq )
+    from blog_v_post_tags lkp
+    where 1 = 1
+      and lkp.post_id = t1.id
+  )                       as tags_html
 from blog_posts t1
 join blog_bloggers t2
   on t1.blogger_id  = t2.id

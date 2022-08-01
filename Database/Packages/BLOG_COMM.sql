@@ -1,4 +1,4 @@
-CREATE OR REPLACE package  "BLOG_COMM"
+create or replace package "BLOG_COMM"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ end "BLOG_COMM";
 /
 
 
-CREATE OR REPLACE package body "BLOG_COMM"
+create or replace package body "BLOG_COMM"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

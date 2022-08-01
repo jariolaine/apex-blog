@@ -30,7 +30,7 @@ wwv_flow_imp_page.create_page(
 ||'he default settings.</p>'))
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220612072242'
+,p_last_upd_yyyymmddhh24miss=>'20220801061600'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(43843535329616316)

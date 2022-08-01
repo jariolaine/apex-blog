@@ -1,4 +1,4 @@
-CREATE OR REPLACE package  "BLOG_URL"
+create or replace package "BLOG_URL"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -158,7 +158,7 @@ end "BLOG_URL";
 /
 
 
-CREATE OR REPLACE package body "BLOG_URL"
+create or replace package body "BLOG_URL"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -208,7 +208,18 @@ as
     p_encode_url  in varchar2 default 'NO'
   ) return varchar2
   as
+    l_url varchar2(4000);
   begin
+
+    l_url :=
+      apex_page.get_url(
+        p_application => p_app_id
+       ,p_page        => p_app_page_id
+       ,p_session     => p_session
+       ,p_request     => p_request
+       ,p_clear_cache => p_clear_cache
+       ,p_plain_url   => case p_plain_url when 'YES' then true else false end
+      );
 
     return
       case p_canonical
@@ -216,14 +227,12 @@ as
       then blog_url.get_canonical_host
       end
       ||
-      apex_page.get_url(
-        p_application => p_app_id
-       ,p_page        => p_app_page_id
-       ,p_session     => p_session
-       ,p_request     => p_request
-       ,p_clear_cache => p_clear_cache
-       ,p_plain_url   => true
-      );
+      case p_encode_url
+      when 'YES'
+      then apex_util.url_encode( l_url )
+      else l_url
+      end
+    ;
 
   end get_tab;
 --------------------------------------------------------------------------------

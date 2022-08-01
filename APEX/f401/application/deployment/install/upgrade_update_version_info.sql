@@ -18,11 +18,10 @@ wwv_flow_imp_shared.create_install_script(
 ,p_sequence=>80
 ,p_script_type=>'UPGRADE'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'--------------------------------------------------------',
-'--  Update application version',
+'-- Update version info',
 '--------------------------------------------------------',
 'update blog_settings',
-'  set attribute_value = ''Release 22.1.2.20220730''',
+'  set attribute_value = ''Release 22.1.2.20220801''',
 'where 1 = 1',
 '  and attribute_name = ''G_APP_VERSION''',
 ';',
