@@ -3,7 +3,7 @@
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "ROW_VERSION", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC") AS
 select
-   t1.id      as file_id
+   t1.id            as file_id
   ,t1.row_version   as row_version
   ,t1.created_on    as created_on
   ,t1.changed_on    as changed_on

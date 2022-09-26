@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.2'
+,p_release=>'22.1.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -24,17 +24,16 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_required_patch=>wwv_flow_imp.id(24626889314854172)
 ,p_page_is_public_y_n=>'Y'
-,p_page_component_map=>'03'
+,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220510054946'
+,p_last_upd_yyyymmddhh24miss=>'20220926174047'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(25312085512124215)
 ,p_plug_name=>'Files Container'
-,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_imp.id(6781372168267375)
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--removeHeader js-removeLandmark:t-Region--scrollBody'
+,p_plug_template=>wwv_flow_imp.id(6802870362267386)
 ,p_plug_display_sequence=>10
-,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
@@ -44,15 +43,18 @@ wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(50989785872352709)
 ,p_plug_name=>'Search from Files'
 ,p_parent_plug_id=>wwv_flow_imp.id(25312085512124215)
-,p_region_template_options=>'#DEFAULT#:t-Region--hideHeader:t-Region--scrollBody:t-Form--noPadding:t-Form--large:t-Form--stretchInputs'
+,p_region_template_options=>'#DEFAULT#:t-Region--hideHeader:t-Region--stacked:t-Region--scrollBody'
 ,p_plug_template=>wwv_flow_imp.id(6802870362267386)
 ,p_plug_display_sequence=>10
 ,p_plug_new_grid_row=>false
 ,p_plug_display_point=>'SUB_REGIONS'
+,p_plug_source_type=>'NATIVE_SMART_FILTERS'
+,p_filtered_region_id=>wwv_flow_imp.id(65301007014080913)
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_required_patch=>wwv_flow_imp.id(25684564406281886)
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
+,p_attribute_02=>'N'
+,p_attribute_03=>'10000'
+,p_attribute_04=>'N'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(65301007014080913)
@@ -61,7 +63,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_template=>wwv_flow_imp.id(6802870362267386)
 ,p_display_sequence=>30
 ,p_region_css_classes=>'z-MediaList--files'
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--hideHeader:t-Region--scrollBody:t-Form--leftLabels'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--hideHeader:t-Region--stacked:t-Region--scrollBody:t-Form--leftLabels'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--stack:t-MediaList--iconsRounded'
 ,p_display_point=>'SUB_REGIONS'
 ,p_source_type=>'NATIVE_SQL_REPORT'
@@ -84,22 +86,9 @@ wwv_flow_imp_page.create_report_region(
 '  ,null              as link_attr',
 '  ,null              as link_class',
 'from #OWNER#.blog_v_files v1',
-'where 1 = 1',
-'and v1.is_download = 1',
-'and (',
-'  :P11_FILE_NAME is null or',
-'  (',
-'    :P11_FILE_NAME is not null and',
-'    (',
-'      instr( upper( v1.file_name ), upper( :P11_FILE_NAME ) ) > 0 or',
-'      instr( upper( v1.file_desc ), upper( :P11_FILE_NAME ) ) > 0',
-'    )',
-'  )',
-')',
 'order by v1.file_name'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
-,p_ajax_items_to_submit=>'P11_FILE_NAME'
 ,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(6815219261267393)
 ,p_query_num_rows=>100
@@ -212,35 +201,27 @@ wwv_flow_imp_page.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_page_item(
- p_id=>wwv_flow_imp.id(25678350637228506)
+ p_id=>wwv_flow_imp.id(22521279988146407)
 ,p_name=>'P11_FILE_NAME'
 ,p_item_sequence=>10
 ,p_item_plug_id=>wwv_flow_imp.id(50989785872352709)
-,p_use_cache_before_default=>'NO'
-,p_prompt=>'File Search'
+,p_prompt=>'File Name'
 ,p_placeholder=>'Search on files...'
-,p_display_as=>'NATIVE_TEXT_FIELD'
-,p_cSize=>30
-,p_cMaxlength=>256
-,p_grid_label_column_span=>0
-,p_field_template=>wwv_flow_imp.id(6854381477267413)
-,p_item_icon_css_classes=>'fa-search'
+,p_source=>'LIST_TITLE,LIST_TEXT'
+,p_source_type=>'FACET_COLUMN'
+,p_display_as=>'NATIVE_SEARCH'
 ,p_item_template_options=>'#DEFAULT#'
-,p_is_persistent=>'N'
-,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
 ,p_required_patch=>wwv_flow_imp.id(25684564406281886)
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'N'
-,p_attribute_02=>'N'
-,p_attribute_04=>'SEARCH'
-,p_attribute_05=>'BOTH'
+,p_attribute_01=>'ROW'
+,p_attribute_04=>'N'
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(25310969553124204)
 ,p_name=>'Perform Search'
 ,p_event_sequence=>10
 ,p_triggering_element_type=>'ITEM'
-,p_triggering_element=>'P11_FILE_NAME'
+,p_triggering_element=>'P11_FILE_NAME1'
 ,p_triggering_condition_type=>'JAVASCRIPT_EXPRESSION'
 ,p_triggering_expression=>'this.browserEvent.which === apex.jQuery.ui.keyCode.ENTER'
 ,p_bind_type=>'bind'

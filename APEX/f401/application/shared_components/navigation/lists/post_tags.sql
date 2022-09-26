@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.2'
+,p_release=>'22.1.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -32,8 +32,8 @@ wwv_flow_imp_shared.create_list(
 '  ,width_bucket(',
 '     v1.posts_count',
 '    ,min( v1.posts_count ) over()',
-'    ,max( v1.posts_count ) over() + 1',
-'    ,8',
+'    ,max( v1.posts_count ) over()',
+'    ,7',
 '  )                                     as attribute2',
 'from #OWNER#.blog_v_tags v1',
 'cross join(',

@@ -5,25 +5,17 @@
   width: 20%;
 }
 /**************************************
+* Files report copy URL column
+**************************************/
+td[headers="COPY_URL"] {
+  padding: 0;
+}
+/**************************************
 * Posts IR detail view
 **************************************/
 .z-post--IR {
   font-size: 1rem;
   margin: 2em 1rem;
-}
-/**************************************
-* Interactive Reports link column
-**************************************/
-.z-IR--iconLinks tr > :first-child {
-  padding: 0.25rem 0.5rem;
-  width: 0.1%;
-}
-/**************************************
-* Settings and features Interactive Grid
-**************************************/
-.z-config-ig span.a-GV-breakLabel {
-  display: none!important;
-  visibility: hidden!important;
 }
 /**************************************
 * Interactive Reports link column

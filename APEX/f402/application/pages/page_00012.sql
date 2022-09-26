@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.2'
+,p_release=>'22.1.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -70,7 +70,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220717084957'
+,p_last_upd_yyyymmddhh24miss=>'20220806055402'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8640589331194982)
@@ -404,7 +404,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_plug_id=>wwv_flow_imp.id(8640589331194982)
 ,p_item_source_plug_id=>wwv_flow_imp.id(8640589331194982)
 ,p_prompt=>'Set Date and Time'
-,p_format_mask=>'&G_USER_INPUT_DATE_TIME_FORMAT.  HH24:MI'
+,p_format_mask=>'&G_USER_INPUT_DATE_TIME_FORMAT.'
 ,p_source=>'PUBLISHED_ON'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_DATE_PICKER_JET'
@@ -485,7 +485,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_RICH_TEXT_EDITOR'
 ,p_cSize=>255
 ,p_cMaxlength=>30000
-,p_cHeight=>20
+,p_cHeight=>25
 ,p_field_template=>wwv_flow_imp.id(8548506989518243)
 ,p_item_css_classes=>'padding-right-sm margin-right-md'
 ,p_item_template_options=>'#DEFAULT#'
@@ -694,7 +694,7 @@ wwv_flow_imp_page.create_page_computation(
 ,p_computation_item=>'P12_PUBLISHED_ON'
 ,p_computation_type=>'EXPRESSION'
 ,p_computation_language=>'PLSQL'
-,p_computation=>'to_char( localtimestamp, apex_string.format( ''%s HH24:MI'', :G_USER_INPUT_DATE_TIME_FORMAT ) )'
+,p_computation=>'to_char( localtimestamp, :G_USER_INPUT_DATE_TIME_FORMAT )'
 ,p_compute_when=>'P12_PUBLISHED_ON'
 ,p_compute_when_type=>'ITEM_IS_NULL'
 );
@@ -978,7 +978,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.2'
+,p_release=>'22.1.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0

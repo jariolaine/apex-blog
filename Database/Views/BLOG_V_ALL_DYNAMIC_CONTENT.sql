@@ -17,4 +17,4 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VERSION", 
   ,t1.content_html      as content_html
 from blog_dynamic_content t1
 where 1 = 1
-;
+/

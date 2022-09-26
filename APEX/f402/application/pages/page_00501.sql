@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.2'
+,p_release=>'22.1.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220507034300'
+,p_last_upd_yyyymmddhh24miss=>'20220807060540'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8857181938695778)
@@ -196,7 +196,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_RICH_TEXT_EDITOR'
 ,p_cSize=>4000
 ,p_cMaxlength=>4000
-,p_cHeight=>20
+,p_cHeight=>25
 ,p_field_template=>wwv_flow_imp.id(8548365426518242)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
@@ -233,29 +233,6 @@ wwv_flow_imp_page.create_page_item(
 ,p_restricted_characters=>'US_ONLY'
 ,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
-);
-wwv_flow_imp_page.create_page_item(
- p_id=>wwv_flow_imp.id(37643942322287105)
-,p_name=>'P501_USER_NAME'
-,p_source_data_type=>'VARCHAR2'
-,p_is_query_only=>true
-,p_item_sequence=>10
-,p_item_plug_id=>wwv_flow_imp.id(45722084445325202)
-,p_item_source_plug_id=>wwv_flow_imp.id(8857181938695778)
-,p_prompt=>'User Name'
-,p_source=>'APEX_USERNAME'
-,p_source_type=>'REGION_SOURCE_COLUMN'
-,p_display_as=>'NATIVE_DISPLAY_ONLY'
-,p_field_template=>wwv_flow_imp.id(8548970214518243)
-,p_item_template_options=>'#DEFAULT#'
-,p_is_persistent=>'N'
-,p_protection_level=>'I'
-,p_required_patch=>wwv_flow_imp.id(24687280101070827)
-,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'N'
-,p_attribute_02=>'VALUE'
-,p_attribute_04=>'N'
-,p_attribute_05=>'PLAIN'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(37645870035287124)
@@ -359,8 +336,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_04=>'TEXT'
 ,p_attribute_05=>'BOTH'
 ,p_show_quick_picks=>'Y'
-,p_quick_pick_label_01=>'DD.MM.YYYY'
-,p_quick_pick_value_01=>'DD.MM.YYYY'
+,p_quick_pick_label_01=>'DD.MM.YYYY HH24:MI'
+,p_quick_pick_value_01=>'DD.MM.YYYY HH24:MI'
 );
 wwv_flow_imp_page.create_page_computation(
  p_id=>wwv_flow_imp.id(27062727345689128)

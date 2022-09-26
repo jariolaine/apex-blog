@@ -38,6 +38,7 @@ as
 --                          - Removed obsolete procedure check_archive_exists
 --    Jari Laine 19.04.2022 - Changes to procedures download_file
 --    Jari Laine 26.04.2022 - Parameter p_escape to function get_tag
+--    Jari Laine 03.08.2022 - Changed procedure render_dynamic_content to use apex_util.prn
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -790,7 +791,7 @@ as
       p_content_title := c1.content_desc;
 
       -- output content HTML
-      sys.htp.p( c1.content_html );
+      apex_util.prn( c1.content_html, false );
 
       -- output when content is changed if show_changed_on column value is 1
       if c1.show_changed_on = 1

@@ -39,16 +39,8 @@ var blog = blog || {};
       report.find( "td[headers=DOWNLOAD] a" ).removeAttr( "alt title" ).end()
       // Find column that have copy URL button and attach click event
       .find( "[data-clipboard-source]" ).click( function(){
-        var tempItem = $( "<input/>", {
-          "class": "z-hidden",
-          "value": $( this ).data( "clipboard-source" )
-        });
-        $( "body" ).append( tempItem );
-        tempItem.select();
-        document.execCommand( "copy" );
-        tempItem.remove();
+        navigator.clipboard.writeText( $( this ).data( "clipboard-source" ) );
       });
-
     },
     /**
     * @function commentsIrAfterRefresh

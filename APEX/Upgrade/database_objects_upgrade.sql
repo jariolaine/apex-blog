@@ -67,6 +67,7 @@ as
 --                          - Removed obsolete procedure check_archive_exists
 --    Jari Laine 19.04.2022 - Changes to procedures download_file
 --    Jari Laine 26.04.2022 - Parameter p_escape to function get_tag
+--    Jari Laine 03.08.2022 - Changed procedure render_dynamic_content to use apex_util.prn
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -955,7 +956,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VERSION", 
   ,t1.content_html      as content_html
 from blog_dynamic_content t1
 where 1 = 1
-;
+/
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_FEATURES
 --------------------------------------------------------
@@ -1235,7 +1236,7 @@ with read only
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "ROW_VERSION", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC") AS
 select
-   t1.id      as file_id
+   t1.id            as file_id
   ,t1.row_version   as row_version
   ,t1.created_on    as created_on
   ,t1.changed_on    as changed_on
@@ -1653,6 +1654,7 @@ as
   )
   as
   begin
+
     select
       xmlserialize( content
         xmlconcat(
@@ -1670,6 +1672,7 @@ as
     where 1 = 1
       and v1.ctx_rid = rid
     ;
+
   end generate_post_datastore;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1684,8 +1687,10 @@ as
       ||    '<seq>#FUZZY#</seq>'
       || '</progression></textquery></query>'
     ;
+
     l_search    varchar2(32767);
     l_tokens    apex_t_varchar2;
+
     function generate_query(
       p_feature in varchar2,
       p_combine in varchar2 default null
@@ -1694,11 +1699,15 @@ as
       l_token   varchar2(32767);
       l_query   varchar2(32767);
     begin
+
       for i in 1 .. l_tokens.count
       loop
+
         l_token := trim( l_tokens(i) );
+
         if l_token is not null
         then
+
             l_query :=
               apex_string.format(
                 p_message =>
@@ -1711,32 +1720,47 @@ as
                 ,p2 => case p_combine when 'OR' then 'or' else 'and' end
               )
             ;
+
         end if;
+
       end loop;
+
       if p_combine = 'AND' then
           l_query := substr( l_query, 1, length( l_query ) - 5 );
       else
           l_query := substr( l_query, 1, length( l_query ) - 4 );
       end if;
+
       return trim( l_query );
+
     end generate_query;
+
   begin
+
     if substr( p_search, 1, 8 ) = 'ORATEXT:'
     then
       l_search := substr( p_search, 9 );
     else
+
       -- remove special characters; irrelevant for full text search
       l_search := trim( regexp_replace( lower( p_search ), '[<>{}/()*%&!$?.:,;\+#]' ) );
+
       if l_search is not null
       then
+
         l_tokens := apex_string.split( l_search, ' ' );
+
         l_search := c_xml;
         l_search := replace( l_search, '#NORMAL#', generate_query( 'NORMAL' ) );
         l_search := replace( l_search, '#WILDCARD#', generate_query( 'WILDCARD' ) );
         l_search := replace( l_search, '#FUZZY#', generate_query( 'FUZZY' ) );
+
       end if;
+
     end if;
+
     return l_search;
+
   end get_post_search;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1775,23 +1799,28 @@ as
   ) return apex_error.t_error_result
   as
     l_genereric_error constant varchar2(255) := 'BLOG_GENERIC_ERROR';
+
     l_result          apex_error.t_error_result;
     l_reference_id    pls_integer;
     l_constraint_name varchar2(255);
     l_err_mesg        varchar2(32700);
+
   begin
+
     -- This function must be used to ensure initialization is compatible
     -- with future changes to t_error_result.
     l_result :=
       apex_error.init_error_result(
         p_error => p_error
       );
+
     -- If it's an internal error raised by APEX, like an invalid statement or
     -- code which can't be executed, the error text might contain security sensitive
     -- information. To avoid this security problem we can rewrite the error to
     -- a generic error message and log the original error message for further
     -- investigation by the help desk.
     if p_error.is_internal_error then
+
       if not p_error.is_common_runtime_error then
         -- Change the message to the generic error message which doesn't expose
         -- any sensitive information.
@@ -1800,7 +1829,9 @@ as
         );
         l_result.additional_info := null;
       end if;
+
     else
+
       -- Don't change display position for specific ORA eror codes
       if not p_error.ora_sqlcode between -20999 and -20901
       then
@@ -1812,6 +1843,7 @@ as
           end
        ;
       end if;
+
       -- If it's a constraint violation like
       --
       --   -) ORA-02292 ORA-02291 ORA-02290 ORA-02091 ORA-00001: unique constraint violated
@@ -1823,20 +1855,26 @@ as
       -- we try to get a friendly error message from our constraint lookup configuration.
       -- If we don't find the constraint in our lookup table we fallback to
       -- the original ORA error message.
+
       if p_error.ora_sqlcode in (-1, -2091, -2290, -2291, -2292) then
+
         l_constraint_name :=
           apex_error.extract_constraint_name(
             p_error => p_error
           );
+
         l_err_mesg := apex_lang.message(
           p_name => l_constraint_name
         );
+
         -- not every constraint has to be in our lookup table
         if not l_err_mesg = l_constraint_name then
           l_result.message := l_err_mesg;
           l_result.additional_info := null;
         end if;
+
       end if;
+
       -- If an ORA error has been raised, for example a raise_application_error(-20xxx, '...')
       -- in a table trigger or in a PL/SQL package called by a process and we
       -- haven't found the error in our lookup table, then we just want to see
@@ -1850,18 +1888,24 @@ as
           );
         l_result.additional_info := null;
       end if;
+
       -- If no associated page item/tabular form column has been set, we can use
       -- apex_error.auto_set_associated_item to automatically guess the affected
       -- error field by examine the ORA error for constraint names or column names.
       if l_result.page_item_name is null
       and l_result.column_alias is null then
+
         apex_error.auto_set_associated_item (
            p_error => p_error
           ,p_error_result => l_result
         );
+
       end if;
+
     end if;
+
     return l_result;
+
   end apex_error_handler;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1881,32 +1925,39 @@ as
   as
     l_value varchar2(4000);
   begin
+
     apex_debug.enter(
       p_routine_name  => 'blog_util.get_attribute_value'
       ,p_name01       => 'p_attribute_name'
       ,p_value01      => p_attribute_name
     );
+
     -- raise no data found error if parameter p_attribute_name is null
     if p_attribute_name is null then
       raise no_data_found;
     end if;
+
     -- fetch and return value from settings table
     select attribute_value
     into l_value
     from blog_settings
     where attribute_name = p_attribute_name
     ;
+
     apex_debug.info(
       p_message => 'Fetch attribute %s return: %s'
       ,p0 => p_attribute_name
       ,p1 => l_value
     );
+
     -- return attribute value
     return l_value;
+
   -- Handle error cases
   exception
   when no_data_found
   then
+
     apex_debug.warn(
        p_message => 'No data found. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
@@ -1914,8 +1965,10 @@ as
       ,p2 => coalesce( p_attribute_name, '(null)' )
     );
     raise;
+
   when others
   then
+
     apex_debug.error(
        p_message => 'Unhandled error. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
@@ -1923,6 +1976,7 @@ as
       ,p2 => coalesce( p_attribute_name, '(null)' )
     );
     raise;
+
   end get_attribute_value;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1932,17 +1986,21 @@ as
   as
     l_app_id number;
   begin
+
     apex_debug.enter(
       p_routine_name  => 'blog_util.initialize_items'
       ,p_name01       => 'p_app_id'
       ,p_value01      => p_app_id
     );
+
     -- raise no data found error if parameter p_app_id_name is null
     if p_app_id is null then
       raise no_data_found;
     end if;
+
     -- conver application id string to number
     l_app_id := to_number( p_app_id );
+
     -- set items session state
     -- fetch items and values that session state need to be set
     for c1 in (
@@ -1952,23 +2010,28 @@ as
       from blog_v_init_items i
       where i.application_id = l_app_id
     ) loop
+
       apex_debug.info(
         p_message => 'Initialize application id: %s item: %s value: %s'
         ,p0 => p_app_id
         ,p1 => c1.item_name
         ,p2 => c1.item_value
       );
+
       -- set item session state and no commit
       apex_util.set_session_state(
         p_name    => c1.item_name
         ,p_value  => c1.item_value
         ,p_commit => false
       );
+
     end loop;
+
   -- handle errors
   exception
   when no_data_found
   then
+
     apex_debug.warn(
        p_message => 'No data found. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
@@ -1976,8 +2039,10 @@ as
       ,p2 => coalesce( p_app_id, '(null)' )
     );
     raise;
+
   when others
   then
+
     apex_debug.error(
        p_message => 'Unhandled error. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
@@ -1985,6 +2050,7 @@ as
       ,p2 => coalesce( p_app_id, '(null)' )
     );
     raise;
+
   end initialize_items;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1996,6 +2062,7 @@ as
     l_post_title  varchar2(4000);
     l_post_id     number;
   begin
+
     apex_debug.enter(
       p_routine_name  => 'blog_util.get_post_title'
       ,p_name01       => 'p_post_id'
@@ -2003,23 +2070,28 @@ as
       ,p_name02       => 'p_escape'
       ,p_value02      => apex_debug.tochar(p_escape)
     );
+
     -- raise no data found error if parameter p_post_id is null
     if p_post_id is null then
       raise no_data_found;
     end if;
+
     -- conver post id string to number
     l_post_id := to_number( p_post_id );
+
     -- fetch post title
     select v1.post_title
     into l_post_title
     from blog_v_posts v1
     where v1.post_id = l_post_id
     ;
+
     apex_debug.info(
       p_message => 'Fetch post: %s return: %s'
       ,p0 => p_post_id
       ,p1 => l_post_title
     );
+
     -- espace html from post title if parameter p_escape is true
     -- return post title
     return case when p_escape
@@ -2027,9 +2099,11 @@ as
       else l_post_title
       end
     ;
+
   -- handle errors
   exception when no_data_found
   then
+
     apex_debug.warn(
        p_message => 'No data found. %s( %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
@@ -2038,11 +2112,14 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
     -- show http error
     raise_http_error( 404 );
     raise;
+
   when others
   then
+
     apex_debug.error(
        p_message => 'Unhandled error. %s( %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
@@ -2051,9 +2128,11 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
     -- show http error
     raise_http_error( 404 );
     raise;
+
   end get_post_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2071,17 +2150,21 @@ as
     l_newer       blog_t_post;
     l_older       blog_t_post;
   begin
+
     apex_debug.enter(
       p_routine_name  => 'blog_util.pagination'
       ,p_name01       => 'p_post_id'
       ,p_value01      => p_post_id
     );
+
     -- raise no data found error if parameter p_post_id is null
     if p_post_id is null then
       raise no_data_found;
     end if;
+
     -- conver post id string to number
     l_post_id := to_number( p_post_id );
+
     -- fetch post title by post id
     -- also fetch older and newer post id and title
     select
@@ -2107,33 +2190,40 @@ as
     where 1 = 1
       and post_id = l_post_id
     ;
+
     -- set procedure out parameters
     p_post_title  := l_post_title;
     p_newer_id    := int_to_vc2( l_newer.post_id );
     p_newer_title := l_newer.post_title;
     p_older_id    := int_to_vc2( l_older.post_id );
     p_older_title := l_older.post_title;
+
     apex_debug.info(
       p_message => 'Fetch post: %s next_id: %s prev_id: %s'
       ,p0 => p_post_id
       ,p1 => p_newer_id
       ,p2 => p_older_id
     );
+
   -- handle errors
   exception
   when no_data_found
   then
+
     apex_debug.warn(
        p_message => 'No data found. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_post_id'
       ,p2 => coalesce( p_post_id, '(null)' )
     );
+
     -- show http error
     raise_http_error( 404 );
     raise;
+
   when others
   then
+
     apex_debug.error(
        p_message => 'Unhandled error. %s( %s => %s, %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
@@ -2144,9 +2234,11 @@ as
       ,p5 => 'p_older_id'
       ,p6 => p_older_id
     );
+
     -- show http error
     raise_http_error( 404 );
     raise;
+
   end get_post_pagination;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2158,6 +2250,7 @@ as
     l_category_id   number;
     l_category_name varchar2(4000);
   begin
+
     apex_debug.enter(
       p_routine_name  => 'blog_util.get_category_title'
       ,p_name01       => 'p_category_id'
@@ -2165,23 +2258,28 @@ as
       ,p_name02       => 'p_escape'
       ,p_value02      => apex_debug.tochar(p_escape)
     );
+
     -- raise no data found error if parameter p_category_id is null
     if p_category_id is null then
       raise no_data_found;
     end if;
+
     -- conver category id string to number
     l_category_id := to_number( p_category_id );
+
     -- fetch category name
     select v1.category_title
     into l_category_name
     from blog_v_categories v1
     where v1.category_id = l_category_id
     ;
+
     apex_debug.info(
       p_message => 'Fetch category: %s return: %s'
       ,p0 => p_category_id
       ,p1 => l_category_name
     );
+
     -- espace html from category name if parameter p_escape is true
     -- return category name
     return case when p_escape
@@ -2189,9 +2287,11 @@ as
       else l_category_name
       end
     ;
+
   -- handle errors
   exception
   when no_data_found then
+
     apex_debug.warn(
        p_message => 'No data found. %s( %s => %s, %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
@@ -2200,9 +2300,11 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
     -- show http error
     raise_http_error( 404 );
     raise;
+
   when others then
     apex_debug.error(
        p_message => 'Unhandled error. %s( %s => %s, %s => %s )'
@@ -2212,9 +2314,11 @@ as
       ,p3 => 'p_escape'
       ,p4 => apex_debug.tochar( p_escape )
     );
+
     -- show http error
     raise_http_error( 404 );
     raise;
+
   end get_category_title;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2226,17 +2330,21 @@ as
     l_tag_id    number;
     l_tag_name  varchar2(4000);
   begin
+
     apex_debug.enter(
       p_routine_name  => 'blog_util.get_tag'
       ,p_name01       => 'p_tag_id'
       ,p_value01      => p_tag_id
     );
+
     -- raise no data found error if parameter p_tag_id is null
     if p_tag_id is null then
       raise no_data_found;
     end if;
+
     -- conver tag id string to number
     l_tag_id := to_number( p_tag_id );
+
     -- fetch tag name
     select t1.tag
     into l_tag_name
@@ -2244,11 +2352,13 @@ as
     where 1 = 1
     and t1.tag_id = l_tag_id
     ;
+
     apex_debug.info(
       p_message => 'Fetch tag: %s return: %s'
       ,p0 => p_tag_id
       ,p1 => l_tag_name
     );
+
     -- espace html from tag name if parameter p_escape is true
     -- return category name
     return case when p_escape
@@ -2256,30 +2366,37 @@ as
       else l_tag_name
       end
     ;
+
   -- handle errors
   exception
   when no_data_found
   then
+
     apex_debug.warn(
        p_message => 'No data found. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_tag_id'
       ,p2 => coalesce( p_tag_id, '(null)' )
     );
+
     -- show http error
     raise_http_error( 404 );
     raise;
+
   when others
   then
+
     apex_debug.error(
        p_message => 'Unhandled error. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_tag_id'
       ,p2 => coalesce( p_tag_id, '(null)' )
     );
+
     -- show http error
     raise_http_error( 404 );
     raise;
+
   end get_tag;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2290,6 +2407,7 @@ as
   )
   as
   begin
+
     -- fetch content
     for c1 in(
       select v1.content_desc
@@ -2300,10 +2418,13 @@ as
       where 1 = 1
       and v1.content_id = p_content_id
     ) loop
+
       -- set content description to procedure out parameter
       p_content_title := c1.content_desc;
+
       -- output content HTML
-      sys.htp.p( c1.content_html );
+      apex_util.prn( c1.content_html, false );
+
       -- output when content is changed if show_changed_on column value is 1
       if c1.show_changed_on = 1
       then
@@ -2318,7 +2439,9 @@ as
             )
           );
       end if;
+
     end loop;
+
   end render_dynamic_content;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2331,20 +2454,25 @@ as
   )
   as
   begin
+
     -- init HTTP buffer
     sys.htp.init;
+
     -- open HTTP header
     sys.owa_util.mime_header(
       ccontent_type   => coalesce ( p_mime_type, 'application/octet' )
       ,bclose_header  => false
       ,ccharset       => p_charset
     );
+
     apex_debug.info(
       p_message => 'Set response headers'
     );
+
     -- set response headers
     for i in 1 .. p_header_names.count
     loop
+
       apex_debug.info(
          p_message => 'Header name: %s , header value: %s'
         ,p0 => p_header_names(i)
@@ -2358,11 +2486,15 @@ as
           ,p1 => p_header_values(i)
         )
       );
+
     end loop;
+
     -- close HTTP header
     sys.owa_util.http_header_close;
+
     -- output file
     sys.wpg_docload.download_file ( p_blob_content );
+
   end download_file;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2374,6 +2506,7 @@ as
     l_header_names  apex_t_varchar2;
     l_header_values apex_t_varchar2;
   begin
+
     -- fetch file
     select *
     into l_file_t
@@ -2382,6 +2515,7 @@ as
     --and t1.is_download = 0
     and t1.file_name = p_file_name
     ;
+
     apex_debug.info(
       p_message => 'File name: %s, file size: %s, mime type: %s'
       ,p0 => l_file_t.file_name
@@ -2389,6 +2523,7 @@ as
       ,p2 => l_file_t.mime_type
       ,p3 => l_file_t.file_charset
     );
+
     -- Add Last-Modified header
     apex_string.push(
         p_table => l_header_names
@@ -2403,6 +2538,7 @@ as
           ,'NLS_DATE_LANGUAGE=ENGLISH'
         )
     );
+
     -- Compare request If-Modified-Since header to Last-Modified
     -- If values are equal then set status header and exit from procedure
     if sys.owa_util.get_cgi_env('HTTP_IF_MODIFIED_SINCE') = l_header_values(1)
@@ -2414,6 +2550,7 @@ as
       );
       return;
     end if;
+
     -- Add Cache-Control header
     apex_string.push(
         p_table => l_header_names
@@ -2432,6 +2569,7 @@ as
             end
         )
     );
+
     -- add Content-Disposition header
     apex_string.push(
       p_table => l_header_names
@@ -2451,6 +2589,7 @@ as
           ,p1 => l_file_t.file_name
         )
     );
+
     -- download file
     download_file(
       p_blob_content    => l_file_t.blob_content
@@ -2458,12 +2597,15 @@ as
       ,p_header_names   => l_header_names
       ,p_header_values  => l_header_values
     );
+
   -- handle errors
   exception
   when no_data_found
   then
+
     raise_http_error( 404 );
     raise;
+
   end download_file;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2520,6 +2662,7 @@ as
   )
   as
   begin
+
     -- merge tag
     merge into blog_post_tags t1
     using dual on (
@@ -2535,6 +2678,7 @@ as
       insert ( is_active, post_id, tag_id, display_seq )
         values ( 1, p_post_id, p_tag_id, p_display_seq )
     ;
+
   end add_tag_to_post;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2544,6 +2688,7 @@ as
   )
   as
   begin
+
     -- delete relationship from tags that aren't belong to post anymore
     delete
     from blog_post_tags t1
@@ -2555,6 +2700,7 @@ as
       where 1 = 1
       and x1.column_value = t1.tag_id
     );
+
   end cleanup_post_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2567,20 +2713,25 @@ as
     l_max   number;
     l_email varchar2(256);
   begin
+
     -- fetch next display_seq
     select max(display_seq) as display_seq
     into l_max
     from blog_bloggers
     ;
+
     l_max := next_seq( l_max );
+
     -- get APEX user email
     l_email := apex_util.get_email( p_username => p_username );
+
     -- get APEX user first and last name for blogger name
     p_name := apex_string.format(
        p_message  => '%s %s'
       ,p0 => apex_util.get_first_name( p_username => p_username )
       ,p1 => apex_util.get_last_name( p_username => p_username )
     );
+
     -- add new blogger
     insert into blog_bloggers
       ( is_active, publish_desc, display_seq, apex_username, blogger_name, email )
@@ -2588,6 +2739,7 @@ as
       ( 1, 0, l_max, p_username, p_name, l_email )
     returning id into p_id
     ;
+
   end add_blogger;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2598,6 +2750,7 @@ as
   as
     l_group_names apex_t_varchar2;
   begin
+
     -- collect user groups to PL/SQL table
     for c1 in(
       select group_name
@@ -2607,10 +2760,12 @@ as
     ) loop
       apex_string.push( l_group_names, c1.group_name );
     end loop;
+
     -- Enable user groups
     apex_authorization.enable_dynamic_groups (
       p_group_names => l_group_names
     );
+
   exception
   when others
   then
@@ -2629,6 +2784,7 @@ as
     l_app_id    number;
     l_authz_grp varchar2(256);
   begin
+
     -- fetch user id and name
     select id
       ,blogger_name
@@ -2636,12 +2792,15 @@ as
     from blog_bloggers
     where apex_username = p_username
     ;
+
   -- if user not found, check is user authorized use blog
   exception
   when no_data_found
   then
+
     -- conver application id string to number
     l_app_id := to_number( p_app_id );
+
     -- fetch application authorization scheme name
     select authorization_scheme
     into l_authz_grp
@@ -2649,6 +2808,7 @@ as
     where 1 = 1
     and application_id = l_app_id
     ;
+
     -- verify user is authorized
     if apex_util.current_user_in_group( l_authz_grp )
     then
@@ -2658,7 +2818,9 @@ as
         ,p_id => p_id
         ,p_name => p_name
       );
+
     end if;
+
   end get_blogger_details;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2668,6 +2830,7 @@ as
     l_max_seq   number;
     l_next_seq  varchar2(256);
   begin
+
     -- fetch max category display sequence
     select max( v1.display_seq ) as display_seq
     into l_max_seq
@@ -2677,6 +2840,7 @@ as
     l_next_seq := blog_util.int_to_vc2( next_seq( l_max_seq ) );
     -- return next category display sequence
     return l_next_seq;
+
   end get_category_seq;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2686,6 +2850,7 @@ as
     l_max_seq   number;
     l_next_seq  varchar2(256);
   begin
+
     -- fetch max link group display sequence
     select max( v1.display_seq ) as display_seq
     into l_max_seq
@@ -2695,6 +2860,7 @@ as
     l_next_seq := blog_util.int_to_vc2( next_seq( l_max_seq ) );
     -- return next link group display sequence
     return l_next_seq;
+
   end get_link_grp_seq;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2704,6 +2870,7 @@ as
     l_max_seq   number;
     l_next_seq  varchar2(256);
   begin
+
     -- fetch max link group display sequence
     select max( v1.display_seq ) as display_seq
     into l_max_seq
@@ -2713,6 +2880,7 @@ as
     l_next_seq := blog_util.int_to_vc2( next_seq( l_max_seq ) );
     -- return next link group display sequence
     return l_next_seq;
+
   end get_modal_page_seq;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2724,8 +2892,10 @@ as
     l_max_seq       number;
     l_next_seq      varchar2(256);
   begin
+
     -- conver link group id string to number
     l_link_group_id := to_number( p_link_group_id );
+
     -- fetch max link display sequence
     select max( v1.display_seq ) as display_seq
     into l_max_seq
@@ -2737,6 +2907,7 @@ as
     l_next_seq := blog_util.int_to_vc2( next_seq( l_max_seq ) );
     -- return next link display sequence
     return l_next_seq;
+
   end get_link_seq;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2745,6 +2916,7 @@ as
   ) return varchar2
   as
   begin
+
     -- conver APEX request to post status (blog_posts.is_active)
     return case p_request
       when 'CREATE'
@@ -2755,6 +2927,7 @@ as
       then '1'
       else '0'
     end;
+
   end request_to_post_status;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2769,37 +2942,53 @@ as
     l_next_p        number;
     l_cnt           number;
   begin
+
     l_cnt := 1;
     l_next_p := 1;
+
     -- get first opening and closing tag positions
     l_first_p_start := instr( p_body_html, '<p>' );
     l_first_p_end   := instr( p_body_html, '</p>', l_first_p_start ) + 4;
+
     -- check if there nested tags
     while l_next_p > 0
     loop
       l_cnt := l_cnt + 1;
+
       -- get string length between opening and closing tag
       l_length  := l_first_p_end - l_first_p_start;
       -- select contect between opening and closing tag
       l_first_p := substr( p_body_html, l_first_p_start, l_length );
+
       -- check if there is more opening tags inside selection
       l_next_p := instr( l_first_p, '<p', 1, l_cnt );
+
       if l_next_p > 0
       then
         -- if another opening tag found, find next closing tag
         l_first_p_end := instr( p_body_html, '</p>', 1, l_cnt ) + 4;
       end if;
+
       l_first_p := null;
+
     end loop;
+
+
     -- post must have at least one paragraph
     if l_first_p_start > 0 and l_first_p_end > 0 then
+
       l_length := l_first_p_end - l_first_p_start;
+
       -- get first paragraph
       l_first_p := substr( p_body_html, l_first_p_start, l_length );
+
       -- remove whitespace
       l_first_p := remove_whitespace( l_first_p );
+
     end if;
+
     return l_first_p;
+
   end get_first_paragraph;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2812,22 +3001,28 @@ as
     l_file_names  apex_t_varchar2;
     l_file_name   varchar2(256);
   begin
+
     l_file_exists := false;
+
     -- Get file names
     l_file_names := apex_string.split (
       p_str => p_file_name
       ,p_sep => ':'
     );
+
     -- create apex_collection for storing files
     -- collection is used to show what files already exists in repository
     -- we prompt user to confirm those files overwrite
     apex_collection.create_or_truncate_collection(
       p_collection_name => p_collection_name
     );
+
     -- store uploaded files to apex_collection
     for i in 1 .. l_file_names.count
     loop
+
       l_file_name := substr(l_file_names(i), instr(l_file_names(i), '/') + 1);
+
       for c1 in(
         select
            t2.id            as file_id
@@ -2842,12 +3037,14 @@ as
         where 1 = 1
         and t1.name = l_file_names(i)
       ) loop
+
         l_file_exists := case
           when c1.file_id is not null
           then true
           else l_file_exists
           end
         ;
+
         apex_collection.add_member(
            p_collection_name => p_collection_name
           ,p_n001     => c1.file_id
@@ -2858,15 +3055,19 @@ as
           ,p_c003     => c1.mime_type
           ,p_blob001  => c1.blob_content
         );
+
       end loop;
     end loop;
+
     -- if non of files exists, insert files to blog_files
     if not l_file_exists then
       merge_files(
         p_collection_name => p_collection_name
       );
     end if;
+
     return not l_file_exists;
+
   end file_upload;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2885,6 +3086,7 @@ as
   )
   as
   begin
+
     -- insert new files and overwrite existing
     merge into blog_files t1 using (
       select
@@ -2920,6 +3122,7 @@ as
         ,new_files.blob_content
         ,new_files.file_desc
       );
+
   end merge_files;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -2932,9 +3135,11 @@ as
     l_title         varchar2(512);
     l_title_unique  varchar2(512);
   begin
+
     -- remove whitespace from category title
     l_title := remove_whitespace( p_title );
     l_title_unique := upper( l_title );
+
     -- check if category already exists and fetch id
     begin
       select v1.id
@@ -2981,12 +3186,14 @@ as
       where 1 = 1
       and x1.category_id = t1.id
     );
+
   end remove_unused_categories;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure resequence_categories
   as
   begin
+
     merge into blog_categories t1
     using (
       select id
@@ -2999,6 +3206,7 @@ as
       update set t1.display_seq = v1.rn
         where t1.display_seq != v1.rn
     ;
+
   end resequence_categories;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3009,10 +3217,13 @@ as
   as
     l_value varchar2(256);
   begin
+
     p_tag_id  := null;
     l_value   := remove_whitespace( p_tag );
+
     -- if tag is not null then fetch id
     if l_value is not null then
+
       begin
         select id
         into p_tag_id
@@ -3027,7 +3238,9 @@ as
         returning id into p_tag_id
         ;
       end;
+
     end if;
+
   end add_tag;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3043,42 +3256,54 @@ as
     l_tag_tab     apex_t_varchar2;
     l_tag_id_tab  apex_t_number;
   begin
+
     l_post_id := to_number( p_post_id );
+
     -- split tags string to table and loop all values
     l_tag_tab := apex_string.split(
        p_str => p_tags
       ,p_sep => p_sep
     );
+
     for i in 1 .. l_tag_tab.count
     loop
+
       -- add tag to repository and return id
       add_tag(
          p_tag    => l_tag_tab(i)
         ,p_tag_id => l_tag_id
       );
+
       -- if the tag has been added or is already in the repository
       -- create relationships to post
       if l_tag_id is not null
       then
+
         -- collect tag id to table.
         -- table is used at end of procedure
         -- for checking relationships that should be removed
         apex_string.push( l_tag_id_tab, l_tag_id );
+
         -- get table record count for tag display sequence
         l_display_seq:= l_tag_id_tab.count * 10;
+
         -- add tag relationships to post
         add_tag_to_post(
            p_post_id     => l_post_id
           ,p_tag_id      => l_tag_id
           ,p_display_seq => l_display_seq
         );
+
       end if;
+
     end loop;
+
     -- delete removed tags relationships
     cleanup_post_tags(
        p_post_id => l_post_id
       ,p_tag_tab => l_tag_id_tab
     );
+
   end add_post_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3103,7 +3328,9 @@ as
   as
     l_post_id number;
   begin
+
     l_post_id := to_number( p_post_id );
+
     merge into blog_post_tags t1
     using (
       select id
@@ -3117,6 +3344,7 @@ as
       update set t1.display_seq = v1.rn
         where t1.display_seq != v1.rn
     ;
+
   end resequence_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3130,6 +3358,7 @@ as
     l_value     number;
     l_err_mesg  varchar2(32700);
   begin
+
     if p_value is not null
     then
       -- prepare validation error message
@@ -3138,10 +3367,12 @@ as
         ,p0 => p_min
         ,p1 => p_max
       );
+
       if l_err_mesg = apex_escape.html( upper( p_err_mesg ) )
       then
         l_err_mesg := p_err_mesg;
       end if;
+
       l_value := to_number( p_value );
       -- check value is integer and between range
       if round( l_value ) = l_value
@@ -3151,7 +3382,9 @@ as
         l_err_mesg := null;
       end if;
     end if;
+
     return l_err_mesg;
+
   exception
   when invalid_number
   or value_error
@@ -3168,18 +3401,23 @@ as
   as
     l_err_mesg varchar2(32700);
   begin
+
     if not regexp_like(p_value, '^https?\:\/\/.*$')
     then
       -- if validation fails prepare error message
       l_err_mesg := apex_lang.message(
         p_name => p_err_mesg
       );
+
       if l_err_mesg = apex_escape.html( upper( p_err_mesg ) )
       then
         l_err_mesg := p_err_mesg;
       end if;
+
     end if;
+
     return l_err_mesg;
+
   end is_url;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3192,21 +3430,26 @@ as
     invalid_date_format exception;
     pragma              exception_init(invalid_date_format, -1821);
   begin
+
     -- prepare validation error message
     l_err_mesg := apex_lang.message(
       p_name => p_err_mesg
     );
+
     if l_err_mesg = apex_escape.html( upper( p_err_mesg ) )
     then
       l_err_mesg := p_err_mesg;
     end if;
+
     -- try convert timestamp to string
     if to_char( systimestamp, p_value ) is not null
     then
       -- if validation passes, clear error meassage
       l_err_mesg := null;
     end if;
+
     return l_err_mesg;
+
   exception
   when invalid_date_format
   then
@@ -3222,18 +3465,21 @@ as
   )
   as
   begin
+
     -- update build option value
     apex_util.set_build_option_status(
        p_application_id => p_app_id
       ,p_id => p_build_option_id
       ,p_build_status => upper( p_build_status )
     );
+
   end update_feature;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure resequence_link_groups
   as
   begin
+
     merge into blog_link_groups t1
     using (
       select id
@@ -3246,6 +3492,7 @@ as
       update set t1.display_seq = v1.rn
         where t1.display_seq != v1.rn
     ;
+
   end resequence_link_groups;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3255,7 +3502,9 @@ as
   as
     l_link_group_id number;
   begin
+
     l_link_group_id := to_number( p_link_group_id );
+
     merge into blog_links t1
     using (
       select id
@@ -3269,6 +3518,7 @@ as
       update set t1.display_seq = v1.rn
         where t1.display_seq != v1.rn
     ;
+
   end resequence_links;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3294,6 +3544,7 @@ as
     l_string varchar2(4000);
     l_result varchar2(4000);
   begin
+
     l_string := blog_util.int_to_vc2( p_number );
     for i in 1 .. length( l_string )
     loop
@@ -3306,6 +3557,7 @@ as
       ;
     end loop;
     return l_result;
+
   end to_html_entities;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3321,8 +3573,11 @@ as
   as
     l_name varchar2(30);
   begin
+
     l_name := apex_plugin.get_input_name_for_page_item(false);
+
     if not (p_param.is_readonly or p_param.is_printer_friendly) then
+
       sys.htp.p('<input type="text" '
         || case when p_item.element_width is not null
             then'size="' || p_item.element_width ||'" '
@@ -3338,6 +3593,7 @@ as
           )
         || 'value="" />'
       );
+
       if p_item.icon_css_classes is not null
       then
         sys.htp.p('<span class="apex-item-icon fa '
@@ -3345,6 +3601,7 @@ as
           || '" aria-hidden="true"></span>'
         );
       end if;
+
       apex_javascript.add_onload_code (
         p_code => 'apex.server.plugin("' || apex_plugin.get_ajax_identifier || '",{},{'
         || 'dataType:"text",'
@@ -3354,7 +3611,9 @@ as
       );
       -- Tell APEX that this textarea is navigable
       p_result.is_navigable := true;
+
     end if;
+
   end render_math_question_field;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3373,12 +3632,15 @@ as
     l_num_2 number;
     l_tab   apex_t_varchar2;
   begin
+
     l_min   := to_number( p_item.attribute_01 );
     l_max   := to_number( p_item.attribute_02 );
     l_num_1 := round( sys.dbms_random.value( l_min, l_max ) );
+
     l_min   := to_number( p_item.attribute_03 );
     l_max   := to_number( p_item.attribute_04 );
     l_num_2 := round( sys.dbms_random.value( l_min, l_max ) );
+
     l_data  :=
       apex_string.format(
         p_message =>'<span class="z-question">%s&nbsp;&#%s&nbsp;%s&#%s</span>'
@@ -3394,6 +3656,7 @@ as
       ,p_value  => blog_util.int_to_vc2( l_num_1 + l_num_2 )
       ,p_commit => false
     );
+
     -- Write header for the output
     sys.owa_util.mime_header('text/plain', false);
     sys.htp.p('Cache-Control: no-cache');
@@ -3401,15 +3664,19 @@ as
     sys.owa_util.http_header_close;
     -- Write output
     sys.htp.prn( l_data );
+
   exception when others
   then
+
     apex_debug.error( 'ajax_math_question_field error: %s', sqlerrm );
+
     l_err := apex_lang.message(
        p_name => p_plugin.attribute_02
       ,p0 => p_item.plain_label
     );
     raise_application_error( -20002 ,  l_err );
     raise;
+
   end ajax_math_question_field;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3424,23 +3691,32 @@ as
     l_value   varchar2(4000);
     l_result  boolean;
   begin
+
     if p_param.value is not null then
+
       l_value   := v(p_item.attribute_05);
       l_answer  := p_param.value;
+
       -- Check is answer correct
       l_result  := case when l_value = l_answer then true else false end;
+
     else
       l_result := false;
     end if;
+
     if not l_result then
+
       p_result.message := apex_lang.message(
         p_name => p_plugin.attribute_01
         ,p0 => p_item.plain_label
       );
+
       if p_result.message = apex_escape.html( upper( p_plugin.attribute_01 ) ) then
         p_result.message := p_plugin.attribute_01;
       end if;
+
     end if;
+
   end validate_math_question_field;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3470,14 +3746,18 @@ as
   as
     l_url varchar2(4000);
   begin
+
     -- get canonical host from blog settings
     l_url := blog_util.get_attribute_value( 'G_CANONICAL_HOST' );
+
     -- if host not found from settings, use APEX provided value
     if l_url is null
     then
       l_url := apex_util.host_url();
     end if;
+
     return rtrim( l_url, '/' );
+
   end get_canonical_host;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3494,6 +3774,7 @@ as
   as
     l_url varchar2(4000);
   begin
+
     l_url :=
       apex_page.get_url(
         p_application => p_app_id
@@ -3503,6 +3784,7 @@ as
        ,p_clear_cache => p_clear_cache
        ,p_plain_url   => case p_plain_url when 'YES' then true else false end
       );
+
     return
       case p_canonical
       when 'YES'
@@ -3515,6 +3797,7 @@ as
       else l_url
       end
     ;
+
   end get_tab;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3530,6 +3813,7 @@ as
   as
     l_post_id varchar2(256);
   begin
+
     l_post_id := blog_util.int_to_vc2( p_post_id );
     return
       get_post(
@@ -3541,6 +3825,7 @@ as
         ,p_plain_url    => p_plain_url
         ,p_encode_url   => p_encode_url
       );
+
   end get_post;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3556,6 +3841,7 @@ as
   as
     l_url varchar2(4000);
   begin
+
     l_url := apex_page.get_url(
       p_application => p_app_id
      ,p_page        => 'POST'
@@ -3565,6 +3851,7 @@ as
      ,p_values      => p_post_id
      ,p_plain_url   => case p_plain_url when 'YES' then true else false end
    );
+
     return
       case p_canonical
       when 'YES'
@@ -3577,6 +3864,7 @@ as
       else l_url
       end
     ;
+
   end get_post;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3592,6 +3880,7 @@ as
   as
     l_category_id varchar2(256);
   begin
+
     l_category_id := blog_util.int_to_vc2( p_category_id );
     return
       get_category(
@@ -3603,6 +3892,7 @@ as
         ,p_plain_url    => p_plain_url
         ,p_encode_url   => p_encode_url
       );
+
   end get_category;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3617,6 +3907,7 @@ as
   ) return varchar2
   as
   begin
+
     return
       case p_canonical
       when 'YES'
@@ -3632,6 +3923,7 @@ as
        ,p_values      => p_category_id
        ,p_plain_url   => case p_plain_url when 'YES' then true else false end
       );
+
   end get_category;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3647,6 +3939,7 @@ as
   as
     l_archive_id varchar2(256);
   begin
+
     l_archive_id := blog_util.int_to_vc2( p_archive_id );
     return
       get_archive(
@@ -3658,6 +3951,7 @@ as
         ,p_plain_url    => p_plain_url
         ,p_encode_url   => p_encode_url
       );
+
   end get_archive;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3672,6 +3966,7 @@ as
   ) return varchar2
   as
   begin
+
     return
       case p_canonical
       when 'YES'
@@ -3688,6 +3983,7 @@ as
         ,p_plain_url   => case p_plain_url when 'YES' then true else false end
       )
     ;
+
   end get_archive;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3703,7 +3999,9 @@ as
   as
     l_tag_id varchar2(256);
   begin
+
     l_tag_id := blog_util.int_to_vc2( p_tag_id );
+
     return
       case p_canonical
       when 'YES'
@@ -3720,6 +4018,7 @@ as
         ,p_plain_url   => case p_plain_url when 'YES' then true else false end
       )
     ;
+
   end get_tag;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3732,6 +4031,7 @@ as
     l_url     varchar2(4000);
     l_subs_id varchar2(256);
   begin
+
     l_subs_id := blog_util.int_to_vc2( p_subscription_id );
     -- workaround because APEX 19.2
     -- apex_page.get_url don't have parameter p_plain_url
@@ -3746,13 +4046,16 @@ as
       || ','
       || l_subs_id
     ;
+
     l_url :=
       apex_util.prepare_url(
          p_url => l_url
         ,p_checksum_type => 'PUBLIC_BOOKMARK'
         ,p_plain_url => true
       );
+
     return blog_url.get_canonical_host || l_url;
+
   end get_unsubscribe;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3763,6 +4066,7 @@ as
   as
     l_rss_url varchar2(4000);
   begin
+
     -- Fetch RSS URL override from settings
     l_rss_url := blog_util.get_attribute_value( 'G_RSS_URL' );
     -- If there isn't override custruct URL
@@ -3776,7 +4080,9 @@ as
           ,p_request => 'application_process=rss.xml'
         );
     end if;
+
     return l_rss_url;
+
   end get_rss;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3787,6 +4093,7 @@ as
   as
     l_xsl_url varchar2(4000);
   begin
+
     -- Fetch XSL URL override from settings
     l_xsl_url := blog_util.get_attribute_value( 'G_RSS_XSL_URL' );
     -- If there isn't override custruct XSL
@@ -3800,7 +4107,9 @@ as
           ,p_request => 'application_process=rss.xsl'
         );
     end if;
+
     return l_xsl_url;
+
   end get_rss_xsl;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3811,6 +4120,7 @@ as
   as
     l_sitemap_url varchar2(4000);
   begin
+
     l_sitemap_url := blog_url.get_canonical_host
       || apex_page.get_url(
         p_application => p_app_id
@@ -3818,7 +4128,9 @@ as
         ,p_session => null
         ,p_request => 'application_process=sitemap-index.xml'
       );
+
     return l_sitemap_url;
+
   end get_sitemap_index;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3868,17 +4180,21 @@ as
   )
   as
   begin
+
     -- change all hash marks so we can escape those
     -- after calling apex_escape.html_whitelist
     -- escape of hash marks needed to prevent APEX substitutions
     p_string := replace( p_string, '#', '#HashMark#' );
+
     -- escape comment html
     p_string := apex_escape.html_whitelist(
        p_html            => p_string
       ,p_whitelist_tags  => c_whitelist_tags
     );
+
     -- escape hash marks
     p_string := replace( p_string, '#HashMark#', '&#x23;' );
+
   end escape_html;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3887,21 +4203,28 @@ as
     p_code_tab  in out nocopy apex_t_varchar2
   )
   as
+
     l_code_cnt  pls_integer := 0;
     l_start_pos pls_integer := 0;
     l_end_pos   pls_integer := 0;
+
   begin
+
     -- check code open tag count
     l_code_cnt := regexp_count( p_comment, '\<code\>', 1, 'i' );
+
     -- process code tags if open and close count match ( pre check is for valid HTML )
     if l_code_cnt = regexp_count( p_comment, '\<\/code\>', 1, 'i' )
     then
+
       -- collect content inside code tags to collection
       for i in 1 .. l_code_cnt
       loop
+
         -- get code start and end position
         l_start_pos := instr( lower( p_comment ), '<code>' );
         l_end_pos := instr( lower( p_comment ), '</code>' );
+
         -- store code tag content to collection and wrap it to pre tag having class
         apex_string.push(
            p_table => p_code_tab
@@ -3912,6 +4235,7 @@ as
               ,p1 => substr(p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6)
             )
         );
+
         -- substitude handled code tag
         p_comment :=
           apex_string.format(
@@ -3923,8 +4247,11 @@ as
             ,p4 => ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )
           )
         ;
+
       end loop;
+
     end if;
+
   end build_code_tab;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3937,20 +4264,26 @@ as
     l_code_tab    apex_t_varchar2;
     l_comment_tab apex_t_varchar2;
   begin
+
     -- process code tags
     build_code_tab(
        p_comment => p_comment
       ,p_code_tab => l_code_tab
     );
+
     -- split comment to collection by new line character
     l_comment_tab := apex_string.split( p_comment, chr(10) );
+
     -- comment is stored to collection
     -- start building comment with prober html tags
     p_comment := null;
+
     -- Format comment
     for i in 1 .. l_comment_tab.count
     loop
+
       l_temp := trim( l_comment_tab(i) );
+
       -- check if row is code block
       if regexp_like( l_temp, '^CODE\#[0-9]+$' )
       then
@@ -3965,6 +4298,7 @@ as
             ,p1 => l_code_tab(l_code_row)
           )
         ;
+
       else
         -- append text if row is not empty
         if l_temp is not null
@@ -3989,12 +4323,16 @@ as
             ;
           end if;
         end if;
+
       end if;
+
     end loop;
+
     -- wrap comment to p tag.
     p_comment := apex_string.format( '<p>%s</p>', p_comment );
     -- there might be empty p, if comment ends code tag, remove that
     p_comment := replace( p_comment, '<p></p>' );
+
   end build_comment_html;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4008,7 +4346,9 @@ as
   as
     l_comment varchar2(32700);
   begin
+
     l_comment := p_comment;
+
     -- remove unwanted ascii codes
     remove_ascii(
        p_string => l_comment
@@ -4028,9 +4368,11 @@ as
     build_comment_html(
        p_comment => l_comment
     );
+
     apex_debug.info('Formatted comment: %s', l_comment);
     -- return comment
     return l_comment;
+
   end format_comment;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4042,9 +4384,11 @@ as
     l_xml       xmltype;
     l_result    varchar2(32700);
     l_err_mesg  varchar2(32700);
+
     xml_parsing_failed exception;
     pragma exception_init( xml_parsing_failed, -31011 );
   begin
+
     -- check formatted comment length
     if lengthb( p_comment ) > p_max_length
     then
@@ -4064,7 +4408,9 @@ as
         -- set error message
         l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_HTML';
       end;
+
     end if;
+
     if l_err_mesg is not null
     then
       -- prepare return validation error message
@@ -4075,6 +4421,7 @@ as
     -- return validation result
     -- if validation fails we return error message stored to variable
     return l_result;
+
   end validate_comment;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4086,6 +4433,7 @@ as
     l_err_mesg varchar2(32700);
   begin
     -- TO DO see item 3 from package specs
+
     -- do some basic check for email address
     if not regexp_like( p_email, '^.*\@.*\..*$' )
     then
@@ -4093,14 +4441,18 @@ as
       l_err_mesg := apex_lang.message(
         p_name => p_err_mesg
       );
+
       if l_err_mesg = apex_escape.html(
         p_string => p_err_mesg
       )
       then
         l_err_mesg := p_err_mesg;
       end if;
+
     end if;
+
     return l_err_mesg;
+
   end is_email;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4111,9 +4463,12 @@ as
   as
     l_flags apex_t_varchar2;
   begin
+
     l_flags := apex_string.split( p_flags, ':' );
+
     for i in 1 .. l_flags.count
     loop
+
       begin
         insert into blog_comment_flags( comment_id, flag )
           values( p_comment_id, l_flags(i) )
@@ -4122,7 +4477,9 @@ as
       then
         null;
       end;
+
     end loop;
+
   end flag_comment;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4133,7 +4490,9 @@ as
   as
     l_flags apex_t_varchar2;
   begin
+
     l_flags := apex_string.split( p_flags, ':' );
+
     for i in 1 .. l_flags.count
     loop
       delete from blog_comment_flags
@@ -4142,6 +4501,7 @@ as
         and flag = l_flags(i)
       ;
     end loop;
+
   end unflag_comment;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4154,7 +4514,9 @@ as
     l_post_id   number;
     l_app_email varchar2(4000);
   begin
+
     l_post_id   := to_number( p_post_id );
+
     -- fetch application email address
     l_app_email := blog_util.get_attribute_value('G_APP_EMAIL');
     -- if application email address is not set, exit from procedure
@@ -4163,6 +4525,7 @@ as
       apex_debug.info('application email address is not set');
       return;
     end if;
+
     -- get values for APEX email template
     -- send notify email if blog email address is set
     -- and blogger has set email
@@ -4183,6 +4546,7 @@ as
       and v1.id = l_post_id
       and v1.blogger_email is not null
     ) loop
+
       apex_debug.info(
         'Send email to: %s from: %s template: %s placeholders: %s'
         ,c1.blogger_email
@@ -4198,6 +4562,7 @@ as
         ,p_placeholders       => c1.placeholders
       );
     end loop;
+
   end new_comment_notify;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4213,7 +4578,9 @@ as
     l_watch_months  number;
     l_app_email     varchar2(4000);
   begin
+
     l_post_id := to_number( p_post_id );
+
     -- fetch application email address
     l_app_email := blog_util.get_attribute_value( 'G_APP_EMAIL' );
     -- if application email address is not set, exit from procedure
@@ -4222,12 +4589,14 @@ as
       apex_debug.info('application email address is not set');
       return;
     end if;
+
     -- fetch comment watch expires
     l_watch_months := to_number(
         blog_util.get_attribute_value( 'G_COMMENT_WATCH_MONTHS' )
       ) * -1
     ;
     l_watch_end := add_months( trunc( sysdate ), l_watch_months );
+
     -- send notify users that have subscribed to replies to comment
     for c1 in(
       select t2.email
@@ -4261,6 +4630,7 @@ as
         -- send notification if subscription is created less than months ago specified in settings
         and t1.subscription_date > l_watch_end
     ) loop
+
       apex_debug.info(
         'Send email to: %s from: %s template: %s placeholders: %s'
         ,c1.email
@@ -4275,7 +4645,9 @@ as
         ,p_template_static_id => p_email_template
         ,p_placeholders => c1.placeholders
       );
+
     end loop;
+
   end reply_notify;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4288,8 +4660,10 @@ as
     l_post_id   number;
     l_email_id  number;
   begin
+
     l_email   := trim( lower( p_email ) );
     l_post_id := to_number( p_post_id );
+
     -- subscribe user to get notify on reply to comment
     if p_email is not null
     and p_post_id is not null
@@ -4331,6 +4705,7 @@ as
         ;
       end;
     end if;
+
   end subscribe;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4393,7 +4768,9 @@ as
     else
       apex_debug.warn('Description meta tag not generated.');
     end if;
+
     return l_html;
+
   end get_description_meta;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4447,6 +4824,7 @@ as
     end if;
     -- return generated HTML
     return l_html;
+
   end get_tab_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4477,6 +4855,7 @@ as
     end if;
     -- return generated HTML
     return l_html;
+
   end get_post_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4508,6 +4887,7 @@ as
     end if;
     -- return generated HTML
     return l_html;
+
   end get_category_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4539,6 +4919,7 @@ as
     end if;
     -- return generated HTML
     return l_html;
+
   end get_archive_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4568,8 +4949,10 @@ as
       apex_debug.warn( 'Canonical link tag not generated for tag.' );
       l_html := get_robots_noindex_meta;
     end if;
+
     -- return generated HTML
     return l_html;
+
   end get_tag_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4582,6 +4965,7 @@ as
     l_rss_title   varchar2(4000);
     l_rss_anchor  varchar2(4000);
   begin
+
     -- get rss title
     l_rss_title :=
       apex_lang.message(
@@ -4589,8 +4973,10 @@ as
         ,p0 => p_app_name
       )
     ;
+
     -- get rss url
     l_rss_url :=  blog_url.get_rss;
+
     -- generate RSS anchor
     l_rss_anchor :=
       apex_string.format(
@@ -4607,6 +4993,7 @@ as
     ;
     -- return generated HTML
     return l_rss_anchor;
+
   end get_rss_anchor;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4621,7 +5008,9 @@ as
     l_rss_url   varchar2(4000);
     l_rss_title varchar2(4000);
   begin
+
     l_app_id := to_number( p_app_id );
+
     -- check build option should HTML generated
     if apex_util.get_build_option_status(
        p_application_id     => l_app_id
@@ -4630,6 +5019,7 @@ as
     then
       -- get rss url
       l_rss_url := blog_url.get_rss;
+
     -- generate link for RSS
       l_rss_title := apex_lang.message(
         p_name => p_message
@@ -4646,9 +5036,11 @@ as
             )
         )
       ;
+
     end if;
     -- return generated HTML
     return l_rss_url;
+
   end get_rss_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4692,6 +5084,7 @@ as
     l_max_published timestamp;
     l_rss_version   constant varchar2(5) := '2.0';
   begin
+
     -- RSS feed URL
     l_rss_url   := blog_url.get_rss;
     -- blog name
@@ -4711,6 +5104,7 @@ as
     );
     -- rss transformations (XSLT)
     l_xsl_url := blog_url.get_rss_xsl;
+
     -- generate RSS
     select xmlserialize(
       content xmlconcat(
@@ -4776,6 +5170,7 @@ as
     into l_rss, l_max_published
     from blog_v_posts_last20 posts
     ;
+
     l_cache_control :=
       apex_string.format(
          p_message => 'max-age=%s'
@@ -4789,6 +5184,7 @@ as
         ,'NLS_DATE_LANGUAGE=ENGLISH'
       )
     ;
+
     blog_util.download_file(
        p_blob_content   => l_rss
       ,p_mime_type      => 'application/xml'
@@ -4796,6 +5192,7 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xml"', l_last_modified  )
       ,p_charset        => 'UTF-8'
     );
+
   end rss;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4809,9 +5206,11 @@ as
     l_host_url      varchar2(1024);
     l_cache_control varchar2(256);
   begin
+
     l_host_url := apex_util.host_url( 'APEX_PATH' );
     l_host_url := substr( l_host_url, instr( l_host_url, '/', 1, 3 ) );
     l_host_url := l_host_url || p_ws_images || p_css_file;
+
     l_xml :=
       sys.xmltype.createxml(
         apex_string.format(
@@ -4849,6 +5248,7 @@ as
         )
       )
     ;
+
     select xmlserialize(
       content l_xml
       as blob encoding 'UTF-8' indent size=2
@@ -4856,12 +5256,14 @@ as
     into l_xsl
     from dual
     ;
+
     l_cache_control :=
       apex_string.format(
          p_message => 'max-age=%s'
         ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_RSS_XSL' )
       )
     ;
+
     blog_util.download_file(
        p_blob_content   => l_xsl
       ,p_mime_type      => 'application/xml'
@@ -4869,6 +5271,7 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xsl"' )
       ,p_charset        => 'UTF-8'
     );
+
   end rss_xsl;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4883,11 +5286,13 @@ as
     l_cache_control varchar2(256);
     l_build_option  constant varchar2(256) := 'BLOG_FEATURE_SITEMAP';
   begin
+
     l_url := blog_url.get_tab(
        p_app_page_id  => p_app_page_id
       ,p_request      => 'application_process='
       ,p_canonical    => 'YES'
     );
+
     select xmlserialize( document
       xmlelement(
         "sitemapindex",
@@ -4910,12 +5315,14 @@ as
       and t1.page_id = p_app_page_id
       and t1.build_option = l_build_option
     ;
+
     l_cache_control :=
       apex_string.format(
          p_message => 'max-age=%s'
         ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_SITEMAP' )
       )
     ;
+
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => 'application/xml'
@@ -4923,6 +5330,7 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-index.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
   end sitemap_index;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4934,6 +5342,7 @@ as
     l_xml   blob;
     l_cache_control varchar2(256);
   begin
+
     select xmlserialize( document
       xmlelement(
         "urlset",
@@ -4968,12 +5377,14 @@ as
           )
       end = 'INCLUDE'
     ;
+
     l_cache_control :=
       apex_string.format(
          p_message => 'max-age=%s'
         ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_SITEMAP' )
       )
     ;
+
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => 'application/xml'
@@ -4981,6 +5392,7 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-main.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
   end sitemap_main;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4989,6 +5401,7 @@ as
     l_xml           blob;
     l_cache_control varchar2(256);
   begin
+
     select xmlserialize( document
       xmlelement(
         "urlset",
@@ -5019,12 +5432,14 @@ as
     into l_xml
     from blog_v_posts posts
     ;
+
     l_cache_control :=
       apex_string.format(
          p_message => 'max-age=%s'
         ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_SITEMAP' )
       )
     ;
+
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => 'application/xml'
@@ -5032,6 +5447,7 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-posts.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
   end sitemap_posts;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -5040,6 +5456,7 @@ as
     l_xml           blob;
     l_cache_control varchar2(256);
   begin
+
     select xmlserialize( document
       xmlelement(
         "urlset",
@@ -5068,12 +5485,14 @@ as
     into l_xml
     from blog_v_categories cat
     ;
+
     l_cache_control :=
       apex_string.format(
          p_message => 'max-age=%s'
         ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_SITEMAP' )
       )
     ;
+
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => 'application/xml'
@@ -5081,6 +5500,7 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-categories.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
   end sitemap_categories;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -5089,6 +5509,7 @@ as
     l_xml           blob;
     l_cache_control varchar2(256);
   begin
+
     select xmlserialize( document
       xmlelement(
         "urlset",
@@ -5117,12 +5538,14 @@ as
     into l_xml
     from blog_v_archive_year arc
     ;
+
     l_cache_control :=
       apex_string.format(
          p_message => 'max-age=%s'
         ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_SITEMAP' )
       )
     ;
+
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => 'application/xml'
@@ -5130,6 +5553,7 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-archives.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
   end sitemap_archives;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -5138,6 +5562,7 @@ as
     l_xml           blob;
     l_cache_control varchar2(256);
   begin
+
     select xmlserialize( document
       xmlelement(
         "urlset",
@@ -5166,12 +5591,14 @@ as
     into l_xml
     from blog_v_tags tags
     ;
+
     l_cache_control :=
       apex_string.format(
          p_message => 'max-age=%s'
         ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_SITEMAP' )
       )
     ;
+
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => 'application/xml'
@@ -5179,6 +5606,7 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-tags.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
   end sitemap_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
