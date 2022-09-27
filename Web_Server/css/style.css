@@ -131,7 +131,7 @@ blockquote::after {
 }
 .z-post--header .z-post--category {
   font-size: 1em;
-  margin: 0 0 2rem;
+  margin: 0 0 1rem;
 }
 .z-post--header .z-post--date {
   font-size: 1.125em;

@@ -26,7 +26,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220926174102'
+,p_last_upd_yyyymmddhh24miss=>'20220927110502'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(25312381302124218)
@@ -197,7 +197,6 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_SEARCH'
 ,p_item_template_options=>'#DEFAULT#'
 ,p_required_patch=>wwv_flow_imp.id(25684767186283357)
-,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'ROW'
 ,p_attribute_04=>'N'
 );
@@ -223,40 +222,9 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_icon_css_classes=>'fa-tag'
 ,p_item_template_options=>'#DEFAULT#'
 ,p_required_patch=>wwv_flow_imp.id(25684767186283357)
-,p_encrypt_session_state_yn=>'N'
 ,p_fc_compute_counts=>false
 ,p_fc_filter_values=>false
 ,p_fc_show_selected_first=>false
-);
-wwv_flow_imp_page.create_page_da_event(
- p_id=>wwv_flow_imp.id(25680634479245323)
-,p_name=>'Perform Search'
-,p_event_sequence=>20
-,p_triggering_element_type=>'ITEM'
-,p_triggering_element=>'P10_LINK_SEARCH'
-,p_triggering_condition_type=>'JAVASCRIPT_EXPRESSION'
-,p_triggering_expression=>'this.browserEvent.which === apex.jQuery.ui.keyCode.ENTER'
-,p_bind_type=>'bind'
-,p_bind_event_type=>'keypress'
-,p_required_patch=>wwv_flow_imp.id(25684767186283357)
-);
-wwv_flow_imp_page.create_page_da_action(
- p_id=>wwv_flow_imp.id(25681057447245326)
-,p_event_id=>wwv_flow_imp.id(25680634479245323)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_REFRESH'
-,p_affected_elements_type=>'REGION'
-,p_affected_region_id=>wwv_flow_imp.id(6899425042645290)
-);
-wwv_flow_imp_page.create_page_da_action(
- p_id=>wwv_flow_imp.id(25681512200245326)
-,p_event_id=>wwv_flow_imp.id(25680634479245323)
-,p_event_result=>'TRUE'
-,p_action_sequence=>20
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_CANCEL_EVENT'
 );
 wwv_flow_imp.component_end;
 end;
