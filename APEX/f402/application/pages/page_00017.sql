@@ -42,7 +42,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220927075553'
+,p_last_upd_yyyymmddhh24miss=>'20221003074833'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6849894493100859)
@@ -278,7 +278,7 @@ wwv_flow_imp_page.create_worksheet_rpt(
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(27864428062256843)
-,p_name=>'Links Label'
+,p_name=>'Link Groups'
 ,p_template=>wwv_flow_imp.id(8496813422518209)
 ,p_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
@@ -650,11 +650,11 @@ wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(29623575443195201)
 ,p_button_sequence=>30
 ,p_button_plug_id=>wwv_flow_imp.id(50093168854497120)
-,p_button_name=>'EDIT_LABEL'
+,p_button_name=>'EDIT_GROUP'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
-,p_button_image_alt=>'Edit Label'
+,p_button_image_alt=>'Edit Group'
 ,p_button_position=>'NEXT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:20:&SESSION.::&DEBUG.::P20_ID:&P17_LINK_GROUP_ID.'
 ,p_button_condition=>'P17_LINK_GROUP_ID'
@@ -669,9 +669,9 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
-,p_button_image_alt=>'Resequence Labels'
+,p_button_image_alt=>'Resequence Groups'
 ,p_button_position=>'NEXT'
-,p_confirm_message=>'Resequence label entries, incrementing sequence numbers by 10?'
+,p_confirm_message=>'Resequence group entries, incrementing sequence numbers by 10?'
 ,p_confirm_style=>'warning'
 ,p_button_condition=>'P17_LINK_GROUP_ID'
 ,p_button_condition_type=>'ITEM_IS_NOT_NULL'
@@ -681,12 +681,12 @@ wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(25129462465406507)
 ,p_button_sequence=>50
 ,p_button_plug_id=>wwv_flow_imp.id(50093168854497120)
-,p_button_name=>'CREATE_LABEL'
+,p_button_name=>'CREATE_GROUP'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_is_hot=>'Y'
-,p_button_image_alt=>'New Label'
+,p_button_image_alt=>'New Group'
 ,p_button_position=>'NEXT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:20:&SESSION.::&DEBUG.:RP,20::'
 ,p_icon_css_classes=>'fa-plus'

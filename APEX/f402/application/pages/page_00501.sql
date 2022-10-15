@@ -15,6 +15,7 @@ wwv_flow_imp_page.create_page(
  p_id=>501
 ,p_user_interface_id=>wwv_flow_imp.id(8571044485518264)
 ,p_name=>'My Profile'
+,p_alias=>'MY-PROFILE'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'My Profile'
 ,p_autocomplete_on_off=>'OFF'
@@ -24,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220927075813'
+,p_last_upd_yyyymmddhh24miss=>'20221003075510'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8857181938695778)

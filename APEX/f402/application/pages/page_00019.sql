@@ -15,8 +15,9 @@ wwv_flow_imp_page.create_page(
  p_id=>19
 ,p_user_interface_id=>wwv_flow_imp.id(8571044485518264)
 ,p_name=>'Add/Edit Tags'
+,p_alias=>'TAGS'
 ,p_page_mode=>'MODAL'
-,p_step_title=>'All Tags'
+,p_step_title=>'Tags'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8929534050595858)
 ,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -28,7 +29,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220509183333'
+,p_last_upd_yyyymmddhh24miss=>'20221003075201'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(9879490963762847)

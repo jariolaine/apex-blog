@@ -15,6 +15,7 @@ wwv_flow_imp_page.create_page(
  p_id=>16
 ,p_user_interface_id=>wwv_flow_imp.id(8571044485518264)
 ,p_name=>'Edit File Properties'
+,p_alias=>'FILE-PROPERTIES'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'File Properties'
 ,p_autocomplete_on_off=>'OFF'
@@ -23,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220927075534'
+,p_last_upd_yyyymmddhh24miss=>'20221003075124'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6788182287545486)

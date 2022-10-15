@@ -15,6 +15,7 @@ wwv_flow_imp_page.create_page(
  p_id=>21
 ,p_user_interface_id=>wwv_flow_imp.id(8571044485518264)
 ,p_name=>'Confirm Link Group Delete'
+,p_alias=>'LINK-GROUP-DELETE-CONFIRM'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Confirm'
 ,p_autocomplete_on_off=>'OFF'
@@ -23,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220927075657'
+,p_last_upd_yyyymmddhh24miss=>'20221003075228'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(19303429631329496)

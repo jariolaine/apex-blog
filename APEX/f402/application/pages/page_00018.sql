@@ -15,16 +15,16 @@ wwv_flow_imp_page.create_page(
  p_id=>18
 ,p_user_interface_id=>wwv_flow_imp.id(8571044485518264)
 ,p_name=>'Add/Edit Link'
+,p_alias=>'LINK-PROPERTIES'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Link Properties'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(4073365241705286)
-,p_step_template=>wwv_flow_imp.id(8456403392518180)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220927075622'
+,p_last_upd_yyyymmddhh24miss=>'20221003075619'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6814521408894774)
