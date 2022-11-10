@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -45,6 +45,7 @@ wwv_flow_imp_page.create_report_region(
 '  and t1.attribute_name = ''G_APP_VERSION''',
 ''))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(8519378220518224)
 ,p_query_headings_type=>'NO_HEADINGS'
 ,p_query_num_rows=>1
@@ -109,6 +110,7 @@ wwv_flow_imp_page.create_report_region(
 '  and t1.attribute_name like ''PATCH%''',
 'order by t1.attribute_name desc'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(8519378220518224)
 ,p_query_headings_type=>'NO_HEADINGS'
 ,p_query_num_rows=>500

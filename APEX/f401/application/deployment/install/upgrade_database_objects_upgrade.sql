@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -716,7 +716,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -1527,7 +1527,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,t2.id                  as blogger_id',
 '  ,t2.blogger_name        as blogger_name',
 '  ,t1.title               as post_title',
-'  ,'))
+'  ,t3.title               as category_title',
+'  ,t1.post_desc           as post_desc',
+'  ,t1'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1536,7 +1538,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -1545,9 +1547,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'t3.title               as category_title',
-'  ,t1.post_desc           as post_desc',
-'  ,t1.first_paragraph     as first_paragraph',
+'.first_paragraph     as first_paragraph',
 '  ,t1.body_html           as body_html',
 '  ,t1.published_on        as published_on',
 '  ,t1.changed_on          as changed_on',
@@ -2579,7 +2579,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '    ;',
 '',
 '    apex_debug.info(',
-'      p_message => ''File name: %s, file size: %s, mime '))
+'      p_message => ''File name: %s, file size: %s, mime type: %s''',
+'      ,p0 => l_file_t.file_name',
+'      ,p1 => l_file_t.file_size',
+'      ,p2 ='))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2588,7 +2591,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -2597,10 +2600,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'type: %s''',
-'      ,p0 => l_file_t.file_name',
-'      ,p1 => l_file_t.file_size',
-'      ,p2 => l_file_t.mime_type',
+'> l_file_t.mime_type',
 '      ,p3 => l_file_t.file_charset',
 '    );',
 '',
@@ -3643,7 +3643,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '-- Global procedures and functions',
 '--------------------------------------------------------------------------------',
-'----------------------------------------'))
+'--------------------------------------------------------------------------------',
+'  procedure render_math_question_field(',
+'    '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3652,7 +3654,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -3661,9 +3663,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----------------------------------------',
-'  procedure render_math_question_field(',
-'    p_item in apex_plugin.t_item,',
+'p_item in apex_plugin.t_item,',
 '    p_plugin in apex_plugin.t_plugin,',
 '    p_param in apex_plugin.t_item_render_param,',
 '    p_result in out nocopy apex_plugin.t_item_render_result',
@@ -4639,7 +4639,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '                ,p_canonical => ''YES''',
 '              )',
 '        ) as placeholders',
-'      from'))
+'      from blog_v_all_posts v1',
+'      where 1 = 1',
+'      and v1.id = l_post_id',
+'      and v1.blogg'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4648,7 +4651,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -4657,10 +4660,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' blog_v_all_posts v1',
-'      where 1 = 1',
-'      and v1.id = l_post_id',
-'      and v1.blogger_email is not null',
+'er_email is not null',
 '    ) loop',
 '',
 '      apex_debug.info(',
@@ -5597,7 +5597,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '        )',
 '      )',
 '      as blob encoding ''UTF-8'' indent size=2',
-''))
+'    )',
+'    into l_xml',
+'    from blog_v_categories cat',
+'    ;',
+'',
+'    l_cache_control :=',
+'   '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5606,7 +5612,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -5615,13 +5621,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'    )',
-'    into l_xml',
-'    from blog_v_categories cat',
-'    ;',
-'',
-'    l_cache_control :=',
-'      apex_string.format(',
+'   apex_string.format(',
 '         p_message => ''max-age=%s''',
 '        ,p0 => blog_util.get_attribute_value( ''G_MAX_AGE_SITEMAP'' )',
 '      )',

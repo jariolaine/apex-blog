@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -21,7 +21,7 @@ wwv_flow_imp_shared.create_install_script(
 '-- Update version info',
 '--------------------------------------------------------',
 'update blog_settings',
-'  set attribute_value = ''Release 22.1.4.20221015''',
+'  set attribute_value = ''Release 22.1.6.20221110''',
 'where 1 = 1',
 '  and attribute_name = ''G_APP_VERSION''',
 ';',

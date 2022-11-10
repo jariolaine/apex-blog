@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -687,7 +687,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -1448,7 +1448,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,t1.show_changed_on   as show_changed_on',
 '  ,t1.content_desc      as content_desc',
 '  ,t1.content_html      as content_html',
-'f'))
+'from blog_dynamic_content t1',
+'where 1 = 1',
+'/',
+'-------------------------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1457,7 +1460,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -1466,10 +1469,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'rom blog_dynamic_content t1',
-'where 1 = 1',
-'/',
-'--------------------------------------------------------',
+'-------------',
 '--  DDL for View BLOG_V_ALL_FEATURES',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "BUILD_OPTION_NAME", "BUILD_OPTION_GROUP", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "FEATURE_GROUP_SEQ", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "'
@@ -2345,7 +2345,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 'end;',
 '/',
-'---------------------------------'))
+'--------------------------------------------------------',
+'--  DDL for Trigger BLOG_FEATURES_TRG',
+'-----------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2354,7 +2356,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -2363,9 +2365,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------------------',
-'--  DDL for Trigger BLOG_FEATURES_TRG',
-'--------------------------------------------------------',
+'---------------------------------',
 'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_FEATURES_TRG"',
 'before',
 'insert or',
@@ -3380,7 +3380,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_post_id     number;',
 '    l_post_title  varchar2(512);',
 '    l_newer       blog_t_post;',
-'    l'))
+'    l_older       blog_t_post;',
+'  begin',
+'',
+'    apex_debug.enter(',
+'      p_routine_name  => ''bl'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3389,7 +3393,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -3398,11 +3402,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_older       blog_t_post;',
-'  begin',
-'',
-'    apex_debug.enter(',
-'      p_routine_name  => ''blog_util.pagination''',
+'og_util.pagination''',
 '      ,p_name01       => ''p_post_id''',
 '      ,p_value01      => p_post_id',
 '    );',
@@ -4469,7 +4469,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '  begin',
 '',
 '    p_tag_id  := null;',
-'    l_v'))
+'    l_value   := remove_whitespace( p_tag );',
+'',
+'    -- if tag is not null then fetch id',
+'    if'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4478,7 +4481,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -4487,10 +4490,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'alue   := remove_whitespace( p_tag );',
-'',
-'    -- if tag is not null then fetch id',
-'    if l_value is not null then',
+' l_value is not null then',
 '',
 '      begin',
 '        select id',
@@ -5465,7 +5465,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end escape_html;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------'))
+'--------------------------------------------------------------------------------',
+'  procedure build_code_tab(',
+'    p_comment   in out nocopy varchar2,',
+'    '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5474,7 +5477,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -5483,10 +5486,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'------------',
-'  procedure build_code_tab(',
-'    p_comment   in out nocopy varchar2,',
-'    p_code_tab  in out nocopy apex_t_varchar2',
+'p_code_tab  in out nocopy apex_t_varchar2',
 '  )',
 '  as',
 '',
@@ -6465,7 +6465,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '    ;',
 '    l_last_modified :=',
 '      to_char(',
-'         sys_extract_utc( l_max_publi'))
+'         sys_extract_utc( l_max_published )',
+'        ,''Dy, DD Mon YYYY HH24:MI:SS "GMT"''',
+'        ,''NLS_DATE_LANGUAGE=ENGLIS'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6474,7 +6476,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -6483,9 +6485,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'shed )',
-'        ,''Dy, DD Mon YYYY HH24:MI:SS "GMT"''',
-'        ,''NLS_DATE_LANGUAGE=ENGLISH''',
+'H''',
 '      )',
 '    ;',
 '',

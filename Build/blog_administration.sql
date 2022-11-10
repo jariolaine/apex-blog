@@ -36,7 +36,7 @@ whenever sqlerror exit sql.sqlcode rollback
 begin
 wwv_flow_imp.import_begin (
  p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.4'
+,p_release=>'22.1.6'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -94,8 +94,8 @@ prompt APPLICATION 402 - Blog Administration
 --     Supporting Objects:  Included
 --       Install scripts:          4
 --       Validations:              1
---   Version:         22.1.4
---   Instance ID:     9502710254078678
+--   Version:         22.1.6
+--   Instance ID:     7729808509147575
 --
 
 prompt --application/delete_application
@@ -110,7 +110,7 @@ wwv_flow_imp.create_flow(
 ,p_owner=>nvl(wwv_flow_application_install.get_schema,'BLOG_040000')
 ,p_name=>nvl(wwv_flow_application_install.get_application_name,'Blog Administration')
 ,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'BLOG_ADMIN')
-,p_application_group=>wwv_flow_imp.id(3742713376965422)
+,p_application_group=>wwv_flow_imp.id(7755621288593240)
 ,p_application_group_name=>'APEX Blog'
 ,p_application_group_comment=>'APEX Blog applications'
 ,p_page_view_logging=>'YES'
@@ -158,8 +158,8 @@ wwv_flow_imp.create_flow(
 ,p_substitution_value_01=>'BLOG_FILE_UPLOAD'
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221015063119'
+,p_last_updated_by=>'ADMIN'
+,p_last_upd_yyyymmddhh24miss=>'20221025180249'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>433
 ,p_ui_type_name => null
@@ -24929,6 +24929,7 @@ wwv_flow_imp_page.create_report_region(
 '  and t1.attribute_name = ''G_APP_VERSION''',
 ''))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(8519378220518224)
 ,p_query_headings_type=>'NO_HEADINGS'
 ,p_query_num_rows=>1
@@ -24993,6 +24994,7 @@ wwv_flow_imp_page.create_report_region(
 '  and t1.attribute_name like ''PATCH%''',
 'order by t1.attribute_name desc'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(8519378220518224)
 ,p_query_headings_type=>'NO_HEADINGS'
 ,p_query_num_rows=>500
@@ -26120,6 +26122,7 @@ wwv_flow_imp_page.create_interactive_grid(
 ,p_define_chart_view=>false
 ,p_enable_download=>false
 ,p_download_formats=>null
+,p_enable_mail_download=>true
 ,p_fixed_header=>'NONE'
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false
@@ -26809,6 +26812,7 @@ wwv_flow_imp_page.create_interactive_grid(
 ,p_define_chart_view=>false
 ,p_enable_download=>false
 ,p_download_formats=>null
+,p_enable_mail_download=>true
 ,p_fixed_header=>'NONE'
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false
@@ -27545,6 +27549,8 @@ wwv_flow_imp_page.create_jet_chart_series(
 ,p_items_label_column_name=>'LOG_TIME'
 ,p_assigned_to_y2=>'off'
 ,p_items_label_rendered=>false
+,p_items_label_display_as=>'PERCENT'
+,p_threshold_display=>'onIndicator'
 );
 wwv_flow_imp_page.create_jet_chart_axis(
  p_id=>wwv_flow_imp.id(43826627171615043)
@@ -27560,6 +27566,14 @@ wwv_flow_imp_page.create_jet_chart_axis(
 ,p_tick_label_rendered=>'on'
 ,p_tick_label_rotation=>'auto'
 ,p_tick_label_position=>'outside'
+,p_zoom_order_seconds=>false
+,p_zoom_order_minutes=>false
+,p_zoom_order_hours=>false
+,p_zoom_order_days=>false
+,p_zoom_order_weeks=>false
+,p_zoom_order_months=>false
+,p_zoom_order_quarters=>false
+,p_zoom_order_years=>false
 );
 wwv_flow_imp_page.create_jet_chart_axis(
  p_id=>wwv_flow_imp.id(43826047485615041)
@@ -27663,6 +27677,8 @@ wwv_flow_imp_page.create_jet_chart_series(
 ,p_items_label_column_name=>'LABEL'
 ,p_assigned_to_y2=>'off'
 ,p_items_label_rendered=>false
+,p_items_label_display_as=>'PERCENT'
+,p_threshold_display=>'onIndicator'
 );
 wwv_flow_imp_page.create_jet_chart_axis(
  p_id=>wwv_flow_imp.id(43831022574615049)
@@ -31325,7 +31341,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,t1.show_changed_on   as show_changed_on',
 '  ,t1.content_desc      as content_desc',
 '  ,t1.content_html      as content_html',
-'f'))
+'from blog_dynamic_content t1',
+'where 1 = 1',
+'/',
+'-------------------------------------------'))
 );
 null;
 end;
@@ -31334,10 +31353,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'rom blog_dynamic_content t1',
-'where 1 = 1',
-'/',
-'--------------------------------------------------------',
+'-------------',
 '--  DDL for View BLOG_V_ALL_FEATURES',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "BUILD_OPTION_NAME", "BUILD_OPTION_GROUP", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "FEATURE_GROUP_SEQ", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "'
@@ -32213,7 +32229,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 'end;',
 '/',
-'---------------------------------'))
+'--------------------------------------------------------',
+'--  DDL for Trigger BLOG_FEATURES_TRG',
+'-----------------------'))
 );
 null;
 end;
@@ -32222,9 +32240,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------------------',
-'--  DDL for Trigger BLOG_FEATURES_TRG',
-'--------------------------------------------------------',
+'---------------------------------',
 'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_FEATURES_TRG"',
 'before',
 'insert or',
@@ -33239,7 +33255,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_post_id     number;',
 '    l_post_title  varchar2(512);',
 '    l_newer       blog_t_post;',
-'    l'))
+'    l_older       blog_t_post;',
+'  begin',
+'',
+'    apex_debug.enter(',
+'      p_routine_name  => ''bl'))
 );
 null;
 end;
@@ -33248,11 +33268,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_older       blog_t_post;',
-'  begin',
-'',
-'    apex_debug.enter(',
-'      p_routine_name  => ''blog_util.pagination''',
+'og_util.pagination''',
 '      ,p_name01       => ''p_post_id''',
 '      ,p_value01      => p_post_id',
 '    );',
@@ -34319,7 +34335,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '  begin',
 '',
 '    p_tag_id  := null;',
-'    l_v'))
+'    l_value   := remove_whitespace( p_tag );',
+'',
+'    -- if tag is not null then fetch id',
+'    if'))
 );
 null;
 end;
@@ -34328,10 +34347,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'alue   := remove_whitespace( p_tag );',
-'',
-'    -- if tag is not null then fetch id',
-'    if l_value is not null then',
+' l_value is not null then',
 '',
 '      begin',
 '        select id',
@@ -35306,7 +35322,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end escape_html;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------'))
+'--------------------------------------------------------------------------------',
+'  procedure build_code_tab(',
+'    p_comment   in out nocopy varchar2,',
+'    '))
 );
 null;
 end;
@@ -35315,10 +35334,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'------------',
-'  procedure build_code_tab(',
-'    p_comment   in out nocopy varchar2,',
-'    p_code_tab  in out nocopy apex_t_varchar2',
+'p_code_tab  in out nocopy apex_t_varchar2',
 '  )',
 '  as',
 '',
@@ -36297,7 +36313,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '    ;',
 '    l_last_modified :=',
 '      to_char(',
-'         sys_extract_utc( l_max_publi'))
+'         sys_extract_utc( l_max_published )',
+'        ,''Dy, DD Mon YYYY HH24:MI:SS "GMT"''',
+'        ,''NLS_DATE_LANGUAGE=ENGLIS'))
 );
 null;
 end;
@@ -36306,9 +36324,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'shed )',
-'        ,''Dy, DD Mon YYYY HH24:MI:SS "GMT"''',
-'        ,''NLS_DATE_LANGUAGE=ENGLISH''',
+'H''',
 '      )',
 '    ;',
 '',
