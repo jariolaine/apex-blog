@@ -4,8 +4,8 @@ begin
 --     PLUGIN: FI.JARIS.MATH_QUESTION_FIELD
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.6'
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -16,7 +16,6 @@ wwv_flow_imp_shared.create_plugin(
 ,p_plugin_type=>'ITEM TYPE'
 ,p_name=>'FI.JARIS.MATH_QUESTION_FIELD'
 ,p_display_name=>'Math Question Field'
-,p_supported_ui_types=>'DESKTOP'
 ,p_supported_component_types=>'APEX_APPLICATION_PAGE_ITEMS'
 ,p_image_prefix => nvl(wwv_flow_application_install.get_static_plugin_file_prefix('ITEM TYPE','FI.JARIS.MATH_QUESTION_FIELD'),'')
 ,p_api_version=>2

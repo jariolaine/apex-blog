@@ -4,8 +4,8 @@ begin
 --     PAGE: 00000
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.6'
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -13,7 +13,6 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_page.create_page(
  p_id=>0
-,p_user_interface_id=>wwv_flow_imp.id(8571044485518264)
 ,p_name=>'Global Page - Desktop'
 ,p_step_title=>'Global Page - Desktop'
 ,p_autocomplete_on_off=>'OFF'
@@ -31,6 +30,7 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_triggering_element_type=>'JAVASCRIPT_EXPRESSION'
 ,p_triggering_element=>'apex.gPageContext$'
 ,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'apexafterclosedialog'
 );
 wwv_flow_imp_page.create_page_da_action(

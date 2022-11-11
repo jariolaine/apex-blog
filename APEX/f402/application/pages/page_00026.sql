@@ -4,8 +4,8 @@ begin
 --     PAGE: 00026
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.6'
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -13,7 +13,6 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_page.create_page(
  p_id=>26
-,p_user_interface_id=>wwv_flow_imp.id(8571044485518264)
 ,p_name=>'Add/Edit Modal Popup Page'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Add/Edit Modal Popup Page'
@@ -229,6 +228,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_restricted_characters=>'US_ONLY'
 ,p_help_text=>'Link display sequence.'
 ,p_attribute_03=>'right'
+,p_attribute_04=>'text'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(41931552108116295)
@@ -265,17 +265,16 @@ wwv_flow_imp_page.create_page_item(
 ,p_source=>'CONTENT_HTML'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_RICH_TEXT_EDITOR'
-,p_cSize=>60
 ,p_cMaxlength=>32700
-,p_cHeight=>20
 ,p_field_template=>wwv_flow_imp.id(8548365426518242)
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--stretchInputs'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
-,p_attribute_03=>'Y'
-,p_attribute_05=>'top'
-,p_attribute_06=>'4'
-,p_attribute_09=>'HTML'
+,p_attribute_01=>'HTML'
+,p_attribute_02=>'INTERMEDIATE'
+,p_attribute_03=>'MULTILINE'
+,p_attribute_04=>'180'
+,p_attribute_07=>'Y'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(64761748434771401)

@@ -4,8 +4,8 @@ begin
 --     PAGE: 00010
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.6'
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -13,7 +13,6 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_page.create_page(
  p_id=>10
-,p_user_interface_id=>wwv_flow_imp.id(6877050287267426)
 ,p_name=>'Links'
 ,p_alias=>'LINKS'
 ,p_step_title=>'Links | &G_APP_NAME.'
@@ -26,11 +25,12 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221002074737'
+,p_last_upd_yyyymmddhh24miss=>'20221111114326'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(25312381302124218)
 ,p_plug_name=>'Links Container'
+,p_region_css_classes=>'z-overflowHidden'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--removeHeader js-removeLandmark:t-Region--scrollBody'
 ,p_plug_template=>wwv_flow_imp.id(6802870362267386)
 ,p_plug_display_sequence=>30

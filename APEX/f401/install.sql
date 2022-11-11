@@ -2,6 +2,7 @@ prompt --install
 @@application/set_environment.sql
 @@application/delete_application.sql
 @@application/create_application.sql
+@@application/user_interfaces.sql
 @@application/shared_components/navigation/lists/navigation_bar.sql
 @@application/shared_components/navigation/lists/post_categories.sql
 @@application/shared_components/navigation/lists/latest_posts.sql
@@ -130,7 +131,6 @@ prompt --install
 @@application/shared_components/email/templates/blog_new_comment_notify.sql
 @@application/shared_components/security/authentications/application_express_authentication.sql
 @@application/shared_components/plugins/item_type/fi_jaris_math_question_field.sql
-@@application/user_interfaces.sql
 @@application/user_interfaces/combined_files.sql
 @@application/pages/page_00000.sql
 @@application/pages/page_00001.sql

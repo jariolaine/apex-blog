@@ -4,8 +4,8 @@ begin
 --     REGION TEMPLATE: SIDE_NAVIGATION_MENU
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.6'
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -53,8 +53,8 @@ wwv_flow_imp_shared.create_list_template(
 '    </ul>',
 '  </div>',
 '</div>',
-'<script>(sessionStorage.getItem("nav.&APP_ID..preferenceForExpanded") === "true" && window.matchMedia("(min-width: " + getComputedStyle(document.documentElement).getPropertyValue("--js-mq-lg") + ")").matches) && document.getElementById(''t_PageBody'').'
-||'classList.add(''js-navExpanded'');</script>',
+'<script>(sessionStorage.getItem("ORA_WWV_apex.toggleCore.nav.&APP_ID..preferenceForExpanded") === "true" && window.matchMedia("(min-width: " + getComputedStyle(document.documentElement).getPropertyValue("--js-mq-lg") + ")").matches) && document.getEl'
+||'ementById(''t_PageBody'').classList.add(''js-navExpanded'');</script>',
 '<script>',
 '    const labels = document.querySelectorAll(".a-TreeView .a-TreeView-label");',
 '    for (const label of labels) {',

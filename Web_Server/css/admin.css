@@ -282,3 +282,6 @@ pre.z-program-code code {
   display: none!important;
   visibility: hidden!important;
 }
+.z-overflowHidden {
+  overflow: hidden;
+}

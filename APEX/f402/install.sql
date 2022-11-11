@@ -2,6 +2,7 @@ prompt --install
 @@application/set_environment.sql
 @@application/delete_application.sql
 @@application/create_application.sql
+@@application/user_interfaces.sql
 @@workspace/credentials/google_oauth2.sql
 @@application/shared_components/navigation/lists/navigation_menu.sql
 @@application/shared_components/navigation/lists/navigation_bar.sql
@@ -135,7 +136,6 @@ prompt --install
 @@application/shared_components/email/templates/blog_reply_to_comment_notify.sql
 @@application/shared_components/security/authentications/application_express_authentication.sql
 @@application/shared_components/security/authentications/google.sql
-@@application/user_interfaces.sql
 @@application/user_interfaces/combined_files.sql
 @@application/pages/page_00000.sql
 @@application/pages/page_00001.sql

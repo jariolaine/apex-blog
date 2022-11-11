@@ -4,8 +4,8 @@ begin
 --     PAGE: 00014
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.6'
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -13,7 +13,6 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_page.create_page(
  p_id=>14
-,p_user_interface_id=>wwv_flow_imp.id(6877050287267426)
 ,p_name=>'Posts Under Category'
 ,p_alias=>'CATEGORY'
 ,p_step_title=>'Category &P14_CATEGORY_TITLE. | &G_APP_NAME.'
@@ -245,6 +244,7 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_name=>'Set is Current'
 ,p_event_sequence=>10
 ,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'ready'
 ,p_display_when_type=>'ITEM_IS_NOT_NULL'
 ,p_display_when_cond=>'P14_CATEGORY_ID'

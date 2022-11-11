@@ -4,8 +4,8 @@ begin
 --     PAGE: 09999
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.6'
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -13,7 +13,6 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_page.create_page(
  p_id=>9999
-,p_user_interface_id=>wwv_flow_imp.id(8571044485518264)
 ,p_name=>'Login Page'
 ,p_alias=>'LOGIN'
 ,p_step_title=>'&G_APP_NAME. - Sign In'

@@ -4,8 +4,8 @@ begin
 --     PAGE: 01002
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.6'
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -13,7 +13,6 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_page.create_page(
  p_id=>1002
-,p_user_interface_id=>wwv_flow_imp.id(6877050287267426)
 ,p_name=>'Footer Link Modal Dialog'
 ,p_alias=>'INFORMATION'
 ,p_page_mode=>'MODAL'
@@ -81,6 +80,7 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_triggering_element_type=>'BUTTON'
 ,p_triggering_button_id=>wwv_flow_imp.id(36227766771379736)
 ,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'click'
 );
 wwv_flow_imp_page.create_page_da_action(
@@ -96,6 +96,7 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_name=>'Set Dialog Title'
 ,p_event_sequence=>20
 ,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'ready'
 );
 wwv_flow_imp_page.create_page_da_action(

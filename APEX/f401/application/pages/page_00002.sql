@@ -4,8 +4,8 @@ begin
 --     PAGE: 00002
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.04.12'
-,p_release=>'22.1.6'
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -13,7 +13,6 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_page.create_page(
  p_id=>2
-,p_user_interface_id=>wwv_flow_imp.id(6877050287267426)
 ,p_name=>'Post and Comments'
 ,p_alias=>'POST'
 ,p_step_title=>'&P2_POST_TITLE. | &G_APP_NAME.'
@@ -561,6 +560,7 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_name=>'Set is Current'
 ,p_event_sequence=>10
 ,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'ready'
 ,p_da_event_comment=>'Because latest post list in global page is cached, we set is-current class here'
 );
@@ -588,6 +588,7 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_triggering_element_type=>'REGION'
 ,p_triggering_region_id=>wwv_flow_imp.id(6915627356677149)
 ,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'apexafterclosedialog'
 ,p_required_patch=>wwv_flow_imp.id(7073708623458378)
 );
