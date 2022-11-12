@@ -212,54 +212,6 @@ var blog = blog || {};
 
         });
       }
-    },
-    /**
-    * @function editorInit
-    * @summary editor item initialization code
-    * @desc put blog.admin.editorInit in item Advanced: JavaScript Initialization Code
-    * @version 1.0
-    **/
-    editorInit: function( options ){
-
-      options.contentsCss = options.contentsCss || [];
-      options.contentsCss.unshift(CKEDITOR.getUrl("contents.css"));
-
-      return $.extend(options, {
-         startupOutlineBlocks: true
-        ,toolbarCanCollapse: true
-        ,forcePasteAsPlainText: true
-        //,autoParagraph: false
-        //,enterMode: CKEDITOR.ENTER_BR
-        //,shiftEnterMode: CKEDITOR.ENTER_P
-        ,entities_additional: "#35,#39"
-        ,disallowedContent: "script; *[on*]"
-        ,allowedContent: {
-          $1:{
-            // Use the ability to specify elements as an object.
-            elements: CKEDITOR.dtd,
-            attributes: true,
-            styles: true,
-            classes: true
-          }
-        }
-        ,stylesSet: [
-          {name:"Program Code",element:"pre",attributes:{"class":"z-program-code"}},
-
-          {name:"Big",element:"big"},
-          {name:"Small",element:"small"},
-          {name:"Typewriter",element:"tt"},
-          {name:"Computer Code",element:"code"},
-          {name:"Keyboard Phrase",element:"kbd"},
-          {name:"Sample Text",element:"samp"},
-          {name:"Variable",element:"var"},
-          {name:"Deleted Text",element:"del"},
-          {name:"Inserted Text",element:"ins"},
-          {name:"Cited Work",element:"cite"},
-          {name:"Inline Quotation",element:"q"},
-          {name:"Styled image(left)",element:"img",attributes:{"class":"left"}},
-          {name:"Styled image(right)",element:"img",attributes:{"class":"right"}}
-        ]
-      });
     }
   }
 })( apex.jQuery, apex.region, blog );

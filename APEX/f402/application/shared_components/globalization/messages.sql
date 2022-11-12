@@ -421,7 +421,7 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(61250680749871346)
 ,p_name=>'BLOG_HELP_POST_EDITOR'
-,p_message_text=>'Refer online document <a target="_balank" href="https://ckeditor.com/docs/ckeditor4/latest/features/basicstyles.html">Basic Text Styles: Bold, Italic and More</a> how style your post.'
+,p_message_text=>'Refer online document <a target="_blank" href="https://ckeditor.com/docs/ckeditor5/latest/features/basic-styles.html">Basic Text Styles: Bold, Italic and More</a> how style your post.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(23116114610465857)

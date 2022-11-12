@@ -14,10 +14,8 @@ prompt --install
 @@application/shared_components/files/icons_app_icon_512_png.sql
 @@application/shared_components/files/css_admin_min_css.sql
 @@application/shared_components/files/js_admin_min_js.sql
-@@application/shared_components/files/css_chkeditor_min_css.sql
 @@application/shared_components/files/css_admin_css.sql
 @@application/shared_components/files/js_admin_js.sql
-@@application/shared_components/files/css_chkeditor_css.sql
 @@application/plugin_settings.sql
 @@application/shared_components/security/authorizations/bloggers.sql
 @@application/shared_components/navigation/navigation_bar.sql

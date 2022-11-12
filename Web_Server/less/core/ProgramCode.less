@@ -2,7 +2,33 @@
 /**************************************
 * Program code formatting
 **************************************/
+/* Pre AÅEX 22.2 CKEditor 4*/
 pre.z-program-code {
+  clear: both;
+  font-family: @code-font;
+  font-size: @code-font-size;
+  color: var(--ut-component-badge-text-color);
+  tab-size: @code-tab-size;
+  overflow-x: auto;
+  display: block;
+  padding: @code-padding;
+  margin: @code-margin;
+  border-width: var(--ut-component-inner-border-width);
+  border-style: solid;
+  border-color: var(--ut-component-inner-border-color);
+  border-left-width: 0.25rem;
+  border-left-style: solid;
+  border-left-color: var(--u-color-35);
+  border-radius: var(--ut-component-badge-border-radius);
+  background-color: var(--ut-component-badge-background-color);
+  box-shadow: var(--ut-shadow-sm);
+  code{
+    font-family: inherit;
+    font-size: inherit;
+  }
+}
+/* AÅEX 22.2 CKEditor 5*/
+.ck-content pre:has( code ) {
   clear: both;
   font-family: @code-font;
   font-size: @code-font-size;
