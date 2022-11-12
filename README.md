@@ -1,6 +1,6 @@
 # APEX Blog
 ![](https://img.shields.io/badge/Oracle_Database-19c-blue.svg)
-![](https://img.shields.io/badge/APEX-22.1-success.svg)
+![](https://img.shields.io/badge/APEX-22.2-success.svg)
 
 
 Blog application built with Oracle Application Express (APEX).
@@ -9,7 +9,7 @@ Blog application built with Oracle Application Express (APEX).
 
 ### System Requirements
 * Oracle database version 19c or later
-* Oracle Application Express version 22.1 or later
+* Oracle Application Express version 22.2 or later
 
 ### Needed Privileges
 Ensure target schema associated to your APEX workspace has following system privileges and roles:
@@ -32,7 +32,7 @@ APEX workspace administrator privileges are required to create a user group for 
 4. Import and install *blog_public_pages.sql* and select install supporting objects.
 
 ### Post Install
-Create a "Bloggers" workspace user group. Add APEX users to the group who are authorized to use the blog admin application. See [Using Groups to Manage Application Express Users](https://docs.oracle.com/en/database/oracle/apex/22.1/aeadm/managing-users-in-a-workspace.html#GUID-0FD7B406-8A83-40C0-A3E7-EF19BBDEA5A4)
+Create a "Bloggers" workspace user group. Add APEX users to the group who are authorized to use the blog admin application. See [Using Groups to Manage Application Express Users](https://docs.oracle.com/en/database/oracle/apex/22.2/aeadm/managing-users-in-a-workspace.html#GUID-0FD7B406-8A83-40C0-A3E7-EF19BBDEA5A4)
 
 ## Upgrade
 Existing application version must be Release v4.4.20220326 or later.
