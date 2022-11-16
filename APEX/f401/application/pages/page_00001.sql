@@ -20,7 +20,6 @@ wwv_flow_imp_page.create_page(
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(20718112665951240)
 ,p_html_page_header=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'"BLOG_META_HOME_DESCRIPTION"',
 '"BLOG_CANONICAL_LINK_TAB"',
 '"BLOG_RSS_LINK"',
 ''))
@@ -28,7 +27,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221007092802'
+,p_last_upd_yyyymmddhh24miss=>'20221116163532'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6432040642894060)
@@ -212,6 +211,31 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'Reset Posts Pagination'
 ,p_attribute_01=>'THIS_PAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(22521995144146414)
+,p_meta_tag_name=>'description'
+,p_meta_tag_value=>'&G_APP_DESC.'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(22522051640146415)
+,p_meta_tag_name=>'og:description'
+,p_meta_tag_value=>'&G_APP_DESC.'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(22522146511146416)
+,p_meta_tag_name=>'og:title'
+,p_meta_tag_value=>'&G_APP_NAME.'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(22522497721146419)
+,p_meta_tag_name=>'og:site_name'
+,p_meta_tag_value=>'&G_APP_NAME.'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(22522683196146421)
+,p_meta_tag_name=>'og:type'
+,p_meta_tag_value=>'website'
 );
 wwv_flow_imp.component_end;
 end;

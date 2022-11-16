@@ -20,15 +20,11 @@ wwv_flow_imp_page.create_page(
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8697986188142973)
 ,p_html_page_header=>'"BLOG_CANONICAL_LINK_TAG"'
-,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'/*',
-' var(--ut-component-highlight-background-color)',
-'*/'))
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220927045300'
+,p_last_upd_yyyymmddhh24miss=>'20221116170637'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(13706719753736206)

@@ -39,6 +39,7 @@ as
 --    Jari Laine 19.04.2022 - Changes to procedures download_file
 --    Jari Laine 26.04.2022 - Parameter p_escape to function get_tag
 --    Jari Laine 03.08.2022 - Changed procedure render_dynamic_content to use apex_util.prn
+--    Jari Laine 16.11.2022 - Removed obsolete function get_post_title
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -68,16 +69,10 @@ as
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 2
-  function get_post_title(
-    p_post_id         in varchar2,
-    p_escape          in boolean
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  public app page 2
   procedure get_post_pagination(
     p_post_id         in varchar2,
     p_post_title      out nocopy varchar2,
+    p_post_desc       out nocopy varchar2,
     p_newer_id        out nocopy varchar2,
     p_newer_title     out nocopy varchar2,
     p_older_id        out nocopy varchar2,
@@ -422,91 +417,10 @@ as
   end initialize_items;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_post_title(
-    p_post_id     in varchar2,
-    p_escape      in boolean
-  ) return varchar2
-  as
-    l_post_title  varchar2(4000);
-    l_post_id     number;
-  begin
-
-    apex_debug.enter(
-      p_routine_name  => 'blog_util.get_post_title'
-      ,p_name01       => 'p_post_id'
-      ,p_value01      => p_post_id
-      ,p_name02       => 'p_escape'
-      ,p_value02      => apex_debug.tochar(p_escape)
-    );
-
-    -- raise no data found error if parameter p_post_id is null
-    if p_post_id is null then
-      raise no_data_found;
-    end if;
-
-    -- conver post id string to number
-    l_post_id := to_number( p_post_id );
-
-    -- fetch post title
-    select v1.post_title
-    into l_post_title
-    from blog_v_posts v1
-    where v1.post_id = l_post_id
-    ;
-
-    apex_debug.info(
-      p_message => 'Fetch post: %s return: %s'
-      ,p0 => p_post_id
-      ,p1 => l_post_title
-    );
-
-    -- espace html from post title if parameter p_escape is true
-    -- return post title
-    return case when p_escape
-      then apex_escape.html( l_post_title )
-      else l_post_title
-      end
-    ;
-
-  -- handle errors
-  exception when no_data_found
-  then
-
-    apex_debug.warn(
-       p_message => 'No data found. %s( %s => %s, %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_post_id'
-      ,p2 => coalesce( p_post_id, '(null)' )
-      ,p3 => 'p_escape'
-      ,p4 => apex_debug.tochar( p_escape )
-    );
-
-    -- show http error
-    raise_http_error( 404 );
-    raise;
-
-  when others
-  then
-
-    apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s, %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_post_id'
-      ,p2 => coalesce( p_post_id, '(null)' )
-      ,p3 => 'p_escape'
-      ,p4 => apex_debug.tochar( p_escape )
-    );
-
-    -- show http error
-    raise_http_error( 404 );
-    raise;
-
-  end get_post_title;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   procedure get_post_pagination(
     p_post_id         in varchar2,
     p_post_title      out nocopy varchar2,
+    p_post_desc       out nocopy varchar2,
     p_newer_id        out nocopy varchar2,
     p_newer_title     out nocopy varchar2,
     p_older_id        out nocopy varchar2,
@@ -514,7 +428,6 @@ as
   )
   as
     l_post_id     number;
-    l_post_title  varchar2(512);
     l_newer       blog_t_post;
     l_older       blog_t_post;
   begin
@@ -537,6 +450,7 @@ as
     -- also fetch older and newer post id and title
     select
       v1.post_title
+      ,v1.post_desc
       ,(
         select blog_t_post( lkp1.post_id, lkp1.post_title )
         from blog_v_posts lkp1
@@ -553,14 +467,13 @@ as
         order by lkp2.published_on desc
         fetch first 1 rows only
       ) as older_post
-    into l_post_title, l_newer, l_older
+    into p_post_title, p_post_desc, l_newer, l_older
     from blog_v_posts v1
     where 1 = 1
       and post_id = l_post_id
     ;
 
     -- set procedure out parameters
-    p_post_title  := l_post_title;
     p_newer_id    := int_to_vc2( l_newer.post_id );
     p_newer_title := l_newer.post_title;
     p_older_id    := int_to_vc2( l_older.post_id );
@@ -593,14 +506,10 @@ as
   then
 
     apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s, %s => %s, %s => %s )'
+       p_message => 'Unhandled error. %s( %s => %s )'
       ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p1 => 'p_post_id'
       ,p2 => coalesce( p_post_id, '(null)' )
-      ,p3 => 'p_newer_id'
-      ,p4 => p_newer_id
-      ,p5 => 'p_older_id'
-      ,p6 => p_older_id
     );
 
     -- show http error

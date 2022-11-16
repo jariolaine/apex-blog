@@ -34,7 +34,7 @@ wwv_flow_imp_page.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220927045457'
+,p_last_upd_yyyymmddhh24miss=>'20221115180854'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27990916738607115)
@@ -164,7 +164,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_prompt=>'Last Name'
 ,p_display_as=>'NATIVE_TEXT_FIELD'
 ,p_cMaxlength=>256
-,p_grid_column_css_classes=>'z-hidden'
+,p_grid_row_css_classes=>'z-hidden'
 ,p_field_template=>wwv_flow_imp.id(6855004103267413)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_warn_on_unsaved_changes=>'I'
@@ -174,7 +174,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'TEXT'
 ,p_attribute_05=>'BOTH'
-,p_item_comment=>'Field is not for human input. Column CSS class hides item from screen. If field isn''t empty close dialog process is fired before submitting comment.'
+,p_item_comment=>'Field is not for human input. Row CSS class hides item from screen. If field isn''t empty close dialog process is fired before submitting comment.'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(6286425900551659)
@@ -455,7 +455,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_sequence=>70
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_SESSION_STATE'
-,p_process_name=>'Clear items'
+,p_process_name=>'Clear page items'
 ,p_attribute_01=>'CLEAR_CACHE_CURRENT_PAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_comment=>'At least question answer item saves session state to disk. Clear all page items session state.'
