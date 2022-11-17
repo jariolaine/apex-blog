@@ -15,7 +15,7 @@ wwv_flow_imp_shared.create_plug_template(
  p_id=>wwv_flow_imp.id(6782379920267375)
 ,p_layout=>'TABLE'
 ,p_template=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<div role="region" aria-label="#TITLE!ATTR#" class="t-ButtonRegion t-Form--floatLeft #REGION_CSS_CLASSES#" id="#REGION_STATIC_ID#" #REGION_ATTRIBUTES#>',
+'<div class="t-ButtonRegion t-Form--floatLeft #REGION_CSS_CLASSES#" id="#REGION_STATIC_ID#" #REGION_LANDMARK_ATTRIBUTES# #REGION_ATTRIBUTES#>',
 '  <div class="t-ButtonRegion-wrap">',
 '    <div class="t-ButtonRegion-col t-ButtonRegion-col--left"><div class="t-ButtonRegion-buttons">#PREVIOUS##CLOSE##DELETE#</div></div>',
 '    <div class="t-ButtonRegion-col t-ButtonRegion-col--content">',
@@ -35,11 +35,12 @@ wwv_flow_imp_shared.create_plug_template(
 ,p_plug_font_size=>'-1'
 ,p_default_label_alignment=>'RIGHT'
 ,p_default_field_alignment=>'LEFT'
+,p_default_landmark_type=>'region'
 ,p_reference_id=>2124982336649579661
 ,p_translate_this_template=>'N'
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(10080353890892285)
+ p_id=>wwv_flow_imp.id(9061231291555938)
 ,p_plug_template_id=>wwv_flow_imp.id(6782379920267375)
 ,p_name=>'Region Body'
 ,p_placeholder=>'BODY'
@@ -51,18 +52,18 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_max_fixed_grid_columns=>12
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(10080822453892285)
+ p_id=>wwv_flow_imp.id(9061792140555938)
 ,p_plug_template_id=>wwv_flow_imp.id(6782379920267375)
 ,p_name=>'Change'
 ,p_placeholder=>'CHANGE'
 ,p_has_grid_support=>false
 ,p_has_region_support=>false
-,p_has_item_support=>false
+,p_has_item_support=>true
 ,p_has_button_support=>true
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(10081393204892285)
+ p_id=>wwv_flow_imp.id(9062287772555938)
 ,p_plug_template_id=>wwv_flow_imp.id(6782379920267375)
 ,p_name=>'Close'
 ,p_placeholder=>'CLOSE'
@@ -73,7 +74,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(10081868510892285)
+ p_id=>wwv_flow_imp.id(9062781697555938)
 ,p_plug_template_id=>wwv_flow_imp.id(6782379920267375)
 ,p_name=>'Create'
 ,p_placeholder=>'CREATE'
@@ -84,7 +85,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(10082366512892286)
+ p_id=>wwv_flow_imp.id(9063213916555939)
 ,p_plug_template_id=>wwv_flow_imp.id(6782379920267375)
 ,p_name=>'Delete'
 ,p_placeholder=>'DELETE'
@@ -95,7 +96,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(10082859110892286)
+ p_id=>wwv_flow_imp.id(9063720361555939)
 ,p_plug_template_id=>wwv_flow_imp.id(6782379920267375)
 ,p_name=>'Edit'
 ,p_placeholder=>'EDIT'
@@ -106,29 +107,29 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(10083390878892286)
+ p_id=>wwv_flow_imp.id(9064292548555939)
 ,p_plug_template_id=>wwv_flow_imp.id(6782379920267375)
 ,p_name=>'Next'
 ,p_placeholder=>'NEXT'
 ,p_has_grid_support=>false
 ,p_has_region_support=>false
-,p_has_item_support=>false
+,p_has_item_support=>true
 ,p_has_button_support=>true
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(10083821116892287)
+ p_id=>wwv_flow_imp.id(9064718602555940)
 ,p_plug_template_id=>wwv_flow_imp.id(6782379920267375)
 ,p_name=>'Previous'
 ,p_placeholder=>'PREVIOUS'
 ,p_has_grid_support=>false
 ,p_has_region_support=>false
-,p_has_item_support=>false
+,p_has_item_support=>true
 ,p_has_button_support=>true
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(10084361394892287)
+ p_id=>wwv_flow_imp.id(9065269077555940)
 ,p_plug_template_id=>wwv_flow_imp.id(6782379920267375)
 ,p_name=>'Sub Regions'
 ,p_placeholder=>'SUB_REGIONS'

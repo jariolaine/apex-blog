@@ -85,6 +85,8 @@ prompt --install
 @@application/shared_components/user_interface/templates/region/wizard_container.sql
 @@application/shared_components/user_interface/templates/region/inline_drawer.sql
 @@application/shared_components/user_interface/templates/region/image.sql
+@@application/shared_components/user_interface/templates/region/search_results_container.sql
+@@application/shared_components/user_interface/templates/region/item_container.sql
 @@application/shared_components/user_interface/templates/region/cards_container.sql
 @@application/shared_components/user_interface/templates/list/badge_list.sql
 @@application/shared_components/user_interface/templates/list/cards.sql

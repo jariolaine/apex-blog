@@ -125,17 +125,17 @@ blockquote::after {
 .z-post--header {
   clear: both;
 }
+.z-post--header .z-post--date {
+  font-size: 1.125em;
+  margin: 0 0 0.25rem;
+}
 .z-post--header .z-post--title {
   font-size: 1.625em;
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.5rem;
 }
 .z-post--header .z-post--category {
   font-size: 1em;
   margin: 0 0 1rem;
-}
-.z-post--header .z-post--date {
-  font-size: 1.125em;
-  margin: 0 0 0.25rem;
 }
 .z-post--body img {
   max-width: 100%;
@@ -245,8 +245,8 @@ pre.z-program-code {
   tab-size: 2;
   overflow-x: auto;
   display: block;
-  padding: 1em 1.5em;
-  margin: 8px 8px 18px 8px;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0.5rem 1rem 0.5rem;
   border-width: var(--ut-component-inner-border-width);
   border-style: solid;
   border-color: var(--ut-component-inner-border-color);
@@ -270,8 +270,8 @@ pre.z-program-code code {
   tab-size: 2;
   overflow-x: auto;
   display: block;
-  padding: 1em 1.5em;
-  margin: 8px 8px 18px 8px;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0.5rem 1rem 0.5rem;
   border-width: var(--ut-component-inner-border-width);
   border-style: solid;
   border-color: var(--ut-component-inner-border-color);
