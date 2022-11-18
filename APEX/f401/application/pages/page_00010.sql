@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221117163023'
+,p_last_upd_yyyymmddhh24miss=>'20221118062822'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(25312381302124218)
@@ -56,13 +56,14 @@ wwv_flow_imp_page.create_report_region(
 'select v1.link_title      as list_title',
 '  ,v1.link_desc           as list_text',
 '  ,null                   as list_class',
-'  ,''fa fa-external-link''  as icon_class',
+'  ,null                   as icon_class',
 '  ,null                   as icon_color_class',
 '  ,v1.link_url            as link',
 '  ,null                   as link_attr',
 '  ,null                   as link_class',
 '  ,v1.group_title         as list_badge',
 'from #OWNER#.blog_v_links v1',
+'where 1 = 1',
 'order by v1.group_display_seq',
 '  ,v1.display_seq'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
@@ -116,6 +117,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>4
 ,p_column_heading=>'Icon Class'
 ,p_use_as_row_header=>'N'
+,p_column_html_expression=>'fa fa-external-link'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );

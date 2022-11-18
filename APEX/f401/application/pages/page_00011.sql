@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221111114305'
+,p_last_upd_yyyymmddhh24miss=>'20221118062925'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(25312085512124215)
@@ -74,10 +74,10 @@ wwv_flow_imp_page.create_report_region(
 '  ,v1.file_desc      as list_text',
 '  ,v1.file_size      as list_badge',
 '  ,null              as list_class',
-'  ,''fa fa-download''  as icon_class',
+'  ,null              as icon_class',
 '  ,null              as icon_color_class',
 '  ,apex_page.get_url(',
-'    p_page      => 1003',
+'     p_page      => 1003',
 '    ,p_session  => null',
 '    ,p_request  => ''application_process=download''',
 '    ,p_items    => ''P11_FILE_NAME''',
@@ -87,7 +87,6 @@ wwv_flow_imp_page.create_report_region(
 '  ,null              as link_class',
 'from #OWNER#.blog_v_files v1',
 'where 1 = 1',
-'and v1.file_name = :P11_FILE_NAME or :P11_FILE_NAME is null',
 'order by v1.file_name'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
@@ -159,6 +158,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>60
 ,p_column_heading=>'Icon Class'
 ,p_use_as_row_header=>'N'
+,p_column_html_expression=>'fa fa-download'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );

@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220927045346'
+,p_last_upd_yyyymmddhh24miss=>'20221118180246'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(58686289966142463)
@@ -38,36 +38,22 @@ wwv_flow_imp_page.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.category_id     as category_id',
-'  ,v1.post_title          as search_title',
-'  ,#OWNER#.blog_url.get_post(',
-'     p_post_id => v1.post_id',
-'   )                      as search_link',
-'  ,v1.post_desc           as search_desc',
-'  ,labels.category        as label_01',
-'  ,v1.category_title      as value_01',
-'  ,labels.posted_by       as label_02',
-'  ,v1.blogger_name        as value_02',
-'  ,labels.posted_on       as label_03',
-'  ,v1.published_on        as value_03',
-'  -- output label if there is tags',
-'  ,case when',
-'    apex_util.savekey_vc2( v1.tags_html ) is not null',
-'    then labels.tags',
-'  end                     as label_04',
-'  -- get tags from variable',
-'  ,apex_util.keyval_vc2   as value_04',
-'from #OWNER#.blog_v_posts v1',
-'cross join(',
-'  select',
-'     apex_lang.message( ''BLOG_TXT_TAGS'' )       as tags',
-'    ,apex_lang.message( ''BLOG_TXT_CATEGORY'' )   as category',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_BY'' )  as posted_by',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_ON'' )  as posted_on',
-'  from dual',
-') labels',
+'select ',
+'   v1.category_id     as category_id',
+'  ,v1.post_title      as search_title',
+'  ,v1.post_url        as search_link',
+'  ,v1.post_desc       as search_desc',
+'  ,v1.txt_category    as label_01',
+'  ,v1.category_title  as value_01',
+'  ,v1.txt_posted_by   as label_02',
+'  ,v1.blogger_name    as value_02',
+'  ,v1.txt_posted_on   as label_03',
+'  ,v1.published_on    as value_03',
+'  ,v1.txt_tags        as label_04',
+'  ,v1.tags_html1      as value_04',
+'from #OWNER#.blog_v_posts_apex v1',
 'where 1 = 1',
-'and v1.archive_year = :P15_ARCHIVE_ID',
+'  and v1.archive_year = :P15_ARCHIVE_ID',
 'order by v1.published_on desc'))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P15_ARCHIVE_ID'

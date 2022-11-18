@@ -446,7 +446,7 @@ as
     -- conver post id string to number
     l_post_id := to_number( p_post_id );
 
-    -- fetch post title by post id
+    -- fetch post title and description by post id
     -- also fetch older and newer post id and title
     select
       v1.post_title

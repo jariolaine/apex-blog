@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220927045333'
+,p_last_upd_yyyymmddhh24miss=>'20221118180151'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(40117793173805532)
@@ -37,36 +37,22 @@ wwv_flow_imp_page.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.post_title       as search_title',
-'  ,#OWNER#.blog_url.get_post(',
-'     p_post_id => v1.post_id',
-'  )                       as search_link',
-'  ,v1.post_desc           as search_desc',
-'  ,labels.posted_by       as label_01',
-'  ,v1.blogger_name        as value_01',
-'  ,labels.posted_on       as label_02',
-'  ,v1.published_on        as value_02',
-'  -- output label if there is tags',
-'  ,case when',
-'    apex_util.savekey_vc2( v1.tags_html ) is not null',
-'    then labels.tags',
-'  end                     as label_03',
-'  -- get tags from variable',
-'  ,apex_util.keyval_vc2   as value_03',
-'  ,null                   as label_04',
-'  ,null                   as value_04',
-'from #OWNER#.blog_v_posts v1',
-'cross join(',
-'  select',
-'     apex_lang.message( ''BLOG_TXT_TAGS'' )      as tags',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_BY'' ) as posted_by',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_ON'' ) as posted_on',
-'  from dual',
-') labels',
+'select ',
+'   v1.post_title    as search_title',
+'  ,v1.post_url      as search_link',
+'  ,v1.post_desc     as search_desc',
+'  ,v1.txt_posted_by as label_01',
+'  ,v1.blogger_name  as value_01',
+'  ,v1.txt_posted_on as label_02',
+'  ,v1.published_on  as value_02',
+'  ,v1.txt_tags      as label_03',
+'  ,v1.tags_html1    as value_03',
+'  ,null             as label_04',
+'  ,null             as value_04',
+'from #OWNER#.blog_v_posts_apex v1',
 'where 1 = 1',
 '  and v1.category_id = :P14_CATEGORY_ID',
-'order by v1.category_seq',
-'  ,v1.published_on desc'))
+'order by v1.published_on desc'))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P14_CATEGORY_ID'
 ,p_lazy_loading=>false

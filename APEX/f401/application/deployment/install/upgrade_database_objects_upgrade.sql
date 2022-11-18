@@ -1308,7 +1308,8 @@ wwv_flow_imp_shared.append_to_install_script(
 'join blog_link_groups t2',
 '  on t1.link_group_id = t2.id',
 'where 1 = 1',
-'and t1.is_active * t2.is_active > 0',
+'  and t1.is_active = 1',
+'  and t2.is_active = 1',
 'with read only',
 '/',
 '--------------------------------------------------------',
@@ -1502,30 +1503,22 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_POSTS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "CATEGORY_CHANGED_ON", "ARCHIVE_YEAR_MONTH'
-||'", "ARCHIVE_YEAR", "CATEGORY_SEQ", "COMMENTS_COUNT", "TAGS_HTML") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CAT'
+||'EGORY_SEQ", "RN", "POST_URL", "TAGS_HTML1", "TAGS_HTML2") AS',
 '  select',
-'   t1.id                  as post_id',
-'  ,t3.id                  as category_id',
-'  ,t2.id                  as blogger_id',
-'  ,t2.blogger_name        as blogger_name',
-'  ,t1.title               as post_title',
-'  ,t3.title               as category_title',
-'  ,t1.post_desc           as post_desc',
-'  ,t1.first_paragraph     as first_paragraph',
-'  ,t1.body_html           as body_html',
-'  ,t1.published_on        as published_on',
-'  ,t1.changed_on          as changed_on',
-'  ,t2.changed_on          as category_changed_on',
-'  ,t1.archive_year_month  as archive_year_month',
-'  ,t1.archive_year        as archive_year',
-'  ,t3.display_seq         as category_seq',
-'  ,(',
-'    select count( l1.id )',
-'    from blog_comments l1',
-'    where 1 = 1',
-'    and l1.is_active = 1',
-'    and l1.post_id  = t1.id'))
+'   t1.id                                                as post_id',
+'  ,t3.id                                                as category_id',
+'  ,t2.id                                                as blogger_id',
+'  ,t2.blogger_name                                      as blogger_name',
+'  ,t1.title                                             as post_title',
+'  ,t3.title                                             as category_title',
+'  ,t1.post_desc                                         as post_desc',
+'  ,t1.first_paragraph                                   as first_paragraph',
+'  ,t1.body_html                                         as body_html',
+'  ,t1.published_on                                      as published_on',
+'  ,greatest(',
+'     t1.published_on',
+'    ,t1.ch'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1543,8 +1536,19 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
-'  )                       as comments_count',
+'anged_on',
+'    ,t2.changed_on',
+'  )                                                     as changed_on',
+'  ,t1.archive_year_month                                as archive_year_month',
+'  ,t1.archive_year                                      as archive_year',
+'  ,t3.display_seq                                       as category_seq',
+'  -- for view BLOG_V_POSTS_LAST20',
+'  ,row_number() over ( order by t1.published_on desc )  as rn',
+'  -- generate post URL',
+'  ,blog_url.get_post(',
+'     p_post_id => t1.id',
+'  )                                                     as post_url',
+'  -- post tags link HTML 1',
 '  ,(',
 '    select',
 '      listagg(',
@@ -1564,7 +1568,38 @@ wwv_flow_imp_shared.append_to_install_script(
 '    from blog_v_post_tags lkp',
 '    where 1 = 1',
 '      and lkp.post_id = t1.id',
-'  )                       as tags_html',
+'  )                                                     as tags_html1',
+'  -- post tags link HTML 2',
+'  ,(',
+'    select',
+'      xmlserialize( content',
+'        xmlagg(',
+'          xmlelement( "a"',
+'            ,xmlattributes(',
+'              blog_url.get_tag(',
+'                p_tag_id => lkp.tag_id',
+'              )                                                                           as "href"',
+'              ,''t-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-md''  as "class"',
+'            )',
+'            ,xmlelement( "span"',
+'              ,xmlattributes(',
+'                ''t-Icon fa fa-tag''                                                        as "class"',
+'                ,''true''                                                                   as "aria-hidden"',
+'              )',
+'            )',
+'            ,xmlelement( "span"',
+'              ,xmlattributes(',
+'                ''t-Button-label''                                                          as "class"',
+'              )',
+'              ,lkp.tag',
+'            )',
+'          ) order by lkp.display_seq',
+'        )',
+'      )',
+'    from blog_v_post_tags lkp',
+'    where 1 = 1',
+'      and lkp.post_id = t1.id',
+'  )                                                     as tags_html2',
 'from blog_posts t1',
 'join blog_bloggers t2',
 '  on t1.blogger_id  = t2.id',
@@ -1574,23 +1609,20 @@ wwv_flow_imp_shared.append_to_install_script(
 '  and t1.is_active = 1',
 '  and t2.is_active = 1',
 '  and t3.is_active = 1',
-'  and t1.published_on <= localtimestamp',
+'  and t1.published_on <= current_timestamp',
 'with read only',
 '/',
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ARCHIVE_YEAR',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ARCHIVE_YEAR" ("ARCHIVE_YEAR", "POST_COUNT", "CHANGED_ON") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_ARCHIVE_YEAR" ("ARCHIVE_YEAR", "POST_COUNT", "CHANGED_ON", "ARCHIVE_URL") AS',
 'select',
 '   v1.archive_year      as archive_year',
 '  ,count( v1.post_id )  as post_count',
-'  ,max(',
-'    greatest(',
-'       v1.published_on',
-'      ,v1.changed_on',
-'      ,v1.category_changed_on',
-'    )',
-'  )                     as changed_on',
+'  ,max( v1.changed_on ) as changed_on',
+'  ,blog_url.get_archive(',
+'    p_archive_id => v1.archive_year',
+'  )                     as archive_url',
 'from blog_v_posts v1',
 'where 1 = 1',
 'group by v1.archive_year',
@@ -1599,19 +1631,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_CATEGORIES',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT", "CHANGED_ON") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT", "CHANGED_ON", "CATEGORY_URL") AS',
 '  select',
-'   v1.category_id     as category_id',
-'  ,v1.category_title  as category_title',
-'  ,v1.category_seq    as display_seq',
-'  ,count(v1.post_id)  as posts_count',
-'  ,max(',
-'    greatest(',
-'       v1.published_on',
-'      ,v1.changed_on',
-'      ,v1.category_changed_on',
-'    )',
-'  )                   as changed_on',
+'   v1.category_id       as category_id',
+'  ,v1.category_title    as category_title',
+'  ,v1.category_seq      as display_seq',
+'  ,count( v1.post_id )  as posts_count',
+'  ,max( v1.changed_on ) as changed_on',
+'  ,blog_url.get_category(',
+'    p_category_id => v1.category_id',
+'  )                     as category_url',
 'from blog_v_posts v1',
 'where 1 = 1',
 'group by v1.category_id',
@@ -1620,37 +1649,71 @@ wwv_flow_imp_shared.append_to_install_script(
 'with read only',
 '/',
 '--------------------------------------------------------',
+'--  DDL for View BLOG_V_POSTS_APEX',
+'--------------------------------------------------------',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_APEX" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR",'
+||' "CATEGORY_SEQ", "POST_URL", "TAGS_HTML1", "TAGS_HTML2", "TXT_POSTED_BY", "TXT_POSTED_ON", "TXT_CATEGORY", "TXT_TAGS", "TXT_READ_MORE") AS',
+'  select',
+'   v1.post_id             as post_id',
+'  ,v1.category_id         as category_id',
+'  ,v1.blogger_id          as blogger_id',
+'  ,v1.blogger_name        as blogger_name',
+'  ,v1.post_title          as post_title',
+'  ,v1.category_title      as category_title',
+'  ,v1.post_desc           as post_desc',
+'  ,v1.first_paragraph     as first_paragraph',
+'  ,v1.body_html           as body_html',
+'  ,v1.published_on        as published_on',
+'  ,v1.changed_on          as changed_on',
+'  ,v1.archive_year_month  as archive_year_month',
+'  ,v1.archive_year        as archive_year',
+'  ,v1.category_seq        as category_seq',
+'  ,v1.post_url            as post_url',
+'  ,v1.tags_html1          as tags_html1',
+'  ,v1.tags_html2          as tags_html2',
+'  -- text, label etc. for APEX reports',
+'  ,txt.posted_by          as txt_posted_by',
+'  ,txt.posted_on          as txt_posted_on',
+'  ,txt.category           as txt_category',
+'  ,case',
+'    when v1.tags_html1 is not null',
+'    then txt.tags',
+'  end                     as txt_tags',
+'  ,txt.read_more          as txt_read_more',
+'from blog_v_posts v1',
+'cross join(',
+'select',
+'   apex_lang.message( ''BLOG_TXT_POSTED_BY'' )  as posted_by',
+'  ,apex_lang.message( ''BLOG_TXT_POSTED_ON'' )  as posted_on',
+'  ,apex_lang.message( ''BLOG_TXT_CATEGORY'' )   as category',
+'  ,apex_lang.message( ''BLOG_TXT_TAGS'' )       as tags',
+'  ,apex_lang.message( ''BLOG_TXT_READ_MORE'' )  as read_more',
+'from dual',
+') txt',
+'with read only',
+'/',
+'--------------------------------------------------------',
 '--  DDL for View BLOG_V_POSTS_LAST20',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "PUBLISHED_ON", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE") AS',
-'  with qry as (',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "PUBLISHED_ON", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE", "POST_URL") AS',
 '  select',
-'     row_number() over ( order by t1.published_on desc ) as rn',
-'    ,t1.post_id',
-'    ,t1.post_title',
-'    ,t1.post_desc',
-'    ,t1.blogger_name',
-'    ,t1.category_title',
-'    ,t1.published_on',
-'  from blog_v_posts t1',
-')',
-'select',
-'   qry.rn             as display_seq',
-'  ,qry.post_id        as post_id',
-'  ,qry.published_on   as published_on',
-'  ,qry.blogger_name   as blogger_name',
-'  ,qry.post_title     as post_title',
-'  ,qry.post_desc      as post_desc',
-'  ,qry.category_title as category_title',
-'from qry',
+'   v1.rn              as display_seq',
+'  ,v1.post_id         as post_id',
+'  ,v1.published_on    as published_on',
+'  ,v1.blogger_name    as blogger_name',
+'  ,v1.post_title      as post_title',
+'  ,v1.post_desc       as post_desc',
+'  ,v1.category_title  as category_title',
+'  ,v1.post_url        as post_url',
+'from blog_v_posts v1',
 'where 1 = 1',
-'and qry.rn <= 20',
+'and v1.rn <= 20',
 'with read only',
 '/',
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_TAGS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "POSTS_COUNT", "CHANGED_ON") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "POSTS_COUNT", "CHANGED_ON", "TAG_URL") AS',
 '  select',
 '   t1.id                as tag_id',
 '  ,t1.tag               as tag',
@@ -1659,11 +1722,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '    greatest(',
 '       t1.changed_on',
 '      ,t2.changed_on',
-'      ,v1.published_on',
 '      ,v1.changed_on',
-'      ,v1.category_changed_on',
 '    )',
 '  )                     as changed_on',
+'  ,blog_url.get_tag(',
+'    p_tag_id => t1.id',
+'  )                     as tag_url',
 'from blog_tags t1',
 'join blog_post_tags t2 on t1.id = t2.tag_id',
 'join blog_v_posts   v1 on t2.post_id = v1.post_id',
@@ -2128,7 +2192,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- conver post id string to number',
 '    l_post_id := to_number( p_post_id );',
 '',
-'    -- fetch post title by post id',
+'    -- fetch post title and description by post id',
 '    -- also fetch older and newer post id and title',
 '    select',
 '      v1.post_title',
@@ -2444,7 +2508,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '          ,p0 => p_header_names(i)',
 '          ,p1 => p_header_values(i)',
 '        )',
-'      );',
+'    '))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'  );',
 '',
 '    end loop;',
 '',
@@ -2580,25 +2662,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      apex_page.get_url(',
 '         p_application => p_app_id',
 '        ,p_page        => ''SEARCH''',
-'     '))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   ,p_session     => p_session',
+'        ,p_session     => p_session',
 '--          ,p_clear_cache => ''RP''',
 '        ,p_items       => ''P0_SEARCH''',
 '        ,p_values      => p_value',
@@ -3514,7 +3578,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Private procedures and functions',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  function to_html_entities(',
+'  function to_html_entit'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ies(',
 '    p_number in number',
 '  ) return varchar2',
 '  as',
@@ -3623,25 +3705,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        p_message =>''<span class="z-question">%s&nbsp;&#%s&nbsp;%s&#%s</span>''',
 '        ,p0 => to_html_entities( l_num_1 )',
 '        ,p1 => ascii(''+'')',
-'        ,p2 => to_html_ent'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ities( l_num_2 )',
+'        ,p2 => to_html_entities( l_num_2 )',
 '        ,p3 => ascii(''?'')',
 '      )',
 '    ;',
@@ -4513,7 +4577,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_post_id   := to_number( p_post_id );',
 '',
 '    -- fetch application email address',
-'    l_app_email := blog_util.get_attribute_value(''G_APP_EMAIL'');',
+'    l_app_em'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ail := blog_util.get_attribute_value(''G_APP_EMAIL'');',
 '    -- if application email address is not set, exit from procedure',
 '    if l_app_email is null',
 '    then',
@@ -4623,25 +4705,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '          = 1',
 '        and v1.id = l_post_id',
 '        -- send notification if subscription is created less than months ago specified in settings',
-'        and t1.subscription_date > l_watch_end'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'        and t1.subscription_date > l_watch_end',
 '    ) loop',
 '',
 '      apex_debug.info(',
@@ -5476,7 +5540,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '        xmlattributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns"),',
 '        (',
 '          xmlagg(',
-'            xmlelement( "url"',
+'            xmlelemen'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'t( "url"',
 '              ,xmlelement( "loc",',
 '                blog_url.get_archive(',
 '                   p_archive_id => arc.archive_year',

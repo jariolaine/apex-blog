@@ -67,6 +67,7 @@ drop view blog_v_init_items;
 drop view blog_v_links;
 drop view blog_v_lov;
 drop view blog_v_posts;
+drop view blog_v_posts_apex;
 drop view blog_v_posts_last20;
 drop view blog_v_post_tags;
 drop view blog_v_tags;

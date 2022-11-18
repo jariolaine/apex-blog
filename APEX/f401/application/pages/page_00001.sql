@@ -27,7 +27,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221116163532'
+,p_last_upd_yyyymmddhh24miss=>'20221118155906'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6432040642894060)
@@ -43,23 +43,16 @@ wwv_flow_imp_page.create_report_region(
 'select',
 '   v1.post_id         as post_id',
 '  ,v1.category_id     as category_id',
+'  ,v1.published_on    as published_on',
+'  ,v1.published_on    as pubdate',
 '  ,v1.post_title      as post_title',
 '  ,v1.category_title  as category_title',
-'  ,v1.published_on    as published_on',
 '  ,v1.first_paragraph as body_html',
-'  ,txt.read_more      as read_more_link',
 '  ,null               as tags_html',
-'  ,v1.published_on    as pubdate',
-'  ,txt.posted_on      as txt_posted_on',
-'  ,txt.category       as txt_category',
-'from #OWNER#.blog_v_posts v1',
-'cross join(',
-'  select',
-'     apex_lang.message( ''BLOG_TXT_POSTED_ON'' )  as posted_on',
-'    ,apex_lang.message( ''BLOG_TXT_CATEGORY'' )   as category',
-'    ,apex_lang.message( ''BLOG_TXT_READ_MORE'' )  as read_more',
-'  from dual',
-') txt',
+'  ,v1.txt_read_more   as read_more_link',
+'  ,v1.txt_posted_on   as txt_posted_on',
+'  ,v1.txt_category    as txt_category',
+'from #OWNER#.blog_v_posts_apex v1',
 'where 1 = 1',
 'order by v1.published_on desc',
 ''))
@@ -97,10 +90,32 @@ wwv_flow_imp_page.create_report_columns(
 ,p_derived_column=>'N'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(3760957181646113)
+ p_id=>wwv_flow_imp.id(27993285417607138)
 ,p_query_column_id=>3
+,p_column_alias=>'PUBLISHED_ON'
+,p_column_display_sequence=>12
+,p_column_heading=>'Published On'
+,p_use_as_row_header=>'N'
+,p_column_format=>'&G_POST_TITLE_DATE_FORMAT.'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(11415615306329114)
+,p_query_column_id=>4
+,p_column_alias=>'PUBDATE'
+,p_column_display_sequence=>22
+,p_column_heading=>'Pubdate'
+,p_use_as_row_header=>'N'
+,p_column_format=>'YYYY-MM-DD'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(3760957181646113)
+,p_query_column_id=>5
 ,p_column_alias=>'POST_TITLE'
-,p_column_display_sequence=>3
+,p_column_display_sequence=>32
 ,p_column_heading=>'Post Title'
 ,p_use_as_row_header=>'N'
 ,p_column_link=>'f?p=&APP_ID.:POST:&SESSION.::&DEBUG.::P2_POST_ID:#POST_ID#'
@@ -111,9 +126,9 @@ wwv_flow_imp_page.create_report_columns(
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(3761060172646114)
-,p_query_column_id=>4
+,p_query_column_id=>6
 ,p_column_alias=>'CATEGORY_TITLE'
-,p_column_display_sequence=>4
+,p_column_display_sequence=>42
 ,p_column_heading=>'Category Title'
 ,p_use_as_row_header=>'Y'
 ,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.::P14_CATEGORY_ID:#CATEGORY_ID#'
@@ -122,31 +137,27 @@ wwv_flow_imp_page.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(27993285417607138)
-,p_query_column_id=>5
-,p_column_alias=>'PUBLISHED_ON'
-,p_column_display_sequence=>5
-,p_column_heading=>'Published On'
-,p_use_as_row_header=>'N'
-,p_column_format=>'&G_POST_TITLE_DATE_FORMAT.'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(27990833555607114)
-,p_query_column_id=>6
+,p_query_column_id=>7
 ,p_column_alias=>'BODY_HTML'
-,p_column_display_sequence=>6
-,p_use_as_row_header=>'N'
+,p_column_display_sequence=>52
 ,p_hidden_column=>'Y'
 ,p_display_as=>'WITHOUT_MODIFICATION'
 ,p_derived_column=>'N'
 );
 wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(20710906917895803)
+,p_query_column_id=>8
+,p_column_alias=>'TAGS_HTML'
+,p_column_display_sequence=>62
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(29063299064157121)
-,p_query_column_id=>7
+,p_query_column_id=>9
 ,p_column_alias=>'READ_MORE_LINK'
-,p_column_display_sequence=>7
+,p_column_display_sequence=>72
 ,p_column_heading=>'Read More Link'
 ,p_use_as_row_header=>'N'
 ,p_column_link=>'f?p=&APP_ID.:2:&SESSION.::&DEBUG.::P2_POST_ID:#POST_ID#'
@@ -155,31 +166,10 @@ wwv_flow_imp_page.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(20710906917895803)
-,p_query_column_id=>8
-,p_column_alias=>'TAGS_HTML'
-,p_column_display_sequence=>8
-,p_use_as_row_header=>'N'
-,p_hidden_column=>'Y'
-,p_derived_column=>'N'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(11415615306329114)
-,p_query_column_id=>9
-,p_column_alias=>'PUBDATE'
-,p_column_display_sequence=>18
-,p_column_heading=>'Pubdate'
-,p_use_as_row_header=>'N'
-,p_column_format=>'YYYY-MM-DD'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(11417084664329128)
 ,p_query_column_id=>10
 ,p_column_alias=>'TXT_POSTED_ON'
-,p_column_display_sequence=>28
-,p_use_as_row_header=>'N'
+,p_column_display_sequence=>82
 ,p_hidden_column=>'Y'
 ,p_derived_column=>'N'
 );
@@ -187,8 +177,7 @@ wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(11417134342329129)
 ,p_query_column_id=>11
 ,p_column_alias=>'TXT_CATEGORY'
-,p_column_display_sequence=>38
-,p_use_as_row_header=>'N'
+,p_column_display_sequence=>92
 ,p_hidden_column=>'Y'
 ,p_derived_column=>'N'
 );

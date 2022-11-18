@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_TAGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "POSTS_COUNT", "CHANGED_ON") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "POSTS_COUNT", "CHANGED_ON", "TAG_URL") AS
   select
    t1.id                as tag_id
   ,t1.tag               as tag
@@ -10,11 +10,12 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "POSTS_COUNT", "CHA
     greatest(
        t1.changed_on
       ,t2.changed_on
-      ,v1.published_on
       ,v1.changed_on
-      ,v1.category_changed_on
     )
   )                     as changed_on
+  ,blog_url.get_tag(
+    p_tag_id => t1.id
+  )                     as tag_url
 from blog_tags t1
 join blog_post_tags t2 on t1.id = t2.tag_id
 join blog_v_posts   v1 on t2.post_id = v1.post_id

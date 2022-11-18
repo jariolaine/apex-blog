@@ -15,6 +15,7 @@ from blog_links t1
 join blog_link_groups t2
   on t1.link_group_id = t2.id
 where 1 = 1
-and t1.is_active * t2.is_active > 0
+  and t1.is_active = 1
+  and t2.is_active = 1
 with read only
 /

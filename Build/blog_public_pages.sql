@@ -156,7 +156,7 @@ wwv_flow_imp.create_flow(
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_tokenize_row_search=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221117163023'
+,p_last_upd_yyyymmddhh24miss=>'20221118184759'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>410
 ,p_print_server_type=>'INSTANCE'
@@ -252,36 +252,33 @@ wwv_flow_imp_shared.create_list(
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   1                                        as link_level',
-'  ,v1.category_title                        as link_text',
-'  ,#OWNER#.blog_url.get_category(',
-'     p_category_id => v1.category_id',
-'   )                                        as target_url',
-'   -- list is cached',
-'   -- so we can''t use is_current attribute',
-'  ,''NO''                                     as is_current',
-'  ,null                                     as image',
-'  ,null                                     as image_attribute',
-'  ,null                                     as image_alt_attribute',
-'  ,case d.post_count',
+'   1                  as link_level',
+'  ,v1.category_title  as link_text',
+'  ,v1.category_url    as target_url',
+'   -- list is cached, we can''t use is_current attribute',
+'  ,''NO''               as is_current',
+'  ,null               as image',
+'  ,null               as image_attribute',
+'  ,null               as image_alt_attribute',
+'  ,case feat.show_count',
 '    when ''INCLUDE'' then v1.posts_count',
-'  end                                       as attribute1',
+'  end                 as attribute1',
 '   -- add category id to data attribute',
 '   -- we can use it then in dynamic action',
 '   -- to set class for current list item',
 '  ,''data-blog-content-id="''',
 '   || v1.category_id',
-'   || ''"''                                   as attribute2',
-'   ,''z-linkList''                            as attribute3',
+'   || ''"''             as attribute2',
+'   ,''z-linkList''      as attribute3',
 'from #OWNER#.blog_v_categories v1',
 'cross join(',
 '  select',
 '    apex_util.get_build_option_status(',
 '       p_application_id     => :APP_ID',
 '      ,p_build_option_name  => ''BLOG_FEATURE_CATEGORY_POST_COUNT''',
-'    ) as post_count',
+'    ) as show_count',
 '  from dual',
-') d',
+') feat',
 'where 1 = 1',
 'order by v1.display_seq',
 ''))
@@ -298,23 +295,21 @@ wwv_flow_imp_shared.create_list(
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   1                          as link_level',
-'  ,v1.post_title              as link_text',
-'  ,#OWNER#.blog_url.get_post(',
-'    p_post_id => v1.post_id',
-'  )                           as target_url',
-'-- list is cached so we can''t use is_current attribute',
-'  ,''NO''                       as is_current',
-'  ,null                       as image',
-'  ,null                       as image_attribute',
-'  ,null                       as image_alt_attribute',
-'  ,null                       as attribute1',
+'   1              as link_level',
+'  ,v1.post_title  as link_text',
+'  ,v1.post_url    as target_url',
+'-- list is cached, we can''t use is_current attribute',
+'  ,''NO''           as is_current',
+'  ,null           as image',
+'  ,null           as image_attribute',
+'  ,null           as image_alt_attribute',
+'  ,null           as attribute1',
 '   -- add post id to data attribute',
 '   -- we can use it then in dynamic action to set class for current list item',
 '  ,''data-blog-content-id="''',
 '    || v1.post_id',
-'    || ''"''                    as attribute2',
-'  ,''z-linkList''               as attribute3',
+'    || ''"''        as attribute2',
+'  ,''z-linkList''   as attribute3',
 'from #OWNER#.blog_v_posts_last20 v1',
 'where 1 = 1',
 '-- Use function to get max row count. Region is cached',
@@ -336,33 +331,31 @@ wwv_flow_imp_shared.create_list(
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   1                                    as link_level',
-'  ,v1.tag                               as link_text',
-'  ,#OWNER#.blog_url.get_tag(',
-'     p_tag_id => v1.tag_id',
-'   )                                    as target_url',
-'  ,''NO''                                 as is_current',
-'  ,null                                 as image',
-'  ,null                                 as image_attribute',
-'  ,null                                 as image_alt_attribute',
-'  ,case d.post_count',
+'   1            as link_level',
+'  ,v1.tag       as link_text',
+'  ,v1.tag_url   as target_url',
+'  ,''NO''         as is_current',
+'  ,null         as image',
+'  ,null         as image_attribute',
+'  ,null         as image_alt_attribute',
+'  ,case feat.show_count',
 '    when ''INCLUDE'' then v1.posts_count',
-'  end                                   as attribute1',
+'  end           as attribute1',
 '  ,width_bucket(',
 '     v1.posts_count',
 '    ,min( v1.posts_count ) over()',
 '    ,max( v1.posts_count ) over() + 1',
 '    ,8',
-'  )                                     as attribute2',
+'  )             as attribute2',
 'from #OWNER#.blog_v_tags v1',
 'cross join(',
 '  select',
 '    apex_util.get_build_option_status(',
 '       p_application_id     => :APP_ID',
 '      ,p_build_option_name  => ''BLOG_FEATURE_TAG_CLOUD_POST_COUNT''',
-'    ) as post_count',
+'    ) as show_count',
 '  from dual',
-') d',
+') feat',
 'where 1 = 1',
 'order by v1.tag'))
 ,p_list_status=>'PUBLIC'
@@ -378,36 +371,33 @@ wwv_flow_imp_shared.create_list(
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   1                                      as link_level',
-'  ,v1.archive_year                        as link_text',
-'  ,#OWNER#.blog_url.get_archive(',
-'     p_archive_id => v1.archive_year',
-'   )                                      as target_url',
-'-- list is cached',
-'-- we can''t use is_current attribute',
-'  ,''NO''                                   as is_current',
-'  ,null                                   as image',
-'  ,null                                   as image_attribute',
-'  ,null                                   as image_alt_attribute',
-'  ,case when d.post_count = ''INCLUDE''',
-'    then v1.post_count',
-'  end                                     as attribute1',
+'   1                as link_level',
+'  ,v1.archive_year  as link_text',
+'  ,v1.archive_url   as target_url',
+'-- list is cached, we can''t use is_current attribute',
+'  ,''NO''             as is_current',
+'  ,null             as image',
+'  ,null             as image_attribute',
+'  ,null             as image_alt_attribute',
+'  ,case feat.show_count',
+'    when ''INCLUDE'' then v1.post_count',
+'  end               as attribute1',
 '-- add archive id to data attribute',
 '-- we can use it then in dynamic action',
 '-- set class for current list item',
 '  ,''data-blog-content-id="''',
 '    || v1.archive_year',
-'    || ''"''                                as attribute2',
-'  ,''z-linkList''                           as attribute3',
+'    || ''"''          as attribute2',
+'  ,''z-linkList''     as attribute3',
 'from #OWNER#.blog_v_archive_year v1',
 'cross join(',
 '  select',
 '    apex_util.get_build_option_status(',
 '       p_application_id     => :APP_ID',
 '      ,p_build_option_name  => ''BLOG_FEATURE_ARCHIVE_POST_COUNT''',
-'    ) as post_count',
+'    ) as show_count',
 '  from dual',
-') d',
+') feat',
 'order by v1.archive_year desc',
 ''))
 ,p_list_status=>'PUBLIC'
@@ -16262,7 +16252,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221116163532'
+,p_last_upd_yyyymmddhh24miss=>'20221118155906'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6432040642894060)
@@ -16278,23 +16268,16 @@ wwv_flow_imp_page.create_report_region(
 'select',
 '   v1.post_id         as post_id',
 '  ,v1.category_id     as category_id',
+'  ,v1.published_on    as published_on',
+'  ,v1.published_on    as pubdate',
 '  ,v1.post_title      as post_title',
 '  ,v1.category_title  as category_title',
-'  ,v1.published_on    as published_on',
 '  ,v1.first_paragraph as body_html',
-'  ,txt.read_more      as read_more_link',
 '  ,null               as tags_html',
-'  ,v1.published_on    as pubdate',
-'  ,txt.posted_on      as txt_posted_on',
-'  ,txt.category       as txt_category',
-'from #OWNER#.blog_v_posts v1',
-'cross join(',
-'  select',
-'     apex_lang.message( ''BLOG_TXT_POSTED_ON'' )  as posted_on',
-'    ,apex_lang.message( ''BLOG_TXT_CATEGORY'' )   as category',
-'    ,apex_lang.message( ''BLOG_TXT_READ_MORE'' )  as read_more',
-'  from dual',
-') txt',
+'  ,v1.txt_read_more   as read_more_link',
+'  ,v1.txt_posted_on   as txt_posted_on',
+'  ,v1.txt_category    as txt_category',
+'from #OWNER#.blog_v_posts_apex v1',
 'where 1 = 1',
 'order by v1.published_on desc',
 ''))
@@ -16332,10 +16315,32 @@ wwv_flow_imp_page.create_report_columns(
 ,p_derived_column=>'N'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(3760957181646113)
+ p_id=>wwv_flow_imp.id(27993285417607138)
 ,p_query_column_id=>3
+,p_column_alias=>'PUBLISHED_ON'
+,p_column_display_sequence=>12
+,p_column_heading=>'Published On'
+,p_use_as_row_header=>'N'
+,p_column_format=>'&G_POST_TITLE_DATE_FORMAT.'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(11415615306329114)
+,p_query_column_id=>4
+,p_column_alias=>'PUBDATE'
+,p_column_display_sequence=>22
+,p_column_heading=>'Pubdate'
+,p_use_as_row_header=>'N'
+,p_column_format=>'YYYY-MM-DD'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(3760957181646113)
+,p_query_column_id=>5
 ,p_column_alias=>'POST_TITLE'
-,p_column_display_sequence=>3
+,p_column_display_sequence=>32
 ,p_column_heading=>'Post Title'
 ,p_use_as_row_header=>'N'
 ,p_column_link=>'f?p=&APP_ID.:POST:&SESSION.::&DEBUG.::P2_POST_ID:#POST_ID#'
@@ -16346,9 +16351,9 @@ wwv_flow_imp_page.create_report_columns(
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(3761060172646114)
-,p_query_column_id=>4
+,p_query_column_id=>6
 ,p_column_alias=>'CATEGORY_TITLE'
-,p_column_display_sequence=>4
+,p_column_display_sequence=>42
 ,p_column_heading=>'Category Title'
 ,p_use_as_row_header=>'Y'
 ,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.::P14_CATEGORY_ID:#CATEGORY_ID#'
@@ -16357,31 +16362,27 @@ wwv_flow_imp_page.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(27993285417607138)
-,p_query_column_id=>5
-,p_column_alias=>'PUBLISHED_ON'
-,p_column_display_sequence=>5
-,p_column_heading=>'Published On'
-,p_use_as_row_header=>'N'
-,p_column_format=>'&G_POST_TITLE_DATE_FORMAT.'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(27990833555607114)
-,p_query_column_id=>6
+,p_query_column_id=>7
 ,p_column_alias=>'BODY_HTML'
-,p_column_display_sequence=>6
-,p_use_as_row_header=>'N'
+,p_column_display_sequence=>52
 ,p_hidden_column=>'Y'
 ,p_display_as=>'WITHOUT_MODIFICATION'
 ,p_derived_column=>'N'
 );
 wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(20710906917895803)
+,p_query_column_id=>8
+,p_column_alias=>'TAGS_HTML'
+,p_column_display_sequence=>62
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(29063299064157121)
-,p_query_column_id=>7
+,p_query_column_id=>9
 ,p_column_alias=>'READ_MORE_LINK'
-,p_column_display_sequence=>7
+,p_column_display_sequence=>72
 ,p_column_heading=>'Read More Link'
 ,p_use_as_row_header=>'N'
 ,p_column_link=>'f?p=&APP_ID.:2:&SESSION.::&DEBUG.::P2_POST_ID:#POST_ID#'
@@ -16390,31 +16391,10 @@ wwv_flow_imp_page.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(20710906917895803)
-,p_query_column_id=>8
-,p_column_alias=>'TAGS_HTML'
-,p_column_display_sequence=>8
-,p_use_as_row_header=>'N'
-,p_hidden_column=>'Y'
-,p_derived_column=>'N'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(11415615306329114)
-,p_query_column_id=>9
-,p_column_alias=>'PUBDATE'
-,p_column_display_sequence=>18
-,p_column_heading=>'Pubdate'
-,p_use_as_row_header=>'N'
-,p_column_format=>'YYYY-MM-DD'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(11417084664329128)
 ,p_query_column_id=>10
 ,p_column_alias=>'TXT_POSTED_ON'
-,p_column_display_sequence=>28
-,p_use_as_row_header=>'N'
+,p_column_display_sequence=>82
 ,p_hidden_column=>'Y'
 ,p_derived_column=>'N'
 );
@@ -16422,8 +16402,7 @@ wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(11417134342329129)
 ,p_query_column_id=>11
 ,p_column_alias=>'TXT_CATEGORY'
-,p_column_display_sequence=>38
-,p_use_as_row_header=>'N'
+,p_column_display_sequence=>92
 ,p_hidden_column=>'Y'
 ,p_derived_column=>'N'
 );
@@ -16489,7 +16468,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221116170427'
+,p_last_upd_yyyymmddhh24miss=>'20221118155933'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6915627356677149)
@@ -16653,58 +16632,19 @@ wwv_flow_imp_page.create_report_region(
 'select',
 '   v1.post_id         as post_id',
 '  ,v1.category_id     as category_id',
+'  ,v1.published_on    as published_on',
+'  ,v1.published_on    as pubdate',
 '  ,v1.post_title      as post_title',
 '  ,v1.category_title  as category_title',
-'  ,v1.published_on    as published_on',
 '  ,v1.body_html       as body_html',
+'  ,v1.tags_html2      as tags_html',
 '  ,null               as read_more_link',
-'  -- fetch tags',
-'  ,(',
-'    select',
-'      xmlserialize( content',
-'        xmlagg(',
-'          xmlelement( "a"',
-'            ,xmlattributes(',
-'              #OWNER#.blog_url.get_tag(',
-'                p_tag_id => lkp.tag_id',
-'                ,p_app_id => :APP_ID',
-'              ) as "href"',
-'              ,''t-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-md'' as "class"',
-'            )',
-'            ,xmlelement( "span"',
-'              ,xmlattributes(',
-'                ''t-Icon fa fa-tag''  as "class"',
-'                ,''true''             as "aria-hidden"',
-'              )',
-'            )',
-'            ,xmlelement( "span"',
-'              ,xmlattributes(',
-'                ''t-Button-label''    as "class"',
-'              )',
-'              ,lkp.tag',
-'            )',
-'          ) order by lkp.display_seq',
-'        )',
-'      ) as tags_html',
-'    from #OWNER#.blog_v_post_tags lkp',
-'    where 1 = 1',
-'      and lkp.post_id = v1.post_id',
-'  )                   as tags_html',
-'  ,v1.published_on    as pubdate',
-'  ,txt.posted_on      as txt_posted_on',
-'  ,txt.category       as txt_category',
-'  ,txt.tags           as txt_tags',
-'from #OWNER#.blog_v_posts v1',
-'cross join(',
-'  select',
-'     apex_lang.message( ''BLOG_TXT_POSTED_ON'' )  as posted_on',
-'    ,apex_lang.message( ''BLOG_TXT_CATEGORY'' )   as category',
-'    ,apex_lang.message( ''BLOG_TXT_TAGS'' )       as tags',
-'  from dual',
-') txt',
+'  ,v1.txt_posted_on   as txt_posted_on',
+'  ,v1.txt_category    as txt_category',
+'  ,v1.txt_tags        as txt_tags',
+'from #OWNER#.blog_v_posts_apex v1',
 'where 1 = 1',
-'and v1.post_id = :P2_POST_ID',
-'--order by v1.published_on'))
+'and v1.post_id = :P2_POST_ID'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_translate_title=>'N'
 ,p_lazy_loading=>false
@@ -16738,19 +16678,40 @@ wwv_flow_imp_page.create_report_columns(
 ,p_derived_column=>'N'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(3762641236646130)
+ p_id=>wwv_flow_imp.id(27993118245607137)
 ,p_query_column_id=>3
-,p_column_alias=>'POST_TITLE'
-,p_column_display_sequence=>3
+,p_column_alias=>'PUBLISHED_ON'
+,p_column_display_sequence=>12
+,p_column_heading=>'Published On'
 ,p_use_as_row_header=>'N'
+,p_column_format=>'&G_POST_TITLE_DATE_FORMAT.'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(11415791287329115)
+,p_query_column_id=>4
+,p_column_alias=>'PUBDATE'
+,p_column_display_sequence=>22
+,p_column_heading=>'Pubdate'
+,p_use_as_row_header=>'N'
+,p_column_format=>'YYYY-MM-DD'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(3762641236646130)
+,p_query_column_id=>5
+,p_column_alias=>'POST_TITLE'
+,p_column_display_sequence=>32
 ,p_hidden_column=>'Y'
 ,p_derived_column=>'N'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(3762796274646131)
-,p_query_column_id=>4
+,p_query_column_id=>6
 ,p_column_alias=>'CATEGORY_TITLE'
-,p_column_display_sequence=>4
+,p_column_display_sequence=>42
 ,p_column_heading=>'Category Title'
 ,p_use_as_row_header=>'N'
 ,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.::P14_CATEGORY_ID:#CATEGORY_ID#'
@@ -16759,54 +16720,30 @@ wwv_flow_imp_page.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(27993118245607137)
-,p_query_column_id=>5
-,p_column_alias=>'PUBLISHED_ON'
-,p_column_display_sequence=>5
-,p_column_heading=>'Published On'
-,p_use_as_row_header=>'N'
-,p_column_format=>'&G_POST_TITLE_DATE_FORMAT.'
+ p_id=>wwv_flow_imp.id(27990621426607112)
+,p_query_column_id=>7
+,p_column_alias=>'BODY_HTML'
+,p_column_display_sequence=>62
+,p_hidden_column=>'Y'
+,p_display_as=>'WITHOUT_MODIFICATION'
 ,p_derived_column=>'N'
-,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(27990621426607112)
-,p_query_column_id=>6
-,p_column_alias=>'BODY_HTML'
-,p_column_display_sequence=>6
-,p_use_as_row_header=>'N'
+ p_id=>wwv_flow_imp.id(27990703148607113)
+,p_query_column_id=>8
+,p_column_alias=>'TAGS_HTML'
+,p_column_display_sequence=>72
 ,p_hidden_column=>'Y'
 ,p_display_as=>'WITHOUT_MODIFICATION'
 ,p_derived_column=>'N'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(29063187084157120)
-,p_query_column_id=>7
+,p_query_column_id=>9
 ,p_column_alias=>'READ_MORE_LINK'
-,p_column_display_sequence=>8
+,p_column_display_sequence=>82
 ,p_column_heading=>'Read More Link'
 ,p_use_as_row_header=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(27990703148607113)
-,p_query_column_id=>8
-,p_column_alias=>'TAGS_HTML'
-,p_column_display_sequence=>7
-,p_use_as_row_header=>'N'
-,p_hidden_column=>'Y'
-,p_display_as=>'WITHOUT_MODIFICATION'
-,p_derived_column=>'N'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(11415791287329115)
-,p_query_column_id=>9
-,p_column_alias=>'PUBDATE'
-,p_column_display_sequence=>18
-,p_column_heading=>'Pubdate'
-,p_use_as_row_header=>'N'
-,p_column_format=>'YYYY-MM-DD'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -16814,7 +16751,7 @@ wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(11417381405329131)
 ,p_query_column_id=>10
 ,p_column_alias=>'TXT_POSTED_ON'
-,p_column_display_sequence=>28
+,p_column_display_sequence=>92
 ,p_column_heading=>'Txt Posted On'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
@@ -16825,7 +16762,7 @@ wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(11417417719329132)
 ,p_query_column_id=>11
 ,p_column_alias=>'TXT_CATEGORY'
-,p_column_display_sequence=>38
+,p_column_display_sequence=>102
 ,p_column_heading=>'Txt Category'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
@@ -16836,7 +16773,7 @@ wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(11417545272329133)
 ,p_query_column_id=>12
 ,p_column_alias=>'TXT_TAGS'
-,p_column_display_sequence=>48
+,p_column_display_sequence=>112
 ,p_column_heading=>'Txt Tags'
 ,p_use_as_row_header=>'N'
 ,p_disable_sort_column=>'N'
@@ -17157,7 +17094,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220801121424'
+,p_last_upd_yyyymmddhh24miss=>'20221118180405'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6979825819516521)
@@ -17170,42 +17107,30 @@ wwv_flow_imp_page.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.category_id     as category_id',
-'  ,v1.post_title          as search_title',
-'  -- fetch URL for post',
-'  ,#OWNER#.blog_url.get_post(',
-'     p_post_id => v1.post_id',
-'   )                      as search_link',
-'  ,v1.post_desc           as search_desc',
-'  ,labels.category        as label_01',
-'  ,v1.category_title      as value_01',
-'  ,labels.posted_by       as label_02',
-'  ,v1.blogger_name        as value_02',
-'  ,labels.posted_on       as label_03',
-'  ,v1.published_on        as value_03',
-'  -- output label if there is tags',
-'  ,case when',
-'    apex_util.savekey_vc2( v1.tags_html ) is not null',
-'    then labels.tags',
-'  end                     as label_04',
-'  -- get tags from variable',
-'  ,apex_util.keyval_vc2   as value_04',
-'from #OWNER#.blog_v_posts v1',
+'select',
+'   v1.category_id     as category_id',
+'  ,v1.post_title      as search_title',
+'  ,v1.post_url        as search_link',
+'  ,v1.post_desc       as search_desc',
+'  ,v1.txt_category    as label_01',
+'  ,v1.category_title  as value_01',
+'  ,v1.txt_posted_by   as label_02',
+'  ,v1.blogger_name    as value_02',
+'  ,v1.txt_posted_on   as label_03',
+'  ,v1.published_on    as value_03',
+'  ,v1.txt_tags        as label_04',
+'  ,tags_html1         as value_04',
+'from #OWNER#.blog_v_posts_apex v1',
 'join #OWNER#.blog_post_uds t1',
 '  on v1.post_id = t1.post_id',
-'-- get APEX messages for labels',
 'cross join(',
 '  select',
-'     apex_lang.message( ''BLOG_TXT_TAGS'' )           as tags',
-'    ,apex_lang.message( ''BLOG_TXT_CATEGORY'' )       as category',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_BY'' )      as posted_by',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_ON'' )      as posted_on',
-'    ,#OWNER#.blog_ctx.get_post_search( :P0_SEARCH ) as search_string',
+'    #OWNER#.blog_ctx.get_post_search( :P0_SEARCH ) as search_string',
 '  from dual',
-') labels',
+') text_search',
 'where 1 = 1',
-'  and labels.search_string is not null',
-'  and contains( t1.dummy, labels.search_string, 1 ) > 0',
+'  and text_search.search_string is not null',
+'  and contains( t1.dummy, text_search.search_string, 1 ) > 0',
 'order by score(1) desc',
 '  ,v1.published_on desc'))
 ,p_ajax_enabled=>'Y'
@@ -17385,7 +17310,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221116170637'
+,p_last_upd_yyyymmddhh24miss=>'20221118180325'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(13706719753736206)
@@ -17398,29 +17323,20 @@ wwv_flow_imp_page.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.category_id   as category_id',
-'  ,v1.post_title        as search_title',
-'  ,#OWNER#.blog_url.get_post(',
-'     p_post_id => v1.post_id',
-'   )                    as search_link',
-'  ,v1.post_desc         as search_desc',
-'  ,labels.category      as label_01',
-'  ,v1.category_title    as value_01',
-'  ,labels.posted_by     as label_02',
-'  ,v1.blogger_name      as value_02',
-'  ,labels.posted_on     as label_03',
-'  ,v1.published_on      as value_03',
-'  ,labels.tags          as label_04',
-'  ,v1.tags_html         as value_04',
-'from #OWNER#.blog_v_posts v1',
-'cross join(',
-'  select',
-'     apex_lang.message( ''BLOG_TXT_TAGS'' )       as tags',
-'    ,apex_lang.message( ''BLOG_TXT_CATEGORY'' )   as category',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_BY'' )  as posted_by',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_ON'' )  as posted_on',
-'  from dual',
-') labels',
+'select ',
+'   v1.category_id     as category_id',
+'  ,v1.post_title      as search_title',
+'  ,v1.post_url        as search_link',
+'  ,v1.post_desc       as search_desc',
+'  ,v1.txt_category    as label_01',
+'  ,v1.category_title  as value_01',
+'  ,v1.txt_posted_by   as label_02',
+'  ,v1.blogger_name    as value_02',
+'  ,v1.txt_posted_on   as label_03',
+'  ,v1.published_on    as value_03',
+'  ,v1.txt_tags        as label_04',
+'  ,v1.tags_html1      as value_04',
+'from #OWNER#.blog_v_posts_apex v1',
 'where 1 = 1',
 'and exists(',
 '  select 1',
@@ -17645,7 +17561,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221117163023'
+,p_last_upd_yyyymmddhh24miss=>'20221118062822'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(25312381302124218)
@@ -17676,13 +17592,14 @@ wwv_flow_imp_page.create_report_region(
 'select v1.link_title      as list_title',
 '  ,v1.link_desc           as list_text',
 '  ,null                   as list_class',
-'  ,''fa fa-external-link''  as icon_class',
+'  ,null                   as icon_class',
 '  ,null                   as icon_color_class',
 '  ,v1.link_url            as link',
 '  ,null                   as link_attr',
 '  ,null                   as link_class',
 '  ,v1.group_title         as list_badge',
 'from #OWNER#.blog_v_links v1',
+'where 1 = 1',
 'order by v1.group_display_seq',
 '  ,v1.display_seq'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
@@ -17736,6 +17653,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>4
 ,p_column_heading=>'Icon Class'
 ,p_use_as_row_header=>'N'
+,p_column_html_expression=>'fa fa-external-link'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -17868,7 +17786,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221111114305'
+,p_last_upd_yyyymmddhh24miss=>'20221118062925'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(25312085512124215)
@@ -17917,10 +17835,10 @@ wwv_flow_imp_page.create_report_region(
 '  ,v1.file_desc      as list_text',
 '  ,v1.file_size      as list_badge',
 '  ,null              as list_class',
-'  ,''fa fa-download''  as icon_class',
+'  ,null              as icon_class',
 '  ,null              as icon_color_class',
 '  ,apex_page.get_url(',
-'    p_page      => 1003',
+'     p_page      => 1003',
 '    ,p_session  => null',
 '    ,p_request  => ''application_process=download''',
 '    ,p_items    => ''P11_FILE_NAME''',
@@ -17930,7 +17848,6 @@ wwv_flow_imp_page.create_report_region(
 '  ,null              as link_class',
 'from #OWNER#.blog_v_files v1',
 'where 1 = 1',
-'and v1.file_name = :P11_FILE_NAME or :P11_FILE_NAME is null',
 'order by v1.file_name'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
@@ -18002,6 +17919,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>60
 ,p_column_heading=>'Icon Class'
 ,p_use_as_row_header=>'N'
+,p_column_html_expression=>'fa fa-download'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -18157,7 +18075,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220927045333'
+,p_last_upd_yyyymmddhh24miss=>'20221118180151'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(40117793173805532)
@@ -18170,36 +18088,22 @@ wwv_flow_imp_page.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.post_title       as search_title',
-'  ,#OWNER#.blog_url.get_post(',
-'     p_post_id => v1.post_id',
-'  )                       as search_link',
-'  ,v1.post_desc           as search_desc',
-'  ,labels.posted_by       as label_01',
-'  ,v1.blogger_name        as value_01',
-'  ,labels.posted_on       as label_02',
-'  ,v1.published_on        as value_02',
-'  -- output label if there is tags',
-'  ,case when',
-'    apex_util.savekey_vc2( v1.tags_html ) is not null',
-'    then labels.tags',
-'  end                     as label_03',
-'  -- get tags from variable',
-'  ,apex_util.keyval_vc2   as value_03',
-'  ,null                   as label_04',
-'  ,null                   as value_04',
-'from #OWNER#.blog_v_posts v1',
-'cross join(',
-'  select',
-'     apex_lang.message( ''BLOG_TXT_TAGS'' )      as tags',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_BY'' ) as posted_by',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_ON'' ) as posted_on',
-'  from dual',
-') labels',
+'select ',
+'   v1.post_title    as search_title',
+'  ,v1.post_url      as search_link',
+'  ,v1.post_desc     as search_desc',
+'  ,v1.txt_posted_by as label_01',
+'  ,v1.blogger_name  as value_01',
+'  ,v1.txt_posted_on as label_02',
+'  ,v1.published_on  as value_02',
+'  ,v1.txt_tags      as label_03',
+'  ,v1.tags_html1    as value_03',
+'  ,null             as label_04',
+'  ,null             as value_04',
+'from #OWNER#.blog_v_posts_apex v1',
 'where 1 = 1',
 '  and v1.category_id = :P14_CATEGORY_ID',
-'order by v1.category_seq',
-'  ,v1.published_on desc'))
+'order by v1.published_on desc'))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P14_CATEGORY_ID'
 ,p_lazy_loading=>false
@@ -18426,7 +18330,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220927045346'
+,p_last_upd_yyyymmddhh24miss=>'20221118180246'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(58686289966142463)
@@ -18439,36 +18343,22 @@ wwv_flow_imp_page.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.category_id     as category_id',
-'  ,v1.post_title          as search_title',
-'  ,#OWNER#.blog_url.get_post(',
-'     p_post_id => v1.post_id',
-'   )                      as search_link',
-'  ,v1.post_desc           as search_desc',
-'  ,labels.category        as label_01',
-'  ,v1.category_title      as value_01',
-'  ,labels.posted_by       as label_02',
-'  ,v1.blogger_name        as value_02',
-'  ,labels.posted_on       as label_03',
-'  ,v1.published_on        as value_03',
-'  -- output label if there is tags',
-'  ,case when',
-'    apex_util.savekey_vc2( v1.tags_html ) is not null',
-'    then labels.tags',
-'  end                     as label_04',
-'  -- get tags from variable',
-'  ,apex_util.keyval_vc2   as value_04',
-'from #OWNER#.blog_v_posts v1',
-'cross join(',
-'  select',
-'     apex_lang.message( ''BLOG_TXT_TAGS'' )       as tags',
-'    ,apex_lang.message( ''BLOG_TXT_CATEGORY'' )   as category',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_BY'' )  as posted_by',
-'    ,apex_lang.message( ''BLOG_TXT_POSTED_ON'' )  as posted_on',
-'  from dual',
-') labels',
+'select ',
+'   v1.category_id     as category_id',
+'  ,v1.post_title      as search_title',
+'  ,v1.post_url        as search_link',
+'  ,v1.post_desc       as search_desc',
+'  ,v1.txt_category    as label_01',
+'  ,v1.category_title  as value_01',
+'  ,v1.txt_posted_by   as label_02',
+'  ,v1.blogger_name    as value_02',
+'  ,v1.txt_posted_on   as label_03',
+'  ,v1.published_on    as value_03',
+'  ,v1.txt_tags        as label_04',
+'  ,v1.tags_html1      as value_04',
+'from #OWNER#.blog_v_posts_apex v1',
 'where 1 = 1',
-'and v1.archive_year = :P15_ARCHIVE_ID',
+'  and v1.archive_year = :P15_ARCHIVE_ID',
 'order by v1.published_on desc'))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P15_ARCHIVE_ID'
@@ -19638,7 +19528,7 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 22.2.0.20221117'');',
+'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 22.2.0.20221118'');',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''20'',''0'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,blog_util.int_to_vc2(apex_application_install.get_applica'
 ||'tion_id));',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''110'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,''My Blog'');',
@@ -21564,7 +21454,8 @@ wwv_flow_imp_shared.append_to_install_script(
 'join blog_link_groups t2',
 '  on t1.link_group_id = t2.id',
 'where 1 = 1',
-'and t1.is_active * t2.is_active > 0',
+'  and t1.is_active = 1',
+'  and t2.is_active = 1',
 'with read only',
 '/',
 '--------------------------------------------------------',
@@ -21758,30 +21649,22 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_POSTS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "CATEGORY_CHANGED_ON", "ARCHIVE_YEAR_MONTH'
-||'", "ARCHIVE_YEAR", "CATEGORY_SEQ", "COMMENTS_COUNT", "TAGS_HTML") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CAT'
+||'EGORY_SEQ", "RN", "POST_URL", "TAGS_HTML1", "TAGS_HTML2") AS',
 '  select',
-'   t1.id                  as post_id',
-'  ,t3.id                  as category_id',
-'  ,t2.id                  as blogger_id',
-'  ,t2.blogger_name        as blogger_name',
-'  ,t1.title               as post_title',
-'  ,t3.title               as category_title',
-'  ,t1.post_desc           as post_desc',
-'  ,t1.first_paragraph     as first_paragraph',
-'  ,t1.body_html           as body_html',
-'  ,t1.published_on        as published_on',
-'  ,t1.changed_on          as changed_on',
-'  ,t2.changed_on          as category_changed_on',
-'  ,t1.archive_year_month  as archive_year_month',
-'  ,t1.archive_year        as archive_year',
-'  ,t3.display_seq         as category_seq',
-'  ,(',
-'    select count( l1.id )',
-'    from blog_comments l1',
-'    where 1 = 1',
-'    and l1.is_active = 1',
-'    and l1.post_id  = t1.id'))
+'   t1.id                                                as post_id',
+'  ,t3.id                                                as category_id',
+'  ,t2.id                                                as blogger_id',
+'  ,t2.blogger_name                                      as blogger_name',
+'  ,t1.title                                             as post_title',
+'  ,t3.title                                             as category_title',
+'  ,t1.post_desc                                         as post_desc',
+'  ,t1.first_paragraph                                   as first_paragraph',
+'  ,t1.body_html                                         as body_html',
+'  ,t1.published_on                                      as published_on',
+'  ,greatest(',
+'     t1.published_on',
+'    ,t1.ch'))
 );
 null;
 end;
@@ -21790,8 +21673,19 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
-'  )                       as comments_count',
+'anged_on',
+'    ,t2.changed_on',
+'  )                                                     as changed_on',
+'  ,t1.archive_year_month                                as archive_year_month',
+'  ,t1.archive_year                                      as archive_year',
+'  ,t3.display_seq                                       as category_seq',
+'  -- for view BLOG_V_POSTS_LAST20',
+'  ,row_number() over ( order by t1.published_on desc )  as rn',
+'  -- generate post URL',
+'  ,blog_url.get_post(',
+'     p_post_id => t1.id',
+'  )                                                     as post_url',
+'  -- post tags link HTML 1',
 '  ,(',
 '    select',
 '      listagg(',
@@ -21811,7 +21705,38 @@ wwv_flow_imp_shared.append_to_install_script(
 '    from blog_v_post_tags lkp',
 '    where 1 = 1',
 '      and lkp.post_id = t1.id',
-'  )                       as tags_html',
+'  )                                                     as tags_html1',
+'  -- post tags link HTML 2',
+'  ,(',
+'    select',
+'      xmlserialize( content',
+'        xmlagg(',
+'          xmlelement( "a"',
+'            ,xmlattributes(',
+'              blog_url.get_tag(',
+'                p_tag_id => lkp.tag_id',
+'              )                                                                           as "href"',
+'              ,''t-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-md''  as "class"',
+'            )',
+'            ,xmlelement( "span"',
+'              ,xmlattributes(',
+'                ''t-Icon fa fa-tag''                                                        as "class"',
+'                ,''true''                                                                   as "aria-hidden"',
+'              )',
+'            )',
+'            ,xmlelement( "span"',
+'              ,xmlattributes(',
+'                ''t-Button-label''                                                          as "class"',
+'              )',
+'              ,lkp.tag',
+'            )',
+'          ) order by lkp.display_seq',
+'        )',
+'      )',
+'    from blog_v_post_tags lkp',
+'    where 1 = 1',
+'      and lkp.post_id = t1.id',
+'  )                                                     as tags_html2',
 'from blog_posts t1',
 'join blog_bloggers t2',
 '  on t1.blogger_id  = t2.id',
@@ -21821,23 +21746,20 @@ wwv_flow_imp_shared.append_to_install_script(
 '  and t1.is_active = 1',
 '  and t2.is_active = 1',
 '  and t3.is_active = 1',
-'  and t1.published_on <= localtimestamp',
+'  and t1.published_on <= current_timestamp',
 'with read only',
 '/',
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ARCHIVE_YEAR',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ARCHIVE_YEAR" ("ARCHIVE_YEAR", "POST_COUNT", "CHANGED_ON") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_ARCHIVE_YEAR" ("ARCHIVE_YEAR", "POST_COUNT", "CHANGED_ON", "ARCHIVE_URL") AS',
 'select',
 '   v1.archive_year      as archive_year',
 '  ,count( v1.post_id )  as post_count',
-'  ,max(',
-'    greatest(',
-'       v1.published_on',
-'      ,v1.changed_on',
-'      ,v1.category_changed_on',
-'    )',
-'  )                     as changed_on',
+'  ,max( v1.changed_on ) as changed_on',
+'  ,blog_url.get_archive(',
+'    p_archive_id => v1.archive_year',
+'  )                     as archive_url',
 'from blog_v_posts v1',
 'where 1 = 1',
 'group by v1.archive_year',
@@ -21846,19 +21768,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_CATEGORIES',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT", "CHANGED_ON") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT", "CHANGED_ON", "CATEGORY_URL") AS',
 '  select',
-'   v1.category_id     as category_id',
-'  ,v1.category_title  as category_title',
-'  ,v1.category_seq    as display_seq',
-'  ,count(v1.post_id)  as posts_count',
-'  ,max(',
-'    greatest(',
-'       v1.published_on',
-'      ,v1.changed_on',
-'      ,v1.category_changed_on',
-'    )',
-'  )                   as changed_on',
+'   v1.category_id       as category_id',
+'  ,v1.category_title    as category_title',
+'  ,v1.category_seq      as display_seq',
+'  ,count( v1.post_id )  as posts_count',
+'  ,max( v1.changed_on ) as changed_on',
+'  ,blog_url.get_category(',
+'    p_category_id => v1.category_id',
+'  )                     as category_url',
 'from blog_v_posts v1',
 'where 1 = 1',
 'group by v1.category_id',
@@ -21867,37 +21786,71 @@ wwv_flow_imp_shared.append_to_install_script(
 'with read only',
 '/',
 '--------------------------------------------------------',
+'--  DDL for View BLOG_V_POSTS_APEX',
+'--------------------------------------------------------',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_APEX" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR",'
+||' "CATEGORY_SEQ", "POST_URL", "TAGS_HTML1", "TAGS_HTML2", "TXT_POSTED_BY", "TXT_POSTED_ON", "TXT_CATEGORY", "TXT_TAGS", "TXT_READ_MORE") AS',
+'  select',
+'   v1.post_id             as post_id',
+'  ,v1.category_id         as category_id',
+'  ,v1.blogger_id          as blogger_id',
+'  ,v1.blogger_name        as blogger_name',
+'  ,v1.post_title          as post_title',
+'  ,v1.category_title      as category_title',
+'  ,v1.post_desc           as post_desc',
+'  ,v1.first_paragraph     as first_paragraph',
+'  ,v1.body_html           as body_html',
+'  ,v1.published_on        as published_on',
+'  ,v1.changed_on          as changed_on',
+'  ,v1.archive_year_month  as archive_year_month',
+'  ,v1.archive_year        as archive_year',
+'  ,v1.category_seq        as category_seq',
+'  ,v1.post_url            as post_url',
+'  ,v1.tags_html1          as tags_html1',
+'  ,v1.tags_html2          as tags_html2',
+'  -- text, label etc. for APEX reports',
+'  ,txt.posted_by          as txt_posted_by',
+'  ,txt.posted_on          as txt_posted_on',
+'  ,txt.category           as txt_category',
+'  ,case',
+'    when v1.tags_html1 is not null',
+'    then txt.tags',
+'  end                     as txt_tags',
+'  ,txt.read_more          as txt_read_more',
+'from blog_v_posts v1',
+'cross join(',
+'select',
+'   apex_lang.message( ''BLOG_TXT_POSTED_BY'' )  as posted_by',
+'  ,apex_lang.message( ''BLOG_TXT_POSTED_ON'' )  as posted_on',
+'  ,apex_lang.message( ''BLOG_TXT_CATEGORY'' )   as category',
+'  ,apex_lang.message( ''BLOG_TXT_TAGS'' )       as tags',
+'  ,apex_lang.message( ''BLOG_TXT_READ_MORE'' )  as read_more',
+'from dual',
+') txt',
+'with read only',
+'/',
+'--------------------------------------------------------',
 '--  DDL for View BLOG_V_POSTS_LAST20',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "PUBLISHED_ON", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE") AS',
-'  with qry as (',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "PUBLISHED_ON", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE", "POST_URL") AS',
 '  select',
-'     row_number() over ( order by t1.published_on desc ) as rn',
-'    ,t1.post_id',
-'    ,t1.post_title',
-'    ,t1.post_desc',
-'    ,t1.blogger_name',
-'    ,t1.category_title',
-'    ,t1.published_on',
-'  from blog_v_posts t1',
-')',
-'select',
-'   qry.rn             as display_seq',
-'  ,qry.post_id        as post_id',
-'  ,qry.published_on   as published_on',
-'  ,qry.blogger_name   as blogger_name',
-'  ,qry.post_title     as post_title',
-'  ,qry.post_desc      as post_desc',
-'  ,qry.category_title as category_title',
-'from qry',
+'   v1.rn              as display_seq',
+'  ,v1.post_id         as post_id',
+'  ,v1.published_on    as published_on',
+'  ,v1.blogger_name    as blogger_name',
+'  ,v1.post_title      as post_title',
+'  ,v1.post_desc       as post_desc',
+'  ,v1.category_title  as category_title',
+'  ,v1.post_url        as post_url',
+'from blog_v_posts v1',
 'where 1 = 1',
-'and qry.rn <= 20',
+'and v1.rn <= 20',
 'with read only',
 '/',
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_TAGS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "POSTS_COUNT", "CHANGED_ON") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "POSTS_COUNT", "CHANGED_ON", "TAG_URL") AS',
 '  select',
 '   t1.id                as tag_id',
 '  ,t1.tag               as tag',
@@ -21906,11 +21859,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '    greatest(',
 '       t1.changed_on',
 '      ,t2.changed_on',
-'      ,v1.published_on',
 '      ,v1.changed_on',
-'      ,v1.category_changed_on',
 '    )',
 '  )                     as changed_on',
+'  ,blog_url.get_tag(',
+'    p_tag_id => t1.id',
+'  )                     as tag_url',
 'from blog_tags t1',
 'join blog_post_tags t2 on t1.id = t2.tag_id',
 'join blog_v_posts   v1 on t2.post_id = v1.post_id',
@@ -22375,7 +22329,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- conver post id string to number',
 '    l_post_id := to_number( p_post_id );',
 '',
-'    -- fetch post title by post id',
+'    -- fetch post title and description by post id',
 '    -- also fetch older and newer post id and title',
 '    select',
 '      v1.post_title',
@@ -22691,7 +22645,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '          ,p0 => p_header_names(i)',
 '          ,p1 => p_header_values(i)',
 '        )',
-'      );',
+'    '))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'  );',
 '',
 '    end loop;',
 '',
@@ -22827,16 +22790,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      apex_page.get_url(',
 '         p_application => p_app_id',
 '        ,p_page        => ''SEARCH''',
-'     '))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   ,p_session     => p_session',
+'        ,p_session     => p_session',
 '--          ,p_clear_cache => ''RP''',
 '        ,p_items       => ''P0_SEARCH''',
 '        ,p_values      => p_value',
@@ -23752,7 +23706,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Private procedures and functions',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  function to_html_entities(',
+'  function to_html_entit'))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ies(',
 '    p_number in number',
 '  ) return varchar2',
 '  as',
@@ -23861,16 +23824,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        p_message =>''<span class="z-question">%s&nbsp;&#%s&nbsp;%s&#%s</span>''',
 '        ,p0 => to_html_entities( l_num_1 )',
 '        ,p1 => ascii(''+'')',
-'        ,p2 => to_html_ent'))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ities( l_num_2 )',
+'        ,p2 => to_html_entities( l_num_2 )',
 '        ,p3 => ascii(''?'')',
 '      )',
 '    ;',
@@ -24742,7 +24696,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_post_id   := to_number( p_post_id );',
 '',
 '    -- fetch application email address',
-'    l_app_email := blog_util.get_attribute_value(''G_APP_EMAIL'');',
+'    l_app_em'))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ail := blog_util.get_attribute_value(''G_APP_EMAIL'');',
 '    -- if application email address is not set, exit from procedure',
 '    if l_app_email is null',
 '    then',
@@ -24852,16 +24815,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '          = 1',
 '        and v1.id = l_post_id',
 '        -- send notification if subscription is created less than months ago specified in settings',
-'        and t1.subscription_date > l_watch_end'))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'        and t1.subscription_date > l_watch_end',
 '    ) loop',
 '',
 '      apex_debug.info(',
@@ -25696,7 +25650,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '        xmlattributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns"),',
 '        (',
 '          xmlagg(',
-'            xmlelement( "url"',
+'            xmlelemen'))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'t( "url"',
 '              ,xmlelement( "loc",',
 '                blog_url.get_archive(',
 '                   p_archive_id => arc.archive_year',
@@ -25839,7 +25802,7 @@ wwv_flow_imp_shared.create_install_script(
 '-- Update version info',
 '--------------------------------------------------------',
 'update blog_settings',
-'  set attribute_value = ''Release 22.2.0.20221117''',
+'  set attribute_value = ''Release 22.2.0.20221118''',
 'where 1 = 1',
 '  and attribute_name = ''G_APP_VERSION''',
 ';',
