@@ -69,6 +69,7 @@ as
 --    Jari Laine 26.04.2022 - Parameter p_escape to function get_tag
 --    Jari Laine 03.08.2022 - Changed procedure render_dynamic_content to use apex_util.prn
 --    Jari Laine 16.11.2022 - Removed obsolete function get_post_title
+--    Jari Laine 21.11.2022 - Added DETERMINISTIC caluse to function int_to_vc2
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -82,7 +83,7 @@ as
 --  inside package and from other packages
   function int_to_vc2(
     p_value           in number
-  ) return varchar2;
+  ) return varchar2 deterministic;
 --------------------------------------------------------------------------------
 -- Called from:
 --  other packages, public and admin application
@@ -1460,7 +1461,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "RN", "POST_URL", "TAGS_HTML1", "TAGS_HTML2") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "POST_URL", "TAGS_HTML1", "TAGS_HTML2") AS
   select
    t1.id                                                as post_id
   ,t3.id                                                as category_id
@@ -1480,13 +1481,11 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
   ,t1.archive_year_month                                as archive_year_month
   ,t1.archive_year                                      as archive_year
   ,t3.display_seq                                       as category_seq
-  -- for view BLOG_V_POSTS_LAST20
-  ,row_number() over ( order by t1.published_on desc )  as rn
-  -- generate post URL
+  -- Generate post URL
   ,blog_url.get_post(
      p_post_id => t1.id
   )                                                     as post_url
-  -- post tags link HTML 1
+  -- Generate HTML for tags used in APEX reports
   ,(
     select
       listagg(
@@ -1507,7 +1506,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
     where 1 = 1
       and lkp.post_id = t1.id
   )                                                     as tags_html1
-  -- post tags link HTML 2
+  -- Generate HTML for tags used in APEX reports
   ,(
     select
       xmlserialize( content
@@ -1634,17 +1633,28 @@ with read only
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "PUBLISHED_ON", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE", "POST_URL") AS
   select
-   v1.rn              as display_seq
-  ,v1.post_id         as post_id
-  ,v1.published_on    as published_on
-  ,v1.blogger_name    as blogger_name
-  ,v1.post_title      as post_title
-  ,v1.post_desc       as post_desc
-  ,v1.category_title  as category_title
-  ,v1.post_url        as post_url
-from blog_v_posts v1
+   rownum             as display_seq
+  ,q1.post_id         as post_id
+  ,q1.published_on    as published_on
+  ,q1.blogger_name    as blogger_name
+  ,q1.post_title      as post_title
+  ,q1.post_desc       as post_desc
+  ,q1.category_title  as category_title
+  ,q1.post_url        as post_url
+from (
+  select --+ first_rows(20)
+     v1.post_id
+    ,v1.published_on
+    ,v1.blogger_name
+    ,v1.post_title
+    ,v1.post_desc
+    ,v1.category_title
+    ,v1.post_url
+  from blog_v_posts v1
+  order by v1.published_on desc
+) q1
 where 1 = 1
-and v1.rn <= 20
+  and rownum <= 20
 with read only
 /
 --------------------------------------------------------

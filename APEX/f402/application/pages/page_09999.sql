@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'12'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220927075828'
+,p_last_upd_yyyymmddhh24miss=>'20221121072455'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8575301514518303)
@@ -65,16 +65,20 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_point=>'SUB_REGIONS'
 ,p_plug_source=>'"SIGN_IN_USING_ANOTHER_IDENTITY_PROVIDER"'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_plug_display_condition_type=>'EXPRESSION'
+,p_plug_display_condition_type=>'NOT_EXISTS'
 ,p_plug_display_when_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex_util.get_build_option_status(',
-'   p_application_id     => :APP_ID',
-'  ,p_build_option_name  => ''Use APEX authentication''',
-') = ''INCLUDE'''))
-,p_plug_display_when_cond2=>'PLSQL'
-,p_required_patch=>wwv_flow_imp.id(35675193135740905)
+'select 1',
+'from apex_application_build_options',
+'where 1 = 1',
+'  and application_id = :APP_ID',
+'  and build_option_status = ''Exclude''',
+'  and build_option_name in( ',
+'     ''Admin app APEX authentication''',
+'    ,''Admin app Google authentication''',
+'  )'))
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'HTML'
+,p_plug_comment=>'Region is displayed if both authentication methods are enabled by build options'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(59284401267356420)

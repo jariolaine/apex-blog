@@ -89,6 +89,7 @@ wwv_flow_imp_shared.create_install_script(
 '--    Jari Laine 26.04.2022 - Parameter p_escape to function get_tag',
 '--    Jari Laine 03.08.2022 - Changed procedure render_dynamic_content to use apex_util.prn',
 '--    Jari Laine 16.11.2022 - Removed obsolete function get_post_title',
+'--    Jari Laine 21.11.2022 - Added DETERMINISTIC caluse to function int_to_vc2',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -102,7 +103,7 @@ wwv_flow_imp_shared.create_install_script(
 '--  inside package and from other packages',
 '  function int_to_vc2(',
 '    p_value           in number',
-'  ) return varchar2;',
+'  ) return varchar2 deterministic;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  other packages, public and admin application',
@@ -704,9 +705,7 @@ wwv_flow_imp_shared.create_install_script(
 '    p_app_page_id   in varchar2,',
 '    p_app_id        in varchar2 default null',
 '  ) return varchar2;',
-'--------------------------------------------------------------------------------',
-'-- Called from:',
-'--  pub app'))
+'--------------'))
 );
 wwv_flow_imp.component_end;
 end;
@@ -723,7 +722,9 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' shortcut BLOG_CANONICAL_LINK_POST',
+'------------------------------------------------------------------',
+'-- Called from:',
+'--  pub app shortcut BLOG_CANONICAL_LINK_POST',
 '  function get_post_canonical_link(',
 '    p_post_id       in varchar2,',
 '    p_app_id        in varchar2 default null',
@@ -1504,7 +1505,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--  DDL for View BLOG_V_POSTS',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CAT'
-||'EGORY_SEQ", "RN", "POST_URL", "TAGS_HTML1", "TAGS_HTML2") AS',
+||'EGORY_SEQ", "POST_URL", "TAGS_HTML1", "TAGS_HTML2") AS',
 '  select',
 '   t1.id                                                as post_id',
 '  ,t3.id                                                as category_id',
@@ -1515,10 +1516,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,t1.post_desc                                         as post_desc',
 '  ,t1.first_paragraph                                   as first_paragraph',
 '  ,t1.body_html                                         as body_html',
-'  ,t1.published_on                                      as published_on',
-'  ,greatest(',
-'     t1.published_on',
-'    ,t1.ch'))
+'  ,t1.published_on          '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1536,19 +1534,20 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'anged_on',
+'                            as published_on',
+'  ,greatest(',
+'     t1.published_on',
+'    ,t1.changed_on',
 '    ,t2.changed_on',
 '  )                                                     as changed_on',
 '  ,t1.archive_year_month                                as archive_year_month',
 '  ,t1.archive_year                                      as archive_year',
 '  ,t3.display_seq                                       as category_seq',
-'  -- for view BLOG_V_POSTS_LAST20',
-'  ,row_number() over ( order by t1.published_on desc )  as rn',
-'  -- generate post URL',
+'  -- Generate post URL',
 '  ,blog_url.get_post(',
 '     p_post_id => t1.id',
 '  )                                                     as post_url',
-'  -- post tags link HTML 1',
+'  -- Generate HTML for tags used in APEX reports',
 '  ,(',
 '    select',
 '      listagg(',
@@ -1569,7 +1568,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    where 1 = 1',
 '      and lkp.post_id = t1.id',
 '  )                                                     as tags_html1',
-'  -- post tags link HTML 2',
+'  -- Generate HTML for tags used in APEX reports',
 '  ,(',
 '    select',
 '      xmlserialize( content',
@@ -1697,17 +1696,28 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "PUBLISHED_ON", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE", "POST_URL") AS',
 '  select',
-'   v1.rn              as display_seq',
-'  ,v1.post_id         as post_id',
-'  ,v1.published_on    as published_on',
-'  ,v1.blogger_name    as blogger_name',
-'  ,v1.post_title      as post_title',
-'  ,v1.post_desc       as post_desc',
-'  ,v1.category_title  as category_title',
-'  ,v1.post_url        as post_url',
-'from blog_v_posts v1',
+'   rownum             as display_seq',
+'  ,q1.post_id         as post_id',
+'  ,q1.published_on    as published_on',
+'  ,q1.blogger_name    as blogger_name',
+'  ,q1.post_title      as post_title',
+'  ,q1.post_desc       as post_desc',
+'  ,q1.category_title  as category_title',
+'  ,q1.post_url        as post_url',
+'from (',
+'  select --+ first_rows(20)',
+'     v1.post_id',
+'    ,v1.published_on',
+'    ,v1.blogger_name',
+'    ,v1.post_title',
+'    ,v1.post_desc',
+'    ,v1.category_title',
+'    ,v1.post_url',
+'  from blog_v_posts v1',
+'  order by v1.published_on desc',
+') q1',
 'where 1 = 1',
-'and v1.rn <= 20',
+'  and rownum <= 20',
 'with read only',
 '/',
 '--------------------------------------------------------',
@@ -2498,17 +2508,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '      apex_debug.info(',
 '         p_message => ''Header name: %s , header value: %s''',
-'        ,p0 => p_header_names(i)',
-'        ,p1 => p_header_values(i)',
-'      );',
-'      -- output HTTP header',
-'      sys.htp.p(',
-'        apex_string.format(',
-'           p_message => ''%s: %s''',
-'          ,p0 => p_header_names(i)',
-'          ,p1 => p_header_values(i)',
-'        )',
-'    '))
+'        ,p0 => p_he'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2526,7 +2526,17 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'  );',
+'ader_names(i)',
+'        ,p1 => p_header_values(i)',
+'      );',
+'      -- output HTTP header',
+'      sys.htp.p(',
+'        apex_string.format(',
+'           p_message => ''%s: %s''',
+'          ,p0 => p_header_names(i)',
+'          ,p1 => p_header_values(i)',
+'        )',
+'      );',
 '',
 '    end loop;',
 '',
@@ -3574,11 +3584,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '-- none',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'-- Private procedures and functions',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function to_html_entit'))
+'-------------------------------------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3596,7 +3602,11 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ies(',
+'-------------------------',
+'-- Private procedures and functions',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  function to_html_entities(',
 '    p_number in number',
 '  ) return varchar2',
 '  as',
@@ -4565,19 +4575,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure new_comment_notify(',
-'    p_post_id         in varchar2,',
-'    p_app_name        in varchar2,',
-'    p_email_template  in varchar2',
-'  )',
-'  as',
-'    l_post_id   number;',
-'    l_app_email varchar2(4000);',
-'  begin',
-'',
-'    l_post_id   := to_number( p_post_id );',
-'',
-'    -- fetch application email address',
-'    l_app_em'))
+'    p_post_id         in '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4595,7 +4593,19 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ail := blog_util.get_attribute_value(''G_APP_EMAIL'');',
+'varchar2,',
+'    p_app_name        in varchar2,',
+'    p_email_template  in varchar2',
+'  )',
+'  as',
+'    l_post_id   number;',
+'    l_app_email varchar2(4000);',
+'  begin',
+'',
+'    l_post_id   := to_number( p_post_id );',
+'',
+'    -- fetch application email address',
+'    l_app_email := blog_util.get_attribute_value(''G_APP_EMAIL'');',
 '    -- if application email address is not set, exit from procedure',
 '    if l_app_email is null',
 '    then',
@@ -5530,17 +5540,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  procedure sitemap_archives',
 '  as',
-'    l_xml           blob;',
-'    l_cache_control varchar2(256);',
-'  begin',
-'',
-'    select xmlserialize( document',
-'      xmlelement(',
-'        "urlset",',
-'        xmlattributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns"),',
-'        (',
-'          xmlagg(',
-'            xmlelemen'))
+'    l_xml           bl'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5558,7 +5558,17 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'t( "url"',
+'ob;',
+'    l_cache_control varchar2(256);',
+'  begin',
+'',
+'    select xmlserialize( document',
+'      xmlelement(',
+'        "urlset",',
+'        xmlattributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns"),',
+'        (',
+'          xmlagg(',
+'            xmlelement( "url"',
 '              ,xmlelement( "loc",',
 '                blog_url.get_archive(',
 '                   p_archive_id => arc.archive_year',

@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "RN", "POST_URL", "TAGS_HTML1", "TAGS_HTML2") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "POST_URL", "TAGS_HTML1", "TAGS_HTML2") AS
   select
    t1.id                                                as post_id
   ,t3.id                                                as category_id
@@ -21,13 +21,11 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
   ,t1.archive_year_month                                as archive_year_month
   ,t1.archive_year                                      as archive_year
   ,t3.display_seq                                       as category_seq
-  -- for view BLOG_V_POSTS_LAST20
-  ,row_number() over ( order by t1.published_on desc )  as rn
-  -- generate post URL
+  -- Generate post URL
   ,blog_url.get_post(
      p_post_id => t1.id
   )                                                     as post_url
-  -- post tags link HTML 1
+  -- Generate HTML for tags used in APEX reports
   ,(
     select
       listagg(
@@ -48,7 +46,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
     where 1 = 1
       and lkp.post_id = t1.id
   )                                                     as tags_html1
-  -- post tags link HTML 2
+  -- Generate HTML for tags used in APEX reports
   ,(
     select
       xmlserialize( content

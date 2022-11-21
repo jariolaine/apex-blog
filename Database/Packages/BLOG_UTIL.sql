@@ -40,6 +40,7 @@ as
 --    Jari Laine 26.04.2022 - Parameter p_escape to function get_tag
 --    Jari Laine 03.08.2022 - Changed procedure render_dynamic_content to use apex_util.prn
 --    Jari Laine 16.11.2022 - Removed obsolete function get_post_title
+--    Jari Laine 21.11.2022 - Added DETERMINISTIC caluse to function int_to_vc2
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ as
 --  inside package and from other packages
   function int_to_vc2(
     p_value           in number
-  ) return varchar2;
+  ) return varchar2 deterministic;
 --------------------------------------------------------------------------------
 -- Called from:
 --  other packages, public and admin application

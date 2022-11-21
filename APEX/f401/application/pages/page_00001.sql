@@ -27,7 +27,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221118155906'
+,p_last_upd_yyyymmddhh24miss=>'20221121140903'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6432040642894060)
@@ -56,11 +56,12 @@ wwv_flow_imp_page.create_report_region(
 'where 1 = 1',
 'order by v1.published_on desc',
 ''))
+,p_optimizer_hint=>'APEX$USE_ROWNUM_PAGINATION'
 ,p_translate_title=>'N'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(6894976353301648)
-,p_query_headings_type=>'QUERY_COLUMNS'
+,p_query_headings_type=>'NO_HEADINGS'
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
 ,p_query_num_rows_item=>'P1_REPORT_ROWS'
@@ -76,7 +77,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_query_column_id=>1
 ,p_column_alias=>'POST_ID'
 ,p_column_display_sequence=>1
-,p_use_as_row_header=>'N'
 ,p_hidden_column=>'Y'
 ,p_derived_column=>'N'
 );
@@ -85,7 +85,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_query_column_id=>2
 ,p_column_alias=>'CATEGORY_ID'
 ,p_column_display_sequence=>2
-,p_use_as_row_header=>'N'
 ,p_hidden_column=>'Y'
 ,p_derived_column=>'N'
 );
@@ -141,17 +140,21 @@ wwv_flow_imp_page.create_report_columns(
 ,p_query_column_id=>7
 ,p_column_alias=>'BODY_HTML'
 ,p_column_display_sequence=>52
-,p_hidden_column=>'Y'
+,p_column_heading=>'Body Html'
+,p_use_as_row_header=>'N'
 ,p_display_as=>'WITHOUT_MODIFICATION'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(20710906917895803)
 ,p_query_column_id=>8
 ,p_column_alias=>'TAGS_HTML'
 ,p_column_display_sequence=>62
-,p_hidden_column=>'Y'
+,p_column_heading=>'Tags Html'
+,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(29063299064157121)
@@ -170,16 +173,20 @@ wwv_flow_imp_page.create_report_columns(
 ,p_query_column_id=>10
 ,p_column_alias=>'TXT_POSTED_ON'
 ,p_column_display_sequence=>82
-,p_hidden_column=>'Y'
+,p_column_heading=>'Txt Posted On'
+,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(11417134342329129)
 ,p_query_column_id=>11
 ,p_column_alias=>'TXT_CATEGORY'
 ,p_column_display_sequence=>92
-,p_hidden_column=>'Y'
+,p_column_heading=>'Txt Category'
+,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(24468458324361504)

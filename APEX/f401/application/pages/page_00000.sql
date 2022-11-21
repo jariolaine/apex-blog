@@ -21,7 +21,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'14'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221116130128'
+,p_last_upd_yyyymmddhh24miss=>'20221121081137'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6433141607894071)
@@ -56,7 +56,7 @@ wwv_flow_imp_page.create_page_plug(
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6433488213894074)
-,p_plug_name=>'Search'
+,p_plug_name=>'Search from Posts'
 ,p_parent_plug_id=>wwv_flow_imp.id(6433383599894073)
 ,p_region_template_options=>'#DEFAULT#:t-Region--hideHeader:t-Region--scrollBody:t-Form--noPadding:t-Form--large:t-Form--stretchInputs:t-Form--labelsAbove'
 ,p_plug_template=>wwv_flow_imp.id(6802870362267386)

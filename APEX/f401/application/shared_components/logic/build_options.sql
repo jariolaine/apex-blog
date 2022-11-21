@@ -29,10 +29,10 @@ wwv_flow_imp_shared.create_build_option(
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(7122597691878829)
-,p_build_option_name=>'Not Ready'
+,p_build_option_name=>'Under development'
 ,p_build_option_status=>'EXCLUDE'
 ,p_default_on_export=>'EXCLUDE'
-,p_build_option_comment=>'Objects need development'
+,p_build_option_comment=>'Objects whose development is ongoing'
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(8635198962090938)
@@ -119,7 +119,7 @@ wwv_flow_imp_shared.create_build_option(
 ,p_build_option_name=>'Commented Out'
 ,p_build_option_status=>'EXCLUDE'
 ,p_default_on_export=>'EXCLUDE'
-,p_build_option_comment=>'Commented out objects'
+,p_build_option_comment=>'Features that have been commented out'
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(27921011391085431)

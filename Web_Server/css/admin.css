@@ -210,7 +210,7 @@ blockquote::after {
 /**************************************
 * Program code formatting
 **************************************/
-/* Pre AÅEX 22.2 CKEditor 4*/
+/* Pre APEX 22.2 CKEditor 4*/
 pre.z-program-code {
   clear: both;
   font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace";
@@ -235,7 +235,7 @@ pre.z-program-code code {
   font-family: inherit;
   font-size: inherit;
 }
-/* AÅEX 22.2 CKEditor 5*/
+/* APEX 22.2 CKEditor 5*/
 .ck-content pre:has( code ) {
   clear: both;
   font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace";

@@ -13,28 +13,28 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(8935943081653812)
-,p_build_option_name=>'Not Ready'
+,p_build_option_name=>'Under development'
 ,p_build_option_status=>'EXCLUDE'
 ,p_default_on_export=>'EXCLUDE'
-,p_build_option_comment=>'Not ready features'
+,p_build_option_comment=>'Objects whose development is ongoing'
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(10006498624902877)
 ,p_build_option_name=>'Obsolete'
 ,p_build_option_status=>'EXCLUDE'
 ,p_default_on_export=>'EXCLUDE'
-,p_build_option_comment=>'Obsolete objects that should be removed'
+,p_build_option_comment=>'Obsolete objects that are considered to be removed'
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(24687280101070827)
 ,p_build_option_name=>'Commented Out'
 ,p_build_option_status=>'EXCLUDE'
 ,p_default_on_export=>'EXCLUDE'
-,p_build_option_comment=>'Features that are commented out for now.'
+,p_build_option_comment=>'Features that have been commented out'
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(35674953070739317)
-,p_build_option_name=>'Use APEX authentication'
+,p_build_option_name=>'Admin app APEX authentication'
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
@@ -42,7 +42,7 @@ wwv_flow_imp_shared.create_build_option(
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(35675193135740905)
-,p_build_option_name=>'Use Google authentication'
+,p_build_option_name=>'Admin app Google authentication'
 ,p_build_option_status=>'EXCLUDE'
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
