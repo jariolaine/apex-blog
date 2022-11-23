@@ -20,7 +20,8 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
   )                                                     as changed_on
   ,t1.archive_year_month                                as archive_year_month
   ,t1.archive_year                                      as archive_year
-  ,t3.display_seq                                       as category_seq
+  ,t3.display_seq
+                     as category_seq
   -- Generate post URL
   ,blog_url.get_post(
      p_post_id => t1.id
@@ -33,18 +34,18 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
           xmlelement( "a"
             ,xmlattributes(
               blog_url.get_tag(
-                 p_tag_id => lkp.tag_id
-              )                                                 as "href"
-              ,'margin-bottom-md margin-left-sm z-search--tags' as "class"
+                 p_tag_id => lkp1.tag_id
+              )                         as "href"
+              ,'z-search--tags'         as "class"
             )
-            ,lkp.tag
+            ,lkp1.tag
           )
         )
         ,','
-      ) within group( order by lkp.display_seq )
-    from blog_v_post_tags lkp
+      ) within group( order by lkp1.display_seq )
+    from blog_v_post_tags lkp1
     where 1 = 1
-      and lkp.post_id = t1.id
+      and lkp1.post_id = t1.id
   )                                                     as tags_html1
   -- Generate HTML for tags used in APEX reports
   ,(
@@ -54,28 +55,28 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
           xmlelement( "a"
             ,xmlattributes(
               blog_url.get_tag(
-                p_tag_id => lkp.tag_id
-              )                                                                           as "href"
-              ,'t-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-md'  as "class"
+                p_tag_id => lkp2.tag_id
+              )                                                                             as "href"
+              ,'t-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft'  as "class"
             )
             ,xmlelement( "span"
               ,xmlattributes(
-                't-Icon fa fa-tag'                                                        as "class"
-                ,'true'                                                                   as "aria-hidden"
+                't-Icon fa fa-tag'                                                          as "class"
+                ,'true'                                                                     as "aria-hidden"
               )
             )
             ,xmlelement( "span"
               ,xmlattributes(
-                't-Button-label'                                                          as "class"
+                't-Button-label'                                                            as "class"
               )
-              ,lkp.tag
+              ,lkp2.tag
             )
-          ) order by lkp.display_seq
+          ) order by lkp2.display_seq
         )
       )
-    from blog_v_post_tags lkp
+    from blog_v_post_tags lkp2
     where 1 = 1
-      and lkp.post_id = t1.id
+      and lkp2.post_id = t1.id
   )                                                     as tags_html2
 from blog_posts t1
 join blog_bloggers t2

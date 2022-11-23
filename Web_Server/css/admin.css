@@ -138,15 +138,19 @@ blockquote::after {
 .z-post--tags {
   width: 100%;
   clear: both;
-  margin: 2rem 0 0;
+  padding-top: 1rem;
   border-top-width: var(--ut-component-inner-border-width);
   border-top-style: solid;
   border-top-color: var(--ut-component-inner-border-color);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
 }
 .z-post--footer {
   width: 100%;
   clear: both;
-  margin: 1rem 0 0;
+  padding-top: 1rem;
 }
 .z-posts--pagination {
   margin-bottom: 1rem;
@@ -204,6 +208,11 @@ blockquote::after {
 /**************************************
 * Search Result tags column
 **************************************/
+.z-search--tags {
+  margin-inline-start: 0.5rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
 .z-search--tags:first-child {
   margin-inline-start: 0!important;
 }

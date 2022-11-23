@@ -618,8 +618,8 @@ as
         apex_collection.add_member(
            p_collection_name => p_collection_name
           ,p_n001     => c1.file_id
-          ,p_n002     => coalesce(c1.is_active, 1)
-          ,p_n003     => coalesce(c1.is_download, 0)
+          ,p_n002     => coalesce( c1.is_active, 1 )
+          ,p_n003     => coalesce( c1.is_download, 0 )
           ,p_c001     => l_file_name
           ,p_c002     => c1.file_desc
           ,p_c003     => c1.mime_type
@@ -671,7 +671,7 @@ as
       where 1 = 1
       and collection_name = p_collection_name
     ) new_files
-    on (t1.id = new_files.id)
+    on ( t1.id = new_files.id )
     when matched then
       update
         set t1.blob_content = new_files.blob_content
@@ -685,8 +685,8 @@ as
         ,file_desc
       )
       values (
-         coalesce( new_files.is_active ,  1 )
-        ,coalesce( new_files.is_download, 0 )
+         new_files.is_active
+        ,new_files.is_download
         ,new_files.file_name
         ,new_files.mime_type
         ,new_files.blob_content

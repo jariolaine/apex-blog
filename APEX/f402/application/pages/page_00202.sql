@@ -19,25 +19,24 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'About This Application'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8930100593603171)
-,p_page_template_options=>'#DEFAULT#'
+,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220510054419'
+,p_last_upd_yyyymmddhh24miss=>'20221122062337'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(11416108930329119)
 ,p_name=>'Version'
 ,p_template=>wwv_flow_imp.id(8496813422518209)
 ,p_display_sequence=>10
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
+,p_region_template_options=>'#DEFAULT#:t-Region--stacked:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Report--stretch:t-Report--staticRowColors:t-Report--rowHighlightOff:t-Report--noBorders'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
 '   t1.attribute_value as attribute_value',
-'  ,t1.created_on      as created_on',
 '  ,t1.changed_on      as changed_on',
 'from #OWNER#.blog_settings t1',
 'where 1 = 1',
@@ -68,17 +67,8 @@ wwv_flow_imp_page.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(12513700970984043)
-,p_query_column_id=>2
-,p_column_alias=>'CREATED_ON'
-,p_column_display_sequence=>40
-,p_use_as_row_header=>'N'
-,p_hidden_column=>'Y'
-,p_derived_column=>'N'
-);
-wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(12513831447984044)
-,p_query_column_id=>3
+,p_query_column_id=>2
 ,p_column_alias=>'CHANGED_ON'
 ,p_column_display_sequence=>50
 ,p_column_heading=>'Changed On'
@@ -95,7 +85,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_name=>'Patches'
 ,p_template=>wwv_flow_imp.id(8496813422518209)
 ,p_display_sequence=>20
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
+,p_region_template_options=>'#DEFAULT#:t-Region--stacked:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Report--stretch:t-Report--staticRowColors:t-Report--rowHighlightOff:t-Report--noBorders'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -103,11 +93,10 @@ wwv_flow_imp_page.create_report_region(
 'select',
 '   t1.attribute_value as attribute_value',
 '  ,t1.created_on      as created_on',
-'  ,t1.changed_on      as changed_on',
 'from #OWNER#.blog_settings t1',
 'where 1 = 1',
 '  and t1.attribute_name like ''PATCH%''',
-'order by t1.attribute_name desc'))
+'order by t1.created_on desc'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(8519378220518224)
@@ -143,15 +132,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_heading_alignment=>'RIGHT'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(12514210714984048)
-,p_query_column_id=>3
-,p_column_alias=>'CHANGED_ON'
-,p_column_display_sequence=>30
-,p_use_as_row_header=>'N'
-,p_hidden_column=>'Y'
-,p_derived_column=>'N'
 );
 wwv_flow_imp.component_end;
 end;

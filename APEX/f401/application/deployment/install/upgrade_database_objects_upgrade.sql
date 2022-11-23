@@ -90,6 +90,8 @@ wwv_flow_imp_shared.create_install_script(
 '--    Jari Laine 03.08.2022 - Changed procedure render_dynamic_content to use apex_util.prn',
 '--    Jari Laine 16.11.2022 - Removed obsolete function get_post_title',
 '--    Jari Laine 21.11.2022 - Added DETERMINISTIC caluse to function int_to_vc2',
+'--    Jari Laine 23.11.2022 - Changed procedures exception handling and removed some unnecessary calls to apex_debug',
+'--                          - Renamed procedure get_post_pagination to get_post_details and added more out parameters',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -119,14 +121,18 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  public app page 2',
-'  procedure get_post_pagination(',
+'  procedure get_post_details(',
 '    p_post_id         in varchar2,',
 '    p_post_title      out nocopy varchar2,',
 '    p_post_desc       out nocopy varchar2,',
-'    p_newer_id        out nocopy varchar2,',
-'    p_newer_title     out nocopy varchar2,',
-'    p_older_id        out nocopy varchar2,',
-'    p_older_title     out nocopy varchar2',
+'    p_post_category   out nocopy varchar2,',
+'    p_post_author     out nocopy varchar2,',
+'    p_post_published  out nocopy varchar2,',
+'    p_post_modified   out nocopy varchar2,',
+'    p_next_id         out nocopy varchar2,',
+'    p_next_title      out nocopy varchar2,',
+'    p_prev_id         out nocopy varchar2,',
+'    p_prev_title       out nocopy varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
@@ -695,17 +701,7 @@ wwv_flow_imp_shared.create_install_script(
 '--    Jari Laine 16.11.2022 - Removed obsolete functions:',
 '--                              - get_robots_noindex_meta',
 '--                              - get_post_description_meta',
-'--                              - get_description_meta',
-'--',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'-- Called from:',
-'--  pub app shortcut BLOG_CANONICAL_LINK_TAB',
-'  function get_tab_canonical_link(',
-'    p_app_page_id   in varchar2,',
-'    p_app_id        in varchar2 default null',
-'  ) return varchar2;',
-'--------------'))
+'--                      '))
 );
 wwv_flow_imp.component_end;
 end;
@@ -722,7 +718,17 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'------------------------------------------------------------------',
+'        - get_description_meta',
+'--',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'-- Called from:',
+'--  pub app shortcut BLOG_CANONICAL_LINK_TAB',
+'  function get_tab_canonical_link(',
+'    p_app_page_id   in varchar2,',
+'    p_app_id        in varchar2 default null',
+'  ) return varchar2;',
+'--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  pub app shortcut BLOG_CANONICAL_LINK_POST',
 '  function get_post_canonical_link(',
@@ -1510,13 +1516,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '   t1.id                                                as post_id',
 '  ,t3.id                                                as category_id',
 '  ,t2.id                                                as blogger_id',
-'  ,t2.blogger_name                                      as blogger_name',
-'  ,t1.title                                             as post_title',
-'  ,t3.title                                             as category_title',
-'  ,t1.post_desc                                         as post_desc',
-'  ,t1.first_paragraph                                   as first_paragraph',
-'  ,t1.body_html                                         as body_html',
-'  ,t1.published_on          '))
+'  ,t2.blogger_name                                  '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1534,7 +1534,13 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'                            as published_on',
+'    as blogger_name',
+'  ,t1.title                                             as post_title',
+'  ,t3.title                                             as category_title',
+'  ,t1.post_desc                                         as post_desc',
+'  ,t1.first_paragraph                                   as first_paragraph',
+'  ,t1.body_html                                         as body_html',
+'  ,t1.published_on                                      as published_on',
 '  ,greatest(',
 '     t1.published_on',
 '    ,t1.changed_on',
@@ -1542,7 +1548,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '  )                                                     as changed_on',
 '  ,t1.archive_year_month                                as archive_year_month',
 '  ,t1.archive_year                                      as archive_year',
-'  ,t3.display_seq                                       as category_seq',
+'  ,t3.display_seq',
+'                     as category_seq',
 '  -- Generate post URL',
 '  ,blog_url.get_post(',
 '     p_post_id => t1.id',
@@ -1555,18 +1562,18 @@ wwv_flow_imp_shared.append_to_install_script(
 '          xmlelement( "a"',
 '            ,xmlattributes(',
 '              blog_url.get_tag(',
-'                 p_tag_id => lkp.tag_id',
-'              )                                                 as "href"',
-'              ,''margin-bottom-md margin-left-sm z-search--tags'' as "class"',
+'                 p_tag_id => lkp1.tag_id',
+'              )                         as "href"',
+'              ,''z-search--tags''         as "class"',
 '            )',
-'            ,lkp.tag',
+'            ,lkp1.tag',
 '          )',
 '        )',
 '        ,'',''',
-'      ) within group( order by lkp.display_seq )',
-'    from blog_v_post_tags lkp',
+'      ) within group( order by lkp1.display_seq )',
+'    from blog_v_post_tags lkp1',
 '    where 1 = 1',
-'      and lkp.post_id = t1.id',
+'      and lkp1.post_id = t1.id',
 '  )                                                     as tags_html1',
 '  -- Generate HTML for tags used in APEX reports',
 '  ,(',
@@ -1576,28 +1583,28 @@ wwv_flow_imp_shared.append_to_install_script(
 '          xmlelement( "a"',
 '            ,xmlattributes(',
 '              blog_url.get_tag(',
-'                p_tag_id => lkp.tag_id',
-'              )                                                                           as "href"',
-'              ,''t-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-md''  as "class"',
+'                p_tag_id => lkp2.tag_id',
+'              )                                                                             as "href"',
+'              ,''t-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft''  as "class"',
 '            )',
 '            ,xmlelement( "span"',
 '              ,xmlattributes(',
-'                ''t-Icon fa fa-tag''                                                        as "class"',
-'                ,''true''                                                                   as "aria-hidden"',
+'                ''t-Icon fa fa-tag''                                                          as "class"',
+'                ,''true''                                                                     as "aria-hidden"',
 '              )',
 '            )',
 '            ,xmlelement( "span"',
 '              ,xmlattributes(',
-'                ''t-Button-label''                                                          as "class"',
+'                ''t-Button-label''                                                            as "class"',
 '              )',
-'              ,lkp.tag',
+'              ,lkp2.tag',
 '            )',
-'          ) order by lkp.display_seq',
+'          ) order by lkp2.display_seq',
 '        )',
 '      )',
-'    from blog_v_post_tags lkp',
+'    from blog_v_post_tags lkp2',
 '    where 1 = 1',
-'      and lkp.post_id = t1.id',
+'      and lkp2.post_id = t1.id',
 '  )                                                     as tags_html2',
 'from blog_posts t1',
 'join blog_bloggers t2',
@@ -2074,25 +2081,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  -- Handle error cases',
 '  exception',
-'  when no_data_found',
-'  then',
-'',
-'    apex_debug.warn(',
-'       p_message => ''No data found. %s( %s => %s )''',
-'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => ''p_attribute_name''',
-'      ,p2 => coalesce( p_attribute_name, ''(null)'' )',
-'    );',
-'    raise;',
-'',
 '  when others',
 '  then',
 '',
 '    apex_debug.error(',
-'       p_message => ''Unhandled error. %s( %s => %s )''',
-'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => ''p_attribute_name''',
-'      ,p2 => coalesce( p_attribute_name, ''(null)'' )',
+'       p_message => ''Error: %s %s( %s => %s )''',
+'      ,p0 => sqlerrm',
+'      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'      ,p2 => ''p_attribute_name''',
+'      ,p3 => coalesce( p_attribute_name, ''(null)'' )',
 '    );',
 '    raise;',
 '',
@@ -2105,12 +2102,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '  as',
 '    l_app_id number;',
 '  begin',
-'',
-'    apex_debug.enter(',
-'      p_routine_name  => ''blog_util.initialize_items''',
-'      ,p_name01       => ''p_app_id''',
-'      ,p_value01      => p_app_id',
-'    );',
 '',
 '    -- raise no data found error if parameter p_app_id_name is null',
 '    if p_app_id is null then',
@@ -2130,13 +2121,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '      where i.application_id = l_app_id',
 '    ) loop',
 '',
-'      apex_debug.info(',
-'        p_message => ''Initialize application id: %s item: %s value: %s''',
-'        ,p0 => p_app_id',
-'        ,p1 => c1.item_name',
-'        ,p2 => c1.item_value',
-'      );',
-'',
 '      -- set item session state and no commit',
 '      apex_util.set_session_state(',
 '        p_name    => c1.item_name',
@@ -2146,53 +2130,43 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    end loop;',
 '',
-'  -- handle errors',
 '  exception',
-'  when no_data_found',
-'  then',
-'',
-'    apex_debug.warn(',
-'       p_message => ''No data found. %s( %s => %s )''',
-'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => ''p_app_id''',
-'      ,p2 => coalesce( p_app_id, ''(null)'' )',
-'    );',
-'    raise;',
-'',
 '  when others',
 '  then',
 '',
 '    apex_debug.error(',
-'       p_message => ''Unhandled error. %s( %s => %s )''',
-'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => ''p_app_id''',
-'      ,p2 => coalesce( p_app_id, ''(null)'' )',
+'       p_message => ''Error: %s. %s( %s => %s )''',
+'      ,p0 => sqlerrm',
+'      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'      ,p2 => ''p_app_id''',
+'      ,p3 => coalesce( p_app_id, ''(null)'' )',
 '    );',
+'',
 '    raise;',
 '',
 '  end initialize_items;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure get_post_pagination(',
+'  procedure get_post_details(',
 '    p_post_id         in varchar2,',
 '    p_post_title      out nocopy varchar2,',
 '    p_post_desc       out nocopy varchar2,',
-'    p_newer_id        out nocopy varchar2,',
-'    p_newer_title     out nocopy varchar2,',
-'    p_older_id        out nocopy varchar2,',
-'    p_older_title     out nocopy varchar2',
+'    p_post_category   out nocopy varchar2,',
+'    p_post_author     out nocopy varchar2,',
+'    p_post_published  out nocopy varchar2,',
+'    p_post_modified   out nocopy varchar2,',
+'    p_next_id         out nocopy varchar2,',
+'    p_next_title      out nocopy varchar2,',
+'    p_prev_id         out nocopy varchar2,',
+'    p_prev_title      out nocopy varchar2',
 '  )',
 '  as',
 '    l_post_id     number;',
-'    l_newer       blog_t_post;',
-'    l_older       blog_t_post;',
+'    l_next       blog_t_post;',
+'    l_prev       blog_t_post;',
+'    l_published   timestamp with local time zone;',
+'    l_modified    timestamp with local time zone;',
 '  begin',
-'',
-'    apex_debug.enter(',
-'      p_routine_name  => ''blog_util.pagination''',
-'      ,p_name01       => ''p_post_id''',
-'      ,p_value01      => p_post_id',
-'    );',
 '',
 '    -- raise no data found error if parameter p_post_id is null',
 '    if p_post_id is null then',
@@ -2203,10 +2177,14 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_post_id := to_number( p_post_id );',
 '',
 '    -- fetch post title and description by post id',
-'    -- also fetch older and newer post id and title',
+'    -- also fetch prev and next post id and title',
 '    select',
 '      v1.post_title',
 '      ,v1.post_desc',
+'      ,v1.category_title',
+'      ,v1.blogger_name',
+'      ,v1.published_on',
+'      ,v1.changed_on',
 '      ,(',
 '        select blog_t_post( lkp1.post_id, lkp1.post_title )',
 '        from blog_v_posts lkp1',
@@ -2214,7 +2192,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '          and lkp1.published_on > v1.published_on',
 '        order by lkp1.published_on asc',
 '        fetch first 1 rows only',
-'      ) as newer_post',
+'      ) as next_post',
 '      ,(',
 '        select blog_t_post( lkp2.post_id, lkp2.post_title )',
 '        from blog_v_posts lkp2',
@@ -2222,57 +2200,53 @@ wwv_flow_imp_shared.append_to_install_script(
 '          and lkp2.published_on < v1.published_on',
 '        order by lkp2.published_on desc',
 '        fetch first 1 rows only',
-'      ) as older_post',
-'    into p_post_title, p_post_desc, l_newer, l_older',
+'      ) as prev_post',
+'    into p_post_title',
+'      ,p_post_desc',
+'      ,p_post_category',
+'      ,p_post_author',
+'      ,l_published',
+'      ,l_modified',
+'      ,l_next',
+'      ,l_prev',
 '    from blog_v_posts v1',
 '    where 1 = 1',
 '      and post_id = l_post_id',
 '    ;',
 '',
 '    -- set procedure out parameters',
-'    p_newer_id    := int_to_vc2( l_newer.post_id );',
-'    p_newer_title := l_newer.post_title;',
-'    p_older_id    := int_to_vc2( l_older.post_id );',
-'    p_older_title := l_older.post_title;',
-'',
-'    apex_debug.info(',
-'      p_message => ''Fetch post: %s next_id: %s prev_id: %s''',
-'      ,p0 => p_post_id',
-'      ,p1 => p_newer_id',
-'      ,p2 => p_older_id',
+'    p_next_id     := int_to_vc2( l_next.post_id );',
+'    p_next_title  := l_next.post_title;',
+'    p_prev_id     := int_to_vc2( l_prev.post_id );',
+'    p_prev_title  := l_prev.post_title;',
+'    -- Get post published and modified UTC time',
+'    p_post_published := to_char(',
+'       sys_extract_utc( l_published )',
+'      ,''YYYY-MM-DD"T"HH24:MI:SS.FF3"+00:00"''',
+'    );',
+'    p_post_modified := to_char(',
+'       sys_extract_utc( l_modified )',
+'      ,''YYYY-MM-DD"T"HH24:MI:SS.FF3"+00:00"''',
 '    );',
 '',
 '  -- handle errors',
 '  exception',
-'  when no_data_found',
-'  then',
-'',
-'    apex_debug.warn(',
-'       p_message => ''No data found. %s( %s => %s )''',
-'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => ''p_post_id''',
-'      ,p2 => coalesce( p_post_id, ''(null)'' )',
-'    );',
-'',
-'    -- show http error',
-'    raise_http_error( 404 );',
-'    raise;',
-'',
 '  when others',
 '  then',
 '',
 '    apex_debug.error(',
-'       p_message => ''Unhandled error. %s( %s => %s )''',
-'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => ''p_post_id''',
-'      ,p2 => coalesce( p_post_id, ''(null)'' )',
+'       p_message => ''Error: %s %s( %s => %s )''',
+'      ,p0 => sqlerrm',
+'      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'      ,p2 => ''p_post_id''',
+'      ,p3 => coalesce( p_post_id, ''(null)'' )',
 '    );',
 '',
 '    -- show http error',
 '    raise_http_error( 404 );',
 '    raise;',
 '',
-'  end get_post_pagination;',
+'  end get_post_details;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function get_category_title(',
@@ -2283,14 +2257,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_category_id   number;',
 '    l_category_name varchar2(4000);',
 '  begin',
-'',
-'    apex_debug.enter(',
-'      p_routine_name  => ''blog_util.get_category_title''',
-'      ,p_name01       => ''p_category_id''',
-'      ,p_value01      => p_category_id',
-'      ,p_name02       => ''p_escape''',
-'      ,p_value02      => apex_debug.tochar(p_escape)',
-'    );',
 '',
 '    -- raise no data found error if parameter p_category_id is null',
 '    if p_category_id is null then',
@@ -2307,12 +2273,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '    where v1.category_id = l_category_id',
 '    ;',
 '',
-'    apex_debug.info(',
-'      p_message => ''Fetch category: %s return: %s''',
-'      ,p0 => p_category_id',
-'      ,p1 => l_category_name',
-'    );',
-'',
 '    -- espace html from category name if parameter p_escape is true',
 '    -- return category name',
 '    return case when p_escape',
@@ -2323,29 +2283,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  -- handle errors',
 '  exception',
-'  when no_data_found then',
-'',
-'    apex_debug.warn(',
-'       p_message => ''No data found. %s( %s => %s, %s => %s )''',
-'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => ''p_category_id''',
-'      ,p2 => coalesce( p_category_id, ''(null)'' )',
-'      ,p3 => ''p_escape''',
-'      ,p4 => apex_debug.tochar( p_escape )',
-'    );',
-'',
-'    -- show http error',
-'    raise_http_error( 404 );',
-'    raise;',
-'',
 '  when others then',
+'',
 '    apex_debug.error(',
-'       p_message => ''Unhandled error. %s( %s => %s, %s => %s )''',
-'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => ''p_category_id''',
-'      ,p2 => coalesce( p_category_id, ''(null)'' )',
-'      ,p3 => ''p_escape''',
-'      ,p4 => apex_debug.tochar( p_escape )',
+'       p_message => ''Error: %s %s( %s => %s, %s => %s )''',
+'      ,p0 => sqlerrm',
+'      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'      ,p2 => ''p_category_id''',
+'      ,p3 => coalesce( p_category_id, ''(null)'' )',
+'      ,p4 => ''p_escape''',
+'      ,p5 => apex_debug.tochar( p_escape )',
 '    );',
 '',
 '    -- show http error',
@@ -2364,12 +2311,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_tag_name  varchar2(4000);',
 '  begin',
 '',
-'    apex_debug.enter(',
-'      p_routine_name  => ''blog_util.get_tag''',
-'      ,p_name01       => ''p_tag_id''',
-'      ,p_value01      => p_tag_id',
-'    );',
-'',
 '    -- raise no data found error if parameter p_tag_id is null',
 '    if p_tag_id is null then',
 '      raise no_data_found;',
@@ -2386,12 +2327,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '    and t1.tag_id = l_tag_id',
 '    ;',
 '',
-'    apex_debug.info(',
-'      p_message => ''Fetch tag: %s return: %s''',
-'      ,p0 => p_tag_id',
-'      ,p1 => l_tag_name',
-'    );',
-'',
 '    -- espace html from tag name if parameter p_escape is true',
 '    -- return category name',
 '    return case when p_escape',
@@ -2402,28 +2337,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  -- handle errors',
 '  exception',
-'  when no_data_found',
-'  then',
-'',
-'    apex_debug.warn(',
-'       p_message => ''No data found. %s( %s => %s )''',
-'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => ''p_tag_id''',
-'      ,p2 => coalesce( p_tag_id, ''(null)'' )',
-'    );',
-'',
-'    -- show http error',
-'    raise_http_error( 404 );',
-'    raise;',
-'',
 '  when others',
 '  then',
 '',
 '    apex_debug.error(',
-'       p_message => ''Unhandled error. %s( %s => %s )''',
-'      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => ''p_tag_id''',
-'      ,p2 => coalesce( p_tag_id, ''(null)'' )',
+'       p_message => ''Error: %s %s( %s => %s )''',
+'      ,p0 => sqlerrm',
+'      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'      ,p2 => ''p_tag_id''',
+'      ,p3 => coalesce( p_tag_id, ''(null)'' )',
 '    );',
 '',
 '    -- show http error',
@@ -2508,25 +2430,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '      apex_debug.info(',
 '         p_message => ''Header name: %s , header value: %s''',
-'        ,p0 => p_he'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ader_names(i)',
+'        ,p0 => p_header_names(i)',
 '        ,p1 => p_header_values(i)',
 '      );',
 '      -- output HTTP header',
@@ -2594,7 +2498,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- If values are equal then set status header and exit from procedure',
 '    if sys.owa_util.get_cgi_env(''HTTP_IF_MODIFIED_SINCE'') = l_header_values(1)',
 '    then',
-'      sys.owa_util.status_line( 304 );',
+'    '))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'  sys.owa_util.status_line( 304 );',
 '      apex_debug.info(',
 '         p_message => ''File not sent. If-Modified-Since: %s''',
 '        ,p0 => l_header_values(1)',
@@ -3099,8 +3021,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '        apex_collection.add_member(',
 '           p_collection_name => p_collection_name',
 '          ,p_n001     => c1.file_id',
-'          ,p_n002     => coalesce(c1.is_active, 1)',
-'          ,p_n003     => coalesce(c1.is_download, 0)',
+'          ,p_n002     => coalesce( c1.is_active, 1 )',
+'          ,p_n003     => coalesce( c1.is_download, 0 )',
 '          ,p_c001     => l_file_name',
 '          ,p_c002     => c1.file_desc',
 '          ,p_c003     => c1.mime_type',
@@ -3152,7 +3074,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      where 1 = 1',
 '      and collection_name = p_collection_name',
 '    ) new_files',
-'    on (t1.id = new_files.id)',
+'    on ( t1.id = new_files.id )',
 '    when matched then',
 '      update',
 '        set t1.blob_content = new_files.blob_content',
@@ -3166,8 +3088,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '        ,file_desc',
 '      )',
 '      values (',
-'         coalesce( new_files.is_active ,  1 )',
-'        ,coalesce( new_files.is_download, 0 )',
+'         new_files.is_active',
+'        ,new_files.is_download',
 '        ,new_files.file_name',
 '        ,new_files.mime_type',
 '        ,new_files.blob_content',
@@ -3584,25 +3506,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '-- none',
 '--------------------------------------------------------------------------------',
-'-------------------------------------------------------'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-------------------------',
+'--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -3655,7 +3559,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '            then ''maxlength="'' || p_item.element_max_length || ''" ''',
 '           end',
 '        ||',
-'          apex_plugin_util.get_element_attributes(',
+'          apex_plugin_ut'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'il.get_element_attributes(',
 '             p_item           => p_item',
 '            ,p_name           => l_name',
 '            ,p_default_class  => ''text_field apex-item-text''',
@@ -4575,25 +4497,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure new_comment_notify(',
-'    p_post_id         in '))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'varchar2,',
+'    p_post_id         in varchar2,',
 '    p_app_name        in varchar2,',
 '    p_email_template  in varchar2',
 '  )',
@@ -4653,7 +4557,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end new_comment_notify;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure reply_notify(',
+'  proced'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ure reply_notify(',
 '    p_app_id          in varchar2,',
 '    p_app_name        in varchar2,',
 '    p_post_id         in varchar2,',
@@ -5540,25 +5462,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  procedure sitemap_archives',
 '  as',
-'    l_xml           bl'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ob;',
+'    l_xml           blob;',
 '    l_cache_control varchar2(256);',
 '  begin',
 '',
@@ -5620,6 +5524,24 @@ wwv_flow_imp_shared.append_to_install_script(
 '        "urlset",',
 '        xmlattributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns"),',
 '        (',
+''))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '          xmlagg(',
 '            xmlelement( "url"',
 '              ,xmlelement( "loc",',
