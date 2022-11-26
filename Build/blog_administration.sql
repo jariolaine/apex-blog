@@ -160,7 +160,7 @@ wwv_flow_imp.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221126093838'
+,p_last_upd_yyyymmddhh24miss=>'20221126134408'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>471
 ,p_print_server_type=>'INSTANCE'
@@ -32296,6 +32296,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '            ,xmlattributes(',
 '              lkp2.tag_url                                                                  as "href"',
 '              ,''t-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft''  as "class"',
+'              ,''tag''                                                                        as "rel"',
 '            )',
 '            ,xmlelement( "span"',
 '              ,xmlattributes(',
@@ -32553,10 +32554,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
-'  :new.changed_on := localtimestamp;',
-'  :new.changed_by := coalesce(',
-'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_c'))
+'  :new.changed_on := loc'))
 );
 null;
 end;
@@ -32565,7 +32563,10 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ontext( ''USERENV'', ''PROXY_USER'' )',
+'altimestamp;',
+'  :new.changed_by := coalesce(',
+'     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'    ,sys_context( ''USERENV'', ''PROXY_USER'' )',
 '    ,sys_context( ''USERENV'', ''SESSION_USER'' )',
 '  );',
 '',
@@ -33558,12 +33559,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        i.item_name,',
 '        i.item_value',
 '      from blog_v_init_items i',
-'      where i.application_id = l_app_id',
-'    ) loop',
-'',
-'      -- set item session state and no commit',
-'      apex_util.set_session_state(',
-'       '))
+'      where i.application_id = l_app_id'))
 );
 null;
 end;
@@ -33572,7 +33568,12 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' p_name    => c1.item_name',
+'',
+'    ) loop',
+'',
+'      -- set item session state and no commit',
+'      apex_util.set_session_state(',
+'        p_name    => c1.item_name',
 '        ,p_value  => c1.item_value',
 '        ,p_commit => false',
 '      );',
@@ -34636,12 +34637,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  procedure add_post_tags(',
 '    p_post_id in varchar2,',
-'    p_tags    in varchar2,',
-'    p_sep     in varchar2 default '',''',
-'  )',
-'  as',
-'    l_post_id     number;',
-'   '))
+'  '))
 );
 null;
 end;
@@ -34650,7 +34646,12 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' l_tag_id      number;',
+'  p_tags    in varchar2,',
+'    p_sep     in varchar2 default '',''',
+'  )',
+'  as',
+'    l_post_id     number;',
+'    l_tag_id      number;',
 '    l_display_seq number;',
 '    l_tag_tab     apex_t_varchar2;',
 '    l_tag_id_tab  apex_t_number;',
@@ -35646,12 +35647,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- process code tags',
 '    build_code_tab(',
-'       p_comment => p_comment',
-'      ,p_code_tab => l_code_tab',
-'    );',
-'',
-'    -- split comment to collection by new line character',
-''))
+'       p_comment => p_comm'))
 );
 null;
 end;
@@ -35660,6 +35656,11 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ent',
+'      ,p_code_tab => l_code_tab',
+'    );',
+'',
+'    -- split comment to collection by new line character',
 '    l_comment_tab := apex_string.split( p_comment, chr(10) );',
 '',
 '    -- comment is stored to collection',
@@ -36635,10 +36636,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      )',
 '      as blob encoding ''UTF-8'' indent size=2',
 '    )',
-'    into l_xml',
-'    from apex_application_page_proc t1',
-'    where 1 = 1',
-'      and t1.process_name != p_process_na'))
+'    into l'))
 );
 null;
 end;
@@ -36647,7 +36645,10 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'me',
+'_xml',
+'    from apex_application_page_proc t1',
+'    where 1 = 1',
+'      and t1.process_name != p_process_name',
 '      and t1.application_id = p_app_id',
 '      and t1.page_id = p_app_page_id',
 '      and t1.build_option = l_build_option',

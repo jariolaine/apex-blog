@@ -1508,6 +1508,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
             ,xmlattributes(
               lkp2.tag_url                                                                  as "href"
               ,'t-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft'  as "class"
+              ,'tag'                                                                        as "rel"
             )
             ,xmlelement( "span"
               ,xmlattributes(

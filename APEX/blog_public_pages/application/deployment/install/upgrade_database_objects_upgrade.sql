@@ -1570,6 +1570,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '            ,xmlattributes(',
 '              lkp2.tag_url                                                                  as "href"',
 '              ,''t-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft''  as "class"',
+'              ,''tag''                                                                        as "rel"',
 '            )',
 '            ,xmlelement( "span"',
 '              ,xmlattributes(',
@@ -2491,10 +2492,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- Compare request If-Modified-Since header to Last-Modified',
 '    -- If values are equal then set status header and exit from procedure',
-'    if sys.owa_util.get_cgi_env(''HTTP_IF_MODIFIED_SINCE'') = l_header_values(1)',
-'    then',
-'      sys.owa_util.status_line( 304 );',
-'      apex_debug.info'))
+'    if sys.owa_util.get_cgi_env(''HTTP_IF_MODIFI'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2512,7 +2510,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'(',
+'ED_SINCE'') = l_header_values(1)',
+'    then',
+'      sys.owa_util.status_line( 304 );',
+'      apex_debug.info(',
 '         p_message => ''File not sent. If-Modified-Since: %s''',
 '        ,p0 => l_header_values(1)',
 '      );',
@@ -3552,10 +3553,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '           end',
 '        || case when p_item.element_max_length  is not null',
 '            then ''maxlength="'' || p_item.element_max_length || ''" ''',
-'           end',
-'        ||',
-'          apex_plugin_util.get_element_attributes(',
-'             p_item          '))
+'     '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3573,7 +3571,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' => p_item',
+'      end',
+'        ||',
+'          apex_plugin_util.get_element_attributes(',
+'             p_item           => p_item',
 '            ,p_name           => l_name',
 '            ,p_default_class  => ''text_field apex-item-text''',
 '          )',
@@ -4575,9 +4576,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '              ,p_post_id      => p_post_id',
 '              ,p_canonical    => ''YES''',
 '            )',
-'        ,''UNSUBSCRIBE_LINK'' value',
-'            blog_url.get_unsubscribe(',
-'               p_application     => p_app_'))
+'        ,''UNS'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4595,7 +4594,9 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'id',
+'UBSCRIBE_LINK'' value',
+'            blog_url.get_unsubscribe(',
+'               p_application     => p_app_id',
 '              ,p_post_id         => p_post_id',
 '              ,p_subscription_id => t1.id',
 '            )',
