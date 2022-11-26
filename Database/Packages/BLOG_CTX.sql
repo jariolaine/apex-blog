@@ -11,6 +11,7 @@ as
 --    Jari Laine 22.06.2020 - Created
 --    Jari Laine 30.04.2022 - Changed procedure generate_post_datastore to use XML functions
 --    Jari Laine 02.05.2022 - Improved text search query function get_post_search returns
+--    Jari Laine 25.11.2022 - Changed generate_post_datastore remove HTML from post body
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -64,7 +65,7 @@ as
               then xmlelement( "tags", v1.visible_tags )
           end
         )
-      ) || '<body>' || v1.body_html || '</body>'
+      ) || '<body>' || apex_escape.striphtml( v1.body_html ) || '</body>'
     into tlob
     from blog_v_all_posts v1
     where 1 = 1

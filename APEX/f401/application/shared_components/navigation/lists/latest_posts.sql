@@ -34,11 +34,7 @@ wwv_flow_imp_shared.create_list(
 '  ,''z-linkList''   as attribute3',
 'from #OWNER#.blog_v_posts_last20 v1',
 'where 1 = 1',
-'-- Use function to get max row count. Region is cached',
-'and v1.display_seq <= (',
-'  select #OWNER#.blog_util.get_attribute_value( ''G_LATEST_POST_ROWS'' )',
-'  from dual',
-')',
+'and v1.display_seq <= :G_LATEST_POST_ROWS',
 'order by v1.published_on desc'))
 ,p_list_status=>'PUBLIC'
 ,p_required_patch=>wwv_flow_imp.id(8677319562925389)

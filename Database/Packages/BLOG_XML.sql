@@ -92,7 +92,11 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- none
+
+  c_lastmod_format  constant varchar2(26) := 'YYYY-MM-DD"T"HH24:MI:SS"Z"';
+  c_pubdate_format  constant varchar2(32) := 'Dy, DD Mon YYYY HH24:MI:SS "GMT"';
+  c_pubdate_lang    constant varchar2(25) := 'NLS_DATE_LANGUAGE=ENGLISH';
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -121,7 +125,9 @@ as
     l_cache_control varchar2(256);
     l_last_modified varchar2(256);
     l_max_published timestamp;
-    l_rss_version   constant varchar2(5) := '2.0';
+
+    l_rss_version   constant varchar2(5)  := '2.0';
+
   begin
 
     -- RSS feed URL
@@ -138,8 +144,8 @@ as
     );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
-       p_app_page_id => 'HOME'
-      ,p_canonical => 'YES'
+       p_page       => 'HOME'
+      ,p_canonical  => 'YES'
     );
     -- rss transformations (XSLT)
     l_xsl_url := blog_url.get_rss_xsl;
@@ -193,8 +199,8 @@ as
                 ,xmlelement( "pubDate",
                   to_char(
                      sys_extract_utc( posts.published_on )
-                    ,'Dy, DD Mon YYYY HH24:MI:SS "GMT"'
-                    ,'NLS_DATE_LANGUAGE=ENGLISH'
+                    ,c_pubdate_format
+                    ,c_pubdate_lang
                   )
                 )
                 ,xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id )
@@ -216,19 +222,20 @@ as
         ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_RSS' )
       )
     ;
+
     l_last_modified :=
       to_char(
          sys_extract_utc( l_max_published )
-        ,'Dy, DD Mon YYYY HH24:MI:SS "GMT"'
-        ,'NLS_DATE_LANGUAGE=ENGLISH'
+        ,c_pubdate_format
+        ,c_pubdate_lang
       )
     ;
 
     blog_util.download_file(
        p_blob_content   => l_rss
       ,p_mime_type      => 'application/xml'
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition', 'Last-Modified' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xml"', l_last_modified  )
+      ,p_header_names   => apex_t_varchar2( 'Cache-Control',  'Content-Disposition',        'Last-Modified' )
+      ,p_header_values  => apex_t_varchar2( l_cache_control,  'inline; filename="rss.xml"', l_last_modified  )
       ,p_charset        => 'UTF-8'
     );
 
@@ -320,17 +327,14 @@ as
     p_process_name  in varchar2
   )
   as
-    l_xml           blob;
     l_url           varchar2(4000);
+    l_xml           blob;
     l_cache_control varchar2(256);
     l_build_option  constant varchar2(256) := 'BLOG_FEATURE_SITEMAP';
   begin
 
-    l_url := blog_url.get_tab(
-       p_app_page_id  => p_app_page_id
-      ,p_request      => 'application_process='
-      ,p_canonical    => 'YES'
-    );
+    -- get url to call sitemaps process
+    l_url := blog_url.get_process;
 
     select xmlserialize( document
       xmlelement(
@@ -339,7 +343,8 @@ as
         (
           xmlagg(
             xmlelement( "sitemap"
-              ,xmlelement( "loc", l_url || t1.process_name )
+              ,xmlelement( "loc", l_url || t1.process_name
+              )
             ) order by t1.execution_sequence
           )
         )
@@ -391,8 +396,8 @@ as
             xmlelement( "url"
               ,xmlelement( "loc",
                 blog_url.get_tab(
-                   p_app_page_id => v1.page_alias
-                  ,p_canonical => 'YES'
+                   p_page       => v1.page_alias
+                  ,p_canonical  => 'YES'
                 )
               )
             ) order by v1.page_id
@@ -459,7 +464,7 @@ as
                   sys_extract_utc(
                     greatest( posts.published_on, posts.changed_on )
                   )
-                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
+                  ,c_lastmod_format
                 )
               )
             ) order by posts.published_on desc
@@ -512,7 +517,7 @@ as
               ,xmlelement( "lastmod",
                 to_char(
                   sys_extract_utc( cat.changed_on )
-                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
+                  ,c_lastmod_format
                 )
               )
             ) order by cat.display_seq desc
@@ -565,7 +570,7 @@ as
               ,xmlelement( "lastmod",
                 to_char(
                   sys_extract_utc( arc.changed_on )
-                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
+                  ,c_lastmod_format
                 )
               )
             ) order by arc.archive_year desc
@@ -618,7 +623,7 @@ as
               ,xmlelement( "lastmod",
                 to_char(
                   sys_extract_utc( tags.changed_on )
-                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
+                  ,c_lastmod_format
                 )
               )
             ) order by tags.changed_on

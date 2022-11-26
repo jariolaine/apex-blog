@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221123094822'
+,p_last_upd_yyyymmddhh24miss=>'20221124201934'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(25312085512124215)
@@ -69,22 +69,23 @@ wwv_flow_imp_page.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.file_id    as id',
-'  ,v1.file_name      as list_title',
-'  ,v1.file_desc      as list_text',
-'  ,v1.file_size      as list_badge',
-'  ,null              as list_class',
-'  ,null              as icon_class',
-'  ,null              as icon_color_class',
+'select',
+'   v1.file_id   as id',
+'  ,v1.file_name as list_title',
+'  ,v1.file_desc as list_text',
+'  ,v1.file_size as list_badge',
+'  ,null         as list_class',
+'  ,null         as icon_class',
+'  ,null         as icon_color_class',
 '  ,apex_page.get_url(',
-'     p_page      => 1003',
+'     p_page     => 1003',
 '    ,p_session  => null',
 '    ,p_request  => ''application_process=download''',
 '    ,p_items    => ''P11_FILE_NAME''',
 '    ,p_values   => v1.file_name',
-'  )                  as link',
-'  ,null              as link_attr',
-'  ,null              as link_class',
+'  )             as link',
+'  ,null         as link_attr',
+'  ,null         as link_class',
 'from #OWNER#.blog_v_files v1',
 'where 1 = 1',
 'order by v1.file_name'))

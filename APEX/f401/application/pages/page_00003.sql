@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221123094727'
+,p_last_upd_yyyymmddhh24miss=>'20221124202908'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6979825819516521)
@@ -50,18 +50,13 @@ wwv_flow_imp_page.create_report_region(
 '  ,v1.txt_posted_on   as label_03',
 '  ,v1.published_on    as value_03',
 '  ,v1.txt_tags        as label_04',
-'  ,tags_html1         as value_04',
+'  ,v1.tags_html1      as value_04',
 'from #OWNER#.blog_v_posts_apex v1',
 'join #OWNER#.blog_post_uds t1',
 '  on v1.post_id = t1.post_id',
-'cross join(',
-'  select',
-'    #OWNER#.blog_ctx.get_post_search( :P0_SEARCH ) as search_string',
-'  from dual',
-') text_search',
 'where 1 = 1',
-'  and text_search.search_string is not null',
-'  and contains( t1.dummy, text_search.search_string, 1 ) > 0',
+'  and :P3_TEXT_SEARCH is not null',
+'  and contains( t1.dummy, :P3_TEXT_SEARCH, 1 ) > 0',
 'order by score(1) desc',
 '  ,v1.published_on desc'))
 ,p_ajax_enabled=>'Y'
@@ -216,6 +211,24 @@ wwv_flow_imp_page.create_report_columns(
 ,p_attribute_01=>'HTML'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(22524253440146437)
+,p_name=>'P3_TEXT_SEARCH'
+,p_item_sequence=>10
+,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_protection_level=>'I'
+,p_attribute_01=>'Y'
+);
+wwv_flow_imp_page.create_page_computation(
+ p_id=>wwv_flow_imp.id(22524369772146438)
+,p_computation_sequence=>10
+,p_computation_item=>'P3_TEXT_SEARCH'
+,p_computation_point=>'BEFORE_HEADER'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
+,p_computation=>'#OWNER#.blog_ctx.get_post_search( :P0_SEARCH )'
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(26065707389107835)

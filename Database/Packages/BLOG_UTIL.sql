@@ -43,6 +43,7 @@ as
 --    Jari Laine 21.11.2022 - Added DETERMINISTIC caluse to function int_to_vc2
 --    Jari Laine 23.11.2022 - Changed procedures exception handling and removed some unnecessary calls to apex_debug
 --                          - Renamed procedure get_post_pagination to get_post_details and added more out parameters
+--    Jari Laine 24.11.2022 . Removed obsolete parameter p_escape from functions get_category_title and get_tag
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -89,15 +90,13 @@ as
 -- Called from:
 --  public app page 14 Pre-Rendering Computations
   function get_category_title(
-    p_category_id     in varchar2,
-    p_escape          in boolean
+    p_category_id     in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 6 Pre-Rendering Computations
   function get_tag(
-    p_tag_id          in varchar2,
-    p_escape          in boolean
+    p_tag_id          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
@@ -296,12 +295,6 @@ as
     l_value varchar2(4000);
   begin
 
-    apex_debug.enter(
-      p_routine_name  => 'blog_util.get_attribute_value'
-      ,p_name01       => 'p_attribute_name'
-      ,p_value01      => p_attribute_name
-    );
-
     -- raise no data found error if parameter p_attribute_name is null
     if p_attribute_name is null then
       raise no_data_found;
@@ -405,11 +398,11 @@ as
     p_prev_title      out nocopy varchar2
   )
   as
-    l_post_id     number;
-    l_next       blog_t_post;
-    l_prev       blog_t_post;
-    l_published   timestamp with local time zone;
-    l_modified    timestamp with local time zone;
+    l_post_id   number;
+    l_next      blog_t_post;
+    l_prev      blog_t_post;
+    l_published timestamp with local time zone;
+    l_modified  timestamp with local time zone;
   begin
 
     -- raise no data found error if parameter p_post_id is null
@@ -466,11 +459,11 @@ as
     -- Get post published and modified UTC time
     p_post_published := to_char(
        sys_extract_utc( l_published )
-      ,'YYYY-MM-DD"T"HH24:MI:SS.FF3"+00:00"'
+      ,'YYYY-MM-DD"T"HH24:MI:SS.FF3"Z"'
     );
     p_post_modified := to_char(
        sys_extract_utc( l_modified )
-      ,'YYYY-MM-DD"T"HH24:MI:SS.FF3"+00:00"'
+      ,'YYYY-MM-DD"T"HH24:MI:SS.FF3"Z"'
     );
 
   -- handle errors
@@ -494,8 +487,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_category_title(
-    p_category_id in varchar2,
-    p_escape      in boolean
+    p_category_id in varchar2
   ) return varchar2
   as
     l_category_id   number;
@@ -517,13 +509,8 @@ as
     where v1.category_id = l_category_id
     ;
 
-    -- espace html from category name if parameter p_escape is true
     -- return category name
-    return case when p_escape
-      then apex_escape.html( l_category_name )
-      else l_category_name
-      end
-    ;
+    return l_category_name;
 
   -- handle errors
   exception
@@ -535,8 +522,6 @@ as
       ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
       ,p2 => 'p_category_id'
       ,p3 => coalesce( p_category_id, '(null)' )
-      ,p4 => 'p_escape'
-      ,p5 => apex_debug.tochar( p_escape )
     );
 
     -- show http error
@@ -547,8 +532,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tag(
-    p_tag_id in varchar2,
-    p_escape in boolean
+    p_tag_id in varchar2
   ) return varchar2
   as
     l_tag_id    number;
@@ -571,13 +555,8 @@ as
     and t1.tag_id = l_tag_id
     ;
 
-    -- espace html from tag name if parameter p_escape is true
     -- return category name
-    return case when p_escape
-      then apex_escape.html( l_tag_name )
-      else l_tag_name
-      end
-    ;
+    return l_tag_name;
 
   -- handle errors
   exception

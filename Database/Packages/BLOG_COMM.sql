@@ -560,13 +560,13 @@ as
         ,'POST_TITLE'       value v1.title
         ,'POST_LINK'        value
             blog_url.get_post(
-               p_app_id     => p_app_id
-              ,p_post_id    => p_post_id
-              ,p_canonical  => 'YES'
+               p_application  => p_app_id
+              ,p_post_id      => p_post_id
+              ,p_canonical    => 'YES'
             )
         ,'UNSUBSCRIBE_LINK' value
             blog_url.get_unsubscribe(
-               p_app_id          => p_app_id
+               p_application     => p_app_id
               ,p_post_id         => p_post_id
               ,p_subscription_id => t1.id
             )

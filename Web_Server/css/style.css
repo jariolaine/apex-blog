@@ -8,7 +8,7 @@ blockquote::after {
   content: close-quote;
 }
 /**************************************
-* Logo
+* Public application logo
 **************************************/
 .z-app-logo {
   display: flex;
@@ -36,13 +36,16 @@ blockquote::after {
   }
 }
 /**************************************
-* Media list report extra classes
+* Public app media list report extra classes
+* Used in file repository report
+* Needed for wrap file name on small screens
 **************************************/
 .z-MediaList--files .t-MediaList-title {
   word-break: break-word;
 }
 /**************************************
-* Footer Link List
+* Public app custom list template:
+*	  Blog Footer Link List (Custom 1)
 *
 * Credits:
 *   https://epicbootstrap.com/snippets/footer-basic
@@ -58,7 +61,7 @@ blockquote::after {
   font-size: 1.125rem;
 }
 .z-footerList .z-footerList-item {
-  padding: 0 10px;
+  padding: 0 0.625rem;
   font-size: inherit;
 }
 .z-footerList .z-footerList-link {
@@ -104,17 +107,6 @@ blockquote::after {
   width: 100%;
 }
 /**************************************
-* Search Result tags column
-**************************************/
-.z-search--tags {
-  margin-inline-start: 0.5rem;
-  margin-bottom: 0.5rem;
-  display: inline-block;
-}
-.z-search--tags:first-child {
-  margin-inline-start: 0!important;
-}
-/**************************************
 * Post report
 **************************************/
 .z-post {
@@ -158,7 +150,6 @@ blockquote::after {
   border-top-color: var(--ut-component-inner-border-color);
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 1rem;
 }
 .z-post--footer {
@@ -207,7 +198,8 @@ blockquote::after {
   }
 }
 /**************************************
-* General custom report
+* Public app custom report template:
+*   Blog Content (Custom 2)
 **************************************/
 .z-Content .z-Content--Row {
   border-width: var(--ut-component-border-width);
@@ -326,7 +318,7 @@ pre.z-program-code code {
   }
 }
 /**************************************
-* Comments report
+* Comments classic report
 **************************************/
 .z-comment .t-Comments-body {
   width: 0;
@@ -335,13 +327,15 @@ pre.z-program-code code {
   overflow-wrap: break-word;
 }
 /**************************************
-* Link list extra classes
+* Public app right column lists extra class
 **************************************/
 .z-linkList:hover {
   background-color: var(--ut-linkslist-hover-background-color, var(--ut-component-highlight-background-color));
 }
 /**************************************
 * Tag Cloud
+* Public app cutom list template:
+*   Blog Tag Cloud (Custom 2)
 *
 * Credits:
 *   https://dev.to/alvaromontoro/create-a-tag-cloud-with-html-and-css-1e90
@@ -419,6 +413,17 @@ pre.z-program-code code {
   ul.z-tagCloud * {
     transition: none !important;
   }
+}
+/**************************************
+* Public app search result reports tags
+**************************************/
+.z-search--tags {
+  margin-inline-start: 0.5rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+.z-search--tags:first-child {
+  margin-inline-start: 0!important;
 }
 /**************************************
 * Modifiers

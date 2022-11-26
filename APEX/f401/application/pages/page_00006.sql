@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221123094755'
+,p_last_upd_yyyymmddhh24miss=>'20221124183024'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(13706719753736206)
@@ -243,8 +243,7 @@ wwv_flow_imp_page.create_page_computation(
 ,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_util.get_tag(',
-'   p_tag_id => :P6_TAG_ID',
-'  ,p_escape => false',
+'  p_tag_id => :P6_TAG_ID',
 ')'))
 ,p_computation_comment=>'Fetch tag name to item. Item is used in page and region title.'
 ,p_computation_error_message=>'Tag not found.'

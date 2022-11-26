@@ -27,6 +27,7 @@ prompt --install
 @@application/shared_components/logic/application_items/g_app_desc.sql
 @@application/shared_components/logic/application_items/g_app_name.sql
 @@application/shared_components/logic/application_items/g_app_version.sql
+@@application/shared_components/logic/application_items/g_latest_post_rows.sql
 @@application/shared_components/logic/application_items/g_post_title_date_format.sql
 @@application/shared_components/logic/application_items/g_search_rows.sql
 @@application/shared_components/logic/application_settings.sql
@@ -153,6 +154,7 @@ prompt --install
 @@application/deployment/install/upgrade_patch_21_2_20220421.sql
 @@application/deployment/install/upgrade_patch_21_2_20220508.sql
 @@application/deployment/install/upgrade_patch_21_2_20220612.sql
+@@application/deployment/install/upgrade_patch_22_2_20221124.sql
 @@application/deployment/install/upgrade_database_objects_upgrade.sql
 @@application/deployment/install/upgrade_rereate_text_index.sql
 @@application/deployment/install/upgrade_update_version_info.sql

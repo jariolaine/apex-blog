@@ -16,12 +16,10 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
   ,greatest(
      t1.published_on
     ,t1.changed_on
-    ,t2.changed_on
   )                                                     as changed_on
   ,t1.archive_year_month                                as archive_year_month
   ,t1.archive_year                                      as archive_year
-  ,t3.display_seq
-                     as category_seq
+  ,t3.display_seq                                       as category_seq
   -- Generate post URL
   ,blog_url.get_post(
      p_post_id => t1.id
@@ -33,10 +31,8 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
         xmlserialize( content
           xmlelement( "a"
             ,xmlattributes(
-              blog_url.get_tag(
-                 p_tag_id => lkp1.tag_id
-              )                         as "href"
-              ,'z-search--tags'         as "class"
+              lkp1.tag_url      as "href"
+              ,'z-search--tags' as "class"
             )
             ,lkp1.tag
           )
@@ -54,9 +50,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
         xmlagg(
           xmlelement( "a"
             ,xmlattributes(
-              blog_url.get_tag(
-                p_tag_id => lkp2.tag_id
-              )                                                                             as "href"
+              lkp2.tag_url                                                                  as "href"
               ,'t-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft'  as "class"
             )
             ,xmlelement( "span"

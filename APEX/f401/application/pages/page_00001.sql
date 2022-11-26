@@ -27,7 +27,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221123093453'
+,p_last_upd_yyyymmddhh24miss=>'20221125135514'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6432040642894060)
@@ -56,7 +56,6 @@ wwv_flow_imp_page.create_report_region(
 'where 1 = 1',
 'order by v1.published_on desc',
 ''))
-,p_optimizer_hint=>'APEX$USE_ROWNUM_PAGINATION'
 ,p_translate_title=>'N'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false

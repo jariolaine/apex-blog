@@ -15,12 +15,13 @@ wwv_flow_imp_shared.create_list_of_values(
  p_id=>wwv_flow_imp.id(17536632976390056)
 ,p_lov_name=>'LINK_GROUPS'
 ,p_lov_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select title  as return_value',
-'  ,title      as display_vaue',
-' from blog_link_groups',
+'select distinct',
+'   group_title        as return_value',
+'  ,group_title        as display_vaue',
+'  ,group_display_seq  as display_seq',
+' from #OWNER#.blog_v_links',
 ' where 1 = 1',
-' and is_active = 1',
-' order by display_seq',
+' order by 3',
 ''))
 ,p_source_type=>'SQL'
 ,p_location=>'LOCAL'

@@ -19,7 +19,7 @@ wwv_flow_imp_shared.create_shortcut(
 ,p_comments=>'Get canonical link for page that is accessed form tabs. Used in pages 1, 10, 11 and 12 page html header.'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_html.get_tab_canonical_link(',
-'  p_app_page_id => :APP_PAGE_ID',
+'  p_page => :APP_PAGE_ID',
 ');'))
 );
 wwv_flow_imp.component_end;

@@ -62,7 +62,7 @@ td[headers="COPY_URL"] {
   visibility: hidden!important;
 }
 /**************************************
-* Comments IR detail view
+* Admin application comments IR detail view
 **************************************/
 .z-comment-IR {
   display: flex;
@@ -144,7 +144,6 @@ blockquote::after {
   border-top-color: var(--ut-component-inner-border-color);
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 1rem;
 }
 .z-post--footer {
@@ -206,17 +205,6 @@ blockquote::after {
   width: 100%;
 }
 /**************************************
-* Search Result tags column
-**************************************/
-.z-search--tags {
-  margin-inline-start: 0.5rem;
-  margin-bottom: 0.5rem;
-  display: inline-block;
-}
-.z-search--tags:first-child {
-  margin-inline-start: 0!important;
-}
-/**************************************
 * Program code formatting
 **************************************/
 /* Pre APEX 22.2 CKEditor 4*/
@@ -270,7 +258,7 @@ pre.z-program-code code {
   font-size: inherit;
 }
 /**************************************
-* Comments report
+* Comments classic report
 **************************************/
 .z-comment .t-Comments-body {
   width: 0;
@@ -280,14 +268,15 @@ pre.z-program-code code {
 }
 /**************************************
 * Status Marker
+* Ussed in admin application settings IG
 *
 * Credits to fac586:
 *   https://community.oracle.com/tech/developers/discussion/comment/15630636/#Comment_15630636
 **************************************/
 .z-status-marker {
   position: relative;
-  margin: -8px -12px;
-  padding: 8px 12px;
+  margin: -0.5rem -0.75rem;
+  padding: 0.5rem 0.75rem;
 }
 .z-status-marker.z-status-marker--left::before {
   position: absolute;
@@ -305,7 +294,7 @@ pre.z-program-code code {
   position: absolute;
   top: 0;
   right: 0;
-  border: 6px solid transparent;
+  border: 0.375rem solid transparent;
   width: 0;
   height: 0;
   content: "";
@@ -314,13 +303,13 @@ pre.z-program-code code {
   border-color: var(--u-color-9) var(--u-color-9) transparent transparent;
 }
 /**************************************
-* Login page horizontal ruler
+* Admin app login page horizontal ruler
 **************************************/
 .z-hr-section {
   display: flex;
   flex-basis: 100%;
   align-items: center;
-  margin: 8px 0px;
+  margin: 0.5rem 0px;
 }
 .z-hr-section::before,
 .z-hr-section::after {
@@ -332,10 +321,10 @@ pre.z-program-code code {
   line-height: 0px;
 }
 .z-hr-section::before {
-  margin-right: 8px;
+  margin-right: 0.5rem;
 }
 .z-hr-section::after {
-  margin-left: 8px;
+  margin-left: 0.5rem;
 }
 /**************************************
 * Modifiers

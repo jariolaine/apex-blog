@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221121073651'
+,p_last_upd_yyyymmddhh24miss=>'20221124190252'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(25312381302124218)
@@ -53,15 +53,16 @@ wwv_flow_imp_page.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.link_title      as list_title',
-'  ,v1.link_desc           as list_text',
-'  ,null                   as list_class',
-'  ,null                   as icon_class',
-'  ,null                   as icon_color_class',
-'  ,v1.link_url            as link',
-'  ,null                   as link_attr',
-'  ,null                   as link_class',
-'  ,v1.group_title         as list_badge',
+'select',
+'   v1.link_title  as list_title',
+'  ,v1.link_desc   as list_text',
+'  ,null           as list_class',
+'  ,null           as icon_class',
+'  ,null           as icon_color_class',
+'  ,v1.link_url    as link',
+'  ,null           as link_attr',
+'  ,null           as link_class',
+'  ,v1.group_title as list_badge',
 'from #OWNER#.blog_v_links v1',
 'where 1 = 1',
 'order by v1.group_display_seq',
@@ -216,12 +217,13 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_CHECKBOX'
 ,p_named_lov=>'LINK_GROUPS'
 ,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select title  as return_value',
-'  ,title      as display_vaue',
-' from blog_link_groups',
+'select distinct',
+'   group_title        as return_value',
+'  ,group_title        as display_vaue',
+'  ,group_display_seq  as display_seq',
+' from #OWNER#.blog_v_links',
 ' where 1 = 1',
-' and is_active = 1',
-' order by display_seq',
+' order by 3',
 ''))
 ,p_item_icon_css_classes=>'fa-tag'
 ,p_item_template_options=>'#DEFAULT#'

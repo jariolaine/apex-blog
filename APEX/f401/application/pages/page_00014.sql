@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221123092417'
+,p_last_upd_yyyymmddhh24miss=>'20221124183045'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(40117793173805532)
@@ -221,8 +221,7 @@ wwv_flow_imp_page.create_page_computation(
 ,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#OWNER#.blog_util.get_category_title(',
-'   p_category_id => :P14_CATEGORY_ID',
-'  ,p_escape      => false',
+'  p_category_id => :P14_CATEGORY_ID',
 ')'))
 ,p_computation_error_message=>'Category not found.'
 );

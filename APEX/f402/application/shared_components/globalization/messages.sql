@@ -359,7 +359,7 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(19895931361259762)
 ,p_name=>'BLOG_HELP_G_LATEST_POST_ROWS'
-,p_message_text=>'The number of post displayed on the latest post list. The value must be an integer between %0 and %1.'
+,p_message_text=>'The number of post displayed on the latest post list. The value must be an integer between %0 and %1. Changes to this settings only take effect in new sessions of the public application.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(12338282619659168)

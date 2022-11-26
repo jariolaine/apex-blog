@@ -16,15 +16,11 @@ wwv_flow_imp_shared.create_list(
 ,p_name=>'Footer Modal Pages'
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select null                       as list_level',
-'  ,v1.content_desc                as list_label',
-'  ,apex_page.get_url(',
-'     p_page     => 1002',
-'    ,p_application => :APP_ID',
-'    ,p_session => :APP_SESSION',
-'    ,p_request  => v1.content_id',
-'  )                               as list_target',
-'  ,''N''                            as is_current',
+'select',
+'   1                as list_level',
+'  ,v1.content_desc  as list_label',
+'  ,v1.content_url   as list_target',
+'  ,''N''              as is_current',
 'from #OWNER#.blog_v_dynamic_content v1',
 'where 1 = 1',
 '  and v1.content_type = ''FOOTER_LINK''',
