@@ -9,7 +9,7 @@
     "url": "https://github.com/jariolaine/apex-blog",
     "source": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/Build/blog_administration.sql",
     "zip": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/Build/blog_administration.zip",
-    "license": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/Build/LICENSE.txt"
+    "license": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/LICENSE.txt"
   },
   {
     "internalName": "APEX_BLOG_PUBLIC",
@@ -21,8 +21,6 @@
     "url": "https://github.com/jariolaine/apex-blog",
     "source": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/Build/blog_public_pages.sql",
     "zip": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/Build/blog_public_pages.zip",
-    "license": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/Build/LICENSE.txt"
+    "license": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/LICENSE.txt"
   }]
 }
-
-
