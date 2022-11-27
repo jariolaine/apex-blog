@@ -160,7 +160,7 @@ wwv_flow_imp.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221126134408'
+,p_last_upd_yyyymmddhh24miss=>'20221127160900'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>471
 ,p_print_server_type=>'INSTANCE'
@@ -31336,6 +31336,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--    Jari Laine 30.10.2021 - Removed functions validate_email and is_email_verified',
 '--    Jari Laine 13.04.2022 - Posibility add multiple flags using procedure flag_comment',
 '--                            Posibility remove multiple flags using procedure unflag_comment',
+'--    Jari Laine 27.11.2022 - Changed procedure build_code_tab remove leading and trailing line breaks from posted code',
 '--',
 '--  TO DO:',
 '--    #1  comment HTML validation should be improved',
@@ -31706,10 +31707,7 @@ wwv_flow_imp_shared.append_to_install_script(
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "BUILD_OPTION_NAME", "BUILD_OPTION_GROUP", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "FEATURE_GROUP_SEQ", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "'
 ||'LAST_UPDATED_BY", "IS_ACTIVE", "FEATURE_PARENT", "HELP_MESSAGE") AS',
 '  select',
-'   t2.id                        as id',
-'  ,t1.application_id            as application_id',
-'  ,t1.build_option_id           as build_option_id',
-'  ,t2.'))
+'   t2.id                 '))
 );
 null;
 end;
@@ -31718,7 +31716,10 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'build_option_name         as build_option_name',
+'       as id',
+'  ,t1.application_id            as application_id',
+'  ,t1.build_option_id           as build_option_id',
+'  ,t2.build_option_name         as build_option_name',
 '  ,t2.build_option_group        as build_option_group',
 '  ,t2.display_seq               as display_seq',
 '  ,apex_lang.message(',
@@ -32548,13 +32549,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      :new.created_by',
 '      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
 '      ,sys_context( ''USERENV'', ''PROXY_USER'' )',
-'      ,sys_context( ''USERENV'', ''SESSION_USER'' )',
-'    );',
-'  elsif updating then',
-'    :new.row_version := :old.row_version + 1;',
-'  end if;',
-'',
-'  :new.changed_on := loc'))
+'      ,sys_context( ''USERENV'', ''SESSIO'))
 );
 null;
 end;
@@ -32563,7 +32558,13 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'altimestamp;',
+'N_USER'' )',
+'    );',
+'  elsif updating then',
+'    :new.row_version := :old.row_version + 1;',
+'  end if;',
+'',
+'  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
 '     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
 '    ,sys_context( ''USERENV'', ''PROXY_USER'' )',
@@ -33555,11 +33556,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- set items session state',
 '    -- fetch items and values that session state need to be set',
 '    for c1 in (',
-'      select',
-'        i.item_name,',
-'        i.item_value',
-'      from blog_v_init_items i',
-'      where i.application_id = l_app_id'))
+'     '))
 );
 null;
 end;
@@ -33568,7 +33565,11 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+' select',
+'        i.item_name,',
+'        i.item_value',
+'      from blog_v_init_items i',
+'      where i.application_id = l_app_id',
 '    ) loop',
 '',
 '      -- set item session state and no commit',
@@ -34634,10 +34635,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end add_tag;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure add_post_tags(',
-'    p_post_id in varchar2,',
-'  '))
+'-----------------'))
 );
 null;
 end;
@@ -34646,7 +34644,10 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'  p_tags    in varchar2,',
+'---------------------------------------------------------------',
+'  procedure add_post_tags(',
+'    p_post_id in varchar2,',
+'    p_tags    in varchar2,',
 '    p_sep     in varchar2 default '',''',
 '  )',
 '  as',
@@ -35523,8 +35524,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Private constants and variables',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  c_whitelist_tags      constant varchar2(256)  := ''<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>'';',
-'  c_code_css_class      constant varchar2(256)  := ''z-program-code'';',
+'  c_whitelist_tags  constant varchar2(256)  := ''<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>'';',
+'  c_code_block_html constant varchar2(256)  := ''<pre class="z-program-code"><code>%s</code></pre>'';',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
@@ -35559,21 +35560,20 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_string in out nocopy varchar2',
 '  )',
 '  as',
+'    l_hasmark constant varchar(10) := ''#HashMark#'';',
 '  begin',
 '',
 '    -- change all hash marks so we can escape those',
 '    -- after calling apex_escape.html_whitelist',
 '    -- escape of hash marks needed to prevent APEX substitutions',
-'    p_string := replace( p_string, ''#'', ''#HashMark#'' );',
-'',
+'    p_string := replace( p_string, ''#'', l_hasmark );',
 '    -- escape comment html',
 '    p_string := apex_escape.html_whitelist(',
 '       p_html            => p_string',
 '      ,p_whitelist_tags  => c_whitelist_tags',
 '    );',
-'',
 '    -- escape hash marks',
-'    p_string := replace( p_string, ''#HashMark#'', ''&#x23;'' );',
+'    p_string := replace( p_string, l_hasmark, ''&#x23;'' );',
 '',
 '  end escape_html;',
 '--------------------------------------------------------------------------------',
@@ -35584,6 +35584,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  )',
 '  as',
 '',
+'    l_code      varchar2(32700);',
 '    l_code_cnt  pls_integer := 0;',
 '    l_start_pos pls_integer := 0;',
 '    l_end_pos   pls_integer := 0;',
@@ -35601,25 +35602,29 @@ wwv_flow_imp_shared.append_to_install_script(
 '      for i in 1 .. l_code_cnt',
 '      loop',
 '',
+'        l_code := null;',
+'',
 '        -- get code start and end position',
 '        l_start_pos := instr( lower( p_comment ), ''<code>'' );',
 '        l_end_pos := instr( lower( p_comment ), ''</code>'' );',
+'',
+'        l_code := trim( substr( p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6 ) );',
+'        l_code := trim( trim( both chr(10) from l_code ) );',
 '',
 '        -- store code tag content to collection and wrap it to pre tag having class',
 '        apex_string.push(',
 '           p_table => p_code_tab',
 '          ,p_value =>',
 '            apex_string.format(',
-'               p_message => ''<pre class="%s">%s</pre>''',
-'              ,p0 => c_code_css_class',
-'              ,p1 => substr(p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6)',
+'               p_message => c_code_block_html',
+'              ,p0 => l_code',
 '            )',
 '        );',
 '',
 '        -- substitude handled code tag',
 '        p_comment :=',
 '          apex_string.format(',
-'             p_message => ''%s%sCODE#%s%s%s''',
+'             p_message => ''%s%s#BLOG_COMMENT_CODE%s#%s%s''',
 '            ,p0 => rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )',
 '            ,p1 => chr(10)',
 '            ,p2 => i',
@@ -35634,7 +35639,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end build_code_tab;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
+'---------------------------------------------------------'))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'-----------------------',
 '  procedure build_comment_html(',
 '    p_comment in out nocopy varchar2',
 '  )',
@@ -35647,16 +35661,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- process code tags',
 '    build_code_tab(',
-'       p_comment => p_comm'))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ent',
+'       p_comment => p_comment',
 '      ,p_code_tab => l_code_tab',
 '    );',
 '',
@@ -35674,7 +35679,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      l_temp := trim( l_comment_tab(i) );',
 '',
 '      -- check if row is code block',
-'      if regexp_like( l_temp, ''^CODE\#[0-9]+$'' )',
+'      if regexp_like( l_temp, ''^#BLOG_COMMENT_CODE[0-9]+\#$'' )',
 '      then',
 '        -- get code block row number',
 '        l_code_row := regexp_substr( l_temp, ''[0-9]+'' );',
@@ -35684,7 +35689,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '          apex_string.format(',
 '             p_message => ''%s</p>%s<p>''',
 '            ,p0 => p_comment',
-'            ,p1 => l_code_tab(l_code_row)',
+'            ,p1 => l_code_tab( l_code_row )',
 '          )',
 '        ;',
 '',
@@ -35705,7 +35710,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '                ,p1 =>',
 '                  case',
 '                  when not substr( p_comment, length( p_comment ) - 2 ) = ''<p>''',
-'                  then ''<br/>'' -- br element backlash needed as comment is validated as XML',
+'                  then ''<br/>'' -- br element backlash needed because comment is validated as XML',
 '                  end',
 '                ,p2 => l_temp',
 '              )',
@@ -35719,7 +35724,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- wrap comment to p tag.',
 '    p_comment := apex_string.format( ''<p>%s</p>'', p_comment );',
-'    -- there might be empty p, if comment ends code tag, remove that',
+'    -- there might be empty p, if comment e.g. ends code tag, remove that',
 '    p_comment := replace( p_comment, ''<p></p>'' );',
 '',
 '  end build_comment_html;',
@@ -35740,7 +35745,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- remove unwanted ascii codes',
 '    remove_ascii(',
-'       p_string => l_comment',
+'      p_string => l_comment',
 '    );',
 '    -- remove all anchors',
 '    if p_remove_anchors',
@@ -35751,14 +35756,14 @@ wwv_flow_imp_shared.append_to_install_script(
 '    end if;',
 '    -- escape HTML',
 '    escape_html(',
-'       p_string => l_comment',
+'      p_string => l_comment',
 '    );',
 '    -- build comment HTML',
 '    build_comment_html(',
-'       p_comment => l_comment',
+'      p_comment => l_comment',
 '    );',
 '',
-'    apex_debug.info(''Formatted comment: %s'', l_comment);',
+'    apex_debug.info( ''Formatted comment: %s'', l_comment );',
 '    -- return comment',
 '    return l_comment;',
 '',
@@ -35907,11 +35912,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_post_id   := to_number( p_post_id );',
 '',
 '    -- fetch application email address',
-'    l_app_email := blog_util.get_attribute_value(''G_APP_EMAIL'');',
+'    l_app_email := blog_util.get_attribute_value( ''G_APP_EMAIL'' );',
 '    -- if application email address is not set, exit from procedure',
 '    if l_app_email is null',
 '    then',
-'      apex_debug.info(''application email address is not set'');',
+'      apex_debug.info( ''application email address is not set'' );',
 '      return;',
 '    end if;',
 '',
@@ -35950,6 +35955,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        ,p_template_static_id => p_email_template',
 '        ,p_placeholders       => c1.placeholders',
 '      );',
+'',
 '    end loop;',
 '',
 '  end new_comment_notify;',
@@ -35975,7 +35981,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- if application email address is not set, exit from procedure',
 '    if l_app_email is null',
 '    then',
-'      apex_debug.info(''application email address is not set'');',
+'      apex_debug.info( ''application email address is not set'' );',
 '      return;',
 '    end if;',
 '',
@@ -36624,7 +36630,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '    select xmlserialize( document',
 '      xmlelement(',
 '        "sitemapindex",',
-'        xmlattributes( ''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns" ),',
+'        xml'))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'attributes( ''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns" ),',
 '        (',
 '          xmlagg(',
 '            xmlelement( "sitemap"',
@@ -36636,16 +36651,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      )',
 '      as blob encoding ''UTF-8'' indent size=2',
 '    )',
-'    into l'))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_xml',
+'    into l_xml',
 '    from apex_application_page_proc t1',
 '    where 1 = 1',
 '      and t1.process_name != p_process_name',

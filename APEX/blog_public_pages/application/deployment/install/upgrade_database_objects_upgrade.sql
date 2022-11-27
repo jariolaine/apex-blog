@@ -584,6 +584,7 @@ wwv_flow_imp_shared.create_install_script(
 '--    Jari Laine 30.10.2021 - Removed functions validate_email and is_email_verified',
 '--    Jari Laine 13.04.2022 - Posibility add multiple flags using procedure flag_comment',
 '--                            Posibility remove multiple flags using procedure unflag_comment',
+'--    Jari Laine 27.11.2022 - Changed procedure build_code_tab remove leading and trailing line breaks from posted code',
 '--',
 '--  TO DO:',
 '--    #1  comment HTML validation should be improved',
@@ -692,10 +693,7 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  pub app shortcut BLOG_CANONICAL_LINK_TAB',
-'  function get_tab_canonical_link(',
-'    p_page          in varchar2',
-'  ) return varchar2;',
-'-------------------------------------'))
+'  fun'))
 );
 wwv_flow_imp.component_end;
 end;
@@ -712,7 +710,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-------------------------------------------',
+'ction get_tab_canonical_link(',
+'    p_page          in varchar2',
+'  ) return varchar2;',
+'--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  pub app shortcut BLOG_CANONICAL_LINK_POST',
 '  function get_post_canonical_link(',
@@ -1509,9 +1510,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,t2.blogger_name                                      as blogger_name',
 '  ,t1.title                                             as post_title',
 '  ,t3.title                                             as category_title',
-'  ,t1.post_desc                                         as post_desc',
-'  ,t1.first_paragraph                                   as first_paragraph',
-'  ,t1.body_html '))
+'  ,t1.post_desc                         '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1529,7 +1528,9 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'                                        as body_html',
+'                as post_desc',
+'  ,t1.first_paragraph                                   as first_paragraph',
+'  ,t1.body_html                                         as body_html',
 '  ,t1.published_on                                      as published_on',
 '  ,greatest(',
 '     t1.published_on',
@@ -2491,8 +2492,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    );',
 '',
 '    -- Compare request If-Modified-Since header to Last-Modified',
-'    -- If values are equal then set status header and exit from procedure',
-'    if sys.owa_util.get_cgi_env(''HTTP_IF_MODIFI'))
+' '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2510,7 +2510,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ED_SINCE'') = l_header_values(1)',
+'   -- If values are equal then set status header and exit from procedure',
+'    if sys.owa_util.get_cgi_env(''HTTP_IF_MODIFIED_SINCE'') = l_header_values(1)',
 '    then',
 '      sys.owa_util.status_line( 304 );',
 '      apex_debug.info(',
@@ -3551,9 +3552,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        || case when p_item.element_width is not null',
 '            then''size="'' || p_item.element_width ||''" ''',
 '           end',
-'        || case when p_item.element_max_length  is not null',
-'            then ''maxlength="'' || p_item.element_max_length || ''" ''',
-'     '))
+'        || ca'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3571,7 +3570,9 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'      end',
+'se when p_item.element_max_length  is not null',
+'            then ''maxlength="'' || p_item.element_max_length || ''" ''',
+'           end',
 '        ||',
 '          apex_plugin_util.get_element_attributes(',
 '             p_item           => p_item',
@@ -4110,8 +4111,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Private constants and variables',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  c_whitelist_tags      constant varchar2(256)  := ''<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>'';',
-'  c_code_css_class      constant varchar2(256)  := ''z-program-code'';',
+'  c_whitelist_tags  constant varchar2(256)  := ''<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>'';',
+'  c_code_block_html constant varchar2(256)  := ''<pre class="z-program-code"><code>%s</code></pre>'';',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
@@ -4146,21 +4147,20 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_string in out nocopy varchar2',
 '  )',
 '  as',
+'    l_hasmark constant varchar(10) := ''#HashMark#'';',
 '  begin',
 '',
 '    -- change all hash marks so we can escape those',
 '    -- after calling apex_escape.html_whitelist',
 '    -- escape of hash marks needed to prevent APEX substitutions',
-'    p_string := replace( p_string, ''#'', ''#HashMark#'' );',
-'',
+'    p_string := replace( p_string, ''#'', l_hasmark );',
 '    -- escape comment html',
 '    p_string := apex_escape.html_whitelist(',
 '       p_html            => p_string',
 '      ,p_whitelist_tags  => c_whitelist_tags',
 '    );',
-'',
 '    -- escape hash marks',
-'    p_string := replace( p_string, ''#HashMark#'', ''&#x23;'' );',
+'    p_string := replace( p_string, l_hasmark, ''&#x23;'' );',
 '',
 '  end escape_html;',
 '--------------------------------------------------------------------------------',
@@ -4171,6 +4171,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  )',
 '  as',
 '',
+'    l_code      varchar2(32700);',
 '    l_code_cnt  pls_integer := 0;',
 '    l_start_pos pls_integer := 0;',
 '    l_end_pos   pls_integer := 0;',
@@ -4188,25 +4189,29 @@ wwv_flow_imp_shared.append_to_install_script(
 '      for i in 1 .. l_code_cnt',
 '      loop',
 '',
+'        l_code := null;',
+'',
 '        -- get code start and end position',
 '        l_start_pos := instr( lower( p_comment ), ''<code>'' );',
 '        l_end_pos := instr( lower( p_comment ), ''</code>'' );',
+'',
+'        l_code := trim( substr( p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6 ) );',
+'        l_code := trim( trim( both chr(10) from l_code ) );',
 '',
 '        -- store code tag content to collection and wrap it to pre tag having class',
 '        apex_string.push(',
 '           p_table => p_code_tab',
 '          ,p_value =>',
 '            apex_string.format(',
-'               p_message => ''<pre class="%s">%s</pre>''',
-'              ,p0 => c_code_css_class',
-'              ,p1 => substr(p_comment, l_start_pos  + 6, l_end_pos - l_start_pos - 6)',
+'               p_message => c_code_block_html',
+'              ,p0 => l_code',
 '            )',
 '        );',
 '',
 '        -- substitude handled code tag',
 '        p_comment :=',
 '          apex_string.format(',
-'             p_message => ''%s%sCODE#%s%s%s''',
+'             p_message => ''%s%s#BLOG_COMMENT_CODE%s#%s%s''',
 '            ,p0 => rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )',
 '            ,p1 => chr(10)',
 '            ,p2 => i',
@@ -4252,7 +4257,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      l_temp := trim( l_comment_tab(i) );',
 '',
 '      -- check if row is code block',
-'      if regexp_like( l_temp, ''^CODE\#[0-9]+$'' )',
+'      if regexp_like( l_temp, ''^#BLOG_COMMENT_CODE[0-9]+\#$'' )',
 '      then',
 '        -- get code block row number',
 '        l_code_row := regexp_substr( l_temp, ''[0-9]+'' );',
@@ -4262,7 +4267,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '          apex_string.format(',
 '             p_message => ''%s</p>%s<p>''',
 '            ,p0 => p_comment',
-'            ,p1 => l_code_tab(l_code_row)',
+'            ,p1 => l_code_tab( l_code_row )',
 '          )',
 '        ;',
 '',
@@ -4283,7 +4288,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '                ,p1 =>',
 '                  case',
 '                  when not substr( p_comment, length( p_comment ) - 2 ) = ''<p>''',
-'                  then ''<br/>'' -- br element backlash needed as comment is validated as XML',
+'                  then ''<br/>'' -- br element backlash needed because comment is validated as XML',
 '                  end',
 '                ,p2 => l_temp',
 '              )',
@@ -4297,7 +4302,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- wrap comment to p tag.',
 '    p_comment := apex_string.format( ''<p>%s</p>'', p_comment );',
-'    -- there might be empty p, if comment ends code tag, remove that',
+'    -- there might be empty p, if comment e.g. ends code tag, remove that',
 '    p_comment := replace( p_comment, ''<p></p>'' );',
 '',
 '  end build_comment_html;',
@@ -4318,7 +4323,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- remove unwanted ascii codes',
 '    remove_ascii(',
-'       p_string => l_comment',
+'      p_string => l_comment',
 '    );',
 '    -- remove all anchors',
 '    if p_remove_anchors',
@@ -4329,14 +4334,14 @@ wwv_flow_imp_shared.append_to_install_script(
 '    end if;',
 '    -- escape HTML',
 '    escape_html(',
-'       p_string => l_comment',
+'      p_string => l_comment',
 '    );',
 '    -- build comment HTML',
 '    build_comment_html(',
-'       p_comment => l_comment',
+'      p_comment => l_comment',
 '    );',
 '',
-'    apex_debug.info(''Formatted comment: %s'', l_comment);',
+'    apex_debug.info( ''Formatted comment: %s'', l_comment );',
 '    -- return comment',
 '    return l_comment;',
 '',
@@ -4485,11 +4490,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_post_id   := to_number( p_post_id );',
 '',
 '    -- fetch application email address',
-'    l_app_email := blog_util.get_attribute_value(''G_APP_EMAIL'');',
+'    l_app_email := blog_util.get_attribute_value( ''G_APP_EMAIL'' );',
 '    -- if application email address is not set, exit from procedure',
 '    if l_app_email is null',
 '    then',
-'      apex_debug.info(''application email address is not set'');',
+'      apex_debug.info( ''application email address is not set'' );',
 '      return;',
 '    end if;',
 '',
@@ -4528,6 +4533,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        ,p_template_static_id => p_email_template',
 '        ,p_placeholders       => c1.placeholders',
 '      );',
+'',
 '    end loop;',
 '',
 '  end new_comment_notify;',
@@ -4553,7 +4559,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- if application email address is not set, exit from procedure',
 '    if l_app_email is null',
 '    then',
-'      apex_debug.info(''application email address is not set'');',
+'      apex_debug.info( ''application email address is not set'' );',
 '      return;',
 '    end if;',
 '',
@@ -4566,17 +4572,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- send notify users that have subscribed to replies to comment',
 '    for c1 in(',
-'      select t2.email',
-'      ,json_object (',
-'         ''APP_NAME''         value p_app_name',
-'        ,''POST_TITLE''       value v1.title',
-'        ,''POST_LINK''        value',
-'            blog_url.get_post(',
-'               p_application  => p_app_id',
-'              ,p_post_id      => p_post_id',
-'              ,p_canonical    => ''YES''',
-'            )',
-'        ,''UNS'))
+'  '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4594,7 +4590,17 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'UBSCRIBE_LINK'' value',
+'    select t2.email',
+'      ,json_object (',
+'         ''APP_NAME''         value p_app_name',
+'        ,''POST_TITLE''       value v1.title',
+'        ,''POST_LINK''        value',
+'            blog_url.get_post(',
+'               p_application  => p_app_id',
+'              ,p_post_id      => p_post_id',
+'              ,p_canonical    => ''YES''',
+'            )',
+'        ,''UNSUBSCRIBE_LINK'' value',
 '            blog_url.get_unsubscribe(',
 '               p_application     => p_app_id',
 '              ,p_post_id         => p_post_id',
