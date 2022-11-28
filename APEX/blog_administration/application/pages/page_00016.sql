@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221003075124'
+,p_last_upd_yyyymmddhh24miss=>'20221128143126'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6788182287545486)
@@ -103,7 +103,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_name=>'P16_IS_DOWNLOAD'
 ,p_source_data_type=>'NUMBER'
 ,p_is_required=>true
-,p_item_sequence=>70
+,p_item_sequence=>50
 ,p_item_plug_id=>wwv_flow_imp.id(6788182287545486)
 ,p_item_source_plug_id=>wwv_flow_imp.id(6788182287545486)
 ,p_item_default=>'0'
@@ -127,7 +127,7 @@ wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(6794442374545492)
 ,p_name=>'P16_FILE_DESC'
 ,p_source_data_type=>'VARCHAR2'
-,p_item_sequence=>40
+,p_item_sequence=>60
 ,p_item_plug_id=>wwv_flow_imp.id(6788182287545486)
 ,p_item_source_plug_id=>wwv_flow_imp.id(6788182287545486)
 ,p_prompt=>'Description'
@@ -168,7 +168,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_name=>'P16_IS_ACTIVE'
 ,p_source_data_type=>'NUMBER'
 ,p_is_required=>true
-,p_item_sequence=>60
+,p_item_sequence=>20
 ,p_item_plug_id=>wwv_flow_imp.id(6788182287545486)
 ,p_item_source_plug_id=>wwv_flow_imp.id(6788182287545486)
 ,p_item_default=>'1'
@@ -193,7 +193,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_name=>'P16_FILE_NAME'
 ,p_source_data_type=>'VARCHAR2'
 ,p_is_required=>true
-,p_item_sequence=>30
+,p_item_sequence=>40
 ,p_item_plug_id=>wwv_flow_imp.id(6788182287545486)
 ,p_item_source_plug_id=>wwv_flow_imp.id(6788182287545486)
 ,p_prompt=>'File Name'
@@ -215,7 +215,7 @@ wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(11383713114073312)
 ,p_name=>'P16_ROW_VERSION'
 ,p_source_data_type=>'NUMBER'
-,p_item_sequence=>20
+,p_item_sequence=>30
 ,p_item_plug_id=>wwv_flow_imp.id(6788182287545486)
 ,p_item_source_plug_id=>wwv_flow_imp.id(6788182287545486)
 ,p_source=>'ROW_VERSION'
@@ -230,7 +230,7 @@ wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(22957719049076034)
 ,p_name=>'P16_NOTES'
 ,p_source_data_type=>'VARCHAR2'
-,p_item_sequence=>50
+,p_item_sequence=>70
 ,p_item_plug_id=>wwv_flow_imp.id(6788182287545486)
 ,p_item_source_plug_id=>wwv_flow_imp.id(6788182287545486)
 ,p_prompt=>'Notes'

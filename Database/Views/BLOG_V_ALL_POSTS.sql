@@ -43,14 +43,14 @@ select
     from blog_v_all_post_tags tags
     where 1 = 1
     and tags.post_id = t1.id
-    and tags.is_active = 1
+    and tags.is_active * tags.tag_is_active = 1
   )                     as visible_tags
   ,(
     select listagg( tags.tag, ', ' )  within group( order by tags.display_seq )
     from blog_v_all_post_tags tags
     where 1 = 1
     and tags.post_id = t1.id
-    and tags.is_active = 0
+    and tags.is_active * tags.tag_is_active = 0
   )                     as hidden_tags
   ,(
     select count( co.id )
@@ -119,30 +119,12 @@ select
 -- Post tags for detail view
   ,(
     select
-      xmlserialize( content
-        xmlagg(
-          xmlelement( "span"
-            ,xmlattributes(
-              't-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-md' as "class"
-            )
-            ,xmlelement( "span"
-              ,xmlattributes(
-                't-Icon fa fa-tag'  as "class"
-                ,'true'             as "aria-hidden"
-              )
-            )
-            ,xmlelement( "span"
-              ,xmlattributes(
-                't-Button-label'    as "class"
-              )
-              ,lkp.tag
-            )
-          ) order by lkp.display_seq
-        )
-      ) as tags_html
-    from blog_v_post_tags lkp
+      xmlserialize(
+        content xmlagg( lkp1.tag_html3 order by lkp1.display_seq )
+      )
+    from blog_v_post_tags lkp1
     where 1 = 1
-      and lkp.post_id = t1.id
+      and lkp1.post_id = t1.id
   )                     as tags_html
 from blog_posts t1
 join blog_categories t2

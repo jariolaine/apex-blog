@@ -1564,7 +1564,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_POST_TAGS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POST_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POST_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG", "TAG_IS_ACTIVE") AS',
 '  select',
 '   t1.id                        as id',
 '  ,t1.row_version               as row_version',
@@ -1582,6 +1582,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '    where 1 = 1',
 '    and lkp.id = t1.tag_id',
 '  )                             as tag',
+'  ,(',
+'    select lkp.is_active',
+'    from blog_tags lkp',
+'    where 1 = 1',
+'    and lkp.id = t1.tag_id',
+'  )                             as tag_is_active',
 'from blog_post_tags t1',
 'where 1 = 1',
 '/',
@@ -1795,24 +1801,71 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_POSTS_TAGS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_POST_TAGS" ("POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG", "CHANGED_ON", "TAG_URL") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_POST_TAGS" ("POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG", "CHANGED_ON", "TAG_URL", "TAG_HTML1", "TAG_HTML2", "TAG_HTML3") AS',
 '  select',
-'   t2.post_id     as post_id',
-'  ,t2.tag_id      as tag_id',
-'  ,t2.display_seq as display_seq',
-'  ,t1.tag         as tag',
-'  ,greatest(',
-'     t1.changed_on',
-'    ,t2.changed_on',
-'  )               as changed_on',
-'  ,blog_url.get_tag(',
-'    p_tag_id => t1.id',
-'  )               as tag_url',
-'from blog_tags t1',
-'join blog_post_tags t2 on t1.id = t2.tag_id',
-'where 1 = 1',
-'  and t1.is_active = 1',
-'  and t2.is_active = 1',
+'   q1.post_id                         as post_id',
+'  ,q1.tag_id                          as tag_id',
+'  ,q1.display_seq                     as display_seq',
+'  ,q1.tag                             as tag',
+'  ,q1.changed_on                      as changed_on',
+'  ,q1.tag_url                         as tag_url',
+'  -- Generate HTML for tags used in APEX reports',
+'  ,xmlelement( "a"',
+'    ,xmlattributes(',
+'      q1.tag_url        as "href"',
+'      ,''z-search--tags'' as "class"',
+'    )',
+'    ,q1.tag',
+'  )                                   as tag_html1',
+'  ,xmlelement( "a"',
+'    ,xmlattributes(',
+'       q1.tag_url       as "href"',
+'      ,q1.tag_class     as "class"',
+'      ,''tag''            as "rel"',
+'    )',
+'    ,q1.tag_icon',
+'    ,q1.tag_label',
+'  )                                   as tag_html2',
+'  ,xmlelement( "span"',
+'    ,xmlattributes(',
+'      q1.tag_class      as "class"',
+'      ,''tag''            as "rel"',
+'    )',
+'    ,q1.tag_icon',
+'    ,q1.tag_label',
+'  )                                    as tag_html3',
+'from (',
+'  select',
+'     t2.post_id                                                                   as post_id',
+'    ,t2.tag_id                                                                    as tag_id',
+'    ,t2.display_seq                                                               as display_seq',
+'    ,t1.tag                                                                       as tag',
+'    ,greatest(',
+'       t1.changed_on',
+'      ,t2.changed_on',
+'    )                                                                             as changed_on',
+'    ,blog_url.get_tag(',
+'      p_tag_id => t1.id',
+'    )                                                                             as tag_url',
+'    ,''t-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft''  as tag_class',
+'    ,xmlelement( "span"',
+'      ,xmlattributes(',
+'        ''t-Icon fa fa-tag''  as "class"',
+'        ,''true''             as "aria-hidden"',
+'      )',
+'    )                                                                             as tag_icon',
+'    ,xmlelement( "span"',
+'      ,xmlattributes(',
+'        ''t-Button-label''    as "class"',
+'      )',
+'      ,t1.tag',
+'    )                                                                             as tag_label',
+'  from blog_tags t1',
+'  join blog_post_tags t2 on t1.id = t2.tag_id',
+'  where 1 = 1',
+'    and t1.is_active = 1',
+'    and t2.is_active = 1',
+') q1',
 'with read only',
 '/',
 '--------------------------------------------------------',
@@ -1862,14 +1915,14 @@ wwv_flow_imp_shared.append_to_install_script(
 '    from blog_v_all_post_tags tags',
 '    where 1 = 1',
 '    and tags.post_id = t1.id',
-'    and tags.is_active = 1',
+'    and tags.is_active * tags.tag_is_active = 1',
 '  )                     as visible_tags',
 '  ,(',
 '    select listagg( tags.tag, '', '' )  within group( order by tags.display_seq )',
 '    from blog_v_all_post_tags tags',
 '    where 1 = 1',
 '    and tags.post_id = t1.id',
-'    and tags.is_active = 0',
+'    and tags.is_active * tags.tag_is_active = 0',
 '  )                     as hidden_tags',
 '  ,(',
 '    select count( co.id )',
@@ -1938,30 +1991,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Post tags for detail view',
 '  ,(',
 '    select',
-'      xmlserialize( content',
-'        xmlagg(',
-'          xmlelement( "span"',
-'            ,xmlattributes(',
-'              ''t-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-md'' as "class"',
-'            )',
-'            ,xmlelement( "span"',
-'              ,xmlattributes(',
-'                ''t-Icon fa fa-tag''  as "class"',
-'                ,''true''             as "aria-hidden"',
-'              )',
-'            )',
-'            ,xmlelement( "span"',
-'              ,xmlattributes(',
-'                ''t-Button-label''    as "class"',
-'              )',
-'              ,lkp.tag',
-'            )',
-'          ) order by lkp.display_seq',
-'        )',
-'      ) as tags_html',
-'    from blog_v_post_tags lkp',
+'      xmlserialize(',
+'        content xmlagg( lkp1.tag_html3 order by lkp1.display_seq )',
+'      )',
+'    from blog_v_post_tags lkp1',
 '    where 1 = 1',
-'      and lkp.post_id = t1.id',
+'      and lkp1.post_id = t1.id',
 '  )                     as tags_html',
 'from blog_posts t1',
 'join blog_categories t2',
@@ -1999,50 +2034,22 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,blog_url.get_post(',
 '     p_post_id => t1.id',
 '  )                                                     as post_url',
-'  -- Generate HTML for tags used in APEX reports',
+'-- Aggregate tag HTML for post',
 '  ,(',
 '    select',
 '      listagg(',
-'        xmlserialize( content',
-'          xmlelement( "a"',
-'            ,xmlattributes(',
-'              lkp1.tag_url      as "href"',
-'              ,''z-search--tags'' as "class"',
-'            )',
-'            ,lkp1.tag',
-'          )',
-'        )',
+'        xmlserialize( content lkp1.tag_html1 )',
 '        ,'',''',
 '      ) within group( order by lkp1.display_seq )',
 '    from blog_v_post_tags lkp1',
 '    where 1 = 1',
 '      and lkp1.post_id = t1.id',
 '  )                                                     as tags_html1',
-'  -- Generate HTML for tags used in APEX reports',
+'-- Aggregate tag HTML for post',
 '  ,(',
 '    select',
-'      xmlserialize( content',
-'        xmlagg(',
-'          xmlelement( "a"',
-'            ,xmlattributes(',
-'              lkp2.tag_url                                                                  as "href"',
-'              ,''t-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft''  as "class"',
-'              ,''tag''                                                                        as "rel"',
-'            )',
-'            ,xmlelement( "span"',
-'              ,xmlattributes(',
-'                ''t-Icon fa fa-tag''                                                          as "class"',
-'                ,''true''                                                                     as "aria-hidden"',
-'              )',
-'            )',
-'            ,xmlelement( "span"',
-'              ,xmlattributes(',
-'                ''t-Button-label''                                                            as "class"',
-'              )',
-'              ,lkp2.tag',
-'            )',
-'          ) order by lkp2.display_seq',
-'        )',
+'      xmlserialize(',
+'        content xmlagg( lkp2.tag_html2 order by lkp2.display_seq )',
 '      )',
 '    from blog_v_post_tags lkp2',
 '    where 1 = 1',
@@ -2264,22 +2271,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for Trigger BLOG_CATEGORIES_TRG',
 '--------------------------------------------------------',
-'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_CATEGORIES_TRG"',
-'before',
-'insert or',
-'update on blog_categories',
-'for each row',
-'begin',
-'',
-'  if inserting then',
-'    :new.id           := coalesce( :new.id, blog_seq.nextval );',
-'    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
-'    :new.created_by   := coalesce(',
-'      :new.created_by',
-'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context( ''USERENV'', ''PROXY_USER'' )',
-'      ,sys_context( ''USERENV'', ''SESSIO'))
+'CREATE OR REPLACE EDITIONAB'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2297,7 +2289,22 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'N_USER'' )',
+'LE TRIGGER "BLOG_CATEGORIES_TRG"',
+'before',
+'insert or',
+'update on blog_categories',
+'for each row',
+'begin',
+'',
+'  if inserting then',
+'    :new.id           := coalesce( :new.id, blog_seq.nextval );',
+'    :new.row_version  := coalesce( :new.row_version, 1 );',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
+'    :new.created_by   := coalesce(',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'', ''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'', ''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -3276,7 +3283,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end get_attribute_value;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
+'----------------'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'----------------------------------------------------------------',
 '  procedure initialize_items(',
 '    p_app_id in varchar2',
 '  )',
@@ -3295,25 +3320,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- set items session state',
 '    -- fetch items and values that session state need to be set',
 '    for c1 in (',
-'     '))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' select',
+'      select',
 '        i.item_name,',
 '        i.item_value',
 '      from blog_v_init_items i',
@@ -4364,7 +4371,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- if tag is not null then fetch id',
 '    if l_value is not null then',
 '',
-'      begin',
+'    '))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'  begin',
 '        select id',
 '        into p_tag_id',
 '        from blog_v_all_tags',
@@ -4383,25 +4408,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end add_tag;',
 '--------------------------------------------------------------------------------',
-'-----------------'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'---------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '  procedure add_post_tags(',
 '    p_post_id in varchar2,',
 '    p_tags    in varchar2,',
@@ -5380,23 +5387,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '        -- substitude handled code tag',
 '        p_comment :=',
-'          apex_string.format(',
-'             p_message => ''%s%s#BLOG_COMMENT_CODE%s#%s%s''',
-'            ,p0 => rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )',
-'            ,p1 => chr(10)',
-'            ,p2 => i',
-'            ,p3 => chr(10)',
-'            ,p4 => ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )',
-'          )',
-'        ;',
-'',
-'      end loop;',
-'',
-'    end if;',
-'',
-'  end build_code_tab;',
-'--------------------------------------------------------------------------------',
-'---------------------------------------------------------'))
+'          apex_string.forma'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5414,7 +5405,23 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------------------',
+'t(',
+'             p_message => ''%s%s#BLOG_COMMENT_CODE%s#%s%s''',
+'            ,p0 => rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )',
+'            ,p1 => chr(10)',
+'            ,p2 => i',
+'            ,p3 => chr(10)',
+'            ,p4 => ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )',
+'          )',
+'        ;',
+'',
+'      end loop;',
+'',
+'    end if;',
+'',
+'  end build_code_tab;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '  procedure build_comment_html(',
 '    p_comment in out nocopy varchar2',
 '  )',
@@ -6377,7 +6384,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end rss_xsl;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
+'--------------------------------------------------------'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'------------------------',
 '  procedure sitemap_index(',
 '    p_app_id        in varchar2,',
 '    p_app_page_id   in varchar2,',
@@ -6396,25 +6421,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    select xmlserialize( document',
 '      xmlelement(',
 '        "sitemapindex",',
-'        xml'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'attributes( ''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns" ),',
+'        xmlattributes( ''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns" ),',
 '        (',
 '          xmlagg(',
 '            xmlelement( "sitemap"',

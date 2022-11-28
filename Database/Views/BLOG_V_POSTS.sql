@@ -24,50 +24,22 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
   ,blog_url.get_post(
      p_post_id => t1.id
   )                                                     as post_url
-  -- Generate HTML for tags used in APEX reports
+-- Aggregate tag HTML for post
   ,(
     select
       listagg(
-        xmlserialize( content
-          xmlelement( "a"
-            ,xmlattributes(
-              lkp1.tag_url      as "href"
-              ,'z-search--tags' as "class"
-            )
-            ,lkp1.tag
-          )
-        )
+        xmlserialize( content lkp1.tag_html1 )
         ,','
       ) within group( order by lkp1.display_seq )
     from blog_v_post_tags lkp1
     where 1 = 1
       and lkp1.post_id = t1.id
   )                                                     as tags_html1
-  -- Generate HTML for tags used in APEX reports
+-- Aggregate tag HTML for post
   ,(
     select
-      xmlserialize( content
-        xmlagg(
-          xmlelement( "a"
-            ,xmlattributes(
-              lkp2.tag_url                                                                  as "href"
-              ,'t-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft'  as "class"
-              ,'tag'                                                                        as "rel"
-            )
-            ,xmlelement( "span"
-              ,xmlattributes(
-                't-Icon fa fa-tag'                                                          as "class"
-                ,'true'                                                                     as "aria-hidden"
-              )
-            )
-            ,xmlelement( "span"
-              ,xmlattributes(
-                't-Button-label'                                                            as "class"
-              )
-              ,lkp2.tag
-            )
-          ) order by lkp2.display_seq
-        )
+      xmlserialize(
+        content xmlagg( lkp2.tag_html2 order by lkp2.display_seq )
       )
     from blog_v_post_tags lkp2
     where 1 = 1

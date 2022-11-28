@@ -1506,7 +1506,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POST_TAGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POST_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POST_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG", "TAG_IS_ACTIVE") AS
   select
    t1.id                        as id
   ,t1.row_version               as row_version
@@ -1524,6 +1524,12 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POST_TAGS" ("ID", "ROW_VERSION", "CREAT
     where 1 = 1
     and lkp.id = t1.tag_id
   )                             as tag
+  ,(
+    select lkp.is_active
+    from blog_tags lkp
+    where 1 = 1
+    and lkp.id = t1.tag_id
+  )                             as tag_is_active
 from blog_post_tags t1
 where 1 = 1
 /
@@ -1736,24 +1742,71 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS_TAGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POST_TAGS" ("POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG", "CHANGED_ON", "TAG_URL") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POST_TAGS" ("POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG", "CHANGED_ON", "TAG_URL", "TAG_HTML1", "TAG_HTML2", "TAG_HTML3") AS
   select
-   t2.post_id     as post_id
-  ,t2.tag_id      as tag_id
-  ,t2.display_seq as display_seq
-  ,t1.tag         as tag
-  ,greatest(
-     t1.changed_on
-    ,t2.changed_on
-  )               as changed_on
-  ,blog_url.get_tag(
-    p_tag_id => t1.id
-  )               as tag_url
-from blog_tags t1
-join blog_post_tags t2 on t1.id = t2.tag_id
-where 1 = 1
-  and t1.is_active = 1
-  and t2.is_active = 1
+   q1.post_id                         as post_id
+  ,q1.tag_id                          as tag_id
+  ,q1.display_seq                     as display_seq
+  ,q1.tag                             as tag
+  ,q1.changed_on                      as changed_on
+  ,q1.tag_url                         as tag_url
+  -- Generate HTML for tags used in APEX reports
+  ,xmlelement( "a"
+    ,xmlattributes(
+      q1.tag_url        as "href"
+      ,'z-search--tags' as "class"
+    )
+    ,q1.tag
+  )                                   as tag_html1
+  ,xmlelement( "a"
+    ,xmlattributes(
+       q1.tag_url       as "href"
+      ,q1.tag_class     as "class"
+      ,'tag'            as "rel"
+    )
+    ,q1.tag_icon
+    ,q1.tag_label
+  )                                   as tag_html2
+  ,xmlelement( "span"
+    ,xmlattributes(
+      q1.tag_class      as "class"
+      ,'tag'            as "rel"
+    )
+    ,q1.tag_icon
+    ,q1.tag_label
+  )                                    as tag_html3
+from (
+  select
+     t2.post_id                                                                   as post_id
+    ,t2.tag_id                                                                    as tag_id
+    ,t2.display_seq                                                               as display_seq
+    ,t1.tag                                                                       as tag
+    ,greatest(
+       t1.changed_on
+      ,t2.changed_on
+    )                                                                             as changed_on
+    ,blog_url.get_tag(
+      p_tag_id => t1.id
+    )                                                                             as tag_url
+    ,'t-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft'  as tag_class
+    ,xmlelement( "span"
+      ,xmlattributes(
+        't-Icon fa fa-tag'  as "class"
+        ,'true'             as "aria-hidden"
+      )
+    )                                                                             as tag_icon
+    ,xmlelement( "span"
+      ,xmlattributes(
+        't-Button-label'    as "class"
+      )
+      ,t1.tag
+    )                                                                             as tag_label
+  from blog_tags t1
+  join blog_post_tags t2 on t1.id = t2.tag_id
+  where 1 = 1
+    and t1.is_active = 1
+    and t2.is_active = 1
+) q1
 with read only
 /
 --------------------------------------------------------
@@ -1801,14 +1854,14 @@ select
     from blog_v_all_post_tags tags
     where 1 = 1
     and tags.post_id = t1.id
-    and tags.is_active = 1
+    and tags.is_active * tags.tag_is_active = 1
   )                     as visible_tags
   ,(
     select listagg( tags.tag, ', ' )  within group( order by tags.display_seq )
     from blog_v_all_post_tags tags
     where 1 = 1
     and tags.post_id = t1.id
-    and tags.is_active = 0
+    and tags.is_active * tags.tag_is_active = 0
   )                     as hidden_tags
   ,(
     select count( co.id )
@@ -1877,30 +1930,12 @@ select
 -- Post tags for detail view
   ,(
     select
-      xmlserialize( content
-        xmlagg(
-          xmlelement( "span"
-            ,xmlattributes(
-              't-Button t-Button--icon t-Button--noUI t-Button--iconLeft margin-top-md' as "class"
-            )
-            ,xmlelement( "span"
-              ,xmlattributes(
-                't-Icon fa fa-tag'  as "class"
-                ,'true'             as "aria-hidden"
-              )
-            )
-            ,xmlelement( "span"
-              ,xmlattributes(
-                't-Button-label'    as "class"
-              )
-              ,lkp.tag
-            )
-          ) order by lkp.display_seq
-        )
-      ) as tags_html
-    from blog_v_post_tags lkp
+      xmlserialize(
+        content xmlagg( lkp1.tag_html3 order by lkp1.display_seq )
+      )
+    from blog_v_post_tags lkp1
     where 1 = 1
-      and lkp.post_id = t1.id
+      and lkp1.post_id = t1.id
   )                     as tags_html
 from blog_posts t1
 join blog_categories t2
@@ -1937,50 +1972,22 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_
   ,blog_url.get_post(
      p_post_id => t1.id
   )                                                     as post_url
-  -- Generate HTML for tags used in APEX reports
+-- Aggregate tag HTML for post
   ,(
     select
       listagg(
-        xmlserialize( content
-          xmlelement( "a"
-            ,xmlattributes(
-              lkp1.tag_url      as "href"
-              ,'z-search--tags' as "class"
-            )
-            ,lkp1.tag
-          )
-        )
+        xmlserialize( content lkp1.tag_html1 )
         ,','
       ) within group( order by lkp1.display_seq )
     from blog_v_post_tags lkp1
     where 1 = 1
       and lkp1.post_id = t1.id
   )                                                     as tags_html1
-  -- Generate HTML for tags used in APEX reports
+-- Aggregate tag HTML for post
   ,(
     select
-      xmlserialize( content
-        xmlagg(
-          xmlelement( "a"
-            ,xmlattributes(
-              lkp2.tag_url                                                                  as "href"
-              ,'t-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft'  as "class"
-              ,'tag'                                                                        as "rel"
-            )
-            ,xmlelement( "span"
-              ,xmlattributes(
-                't-Icon fa fa-tag'                                                          as "class"
-                ,'true'                                                                     as "aria-hidden"
-              )
-            )
-            ,xmlelement( "span"
-              ,xmlattributes(
-                't-Button-label'                                                            as "class"
-              )
-              ,lkp2.tag
-            )
-          ) order by lkp2.display_seq
-        )
+      xmlserialize(
+        content xmlagg( lkp2.tag_html2 order by lkp2.display_seq )
       )
     from blog_v_post_tags lkp2
     where 1 = 1

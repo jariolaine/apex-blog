@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221124201934'
+,p_last_upd_yyyymmddhh24miss=>'20221128153753'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(25312085512124215)
@@ -75,7 +75,7 @@ wwv_flow_imp_page.create_report_region(
 '  ,v1.file_desc as list_text',
 '  ,v1.file_size as list_badge',
 '  ,null         as list_class',
-'  ,null         as icon_class',
+'  ,null         as icon_class -- se column HTML expression',
 '  ,null         as icon_color_class',
 '  ,apex_page.get_url(',
 '     p_page     => 1003',
@@ -119,7 +119,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'LIST_TITLE'
 ,p_column_display_sequence=>20
 ,p_column_heading=>'List Title'
-,p_use_as_row_header=>'N'
+,p_use_as_row_header=>'Y'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
