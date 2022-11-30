@@ -425,6 +425,9 @@ pre.z-program-code code {
 .z-search--tags:first-child {
   margin-inline-start: 0!important;
 }
+.z-search--tags:not( :last-child )::after {
+  content: ",";
+}
 /**************************************
 * Modifiers
 **************************************/

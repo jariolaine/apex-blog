@@ -1,4 +1,4 @@
-create or replace package "BLOG_URL"
+  create or replace package "BLOG_URL"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -153,13 +153,16 @@ as
     page_alias  varchar2(256),
     item_name   varchar2(256)
   );
-
+-- constants for pages and id items
   c_post_page     constant t_page_item := t_page_item( 'POST',      'P2_POST_ID' );
   c_category_page constant t_page_item := t_page_item( 'CATEGORY',  'P14_CATEGORY_ID' );
   c_archive_page  constant t_page_item := t_page_item( 'ARCHIVES',  'P15_ARCHIVE_ID' );
   c_tags_page     constant t_page_item := t_page_item( 'TAG',       'P6_TAG_ID' );
 
-  g_canonical_url varchar2(256);
+-- cache rss url
+  g_rss_url       varchar2(1024);
+-- cache canonical host
+  g_canonical_url varchar2(1024);
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -472,22 +475,25 @@ as
     p_application in varchar2 default null
   ) return varchar2
   as
-    l_rss_url varchar2(4000);
   begin
-
-    -- Fetch RSS URL override from settings
-    l_rss_url := blog_util.get_attribute_value( 'G_RSS_URL' );
-    -- If there isn't override custruct URL
-    if l_rss_url is null
+    -- get rss url from blog settings or use default value
+    -- cache value to package private variable
+    if g_rss_url is null
     then
-      l_rss_url :=
-        get_process(
-           p_application  => p_application
-          ,p_process      => 'rss.xml'
-        );
+      -- Fetch RSS URL override from settings
+      g_rss_url := blog_util.get_attribute_value( 'G_RSS_URL' );
+      -- If there isn't override custruct URL
+      if g_rss_url is null
+      then
+        g_rss_url :=
+          get_process(
+             p_application  => p_application
+            ,p_process      => 'rss.xml'
+          );
+      end if;
     end if;
 
-    return l_rss_url;
+    return g_rss_url;
 
   end get_rss;
 --------------------------------------------------------------------------------
@@ -501,7 +507,7 @@ as
 
     -- Fetch XSL URL override from settings
     l_xsl_url := blog_util.get_attribute_value( 'G_RSS_XSL_URL' );
-    -- If there isn't override custruct XSL
+    -- If there isn't override use default XSL
     if l_xsl_url is null
     then
       l_xsl_url :=

@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221128153926'
+,p_last_upd_yyyymmddhh24miss=>'20221129195243'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6915627356677149)
@@ -209,7 +209,7 @@ wwv_flow_imp_page.create_report_region(
 '  ,v1.txt_posted_on   as txt_posted_on',
 '  ,v1.txt_category    as txt_category',
 '  ,v1.txt_tags        as txt_tags',
-'from #OWNER#.blog_v_posts_apex v1',
+'from #OWNER#.blog_v_posts v1',
 'where 1 = 1',
 '  and v1.post_id = :P2_POST_ID'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
@@ -382,7 +382,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_NEXT_POST_ID.'
 ,p_button_condition=>'P2_NEXT_POST_ID'
 ,p_button_condition_type=>'ITEM_IS_NOT_NULL'
-,p_button_css_classes=>'z-text-wrap u-pullLeft padding-left-none padding-right-sm'
+,p_button_css_classes=>'z-text-wrap u-pullLeft padding-left-none padding-right-none'
 ,p_icon_css_classes=>'fa-angle-left'
 ,p_grid_new_row=>'Y'
 ,p_grid_row_css_classes=>'u-flex-wrap-nowrap padding-sm'
@@ -401,7 +401,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_PREV_POST_ID.'
 ,p_button_condition=>'P2_PREV_POST_ID'
 ,p_button_condition_type=>'ITEM_IS_NOT_NULL'
-,p_button_css_classes=>'z-text-wrap u-pullRight padding-left-sm padding-right-none'
+,p_button_css_classes=>'z-text-wrap u-pullRight padding-left-none padding-right-none'
 ,p_icon_css_classes=>'fa-angle-right'
 ,p_grid_new_row=>'N'
 ,p_grid_new_column=>'Y'

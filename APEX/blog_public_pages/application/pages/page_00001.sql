@@ -27,7 +27,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221128153623'
+,p_last_upd_yyyymmddhh24miss=>'20221129094503'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6432040642894060)
@@ -52,7 +52,7 @@ wwv_flow_imp_page.create_report_region(
 '  ,v1.txt_read_more   as read_more_link',
 '  ,v1.txt_posted_on   as txt_posted_on',
 '  ,v1.txt_category    as txt_category',
-'from #OWNER#.blog_v_posts_apex v1',
+'from #OWNER#.blog_v_posts v1',
 'where 1 = 1',
 'order by v1.published_on desc',
 ''))

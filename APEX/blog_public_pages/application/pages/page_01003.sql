@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_browser_cache=>'Y'
 ,p_page_component_map=>'11'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221125191132'
+,p_last_upd_yyyymmddhh24miss=>'20221129150636'
 );
 wwv_flow_imp_page.create_page_branch(
  p_id=>wwv_flow_imp.id(62674058371144805)
@@ -45,6 +45,7 @@ wwv_flow_imp_page.create_page_process(
 '   p_app_name => :G_APP_NAME',
 '  ,p_app_desc => :G_APP_DESC',
 ');',
+'',
 ''))
 ,p_process_clob_language=>'PLSQL'
 ,p_required_patch=>wwv_flow_imp.id(8635198962090938)

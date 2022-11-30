@@ -280,14 +280,14 @@ as
     p_name      out nocopy varchar2
   )
   as
-    l_max   number;
+    l_max   blog_bloggers.display_seq%type;
     l_email varchar2(256);
   begin
 
     -- fetch next display_seq
-    select max(display_seq) as display_seq
+    select max( t1.display_seq ) as display_seq
     into l_max
-    from blog_bloggers
+    from blog_bloggers t1
     ;
 
     l_max := next_seq( l_max );
@@ -352,7 +352,7 @@ as
   )
   as
     l_app_id    number;
-    l_authz_grp varchar2(256);
+    l_authz_grp apex_applications.authorization_scheme%type;
   begin
 
     -- fetch user id and name
@@ -397,7 +397,7 @@ as
   function get_category_seq
   return varchar2
   as
-    l_max_seq   number;
+    l_max_seq   blog_v_all_categories.display_seq%type;
     l_next_seq  varchar2(256);
   begin
 
@@ -417,7 +417,7 @@ as
   function get_link_grp_seq
   return varchar2
   as
-    l_max_seq   number;
+    l_max_seq   blog_v_all_link_groups.display_seq%type;
     l_next_seq  varchar2(256);
   begin
 
@@ -437,7 +437,7 @@ as
   function get_modal_page_seq
   return varchar2
   as
-    l_max_seq   number;
+    l_max_seq   blog_v_all_dynamic_content.display_seq%type;
     l_next_seq  varchar2(256);
   begin
 
@@ -459,7 +459,7 @@ as
   ) return varchar2
   as
     l_link_group_id number;
-    l_max_seq       number;
+    l_max_seq       blog_v_all_links.display_seq%type;
     l_next_seq      varchar2(256);
   begin
 
@@ -764,17 +764,20 @@ as
   as
   begin
 
+    -- update categories display_seq if it different than new
     merge into blog_categories t1
     using (
       select id
-        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+        ,row_number() over(
+          order by display_seq, created_on
+        ) * 10 as new_display_seq
       from blog_categories
       where 1 = 1
     ) v1
     on ( t1.id = v1.id )
     when matched then
-      update set t1.display_seq = v1.rn
-        where t1.display_seq != v1.rn
+      update set t1.display_seq = v1.new_display_seq
+        where t1.display_seq != v1.new_display_seq
     ;
 
   end resequence_categories;
@@ -901,18 +904,21 @@ as
 
     l_post_id := to_number( p_post_id );
 
+    -- update post tags display_seq if it different than new
     merge into blog_post_tags t1
     using (
       select id
-        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+        ,row_number() over(
+          order by display_seq, created_on
+        ) * 10 as new_display_seq
       from blog_post_tags
       where 1 = 1
       and post_id = l_post_id
     ) v1
     on ( t1.id = v1.id )
     when matched then
-      update set t1.display_seq = v1.rn
-        where t1.display_seq != v1.rn
+      update set t1.display_seq = v1.new_display_seq
+        where t1.display_seq != v1.new_display_seq
     ;
 
   end resequence_tags;
@@ -1050,17 +1056,20 @@ as
   as
   begin
 
+    -- update link groups display_seq if it different than new
     merge into blog_link_groups t1
     using (
       select id
-        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+        ,row_number() over(
+          order by display_seq, created_on
+        ) * 10 as new_display_seq
       from blog_link_groups
       where 1 = 1
     ) v1
     on ( t1.id = v1.id )
     when matched then
-      update set t1.display_seq = v1.rn
-        where t1.display_seq != v1.rn
+      update set t1.display_seq = v1.new_display_seq
+        where t1.display_seq != v1.new_display_seq
     ;
 
   end resequence_link_groups;
@@ -1073,20 +1082,24 @@ as
     l_link_group_id number;
   begin
 
+    -- convert link group id to number
     l_link_group_id := to_number( p_link_group_id );
 
+    -- update links display_seq if it different than new
     merge into blog_links t1
     using (
       select id
-        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+        ,row_number() over(
+          order by display_seq, created_on
+        ) * 10 as new_display_seq
       from blog_links
       where 1 = 1
       and link_group_id = l_link_group_id
     ) v1
     on ( t1.id = v1.id )
     when matched then
-      update set t1.display_seq = v1.rn
-        where t1.display_seq != v1.rn
+      update set t1.display_seq = v1.new_display_seq
+        where t1.display_seq != v1.new_display_seq
     ;
 
   end resequence_links;

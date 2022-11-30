@@ -6,7 +6,12 @@
   margin-inline-start: 0.5rem;
   margin-bottom: 0.5rem;
   display: inline-block;
-}
-.z-search--tags:first-child {
-  margin-inline-start: 0!important;
+  &:first-child {
+    margin-inline-start: 0!important;
+  }
+  &:not( :last-child ) {
+    &::after {
+      content: ",";
+    }
+  }
 }

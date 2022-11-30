@@ -44,8 +44,15 @@ as
 --    Jari Laine 23.11.2022 - Changed procedures exception handling and removed some unnecessary calls to apex_debug
 --                          - Renamed procedure get_post_pagination to get_post_details and added more out parameters
 --    Jari Laine 24.11.2022 . Removed obsolete parameter p_escape from functions get_category_title and get_tag
+--    Jari Laine 29.11.2022 - Published procedure raise_http_error to
+--                          - Exception handler to procedures download_file
+--                          - Moved logic to fetch next and previous post to view blog_v_posts from procedure get_post_details
 --
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure raise_http_error(
+    p_error_code  in number
+  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public and admin application definition Error Handling Function
@@ -148,6 +155,12 @@ as
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+-- none
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Global functions and procedures
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure raise_http_error(
     p_error_code  in number
   )
@@ -158,9 +171,6 @@ as
     -- stop APEX
     apex_application.stop_apex_engine;
   end raise_http_error;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function apex_error_handler(
@@ -292,7 +302,7 @@ as
     p_attribute_name in varchar2
   ) return varchar2
   as
-    l_value varchar2(4000);
+    l_value blog_settings.attribute_value%type;
   begin
 
     -- raise no data found error if parameter p_attribute_name is null
@@ -398,11 +408,13 @@ as
     p_prev_title      out nocopy varchar2
   )
   as
-    l_post_id   number;
-    l_next      blog_t_post;
-    l_prev      blog_t_post;
-    l_published timestamp with local time zone;
-    l_modified  timestamp with local time zone;
+    l_post_id       number;
+    l_next          blog_t_post;
+    l_prev          blog_t_post;
+    l_published_on  blog_v_posts.published_on%type;
+    l_changed_on    blog_v_posts.changed_on%type;
+
+    c_meta_date_format constant varchar2(30) := 'YYYY-MM-DD"T"HH24:MI:SS.FF3"Z"';
   begin
 
     -- raise no data found error if parameter p_post_id is null
@@ -422,28 +434,14 @@ as
       ,v1.blogger_name
       ,v1.published_on
       ,v1.changed_on
-      ,(
-        select blog_t_post( lkp1.post_id, lkp1.post_title )
-        from blog_v_posts lkp1
-        where 1 = 1
-          and lkp1.published_on > v1.published_on
-        order by lkp1.published_on asc
-        fetch first 1 rows only
-      ) as next_post
-      ,(
-        select blog_t_post( lkp2.post_id, lkp2.post_title )
-        from blog_v_posts lkp2
-        where 1 = 1
-          and lkp2.published_on < v1.published_on
-        order by lkp2.published_on desc
-        fetch first 1 rows only
-      ) as prev_post
+      ,v1.next_post
+      ,v1.prev_post
     into p_post_title
       ,p_post_desc
       ,p_post_category
       ,p_post_author
-      ,l_published
-      ,l_modified
+      ,l_published_on
+      ,l_changed_on
       ,l_next
       ,l_prev
     from blog_v_posts v1
@@ -458,12 +456,12 @@ as
     p_prev_title  := l_prev.post_title;
     -- Get post published and modified UTC time
     p_post_published := to_char(
-       sys_extract_utc( l_published )
-      ,'YYYY-MM-DD"T"HH24:MI:SS.FF3"Z"'
+       sys_extract_utc( l_published_on )
+      ,c_meta_date_format
     );
     p_post_modified := to_char(
-       sys_extract_utc( l_modified )
-      ,'YYYY-MM-DD"T"HH24:MI:SS.FF3"Z"'
+       sys_extract_utc( l_changed_on )
+      ,c_meta_date_format
     );
 
   -- handle errors
@@ -491,7 +489,7 @@ as
   ) return varchar2
   as
     l_category_id   number;
-    l_category_name varchar2(4000);
+    l_category_name blog_v_categories.category_title%type;
   begin
 
     -- raise no data found error if parameter p_category_id is null
@@ -536,7 +534,7 @@ as
   ) return varchar2
   as
     l_tag_id    number;
-    l_tag_name  varchar2(4000);
+    l_tag_name  blog_v_tags.tag%type;
   begin
 
     -- raise no data found error if parameter p_tag_id is null
@@ -634,7 +632,8 @@ as
   begin
 
     -- init HTTP buffer
-    sys.htp.init;
+    --sys.htp.flush;
+    --sys.htp.init;
 
     -- open HTTP header
     sys.owa_util.mime_header(
@@ -672,6 +671,21 @@ as
 
     -- output file
     sys.wpg_docload.download_file ( p_blob_content );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    raise_http_error( 500 );
+    raise;
 
   end download_file;
 --------------------------------------------------------------------------------
@@ -780,6 +794,12 @@ as
   exception
   when no_data_found
   then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
 
     raise_http_error( 404 );
     raise;

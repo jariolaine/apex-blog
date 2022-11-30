@@ -26,7 +26,7 @@ as
 --                              - get_robots_noindex_meta
 --                              - get_post_description_meta
 --                              - get_description_meta
---    Jari Laine 25.22.2022 - Removed unused parameters
+--    Jari Laine 25.11.2022 - Removed unused parameters
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

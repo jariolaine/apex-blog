@@ -530,8 +530,15 @@ as
 --    Jari Laine 23.11.2022 - Changed procedures exception handling and removed some unnecessary calls to apex_debug
 --                          - Renamed procedure get_post_pagination to get_post_details and added more out parameters
 --    Jari Laine 24.11.2022 . Removed obsolete parameter p_escape from functions get_category_title and get_tag
+--    Jari Laine 29.11.2022 - Published procedure raise_http_error to
+--                          - Exception handler to procedures download_file
+--                          - Moved logic to fetch next and previous post to view blog_v_posts from procedure get_post_details
 --
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure raise_http_error(
+    p_error_code  in number
+  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public and admin application definition Error Handling Function
@@ -861,7 +868,7 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_PLUGIN";
 /
-create or replace package "BLOG_URL"
+  create or replace package "BLOG_URL"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -1123,7 +1130,7 @@ as
 --                              - get_robots_noindex_meta
 --                              - get_post_description_meta
 --                              - get_description_meta
---    Jari Laine 25.22.2022 - Removed unused parameters
+--    Jari Laine 25.11.2022 - Removed unused parameters
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1210,6 +1217,9 @@ as
 --                              sitemap_archives
 --                              sitemap_tags
 --    Jari Laine 28.04.2020 - Changed rss_xsl
+--    Jari Laine 29.11.2022 - Removed parameter p_lang from procedure rss
+--                          - Added exception handler that raise also HTTP error to procedures
+--                          - Other minor changes
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1217,8 +1227,7 @@ as
 --  public app page 1003 Ajax Callback process "rss.xml"
   procedure rss(
     p_app_name      in varchar2,
-    p_app_desc      in varchar2,
-    p_lang          in varchar2 default 'en'
+    p_app_desc      in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -1743,14 +1752,49 @@ with read only
 --  DDL for View BLOG_V_POSTS_TAGS
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_POST_TAGS" ("POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG", "CHANGED_ON", "TAG_URL", "TAG_HTML1", "TAG_HTML2", "TAG_HTML3") AS
+with q1 as(
   select
+     t2.post_id     as post_id
+    ,t2.tag_id      as tag_id
+    ,t2.display_seq as display_seq
+    ,t1.tag         as tag
+    ,greatest(
+       t1.changed_on
+      ,t2.changed_on
+    )               as changed_on
+  -- Generate tag URL
+    ,blog_url.get_tag(
+      p_tag_id => t1.id
+    )               as tag_url
+  -- Generate HTML for tags used in APEX reports
+    ,xmlelement( "span"
+      ,xmlattributes(
+        't-Icon fa fa-tag'  as "class"
+        ,'true'             as "aria-hidden"
+      )
+    )               as tag_icon
+    ,xmlelement( "span"
+      ,xmlattributes(
+        't-Button-label'    as "class"
+      )
+      ,t1.tag
+    )               as tag_label
+  -- Tag CSS class
+    ,'t-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft' as tag_class
+  from blog_tags t1
+  join blog_post_tags t2 on t1.id = t2.tag_id
+  where 1 = 1
+    and t1.is_active = 1
+    and t2.is_active = 1
+)
+select
    q1.post_id                         as post_id
   ,q1.tag_id                          as tag_id
   ,q1.display_seq                     as display_seq
   ,q1.tag                             as tag
   ,q1.changed_on                      as changed_on
   ,q1.tag_url                         as tag_url
-  -- Generate HTML for tags used in APEX reports
+-- Generate HTML for tags used in APEX reports
   ,xmlelement( "a"
     ,xmlattributes(
       q1.tag_url        as "href"
@@ -1770,43 +1814,11 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POST_TAGS" ("POST_ID", "TAG_ID", "DISPLAY_S
   ,xmlelement( "span"
     ,xmlattributes(
       q1.tag_class      as "class"
-      ,'tag'            as "rel"
     )
     ,q1.tag_icon
     ,q1.tag_label
   )                                    as tag_html3
-from (
-  select
-     t2.post_id                                                                   as post_id
-    ,t2.tag_id                                                                    as tag_id
-    ,t2.display_seq                                                               as display_seq
-    ,t1.tag                                                                       as tag
-    ,greatest(
-       t1.changed_on
-      ,t2.changed_on
-    )                                                                             as changed_on
-    ,blog_url.get_tag(
-      p_tag_id => t1.id
-    )                                                                             as tag_url
-    ,'t-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft'  as tag_class
-    ,xmlelement( "span"
-      ,xmlattributes(
-        't-Icon fa fa-tag'  as "class"
-        ,'true'             as "aria-hidden"
-      )
-    )                                                                             as tag_icon
-    ,xmlelement( "span"
-      ,xmlattributes(
-        't-Button-label'    as "class"
-      )
-      ,t1.tag
-    )                                                                             as tag_label
-  from blog_tags t1
-  join blog_post_tags t2 on t1.id = t2.tag_id
-  where 1 = 1
-    and t1.is_active = 1
-    and t2.is_active = 1
-) q1
+from q1
 with read only
 /
 --------------------------------------------------------
@@ -1949,60 +1961,124 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "POST_URL", "TAGS_HTML1", "TAGS_HTML2") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR", "CATEGORY_SEQ", "POST_URL", "TAGS_HTML1", "TAGS_HTML2", "TXT_POSTED_BY", "TXT_POSTED_ON", "TXT_CATEGORY", "TXT_READ_MORE", "TXT_TAGS", "NEXT_POST", "PREV_POST") AS
+with q1 as(
   select
-   t1.id                                                as post_id
-  ,t3.id                                                as category_id
-  ,t2.id                                                as blogger_id
-  ,t2.blogger_name                                      as blogger_name
-  ,t1.title                                             as post_title
-  ,t3.title                                             as category_title
-  ,t1.post_desc                                         as post_desc
-  ,t1.first_paragraph                                   as first_paragraph
-  ,t1.body_html                                         as body_html
-  ,t1.published_on                                      as published_on
-  ,greatest(
-     t1.published_on
-    ,t1.changed_on
-  )                                                     as changed_on
-  ,t1.archive_year_month                                as archive_year_month
-  ,t1.archive_year                                      as archive_year
-  ,t3.display_seq                                       as category_seq
+     t1.id              as post_id
+    ,t3.id              as category_id
+    ,t2.id              as blogger_id
+    ,t2.blogger_name    as blogger_name
+    ,t1.title           as post_title
+    ,t3.title           as category_title
+    ,t1.post_desc       as post_desc
+    ,t1.first_paragraph as first_paragraph
+    ,t1.body_html       as body_html
+    ,t1.published_on    as published_on
+    ,greatest(
+       t1.published_on
+      ,t1.changed_on
+    )                   as changed_on
+    ,t1.archive_year    as archive_year
+    ,t3.display_seq     as category_seq
   -- Generate post URL
-  ,blog_url.get_post(
-     p_post_id => t1.id
-  )                                                     as post_url
--- Aggregate tag HTML for post
+    ,blog_url.get_post(
+      p_post_id => t1.id
+    )                   as post_url
+  -- Aggregate tag HTML for post
+    ,(
+      select
+        xmlserialize(
+          content xmlagg( lkp_tag.tag_html1 order by lkp_tag.display_seq )
+        ) as tags_html
+      from blog_v_post_tags lkp_tag
+      where 1 = 1
+        and lkp_tag.post_id = t1.id
+    )                   as tags_html1
+    ,(
+      select
+        xmlserialize(
+          content xmlagg( lkp_tag.tag_html2 order by lkp_tag.display_seq )
+        ) as tags_html
+      from blog_v_post_tags lkp_tag
+      where 1 = 1
+        and lkp_tag.post_id = t1.id
+    )                   as tags_html2
+  from blog_posts t1
+  join blog_bloggers t2
+    on t1.blogger_id  = t2.id
+  join blog_categories t3
+    on t1.category_id = t3.id
+  where 1 = 1
+    and t1.is_active = 1
+    and t2.is_active = 1
+    and t3.is_active = 1
+    and t1.published_on <= current_timestamp
+)
+select
+   q1.post_id         as post_id
+  ,q1.category_id     as category_id
+  ,q1.blogger_id      as blogger_id
+  ,q1.blogger_name    as blogger_name
+  ,q1.post_title      as post_title
+  ,q1.category_title  as category_title
+  ,q1.post_desc       as post_desc
+  ,q1.first_paragraph as first_paragraph
+  ,q1.body_html       as body_html
+  ,q1.published_on    as published_on
+  ,q1.changed_on      as changed_on
+  ,q1.archive_year    as archive_year
+  ,q1.category_seq    as category_seq
+  ,q1.post_url        as post_url
+  ,q1.tags_html1      as tags_html1
+  ,q1.tags_html2      as tags_html2
+-- text, label etc. for APEX reports
+  ,txt.posted_by      as txt_posted_by
+  ,txt.posted_on      as txt_posted_on
+  ,txt.category       as txt_category
+  ,txt.read_more      as txt_read_more
+  ,case
+    when q1.tags_html1 is not null
+    then txt.tags
+  end                 as txt_tags
+-- Fetch next post id and title
   ,(
     select
-      listagg(
-        xmlserialize( content lkp1.tag_html1 )
-        ,','
-      ) within group( order by lkp1.display_seq )
-    from blog_v_post_tags lkp1
+      blog_t_post(
+         lkp_post.post_id
+        ,lkp_post.post_title
+      ) as post
+    from q1 lkp_post
     where 1 = 1
-      and lkp1.post_id = t1.id
-  )                                                     as tags_html1
--- Aggregate tag HTML for post
+      and lkp_post.published_on >= q1.published_on
+      and lkp_post.post_id != q1.post_id
+    order by lkp_post.published_on asc, lkp_post.post_id asc
+    fetch first 1 rows only
+  )                   as next_post
+-- Fetch previous post id and title
   ,(
     select
-      xmlserialize(
-        content xmlagg( lkp2.tag_html2 order by lkp2.display_seq )
-      )
-    from blog_v_post_tags lkp2
+      blog_t_post(
+         lkp_post.post_id
+        ,lkp_post.post_title
+      ) as post
+    from q1 lkp_post
     where 1 = 1
-      and lkp2.post_id = t1.id
-  )                                                     as tags_html2
-from blog_posts t1
-join blog_bloggers t2
-  on t1.blogger_id  = t2.id
-join blog_categories t3
-  on t1.category_id = t3.id
-where 1 = 1
-  and t1.is_active = 1
-  and t2.is_active = 1
-  and t3.is_active = 1
-  and t1.published_on <= current_timestamp
+      and lkp_post.published_on <= q1.published_on
+      and lkp_post.post_id != q1.post_id
+    order by lkp_post.published_on desc, lkp_post.post_id desc
+    fetch first 1 rows only
+  )                   as prev_post
+from q1
+-- Fetch APEX messages
+cross join(
+  select
+     apex_lang.message( 'BLOG_TXT_POSTED_BY' )  as posted_by
+    ,apex_lang.message( 'BLOG_TXT_POSTED_ON' )  as posted_on
+    ,apex_lang.message( 'BLOG_TXT_CATEGORY' )   as category
+    ,apex_lang.message( 'BLOG_TXT_TAGS' )       as tags
+    ,apex_lang.message( 'BLOG_TXT_READ_MORE' )  as read_more
+  from dual
+) txt
 with read only
 /
 --------------------------------------------------------
@@ -2059,49 +2135,6 @@ group by v1.category_id
   ,v1.category_title
   ,v1.category_seq
   ,feat.show_post_count
-with read only
-/
---------------------------------------------------------
---  DDL for View BLOG_V_POSTS_APEX
---------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_APEX" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CHANGED_ON", "ARCHIVE_YEAR_MONTH", "ARCHIVE_YEAR", "CATEGORY_SEQ", "POST_URL", "TAGS_HTML1", "TAGS_HTML2", "TXT_POSTED_BY", "TXT_POSTED_ON", "TXT_CATEGORY", "TXT_TAGS", "TXT_READ_MORE") AS
-  select
-   v1.post_id             as post_id
-  ,v1.category_id         as category_id
-  ,v1.blogger_id          as blogger_id
-  ,v1.blogger_name        as blogger_name
-  ,v1.post_title          as post_title
-  ,v1.category_title      as category_title
-  ,v1.post_desc           as post_desc
-  ,v1.first_paragraph     as first_paragraph
-  ,v1.body_html           as body_html
-  ,v1.published_on        as published_on
-  ,v1.changed_on          as changed_on
-  ,v1.archive_year_month  as archive_year_month
-  ,v1.archive_year        as archive_year
-  ,v1.category_seq        as category_seq
-  ,v1.post_url            as post_url
-  ,v1.tags_html1          as tags_html1
-  ,v1.tags_html2          as tags_html2
-  -- text, label etc. for APEX reports
-  ,txt.posted_by          as txt_posted_by
-  ,txt.posted_on          as txt_posted_on
-  ,txt.category           as txt_category
-  ,case
-    when v1.tags_html1 is not null
-    then txt.tags
-  end                     as txt_tags
-  ,txt.read_more          as txt_read_more
-from blog_v_posts v1
-cross join(
-select
-   apex_lang.message( 'BLOG_TXT_POSTED_BY' )  as posted_by
-  ,apex_lang.message( 'BLOG_TXT_POSTED_ON' )  as posted_on
-  ,apex_lang.message( 'BLOG_TXT_CATEGORY' )   as category
-  ,apex_lang.message( 'BLOG_TXT_TAGS' )       as tags
-  ,apex_lang.message( 'BLOG_TXT_READ_MORE' )  as read_more
-from dual
-) txt
 with read only
 /
 --------------------------------------------------------
@@ -2900,12 +2933,10 @@ as
            xmlelement( "title", v1.title )
           ,xmlelement( "category", v1.category_title )
           ,xmlelement( "description", v1.post_desc )
-          ,case
-            when v1.visible_tags is not null
-              then xmlelement( "tags", v1.visible_tags )
-          end
+          ,xmlelement( "body", apex_escape.striphtml( v1.body_html ) )
+          ,xmlelement( "tags", v1.visible_tags )
         )
-      ) || '<body>' || apex_escape.striphtml( v1.body_html ) || '</body>'
+      )
     into tlob
     from blog_v_all_posts v1
     where 1 = 1
@@ -3018,6 +3049,12 @@ as
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+-- none
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Global functions and procedures
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure raise_http_error(
     p_error_code  in number
   )
@@ -3028,9 +3065,6 @@ as
     -- stop APEX
     apex_application.stop_apex_engine;
   end raise_http_error;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function apex_error_handler(
@@ -3162,7 +3196,7 @@ as
     p_attribute_name in varchar2
   ) return varchar2
   as
-    l_value varchar2(4000);
+    l_value blog_settings.attribute_value%type;
   begin
 
     -- raise no data found error if parameter p_attribute_name is null
@@ -3268,11 +3302,13 @@ as
     p_prev_title      out nocopy varchar2
   )
   as
-    l_post_id   number;
-    l_next      blog_t_post;
-    l_prev      blog_t_post;
-    l_published timestamp with local time zone;
-    l_modified  timestamp with local time zone;
+    l_post_id       number;
+    l_next          blog_t_post;
+    l_prev          blog_t_post;
+    l_published_on  blog_v_posts.published_on%type;
+    l_changed_on    blog_v_posts.changed_on%type;
+
+    c_meta_date_format constant varchar2(30) := 'YYYY-MM-DD"T"HH24:MI:SS.FF3"Z"';
   begin
 
     -- raise no data found error if parameter p_post_id is null
@@ -3292,28 +3328,14 @@ as
       ,v1.blogger_name
       ,v1.published_on
       ,v1.changed_on
-      ,(
-        select blog_t_post( lkp1.post_id, lkp1.post_title )
-        from blog_v_posts lkp1
-        where 1 = 1
-          and lkp1.published_on > v1.published_on
-        order by lkp1.published_on asc
-        fetch first 1 rows only
-      ) as next_post
-      ,(
-        select blog_t_post( lkp2.post_id, lkp2.post_title )
-        from blog_v_posts lkp2
-        where 1 = 1
-          and lkp2.published_on < v1.published_on
-        order by lkp2.published_on desc
-        fetch first 1 rows only
-      ) as prev_post
+      ,v1.next_post
+      ,v1.prev_post
     into p_post_title
       ,p_post_desc
       ,p_post_category
       ,p_post_author
-      ,l_published
-      ,l_modified
+      ,l_published_on
+      ,l_changed_on
       ,l_next
       ,l_prev
     from blog_v_posts v1
@@ -3328,12 +3350,12 @@ as
     p_prev_title  := l_prev.post_title;
     -- Get post published and modified UTC time
     p_post_published := to_char(
-       sys_extract_utc( l_published )
-      ,'YYYY-MM-DD"T"HH24:MI:SS.FF3"Z"'
+       sys_extract_utc( l_published_on )
+      ,c_meta_date_format
     );
     p_post_modified := to_char(
-       sys_extract_utc( l_modified )
-      ,'YYYY-MM-DD"T"HH24:MI:SS.FF3"Z"'
+       sys_extract_utc( l_changed_on )
+      ,c_meta_date_format
     );
 
   -- handle errors
@@ -3361,7 +3383,7 @@ as
   ) return varchar2
   as
     l_category_id   number;
-    l_category_name varchar2(4000);
+    l_category_name blog_v_categories.category_title%type;
   begin
 
     -- raise no data found error if parameter p_category_id is null
@@ -3406,7 +3428,7 @@ as
   ) return varchar2
   as
     l_tag_id    number;
-    l_tag_name  varchar2(4000);
+    l_tag_name  blog_v_tags.tag%type;
   begin
 
     -- raise no data found error if parameter p_tag_id is null
@@ -3504,7 +3526,8 @@ as
   begin
 
     -- init HTTP buffer
-    sys.htp.init;
+    --sys.htp.flush;
+    --sys.htp.init;
 
     -- open HTTP header
     sys.owa_util.mime_header(
@@ -3542,6 +3565,21 @@ as
 
     -- output file
     sys.wpg_docload.download_file ( p_blob_content );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    raise_http_error( 500 );
+    raise;
 
   end download_file;
 --------------------------------------------------------------------------------
@@ -3651,6 +3689,12 @@ as
   when no_data_found
   then
 
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
     raise_http_error( 404 );
     raise;
 
@@ -3758,14 +3802,14 @@ as
     p_name      out nocopy varchar2
   )
   as
-    l_max   number;
+    l_max   blog_bloggers.display_seq%type;
     l_email varchar2(256);
   begin
 
     -- fetch next display_seq
-    select max(display_seq) as display_seq
+    select max( t1.display_seq ) as display_seq
     into l_max
-    from blog_bloggers
+    from blog_bloggers t1
     ;
 
     l_max := next_seq( l_max );
@@ -3830,7 +3874,7 @@ as
   )
   as
     l_app_id    number;
-    l_authz_grp varchar2(256);
+    l_authz_grp apex_applications.authorization_scheme%type;
   begin
 
     -- fetch user id and name
@@ -3875,7 +3919,7 @@ as
   function get_category_seq
   return varchar2
   as
-    l_max_seq   number;
+    l_max_seq   blog_v_all_categories.display_seq%type;
     l_next_seq  varchar2(256);
   begin
 
@@ -3895,7 +3939,7 @@ as
   function get_link_grp_seq
   return varchar2
   as
-    l_max_seq   number;
+    l_max_seq   blog_v_all_link_groups.display_seq%type;
     l_next_seq  varchar2(256);
   begin
 
@@ -3915,7 +3959,7 @@ as
   function get_modal_page_seq
   return varchar2
   as
-    l_max_seq   number;
+    l_max_seq   blog_v_all_dynamic_content.display_seq%type;
     l_next_seq  varchar2(256);
   begin
 
@@ -3937,7 +3981,7 @@ as
   ) return varchar2
   as
     l_link_group_id number;
-    l_max_seq       number;
+    l_max_seq       blog_v_all_links.display_seq%type;
     l_next_seq      varchar2(256);
   begin
 
@@ -4242,17 +4286,20 @@ as
   as
   begin
 
+    -- update categories display_seq if it different than new
     merge into blog_categories t1
     using (
       select id
-        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+        ,row_number() over(
+          order by display_seq, created_on
+        ) * 10 as new_display_seq
       from blog_categories
       where 1 = 1
     ) v1
     on ( t1.id = v1.id )
     when matched then
-      update set t1.display_seq = v1.rn
-        where t1.display_seq != v1.rn
+      update set t1.display_seq = v1.new_display_seq
+        where t1.display_seq != v1.new_display_seq
     ;
 
   end resequence_categories;
@@ -4379,18 +4426,21 @@ as
 
     l_post_id := to_number( p_post_id );
 
+    -- update post tags display_seq if it different than new
     merge into blog_post_tags t1
     using (
       select id
-        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+        ,row_number() over(
+          order by display_seq, created_on
+        ) * 10 as new_display_seq
       from blog_post_tags
       where 1 = 1
       and post_id = l_post_id
     ) v1
     on ( t1.id = v1.id )
     when matched then
-      update set t1.display_seq = v1.rn
-        where t1.display_seq != v1.rn
+      update set t1.display_seq = v1.new_display_seq
+        where t1.display_seq != v1.new_display_seq
     ;
 
   end resequence_tags;
@@ -4528,17 +4578,20 @@ as
   as
   begin
 
+    -- update link groups display_seq if it different than new
     merge into blog_link_groups t1
     using (
       select id
-        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+        ,row_number() over(
+          order by display_seq, created_on
+        ) * 10 as new_display_seq
       from blog_link_groups
       where 1 = 1
     ) v1
     on ( t1.id = v1.id )
     when matched then
-      update set t1.display_seq = v1.rn
-        where t1.display_seq != v1.rn
+      update set t1.display_seq = v1.new_display_seq
+        where t1.display_seq != v1.new_display_seq
     ;
 
   end resequence_link_groups;
@@ -4551,20 +4604,24 @@ as
     l_link_group_id number;
   begin
 
+    -- convert link group id to number
     l_link_group_id := to_number( p_link_group_id );
 
+    -- update links display_seq if it different than new
     merge into blog_links t1
     using (
       select id
-        ,row_number() over( order by display_seq, created_on ) * 10 as rn
+        ,row_number() over(
+          order by display_seq, created_on
+        ) * 10 as new_display_seq
       from blog_links
       where 1 = 1
       and link_group_id = l_link_group_id
     ) v1
     on ( t1.id = v1.id )
     when matched then
-      update set t1.display_seq = v1.rn
-        where t1.display_seq != v1.rn
+      update set t1.display_seq = v1.new_display_seq
+        where t1.display_seq != v1.new_display_seq
     ;
 
   end resequence_links;
@@ -4781,13 +4838,16 @@ as
     page_alias  varchar2(256),
     item_name   varchar2(256)
   );
-
+-- constants for pages and id items
   c_post_page     constant t_page_item := t_page_item( 'POST',      'P2_POST_ID' );
   c_category_page constant t_page_item := t_page_item( 'CATEGORY',  'P14_CATEGORY_ID' );
   c_archive_page  constant t_page_item := t_page_item( 'ARCHIVES',  'P15_ARCHIVE_ID' );
   c_tags_page     constant t_page_item := t_page_item( 'TAG',       'P6_TAG_ID' );
 
-  g_canonical_url varchar2(256);
+-- cache rss url
+  g_rss_url       varchar2(1024);
+-- cache canonical host
+  g_canonical_url varchar2(1024);
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -5100,22 +5160,25 @@ as
     p_application in varchar2 default null
   ) return varchar2
   as
-    l_rss_url varchar2(4000);
   begin
-
-    -- Fetch RSS URL override from settings
-    l_rss_url := blog_util.get_attribute_value( 'G_RSS_URL' );
-    -- If there isn't override custruct URL
-    if l_rss_url is null
+    -- get rss url from blog settings or use default value
+    -- cache value to package private variable
+    if g_rss_url is null
     then
-      l_rss_url :=
-        get_process(
-           p_application  => p_application
-          ,p_process      => 'rss.xml'
-        );
+      -- Fetch RSS URL override from settings
+      g_rss_url := blog_util.get_attribute_value( 'G_RSS_URL' );
+      -- If there isn't override custruct URL
+      if g_rss_url is null
+      then
+        g_rss_url :=
+          get_process(
+             p_application  => p_application
+            ,p_process      => 'rss.xml'
+          );
+      end if;
     end if;
 
-    return l_rss_url;
+    return g_rss_url;
 
   end get_rss;
 --------------------------------------------------------------------------------
@@ -5129,7 +5192,7 @@ as
 
     -- Fetch XSL URL override from settings
     l_xsl_url := blog_util.get_attribute_value( 'G_RSS_XSL_URL' );
-    -- If there isn't override custruct XSL
+    -- If there isn't override use default XSL
     if l_xsl_url is null
     then
       l_xsl_url :=
@@ -6039,12 +6102,12 @@ as
 --------------------------------------------------------------------------------
   procedure rss(
     p_app_name  in varchar2,
-    p_app_desc  in varchar2,
-    p_lang      in varchar2 default 'en'
+    p_app_desc  in varchar2
   )
   as
     l_xml           xmltype;
     l_rss           blob;
+    l_lang          varchar2(256);
     l_app_id        varchar2(256);
     l_rss_url       varchar2(4000);
     l_xsl_url       varchar2(4000);
@@ -6058,6 +6121,8 @@ as
     l_rss_version   constant varchar2(5)  := '2.0';
 
   begin
+
+    l_lang := apex_application.g_browser_language;
 
     -- RSS feed URL
     l_rss_url   := blog_url.get_rss;
@@ -6110,7 +6175,7 @@ as
               l_app_name  as "title"
               ,l_home_url as "link"
               ,l_app_desc as "description"
-              ,p_lang     as "language"
+              ,l_lang     as "language"
             )
             ,xmlagg(
               xmlelement(
@@ -6138,7 +6203,7 @@ as
           )
         )
       )
-      as blob encoding 'UTF-8' indent size=2
+      as blob encoding 'UTF-8' indent size = 2
     )
     ,max( posts.published_on ) as max_published
     into l_rss, l_max_published
@@ -6168,6 +6233,21 @@ as
       ,p_charset        => 'UTF-8'
     );
 
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
+
   end rss;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -6178,16 +6258,17 @@ as
   as
     l_xml           xmltype;
     l_xsl           blob;
-    l_host_url      varchar2(1024);
+    l_cc_url        varchar2(1024);
     l_cache_control varchar2(256);
   begin
 
-    l_host_url := apex_util.host_url( 'APEX_PATH' );
-    l_host_url := substr( l_host_url, instr( l_host_url, '/', 1, 3 ) );
-    l_host_url := l_host_url || p_ws_images || p_css_file;
+    -- Generate relaive URL for CSS file
+    l_cc_url := apex_util.host_url( 'APEX_PATH' );
+    l_cc_url := substr( l_cc_url, instr( l_cc_url, '/', 1, 3 ) );
+    l_cc_url := l_cc_url || p_ws_images || p_css_file;
 
     l_xml :=
-      sys.xmltype.createxml(
+      xmltype(
         apex_string.format(
           p_message => '
             <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -6195,7 +6276,7 @@ as
               <xsl:output method="html" doctype-system="about:legacy-compat" indent="yes" />
               <!-- Start matching at the Channel node within the XML RSS feed. -->
               <xsl:template match="/rss/channel">
-                <html lang="en">
+                <html lang="%s">
                 <head>
                   <meta charset="utf-8" />
                   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -6219,15 +6300,16 @@ as
                 </html>
               </xsl:template>
             </xsl:stylesheet>'
-          ,p0 => l_host_url
+          ,p0 => apex_application.g_browser_language
+          ,p1 => l_cc_url
         )
       )
     ;
 
-    select xmlserialize(
-      content l_xml
-      as blob encoding 'UTF-8' indent size=2
-    )
+    select
+      xmlserialize(
+        content l_xml as blob encoding 'UTF-8' indent size = 2
+      ) xsl
     into l_xsl
     from dual
     ;
@@ -6246,6 +6328,21 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xsl"' )
       ,p_charset        => 'UTF-8'
     );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
 
   end rss_xsl;
 --------------------------------------------------------------------------------
@@ -6278,7 +6375,7 @@ as
           )
         )
       )
-      as blob encoding 'UTF-8' indent size=2
+      as blob encoding 'UTF-8' indent size = 2
     )
     into l_xml
     from apex_application_page_proc t1
@@ -6303,6 +6400,21 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-index.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
 
   end sitemap_index;
 --------------------------------------------------------------------------------
@@ -6333,7 +6445,7 @@ as
           )
         )
       )
-      as blob encoding 'UTF-8' indent size=2
+      as blob encoding 'UTF-8' indent size = 2
     )
     into l_xml
     from apex_application_pages v1
@@ -6365,6 +6477,21 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-main.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
 
   end sitemap_main;
 --------------------------------------------------------------------------------
@@ -6400,7 +6527,7 @@ as
           )
         )
       )
-      as blob encoding 'UTF-8' indent size=2
+      as blob encoding 'UTF-8' indent size = 2
     )
     into l_xml
     from blog_v_posts posts
@@ -6420,6 +6547,21 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-posts.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
 
   end sitemap_posts;
 --------------------------------------------------------------------------------
@@ -6453,7 +6595,7 @@ as
           )
         )
       )
-      as blob encoding 'UTF-8' indent size=2
+      as blob encoding 'UTF-8' indent size = 2
     )
     into l_xml
     from blog_v_categories cat
@@ -6473,6 +6615,21 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-categories.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
 
   end sitemap_categories;
 --------------------------------------------------------------------------------
@@ -6506,7 +6663,7 @@ as
           )
         )
       )
-      as blob encoding 'UTF-8' indent size=2
+      as blob encoding 'UTF-8' indent size = 2
     )
     into l_xml
     from blog_v_archive_year arc
@@ -6526,6 +6683,21 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-archives.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
 
   end sitemap_archives;
 --------------------------------------------------------------------------------
@@ -6559,7 +6731,7 @@ as
           )
         )
       )
-      as blob encoding 'UTF-8' indent size=2
+      as blob encoding 'UTF-8' indent size = 2
     )
     into l_xml
     from blog_v_tags tags
@@ -6579,6 +6751,21 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-tags.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
 
   end sitemap_tags;
 --------------------------------------------------------------------------------

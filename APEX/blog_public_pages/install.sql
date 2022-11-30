@@ -10,10 +10,10 @@ prompt --install
 @@application/shared_components/navigation/lists/post_archives.sql
 @@application/shared_components/navigation/lists/footer_modal_pages.sql
 @@application/shared_components/navigation/lists/navigation_menu.sql
-@@application/shared_components/files/css_style_min_css.sql
 @@application/shared_components/files/icons_app_icon_32_png.sql
 @@application/shared_components/files/icons_app_icon_192_png.sql
 @@application/shared_components/files/icons_app_icon_512_png.sql
+@@application/shared_components/files/css_style_min_css.sql
 @@application/shared_components/files/js_blog_min_js.sql
 @@application/shared_components/files/css_rss_xsl_min_css.sql
 @@application/shared_components/files/css_rss_xsl_css.sql

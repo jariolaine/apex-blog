@@ -172,15 +172,9 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------',
 '--  Insert patch version info to BLOG_SETTINGS',
 '--------------------------------------------------------',
-'begin',
-'  insert into blog_settings(display_seq, is_nullable, attribute_name, data_type, attribute_group_message, attribute_value)',
-'    values(10, 0, ''PATCH_20220415'', ''STRING'', ''INTERNAL'', ''Patch 21.2.20220415'')',
-'  ;',
-'-- Handle exception if patch version already inserted',
-'exception when dup_val_on_index then',
-'  null;',
-'end;',
-'/',
+'insert into blog_settings(display_seq, is_nullable, attribute_name, data_type, attribute_group_message, attribute_value)',
+'  values(10, 0, ''PATCH_20220415'', ''STRING'', ''INTERNAL'', ''Patch 21.2.20220415'')',
+';',
 ''))
 );
 wwv_flow_imp.component_end;

@@ -60,12 +60,10 @@ as
            xmlelement( "title", v1.title )
           ,xmlelement( "category", v1.category_title )
           ,xmlelement( "description", v1.post_desc )
-          ,case
-            when v1.visible_tags is not null
-              then xmlelement( "tags", v1.visible_tags )
-          end
+          ,xmlelement( "body", apex_escape.striphtml( v1.body_html ) )
+          ,xmlelement( "tags", v1.visible_tags )
         )
-      ) || '<body>' || apex_escape.striphtml( v1.body_html ) || '</body>'
+      )
     into tlob
     from blog_v_all_posts v1
     where 1 = 1
