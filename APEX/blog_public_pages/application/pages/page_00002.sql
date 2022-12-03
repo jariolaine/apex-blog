@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.0'
+,p_release=>'22.2.1'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221129195243'
+,p_last_upd_yyyymmddhh24miss=>'20221203085635'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6915627356677149)
@@ -99,6 +99,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'COMMENT_TEXT'
 ,p_column_display_sequence=>3
 ,p_column_heading=>'Comment Text'
+,p_use_as_row_header=>'N'
 ,p_display_as=>'RICH_TEXT'
 ,p_attribute_01=>'HTML'
 ,p_derived_column=>'N'
@@ -191,7 +192,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_template=>wwv_flow_imp.id(6781372168267375)
 ,p_display_sequence=>10
 ,p_region_template_options=>'#DEFAULT#'
-,p_component_template_options=>'#DEFAULT#:z-posts:z-posts--paginationHidden'
+,p_component_template_options=>'#DEFAULT#:z-posts--paginationHidden'
 ,p_item_display_point=>'BELOW'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -214,6 +215,7 @@ wwv_flow_imp_page.create_report_region(
 '  and v1.post_id = :P2_POST_ID'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_translate_title=>'N'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(6894976353301648)
 ,p_query_headings_type=>'NO_HEADINGS'
 ,p_query_num_rows=>1
@@ -296,6 +298,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'BODY_HTML'
 ,p_column_display_sequence=>62
 ,p_column_heading=>'Body Html'
+,p_use_as_row_header=>'N'
 ,p_display_as=>'RICH_TEXT'
 ,p_attribute_01=>'HTML'
 ,p_derived_column=>'N'
@@ -307,6 +310,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'TAGS_HTML'
 ,p_column_display_sequence=>72
 ,p_column_heading=>'Tags Html'
+,p_use_as_row_header=>'N'
 ,p_display_as=>'RICH_TEXT'
 ,p_attribute_01=>'HTML'
 ,p_derived_column=>'N'

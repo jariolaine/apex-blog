@@ -15,7 +15,10 @@
   justify-content: center;
   line-height: 2rem;
   margin: 0;
-  padding: 0.5rem;
+  padding: 0;
+  &:not(:empty){
+    padding: 0.5rem;
+  }
   .z-tagCloud-link {
     &[data-weight="1"] {
       --z-tag-size: 1;
@@ -42,7 +45,6 @@
       --z-tag-size: 8;
     }
     display: flex;
-    padding: 0.5rem;
     text-decoration: none;
     position: relative;
     font-size: ~"calc(var(--z-tag-size) * 0.125rem - -0.75rem)";

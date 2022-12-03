@@ -348,11 +348,13 @@ pre.z-program-code code {
   justify-content: center;
   line-height: 2rem;
   margin: 0;
+  padding: 0;
+}
+.z-tagCloud:not(:empty) {
   padding: 0.5rem;
 }
 .z-tagCloud .z-tagCloud-link {
   display: flex;
-  padding: 0.5rem;
   text-decoration: none;
   position: relative;
   font-size: calc(var(--z-tag-size) * 0.125rem - -0.75rem);

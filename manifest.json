@@ -4,9 +4,9 @@
     "name": "APEX Blog Administration",
     "description": "Blog application administration pages.",
     "author": "Jari Laine",
-    "version": "Release 22.2.0.20221130",
+    "version": "Release 22.2.1.20221203",
     "icon": "https://raw.githubusercontent.com/jariolaine/apex-blog/APEX_22.2/Web_Server/icons/app-icon-192.png",
-    "url": "https://github.com/jariolaine/apex-blog",
+    "url": "https://github.com/jariolaine/apex-blog/tree/APEX_22.2",
     "source": "https://raw.githubusercontent.com/jariolaine/apex-blog/APEX_22.2/Build/blog_administration.sql",
     "zip": "https://raw.githubusercontent.com/jariolaine/apex-blog/APEX_22.2/Build/blog_administration.zip",
     "license": "https://raw.githubusercontent.com/jariolaine/apex-blog/APEX_22.2/LICENSE.txt"
@@ -16,9 +16,9 @@
     "name": "APEX Blog",
     "description": "Blog application public pages. Please install first APEX Blog Administration application.",
     "author": "Jari Laine",
-    "version": "Release 22.2.0.20221130",
+    "version": "Release 22.2.1.20221203",
     "icon": "https://raw.githubusercontent.com/jariolaine/apex-blog/APEX_22.2/Web_Server/icons/app-icon-192.png",
-    "url": "https://github.com/jariolaine/apex-blog",
+    "url": "https://github.com/jariolaine/apex-blog/tree/APEX_22.2",
     "source": "https://raw.githubusercontent.com/jariolaine/apex-blog/APEX_22.2/Build/blog_public_pages.sql",
     "zip": "https://raw.githubusercontent.com/jariolaine/apex-blog/APEX_22.2/Build/blog_public_pages.zip",
     "license": "https://raw.githubusercontent.com/jariolaine/apex-blog/APEX_22.2/LICENSE.txt"
