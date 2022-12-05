@@ -22,12 +22,12 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221128144427'
+,p_last_upd_yyyymmddhh24miss=>'20221205061306'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8596898648797585)
 ,p_plug_name=>'Posts Report'
-,p_region_css_classes=>'z-IR--iconLinks'
+,p_region_css_classes=>'z-IR--iconLinks z-posts  z-post--IR'
 ,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
 ,p_plug_template=>wwv_flow_imp.id(8495746153518209)
 ,p_plug_display_sequence=>20
@@ -123,7 +123,7 @@ wwv_flow_imp_page.create_worksheet(
 ,p_detail_link_attr=>'title="#BTN_TITLE_EDIT#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
 ,p_detail_view_enabled_yn=>'Y'
 ,p_detail_view_for_each_row=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<article role="article" class="z-post z-post--IR">',
+'<article role="article" class="z-post">',
 '  <header class="z-post--header">',
 '    <div class="z-post--date">#DETAIL_VIEW_PUBLISHED#</div>',
 '    <h1 class="z-post--title "><a href="#EDIT_URL#" class="u-normal">#POST_TITLE#</a></h1>',

@@ -24,7 +24,7 @@ wwv_flow_imp_shared.create_row_template(
 '    #2#',
 '  </div>',
 '</div>'))
-,p_row_template_before_rows=>'<div class="#COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_report" data-region-id="#REGION_STATIC_ID#">'
+,p_row_template_before_rows=>'<div class="z-Content #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_report" data-region-id="#REGION_STATIC_ID#">'
 ,p_row_template_after_rows=>'</div>'
 ,p_row_template_type=>'NAMED_COLUMNS'
 ,p_row_template_display_cond1=>'0'
@@ -33,7 +33,6 @@ wwv_flow_imp_shared.create_row_template(
 ,p_row_template_display_cond4=>'0'
 ,p_theme_id=>42
 ,p_theme_class_id=>8
-,p_preset_template_options=>'z-Content'
 );
 wwv_flow_imp.component_end;
 end;

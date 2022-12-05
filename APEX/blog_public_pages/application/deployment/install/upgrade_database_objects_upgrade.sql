@@ -1510,10 +1510,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '    and not exists(',
 '      select 1',
 '      from blog_comment_flags x1',
-'      where 1 = 1',
-'      and x1.flag = ''MODERATE''',
-'      and x1.comment_id = co.id',
-'    )',
 '  '))
 );
 null;
@@ -1532,7 +1528,11 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-')                     as disabled_comments_count',
+'    where 1 = 1',
+'      and x1.flag = ''MODERATE''',
+'      and x1.comment_id = co.id',
+'    )',
+'  )                     as disabled_comments_count',
 '  ,case',
 '    when t3.is_active = 0',
 '    then ''BLOGGER_DISABLED''',
@@ -2522,10 +2522,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- Add Last-Modified header',
 '    apex_string.push(',
-'        p_table => l_header_names',
-'       ,p_value => ''Last-Modified''',
-'    );',
-'    apex_str'))
+' '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2543,7 +2540,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ing.push(',
+'       p_table => l_header_names',
+'       ,p_value => ''Last-Modified''',
+'    );',
+'    apex_string.push(',
 '       p_table => l_header_values',
 '      ,p_value =>',
 '        to_char(',
@@ -3578,10 +3578,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_result varchar2(4000);',
 '  begin',
 '',
-'    l_string := blog_util.int_to_vc2( p_number );',
-'    for i in 1 .. length( l_string )',
-'    loop',
-''))
+'    l_str'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3599,6 +3596,9 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ing := blog_util.int_to_vc2( p_number );',
+'    for i in 1 .. length( l_string )',
+'    loop',
 '      l_result :=',
 '        apex_string.format(',
 '          p_message => ''%s&#%s''',
@@ -4590,10 +4590,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '      apex_debug.info(',
 '        ''Send email to: %s from: %s template: %s placeholders: %s''',
-'        ,c1.blogger_email',
-'        ,l_app_email',
-'        ,p_email_template',
-'        ,c1.placehol'))
+'      '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4611,7 +4608,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ders',
+'  ,c1.blogger_email',
+'        ,l_app_email',
+'        ,p_email_template',
+'        ,c1.placeholders',
 '      );',
 '      -- send notify email',
 '      apex_mail.send (',
@@ -5597,10 +5597,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end sitemap_categories;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure sitemap_archives',
-'  as',
-'    l_xml        '))
+'---------------------------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5618,7 +5615,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   blob;',
+'-----------------------------------',
+'  procedure sitemap_archives',
+'  as',
+'    l_xml           blob;',
 '    l_cache_control varchar2(256);',
 '  begin',
 '',

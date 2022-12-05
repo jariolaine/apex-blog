@@ -77,12 +77,11 @@ blockquote::after {
   padding: 1rem 0;
 }
 .z-copyright .z-copyright-link {
-  display: block;
   color: inherit;
   font-size: 0.875rem;
   opacity: 0.6;
 }
-.z-copyright:hover .z-copyright-link {
+.z-copyright .z-copyright-link:hover {
   opacity: 1;
 }
 @media only screen and (max-width: 640px) {
@@ -109,91 +108,73 @@ blockquote::after {
 /**************************************
 * Post report
 **************************************/
-.z-post {
-  background-color: var(--ut-component-background-color);
+.z-posts .z-post {
   margin-bottom: 1rem;
+  padding: 1rem;
   border-width: var(--ut-component-border-width);
   border-style: solid;
   border-color: var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
-  padding: 1rem;
+  background-color: var(--ut-component-background-color);
 }
-.z-post--header {
+.z-posts .z-post .z-post--header {
   clear: both;
 }
-.z-post--header .z-post--date {
+.z-posts .z-post .z-post--header .z-post--date {
   font-size: 1.125em;
   margin: 0 0 0.25rem;
 }
-.z-post--header .z-post--title {
+.z-posts .z-post .z-post--header .z-post--title {
   font-size: 1.625em;
   margin: 0 0 0.5rem;
 }
-.z-post--header .z-post--category {
+.z-posts .z-post .z-post--header .z-post--category {
   font-size: 1em;
   margin: 0 0 1rem;
 }
-.z-post--body img {
+.z-posts .z-post .z-post--body img {
   max-width: 100%;
   height: auto;
 }
-.z-post--body br {
+.z-posts .z-post .z-post--body br {
   clear: none!important;
 }
-.z-post--tags {
+.z-posts .z-post .z-post--footer {
   width: 100%;
   clear: both;
   padding-top: 1rem;
-  border-top-width: var(--ut-component-inner-border-width);
-  border-top-style: solid;
-  border-top-color: var(--ut-component-inner-border-color);
+}
+.z-posts .z-post .z-post--footer .z-post--tags {
+  width: 100%;
+  clear: both;
+  padding-top: 1rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  border-top-width: var(--ut-component-inner-border-width);
+  border-top-style: solid;
+  border-top-color: var(--ut-component-inner-border-color);
 }
-.z-post--footer {
-  width: 100%;
-  clear: both;
-  padding-top: 1rem;
-}
-.z-posts--pagination {
+.z-posts .z-posts--pagination {
   margin-bottom: 1rem;
-}
-.z-posts--paginationBorder .z-posts--pagination {
-  background-color: var(--ut-component-background-color);
+  padding: 0.25rem;
   border-width: var(--ut-component-border-width);
   border-style: solid;
   border-color: var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
-  padding: 0.25rem;
+  background-color: var(--ut-component-background-color);
 }
-.z-post--largeMargin .z-post {
-  margin-bottom: 2rem;
-}
-.z-post--smallMargin .z-post {
-  margin-bottom: 0.5rem;
-}
-.z-post--noMargin .z-post {
-  margin-bottom: 0;
-}
-.z-post--noMargin .z-post:not(:first-child) {
-  border-top: none;
-}
-.z-post--noMargin.z-posts--paginationBorder .z-posts--pagination {
-  border-top: none;
-}
-.z-posts--paginationHidden .z-posts--pagination {
+.z-posts.z-posts--paginationHidden .z-posts--pagination {
   display: none!important;
   visibility: hidden!important;
 }
 @media only screen and (max-width: 640px) {
-  .z-post {
-    padding: 0.75rem;
-    margin-bottom: 1rem;
+  .z-posts .z-post {
+    padding: 0.5rem;
   }
-  .z-post--header .z-post--title {
+  .z-posts .z-post .z-post--header .z-post--title {
     font-size: 1.375em;
   }
 }
@@ -208,12 +189,10 @@ blockquote::after {
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
   margin-bottom: 1rem;
-}
-.z-Content--Row {
   background-color: var(--ut-component-background-color);
   overflow: hidden;
 }
-.z-Content--Title {
+.z-Content .z-Content--Title {
   font-size: var(--ut-region-header-font-size, 1rem);
   font-weight: 500;
   border-bottom-width: var(--ut-component-inner-border-width);
@@ -223,21 +202,13 @@ blockquote::after {
   padding: var(--ut-region-header-padding-x, 0.75rem);
   margin: 0;
 }
-.z-Content--Body {
+.z-Content .z-Content--Body {
   padding: 1rem;
-}
-.z-Content--Stacked .z-Content--Title {
-  border-top-width: var(--ut-component-inner-border-width);
-  border-top-style: solid;
-  border-top-color: var(--ut-component-inner-border-color);
-}
-.z-Content--Stacked .z-Content--Row:first-child .z-Content--Title {
-  border-top: none;
 }
 /**************************************
 * Program code formatting
 **************************************/
-/* Pre APEX 22.2 CKEditor 4*/
+/* Pre APEX 22.2 CKEditor 4 */
 pre.z-program-code {
   clear: both;
   font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace";
@@ -262,7 +233,7 @@ pre.z-program-code code {
   font-family: inherit;
   font-size: inherit;
 }
-/* APEX 22.2 CKEditor 5*/
+/* APEX 22.2 CKEditor 5 */
 .ck-content pre:has( code ) {
   clear: both;
   font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace";
