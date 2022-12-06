@@ -16,11 +16,10 @@ Ensure target schema associated to your APEX workspace has following system priv
 * CREATE INDEXTYPE
 * CREATE PROCEDURE
 * CREATE SEQUENCE
-* CREATE TYPE
 * CREATE TABLE
 * CREATE TRIGGER
+* CREATE TYPE
 * CREATE VIEW
-* CREATE JOB
 * CTXAPP
 
 APEX workspace administrator privileges are required to create a user group for authorization.
