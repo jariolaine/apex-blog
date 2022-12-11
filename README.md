@@ -45,4 +45,4 @@ Before starting the upgrade, backup the application parsing schema data and obje
 4. Import and install *blog_public_pages.sql* and select upgrade supporting objects.
 
 # License
-This code is released under [MIT license](https://raw.githubusercontent.com/jariolaine/apex-blog/APEX_22.2/LICENSE.txt) by Jari Laine.
+This code is released under [MIT license](https://raw.githubusercontent.com/jariolaine/apex-blog/master/LICENSE.txt) by Jari Laine.
