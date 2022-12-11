@@ -40,8 +40,19 @@ as
 --    Jari Laine 26.04.2022 - Parameter p_escape to function get_tag
 --    Jari Laine 03.08.2022 - Changed procedure render_dynamic_content to use apex_util.prn
 --    Jari Laine 16.11.2022 - Removed obsolete function get_post_title
+--    Jari Laine 21.11.2022 - Added DETERMINISTIC caluse to function int_to_vc2
+--    Jari Laine 23.11.2022 - Changed procedures exception handling and removed some unnecessary calls to apex_debug
+--                          - Renamed procedure get_post_pagination to get_post_details and added more out parameters
+--    Jari Laine 24.11.2022 . Removed obsolete parameter p_escape from functions get_category_title and get_tag
+--    Jari Laine 29.11.2022 - Published procedure raise_http_error to
+--                          - Exception handler to procedures download_file
+--                          - Moved logic to fetch next and previous post to view blog_v_posts from procedure get_post_details
 --
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure raise_http_error(
+    p_error_code  in number
+  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public and admin application definition Error Handling Function
@@ -53,7 +64,7 @@ as
 --  inside package and from other packages
   function int_to_vc2(
     p_value           in number
-  ) return varchar2;
+  ) return varchar2 deterministic;
 --------------------------------------------------------------------------------
 -- Called from:
 --  other packages, public and admin application
@@ -69,28 +80,30 @@ as
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 2
-  procedure get_post_pagination(
+  procedure get_post_details(
     p_post_id         in varchar2,
     p_post_title      out nocopy varchar2,
     p_post_desc       out nocopy varchar2,
-    p_newer_id        out nocopy varchar2,
-    p_newer_title     out nocopy varchar2,
-    p_older_id        out nocopy varchar2,
-    p_older_title     out nocopy varchar2
+    p_post_category   out nocopy varchar2,
+    p_post_author     out nocopy varchar2,
+    p_post_published  out nocopy varchar2,
+    p_post_modified   out nocopy varchar2,
+    p_next_id         out nocopy varchar2,
+    p_next_title      out nocopy varchar2,
+    p_prev_id         out nocopy varchar2,
+    p_prev_title       out nocopy varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 14 Pre-Rendering Computations
   function get_category_title(
-    p_category_id     in varchar2,
-    p_escape          in boolean
+    p_category_id     in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 6 Pre-Rendering Computations
   function get_tag(
-    p_tag_id          in varchar2,
-    p_escape          in boolean
+    p_tag_id          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
@@ -142,6 +155,12 @@ as
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+-- none
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Global functions and procedures
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure raise_http_error(
     p_error_code  in number
   )
@@ -152,9 +171,6 @@ as
     -- stop APEX
     apex_application.stop_apex_engine;
   end raise_http_error;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function apex_error_handler(
@@ -286,14 +302,8 @@ as
     p_attribute_name in varchar2
   ) return varchar2
   as
-    l_value varchar2(4000);
+    l_value blog_settings.attribute_value%type;
   begin
-
-    apex_debug.enter(
-      p_routine_name  => 'blog_util.get_attribute_value'
-      ,p_name01       => 'p_attribute_name'
-      ,p_value01      => p_attribute_name
-    );
 
     -- raise no data found error if parameter p_attribute_name is null
     if p_attribute_name is null then
@@ -318,25 +328,15 @@ as
 
   -- Handle error cases
   exception
-  when no_data_found
-  then
-
-    apex_debug.warn(
-       p_message => 'No data found. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_attribute_name'
-      ,p2 => coalesce( p_attribute_name, '(null)' )
-    );
-    raise;
-
   when others
   then
 
     apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_attribute_name'
-      ,p2 => coalesce( p_attribute_name, '(null)' )
+       p_message => 'Error: %s %s( %s => %s )'
+      ,p0 => sqlerrm
+      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p2 => 'p_attribute_name'
+      ,p3 => coalesce( p_attribute_name, '(null)' )
     );
     raise;
 
@@ -349,12 +349,6 @@ as
   as
     l_app_id number;
   begin
-
-    apex_debug.enter(
-      p_routine_name  => 'blog_util.initialize_items'
-      ,p_name01       => 'p_app_id'
-      ,p_value01      => p_app_id
-    );
 
     -- raise no data found error if parameter p_app_id_name is null
     if p_app_id is null then
@@ -374,13 +368,6 @@ as
       where i.application_id = l_app_id
     ) loop
 
-      apex_debug.info(
-        p_message => 'Initialize application id: %s item: %s value: %s'
-        ,p0 => p_app_id
-        ,p1 => c1.item_name
-        ,p2 => c1.item_value
-      );
-
       -- set item session state and no commit
       apex_util.set_session_state(
         p_name    => c1.item_name
@@ -390,53 +377,45 @@ as
 
     end loop;
 
-  -- handle errors
   exception
-  when no_data_found
-  then
-
-    apex_debug.warn(
-       p_message => 'No data found. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_app_id'
-      ,p2 => coalesce( p_app_id, '(null)' )
-    );
-    raise;
-
   when others
   then
 
     apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_app_id'
-      ,p2 => coalesce( p_app_id, '(null)' )
+       p_message => 'Error: %s. %s( %s => %s )'
+      ,p0 => sqlerrm
+      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p2 => 'p_app_id'
+      ,p3 => coalesce( p_app_id, '(null)' )
     );
+
     raise;
 
   end initialize_items;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure get_post_pagination(
+  procedure get_post_details(
     p_post_id         in varchar2,
     p_post_title      out nocopy varchar2,
     p_post_desc       out nocopy varchar2,
-    p_newer_id        out nocopy varchar2,
-    p_newer_title     out nocopy varchar2,
-    p_older_id        out nocopy varchar2,
-    p_older_title     out nocopy varchar2
+    p_post_category   out nocopy varchar2,
+    p_post_author     out nocopy varchar2,
+    p_post_published  out nocopy varchar2,
+    p_post_modified   out nocopy varchar2,
+    p_next_id         out nocopy varchar2,
+    p_next_title      out nocopy varchar2,
+    p_prev_id         out nocopy varchar2,
+    p_prev_title      out nocopy varchar2
   )
   as
-    l_post_id     number;
-    l_newer       blog_t_post;
-    l_older       blog_t_post;
-  begin
+    l_post_id       number;
+    l_next          blog_t_post;
+    l_prev          blog_t_post;
+    l_published_on  blog_v_posts.published_on%type;
+    l_changed_on    blog_v_posts.changed_on%type;
 
-    apex_debug.enter(
-      p_routine_name  => 'blog_util.pagination'
-      ,p_name01       => 'p_post_id'
-      ,p_value01      => p_post_id
-    );
+    c_meta_date_format constant varchar2(30) := 'YYYY-MM-DD"T"HH24:MI:SS.FF3"Z"';
+  begin
 
     -- raise no data found error if parameter p_post_id is null
     if p_post_id is null then
@@ -446,95 +425,72 @@ as
     -- conver post id string to number
     l_post_id := to_number( p_post_id );
 
-    -- fetch post title by post id
-    -- also fetch older and newer post id and title
+    -- fetch post title and description by post id
+    -- also fetch prev and next post id and title
     select
       v1.post_title
       ,v1.post_desc
-      ,(
-        select blog_t_post( lkp1.post_id, lkp1.post_title )
-        from blog_v_posts lkp1
-        where 1 = 1
-          and lkp1.published_on > v1.published_on
-        order by lkp1.published_on asc
-        fetch first 1 rows only
-      ) as newer_post
-      ,(
-        select blog_t_post( lkp2.post_id, lkp2.post_title )
-        from blog_v_posts lkp2
-        where 1 = 1
-          and lkp2.published_on < v1.published_on
-        order by lkp2.published_on desc
-        fetch first 1 rows only
-      ) as older_post
-    into p_post_title, p_post_desc, l_newer, l_older
+      ,v1.category_title
+      ,v1.blogger_name
+      ,v1.published_on
+      ,v1.changed_on
+      ,v1.next_post
+      ,v1.prev_post
+    into p_post_title
+      ,p_post_desc
+      ,p_post_category
+      ,p_post_author
+      ,l_published_on
+      ,l_changed_on
+      ,l_next
+      ,l_prev
     from blog_v_posts v1
     where 1 = 1
       and post_id = l_post_id
     ;
 
     -- set procedure out parameters
-    p_newer_id    := int_to_vc2( l_newer.post_id );
-    p_newer_title := l_newer.post_title;
-    p_older_id    := int_to_vc2( l_older.post_id );
-    p_older_title := l_older.post_title;
-
-    apex_debug.info(
-      p_message => 'Fetch post: %s next_id: %s prev_id: %s'
-      ,p0 => p_post_id
-      ,p1 => p_newer_id
-      ,p2 => p_older_id
+    p_next_id     := int_to_vc2( l_next.post_id );
+    p_next_title  := l_next.post_title;
+    p_prev_id     := int_to_vc2( l_prev.post_id );
+    p_prev_title  := l_prev.post_title;
+    -- Get post published and modified UTC time
+    p_post_published := to_char(
+       sys_extract_utc( l_published_on )
+      ,c_meta_date_format
+    );
+    p_post_modified := to_char(
+       sys_extract_utc( l_changed_on )
+      ,c_meta_date_format
     );
 
   -- handle errors
   exception
-  when no_data_found
-  then
-
-    apex_debug.warn(
-       p_message => 'No data found. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_post_id'
-      ,p2 => coalesce( p_post_id, '(null)' )
-    );
-
-    -- show http error
-    raise_http_error( 404 );
-    raise;
-
   when others
   then
 
     apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_post_id'
-      ,p2 => coalesce( p_post_id, '(null)' )
+       p_message => 'Error: %s %s( %s => %s )'
+      ,p0 => sqlerrm
+      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p2 => 'p_post_id'
+      ,p3 => coalesce( p_post_id, '(null)' )
     );
 
     -- show http error
     raise_http_error( 404 );
     raise;
 
-  end get_post_pagination;
+  end get_post_details;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_category_title(
-    p_category_id in varchar2,
-    p_escape      in boolean
+    p_category_id in varchar2
   ) return varchar2
   as
     l_category_id   number;
-    l_category_name varchar2(4000);
+    l_category_name blog_v_categories.category_title%type;
   begin
-
-    apex_debug.enter(
-      p_routine_name  => 'blog_util.get_category_title'
-      ,p_name01       => 'p_category_id'
-      ,p_value01      => p_category_id
-      ,p_name02       => 'p_escape'
-      ,p_value02      => apex_debug.tochar(p_escape)
-    );
 
     -- raise no data found error if parameter p_category_id is null
     if p_category_id is null then
@@ -551,45 +507,19 @@ as
     where v1.category_id = l_category_id
     ;
 
-    apex_debug.info(
-      p_message => 'Fetch category: %s return: %s'
-      ,p0 => p_category_id
-      ,p1 => l_category_name
-    );
-
-    -- espace html from category name if parameter p_escape is true
     -- return category name
-    return case when p_escape
-      then apex_escape.html( l_category_name )
-      else l_category_name
-      end
-    ;
+    return l_category_name;
 
   -- handle errors
   exception
-  when no_data_found then
-
-    apex_debug.warn(
-       p_message => 'No data found. %s( %s => %s, %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_category_id'
-      ,p2 => coalesce( p_category_id, '(null)' )
-      ,p3 => 'p_escape'
-      ,p4 => apex_debug.tochar( p_escape )
-    );
-
-    -- show http error
-    raise_http_error( 404 );
-    raise;
-
   when others then
+
     apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s, %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_category_id'
-      ,p2 => coalesce( p_category_id, '(null)' )
-      ,p3 => 'p_escape'
-      ,p4 => apex_debug.tochar( p_escape )
+       p_message => 'Error: %s %s( %s => %s, %s => %s )'
+      ,p0 => sqlerrm
+      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p2 => 'p_category_id'
+      ,p3 => coalesce( p_category_id, '(null)' )
     );
 
     -- show http error
@@ -600,19 +530,12 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tag(
-    p_tag_id in varchar2,
-    p_escape in boolean
+    p_tag_id in varchar2
   ) return varchar2
   as
     l_tag_id    number;
-    l_tag_name  varchar2(4000);
+    l_tag_name  blog_v_tags.tag%type;
   begin
-
-    apex_debug.enter(
-      p_routine_name  => 'blog_util.get_tag'
-      ,p_name01       => 'p_tag_id'
-      ,p_value01      => p_tag_id
-    );
 
     -- raise no data found error if parameter p_tag_id is null
     if p_tag_id is null then
@@ -630,44 +553,20 @@ as
     and t1.tag_id = l_tag_id
     ;
 
-    apex_debug.info(
-      p_message => 'Fetch tag: %s return: %s'
-      ,p0 => p_tag_id
-      ,p1 => l_tag_name
-    );
-
-    -- espace html from tag name if parameter p_escape is true
     -- return category name
-    return case when p_escape
-      then apex_escape.html( l_tag_name )
-      else l_tag_name
-      end
-    ;
+    return l_tag_name;
 
   -- handle errors
   exception
-  when no_data_found
-  then
-
-    apex_debug.warn(
-       p_message => 'No data found. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_tag_id'
-      ,p2 => coalesce( p_tag_id, '(null)' )
-    );
-
-    -- show http error
-    raise_http_error( 404 );
-    raise;
-
   when others
   then
 
     apex_debug.error(
-       p_message => 'Unhandled error. %s( %s => %s )'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => 'p_tag_id'
-      ,p2 => coalesce( p_tag_id, '(null)' )
+       p_message => 'Error: %s %s( %s => %s )'
+      ,p0 => sqlerrm
+      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p2 => 'p_tag_id'
+      ,p3 => coalesce( p_tag_id, '(null)' )
     );
 
     -- show http error
@@ -733,7 +632,8 @@ as
   begin
 
     -- init HTTP buffer
-    sys.htp.init;
+    --sys.htp.flush;
+    --sys.htp.init;
 
     -- open HTTP header
     sys.owa_util.mime_header(
@@ -771,6 +671,21 @@ as
 
     -- output file
     sys.wpg_docload.download_file ( p_blob_content );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    raise_http_error( 500 );
+    raise;
 
   end download_file;
 --------------------------------------------------------------------------------
@@ -879,6 +794,12 @@ as
   exception
   when no_data_found
   then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
 
     raise_http_error( 404 );
     raise;

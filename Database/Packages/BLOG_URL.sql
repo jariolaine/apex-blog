@@ -1,4 +1,4 @@
-create or replace package "BLOG_URL"
+  create or replace package "BLOG_URL"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -21,6 +21,9 @@ as
 --    Jari Laine 13.11.2021 - New funtions get_sitemap_index, get_rss and get get_rss_xsl
 --    Jari Laine 18.12.2021 - Moved procedure redirect_search to package blog_util.
 --    Jari Laine 14.03.2022 - New function get_canonical_host
+--    Jari Laine 24.11.2022 - Hard coded values to package private constants
+--                          - Removed not used parammeters from functions
+--                          - New function get_dynamic_page
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -29,129 +32,110 @@ as
   function get_canonical_host return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- package blog_html
   function get_tab(
-    p_app_page_id     in varchar2,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_request         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
+    p_page            in varchar2,
+    p_application     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- packages blog_comm, blog_xml
+-- view blog_v_posts
   function get_post(
     p_post_id         in number,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
+    p_application     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- packages blog_html, blog_url
   function get_post(
     p_post_id         in varchar2,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
+    p_application     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- package blog_xml and view blog_v_categories
   function get_category(
     p_category_id     in number,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
+    p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- packages blog_html, blog_url
   function get_category(
     p_category_id     in varchar2,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
+    p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- package blog_xml and view blog_v_archive_year
   function get_archive(
     p_archive_id      in number,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
+    p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- packages blog_html, blog_url
   function get_archive(
     p_archive_id      in varchar2,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
+    p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- package blog_xml and view blog_v_post_tags
   function get_tag(
     p_tag_id          in number,
-    p_app_id          in varchar2 default null,
-    p_session         in varchar2 default null,
-    p_clear_cache     in varchar2 default null,
-    p_canonical       in varchar2 default 'NO',
-    p_plain_url       in varchar2 default 'YES',
-    p_encode_url      in varchar2 default 'NO'
+    p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- packages blog_html, blog_url
+  function get_tag(
+    p_tag_id          in varchar2,
+    p_canonical       in varchar2 default 'NO'
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+-- view blog_v_dynamic_content
+  function get_dynamic_page(
+    p_content_id      in number
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+-- packages blog_url, blog_xml
+  function get_process(
+    p_application     in varchar2 default null,
+    p_process         in varchar2 default null
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+-- package blog_comm
   function get_unsubscribe(
-    p_app_id          in varchar2,
+    p_application     in varchar2,
     p_post_id         in varchar2,
     p_subscription_id in number
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- packages blog_html, blog_xml
+-- Blog Administration > Lists > Public Application Links
   function get_rss(
-    p_app_id          in varchar2 default null,
-    p_app_page_id     in varchar2 default 'PGM'
+    p_application     in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+-- packages blog_xml
   function get_rss_xsl(
-    p_app_id          in varchar2 default null,
-    p_app_page_id     in varchar2 default 'PGM'
+    p_application     in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---
+--  Blog Administration > Lists > Public Application Links
   function get_sitemap_index(
-    p_app_id          in varchar2 default null,
-    p_app_page_id     in varchar2 default 'PGM'
+    p_application     in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_URL";
@@ -165,7 +149,21 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- none
+  type t_page_item is record(
+    page_alias  varchar2(256),
+    item_name   varchar2(256)
+  );
+-- constants for pages and id items
+  c_post_page     constant t_page_item := t_page_item( 'POST',      'P2_POST_ID' );
+  c_category_page constant t_page_item := t_page_item( 'CATEGORY',  'P14_CATEGORY_ID' );
+  c_archive_page  constant t_page_item := t_page_item( 'ARCHIVES',  'P15_ARCHIVE_ID' );
+  c_tags_page     constant t_page_item := t_page_item( 'TAG',       'P6_TAG_ID' );
+
+-- cache rss url
+  g_rss_url       varchar2(1024);
+-- cache canonical host
+  g_canonical_url varchar2(1024);
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -180,86 +178,68 @@ as
   function get_canonical_host
   return varchar2
   as
-    l_url varchar2(4000);
   begin
 
-    -- get canonical host from blog settings
-    l_url := blog_util.get_attribute_value( 'G_CANONICAL_HOST' );
-
-    -- if host not found from settings, use APEX provided value
-    if l_url is null
+    -- get canonical host from blog settings or use APEX provided value
+    -- cache value to package private variable
+    if g_canonical_url is null
     then
-      l_url := apex_util.host_url();
+
+      g_canonical_url := blog_util.get_attribute_value( 'G_CANONICAL_HOST' );
+      -- if host not found from settings, use APEX provided value
+      if g_canonical_url is null
+      then
+        g_canonical_url := apex_util.host_url();
+      end if;
+      -- remove trailing slash
+      g_canonical_url := rtrim( g_canonical_url, '/' );
+
     end if;
 
-    return rtrim( l_url, '/' );
+    return g_canonical_url;
 
   end get_canonical_host;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tab(
-    p_app_page_id in varchar2,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_request     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
+    p_page        in varchar2,
+    p_application in varchar2 default null,
+    p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
     l_url varchar2(4000);
   begin
 
-    l_url :=
-      apex_page.get_url(
-        p_application => p_app_id
-       ,p_page        => p_app_page_id
-       ,p_session     => p_session
-       ,p_request     => p_request
-       ,p_clear_cache => p_clear_cache
-       ,p_plain_url   => case p_plain_url when 'YES' then true else false end
-      );
-
     return
       case p_canonical
-      when 'YES'
-      then blog_url.get_canonical_host
-      end
-      ||
-      case p_encode_url
-      when 'YES'
-      then apex_util.url_encode( l_url )
-      else l_url
-      end
-    ;
+        when 'YES' then get_canonical_host
+      end ||
+      apex_page.get_url(
+         p_application  => p_application
+        ,p_page         => p_page
+        ,p_session      => ''
+        ,p_plain_url    => true
+      );
 
   end get_tab;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_post(
     p_post_id     in number,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
+    p_application in varchar2 default null,
+    p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
     l_post_id varchar2(256);
   begin
 
     l_post_id := blog_util.int_to_vc2( p_post_id );
+
     return
       get_post(
          p_post_id      => l_post_id
-        ,p_app_id       => p_app_id
-        ,p_session      => p_session
-        ,p_clear_cache  => p_clear_cache
+        ,p_application  => p_application
         ,p_canonical    => p_canonical
-        ,p_plain_url    => p_plain_url
-        ,p_encode_url   => p_encode_url
       );
 
   end get_post;
@@ -267,66 +247,43 @@ as
 --------------------------------------------------------------------------------
   function get_post(
     p_post_id     in varchar2,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
+    p_application in varchar2 default null,
+    p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
     l_url varchar2(4000);
   begin
 
-    l_url := apex_page.get_url(
-      p_application => p_app_id
-     ,p_page        => 'POST'
-     ,p_session     => p_session
-     ,p_clear_cache => p_clear_cache
-     ,p_items       => 'P2_POST_ID'
+  return
+    case p_canonical
+      when 'YES' then get_canonical_host
+    end ||
+    apex_page.get_url(
+      p_application => p_application
+     ,p_page        => c_post_page.page_alias
+     ,p_session     => ''
+     ,p_items       => c_post_page.item_name
      ,p_values      => p_post_id
-     ,p_plain_url   => case p_plain_url when 'YES' then true else false end
+     ,p_plain_url   => true
    );
-
-    return
-      case p_canonical
-      when 'YES'
-      then blog_url.get_canonical_host
-      end
-      ||
-      case p_encode_url
-      when 'YES'
-      then apex_util.url_encode( l_url )
-      else l_url
-      end
-    ;
 
   end get_post;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_category(
     p_category_id in number,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
+    p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
     l_category_id varchar2(256);
   begin
 
     l_category_id := blog_util.int_to_vc2( p_category_id );
+
     return
       get_category(
          p_category_id  => l_category_id
-        ,p_app_id       => p_app_id
-        ,p_session      => p_session
         ,p_canonical    => p_canonical
-        ,p_clear_cache  => p_clear_cache
-        ,p_plain_url    => p_plain_url
-        ,p_encode_url   => p_encode_url
       );
 
   end get_category;
@@ -334,30 +291,21 @@ as
 --------------------------------------------------------------------------------
   function get_category(
     p_category_id in varchar2,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
+    p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
   begin
 
     return
       case p_canonical
-      when 'YES'
-      then blog_url.get_canonical_host
-      end
-      ||
+        when 'YES' then get_canonical_host
+      end ||
       apex_page.get_url(
-        p_application => p_app_id
-       ,p_page        => 'CATEGORY'
-       ,p_session     => p_session
-       ,p_clear_cache => p_clear_cache
-       ,p_items       => 'P14_CATEGORY_ID'
-       ,p_values      => p_category_id
-       ,p_plain_url   => case p_plain_url when 'YES' then true else false end
+         p_page       => c_category_page.page_alias
+        ,p_session    => ''
+        ,p_items      => c_category_page.item_name
+        ,p_values     => p_category_id
+        ,p_plain_url  => true
       );
 
   end get_category;
@@ -365,27 +313,18 @@ as
 --------------------------------------------------------------------------------
   function get_archive(
     p_archive_id  in number,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
+    p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
     l_archive_id varchar2(256);
   begin
 
     l_archive_id := blog_util.int_to_vc2( p_archive_id );
+
     return
       get_archive(
-         p_archive_id   => l_archive_id
-        ,p_app_id       => p_app_id
-        ,p_session      => p_session
-        ,p_canonical    => p_canonical
-        ,p_clear_cache  => p_clear_cache
-        ,p_plain_url    => p_plain_url
-        ,p_encode_url   => p_encode_url
+         p_archive_id => l_archive_id
+        ,p_canonical  => p_canonical
       );
 
   end get_archive;
@@ -393,30 +332,21 @@ as
 --------------------------------------------------------------------------------
   function get_archive(
     p_archive_id  in varchar2,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
+    p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
   begin
 
     return
       case p_canonical
-      when 'YES'
-      then blog_url.get_canonical_host
-      end
-      ||
+        when 'YES' then get_canonical_host
+      end  ||
       apex_page.get_url(
-         p_application => p_app_id
-        ,p_page        => 'ARCHIVES'
-        ,p_session     => p_session
-        ,p_clear_cache => p_clear_cache
-        ,p_items       => 'P15_ARCHIVE_ID'
-        ,p_values      => p_archive_id
-        ,p_plain_url   => case p_plain_url when 'YES' then true else false end
+         p_page       => c_archive_page.page_alias
+        ,p_session    => ''
+        ,p_items      => c_archive_page.item_name
+        ,p_values     => p_archive_id
+        ,p_plain_url  => true
       )
     ;
 
@@ -425,12 +355,7 @@ as
 --------------------------------------------------------------------------------
   function get_tag(
     p_tag_id      in number,
-    p_app_id      in varchar2 default null,
-    p_session     in varchar2 default null,
-    p_clear_cache in varchar2 default null,
-    p_canonical   in varchar2 default 'NO',
-    p_plain_url   in varchar2 default 'YES',
-    p_encode_url  in varchar2 default 'NO'
+    p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
     l_tag_id varchar2(256);
@@ -439,27 +364,78 @@ as
     l_tag_id := blog_util.int_to_vc2( p_tag_id );
 
     return
-      case p_canonical
-      when 'YES'
-      then blog_url.get_canonical_host
-      end
-      ||
-      apex_page.get_url(
-         p_application => p_app_id
-        ,p_page        => 'TAG'
-        ,p_session     => p_session
-        ,p_clear_cache => p_clear_cache
-        ,p_items       => 'P6_TAG_ID'
-        ,p_values      => l_tag_id
-        ,p_plain_url   => case p_plain_url when 'YES' then true else false end
+      get_tag(
+         p_tag_id     => l_tag_id
+        ,p_canonical  => p_canonical
       )
     ;
 
   end get_tag;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function get_tag(
+    p_tag_id      in varchar2,
+    p_canonical   in varchar2 default 'NO'
+  ) return varchar2
+  as
+  begin
+
+    return
+      case p_canonical
+        when 'YES' then get_canonical_host
+      end ||
+      apex_page.get_url(
+         p_page       => c_tags_page.page_alias
+        ,p_session    => ''
+        ,p_items      => c_tags_page.item_name
+        ,p_values     => p_tag_id
+        ,p_plain_url  => true
+      )
+    ;
+
+  end get_tag;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_dynamic_page(
+    p_content_id in number
+  ) return varchar2
+  as
+    l_content_id varchar(256);
+  begin
+
+    l_content_id := blog_util.int_to_vc2( p_content_id );
+
+    return
+      apex_page.get_url(
+         p_page     => 'information'
+        ,p_request  => l_content_id
+      )
+    ;
+
+  end get_dynamic_page;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_process(
+    p_application in varchar2 default null,
+    p_process     in varchar2 default null
+  ) return varchar2
+  as
+  begin
+
+    return get_canonical_host ||
+      apex_page.get_url(
+         p_application  => p_application
+        ,p_page         => 'pgm'
+        ,p_session      => ''
+        ,p_request      => 'application_process=' || p_process
+        ,p_plain_url    => true
+      );
+
+  end get_process;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   function get_unsubscribe(
-    p_app_id          in varchar2,
+    p_application     in varchar2,
     p_post_id         in varchar2,
     p_subscription_id in number
   ) return varchar2
@@ -472,7 +448,7 @@ as
     -- workaround because APEX 19.2
     -- apex_page.get_url don't have parameter p_plain_url
     l_url := 'f?p='
-      || p_app_id
+      || p_application
       || ':POST:::NO::'
       || 'P2_POST_ID'
       || ','
@@ -485,46 +461,45 @@ as
 
     l_url :=
       apex_util.prepare_url(
-         p_url => l_url
-        ,p_checksum_type => 'PUBLIC_BOOKMARK'
-        ,p_plain_url => true
+         p_url            => l_url
+        ,p_checksum_type  => 'PUBLIC_BOOKMARK'
+        ,p_plain_url      => true
       );
 
-    return blog_url.get_canonical_host || l_url;
+    return get_canonical_host || l_url;
 
   end get_unsubscribe;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss(
-    p_app_id      in varchar2 default null,
-    p_app_page_id in varchar2 default 'PGM'
+    p_application in varchar2 default null
   ) return varchar2
   as
-    l_rss_url varchar2(4000);
   begin
-
-    -- Fetch RSS URL override from settings
-    l_rss_url := blog_util.get_attribute_value( 'G_RSS_URL' );
-    -- If there isn't override custruct URL
-    if l_rss_url is null
+    -- get rss url from blog settings or use default value
+    -- cache value to package private variable
+    if g_rss_url is null
     then
-      l_rss_url := blog_url.get_canonical_host
-        || apex_page.get_url(
-          p_application => p_app_id
-          ,p_page => p_app_page_id
-          ,p_session => null
-          ,p_request => 'application_process=rss.xml'
-        );
+      -- Fetch RSS URL override from settings
+      g_rss_url := blog_util.get_attribute_value( 'G_RSS_URL' );
+      -- If there isn't override custruct URL
+      if g_rss_url is null
+      then
+        g_rss_url :=
+          get_process(
+             p_application  => p_application
+            ,p_process      => 'rss.xml'
+          );
+      end if;
     end if;
 
-    return l_rss_url;
+    return g_rss_url;
 
   end get_rss;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss_xsl(
-    p_app_id      in varchar2 default null,
-    p_app_page_id in varchar2 default 'PGM'
+    p_application in varchar2 default null
   ) return varchar2
   as
     l_xsl_url varchar2(4000);
@@ -532,15 +507,13 @@ as
 
     -- Fetch XSL URL override from settings
     l_xsl_url := blog_util.get_attribute_value( 'G_RSS_XSL_URL' );
-    -- If there isn't override custruct XSL
+    -- If there isn't override use default XSL
     if l_xsl_url is null
     then
-      l_xsl_url := blog_url.get_canonical_host
-        || apex_page.get_url(
-          p_application => p_app_id
-          ,p_page => p_app_page_id
-          ,p_session => null
-          ,p_request => 'application_process=rss.xsl'
+      l_xsl_url :=
+        get_process(
+           p_application  => p_application
+          ,p_process      => 'rss.xsl'
         );
     end if;
 
@@ -550,19 +523,16 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_sitemap_index(
-    p_app_id      in varchar2 default null,
-    p_app_page_id in varchar2 default 'PGM'
+    p_application     in varchar2 default null
   ) return varchar2
   as
     l_sitemap_url varchar2(4000);
   begin
 
-    l_sitemap_url := blog_url.get_canonical_host
-      || apex_page.get_url(
-        p_application => p_app_id
-        ,p_page => p_app_page_id
-        ,p_session => null
-        ,p_request => 'application_process=sitemap-index.xml'
+    l_sitemap_url :=
+      get_process(
+         p_application  => p_application
+        ,p_process      => 'sitemap-index.xml'
       );
 
     return l_sitemap_url;

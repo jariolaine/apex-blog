@@ -1,6 +1,7 @@
 @import url('_variables.less');
 /**************************************
-* Footer Link List
+* Public app custom list template:
+*	  Blog Footer Link List (Custom 1)
 *
 * Credits:
 *   https://epicbootstrap.com/snippets/footer-basic
@@ -15,7 +16,7 @@
   text-align: center;
   font-size: 1.125rem;
   .z-footerList-item {
-    padding: 0 10px;
+    padding: 0 0.625rem;
     font-size: inherit;
   }
   .z-footerList-link {
@@ -23,21 +24,24 @@
     text-decoration: none;
     opacity: 0.6;
   }
-  .z-footerList-link:hover {
-    opacity: 1;
+  .z-footerList-link {
+    &:hover {
+      opacity: 1;
+    }
   }
 }
 .z-copyright {
   text-align: center;
   padding: 1rem 0;
   .z-copyright-link {
-    display: block;
     color: inherit;
     font-size: 0.875rem;
     opacity: 0.6;
   }
-  &:hover .z-copyright-link {
-    opacity: 1;
+  .z-copyright-link {
+    &:hover {
+      opacity: 1;
+    }
   }
 }
 @media only screen and (max-width: 640px) {

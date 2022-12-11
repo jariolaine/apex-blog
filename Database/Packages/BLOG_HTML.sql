@@ -26,42 +26,38 @@ as
 --                              - get_robots_noindex_meta
 --                              - get_post_description_meta
 --                              - get_description_meta
+--    Jari Laine 25.11.2022 - Removed unused parameters
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAB
   function get_tab_canonical_link(
-    p_app_page_id   in varchar2,
-    p_app_id        in varchar2 default null
+    p_page          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_POST
   function get_post_canonical_link(
-    p_post_id       in varchar2,
-    p_app_id        in varchar2 default null
+    p_post_id       in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
   function get_category_canonical_link(
-    p_category_id   in varchar2,
-    p_app_id        in varchar2 default null
+    p_category_id   in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
   function get_archive_canonical_link(
-    p_archive_id    in varchar2,
-    p_app_id        in varchar2 default null
+    p_archive_id    in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAG
   function get_tag_canonical_link(
-    p_tag_id        in varchar2,
-    p_app_id        in varchar2 default null
+    p_tag_id        in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
@@ -91,7 +87,9 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- none
+
+  c_link_canonical constant varchar2(34) := '<link rel="canonical" href="%s" />';
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -104,28 +102,26 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tab_canonical_link(
-    p_app_page_id     in varchar2,
-    p_app_id          in varchar2 default null
+    p_page in varchar2
   ) return varchar2
   as
     l_html varchar2(32700);
   begin
     -- generate canonical link for tab
-    if p_app_page_id is not null then
+    if p_page is not null then
       l_html :=
         apex_string.format(
-          p_message =>'<link rel="canonical" href="%s" />'
+          p_message => c_link_canonical
           ,p0 =>
             blog_url.get_tab(
-               p_app_id       => p_app_id
-              ,p_app_page_id  => p_app_page_id
-              ,p_canonical    => 'YES'
+               p_page       => p_page
+              ,p_canonical  => 'YES'
             )
         )
       ;
     else
-      -- if p_app_page_id is not defined
-      apex_debug.warn( 'Canonical link tag not generated for tab.');
+      -- if p_page is not defined
+      apex_debug.warn( 'Canonical link tag not generated for tab.' );
       l_html := null;
     end if;
     -- return generated HTML
@@ -135,8 +131,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_post_canonical_link(
-    p_post_id       in varchar2,
-    p_app_id        in varchar2 default null
+    p_post_id in varchar2
   ) return varchar2
   as
     l_html varchar2(32700);
@@ -145,18 +140,16 @@ as
     if p_post_id is not null then
       l_html :=
         apex_string.format(
-          p_message =>'<link rel="canonical" href="%s" />'
+          p_message => c_link_canonical
           ,p0 =>
             blog_url.get_post(
-              p_post_id      => p_post_id
-              ,p_app_id       => p_app_id
-              ,p_session      => ''
+               p_post_id      => p_post_id
               ,p_canonical    => 'YES'
             )
         )
       ;
     else
-      apex_debug.warn('Canonical link tag not generated for post.');
+      apex_debug.warn( 'Canonical link tag not generated for post.' );
       l_html := null;
     end if;
     -- return generated HTML
@@ -166,8 +159,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_category_canonical_link(
-    p_category_id   in varchar2,
-    p_app_id        in varchar2 default null
+    p_category_id in varchar2
   ) return varchar2
   as
     l_html varchar2(32700);
@@ -177,18 +169,16 @@ as
     then
       l_html :=
         apex_string.format(
-          p_message =>'<link rel="canonical" href="%s" />'
+          p_message => c_link_canonical
           ,p0 =>
             blog_url.get_category(
                p_category_id  => p_category_id
-              ,p_app_id       => p_app_id
-              ,p_session      => ''
               ,p_canonical    => 'YES'
             )
         )
       ;
     else
-      apex_debug.warn( 'Canonical link tag not generated for category.');
+      apex_debug.warn( 'Canonical link tag not generated for category.' );
       l_html := null;
     end if;
     -- return generated HTML
@@ -198,8 +188,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_archive_canonical_link(
-    p_archive_id    in varchar2,
-    p_app_id        in varchar2 default null
+    p_archive_id in varchar2
   ) return varchar2
   as
     l_html varchar2(32700);
@@ -209,18 +198,16 @@ as
     then
       l_html :=
         apex_string.format(
-          p_message =>'<link rel="canonical" href="%s" />'
+          p_message => c_link_canonical
           ,p0 =>
             blog_url.get_archive(
                p_archive_id => p_archive_id
-              ,p_app_id     => p_app_id
-              ,p_session    => ''
               ,p_canonical  => 'YES'
             )
         )
       ;
     else
-      apex_debug.warn( 'Canonical link tag not generated for archive.');
+      apex_debug.warn( 'Canonical link tag not generated for archive.' );
       l_html := null;
     end if;
     -- return generated HTML
@@ -230,8 +217,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_tag_canonical_link(
-    p_tag_id        in varchar2,
-    p_app_id        in varchar2 default null
+    p_tag_id in varchar2
   ) return varchar2
   as
     l_html varchar2(32700);
@@ -241,13 +227,11 @@ as
     then
       l_html :=
         apex_string.format(
-          p_message =>'<link rel="canonical" href="%s" />'
+          p_message => c_link_canonical
           ,p0 =>
             blog_url.get_tag(
-               p_tag_id       => p_tag_id
-              ,p_app_id       => p_app_id
-              ,p_session      => ''
-              ,p_canonical    => 'YES'
+               p_tag_id     => p_tag_id
+              ,p_canonical  => 'YES'
             )
         )
       ;
@@ -263,8 +247,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss_anchor(
-    p_app_name    in varchar2,
-    p_message     in varchar2
+    p_app_name  in varchar2,
+    p_message   in varchar2
   ) return varchar2
   as
     l_rss_url     varchar2(4000);
@@ -291,7 +275,7 @@ as
           || '<span aria-hidden="true" class="%s"></span>'
           || '</a>'
         ,p0 => l_rss_url
-        ,p1 => apex_escape.html_attribute(l_rss_title)
+        ,p1 => apex_escape.html_attribute( l_rss_title )
         ,p2 => 'application/rss+xml'
         ,p3 => 't-Button t-Button--noLabel t-Button--icon t-Button--link'
         ,p4 => 'fa fa-rss-square fa-3x fa-lg u-color-8-text'

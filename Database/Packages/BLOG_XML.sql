@@ -33,6 +33,9 @@ as
 --                              sitemap_archives
 --                              sitemap_tags
 --    Jari Laine 28.04.2020 - Changed rss_xsl
+--    Jari Laine 29.11.2022 - Removed parameter p_lang from procedure rss
+--                          - Added exception handler that raise also HTTP error to procedures
+--                          - Other minor changes
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -40,8 +43,7 @@ as
 --  public app page 1003 Ajax Callback process "rss.xml"
   procedure rss(
     p_app_name      in varchar2,
-    p_app_desc      in varchar2,
-    p_lang          in varchar2 default 'en'
+    p_app_desc      in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -92,7 +94,11 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- none
+
+  c_lastmod_format  constant varchar2(26) := 'YYYY-MM-DD"T"HH24:MI:SS"Z"';
+  c_pubdate_format  constant varchar2(32) := 'Dy, DD Mon YYYY HH24:MI:SS "GMT"';
+  c_pubdate_lang    constant varchar2(25) := 'NLS_DATE_LANGUAGE=ENGLISH';
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -106,12 +112,12 @@ as
 --------------------------------------------------------------------------------
   procedure rss(
     p_app_name  in varchar2,
-    p_app_desc  in varchar2,
-    p_lang      in varchar2 default 'en'
+    p_app_desc  in varchar2
   )
   as
     l_xml           xmltype;
     l_rss           blob;
+    l_lang          varchar2(256);
     l_app_id        varchar2(256);
     l_rss_url       varchar2(4000);
     l_xsl_url       varchar2(4000);
@@ -121,8 +127,12 @@ as
     l_cache_control varchar2(256);
     l_last_modified varchar2(256);
     l_max_published timestamp;
-    l_rss_version   constant varchar2(5) := '2.0';
+
+    l_rss_version   constant varchar2(5)  := '2.0';
+
   begin
+
+    l_lang := apex_application.g_browser_language;
 
     -- RSS feed URL
     l_rss_url   := blog_url.get_rss;
@@ -138,8 +148,8 @@ as
     );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
-       p_app_page_id => 'HOME'
-      ,p_canonical => 'YES'
+       p_page       => 'HOME'
+      ,p_canonical  => 'YES'
     );
     -- rss transformations (XSLT)
     l_xsl_url := blog_url.get_rss_xsl;
@@ -175,7 +185,7 @@ as
               l_app_name  as "title"
               ,l_home_url as "link"
               ,l_app_desc as "description"
-              ,p_lang     as "language"
+              ,l_lang     as "language"
             )
             ,xmlagg(
               xmlelement(
@@ -193,8 +203,8 @@ as
                 ,xmlelement( "pubDate",
                   to_char(
                      sys_extract_utc( posts.published_on )
-                    ,'Dy, DD Mon YYYY HH24:MI:SS "GMT"'
-                    ,'NLS_DATE_LANGUAGE=ENGLISH'
+                    ,c_pubdate_format
+                    ,c_pubdate_lang
                   )
                 )
                 ,xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id )
@@ -203,7 +213,7 @@ as
           )
         )
       )
-      as blob encoding 'UTF-8' indent size=2
+      as blob encoding 'UTF-8' indent size = 2
     )
     ,max( posts.published_on ) as max_published
     into l_rss, l_max_published
@@ -216,21 +226,37 @@ as
         ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_RSS' )
       )
     ;
+
     l_last_modified :=
       to_char(
          sys_extract_utc( l_max_published )
-        ,'Dy, DD Mon YYYY HH24:MI:SS "GMT"'
-        ,'NLS_DATE_LANGUAGE=ENGLISH'
+        ,c_pubdate_format
+        ,c_pubdate_lang
       )
     ;
 
     blog_util.download_file(
        p_blob_content   => l_rss
       ,p_mime_type      => 'application/xml'
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition', 'Last-Modified' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xml"', l_last_modified  )
+      ,p_header_names   => apex_t_varchar2( 'Cache-Control',  'Content-Disposition',        'Last-Modified' )
+      ,p_header_values  => apex_t_varchar2( l_cache_control,  'inline; filename="rss.xml"', l_last_modified  )
       ,p_charset        => 'UTF-8'
     );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
 
   end rss;
 --------------------------------------------------------------------------------
@@ -242,16 +268,17 @@ as
   as
     l_xml           xmltype;
     l_xsl           blob;
-    l_host_url      varchar2(1024);
+    l_cc_url        varchar2(1024);
     l_cache_control varchar2(256);
   begin
 
-    l_host_url := apex_util.host_url( 'APEX_PATH' );
-    l_host_url := substr( l_host_url, instr( l_host_url, '/', 1, 3 ) );
-    l_host_url := l_host_url || p_ws_images || p_css_file;
+    -- Generate relaive URL for CSS file
+    l_cc_url := apex_util.host_url( 'APEX_PATH' );
+    l_cc_url := substr( l_cc_url, instr( l_cc_url, '/', 1, 3 ) );
+    l_cc_url := l_cc_url || p_ws_images || p_css_file;
 
     l_xml :=
-      sys.xmltype.createxml(
+      xmltype(
         apex_string.format(
           p_message => '
             <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -259,7 +286,7 @@ as
               <xsl:output method="html" doctype-system="about:legacy-compat" indent="yes" />
               <!-- Start matching at the Channel node within the XML RSS feed. -->
               <xsl:template match="/rss/channel">
-                <html lang="en">
+                <html lang="%s">
                 <head>
                   <meta charset="utf-8" />
                   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -283,15 +310,16 @@ as
                 </html>
               </xsl:template>
             </xsl:stylesheet>'
-          ,p0 => l_host_url
+          ,p0 => apex_application.g_browser_language
+          ,p1 => l_cc_url
         )
       )
     ;
 
-    select xmlserialize(
-      content l_xml
-      as blob encoding 'UTF-8' indent size=2
-    )
+    select
+      xmlserialize(
+        content l_xml as blob encoding 'UTF-8' indent size = 2
+      ) xsl
     into l_xsl
     from dual
     ;
@@ -311,6 +339,21 @@ as
       ,p_charset        => 'UTF-8'
     );
 
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
+
   end rss_xsl;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -320,17 +363,14 @@ as
     p_process_name  in varchar2
   )
   as
-    l_xml           blob;
     l_url           varchar2(4000);
+    l_xml           blob;
     l_cache_control varchar2(256);
     l_build_option  constant varchar2(256) := 'BLOG_FEATURE_SITEMAP';
   begin
 
-    l_url := blog_url.get_tab(
-       p_app_page_id  => p_app_page_id
-      ,p_request      => 'application_process='
-      ,p_canonical    => 'YES'
-    );
+    -- get url to call sitemaps process
+    l_url := blog_url.get_process;
 
     select xmlserialize( document
       xmlelement(
@@ -339,12 +379,13 @@ as
         (
           xmlagg(
             xmlelement( "sitemap"
-              ,xmlelement( "loc", l_url || t1.process_name )
+              ,xmlelement( "loc", l_url || t1.process_name
+              )
             ) order by t1.execution_sequence
           )
         )
       )
-      as blob encoding 'UTF-8' indent size=2
+      as blob encoding 'UTF-8' indent size = 2
     )
     into l_xml
     from apex_application_page_proc t1
@@ -370,6 +411,21 @@ as
       ,p_charset        => 'UTF-8'
     );
 
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
+
   end sitemap_index;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -391,15 +447,15 @@ as
             xmlelement( "url"
               ,xmlelement( "loc",
                 blog_url.get_tab(
-                   p_app_page_id => v1.page_alias
-                  ,p_canonical => 'YES'
+                   p_page       => v1.page_alias
+                  ,p_canonical  => 'YES'
                 )
               )
             ) order by v1.page_id
           )
         )
       )
-      as blob encoding 'UTF-8' indent size=2
+      as blob encoding 'UTF-8' indent size = 2
     )
     into l_xml
     from apex_application_pages v1
@@ -432,6 +488,21 @@ as
       ,p_charset        => 'UTF-8'
     );
 
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
+
   end sitemap_main;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -459,14 +530,14 @@ as
                   sys_extract_utc(
                     greatest( posts.published_on, posts.changed_on )
                   )
-                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
+                  ,c_lastmod_format
                 )
               )
             ) order by posts.published_on desc
           )
         )
       )
-      as blob encoding 'UTF-8' indent size=2
+      as blob encoding 'UTF-8' indent size = 2
     )
     into l_xml
     from blog_v_posts posts
@@ -486,6 +557,21 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-posts.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
 
   end sitemap_posts;
 --------------------------------------------------------------------------------
@@ -512,14 +598,14 @@ as
               ,xmlelement( "lastmod",
                 to_char(
                   sys_extract_utc( cat.changed_on )
-                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
+                  ,c_lastmod_format
                 )
               )
             ) order by cat.display_seq desc
           )
         )
       )
-      as blob encoding 'UTF-8' indent size=2
+      as blob encoding 'UTF-8' indent size = 2
     )
     into l_xml
     from blog_v_categories cat
@@ -539,6 +625,21 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-categories.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
 
   end sitemap_categories;
 --------------------------------------------------------------------------------
@@ -565,14 +666,14 @@ as
               ,xmlelement( "lastmod",
                 to_char(
                   sys_extract_utc( arc.changed_on )
-                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
+                  ,c_lastmod_format
                 )
               )
             ) order by arc.archive_year desc
           )
         )
       )
-      as blob encoding 'UTF-8' indent size=2
+      as blob encoding 'UTF-8' indent size = 2
     )
     into l_xml
     from blog_v_archive_year arc
@@ -592,6 +693,21 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-archives.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
 
   end sitemap_archives;
 --------------------------------------------------------------------------------
@@ -618,14 +734,14 @@ as
               ,xmlelement( "lastmod",
                 to_char(
                   sys_extract_utc( tags.changed_on )
-                  ,'YYYY-MM-DD"T"HH24:MI:SS"+00:00""'
+                  ,c_lastmod_format
                 )
               )
             ) order by tags.changed_on
           )
         )
       )
-      as blob encoding 'UTF-8' indent size=2
+      as blob encoding 'UTF-8' indent size = 2
     )
     into l_xml
     from blog_v_tags tags
@@ -645,6 +761,21 @@ as
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-tags.xml"' )
       ,p_charset        => 'UTF-8'
     );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
 
   end sitemap_tags;
 --------------------------------------------------------------------------------

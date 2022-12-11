@@ -1,6 +1,6 @@
 # APEX Blog
-![](https://img.shields.io/badge/Oracle_Database-19c-blue.svg)
-![](https://img.shields.io/badge/APEX-22.2-success.svg)
+![](https://img.shields.io/badge/Oracle_Database-19c-red)
+![](https://img.shields.io/badge/APEX-22.2-blue)
 
 
 Blog application built with Oracle Application Express (APEX).
@@ -16,11 +16,10 @@ Ensure target schema associated to your APEX workspace has following system priv
 * CREATE INDEXTYPE
 * CREATE PROCEDURE
 * CREATE SEQUENCE
-* CREATE TYPE
 * CREATE TABLE
 * CREATE TRIGGER
+* CREATE TYPE
 * CREATE VIEW
-* CREATE JOB
 * CTXAPP
 
 APEX workspace administrator privileges are required to create a user group for authorization.
@@ -46,4 +45,4 @@ Before starting the upgrade, backup the application parsing schema data and obje
 4. Import and install *blog_public_pages.sql* and select upgrade supporting objects.
 
 # License
-This code is released under [MIT license](https://github.com/jariolaine/apex-blog/blob/master/LICENSE) by Jari Laine.
+This code is released under [MIT license](https://raw.githubusercontent.com/jariolaine/apex-blog/APEX_22.2/LICENSE.txt) by Jari Laine.

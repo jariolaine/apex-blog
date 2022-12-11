@@ -1,6 +1,8 @@
 @import url('_variables.less');
 /**************************************
 * Tag Cloud
+* Public app cutom list template:
+*   Blog Tag Cloud (Custom 2)
 *
 * Credits:
 *   https://dev.to/alvaromontoro/create-a-tag-cloud-with-html-and-css-1e90
@@ -13,7 +15,10 @@
   justify-content: center;
   line-height: 2rem;
   margin: 0;
-  padding: 0.5rem;
+  padding: 0;
+  &:not(:empty){
+    padding: 0.5rem;
+  }
   .z-tagCloud-link {
     &[data-weight="1"] {
       --z-tag-size: 1;
@@ -40,10 +45,10 @@
       --z-tag-size: 8;
     }
     display: flex;
-    padding: 0.5rem;
     text-decoration: none;
     position: relative;
     font-size: ~"calc(var(--z-tag-size) * 0.125rem - -0.75rem)";
+    padding: 0.5rem;
     &::before {
       content: "";
       position: absolute;
@@ -75,7 +80,6 @@
     }
   }
 }
-
 @media (prefers-reduced-motion) {
   ul.z-tagCloud * {
     transition: none !important;

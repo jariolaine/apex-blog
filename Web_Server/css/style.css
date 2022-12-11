@@ -8,7 +8,7 @@ blockquote::after {
   content: close-quote;
 }
 /**************************************
-* Logo
+* Public application logo
 **************************************/
 .z-app-logo {
   display: flex;
@@ -36,13 +36,16 @@ blockquote::after {
   }
 }
 /**************************************
-* Media list report extra classes
+* Public app media list report extra classes
+* Used in file repository report
+* Needed for wrap file name on small screens
 **************************************/
 .z-MediaList--files .t-MediaList-title {
   word-break: break-word;
 }
 /**************************************
-* Footer Link List
+* Public app custom list template:
+*	  Blog Footer Link List (Custom 1)
 *
 * Credits:
 *   https://epicbootstrap.com/snippets/footer-basic
@@ -58,7 +61,7 @@ blockquote::after {
   font-size: 1.125rem;
 }
 .z-footerList .z-footerList-item {
-  padding: 0 10px;
+  padding: 0 0.625rem;
   font-size: inherit;
 }
 .z-footerList .z-footerList-link {
@@ -74,12 +77,11 @@ blockquote::after {
   padding: 1rem 0;
 }
 .z-copyright .z-copyright-link {
-  display: block;
   color: inherit;
   font-size: 0.875rem;
   opacity: 0.6;
 }
-.z-copyright:hover .z-copyright-link {
+.z-copyright .z-copyright-link:hover {
   opacity: 1;
 }
 @media only screen and (max-width: 640px) {
@@ -104,139 +106,99 @@ blockquote::after {
   width: 100%;
 }
 /**************************************
-* Search Result tags column
-**************************************/
-.z-search--tags:first-child {
-  margin-inline-start: 0!important;
-}
-/**************************************
 * Post report
 **************************************/
-.z-post {
-  background-color: var(--ut-component-background-color);
+.z-posts .z-post {
   margin-bottom: 1rem;
-  border-width: var(--ut-component-border-width);
-  border-style: solid;
-  border-color: var(--ut-component-border-color);
+  padding: 1rem;
+  border: var(--ut-component-border-width) solid var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
-  padding: 1rem;
+  background-color: var(--ut-component-background-color);
 }
-.z-post--header {
+.z-posts .z-post .z-post--header {
   clear: both;
 }
-.z-post--header .z-post--title {
-  font-size: 1.625em;
-  margin: 0 0 0.25rem;
-}
-.z-post--header .z-post--category {
-  font-size: 1em;
-  margin: 0 0 1rem;
-}
-.z-post--header .z-post--date {
+.z-posts .z-post .z-post--header .z-post--date {
   font-size: 1.125em;
   margin: 0 0 0.25rem;
 }
-.z-post--body img {
+.z-posts .z-post .z-post--header .z-post--title {
+  font-size: 1.625em;
+  margin: 0 0 0.5rem;
+}
+.z-posts .z-post .z-post--header .z-post--category {
+  font-size: 1em;
+  margin: 0 0 1rem;
+}
+.z-posts .z-post .z-post--body img {
   max-width: 100%;
   height: auto;
 }
-.z-post--body br {
+.z-posts .z-post .z-post--body br {
   clear: none!important;
 }
-.z-post--tags {
+.z-posts .z-post .z-post--footer {
   width: 100%;
   clear: both;
-  margin: 2rem 0 0;
-  border-top-width: var(--ut-component-inner-border-width);
-  border-top-style: solid;
-  border-top-color: var(--ut-component-inner-border-color);
+  padding-top: 1rem;
 }
-.z-post--footer {
+.z-posts .z-post .z-post--footer .z-post--tags {
   width: 100%;
   clear: both;
-  margin: 1rem 0 0;
+  padding-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border-top: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
 }
-.z-posts--pagination {
+.z-posts .z-posts--pagination {
   margin-bottom: 1rem;
-}
-.z-posts--paginationBorder .z-posts--pagination {
-  background-color: var(--ut-component-background-color);
-  border-width: var(--ut-component-border-width);
-  border-style: solid;
-  border-color: var(--ut-component-border-color);
+  padding: 0.25rem;
+  border: var(--ut-component-border-width) solid var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
-  padding: 0.25rem;
+  background-color: var(--ut-component-background-color);
 }
-.z-post--largeMargin .z-post {
-  margin-bottom: 2rem;
-}
-.z-post--smallMargin .z-post {
-  margin-bottom: 0.5rem;
-}
-.z-post--noMargin .z-post {
-  margin-bottom: 0;
-}
-.z-post--noMargin .z-post:not(:first-child) {
-  border-top: none;
-}
-.z-post--noMargin.z-posts--paginationBorder .z-posts--pagination {
-  border-top: none;
-}
-.z-posts--paginationHidden .z-posts--pagination {
+.z-posts.z-posts--paginationHidden .z-posts--pagination {
   display: none!important;
   visibility: hidden!important;
 }
 @media only screen and (max-width: 640px) {
-  .z-post {
-    padding: 0.75rem;
-    margin-bottom: 1rem;
+  .z-posts .z-post {
+    padding: 0.5rem;
   }
-  .z-post--header .z-post--title {
+  .z-posts .z-post .z-post--header .z-post--title {
     font-size: 1.375em;
   }
 }
 /**************************************
-* General custom report
+* Public app custom report template:
+*   Blog Content (Custom 2)
 **************************************/
 .z-Content .z-Content--Row {
-  border-width: var(--ut-component-border-width);
-  border-style: solid;
-  border-color: var(--ut-component-border-color);
+  border: var(--ut-component-border-width) solid var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
   margin-bottom: 1rem;
-}
-.z-Content--Row {
   background-color: var(--ut-component-background-color);
   overflow: hidden;
 }
-.z-Content--Title {
+.z-Content .z-Content--Title {
   font-size: var(--ut-region-header-font-size, 1rem);
   font-weight: 500;
-  border-bottom-width: var(--ut-component-inner-border-width);
-  border-bottom-style: solid;
-  border-bottom-color: var(--ut-component-inner-border-color);
+  border-bottom: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
   background-color: var(--ut-region-header-background-color);
   padding: var(--ut-region-header-padding-x, 0.75rem);
   margin: 0;
 }
-.z-Content--Body {
+.z-Content .z-Content--Body {
   padding: 1rem;
-}
-.z-Content--Stacked .z-Content--Title {
-  border-top-width: var(--ut-component-inner-border-width);
-  border-top-style: solid;
-  border-top-color: var(--ut-component-inner-border-color);
-}
-.z-Content--Stacked .z-Content--Row:first-child .z-Content--Title {
-  border-top: none;
 }
 /**************************************
 * Program code formatting
 **************************************/
-/* Pre AÅEX 22.2 CKEditor 4*/
+/* Pre APEX 22.2 CKEditor 4 */
 pre.z-program-code {
   clear: both;
   font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace";
@@ -245,11 +207,9 @@ pre.z-program-code {
   tab-size: 2;
   overflow-x: auto;
   display: block;
-  padding: 1em 1.5em;
-  margin: 8px 8px 18px 8px;
-  border-width: var(--ut-component-inner-border-width);
-  border-style: solid;
-  border-color: var(--ut-component-inner-border-color);
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0.5rem 1rem 0.5rem;
+  border: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
   border-left-width: 0.25rem;
   border-left-style: solid;
   border-left-color: var(--u-color-35);
@@ -261,7 +221,7 @@ pre.z-program-code code {
   font-family: inherit;
   font-size: inherit;
 }
-/* AÅEX 22.2 CKEditor 5*/
+/* APEX 22.2 CKEditor 5 */
 .ck-content pre:has( code ) {
   clear: both;
   font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace";
@@ -270,11 +230,9 @@ pre.z-program-code code {
   tab-size: 2;
   overflow-x: auto;
   display: block;
-  padding: 1em 1.5em;
-  margin: 8px 8px 18px 8px;
-  border-width: var(--ut-component-inner-border-width);
-  border-style: solid;
-  border-color: var(--ut-component-inner-border-color);
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0.5rem 1rem 0.5rem;
+  border: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
   border-left-width: 0.25rem;
   border-left-style: solid;
   border-left-color: var(--u-color-35);
@@ -317,7 +275,7 @@ pre.z-program-code code {
   }
 }
 /**************************************
-* Comments report
+* Comments classic report
 **************************************/
 .z-comment .t-Comments-body {
   width: 0;
@@ -326,13 +284,15 @@ pre.z-program-code code {
   overflow-wrap: break-word;
 }
 /**************************************
-* Link list extra classes
+* Public app right column lists extra class
 **************************************/
 .z-linkList:hover {
   background-color: var(--ut-linkslist-hover-background-color, var(--ut-component-highlight-background-color));
 }
 /**************************************
 * Tag Cloud
+* Public app cutom list template:
+*   Blog Tag Cloud (Custom 2)
 *
 * Credits:
 *   https://dev.to/alvaromontoro/create-a-tag-cloud-with-html-and-css-1e90
@@ -345,14 +305,17 @@ pre.z-program-code code {
   justify-content: center;
   line-height: 2rem;
   margin: 0;
+  padding: 0;
+}
+.z-tagCloud:not(:empty) {
   padding: 0.5rem;
 }
 .z-tagCloud .z-tagCloud-link {
   display: flex;
-  padding: 0.5rem;
   text-decoration: none;
   position: relative;
   font-size: calc(var(--z-tag-size) * 0.125rem - -0.75rem);
+  padding: 0.5rem;
 }
 .z-tagCloud .z-tagCloud-link[data-weight="1"] {
   --z-tag-size: 1;
@@ -410,6 +373,20 @@ pre.z-program-code code {
   ul.z-tagCloud * {
     transition: none !important;
   }
+}
+/**************************************
+* Public app search result reports tags
+**************************************/
+.z-search--tags {
+  margin-inline-start: 0.5rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+.z-search--tags:first-child {
+  margin-inline-start: 0!important;
+}
+.z-search--tags:not( :last-child )::after {
+  content: ",";
 }
 /**************************************
 * Modifiers
