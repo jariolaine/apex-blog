@@ -234,12 +234,16 @@ create table blog_links(
   title varchar2( 256 char ) not null,
   link_desc varchar2( 4000 byte ) not null,
   link_url varchar2( 256 char ) not null,
+  external_link number(1,0) not null,
+  target_blank number(1,0) not null,
   notes varchar2( 4000 byte ),
   constraint blog_links_pk primary key( id ),
   constraint blog_links_uk1 unique( link_group_id, id ),
   constraint blog_links_ck1 check( row_version > 0 ),
   constraint blog_links_ck2 check( is_active in( 0, 1 ) ),
-  constraint blog_links_ck3 check( display_seq > 0 )
+  constraint blog_links_ck3 check( display_seq > 0 ),
+  constraint blog_links_ck4 check( external_link in( 0, 1 ) ),
+  constraint blog_links_ck5 check( target_blank in( 0, 1 ) )
 )
 /
 --------------------------------------------------------
@@ -1715,7 +1719,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_LINKS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ", "DISPLAY_SEQ", "LINK_TITLE", "LINK_DESC", "LINK_URL") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ", "DISPLAY_SEQ", "LINK_TITLE", "LINK_DESC", "LINK_URL", "LINK_ATTR") AS
   select
    t1.id          as link_id
   ,t2.id          as group_id
@@ -1725,6 +1729,17 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE
   ,t1.title       as link_title
   ,t1.link_desc   as link_desc
   ,t1.link_url    as link_url
+  ,case external_link + target_blank
+    when 2
+    then 'target="_blank" rel="external"'
+    when 1
+    then
+      case external_link
+      when 1
+      then 'rel="external"'
+      else 'target="_blank"'
+    end
+  end as
 from blog_links t1
 join blog_link_groups t2
   on t1.link_group_id = t2.id

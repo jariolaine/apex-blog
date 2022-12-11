@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221128153716'
+,p_last_upd_yyyymmddhh24miss=>'20221206080612'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(25312381302124218)
@@ -60,7 +60,7 @@ wwv_flow_imp_page.create_report_region(
 '  ,null           as icon_class -- see column HTML expression',
 '  ,null           as icon_color_class',
 '  ,v1.link_url    as link',
-'  ,null           as link_attr  -- see column HTML expression',
+'  ,v1.link_attr   as link_attr',
 '  ,null           as link_class',
 '  ,v1.group_title as list_badge',
 'from #OWNER#.blog_v_links v1',
@@ -149,7 +149,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>7
 ,p_column_heading=>'Link Attr'
 ,p_use_as_row_header=>'N'
-,p_column_html_expression=>'target="_blank" rel="external"'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );

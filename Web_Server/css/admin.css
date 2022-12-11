@@ -106,9 +106,7 @@ blockquote::after {
 .z-posts .z-post {
   margin-bottom: 1rem;
   padding: 1rem;
-  border-width: var(--ut-component-border-width);
-  border-style: solid;
-  border-color: var(--ut-component-border-color);
+  border: var(--ut-component-border-width) solid var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
   background-color: var(--ut-component-background-color);
@@ -147,16 +145,12 @@ blockquote::after {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  border-top-width: var(--ut-component-inner-border-width);
-  border-top-style: solid;
-  border-top-color: var(--ut-component-inner-border-color);
+  border-top: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
 }
 .z-posts .z-posts--pagination {
   margin-bottom: 1rem;
   padding: 0.25rem;
-  border-width: var(--ut-component-border-width);
-  border-style: solid;
-  border-color: var(--ut-component-border-color);
+  border: var(--ut-component-border-width) solid var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
   background-color: var(--ut-component-background-color);
@@ -200,9 +194,7 @@ pre.z-program-code {
   display: block;
   padding: 0.5rem 1rem;
   margin: 0.5rem 0.5rem 1rem 0.5rem;
-  border-width: var(--ut-component-inner-border-width);
-  border-style: solid;
-  border-color: var(--ut-component-inner-border-color);
+  border: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
   border-left-width: 0.25rem;
   border-left-style: solid;
   border-left-color: var(--u-color-35);
@@ -225,9 +217,7 @@ pre.z-program-code code {
   display: block;
   padding: 0.5rem 1rem;
   margin: 0.5rem 0.5rem 1rem 0.5rem;
-  border-width: var(--ut-component-inner-border-width);
-  border-style: solid;
-  border-color: var(--ut-component-inner-border-color);
+  border: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
   border-left-width: 0.25rem;
   border-left-style: solid;
   border-left-color: var(--u-color-35);

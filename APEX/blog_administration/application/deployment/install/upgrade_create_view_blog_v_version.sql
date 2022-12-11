@@ -17,6 +17,12 @@ wwv_flow_imp_shared.create_install_script(
 ,p_name=>'Create view BLOG_V_VERSION'
 ,p_sequence=>10
 ,p_script_type=>'UPGRADE'
+,p_condition_type=>'NOT_EXISTS'
+,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from user_views',
+'where 1 = 1',
+'and view_name = ''BLOG_V_VERSION'''))
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_VERSION',

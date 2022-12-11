@@ -1300,7 +1300,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_LINKS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ", "DISPLAY_SEQ", "LINK_TITLE", "LINK_DESC", "LINK_URL") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ", "DISPLAY_SEQ", "LINK_TITLE", "LINK_DESC", "LINK_URL", "LINK_ATTR") AS',
 '  select',
 '   t1.id          as link_id',
 '  ,t2.id          as group_id',
@@ -1310,6 +1310,17 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,t1.title       as link_title',
 '  ,t1.link_desc   as link_desc',
 '  ,t1.link_url    as link_url',
+'  ,case external_link + target_blank',
+'    when 2',
+'    then ''target="_blank" rel="external"''',
+'    when 1',
+'    then',
+'      case external_link',
+'      when 1',
+'      then ''rel="external"''',
+'      else ''target="_blank"''',
+'    end',
+'  end as',
 'from blog_links t1',
 'join blog_link_groups t2',
 '  on t1.link_group_id = t2.id',
@@ -1500,17 +1511,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      and x1.flag = ''MODERATE''',
 '      and x1.comment_id = co.id',
 '    )',
-'  )                     as moderate_comments_count',
-'  ,(',
-'    select count( co.id )',
-'    from blog_comments co',
-'    where 1 = 1',
-'    and co.post_id  = t1.id',
-'    and co.is_active = 0',
-'    and not exists(',
-'      select 1',
-'      from blog_comment_flags x1',
-'  '))
+'  )         '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1528,7 +1529,17 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'            as moderate_comments_count',
+'  ,(',
+'    select count( co.id )',
+'    from blog_comments co',
 '    where 1 = 1',
+'    and co.post_id  = t1.id',
+'    and co.is_active = 0',
+'    and not exists(',
+'      select 1',
+'      from blog_comment_flags x1',
+'      where 1 = 1',
 '      and x1.flag = ''MODERATE''',
 '      and x1.comment_id = co.id',
 '    )',
@@ -2513,16 +2524,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    ;',
 '',
 '    apex_debug.info(',
-'      p_message => ''File name: %s, file size: %s, mime type: %s''',
-'      ,p0 => l_file_t.file_name',
-'      ,p1 => l_file_t.file_size',
-'      ,p2 => l_file_t.mime_type',
-'      ,p3 => l_file_t.file_charset',
-'    );',
-'',
-'    -- Add Last-Modified header',
-'    apex_string.push(',
-' '))
+'      p_message => ''File'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2540,7 +2542,16 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'       p_table => l_header_names',
+' name: %s, file size: %s, mime type: %s''',
+'      ,p0 => l_file_t.file_name',
+'      ,p1 => l_file_t.file_size',
+'      ,p2 => l_file_t.mime_type',
+'      ,p3 => l_file_t.file_charset',
+'    );',
+'',
+'    -- Add Last-Modified header',
+'    apex_string.push(',
+'        p_table => l_header_names',
 '       ,p_value => ''Last-Modified''',
 '    );',
 '    apex_string.push(',
@@ -3568,17 +3579,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function to_html_entities(',
-'    p_number in number',
-'  ) return varchar2',
-'  as',
-'    l_string varchar2(4000);',
-'    l_result varchar2(4000);',
-'  begin',
-'',
-'    l_str'))
+'--------------------------------------------------------------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3596,7 +3597,17 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ing := blog_util.int_to_vc2( p_number );',
+'',
+'--------------------------------------------------------------------------------',
+'  function to_html_entities(',
+'    p_number in number',
+'  ) return varchar2',
+'  as',
+'    l_string varchar2(4000);',
+'    l_result varchar2(4000);',
+'  begin',
+'',
+'    l_string := blog_util.int_to_vc2( p_number );',
 '    for i in 1 .. length( l_string )',
 '    loop',
 '      l_result :=',
@@ -4581,16 +4592,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '                 p_post_id => v1.id',
 '                ,p_canonical => ''YES''',
 '              )',
-'        ) as placeholders',
-'      from blog_v_all_posts v1',
-'      where 1 = 1',
-'      and v1.id = l_post_id',
-'      and v1.blogger_email is not null',
-'    ) loop',
-'',
-'      apex_debug.info(',
-'        ''Send email to: %s from: %s template: %s placeholders: %s''',
-'      '))
+'        ) as pl'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4608,7 +4610,16 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'  ,c1.blogger_email',
+'aceholders',
+'      from blog_v_all_posts v1',
+'      where 1 = 1',
+'      and v1.id = l_post_id',
+'      and v1.blogger_email is not null',
+'    ) loop',
+'',
+'      apex_debug.info(',
+'        ''Send email to: %s from: %s template: %s placeholders: %s''',
+'        ,c1.blogger_email',
 '        ,l_app_email',
 '        ,p_email_template',
 '        ,c1.placeholders',
@@ -5588,16 +5599,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    apex_debug.error(',
 '       p_message => ''%s Error: %s''',
 '      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => sqlerrm',
-'    );',
-'',
-'    -- show http error',
-'    blog_util.raise_http_error( 500 );',
-'    raise;',
-'',
-'  end sitemap_categories;',
-'--------------------------------------------------------------------------------',
-'---------------------------------------------'))
+'      ,p1 => sqlerrm'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5615,7 +5617,16 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------------------------------',
+'',
+'    );',
+'',
+'    -- show http error',
+'    blog_util.raise_http_error( 500 );',
+'    raise;',
+'',
+'  end sitemap_categories;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '  procedure sitemap_archives',
 '  as',
 '    l_xml           blob;',

@@ -91,19 +91,22 @@ wwv_flow_imp_shared.create_row_template(
 ''))
 ,p_next_page_template=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--next">',
-'  #PAGINATION_NEXT#<span class="a-Icon icon-right-arrow"></span>',
+'  <span class="t-Button-label">#PAGINATION_NEXT#</span><span class="a-Icon icon-right-arrow"></span>',
 '</a>'))
 ,p_previous_page_template=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<a href="#LINK#" class="t-Button t-Button--small t-Button--noUI t-Report-paginationLink t-Report-paginationLink--prev">',
-'  <span class="a-Icon icon-left-arrow"></span>#PAGINATION_PREVIOUS#',
+'  <span class="a-Icon icon-left-arrow"></span><span class="t-Button-label">#PAGINATION_PREVIOUS#</span>',
 '</a>'))
-,p_next_set_template=>'<button onclick="#LINK#" type="button" title="#PAGINATION_NEXT_SET#" aria-label="#PAGINATION_NEXT_SET#" class="t-Button t-Button--noLabel t-Button--icon t-Button--hot t-Button--small t-Button--simple"><span aria-hidden="true" class="t-Icon fa fa-chev'
-||'ron-right"></span></button>'
-,p_previous_set_template=>'<button onclick="#LINK#" type="button" title="#PAGINATION_PREVIOUS_SET#" aria-label="#PAGINATION_PREVIOUS_SET#" class="t-Button t-Button--noLabel t-Button--icon t-Button--hot t-Button--small t-Button--simple"><span aria-hidden="true" class="t-Icon fa'
-||' fa-chevron-left"></span></button>'
+,p_next_set_template=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<button onclick="#LINK#" type="button" title="#PAGINATION_NEXT_SET#" aria-label="#PAGINATION_NEXT_SET#" class="t-Button t-Button--noLabel t-Button--icon t-Button--hot t-Button--small t-Button--simple">',
+'  <span aria-hidden="true" class="t-Icon fa fa-chevron-right"></span>',
+'</button>'))
+,p_previous_set_template=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<button onclick="#LINK#" type="button" title="#PAGINATION_PREVIOUS_SET#" aria-label="#PAGINATION_PREVIOUS_SET#" class="t-Button t-Button--noLabel t-Button--icon t-Button--hot t-Button--small t-Button--simple">',
+'  <span aria-hidden="true" class="t-Icon fa fa-chevron-left"></span>',
+'</button>'))
 ,p_theme_id=>42
 ,p_theme_class_id=>7
-,p_preset_template_options=>'z-posts--paginationBorder'
 );
 wwv_flow_imp.component_end;
 end;

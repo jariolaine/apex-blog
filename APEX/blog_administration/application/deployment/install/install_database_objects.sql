@@ -254,12 +254,16 @@ wwv_flow_imp_shared.create_install_script(
 '  title varchar2( 256 char ) not null,',
 '  link_desc varchar2( 4000 byte ) not null,',
 '  link_url varchar2( 256 char ) not null,',
+'  external_link number(1,0) not null,',
+'  target_blank number(1,0) not null,',
 '  notes varchar2( 4000 byte ),',
 '  constraint blog_links_pk primary key( id ),',
 '  constraint blog_links_uk1 unique( link_group_id, id ),',
 '  constraint blog_links_ck1 check( row_version > 0 ),',
 '  constraint blog_links_ck2 check( is_active in( 0, 1 ) ),',
-'  constraint blog_links_ck3 check( display_seq > 0 )',
+'  constraint blog_links_ck3 check( display_seq > 0 ),',
+'  constraint blog_links_ck4 check( external_link in( 0, 1 ) ),',
+'  constraint blog_links_ck5 check( target_blank in( 0, 1 ) )',
 ')',
 '/',
 '--------------------------------------------------------',
@@ -676,10 +680,7 @@ wwv_flow_imp_shared.create_install_script(
 '--    Jari Laine 30.09.2020 - Added procedure google_post_authentication',
 '--    Jari Laine 28.11.2020 - Removed obsolete function get_comment_post_id',
 '--                            Renamed function google_post_authentication to post_authentication',
-'--    Jari Laine 28.02.2020 - New function get_footer_link_seq',
-'--    Jari Laine 23.05.2020 - Modifications to remove ORDS depency',
-'--    Jari Laine 21.03.2021 - Changed procedure get_blogger_details fetch authorization group name stored to BLOG_SETTINGS table',
-'--'))
+'--    Jari Laine 28.02.2020 - New function get_footer_link_se'))
 );
 wwv_flow_imp.component_end;
 end;
@@ -696,7 +697,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'                            Added trim to function remove_whitespace',
+'q',
+'--    Jari Laine 23.05.2020 - Modifications to remove ORDS depency',
+'--    Jari Laine 21.03.2021 - Changed procedure get_blogger_details fetch authorization group name stored to BLOG_SETTINGS table',
+'--                            Added trim to function remove_whitespace',
 '--                            Changed procedures add_category and add_tag use function remove_whitespace',
 '--    Jari Laine 11.04.2021 - Procedure send_reply_notify moved to package BLOG_COMM',
 '--    Jari Laine 13.04.2021 - Changes to procedure post_authentication',
@@ -1421,12 +1425,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,t1.created_on        as created_on',
 '  ,lower(t1.created_by) as created_by',
 '  ,t1.changed_on        as changed_on',
-'  ,lower(t1.changed_by) as changed_by',
-'  ,t1.is_active         as is_active',
-'  ,t1.content_type      as content_type',
-'  ,t1.display_seq       as display_seq',
-'  ,t1.show_changed_on   as show_changed_on',
-'  ,t1.content_desc      as conte'))
+'  ,lower(t1.changed_by) as ch'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1444,7 +1443,12 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'nt_desc',
+'anged_by',
+'  ,t1.is_active         as is_active',
+'  ,t1.content_type      as content_type',
+'  ,t1.display_seq       as display_seq',
+'  ,t1.show_changed_on   as show_changed_on',
+'  ,t1.content_desc      as content_desc',
 '  ,t1.content_html      as content_html',
 'from blog_dynamic_content t1',
 'where 1 = 1',
@@ -1774,7 +1778,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_LINKS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ", "DISPLAY_SEQ", "LINK_TITLE", "LINK_DESC", "LINK_URL") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ", "DISPLAY_SEQ", "LINK_TITLE", "LINK_DESC", "LINK_URL", "LINK_ATTR") AS',
 '  select',
 '   t1.id          as link_id',
 '  ,t2.id          as group_id',
@@ -1784,6 +1788,17 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,t1.title       as link_title',
 '  ,t1.link_desc   as link_desc',
 '  ,t1.link_url    as link_url',
+'  ,case external_link + target_blank',
+'    when 2',
+'    then ''target="_blank" rel="external"''',
+'    when 1',
+'    then',
+'      case external_link',
+'      when 1',
+'      then ''rel="external"''',
+'      else ''target="_blank"''',
+'    end',
+'  end as',
 'from blog_links t1',
 'join blog_link_groups t2',
 '  on t1.link_group_id = t2.id',
@@ -2294,24 +2309,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
 '     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context( ''USERENV'', ''PROXY_USER'' )',
-'    ,sys_context( ''USERENV'', ''SESSION_USER'' )',
-'  );',
-'',
-'end;',
-'/',
-'--------------------------------------------------------',
-'--  DDL for Trigger BLOG_CATEGORIES_TRG',
-'--------------------------------------------------------',
-'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_CATEGORIES_TRG"',
-'before',
-'insert or',
-'update on blog_categories',
-'for each row',
-'begin',
-'',
-'  if inserting then',
-'    :new.id           := coalesce( :new.id, '))
+'    ,sys_'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2329,7 +2327,24 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_seq.nextval );',
+'context( ''USERENV'', ''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'', ''SESSION_USER'' )',
+'  );',
+'',
+'end;',
+'/',
+'--------------------------------------------------------',
+'--  DDL for Trigger BLOG_CATEGORIES_TRG',
+'--------------------------------------------------------',
+'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_CATEGORIES_TRG"',
+'before',
+'insert or',
+'update on blog_categories',
+'for each row',
+'begin',
+'',
+'  if inserting then',
+'    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
@@ -3305,18 +3320,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  when others',
 '  then',
 '',
-'    apex_debug.error(',
-'       p_message => ''Error: %s %s( %s => %s )''',
-'      ,p0 => sqlerrm',
-'      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p2 => ''p_attribute_name''',
-'      ,p3 => coalesce( p_attribute_name, ''(null)'' )',
-'    );',
-'    raise;',
-'',
-'  end get_attribute_value;',
-'--------------------------------------------------------------------------------',
-'----------------------------------------------------------------'))
+'    apex_de'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3334,7 +3338,18 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----------------',
+'bug.error(',
+'       p_message => ''Error: %s %s( %s => %s )''',
+'      ,p0 => sqlerrm',
+'      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'      ,p2 => ''p_attribute_name''',
+'      ,p3 => coalesce( p_attribute_name, ''(null)'' )',
+'    );',
+'    raise;',
+'',
+'  end get_attribute_value;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '  procedure initialize_items(',
 '    p_app_id in varchar2',
 '  )',
@@ -4386,22 +4401,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- update categories display_seq if it different than new',
 '    merge into blog_categories t1',
-'    using (',
-'      select id',
-'        ,row_number() over(',
-'          order by display_seq, created_on',
-'        ) * 10 as new_display_seq',
-'      from blog_categories',
-'      where 1 = 1',
-'    ) v1',
-'    on ( t1.id = v1.id )',
-'    when matched then',
-'      update set t1.display_seq = v1.new_display_seq',
-'        where t1.display_seq != v1.new_display_seq',
-'    ;',
-'',
-'  end resequence_categories;',
-'----------------------------------------------------------------------'))
+'    using'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4419,7 +4419,22 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----------',
+' (',
+'      select id',
+'        ,row_number() over(',
+'          order by display_seq, created_on',
+'        ) * 10 as new_display_seq',
+'      from blog_categories',
+'      where 1 = 1',
+'    ) v1',
+'    on ( t1.id = v1.id )',
+'    when matched then',
+'      update set t1.display_seq = v1.new_display_seq',
+'        where t1.display_seq != v1.new_display_seq',
+'    ;',
+'',
+'  end resequence_categories;',
+'--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure add_tag(',
 '    p_tag     in varchar2,',
@@ -5402,23 +5417,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_string := replace( p_string, l_hasmark, ''&#x23;'' );',
 '',
 '  end escape_html;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure build_code_tab(',
-'    p_comment   in out nocopy varchar2,',
-'    p_code_tab  in out nocopy apex_t_varchar2',
-'  )',
-'  as',
-'',
-'    l_code      varchar2(32700);',
-'    l_code_cnt  pls_integer := 0;',
-'    l_start_pos pls_integer := 0;',
-'    l_end_pos   pls_integer := 0;',
-'',
-'  begin',
-'',
-'    -- check code open tag count',
-'    l_code_cnt := regexp_count( p_comment, ''\<code'))
+'-------------------------------------------------------------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5436,7 +5435,23 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'\>'', 1, ''i'' );',
+'-',
+'--------------------------------------------------------------------------------',
+'  procedure build_code_tab(',
+'    p_comment   in out nocopy varchar2,',
+'    p_code_tab  in out nocopy apex_t_varchar2',
+'  )',
+'  as',
+'',
+'    l_code      varchar2(32700);',
+'    l_code_cnt  pls_integer := 0;',
+'    l_start_pos pls_integer := 0;',
+'    l_end_pos   pls_integer := 0;',
+'',
+'  begin',
+'',
+'    -- check code open tag count',
+'    l_code_cnt := regexp_count( p_comment, ''\<code\>'', 1, ''i'' );',
 '',
 '    -- process code tags if open and close count match ( pre check is for valid HTML )',
 '    if l_code_cnt = regexp_count( p_comment, ''\<\/code\>'', 1, ''i'' )',
@@ -6413,16 +6428,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '                <html lang="%s">',
 '                <head>',
 '                  <meta charset="utf-8" />',
-'                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />',
-'                  <title>',
-'                    <xsl:value-of select="title" />',
-'                  </title>',
-'                  <link rel="stylesheet" type="text/css" href="%s" />',
-'                </head>',
-'                <body>',
-'                  <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>',
-'                  <h2 class="z-rss--description"><xsl:value-of select="description" /></h2>',
-'     '))
+'                  <meta name="viewport" content="width=device-width, initial-s'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6440,7 +6446,16 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'             <xsl:for-each select="./item">',
+'cale=1.0" />',
+'                  <title>',
+'                    <xsl:value-of select="title" />',
+'                  </title>',
+'                  <link rel="stylesheet" type="text/css" href="%s" />',
+'                </head>',
+'                <body>',
+'                  <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>',
+'                  <h2 class="z-rss--description"><xsl:value-of select="description" /></h2>',
+'                  <xsl:for-each select="./item">',
 '                    <article class="z-rss--post">',
 '                      <header>',
 '                        <h3 class="z-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h3>',

@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_LINKS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ", "DISPLAY_SEQ", "LINK_TITLE", "LINK_DESC", "LINK_URL") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ", "DISPLAY_SEQ", "LINK_TITLE", "LINK_DESC", "LINK_URL", "LINK_ATTR") AS
   select
    t1.id          as link_id
   ,t2.id          as group_id
@@ -11,6 +11,17 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE
   ,t1.title       as link_title
   ,t1.link_desc   as link_desc
   ,t1.link_url    as link_url
+  ,case external_link + target_blank
+    when 2
+    then 'target="_blank" rel="external"'
+    when 1
+    then
+      case external_link
+      when 1
+      then 'rel="external"'
+      else 'target="_blank"'
+    end
+  end as
 from blog_links t1
 join blog_link_groups t2
   on t1.link_group_id = t2.id

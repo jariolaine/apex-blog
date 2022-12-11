@@ -48,6 +48,7 @@
     text-decoration: none;
     position: relative;
     font-size: ~"calc(var(--z-tag-size) * 0.125rem - -0.75rem)";
+    padding: 0.5rem;
     &::before {
       content: "";
       position: absolute;
@@ -79,7 +80,6 @@
     }
   }
 }
-
 @media (prefers-reduced-motion) {
   ul.z-tagCloud * {
     transition: none !important;
