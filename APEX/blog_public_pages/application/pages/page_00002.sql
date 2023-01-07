@@ -215,6 +215,7 @@ wwv_flow_imp_page.create_report_region(
 '  and v1.post_id = :P2_POST_ID'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_translate_title=>'N'
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(6894976353301648)
 ,p_query_headings_type=>'NO_HEADINGS'
 ,p_query_num_rows=>1

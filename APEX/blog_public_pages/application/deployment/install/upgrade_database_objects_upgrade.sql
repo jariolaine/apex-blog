@@ -1511,7 +1511,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '      and x1.flag = ''MODERATE''',
 '      and x1.comment_id = co.id',
 '    )',
-'  )         '))
+'  )                     as moderate_comments_count',
+'  ,(',
+'    select count( co.id )',
+'    from blog_com'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1529,10 +1532,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'            as moderate_comments_count',
-'  ,(',
-'    select count( co.id )',
-'    from blog_comments co',
+'ments co',
 '    where 1 = 1',
 '    and co.post_id  = t1.id',
 '    and co.is_active = 0',
@@ -2524,7 +2524,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '    ;',
 '',
 '    apex_debug.info(',
-'      p_message => ''File'))
+'      p_message => ''File name: %s, file size: %s, mime type: %s''',
+'      ,p0 => l_file_t.file_name',
+'      ,p1 => l'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2542,9 +2544,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' name: %s, file size: %s, mime type: %s''',
-'      ,p0 => l_file_t.file_name',
-'      ,p1 => l_file_t.file_size',
+'_file_t.file_size',
 '      ,p2 => l_file_t.mime_type',
 '      ,p3 => l_file_t.file_charset',
 '    );',
@@ -3579,7 +3579,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
-'--------------------------------------------------------------------------------'))
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  fun'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3597,9 +3599,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
-'--------------------------------------------------------------------------------',
-'  function to_html_entities(',
+'ction to_html_entities(',
 '    p_number in number',
 '  ) return varchar2',
 '  as',
@@ -4592,7 +4592,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '                 p_post_id => v1.id',
 '                ,p_canonical => ''YES''',
 '              )',
-'        ) as pl'))
+'        ) as placeholders',
+'      from blog_v_all_posts v1',
+'      where 1 = 1',
+'      and v1.id = l_post_id'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4610,10 +4613,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'aceholders',
-'      from blog_v_all_posts v1',
-'      where 1 = 1',
-'      and v1.id = l_post_id',
+'',
 '      and v1.blogger_email is not null',
 '    ) loop',
 '',
@@ -5599,7 +5599,14 @@ wwv_flow_imp_shared.append_to_install_script(
 '    apex_debug.error(',
 '       p_message => ''%s Error: %s''',
 '      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => sqlerrm'))
+'      ,p1 => sqlerrm',
+'    );',
+'',
+'    -- show http error',
+'    blog_util.raise_http_error( 500 );',
+'    raise;',
+'',
+'  en'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5617,14 +5624,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
-'    );',
-'',
-'    -- show http error',
-'    blog_util.raise_http_error( 500 );',
-'    raise;',
-'',
-'  end sitemap_categories;',
+'d sitemap_categories;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure sitemap_archives',

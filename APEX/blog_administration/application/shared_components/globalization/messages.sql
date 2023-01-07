@@ -90,6 +90,12 @@ wwv_flow_imp_shared.create_message(
 ,p_message_text=>'You have requested the permanent deletion of links label. Following link(s) will be also deleted.'
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(16723151198968143)
+,p_name=>'BLOG_EDITOR_OPEN_NEW_TAB'
+,p_message_text=>'Open in a new tab'
+,p_is_js_message=>true
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(30112367443952323)
 ,p_name=>'BLOG_FEATURE_ABOUT'
 ,p_message_text=>'About'

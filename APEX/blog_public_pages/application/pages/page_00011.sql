@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221128153753'
+,p_last_upd_yyyymmddhh24miss=>'20221214135747'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(25312085512124215)
@@ -84,7 +84,7 @@ wwv_flow_imp_page.create_report_region(
 '    ,p_items    => ''P11_FILE_NAME''',
 '    ,p_values   => v1.file_name',
 '  )             as link',
-'  ,null         as link_attr',
+'  ,null         as link_attr -- se column HTML expression',
 '  ,null         as link_class',
 'from #OWNER#.blog_v_files v1',
 'where 1 = 1',
@@ -192,6 +192,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>90
 ,p_column_heading=>'Link Attr'
 ,p_use_as_row_header=>'N'
+,p_column_html_expression=>'download'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );

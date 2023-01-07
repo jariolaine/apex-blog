@@ -23,7 +23,6 @@ var blog = blog || {};
     * @function getDialogMessage
     * @summary Get Dialog Message
     * @desc
-    * @version 1.0
     **/
     getDialogMessage: function( message ){
       message !== undefined ? apex.message.showPageSuccess( message.text ) : null;
@@ -32,7 +31,7 @@ var blog = blog || {};
     * @function filesIrAfterRefresh
     * @summary Handle page 15 "Files" interactive report after refresh actions
     * @desc
-    * @version 1.0
+
     **/
     filesIrAfterRefresh: function( report ){
       // Remove alt and title from download link. APEX bug
@@ -46,7 +45,6 @@ var blog = blog || {};
     * @function commentsIrAfterRefresh
     * @summary Handle page 30 "Comments" interactive report after refresh actions
     * @desc
-    * @version 1.0
     **/
     commentsIrAfterRefresh: function( report ){
       report.find( "a[data-unread=true]" ).one( "click", function(){
@@ -63,7 +61,6 @@ var blog = blog || {};
       * @function initRegion
       * @summary Dialog IG region initialization code
       * @desc put blog.admin.dialogIG.initRegion in region Advanced: JavaScript Initialization Code
-      * @version 1.0
       **/
       initRegion: function( options ){
 
@@ -78,12 +75,12 @@ var blog = blog || {};
               sequenceField: blog.admin.dialogIG.options.sequenceField,
               sequenceStep: blog.admin.dialogIG.options.sequenceStep
             }
-          }, options);
+          }, options );
         }
 
         options = $.extend({
           toolbarData: toolbarData
-        }, options);
+        }, options );
 
         return options;
 
@@ -92,7 +89,6 @@ var blog = blog || {};
       * @function initLinkColumn
       * @summary Dialog IG link column Initialization code
       * @desc put blog.admin.dialogIG.initLinkColumn in column Advanced: JavaScript Initialization Code
-      * @version 1.0
       **/
       initLinkColumn: function( options ){
 
@@ -100,7 +96,7 @@ var blog = blog || {};
           defaultGridColumnOptions: {
             noHeaderActivate: true
           }
-        }, options);
+        }, options );
 
         return options;
 
@@ -109,7 +105,6 @@ var blog = blog || {};
       * @function initOnPageLoad
       * @summary Dialog IG initialization code
       * @desc put blog.admin.dialogIG.initOnPageLoad in page JavaScript: Function and Global Variable Declaration
-      * @version 1.0
       **/
       initOnPageLoad: function( options ){
 
@@ -118,7 +113,7 @@ var blog = blog || {};
           options = $.extend({
             btnSave: "ig-save"
             ,btnAddRow: "ig-selection-add-row"
-          }, options);
+          }, options );
 
           blog.admin.dialogIG.options = $.extend({
             sequenceField: options.sequenceField
@@ -152,7 +147,6 @@ var blog = blog || {};
       * @function initRegion
       * @summary configuration IG region initialization code
       * @desc put blog.admin.configIG.initRegion in region Advanced: JavaScript Initialization Code
-      * @version 1.0tags
       **/
       initRegion: function( options ){
 
@@ -167,7 +161,7 @@ var blog = blog || {};
             reorderColumns: false,
             footer: false
           }
-        }, options);
+        }, options );
 
         return options;
       },
@@ -175,7 +169,6 @@ var blog = blog || {};
       * @function initColumn
       * @summary IG columns initialization code
       * @desc put blog.admin.configIG.initColumn in column Advanced: JavaScript Initialization Code
-      * @version 1.0
       **/
       initColumn: function( options ){
 
@@ -183,7 +176,7 @@ var blog = blog || {};
           defaultGridColumnOptions: {
             noHeaderActivate: true
           }
-        }, options);
+        }, options );
 
         return options;
 
@@ -192,14 +185,13 @@ var blog = blog || {};
       * @function initOnPageLoad
       * @summary configuration IG page initialization code
       * @desc put blog.admin.configIG.initOnPageLoad in page JavaScript: Function and Global Variable Declaration
-      * @version 1.0
       **/
       initOnPageLoad: function( options ){
         $(function(){
 
           options = $.extend({
             btnSave: "ig-save"
-          }, options);
+          }, options );
 
           apex.actions.add([
             {
@@ -211,6 +203,41 @@ var blog = blog || {};
           ]);
 
         });
+      }
+    },
+    editor: {
+      /**
+      * @function initItem
+      * @summary Editor item initialization code
+      * @desc put blog.admin.editor.initItem in item Advanced: JavaScript Initialization Code
+      **/
+      initItem: function( options ){
+
+        var messageKey    = "BLOG_EDITOR_OPEN_NEW_TAB"
+          , defaultLabel  = "Open in a new tab"
+          , linkTarget    = "_blank"
+          , linkRel       = "noopener noreferrer"
+        ;
+
+        options = $.extend( true, {
+          editorOptions: {
+            link: {
+              decorators: {
+                openInNewTab: {
+                  mode: "manual"
+                  ,label: apex.lang.hasMessage( messageKey ) ? apex.lang.getMessage( messageKey ) : defaultLabel
+                  ,attributes: {
+                    target: linkTarget
+                    ,rel: linkRel
+                  }
+                }
+              }
+            }
+          }
+        }, options );
+
+        return options;
+
       }
     }
   }
