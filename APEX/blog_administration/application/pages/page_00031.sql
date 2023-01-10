@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221003075338'
+,p_last_upd_yyyymmddhh24miss=>'20230110225107'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(37645474034287120)
@@ -69,7 +69,7 @@ wwv_flow_imp_page.create_report_region(
 '--  ,v1.user_icon      as user_icon',
 '--  ,v1.icon_modifier  as icon_modifier',
 '  ,null              as user_icon',
-'  ,''z-hidden''        as icon_modifier',
+'  ,''u-hidden''        as icon_modifier',
 '  ,''z-comment''       as comment_modifiers',
 '  ,null              as actions',
 '  ,null              as attribute_1',

@@ -134,7 +134,7 @@ prompt --install
 @@application/shared_components/globalization/dyntranslations.sql
 @@application/shared_components/user_interface/shortcuts/sign_in_using_another_identity_provider.sql
 @@application/shared_components/email/templates/blog_reply_to_comment_notify.sql
-@@application/shared_components/security/authentications/application_express_authentication.sql
+@@application/shared_components/security/authentications/apex.sql
 @@application/shared_components/security/authentications/google.sql
 @@application/user_interfaces/combined_files.sql
 @@application/pages/page_00000.sql

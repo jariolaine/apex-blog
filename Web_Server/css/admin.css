@@ -6,12 +6,8 @@
   gap: 1rem;
 }
 .z-author-container .z-author-left {
-  order: 1;
   display: flex;
   flex-direction: column;
-}
-.z-author-container .z-author-right {
-  order: 2;
 }
 .z-author-container .z-author-right .z-author-badges {
   display: flex;
@@ -282,10 +278,6 @@ pre.z-program-code code,
 **************************************/
 .z-text-wrap {
   white-space: pre-wrap;
-}
-.z-hidden {
-  display: none!important;
-  visibility: hidden!important;
 }
 .z-overflowHidden {
   overflow: hidden;
