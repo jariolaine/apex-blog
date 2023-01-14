@@ -14,7 +14,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_page.create_page(
  p_id=>31
 ,p_name=>'View Comment'
-,p_alias=>'COMMENT'
+,p_alias=>'VIEW-COMMENT'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Comment'
 ,p_autocomplete_on_off=>'OFF'
@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230110225107'
+,p_last_upd_yyyymmddhh24miss=>'20230114104836'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(37645474034287120)

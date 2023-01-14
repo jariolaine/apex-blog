@@ -14,6 +14,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_page.create_page(
  p_id=>26
 ,p_name=>'Add/Edit Modal Popup Page'
+,p_alias=>'ADD-EDIT-POPUP-PAGE'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Add/Edit Modal Popup Page'
 ,p_autocomplete_on_off=>'OFF'
@@ -22,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221112082547'
+,p_last_upd_yyyymmddhh24miss=>'20230114105122'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(41929607444116285)

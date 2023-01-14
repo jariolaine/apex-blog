@@ -14,6 +14,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_page.create_page(
  p_id=>12
 ,p_name=>'Add/Edit Post'
+,p_alias=>'ADD-EDIT-POST'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Post'
 ,p_first_item=>'AUTO_FIRST_ITEM'
@@ -69,7 +70,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230107084456'
+,p_last_upd_yyyymmddhh24miss=>'20230114105050'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8640589331194982)

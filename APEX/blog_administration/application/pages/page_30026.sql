@@ -18,12 +18,13 @@ wwv_flow_imp_page.create_page(
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Session Log'
 ,p_autocomplete_on_off=>'OFF'
+,p_group_id=>wwv_flow_imp.id(28670259188910652)
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_dialog_chained=>'N'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221125172946'
+,p_last_upd_yyyymmddhh24miss=>'20230114104920'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(19643397669399856)
@@ -350,7 +351,7 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_report_alias=>'196594'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'PAGE_ID:VIEW_TIMESTAMP:ELAPSED_TIME:ROWS_QUERIED:IP_ADDRESS:AGENT:ECID:'
+,p_report_columns=>'PAGE_ID:PAGE_NAME:VIEW_TIMESTAMP:ELAPSED_TIME:ROWS_QUERIED:IP_ADDRESS:AGENT:ECID:'
 ,p_sort_column_1=>'VIEW_TIMESTAMP'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'SECONDS_AGO'
