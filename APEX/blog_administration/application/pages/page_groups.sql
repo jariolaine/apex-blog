@@ -12,6 +12,10 @@ wwv_flow_imp.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_page.create_page_group(
+ p_id=>wwv_flow_imp.id(28670259188910652)
+,p_group_name=>'Activity Reporting'
+);
+wwv_flow_imp_page.create_page_group(
  p_id=>wwv_flow_imp.id(28670115427911376)
 ,p_group_name=>'Comments'
 );
@@ -42,10 +46,6 @@ wwv_flow_imp_page.create_page_group(
  p_id=>wwv_flow_imp.id(8929534050595858)
 ,p_group_name=>'Posts'
 ,p_group_desc=>'Posts, categories and tags'
-);
-wwv_flow_imp_page.create_page_group(
- p_id=>wwv_flow_imp.id(28670259188910652)
-,p_group_name=>'Reporting'
 );
 wwv_flow_imp_page.create_page_group(
  p_id=>wwv_flow_imp.id(8928435152589675)

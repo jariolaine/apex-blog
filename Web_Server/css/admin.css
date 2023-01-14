@@ -6,12 +6,8 @@
   gap: 1rem;
 }
 .z-author-container .z-author-left {
-  order: 1;
   display: flex;
   flex-direction: column;
-}
-.z-author-container .z-author-right {
-  order: 2;
 }
 .z-author-container .z-author-right .z-author-badges {
   display: flex;
@@ -184,29 +180,7 @@ blockquote::after {
 * Program code formatting
 **************************************/
 /* Pre APEX 22.2 CKEditor 4 */
-pre.z-program-code {
-  clear: both;
-  font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace";
-  font-size: 0.75rem;
-  color: var(--ut-component-badge-text-color);
-  tab-size: 2;
-  overflow-x: auto;
-  display: block;
-  padding: 0.5rem 1rem;
-  margin: 0.5rem 0.5rem 1rem 0.5rem;
-  border: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
-  border-left-width: 0.25rem;
-  border-left-style: solid;
-  border-left-color: var(--u-color-35);
-  border-radius: var(--ut-component-badge-border-radius);
-  background-color: var(--ut-component-badge-background-color);
-  box-shadow: var(--ut-shadow-sm);
-}
-pre.z-program-code code {
-  font-family: inherit;
-  font-size: inherit;
-}
-/* APEX 22.2 CKEditor 5 */
+pre.z-program-code,
 .ck-content pre:has( code ) {
   clear: both;
   font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace";
@@ -225,6 +199,7 @@ pre.z-program-code code {
   background-color: var(--ut-component-badge-background-color);
   box-shadow: var(--ut-shadow-sm);
 }
+pre.z-program-code code,
 .ck-content pre:has( code ) code {
   font-family: inherit;
   font-size: inherit;
@@ -240,7 +215,7 @@ pre.z-program-code code {
 }
 /**************************************
 * Status Marker
-* Ussed in admin application settings IG
+* Used in admin application settings IG
 *
 * Credits to fac586:
 *   https://community.oracle.com/tech/developers/discussion/comment/15630636/#Comment_15630636
@@ -303,10 +278,6 @@ pre.z-program-code code {
 **************************************/
 .z-text-wrap {
   white-space: pre-wrap;
-}
-.z-hidden {
-  display: none!important;
-  visibility: hidden!important;
 }
 .z-overflowHidden {
   overflow: hidden;

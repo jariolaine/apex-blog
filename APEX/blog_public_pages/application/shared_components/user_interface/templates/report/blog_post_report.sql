@@ -107,6 +107,7 @@ wwv_flow_imp_shared.create_row_template(
 '</button>'))
 ,p_theme_id=>42
 ,p_theme_class_id=>7
+,p_translate_this_template=>'N'
 );
 wwv_flow_imp.component_end;
 end;

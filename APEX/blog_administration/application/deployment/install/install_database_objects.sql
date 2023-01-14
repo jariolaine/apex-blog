@@ -1425,7 +1425,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,t1.created_on        as created_on',
 '  ,lower(t1.created_by) as created_by',
 '  ,t1.changed_on        as changed_on',
-'  ,lower(t1.changed_by) as ch'))
+'  ,lower(t1.changed_by) as changed_by',
+'  ,t1.is_active         as is_active',
+'  ,t1.content_type      as content_type',
+' '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1443,10 +1446,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'anged_by',
-'  ,t1.is_active         as is_active',
-'  ,t1.content_type      as content_type',
-'  ,t1.display_seq       as display_seq',
+' ,t1.display_seq       as display_seq',
 '  ,t1.show_changed_on   as show_changed_on',
 '  ,t1.content_desc      as content_desc',
 '  ,t1.content_html      as content_html',
@@ -2309,7 +2309,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
 '     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_'))
+'    ,sys_context( ''USERENV'', ''PROXY_USER'' )',
+'    ,sys_context( ''USERENV'', ''SESSION_USER'' )',
+'  );',
+'',
+''))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2327,10 +2331,6 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'context( ''USERENV'', ''PROXY_USER'' )',
-'    ,sys_context( ''USERENV'', ''SESSION_USER'' )',
-'  );',
-'',
 'end;',
 '/',
 '--------------------------------------------------------',
@@ -3320,7 +3320,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '  when others',
 '  then',
 '',
-'    apex_de'))
+'    apex_debug.error(',
+'       p_message => ''Error: %s %s( %s => %s )''',
+'      ,p0 => sqlerrm',
+'      ,p'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3338,10 +3341,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'bug.error(',
-'       p_message => ''Error: %s %s( %s => %s )''',
-'      ,p0 => sqlerrm',
-'      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
 '      ,p2 => ''p_attribute_name''',
 '      ,p3 => coalesce( p_attribute_name, ''(null)'' )',
 '    );',
@@ -4401,7 +4401,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- update categories display_seq if it different than new',
 '    merge into blog_categories t1',
-'    using'))
+'    using (',
+'      select id',
+'        ,row_number() over(',
+'          order by display_seq, created_'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4419,10 +4422,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' (',
-'      select id',
-'        ,row_number() over(',
-'          order by display_seq, created_on',
+'on',
 '        ) * 10 as new_display_seq',
 '      from blog_categories',
 '      where 1 = 1',
@@ -5417,7 +5417,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_string := replace( p_string, l_hasmark, ''&#x23;'' );',
 '',
 '  end escape_html;',
-'-------------------------------------------------------------------------------'))
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  pr'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5435,9 +5437,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-',
-'--------------------------------------------------------------------------------',
-'  procedure build_code_tab(',
+'ocedure build_code_tab(',
 '    p_comment   in out nocopy varchar2,',
 '    p_code_tab  in out nocopy apex_t_varchar2',
 '  )',
@@ -6428,7 +6428,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '                <html lang="%s">',
 '                <head>',
 '                  <meta charset="utf-8" />',
-'                  <meta name="viewport" content="width=device-width, initial-s'))
+'                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />',
+'                  <title>',
+'                    <xsl:value-of select="title"'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6446,9 +6448,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'cale=1.0" />',
-'                  <title>',
-'                    <xsl:value-of select="title" />',
+' />',
 '                  </title>',
 '                  <link rel="stylesheet" type="text/css" href="%s" />',
 '                </head>',

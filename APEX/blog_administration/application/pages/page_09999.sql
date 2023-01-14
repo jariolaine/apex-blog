@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'12'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221121072455'
+,p_last_upd_yyyymmddhh24miss=>'20230110235544'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8575301514518303)
@@ -65,17 +65,16 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_point=>'SUB_REGIONS'
 ,p_plug_source=>'"SIGN_IN_USING_ANOTHER_IDENTITY_PROVIDER"'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_plug_display_condition_type=>'NOT_EXISTS'
+,p_plug_display_condition_type=>'EXISTS'
 ,p_plug_display_when_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select 1',
 'from apex_application_build_options',
 'where 1 = 1',
 '  and application_id = :APP_ID',
-'  and build_option_status = ''Exclude''',
-'  and build_option_name in( ',
-'     ''Admin app APEX authentication''',
-'    ,''Admin app Google authentication''',
-'  )'))
+'  and build_option_status = ''Include''',
+'  and build_option_name != ''BLOG_AUTHENTICATION_APEX''',
+'  and build_option_name like ''BLOG\_AUTHENTICATION\_%'' escape ''\'''))
+,p_required_patch=>wwv_flow_imp.id(35674953070739317)
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'HTML'
 ,p_plug_comment=>'Region is displayed if both authentication methods are enabled by build options'
