@@ -47,6 +47,7 @@ as
 --    Jari Laine 29.11.2022 - Published procedure raise_http_error to
 --                          - Exception handler to procedures download_file
 --                          - Moved logic to fetch next and previous post to view blog_v_posts from procedure get_post_details
+--    Jari Laine 15.01.2023 - Removed obsolete procedure render_dynamic_content
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -105,14 +106,6 @@ as
   function get_tag(
     p_tag_id          in varchar2
   ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  public app page 1002 PL/SQL Dynamic Content Region "Content"
-  procedure render_dynamic_content(
-    p_content_id      in varchar2,
-    p_date_format     in varchar2,
-    p_content_title   out nocopy varchar2
-  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  inside package and package BLOG_XML
@@ -574,51 +567,6 @@ as
     raise;
 
   end get_tag;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure render_dynamic_content(
-    p_content_id    in varchar2,
-    p_date_format   in varchar2,
-    p_content_title out nocopy varchar2
-  )
-  as
-  begin
-
-    -- fetch content
-    for c1 in(
-      select v1.content_desc
-        ,v1.content_html
-        ,v1.changed_on
-        ,v1.show_changed_on
-      from blog_v_dynamic_content v1
-      where 1 = 1
-      and v1.content_id = p_content_id
-    ) loop
-
-      -- set content description to procedure out parameter
-      p_content_title := c1.content_desc;
-
-      -- output content HTML
-      apex_util.prn( c1.content_html, false );
-
-      -- output when content is changed if show_changed_on column value is 1
-      if c1.show_changed_on = 1
-      then
-        sys.htp.p(
-            apex_string.format(
-              p_message => '<p>%s</p>'
-              ,p0 =>
-                apex_lang.message(
-                  p_name => 'BLOG_MSG_LAST_UPDATED'
-                  ,p0 => to_char( c1.changed_on, p_date_format )
-                )
-            )
-          );
-      end if;
-
-    end loop;
-
-  end render_dynamic_content;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure download_file (

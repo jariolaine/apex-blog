@@ -148,8 +148,9 @@ prompt --install
 @@application/pages/page_01003.sql
 @@application/pages/page_09999.sql
 @@application/deployment/definition.sql
-@@application/deployment/install/install_metadata.sql
+@@application/deployment/install/install_create_view_blog_v_version.sql
 @@application/deployment/install/upgrade_patch_21_2_20220409.sql
+@@application/deployment/install/install_metadata.sql
 @@application/deployment/install/upgrade_patch_21_2_20220415.sql
 @@application/deployment/install/upgrade_patch_21_2_20220421.sql
 @@application/deployment/install/upgrade_patch_21_2_20220508.sql

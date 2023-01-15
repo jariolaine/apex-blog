@@ -79,15 +79,3 @@ begin
   ctx_ddl.drop_preference( 'BLOG_POST_UDS_LX' );
 end;
 /
---------------------------------------------------------
---  Drop view BLOG_V_VERSION
---------------------------------------------------------
-declare
-  view_not_exists exception;
-  pragma exception_init ( view_not_exists, -942 );
-begin
-  execute immediate 'drop view blog_v_version';
-exception when view_not_exists then
-  null;
-end;
-/

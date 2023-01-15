@@ -137,18 +137,6 @@ wwv_flow_imp_shared.create_install(
 '  ctx_ddl.drop_preference( ''BLOG_POST_UDS_LX'' );',
 'end;',
 '/',
-'--------------------------------------------------------',
-'--  Drop view BLOG_V_VERSION',
-'--------------------------------------------------------',
-'declare',
-'  view_not_exists exception;',
-'  pragma exception_init ( view_not_exists, -942 );',
-'begin',
-'  execute immediate ''drop view blog_v_version'';',
-'exception when view_not_exists then',
-'  null;',
-'end;',
-'/',
 ''))
 ,p_required_free_kb=>200
 ,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE TYPE :CREATE VIEW'

@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221122062337'
+,p_last_upd_yyyymmddhh24miss=>'20230114114252'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(11416108930329119)
@@ -87,6 +87,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_display_sequence=>20
 ,p_region_template_options=>'#DEFAULT#:t-Region--stacked:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Report--stretch:t-Report--staticRowColors:t-Report--rowHighlightOff:t-Report--noBorders'
+,p_item_display_point=>'BELOW'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -132,6 +133,39 @@ wwv_flow_imp_page.create_report_columns(
 ,p_heading_alignment=>'RIGHT'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(16125672228947349)
+,p_button_sequence=>10
+,p_button_plug_id=>wwv_flow_imp.id(12513918318984045)
+,p_button_name=>'CLOSE'
+,p_button_action=>'DEFINED_BY_DA'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
+,p_button_image_alt=>'Close'
+,p_warn_on_unsaved_changes=>null
+,p_button_css_classes=>'w40p mxw240'
+,p_icon_css_classes=>'fa-close'
+,p_grid_column_css_classes=>'u-textCenter padding-top-md'
+,p_grid_new_row=>'Y'
+);
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(16125748734947350)
+,p_name=>'Close Dialog'
+,p_event_sequence=>10
+,p_triggering_element_type=>'BUTTON'
+,p_triggering_button_id=>wwv_flow_imp.id(16125672228947349)
+,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
+,p_bind_event_type=>'click'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(19452116825363501)
+,p_event_id=>wwv_flow_imp.id(16125748734947350)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_DIALOG_CANCEL'
 );
 wwv_flow_imp.component_end;
 end;
