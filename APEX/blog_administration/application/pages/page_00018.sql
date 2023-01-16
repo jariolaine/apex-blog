@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221206081714'
+,p_last_upd_yyyymmddhh24miss=>'20230116091833'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6814521408894774)
@@ -71,7 +71,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(6814521408894774)
 ,p_button_name=>'DELETE'
 ,p_button_action=>'SUBMIT'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--danger:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Delete'
 ,p_button_position=>'DELETE'

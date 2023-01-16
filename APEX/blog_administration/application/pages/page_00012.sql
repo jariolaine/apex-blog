@@ -14,7 +14,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_page.create_page(
  p_id=>12
 ,p_name=>'Add/Edit Post'
-,p_alias=>'ADD-EDIT-POST'
+,p_alias=>'POST-PROPERTIES'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Post'
 ,p_first_item=>'AUTO_FIRST_ITEM'
@@ -70,7 +70,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230114105050'
+,p_last_upd_yyyymmddhh24miss=>'20230116123532'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8640589331194982)
@@ -155,7 +155,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(9832800462215220)
 ,p_button_name=>'CANCEL'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Cancel'
 ,p_button_position=>'CLOSE'
@@ -184,7 +184,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(9832800462215220)
 ,p_button_name=>'CREATE'
 ,p_button_action=>'SUBMIT'
-,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Publish'
@@ -220,7 +220,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
-,p_button_image_alt=>'Save'
+,p_button_image_alt=>'Save Draft'
 ,p_button_position=>'EDIT'
 ,p_button_condition=>'P12_IS_ACTIVE'
 ,p_button_condition2=>'0'
@@ -234,7 +234,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(9832800462215220)
 ,p_button_name=>'SAVE_AND_PUBLISH'
 ,p_button_action=>'SUBMIT'
-,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Publish'
@@ -267,7 +267,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(9832800462215220)
 ,p_button_name=>'SAVE'
 ,p_button_action=>'SUBMIT'
-,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Save'
@@ -529,7 +529,7 @@ wwv_flow_imp_page.create_page_item(
 'Example, if you enter "my tag" and there is already tag "My Tag",',
 'later will be used as tag. ',
 'Use search to find existing tags. ',
-'You can maintain tags information by clicking Tags tab at Posts page.'))
+'You can maintain  all tags information by clicking All Tags tab at Posts page. To edit e.g. display sequence tags linked to post, click Edit Tags button on Posts page report.'))
 ,p_attribute_01=>'POPUP'
 ,p_attribute_02=>'FIRST_ROWSET'
 ,p_attribute_03=>'Y'

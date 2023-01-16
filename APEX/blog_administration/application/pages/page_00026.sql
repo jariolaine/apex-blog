@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230114105122'
+,p_last_upd_yyyymmddhh24miss=>'20230116093128'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(41929607444116285)
@@ -97,7 +97,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(41934854344116299)
 ,p_button_name=>'DELETE'
 ,p_button_action=>'SUBMIT'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--danger:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Delete'
 ,p_button_position=>'DELETE'
@@ -266,11 +266,11 @@ wwv_flow_imp_page.create_page_item(
 ,p_source=>'CONTENT_HTML'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_RICH_TEXT_EDITOR'
-,p_cMaxlength=>32700
 ,p_field_template=>wwv_flow_imp.id(8548365426518242)
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--stretchInputs'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
+,p_plugin_init_javascript_code=>'blog.admin.editor.initItem'
 ,p_attribute_01=>'HTML'
 ,p_attribute_02=>'INTERMEDIATE'
 ,p_attribute_03=>'MULTILINE'

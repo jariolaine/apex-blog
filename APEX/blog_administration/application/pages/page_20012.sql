@@ -28,7 +28,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221125203222'
+,p_last_upd_yyyymmddhh24miss=>'20230116135437'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27272383079075402)
@@ -436,7 +436,6 @@ wwv_flow_imp_page.create_interactive_grid(
 ,p_define_chart_view=>false
 ,p_enable_download=>false
 ,p_download_formats=>null
-,p_enable_mail_download=>true
 ,p_fixed_header=>'NONE'
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false
@@ -624,12 +623,12 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(80220063138113444)
 ,p_button_name=>'CLOSE'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Close'
 ,p_button_position=>'CLOSE'
 ,p_warn_on_unsaved_changes=>null
-,p_icon_css_classes=>'fa-remove'
+,p_icon_css_classes=>'fa-close'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(27324432937857302)
@@ -783,27 +782,6 @@ wwv_flow_imp_page.create_page_da_action(
 ''))
 ,p_attribute_05=>'PLSQL'
 ,p_wait_for_result=>'N'
-);
-wwv_flow_imp_page.create_page_da_event(
- p_id=>wwv_flow_imp.id(14806777327070101)
-,p_name=>'Set Edit Mode'
-,p_event_sequence=>30
-,p_bind_type=>'bind'
-,p_execution_type=>'IMMEDIATE'
-,p_bind_event_type=>'ready'
-);
-wwv_flow_imp_page.create_page_da_action(
- p_id=>wwv_flow_imp.id(14806855920070102)
-,p_event_id=>wwv_flow_imp.id(14806777327070101)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_affected_elements_type=>'REGION'
-,p_affected_region_id=>wwv_flow_imp.id(27272383079075402)
-,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex.region(this.affectedElements[0].id).call("getActions").set("edit", true);',
-''))
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(27274503365075424)

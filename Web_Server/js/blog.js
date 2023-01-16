@@ -1,7 +1,7 @@
- /**
- * @namespace blog
- **/
- var blog = blog || {};
+/**
+* @namespace blog
+**/
+var blog = blog || {};
 
 (function($, blog) {
 
@@ -24,7 +24,7 @@
     * @function setListCurrentItem
     * @example blog.UI.setListCurrentItem({ affectedElements: this.affectedElements, pageItem: "PX_ITEM" });
     **/
-    setListCurrentItem: function(options){
+    setListCurrentItem: function( options ){
 
       options = $.extend({
         currentClass: "is-current",
@@ -33,13 +33,13 @@
 
       options.affectedElements.find( "li" ).filter( function(){
 
-        var lDataValue = $(this).children( "a" ).data( options.dataAttrName ),
-            result = false
+        var lDataValue = $(this).children( "a" ).data( options.dataAttrName )
+          , result = false
         ;
 
         if( lDataValue ){
           result = $v_CheckValueAgainst(
-             options.pageItem
+            options.pageItem
             ,lDataValue
           );
         }
@@ -48,6 +48,13 @@
 
       }).addClass( options.currentClass );
 
+    },
+    /**
+    * @function setDialogTitle
+    * @example blog.UI.setDialogTitle("Dialog Title");
+    **/
+    setDialogTitle: function( title ){
+      apex.util.getTopApex().jQuery( ".ui-dialog-content" ).dialog( "option", "title", title );
     }
 
   };

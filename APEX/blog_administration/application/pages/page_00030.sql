@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221125172946'
+,p_last_upd_yyyymmddhh24miss=>'20230116144949'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27412346667552217)
@@ -389,7 +389,7 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_affected_elements_type=>'TRIGGERING_ELEMENT'
-,p_attribute_01=>'blog.admin.commentsIrAfterRefresh( this.affectedElements );'
+,p_attribute_01=>'blog.admin.commentsIrAfterRefresh({ "region$": this.affectedElements });'
 ,p_da_action_comment=>'Attach one time click event listener to report links having data attribute. When report link is clicked change link icon class.'
 );
 wwv_flow_imp_page.create_page_da_event(

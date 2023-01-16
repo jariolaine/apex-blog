@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221125172946'
+,p_last_upd_yyyymmddhh24miss=>'20230116144229'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6729285879951908)
@@ -372,7 +372,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(24910787972771846)
 ,p_button_name=>'UPLOAD_FILE'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft:t-Button--pillEnd'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Upload File(s)'
@@ -451,7 +451,7 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_affected_elements_type=>'TRIGGERING_ELEMENT'
-,p_attribute_01=>'blog.admin.filesIrAfterRefresh( this.affectedElements );'
+,p_attribute_01=>'blog.admin.filesIrAfterRefresh({ "region$": this.affectedElements });'
 );
 wwv_flow_imp.component_end;
 end;

@@ -20,150 +20,162 @@ var blog = blog || {};
   **/
   blog.admin = {
     /**
-    * @function getDialogMessage
-    * @summary Get Dialog Message
+    * @function showMessage
+    * @summary Show APEX success message
     * @desc
     **/
-    getDialogMessage: function( message ){
+    showMessage: function( message ){
       message !== undefined ? apex.message.showPageSuccess( message.text ) : null;
     },
     /**
     * @function filesIrAfterRefresh
     * @summary Handle page 15 "Files" interactive report after refresh actions
     * @desc
-
     **/
-    filesIrAfterRefresh: function( report ){
-      // Remove alt and title from download link. APEX bug
-      report.find( "td[headers=DOWNLOAD] a" ).removeAttr( "alt title" ).end()
+    filesIrAfterRefresh: function( options ){
+
+      // set defaults
+      options = $.extend({
+        copyLink: "[data-clipboard-source]"
+        ,copySource: "clipboard-source"
+        ,downloadLink: "td[headers=DOWNLOAD] a"
+      }, options );
+
+      // Remove alt and title from download link. APEX bug??
+      options.region$.find( options.downloadLink ).removeAttr( "alt title" ).end()
       // Find column that have copy URL button and attach click event
-      .find( "[data-clipboard-source]" ).click( function(){
-        navigator.clipboard.writeText( $( this ).data( "clipboard-source" ) );
+      .find( options.copyLink ).click( function(){
+        navigator.clipboard.writeText( $( this ).data( options.copySource ) );
       });
+
     },
     /**
     * @function commentsIrAfterRefresh
     * @summary Handle page 30 "Comments" interactive report after refresh actions
     * @desc
     **/
-    commentsIrAfterRefresh: function( report ){
-      report.find( "a[data-unread=true]" ).one( "click", function(){
+    commentsIrAfterRefresh: function( options ){
+
+      // set defaults
+      options = $.extend({
+        openLink: "a[data-unread=true]"
+        ,newClass: "fa-envelope-open-o"
+        ,oldClass: ["fa-envelope-o", "fa-envelope-arrow-down"]
+      }, options );
+
+      // change link column css class
+      options.region$.find( options.openLink ).one( "click", function(){
         $( $x( $( this ).data( "id" ) ) )
-          .removeClass( "fa-envelope-o fa-envelope-arrow-down" )
-          .addClass( "fa-envelope-open-o" );
+          .removeClass( options.oldClass )
+          .addClass( options.newClass );
       });
-    },
-    /**
-    * @module blog.admin.dialogIG
-    **/
-    dialogIG : {
-      /**
-      * @function initRegion
-      * @summary Dialog IG region initialization code
-      * @desc put blog.admin.dialogIG.initRegion in region Advanced: JavaScript Initialization Code
-      **/
-      initRegion: function( options ){
 
-        var toolbarData = $.apex.interactiveGrid.copyDefaultToolbar();
-
-        toolbarData.toolbarRemove( "save" );
-        toolbarData.toolbarRemove( "selection-add-row" );
-
-        if( blog.admin.dialogIG.options.sequenceField != "undefined" ){
-          options = $.extend({
-            defaultModelOptions: {
-              sequenceField: blog.admin.dialogIG.options.sequenceField,
-              sequenceStep: blog.admin.dialogIG.options.sequenceStep
-            }
-          }, options );
-        }
-
-        options = $.extend({
-          toolbarData: toolbarData
-        }, options );
-
-        return options;
-
-      },
-      /**
-      * @function initLinkColumn
-      * @summary Dialog IG link column Initialization code
-      * @desc put blog.admin.dialogIG.initLinkColumn in column Advanced: JavaScript Initialization Code
-      **/
-      initLinkColumn: function( options ){
-
-        options = $.extend({
-          defaultGridColumnOptions: {
-            noHeaderActivate: true
-          }
-        }, options );
-
-        return options;
-
-      },
-      /**
-      * @function initOnPageLoad
-      * @summary Dialog IG initialization code
-      * @desc put blog.admin.dialogIG.initOnPageLoad in page JavaScript: Function and Global Variable Declaration
-      **/
-      initOnPageLoad: function( options ){
-
-        $(function(){
-
-          options = $.extend({
-            btnSave: "ig-save"
-            ,btnAddRow: "ig-selection-add-row"
-          }, options );
-
-          blog.admin.dialogIG.options = $.extend({
-            sequenceField: options.sequenceField
-            ,sequenceStep: 10
-          }, blog.admin.dialogIG.options);
-
-          apex.actions.add([
-            {
-              name: options.btnSave
-              ,action: function(){
-                region( options.regionId ).call( "getActions" ).invoke( "save" );
-              }
-            }
-            ,{
-              name: options.btnAddRow
-              ,action: function(){
-                region( options.regionId ).call( "getActions" ).invoke( "selection-add-row" );
-              }
-            }
-          ]);
-
-        });
-
-      }
     },
     /**
     * @module blog.admin.configIG
     **/
     configIG : {
+
+      options: {},
+
+      /**
+      * @function initOnPageLoad
+      * @summary IG initialization code on page load
+      * @desc put blog.admin.configIG.initOnPageLoad in page JavaScript: Function and Global Variable Declaration
+      **/
+      initOnPageLoad: function( options ){
+
+        // dofaults for IG custom button data attribute values
+        options = $.extend({
+          btnSave: "ig-save"
+          ,btnAddRow: "ig-selection-add-row"
+        }, options );
+
+        // if sequence column defined
+        if( options.sequenceField !== undefined ){
+          blog.admin.configIG.options = $.extend({
+            sequenceField: options.sequenceField
+            ,sequenceStep: 10
+          }, blog.admin.configIG.options );
+        }
+
+        // Set IG to edit mode by default on page load
+        $( window ).on( "theme42ready", function(){
+          region( options.regionId  ).call( "getActions" ).set( "edit", true );
+        });
+
+        // run coode when page is ready
+        $(function(){
+
+          // Set IG save action to custom button
+          apex.actions.add([{
+            name: options.btnSave
+            ,action: function(){
+              region( options.regionId ).call( "getActions" ).invoke( "save" );
+            }
+          }]);
+
+          // don't include "Add Row" button to blog features and settings IG
+          if( !$( $x( options.regionId ) ).hasClass( "z-config-ig" ) ) {
+
+            // Set IG add row action to custom button
+            apex.actions.add([{
+              name: options.btnAddRow
+              ,action: function(){
+                region( options.regionId ).call( "getActions" ).invoke( "selection-add-row" );
+              }
+            }]);
+
+          }
+
+        });
+
+      },
       /**
       * @function initRegion
-      * @summary configuration IG region initialization code
+      * @summary IG region initialization code
       * @desc put blog.admin.configIG.initRegion in region Advanced: JavaScript Initialization Code
       **/
       initRegion: function( options ){
 
+        // remove default "Save" and "Add Row" buttons form IG toolbar
         var toolbarData = $.apex.interactiveGrid.copyDefaultToolbar();
 
         toolbarData.toolbarRemove( "save" );
+        toolbarData.toolbarRemove( "selection-add-row" );
 
         options = $.extend({
-          toolbarData: toolbarData,
-          reportSettingsArea: false,
-          defaultGridViewOptions: {
-            reorderColumns: false,
-            footer: false
-          }
+          toolbarData: toolbarData
         }, options );
 
+        // if sequence column defined in page load
+        if( blog.admin.configIG.options.sequenceField !== undefined ){
+          options = $.extend({
+            defaultModelOptions: {
+              sequenceField: blog.admin.configIG.options.sequenceField,
+              sequenceStep: blog.admin.configIG.options.sequenceStep
+            }
+          }, options );
+        }
+
+        if( $( $x( options.regionStaticId ) ).hasClass( "z-config-ig" ) ) {
+
+          // disable options from IG that are used manage blog features and settings
+          options = $.extend({
+            reportSettingsArea: false,
+            defaultGridViewOptions: {
+              footer: false,
+              collapsibleControlBreaks: false,
+              reorderColumns: false,
+              columnSort: false,
+              resizeColumns: false
+            }
+          }, options );
+
+        }
+
         return options;
+
       },
       /**
       * @function initColumn
@@ -172,6 +184,7 @@ var blog = blog || {};
       **/
       initColumn: function( options ){
 
+        // remove headers actions
         options = $.extend({
           defaultGridColumnOptions: {
             noHeaderActivate: true
@@ -182,29 +195,18 @@ var blog = blog || {};
 
       },
       /**
-      * @function initOnPageLoad
-      * @summary configuration IG page initialization code
-      * @desc put blog.admin.configIG.initOnPageLoad in page JavaScript: Function and Global Variable Declaration
+      * @function setEditMode
+      * @summary change IG to edit mode
+      * @desc
       **/
-      initOnPageLoad: function( options ){
-        $(function(){
-
-          options = $.extend({
-            btnSave: "ig-save"
-          }, options );
-
-          apex.actions.add([
-            {
-              name: options.btnSave
-              ,action: function(){
-                region( options.regionId ).call( "getActions" ).invoke( "save" );
-              }
-            }
-          ]);
-
-        });
+      setEditMode: function( regionId ){
+        region( regionId ).call( "getActions" ).set( "edit", true );
       }
+
     },
+    /**
+    * @module blog.admin.editor
+    **/
     editor: {
       /**
       * @function initItem
@@ -216,9 +218,9 @@ var blog = blog || {};
         var messageKey    = "BLOG_EDITOR_OPEN_NEW_TAB"
           , defaultLabel  = "Open in a new tab"
           , linkTarget    = "_blank"
-          , linkRel       = "noopener noreferrer"
         ;
 
+        // include option to add target attribute to links
         options = $.extend( true, {
           editorOptions: {
             link: {
@@ -228,7 +230,6 @@ var blog = blog || {};
                   ,label: apex.lang.hasMessage( messageKey ) ? apex.lang.getMessage( messageKey ) : defaultLabel
                   ,attributes: {
                     target: linkTarget
-                    ,rel: linkRel
                   }
                 }
               }

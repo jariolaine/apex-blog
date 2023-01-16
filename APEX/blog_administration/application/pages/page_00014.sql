@@ -20,7 +20,7 @@ wwv_flow_imp_page.create_page(
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8929534050595858)
 ,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog.admin.dialogIG.initOnPageLoad({',
+'blog.admin.configIG.initOnPageLoad({',
 '  regionId: "categories"',
 '  ,sequenceField: "DISPLAY_SEQ"',
 '});'))
@@ -32,7 +32,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221116131518'
+,p_last_upd_yyyymmddhh24miss=>'20230116110815'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(9834087769215232)
@@ -437,7 +437,6 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_type=>'DB_COLUMN'
 ,p_source_expression=>'BTN_POSTS_LINK'
 ,p_data_type=>'VARCHAR2'
-,p_session_state_data_type=>'VARCHAR2'
 ,p_is_query_only=>true
 ,p_item_type=>'NATIVE_LINK'
 ,p_label=>'Link to Posts'
@@ -451,7 +450,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_enable_filter=>false
 ,p_filter_is_required=>false
 ,p_use_as_row_header=>false
-,p_javascript_code=>'blog.admin.dialogIG.initLinkColumn '
+,p_javascript_code=>'blog.admin.configIG.initColumn'
 ,p_enable_sort_group=>false
 ,p_enable_hide=>true
 ,p_is_primary_key=>false
@@ -489,7 +488,7 @@ wwv_flow_imp_page.create_interactive_grid(
 ,p_fixed_header_max_height=>440
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false
-,p_javascript_code=>'blog.admin.dialogIG.initRegion'
+,p_javascript_code=>'blog.admin.configIG.initRegion'
 );
 wwv_flow_imp_page.create_ig_report(
  p_id=>wwv_flow_imp.id(15190897476050378)
@@ -637,7 +636,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(9834087769215232)
 ,p_button_name=>'CLOSE'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Close'
 ,p_button_position=>'CLOSE'
@@ -650,7 +649,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(9834087769215232)
 ,p_button_name=>'DELETE_UNUSED'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--danger:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Delete Unused'
 ,p_button_position=>'DELETE'
@@ -695,7 +694,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(9834087769215232)
 ,p_button_name=>'SAVE'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Save'

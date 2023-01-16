@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'10'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221003075500'
+,p_last_upd_yyyymmddhh24miss=>'20230116070506'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(38181061881570820)
@@ -32,6 +32,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(8475374748518195)
 ,p_plug_display_sequence=>10
+,p_plug_item_display_point=>'BELOW'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'apex_application.help(',
 '  p_flow_id        => :APP_ID',
@@ -46,9 +47,9 @@ wwv_flow_imp_page.create_page_plug(
 '  --,p_after_prompt_html  => ''</strong>''',
 '  --,p_before_item_html   => ''<span>''',
 '  --,p_after_item_html    => ''</span></p>''',
-'  ,p_before_prompt_html => ''<dl><dt><b>''',
-'  ,p_after_prompt_html  => ''</b></dt>''',
-'  ,p_before_item_html   => ''<dd>''',
+'  ,p_before_prompt_html => ''<dl><dt><strong>''',
+'  ,p_after_prompt_html  => ''</strong></dt>''',
+'  ,p_before_item_html   => ''<dd class="margin-top-sm">''',
 '  ,p_after_item_html    => ''</dd></dl>''',
 ');'))
 ,p_plug_source_type=>'NATIVE_PLSQL'
@@ -61,12 +62,14 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(38181061881570820)
 ,p_button_name=>'CLOSE'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight:t-Button--stretch'
+,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Close'
-,p_button_position=>'BELOW_BOX'
 ,p_warn_on_unsaved_changes=>null
-,p_icon_css_classes=>'fa-remove'
+,p_button_css_classes=>'w40p mxw240'
+,p_icon_css_classes=>'fa-close'
+,p_grid_column_css_classes=>'u-textCenter padding-top-md'
+,p_grid_new_row=>'Y'
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(19110790732561798)
