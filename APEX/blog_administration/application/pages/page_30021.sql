@@ -26,7 +26,7 @@ wwv_flow_imp_page.create_page(
 ,p_help_text=>'High level view of application logging information.'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220927075907'
+,p_last_upd_yyyymmddhh24miss=>'20230117163552'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(87874963598811882)
@@ -47,6 +47,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_name=>'Breakdown by Page'
 ,p_template=>wwv_flow_imp.id(8490381578518205)
 ,p_display_sequence=>30
+,p_region_sub_css_classes=>'z-page-view-breakdown'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
 ,p_component_template_options=>'#DEFAULT#:t-Report--stretch:t-Report--altRowsDefault:t-Report--rowHighlight:t-Report--inline'
 ,p_source_type=>'NATIVE_SQL_REPORT'
@@ -191,7 +192,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_default_sort_column_sequence=>1
 ,p_default_sort_dir=>'desc'
 ,p_disable_sort_column=>'N'
-,p_sum_column=>'Y'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -227,14 +227,18 @@ wwv_flow_imp_page.create_report_region(
 ,p_template=>wwv_flow_imp.id(8490381578518205)
 ,p_display_sequence=>10
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--fixed'
+,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols t-BadgeList--4cols:t-Report--hideNoPagination'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select count(1)           as page_views',
-'  ,min( l.elapsed_time )  as min_elapsed_time',
-'  ,avg( l.elapsed_time )  as avg_elapsed_time',
-'  ,max( l.elapsed_time )  as max_elapsed_time',
+'select count(1)                       as page_views',
+'  ,min( l.elapsed_time )              as min_elapsed_time',
+'  ,avg( l.elapsed_time )              as avg_elapsed_time',
+'  ,max( l.elapsed_time )              as max_elapsed_time',
+'  ,sum( rows_queried )                as rows_queried',
+'  ,count( distinct apex_session_id )  as apex_session',
+'  ,count( distinct ip_address )       as ip_address',
+'  ,count( distinct agent )            as user_agent',
 'from apex_workspace_activity_log l',
 'where 1 = 1',
 'and l.application_id = :G_PUB_APP_ID',
@@ -306,6 +310,50 @@ wwv_flow_imp_page.create_report_columns(
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'999999999999990D000'
 ,p_heading_alignment=>'LEFT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(19455369634363533)
+,p_query_column_id=>5
+,p_column_alias=>'ROWS_QUERIED'
+,p_column_display_sequence=>16
+,p_column_heading=>'Rows Queried'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(19455497200363534)
+,p_query_column_id=>6
+,p_column_alias=>'APEX_SESSION'
+,p_column_display_sequence=>26
+,p_column_heading=>'Session'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(19455153983363531)
+,p_query_column_id=>7
+,p_column_alias=>'IP_ADDRESS'
+,p_column_display_sequence=>36
+,p_column_heading=>'IP Address'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(19455291759363532)
+,p_query_column_id=>8
+,p_column_alias=>'USER_AGENT'
+,p_column_display_sequence=>56
+,p_column_heading=>'User Agent'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );

@@ -59,17 +59,8 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(43905081397718896)
-,p_list_item_display_sequence=>70
-,p_list_item_link_text=>'Activity'
-,p_list_item_link_target=>'f?p=&APP_ID.:30010:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-area-chart'
-,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
-,p_list_item_current_for_pages=>'30010'
-);
-wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(24902524516683500)
-,p_list_item_display_sequence=>80
+,p_list_item_display_sequence=>70
 ,p_list_item_link_text=>'Administration'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20010:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-gear'

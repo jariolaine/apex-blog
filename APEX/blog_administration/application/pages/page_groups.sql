@@ -16,6 +16,10 @@ wwv_flow_imp_page.create_page_group(
 ,p_group_name=>'Activity Reporting'
 );
 wwv_flow_imp_page.create_page_group(
+ p_id=>wwv_flow_imp.id(20246051173750852)
+,p_group_name=>'Administration'
+);
+wwv_flow_imp_page.create_page_group(
  p_id=>wwv_flow_imp.id(28670115427911376)
 ,p_group_name=>'Comments'
 );

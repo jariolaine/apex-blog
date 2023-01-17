@@ -28,7 +28,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221003075520'
+,p_last_upd_yyyymmddhh24miss=>'20230116193717'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27063074415689131)
@@ -92,7 +92,6 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_type=>'DB_COLUMN'
 ,p_source_expression=>'HELP_BTN'
 ,p_data_type=>'VARCHAR2'
-,p_session_state_data_type=>'VARCHAR2'
 ,p_is_query_only=>true
 ,p_item_type=>'NATIVE_LINK'
 ,p_heading=>'Help'
@@ -118,7 +117,6 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_type=>'DB_COLUMN'
 ,p_source_expression=>'FEATURE_NAME'
 ,p_data_type=>'VARCHAR2'
-,p_session_state_data_type=>'VARCHAR2'
 ,p_is_query_only=>true
 ,p_item_type=>'NATIVE_HTML_EXPRESSION'
 ,p_heading=>'Name'
@@ -142,7 +140,6 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_type=>'DB_COLUMN'
 ,p_source_expression=>'STATUS'
 ,p_data_type=>'VARCHAR2'
-,p_session_state_data_type=>'VARCHAR2'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_YES_NO'
 ,p_heading=>'Status'
@@ -296,6 +293,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_attribute_05=>'PLAIN'
 ,p_enable_filter=>false
 ,p_use_as_row_header=>false
+,p_javascript_code=>'blog.admin.configIG.initColumn'
 ,p_enable_sort_group=>true
 ,p_enable_control_break=>true
 ,p_enable_hide=>false
@@ -507,12 +505,12 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(52996033344836443)
 ,p_button_name=>'CLOSE'
 ,p_button_action=>'DEFINED_BY_DA'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Close'
 ,p_button_position=>'CLOSE'
 ,p_warn_on_unsaved_changes=>null
-,p_icon_css_classes=>'fa-remove'
+,p_icon_css_classes=>'fa-close'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(27266116436768098)
@@ -526,9 +524,8 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_image_alt=>'Save'
 ,p_button_position=>'NEXT'
 ,p_warn_on_unsaved_changes=>null
-,p_button_css_classes=>'js-actionButton'
 ,p_icon_css_classes=>'fa-save'
-,p_button_cattributes=>'data-action="ig-save"'
+,p_button_cattributes=>'data-action="save"'
 ,p_database_action=>'UPDATE'
 );
 wwv_flow_imp_page.create_page_branch(
@@ -591,27 +588,6 @@ wwv_flow_imp_page.create_page_da_action(
 ''))
 ,p_attribute_05=>'PLSQL'
 ,p_wait_for_result=>'N'
-);
-wwv_flow_imp_page.create_page_da_event(
- p_id=>wwv_flow_imp.id(14806954183070103)
-,p_name=>'Set Edit Mode'
-,p_event_sequence=>30
-,p_bind_type=>'bind'
-,p_execution_type=>'IMMEDIATE'
-,p_bind_event_type=>'ready'
-);
-wwv_flow_imp_page.create_page_da_action(
- p_id=>wwv_flow_imp.id(14807006401070104)
-,p_event_id=>wwv_flow_imp.id(14806954183070103)
-,p_event_result=>'TRUE'
-,p_action_sequence=>10
-,p_execute_on_page_init=>'N'
-,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_affected_elements_type=>'REGION'
-,p_affected_region_id=>wwv_flow_imp.id(27063074415689131)
-,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex.region(this.affectedElements[0].id).call("getActions").set("edit", true);',
-''))
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(27064721351689148)

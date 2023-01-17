@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220510055035'
+,p_last_upd_yyyymmddhh24miss=>'20230117125819'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8582113239518316)
@@ -37,11 +37,78 @@ wwv_flow_imp_page.create_page_plug(
 ,p_attribute_02=>'HTML'
 );
 wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(17115504500199917)
+,p_name=>'Page Load Time in Seconds'
+,p_template=>wwv_flow_imp.id(8490381578518205)
+,p_display_sequence=>40
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
+,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols t-BadgeList--3cols:t-Report--hideNoPagination'
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select ',
+'   ls.average_elapsed_time  as average_elapsed_time',
+'  ,ls.minimum_elapsed_time  as minimum_elapsed_time',
+'  ,ls.maximum_elapsed_time  as maximum_elapsed_time',
+'from apex_workspace_log_summary ls',
+'where 1 = 1',
+'  and ls.application_id = :G_PUB_APP_ID',
+''))
+,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_ajax_enabled=>'Y'
+,p_lazy_loading=>false
+,p_query_row_template=>wwv_flow_imp.id(8515750866518222)
+,p_query_num_rows=>15
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_query_show_nulls_as=>'0'
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+,p_required_patch=>wwv_flow_imp.id(24687280101070827)
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(17115986049199921)
+,p_query_column_id=>1
+,p_column_alias=>'AVERAGE_ELAPSED_TIME'
+,p_column_display_sequence=>40
+,p_column_heading=>'Average '
+,p_use_as_row_header=>'N'
+,p_column_format=>'999999999999990D000'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(17116047592199922)
+,p_query_column_id=>2
+,p_column_alias=>'MINIMUM_ELAPSED_TIME'
+,p_column_display_sequence=>50
+,p_column_heading=>'Minimum'
+,p_use_as_row_header=>'N'
+,p_column_format=>'999999999999990D000'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(17116146435199923)
+,p_query_column_id=>3
+,p_column_alias=>'MAXIMUM_ELAPSED_TIME'
+,p_column_display_sequence=>60
+,p_column_heading=>'Maximum'
+,p_use_as_row_header=>'N'
+,p_column_format=>'999999999999990D000'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(37646499764287130)
 ,p_name=>'Posts'
-,p_template=>wwv_flow_imp.id(8496813422518209)
+,p_template=>wwv_flow_imp.id(8490381578518205)
 ,p_display_sequence=>10
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
 ,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -129,9 +196,9 @@ wwv_flow_imp_page.create_report_columns(
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(37647496544287140)
 ,p_name=>'Comments'
-,p_template=>wwv_flow_imp.id(8496813422518209)
+,p_template=>wwv_flow_imp.id(8490381578518205)
 ,p_display_sequence=>20
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
 ,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols'
 ,p_new_grid_row=>false
 ,p_source_type=>'NATIVE_SQL_REPORT'
@@ -199,17 +266,120 @@ wwv_flow_imp_page.create_report_columns(
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
+wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(108235555993675155)
+,p_name=>'Activity Last &P1_PERIOD_IN_DAYS. Days'
+,p_template=>wwv_flow_imp.id(8490381578518205)
+,p_display_sequence=>30
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
+,p_component_template_options=>'#DEFAULT#:t-BadgeList--medium:t-BadgeList--dash:t-BadgeList--cols t-BadgeList--4cols:t-Report--hideNoPagination'
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select ',
+'   ls.page_views            as page_views',
+'  ,ls.total_rows_queried    as rows_queried',
+'  ,ls.apex_sessions         as apex_sessions',
+'  ,ls.ip_addresses          as ip_addresses',
+'--  ,ls.total_elapsed_time    as total_elapsed_time',
+'--  ,ls.average_elapsed_time  as average_elapsed_time',
+'--  ,ls.minimum_elapsed_time  as minimum_elapsed_time',
+'--  ,ls.maximum_elapsed_time  as maximum_elapsed_time',
+'--  ,ls.distinct_pages        as distinct_pages',
+'--  ,ls.agents                as agents',
+'from apex_workspace_log_summary ls',
+'where 1 = 1',
+'  and ls.application_id = :G_PUB_APP_ID',
+''))
+,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_ajax_enabled=>'Y'
+,p_lazy_loading=>false
+,p_query_row_template=>wwv_flow_imp.id(8515750866518222)
+,p_query_num_rows=>15
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_query_show_nulls_as=>'0'
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(20240924845665086)
+,p_query_column_id=>1
+,p_column_alias=>'PAGE_VIEWS'
+,p_column_display_sequence=>10
+,p_column_heading=>'Page Views'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(20241798513665088)
+,p_query_column_id=>2
+,p_column_alias=>'ROWS_QUERIED'
+,p_column_display_sequence=>30
+,p_column_heading=>'Rows Queried'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(20242109347665088)
+,p_query_column_id=>3
+,p_column_alias=>'APEX_SESSIONS'
+,p_column_display_sequence=>40
+,p_column_heading=>'Sessions'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(17116268743199924)
+,p_query_column_id=>4
+,p_column_alias=>'IP_ADDRESSES'
+,p_column_display_sequence=>50
+,p_column_heading=>'IP Addresses'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(145874845182292377)
 ,p_plug_name=>'Blog Public URLs'
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
 ,p_component_template_options=>'#DEFAULT#:u-colors:t-MediaList--iconsRounded'
-,p_plug_template=>wwv_flow_imp.id(8496813422518209)
+,p_plug_template=>wwv_flow_imp.id(8490381578518205)
 ,p_plug_display_sequence=>50
 ,p_list_id=>wwv_flow_imp.id(43181213072992711)
 ,p_plug_source_type=>'NATIVE_LIST'
 ,p_list_template_id=>wwv_flow_imp.id(8538547318518236)
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(17114949614199911)
+,p_name=>'P1_PERIOD_IN_DAYS'
+,p_item_sequence=>10
+,p_item_plug_id=>wwv_flow_imp.id(108235555993675155)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_protection_level=>'I'
+,p_restricted_characters=>'US_ONLY'
+,p_attribute_01=>'Y'
+);
+wwv_flow_imp_page.create_page_computation(
+ p_id=>wwv_flow_imp.id(17115065731199912)
+,p_computation_sequence=>10
+,p_computation_item=>'P1_PERIOD_IN_DAYS'
+,p_computation_point=>'BEFORE_BOX_BODY'
+,p_computation_type=>'QUERY'
+,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select round( ls.period_in_days ) as period_in_days',
+'from apex_workspace_log_summary ls',
+'where 1 = 1',
+'  and ls.application_id = :G_PUB_APP_ID'))
 );
 wwv_flow_imp.component_end;
 end;

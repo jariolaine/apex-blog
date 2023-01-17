@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221003075305'
+,p_last_upd_yyyymmddhh24miss=>'20230116092254'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(20788260829204935)
@@ -116,7 +116,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_image_alt=>'Cancel'
 ,p_button_position=>'CLOSE'
 ,p_warn_on_unsaved_changes=>null
-,p_icon_css_classes=>'fa-remove'
+,p_icon_css_classes=>'fa-close'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(20848785633229650)
@@ -124,7 +124,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(51179944494147454)
 ,p_button_name=>'SAVE'
 ,p_button_action=>'SUBMIT'
-,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_options=>'#DEFAULT#:t-Button--danger:t-Button--iconRight'
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Replace File(s)'
 ,p_button_position=>'NEXT'

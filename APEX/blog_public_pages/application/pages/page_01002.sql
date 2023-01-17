@@ -24,33 +24,85 @@ wwv_flow_imp_page.create_page(
 ,p_dialog_chained=>'N'
 ,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
-,p_page_component_map=>'10'
+,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221124194856'
+,p_last_upd_yyyymmddhh24miss=>'20230116120525'
 );
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(41876461524408305)
-,p_plug_name=>'Content'
-,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_imp.id(6781372168267375)
-,p_plug_display_sequence=>10
+wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(19452283963363502)
+,p_name=>'Dynamic content'
+,p_template=>wwv_flow_imp.id(6781372168267375)
+,p_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
-,p_plug_item_display_point=>'BELOW'
-,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_util.render_dynamic_content(',
-'   p_content_id     => :REQUEST',
-'  ,p_date_format    => :G_APP_DATE_FORMAT',
-'  ,p_content_title  => :P1002_PAGE_TITLE',
-');',
-''))
-,p_plug_source_type=>'NATIVE_PLSQL'
-,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_region_template_options=>'#DEFAULT#'
+,p_component_template_options=>'#DEFAULT#'
+,p_item_display_point=>'BELOW'
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select',
+'   v1.content_html        as body_html',
+'  ,case v1.show_changed_on',
+'    when 1',
+'    then',
+'      apex_lang.message(',
+'         p_name => ''BLOG_MSG_LAST_UPDATED''',
+'        ,p0 => to_char( v1.changed_on, :G_APP_DATE_FORMAT )',
+'      )     ',
+'  end                     as changed_on',
+'  ,apex_util.savekey_vc2(',
+'    p_val => v1.content_desc',
+'  )                       as dialog_title',
+'from blog_v_dynamic_content v1',
+'where 1 = 1',
+'and v1.content_id = :REQUEST'))
+,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_ajax_enabled=>'Y'
+,p_lazy_loading=>false
+,p_query_row_template=>wwv_flow_imp.id(30641878306098019)
+,p_query_num_rows=>1
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(19454652674363526)
+,p_query_column_id=>1
+,p_column_alias=>'BODY_HTML'
+,p_column_display_sequence=>10
+,p_column_heading=>'Body Html'
+,p_display_as=>'RICH_TEXT'
+,p_attribute_01=>'HTML'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(19453808827363518)
+,p_query_column_id=>2
+,p_column_alias=>'CHANGED_ON'
+,p_column_display_sequence=>20
+,p_column_heading=>'Changed On'
+,p_use_as_row_header=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(19454925235363529)
+,p_query_column_id=>3
+,p_column_alias=>'DIALOG_TITLE'
+,p_column_display_sequence=>30
+,p_column_heading=>'Dialog Title'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(36227766771379736)
-,p_button_sequence=>10
-,p_button_plug_id=>wwv_flow_imp.id(41876461524408305)
+,p_button_sequence=>20
+,p_button_plug_id=>wwv_flow_imp.id(19452283963363502)
 ,p_button_name=>'CLOSE'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--iconRight'
@@ -74,12 +126,13 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_01=>'Y'
 );
 wwv_flow_imp_page.create_page_computation(
- p_id=>wwv_flow_imp.id(22524139649146436)
+ p_id=>wwv_flow_imp.id(19454870397363528)
 ,p_computation_sequence=>10
 ,p_computation_item=>'P1002_PAGE_TITLE'
-,p_computation_point=>'BEFORE_HEADER'
-,p_computation_type=>'STATIC_ASSIGNMENT'
-,p_computation=>'Test'
+,p_computation_point=>'AFTER_BOX_BODY'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
+,p_computation=>'apex_util.keyval_vc2'
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(36227874221379737)
@@ -104,7 +157,6 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_name=>'Set Dialog Title'
 ,p_event_sequence=>20
 ,p_bind_type=>'bind'
-,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'ready'
 );
 wwv_flow_imp_page.create_page_da_action(
@@ -114,7 +166,7 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_action_sequence=>10
 ,p_execute_on_page_init=>'N'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_attribute_01=>'apex.util.getTopApex().jQuery(".ui-dialog-content").dialog("option", "title", "&P1002_PAGE_TITLE.");'
+,p_attribute_01=>'blog.UI.setDialogTitle( "&P1002_PAGE_TITLE." );'
 );
 wwv_flow_imp.component_end;
 end;

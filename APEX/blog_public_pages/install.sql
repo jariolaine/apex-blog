@@ -14,8 +14,8 @@ prompt --install
 @@application/shared_components/files/icons_app_icon_192_png.sql
 @@application/shared_components/files/icons_app_icon_512_png.sql
 @@application/shared_components/files/css_style_min_css.sql
-@@application/shared_components/files/js_blog_min_js.sql
 @@application/shared_components/files/css_rss_xsl_min_css.sql
+@@application/shared_components/files/js_blog_min_js.sql
 @@application/shared_components/files/css_rss_xsl_css.sql
 @@application/shared_components/files/js_blog_js.sql
 @@application/shared_components/files/css_style_css.sql
@@ -148,8 +148,9 @@ prompt --install
 @@application/pages/page_01003.sql
 @@application/pages/page_09999.sql
 @@application/deployment/definition.sql
-@@application/deployment/install/install_metadata.sql
+@@application/deployment/install/install_create_view_blog_v_version.sql
 @@application/deployment/install/upgrade_patch_21_2_20220409.sql
+@@application/deployment/install/install_metadata.sql
 @@application/deployment/install/upgrade_patch_21_2_20220415.sql
 @@application/deployment/install/upgrade_patch_21_2_20220421.sql
 @@application/deployment/install/upgrade_patch_21_2_20220508.sql

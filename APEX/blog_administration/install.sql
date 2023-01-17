@@ -53,6 +53,7 @@ prompt --install
 @@application/shared_components/user_interface/lovs/yes_no.sql
 @@application/pages/page_groups.sql
 @@application/comments.sql
+@@application/shared_components/navigation/breadcrumbs/breadcumb.sql
 @@application/shared_components/navigation/breadcrumbentry.sql
 @@application/shared_components/user_interface/templates/page/master_detail.sql
 @@application/shared_components/user_interface/templates/page/modal_dialog.sql
@@ -165,7 +166,6 @@ prompt --install
 @@application/pages/page_20011.sql
 @@application/pages/page_20012.sql
 @@application/pages/page_20100.sql
-@@application/pages/page_30010.sql
 @@application/pages/page_30020.sql
 @@application/pages/page_30021.sql
 @@application/pages/page_30022.sql

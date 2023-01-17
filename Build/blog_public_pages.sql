@@ -58,7 +58,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --       Computations:             6
 --       Validations:              2
 --       Processes:               31
---       Regions:                 30
+--       Regions:                 29
 --       Buttons:                  7
 --       Dynamic Actions:          8
 --       Meta Tags:               14
@@ -93,7 +93,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --       E-Mail:
 --         Templates:              1
 --     Supporting Objects:  Included
---       Install scripts:         10
+--       Install scripts:         11
 --       Validations:              3
 --   Version:         22.2.1
 --   Instance ID:     7729808509147575
@@ -156,9 +156,9 @@ wwv_flow_imp.create_flow(
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_tokenize_row_search=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230114105511'
+,p_last_upd_yyyymmddhh24miss=>'20230117134005'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>502
+,p_files_version=>516
 ,p_print_server_type=>'INSTANCE'
 ,p_is_pwa=>'N'
 ,p_copyright_banner=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -950,23 +950,6 @@ wwv_flow_imp_shared.create_app_static_file(
 );
 end;
 /
-prompt --application/shared_components/files/js_blog_min_js
-begin
-wwv_flow_imp.g_varchar2_table := wwv_flow_imp.empty_varchar2_table;
-wwv_flow_imp.g_varchar2_table(1) := '76617220626C6F673D626C6F677C7C7B7D3B2866756E6374696F6E28612C62297B612866756E6374696F6E28297B617065782E7468656D6534322E7574696C2E636F6E666967415045584D736773287B6175746F4469736D6973733A747275652C647572';
-wwv_flow_imp.g_varchar2_table(2) := '6174696F6E3A31303030307D297D293B622E55493D7B7365744C69737443757272656E744974656D3A66756E6374696F6E2863297B633D612E657874656E64287B63757272656E74436C6173733A2269732D63757272656E74222C64617461417474724E';
-wwv_flow_imp.g_varchar2_table(3) := '616D653A22626C6F672D636F6E74656E742D6964227D2C63293B632E6166666563746564456C656D656E74732E66696E6428226C6922292E66696C7465722866756E6374696F6E28297B76617220653D612874686973292E6368696C6472656E28226122';
-wwv_flow_imp.g_varchar2_table(4) := '292E6461746128632E64617461417474724E616D65292C643D66616C73653B69662865297B643D24765F436865636B56616C7565416761696E737428632E706167654974656D2C65297D72657475726E20647D292E616464436C61737328632E63757272';
-wwv_flow_imp.g_varchar2_table(5) := '656E74436C617373297D7D7D2928617065782E6A51756572792C626C6F67293B';
-wwv_flow_imp_shared.create_app_static_file(
- p_id=>wwv_flow_imp.id(19759584790129057)
-,p_file_name=>'js/blog.min.js'
-,p_mime_type=>'application/javascript'
-,p_file_charset=>'utf-8'
-,p_file_content => wwv_flow_imp.varchar2_to_blob(wwv_flow_imp.g_varchar2_table)
-);
-end;
-/
 prompt --application/shared_components/files/css_rss_xsl_min_css
 begin
 wwv_flow_imp.g_varchar2_table := wwv_flow_imp.empty_varchar2_table;
@@ -980,6 +963,24 @@ wwv_flow_imp_shared.create_app_static_file(
  p_id=>wwv_flow_imp.id(19760172016137489)
 ,p_file_name=>'css/rss-xsl.min.css'
 ,p_mime_type=>'text/css'
+,p_file_charset=>'utf-8'
+,p_file_content => wwv_flow_imp.varchar2_to_blob(wwv_flow_imp.g_varchar2_table)
+);
+end;
+/
+prompt --application/shared_components/files/js_blog_min_js
+begin
+wwv_flow_imp.g_varchar2_table := wwv_flow_imp.empty_varchar2_table;
+wwv_flow_imp.g_varchar2_table(1) := '76617220626C6F673D626C6F677C7C7B7D3B2866756E6374696F6E28612C62297B612866756E6374696F6E28297B617065782E7468656D6534322E7574696C2E636F6E666967415045584D736773287B6175746F4469736D6973733A747275652C647572';
+wwv_flow_imp.g_varchar2_table(2) := '6174696F6E3A31303030307D297D293B622E55493D7B7365744C69737443757272656E744974656D3A66756E6374696F6E2863297B633D612E657874656E64287B63757272656E74436C6173733A2269732D63757272656E74222C64617461417474724E';
+wwv_flow_imp.g_varchar2_table(3) := '616D653A22626C6F672D636F6E74656E742D6964227D2C63293B632E6166666563746564456C656D656E74732E66696E6428226C6922292E66696C7465722866756E6374696F6E28297B76617220653D612874686973292E6368696C6472656E28226122';
+wwv_flow_imp.g_varchar2_table(4) := '292E6461746128632E64617461417474724E616D65292C643D66616C73653B69662865297B643D24765F436865636B56616C7565416761696E737428632E706167654974656D2C65297D72657475726E20647D292E616464436C61737328632E63757272';
+wwv_flow_imp.g_varchar2_table(5) := '656E74436C617373297D2C7365744469616C6F675469746C653A66756E6374696F6E2863297B617065782E7574696C2E676574546F704170657828292E6A517565727928222E75692D6469616C6F672D636F6E74656E7422292E6469616C6F6728226F70';
+wwv_flow_imp.g_varchar2_table(6) := '74696F6E222C227469746C65222C63297D7D7D2928617065782E6A51756572792C626C6F67293B';
+wwv_flow_imp_shared.create_app_static_file(
+ p_id=>wwv_flow_imp.id(20084379906800491)
+,p_file_name=>'js/blog.min.js'
+,p_mime_type=>'application/javascript'
 ,p_file_charset=>'utf-8'
 ,p_file_content => wwv_flow_imp.varchar2_to_blob(wwv_flow_imp.g_varchar2_table)
 );
@@ -1008,18 +1009,20 @@ end;
 prompt --application/shared_components/files/js_blog_js
 begin
 wwv_flow_imp.g_varchar2_table := wwv_flow_imp.empty_varchar2_table;
-wwv_flow_imp.g_varchar2_table(1) := '202F2A2A0A202A20406E616D65737061636520626C6F670A202A2A2F0A2076617220626C6F67203D20626C6F67207C7C207B7D3B0A0A2866756E6374696F6E28242C20626C6F6729207B0A0A20202F2F206F6E20706167652072656164790A20202F2F20';
-wwv_flow_imp.g_varchar2_table(2) := '68696465206175746F6D61746963616C6C792073756363657373206D6573736167650A2020242866756E6374696F6E2829207B0A20202020617065782E7468656D6534322E7574696C2E636F6E666967415045584D736773287B0A202020202020617574';
-wwv_flow_imp.g_varchar2_table(3) := '6F4469736D6973733A20747275650A2020202020202F2F206475726174696F6E206973206F7074696F6E616C202844656661756C742069732033303030206D696C6C697365636F6E6473290A2020202020202C6475726174696F6E3A2031303030300A20';
-wwv_flow_imp.g_varchar2_table(4) := '2020207D293B0A20207D293B0A0A20202F2A2A0A20202A20406D6F64756C6520626C6F672E55490A20202A2A2F0A2020626C6F672E5549203D207B0A0A202020202F2A2A0A202020202A204066756E6374696F6E207365744C69737443757272656E7449';
-wwv_flow_imp.g_varchar2_table(5) := '74656D0A202020202A20406578616D706C6520626C6F672E55492E7365744C69737443757272656E744974656D287B206166666563746564456C656D656E74733A20746869732E6166666563746564456C656D656E74732C20706167654974656D3A2022';
-wwv_flow_imp.g_varchar2_table(6) := '50585F4954454D22207D293B0A202020202A2A2F0A202020207365744C69737443757272656E744974656D3A2066756E6374696F6E286F7074696F6E73297B0A0A2020202020206F7074696F6E73203D20242E657874656E64287B0A2020202020202020';
-wwv_flow_imp.g_varchar2_table(7) := '63757272656E74436C6173733A202269732D63757272656E74222C0A202020202020202064617461417474724E616D653A2022626C6F672D636F6E74656E742D6964220A2020202020207D2C206F7074696F6E7320293B0A0A2020202020206F7074696F';
-wwv_flow_imp.g_varchar2_table(8) := '6E732E6166666563746564456C656D656E74732E66696E642820226C692220292E66696C746572282066756E6374696F6E28297B0A0A2020202020202020766172206C4461746156616C7565203D20242874686973292E6368696C6472656E2820226122';
-wwv_flow_imp.g_varchar2_table(9) := '20292E6461746128206F7074696F6E732E64617461417474724E616D6520292C0A202020202020202020202020726573756C74203D2066616C73650A20202020202020203B0A0A2020202020202020696628206C4461746156616C756520297B0A202020';
-wwv_flow_imp.g_varchar2_table(10) := '20202020202020726573756C74203D2024765F436865636B56616C7565416761696E7374280A202020202020202020202020206F7074696F6E732E706167654974656D0A2020202020202020202020202C6C4461746156616C75650A2020202020202020';
-wwv_flow_imp.g_varchar2_table(11) := '2020293B0A20202020202020207D0A0A202020202020202072657475726E20726573756C743B0A0A2020202020207D292E616464436C61737328206F7074696F6E732E63757272656E74436C61737320293B0A0A202020207D0A0A20207D3B0A0A7D2928';
-wwv_flow_imp.g_varchar2_table(12) := '617065782E6A51756572792C20626C6F67293B0A';
+wwv_flow_imp.g_varchar2_table(1) := '2F2A2A0A2A20406E616D65737061636520626C6F670A2A2A2F0A76617220626C6F67203D20626C6F67207C7C207B7D3B0A0A2866756E6374696F6E28242C20626C6F6729207B0A0A20202F2F206F6E20706167652072656164790A20202F2F2068696465';
+wwv_flow_imp.g_varchar2_table(2) := '206175746F6D61746963616C6C792073756363657373206D6573736167650A2020242866756E6374696F6E2829207B0A20202020617065782E7468656D6534322E7574696C2E636F6E666967415045584D736773287B0A2020202020206175746F446973';
+wwv_flow_imp.g_varchar2_table(3) := '6D6973733A20747275650A2020202020202F2F206475726174696F6E206973206F7074696F6E616C202844656661756C742069732033303030206D696C6C697365636F6E6473290A2020202020202C6475726174696F6E3A2031303030300A202020207D';
+wwv_flow_imp.g_varchar2_table(4) := '293B0A20207D293B0A0A20202F2A2A0A20202A20406D6F64756C6520626C6F672E55490A20202A2A2F0A2020626C6F672E5549203D207B0A0A202020202F2A2A0A202020202A204066756E6374696F6E207365744C69737443757272656E744974656D0A';
+wwv_flow_imp.g_varchar2_table(5) := '202020202A20406578616D706C6520626C6F672E55492E7365744C69737443757272656E744974656D287B206166666563746564456C656D656E74733A20746869732E6166666563746564456C656D656E74732C20706167654974656D3A202250585F49';
+wwv_flow_imp.g_varchar2_table(6) := '54454D22207D293B0A202020202A2A2F0A202020207365744C69737443757272656E744974656D3A2066756E6374696F6E28206F7074696F6E7320297B0A0A2020202020206F7074696F6E73203D20242E657874656E64287B0A20202020202020206375';
+wwv_flow_imp.g_varchar2_table(7) := '7272656E74436C6173733A202269732D63757272656E74222C0A202020202020202064617461417474724E616D653A2022626C6F672D636F6E74656E742D6964220A2020202020207D2C206F7074696F6E7320293B0A0A2020202020206F7074696F6E73';
+wwv_flow_imp.g_varchar2_table(8) := '2E6166666563746564456C656D656E74732E66696E642820226C692220292E66696C746572282066756E6374696F6E28297B0A0A2020202020202020766172206C4461746156616C7565203D20242874686973292E6368696C6472656E28202261222029';
+wwv_flow_imp.g_varchar2_table(9) := '2E6461746128206F7074696F6E732E64617461417474724E616D6520290A202020202020202020202C20726573756C74203D2066616C73650A20202020202020203B0A0A2020202020202020696628206C4461746156616C756520297B0A202020202020';
+wwv_flow_imp.g_varchar2_table(10) := '20202020726573756C74203D2024765F436865636B56616C7565416761696E7374280A2020202020202020202020206F7074696F6E732E706167654974656D0A2020202020202020202020202C6C4461746156616C75650A20202020202020202020293B';
+wwv_flow_imp.g_varchar2_table(11) := '0A20202020202020207D0A0A202020202020202072657475726E20726573756C743B0A0A2020202020207D292E616464436C61737328206F7074696F6E732E63757272656E74436C61737320293B0A0A202020207D2C0A202020202F2A2A0A202020202A';
+wwv_flow_imp.g_varchar2_table(12) := '204066756E6374696F6E207365744469616C6F675469746C650A202020202A20406578616D706C6520626C6F672E55492E7365744469616C6F675469746C6528224469616C6F67205469746C6522293B0A202020202A2A2F0A202020207365744469616C';
+wwv_flow_imp.g_varchar2_table(13) := '6F675469746C653A2066756E6374696F6E28207469746C6520297B0A202020202020617065782E7574696C2E676574546F704170657828292E6A51756572792820222E75692D6469616C6F672D636F6E74656E742220292E6469616C6F672820226F7074';
+wwv_flow_imp.g_varchar2_table(14) := '696F6E222C20227469746C65222C207469746C6520293B0A202020207D0A0A20207D3B0A0A7D2928617065782E6A51756572792C20626C6F67293B0A';
 wwv_flow_imp_shared.create_app_static_file(
  p_id=>wwv_flow_imp.id(42962234337403863)
 ,p_file_name=>'js/blog.js'
@@ -7623,7 +7626,6 @@ wwv_flow_imp_shared.create_row_template(
 '</button>'))
 ,p_theme_id=>42
 ,p_theme_class_id=>7
-,p_translate_this_template=>'N'
 );
 end;
 /
@@ -7736,22 +7738,29 @@ wwv_flow_imp_shared.create_row_template(
 ,p_row_template1=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="z-Content--Row">',
 '  <h3 class="z-Content--Title">',
-'    #1#',
+'    #REGION_TITLE#',
 '  </h3>',
 '  <div class="z-Content--Body">',
-'    #2#',
+'    #BODY_HTML#',
 '  </div>',
 '</div>'))
+,p_row_template_condition1=>':REGION_TITLE is not null'
+,p_row_template2=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#BODY_HTML#',
+'<p>#CHANGED_ON#</p>'))
+,p_row_template_condition2=>':CHANGED_ON is not null'
+,p_row_template3=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#BODY_HTML#',
+''))
 ,p_row_template_before_rows=>'<div class="z-Content #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_report" data-region-id="#REGION_STATIC_ID#">'
 ,p_row_template_after_rows=>'</div>'
 ,p_row_template_type=>'NAMED_COLUMNS'
-,p_row_template_display_cond1=>'0'
-,p_row_template_display_cond2=>'0'
+,p_row_template_display_cond1=>'NOT_CONDITIONAL'
+,p_row_template_display_cond2=>'NOT_CONDITIONAL'
 ,p_row_template_display_cond3=>'0'
 ,p_row_template_display_cond4=>'0'
 ,p_theme_id=>42
 ,p_theme_class_id=>8
-,p_translate_this_template=>'N'
 );
 end;
 /
@@ -18011,7 +18020,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221205154945'
+,p_last_upd_yyyymmddhh24miss=>'20230115182633'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(30430710498753130)
@@ -18024,8 +18033,8 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   t1.blogger_name  as blogger_name',
-'  ,t1.blogger_desc  as blogger_desc',
+'   t1.blogger_name  as region_title',
+'  ,t1.blogger_desc  as body_html',
 'from #OWNER#.blog_v_bloggers t1',
 'where 1 = 1',
 'order by t1.display_seq'))
@@ -18043,22 +18052,21 @@ wwv_flow_imp_page.create_report_region(
 ,p_plug_query_strip_html=>'N'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(30431791112753140)
+ p_id=>wwv_flow_imp.id(19454440498363524)
 ,p_query_column_id=>1
-,p_column_alias=>'BLOGGER_NAME'
-,p_column_display_sequence=>1
-,p_column_heading=>'Blogger Name'
-,p_use_as_row_header=>'Y'
+,p_column_alias=>'REGION_TITLE'
+,p_column_display_sequence=>10
+,p_column_heading=>'Region Title'
+,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(30431873720753141)
+ p_id=>wwv_flow_imp.id(19454526302363525)
 ,p_query_column_id=>2
-,p_column_alias=>'BLOGGER_DESC'
-,p_column_display_sequence=>2
-,p_column_heading=>'Blogger Desc'
-,p_use_as_row_header=>'N'
+,p_column_alias=>'BODY_HTML'
+,p_column_display_sequence=>20
+,p_column_heading=>'Body Html'
 ,p_display_as=>'RICH_TEXT'
 ,p_attribute_01=>'HTML'
 ,p_derived_column=>'N'
@@ -19078,33 +19086,85 @@ wwv_flow_imp_page.create_page(
 ,p_dialog_chained=>'N'
 ,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
-,p_page_component_map=>'10'
+,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221124194856'
+,p_last_upd_yyyymmddhh24miss=>'20230116120525'
 );
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(41876461524408305)
-,p_plug_name=>'Content'
-,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_imp.id(6781372168267375)
-,p_plug_display_sequence=>10
+wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(19452283963363502)
+,p_name=>'Dynamic content'
+,p_template=>wwv_flow_imp.id(6781372168267375)
+,p_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
-,p_plug_item_display_point=>'BELOW'
-,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_util.render_dynamic_content(',
-'   p_content_id     => :REQUEST',
-'  ,p_date_format    => :G_APP_DATE_FORMAT',
-'  ,p_content_title  => :P1002_PAGE_TITLE',
-');',
-''))
-,p_plug_source_type=>'NATIVE_PLSQL'
-,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_region_template_options=>'#DEFAULT#'
+,p_component_template_options=>'#DEFAULT#'
+,p_item_display_point=>'BELOW'
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select',
+'   v1.content_html        as body_html',
+'  ,case v1.show_changed_on',
+'    when 1',
+'    then',
+'      apex_lang.message(',
+'         p_name => ''BLOG_MSG_LAST_UPDATED''',
+'        ,p0 => to_char( v1.changed_on, :G_APP_DATE_FORMAT )',
+'      )     ',
+'  end                     as changed_on',
+'  ,apex_util.savekey_vc2(',
+'    p_val => v1.content_desc',
+'  )                       as dialog_title',
+'from blog_v_dynamic_content v1',
+'where 1 = 1',
+'and v1.content_id = :REQUEST'))
+,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_ajax_enabled=>'Y'
+,p_lazy_loading=>false
+,p_query_row_template=>wwv_flow_imp.id(30641878306098019)
+,p_query_num_rows=>1
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(19454652674363526)
+,p_query_column_id=>1
+,p_column_alias=>'BODY_HTML'
+,p_column_display_sequence=>10
+,p_column_heading=>'Body Html'
+,p_display_as=>'RICH_TEXT'
+,p_attribute_01=>'HTML'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(19453808827363518)
+,p_query_column_id=>2
+,p_column_alias=>'CHANGED_ON'
+,p_column_display_sequence=>20
+,p_column_heading=>'Changed On'
+,p_use_as_row_header=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(19454925235363529)
+,p_query_column_id=>3
+,p_column_alias=>'DIALOG_TITLE'
+,p_column_display_sequence=>30
+,p_column_heading=>'Dialog Title'
+,p_use_as_row_header=>'N'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(36227766771379736)
-,p_button_sequence=>10
-,p_button_plug_id=>wwv_flow_imp.id(41876461524408305)
+,p_button_sequence=>20
+,p_button_plug_id=>wwv_flow_imp.id(19452283963363502)
 ,p_button_name=>'CLOSE'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--iconRight'
@@ -19128,12 +19188,13 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_01=>'Y'
 );
 wwv_flow_imp_page.create_page_computation(
- p_id=>wwv_flow_imp.id(22524139649146436)
+ p_id=>wwv_flow_imp.id(19454870397363528)
 ,p_computation_sequence=>10
 ,p_computation_item=>'P1002_PAGE_TITLE'
-,p_computation_point=>'BEFORE_HEADER'
-,p_computation_type=>'STATIC_ASSIGNMENT'
-,p_computation=>'Test'
+,p_computation_point=>'AFTER_BOX_BODY'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
+,p_computation=>'apex_util.keyval_vc2'
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(36227874221379737)
@@ -19158,7 +19219,6 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_name=>'Set Dialog Title'
 ,p_event_sequence=>20
 ,p_bind_type=>'bind'
-,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'ready'
 );
 wwv_flow_imp_page.create_page_da_action(
@@ -19168,7 +19228,7 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_action_sequence=>10
 ,p_execute_on_page_init=>'N'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_attribute_01=>'apex.util.getTopApex().jQuery(".ui-dialog-content").dialog("option", "title", "&P1002_PAGE_TITLE.");'
+,p_attribute_01=>'blog.UI.setDialogTitle( "&P1002_PAGE_TITLE." );'
 );
 end;
 /
@@ -19332,7 +19392,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'12'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20220927045442'
+,p_last_upd_yyyymmddhh24miss=>'20230115140608'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(35972740955622136)
@@ -19346,21 +19406,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'TEXT'
 ,p_attribute_03=>'Y'
-);
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(35977396975622143)
-,p_plug_name=>'Language Selector'
-,p_parent_plug_id=>wwv_flow_imp.id(35972740955622136)
-,p_region_template_options=>'#DEFAULT#'
-,p_component_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_imp.id(6781372168267375)
-,p_plug_display_sequence=>20
-,p_plug_display_point=>'SUB_REGIONS'
-,p_plug_source=>'apex_lang.emit_language_selector_list;'
-,p_plug_source_type=>'NATIVE_PLSQL'
-,p_translate_title=>'N'
-,p_plug_query_num_rows=>15
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(27398083179103844)
@@ -19535,19 +19580,94 @@ wwv_flow_imp_shared.create_install(
 );
 end;
 /
+prompt --application/deployment/install/install_create_view_blog_v_version
+begin
+wwv_flow_imp_shared.create_install_script(
+ p_id=>wwv_flow_imp.id(19464498978874461)
+,p_install_id=>wwv_flow_imp.id(20741295540297154)
+,p_name=>'Create view BLOG_V_VERSION'
+,p_sequence=>10
+,p_script_type=>'INSTALL'
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'--------------------------------------------------------',
+'--  DDL for View BLOG_V_VERSION',
+'--------------------------------------------------------',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_VERSION" ("APPLICATION_VERSION", "APPLICATION_DATE") AS',
+'select',
+'  attribute_value                             as application_version',
+'  ,to_number( substr( attribute_value, -8 ) ) as application_date',
+'from blog_settings',
+'where 1 = 1',
+'and attribute_name = ''G_APP_VERSION''',
+'/',
+''))
+);
+end;
+/
+prompt --application/deployment/install/upgrade_patch_21_2_20220409
+begin
+wwv_flow_imp_shared.create_install_script(
+ p_id=>wwv_flow_imp.id(11011254768323995)
+,p_install_id=>wwv_flow_imp.id(20741295540297154)
+,p_name=>'Patch 21.2.20220409'
+,p_sequence=>10
+,p_script_type=>'UPGRADE'
+,p_condition_type=>'EXISTS'
+,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from blog_v_version',
+'where 1 = 1',
+'and application_date <= 20220411'))
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'--  Patch 21.2.20220409',
+'--------------------------------------------------------',
+'--  Changes to table BLOG_COMMENT_SUBSCRIBERS',
+'--------------------------------------------------------',
+'declare',
+'  column_exists exception;',
+'  pragma exception_init ( column_exists, -1430 );',
+'begin',
+'  -- Add new column IS_ACTIVE',
+'  execute immediate',
+'    ''alter table blog_comment_subscribers add is_active number( 1, 0 )''',
+'  ;',
+'  -- Update default value to column IS_ACTIVE',
+'  update blog_comment_subscribers set is_active = 1;',
+'  -- Change column noy null',
+'  execute immediate',
+'    ''alter table blog_comment_subscribers modify is_active not null''',
+'  ;',
+'  -- Add check constraint',
+'  execute immediate',
+'    ''alter table blog_comment_subscribers add constraint blog_comment_subscribers_ck2 check ( is_active in( 0, 1 ) )''',
+'  ;',
+'-- Handle excepion if column already exists',
+'-- Column might exists if application is installed from development Git branch',
+'exception when column_exists then',
+'  null;',
+'end;',
+'/',
+'--  Insert patch version info to BLOG_SETTINGS',
+'insert into blog_settings (display_seq, is_nullable, attribute_name, data_type, attribute_group_message, attribute_value)',
+'  values (10, 0, ''PATCH_20220409'', ''STRING'', ''INTERNAL'', ''Patch 21.2.20220409'')',
+';',
+''))
+);
+end;
+/
 prompt --application/deployment/install/install_metadata
 begin
 wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(32997033167621897)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
 ,p_name=>'Metadata'
-,p_sequence=>10
+,p_sequence=>20
 ,p_script_type=>'INSTALL'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 22.2.1.20230114'');',
+'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 22.2.1.20230117'');',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''20'',''0'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,blog_util.int_to_vc2(apex_application_install.get_applica'
 ||'tion_id));',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''110'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,''My Blog'');',
@@ -19652,57 +19772,6 @@ wwv_flow_imp_shared.create_install_script(
 '  on pi.item_name = s.attribute_name',
 'where 1 = 1',
 '  and pi.application_id = blog_util.get_attribute_value( ''G_ADMIN_APP_ID'' )',
-';',
-''))
-);
-end;
-/
-prompt --application/deployment/install/upgrade_patch_21_2_20220409
-begin
-wwv_flow_imp_shared.create_install_script(
- p_id=>wwv_flow_imp.id(11011254768323995)
-,p_install_id=>wwv_flow_imp.id(20741295540297154)
-,p_name=>'Patch 21.2.20220409'
-,p_sequence=>10
-,p_script_type=>'UPGRADE'
-,p_condition_type=>'EXISTS'
-,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select 1',
-'from blog_v_version',
-'where 1 = 1',
-'and application_date <= 20220411'))
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'--  Patch 21.2.20220409',
-'--------------------------------------------------------',
-'--  Changes to table BLOG_COMMENT_SUBSCRIBERS',
-'--------------------------------------------------------',
-'declare',
-'  column_exists exception;',
-'  pragma exception_init ( column_exists, -1430 );',
-'begin',
-'  -- Add new column IS_ACTIVE',
-'  execute immediate',
-'    ''alter table blog_comment_subscribers add is_active number( 1, 0 )''',
-'  ;',
-'  -- Update default value to column IS_ACTIVE',
-'  update blog_comment_subscribers set is_active = 1;',
-'  -- Change column noy null',
-'  execute immediate',
-'    ''alter table blog_comment_subscribers modify is_active not null''',
-'  ;',
-'  -- Add check constraint',
-'  execute immediate',
-'    ''alter table blog_comment_subscribers add constraint blog_comment_subscribers_ck2 check ( is_active in( 0, 1 ) )''',
-'  ;',
-'-- Handle excepion if column already exists',
-'-- Column might exists if application is installed from development Git branch',
-'exception when column_exists then',
-'  null;',
-'end;',
-'/',
-'--  Insert patch version info to BLOG_SETTINGS',
-'insert into blog_settings (display_seq, is_nullable, attribute_name, data_type, attribute_group_message, attribute_value)',
-'  values (10, 0, ''PATCH_20220409'', ''STRING'', ''INTERNAL'', ''Patch 21.2.20220409'')',
 ';',
 ''))
 );
@@ -20287,6 +20356,7 @@ wwv_flow_imp_shared.create_install_script(
 '--    Jari Laine 29.11.2022 - Published procedure raise_http_error to',
 '--                          - Exception handler to procedures download_file',
 '--                          - Moved logic to fetch next and previous post to view blog_v_posts from procedure get_post_details',
+'--    Jari Laine 15.01.2023 - Removed obsolete procedure render_dynamic_content',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -20345,14 +20415,6 @@ wwv_flow_imp_shared.create_install_script(
 '  function get_tag(',
 '    p_tag_id          in varchar2',
 '  ) return varchar2;',
-'--------------------------------------------------------------------------------',
-'-- Called from:',
-'--  public app page 1002 PL/SQL Dynamic Content Region "Content"',
-'  procedure render_dynamic_content(',
-'    p_content_id      in varchar2,',
-'    p_date_format     in varchar2,',
-'    p_content_title   out nocopy varchar2',
-'  );',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  inside package and package BLOG_XML',
@@ -20881,7 +20943,12 @@ wwv_flow_imp_shared.create_install_script(
 '--                          - Added parameter p_message to function get_rss_anchor',
 '--    Jari Laine 27.04.2022 - Removed obsolete functions get_tag_anchor and get_post_tags',
 '--    Jari Laine 16.11.2022 - Removed obsolete functions:',
-'--                              - get_rob'))
+'--                              - get_robots_noindex_meta',
+'--                              - get_post_description_meta',
+'--                              - get_description_meta',
+'--    Jari Laine 25.11.2022 - Removed unused parameters',
+'--',
+'--------------------------------------------'))
 );
 end;
 /
@@ -20889,12 +20956,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ots_noindex_meta',
-'--                              - get_post_description_meta',
-'--                              - get_description_meta',
-'--    Jari Laine 25.11.2022 - Removed unused parameters',
-'--',
-'--------------------------------------------------------------------------------',
+'------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  pub app shortcut BLOG_CANONICAL_LINK_TAB',
@@ -21599,6 +21661,17 @@ wwv_flow_imp_shared.append_to_install_script(
 'with read only',
 '/',
 '--------------------------------------------------------',
+'--  DDL for View BLOG_V_VERSION',
+'--------------------------------------------------------',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_VERSION" ("APPLICATION_VERSION", "APPLICATION_DATE") AS',
+'select',
+'  attribute_value                             as application_version',
+'  ,to_number( substr( attribute_value, -8 ) ) as application_date',
+'from blog_settings',
+'where 1 = 1',
+'and attribute_name = ''G_APP_VERSION''',
+'/',
+'--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_POSTS',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LEN'
@@ -21682,7 +21755,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '  )                     as unread_comments_count',
 '  ,(',
 '    select count( co.id )',
-'    from blog_comments co',
+'    from blog_com'))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ments co',
 '    where 1 = 1',
 '    and co.post_id  = t1.id',
 '    and exists(',
@@ -21695,16 +21777,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  )                     as moderate_comments_count',
 '  ,(',
 '    select count( co.id )',
-'    from blog_com'))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ments co',
+'    from blog_comments co',
 '    where 1 = 1',
 '    and co.post_id  = t1.id',
 '    and co.is_active = 0',
@@ -22563,51 +22636,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end get_tag;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure render_dynamic_content(',
-'    p_content_id    in varchar2,',
-'    p_date_format   in varchar2,',
-'    p_content_title out nocopy varchar2',
-'  )',
-'  as',
-'  begin',
-'',
-'    -- fetch content',
-'    for c1 in(',
-'      select v1.content_desc',
-'        ,v1.content_html',
-'        ,v1.changed_on',
-'        ,v1.show_changed_on',
-'      from blog_v_dynamic_content v1',
-'      where 1 = 1',
-'      and v1.content_id = p_content_id',
-'    ) loop',
-'',
-'      -- set content description to procedure out parameter',
-'      p_content_title := c1.content_desc;',
-'',
-'      -- output content HTML',
-'      apex_util.prn( c1.content_html, false );',
-'',
-'      -- output when content is changed if show_changed_on column value is 1',
-'      if c1.show_changed_on = 1',
-'      then',
-'        sys.htp.p(',
-'            apex_string.format(',
-'              p_message => ''<p>%s</p>''',
-'              ,p0 =>',
-'                apex_lang.message(',
-'                  p_name => ''BLOG_MSG_LAST_UPDATED''',
-'                  ,p0 => to_char( c1.changed_on, p_date_format )',
-'                )',
-'            )',
-'          );',
-'      end if;',
-'',
-'    end loop;',
-'',
-'  end render_dynamic_content;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
 '  procedure download_file (',
 '    p_blob_content    in out nocopy blob,',
 '    p_mime_type       in varchar2,',
@@ -22698,16 +22726,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    apex_debug.info(',
 '      p_message => ''File name: %s, file size: %s, mime type: %s''',
 '      ,p0 => l_file_t.file_name',
-'      ,p1 => l'))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_file_t.file_size',
+'      ,p1 => l_file_t.file_size',
 '      ,p2 => l_file_t.mime_type',
 '      ,p3 => l_file_t.file_charset',
 '    );',
@@ -22740,7 +22759,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '    end if;',
 '',
 '    -- Add Cache-Control header',
-'    apex_string.push(',
+'    apex_string.'))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'push(',
 '        p_table => l_header_names',
 '       ,p_value => ''Cache-Control''',
 '    );',
@@ -23744,16 +23772,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Private procedures and functions',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  fun'))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ction to_html_entities(',
+'  function to_html_entities(',
 '    p_number in number',
 '  ) return varchar2',
 '  as',
@@ -23782,7 +23801,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  procedure render_math_question_field(',
 '    p_item in apex_plugin.t_item,',
-'    p_plugin in apex_plugin.t_plugin,',
+'    p_plugin in apex_plugin.t_plu'))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'gin,',
 '    p_param in apex_plugin.t_item_render_param,',
 '    p_result in out nocopy apex_plugin.t_item_render_result',
 '  )',
@@ -24749,16 +24777,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        ) as placeholders',
 '      from blog_v_all_posts v1',
 '      where 1 = 1',
-'      and v1.id = l_post_id'))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'      and v1.id = l_post_id',
 '      and v1.blogger_email is not null',
 '    ) loop',
 '',
@@ -24791,6 +24810,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '  as',
 '    l_watch_end     date;',
 '    l_post_id       number;',
+''))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '    l_watch_months  number;',
 '    l_app_email     varchar2(4000);',
 '  begin',
@@ -25751,16 +25779,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    blog_util.raise_http_error( 500 );',
 '    raise;',
 '',
-'  en'))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'d sitemap_categories;',
+'  end sitemap_categories;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure sitemap_archives',
@@ -25789,7 +25808,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '                )',
 '              )',
 '            ) order by arc.archive_year desc',
-'          )',
+'        '))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'  )',
 '        )',
 '      )',
 '      as blob encoding ''UTF-8'' indent size = 2',
@@ -25999,7 +26027,7 @@ wwv_flow_imp_shared.create_install_script(
 '-- Update version info',
 '--------------------------------------------------------',
 'update blog_settings',
-'  set attribute_value = ''Release 22.2.1.20230114''',
+'  set attribute_value = ''Release 22.2.1.20230117''',
 'where 1 = 1',
 '  and attribute_name = ''G_APP_VERSION''',
 ';',
