@@ -2,14 +2,19 @@
 /**************************************
 * Page views metric bar column
 **************************************/
-#VIEW_PCT_GRAPH{
-  width: 20%;
+.z-page-view-breakdown {
+  .t-Report-colHead:last-child,
+  .t-Report-cell:last-child {
+    width: 20%;
+  }
 }
-/**************************************
-* Files report copy URL column
-**************************************/
-td[headers="COPY_URL"] {
-  padding: 0;
+@media only screen and (max-width: 684px) {
+  .z-page-view-breakdown {
+    .t-Report-colHead:last-child,
+    .t-Report-cell:last-child {
+      display: none;
+    }
+  }
 }
 /**************************************
 * Posts IR detail view
@@ -26,7 +31,8 @@ td[headers="COPY_URL"] {
 * Interactive Reports link column
 **************************************/
 .z-IR--iconLinks {
-  tr > :first-child {
+  .a-IRR-linkCol:first-child,
+  .a-IRR-header--linkCol:first-child {
     padding: 0.25rem 0.5rem;
     width: 0.1%;
   }

@@ -39,10 +39,19 @@ var blog = blog || {};
         copyLink: "[data-clipboard-source]"
         ,copySource: "clipboard-source"
         ,downloadLink: "td[headers=DOWNLOAD] a"
+        ,downloadLinkClass: [
+          "t-Button"
+          ,"t-Button--noLabel"
+          ,"t-Button--icon"
+          ,"t-Button--link"
+          ,"t-Button--small"
+          ,"t-Button--stretch"
+          ,"padding-none"
+        ]
       }, options );
 
-      // Remove alt and title from download link. APEX bug??
-      options.region$.find( options.downloadLink ).removeAttr( "alt title" ).end()
+      // Remove alt and title attribute from download link. APEX bug??
+      options.region$.find( options.downloadLink ).removeAttr( "alt title" ).addClass( options.downloadLinkClass ).end()
       // Find column that have copy URL button and attach click event
       .find( options.copyLink ).click( function(){
         navigator.clipboard.writeText( $( this ).data( options.copySource ) );
@@ -85,10 +94,10 @@ var blog = blog || {};
       **/
       initOnPageLoad: function( options ){
 
-        // dofaults for IG custom button data attribute values
+        // defaults for IG custom button data attribute values
         options = $.extend({
-          btnSave: "ig-save"
-          ,btnAddRow: "ig-selection-add-row"
+          btnSave: "save"
+          ,btnAddRow: "selection-add-row"
         }, options );
 
         // if sequence column defined

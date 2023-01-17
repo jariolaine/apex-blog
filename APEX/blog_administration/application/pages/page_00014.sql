@@ -32,7 +32,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230116110815'
+,p_last_upd_yyyymmddhh24miss=>'20230116193751'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(9834087769215232)
@@ -684,9 +684,8 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_image_alt=>'Add'
 ,p_button_position=>'NEXT'
 ,p_warn_on_unsaved_changes=>null
-,p_button_css_classes=>'js-actionButton'
 ,p_icon_css_classes=>'fa-plus'
-,p_button_cattributes=>'data-action="ig-selection-add-row"'
+,p_button_cattributes=>'data-action="selection-add-row"'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(10046320819303272)
@@ -700,9 +699,8 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_image_alt=>'Save'
 ,p_button_position=>'NEXT'
 ,p_warn_on_unsaved_changes=>null
-,p_button_css_classes=>'js-actionButton'
 ,p_icon_css_classes=>'fa-save'
-,p_button_cattributes=>'data-action="ig-save"'
+,p_button_cattributes=>'data-action="save"'
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(27863828688256837)
