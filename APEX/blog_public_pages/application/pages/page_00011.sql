@@ -25,47 +25,16 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221214135747'
-);
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(25312085512124215)
-,p_plug_name=>'Files Container'
-,p_region_css_classes=>'z-overflowHidden'
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--removeHeader js-removeLandmark:t-Region--scrollBody'
-,p_plug_template=>wwv_flow_imp.id(6802870362267386)
-,p_plug_display_sequence=>10
-,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
-);
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(50989785872352709)
-,p_plug_name=>'Search from Files'
-,p_parent_plug_id=>wwv_flow_imp.id(25312085512124215)
-,p_region_template_options=>'#DEFAULT#:t-Region--hideHeader:t-Region--stacked:t-Region--scrollBody'
-,p_plug_template=>wwv_flow_imp.id(6802870362267386)
-,p_plug_display_sequence=>10
-,p_plug_new_grid_row=>false
-,p_plug_display_point=>'SUB_REGIONS'
-,p_plug_source_type=>'NATIVE_SMART_FILTERS'
-,p_filtered_region_id=>wwv_flow_imp.id(65301007014080913)
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_required_patch=>wwv_flow_imp.id(25684564406281886)
-,p_attribute_02=>'N'
-,p_attribute_03=>'10000'
-,p_attribute_04=>'N'
+,p_last_upd_yyyymmddhh24miss=>'20230119061721'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(65301007014080913)
 ,p_name=>'File Repository'
-,p_parent_plug_id=>wwv_flow_imp.id(25312085512124215)
-,p_template=>wwv_flow_imp.id(6802870362267386)
+,p_template=>wwv_flow_imp.id(9260227573556082)
 ,p_display_sequence=>30
 ,p_region_css_classes=>'z-MediaList--files'
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--hideHeader:t-Region--stacked:t-Region--scrollBody:t-Form--leftLabels'
+,p_region_template_options=>'#DEFAULT#:t-ResultsRegion--boxed'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--stack:t-MediaList--iconsRounded'
-,p_display_point=>'SUB_REGIONS'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -205,6 +174,22 @@ wwv_flow_imp_page.create_report_columns(
 ,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(50989785872352709)
+,p_plug_name=>'Search from Files'
+,p_parent_plug_id=>wwv_flow_imp.id(65301007014080913)
+,p_region_template_options=>'#DEFAULT#'
+,p_plug_template=>wwv_flow_imp.id(6781372168267375)
+,p_plug_display_sequence=>10
+,p_plug_display_point=>'SEARCH_FIELD'
+,p_plug_source_type=>'NATIVE_SMART_FILTERS'
+,p_filtered_region_id=>wwv_flow_imp.id(65301007014080913)
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_required_patch=>wwv_flow_imp.id(25684564406281886)
+,p_attribute_02=>'N'
+,p_attribute_03=>'10000'
+,p_attribute_04=>'N'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(17563727870717601)

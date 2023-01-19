@@ -30,11 +30,6 @@ blockquote::after {
     margin-left: 0;
   }
 }
-@media (max-width: 340px) {
-  .z-app-logo .z-app-desc {
-    display: none!important;
-  }
-}
 /**************************************
 * Public app media list report extra classes
 * Used in file repository report

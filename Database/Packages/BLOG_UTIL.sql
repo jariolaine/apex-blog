@@ -48,8 +48,17 @@ as
 --                          - Exception handler to procedures download_file
 --                          - Moved logic to fetch next and previous post to view blog_v_posts from procedure get_post_details
 --    Jari Laine 15.01.2023 - Removed obsolete procedure render_dynamic_content
+--    Jari Laine 19.01.2023 - Changed procedure get_post_details parameter names
+--                          - Added global constants
+--                            - g_nls_date_lang
+--                            - g_iso_8601_date
+--                            - g_rfc_2822_date
 --
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  g_nls_date_lang constant varchar2(30) := 'NLS_DATE_LANGUAGE = ENGLISH';
+  g_iso_8601_date constant varchar2(39) := 'YYYY-MM-DD"T"HH24:MI:SS"Z"';
+  g_rfc_2822_date constant varchar2(39) := 'Dy, DD Mon YYYY HH24:MI:SS "GMT"';
 --------------------------------------------------------------------------------
   procedure raise_http_error(
     p_error_code  in number
@@ -89,10 +98,10 @@ as
     p_post_author     out nocopy varchar2,
     p_post_published  out nocopy varchar2,
     p_post_modified   out nocopy varchar2,
-    p_next_id         out nocopy varchar2,
-    p_next_title      out nocopy varchar2,
-    p_prev_id         out nocopy varchar2,
-    p_prev_title       out nocopy varchar2
+    p_next_post_id    out nocopy varchar2,
+    p_next_post_title out nocopy varchar2,
+    p_prev_post_id    out nocopy varchar2,
+    p_prev_post_title out nocopy varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -395,10 +404,10 @@ as
     p_post_author     out nocopy varchar2,
     p_post_published  out nocopy varchar2,
     p_post_modified   out nocopy varchar2,
-    p_next_id         out nocopy varchar2,
-    p_next_title      out nocopy varchar2,
-    p_prev_id         out nocopy varchar2,
-    p_prev_title      out nocopy varchar2
+    p_next_post_id    out nocopy varchar2,
+    p_next_post_title out nocopy varchar2,
+    p_prev_post_id    out nocopy varchar2,
+    p_prev_post_title out nocopy varchar2
   )
   as
     l_post_id       number;
@@ -406,8 +415,6 @@ as
     l_prev          blog_t_post;
     l_published_on  blog_v_posts.published_on%type;
     l_changed_on    blog_v_posts.changed_on%type;
-
-    c_meta_date_format constant varchar2(30) := 'YYYY-MM-DD"T"HH24:MI:SS.FF3"Z"';
   begin
 
     -- raise no data found error if parameter p_post_id is null
@@ -443,18 +450,20 @@ as
     ;
 
     -- set procedure out parameters
-    p_next_id     := int_to_vc2( l_next.post_id );
-    p_next_title  := l_next.post_title;
-    p_prev_id     := int_to_vc2( l_prev.post_id );
-    p_prev_title  := l_prev.post_title;
+    p_next_post_id    := int_to_vc2( l_next.post_id );
+    p_next_post_title := l_next.post_title;
+    p_prev_post_id    := int_to_vc2( l_prev.post_id );
+    p_prev_post_title := l_prev.post_title;
     -- Get post published and modified UTC time
     p_post_published := to_char(
        sys_extract_utc( l_published_on )
-      ,c_meta_date_format
+      ,g_iso_8601_date
+      ,g_nls_date_lang
     );
     p_post_modified := to_char(
        sys_extract_utc( l_changed_on )
-      ,c_meta_date_format
+      ,g_iso_8601_date
+      ,g_nls_date_lang
     );
 
   -- handle errors
@@ -674,8 +683,8 @@ as
       ,p_value =>
         to_char(
           sys_extract_utc( l_file_t.changed_on )
-          ,'Dy, DD Mon YYYY HH24:MI:SS "GMT"'
-          ,'NLS_DATE_LANGUAGE=ENGLISH'
+          ,g_rfc_2822_date
+          ,g_nls_date_lang
         )
     );
 

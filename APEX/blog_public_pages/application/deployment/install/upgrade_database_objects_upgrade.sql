@@ -98,8 +98,17 @@ wwv_flow_imp_shared.create_install_script(
 '--                          - Exception handler to procedures download_file',
 '--                          - Moved logic to fetch next and previous post to view blog_v_posts from procedure get_post_details',
 '--    Jari Laine 15.01.2023 - Removed obsolete procedure render_dynamic_content',
+'--    Jari Laine 19.01.2023 - Changed procedure get_post_details parameter names',
+'--                          - Added global constants',
+'--                            - g_nls_date_lang',
+'--                            - g_iso_8601_date',
+'--                            - g_rfc_2822_date',
 '--',
 '--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  g_nls_date_lang constant varchar2(30) := ''NLS_DATE_LANGUAGE = ENGLISH'';',
+'  g_iso_8601_date constant varchar2(39) := ''YYYY-MM-DD"T"HH24:MI:SS"Z"'';',
+'  g_rfc_2822_date constant varchar2(39) := ''Dy, DD Mon YYYY HH24:MI:SS "GMT"'';',
 '--------------------------------------------------------------------------------',
 '  procedure raise_http_error(',
 '    p_error_code  in number',
@@ -139,10 +148,10 @@ wwv_flow_imp_shared.create_install_script(
 '    p_post_author     out nocopy varchar2,',
 '    p_post_published  out nocopy varchar2,',
 '    p_post_modified   out nocopy varchar2,',
-'    p_next_id         out nocopy varchar2,',
-'    p_next_title      out nocopy varchar2,',
-'    p_prev_id         out nocopy varchar2,',
-'    p_prev_title       out nocopy varchar2',
+'    p_next_post_id    out nocopy varchar2,',
+'    p_next_post_title out nocopy varchar2,',
+'    p_prev_post_id    out nocopy varchar2,',
+'    p_prev_post_title out nocopy varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
@@ -680,16 +689,7 @@ wwv_flow_imp_shared.create_install_script(
 '--                            Removed parameter p_build_option_status from function get_rss_link',
 '--    Jari Laine 13.11.2021 - Changes to funtion get_rss_anchor and get get_rss_link',
 '--                          - Removed obsolete functions',
-'--    Jari Laine 27.03.2022 - Added parameter p_build_option and p_message to function get_rss_link',
-'--                          - Added parameter p_message to function get_rss_anchor',
-'--    Jari Laine 27.04.2022 - Removed obsolete functions get_tag_anchor and get_post_tags',
-'--    Jari Laine 16.11.2022 - Removed obsolete functions:',
-'--                              - get_robots_noindex_meta',
-'--                              - get_post_description_meta',
-'--                              - get_description_meta',
-'--    Jari Laine 25.11.2022 - Removed unused parameters',
-'--',
-'--------------------------------------------'))
+'--    Jari Laine 27.03.'))
 );
 wwv_flow_imp.component_end;
 end;
@@ -706,7 +706,16 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'------------------------------------',
+'2022 - Added parameter p_build_option and p_message to function get_rss_link',
+'--                          - Added parameter p_message to function get_rss_anchor',
+'--    Jari Laine 27.04.2022 - Removed obsolete functions get_tag_anchor and get_post_tags',
+'--    Jari Laine 16.11.2022 - Removed obsolete functions:',
+'--                              - get_robots_noindex_meta',
+'--                              - get_post_description_meta',
+'--                              - get_description_meta',
+'--    Jari Laine 25.11.2022 - Removed unused parameters',
+'--',
+'--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  pub app shortcut BLOG_CANONICAL_LINK_TAB',
@@ -794,6 +803,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '--    Jari Laine 29.11.2022 - Removed parameter p_lang from procedure rss',
 '--                          - Added exception handler that raise also HTTP error to procedures',
 '--                          - Other minor changes',
+'--    Jari Laine 19.01.2023 - Repved parameter p_ws_images from procedure rss_xsl',
+'--                          - Removed parameter p_page_group from procedure sitemap_main',
+'--                          - Replaced private constant c_pubdate_lang with blog.util.g_nls_date_lang',
+'--                          - Replaced private constant c_lastmod_format with blog_util.g_iso_8601_date',
+'--                          - Replaced private constant c_lastmod_format with blog_util.g_rfc_2822_date',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -807,7 +821,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Called from:',
 '--  public app page 1003 Ajax Callback process "rss.xsl"',
 '  procedure rss_xsl(',
-'    p_ws_images     in varchar2,',
 '    p_css_file      in varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
@@ -822,8 +835,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Called from:',
 '--  public app page 1003 Ajax Callback process "sitemap-main.xml"',
 '  procedure sitemap_main(',
-'    p_app_id        in varchar2,',
-'    p_page_group    in varchar2',
+'    p_app_id        in varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
@@ -1468,7 +1480,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '    from blog_v_all_post_tags tags',
 '    where 1 = 1',
 '    and tags.post_id = t1.id',
-'    and tags.is_active * tags.tag_is_active = 1',
+'    and tags.is_a'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.1'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ctive * tags.tag_is_active = 1',
 '  )                     as visible_tags',
 '  ,(',
 '    select listagg( tags.tag, '', '' )  within group( order by tags.display_seq )',
@@ -1505,25 +1535,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  )                     as unread_comments_count',
 '  ,(',
 '    select count( co.id )',
-'    from blog_com'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.1'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ments co',
+'    from blog_comments co',
 '    where 1 = 1',
 '    and co.post_id  = t1.id',
 '    and exists(',
@@ -2221,10 +2233,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_post_author     out nocopy varchar2,',
 '    p_post_published  out nocopy varchar2,',
 '    p_post_modified   out nocopy varchar2,',
-'    p_next_id         out nocopy varchar2,',
-'    p_next_title      out nocopy varchar2,',
-'    p_prev_id         out nocopy varchar2,',
-'    p_prev_title      out nocopy varchar2',
+'    p_next_post_id    out nocopy varchar2,',
+'    p_next_post_title out nocopy varchar2,',
+'    p_prev_post_id    out nocopy varchar2,',
+'    p_prev_post_title out nocopy varchar2',
 '  )',
 '  as',
 '    l_post_id       number;',
@@ -2232,8 +2244,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_prev          blog_t_post;',
 '    l_published_on  blog_v_posts.published_on%type;',
 '    l_changed_on    blog_v_posts.changed_on%type;',
-'',
-'    c_meta_date_format constant varchar2(30) := ''YYYY-MM-DD"T"HH24:MI:SS.FF3"Z"'';',
 '  begin',
 '',
 '    -- raise no data found error if parameter p_post_id is null',
@@ -2269,18 +2279,20 @@ wwv_flow_imp_shared.append_to_install_script(
 '    ;',
 '',
 '    -- set procedure out parameters',
-'    p_next_id     := int_to_vc2( l_next.post_id );',
-'    p_next_title  := l_next.post_title;',
-'    p_prev_id     := int_to_vc2( l_prev.post_id );',
-'    p_prev_title  := l_prev.post_title;',
+'    p_next_post_id    := int_to_vc2( l_next.post_id );',
+'    p_next_post_title := l_next.post_title;',
+'    p_prev_post_id    := int_to_vc2( l_prev.post_id );',
+'    p_prev_post_title := l_prev.post_title;',
 '    -- Get post published and modified UTC time',
 '    p_post_published := to_char(',
 '       sys_extract_utc( l_published_on )',
-'      ,c_meta_date_format',
+'      ,g_iso_8601_date',
+'      ,g_nls_date_lang',
 '    );',
 '    p_post_modified := to_char(',
 '       sys_extract_utc( l_changed_on )',
-'      ,c_meta_date_format',
+'      ,g_iso_8601_date',
+'      ,g_nls_date_lang',
 '    );',
 '',
 '  -- handle errors',
@@ -2484,41 +2496,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    apex_debug.info(',
 '      p_message => ''File name: %s, file size: %s, mime type: %s''',
-'      ,p0 => l_file_t.file_name',
-'      ,p1 => l_file_t.file_size',
-'      ,p2 => l_file_t.mime_type',
-'      ,p3 => l_file_t.file_charset',
-'    );',
-'',
-'    -- Add Last-Modified header',
-'    apex_string.push(',
-'        p_table => l_header_names',
-'       ,p_value => ''Last-Modified''',
-'    );',
-'    apex_string.push(',
-'       p_table => l_header_values',
-'      ,p_value =>',
-'        to_char(',
-'          sys_extract_utc( l_file_t.changed_on )',
-'          ,''Dy, DD Mon YYYY HH24:MI:SS "GMT"''',
-'          ,''NLS_DATE_LANGUAGE=ENGLISH''',
-'        )',
-'    );',
-'',
-'    -- Compare request If-Modified-Since header to Last-Modified',
-'    -- If values are equal then set status header and exit from procedure',
-'    if sys.owa_util.get_cgi_env(''HTTP_IF_MODIFIED_SINCE'') = l_header_values(1)',
-'    then',
-'      sys.owa_util.status_line( 304 );',
-'      apex_debug.info(',
-'         p_message => ''File not sent. If-Modified-Since: %s''',
-'        ,p0 => l_header_values(1)',
-'      );',
-'      return;',
-'    end if;',
-'',
-'    -- Add Cache-Control header',
-'    apex_string.'))
+'     '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2536,7 +2514,41 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'push(',
+' ,p0 => l_file_t.file_name',
+'      ,p1 => l_file_t.file_size',
+'      ,p2 => l_file_t.mime_type',
+'      ,p3 => l_file_t.file_charset',
+'    );',
+'',
+'    -- Add Last-Modified header',
+'    apex_string.push(',
+'        p_table => l_header_names',
+'       ,p_value => ''Last-Modified''',
+'    );',
+'    apex_string.push(',
+'       p_table => l_header_values',
+'      ,p_value =>',
+'        to_char(',
+'          sys_extract_utc( l_file_t.changed_on )',
+'          ,g_rfc_2822_date',
+'          ,g_nls_date_lang',
+'        )',
+'    );',
+'',
+'    -- Compare request If-Modified-Since header to Last-Modified',
+'    -- If values are equal then set status header and exit from procedure',
+'    if sys.owa_util.get_cgi_env(''HTTP_IF_MODIFIED_SINCE'') = l_header_values(1)',
+'    then',
+'      sys.owa_util.status_line( 304 );',
+'      apex_debug.info(',
+'         p_message => ''File not sent. If-Modified-Since: %s''',
+'        ,p0 => l_header_values(1)',
+'      );',
+'      return;',
+'    end if;',
+'',
+'    -- Add Cache-Control header',
+'    apex_string.push(',
 '        p_table => l_header_names',
 '       ,p_value => ''Cache-Control''',
 '    );',
@@ -3539,7 +3551,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
+'----------------------------------------------------------------------------'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.1'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'----',
 '  function to_html_entities(',
 '    p_number in number',
 '  ) return varchar2',
@@ -3569,25 +3599,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  procedure render_math_question_field(',
 '    p_item in apex_plugin.t_item,',
-'    p_plugin in apex_plugin.t_plu'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.1'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'gin,',
+'    p_plugin in apex_plugin.t_plugin,',
 '    p_param in apex_plugin.t_item_render_param,',
 '    p_result in out nocopy apex_plugin.t_item_render_result',
 '  )',
@@ -4554,7 +4566,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '        ) as placeholders',
 '      from blog_v_all_posts v1',
 '      where 1 = 1',
-'      and v1.id = l_post_id',
+'      and v1.id ='))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.1'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+' l_post_id',
 '      and v1.blogger_email is not null',
 '    ) loop',
 '',
@@ -4587,24 +4617,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '  as',
 '    l_watch_end     date;',
 '    l_post_id       number;',
-''))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.1'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '    l_watch_months  number;',
 '    l_app_email     varchar2(4000);',
 '  begin',
@@ -5018,11 +5030,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Private constants and variables',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'',
-'  c_lastmod_format  constant varchar2(26) := ''YYYY-MM-DD"T"HH24:MI:SS"Z"'';',
-'  c_pubdate_format  constant varchar2(32) := ''Dy, DD Mon YYYY HH24:MI:SS "GMT"'';',
-'  c_pubdate_lang    constant varchar2(25) := ''NLS_DATE_LANGUAGE=ENGLISH'';',
-'',
+'-- none',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
@@ -5127,8 +5135,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '                ,xmlelement( "pubDate",',
 '                  to_char(',
 '                     sys_extract_utc( posts.published_on )',
-'                    ,c_pubdate_format',
-'                    ,c_pubdate_lang',
+'                    ,blog_util.g_rfc_2822_date',
+'                    ,blog_util.g_nls_date_lang',
 '                  )',
 '                )',
 '                ,xmlelement( "guid", xmlattributes( ''false'' as "isPermaLink" ), posts.post_id )',
@@ -5154,8 +5162,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_last_modified :=',
 '      to_char(',
 '         sys_extract_utc( l_max_published )',
-'        ,c_pubdate_format',
-'        ,c_pubdate_lang',
+'        ,blog_util.g_rfc_2822_date',
+'        ,blog_util.g_nls_date_lang',
 '      )',
 '    ;',
 '',
@@ -5186,8 +5194,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure rss_xsl(',
-'    p_ws_images in varchar2,',
-'    p_css_file  in varchar2',
+'    p_css_file in varchar2',
 '  )',
 '  as',
 '    l_xml           xmltype;',
@@ -5199,7 +5206,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- Generate relaive URL for CSS file',
 '    l_cc_url := apex_util.host_url( ''APEX_PATH'' );',
 '    l_cc_url := substr( l_cc_url, instr( l_cc_url, ''/'', 1, 3 ) );',
-'    l_cc_url := l_cc_url || p_ws_images || p_css_file;',
+'    l_cc_url := l_cc_url || p_css_file;',
 '',
 '    l_xml :=',
 '      xmltype(',
@@ -5354,8 +5361,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure sitemap_main(',
-'    p_app_id      in varchar2,',
-'    p_page_group  in varchar2',
+'    p_app_id in varchar2',
 '  )',
 '  as',
 '    l_xml   blob;',
@@ -5385,7 +5391,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    from apex_application_pages v1',
 '    where 1 = 1',
 '      and v1.application_id = p_app_id',
-'      and v1.page_group = p_page_group',
+'      and v1.page_alias in ( ''HOME'', ''LINKS'', ''REPOSITORY'', ''ABOUT'' )',
 '      and case',
 '        when v1.build_option is null',
 '        then ''INCLUDE''',
@@ -5454,7 +5460,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '                  sys_extract_utc(',
 '                    greatest( posts.published_on, posts.changed_on )',
 '                  )',
-'                  ,c_lastmod_format',
+'                  ,blog_util.g_iso_8601_date',
 '                )',
 '              )',
 '            ) order by posts.published_on desc',
@@ -5522,7 +5528,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '              ,xmlelement( "lastmod",',
 '                to_char(',
 '                  sys_extract_utc( cat.changed_on )',
-'                  ,c_lastmod_format',
+'                  ,blog_util.g_iso_8601_date',
 '                )',
 '              )',
 '            ) order by cat.display_seq desc',
@@ -5568,7 +5574,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end sitemap_categories;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure sitemap_archives',
+'  procedure sitemap_ar'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.1'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'chives',
 '  as',
 '    l_xml           blob;',
 '    l_cache_control varchar2(256);',
@@ -5590,29 +5614,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '              ,xmlelement( "lastmod",',
 '                to_char(',
 '                  sys_extract_utc( arc.changed_on )',
-'                  ,c_lastmod_format',
+'                  ,blog_util.g_iso_8601_date',
 '                )',
 '              )',
 '            ) order by arc.archive_year desc',
-'        '))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.1'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'  )',
+'          )',
 '        )',
 '      )',
 '      as blob encoding ''UTF-8'' indent size = 2',
@@ -5676,7 +5682,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '              ,xmlelement( "lastmod",',
 '                to_char(',
 '                  sys_extract_utc( tags.changed_on )',
-'                  ,c_lastmod_format',
+'                  ,blog_util.g_iso_8601_date',
 '                )',
 '              )',
 '            ) order by tags.changed_on',

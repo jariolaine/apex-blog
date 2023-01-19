@@ -25,31 +25,17 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221206080612'
-);
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(25312381302124218)
-,p_plug_name=>'Links Container'
-,p_region_css_classes=>'z-overflowHidden'
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--removeHeader js-removeLandmark:t-Region--scrollBody'
-,p_plug_template=>wwv_flow_imp.id(6802870362267386)
-,p_plug_display_sequence=>30
-,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
+,p_last_upd_yyyymmddhh24miss=>'20230119061243'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6899425042645290)
 ,p_name=>'Links'
-,p_parent_plug_id=>wwv_flow_imp.id(25312381302124218)
-,p_template=>wwv_flow_imp.id(6802870362267386)
+,p_template=>wwv_flow_imp.id(9260227573556082)
 ,p_display_sequence=>20
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--hideHeader:t-Region--stacked:t-Region--scrollBody'
+,p_region_template_options=>'#DEFAULT#:t-ResultsRegion--boxed'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--stack:t-MediaList--iconsRounded:t-Report--hideNoPagination'
 ,p_new_grid_row=>false
 ,p_new_grid_column=>false
-,p_display_point=>'SUB_REGIONS'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -72,7 +58,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(6815219261267393)
 ,p_query_headings_type=>'NO_HEADINGS'
-,p_query_num_rows=>100
+,p_query_num_rows=>500
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
 ,p_query_row_count_max=>100
@@ -175,11 +161,11 @@ wwv_flow_imp_page.create_report_columns(
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(25311756072124212)
 ,p_plug_name=>'Search from Links'
-,p_parent_plug_id=>wwv_flow_imp.id(25312381302124218)
-,p_region_template_options=>'#DEFAULT#:t-Region--hideHeader:t-Region--stacked:t-Region--scrollBody'
-,p_plug_template=>wwv_flow_imp.id(6802870362267386)
+,p_parent_plug_id=>wwv_flow_imp.id(6899425042645290)
+,p_region_template_options=>'#DEFAULT#'
+,p_plug_template=>wwv_flow_imp.id(6781372168267375)
 ,p_plug_display_sequence=>10
-,p_plug_display_point=>'SUB_REGIONS'
+,p_plug_display_point=>'SEARCH_FIELD'
 ,p_plug_source_type=>'NATIVE_SMART_FILTERS'
 ,p_filtered_region_id=>wwv_flow_imp.id(6899425042645290)
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'

@@ -78,8 +78,17 @@ as
 --                          - Exception handler to procedures download_file
 --                          - Moved logic to fetch next and previous post to view blog_v_posts from procedure get_post_details
 --    Jari Laine 15.01.2023 - Removed obsolete procedure render_dynamic_content
+--    Jari Laine 19.01.2023 - Changed procedure get_post_details parameter names
+--                          - Added global constants
+--                            - g_nls_date_lang
+--                            - g_iso_8601_date
+--                            - g_rfc_2822_date
 --
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  g_nls_date_lang constant varchar2(30) := 'NLS_DATE_LANGUAGE = ENGLISH';
+  g_iso_8601_date constant varchar2(39) := 'YYYY-MM-DD"T"HH24:MI:SS"Z"';
+  g_rfc_2822_date constant varchar2(39) := 'Dy, DD Mon YYYY HH24:MI:SS "GMT"';
 --------------------------------------------------------------------------------
   procedure raise_http_error(
     p_error_code  in number
@@ -119,10 +128,10 @@ as
     p_post_author     out nocopy varchar2,
     p_post_published  out nocopy varchar2,
     p_post_modified   out nocopy varchar2,
-    p_next_id         out nocopy varchar2,
-    p_next_title      out nocopy varchar2,
-    p_prev_id         out nocopy varchar2,
-    p_prev_title       out nocopy varchar2
+    p_next_post_id    out nocopy varchar2,
+    p_next_post_title out nocopy varchar2,
+    p_prev_post_id    out nocopy varchar2,
+    p_prev_post_title out nocopy varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -757,6 +766,11 @@ as
 --    Jari Laine 29.11.2022 - Removed parameter p_lang from procedure rss
 --                          - Added exception handler that raise also HTTP error to procedures
 --                          - Other minor changes
+--    Jari Laine 19.01.2023 - Repved parameter p_ws_images from procedure rss_xsl
+--                          - Removed parameter p_page_group from procedure sitemap_main
+--                          - Replaced private constant c_pubdate_lang with blog.util.g_nls_date_lang
+--                          - Replaced private constant c_lastmod_format with blog_util.g_iso_8601_date
+--                          - Replaced private constant c_lastmod_format with blog_util.g_rfc_2822_date
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -770,7 +784,6 @@ as
 -- Called from:
 --  public app page 1003 Ajax Callback process "rss.xsl"
   procedure rss_xsl(
-    p_ws_images     in varchar2,
     p_css_file      in varchar2
   );
 --------------------------------------------------------------------------------
@@ -785,8 +798,7 @@ as
 -- Called from:
 --  public app page 1003 Ajax Callback process "sitemap-main.xml"
   procedure sitemap_main(
-    p_app_id        in varchar2,
-    p_page_group    in varchar2
+    p_app_id        in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -2159,10 +2171,10 @@ as
     p_post_author     out nocopy varchar2,
     p_post_published  out nocopy varchar2,
     p_post_modified   out nocopy varchar2,
-    p_next_id         out nocopy varchar2,
-    p_next_title      out nocopy varchar2,
-    p_prev_id         out nocopy varchar2,
-    p_prev_title      out nocopy varchar2
+    p_next_post_id    out nocopy varchar2,
+    p_next_post_title out nocopy varchar2,
+    p_prev_post_id    out nocopy varchar2,
+    p_prev_post_title out nocopy varchar2
   )
   as
     l_post_id       number;
@@ -2170,8 +2182,6 @@ as
     l_prev          blog_t_post;
     l_published_on  blog_v_posts.published_on%type;
     l_changed_on    blog_v_posts.changed_on%type;
-
-    c_meta_date_format constant varchar2(30) := 'YYYY-MM-DD"T"HH24:MI:SS.FF3"Z"';
   begin
 
     -- raise no data found error if parameter p_post_id is null
@@ -2207,18 +2217,20 @@ as
     ;
 
     -- set procedure out parameters
-    p_next_id     := int_to_vc2( l_next.post_id );
-    p_next_title  := l_next.post_title;
-    p_prev_id     := int_to_vc2( l_prev.post_id );
-    p_prev_title  := l_prev.post_title;
+    p_next_post_id    := int_to_vc2( l_next.post_id );
+    p_next_post_title := l_next.post_title;
+    p_prev_post_id    := int_to_vc2( l_prev.post_id );
+    p_prev_post_title := l_prev.post_title;
     -- Get post published and modified UTC time
     p_post_published := to_char(
        sys_extract_utc( l_published_on )
-      ,c_meta_date_format
+      ,g_iso_8601_date
+      ,g_nls_date_lang
     );
     p_post_modified := to_char(
        sys_extract_utc( l_changed_on )
-      ,c_meta_date_format
+      ,g_iso_8601_date
+      ,g_nls_date_lang
     );
 
   -- handle errors
@@ -2438,8 +2450,8 @@ as
       ,p_value =>
         to_char(
           sys_extract_utc( l_file_t.changed_on )
-          ,'Dy, DD Mon YYYY HH24:MI:SS "GMT"'
-          ,'NLS_DATE_LANGUAGE=ENGLISH'
+          ,g_rfc_2822_date
+          ,g_nls_date_lang
         )
     );
 
@@ -4902,11 +4914,7 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-
-  c_lastmod_format  constant varchar2(26) := 'YYYY-MM-DD"T"HH24:MI:SS"Z"';
-  c_pubdate_format  constant varchar2(32) := 'Dy, DD Mon YYYY HH24:MI:SS "GMT"';
-  c_pubdate_lang    constant varchar2(25) := 'NLS_DATE_LANGUAGE=ENGLISH';
-
+-- none
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -5011,8 +5019,8 @@ as
                 ,xmlelement( "pubDate",
                   to_char(
                      sys_extract_utc( posts.published_on )
-                    ,c_pubdate_format
-                    ,c_pubdate_lang
+                    ,blog_util.g_rfc_2822_date
+                    ,blog_util.g_nls_date_lang
                   )
                 )
                 ,xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id )
@@ -5038,8 +5046,8 @@ as
     l_last_modified :=
       to_char(
          sys_extract_utc( l_max_published )
-        ,c_pubdate_format
-        ,c_pubdate_lang
+        ,blog_util.g_rfc_2822_date
+        ,blog_util.g_nls_date_lang
       )
     ;
 
@@ -5070,8 +5078,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss_xsl(
-    p_ws_images in varchar2,
-    p_css_file  in varchar2
+    p_css_file in varchar2
   )
   as
     l_xml           xmltype;
@@ -5083,7 +5090,7 @@ as
     -- Generate relaive URL for CSS file
     l_cc_url := apex_util.host_url( 'APEX_PATH' );
     l_cc_url := substr( l_cc_url, instr( l_cc_url, '/', 1, 3 ) );
-    l_cc_url := l_cc_url || p_ws_images || p_css_file;
+    l_cc_url := l_cc_url || p_css_file;
 
     l_xml :=
       xmltype(
@@ -5238,8 +5245,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure sitemap_main(
-    p_app_id      in varchar2,
-    p_page_group  in varchar2
+    p_app_id in varchar2
   )
   as
     l_xml   blob;
@@ -5269,7 +5275,7 @@ as
     from apex_application_pages v1
     where 1 = 1
       and v1.application_id = p_app_id
-      and v1.page_group = p_page_group
+      and v1.page_alias in ( 'HOME', 'LINKS', 'REPOSITORY', 'ABOUT' )
       and case
         when v1.build_option is null
         then 'INCLUDE'
@@ -5338,7 +5344,7 @@ as
                   sys_extract_utc(
                     greatest( posts.published_on, posts.changed_on )
                   )
-                  ,c_lastmod_format
+                  ,blog_util.g_iso_8601_date
                 )
               )
             ) order by posts.published_on desc
@@ -5406,7 +5412,7 @@ as
               ,xmlelement( "lastmod",
                 to_char(
                   sys_extract_utc( cat.changed_on )
-                  ,c_lastmod_format
+                  ,blog_util.g_iso_8601_date
                 )
               )
             ) order by cat.display_seq desc
@@ -5474,7 +5480,7 @@ as
               ,xmlelement( "lastmod",
                 to_char(
                   sys_extract_utc( arc.changed_on )
-                  ,c_lastmod_format
+                  ,blog_util.g_iso_8601_date
                 )
               )
             ) order by arc.archive_year desc
@@ -5542,7 +5548,7 @@ as
               ,xmlelement( "lastmod",
                 to_char(
                   sys_extract_utc( tags.changed_on )
-                  ,c_lastmod_format
+                  ,blog_util.g_iso_8601_date
                 )
               )
             ) order by tags.changed_on

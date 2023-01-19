@@ -36,6 +36,11 @@ as
 --    Jari Laine 29.11.2022 - Removed parameter p_lang from procedure rss
 --                          - Added exception handler that raise also HTTP error to procedures
 --                          - Other minor changes
+--    Jari Laine 19.01.2023 - Repved parameter p_ws_images from procedure rss_xsl
+--                          - Removed parameter p_page_group from procedure sitemap_main
+--                          - Replaced private constant c_pubdate_lang with blog.util.g_nls_date_lang
+--                          - Replaced private constant c_lastmod_format with blog_util.g_iso_8601_date
+--                          - Replaced private constant c_lastmod_format with blog_util.g_rfc_2822_date
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -49,7 +54,6 @@ as
 -- Called from:
 --  public app page 1003 Ajax Callback process "rss.xsl"
   procedure rss_xsl(
-    p_ws_images     in varchar2,
     p_css_file      in varchar2
   );
 --------------------------------------------------------------------------------
@@ -64,8 +68,7 @@ as
 -- Called from:
 --  public app page 1003 Ajax Callback process "sitemap-main.xml"
   procedure sitemap_main(
-    p_app_id        in varchar2,
-    p_page_group    in varchar2
+    p_app_id        in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -94,11 +97,7 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-
-  c_lastmod_format  constant varchar2(26) := 'YYYY-MM-DD"T"HH24:MI:SS"Z"';
-  c_pubdate_format  constant varchar2(32) := 'Dy, DD Mon YYYY HH24:MI:SS "GMT"';
-  c_pubdate_lang    constant varchar2(25) := 'NLS_DATE_LANGUAGE=ENGLISH';
-
+-- none
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -203,8 +202,8 @@ as
                 ,xmlelement( "pubDate",
                   to_char(
                      sys_extract_utc( posts.published_on )
-                    ,c_pubdate_format
-                    ,c_pubdate_lang
+                    ,blog_util.g_rfc_2822_date
+                    ,blog_util.g_nls_date_lang
                   )
                 )
                 ,xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id )
@@ -230,8 +229,8 @@ as
     l_last_modified :=
       to_char(
          sys_extract_utc( l_max_published )
-        ,c_pubdate_format
-        ,c_pubdate_lang
+        ,blog_util.g_rfc_2822_date
+        ,blog_util.g_nls_date_lang
       )
     ;
 
@@ -262,8 +261,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss_xsl(
-    p_ws_images in varchar2,
-    p_css_file  in varchar2
+    p_css_file in varchar2
   )
   as
     l_xml           xmltype;
@@ -275,7 +273,7 @@ as
     -- Generate relaive URL for CSS file
     l_cc_url := apex_util.host_url( 'APEX_PATH' );
     l_cc_url := substr( l_cc_url, instr( l_cc_url, '/', 1, 3 ) );
-    l_cc_url := l_cc_url || p_ws_images || p_css_file;
+    l_cc_url := l_cc_url || p_css_file;
 
     l_xml :=
       xmltype(
@@ -430,8 +428,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure sitemap_main(
-    p_app_id      in varchar2,
-    p_page_group  in varchar2
+    p_app_id in varchar2
   )
   as
     l_xml   blob;
@@ -461,7 +458,7 @@ as
     from apex_application_pages v1
     where 1 = 1
       and v1.application_id = p_app_id
-      and v1.page_group = p_page_group
+      and v1.page_alias in ( 'HOME', 'LINKS', 'REPOSITORY', 'ABOUT' )
       and case
         when v1.build_option is null
         then 'INCLUDE'
@@ -530,7 +527,7 @@ as
                   sys_extract_utc(
                     greatest( posts.published_on, posts.changed_on )
                   )
-                  ,c_lastmod_format
+                  ,blog_util.g_iso_8601_date
                 )
               )
             ) order by posts.published_on desc
@@ -598,7 +595,7 @@ as
               ,xmlelement( "lastmod",
                 to_char(
                   sys_extract_utc( cat.changed_on )
-                  ,c_lastmod_format
+                  ,blog_util.g_iso_8601_date
                 )
               )
             ) order by cat.display_seq desc
@@ -666,7 +663,7 @@ as
               ,xmlelement( "lastmod",
                 to_char(
                   sys_extract_utc( arc.changed_on )
-                  ,c_lastmod_format
+                  ,blog_util.g_iso_8601_date
                 )
               )
             ) order by arc.archive_year desc
@@ -734,7 +731,7 @@ as
               ,xmlelement( "lastmod",
                 to_char(
                   sys_extract_utc( tags.changed_on )
-                  ,c_lastmod_format
+                  ,blog_util.g_iso_8601_date
                 )
               )
             ) order by tags.changed_on

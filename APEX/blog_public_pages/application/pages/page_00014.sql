@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221129094613'
+,p_last_upd_yyyymmddhh24miss=>'20230119094142'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(40117793173805532)
@@ -32,7 +32,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_region_name=>'page-content-container'
 ,p_template=>wwv_flow_imp.id(6802870362267386)
 ,p_display_sequence=>10
-,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody:margin-bottom-lg'
+,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Report--hideNoPagination'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
@@ -213,19 +213,6 @@ wwv_flow_imp_page.create_page_item(
 ,p_protection_level=>'I'
 ,p_attribute_01=>'Y'
 );
-wwv_flow_imp_page.create_page_computation(
- p_id=>wwv_flow_imp.id(31250468391982944)
-,p_computation_sequence=>10
-,p_computation_item=>'P14_CATEGORY_TITLE'
-,p_computation_point=>'BEFORE_HEADER'
-,p_computation_type=>'EXPRESSION'
-,p_computation_language=>'PLSQL'
-,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_util.get_category_title(',
-'  p_category_id => :P14_CATEGORY_ID',
-')'))
-,p_computation_error_message=>'Category not found.'
-);
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(30119771997698124)
 ,p_name=>'Set is Current'
@@ -254,13 +241,45 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_da_action_comment=>'List anchors have data attribute where is category id. If that match to item P14_CATEGORY_ID value set is-current class to list'
 );
 wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(26065583579107833)
+ p_id=>wwv_flow_imp.id(17117666390199938)
 ,p_process_sequence=>10
+,p_process_point=>'BEFORE_HEADER'
+,p_process_type=>'NATIVE_INVOKE_API'
+,p_process_name=>'Get category title'
+,p_attribute_01=>'PLSQL_PACKAGE'
+,p_attribute_03=>'BLOG_UTIL'
+,p_attribute_04=>'GET_CATEGORY_TITLE'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(17117762848199939)
+,p_page_process_id=>wwv_flow_imp.id(17117666390199938)
+,p_page_id=>14
+,p_direction=>'OUT'
+,p_data_type=>'VARCHAR2'
+,p_ignore_output=>false
+,p_display_sequence=>20
+,p_value_type=>'ITEM'
+,p_value=>'P14_CATEGORY_TITLE'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(17117802235199940)
+,p_page_process_id=>wwv_flow_imp.id(17117666390199938)
+,p_page_id=>14
+,p_name=>'p_category_id'
+,p_direction=>'IN'
+,p_data_type=>'VARCHAR2'
+,p_has_default=>false
+,p_display_sequence=>10
+,p_value_type=>'ITEM'
+,p_value=>'P14_CATEGORY_ID'
+);
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(26065583579107833)
+,p_process_sequence=>20
 ,p_process_point=>'BEFORE_HEADER'
 ,p_process_type=>'NATIVE_RESET_PAGINATION'
 ,p_process_name=>'Reset Category Pagination'
 ,p_attribute_01=>'THIS_PAGE'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_imp.component_end;
 end;

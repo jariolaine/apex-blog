@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221129094546'
+,p_last_upd_yyyymmddhh24miss=>'20230119094236'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(13706719753736206)
@@ -235,28 +235,46 @@ wwv_flow_imp_page.create_page_item(
 ,p_restricted_characters=>'US_ONLY'
 ,p_attribute_01=>'Y'
 );
-wwv_flow_imp_page.create_page_computation(
- p_id=>wwv_flow_imp.id(7082548468178440)
-,p_computation_sequence=>10
-,p_computation_item=>'P6_TAG_NAME'
-,p_computation_point=>'BEFORE_HEADER'
-,p_computation_type=>'EXPRESSION'
-,p_computation_language=>'PLSQL'
-,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_util.get_tag(',
-'  p_tag_id => :P6_TAG_ID',
-')'))
-,p_computation_comment=>'Fetch tag name to item. Item is used in page and region title.'
-,p_computation_error_message=>'Tag not found.'
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(17117374097199935)
+,p_process_sequence=>10
+,p_process_point=>'BEFORE_HEADER'
+,p_process_type=>'NATIVE_INVOKE_API'
+,p_process_name=>'Get tag name'
+,p_attribute_01=>'PLSQL_PACKAGE'
+,p_attribute_03=>'BLOG_UTIL'
+,p_attribute_04=>'GET_TAG'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(17117464350199936)
+,p_page_process_id=>wwv_flow_imp.id(17117374097199935)
+,p_page_id=>6
+,p_direction=>'OUT'
+,p_data_type=>'VARCHAR2'
+,p_ignore_output=>false
+,p_display_sequence=>20
+,p_value_type=>'ITEM'
+,p_value=>'P6_TAG_NAME'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(17117520667199937)
+,p_page_process_id=>wwv_flow_imp.id(17117374097199935)
+,p_page_id=>6
+,p_name=>'p_tag_id'
+,p_direction=>'IN'
+,p_data_type=>'VARCHAR2'
+,p_has_default=>false
+,p_display_sequence=>10
+,p_value_type=>'ITEM'
+,p_value=>'P6_TAG_ID'
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(26065633574107834)
-,p_process_sequence=>10
+,p_process_sequence=>20
 ,p_process_point=>'BEFORE_HEADER'
 ,p_process_type=>'NATIVE_RESET_PAGINATION'
 ,p_process_name=>'Reset Tag Pagination'
 ,p_attribute_01=>'THIS_PAGE'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_imp.component_end;
 end;

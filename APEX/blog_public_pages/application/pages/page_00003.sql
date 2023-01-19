@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221129094532'
+,p_last_upd_yyyymmddhh24miss=>'20230119094323'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6979825819516521)
@@ -222,23 +222,46 @@ wwv_flow_imp_page.create_page_item(
 ,p_protection_level=>'I'
 ,p_attribute_01=>'Y'
 );
-wwv_flow_imp_page.create_page_computation(
- p_id=>wwv_flow_imp.id(22524369772146438)
-,p_computation_sequence=>10
-,p_computation_item=>'P3_TEXT_SEARCH'
-,p_computation_point=>'BEFORE_HEADER'
-,p_computation_type=>'EXPRESSION'
-,p_computation_language=>'PLSQL'
-,p_computation=>'#OWNER#.blog_ctx.get_post_search( :P0_SEARCH )'
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(17117007705199932)
+,p_process_sequence=>10
+,p_process_point=>'BEFORE_HEADER'
+,p_process_type=>'NATIVE_INVOKE_API'
+,p_process_name=>'Get text search'
+,p_attribute_01=>'PLSQL_PACKAGE'
+,p_attribute_03=>'BLOG_CTX'
+,p_attribute_04=>'GET_POST_SEARCH'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(17117166138199933)
+,p_page_process_id=>wwv_flow_imp.id(17117007705199932)
+,p_page_id=>3
+,p_direction=>'OUT'
+,p_data_type=>'VARCHAR2'
+,p_ignore_output=>false
+,p_display_sequence=>20
+,p_value_type=>'ITEM'
+,p_value=>'P3_TEXT_SEARCH'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(17117252718199934)
+,p_page_process_id=>wwv_flow_imp.id(17117007705199932)
+,p_page_id=>3
+,p_name=>'p_search'
+,p_direction=>'IN'
+,p_data_type=>'VARCHAR2'
+,p_has_default=>false
+,p_display_sequence=>10
+,p_value_type=>'ITEM'
+,p_value=>'P0_SEARCH'
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(26065707389107835)
-,p_process_sequence=>10
+,p_process_sequence=>20
 ,p_process_point=>'BEFORE_HEADER'
 ,p_process_type=>'NATIVE_RESET_PAGINATION'
 ,p_process_name=>'Reset Search Pagination'
 ,p_attribute_01=>'THIS_PAGE'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
 wwv_flow_imp.component_end;
 end;

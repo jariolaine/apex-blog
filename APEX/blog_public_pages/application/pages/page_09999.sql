@@ -26,7 +26,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'12'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230115140608'
+,p_last_upd_yyyymmddhh24miss=>'20230119101833'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(35972740955622136)
@@ -90,44 +90,6 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_attribute_01=>'Y'
 );
-wwv_flow_imp_page.create_page_item(
- p_id=>wwv_flow_imp.id(27399224799103849)
-,p_name=>'P9999_REMEMBER'
-,p_item_sequence=>30
-,p_item_plug_id=>wwv_flow_imp.id(35972740955622136)
-,p_prompt=>'Remember username'
-,p_display_as=>'NATIVE_CHECKBOX'
-,p_named_lov=>'LOGIN_REMEMBER_USERNAME'
-,p_lov=>'.'||wwv_flow_imp.id(6882607828267435)||'.'
-,p_field_template=>wwv_flow_imp.id(6854381477267413)
-,p_item_template_options=>'#DEFAULT#'
-,p_lov_display_extra=>'YES'
-,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<p>',
-'If you select this checkbox, the application will save your username in a persistent browser cookie named "LOGIN_USERNAME_COOKIE".',
-'When you go to the login page the next time,',
-'the username field will be automatically populated with this value.',
-'</p>',
-'<p>',
-'If you deselect this checkbox and your username is already saved in the cookie,',
-'the application will overwrite it with an empty value.',
-'You can also use your browser''s developer tools to completely remove the cookie.',
-'</p>'))
-,p_attribute_01=>'1'
-);
-wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(27400882067103859)
-,p_process_sequence=>10
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Set Username Cookie'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex_authentication.send_login_username_cookie (',
-'    p_username => lower(:P9999_USERNAME),',
-'    p_consent  => :P9999_REMEMBER = ''Y'' );'))
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-);
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(27400443838103859)
 ,p_process_sequence=>20
@@ -149,17 +111,6 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'Clear Page(s) Cache'
 ,p_attribute_01=>'CLEAR_CACHE_CURRENT_PAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-);
-wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(27401276124103859)
-,p_process_sequence=>10
-,p_process_point=>'BEFORE_HEADER'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Get Username Cookie'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-':P9999_USERNAME := apex_authentication.get_login_username_cookie;',
-':P9999_REMEMBER := case when :P9999_USERNAME is not null then ''Y'' end;'))
-,p_process_clob_language=>'PLSQL'
 );
 wwv_flow_imp.component_end;
 end;

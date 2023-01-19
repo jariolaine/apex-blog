@@ -13,9 +13,9 @@ prompt --install
 @@application/shared_components/files/icons_app_icon_32_png.sql
 @@application/shared_components/files/icons_app_icon_192_png.sql
 @@application/shared_components/files/icons_app_icon_512_png.sql
-@@application/shared_components/files/css_style_min_css.sql
 @@application/shared_components/files/css_rss_xsl_min_css.sql
 @@application/shared_components/files/js_blog_min_js.sql
+@@application/shared_components/files/css_style_min_css.sql
 @@application/shared_components/files/css_rss_xsl_css.sql
 @@application/shared_components/files/js_blog_js.sql
 @@application/shared_components/files/css_style_css.sql
@@ -34,7 +34,6 @@ prompt --install
 @@application/shared_components/navigation/tabs/standard.sql
 @@application/shared_components/navigation/tabs/parent.sql
 @@application/shared_components/user_interface/lovs/link_groups.sql
-@@application/shared_components/user_interface/lovs/login_remember_username.sql
 @@application/pages/page_groups.sql
 @@application/comments.sql
 @@application/shared_components/navigation/breadcrumbentry.sql

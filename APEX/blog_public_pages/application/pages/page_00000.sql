@@ -14,14 +14,12 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_page.create_page(
  p_id=>0
 ,p_name=>'Global Page - Desktop'
-,p_step_title=>'Global Page - Desktop'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8700188054171688)
-,p_page_template_options=>'#DEFAULT#'
-,p_protection_level=>'C'
+,p_protection_level=>'D'
 ,p_page_component_map=>'14'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221121081137'
+,p_last_upd_yyyymmddhh24miss=>'20230119060056'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6433141607894071)
@@ -39,20 +37,22 @@ wwv_flow_imp_page.create_page_plug(
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6433383599894073)
-,p_plug_name=>'Global Right Column'
+,p_plug_name=>'Global Column'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(6781539027267375)
 ,p_plug_display_sequence=>9999
 ,p_plug_new_grid_row=>false
 ,p_plug_grid_column_span=>3
+,p_plug_grid_column_css_classes=>'z-global-column'
 ,p_plug_display_column=>10
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
-,p_plug_display_when_condition=>'1001,1002,9999'
+,p_plug_display_when_condition=>'1001,1002,1003,9999'
+,p_landmark_type=>'exclude_landmark'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
-,p_plug_comment=>'Application right side column holding e.g. search, archives, categories list and latest posts list'
+,p_plug_comment=>'Application global column holding e.g. search, archives, categories list and latest posts list'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6433488213894074)
@@ -64,8 +64,10 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_point=>'SUB_REGIONS'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_required_patch=>wwv_flow_imp.id(8667733481689180)
+,p_landmark_type=>'search'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
+,p_plug_comment=>'Objects relating search from blog posts'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6913532952677128)
@@ -84,6 +86,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_caching_max_age_in_sec=>604800
 ,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 ,p_required_patch=>wwv_flow_imp.id(8635355820099640)
+,p_landmark_type=>'navigation'
 ,p_plug_comment=>'Categories link list'
 );
 wwv_flow_imp_page.create_page_plug(
@@ -103,6 +106,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_caching_max_age_in_sec=>604800
 ,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 ,p_required_patch=>wwv_flow_imp.id(8677319562925389)
+,p_landmark_type=>'navigation'
 ,p_plug_comment=>'Latest post link list'
 );
 wwv_flow_imp_page.create_page_plug(
@@ -140,6 +144,8 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_caching_max_age_in_sec=>604800
 ,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 ,p_required_patch=>wwv_flow_imp.id(13229141933919002)
+,p_landmark_type=>'navigation'
+,p_plug_comment=>'Tags link list'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(28587492454643033)
@@ -158,11 +164,12 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_caching_max_age_in_sec=>604800
 ,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 ,p_required_patch=>wwv_flow_imp.id(8670890848739263)
+,p_landmark_type=>'navigation'
 ,p_plug_comment=>'Archives link list'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(40726951471800848)
-,p_plug_name=>'Modal Page Links'
+,p_plug_name=>'Footer Links'
 ,p_region_css_classes=>'margin-md'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'#DEFAULT#'
@@ -177,6 +184,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
 ,p_plug_display_when_condition=>'1001,1002,9999'
 ,p_plug_footer=>'"BLOG_POWERED_BY"'
+,p_plug_comment=>'Footer links to modal dialog pages'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(6433577571894075)
@@ -200,6 +208,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'SEARCH'
 ,p_attribute_05=>'BOTH'
+,p_item_comment=>'When user press enter on field page is summitted. Application process "Redirect to search page" handles redirect to search result page.'
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(7052827756664737)
