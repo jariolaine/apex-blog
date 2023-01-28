@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230114104750'
+,p_last_upd_yyyymmddhh24miss=>'20230128071928'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(76305240814166745)
@@ -107,7 +107,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>4
 ,p_column_heading=>'Comment Date'
 ,p_use_as_row_header=>'N'
-,p_column_format=>'&G_USER_DATE_TIME_FORMAT.'
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'

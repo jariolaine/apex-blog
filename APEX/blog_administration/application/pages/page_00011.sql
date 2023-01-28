@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230117103045'
+,p_last_upd_yyyymmddhh24miss=>'20230128074001'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8596898648797585)
@@ -37,21 +37,24 @@ wwv_flow_imp_page.create_page_plug(
 'select v1.id                as post_id',
 '  ,v1.ctx_search            as ctx_search',
 '  ,v1.category_id           as category_id',
+'  ,v1.tag_id                as tag_id',
 '  ,v1.created_on            as created_on',
+'  ,v1.created_on            as created_since',
 '  ,v1.created_by            as created_by',
 '  ,v1.changed_on            as changed_on',
+'  ,v1.changed_on            as changed_since',
 '  ,v1.changed_by            as changed_by',
+'  ,v1.published_display     as published_on',
+'  ,v1.published_display     as published_since',
 '  ,v1.blogger_name          as blogger_name',
 '  ,v1.category_title        as category_title',
 '  ,v1.title                 as post_title',
 '  ,v1.post_desc             as post_desc',
-'  ,v1.tag_id                as tag_id',
 '  ,v1.visible_tags          as visible_tags',
 '  ,v1.hidden_tags           as hidden_tags',
 '  ,v1.body_length           as body_length',
-'  ,v1.published_display     as published_on',
-'  ,v1.notes                 as notes',
 '  ,v1.comments_count        as comments_count',
+'  ,v1.notes                 as notes',
 '  ,status_lov.display_value as post_status',
 '  ,btn.title_tags           as btn_title_tags',
 '  ,case v1.post_status',
@@ -185,20 +188,31 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_db_column_name=>'CREATED_ON'
 ,p_display_order=>50
 ,p_column_identifier=>'BH'
-,p_column_label=>'Created'
+,p_column_label=>'Created on'
 ,p_column_type=>'DATE'
 ,p_heading_alignment=>'RIGHT'
 ,p_column_alignment=>'RIGHT'
-,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
+,p_tz_dependent=>'Y'
+,p_use_as_row_header=>'N'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(21638870596282116)
+,p_db_column_name=>'CREATED_SINCE'
+,p_display_order=>60
+,p_column_identifier=>'BR'
+,p_column_label=>'Created'
+,p_column_type=>'DATE'
+,p_column_alignment=>'CENTER'
+,p_format_mask=>'SINCE'
 ,p_tz_dependent=>'Y'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(27275565959075434)
 ,p_db_column_name=>'CREATED_BY'
-,p_display_order=>60
+,p_display_order=>70
 ,p_column_identifier=>'BI'
-,p_column_label=>'Created By'
+,p_column_label=>'Created by'
 ,p_column_type=>'STRING'
 ,p_heading_alignment=>'LEFT'
 ,p_use_as_row_header=>'N'
@@ -206,22 +220,33 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(8599408102797592)
 ,p_db_column_name=>'CHANGED_ON'
-,p_display_order=>70
+,p_display_order=>90
 ,p_column_identifier=>'F'
-,p_column_label=>'Changed'
+,p_column_label=>'Changed on'
 ,p_column_type=>'DATE'
 ,p_heading_alignment=>'RIGHT'
 ,p_column_alignment=>'RIGHT'
-,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
+,p_tz_dependent=>'Y'
+,p_use_as_row_header=>'N'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(21638986428282117)
+,p_db_column_name=>'CHANGED_SINCE'
+,p_display_order=>100
+,p_column_identifier=>'BS'
+,p_column_label=>'Changed'
+,p_column_type=>'DATE'
+,p_column_alignment=>'CENTER'
+,p_format_mask=>'SINCE'
 ,p_tz_dependent=>'Y'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(8599862540797593)
 ,p_db_column_name=>'CHANGED_BY'
-,p_display_order=>80
+,p_display_order=>110
 ,p_column_identifier=>'G'
-,p_column_label=>'Changed By'
+,p_column_label=>'Changed by'
 ,p_column_type=>'STRING'
 ,p_heading_alignment=>'LEFT'
 ,p_use_as_row_header=>'N'
@@ -229,20 +254,31 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(24468689536361506)
 ,p_db_column_name=>'PUBLISHED_ON'
-,p_display_order=>90
+,p_display_order=>120
 ,p_column_identifier=>'AY'
-,p_column_label=>'Published'
+,p_column_label=>'Published on'
 ,p_column_type=>'DATE'
 ,p_heading_alignment=>'RIGHT'
 ,p_column_alignment=>'RIGHT'
-,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
+,p_tz_dependent=>'Y'
+,p_use_as_row_header=>'N'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(21639087960282118)
+,p_db_column_name=>'PUBLISHED_SINCE'
+,p_display_order=>130
+,p_column_identifier=>'BT'
+,p_column_label=>'Published'
+,p_column_type=>'DATE'
+,p_column_alignment=>'CENTER'
+,p_format_mask=>'SINCE'
 ,p_tz_dependent=>'Y'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3880094723180117)
 ,p_db_column_name=>'BLOGGER_NAME'
-,p_display_order=>100
+,p_display_order=>140
 ,p_column_identifier=>'AF'
 ,p_column_label=>'Blogger'
 ,p_column_type=>'STRING'
@@ -255,7 +291,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3880100059180118)
 ,p_db_column_name=>'CATEGORY_TITLE'
-,p_display_order=>110
+,p_display_order=>150
 ,p_column_identifier=>'AG'
 ,p_column_label=>'Category'
 ,p_column_type=>'STRING'
@@ -265,7 +301,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3880250479180119)
 ,p_db_column_name=>'POST_TITLE'
-,p_display_order=>120
+,p_display_order=>160
 ,p_column_identifier=>'AH'
 ,p_column_label=>'Title'
 ,p_column_type=>'STRING'
@@ -275,7 +311,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3880461305180121)
 ,p_db_column_name=>'POST_DESC'
-,p_display_order=>130
+,p_display_order=>170
 ,p_column_identifier=>'AJ'
 ,p_column_label=>'Description'
 ,p_column_type=>'STRING'
@@ -285,7 +321,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(24471943643361539)
 ,p_db_column_name=>'VISIBLE_TAGS'
-,p_display_order=>150
+,p_display_order=>180
 ,p_column_identifier=>'BB'
 ,p_column_label=>'Tags (Enabled)'
 ,p_column_type=>'STRING'
@@ -298,7 +334,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(24471868067361538)
 ,p_db_column_name=>'HIDDEN_TAGS'
-,p_display_order=>160
+,p_display_order=>190
 ,p_column_identifier=>'BA'
 ,p_column_label=>'Tags (Disabled)'
 ,p_column_type=>'STRING'
@@ -311,7 +347,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3880562284180122)
 ,p_db_column_name=>'BODY_LENGTH'
-,p_display_order=>170
+,p_display_order=>200
 ,p_column_identifier=>'AK'
 ,p_column_label=>'HTML Length'
 ,p_column_type=>'NUMBER'
@@ -322,7 +358,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3881364957180130)
 ,p_db_column_name=>'COMMENTS_COUNT'
-,p_display_order=>180
+,p_display_order=>210
 ,p_column_identifier=>'AP'
 ,p_column_label=>'Comments'
 ,p_column_type=>'NUMBER'
@@ -333,7 +369,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(22958274033076039)
 ,p_db_column_name=>'NOTES'
-,p_display_order=>190
+,p_display_order=>220
 ,p_column_identifier=>'AX'
 ,p_column_label=>'Notes'
 ,p_column_type=>'STRING'
@@ -343,7 +379,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3880710343180124)
 ,p_db_column_name=>'POST_STATUS'
-,p_display_order=>200
+,p_display_order=>230
 ,p_column_identifier=>'AM'
 ,p_column_label=>'Status'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -360,7 +396,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(13625357587077813)
 ,p_db_column_name=>'BTN_TITLE_TAGS'
-,p_display_order=>210
+,p_display_order=>240
 ,p_column_identifier=>'BQ'
 ,p_column_label=>'Edit Tags'
 ,p_column_link=>'f?p=&APP_ID.:24:&SESSION.::&DEBUG.::P24_POST_ID:#POST_ID#'
@@ -373,62 +409,56 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(31618832374094024)
 ,p_db_column_name=>'POST_STATUS_ICON'
-,p_display_order=>220
+,p_display_order=>250
 ,p_column_identifier=>'BL'
 ,p_column_label=>'Post Status Icon'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(31246733855982907)
 ,p_db_column_name=>'BTN_TITLE_EDIT'
-,p_display_order=>230
+,p_display_order=>260
 ,p_column_identifier=>'BK'
 ,p_column_label=>'Btn Title Edit'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(25132885666432510)
 ,p_db_column_name=>'EDIT_URL'
-,p_display_order=>240
+,p_display_order=>270
 ,p_column_identifier=>'BD'
 ,p_column_label=>'Edit Url'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3880372195180120)
 ,p_db_column_name=>'BODY_HTML'
-,p_display_order=>250
+,p_display_order=>280
 ,p_column_identifier=>'AI'
 ,p_column_label=>'Body Html'
 ,p_column_type=>'CLOB'
 ,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(11415530557329113)
 ,p_db_column_name=>'DETAIL_VIEW_PUBLISHED'
-,p_display_order=>260
+,p_display_order=>290
 ,p_column_identifier=>'BO'
 ,p_column_label=>'Detail View Published'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
-,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(21076848274846837)
 ,p_db_column_name=>'TAGS_HTML'
-,p_display_order=>270
+,p_display_order=>300
 ,p_column_identifier=>'BP'
 ,p_column_label=>'Tags Html'
 ,p_column_type=>'CLOB'
 ,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_rpt(
  p_id=>wwv_flow_imp.id(8604892694799317)
@@ -438,7 +468,7 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_view_mode=>'REPORT'
-,p_report_columns=>'POST_TITLE:CATEGORY_TITLE:VISIBLE_TAGS:BTN_TITLE_TAGS:PUBLISHED_ON:POST_STATUS'
+,p_report_columns=>'POST_TITLE:CATEGORY_TITLE:VISIBLE_TAGS:BTN_TITLE_TAGS:PUBLISHED_SINCE:POST_STATUS:'
 ,p_sort_column_1=>'PUBLISHED_ON'
 ,p_sort_direction_1=>'DESC NULLS FIRST'
 ,p_sort_column_2=>'0'

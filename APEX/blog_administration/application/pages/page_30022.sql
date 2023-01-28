@@ -28,7 +28,7 @@ wwv_flow_imp_page.create_page(
 ||'o the default settings.</p>'))
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221125163943'
+,p_last_upd_yyyymmddhh24miss=>'20230128072542'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(43861070470616959)
@@ -45,6 +45,9 @@ wwv_flow_imp_page.create_page_plug(
 '  ,l.view_timestamp ',
 '    at time zone sessiontimezone',
 '                              as error_time',
+'  ,l.view_timestamp ',
+'    at time zone sessiontimezone',
+'                              as error_since',
 '  ,l.error_message            as error_message',
 '  ,l.error_on_component_type  as component_type',
 '  ,l.error_on_component_name  as component_name',
@@ -132,15 +135,27 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'J'
 ,p_column_label=>'Timestamp'
 ,p_column_type=>'DATE'
+,p_heading_alignment=>'RIGHT'
+,p_column_alignment=>'RIGHT'
+,p_tz_dependent=>'N'
+,p_use_as_row_header=>'N'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(21640666937282134)
+,p_db_column_name=>'ERROR_SINCE'
+,p_display_order=>60
+,p_column_identifier=>'U'
+,p_column_label=>'Occurred'
+,p_column_type=>'DATE'
 ,p_column_alignment=>'CENTER'
-,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
+,p_format_mask=>'SINCE'
 ,p_tz_dependent=>'N'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12510130561984007)
 ,p_db_column_name=>'ERROR_MESSAGE'
-,p_display_order=>60
+,p_display_order=>70
 ,p_column_identifier=>'K'
 ,p_column_label=>'Message'
 ,p_column_type=>'STRING'
@@ -149,7 +164,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12510268171984008)
 ,p_db_column_name=>'COMPONENT_TYPE'
-,p_display_order=>70
+,p_display_order=>80
 ,p_column_identifier=>'L'
 ,p_column_label=>'Context'
 ,p_column_type=>'STRING'
@@ -158,7 +173,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12510397121984009)
 ,p_db_column_name=>'COMPONENT_NAME'
-,p_display_order=>80
+,p_display_order=>90
 ,p_column_identifier=>'M'
 ,p_column_label=>'Component Name'
 ,p_column_type=>'STRING'
@@ -167,7 +182,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(15610888098559107)
 ,p_db_column_name=>'VIEW_MODE'
-,p_display_order=>90
+,p_display_order=>100
 ,p_column_identifier=>'O'
 ,p_column_label=>'View Mode'
 ,p_column_type=>'STRING'
@@ -176,7 +191,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(15610983036559108)
 ,p_db_column_name=>'VIEW_TYPE'
-,p_display_order=>100
+,p_display_order=>110
 ,p_column_identifier=>'P'
 ,p_column_label=>'View Type'
 ,p_column_type=>'STRING'
@@ -185,7 +200,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(15611007518559109)
 ,p_db_column_name=>'REQUEST'
-,p_display_order=>110
+,p_display_order=>120
 ,p_column_identifier=>'Q'
 ,p_column_label=>'Request'
 ,p_column_type=>'STRING'
@@ -194,7 +209,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(15611193794559110)
 ,p_db_column_name=>'CONTEXT'
-,p_display_order=>120
+,p_display_order=>130
 ,p_column_identifier=>'R'
 ,p_column_label=>'Context'
 ,p_column_type=>'STRING'
@@ -203,7 +218,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(15611252520559111)
 ,p_db_column_name=>'INFO'
-,p_display_order=>130
+,p_display_order=>140
 ,p_column_identifier=>'S'
 ,p_column_label=>'Info'
 ,p_column_type=>'STRING'
@@ -212,7 +227,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(15611312389559112)
 ,p_db_column_name=>'ECID'
-,p_display_order=>140
+,p_display_order=>150
 ,p_column_identifier=>'T'
 ,p_column_label=>'Ecid'
 ,p_column_type=>'STRING'
@@ -225,7 +240,7 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_report_alias=>'438648'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'PAGE_ID:SESSION_ID:DEBUG_ID:ERROR_TIME:ERROR_MESSAGE:COMPONENT_TYPE:COMPONENT_NAME:'
+,p_report_columns=>'PAGE_ID:SESSION_ID:DEBUG_ID:ERROR_SINCE:ERROR_MESSAGE:COMPONENT_TYPE:COMPONENT_NAME:'
 ,p_sort_column_1=>'ERROR_TIME'
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'ERR_TIME'

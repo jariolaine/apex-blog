@@ -26,7 +26,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230116120525'
+,p_last_upd_yyyymmddhh24miss=>'20230128060742'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(19452283963363502)
@@ -47,15 +47,17 @@ wwv_flow_imp_page.create_report_region(
 '    then',
 '      apex_lang.message(',
 '         p_name => ''BLOG_MSG_LAST_UPDATED''',
-'        ,p0 => to_char( v1.changed_on, :G_APP_DATE_FORMAT )',
+'        ,p0 => to_char( v1.changed_on, :APP_NLS_DATE_FORMAT )',
 '      )     ',
 '  end                     as changed_on',
+' -- save content_desc to compute item after regions',
 '  ,apex_util.savekey_vc2(',
 '    p_val => v1.content_desc',
 '  )                       as dialog_title',
 'from blog_v_dynamic_content v1',
 'where 1 = 1',
-'and v1.content_id = :REQUEST'))
+'and v1.content_id = :REQUEST',
+'order by v1.content_id'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
@@ -94,8 +96,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'DIALOG_TITLE'
 ,p_column_display_sequence=>30
 ,p_column_heading=>'Dialog Title'
-,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
+,p_use_as_row_header=>'Y'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );

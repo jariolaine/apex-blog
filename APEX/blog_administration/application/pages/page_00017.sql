@@ -41,7 +41,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230117103239'
+,p_last_upd_yyyymmddhh24miss=>'20230128074109'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6849894493100859)
@@ -55,20 +55,22 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select v1.id      as id',
 '  ,v1.changed_on  as created_on',
+'  ,v1.changed_on  as created_since',
 '  ,v1.changed_by  as created_by',
 '  ,v1.changed_on  as changed_on',
+'  ,v1.changed_on  as changed_since',
 '  ,v1.changed_by  as changed_by',
+'  ,v1.display_seq as display_seq',
 '  ,v1.link_status as link_status',
+'  ,v1.title       as title',
+'  ,v1.link_desc   as link_desc',
+'  ,v1.link_url    as link_url',
+'  ,v1.notes       as notes',
 '  ,case v1.link_status',
 '    when ''ENABLED''',
 '    then ''fa-check-circle u-success-text''',
 '    else ''fa-minus-circle u-danger-text''',
 '   end            as link_status_icon',
-'  ,v1.display_seq as display_seq',
-'  ,v1.title       as title',
-'  ,v1.link_desc   as link_desc',
-'  ,v1.link_url    as link_url',
-'  ,v1.notes       as notes',
 '  ,btn.title_edit as btn_title_edit',
 'from #OWNER#.blog_v_all_links v1',
 '-- link column button title',
@@ -120,20 +122,31 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_db_column_name=>'CREATED_ON'
 ,p_display_order=>20
 ,p_column_identifier=>'AY'
-,p_column_label=>'Created'
+,p_column_label=>'Created on'
 ,p_column_type=>'DATE'
 ,p_heading_alignment=>'RIGHT'
 ,p_column_alignment=>'RIGHT'
-,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
+,p_tz_dependent=>'Y'
+,p_use_as_row_header=>'N'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(21639712614282125)
+,p_db_column_name=>'CREATED_SINCE'
+,p_display_order=>30
+,p_column_identifier=>'BC'
+,p_column_label=>'Created'
+,p_column_type=>'DATE'
+,p_column_alignment=>'CENTER'
+,p_format_mask=>'SINCE'
 ,p_tz_dependent=>'Y'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(31619047211094026)
 ,p_db_column_name=>'CREATED_BY'
-,p_display_order=>30
+,p_display_order=>50
 ,p_column_identifier=>'AZ'
-,p_column_label=>'Created By'
+,p_column_label=>'Created by'
 ,p_column_type=>'STRING'
 ,p_heading_alignment=>'LEFT'
 ,p_use_as_row_header=>'N'
@@ -141,22 +154,33 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(18444999722293046)
 ,p_db_column_name=>'CHANGED_ON'
-,p_display_order=>40
+,p_display_order=>60
 ,p_column_identifier=>'AI'
-,p_column_label=>'Changed'
+,p_column_label=>'Changed on'
 ,p_column_type=>'DATE'
 ,p_heading_alignment=>'RIGHT'
 ,p_column_alignment=>'RIGHT'
-,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
+,p_tz_dependent=>'Y'
+,p_use_as_row_header=>'N'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(21639830228282126)
+,p_db_column_name=>'CHANGED_SINCE'
+,p_display_order=>70
+,p_column_identifier=>'BD'
+,p_column_label=>'Changed'
+,p_column_type=>'DATE'
+,p_column_alignment=>'CENTER'
+,p_format_mask=>'SINCE'
 ,p_tz_dependent=>'Y'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(18445036864293047)
 ,p_db_column_name=>'CHANGED_BY'
-,p_display_order=>50
+,p_display_order=>80
 ,p_column_identifier=>'AJ'
-,p_column_label=>'Changed By'
+,p_column_label=>'Changed by'
 ,p_column_type=>'STRING'
 ,p_heading_alignment=>'LEFT'
 ,p_use_as_row_header=>'N'
@@ -164,7 +188,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3882035677180137)
 ,p_db_column_name=>'DISPLAY_SEQ'
-,p_display_order=>70
+,p_display_order=>90
 ,p_column_identifier=>'O'
 ,p_column_label=>'Sequence'
 ,p_column_type=>'NUMBER'
@@ -175,7 +199,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(31619295245094028)
 ,p_db_column_name=>'LINK_STATUS'
-,p_display_order=>80
+,p_display_order=>100
 ,p_column_identifier=>'BA'
 ,p_column_label=>'Status'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -192,7 +216,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(19359713146963249)
 ,p_db_column_name=>'TITLE'
-,p_display_order=>100
+,p_display_order=>110
 ,p_column_identifier=>'AN'
 ,p_column_label=>'Title'
 ,p_column_type=>'STRING'
@@ -202,7 +226,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3882275772180139)
 ,p_db_column_name=>'LINK_DESC'
-,p_display_order=>110
+,p_display_order=>120
 ,p_column_identifier=>'Q'
 ,p_column_label=>'Description'
 ,p_column_type=>'STRING'
@@ -212,7 +236,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3882359433180140)
 ,p_db_column_name=>'LINK_URL'
-,p_display_order=>120
+,p_display_order=>130
 ,p_column_identifier=>'R'
 ,p_column_label=>'URL'
 ,p_column_link=>'#LINK_URL#'
@@ -225,7 +249,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(22958590684076042)
 ,p_db_column_name=>'NOTES'
-,p_display_order=>130
+,p_display_order=>140
 ,p_column_identifier=>'AQ'
 ,p_column_label=>'Notes'
 ,p_column_type=>'STRING'
@@ -235,22 +259,20 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(31619389927094029)
 ,p_db_column_name=>'LINK_STATUS_ICON'
-,p_display_order=>140
+,p_display_order=>150
 ,p_column_identifier=>'BB'
 ,p_column_label=>'Link Status Icon'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(31246617470982906)
 ,p_db_column_name=>'BTN_TITLE_EDIT'
-,p_display_order=>150
+,p_display_order=>160
 ,p_column_identifier=>'AX'
 ,p_column_label=>'Btn Title Edit'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_rpt(
  p_id=>wwv_flow_imp.id(6857430697108023)
@@ -261,7 +283,7 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_view_mode=>'REPORT'
-,p_report_columns=>'DISPLAY_SEQ:TITLE:LINK_DESC:CHANGED_ON:LINK_STATUS:'
+,p_report_columns=>'DISPLAY_SEQ:TITLE:LINK_DESC:CHANGED_SINCE:LINK_STATUS:'
 ,p_sort_column_1=>'DISPLAY_SEQ'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'0'

@@ -29,6 +29,10 @@ wwv_flow_imp.create_flow(
 ,p_flow_language=>'en'
 ,p_flow_language_derived_from=>'BROWSER'
 ,p_allow_feedback_yn=>'Y'
+,p_date_format=>'&G_USER_DATE_TIME_FORMAT.'
+,p_date_time_format=>'&G_USER_DATE_TIME_FORMAT.'
+,p_timestamp_format=>'&G_USER_DATE_TIME_FORMAT.'
+,p_timestamp_tz_format=>'&G_USER_DATE_TIME_FORMAT.'
 ,p_direction_right_to_left=>'N'
 ,p_flow_image_prefix => nvl(wwv_flow_application_install.get_image_prefix,'')
 ,p_documentation_banner=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -65,7 +69,7 @@ wwv_flow_imp.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230119190044'
+,p_last_upd_yyyymmddhh24miss=>'20230128074544'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>673
 ,p_print_server_type=>'INSTANCE'

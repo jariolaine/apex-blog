@@ -19,7 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'D'
 ,p_page_component_map=>'14'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230119060056'
+,p_last_upd_yyyymmddhh24miss=>'20230122092337'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6433141607894071)
@@ -39,7 +39,7 @@ wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6433383599894073)
 ,p_plug_name=>'Global Column'
 ,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_imp.id(6781539027267375)
+,p_plug_template=>wwv_flow_imp.id(6781372168267375)
 ,p_plug_display_sequence=>9999
 ,p_plug_new_grid_row=>false
 ,p_plug_grid_column_span=>3
@@ -76,7 +76,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-LinksList--showBadge'
 ,p_plug_template=>wwv_flow_imp.id(6802870362267386)
-,p_plug_display_sequence=>60
+,p_plug_display_sequence=>50
 ,p_plug_display_point=>'SUB_REGIONS'
 ,p_list_id=>wwv_flow_imp.id(6941496811819617)
 ,p_plug_source_type=>'NATIVE_LIST'
@@ -96,7 +96,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(6802870362267386)
-,p_plug_display_sequence=>50
+,p_plug_display_sequence=>40
 ,p_plug_display_point=>'SUB_REGIONS'
 ,p_list_id=>wwv_flow_imp.id(6945203882938984)
 ,p_plug_source_type=>'NATIVE_LIST'
@@ -115,16 +115,21 @@ wwv_flow_imp_page.create_page_plug(
 ,p_parent_plug_id=>wwv_flow_imp.id(6433383599894073)
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_plug_template=>wwv_flow_imp.id(6802870362267386)
-,p_plug_display_sequence=>100
+,p_plug_display_sequence=>90
 ,p_plug_display_point=>'SUB_REGIONS'
-,p_plug_source=>'"BLOG_RSS_ANCHOR"'
+,p_function_body_language=>'PLSQL'
+,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'return #OWNER#.blog_html.get_rss_anchor(',
+'   p_app_name => :G_APP_NAME',
+'  ,p_message  => ''BLOG_RSS_TITLE''',
+');'))
+,p_lazy_loading=>false
+,p_plug_source_type=>'NATIVE_DYNAMIC_CONTENT'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_caching=>'CACHE'
 ,p_plug_caching_max_age_in_sec=>604800
 ,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 ,p_required_patch=>wwv_flow_imp.id(8635198962090938)
-,p_attribute_01=>'Y'
-,p_attribute_02=>'HTML'
 ,p_plug_comment=>'Holds "Subscribe in a Reader" button shortcut'
 );
 wwv_flow_imp_page.create_page_plug(

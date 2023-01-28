@@ -121,7 +121,6 @@ prompt --install
 @@application/shared_components/globalization/dyntranslations.sql
 @@application/shared_components/user_interface/shortcuts/blog_rss_link.sql
 @@application/shared_components/user_interface/shortcuts/blog_meta_robots_noindex.sql
-@@application/shared_components/user_interface/shortcuts/blog_rss_anchor.sql
 @@application/shared_components/user_interface/shortcuts/blog_canonical_link_post.sql
 @@application/shared_components/user_interface/shortcuts/blog_canonical_link_category.sql
 @@application/shared_components/user_interface/shortcuts/blog_canonical_link_tag.sql

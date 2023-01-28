@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221125172946'
+,p_last_upd_yyyymmddhh24miss=>'20230128073239'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(56682839747382561)
@@ -42,6 +42,9 @@ wwv_flow_imp_page.create_page_plug(
 '  ,cast(',
 '    message_timestamp as timestamp with local time zone',
 '  )                   as message_timestamp',
+'  ,cast(',
+'    message_timestamp as timestamp with local time zone',
+'  )                   as message_since',
 '  ,elapsed_time       as elapsed_time',
 '  ,execution_time     as execution_time',
 '  ,message            as message',
@@ -128,14 +131,25 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Timestamp'
 ,p_column_type=>'DATE'
 ,p_column_alignment=>'CENTER'
-,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
+,p_tz_dependent=>'Y'
+,p_use_as_row_header=>'N'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(21640863702282136)
+,p_db_column_name=>'MESSAGE_SINCE'
+,p_display_order=>70
+,p_column_identifier=>'V'
+,p_column_label=>'Occurred'
+,p_column_type=>'DATE'
+,p_column_alignment=>'CENTER'
+,p_format_mask=>'SINCE'
 ,p_tz_dependent=>'Y'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12511022054984016)
 ,p_db_column_name=>'ELAPSED_TIME'
-,p_display_order=>70
+,p_display_order=>80
 ,p_column_identifier=>'R'
 ,p_column_label=>'Elapsed Time'
 ,p_column_type=>'NUMBER'
@@ -145,7 +159,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12511155858984017)
 ,p_db_column_name=>'EXECUTION_TIME'
-,p_display_order=>80
+,p_display_order=>90
 ,p_column_identifier=>'S'
 ,p_column_label=>'Execution Time'
 ,p_column_type=>'NUMBER'
@@ -155,7 +169,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12511249447984018)
 ,p_db_column_name=>'MESSAGE'
-,p_display_order=>90
+,p_display_order=>100
 ,p_column_identifier=>'T'
 ,p_column_label=>'Message'
 ,p_column_type=>'STRING'
@@ -164,7 +178,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12511345459984019)
 ,p_db_column_name=>'CALL_STACK'
-,p_display_order=>100
+,p_display_order=>110
 ,p_column_identifier=>'U'
 ,p_column_label=>'Call Stack'
 ,p_column_type=>'STRING'
@@ -177,7 +191,7 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_report_alias=>'438648'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'MESSAGE_TIMESTAMP:ELAPSED_TIME:EXECUTION_TIME:MESSAGE:CALL_STACK:'
+,p_report_columns=>'MESSAGE_SINCE:ELAPSED_TIME:EXECUTION_TIME:MESSAGE:CALL_STACK:'
 ,p_sort_column_1=>'MESSAGE_TIMESTAMP'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'ERROR_TIME'

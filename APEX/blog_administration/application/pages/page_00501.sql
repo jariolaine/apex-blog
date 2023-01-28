@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221112080630'
+,p_last_upd_yyyymmddhh24miss=>'20230128064026'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8857181938695778)
@@ -293,10 +293,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_04=>'TEXT'
 ,p_attribute_05=>'BOTH'
 ,p_show_quick_picks=>'Y'
-,p_quick_pick_label_01=>'SINCE'
-,p_quick_pick_value_01=>'SINCE'
-,p_quick_pick_label_02=>'DD.MM.YYYY HH24:MI:SS'
-,p_quick_pick_value_02=>'DD.MM.YYYY HH24:MI:SS'
+,p_quick_pick_label_01=>'DD.MM.YYYY HH24:MI:SS'
+,p_quick_pick_value_01=>'DD.MM.YYYY HH24:MI:SS'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(45751319514491572)
@@ -341,9 +339,6 @@ wwv_flow_imp_page.create_page_validation(
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
-,p_validation_condition=>'P501_DISPLAY_DATE_FORMAT'
-,p_validation_condition2=>'SINCE'
-,p_validation_condition_type=>'VAL_OF_ITEM_IN_COND_NOT_EQ_COND2'
 ,p_associated_item=>wwv_flow_imp.id(45750979813491570)
 ,p_error_display_location=>'INLINE_WITH_FIELD'
 );

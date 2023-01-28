@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230114104920'
+,p_last_upd_yyyymmddhh24miss=>'20230128073834'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(19643397669399856)
@@ -34,30 +34,32 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select page_id                ',
-'   ,l.page_name',
-'   ,l.think_time',
-'   ,l.log_context',
-'   ,l.elapsed_time',
-'   ,l.rows_queried',
-'   ,l.ip_address',
-'   ,l.agent',
-'   ,l.apex_session_id',
-'   ,l.error_message',
-'   ,l.error_on_component_type',
-'   ,l.error_on_component_name',
-'   ,l.page_view_mode',
-'   ,l.application_info',
-'   ,l.interactive_report_id',
-'   ,l.ir_saved_report_id',
-'   ,l.ir_search',
-'   ,l.content_length',
-'   ,l.regions_from_cache',
-'   ,l.page_view_type',
-'   ,l.request_value',
-'   ,l.debug_page_view_id',
-'   ,l.view_timestamp',
-'   ,l.ecid',
+'select ',
+'   l.page_id                  as page_id',
+'  ,l.page_name                as page_name',
+'  ,l.think_time               as think_time',
+'  ,l.log_context              as log_context',
+'  ,l.elapsed_time             as elapsed_time',
+'  ,l.rows_queried             as rows_queried',
+'  ,l.ip_address               as ip_address',
+'  ,l.agent                    as agent',
+'  ,l.apex_session_id          as apex_session_id',
+'  ,l.error_message            as error_message',
+'  ,l.error_on_component_type  as error_on_component_type',
+'  ,l.error_on_component_name  as error_on_component_name',
+'  ,l.page_view_mode           as page_view_mode',
+'  ,l.application_info         as application_info',
+'  ,l.interactive_report_id    as interactive_report_id',
+'  ,l.ir_saved_report_id       as ir_saved_report_id',
+'  ,l.ir_search                as ir_search',
+'  ,l.content_length           as content_length',
+'  ,l.regions_from_cache       as regions_from_cache',
+'  ,l.page_view_type           as page_view_type',
+'  ,l.request_value            as request_value',
+'  ,l.debug_page_view_id       as debug_page_view_id',
+'  ,l.view_timestamp           as view_timestamp',
+'  ,l.view_timestamp           as view_since',
+'  ,l.ecid                     as ecid',
 'from apex_workspace_activity_log l',
 'where 1 = 1',
 'and apex_session_id = :P30026_APEX_SESSION_ID'))
@@ -326,22 +328,32 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_db_column_name=>'VIEW_TIMESTAMP'
 ,p_display_order=>27
 ,p_column_identifier=>'AA'
-,p_column_label=>'View Timestamp'
+,p_column_label=>'Timestamp'
 ,p_column_type=>'DATE'
 ,p_heading_alignment=>'LEFT'
-,p_format_mask=>'&G_USER_DATE_TIME_FORMAT.'
+,p_tz_dependent=>'N'
+,p_use_as_row_header=>'N'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(21640974942282137)
+,p_db_column_name=>'VIEW_SINCE'
+,p_display_order=>37
+,p_column_identifier=>'AC'
+,p_column_label=>'Logged'
+,p_column_type=>'DATE'
+,p_column_alignment=>'CENTER'
+,p_format_mask=>'SINCE'
 ,p_tz_dependent=>'N'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(19654685779399870)
 ,p_db_column_name=>'ECID'
-,p_display_order=>28
+,p_display_order=>47
 ,p_column_identifier=>'AB'
 ,p_column_label=>'Ecid'
 ,p_column_type=>'STRING'
 ,p_heading_alignment=>'LEFT'
-,p_tz_dependent=>'N'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_rpt(
@@ -351,7 +363,7 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_report_alias=>'196594'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'PAGE_ID:PAGE_NAME:VIEW_TIMESTAMP:ELAPSED_TIME:ROWS_QUERIED:IP_ADDRESS:AGENT:ECID:'
+,p_report_columns=>'PAGE_ID:PAGE_NAME:VIEW_SINCE:ELAPSED_TIME:ROWS_QUERIED:IP_ADDRESS:AGENT:ECID:'
 ,p_sort_column_1=>'VIEW_TIMESTAMP'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'SECONDS_AGO'

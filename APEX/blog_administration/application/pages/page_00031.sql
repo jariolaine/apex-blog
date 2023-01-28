@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230116091501'
+,p_last_upd_yyyymmddhh24miss=>'20230128071835'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(37645474034287120)
@@ -119,7 +119,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>3
 ,p_column_heading=>'Comment Date'
 ,p_use_as_row_header=>'N'
-,p_column_format=>'&G_USER_DATE_TIME_FORMAT.'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -190,7 +189,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>46
 ,p_column_heading=>'Attribute 3'
 ,p_use_as_row_header=>'N'
-,p_column_format=>'&G_USER_DATE_TIME_FORMAT.'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );

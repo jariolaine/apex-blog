@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230119101458'
+,p_last_upd_yyyymmddhh24miss=>'20230128055727'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6915627356677149)
@@ -112,7 +112,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>4
 ,p_column_heading=>'Comment Date'
 ,p_use_as_row_header=>'N'
-,p_column_format=>'&G_APP_DATE_FORMAT.'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -212,7 +211,8 @@ wwv_flow_imp_page.create_report_region(
 '  ,v1.txt_tags        as txt_tags',
 'from #OWNER#.blog_v_posts v1',
 'where 1 = 1',
-'  and v1.post_id = :P2_POST_ID'))
+'  and v1.post_id = :P2_POST_ID',
+'order by 1'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_translate_title=>'N'
 ,p_lazy_loading=>false

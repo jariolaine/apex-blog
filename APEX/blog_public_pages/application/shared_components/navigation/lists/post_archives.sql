@@ -22,7 +22,7 @@ wwv_flow_imp_shared.create_list(
 '  ,v1.archive_url   as target_url',
 '-- list is cached, we can''t use is_current attribute',
 '  ,''NO''             as is_current',
-'  ,null             as image',
+'  ,''fa-folder-o''    as image',
 '  ,null             as image_attribute',
 '  ,null             as image_alt_attribute',
 '  ,case v1.show_post_count',
@@ -34,7 +34,7 @@ wwv_flow_imp_shared.create_list(
 '  ,''data-blog-content-id="''',
 '    || v1.archive_year',
 '    || ''"''          as attribute2',
-'  ,''z-linkList''      as attribute3',
+'  ,''z-linkList''     as attribute3',
 'from #OWNER#.blog_v_archive_year v1',
 'order by v1.archive_year desc',
 ''))
