@@ -6228,14 +6228,14 @@ as
   as
     l_xml           xmltype;
     l_xsl           blob;
-    l_cc_url        varchar2(1024);
+    l_css_url       varchar2(1024);
     l_cache_control varchar2(256);
   begin
 
     -- Generate relaive URL for CSS file
-    l_cc_url := apex_util.host_url( 'APEX_PATH' );
-    l_cc_url := substr( l_cc_url, instr( l_cc_url, '/', 1, 3 ) );
-    l_cc_url := l_cc_url || p_css_file;
+    l_css_url := apex_util.host_url( 'APEX_PATH' );
+    l_css_url := substr( l_css_url, instr( l_css_url, '/', 1, 3 ) );
+    l_css_url := l_css_url || p_css_file;
 
     l_xml :=
       xmltype(
@@ -6271,7 +6271,7 @@ as
               </xsl:template>
             </xsl:stylesheet>'
           ,p0 => apex_application.g_browser_language
-          ,p1 => l_cc_url
+          ,p1 => l_css_url
         )
       )
     ;

@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230128074001'
+,p_last_upd_yyyymmddhh24miss=>'20230128081357'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8596898648797585)
@@ -401,7 +401,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Edit Tags'
 ,p_column_link=>'f?p=&APP_ID.:24:&SESSION.::&DEBUG.::P24_POST_ID:#POST_ID#'
 ,p_column_linktext=>'<span aria-hidden="true" class="t-Icon fa fa-tag"></span>'
-,p_column_link_attr=>'title="#BTN_TITLE_TAGS#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
+,p_column_link_attr=>'title="#BTN_TITLE_TAGS#" class="t-Button t-Button--noLabel t-Button--icon t t-Button--stretch t-Button--small"'
 ,p_column_type=>'STRING'
 ,p_column_alignment=>'CENTER'
 ,p_use_as_row_header=>'N'

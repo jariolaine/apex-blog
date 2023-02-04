@@ -61,7 +61,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --       Regions:                 27
 --       Buttons:                  7
 --       Dynamic Actions:          8
---       Meta Tags:               15
+--       Meta Tags:               14
 --     Shared Components:
 --       Logic:
 --         Items:                  7
@@ -158,7 +158,7 @@ wwv_flow_imp.create_flow(
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_tokenize_row_search=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230128074742'
+,p_last_upd_yyyymmddhh24miss=>'20230204093429'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>542
 ,p_print_server_type=>'INSTANCE'
@@ -16122,7 +16122,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230122093121'
+,p_last_upd_yyyymmddhh24miss=>'20230128082941'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6432040642894060)
@@ -16306,11 +16306,6 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'Reset Posts Pagination'
 ,p_attribute_01=>'THIS_PAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-);
-wwv_flow_imp_page.create_page_meta_tag(
- p_id=>wwv_flow_imp.id(19455520672363535)
-,p_meta_tag_name=>'og:image'
-,p_meta_tag_value=>'&APP_FILES.icons/app-icon-512.png'
 );
 wwv_flow_imp_page.create_page_meta_tag(
  p_id=>wwv_flow_imp.id(22521995144146414)
@@ -19891,7 +19886,7 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 22.2.1.20230128'');',
+'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 22.2.1.20230204'');',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''20'',''0'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,blog_util.int_to_vc2(apex_application_install.get_applica'
 ||'tion_id));',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''110'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,''My Blog'');',
@@ -25637,14 +25632,14 @@ wwv_flow_imp_shared.append_to_install_script(
 '  as',
 '    l_xml           xmltype;',
 '    l_xsl           blob;',
-'    l_cc_url        varchar2(1024);',
+'    l_css_url       varchar2(1024);',
 '    l_cache_control varchar2(256);',
 '  begin',
 '',
 '    -- Generate relaive URL for CSS file',
-'    l_cc_url := apex_util.host_url( ''APEX_PATH'' );',
-'    l_cc_url := substr( l_cc_url, instr( l_cc_url, ''/'', 1, 3 ) );',
-'    l_cc_url := l_cc_url || p_css_file;',
+'    l_css_url := apex_util.host_url( ''APEX_PATH'' );',
+'    l_css_url := substr( l_css_url, instr( l_css_url, ''/'', 1, 3 ) );',
+'    l_css_url := l_css_url || p_css_file;',
 '',
 '    l_xml :=',
 '      xmltype(',
@@ -25680,7 +25675,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '              </xsl:template>',
 '            </xsl:stylesheet>''',
 '          ,p0 => apex_application.g_browser_language',
-'          ,p1 => l_cc_url',
+'          ,p1 => l_css_url',
 '        )',
 '      )',
 '    ;',
@@ -26012,7 +26007,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end sitemap_categories;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure sitemap_ar'))
+'  procedure sit'))
 );
 null;
 end;
@@ -26021,7 +26016,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'chives',
+'emap_archives',
 '  as',
 '    l_xml           blob;',
 '    l_cache_control varchar2(256);',
@@ -26257,7 +26252,7 @@ wwv_flow_imp_shared.create_install_script(
 '-- Update version info',
 '--------------------------------------------------------',
 'update blog_settings',
-'  set attribute_value = ''Release 22.2.1.20230128''',
+'  set attribute_value = ''Release 22.2.1.20230204''',
 'where 1 = 1',
 '  and attribute_name = ''G_APP_VERSION''',
 ';',

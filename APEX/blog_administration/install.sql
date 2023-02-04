@@ -48,7 +48,6 @@ prompt --install
 @@application/shared_components/user_interface/lovs/post_tags.sql
 @@application/shared_components/user_interface/lovs/post_tags_hidden.sql
 @@application/shared_components/user_interface/lovs/post_tags_visible.sql
-@@application/shared_components/user_interface/lovs/tags.sql
 @@application/shared_components/user_interface/lovs/timeframe_4_weeks.sql
 @@application/shared_components/user_interface/lovs/yes_no.sql
 @@application/pages/page_groups.sql
