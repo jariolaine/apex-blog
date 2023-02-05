@@ -352,23 +352,6 @@ create table blog_post_tags(
 )
 /
 --------------------------------------------------------
---  DDL for Table BLOG_POST_UDS
---------------------------------------------------------
-create table blog_post_uds(
-  id number( 38, 0 ) not null,
-  row_version number( 38, 0 ) not null,
-  created_on timestamp( 6 ) with local time zone not null,
-  created_by varchar2( 256 char ) not null,
-  changed_on timestamp( 6 ) with local time zone not null,
-  changed_by varchar2( 256 char ) not null,
-  post_id number( 38, 0 ) not null,
-  dummy char( 1 byte ) default 'X' not null,
-  constraint blog_post_uds_pk primary key( id ),
-  constraint blog_post_uds_uk1 unique( post_id ),
-  constraint blog_post_uds_ck1 check( row_version > 0 )
-)
-/
---------------------------------------------------------
 --  DDL for Table BLOG_POST_SETTINGS
 --------------------------------------------------------
 create table blog_settings(
@@ -1844,7 +1827,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "PUBLISHED_COMMENTS_COUNT", "UNREAD_COMMENTS_COUNT", "MODERATE_COMMENTS_COUNT", "DISABLED_COMMENTS_COUNT", "POST_STATUS", "TAGS_HTML") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "PUBLISHED_COMMENTS_COUNT", "UNREAD_COMMENTS_COUNT", "MODERATE_COMMENTS_COUNT", "DISABLED_COMMENTS_COUNT", "POST_STATUS", "TAGS_HTML") AS
 select
    t1.id                as id
   ,t1.category_id       as category_id
@@ -1863,8 +1846,7 @@ select
   ,t1.body_length       as body_length
   ,t1.published_on      as published_on
   ,t1.notes             as notes
-  ,t4.rowid             as ctx_rid
-  ,t4.dummy             as ctx_search
+  ,t1.rowid             as ctx_rid
   ,case t1.is_active * t2.is_active * t3.is_active
     when 1
     then t1.published_on
@@ -1974,8 +1956,6 @@ join blog_categories t2
   on t1.category_id = t2.id
 join blog_bloggers t3
   on t1.blogger_id = t3.id
-join blog_post_uds t4
-  on t1.id = t4.post_id
 where 1 = 1
 /
 --------------------------------------------------------
@@ -2702,19 +2682,13 @@ for each row
 begin
 
   -- if category change update post user datastore table
-  if :new.title_unique != :old.title_unique
+  if :new.title != :old.title
   then
 
-    update blog_post_uds t1
-      set dummy = dummy
+    update blog_posts t1
+      set title = title
     where 1 = 1
-    and exists(
-      select 1
-      from blog_posts x1
-      where 1 = 1
-        and x1.category_id = :new.id
-        and x1.id = t1.post_id
-    )
+      and t1.category_id = :new.id
     ;
 
   end if;
@@ -2722,32 +2696,52 @@ begin
 end;
 /
 --------------------------------------------------------
---  DDL for Trigger BLOG_POST_UDS_POSTS_TRG
+--  DDL for Trigger BLOG_POST_UDS_POST_TAGS_TRG
 --------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_POSTS_TRG"
-after
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_POST_TAGS_TRG"
+for
 insert or
-update on blog_posts
-for each row
-begin
+update or
+delete on blog_post_tags
+compound trigger
 
-  if inserting
-  then
+  t_post_id apex_t_number;
 
-    insert into blog_post_uds( post_id )
-      values ( :new.id )
-    ;
+  after each row is
+  begin
 
-  elsif updating
-  then
+    if deleting
+    then
 
-    update blog_post_uds t1
-      set dummy = dummy
+      apex_string.push( t_post_id, :old.post_id );
+
+    else
+
+      update blog_posts t1
+        set title = title
+      where 1 = 1
+        and t1.id = :new.post_id
+      ;
+
+    end if;
+
+  end after each row;
+
+  after statement is
+  begin
+
+    update blog_posts t1
+      set title = title
     where 1 = 1
-    and t1.post_id  = :new.id
+      and exists(
+        select 1
+        from table( t_post_id ) x1
+        where 1 = 1
+          and x1.column_value = t1.id
+      )
     ;
 
-  end if;
+  end after statement;
 
 end;
 /
@@ -2758,67 +2752,25 @@ CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_TAGS_TRG"
 after
 update on blog_tags
 for each row
-declare
-  l_update boolean;
 begin
 
-  l_update :=
-    case
-      when :new.tag_unique != :old.tag_unique
-      then true
-      when :new.is_active != :old.is_active
-      then true
-      else false
-    end
-  ;
-
-  if l_update
+  if :new.tag != :old.tag
+  or :new.is_active != :old.is_active
   then
-    update blog_post_uds t1
-      set dummy = dummy
+
+    update blog_posts t1
+      set title = title
     where 1 = 1
     and exists(
       select 1
       from blog_post_tags x1
       where 1 = 1
-        and x1.post_id = t1.post_id
+        and x1.post_id = t1.id
         and x1.tag_id  = :new.id
       )
     ;
+
   end if;
-
-end;
-/
---------------------------------------------------------
---  DDL for Trigger BLOG_POST_UDS_TRG
---------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_TRG"
-before
-insert or
-update on blog_post_uds
-for each row
-begin
-
-  if inserting then
-    :new.id           := coalesce( :new.id, blog_seq.nextval );
-    :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := coalesce( :new.created_on, localtimestamp );
-    :new.created_by   := coalesce(
-      :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV', 'PROXY_USER' )
-      ,sys_context( 'USERENV', 'SESSION_USER' )
-    );
-  elsif updating then
-    :new.row_version := :old.row_version + 1;
-  end if;
-
-  :new.changed_on := localtimestamp;
-  :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV', 'PROXY_USER' )
-    ,sys_context( 'USERENV', 'SESSION_USER' )
-  );
 
 end;
 /
@@ -6768,5 +6720,3 @@ ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK1" FOREIGN KEY ("P
   REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
 ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK2" FOREIGN KEY ("TAG_ID")
   REFERENCES "BLOG_TAGS" ("ID") ENABLE;
-ALTER TABLE "BLOG_POST_UDS" ADD CONSTRAINT "BLOG_POST_UDS_FK1" FOREIGN KEY ("POST_ID")
-  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;

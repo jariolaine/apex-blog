@@ -13,7 +13,6 @@ alter table blog_posts drop constraint blog_posts_fk1;
 alter table blog_posts drop constraint blog_posts_fk2;
 alter table blog_post_tags drop constraint blog_post_tags_fk1;
 alter table blog_post_tags drop constraint blog_post_tags_fk2;
-alter table blog_post_uds drop constraint blog_post_uds_fk1;
 --------------------------------------------------------
 --  Drop objects
 --------------------------------------------------------
@@ -41,7 +40,6 @@ drop table blog_list_of_values;
 drop table blog_posts;
 drop table blog_post_preview;
 drop table blog_post_tags;
-drop table blog_post_uds;
 drop table blog_settings;
 drop table blog_subscribers_email;
 drop table blog_tags;

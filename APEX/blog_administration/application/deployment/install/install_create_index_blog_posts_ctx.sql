@@ -1,7 +1,7 @@
-prompt --application/deployment/install/install_blog_post_text_index
+prompt --application/deployment/install/install_create_index_blog_posts_ctx
 begin
 --   Manifest
---     INSTALL: INSTALL-Blog post text index
+--     INSTALL: INSTALL-Create index BLOG_POSTS_CTX
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
@@ -14,7 +14,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(41212685070708550)
 ,p_install_id=>wwv_flow_imp.id(31706870664802069)
-,p_name=>'Blog post text index'
+,p_name=>'Create index BLOG_POSTS_CTX'
 ,p_sequence=>20
 ,p_script_type=>'INSTALL'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -72,8 +72,8 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------',
 '--  Create text index',
 '--------------------------------------------------------',
-'create index blog_post_uds_ctx on blog_post_uds (dummy)',
-'indextype is ctxsys.context parameters (',
+'create index blog_posts_ctx on blog_posts(title)',
+'indextype is ctxsys.context parameters(',
 '  ''datastore      blog_post_uds_ds',
 '   lexer          blog_post_uds_lx',
 '   section group  ctxsys.auto_section_group',

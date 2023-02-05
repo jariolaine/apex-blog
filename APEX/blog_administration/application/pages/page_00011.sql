@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230128081357'
+,p_last_upd_yyyymmddhh24miss=>'20230204102010'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8596898648797585)
@@ -35,7 +35,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select v1.id                as post_id',
-'  ,v1.ctx_search            as ctx_search',
 '  ,v1.category_id           as category_id',
 '  ,v1.tag_id                as tag_id',
 '  ,v1.created_on            as created_on',
@@ -113,7 +112,7 @@ wwv_flow_imp_page.create_worksheet(
 ,p_name=>'Articles'
 ,p_max_row_count_message=>'The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.'
 ,p_no_data_found_message=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
-,p_oracle_text_index_column=>'CTX_SEARCH'
+,p_oracle_text_index_column=>'POST_TITLE'
 ,p_pagination_type=>'ROWS_X_TO_Y'
 ,p_pagination_display_pos=>'BOTTOM_RIGHT'
 ,p_report_list_mode=>'TABS'
@@ -150,16 +149,6 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'AD'
 ,p_column_label=>'Post ID'
 ,p_column_type=>'NUMBER'
-,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
-);
-wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(36998139921037737)
-,p_db_column_name=>'CTX_SEARCH'
-,p_display_order=>20
-,p_column_identifier=>'BM'
-,p_column_label=>'Ctx Search'
-,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
 ,p_use_as_row_header=>'N'
 );
@@ -468,7 +457,7 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_view_mode=>'REPORT'
-,p_report_columns=>'POST_TITLE:CATEGORY_TITLE:VISIBLE_TAGS:BTN_TITLE_TAGS:PUBLISHED_SINCE:POST_STATUS:'
+,p_report_columns=>'POST_TITLE:CATEGORY_TITLE:VISIBLE_TAGS:BTN_TITLE_TAGS:PUBLISHED_SINCE:POST_STATUS'
 ,p_sort_column_1=>'PUBLISHED_ON'
 ,p_sort_direction_1=>'DESC NULLS FIRST'
 ,p_sort_column_2=>'0'

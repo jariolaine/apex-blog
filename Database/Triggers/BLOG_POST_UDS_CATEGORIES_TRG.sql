@@ -8,19 +8,13 @@ for each row
 begin
 
   -- if category change update post user datastore table
-  if :new.title_unique != :old.title_unique
+  if :new.title != :old.title
   then
 
-    update blog_post_uds t1
-      set dummy = dummy
+    update blog_posts t1
+      set title = title
     where 1 = 1
-    and exists(
-      select 1
-      from blog_posts x1
-      where 1 = 1
-        and x1.category_id = :new.id
-        and x1.id = t1.post_id
-    )
+      and t1.category_id = :new.id
     ;
 
   end if;

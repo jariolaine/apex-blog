@@ -93,7 +93,7 @@ prompt APPLICATION 401 - Blog Public Pages
 --       E-Mail:
 --         Templates:              1
 --     Supporting Objects:  Included
---       Install scripts:         11
+--       Install scripts:         12
 --       Validations:              3
 --   Version:         22.2.1
 --   Instance ID:     7729808509147575
@@ -158,7 +158,7 @@ wwv_flow_imp.create_flow(
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_tokenize_row_search=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230204093429'
+,p_last_upd_yyyymmddhh24miss=>'20230205082515'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>542
 ,p_print_server_type=>'INSTANCE'
@@ -17199,7 +17199,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230128060147'
+,p_last_upd_yyyymmddhh24miss=>'20230204101413'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6979825819516521)
@@ -17226,11 +17226,9 @@ wwv_flow_imp_page.create_report_region(
 '  ,v1.txt_tags        as label_04',
 '  ,v1.tags_html1      as value_04',
 'from #OWNER#.blog_v_posts v1',
-'join #OWNER#.blog_post_uds t1',
-'  on v1.post_id = t1.post_id',
 'where 1 = 1',
 '  and :P3_TEXT_SEARCH is not null',
-'  and contains( t1.dummy, :P3_TEXT_SEARCH, 1 ) > 0',
+'  and contains( v1.post_title, :P3_TEXT_SEARCH, 1 ) > 0',
 'order by score(1) desc',
 '  ,v1.published_on desc'))
 ,p_ajax_enabled=>'Y'
@@ -19886,7 +19884,7 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 22.2.1.20230204'');',
+'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 22.2.1.20230205'');',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''20'',''0'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,blog_util.int_to_vc2(apex_application_install.get_applica'
 ||'tion_id));',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''110'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,''My Blog'');',
@@ -20487,13 +20485,157 @@ wwv_flow_imp_shared.create_install_script(
 );
 end;
 /
+prompt --application/deployment/install/upgrade_patch_22_2_20230205
+begin
+wwv_flow_imp_shared.create_install_script(
+ p_id=>wwv_flow_imp.id(23864182944606208)
+,p_install_id=>wwv_flow_imp.id(20741295540297154)
+,p_name=>'Patch 22.2.20230205'
+,p_sequence=>70
+,p_script_type=>'UPGRADE'
+,p_condition_type=>'EXISTS'
+,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from blog_v_version',
+'where 1 = 1',
+'and application_date < 20230205'))
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'--  Patch 22.2.20230205',
+'--------------------------------------------------------',
+'--  Drop trigger BLOG_POST_UDS_POSTS_TRG',
+'--------------------------------------------------------',
+'drop trigger blog_post_uds_posts_trg;',
+'--------------------------------------------------------',
+'--  Drop table BLOG_POST_UDS',
+'--------------------------------------------------------',
+'drop table blog_post_uds;',
+'--------------------------------------------------------',
+'--  Drop text index preferences',
+'--------------------------------------------------------',
+'begin',
+'  ctx_ddl.drop_preference( ''BLOG_POST_UDS_DS'' );',
+'  ctx_ddl.drop_preference( ''BLOG_POST_UDS_LX'' );',
+'end;',
+'/',
+'--------------------------------------------------------',
+'--  Create trigger BLOG_POST_UDS_POST_TAGS_TRG',
+'--------------------------------------------------------',
+'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_POST_TAGS_TRG"',
+'for',
+'insert or',
+'update or',
+'delete on blog_post_tags',
+'compound trigger',
+'',
+'  t_post_id apex_t_number;',
+'',
+'  after each row is',
+'  begin',
+'',
+'    if deleting',
+'    then',
+'',
+'      apex_string.push( t_post_id, :old.post_id );',
+'',
+'    else',
+'',
+'      update blog_posts t1',
+'        set title = title',
+'      where 1 = 1',
+'        and t1.id = :new.post_id',
+'      ;',
+'',
+'    end if;',
+'',
+'  end after each row;',
+'',
+'  after statement is',
+'  begin',
+'',
+'    update blog_posts t1',
+'      set title = title',
+'    where 1 = 1',
+'      and exists(',
+'        select 1',
+'        from table( t_post_id ) x1',
+'        where 1 = 1',
+'          and x1.column_value = t1.id',
+'      )',
+'    ;',
+'',
+'  end after statement;',
+'',
+'end;',
+'/',
+'--------------------------------------------------------',
+'--  Alter trigger BLOG_POST_UDS_CATEGORIES_TRG',
+'--------------------------------------------------------',
+'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_CATEGORIES_TRG"',
+'after',
+'update on blog_categories',
+'for each row',
+'begin',
+'',
+'  -- if category change update post user datastore table',
+'  if :new.title != :old.title',
+'  then',
+'',
+'    update blog_posts t1',
+'      set title = title',
+'    where 1 = 1',
+'      and t1.category_id = :new.id',
+'    ;',
+'',
+'  end if;',
+'',
+'end;',
+'/',
+'--------------------------------------------------------',
+'--  Alter trigger BLOG_POST_UDS_TAGS_TRG',
+'--------------------------------------------------------',
+'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_UDS_TAGS_TRG"',
+'after',
+'update on blog_tags',
+'for each row',
+'begin',
+'',
+'  if :new.tag != :old.tag',
+'  or :new.is_active != :old.is_active',
+'  then',
+'',
+'    update blog_posts t1',
+'      set title = title',
+'    where 1 = 1',
+'    and exists(',
+'      select 1',
+'      from blog_post_tags x1',
+'      where 1 = 1',
+'        and x1.post_id = t1.id',
+'        and x1.tag_id  = :new.id',
+'      )',
+'    ;',
+'',
+'  end if;',
+'',
+'end;',
+'/',
+'--------------------------------------------------------',
+'--  Insert patch version info to BLOG_SETTINGS',
+'--------------------------------------------------------',
+'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,attribute_value)',
+'  values(10,0,''PATCH_20230205'',''STRING'',''INTERNAL'',''Patch 22.2.20230205'')',
+';',
+''))
+);
+end;
+/
 prompt --application/deployment/install/upgrade_database_objects_upgrade
 begin
 wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
 ,p_name=>'Database objects upgrade'
-,p_sequence=>70
+,p_sequence=>80
 ,p_script_type=>'UPGRADE'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '-- Database objects upgrade',
@@ -21906,8 +22048,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '--  DDL for View BLOG_V_ALL_POSTS',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LEN'
-||'GTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "PUBLISHED_COMMENTS_COUNT", "UNREAD_COMMENTS_COUNT", "MODERATE_COMMENTS_COUNT", "DISABLED_COMMENTS_CO'
-||'UNT", "POST_STATUS", "TAGS_HTML") AS',
+||'GTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "PUBLISHED_COMMENTS_COUNT", "UNREAD_COMMENTS_COUNT", "MODERATE_COMMENTS_COUNT", "DISABLED_COMMENTS_COUNT", "POST_ST'
+||'ATUS", "TAGS_HTML") AS',
 'select',
 '   t1.id                as id',
 '  ,t1.category_id       as category_id',
@@ -21926,8 +22068,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,t1.body_length       as body_length',
 '  ,t1.published_on      as published_on',
 '  ,t1.notes             as notes',
-'  ,t4.rowid             as ctx_rid',
-'  ,t4.dummy             as ctx_search',
+'  ,t1.rowid             as ctx_rid',
 '  ,case t1.is_active * t2.is_active * t3.is_active',
 '    when 1',
 '    then t1.published_on',
@@ -21949,7 +22090,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '    from blog_v_all_post_tags tags',
 '    where 1 = 1',
 '    and tags.post_id = t1.id',
-'    and tags.is_a'))
+'    and tags.is_active * tags.tag_is_active = 1',
+'  )                  '))
 );
 null;
 end;
@@ -21958,8 +22100,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ctive * tags.tag_is_active = 1',
-'  )                     as visible_tags',
+'   as visible_tags',
 '  ,(',
 '    select listagg( tags.tag, '', '' )  within group( order by tags.display_seq )',
 '    from blog_v_all_post_tags tags',
@@ -22046,8 +22187,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '  on t1.category_id = t2.id',
 'join blog_bloggers t3',
 '  on t1.blogger_id = t3.id',
-'join blog_post_uds t4',
-'  on t1.id = t4.post_id',
 'where 1 = 1',
 '/',
 '--------------------------------------------------------',
@@ -22956,7 +23095,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    apex_debug.info(',
 '      p_message => ''File name: %s, file size: %s, mime type: %s''',
-'     '))
+'      ,p0 => l_file_t.file_name',
+'      ,p1 => l_file_t.file_size',
+'      ,p2 => l_file_t.mime_type',
+'      ,'))
 );
 null;
 end;
@@ -22965,10 +23107,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' ,p0 => l_file_t.file_name',
-'      ,p1 => l_file_t.file_size',
-'      ,p2 => l_file_t.mime_type',
-'      ,p3 => l_file_t.file_charset',
+'p3 => l_file_t.file_charset',
 '    );',
 '',
 '    -- Add Last-Modified header',
@@ -24002,7 +24141,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
 '--------------------------------------------------------------------------------',
-'----------------------------------------------------------------------------'))
+'--------------------------------------------------------------------------------',
+'  function to_html_entities(',
+'    p_number in number',
+'  ) return varchar2',
+'  as',
+'    l_string var'))
 );
 null;
 end;
@@ -24011,12 +24155,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----',
-'  function to_html_entities(',
-'    p_number in number',
-'  ) return varchar2',
-'  as',
-'    l_string varchar2(4000);',
+'char2(4000);',
 '    l_result varchar2(4000);',
 '  begin',
 '',
@@ -25008,7 +25147,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '        ) as placeholders',
 '      from blog_v_all_posts v1',
 '      where 1 = 1',
-'      and v1.id ='))
+'      and v1.id = l_post_id',
+'      and v1.blogger_email is not null',
+'    ) loop',
+'',
+'      apex_debug.info(',
+'        ''Send'))
 );
 null;
 end;
@@ -25017,12 +25161,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' l_post_id',
-'      and v1.blogger_email is not null',
-'    ) loop',
-'',
-'      apex_debug.info(',
-'        ''Send email to: %s from: %s template: %s placeholders: %s''',
+' email to: %s from: %s template: %s placeholders: %s''',
 '        ,c1.blogger_email',
 '        ,l_app_email',
 '        ,p_email_template',
@@ -26007,7 +26146,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end sitemap_categories;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure sit'))
+'  procedure sitemap_archives',
+'  as',
+'    l_xml           blob;',
+'    l_cache_control varchar2(256);',
+'  begin',
+'',
+'    selec'))
 );
 null;
 end;
@@ -26016,13 +26161,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'emap_archives',
-'  as',
-'    l_xml           blob;',
-'    l_cache_control varchar2(256);',
-'  begin',
-'',
-'    select xmlserialize( document',
+'t xmlserialize( document',
 '      xmlelement(',
 '        "urlset",',
 '        xmlattributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns"),',
@@ -26159,22 +26298,23 @@ wwv_flow_imp_shared.append_to_install_script(
 null;
 end;
 /
-prompt --application/deployment/install/upgrade_rereate_text_index
+prompt --application/deployment/install/upgrade_create_index_blog_posts_ctx
 begin
 wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(13344011176158522)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
-,p_name=>'Rereate text index'
-,p_sequence=>80
+,p_name=>'Create index BLOG_POSTS_CTX'
+,p_sequence=>90
 ,p_script_type=>'UPGRADE'
 ,p_condition_type=>'EXISTS'
 ,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select 1',
 'from blog_v_version',
 'where 1 = 1',
-'and application_date < 20221206'))
+'and application_date < 20230205'))
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'--  Recreate text index',
+'--------------------------------------------------------',
+'--  Create text index preferences',
 '--------------------------------------------------------',
 'declare',
 '  l_schema varchar2(256);',
@@ -26227,8 +26367,8 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------',
 '--  Create text index',
 '--------------------------------------------------------',
-'create index blog_post_uds_ctx on blog_post_uds (dummy)',
-'indextype is ctxsys.context parameters (',
+'create index blog_posts_ctx on blog_posts(title)',
+'indextype is ctxsys.context parameters(',
 '  ''datastore      blog_post_uds_ds',
 '   lexer          blog_post_uds_lx',
 '   section group  ctxsys.auto_section_group',
@@ -26246,13 +26386,13 @@ wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(11258222492508804)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
 ,p_name=>'Update version info'
-,p_sequence=>90
+,p_sequence=>100
 ,p_script_type=>'UPGRADE'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '-- Update version info',
 '--------------------------------------------------------',
 'update blog_settings',
-'  set attribute_value = ''Release 22.2.1.20230204''',
+'  set attribute_value = ''Release 22.2.1.20230205''',
 'where 1 = 1',
 '  and attribute_name = ''G_APP_VERSION''',
 ';',

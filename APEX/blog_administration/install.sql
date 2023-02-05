@@ -175,7 +175,7 @@ prompt --install
 @@application/deployment/definition.sql
 @@application/deployment/install/upgrade_create_view_blog_v_version.sql
 @@application/deployment/install/install_database_objects.sql
-@@application/deployment/install/install_blog_post_text_index.sql
+@@application/deployment/install/install_create_index_blog_posts_ctx.sql
 @@application/deployment/install/install_metadata.sql
 @@application/deployment/checks.sql
 @@application/deployment/buildoptions.sql

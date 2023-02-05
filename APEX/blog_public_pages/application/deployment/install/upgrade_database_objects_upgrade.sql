@@ -15,7 +15,7 @@ wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
 ,p_name=>'Database objects upgrade'
-,p_sequence=>70
+,p_sequence=>80
 ,p_script_type=>'UPGRADE'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '-- Database objects upgrade',
@@ -1437,8 +1437,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '--  DDL for View BLOG_V_ALL_POSTS',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LEN'
-||'GTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "CTX_SEARCH", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "PUBLISHED_COMMENTS_COUNT", "UNREAD_COMMENTS_COUNT", "MODERATE_COMMENTS_COUNT", "DISABLED_COMMENTS_CO'
-||'UNT", "POST_STATUS", "TAGS_HTML") AS',
+||'GTH", "PUBLISHED_ON", "NOTES", "CTX_RID", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "PUBLISHED_COMMENTS_COUNT", "UNREAD_COMMENTS_COUNT", "MODERATE_COMMENTS_COUNT", "DISABLED_COMMENTS_COUNT", "POST_ST'
+||'ATUS", "TAGS_HTML") AS',
 'select',
 '   t1.id                as id',
 '  ,t1.category_id       as category_id',
@@ -1457,8 +1457,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,t1.body_length       as body_length',
 '  ,t1.published_on      as published_on',
 '  ,t1.notes             as notes',
-'  ,t4.rowid             as ctx_rid',
-'  ,t4.dummy             as ctx_search',
+'  ,t1.rowid             as ctx_rid',
 '  ,case t1.is_active * t2.is_active * t3.is_active',
 '    when 1',
 '    then t1.published_on',
@@ -1480,7 +1479,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '    from blog_v_all_post_tags tags',
 '    where 1 = 1',
 '    and tags.post_id = t1.id',
-'    and tags.is_a'))
+'    and tags.is_active * tags.tag_is_active = 1',
+'  )                  '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1498,8 +1498,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ctive * tags.tag_is_active = 1',
-'  )                     as visible_tags',
+'   as visible_tags',
 '  ,(',
 '    select listagg( tags.tag, '', '' )  within group( order by tags.display_seq )',
 '    from blog_v_all_post_tags tags',
@@ -1586,8 +1585,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '  on t1.category_id = t2.id',
 'join blog_bloggers t3',
 '  on t1.blogger_id = t3.id',
-'join blog_post_uds t4',
-'  on t1.id = t4.post_id',
 'where 1 = 1',
 '/',
 '--------------------------------------------------------',
@@ -2496,7 +2493,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    apex_debug.info(',
 '      p_message => ''File name: %s, file size: %s, mime type: %s''',
-'     '))
+'      ,p0 => l_file_t.file_name',
+'      ,p1 => l_file_t.file_size',
+'      ,p2 => l_file_t.mime_type',
+'      ,'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2514,10 +2514,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' ,p0 => l_file_t.file_name',
-'      ,p1 => l_file_t.file_size',
-'      ,p2 => l_file_t.mime_type',
-'      ,p3 => l_file_t.file_charset',
+'p3 => l_file_t.file_charset',
 '    );',
 '',
 '    -- Add Last-Modified header',
@@ -3551,7 +3548,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
 '--------------------------------------------------------------------------------',
-'----------------------------------------------------------------------------'))
+'--------------------------------------------------------------------------------',
+'  function to_html_entities(',
+'    p_number in number',
+'  ) return varchar2',
+'  as',
+'    l_string var'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3569,12 +3571,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----',
-'  function to_html_entities(',
-'    p_number in number',
-'  ) return varchar2',
-'  as',
-'    l_string varchar2(4000);',
+'char2(4000);',
 '    l_result varchar2(4000);',
 '  begin',
 '',
@@ -4566,7 +4563,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '        ) as placeholders',
 '      from blog_v_all_posts v1',
 '      where 1 = 1',
-'      and v1.id ='))
+'      and v1.id = l_post_id',
+'      and v1.blogger_email is not null',
+'    ) loop',
+'',
+'      apex_debug.info(',
+'        ''Send'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4584,12 +4586,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' l_post_id',
-'      and v1.blogger_email is not null',
-'    ) loop',
-'',
-'      apex_debug.info(',
-'        ''Send email to: %s from: %s template: %s placeholders: %s''',
+' email to: %s from: %s template: %s placeholders: %s''',
 '        ,c1.blogger_email',
 '        ,l_app_email',
 '        ,p_email_template',
@@ -5574,7 +5571,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end sitemap_categories;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure sit'))
+'  procedure sitemap_archives',
+'  as',
+'    l_xml           blob;',
+'    l_cache_control varchar2(256);',
+'  begin',
+'',
+'    selec'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5592,13 +5595,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'emap_archives',
-'  as',
-'    l_xml           blob;',
-'    l_cache_control varchar2(256);',
-'  begin',
-'',
-'    select xmlserialize( document',
+'t xmlserialize( document',
 '      xmlelement(',
 '        "urlset",',
 '        xmlattributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns"),',
