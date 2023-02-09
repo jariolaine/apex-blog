@@ -120,7 +120,6 @@ wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(41879333719408334)
 ,p_name=>'P1002_PAGE_TITLE'
 ,p_item_sequence=>10
-,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'

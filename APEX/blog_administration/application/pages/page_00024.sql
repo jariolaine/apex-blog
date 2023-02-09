@@ -29,7 +29,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230204113804'
+,p_last_upd_yyyymmddhh24miss=>'20230207061237'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(12514339082984049)
@@ -45,6 +45,7 @@ wwv_flow_imp_page.create_page_plug(
 '   v1.id            as id',
 '  ,v1.tag_id        as tag_id',
 '  ,v1.post_id       as post_id',
+'  ,v1.tag           as tag',
 '  ,v1.row_version   as row_version',
 '  ,v1.created_on    as created_on',
 '  ,v1.created_on    as created_since',
@@ -54,7 +55,6 @@ wwv_flow_imp_page.create_page_plug(
 '  ,v1.changed_by    as changed_by',
 '  ,v1.is_active     as is_active',
 '  ,v1.display_seq   as display_seq',
-'  ,v1.tag           as tag',
 '  ,v1.tag_is_active as tag_is_active',
 'from #OWNER#.blog_v_all_post_tags v1',
 'where 1 = 1',
@@ -116,7 +116,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_session_state_data_type=>'VARCHAR2'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_HIDDEN'
-,p_display_sequence=>60
+,p_display_sequence=>70
 ,p_attribute_01=>'Y'
 ,p_use_as_row_header=>false
 ,p_enable_sort_group=>false
@@ -135,7 +135,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_item_type=>'NATIVE_DISPLAY_ONLY'
 ,p_heading=>'Created on'
 ,p_heading_alignment=>'RIGHT'
-,p_display_sequence=>70
+,p_display_sequence=>80
 ,p_value_alignment=>'RIGHT'
 ,p_attribute_02=>'VALUE'
 ,p_attribute_05=>'PLAIN'
@@ -149,6 +149,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
+,p_help_text=>'Date and time when tag was created.'
 );
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(13625889279077818)
@@ -175,6 +176,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
+,p_help_text=>'User who created tag.'
 );
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(13625906051077819)
@@ -201,6 +203,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
+,p_help_text=>'Date and time when tag was last changed.'
 );
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(13626069536077820)
@@ -227,6 +230,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
+,p_help_text=>'User who has last changed tag.'
 );
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(13626167207077821)
@@ -258,6 +262,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_default_expression=>'1'
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
+,p_help_text=>'Tag status in post.'
 );
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(13626271109077822)
@@ -284,6 +289,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_is_primary_key=>false
 ,p_duplicate_value=>true
 ,p_include_in_export=>true
+,p_help_text=>'Tag display sequence in post.'
 );
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(13626429771077824)
@@ -356,6 +362,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_enable_control_break=>true
 ,p_enable_hide=>true
 ,p_include_in_export=>true
+,p_help_text=>'Tag name.'
 );
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(13628690581077846)
@@ -384,7 +391,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_session_state_data_type=>'VARCHAR2'
 ,p_is_query_only=>true
 ,p_item_type=>'NATIVE_HIDDEN'
-,p_display_sequence=>160
+,p_display_sequence=>60
 ,p_attribute_01=>'Y'
 ,p_use_as_row_header=>false
 ,p_enable_sort_group=>false
@@ -402,7 +409,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_item_type=>'NATIVE_DISPLAY_ONLY'
 ,p_heading=>'Created'
 ,p_heading_alignment=>'CENTER'
-,p_display_sequence=>80
+,p_display_sequence=>90
 ,p_value_alignment=>'CENTER'
 ,p_attribute_02=>'VALUE'
 ,p_attribute_05=>'PLAIN'
@@ -417,6 +424,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
+,p_help_text=>'When tag was created.'
 );
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(21640091543282128)
@@ -444,6 +452,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
+,p_help_text=>'When tag was last changed.'
 );
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(21641283033282140)
@@ -475,6 +484,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_enable_hide=>true
 ,p_is_primary_key=>false
 ,p_include_in_export=>true
+,p_help_text=>'Tag status.'
 );
 wwv_flow_imp_page.create_interactive_grid(
  p_id=>wwv_flow_imp.id(13625444562077814)

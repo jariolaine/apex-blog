@@ -23,6 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(65048103982446247)
 ,p_html_page_header=>'"BLOG_META_ROBOTS_NOINDEX"'
+,p_step_template=>wwv_flow_imp.id(6760179457267364)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_required_patch=>wwv_flow_imp.id(7073708623458378)
 ,p_page_is_public_y_n=>'Y'
@@ -34,7 +35,7 @@ wwv_flow_imp_page.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230119101027'
+,p_last_upd_yyyymmddhh24miss=>'20230206172232'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27990916738607115)
@@ -228,6 +229,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_sequence=>100
 ,p_item_plug_id=>wwv_flow_imp.id(147769743184406827)
 ,p_prompt=>'Answer to'
+,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'PLUGIN_FI.JARIS.MATH_QUESTION_FIELD'
 ,p_cMaxlength=>20
 ,p_field_template=>wwv_flow_imp.id(6855004103267413)
@@ -245,7 +247,6 @@ wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(26381104883542604)
 ,p_name=>'P1001_ANSWER'
 ,p_item_sequence=>20
-,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
 ,p_use_cache_before_default=>'NO'
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_protection_level=>'I'

@@ -164,6 +164,9 @@ blockquote::after {
   .z-posts .z-post .z-post--header .z-post--title {
     font-size: 1.375em;
   }
+  .z-posts .z-post .z-post--footer .z-post--tags {
+    justify-content: space-evenly;
+  }
 }
 /**************************************
 * Classic reports

@@ -1213,7 +1213,7 @@ as
 --                          - Removed parameter p_page_group from procedure sitemap_main
 --                          - Replaced private constant c_pubdate_lang with blog.util.g_nls_date_lang
 --                          - Replaced private constant c_lastmod_format with blog_util.g_iso_8601_date
---                          - Replaced private constant c_lastmod_format with blog_util.g_rfc_2822_date
+--                          - Replaced private constant c_pubdate_format with blog_util.g_rfc_2822_date
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

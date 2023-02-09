@@ -49,7 +49,7 @@
       }
     }
   }
-  .z-posts--pagination{
+  .z-posts--pagination {
     margin-bottom: 1rem;
     padding: 0.25rem;
     border: var(--ut-component-border-width) solid  var(--ut-component-border-color);
@@ -65,12 +65,17 @@
   }
 }
 @media only screen and (max-width: 640px) {
-  .z-posts{
+  .z-posts {
     .z-post {
       padding: @post-padding - 0.5rem;
       .z-post--header {
         .z-post--title {
           font-size: @post-title-font-size - 0.25em;
+        }
+      }
+      .z-post--footer {
+        .z-post--tags {
+            justify-content: space-evenly;
         }
       }
     }

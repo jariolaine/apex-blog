@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230117125819'
+,p_last_upd_yyyymmddhh24miss=>'20230207174833'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8582113239518316)
@@ -75,7 +75,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_heading=>'Average '
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'999999999999990D000'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -87,7 +86,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_heading=>'Minimum'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'999999999999990D000'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -99,7 +97,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_heading=>'Maximum'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'999999999999990D000'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -114,29 +111,30 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'  count(id)             as num_posts',
+'  count( v1.id )        as num_posts',
 '  ,sum(',
-'    case post_status',
+'    case v1.post_status',
 '    when ''PUBLISHED''',
 '      then 1',
 '      else 0',
 '    end',
 '   )                    as num_published_posts',
 '  ,sum(',
-'    case post_status',
+'    case v1.post_status',
 '    when ''DRAFT''',
 '      then 1',
 '      else 0',
 '    end',
 '   )                    as num_draft_posts',
 '  ,sum(',
-'    case post_status',
+'    case v1.post_status',
 '    when ''SCHEDULED''',
 '      then 1',
 '      else 0',
 '    end',
 '   )                    as num_scheduled_posts',
-'from #OWNER#.blog_v_all_posts'))
+'from #OWNER#.blog_v_all_posts v1',
+'where 1 = 1'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
@@ -156,7 +154,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>10
 ,p_column_heading=>'Total'
 ,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -167,7 +164,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>20
 ,p_column_heading=>'Published'
 ,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -178,7 +174,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>30
 ,p_column_heading=>'Draft'
 ,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -189,7 +184,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>60
 ,p_column_heading=>'Scheduled'
 ,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -205,11 +199,13 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   sum(comments_count)            as num_comments',
-'  ,sum(unread_comments_count)     as num_unread_comments',
-'  ,sum(moderate_comments_count)   as num_moderate_comments',
-'  ,sum(published_comments_count)  as num_published_comments',
-'from #OWNER#.blog_v_all_posts'))
+'   sum( v1.comments_count )           as num_comments',
+'  ,sum( v1.unread_comments_count )    as num_unread_comments',
+'  ,sum( v1.moderate_comments_count )  as num_moderate_comments',
+'  ,sum( v1.published_comments_count ) as num_published_comments',
+'from #OWNER#.blog_v_all_posts v1',
+'where 1 = 1',
+''))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
@@ -229,7 +225,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>10
 ,p_column_heading=>'Total'
 ,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -240,7 +235,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>30
 ,p_column_heading=>'Unread'
 ,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -251,7 +245,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>40
 ,p_column_heading=>'Not Approved'
 ,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -262,7 +255,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>20
 ,p_column_heading=>'Published'
 ,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -281,16 +273,9 @@ wwv_flow_imp_page.create_report_region(
 '  ,ls.total_rows_queried    as rows_queried',
 '  ,ls.apex_sessions         as apex_sessions',
 '  ,ls.ip_addresses          as ip_addresses',
-'--  ,ls.total_elapsed_time    as total_elapsed_time',
-'--  ,ls.average_elapsed_time  as average_elapsed_time',
-'--  ,ls.minimum_elapsed_time  as minimum_elapsed_time',
-'--  ,ls.maximum_elapsed_time  as maximum_elapsed_time',
-'--  ,ls.distinct_pages        as distinct_pages',
-'--  ,ls.agents                as agents',
 'from apex_workspace_log_summary ls',
 'where 1 = 1',
-'  and ls.application_id = :G_PUB_APP_ID',
-''))
+'  and ls.application_id = :G_PUB_APP_ID'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
@@ -310,7 +295,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>10
 ,p_column_heading=>'Page Views'
 ,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -321,7 +305,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>30
 ,p_column_heading=>'Rows Queried'
 ,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -332,7 +315,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>40
 ,p_column_heading=>'Sessions'
 ,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -343,7 +325,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>50
 ,p_column_heading=>'IP Addresses'
 ,p_use_as_row_header=>'N'
-,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );

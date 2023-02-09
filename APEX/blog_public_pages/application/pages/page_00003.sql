@@ -214,7 +214,6 @@ wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(22524253440146437)
 ,p_name=>'P3_TEXT_SEARCH'
 ,p_item_sequence=>10
-,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_protection_level=>'I'
 ,p_attribute_01=>'Y'
