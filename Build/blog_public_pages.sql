@@ -158,7 +158,7 @@ wwv_flow_imp.create_flow(
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_tokenize_row_search=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230209214317'
+,p_last_upd_yyyymmddhh24miss=>'20230211073601'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>546
 ,p_print_server_type=>'INSTANCE'
@@ -15727,10 +15727,10 @@ wwv_flow_imp_shared.create_email_template(
  p_id=>wwv_flow_imp.id(31484344164259065)
 ,p_name=>'Blog new comment notification'
 ,p_static_id=>'BLOG_NEW_COMMENT_NOTIFY'
-,p_version_number=>1
+,p_version_number=>2
 ,p_subject=>'#APP_NAME# new comment notification'
 ,p_html_body=>'New comment received in the post <a href="#POST_LINK#">#POST_TITLE#</a>.'
-,p_html_header=>'<b>Hello #BLOGGER_NAME#,</b>'
+,p_html_header=>'<strong>Hello #BLOGGER_NAME#,</strong>'
 ,p_html_footer=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'Best Regards,<br>',
 '#APP_NAME#'))
@@ -18723,7 +18723,7 @@ wwv_flow_imp_page.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230206172232'
+,p_last_upd_yyyymmddhh24miss=>'20230210210505'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27990916738607115)
@@ -18934,7 +18934,8 @@ wwv_flow_imp_page.create_page_item(
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(26381104883542604)
 ,p_name=>'P1001_ANSWER'
-,p_item_sequence=>20
+,p_item_sequence=>110
+,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
 ,p_use_cache_before_default=>'NO'
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_protection_level=>'I'
@@ -19866,7 +19867,7 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 22.2.1.20230209'');',
+'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 22.2.1.20230211'');',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''20'',''0'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,blog_util.int_to_vc2(apex_application_install.get_applica'
 ||'tion_id));',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''110'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,''My Blog'');',
@@ -26374,7 +26375,7 @@ wwv_flow_imp_shared.create_install_script(
 '-- Update version info',
 '--------------------------------------------------------',
 'update blog_settings',
-'  set attribute_value = ''Release 22.2.1.20230209''',
+'  set attribute_value = ''Release 22.2.1.20230211''',
 'where 1 = 1',
 '  and attribute_name = ''G_APP_VERSION''',
 ';',

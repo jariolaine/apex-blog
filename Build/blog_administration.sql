@@ -166,7 +166,7 @@ wwv_flow_imp.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230209214408'
+,p_last_upd_yyyymmddhh24miss=>'20230211074134'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>677
 ,p_print_server_type=>'INSTANCE'
@@ -16390,19 +16390,18 @@ wwv_flow_imp_shared.create_email_template(
  p_id=>wwv_flow_imp.id(31515408461580789)
 ,p_name=>'Blog reply to comment notification'
 ,p_static_id=>'BLOG_REPLY_TO_COMMENT_NOTIFY'
-,p_version_number=>1
+,p_version_number=>2
 ,p_subject=>'#APP_NAME# new reply to comments'
 ,p_html_body=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'You have chosen to receive follow up notification if new reply is posted to <a href="#POST_LINK#">#POST_TITLE#</a>.<br>',
-'<br>',
-'',
-'Please do not reply to this email. This mailbox does not allow incoming messages.'))
+'<p>You have chosen to receive follow up notification if new reply is posted to <a href="#POST_LINK#">#POST_TITLE#</a>.</p>',
+'<p>Please do not reply to this email. This mailbox does not allow incoming messages.</p>',
+'<p>If you wish not get notification email in future you can <a href="#UNSUBSCRIBE_LINK#">unsubscibe</a>.</p>'))
 ,p_html_header=>'Hi,'
 ,p_html_footer=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'If you wish not get notification email in future you can <a href="#UNSUBSCRIBE_LINK#">unsubscibe</a>.<br>',
-'<br>',
+'<p>',
 'Best Regards,<br>',
-'#APP_NAME#'))
+'#APP_NAME#',
+'</p>'))
 ,p_text_template=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'Hi,',
 '',
@@ -24877,7 +24876,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230128071835'
+,p_last_upd_yyyymmddhh24miss=>'20230211074134'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(37645474034287120)
@@ -25181,6 +25180,15 @@ wwv_flow_imp_page.create_page_button(
 'and v1.comment_id = :P31_ID'))
 ,p_button_condition_type=>'EXISTS'
 ,p_icon_css_classes=>'fa-reply'
+);
+wwv_flow_imp_page.create_page_branch(
+ p_id=>wwv_flow_imp.id(21641629749282144)
+,p_branch_name=>'Approve commet'
+,p_branch_action=>'f?p=&APP_ID.:31:&SESSION.::&DEBUG.::P31_ID:&P31_ID.&success_msg=#SUCCESS_MSG#'
+,p_branch_point=>'AFTER_PROCESSING'
+,p_branch_type=>'REDIRECT_URL'
+,p_branch_when_button_id=>wwv_flow_imp.id(37643515449287101)
+,p_branch_sequence=>10
 );
 wwv_flow_imp_page.create_page_branch(
  p_id=>wwv_flow_imp.id(37644134223287107)

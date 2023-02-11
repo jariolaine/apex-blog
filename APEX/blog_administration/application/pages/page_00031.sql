@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230128071835'
+,p_last_upd_yyyymmddhh24miss=>'20230211074134'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(37645474034287120)
@@ -327,6 +327,15 @@ wwv_flow_imp_page.create_page_button(
 'and v1.comment_id = :P31_ID'))
 ,p_button_condition_type=>'EXISTS'
 ,p_icon_css_classes=>'fa-reply'
+);
+wwv_flow_imp_page.create_page_branch(
+ p_id=>wwv_flow_imp.id(21641629749282144)
+,p_branch_name=>'Approve commet'
+,p_branch_action=>'f?p=&APP_ID.:31:&SESSION.::&DEBUG.::P31_ID:&P31_ID.&success_msg=#SUCCESS_MSG#'
+,p_branch_point=>'AFTER_PROCESSING'
+,p_branch_type=>'REDIRECT_URL'
+,p_branch_when_button_id=>wwv_flow_imp.id(37643515449287101)
+,p_branch_sequence=>10
 );
 wwv_flow_imp_page.create_page_branch(
  p_id=>wwv_flow_imp.id(37644134223287107)
