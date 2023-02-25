@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  Inserting into BLOG_SETTINGS
 --------------------------------------------------------
-insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values('10','0','G_APP_VERSION','STRING','INTERNAL',null,null,'Release 22.2.2.20230216');
+insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values('10','0','G_APP_VERSION','STRING','INTERNAL',null,null,'Release 22.2.2.20230225');
 insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values('20','0','G_PUB_APP_ID','STRING','INTERNAL',null,null,blog_util.int_to_vc2(apex_application_install.get_application_id));
 insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values('110','0','G_APP_NAME','STRING','BLOG_SETTING_GROUP_GENERAL',null,null,'My Blog');
 insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values('120','0','G_APP_DESC','STRING','BLOG_SETTING_GROUP_GENERAL',null,null,'About Almost Everything');

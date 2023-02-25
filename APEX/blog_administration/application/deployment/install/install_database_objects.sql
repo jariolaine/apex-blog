@@ -743,7 +743,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Called from:',
 '--  admin app page 12',
 '  function get_first_paragraph(',
-'    p_body_html       in varchar2',
+'    p_body_html       in clob',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
@@ -1411,7 +1411,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '   t1.id                as id',
 '  ,t1.row_version       as row_version',
 '  ,t1.created_on        as created_on',
-'  ,lower(t1.created_by) as cr'))
+'  ,lower(t1.created_by) as create'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1429,7 +1429,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'eated_by',
+'d_by',
 '  ,t1.changed_on        as changed_on',
 '  ,lower(t1.changed_by) as changed_by',
 '  ,t1.is_active         as is_active',
@@ -2294,7 +2294,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
 '     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context( ''USERENV'', ''P'))
+'    ,sys_context( ''USERENV'', ''PROXY'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2312,7 +2312,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ROXY_USER'' )',
+'_USER'' )',
 '    ,sys_context( ''USERENV'', ''SESSION_USER'' )',
 '  );',
 '',
@@ -3310,7 +3310,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      select',
 '        i.item_name,',
 '        i.item_value',
-'      from blog_v_init_ite'))
+'      from blog_v_init_items i'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3328,7 +3328,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ms i',
+'',
 '      where i.application_id = l_app_id',
 '    ) loop',
 '',
@@ -4049,10 +4049,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function get_first_paragraph(',
-'    p_body_html in varchar2',
+'    p_body_html in clob',
 '  ) return varchar2',
 '  as',
-'    l_first_p       varchar2(32700);',
+'    l_first_p       clob;',
 '    l_first_p_start number;',
 '    l_first_p_end   number;',
 '    l_length        number;',
@@ -4401,7 +4401,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '        -- collect tag id to table.',
 '        -- table is used at end of procedure',
-'        -- for checkin'))
+'        -- for checking relationships tha'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4419,7 +4419,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'g relationships that should be removed',
+'t should be removed',
 '        apex_string.push( l_tag_id_tab, l_tag_id );',
 '',
 '        -- get table record count for tag display sequence',
@@ -5405,7 +5405,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- process code tags',
 '    build_code_tab(',
-'       p_comment => p_com'))
+'       p_comment => p_comment',
+'      ,p_code_'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5423,8 +5424,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ment',
-'      ,p_code_tab => l_code_tab',
+'tab => l_code_tab',
 '    );',
 '',
 '    -- split comment to collection by new line character',
@@ -6412,7 +6412,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_url           varchar2(4000);',
 '    l_xml           blob;',
 '    l_cache_control varchar2(256);',
-'    l_build_option  constant varchar2(256) := ''BLOG_FEATURE_SITEM'))
+'    l_build_option  constant varchar2(256) := ''BLOG_FEATURE_SITEMAP'';',
+'  begin',
+'',
+'    -'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6430,10 +6433,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'AP'';',
-'  begin',
-'',
-'    -- get url to call sitemaps process',
+'- get url to call sitemaps process',
 '    l_url := blog_url.get_process;',
 '',
 '    select xmlserialize( document',

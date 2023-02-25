@@ -90,7 +90,7 @@ prompt APPLICATION 402 - Blog Administration
 --         Shortcuts:              1
 --       PWA:
 --       Globalization:
---         Messages:             136
+--         Messages:             135
 --       Reports:
 --       E-Mail:
 --         Templates:              1
@@ -166,7 +166,7 @@ wwv_flow_imp.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230211074134'
+,p_last_upd_yyyymmddhh24miss=>'20230225110146'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>677
 ,p_print_server_type=>'INSTANCE'
@@ -15653,14 +15653,14 @@ wwv_flow_imp_shared.create_build_option(
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(24687280101070827)
-,p_build_option_name=>'Commented Out'
+,p_build_option_name=>'Commented out'
 ,p_build_option_status=>'EXCLUDE'
 ,p_default_on_export=>'EXCLUDE'
 ,p_build_option_comment=>'Features that have been commented out'
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(35674953070739317)
-,p_build_option_name=>'BLOG_AUTHENTICATION_APEX'
+,p_build_option_name=>'APEX Authentication'
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
@@ -15668,7 +15668,7 @@ wwv_flow_imp_shared.create_build_option(
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(35675193135740905)
-,p_build_option_name=>'BLOG_AUTHENTICATION_GOOGLE'
+,p_build_option_name=>'Google Authentication'
 ,p_build_option_status=>'EXCLUDE'
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
@@ -16081,11 +16081,6 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(19895088592241687)
 ,p_name=>'BLOG_HELP_P2_REPORT_ROWS'
 ,p_message_text=>'The number of comments per report page displayed on the post page. The value must be an integer between %0 and %1. Changes to this settings only take effect in new sessions of the public application.'
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(61250680749871346)
-,p_name=>'BLOG_HELP_POST_EDITOR'
-,p_message_text=>'Refer online document <a target="_blank" href="https://ckeditor.com/docs/ckeditor5/latest/features/basic-styles.html">Basic Text Styles: Bold, Italic and More</a> how style your post.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(23116114610465857)
@@ -16505,7 +16500,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230207174833'
+,p_last_upd_yyyymmddhh24miss=>'20230225084402'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8582113239518316)
@@ -16752,10 +16747,10 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select ',
-'   ls.page_views            as page_views',
-'  ,ls.total_rows_queried    as rows_queried',
-'  ,ls.apex_sessions         as apex_sessions',
-'  ,ls.ip_addresses          as ip_addresses',
+'   sum( ls.page_views )         as page_views',
+'  ,sum( ls.total_rows_queried ) as rows_queried',
+'  ,sum( ls.apex_sessions )      as apex_sessions',
+'  ,sum( ls.ip_addresses )       as ip_addresses',
 'from apex_workspace_log_summary ls',
 'where 1 = 1',
 '  and ls.application_id = :G_PUB_APP_ID'))
@@ -16766,6 +16761,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_num_rows=>15
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_show_nulls_as=>'0'
+,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
 ,p_csv_output=>'N'
 ,p_prn_output=>'N'
 ,p_sort_null=>'L'
@@ -17488,7 +17484,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230206172444'
+,p_last_upd_yyyymmddhh24miss=>'20230223175905'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8640589331194982)
@@ -17897,9 +17893,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
-,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'&APP_TEXT$BLOG_HELP_POST_EDITOR!RAW.',
-''))
+,p_help_text=>'Refer online document <a target="_blank" href="https://ckeditor.com/docs/ckeditor5/latest/features/basic-styles.html">Basic Text Styles: Bold, Italic and More</a> how style your post.'
 ,p_plugin_init_javascript_code=>'blog.admin.editor.initItem'
 ,p_attribute_01=>'HTML'
 ,p_attribute_02=>'FULL'
@@ -26564,7 +26558,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'12'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230110235544'
+,p_last_upd_yyyymmddhh24miss=>'20230225092514'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8575301514518303)
@@ -26612,8 +26606,8 @@ wwv_flow_imp_page.create_page_plug(
 '  and application_id = :APP_ID',
 '  and build_option_status = ''Include''',
 '  and build_option_name != ''BLOG_AUTHENTICATION_APEX''',
-'  and build_option_name like ''BLOG\_AUTHENTICATION\_%'' escape ''\'''))
-,p_required_patch=>wwv_flow_imp.id(35674953070739317)
+'  and build_option_name like ''%Authentication''',
+' having count(1) > 1'))
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'HTML'
 ,p_plug_comment=>'Region is displayed if both authentication methods are enabled by build options'
@@ -31642,7 +31636,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Called from:',
 '--  admin app page 12',
 '  function get_first_paragraph(',
-'    p_body_html       in varchar2',
+'    p_body_html       in clob',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
@@ -32310,7 +32304,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '   t1.id                as id',
 '  ,t1.row_version       as row_version',
 '  ,t1.created_on        as created_on',
-'  ,lower(t1.created_by) as cr'))
+'  ,lower(t1.created_by) as create'))
 );
 null;
 end;
@@ -32319,7 +32313,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'eated_by',
+'d_by',
 '  ,t1.changed_on        as changed_on',
 '  ,lower(t1.changed_by) as changed_by',
 '  ,t1.is_active         as is_active',
@@ -33184,7 +33178,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  :new.changed_on := localtimestamp;',
 '  :new.changed_by := coalesce(',
 '     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    ,sys_context( ''USERENV'', ''P'))
+'    ,sys_context( ''USERENV'', ''PROXY'))
 );
 null;
 end;
@@ -33193,7 +33187,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ROXY_USER'' )',
+'_USER'' )',
 '    ,sys_context( ''USERENV'', ''SESSION_USER'' )',
 '  );',
 '',
@@ -34191,7 +34185,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      select',
 '        i.item_name,',
 '        i.item_value',
-'      from blog_v_init_ite'))
+'      from blog_v_init_items i'))
 );
 null;
 end;
@@ -34200,7 +34194,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ms i',
+'',
 '      where i.application_id = l_app_id',
 '    ) loop',
 '',
@@ -34921,10 +34915,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function get_first_paragraph(',
-'    p_body_html in varchar2',
+'    p_body_html in clob',
 '  ) return varchar2',
 '  as',
-'    l_first_p       varchar2(32700);',
+'    l_first_p       clob;',
 '    l_first_p_start number;',
 '    l_first_p_end   number;',
 '    l_length        number;',
@@ -35273,7 +35267,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '        -- collect tag id to table.',
 '        -- table is used at end of procedure',
-'        -- for checkin'))
+'        -- for checking relationships tha'))
 );
 null;
 end;
@@ -35282,7 +35276,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'g relationships that should be removed',
+'t should be removed',
 '        apex_string.push( l_tag_id_tab, l_tag_id );',
 '',
 '        -- get table record count for tag display sequence',
@@ -36268,7 +36262,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- process code tags',
 '    build_code_tab(',
-'       p_comment => p_com'))
+'       p_comment => p_comment',
+'      ,p_code_'))
 );
 null;
 end;
@@ -36277,8 +36272,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ment',
-'      ,p_code_tab => l_code_tab',
+'tab => l_code_tab',
 '    );',
 '',
 '    -- split comment to collection by new line character',
@@ -37266,7 +37260,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_url           varchar2(4000);',
 '    l_xml           blob;',
 '    l_cache_control varchar2(256);',
-'    l_build_option  constant varchar2(256) := ''BLOG_FEATURE_SITEM'))
+'    l_build_option  constant varchar2(256) := ''BLOG_FEATURE_SITEMAP'';',
+'  begin',
+'',
+'    -'))
 );
 null;
 end;
@@ -37275,10 +37272,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'AP'';',
-'  begin',
-'',
-'    -- get url to call sitemaps process',
+'- get url to call sitemaps process',
 '    l_url := blog_url.get_process;',
 '',
 '    select xmlserialize( document',
@@ -37832,23 +37826,23 @@ wwv_flow_imp_shared.create_install_check(
 'and rownum = 1',
 'union all',
 'select 1',
-'from sys.all_objects',
+'from all_objects',
 'where owner = ''CTXSYS''',
 'and object_name = ''CTX_DDL''',
 'and rownum = 1'))
-,p_failure_message=>'Application parsing schema must have role CTXAPP.'
+,p_failure_message=>'Application parsing schema must have role CTXAPP or execute privilege to package CTX_DDL.'
 );
 end;
 /
 prompt --application/deployment/buildoptions
 begin
 wwv_flow_imp_shared.create_install_build_option(
- p_id=>wwv_flow_imp.id(19465075295102163)
+ p_id=>wwv_flow_imp.id(30741448614308988)
 ,p_install_id=>wwv_flow_imp.id(31706870664802069)
 ,p_build_opt_id=>wwv_flow_imp.id(35674953070739317)
 );
 wwv_flow_imp_shared.create_install_build_option(
- p_id=>wwv_flow_imp.id(19465233808102163)
+ p_id=>wwv_flow_imp.id(30741641589308988)
 ,p_install_id=>wwv_flow_imp.id(31706870664802069)
 ,p_build_opt_id=>wwv_flow_imp.id(35675193135740905)
 );

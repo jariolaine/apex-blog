@@ -27,7 +27,7 @@ wwv_flow_imp_shared.create_install_check(
 wwv_flow_imp_shared.create_install_check(
  p_id=>wwv_flow_imp.id(11013705994514070)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
-,p_name=>'Pre-check if upgrading application'
+,p_name=>'Pre-check is upgrade supported'
 ,p_sequence=>20
 ,p_check_type=>'EXISTS'
 ,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -47,7 +47,7 @@ wwv_flow_imp_shared.create_install_check(
 wwv_flow_imp_shared.create_install_check(
  p_id=>wwv_flow_imp.id(11014025569539865)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
-,p_name=>'Application update is supported'
+,p_name=>'Application upgrade is supported'
 ,p_sequence=>30
 ,p_check_type=>'EXISTS'
 ,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(

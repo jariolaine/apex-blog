@@ -425,11 +425,6 @@ wwv_flow_imp_shared.create_message(
 ,p_message_text=>'The number of comments per report page displayed on the post page. The value must be an integer between %0 and %1. Changes to this settings only take effect in new sessions of the public application.'
 );
 wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(61250680749871346)
-,p_name=>'BLOG_HELP_POST_EDITOR'
-,p_message_text=>'Refer online document <a target="_blank" href="https://ckeditor.com/docs/ckeditor5/latest/features/basic-styles.html">Basic Text Styles: Bold, Italic and More</a> how style your post.'
-);
-wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(23116114610465857)
 ,p_name=>'BLOG_LINK_GROUPS_UK1'
 ,p_message_text=>'Label with same name already exists.'

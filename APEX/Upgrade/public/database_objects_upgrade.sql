@@ -263,7 +263,7 @@ as
 -- Called from:
 --  admin app page 12
   function get_first_paragraph(
-    p_body_html       in varchar2
+    p_body_html       in clob
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
@@ -2851,10 +2851,10 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_first_paragraph(
-    p_body_html in varchar2
+    p_body_html in clob
   ) return varchar2
   as
-    l_first_p       varchar2(32700);
+    l_first_p       clob;
     l_first_p_start number;
     l_first_p_end   number;
     l_length        number;

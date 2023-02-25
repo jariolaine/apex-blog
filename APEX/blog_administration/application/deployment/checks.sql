@@ -25,11 +25,11 @@ wwv_flow_imp_shared.create_install_check(
 'and rownum = 1',
 'union all',
 'select 1',
-'from sys.all_objects',
+'from all_objects',
 'where owner = ''CTXSYS''',
 'and object_name = ''CTX_DDL''',
 'and rownum = 1'))
-,p_failure_message=>'Application parsing schema must have role CTXAPP.'
+,p_failure_message=>'Application parsing schema must have role CTXAPP or execute privilege to package CTX_DDL.'
 );
 wwv_flow_imp.component_end;
 end;

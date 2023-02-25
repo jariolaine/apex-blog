@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230207174833'
+,p_last_upd_yyyymmddhh24miss=>'20230225084402'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8582113239518316)
@@ -269,10 +269,10 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select ',
-'   ls.page_views            as page_views',
-'  ,ls.total_rows_queried    as rows_queried',
-'  ,ls.apex_sessions         as apex_sessions',
-'  ,ls.ip_addresses          as ip_addresses',
+'   sum( ls.page_views )         as page_views',
+'  ,sum( ls.total_rows_queried ) as rows_queried',
+'  ,sum( ls.apex_sessions )      as apex_sessions',
+'  ,sum( ls.ip_addresses )       as ip_addresses',
 'from apex_workspace_log_summary ls',
 'where 1 = 1',
 '  and ls.application_id = :G_PUB_APP_ID'))
@@ -283,6 +283,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_num_rows=>15
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_show_nulls_as=>'0'
+,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
 ,p_csv_output=>'N'
 ,p_prn_output=>'N'
 ,p_sort_null=>'L'

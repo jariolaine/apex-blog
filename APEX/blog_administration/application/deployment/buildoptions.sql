@@ -12,12 +12,12 @@ wwv_flow_imp.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_install_build_option(
- p_id=>wwv_flow_imp.id(19465075295102163)
+ p_id=>wwv_flow_imp.id(30741448614308988)
 ,p_install_id=>wwv_flow_imp.id(31706870664802069)
 ,p_build_opt_id=>wwv_flow_imp.id(35674953070739317)
 );
 wwv_flow_imp_shared.create_install_build_option(
- p_id=>wwv_flow_imp.id(19465233808102163)
+ p_id=>wwv_flow_imp.id(30741641589308988)
 ,p_install_id=>wwv_flow_imp.id(31706870664802069)
 ,p_build_opt_id=>wwv_flow_imp.id(35675193135740905)
 );

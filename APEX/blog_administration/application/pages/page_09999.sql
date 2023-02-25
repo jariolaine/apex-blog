@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'12'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230110235544'
+,p_last_upd_yyyymmddhh24miss=>'20230225092514'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8575301514518303)
@@ -73,8 +73,8 @@ wwv_flow_imp_page.create_page_plug(
 '  and application_id = :APP_ID',
 '  and build_option_status = ''Include''',
 '  and build_option_name != ''BLOG_AUTHENTICATION_APEX''',
-'  and build_option_name like ''BLOG\_AUTHENTICATION\_%'' escape ''\'''))
-,p_required_patch=>wwv_flow_imp.id(35674953070739317)
+'  and build_option_name like ''%Authentication''',
+' having count(1) > 1'))
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'HTML'
 ,p_plug_comment=>'Region is displayed if both authentication methods are enabled by build options'

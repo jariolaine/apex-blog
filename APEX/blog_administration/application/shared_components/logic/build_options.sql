@@ -27,14 +27,14 @@ wwv_flow_imp_shared.create_build_option(
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(24687280101070827)
-,p_build_option_name=>'Commented Out'
+,p_build_option_name=>'Commented out'
 ,p_build_option_status=>'EXCLUDE'
 ,p_default_on_export=>'EXCLUDE'
 ,p_build_option_comment=>'Features that have been commented out'
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(35674953070739317)
-,p_build_option_name=>'BLOG_AUTHENTICATION_APEX'
+,p_build_option_name=>'APEX Authentication'
 ,p_build_option_status=>'INCLUDE'
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
@@ -42,7 +42,7 @@ wwv_flow_imp_shared.create_build_option(
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(35675193135740905)
-,p_build_option_name=>'BLOG_AUTHENTICATION_GOOGLE'
+,p_build_option_name=>'Google Authentication'
 ,p_build_option_status=>'EXCLUDE'
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
