@@ -27,7 +27,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230128082941'
+,p_last_upd_yyyymmddhh24miss=>'20230228105126'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6432040642894060)
@@ -196,6 +196,7 @@ wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(24468458324361504)
 ,p_name=>'P1_REPORT_ROWS'
 ,p_item_sequence=>10
+,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'US_ONLY'
