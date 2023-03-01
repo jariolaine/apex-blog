@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230228104437'
+,p_last_upd_yyyymmddhh24miss=>'20230301171905'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(65301007014080913)
@@ -40,12 +40,12 @@ wwv_flow_imp_page.create_report_region(
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
 '   v1.file_id   as id',
+'  ,null         as icon_class -- se column HTML expression',
+'  ,null         as icon_color_class',
 '  ,v1.file_name as list_title',
 '  ,v1.file_desc as list_text',
 '  ,v1.file_size as list_badge',
 '  ,null         as list_class',
-'  ,null         as icon_class -- se column HTML expression',
-'  ,null         as icon_color_class',
 '  ,apex_page.get_url(',
 '     p_page     => 1003',
 '    ,p_session  => null',
@@ -80,13 +80,34 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_heading=>'Id'
 ,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
-,p_include_in_export=>'Y'
+,p_include_in_export=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(65301643674080919)
+,p_query_column_id=>2
+,p_column_alias=>'ICON_CLASS'
+,p_column_display_sequence=>20
+,p_column_heading=>'Icon Class'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'fa fa-download'
+,p_derived_column=>'N'
+,p_include_in_export=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(65301725590080920)
+,p_query_column_id=>3
+,p_column_alias=>'ICON_COLOR_CLASS'
+,p_column_display_sequence=>30
+,p_column_heading=>'Icon Color Class'
+,p_use_as_row_header=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'N'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(65301237974080915)
-,p_query_column_id=>2
+,p_query_column_id=>4
 ,p_column_alias=>'LIST_TITLE'
-,p_column_display_sequence=>20
+,p_column_display_sequence=>40
 ,p_column_heading=>'List Title'
 ,p_use_as_row_header=>'Y'
 ,p_derived_column=>'N'
@@ -94,9 +115,9 @@ wwv_flow_imp_page.create_report_columns(
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(65301369993080916)
-,p_query_column_id=>3
+,p_query_column_id=>5
 ,p_column_alias=>'LIST_TEXT'
-,p_column_display_sequence=>30
+,p_column_display_sequence=>50
 ,p_column_heading=>'List Text'
 ,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
@@ -104,9 +125,9 @@ wwv_flow_imp_page.create_report_columns(
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(65301489097080917)
-,p_query_column_id=>4
+,p_query_column_id=>6
 ,p_column_alias=>'LIST_BADGE'
-,p_column_display_sequence=>40
+,p_column_display_sequence=>60
 ,p_column_heading=>'List Badge'
 ,p_use_as_row_header=>'N'
 ,p_column_format=>'FILESIZE'
@@ -115,40 +136,19 @@ wwv_flow_imp_page.create_report_columns(
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(65301558085080918)
-,p_query_column_id=>5
+,p_query_column_id=>7
 ,p_column_alias=>'LIST_CLASS'
-,p_column_display_sequence=>50
+,p_column_display_sequence=>70
 ,p_column_heading=>'List Class'
 ,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(65301643674080919)
-,p_query_column_id=>6
-,p_column_alias=>'ICON_CLASS'
-,p_column_display_sequence=>60
-,p_column_heading=>'Icon Class'
-,p_use_as_row_header=>'N'
-,p_column_html_expression=>'fa fa-download'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(65301725590080920)
-,p_query_column_id=>7
-,p_column_alias=>'ICON_COLOR_CLASS'
-,p_column_display_sequence=>70
-,p_column_heading=>'Icon Color Class'
-,p_use_as_row_header=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
+,p_include_in_export=>'N'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(65301875071080921)
 ,p_query_column_id=>8
 ,p_column_alias=>'LINK'
-,p_column_display_sequence=>80
+,p_column_display_sequence=>90
 ,p_column_heading=>'Link'
 ,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
@@ -158,22 +158,22 @@ wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(65301942959080922)
 ,p_query_column_id=>9
 ,p_column_alias=>'LINK_ATTR'
-,p_column_display_sequence=>90
+,p_column_display_sequence=>100
 ,p_column_heading=>'Link Attr'
 ,p_use_as_row_header=>'N'
 ,p_column_html_expression=>'download'
 ,p_derived_column=>'N'
-,p_include_in_export=>'Y'
+,p_include_in_export=>'N'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(65302003262080923)
 ,p_query_column_id=>10
 ,p_column_alias=>'LINK_CLASS'
-,p_column_display_sequence=>100
+,p_column_display_sequence=>110
 ,p_column_heading=>'Link Class'
 ,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
-,p_include_in_export=>'Y'
+,p_include_in_export=>'N'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(50989785872352709)

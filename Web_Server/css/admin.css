@@ -218,6 +218,10 @@ pre.z-program-code code,
 .z-comment .t-Comments-comment {
   overflow-wrap: break-word;
 }
+.z-comment:not(:last-child) {
+  border-bottom: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
+  padding-bottom: var(--ut-comment-item-margin-bottom, 1rem);
+}
 /**************************************
 * Status Marker
 * Used in admin application settings IG
