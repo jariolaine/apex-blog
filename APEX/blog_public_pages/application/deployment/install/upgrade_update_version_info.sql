@@ -15,13 +15,13 @@ wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(11258222492508804)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
 ,p_name=>'Update version info'
-,p_sequence=>100
+,p_sequence=>110
 ,p_script_type=>'UPGRADE'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '-- Update version info',
 '--------------------------------------------------------',
 'update blog_settings',
-'  set attribute_value = ''Release 22.2.2.20230301''',
+'  set attribute_value = ''Release 22.2.2.20230304''',
 'where 1 = 1',
 '  and attribute_name = ''G_APP_VERSION''',
 ';',

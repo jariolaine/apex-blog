@@ -540,6 +540,11 @@ wwv_flow_imp_shared.create_message(
 ,p_message_text=>'Posts found from this category. Move posts to other category and then delete category.'
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(31976065517652232)
+,p_name=>'BLOG_POSTS_UK1'
+,p_message_text=>'Post with same published on date and time already exists.'
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(42684822108701097)
 ,p_name=>'BLOG_PUB_APP_LINK_HOME'
 ,p_message_text=>'Home page canonical URL'

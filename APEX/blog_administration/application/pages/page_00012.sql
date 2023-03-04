@@ -71,7 +71,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230223175905'
+,p_last_upd_yyyymmddhh24miss=>'20230304051812'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8640589331194982)
@@ -398,7 +398,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_sequence=>130
 ,p_item_plug_id=>wwv_flow_imp.id(8640589331194982)
 ,p_item_source_plug_id=>wwv_flow_imp.id(8640589331194982)
-,p_prompt=>'Set Date and Time'
+,p_prompt=>'Set Published on'
 ,p_format_mask=>'&G_USER_INPUT_DATE_TIME_FORMAT.'
 ,p_source=>'PUBLISHED_ON'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
@@ -583,7 +583,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_name=>'P12_PUBLISHED_DISPLAY'
 ,p_item_sequence=>120
 ,p_item_plug_id=>wwv_flow_imp.id(8640589331194982)
-,p_prompt=>'Publish Date'
+,p_prompt=>'Published on'
 ,p_format_mask=>'&G_USER_INPUT_DATE_TIME_FORMAT.'
 ,p_source=>'P12_PUBLISHED_ON'
 ,p_source_type=>'ITEM'

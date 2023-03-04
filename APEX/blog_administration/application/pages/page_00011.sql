@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230207060055'
+,p_last_upd_yyyymmddhh24miss=>'20230304074104'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8596898648797585)
@@ -85,6 +85,7 @@ wwv_flow_imp_page.create_page_plug(
 '  )                         as detail_view_published',
 '-- Tags HTML for detail view',
 '  ,v1.tags_html             as tags_html',
+'  ,v1.post_txt_search       as post_txt_search',
 'from #OWNER#.blog_v_all_posts v1',
 '-- because APEX bug that IR not use LOV values ',
 'join (',
@@ -112,7 +113,7 @@ wwv_flow_imp_page.create_worksheet(
 ,p_name=>'Articles'
 ,p_max_row_count_message=>'The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.'
 ,p_no_data_found_message=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
-,p_oracle_text_index_column=>'POST_TITLE'
+,p_oracle_text_index_column=>'POST_TXT_SEARCH'
 ,p_pagination_type=>'ROWS_X_TO_Y'
 ,p_pagination_display_pos=>'BOTTOM_RIGHT'
 ,p_report_list_mode=>'TABS'
@@ -457,6 +458,15 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Tags Html'
 ,p_column_type=>'CLOB'
 ,p_display_text_as=>'HIDDEN'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(21641780130282145)
+,p_db_column_name=>'POST_TXT_SEARCH'
+,p_display_order=>310
+,p_column_identifier=>'BU'
+,p_column_label=>'Post Txt Search'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
 wwv_flow_imp_page.create_worksheet_rpt(
  p_id=>wwv_flow_imp.id(8604892694799317)

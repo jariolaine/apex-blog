@@ -15,14 +15,14 @@ wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(13344011176158522)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
 ,p_name=>'Create index BLOG_POSTS_CTX'
-,p_sequence=>90
+,p_sequence=>100
 ,p_script_type=>'UPGRADE'
 ,p_condition_type=>'EXISTS'
 ,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select 1',
 'from blog_v_version',
 'where 1 = 1',
-'and application_date < 20230205'))
+'and application_date < 20230304'))
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',
 '--  Create text index preferences',
@@ -78,7 +78,7 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------',
 '--  Create text index',
 '--------------------------------------------------------',
-'create index blog_posts_ctx on blog_posts(title)',
+'create index blog_posts_ctx on blog_posts(post_txt_search)',
 'indextype is ctxsys.context parameters(',
 '  ''datastore      blog_post_uds_ds',
 '   lexer          blog_post_uds_lx',
