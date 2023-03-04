@@ -12,7 +12,7 @@ begin
   then
 
     update blog_posts t1
-      set title = title
+      set post_txt_search = post_txt_search
     where 1 = 1
     and exists(
       select 1

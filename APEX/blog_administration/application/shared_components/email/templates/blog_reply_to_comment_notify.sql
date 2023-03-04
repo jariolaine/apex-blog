@@ -16,7 +16,7 @@ wwv_flow_imp_shared.create_email_template(
 ,p_name=>'Blog reply to comment notification'
 ,p_static_id=>'BLOG_REPLY_TO_COMMENT_NOTIFY'
 ,p_version_number=>2
-,p_subject=>'#APP_NAME# new reply to comments'
+,p_subject=>'#APP_NAME!RAW# new reply to comments'
 ,p_html_body=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<p>You have chosen to receive follow up notification if new reply is posted to <a href="#POST_LINK#">#POST_TITLE#</a>.</p>',
 '<p>Please do not reply to this email. This mailbox does not allow incoming messages.</p>',
@@ -25,22 +25,22 @@ wwv_flow_imp_shared.create_email_template(
 ,p_html_footer=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<p>',
 'Best Regards,<br>',
-'#APP_NAME#',
+'#APP_NAME!RAW#',
 '</p>'))
 ,p_text_template=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'Hi,',
 '',
-'You have chosen to receive follow up notification if new reply is posted to #POST_TITLE#.',
+'You have chosen to receive follow up notification if new reply is posted to "#POST_TITLE!RAW#".',
 'See blog post and comments from below link.',
-'#POST_LINK#',
+'#POST_LINK!RAW#',
 '',
 'Please do not reply to this email. This mailbox does not allow incoming messages.',
 '',
 'If you wish not get notification email in future you can unsubscibe using below link.',
-'#UNSUBSCRIBE_LINK#',
+'#UNSUBSCRIBE_LINK!RAW#',
 '',
 'Best Regards,',
-'#APP_NAME#'))
+'#APP_NAME!RAW#'))
 );
 wwv_flow_imp.component_end;
 end;

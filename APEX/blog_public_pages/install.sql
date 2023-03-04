@@ -155,6 +155,7 @@ prompt --install
 @@application/deployment/install/upgrade_patch_21_2_20220612.sql
 @@application/deployment/install/upgrade_patch_22_2_20221206.sql
 @@application/deployment/install/upgrade_patch_22_2_20230205.sql
+@@application/deployment/install/upgrade_patch_22_2_20230304.sql
 @@application/deployment/install/upgrade_database_objects_upgrade.sql
 @@application/deployment/install/upgrade_create_index_blog_posts_ctx.sql
 @@application/deployment/install/upgrade_update_version_info.sql

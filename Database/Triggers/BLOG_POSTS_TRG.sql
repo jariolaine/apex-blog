@@ -32,5 +32,8 @@ begin
     ,sys_context( 'USERENV', 'SESSION_USER' )
   );
 
+  -- tickle text index
+  :new.post_txt_search   := 'X';
+
 end;
 /

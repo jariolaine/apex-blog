@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230228104551'
+,p_last_upd_yyyymmddhh24miss=>'20230304073925'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6979825819516521)
@@ -54,7 +54,7 @@ wwv_flow_imp_page.create_report_region(
 'from #OWNER#.blog_v_posts v1',
 'where 1 = 1',
 '  and :P3_TEXT_SEARCH is not null',
-'  and contains( v1.post_title, :P3_TEXT_SEARCH, 1 ) > 0',
+'  and contains( v1.post_txt_search, :P3_TEXT_SEARCH, 1 ) > 0',
 'order by score(1) desc',
 '  ,v1.published_on desc'))
 ,p_ajax_enabled=>'Y'

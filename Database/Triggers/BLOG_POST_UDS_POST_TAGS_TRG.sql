@@ -21,7 +21,7 @@ compound trigger
     else
 
       update blog_posts t1
-        set title = title
+        set post_txt_search = post_txt_search
       where 1 = 1
         and t1.id = :new.post_id
       ;
@@ -34,7 +34,7 @@ compound trigger
   begin
 
     update blog_posts t1
-      set title = title
+      set post_txt_search = post_txt_search
     where 1 = 1
       and exists(
         select 1

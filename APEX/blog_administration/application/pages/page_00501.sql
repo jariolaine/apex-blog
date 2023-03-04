@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230128064026'
+,p_last_upd_yyyymmddhh24miss=>'20230304050855'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8857181938695778)
@@ -317,8 +317,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_04=>'TEXT'
 ,p_attribute_05=>'BOTH'
 ,p_show_quick_picks=>'Y'
-,p_quick_pick_label_01=>'DD.MM.YYYY HH24:MI'
-,p_quick_pick_value_01=>'DD.MM.YYYY HH24:MI'
+,p_quick_pick_label_01=>'DD.MM.YYYY HH24:MI:SS'
+,p_quick_pick_value_01=>'DD.MM.YYYY HH24:MI:SS'
 );
 wwv_flow_imp_page.create_page_computation(
  p_id=>wwv_flow_imp.id(27062727345689128)

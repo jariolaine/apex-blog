@@ -52,7 +52,7 @@ end;
 --------------------------------------------------------
 --  Create text index
 --------------------------------------------------------
-create index blog_posts_ctx on blog_posts(title)
+create index blog_posts_ctx on blog_posts(post_txt_search)
 indextype is ctxsys.context parameters(
   'datastore      blog_post_uds_ds
    lexer          blog_post_uds_lx
