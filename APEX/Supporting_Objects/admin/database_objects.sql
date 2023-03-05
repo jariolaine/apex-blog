@@ -1299,27 +1299,27 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_CATEGORIES" ("ID", "ROW_VERSION", "CREA
 from blog_categories t1
 /
 --------------------------------------------------------
---  DDL for View BLOG_V_COMMENTS
+--  DDL for View BLOG_V_ALL_COMMENTS
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "PARENT_ID", "POST_TITLE", "BODY_HTML", "COMMENT_BY", "STATUS", "FLAG", "USER_ICON", "ICON_MODIFIER")  AS
   select
-   t1.id            as id
-  ,t1.row_version   as row_version
-  ,t1.created_on    as created_on
-  ,t1.created_by    as created_by
-  ,t1.changed_on    as changed_on
-  ,t1.changed_by    as changed_by
-  ,t1.is_active     as is_active
-  ,t1.post_id       as post_id
-  ,t1.parent_id     as parent_id
+   t1.id                as id
+  ,t1.row_version       as row_version
+  ,t1.created_on        as created_on
+  ,lower(t1.created_by) as created_by
+  ,t1.changed_on        as changed_on
+  ,lower(t1.changed_by) as changed_by
+  ,t1.is_active         as is_active
+  ,t1.post_id           as post_id
+  ,t1.parent_id         as parent_id
   ,(
     select title
     from blog_posts l1
     where 1 = 1
     and l1.id = t1.post_id
-   )                as post_title
-  ,t1.body_html     as body_html
-  ,t1.comment_by    as comment_by
+   )                    as post_title
+  ,t1.body_html         as body_html
+  ,t1.comment_by        as comment_by
   ,case
     when exists(
       select 1
@@ -1335,7 +1335,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATE
         then 'ENABLED'
         else 'DISABLED'
       end
-   end              as status
+   end                  as status
    ,case
      when exists(
        select 1
@@ -1356,14 +1356,14 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATE
      when t1.parent_id is not null
      then 'REPLY'
      else 'READ'
-    end              as flag
+    end                 as flag
   ,apex_string.get_initials(
-    t1.comment_by
-  )                 as user_icon
-  ,'u-color-' ||
-  (
-    ora_hash( lower( t1.comment_by ), 44 ) + 1
-  )                 as icon_modifier
+    p_str => t1.comment_by
+  )                     as user_icon
+  ,apex_string.format(
+     p_message => 'u-color-%s'
+    ,p0 => ora_hash( lower( t1.comment_by ), 44 ) + 1
+  )                     as icon_modifier
 from blog_comments t1
 where 1 = 1
 /
@@ -1622,21 +1622,20 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_COMMENTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "IS_ACTIVE", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "USER_ICON", "ICON_MODIFIER") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "USER_ICON", "ICON_MODIFIER") AS
   select
    t1.id          as comment_id
-  ,t1.is_active   as is_active
   ,t1.post_id     as post_id
   ,t1.parent_id   as parent_id
   ,t1.created_on  as created_on
   ,t1.comment_by  as comment_by
   ,t1.body_html   as comment_body
   ,apex_string.get_initials(
-    t1.comment_by
+    p_str => t1.comment_by
   )               as user_icon
-  ,'u-color-'
-  || (
-   ora_hash( lower( t1.comment_by ), 44 ) + 1
+  ,apex_string.format(
+     p_message => 'u-color-%s'
+    ,p0 => ora_hash( lower( t1.comment_by ), 44 ) + 1
   )               as icon_modifier
 from blog_comments t1
 where 1 = 1
@@ -2177,7 +2176,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "TAG_URL", "POSTS_C
    v1.tag_id            as tag_id
   ,v1.tag               as tag
   ,v1.tag_url           as tag_url
-  ,count( v1.post_id )  as posts_count
+  ,count( 1 )           as posts_count
   ,max(
     greatest(
        v1.changed_on
@@ -2185,14 +2184,15 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "TAG_URL", "POSTS_C
     )
   )                     as changed_on
   ,width_bucket(
-     count( v1.post_id )
-    ,min( count( v1.post_id ) ) over()
-    ,max( count( v1.post_id ) ) over()
+     count( 1 )
+    ,min( count( 1 ) ) over()
+    ,max( count( 1 ) ) over()
     ,7
   )                     as tag_bucket
   ,feat.show_post_count as show_post_count
 from blog_v_post_tags v1
 join blog_v_posts v2 on v1.post_id = v2.post_id
+-- Fetch APEX messages
 cross join(
   select
     apex_util.get_build_option_status(

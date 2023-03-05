@@ -1,7 +1,7 @@
 prompt --application/deployment/install/install_create_view_blog_v_version
 begin
 --   Manifest
---     INSTALL: INSTALL-Create view BLOG_V_VERSION
+--     INSTALL: INSTALL-Create view blog_v_version
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
@@ -14,7 +14,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(19464498978874461)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
-,p_name=>'Create view BLOG_V_VERSION'
+,p_name=>'Create view blog_v_version'
 ,p_sequence=>10
 ,p_script_type=>'INSTALL'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
