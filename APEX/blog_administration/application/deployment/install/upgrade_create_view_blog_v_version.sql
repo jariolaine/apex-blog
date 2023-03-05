@@ -1,7 +1,7 @@
 prompt --application/deployment/install/upgrade_create_view_blog_v_version
 begin
 --   Manifest
---     INSTALL: UPGRADE-Create view BLOG_V_VERSION
+--     INSTALL: UPGRADE-Create view blog_v_version
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
@@ -14,7 +14,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(10802378553752854)
 ,p_install_id=>wwv_flow_imp.id(31706870664802069)
-,p_name=>'Create view BLOG_V_VERSION'
+,p_name=>'Create view blog_v_version'
 ,p_sequence=>10
 ,p_script_type=>'UPGRADE'
 ,p_condition_type=>'NOT_EXISTS'

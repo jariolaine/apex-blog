@@ -1,7 +1,7 @@
 prompt --application/deployment/install/install_create_index_blog_posts_ctx
 begin
 --   Manifest
---     INSTALL: INSTALL-Create index BLOG_POSTS_CTX
+--     INSTALL: INSTALL-Create index blog_posts_ctx
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
@@ -14,18 +14,14 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(41212685070708550)
 ,p_install_id=>wwv_flow_imp.id(31706870664802069)
-,p_name=>'Create index BLOG_POSTS_CTX'
+,p_name=>'Create index blog_posts_ctx'
 ,p_sequence=>20
 ,p_script_type=>'INSTALL'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',
 '--  Create text index preferences',
 '--------------------------------------------------------',
-'declare',
-'  l_schema varchar2(256);',
 'begin',
-'',
-'  l_schema := sys_context( ''USERENV'', ''CURRENT_SCHEMA'' );',
 '',
 '  ctx_ddl.create_preference(',
 '     preference_name  => ''BLOG_POST_UDS_DS''',
@@ -35,7 +31,11 @@ wwv_flow_imp_shared.create_install_script(
 '  ctx_ddl.set_attribute(',
 '    preference_name   => ''BLOG_POST_UDS_DS''',
 '    ,attribute_name   => ''PROCEDURE''',
-'    ,attribute_value  => l_schema || ''.BLOG_CTX.GENERATE_POST_DATASTORE''',
+'    ,attribute_value  =>',
+'      apex_string.format(',
+'        p_message => ''%s.BLOG_CTX.GENERATE_POST_DATASTORE''',
+'        ,p0 => sys_context( ''USERENV'', ''CURRENT_SCHEMA'' )',
+'      )',
 '  );',
 '',
 '  ctx_ddl.set_attribute(',
@@ -72,7 +72,7 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------',
 '--  Create text index',
 '--------------------------------------------------------',
-'create index blog_posts_ctx on blog_posts(title)',
+'create index blog_posts_ctx on blog_posts( post_txt_search )',
 'indextype is ctxsys.context parameters(',
 '  ''datastore      blog_post_uds_ds',
 '   lexer          blog_post_uds_lx',

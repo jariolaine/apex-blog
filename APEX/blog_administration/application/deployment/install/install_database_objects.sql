@@ -1336,28 +1336,28 @@ wwv_flow_imp_shared.append_to_install_script(
 'from blog_categories t1',
 '/',
 '--------------------------------------------------------',
-'--  DDL for View BLOG_V_COMMENTS',
+'--  DDL for View BLOG_V_ALL_COMMENTS',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "PARENT_ID", "POST_TITLE", "BODY_HTML", "COMMENT_BY", "STATUS", "FLAG", "USER_ICON", "ICON_MODIFI'
 ||'ER")  AS',
 '  select',
-'   t1.id            as id',
-'  ,t1.row_version   as row_version',
-'  ,t1.created_on    as created_on',
-'  ,t1.created_by    as created_by',
-'  ,t1.changed_on    as changed_on',
-'  ,t1.changed_by    as changed_by',
-'  ,t1.is_active     as is_active',
-'  ,t1.post_id       as post_id',
-'  ,t1.parent_id     as parent_id',
+'   t1.id                as id',
+'  ,t1.row_version       as row_version',
+'  ,t1.created_on        as created_on',
+'  ,lower(t1.created_by) as created_by',
+'  ,t1.changed_on        as changed_on',
+'  ,lower(t1.changed_by) as changed_by',
+'  ,t1.is_active         as is_active',
+'  ,t1.post_id           as post_id',
+'  ,t1.parent_id         as parent_id',
 '  ,(',
 '    select title',
 '    from blog_posts l1',
 '    where 1 = 1',
 '    and l1.id = t1.post_id',
-'   )                as post_title',
-'  ,t1.body_html     as body_html',
-'  ,t1.comment_by    as comment_by',
+'   )                    as post_title',
+'  ,t1.body_html         as body_html',
+'  ,t1.comment_by        as comment_by',
 '  ,case',
 '    when exists(',
 '      select 1',
@@ -1373,7 +1373,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        then ''ENABLED''',
 '        else ''DISABLED''',
 '      end',
-'   end              as status',
+'   end                  as status',
 '   ,case',
 '     when exists(',
 '       select 1',
@@ -1394,24 +1394,21 @@ wwv_flow_imp_shared.append_to_install_script(
 '     when t1.parent_id is not null',
 '     then ''REPLY''',
 '     else ''READ''',
-'    end              as flag',
+'    end                 as flag',
 '  ,apex_string.get_initials(',
-'    t1.comment_by',
-'  )                 as user_icon',
-'  ,''u-color-'' ||',
-'  (',
-'    ora_hash( lower( t1.comment_by ), 44 ) + 1',
-'  )                 as icon_modifier',
+'    p_str => t1.comment_by',
+'  )                     as user_icon',
+'  ,apex_string.format(',
+'     p_message => ''u-color-%s''',
+'    ,p0 => ora_hash( lower( t1.comment_by ), 44 ) + 1',
+'  )                     as icon_modifier',
 'from blog_comments t1',
 'where 1 = 1',
 '/',
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_DYNAMIC_CONTENT',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "CONTENT_TYPE", "DISPLAY_SEQ", "SHOW_CHANGED_ON", "CONTENT_DESC", "CONTENT_HTML") AS',
-'  select',
-'   t1.id                as id',
-'  ,t1.row_versi'))
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "CONTENT_TYPE", "DISPLA'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1429,7 +1426,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'on       as row_version',
+'Y_SEQ", "SHOW_CHANGED_ON", "CONTENT_DESC", "CONTENT_HTML") AS',
+'  select',
+'   t1.id                as id',
+'  ,t1.row_version       as row_version',
 '  ,t1.created_on        as created_on',
 '  ,lower(t1.created_by) as created_by',
 '  ,t1.changed_on        as changed_on',
@@ -1681,21 +1681,20 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_COMMENTS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "IS_ACTIVE", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "USER_ICON", "ICON_MODIFIER") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "USER_ICON", "ICON_MODIFIER") AS',
 '  select',
 '   t1.id          as comment_id',
-'  ,t1.is_active   as is_active',
 '  ,t1.post_id     as post_id',
 '  ,t1.parent_id   as parent_id',
 '  ,t1.created_on  as created_on',
 '  ,t1.comment_by  as comment_by',
 '  ,t1.body_html   as comment_body',
 '  ,apex_string.get_initials(',
-'    t1.comment_by',
+'    p_str => t1.comment_by',
 '  )               as user_icon',
-'  ,''u-color-''',
-'  || (',
-'   ora_hash( lower( t1.comment_by ), 44 ) + 1',
+'  ,apex_string.format(',
+'     p_message => ''u-color-%s''',
+'    ,p0 => ora_hash( lower( t1.comment_by ), 44 ) + 1',
 '  )               as icon_modifier',
 'from blog_comments t1',
 'where 1 = 1',
@@ -2239,7 +2238,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '   v1.tag_id            as tag_id',
 '  ,v1.tag               as tag',
 '  ,v1.tag_url           as tag_url',
-'  ,count( v1.post_id )  as posts_count',
+'  ,count( 1 )           as posts_count',
 '  ,max(',
 '    greatest(',
 '       v1.changed_on',
@@ -2247,14 +2246,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '    )',
 '  )                     as changed_on',
 '  ,width_bucket(',
-'     count( v1.post_id )',
-'    ,min( count( v1.post_id ) ) over()',
-'    ,max( count( v1.post_id ) ) over()',
+'     count( 1 )',
+'    ,min( count( 1 ) ) over()',
+'    ,max( count( 1 ) ) over()',
 '    ,7',
 '  )                     as tag_bucket',
 '  ,feat.show_post_count as show_post_count',
 'from blog_v_post_tags v1',
 'join blog_v_posts v2 on v1.post_id = v2.post_id',
+'-- Fetch APEX messages',
 'cross join(',
 '  select',
 '    apex_util.get_build_option_status(',
@@ -2286,11 +2286,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
 '      :new.created_by',
-'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'      ,sys_context( ''USERENV'', ''PROXY_USER'' )',
-'      ,sys_context( ''USERENV'', ''SESSION_USER'' )',
-'    );',
-'  elsif updating'))
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2308,7 +2304,11 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' then',
+'',
+'      ,sys_context( ''USERENV'', ''PROXY_USER'' )',
+'      ,sys_context( ''USERENV'', ''SESSION_USER'' )',
+'    );',
+'  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
@@ -3296,14 +3296,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure initialize_items(',
-'    p_app_id in varchar2',
-'  )',
-'  as',
-'    l_app_id number;',
-'  begin',
-'',
-'    -- raise no data found error if parameter p_app_id_name is null',
-' '))
+'    p_app_id in'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3321,7 +3314,14 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   if p_app_id is null then',
+' varchar2',
+'  )',
+'  as',
+'    l_app_id number;',
+'  begin',
+'',
+'    -- raise no data found error if parameter p_app_id_name is null',
+'    if p_app_id is null then',
 '      raise no_data_found;',
 '    end if;',
 '',
@@ -4388,14 +4388,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- split tags string to table and loop all values',
 '    l_tag_tab := apex_string.split(',
 '       p_str => p_tags',
-'      ,p_sep => p_sep',
-'    );',
-'',
-'    for i in 1 .. l_tag_tab.count',
-'    loop',
-'',
-'      -- add tag to repository and return id',
-'      ad'))
+'      ,p_'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4413,7 +4406,14 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'d_tag(',
+'sep => p_sep',
+'    );',
+'',
+'    for i in 1 .. l_tag_tab.count',
+'    loop',
+'',
+'      -- add tag to repository and return id',
+'      add_tag(',
 '         p_tag    => l_tag_tab(i)',
 '        ,p_tag_id => l_tag_id',
 '      );',
@@ -5397,8 +5397,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    end if;',
 '',
 '  end build_code_tab;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------'))
+'-'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5416,7 +5415,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'------------------------------------------',
+'-------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '  procedure build_comment_html(',
 '    p_comment in out nocopy varchar2',
 '  )',
@@ -6407,8 +6407,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    raise;',
 '',
 '  end rss_xsl;',
-'--------------------------------------------------------------------------------',
-'----------------------------------------------'))
+'---------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6426,7 +6425,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----------------------------------',
+'-----------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '  procedure sitemap_index(',
 '    p_app_id        in varchar2,',
 '    p_app_page_id   in varchar2,',

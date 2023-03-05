@@ -6,7 +6,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "TAG_URL", "POSTS_C
    v1.tag_id            as tag_id
   ,v1.tag               as tag
   ,v1.tag_url           as tag_url
-  ,count( v1.post_id )  as posts_count
+  ,count( 1 )           as posts_count
   ,max(
     greatest(
        v1.changed_on
@@ -14,14 +14,15 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "TAG_URL", "POSTS_C
     )
   )                     as changed_on
   ,width_bucket(
-     count( v1.post_id )
-    ,min( count( v1.post_id ) ) over()
-    ,max( count( v1.post_id ) ) over()
+     count( 1 )
+    ,min( count( 1 ) ) over()
+    ,max( count( 1 ) ) over()
     ,7
   )                     as tag_bucket
   ,feat.show_post_count as show_post_count
 from blog_v_post_tags v1
 join blog_v_posts v2 on v1.post_id = v2.post_id
+-- Fetch APEX messages
 cross join(
   select
     apex_util.get_build_option_status(

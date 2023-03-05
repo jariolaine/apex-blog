@@ -48,32 +48,6 @@ alter trigger blog_posts_trg enable;
 alter table blog_posts add constraint blog_posts_uk1 unique( published_on );
 alter table blog_posts modify post_txt_search not null;
 --------------------------------------------------------
---  Drop index BLOG_POST_UDS_CTX
---  Index is recreated after packages and views are recreated
---------------------------------------------------------
-declare
-  index_not_exists exception;
-  pragma exception_init ( index_not_exists, -01418 );
-begin
-  execute immediate 'drop index blog_posts_ctx force';
-exception when index_not_exists then
-  null;
-end;
-/
---------------------------------------------------------
---  Drop text index preferences
---------------------------------------------------------
-declare
-  ctx_ddl_error exception;
-  pragma exception_init ( ctx_ddl_error, -20000 );
-begin
-  ctx_ddl.drop_preference( 'BLOG_POST_UDS_DS' );
-  ctx_ddl.drop_preference( 'BLOG_POST_UDS_LX' );
-exception when ctx_ddl_error then
-  null;
-end;
-/
---------------------------------------------------------
 --  Insert patch version info to BLOG_SETTINGS
 --------------------------------------------------------
 insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,attribute_value)

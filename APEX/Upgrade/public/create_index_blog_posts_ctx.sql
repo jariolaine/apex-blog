@@ -1,11 +1,7 @@
 --------------------------------------------------------
 --  Create text index preferences
 --------------------------------------------------------
-declare
-  l_schema varchar2(256);
 begin
-
-  l_schema := sys_context( 'USERENV', 'CURRENT_SCHEMA' );
 
   ctx_ddl.create_preference(
      preference_name  => 'BLOG_POST_UDS_DS'
@@ -15,7 +11,11 @@ begin
   ctx_ddl.set_attribute(
     preference_name   => 'BLOG_POST_UDS_DS'
     ,attribute_name   => 'PROCEDURE'
-    ,attribute_value  => l_schema || '.BLOG_CTX.GENERATE_POST_DATASTORE'
+    ,attribute_value  =>
+      apex_string.format(
+        p_message => '%s.BLOG_CTX.GENERATE_POST_DATASTORE'
+        ,p0 => sys_context( 'USERENV', 'CURRENT_SCHEMA' )
+      )
   );
 
   ctx_ddl.set_attribute(
@@ -52,7 +52,7 @@ end;
 --------------------------------------------------------
 --  Create text index
 --------------------------------------------------------
-create index blog_posts_ctx on blog_posts(post_txt_search)
+create index blog_posts_ctx on blog_posts( post_txt_search )
 indextype is ctxsys.context parameters(
   'datastore      blog_post_uds_ds
    lexer          blog_post_uds_lx

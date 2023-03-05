@@ -891,28 +891,28 @@ wwv_flow_imp_shared.append_to_install_script(
 'from blog_categories t1',
 '/',
 '--------------------------------------------------------',
-'--  DDL for View BLOG_V_COMMENTS',
+'--  DDL for View BLOG_V_ALL_COMMENTS',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "PARENT_ID", "POST_TITLE", "BODY_HTML", "COMMENT_BY", "STATUS", "FLAG", "USER_ICON", "ICON_MODIFI'
 ||'ER")  AS',
 '  select',
-'   t1.id            as id',
-'  ,t1.row_version   as row_version',
-'  ,t1.created_on    as created_on',
-'  ,t1.created_by    as created_by',
-'  ,t1.changed_on    as changed_on',
-'  ,t1.changed_by    as changed_by',
-'  ,t1.is_active     as is_active',
-'  ,t1.post_id       as post_id',
-'  ,t1.parent_id     as parent_id',
+'   t1.id                as id',
+'  ,t1.row_version       as row_version',
+'  ,t1.created_on        as created_on',
+'  ,lower(t1.created_by) as created_by',
+'  ,t1.changed_on        as changed_on',
+'  ,lower(t1.changed_by) as changed_by',
+'  ,t1.is_active         as is_active',
+'  ,t1.post_id           as post_id',
+'  ,t1.parent_id         as parent_id',
 '  ,(',
 '    select title',
 '    from blog_posts l1',
 '    where 1 = 1',
 '    and l1.id = t1.post_id',
-'   )                as post_title',
-'  ,t1.body_html     as body_html',
-'  ,t1.comment_by    as comment_by',
+'   )                    as post_title',
+'  ,t1.body_html         as body_html',
+'  ,t1.comment_by        as comment_by',
 '  ,case',
 '    when exists(',
 '      select 1',
@@ -928,7 +928,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        then ''ENABLED''',
 '        else ''DISABLED''',
 '      end',
-'   end              as status',
+'   end                  as status',
 '   ,case',
 '     when exists(',
 '       select 1',
@@ -949,14 +949,14 @@ wwv_flow_imp_shared.append_to_install_script(
 '     when t1.parent_id is not null',
 '     then ''REPLY''',
 '     else ''READ''',
-'    end              as flag',
+'    end                 as flag',
 '  ,apex_string.get_initials(',
-'    t1.comment_by',
-'  )                 as user_icon',
-'  ,''u-color-'' ||',
-'  (',
-'    ora_hash( lower( t1.comment_by ), 44 ) + 1',
-'  )                 as icon_modifier',
+'    p_str => t1.comment_by',
+'  )                     as user_icon',
+'  ,apex_string.format(',
+'     p_message => ''u-color-%s''',
+'    ,p0 => ora_hash( lower( t1.comment_by ), 44 ) + 1',
+'  )                     as icon_modifier',
 'from blog_comments t1',
 'where 1 = 1',
 '/',
@@ -1218,21 +1218,20 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_COMMENTS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "IS_ACTIVE", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "USER_ICON", "ICON_MODIFIER") AS',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "USER_ICON", "ICON_MODIFIER") AS',
 '  select',
 '   t1.id          as comment_id',
-'  ,t1.is_active   as is_active',
 '  ,t1.post_id     as post_id',
 '  ,t1.parent_id   as parent_id',
 '  ,t1.created_on  as created_on',
 '  ,t1.comment_by  as comment_by',
 '  ,t1.body_html   as comment_body',
 '  ,apex_string.get_initials(',
-'    t1.comment_by',
+'    p_str => t1.comment_by',
 '  )               as user_icon',
-'  ,''u-color-''',
-'  || (',
-'   ora_hash( lower( t1.comment_by ), 44 ) + 1',
+'  ,apex_string.format(',
+'     p_message => ''u-color-%s''',
+'    ,p0 => ora_hash( lower( t1.comment_by ), 44 ) + 1',
 '  )               as icon_modifier',
 'from blog_comments t1',
 'where 1 = 1',
@@ -1476,11 +1475,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    and tags.post_id = t1.id',
 '  )                     as post_tags',
 '  ,(',
-'    select listagg( tags.tag, '', '' )  within group( order by tags.display_seq )',
-'    from blog_v_all_post_tags tags',
-'    where 1 = 1',
-'    and tags.post_id = t1.id',
-'    and tag'))
+'    select listagg( tags.tag, '', '' )  within grou'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1498,7 +1493,11 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'s.is_active * tags.tag_is_active = 1',
+'p( order by tags.display_seq )',
+'    from blog_v_all_post_tags tags',
+'    where 1 = 1',
+'    and tags.post_id = t1.id',
+'    and tags.is_active * tags.tag_is_active = 1',
 '  )                     as visible_tags',
 '  ,(',
 '    select listagg( tags.tag, '', '' )  within group( order by tags.display_seq )',
@@ -1805,7 +1804,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '   v1.tag_id            as tag_id',
 '  ,v1.tag               as tag',
 '  ,v1.tag_url           as tag_url',
-'  ,count( v1.post_id )  as posts_count',
+'  ,count( 1 )           as posts_count',
 '  ,max(',
 '    greatest(',
 '       v1.changed_on',
@@ -1813,14 +1812,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '    )',
 '  )                     as changed_on',
 '  ,width_bucket(',
-'     count( v1.post_id )',
-'    ,min( count( v1.post_id ) ) over()',
-'    ,max( count( v1.post_id ) ) over()',
+'     count( 1 )',
+'    ,min( count( 1 ) ) over()',
+'    ,max( count( 1 ) ) over()',
 '    ,7',
 '  )                     as tag_bucket',
 '  ,feat.show_post_count as show_post_count',
 'from blog_v_post_tags v1',
 'join blog_v_posts v2 on v1.post_id = v2.post_id',
+'-- Fetch APEX messages',
 'cross join(',
 '  select',
 '    apex_util.get_build_option_status(',
@@ -2513,9 +2513,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '-- Private constants and variables',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'-- none',
-'------------------------------------------------------------------'))
+'-------------------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2533,7 +2531,9 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'--------------',
+'-------------------------------------------',
+'-- none',
+'--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
 '--------------------------------------------------------------------------------',
@@ -3545,10 +3545,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- fetch max link group display sequence',
 '    select max( v1.display_seq ) as display_seq',
 '    into l_max_seq',
-'    from blog_v_all_dynamic_content v1',
-'    ;',
-'    -- get next link group display sequence',
-'    l_next_seq := blog_util.int_to_v'))
+'    fro'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3566,7 +3563,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'c2( next_seq( l_max_seq ) );',
+'m blog_v_all_dynamic_content v1',
+'    ;',
+'    -- get next link group display sequence',
+'    l_next_seq := blog_util.int_to_vc2( next_seq( l_max_seq ) );',
 '    -- return next link group display sequence',
 '    return l_next_seq;',
 '',
@@ -4573,14 +4573,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  function get_category(',
 '    p_category_id in varchar2,',
-'    p_canonical   in varchar2 default ''NO''',
-'  ) return varchar2',
-'  as',
-'  begin',
-'',
-'    return',
-'      case p_canonical',
-'        when ''YES'' then get_canonic'))
+'    p_canonical   in varchar'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4598,7 +4591,14 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'al_host',
+'2 default ''NO''',
+'  ) return varchar2',
+'  as',
+'  begin',
+'',
+'    return',
+'      case p_canonical',
+'        when ''YES'' then get_canonical_host',
 '      end ||',
 '      apex_page.get_url(',
 '         p_page       => c_category_page.page_alias',
@@ -5605,11 +5605,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  function get_rss_anchor(',
 '    p_app_name  in varchar2,',
 '    p_message   in varchar2',
-'  ) return varchar2',
-'  as',
-'    l_rss_url     varchar2(4000);',
-'    l_rss_title   varchar2(4000);',
-'    l_rss_anchor  varchar2(4000'))
+'  ) re'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5627,7 +5623,11 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-');',
+'turn varchar2',
+'  as',
+'    l_rss_url     varchar2(4000);',
+'    l_rss_title   varchar2(4000);',
+'    l_rss_anchor  varchar2(4000);',
 '  begin',
 '',
 '    -- get rss title',
