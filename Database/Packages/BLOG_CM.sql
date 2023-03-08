@@ -52,6 +52,7 @@ as
 --                              resequence_categories
 --                              resequence_tags
 --    Jari Laine 09.05.2022 - Removed obsolete procedure run_settings_post_expression
+--    Jari Laine 08.03.2023 - Changed function is_date_format validate as date instead of timestamp
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1018,7 +1019,7 @@ as
     end if;
 
     -- try convert timestamp to string
-    if to_char( systimestamp, p_value ) is not null
+    if to_char( sysdate, p_value ) is not null
     then
       -- if validation passes, clear error meassage
       l_err_mesg := null;

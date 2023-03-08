@@ -63,7 +63,7 @@ wwv_flow_imp.create_flow(
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
 ,p_tokenize_row_search=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230305071817'
+,p_last_upd_yyyymmddhh24miss=>'20230308180006'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>548
 ,p_print_server_type=>'INSTANCE'

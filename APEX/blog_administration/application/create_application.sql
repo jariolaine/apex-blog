@@ -62,6 +62,7 @@ wwv_flow_imp.create_flow(
 ,p_csv_encoding=>'Y'
 ,p_auto_time_zone=>'Y'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
+,p_oracle_text_function=>'#OWNER#.blog_ctx.get_post_search'
 ,p_tokenize_row_search=>'N'
 ,p_friendly_url=>'N'
 ,p_substitution_string_01=>'BLOG_FILE_UPLOAD_COLLECTION'
@@ -69,7 +70,7 @@ wwv_flow_imp.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230305071947'
+,p_last_upd_yyyymmddhh24miss=>'20230308175905'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>679
 ,p_print_server_type=>'INSTANCE'

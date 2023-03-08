@@ -708,6 +708,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--                              resequence_categories',
 '--                              resequence_tags',
 '--    Jari Laine 09.05.2022 - Removed obsolete procedure run_settings_post_expression',
+'--    Jari Laine 08.03.2023 - Changed function is_date_format validate as date instead of timestamp',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -1408,7 +1409,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_DYNAMIC_CONTENT',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "CONTENT_TYPE", "DISPLA'))
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VE'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1426,7 +1427,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'Y_SEQ", "SHOW_CHANGED_ON", "CONTENT_DESC", "CONTENT_HTML") AS',
+'RSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "CONTENT_TYPE", "DISPLAY_SEQ", "SHOW_CHANGED_ON", "CONTENT_DESC", "CONTENT_HTML") AS',
 '  select',
 '   t1.id                as id',
 '  ,t1.row_version       as row_version',
@@ -2284,9 +2285,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
-'    :new.created_by   := coalesce(',
-'      :new.created_by',
-'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )'))
+'    :'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2304,7 +2303,9 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'new.created_by   := coalesce(',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
 '      ,sys_context( ''USERENV'', ''PROXY_USER'' )',
 '      ,sys_context( ''USERENV'', ''SESSION_USER'' )',
 '    );',
@@ -3294,9 +3295,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end get_attribute_value;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure initialize_items(',
-'    p_app_id in'))
+'--------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3314,7 +3313,9 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' varchar2',
+'------------------------------------------------------',
+'  procedure initialize_items(',
+'    p_app_id in varchar2',
 '  )',
 '  as',
 '    l_app_id number;',
@@ -4385,10 +4386,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    l_post_id := to_number( p_post_id );',
 '',
-'    -- split tags string to table and loop all values',
-'    l_tag_tab := apex_string.split(',
-'       p_str => p_tags',
-'      ,p_'))
+'    -- split tags stri'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4406,7 +4404,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'sep => p_sep',
+'ng to table and loop all values',
+'    l_tag_tab := apex_string.split(',
+'       p_str => p_tags',
+'      ,p_sep => p_sep',
 '    );',
 '',
 '    for i in 1 .. l_tag_tab.count',
@@ -4589,7 +4590,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    end if;',
 '',
 '    -- try convert timestamp to string',
-'    if to_char( systimestamp, p_value ) is not null',
+'    if to_char( sysdate, p_value ) is not null',
 '    then',
 '      -- if validation passes, clear error meassage',
 '      l_err_mesg := null;',
@@ -5388,16 +5389,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '            ,p1 => chr(10)',
 '            ,p2 => i',
 '            ,p3 => chr(10)',
-'            ,p4 => ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )',
-'          )',
-'        ;',
-'',
-'      end loop;',
-'',
-'    end if;',
-'',
-'  end build_code_tab;',
-'-'))
+'            ,p4 => ltrim( substr( p_comment, l_end_po'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5415,7 +5407,16 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-------------------------------------------------------------------------------',
+'s + 7 ), chr(10) )',
+'          )',
+'        ;',
+'',
+'      end loop;',
+'',
+'    end if;',
+'',
+'  end build_code_tab;',
+'--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure build_comment_html(',
 '    p_comment in out nocopy varchar2',
@@ -6402,12 +6403,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      ,p1 => sqlerrm',
 '    );',
 '',
-'    -- show http error',
-'    blog_util.raise_http_error( 500 );',
-'    raise;',
-'',
-'  end rss_xsl;',
-'---------'))
+'   '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6425,7 +6421,12 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------------------------------------------------------------------',
+' -- show http error',
+'    blog_util.raise_http_error( 500 );',
+'    raise;',
+'',
+'  end rss_xsl;',
+'--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure sitemap_index(',
 '    p_app_id        in varchar2,',

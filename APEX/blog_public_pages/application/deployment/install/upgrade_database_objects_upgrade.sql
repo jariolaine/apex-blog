@@ -246,6 +246,7 @@ wwv_flow_imp_shared.create_install_script(
 '--                              resequence_categories',
 '--                              resequence_tags',
 '--    Jari Laine 09.05.2022 - Removed obsolete procedure run_settings_post_expression',
+'--    Jari Laine 08.03.2023 - Changed function is_date_format validate as date instead of timestamp',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -687,9 +688,7 @@ wwv_flow_imp_shared.create_install_script(
 '--    Jari Laine 19.05.2020 - Removed obsolete function get_search_button',
 '--    Jari Laine 06.07.2020 - Added parameter p_rss_url to functions get_rss_link and get_rss_anchor',
 '--                            Removed parameter p_build_option_status from function get_rss_link',
-'--    Jari Laine 13.11.2021 - Changes to funtion get_rss_anchor and get get_rss_link',
-'--                          - Removed obsolete functions',
-'--    Jari Laine 27.03.2022'))
+'--    Jari Laine 13.11.2021 - Changes to funtion get_rss_anchor and g'))
 );
 wwv_flow_imp.component_end;
 end;
@@ -706,7 +705,9 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' - Added parameter p_build_option and p_message to function get_rss_link',
+'et get_rss_link',
+'--                          - Removed obsolete functions',
+'--    Jari Laine 27.03.2022 - Added parameter p_build_option and p_message to function get_rss_link',
 '--                          - Added parameter p_message to function get_rss_anchor',
 '--    Jari Laine 27.04.2022 - Removed obsolete functions get_tag_anchor and get_post_tags',
 '--    Jari Laine 16.11.2022 - Removed obsolete functions:',
@@ -1472,10 +1473,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    select listagg( tags.tag, '', '' )  within group( order by tags.display_seq )',
 '    from blog_v_all_post_tags tags',
 '    where 1 = 1',
-'    and tags.post_id = t1.id',
-'  )                     as post_tags',
-'  ,(',
-'    select listagg( tags.tag, '', '' )  within grou'))
+'    and tags.post_id'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1493,7 +1491,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'p( order by tags.display_seq )',
+' = t1.id',
+'  )                     as post_tags',
+'  ,(',
+'    select listagg( tags.tag, '', '' )  within group( order by tags.display_seq )',
 '    from blog_v_all_post_tags tags',
 '    where 1 = 1',
 '    and tags.post_id = t1.id',
@@ -2512,8 +2513,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Private constants and variables',
-'--------------------------------------------------------------------------------',
-'-------------------------------------'))
+'------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2531,7 +2531,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-------------------------------------------',
+'--------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '-- none',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -3542,10 +3543,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_next_seq  varchar2(256);',
 '  begin',
 '',
-'    -- fetch max link group display sequence',
-'    select max( v1.display_seq ) as display_seq',
-'    into l_max_seq',
-'    fro'))
+'    -- fetch max li'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3563,7 +3561,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'m blog_v_all_dynamic_content v1',
+'nk group display sequence',
+'    select max( v1.display_seq ) as display_seq',
+'    into l_max_seq',
+'    from blog_v_all_dynamic_content v1',
 '    ;',
 '    -- get next link group display sequence',
 '    l_next_seq := blog_util.int_to_vc2( next_seq( l_max_seq ) );',
@@ -4137,7 +4138,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    end if;',
 '',
 '    -- try convert timestamp to string',
-'    if to_char( systimestamp, p_value ) is not null',
+'    if to_char( sysdate, p_value ) is not null',
 '    then',
 '      -- if validation passes, clear error meassage',
 '      l_err_mesg := null;',
@@ -4570,10 +4571,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end get_category;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function get_category(',
-'    p_category_id in varchar2,',
-'    p_canonical   in varchar'))
+'----------------------------------------------------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4591,7 +4589,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'2 default ''NO''',
+'----------',
+'  function get_category(',
+'    p_category_id in varchar2,',
+'    p_canonical   in varchar2 default ''NO''',
 '  ) return varchar2',
 '  as',
 '  begin',
@@ -5601,11 +5602,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end get_tag_canonical_link;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function get_rss_anchor(',
-'    p_app_name  in varchar2,',
-'    p_message   in varchar2',
-'  ) re'))
+'----------------------------------------------------------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5623,7 +5620,11 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'turn varchar2',
+'----',
+'  function get_rss_anchor(',
+'    p_app_name  in varchar2,',
+'    p_message   in varchar2',
+'  ) return varchar2',
 '  as',
 '    l_rss_url     varchar2(4000);',
 '    l_rss_title   varchar2(4000);',

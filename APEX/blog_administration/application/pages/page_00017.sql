@@ -41,7 +41,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230128074109'
+,p_last_upd_yyyymmddhh24miss=>'20230308174948'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6849894493100859)
@@ -61,7 +61,7 @@ wwv_flow_imp_page.create_page_plug(
 '  ,v1.changed_on  as changed_since',
 '  ,v1.changed_by  as changed_by',
 '  ,v1.display_seq as display_seq',
-'  ,v1.link_status as link_status',
+'  ,v1.link_status as link_status -- see column HTML Expression',
 '  ,v1.title       as title',
 '  ,v1.link_desc   as link_desc',
 '  ,v1.link_url    as link_url',
@@ -324,7 +324,7 @@ wwv_flow_imp_page.create_report_region(
 '    then ''fa fa-check-circle u-success-text''',
 '    else ''fa fa-minus-circle u-danger-text''',
 '   end              as icon_class',
-'  ,null             as icon_html',
+'  ,null             as icon_html -- see column HTML Expression',
 '  ,v1.title         as title',
 '  ,v1.notes         as description',
 '  ,apex_lang.message(',

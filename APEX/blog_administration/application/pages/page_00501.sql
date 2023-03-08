@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230304050855'
+,p_last_upd_yyyymmddhh24miss=>'20230305142509'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8857181938695778)
@@ -335,7 +335,7 @@ wwv_flow_imp_page.create_page_validation(
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_cm.is_date_format(',
 '   p_value => :P501_DISPLAY_DATE_FORMAT',
-'  ,p_err_mesg => ''BLOG_VALIDATION_ERR_IS_DATE_FORMAT''',
+'  ,p_err_mesg => ''BLOG_VALIDATION_ERR_DATE_FORMAT''',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -349,7 +349,7 @@ wwv_flow_imp_page.create_page_validation(
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_cm.is_date_format(',
 '   p_value => :P501_INPUT_DATE_FORMAT',
-'  ,p_err_mesg => ''BLOG_VALIDATION_ERR_IS_DATE_FORMAT''',
+'  ,p_err_mesg => ''BLOG_VALIDATION_ERR_DATE_FORMAT''',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'

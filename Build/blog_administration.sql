@@ -58,7 +58,7 @@ prompt APPLICATION 402 - Blog Administration
 --       Computations:            10
 --       Validations:              9
 --       Processes:               52
---       Regions:                 92
+--       Regions:                 91
 --       Buttons:                 89
 --       Dynamic Actions:         43
 --     Shared Components:
@@ -159,6 +159,7 @@ wwv_flow_imp.create_flow(
 ,p_csv_encoding=>'Y'
 ,p_auto_time_zone=>'Y'
 ,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
+,p_oracle_text_function=>'#OWNER#.blog_ctx.get_post_search'
 ,p_tokenize_row_search=>'N'
 ,p_friendly_url=>'N'
 ,p_substitution_string_01=>'BLOG_FILE_UPLOAD_COLLECTION'
@@ -166,7 +167,7 @@ wwv_flow_imp.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230305071947'
+,p_last_upd_yyyymmddhh24miss=>'20230308175905'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>679
 ,p_print_server_type=>'INSTANCE'
@@ -16509,7 +16510,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230225084402'
+,p_last_upd_yyyymmddhh24miss=>'20230305094000'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8582113239518316)
@@ -16522,70 +16523,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
-);
-wwv_flow_imp_page.create_report_region(
- p_id=>wwv_flow_imp.id(17115504500199917)
-,p_name=>'Page Load Time in Seconds'
-,p_template=>wwv_flow_imp.id(8490381578518205)
-,p_display_sequence=>40
-,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols t-BadgeList--3cols:t-Report--hideNoPagination'
-,p_source_type=>'NATIVE_SQL_REPORT'
-,p_query_type=>'SQL'
-,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select ',
-'   ls.average_elapsed_time  as average_elapsed_time',
-'  ,ls.minimum_elapsed_time  as minimum_elapsed_time',
-'  ,ls.maximum_elapsed_time  as maximum_elapsed_time',
-'from apex_workspace_log_summary ls',
-'where 1 = 1',
-'  and ls.application_id = :G_PUB_APP_ID',
-''))
-,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
-,p_ajax_enabled=>'Y'
-,p_lazy_loading=>false
-,p_query_row_template=>wwv_flow_imp.id(8515750866518222)
-,p_query_num_rows=>15
-,p_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_query_show_nulls_as=>'0'
-,p_csv_output=>'N'
-,p_prn_output=>'N'
-,p_sort_null=>'L'
-,p_plug_query_strip_html=>'N'
-,p_required_patch=>wwv_flow_imp.id(24687280101070827)
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(17115986049199921)
-,p_query_column_id=>1
-,p_column_alias=>'AVERAGE_ELAPSED_TIME'
-,p_column_display_sequence=>40
-,p_column_heading=>'Average '
-,p_use_as_row_header=>'N'
-,p_column_format=>'999999999999990D000'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(17116047592199922)
-,p_query_column_id=>2
-,p_column_alias=>'MINIMUM_ELAPSED_TIME'
-,p_column_display_sequence=>50
-,p_column_heading=>'Minimum'
-,p_use_as_row_header=>'N'
-,p_column_format=>'999999999999990D000'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(17116146435199923)
-,p_query_column_id=>3
-,p_column_alias=>'MAXIMUM_ELAPSED_TIME'
-,p_column_display_sequence=>60
-,p_column_heading=>'Maximum'
-,p_use_as_row_header=>'N'
-,p_column_format=>'999999999999990D000'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(37646499764287130)
@@ -20138,7 +20075,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230128074109'
+,p_last_upd_yyyymmddhh24miss=>'20230308174948'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6849894493100859)
@@ -20158,7 +20095,7 @@ wwv_flow_imp_page.create_page_plug(
 '  ,v1.changed_on  as changed_since',
 '  ,v1.changed_by  as changed_by',
 '  ,v1.display_seq as display_seq',
-'  ,v1.link_status as link_status',
+'  ,v1.link_status as link_status -- see column HTML Expression',
 '  ,v1.title       as title',
 '  ,v1.link_desc   as link_desc',
 '  ,v1.link_url    as link_url',
@@ -20421,7 +20358,7 @@ wwv_flow_imp_page.create_report_region(
 '    then ''fa fa-check-circle u-success-text''',
 '    else ''fa fa-minus-circle u-danger-text''',
 '   end              as icon_class',
-'  ,null             as icon_html',
+'  ,null             as icon_html -- see column HTML Expression',
 '  ,v1.title         as title',
 '  ,v1.notes         as description',
 '  ,apex_lang.message(',
@@ -26115,7 +26052,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230304050855'
+,p_last_upd_yyyymmddhh24miss=>'20230305142509'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8857181938695778)
@@ -26426,7 +26363,7 @@ wwv_flow_imp_page.create_page_validation(
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_cm.is_date_format(',
 '   p_value => :P501_DISPLAY_DATE_FORMAT',
-'  ,p_err_mesg => ''BLOG_VALIDATION_ERR_IS_DATE_FORMAT''',
+'  ,p_err_mesg => ''BLOG_VALIDATION_ERR_DATE_FORMAT''',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -26440,7 +26377,7 @@ wwv_flow_imp_page.create_page_validation(
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return #OWNER#.blog_cm.is_date_format(',
 '   p_value => :P501_INPUT_DATE_FORMAT',
-'  ,p_err_mesg => ''BLOG_VALIDATION_ERR_IS_DATE_FORMAT''',
+'  ,p_err_mesg => ''BLOG_VALIDATION_ERR_DATE_FORMAT''',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -31620,6 +31557,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--                              resequence_categories',
 '--                              resequence_tags',
 '--    Jari Laine 09.05.2022 - Removed obsolete procedure run_settings_post_expression',
+'--    Jari Laine 08.03.2023 - Changed function is_date_format validate as date instead of timestamp',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -32320,7 +32258,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_DYNAMIC_CONTENT',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "CONTENT_TYPE", "DISPLA'))
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VE'))
 );
 null;
 end;
@@ -32329,7 +32267,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'Y_SEQ", "SHOW_CHANGED_ON", "CONTENT_DESC", "CONTENT_HTML") AS',
+'RSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "CONTENT_TYPE", "DISPLAY_SEQ", "SHOW_CHANGED_ON", "CONTENT_DESC", "CONTENT_HTML") AS',
 '  select',
 '   t1.id                as id',
 '  ,t1.row_version       as row_version',
@@ -33187,9 +33125,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
-'    :new.created_by   := coalesce(',
-'      :new.created_by',
-'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )'))
+'    :'))
 );
 null;
 end;
@@ -33198,7 +33134,9 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'new.created_by   := coalesce(',
+'      :new.created_by',
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
 '      ,sys_context( ''USERENV'', ''PROXY_USER'' )',
 '      ,sys_context( ''USERENV'', ''SESSION_USER'' )',
 '    );',
@@ -34188,9 +34126,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end get_attribute_value;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure initialize_items(',
-'    p_app_id in'))
+'--------------------------'))
 );
 null;
 end;
@@ -34199,7 +34135,9 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' varchar2',
+'------------------------------------------------------',
+'  procedure initialize_items(',
+'    p_app_id in varchar2',
 '  )',
 '  as',
 '    l_app_id number;',
@@ -35270,10 +35208,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    l_post_id := to_number( p_post_id );',
 '',
-'    -- split tags string to table and loop all values',
-'    l_tag_tab := apex_string.split(',
-'       p_str => p_tags',
-'      ,p_'))
+'    -- split tags stri'))
 );
 null;
 end;
@@ -35282,7 +35217,10 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'sep => p_sep',
+'ng to table and loop all values',
+'    l_tag_tab := apex_string.split(',
+'       p_str => p_tags',
+'      ,p_sep => p_sep',
 '    );',
 '',
 '    for i in 1 .. l_tag_tab.count',
@@ -35465,7 +35403,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    end if;',
 '',
 '    -- try convert timestamp to string',
-'    if to_char( systimestamp, p_value ) is not null',
+'    if to_char( sysdate, p_value ) is not null',
 '    then',
 '      -- if validation passes, clear error meassage',
 '      l_err_mesg := null;',
@@ -36264,16 +36202,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '            ,p1 => chr(10)',
 '            ,p2 => i',
 '            ,p3 => chr(10)',
-'            ,p4 => ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )',
-'          )',
-'        ;',
-'',
-'      end loop;',
-'',
-'    end if;',
-'',
-'  end build_code_tab;',
-'-'))
+'            ,p4 => ltrim( substr( p_comment, l_end_po'))
 );
 null;
 end;
@@ -36282,7 +36211,16 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-------------------------------------------------------------------------------',
+'s + 7 ), chr(10) )',
+'          )',
+'        ;',
+'',
+'      end loop;',
+'',
+'    end if;',
+'',
+'  end build_code_tab;',
+'--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure build_comment_html(',
 '    p_comment in out nocopy varchar2',
@@ -37269,12 +37207,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      ,p1 => sqlerrm',
 '    );',
 '',
-'    -- show http error',
-'    blog_util.raise_http_error( 500 );',
-'    raise;',
-'',
-'  end rss_xsl;',
-'---------'))
+'   '))
 );
 null;
 end;
@@ -37283,7 +37216,12 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------------------------------------------------------------------',
+' -- show http error',
+'    blog_util.raise_http_error( 500 );',
+'    raise;',
+'',
+'  end rss_xsl;',
+'--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure sitemap_index(',
 '    p_app_id        in varchar2,',
