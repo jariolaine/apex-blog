@@ -28,7 +28,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230128074529'
+,p_last_upd_yyyymmddhh24miss=>'20230310220906'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27063074415689131)
@@ -127,7 +127,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_stretch=>'A'
 ,p_attribute_01=>'<span class="&FEATURE_NAME_CLASS.">&FEATURE_NAME.</span>'
 ,p_filter_is_required=>false
-,p_use_as_row_header=>false
+,p_use_as_row_header=>true
 ,p_javascript_code=>'blog.admin.configIG.initColumn'
 ,p_enable_sort_group=>false
 ,p_enable_hide=>false

@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230304074104'
+,p_last_upd_yyyymmddhh24miss=>'20230310220202'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8596898648797585)
@@ -34,67 +34,52 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_point=>'REGION_POSITION_08'
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.id                as post_id',
-'  ,v1.category_id           as category_id',
-'  ,v1.tag_id                as tag_id',
-'  ,v1.created_on            as created_on',
-'  ,v1.created_on            as created_since',
-'  ,v1.created_by            as created_by',
-'  ,v1.changed_on            as changed_on',
-'  ,v1.changed_on            as changed_since',
-'  ,v1.changed_by            as changed_by',
-'  ,v1.published_display     as published_on',
-'  ,v1.published_display     as published_since',
-'  ,v1.blogger_name          as blogger_name',
-'  ,v1.category_title        as category_title',
-'  ,v1.title                 as post_title',
-'  ,v1.post_desc             as post_desc',
-'  ,v1.visible_tags          as visible_tags',
-'  ,v1.hidden_tags           as hidden_tags',
-'  ,v1.body_length           as body_length',
-'  ,v1.comments_count        as comments_count',
-'  ,v1.notes                 as notes',
-'  ,status_lov.display_value as post_status',
-'  ,btn.title_tags           as btn_title_tags',
-'  ,case v1.post_status',
-'    when ''BLOGGER_DISABLED''',
-'    then ''fa-stop-circle u-danger-text''',
-'    when ''CATEGORY_DISABLED''',
-'    then ''fa-minus-circle u-danger-text''',
-'    when ''DRAFT''',
-'    then ''fa-pause-circle u-warning-text''',
-'    when ''SCHEDULED''',
-'    then ''fa-clock-o u-info-text''',
-'    when ''PUBLISHED''',
-'    then ''fa-check-circle u-success-text''',
-'    else ''fa-question-circle''',
+'select ',
+'   v1.id                as post_id',
+'  ,v1.category_id       as category_id',
+'  ,v1.tag_id            as tag_id',
+'  ,v1.created_on        as created_on',
+'  ,v1.created_on        as created_since',
+'  ,v1.created_by        as created_by',
+'  ,v1.changed_on        as changed_on',
+'  ,v1.changed_on        as changed_since',
+'  ,v1.changed_by        as changed_by',
+'  ,v1.published_display as published_on',
+'  ,v1.published_display as published_since',
+'  ,v1.blogger_name      as blogger_name',
+'  ,v1.category_title    as category_title',
+'  ,v1.title             as post_title',
+'  ,v1.post_desc         as post_desc',
+'  ,v1.visible_tags      as visible_tags',
+'  ,v1.hidden_tags       as hidden_tags',
+'  ,v1.body_length       as body_length',
+'  ,v1.comments_cnt      as comments_count',
+'  ,v1.notes             as notes',
+'  ,v1.post_status_code  as post_status_code',
+'  ,v1.post_status       as post_status',
+'  ,btn.title_tags       as btn_title_tags',
+'  ,btn.title_edit       as btn_title_edit',
+'  ,case v1.post_status_code',
+'    when ''BLOGGER_DISABLED'' then ''fa-stop-circle u-danger-text''',
+'    when ''CATEGORY_DISABLED''then ''fa-minus-circle u-danger-text''',
+'    when ''DRAFT''            then ''fa-pause-circle u-warning-text''',
+'    when ''SCHEDULED''        then ''fa-clock-o u-info-text''',
+'    when ''PUBLISHED''        then ''fa-check-circle u-success-text''',
+'                            else ''fa-question-circle''',
 '   end                      as post_status_icon',
-'  ,btn.title_edit           as btn_title_edit',
-'  ,apex_page.get_url(',
-'     p_page   => 12',
-'    ,p_clear_cache => 12',
-'    ,p_items  => ''P12_ID''',
-'    ,p_values => v1.id',
-'   )                        as edit_url',
+'  ,v1.post_edit_url         as edit_url',
 '-- Post HTML for detail view',
 '  ,v1.body_html',
 '-- Post date for detail view',
 '  ,to_char(',
 '     v1.published_on',
 '    ,:G_POST_TITLE_DATE_FORMAT',
-'  )                         as detail_view_published',
+'  )                     as detail_view_published',
 '-- Tags HTML for detail view',
-'  ,v1.tags_html             as tags_html',
-'  ,v1.post_txt_search       as post_txt_search',
+'  ,v1.tags_html         as tags_html',
+'-- Text search',
+'  ,v1.post_txt_search   as post_txt_search',
 'from #OWNER#.blog_v_all_posts v1',
-'-- because APEX bug that IR not use LOV values ',
-'join (',
-'  select lov.display_value',
-'    ,lov.return_value',
-'  from #OWNER#.blog_v_lov lov',
-'  where 1 = 1',
-'  and lov.lov_name = ''POST_STATUS''',
-') status_lov on status_lov.return_value = v1.post_status',
 '-- link column button title',
 'cross join (',
 '  select',
@@ -369,12 +354,13 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3880710343180124)
 ,p_db_column_name=>'POST_STATUS'
-,p_display_order=>230
+,p_display_order=>240
 ,p_column_identifier=>'AM'
 ,p_column_label=>'Status'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<span aria-hidden="true" title="#POST_STATUS#" class="fa #POST_STATUS_ICON#"></span>',
 '<span class="u-VisuallyHidden">#POST_STATUS#</span>',
+'',
 ''))
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
@@ -386,7 +372,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(13625357587077813)
 ,p_db_column_name=>'BTN_TITLE_TAGS'
-,p_display_order=>240
+,p_display_order=>250
 ,p_column_identifier=>'BQ'
 ,p_column_label=>'Edit Tags'
 ,p_column_link=>'f?p=&APP_ID.:24:&SESSION.::&DEBUG.::P24_POST_ID:#POST_ID#'
@@ -406,27 +392,27 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(31618832374094024)
-,p_db_column_name=>'POST_STATUS_ICON'
-,p_display_order=>250
-,p_column_identifier=>'BL'
-,p_column_label=>'Post Status Icon'
-,p_column_type=>'STRING'
-,p_display_text_as=>'HIDDEN'
-);
-wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(31246733855982907)
 ,p_db_column_name=>'BTN_TITLE_EDIT'
-,p_display_order=>260
+,p_display_order=>270
 ,p_column_identifier=>'BK'
 ,p_column_label=>'Btn Title Edit'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
 );
 wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(33133832120313201)
+,p_db_column_name=>'POST_STATUS_CODE'
+,p_display_order=>280
+,p_column_identifier=>'BV'
+,p_column_label=>'Post Status Code'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+);
+wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(25132885666432510)
 ,p_db_column_name=>'EDIT_URL'
-,p_display_order=>270
+,p_display_order=>290
 ,p_column_identifier=>'BD'
 ,p_column_label=>'Edit Url'
 ,p_column_type=>'STRING'
@@ -435,7 +421,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3880372195180120)
 ,p_db_column_name=>'BODY_HTML'
-,p_display_order=>280
+,p_display_order=>300
 ,p_column_identifier=>'AI'
 ,p_column_label=>'Body Html'
 ,p_column_type=>'CLOB'
@@ -444,7 +430,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(11415530557329113)
 ,p_db_column_name=>'DETAIL_VIEW_PUBLISHED'
-,p_display_order=>290
+,p_display_order=>310
 ,p_column_identifier=>'BO'
 ,p_column_label=>'Detail View Published'
 ,p_column_type=>'STRING'
@@ -453,7 +439,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(21076848274846837)
 ,p_db_column_name=>'TAGS_HTML'
-,p_display_order=>300
+,p_display_order=>320
 ,p_column_identifier=>'BP'
 ,p_column_label=>'Tags Html'
 ,p_column_type=>'CLOB'
@@ -462,11 +448,20 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(21641780130282145)
 ,p_db_column_name=>'POST_TXT_SEARCH'
-,p_display_order=>310
+,p_display_order=>330
 ,p_column_identifier=>'BU'
 ,p_column_label=>'Post Txt Search'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(33133905393313202)
+,p_db_column_name=>'POST_STATUS_ICON'
+,p_display_order=>340
+,p_column_identifier=>'BW'
+,p_column_label=>'Post Status Icon'
+,p_column_type=>'STRING'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_rpt(
  p_id=>wwv_flow_imp.id(8604892694799317)

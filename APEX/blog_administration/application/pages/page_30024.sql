@@ -29,7 +29,7 @@ wwv_flow_imp_page.create_page(
 ||'he default settings.</p>'))
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230128073031'
+,p_last_upd_yyyymmddhh24miss=>'20230310221123'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(43843535329616316)
@@ -109,7 +109,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_html_expression=>'#PAGE#. #PAGE_NAME#'
 ,p_column_type=>'STRING'
 ,p_heading_alignment=>'LEFT'
-,p_use_as_row_header=>'N'
+,p_use_as_row_header=>'Y'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(15611713783559116)

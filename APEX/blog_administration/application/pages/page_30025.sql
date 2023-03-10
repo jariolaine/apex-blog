@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230128073239'
+,p_last_upd_yyyymmddhh24miss=>'20230310221432'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(56682839747382561)
@@ -35,6 +35,13 @@ wwv_flow_imp_page.create_page_plug(
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select page_id        as page_id',
+'  ,(',
+'    select p.page_name',
+'    from apex_application_pages p',
+'    where 1 = 1',
+'      and p.application_id  = d.application_id',
+'      and p.page_id         = d.page_id',
+'  )                   as page_name',
 '  ,session_id         as session_id',
 '  ,apex_user          as user_id',
 '  ,page_view_id       as page_view_id',
@@ -49,7 +56,7 @@ wwv_flow_imp_page.create_page_plug(
 '  ,execution_time     as execution_time',
 '  ,message            as message',
 '  ,call_stack         as call_stack',
-'from apex_debug_messages',
+'from apex_debug_messages d',
 'where 1 = 1',
 'and page_view_id = :P30025_DEBUG_ID'))
 ,p_plug_source_type=>'NATIVE_IR'
@@ -85,9 +92,18 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(33134070883313203)
+,p_db_column_name=>'PAGE_NAME'
+,p_display_order=>20
+,p_column_identifier=>'W'
+,p_column_label=>'Page Name'
+,p_column_type=>'STRING'
+,p_use_as_row_header=>'Y'
+);
+wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12822383577765619)
 ,p_db_column_name=>'USER_ID'
-,p_display_order=>20
+,p_display_order=>30
 ,p_column_identifier=>'H'
 ,p_column_label=>'User Name'
 ,p_column_type=>'STRING'
@@ -96,7 +112,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12822771163765619)
 ,p_db_column_name=>'SESSION_ID'
-,p_display_order=>30
+,p_display_order=>40
 ,p_column_identifier=>'I'
 ,p_column_label=>'Session'
 ,p_column_type=>'NUMBER'
@@ -106,7 +122,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12510758783984013)
 ,p_db_column_name=>'PAGE_VIEW_ID'
-,p_display_order=>40
+,p_display_order=>50
 ,p_column_identifier=>'O'
 ,p_column_label=>'Debug'
 ,p_column_type=>'NUMBER'
@@ -116,7 +132,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12510841849984014)
 ,p_db_column_name=>'MESSAGE_LEVEL'
-,p_display_order=>50
+,p_display_order=>60
 ,p_column_identifier=>'P'
 ,p_column_label=>'Message Level'
 ,p_column_type=>'NUMBER'
@@ -126,7 +142,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12510921849984015)
 ,p_db_column_name=>'MESSAGE_TIMESTAMP'
-,p_display_order=>60
+,p_display_order=>70
 ,p_column_identifier=>'Q'
 ,p_column_label=>'Timestamp'
 ,p_column_type=>'DATE'
@@ -137,7 +153,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(21640863702282136)
 ,p_db_column_name=>'MESSAGE_SINCE'
-,p_display_order=>70
+,p_display_order=>80
 ,p_column_identifier=>'V'
 ,p_column_label=>'Occurred'
 ,p_column_type=>'DATE'
@@ -149,7 +165,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12511022054984016)
 ,p_db_column_name=>'ELAPSED_TIME'
-,p_display_order=>80
+,p_display_order=>90
 ,p_column_identifier=>'R'
 ,p_column_label=>'Elapsed Time'
 ,p_column_type=>'NUMBER'
@@ -159,7 +175,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12511155858984017)
 ,p_db_column_name=>'EXECUTION_TIME'
-,p_display_order=>90
+,p_display_order=>100
 ,p_column_identifier=>'S'
 ,p_column_label=>'Execution Time'
 ,p_column_type=>'NUMBER'
@@ -169,7 +185,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12511249447984018)
 ,p_db_column_name=>'MESSAGE'
-,p_display_order=>100
+,p_display_order=>110
 ,p_column_identifier=>'T'
 ,p_column_label=>'Message'
 ,p_column_type=>'STRING'
@@ -178,7 +194,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12511345459984019)
 ,p_db_column_name=>'CALL_STACK'
-,p_display_order=>110
+,p_display_order=>120
 ,p_column_identifier=>'U'
 ,p_column_label=>'Call Stack'
 ,p_column_type=>'STRING'

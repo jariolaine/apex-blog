@@ -1889,76 +1889,117 @@ wwv_flow_imp_shared.append_to_install_script(
 '--  DDL for View BLOG_V_ALL_POSTS',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LEN'
-||'GTH", "PUBLISHED_ON", "POST_TXT_SEARCH", "NOTES", "CTX_RID", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "PUBLISHED_COMMENTS_COUNT", "UNREAD_COMMENTS_COUNT", "MODERATE_COMMENTS_COUNT", "DISABLED_COMMEN'
-||'TS_COUNT", "POST_STATUS", "TAGS_HTML") AS',
+||'GTH", "PUBLISHED_ON", "NOTES", "PUBLISHED_DISPLAY", "POST_STATUS_CODE", "POST_TXT_SEARCH", "CTX_RID", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_CNT", "PUBLISHED_COMMENTS_CNT", "UNREAD_COMMENTS_CNT", "MODERATE_COMMENTS_CNT", "DIS'
+||'ABLED_COMMENTS_CNT", "POST_STATUS", "TAGS_HTML", "POST_EDIT_URL") AS',
+'with q1 as(',
+'  select',
+'     t1.id                  as id',
+'    ,t1.category_id         as category_id',
+'    ,t1.blogger_id          as blogger_id',
+'    ,t1.row_version         as row_version',
+'    ,t1.created_on          as created_on',
+'    ,t1.created_by          as created_by',
+'    ,t1.changed_on          as changed_on',
+'    ,t1.changed_by          as changed_by',
+'    ,t3.blogger_name        as blogger_name',
+'    ,t3.email               as blogger_email',
+'    ,t2.title               as category_title',
+'    ,t1.title               as title',
+'    ,t1.post_desc           as post_desc',
+'    ,t1.body_html           as body_html',
+'    ,t1.body_length         as body_length',
+'    ,t1.published_on        as published_on',
+'    ,t1.notes               as notes',
+'    ,t1.post_txt_search     as post_txt_search',
+'    ,t1.rowid               as ctx_rid',
+'    ,case t1.is_active * t2.is_active * t3.is_active',
+'      when 1',
+'      then t1.published_on',
+'     end                    as published_display',
+'    ,case',
+'      when t3.is_active = 0',
+'      then ''BLOGGER_DISABLED''',
+'      when t2.is_active = 0',
+'      then ''CATEGORY_DISABLED''',
+'      when t1.is_active = 0',
+'      then ''DRAFT''',
+'      when t1.published_on > localtimestamp',
+'      then ''SCHEDULED''',
+'      else ''PUBLISHED''',
+'    end                     as post_status_code',
+'  from blog_posts t1',
+'  join blog_categories t2',
+'    on t1.category_id = t2.id',
+'  join blog_bloggers t3',
+'    on t1.blogger_id = t3.id',
+'  where 1 = 1',
+')',
 'select',
-'   t1.id                as id',
-'  ,t1.category_id       as category_id',
-'  ,t1.blogger_id        as blogger_id',
-'  ,t1.row_version       as row_version',
-'  ,t1.created_on        as created_on',
-'  ,lower(t1.created_by) as created_by',
-'  ,t1.changed_on        as changed_on',
-'  ,lower(t1.changed_by) as changed_by',
-'  ,t3.blogger_name      as blogger_name',
-'  ,t3.email             as blogger_email',
-'  ,t2.title             as category_title',
-'  ,t1.title             as title',
-'  ,t1.post_desc         as post_desc',
-'  ,t1.body_html         as body_html',
-'  ,t1.body_length       as body_length',
-'  ,t1.published_on      as published_on',
-'  ,t1.post_txt_search   as post_txt_search',
-'  ,t1.notes             as notes',
-'  ,t1.rowid             as ctx_rid',
-'  ,case t1.is_active * t2.is_active * t3.is_active',
-'    when 1',
-'    then t1.published_on',
-'   end                  as published_display',
-'   ,(',
+'   q1.id                        as id',
+'  ,q1.category_id               as category_id',
+'  ,q1.blogger_id                as blogger_id',
+'  ,q1.row_version               as row_version',
+'  ,q1.created_on                as created_on',
+'  ,lower( q1.created_by )       as created_by',
+'  ,q1.changed_on                as changed_on',
+'  ,lower( q1.changed_by )       as changed_by',
+'  ,q1.blogger_name              as blogger_name',
+'  ,q1.blogger_email             as blogger_email',
+'  ,q1.category_title            as category_title',
+'  ,q1.title                     as title',
+'  ,q1.post_desc                 as post_desc',
+'  ,q1.body_html                 as body_html',
+'  ,q1.body_length               as body_length',
+'  ,q1.published_on              as published_on',
+'  ,q1.notes                     as notes',
+'  ,q1.published_display         as published_display',
+'  ,q1.post_status_code          as post_status_code',
+'  ,q1.post_txt_search           as post_txt_search',
+'  ,q1.ctx_rid                   as ctx_rid',
+'  ,(',
 '     select listagg( tags.tag_id, '':'' )  within group( order by tags.display_seq )',
 '     from blog_v_all_post_tags tags',
 '     where 1 = 1',
-'     and tags.post_id = t1.id',
-'   )                     as tag_id',
+'     and tags.post_id = q1.id',
+'   )                            as tag_id',
 '  ,(',
 '    select listagg( tags.tag, '', '' )  within group( order by tags.display_seq )',
 '    from blog_v_all_post_tags tags',
 '    where 1 = 1',
-'    and tags.post_id = t1.id',
-'  )                     as post_tags',
+'    and tags.post_id = q1.id',
+'  )                             as post_tags',
 '  ,(',
 '    select listagg( tags.tag, '', '' )  within group( order by tags.display_seq )',
 '    from blog_v_all_post_tags tags',
 '    where 1 = 1',
-'    and tags.post_id = t1.id',
+'    and tags.post_id = q1.id',
 '    and tags.is_active * tags.tag_is_active = 1',
-'  )                     as visible_tags',
+'  )                             as visible_tags',
 '  ,(',
 '    select listagg( tags.tag, '', '' )  within group( order by tags.display_seq )',
 '    from blog_v_all_post_tags tags',
 '    where 1 = 1',
-'    and tags.post_id = t1.id',
+'    and tags.post_id = q1.id',
 '    and tags.is_active * tags.tag_is_active = 0',
-'  )                     as hidden_tags',
+'  )                             as hidden_tags',
 '  ,(',
 '    select count( co.id )',
 '    from blog_comments co',
 '    where 1 = 1',
-'    and co.post_id  = t1.id',
-'  )                     as comments_count',
+'    and co.post_id  = q1.id',
+'  )                             as comments_cnt',
 '  ,(',
 '    select count( co.id )',
 '    from blog_comments co',
 '    where 1 = 1',
 '    and co.is_active = 1',
-'    and co.post_id  = t1.id',
-'  )                     as published_comments_count',
+'    and co.post_id  = q1.id',
+'  )                             as published_comments_cnt',
 '  ,(',
 '    select count( co.id )',
 '    from blog_comments co',
 '    where 1 = 1',
-'    and co.post_id  = t1.id',
+'    and co.post_id  = q1.id',
 '    and exists(',
 '      select 1',
 '      from blog_comment_flags x1',
@@ -1966,12 +2007,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '      and x1.flag in( ''NEW'', ''UNREAD'' )',
 '      and x1.comment_id = co.id',
 '    )',
-'  )                     as unread_comments_count',
+'  )                             as unread_comments_cnt',
 '  ,(',
 '    select count( co.id )',
 '    from blog_comments co',
 '    where 1 = 1',
-'    and co.post_id  = t1.id',
+'    and co.post_id  = q1.id',
 '    and exists(',
 '      select 1',
 '      from blog_comment_flags x1',
@@ -1979,12 +2020,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '      and x1.flag = ''MODERATE''',
 '      and x1.comment_id = co.id',
 '    )',
-'  )                     as moderate_comments_count',
+'  )                             as moderate_comments_cnt',
 '  ,(',
 '    select count( co.id )',
 '    from blog_comments co',
 '    where 1 = 1',
-'    and co.post_id  = t1.id',
+'    and co.post_id  = q1.id',
 '    and co.is_active = 0',
 '    and not exists(',
 '      select 1',
@@ -1993,19 +2034,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '      and x1.flag = ''MODERATE''',
 '      and x1.comment_id = co.id',
 '    )',
-'  )                     as disabled_comments_count',
-'  ,case',
-'    when t3.is_active = 0',
-'    then ''BLOGGER_DISABLED''',
-'    when t2.is_active = 0',
-'    then ''CATEGORY_DISABLED''',
-'    when t1.is_active = 0',
-'    then ''DRAFT''',
-'    when t1.published_on > localtimestamp',
-'    then ''SCHEDULED''',
-'    else ''PUBLISHED''',
-'  end                   as post_status',
-'-- Post tags for detail view',
+'  )                             as disabled_comments_cnt',
+'  ,(',
+'    select lov.display_value',
+'    from blog_v_lov lov',
+'    where 1 = 1',
+'      and lov.lov_name = ''POST_STATUS''',
+'      and lov.return_value = q1.post_status_code',
+'  )                             as post_status',
+'-- Post tags for admin app page 11 IR detail view',
 '  ,(',
 '    select',
 '      xmlserialize(',
@@ -2013,14 +2050,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '      )',
 '    from blog_v_post_tags lkp1',
 '    where 1 = 1',
-'      and lkp1.post_id = t1.id',
-'  )                     as tags_html',
-'from blog_posts t1',
-'join blog_categories t2',
-'  on t1.category_id = t2.id',
-'join blog_bloggers t3',
-'  on t1.blogger_id = t3.id',
-'where 1 = 1',
+'      and lkp1.post_id = q1.id',
+'  )                             as tags_html',
+'  ,apex_page.get_url(',
+'     p_page   => 12',
+'    ,p_clear_cache => 12',
+'    ,p_items  => ''P12_ID''',
+'    ,p_values => q1.id',
+'  )                             as post_edit_url',
+'from q1',
 '/',
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_POSTS',
@@ -2231,7 +2269,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '  and rownum <= 20',
 'with read only',
 '/',
-'--------------------------------------------------------',
+'----------------'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.2'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'----------------------------------------',
 '--  DDL for View BLOG_V_TAGS',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "TAG_URL", "POSTS_COUNT", "CHANGED_ON", "TAG_BUCKET", "SHOW_POST_COUNT") AS',
@@ -2285,25 +2341,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
-'    :'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'new.created_by   := coalesce(',
+'    :new.created_by   := coalesce(',
 '      :new.created_by',
 '      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
 '      ,sys_context( ''USERENV'', ''PROXY_USER'' )',
@@ -3239,7 +3277,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '    return l_result;',
 '',
 '  end apex_error_handler;',
-'--------------------------------------------------------------------------------',
+'---------------------------------'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.2'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'-----------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function int_to_vc2(',
 '    p_value in number',
@@ -3295,25 +3351,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end get_attribute_value;',
 '--------------------------------------------------------------------------------',
-'--------------------------'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '  procedure initialize_items(',
 '    p_app_id in varchar2',
 '  )',
@@ -4323,7 +4361,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '    using (',
 '      select id',
 '        ,row_number() over(',
-'          order by display_seq, created_on',
+'          order by display_seq, creat'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.2'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ed_on',
 '        ) * 10 as new_display_seq',
 '      from blog_categories',
 '      where 1 = 1',
@@ -4386,25 +4442,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    l_post_id := to_number( p_post_id );',
 '',
-'    -- split tags stri'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ng to table and loop all values',
+'    -- split tags string to table and loop all values',
 '    l_tag_tab := apex_string.split(',
 '       p_str => p_tags',
 '      ,p_sep => p_sep',
@@ -5338,7 +5376,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end escape_html;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure build_code_tab(',
+'  proc'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.2'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'edure build_code_tab(',
 '    p_comment   in out nocopy varchar2,',
 '    p_code_tab  in out nocopy apex_t_varchar2',
 '  )',
@@ -5389,25 +5445,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '            ,p1 => chr(10)',
 '            ,p2 => i',
 '            ,p3 => chr(10)',
-'            ,p4 => ltrim( substr( p_comment, l_end_po'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'s + 7 ), chr(10) )',
+'            ,p4 => ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )',
 '          )',
 '        ;',
 '',
@@ -6349,7 +6387,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '                  <link rel="stylesheet" type="text/css" href="%s" />',
 '                </head>',
 '                <body>',
-'                  <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>',
+'                  <h1><a class="z-rss--title" href="{ link }"><xsl:value-of s'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.2'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'elect="title" /></a></h1>',
 '                  <h2 class="z-rss--description"><xsl:value-of select="description" /></h2>',
 '                  <xsl:for-each select="./item">',
 '                    <article class="z-rss--post">',
@@ -6403,25 +6459,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      ,p1 => sqlerrm',
 '    );',
 '',
-'   '))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' -- show http error',
+'    -- show http error',
 '    blog_util.raise_http_error( 500 );',
 '    raise;',
 '',

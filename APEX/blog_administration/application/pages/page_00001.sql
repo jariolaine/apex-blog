@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230305094000'
+,p_last_upd_yyyymmddhh24miss=>'20230310220052'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8582113239518316)
@@ -49,21 +49,21 @@ wwv_flow_imp_page.create_report_region(
 'select',
 '  count( v1.id )        as num_posts',
 '  ,sum(',
-'    case v1.post_status',
+'    case v1.post_status_code',
 '    when ''PUBLISHED''',
 '      then 1',
 '      else 0',
 '    end',
 '   )                    as num_published_posts',
 '  ,sum(',
-'    case v1.post_status',
+'    case v1.post_status_code',
 '    when ''DRAFT''',
 '      then 1',
 '      else 0',
 '    end',
 '   )                    as num_draft_posts',
 '  ,sum(',
-'    case v1.post_status',
+'    case v1.post_status_code',
 '    when ''SCHEDULED''',
 '      then 1',
 '      else 0',
@@ -135,10 +135,10 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   sum( v1.comments_count )           as num_comments',
-'  ,sum( v1.unread_comments_count )    as num_unread_comments',
-'  ,sum( v1.moderate_comments_count )  as num_moderate_comments',
-'  ,sum( v1.published_comments_count ) as num_published_comments',
+'   sum( v1.comments_cnt )           as num_comments',
+'  ,sum( v1.unread_comments_cnt )    as num_unread_comments',
+'  ,sum( v1.moderate_comments_cnt )  as num_moderate_comments',
+'  ,sum( v1.published_comments_cnt ) as num_published_comments',
 'from #OWNER#.blog_v_all_posts v1',
 'where 1 = 1',
 ''))

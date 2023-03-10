@@ -28,7 +28,7 @@ wwv_flow_imp_page.create_page(
 ||'o the default settings.</p>'))
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230128072542'
+,p_last_upd_yyyymmddhh24miss=>'20230310221622'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(43861070470616959)
@@ -39,6 +39,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select l.page_id              as page_id',
+'  ,l.page_name                as page_name',
 '  ,l.apex_user                as user_id',
 '  ,l.apex_session_id          as session_id',
 '  ,l.debug_page_view_id       as debug_id',
@@ -93,12 +94,21 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Page'
 ,p_column_type=>'NUMBER'
 ,p_column_alignment=>'RIGHT'
-,p_use_as_row_header=>'N'
+,p_use_as_row_header=>'Y'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(33134173302313204)
+,p_db_column_name=>'PAGE_NAME'
+,p_display_order=>20
+,p_column_identifier=>'V'
+,p_column_label=>'Page Name'
+,p_column_type=>'STRING'
+,p_use_as_row_header=>'Y'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12509822632984004)
 ,p_db_column_name=>'USER_ID'
-,p_display_order=>20
+,p_display_order=>30
 ,p_column_identifier=>'H'
 ,p_column_label=>'User Name'
 ,p_column_type=>'STRING'
@@ -107,7 +117,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12509929184984005)
 ,p_db_column_name=>'SESSION_ID'
-,p_display_order=>30
+,p_display_order=>40
 ,p_column_identifier=>'I'
 ,p_column_label=>'Session'
 ,p_column_link=>'f?p=&APP_ID.:30026:&SESSION.::&DEBUG.::P30026_APEX_SESSION_ID:#SESSION_ID#'
@@ -119,7 +129,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12510402686984010)
 ,p_db_column_name=>'DEBUG_ID'
-,p_display_order=>40
+,p_display_order=>50
 ,p_column_identifier=>'N'
 ,p_column_label=>'Debug'
 ,p_column_link=>'f?p=&APP_ID.:30025:&SESSION.::&DEBUG.::P30025_DEBUG_ID:#DEBUG_ID#'
@@ -131,7 +141,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12510095933984006)
 ,p_db_column_name=>'ERROR_TIME'
-,p_display_order=>50
+,p_display_order=>60
 ,p_column_identifier=>'J'
 ,p_column_label=>'Timestamp'
 ,p_column_type=>'DATE'
@@ -143,7 +153,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(21640666937282134)
 ,p_db_column_name=>'ERROR_SINCE'
-,p_display_order=>60
+,p_display_order=>70
 ,p_column_identifier=>'U'
 ,p_column_label=>'Occurred'
 ,p_column_type=>'DATE'
@@ -155,7 +165,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12510130561984007)
 ,p_db_column_name=>'ERROR_MESSAGE'
-,p_display_order=>70
+,p_display_order=>80
 ,p_column_identifier=>'K'
 ,p_column_label=>'Message'
 ,p_column_type=>'STRING'
@@ -164,7 +174,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12510268171984008)
 ,p_db_column_name=>'COMPONENT_TYPE'
-,p_display_order=>80
+,p_display_order=>90
 ,p_column_identifier=>'L'
 ,p_column_label=>'Context'
 ,p_column_type=>'STRING'
@@ -173,7 +183,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(12510397121984009)
 ,p_db_column_name=>'COMPONENT_NAME'
-,p_display_order=>90
+,p_display_order=>100
 ,p_column_identifier=>'M'
 ,p_column_label=>'Component Name'
 ,p_column_type=>'STRING'
@@ -182,7 +192,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(15610888098559107)
 ,p_db_column_name=>'VIEW_MODE'
-,p_display_order=>100
+,p_display_order=>110
 ,p_column_identifier=>'O'
 ,p_column_label=>'View Mode'
 ,p_column_type=>'STRING'
@@ -191,7 +201,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(15610983036559108)
 ,p_db_column_name=>'VIEW_TYPE'
-,p_display_order=>110
+,p_display_order=>120
 ,p_column_identifier=>'P'
 ,p_column_label=>'View Type'
 ,p_column_type=>'STRING'
@@ -200,7 +210,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(15611007518559109)
 ,p_db_column_name=>'REQUEST'
-,p_display_order=>120
+,p_display_order=>130
 ,p_column_identifier=>'Q'
 ,p_column_label=>'Request'
 ,p_column_type=>'STRING'
@@ -209,7 +219,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(15611193794559110)
 ,p_db_column_name=>'CONTEXT'
-,p_display_order=>130
+,p_display_order=>140
 ,p_column_identifier=>'R'
 ,p_column_label=>'Context'
 ,p_column_type=>'STRING'
@@ -218,7 +228,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(15611252520559111)
 ,p_db_column_name=>'INFO'
-,p_display_order=>140
+,p_display_order=>150
 ,p_column_identifier=>'S'
 ,p_column_label=>'Info'
 ,p_column_type=>'STRING'
@@ -227,7 +237,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(15611312389559112)
 ,p_db_column_name=>'ECID'
-,p_display_order=>150
+,p_display_order=>160
 ,p_column_identifier=>'T'
 ,p_column_label=>'Ecid'
 ,p_column_type=>'STRING'
