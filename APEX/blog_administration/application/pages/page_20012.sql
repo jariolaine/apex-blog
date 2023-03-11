@@ -28,7 +28,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230310220927'
+,p_last_upd_yyyymmddhh24miss=>'20230311080739'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27272383079075402)
@@ -56,14 +56,8 @@ wwv_flow_imp_page.create_page_plug(
 '  ,apex_lang.message(',
 '    p_name => ''BLOG_BTN_TITLE_HELP'' ',
 '  )                         as help_btn',
-'-- required column fom LOV',
-'  ,(',
-'    select lov.display_value',
-'    from #OWNER#.blog_v_lov lov',
-'    where 1 = 1',
-'    and lov.lov_name = ''YES_NO''',
-'    and lov.return_value = ( v1.is_nullable - 1 ) * -1',
-'  )                         as required',
+'-- required column from LOV',
+'  ,value_required           as required',
 '  ,v1.changed_by            as changed_by',
 '  ,v1.changed_on            as changed_on',
 '-- required column class',

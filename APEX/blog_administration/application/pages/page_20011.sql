@@ -28,7 +28,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230310220906'
+,p_last_upd_yyyymmddhh24miss=>'20230311080854'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27063074415689131)
@@ -57,9 +57,8 @@ wwv_flow_imp_page.create_page_plug(
 '  ,v1.last_updated_by       as last_updated_by',
 '-- add extra paddinging to child features',
 '  ,case',
-'    when v1.feature_parent is null',
-'    then ''margin-left-none''',
-'    else ''margin-left-md''',
+'    when v1.feature_parent is not null',
+'    then ''margin-left-md''',
 '  end                       as feature_name_class',
 'from #OWNER#.blog_v_all_features v1',
 'cross join(',
@@ -357,7 +356,6 @@ wwv_flow_imp_page.create_interactive_grid(
 ,p_define_chart_view=>false
 ,p_enable_download=>false
 ,p_download_formats=>null
-,p_enable_mail_download=>true
 ,p_fixed_header=>'NONE'
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false

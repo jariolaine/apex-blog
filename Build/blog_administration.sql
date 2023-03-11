@@ -167,7 +167,7 @@ wwv_flow_imp.create_flow(
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230310222446'
+,p_last_upd_yyyymmddhh24miss=>'20230311081020'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>679
 ,p_print_server_type=>'INSTANCE'
@@ -26797,7 +26797,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230310220906'
+,p_last_upd_yyyymmddhh24miss=>'20230311080854'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27063074415689131)
@@ -26826,9 +26826,8 @@ wwv_flow_imp_page.create_page_plug(
 '  ,v1.last_updated_by       as last_updated_by',
 '-- add extra paddinging to child features',
 '  ,case',
-'    when v1.feature_parent is null',
-'    then ''margin-left-none''',
-'    else ''margin-left-md''',
+'    when v1.feature_parent is not null',
+'    then ''margin-left-md''',
 '  end                       as feature_name_class',
 'from #OWNER#.blog_v_all_features v1',
 'cross join(',
@@ -27126,7 +27125,6 @@ wwv_flow_imp_page.create_interactive_grid(
 ,p_define_chart_view=>false
 ,p_enable_download=>false
 ,p_download_formats=>null
-,p_enable_mail_download=>true
 ,p_fixed_header=>'NONE'
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false
@@ -27403,7 +27401,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230310220927'
+,p_last_upd_yyyymmddhh24miss=>'20230311080739'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27272383079075402)
@@ -27431,14 +27429,8 @@ wwv_flow_imp_page.create_page_plug(
 '  ,apex_lang.message(',
 '    p_name => ''BLOG_BTN_TITLE_HELP'' ',
 '  )                         as help_btn',
-'-- required column fom LOV',
-'  ,(',
-'    select lov.display_value',
-'    from #OWNER#.blog_v_lov lov',
-'    where 1 = 1',
-'    and lov.lov_name = ''YES_NO''',
-'    and lov.return_value = ( v1.is_nullable - 1 ) * -1',
-'  )                         as required',
+'-- required column from LOV',
+'  ,value_required           as required',
 '  ,v1.changed_by            as changed_by',
 '  ,v1.changed_on            as changed_on',
 '-- required column class',
@@ -28187,7 +28179,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230310220941'
+,p_last_upd_yyyymmddhh24miss=>'20230311080813'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(65300325259080906)
@@ -32460,43 +32452,6 @@ wwv_flow_imp_shared.append_to_install_script(
 'where 1 = 1',
 '/',
 '--------------------------------------------------------',
-'--  DDL for View BLOG_V_ALL_SETTINGS',
-'--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "ATTRIBUTE_VALUE", "DATA_TYPE", "ATTRIBUTE_MESSAGE", "ATTRIBUTE_DESC", "A'
-||'TTRIBUTE_GROUP_MESSAGE", "ATTRIBUTE_GROUP", "ATTRIBUTE_GROUP_SEQ", "INT_MIN", "INT_MAX", "HELP_MESSAGE") AS',
-'  select',
-'   t1.id                      as id',
-'  ,t1.row_version             as row_version',
-'  ,t1.created_on              as created_on',
-'  ,lower(t1.created_by)       as created_by',
-'  ,t1.changed_on              as changed_on',
-'  ,lower(t1.changed_by)       as changed_by',
-'  ,t1.is_nullable             as is_nullable',
-'  ,t1.display_seq             as display_seq',
-'  ,t1.attribute_name          as attribute_name',
-'  ,t1.attribute_value         as attribute_value',
-'  ,t1.data_type               as data_type',
-'  ,t1.attribute_message       as attribute_message',
-'  ,apex_lang.message(',
-'    p_name => t1.attribute_message',
-'  )                           as attribute_desc',
-'  ,t1.attribute_group_message as attribute_group_message',
-'  ,apex_lang.message(',
-'    p_name => t1.attribute_group_message',
-'  )                           as attribute_group',
-'  ,(',
-'    select min( lkp.display_seq )',
-'    from blog_settings lkp',
-'    where 1 = 1',
-'      and lkp.attribute_group_message = t1.attribute_group_message',
-'  )                           as attribute_group_seq',
-'  ,t1.int_min                 as int_min',
-'  ,t1.int_max                 as int_max',
-'  ,t1.help_message            as help_message',
-'from blog_settings t1',
-'where 1 = 1',
-'/',
-'--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_TAGS',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "TAG", "TAG_UNIQUE", "NOTES", "POSTS_COUNT", "ALLOWED_ROW_OPERATION") AS',
@@ -32925,6 +32880,50 @@ wwv_flow_imp_shared.append_to_install_script(
 'from q1',
 '/',
 '--------------------------------------------------------',
+'--  DDL for View BLOG_V_ALL_SETTINGS',
+'--------------------------------------------------------',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "ATTRIBUTE_VALUE", "DATA_TYPE", "ATTRIBUTE_MESSAGE", "INT_MIN", "INT_MAX"'
+||', "HELP_MESSAGE", "VALUE_REQUIRED", "ATTRIBUTE_DESC", "ATTRIBUTE_GROUP_MESSAGE", "ATTRIBUTE_GROUP", "ATTRIBUTE_GROUP_SEQ") AS',
+'select',
+'   t1.id                      as id',
+'  ,t1.row_version             as row_version',
+'  ,t1.created_on              as created_on',
+'  ,lower(t1.created_by)       as created_by',
+'  ,t1.changed_on              as changed_on',
+'  ,lower(t1.changed_by)       as changed_by',
+'  ,t1.is_nullable             as is_nullable',
+'  ,t1.display_seq             as display_seq',
+'  ,t1.attribute_name          as attribute_name',
+'  ,t1.attribute_value         as attribute_value',
+'  ,t1.data_type               as data_type',
+'  ,t1.attribute_message       as attribute_message',
+'  ,t1.int_min                 as int_min',
+'  ,t1.int_max                 as int_max',
+'  ,t1.help_message            as help_message',
+'  ,(',
+'    select lov.display_value',
+'    from blog_v_lov lov',
+'    where 1 = 1',
+'    and lov.lov_name = ''YES_NO''',
+'    and to_number( lov.return_value ) = ( t1.is_nullable - 1 ) * -1',
+'  )                           as value_required',
+'  ,apex_lang.message(',
+'    p_name => t1.attribute_message',
+'  )                           as attribute_desc',
+'  ,t1.attribute_group_message as attribute_group_message',
+'  ,apex_lang.message(',
+'    p_name => t1.attribute_group_message',
+'  )                           as attribute_group',
+'  ,(',
+'    select min( lkp.display_seq )',
+'    from blog_settings lkp',
+'    where 1 = 1',
+'      and lkp.attribute_group_message = t1.attribute_group_message',
+'  )                           as attribute_group_seq',
+'from blog_settings t1',
+'where 1 = 1',
+'/',
+'--------------------------------------------------------',
 '--  DDL for View BLOG_V_POSTS',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "POST_TXT_SEARCH", "CHANGED_ON", "ARCHIVE_YEAR", "CATEGO'
@@ -33120,7 +33119,16 @@ wwv_flow_imp_shared.append_to_install_script(
 'from (',
 '  select --+ first_rows(20)',
 '     v1.post_id',
-'    ,v1.published_on',
+'    ,'))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'v1.published_on',
 '    ,v1.blogger_name',
 '    ,v1.post_title',
 '    ,v1.post_desc',
@@ -33133,16 +33141,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  and rownum <= 20',
 'with read only',
 '/',
-'----------------'))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----------------------------------------',
+'--------------------------------------------------------',
 '--  DDL for View BLOG_V_TAGS',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "TAG_URL", "POSTS_COUNT", "CHANGED_ON", "TAG_BUCKET", "SHOW_POST_COUNT") AS',
@@ -34118,7 +34117,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '      -- apex_error.auto_set_associated_item to automatically guess the affected',
 '      -- error field by examine the ORA error for constraint names or column names.',
 '      if l_result.page_item_name is null',
-'      and l_result.column_alias is null then',
+'      and l_result.column_alias is null the'))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'n',
 '',
 '        apex_error.auto_set_associated_item (',
 '           p_error => p_error',
@@ -34132,16 +34140,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    return l_result;',
 '',
 '  end apex_error_handler;',
-'---------------------------------'))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------------------------------------------',
+'--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function int_to_vc2(',
 '    p_value in number',
@@ -35197,7 +35196,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end remove_unused_categories;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------'))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'',
 '  procedure resequence_categories',
 '  as',
 '  begin',
@@ -35207,16 +35215,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    using (',
 '      select id',
 '        ,row_number() over(',
-'          order by display_seq, creat'))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ed_on',
+'          order by display_seq, created_on',
 '        ) * 10 as new_display_seq',
 '      from blog_categories',
 '      where 1 = 1',
@@ -36208,12 +36207,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      ,p_whitelist_tags  => c_whitelist_tags',
 '    );',
 '    -- escape hash marks',
-'    p_string := replace( p_string, l_hasmark, ''&#x23;'' );',
-'',
-'  end escape_html;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  proc'))
+'    p_st'))
 );
 null;
 end;
@@ -36222,7 +36216,12 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'edure build_code_tab(',
+'ring := replace( p_string, l_hasmark, ''&#x23;'' );',
+'',
+'  end escape_html;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  procedure build_code_tab(',
 '    p_comment   in out nocopy varchar2,',
 '    p_code_tab  in out nocopy apex_t_varchar2',
 '  )',
@@ -37210,12 +37209,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '                  <meta charset="utf-8" />',
 '                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />',
 '                  <title>',
-'                    <xsl:value-of select="title" />',
-'                  </title>',
-'                  <link rel="stylesheet" type="text/css" href="%s" />',
-'                </head>',
-'                <body>',
-'                  <h1><a class="z-rss--title" href="{ link }"><xsl:value-of s'))
+'                    <xsl:value-of s'))
 );
 null;
 end;
@@ -37224,7 +37218,12 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'elect="title" /></a></h1>',
+'elect="title" />',
+'                  </title>',
+'                  <link rel="stylesheet" type="text/css" href="%s" />',
+'                </head>',
+'                <body>',
+'                  <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>',
 '                  <h2 class="z-rss--description"><xsl:value-of select="description" /></h2>',
 '                  <xsl:for-each select="./item">',
 '                    <article class="z-rss--post">',
