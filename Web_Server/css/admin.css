@@ -49,8 +49,12 @@
 **************************************/
 .z-IR--iconLinks .a-IRR-linkCol:first-child,
 .z-IR--iconLinks .a-IRR-header--linkCol:first-child {
-  padding: 0.25rem 0.5rem;
   width: 0.1%;
+}
+.z-IR--iconLinks td:has( .t-Button ),
+.z-IR--iconLinks .a-IRR-linkCol:first-child,
+.z-IR--iconLinks .a-IRR-header--linkCol:first-child {
+  padding: 0.25rem 0.5rem;
 }
 /**************************************
 * Settings and features Interactive Grid
@@ -169,6 +173,12 @@ blockquote::after {
   }
 }
 /**************************************
+* Post paginaion button
+**************************************/
+.z-text-wrap {
+  white-space: pre-wrap;
+}
+/**************************************
 * Classic reports
 **************************************/
 .nodatafound {
@@ -281,13 +291,4 @@ pre.z-program-code code,
 }
 .z-hr-section::after {
   margin-left: 0.5rem;
-}
-/**************************************
-* Modifiers
-**************************************/
-.z-text-wrap {
-  white-space: pre-wrap;
-}
-.z-overflowHidden {
-  overflow: hidden;
 }

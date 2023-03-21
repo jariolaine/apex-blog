@@ -43,10 +43,8 @@ var blog = blog || {};
           "t-Button"
           ,"t-Button--noLabel"
           ,"t-Button--icon"
-          ,"t-Button--link"
           ,"t-Button--small"
           ,"t-Button--stretch"
-          ,"padding-none"
         ]
       }, options );
 
@@ -70,13 +68,19 @@ var blog = blog || {};
         openLink: "a[data-unread=true]"
         ,newClass: "fa-envelope-open-o"
         ,oldClass: ["fa-envelope-o", "fa-envelope-arrow-down"]
+        ,messageKey: "BLOG_LOV_COMMENT_FLAG_READ"
+        ,defaultLabel: "Read"
       }, options );
+
+      // Get aria label
+      var newLabel = apex.lang.hasMessage( options.messageKey ) ? apex.lang.getMessage( options.messageKey ) : options.defaultLabel;
 
       // change link column css class
       options.region$.find( options.openLink ).one( "click", function(){
         $( $x( $( this ).data( "id" ) ) )
           .removeClass( options.oldClass )
-          .addClass( options.newClass );
+          .addClass( options.newClass )
+          .attr({ "aria-label": newLabel, "title": newLabel })
       });
 
     },
@@ -202,14 +206,6 @@ var blog = blog || {};
 
         return options;
 
-      },
-      /**
-      * @function setEditMode
-      * @summary change IG to edit mode
-      * @desc
-      **/
-      setEditMode: function( regionId ){
-        region( regionId ).call( "getActions" ).set( "edit", true );
       }
 
     },

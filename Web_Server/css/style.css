@@ -171,6 +171,12 @@ blockquote::after {
   }
 }
 /**************************************
+* Post paginaion button
+**************************************/
+.z-text-wrap {
+  white-space: pre-wrap;
+}
+/**************************************
 * Public app custom report template:
 *   Blog Content (Custom 2)
 **************************************/
@@ -364,13 +370,4 @@ pre.z-program-code code,
 }
 .z-search--tags:not( :last-child )::after {
   content: ",";
-}
-/**************************************
-* Modifiers
-**************************************/
-.z-text-wrap {
-  white-space: pre-wrap;
-}
-.z-overflowHidden {
-  overflow: hidden;
 }

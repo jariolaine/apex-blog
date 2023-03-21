@@ -438,6 +438,7 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(11806971482595261)
 ,p_name=>'BLOG_LOV_COMMENT_FLAG_READ'
 ,p_message_text=>'Read'
+,p_is_js_message=>true
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(11806625459595261)
