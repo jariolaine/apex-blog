@@ -18,7 +18,7 @@ wwv_flow_imp_shared.create_shortcut(
 ,p_shortcut_language=>'PLSQL'
 ,p_comments=>'Get canonical link for post. Used in page 2 page html header.'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return #OWNER#.blog_html.get_post_canonical_link(',
+'return blog_html.get_post_canonical_link(',
 '  p_post_id => :P2_POST_ID',
 ');'))
 );

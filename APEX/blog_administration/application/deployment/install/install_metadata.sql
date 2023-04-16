@@ -15,7 +15,7 @@ wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(31708826557645262)
 ,p_install_id=>wwv_flow_imp.id(31706870664802069)
 ,p_name=>'Metadata'
-,p_sequence=>30
+,p_sequence=>20
 ,p_script_type=>'INSTALL'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',

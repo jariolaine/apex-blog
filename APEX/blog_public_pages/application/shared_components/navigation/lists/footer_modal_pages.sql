@@ -20,8 +20,8 @@ wwv_flow_imp_shared.create_list(
 '   1                as list_level',
 '  ,v1.content_desc  as list_label',
 '  ,v1.content_url   as list_target',
-'  ,''N''              as is_current',
-'from #OWNER#.blog_v_dynamic_content v1',
+'  ,''NO''             as is_current',
+'from blog_v_dynamic_content v1',
 'where 1 = 1',
 '  and v1.content_type = ''FOOTER_LINK''',
 'order by v1.display_seq'))

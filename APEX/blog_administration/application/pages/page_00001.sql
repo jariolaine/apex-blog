@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230310220052'
+,p_last_upd_yyyymmddhh24miss=>'20230409184359'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8582113239518316)
@@ -69,8 +69,9 @@ wwv_flow_imp_page.create_report_region(
 '      else 0',
 '    end',
 '   )                    as num_scheduled_posts',
-'from #OWNER#.blog_v_all_posts v1',
-'where 1 = 1'))
+'from blog_v_all_posts v1',
+'where 1 = 1',
+'order by 1'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
@@ -89,7 +90,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'NUM_POSTS'
 ,p_column_display_sequence=>10
 ,p_column_heading=>'Total'
-,p_use_as_row_header=>'N'
+,p_use_as_row_header=>'Y'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -139,9 +140,9 @@ wwv_flow_imp_page.create_report_region(
 '  ,sum( v1.unread_comments_cnt )    as num_unread_comments',
 '  ,sum( v1.moderate_comments_cnt )  as num_moderate_comments',
 '  ,sum( v1.published_comments_cnt ) as num_published_comments',
-'from #OWNER#.blog_v_all_posts v1',
+'from blog_v_all_posts v1',
 'where 1 = 1',
-''))
+'order by 1'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
@@ -160,7 +161,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'NUM_COMMENTS'
 ,p_column_display_sequence=>10
 ,p_column_heading=>'Total'
-,p_use_as_row_header=>'N'
+,p_use_as_row_header=>'Y'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -211,7 +212,8 @@ wwv_flow_imp_page.create_report_region(
 '  ,sum( ls.ip_addresses )       as ip_addresses',
 'from apex_workspace_log_summary ls',
 'where 1 = 1',
-'  and ls.application_id = :G_PUB_APP_ID'))
+'  and ls.application_id = :G_PUB_APP_ID',
+'order by 1'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
@@ -219,7 +221,6 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_num_rows=>15
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_show_nulls_as=>'0'
-,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
 ,p_csv_output=>'N'
 ,p_prn_output=>'N'
 ,p_sort_null=>'L'
@@ -231,7 +232,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'PAGE_VIEWS'
 ,p_column_display_sequence=>10
 ,p_column_heading=>'Page Views'
-,p_use_as_row_header=>'N'
+,p_use_as_row_header=>'Y'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );

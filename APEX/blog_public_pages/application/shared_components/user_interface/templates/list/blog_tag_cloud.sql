@@ -33,7 +33,7 @@ wwv_flow_imp_shared.create_list_template(
 ,p_theme_class_id=>10
 ,p_list_template_before_rows=>' <ul class="z-tagCloud #COMPONENT_CSS_CLASSES#" id="#LIST_ID#">'
 ,p_list_template_after_rows=>' </ul>'
-,p_a01_label=>'Badge'
+,p_a01_label=>'Badge. For example, the number of posts with a tag'
 ,p_a02_label=>'Tag weight as an integer between 1 and 8'
 );
 wwv_flow_imp.component_end;

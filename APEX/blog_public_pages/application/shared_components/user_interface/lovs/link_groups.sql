@@ -19,7 +19,7 @@ wwv_flow_imp_shared.create_list_of_values(
 '   group_title        as return_value',
 '  ,group_title        as display_vaue',
 '  ,group_display_seq  as display_seq',
-' from #OWNER#.blog_v_links',
+' from blog_v_links',
 ' where 1 = 1',
 ' order by 3',
 ''))

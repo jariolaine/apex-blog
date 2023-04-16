@@ -18,7 +18,7 @@ wwv_flow_imp_shared.create_shortcut(
 ,p_shortcut_language=>'PLSQL'
 ,p_comments=>'Generate RSS link to page header. Used in page 1 page html header'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return #OWNER#.blog_html.get_rss_link(',
+'return blog_html.get_rss_link(',
 '   p_app_id       => :APP_ID',
 '  ,p_app_name     => :G_APP_NAME',
 '  ,p_message      => ''BLOG_RSS_TITLE''',

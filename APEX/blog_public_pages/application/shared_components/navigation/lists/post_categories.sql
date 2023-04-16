@@ -20,25 +20,19 @@ wwv_flow_imp_shared.create_list(
 '   1                  as link_level',
 '  ,v1.category_title  as link_text',
 '  ,v1.category_url    as target_url',
-'-- list is cached, we can''t use is_current attribute',
+'-- list is cached, can''t use is_current attribute.',
 '  ,''NO''               as is_current',
 '  ,''fa-chevron-right'' as image',
 '  ,null               as image_attribute',
 '  ,null               as image_alt_attribute',
-'  ,case v1.show_post_count',
-'    when ''INCLUDE'' then v1.posts_count',
-'  end                 as attribute1',
-'-- add category id to data attribute',
-'-- we can use it then in dynamic action',
-'-- to set class for current list item',
-'  ,''data-blog-content-id="''',
-'   || v1.category_id',
-'   || ''"''             as attribute2',
-'   ,''z-linkList''      as attribute3',
-'from #OWNER#.blog_v_categories v1',
+'  ,list_badge         as attribute1',
+'-- Category id data attribute.',
+'-- Used in dynamic action to set class for current list item.',
+'  ,v1.list_attr       as attribute2',
+'  ,''z-linkList''       as attribute3',
+'from blog_v_categories v1',
 'where 1 = 1',
-'order by v1.display_seq',
-''))
+'order by v1.display_seq'))
 ,p_list_status=>'PUBLIC'
 ,p_required_patch=>wwv_flow_imp.id(8635355820099640)
 );

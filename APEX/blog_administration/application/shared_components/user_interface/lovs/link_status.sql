@@ -18,10 +18,10 @@ wwv_flow_imp_shared.create_list_of_values(
 'select',
 '   v1.display_value as display_value',
 '  ,v1.return_value  as return_value',
-'  ,v1.display_seq   as display_seq',
-'from #OWNER#.blog_v_lov v1',
+'from blog_v_lov v1',
 'where 1 = 1',
-'and lov_name = ''LINK_STATUS'''))
+'and v1.lov_name = ''LINK_STATUS''',
+'order by v1.display_seq'))
 ,p_source_type=>'SQL'
 ,p_location=>'LOCAL'
 ,p_use_local_sync_table=>false

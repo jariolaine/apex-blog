@@ -35,14 +35,14 @@ wwv_flow_imp_page.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230210210505'
+,p_last_upd_yyyymmddhh24miss=>'20230410132819'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27990916738607115)
 ,p_plug_name=>'Buttons'
 ,p_region_template_options=>'#DEFAULT#:t-ButtonRegion--slimPadding:t-ButtonRegion--noBorder'
 ,p_plug_template=>wwv_flow_imp.id(6782379920267375)
-,p_plug_display_sequence=>10
+,p_plug_display_sequence=>30
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_03'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -61,7 +61,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'EXPRESSION'
 ,p_plug_display_when_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_util.get_attribute_value(''G_APP_EMAIL'') is not null',
+'blog_util.get_attribute_value(''G_APP_EMAIL'') is not null',
 'and',
 'apex_util.get_build_option_status(',
 '   p_application_id     => :APP_ID',
@@ -77,7 +77,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_name=>'Comment Form'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(6781372168267375)
-,p_plug_display_sequence=>10
+,p_plug_display_sequence=>20
 ,p_plug_item_display_point=>'BELOW'
 ,p_query_type=>'TABLE'
 ,p_query_table=>'BLOG_COMMENTS'
@@ -185,7 +185,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_prompt=>'Email'
 ,p_display_as=>'NATIVE_TEXT_FIELD'
 ,p_cMaxlength=>256
-,p_display_when=>'#OWNER#.blog_util.get_attribute_value(''G_APP_EMAIL'') is not null'
+,p_display_when=>'blog_util.get_attribute_value(''G_APP_EMAIL'') is not null'
 ,p_display_when2=>'PLSQL'
 ,p_display_when_type=>'EXPRESSION'
 ,p_field_template=>wwv_flow_imp.id(6854643778267413)
@@ -229,7 +229,6 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_sequence=>100
 ,p_item_plug_id=>wwv_flow_imp.id(147769743184406827)
 ,p_prompt=>'Answer to'
-,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'PLUGIN_FI.JARIS.MATH_QUESTION_FIELD'
 ,p_cMaxlength=>20
 ,p_field_template=>wwv_flow_imp.id(6855004103267413)
@@ -316,7 +315,7 @@ wwv_flow_imp_page.create_page_validation(
 ,p_validation_name=>'Validate comment'
 ,p_validation_sequence=>20
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return #OWNER#.blog_comm.validate_comment(',
+'return blog_comm.validate_comment(',
 '  p_comment => :P1001_COMMENT_HTML',
 ');'))
 ,p_validation2=>'PLSQL'
@@ -330,7 +329,7 @@ wwv_flow_imp_page.create_page_validation(
 ,p_validation_name=>'Validate email'
 ,p_validation_sequence=>30
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return #OWNER#.blog_comm.is_email(',
+'return blog_comm.is_email(',
 '  p_email     => :P1001_EMAIL',
 '  ,p_err_mesg => ''BLOG_VALIDATION_ERR_EMAIL''',
 ');'))

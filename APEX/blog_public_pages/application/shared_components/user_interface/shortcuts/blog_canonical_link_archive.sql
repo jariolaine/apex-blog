@@ -18,7 +18,7 @@ wwv_flow_imp_shared.create_shortcut(
 ,p_shortcut_language=>'PLSQL'
 ,p_comments=>'Get canonical link for archive. Used in page 15 page html header.'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return #OWNER#.blog_html.get_archive_canonical_link(',
+'return blog_html.get_archive_canonical_link(',
 '  p_archive_id => :P15_ARCHIVE_ID',
 ');'))
 );

@@ -33,7 +33,7 @@ begin
   );
 
   -- tickle text index
-  :new.post_txt_search   := 'X';
+  :new.ctx_search   := 'X';
 
 end;
 /

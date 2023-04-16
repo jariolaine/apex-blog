@@ -23,12 +23,13 @@ as
 --                          - Added parameter p_message to function get_rss_anchor
 --    Jari Laine 27.04.2022 - Removed obsolete functions get_tag_anchor and get_post_tags
 --    Jari Laine 16.11.2022 - Removed obsolete functions:
---                              - get_robots_noindex_meta
 --                              - get_post_description_meta
 --                              - get_description_meta
 --    Jari Laine 25.11.2022 - Removed unused parameters
 --
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_robots_noindex_meta return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAB
@@ -101,6 +102,14 @@ as
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function get_robots_noindex_meta
+  return varchar2
+  as
+  begin
+    return '<meta name="robots" value="noindex">';
+  end get_robots_noindex_meta;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   function get_tab_canonical_link(
     p_page in varchar2
   ) return varchar2
@@ -122,7 +131,7 @@ as
     else
       -- if p_page is not defined
       apex_debug.warn( 'Canonical link tag not generated for tab.' );
-      l_html := null;
+      l_html := get_robots_noindex_meta;
     end if;
     -- return generated HTML
     return l_html;
@@ -150,7 +159,7 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for post.' );
-      l_html := null;
+      l_html := get_robots_noindex_meta;
     end if;
     -- return generated HTML
     return l_html;
@@ -179,7 +188,7 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for category.' );
-      l_html := null;
+      l_html := get_robots_noindex_meta;
     end if;
     -- return generated HTML
     return l_html;
@@ -208,7 +217,7 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for archive.' );
-      l_html := null;
+      l_html := get_robots_noindex_meta;
     end if;
     -- return generated HTML
     return l_html;
@@ -237,7 +246,7 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for tag.' );
-      l_html := null;
+      l_html := get_robots_noindex_meta;
     end if;
 
     -- return generated HTML

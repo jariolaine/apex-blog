@@ -23,15 +23,15 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_required_patch=>wwv_flow_imp.id(24626889314854172)
 ,p_page_is_public_y_n=>'Y'
-,p_page_component_map=>'24'
+,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230301171905'
+,p_last_upd_yyyymmddhh24miss=>'20230416043834'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(65301007014080913)
 ,p_name=>'File Repository'
 ,p_template=>wwv_flow_imp.id(9260227573556082)
-,p_display_sequence=>30
+,p_display_sequence=>20
 ,p_region_css_classes=>'z-MediaList--files'
 ,p_region_template_options=>'#DEFAULT#:t-ResultsRegion--boxed'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--stack:t-MediaList--iconsRounded'
@@ -40,25 +40,25 @@ wwv_flow_imp_page.create_report_region(
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
 '   v1.file_id   as id',
-'  ,null         as icon_class -- se column HTML expression',
+'  ,null         as icon_class -- see column HTML expression',
 '  ,null         as icon_color_class',
 '  ,v1.file_name as list_title',
 '  ,v1.file_desc as list_text',
 '  ,v1.file_size as list_badge',
 '  ,null         as list_class',
-'  ,apex_page.get_url(',
-'     p_page     => 1003',
-'    ,p_session  => null',
-'    ,p_request  => ''application_process=download''',
-'    ,p_items    => ''P11_FILE_NAME''',
-'    ,p_values   => v1.file_name',
-'  )             as link',
-'  ,null         as link_attr -- se column HTML expression',
+'  ,v1.file_url  as link',
+'  ,null         as link_attr  -- see column HTML expression',
 '  ,null         as link_class',
-'from #OWNER#.blog_v_files v1',
+'from blog_v_files v1',
 'where 1 = 1',
+'  and v1.is_download = 1',
 'order by v1.file_name'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_plug_caching=>'CACHE'
+,p_plug_caching_max_age_in_sec=>1209600
+,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
+,p_plug_cache_when_condition_e1=>'DEBUG'
+,p_plug_cache_when_condition_e2=>'NO'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(6815219261267393)
@@ -130,7 +130,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>60
 ,p_column_heading=>'List Badge'
 ,p_use_as_row_header=>'N'
-,p_column_format=>'FILESIZE'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'N'
 );
@@ -174,48 +173,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'N'
-);
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(50989785872352709)
-,p_plug_name=>'Search from Files'
-,p_parent_plug_id=>wwv_flow_imp.id(65301007014080913)
-,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_imp.id(6781372168267375)
-,p_plug_display_sequence=>10
-,p_plug_display_point=>'SEARCH_FIELD'
-,p_plug_source_type=>'NATIVE_SMART_FILTERS'
-,p_filtered_region_id=>wwv_flow_imp.id(65301007014080913)
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_required_patch=>wwv_flow_imp.id(25684564406281886)
-,p_attribute_02=>'N'
-,p_attribute_03=>'10000'
-,p_attribute_04=>'N'
-);
-wwv_flow_imp_page.create_page_item(
- p_id=>wwv_flow_imp.id(17563727870717601)
-,p_name=>'P11_FILE_NAME'
-,p_item_sequence=>10
-,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
-,p_display_as=>'NATIVE_HIDDEN'
-,p_is_persistent=>'N'
-,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
-,p_attribute_01=>'Y'
-);
-wwv_flow_imp_page.create_page_item(
- p_id=>wwv_flow_imp.id(22521279988146407)
-,p_name=>'P11_FILE_SEARCH'
-,p_item_sequence=>10
-,p_item_plug_id=>wwv_flow_imp.id(50989785872352709)
-,p_prompt=>'File Search'
-,p_placeholder=>'Search on files...'
-,p_source=>'LIST_TITLE,LIST_TEXT'
-,p_source_type=>'FACET_COLUMN'
-,p_display_as=>'NATIVE_SEARCH'
-,p_item_template_options=>'#DEFAULT#'
-,p_required_patch=>wwv_flow_imp.id(25684564406281886)
-,p_attribute_01=>'ROW'
-,p_attribute_04=>'N'
-,p_fc_show_chart=>false
 );
 wwv_flow_imp.component_end;
 end;

@@ -20,9 +20,53 @@ wwv_flow_imp_page.create_page(
 ,p_group_id=>wwv_flow_imp.id(8929534050595858)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<h2>',
+'  Create, edit, manage or delete a post',
+'</h2>',
+'<h3>',
+'  Write a new post',
+'</h3>',
+'<ol>',
+'  <li>',
+'    Click New Post.',
+'  </li>  ',
+'  <li>',
+'    Create the post. Use editor options to format post. E.g. in "Styles" select list you find block style "Program Code" that is useful when posting code.',
+'  </li>',
+'  <li>',
+'    To save your post without publishing it, click Save Draf. To publish your post, click Publish.',
+'  </li>',
+'</ol>',
+'<h3>',
+'  Edit a post',
+'</h3>',
+'<ol>',
+'  <li>',
+'    Click edit button on post you want to edit.',
+'  </li>',
+'  <li>',
+'    Make your changes.',
+'  </li>',
+'  <li>',
+'    Click Save.',
+'  </li>',
+'</ol>',
+'<h3>',
+'  Delete a post  ',
+'</h3>',
+'<ol>',
+'  <li>',
+'    Click edit button on post you want to delete.',
+'  </li>',
+'  <li>',
+'    Click Delete.',
+'  </li>',
+'</ol>',
+''))
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230321132712'
+,p_last_upd_yyyymmddhh24miss=>'20230409184438'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8596898648797585)
@@ -34,60 +78,49 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_point=>'REGION_POSITION_08'
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select ',
-'   v1.id                as post_id',
-'  ,v1.category_id       as category_id',
-'  ,v1.tag_id            as tag_id',
-'  ,v1.created_on        as created_on',
-'  ,v1.created_on        as created_since',
-'  ,v1.created_by        as created_by',
-'  ,v1.changed_on        as changed_on',
-'  ,v1.changed_on        as changed_since',
-'  ,v1.changed_by        as changed_by',
-'  ,v1.published_display as published_on',
-'  ,v1.published_display as published_since',
-'  ,v1.blogger_name      as blogger_name',
-'  ,v1.category_title    as category_title',
-'  ,v1.title             as post_title',
-'  ,v1.post_desc         as post_desc',
-'  ,v1.visible_tags      as visible_tags',
-'  ,v1.hidden_tags       as hidden_tags',
-'  ,v1.body_length       as body_length',
-'  ,v1.comments_cnt      as comments_count',
-'  ,v1.notes             as notes',
-'  ,v1.post_status_code  as post_status_code',
-'  ,v1.post_status       as post_status',
-'  ,btn.title_tags       as btn_title_tags',
-'  ,btn.title_edit       as btn_title_edit',
-'  ,case v1.post_status_code',
-'    when ''BLOGGER_DISABLED'' then ''fa-stop-circle u-danger-text''',
-'    when ''CATEGORY_DISABLED''then ''fa-minus-circle u-danger-text''',
-'    when ''DRAFT''            then ''fa-pause-circle u-warning-text''',
-'    when ''SCHEDULED''        then ''fa-clock-o u-info-text''',
-'    when ''PUBLISHED''        then ''fa-check-circle u-success-text''',
-'                            else ''fa-question-circle''',
-'   end                      as post_status_icon',
-'  ,v1.post_edit_url         as edit_url',
-'-- Post HTML for detail view',
-'  ,v1.body_html',
+'select',
+'   v1.id                    as post_id',
+'  ,v1.category_id           as category_id',
+'  ,v1.tag_id                as tag_id',
+'  ,v1.created_on            as created_on',
+'  ,v1.created_on            as created_since',
+'  ,v1.created_by            as created_by',
+'  ,v1.changed_on            as changed_on',
+'  ,v1.changed_on            as changed_since',
+'  ,v1.changed_by            as changed_by',
+'  ,v1.published_display     as published_on',
+'  ,v1.published_display     as published_since',
+'  ,v1.blogger_name          as blogger_name',
+'  ,v1.category_title        as category_title',
+'  ,v1.title                 as post_title',
+'  ,v1.post_desc             as post_desc',
+'  ,v1.visible_tags          as visible_tags',
+'  ,v1.hidden_tags           as hidden_tags',
+'  ,v1.body_length           as body_length',
+'  ,v1.comments_cnt          as comments_count',
+'  ,v1.notes                 as notes',
+'  ,v1.post_status_txt       as post_status',
+'  ,:APP_TEXT$BLOG_TXT_EDIT  as btn_edit_tags',
+'  ,:APP_TEXT$BLOG_TXT_EDIT  as btn_label_edit',
+'  ,v1.post_status_icon      as post_status_icon',
+' -- For get edit URL also for detail view',
+'  ,apex_page.get_url(',
+'     p_page   => 12',
+'    ,p_items  => ''P12_ID''',
+'    ,p_values => v1.id',
+'  )                         as edit_url',
 '-- Post date for detail view',
 '  ,to_char(',
 '     v1.published_on',
 '    ,:G_POST_TITLE_DATE_FORMAT',
-'  )                     as detail_view_published',
+'  )                         as detail_view_published',
+'-- Post HTML for detail view',
+'  ,v1.body_html             as body_html',
 '-- Tags HTML for detail view',
-'  ,v1.tags_html         as tags_html',
+'  ,v1.tags_html             as tags_html',
 '-- Text search',
-'  ,v1.post_txt_search   as post_txt_search',
-'from #OWNER#.blog_v_all_posts v1',
-'-- link column button title',
-'cross join (',
-'  select',
-'     apex_lang.message( ''BLOG_BTN_TITLE_EDIT'' ) as title_edit',
-'    ,apex_lang.message( ''BLOG_BTN_TITLE_TAGS'' ) as title_tags',
-'  from dual',
-') btn',
-''))
+'  ,v1.ctx_search            as ctx_search',
+'from blog_v_all_posts v1'))
 ,p_plug_source_type=>'NATIVE_IR'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -98,7 +131,7 @@ wwv_flow_imp_page.create_worksheet(
 ,p_name=>'Articles'
 ,p_max_row_count_message=>'The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.'
 ,p_no_data_found_message=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
-,p_oracle_text_index_column=>'POST_TXT_SEARCH'
+,p_oracle_text_index_column=>'CTX_SEARCH'
 ,p_pagination_type=>'ROWS_X_TO_Y'
 ,p_pagination_display_pos=>'BOTTOM_RIGHT'
 ,p_report_list_mode=>'TABS'
@@ -109,7 +142,7 @@ wwv_flow_imp_page.create_worksheet(
 ,p_enable_mail_download=>'Y'
 ,p_detail_link=>'#EDIT_URL#'
 ,p_detail_link_text=>'<span class="t-Icon fa fa-pencil" aria-hidden="true"></span>'
-,p_detail_link_attr=>'title="#BTN_TITLE_EDIT#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
+,p_detail_link_attr=>'title="#BTN_LABEL_EDIT#" aria-label="#BTN_LABEL_EDIT#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
 ,p_detail_view_enabled_yn=>'Y'
 ,p_detail_view_for_each_row=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<article role="article" class="z-post">',
@@ -135,7 +168,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'AD'
 ,p_column_label=>'Post ID'
 ,p_column_type=>'NUMBER'
-,p_display_text_as=>'HIDDEN'
+,p_display_text_as=>'WITHOUT_MODIFICATION'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
@@ -257,10 +290,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'AF'
 ,p_column_label=>'Blogger'
 ,p_column_type=>'STRING'
-,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_heading_alignment=>'LEFT'
-,p_rpt_named_lov=>wwv_flow_imp.id(11799190347841995)
-,p_rpt_show_filter_lov=>'1'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
@@ -270,8 +300,11 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'AG'
 ,p_column_label=>'Category'
 ,p_column_type=>'STRING'
+,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_heading_alignment=>'LEFT'
-,p_use_as_row_header=>'N'
+,p_rpt_named_lov=>wwv_flow_imp.id(6986423229479201)
+,p_rpt_show_filter_lov=>'1'
+,p_use_as_row_header=>'Y'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3880250479180119)
@@ -302,8 +335,8 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_heading_alignment=>'LEFT'
-,p_rpt_named_lov=>wwv_flow_imp.id(24779831361886842)
-,p_rpt_show_filter_lov=>'1'
+,p_rpt_named_lov=>wwv_flow_imp.id(37867559625990235)
+,p_rpt_show_filter_lov=>'2'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
@@ -315,7 +348,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_heading_alignment=>'LEFT'
-,p_rpt_named_lov=>wwv_flow_imp.id(24782207188898443)
+,p_rpt_named_lov=>wwv_flow_imp.id(37867284322984375)
 ,p_rpt_show_filter_lov=>'2'
 ,p_use_as_row_header=>'N'
 );
@@ -358,26 +391,26 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'AM'
 ,p_column_label=>'Status'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<span aria-hidden="true" title="#POST_STATUS#" class="fa #POST_STATUS_ICON#"></span>',
+'<span title="#POST_STATUS#" aria-hidden="true" class="fa #POST_STATUS_ICON# w100p"></span>',
 '<span class="u-VisuallyHidden">#POST_STATUS#</span>',
 '',
 ''))
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
-,p_rpt_named_lov=>wwv_flow_imp.id(11795802617710966)
+,p_rpt_named_lov=>wwv_flow_imp.id(37868422966001936)
 ,p_rpt_show_filter_lov=>'1'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(13625357587077813)
-,p_db_column_name=>'BTN_TITLE_TAGS'
+ p_id=>wwv_flow_imp.id(37425249219377349)
+,p_db_column_name=>'BTN_EDIT_TAGS'
 ,p_display_order=>250
-,p_column_identifier=>'BQ'
+,p_column_identifier=>'CA'
 ,p_column_label=>'Edit Tags'
-,p_column_link=>'f?p=&APP_ID.:24:&SESSION.::&DEBUG.::P24_POST_ID:#POST_ID#'
+,p_column_link=>'f?p=&APP_ID.:16:&SESSION.::&DEBUG.::P16_POST_ID:#POST_ID#'
 ,p_column_linktext=>'<span aria-hidden="true" class="t-Icon fa fa-tag"></span>'
-,p_column_link_attr=>'title="#BTN_TITLE_TAGS#" class="t-Button t-Button--noLabel t-Button--icon t t-Button--stretch t-Button--small mxw100"'
+,p_column_link_attr=>'title="#BTN_EDIT_TAGS#" aria-label="#BTN_EDIT_TAGS#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small w100p mxw100"'
 ,p_allow_sorting=>'N'
 ,p_allow_filtering=>'N'
 ,p_allow_highlighting=>'N'
@@ -392,31 +425,40 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(31246733855982907)
-,p_db_column_name=>'BTN_TITLE_EDIT'
-,p_display_order=>270
-,p_column_identifier=>'BK'
-,p_column_label=>'Btn Title Edit'
+ p_id=>wwv_flow_imp.id(37559490661471008)
+,p_db_column_name=>'BTN_LABEL_EDIT'
+,p_display_order=>260
+,p_column_identifier=>'CC'
+,p_column_label=>'Btn Label Edit'
 ,p_column_type=>'STRING'
-,p_display_text_as=>'HIDDEN'
+,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(33133832120313201)
-,p_db_column_name=>'POST_STATUS_CODE'
-,p_display_order=>280
-,p_column_identifier=>'BV'
-,p_column_label=>'Post Status Code'
+ p_id=>wwv_flow_imp.id(33133905393313202)
+,p_db_column_name=>'POST_STATUS_ICON'
+,p_display_order=>270
+,p_column_identifier=>'BW'
+,p_column_label=>'Post Status Icon'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(25132885666432510)
 ,p_db_column_name=>'EDIT_URL'
-,p_display_order=>290
+,p_display_order=>280
 ,p_column_identifier=>'BD'
 ,p_column_label=>'Edit Url'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(33134369371313206)
+,p_db_column_name=>'DETAIL_VIEW_PUBLISHED'
+,p_display_order=>290
+,p_column_identifier=>'BY'
+,p_column_label=>'Detail View Published'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3880372195180120)
@@ -428,40 +470,22 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_text_as=>'HIDDEN'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(11415530557329113)
-,p_db_column_name=>'DETAIL_VIEW_PUBLISHED'
-,p_display_order=>310
-,p_column_identifier=>'BO'
-,p_column_label=>'Detail View Published'
-,p_column_type=>'STRING'
-,p_display_text_as=>'HIDDEN_ESCAPE_SC'
-);
-wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(21076848274846837)
 ,p_db_column_name=>'TAGS_HTML'
-,p_display_order=>320
+,p_display_order=>310
 ,p_column_identifier=>'BP'
 ,p_column_label=>'Tags Html'
 ,p_column_type=>'CLOB'
 ,p_display_text_as=>'HIDDEN'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(21641780130282145)
-,p_db_column_name=>'POST_TXT_SEARCH'
-,p_display_order=>330
-,p_column_identifier=>'BU'
-,p_column_label=>'Post Txt Search'
+ p_id=>wwv_flow_imp.id(38590436638274305)
+,p_db_column_name=>'CTX_SEARCH'
+,p_display_order=>320
+,p_column_identifier=>'CD'
+,p_column_label=>'Ctx Search'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
-);
-wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(33133905393313202)
-,p_db_column_name=>'POST_STATUS_ICON'
-,p_display_order=>340
-,p_column_identifier=>'BW'
-,p_column_label=>'Post Status Icon'
-,p_column_type=>'STRING'
-,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_rpt(
  p_id=>wwv_flow_imp.id(8604892694799317)
@@ -471,7 +495,7 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_view_mode=>'REPORT'
-,p_report_columns=>'POST_TITLE:CATEGORY_TITLE:VISIBLE_TAGS:BTN_TITLE_TAGS:PUBLISHED_SINCE:POST_STATUS'
+,p_report_columns=>'POST_TITLE:CATEGORY_TITLE:VISIBLE_TAGS:BTN_EDIT_TAGS:PUBLISHED_SINCE:POST_STATUS'
 ,p_sort_column_1=>'PUBLISHED_ON'
 ,p_sort_direction_1=>'DESC NULLS FIRST'
 ,p_sort_column_2=>'0'
@@ -521,7 +545,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'All Tags'
 ,p_button_position=>'NEXT'
-,p_button_redirect_url=>'f?p=&APP_ID.:19:&SESSION.::&DEBUG.:::'
+,p_button_redirect_url=>'f?p=&APP_ID.:15:&SESSION.::&DEBUG.:::'
 ,p_icon_css_classes=>'fa-tags'
 );
 wwv_flow_imp_page.create_page_button(
@@ -553,13 +577,13 @@ wwv_flow_imp_page.create_page_button(
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(13944956080359343)
-,p_name=>'Opened from Tab'
+,p_name=>'Close New Post'
 ,p_event_sequence=>10
-,p_triggering_element_type=>'REGION'
-,p_triggering_region_id=>wwv_flow_imp.id(24910908943771848)
+,p_triggering_element_type=>'BUTTON'
+,p_triggering_button_id=>wwv_flow_imp.id(24911046946771849)
 ,p_bind_type=>'bind'
 ,p_execution_type=>'IMMEDIATE'
-,p_bind_event_type=>'apexafterclosecanceldialog'
+,p_bind_event_type=>'apexafterclosedialog'
 );
 wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(13945095580359344)
@@ -572,9 +596,49 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_affected_region_id=>wwv_flow_imp.id(8596898648797585)
 );
 wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(38475796789283528)
+,p_name=>'Process Category'
+,p_event_sequence=>20
+,p_triggering_element_type=>'BUTTON'
+,p_triggering_button_id=>wwv_flow_imp.id(24911194442771850)
+,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
+,p_bind_event_type=>'apexafterclosecanceldialog'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(38475809446283529)
+,p_event_id=>wwv_flow_imp.id(38475796789283528)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_imp.id(8596898648797585)
+);
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(38475941874283530)
+,p_name=>'Process Tags'
+,p_event_sequence=>30
+,p_triggering_element_type=>'BUTTON'
+,p_triggering_button_id=>wwv_flow_imp.id(25131954621432501)
+,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
+,p_bind_event_type=>'apexafterclosecanceldialog'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(38476071372283531)
+,p_event_id=>wwv_flow_imp.id(38475941874283530)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_imp.id(8596898648797585)
+);
+wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(13945452969359348)
 ,p_name=>'Opened from Report'
-,p_event_sequence=>20
+,p_event_sequence=>40
 ,p_triggering_element_type=>'REGION'
 ,p_triggering_region_id=>wwv_flow_imp.id(8596898648797585)
 ,p_bind_type=>'bind'

@@ -12,23 +12,22 @@ wwv_flow_imp.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_list_of_values(
- p_id=>wwv_flow_imp.id(24779831361886842)
+ p_id=>wwv_flow_imp.id(37867559625990235)
 ,p_lov_name=>'POST_TAGS_VISIBLE'
 ,p_lov_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select v1.tag     as return_value',
-'  ,v1.tag         as display_value',
-'  ,v1.tag_unique  as display_seq',
-'from #OWNER#.blog_v_all_tags v1',
+'select',
+'   v1.tag as return_value',
+'  ,v1.tag as display_value',
+'from blog_v_all_tags v1',
 'where 1 = 1',
 'and v1.is_active = 1',
-''))
+'order by v1.tag_unique'))
 ,p_source_type=>'SQL'
 ,p_location=>'LOCAL'
 ,p_use_local_sync_table=>false
 ,p_return_column_name=>'RETURN_VALUE'
 ,p_display_column_name=>'DISPLAY_VALUE'
-,p_group_sort_direction=>'DESC'
-,p_default_sort_column_name=>'DISPLAY_SEQ'
+,p_group_sort_direction=>'ASC'
 ,p_default_sort_direction=>'ASC'
 );
 wwv_flow_imp.component_end;

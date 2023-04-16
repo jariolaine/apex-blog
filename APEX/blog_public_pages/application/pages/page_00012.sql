@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230122084313'
+,p_last_upd_yyyymmddhh24miss=>'20230412172349'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(30430710498753130)
@@ -40,10 +40,15 @@ wwv_flow_imp_page.create_report_region(
 'select',
 '   t1.blogger_name  as region_title',
 '  ,t1.blogger_desc  as body_html',
-'from #OWNER#.blog_v_bloggers t1',
+'from blog_v_bloggers t1',
 'where 1 = 1',
 'order by t1.display_seq'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_plug_caching=>'CACHE'
+,p_plug_caching_max_age_in_sec=>1209600
+,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
+,p_plug_cache_when_condition_e1=>'DEBUG'
+,p_plug_cache_when_condition_e2=>'NO'
 ,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(30641878306098019)
 ,p_query_headings_type=>'NO_HEADINGS'
@@ -72,6 +77,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'BODY_HTML'
 ,p_column_display_sequence=>20
 ,p_column_heading=>'Body Html'
+,p_use_as_row_header=>'N'
 ,p_display_as=>'RICH_TEXT'
 ,p_attribute_01=>'HTML'
 ,p_derived_column=>'N'

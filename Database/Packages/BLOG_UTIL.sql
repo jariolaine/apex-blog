@@ -53,6 +53,8 @@ as
 --                            - g_nls_date_lang
 --                            - g_iso_8601_date
 --                            - g_rfc_2822_date
+--    Jari Laine 08.04.2023 - Parameter p_page_id to procedure redirect_search
+--                            Removed ORA errors between -20999 and 20901 display position handlimg from function apex_error_handler
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -137,6 +139,7 @@ as
   procedure redirect_search(
     p_value           in varchar2,
     p_app_id          in varchar2 default null,
+    p_page_id         in varchar2 default 'SEARCH',
     p_session         in varchar2 default null
   );
 --------------------------------------------------------------------------------
@@ -179,6 +182,7 @@ as
     p_error in apex_error.t_error
   ) return apex_error.t_error_result
   as
+
     l_genereric_error constant varchar2(255) := 'BLOG_GENERIC_ERROR';
 
     l_result          apex_error.t_error_result;
@@ -193,37 +197,27 @@ as
     l_result :=
       apex_error.init_error_result(
         p_error => p_error
-      );
-
+      )
+    ;
     -- If it's an internal error raised by APEX, like an invalid statement or
     -- code which can't be executed, the error text might contain security sensitive
     -- information. To avoid this security problem we can rewrite the error to
     -- a generic error message and log the original error message for further
     -- investigation by the help desk.
-    if p_error.is_internal_error then
-
-      if not p_error.is_common_runtime_error then
+    if p_error.is_internal_error
+    then
+      if not p_error.is_common_runtime_error
+      then
         -- Change the message to the generic error message which doesn't expose
         -- any sensitive information.
-        l_result.message := apex_lang.message(
-          p_name => l_genereric_error
-        );
+        l_result.message :=
+          apex_lang.message(
+            p_name => l_genereric_error
+          )
+        ;
         l_result.additional_info := null;
       end if;
-
     else
-
-      -- Don't change display position for specific ORA eror codes
-      if not p_error.ora_sqlcode between -20999 and -20901
-      then
-        -- Always show the error as inline error
-        l_result.display_location := case
-          when l_result.display_location = apex_error.c_on_error_page
-          then apex_error.c_inline_in_notification
-          else l_result.display_location
-          end
-       ;
-      end if;
 
       -- If it's a constraint violation like
       --
@@ -237,23 +231,24 @@ as
       -- If we don't find the constraint in our lookup table we fallback to
       -- the original ORA error message.
 
-      if p_error.ora_sqlcode in (-1, -2091, -2290, -2291, -2292) then
-
+      if p_error.ora_sqlcode in (-1, -2091, -2290, -2291, -2292)
+      then
         l_constraint_name :=
           apex_error.extract_constraint_name(
             p_error => p_error
-          );
-
-        l_err_mesg := apex_lang.message(
-          p_name => l_constraint_name
-        );
-
+          )
+        ;
+        l_err_mesg :=
+          apex_lang.message(
+            p_name => l_constraint_name
+          )
+        ;
         -- not every constraint has to be in our lookup table
-        if not l_err_mesg = l_constraint_name then
+        if not l_err_mesg = l_constraint_name
+        then
           l_result.message := l_err_mesg;
           l_result.additional_info := null;
         end if;
-
       end if;
 
       -- If an ORA error has been raised, for example a raise_application_error(-20xxx, '...')
@@ -266,7 +261,8 @@ as
         l_result.message :=
           apex_error.get_first_ora_error_text (
             p_error => p_error
-          );
+          )
+        ;
         l_result.additional_info := null;
       end if;
 
@@ -274,13 +270,12 @@ as
       -- apex_error.auto_set_associated_item to automatically guess the affected
       -- error field by examine the ORA error for constraint names or column names.
       if l_result.page_item_name is null
-      and l_result.column_alias is null then
-
+      and l_result.column_alias is null
+      then
         apex_error.auto_set_associated_item (
            p_error => p_error
           ,p_error_result => l_result
         );
-
       end if;
 
     end if;
@@ -765,9 +760,10 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure redirect_search(
-    p_value         in varchar2,
-    p_app_id        in varchar2 default null,
-    p_session       in varchar2 default null
+    p_value   in varchar2,
+    p_app_id  in varchar2 default null,
+    p_page_id in varchar2 default 'SEARCH',
+    p_session in varchar2 default null
   )
   as
   begin
@@ -775,7 +771,7 @@ as
     apex_util.redirect_url (
       apex_page.get_url(
          p_application => p_app_id
-        ,p_page        => 'SEARCH'
+        ,p_page        => p_page_id
         ,p_session     => p_session
 --          ,p_clear_cache => 'RP'
         ,p_items       => 'P0_SEARCH'

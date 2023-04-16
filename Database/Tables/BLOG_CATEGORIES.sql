@@ -14,8 +14,7 @@ create table blog_categories(
   title_unique varchar2( 256 char ) as( upper( trim( title ) ) ) virtual not null,
   notes varchar2( 4000 byte ),
   constraint blog_categories_pk primary key( id ),
-  constraint blog_categories_uk1 unique( title ),
-  constraint blog_categories_uk2 unique( title_unique ),
+  constraint blog_categories_uk1 unique( title_unique ),
   constraint blog_categories_ck1 check( row_version > 0 ),
   constraint blog_categories_ck2 check( is_active in( 0, 1 ) ),
   constraint blog_categories_ck3 check( display_seq > 0 )

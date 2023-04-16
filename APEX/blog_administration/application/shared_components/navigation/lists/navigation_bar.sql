@@ -17,26 +17,35 @@ wwv_flow_imp_shared.create_list(
 ,p_list_status=>'PUBLIC'
 );
 wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(11946249778272409)
+ p_id=>wwv_flow_imp.id(19072752156019791)
 ,p_list_item_display_sequence=>10
+,p_list_item_link_text=>'Help'
+,p_list_item_link_target=>'f?p=&APP_ID.:201:&SESSION.:12:&DEBUG.::::'
+,p_list_item_icon=>'fa-question-circle-o'
+,p_list_item_disp_cond_type=>'CURRENT_PAGE_EQUALS_CONDITION'
+,p_list_item_disp_condition=>'11'
+,p_required_patch=>wwv_flow_imp.id(10006498624902877)
+,p_list_item_current_type=>'NEVER'
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(38677231950687990)
+,p_list_item_display_sequence=>20
+,p_list_item_link_text=>'Help'
+,p_list_item_link_target=>'f?p=&APP_ID.:201:&SESSION.:&APP_PAGE_ID.:&DEBUG.::::'
+,p_list_item_icon=>'fa-question-circle-o'
+,p_list_item_current_type=>'NEVER'
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(11946249778272409)
+,p_list_item_display_sequence=>30
 ,p_list_item_link_text=>'About'
 ,p_list_item_link_target=>'f?p=&APP_ID.:202:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-question-circle-o '
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(19072752156019791)
-,p_list_item_display_sequence=>20
-,p_list_item_link_text=>'Help'
-,p_list_item_link_target=>'f?p=&APP_ID.:201:&SESSION.:12:&DEBUG.::::'
-,p_list_item_icon=>'fa-question-circle-o'
-,p_list_item_disp_cond_type=>'CURRENT_PAGE_EQUALS_CONDITION'
-,p_list_item_disp_condition=>'11'
-,p_list_item_current_type=>'NEVER'
-);
-wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(8582761687518324)
-,p_list_item_display_sequence=>30
+,p_list_item_display_sequence=>40
 ,p_list_item_link_text=>'&G_BLOGGER_NAME.'
 ,p_list_item_link_target=>'#'
 ,p_list_item_icon=>'fa-user'
@@ -44,7 +53,7 @@ wwv_flow_imp_shared.create_list_item(
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(8873205810704269)
-,p_list_item_display_sequence=>40
+,p_list_item_display_sequence=>50
 ,p_list_item_link_text=>'Edit Profile'
 ,p_list_item_link_target=>'f?p=&APP_ID.:501:&SESSION.::&DEBUG.:501:::'
 ,p_list_item_icon=>'fa-id-card-o'
@@ -53,7 +62,7 @@ wwv_flow_imp_shared.create_list_item(
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(8960833415552711)
-,p_list_item_display_sequence=>50
+,p_list_item_display_sequence=>60
 ,p_list_item_link_text=>'----'
 ,p_list_item_link_target=>'separator'
 ,p_parent_list_item_id=>wwv_flow_imp.id(8582761687518324)
@@ -61,7 +70,7 @@ wwv_flow_imp_shared.create_list_item(
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(8583599195518325)
-,p_list_item_display_sequence=>60
+,p_list_item_display_sequence=>70
 ,p_list_item_link_text=>'Sign Out'
 ,p_list_item_link_target=>'&LOGOUT_URL.'
 ,p_list_item_icon=>'fa-sign-out'

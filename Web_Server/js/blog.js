@@ -18,6 +18,31 @@ var blog = blog || {};
   /**
   * @module blog.UI
   **/
+
+  blog.search = function( element, options ){
+
+    options = $.extend({
+      noSubmitPage: "4"
+      ,request: "SEARCH"
+      ,showWait: true
+    }, options );
+
+    if( element.value.trim() === "" && options.submitIfEnter.key === "Enter" ){
+      return false;
+    }
+
+    if( options.currentPage === options.noSubmitPage ){
+      return options.submitIfEnter.key
+    }
+
+    return apex.submit({
+      request: options.request
+      ,submitIfEnter: options.submitIfEnter
+      ,showWait: options.showWait
+    });
+
+  }
+
   blog.UI = {
 
     /**
@@ -28,7 +53,7 @@ var blog = blog || {};
 
       options = $.extend({
         currentClass: "is-current",
-        dataAttrName: "blog-content-id"
+        dataAttrName: "item-id"
       }, options );
 
       options.affectedElements.find( "li" ).filter( function(){
@@ -49,6 +74,7 @@ var blog = blog || {};
       }).addClass( options.currentClass );
 
     },
+
     /**
     * @function setDialogTitle
     * @example blog.UI.setDialogTitle("Dialog Title");

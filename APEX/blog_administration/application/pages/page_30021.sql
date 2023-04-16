@@ -26,7 +26,7 @@ wwv_flow_imp_page.create_page(
 ,p_help_text=>'High level view of application logging information.'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230310221014'
+,p_last_upd_yyyymmddhh24miss=>'20230403081915'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(87874963598811882)
@@ -268,7 +268,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'PAGE_VIEWS'
 ,p_column_display_sequence=>1
 ,p_column_heading=>'Page views'
-,p_use_as_row_header=>'N'
+,p_use_as_row_header=>'Y'
 ,p_column_format=>'999999999999990'
 ,p_column_alignment=>'RIGHT'
 ,p_heading_alignment=>'LEFT'

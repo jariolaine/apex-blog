@@ -18,7 +18,7 @@ wwv_flow_imp_shared.create_shortcut(
 ,p_shortcut_language=>'PLSQL'
 ,p_comments=>'Get canonical link for page that is accessed form tabs. Used in pages 1, 10, 11 and 12 page html header.'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return #OWNER#.blog_html.get_tab_canonical_link(',
+'return blog_html.get_tab_canonical_link(',
 '  p_page => :APP_PAGE_ID',
 ');'))
 );

@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230310221432'
+,p_last_upd_yyyymmddhh24miss=>'20230405090340'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(56682839747382561)
@@ -34,7 +34,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select page_id        as page_id',
+'select page_id        as page',
 '  ,(',
 '    select p.page_name',
 '    from apex_application_pages p',
@@ -82,10 +82,10 @@ wwv_flow_imp_page.create_worksheet(
 ,p_internal_uid=>56683755401382562
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(12822065515765618)
-,p_db_column_name=>'PAGE_ID'
+ p_id=>wwv_flow_imp.id(37976572077048229)
+,p_db_column_name=>'PAGE'
 ,p_display_order=>10
-,p_column_identifier=>'G'
+,p_column_identifier=>'X'
 ,p_column_label=>'Page'
 ,p_column_type=>'NUMBER'
 ,p_column_alignment=>'RIGHT'
@@ -97,6 +97,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_order=>20
 ,p_column_identifier=>'W'
 ,p_column_label=>'Page Name'
+,p_column_html_expression=>'#PAGE#. #PAGE_NAME#'
 ,p_column_type=>'STRING'
 ,p_use_as_row_header=>'Y'
 );
@@ -207,7 +208,7 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_report_alias=>'438648'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'MESSAGE_SINCE:ELAPSED_TIME:EXECUTION_TIME:MESSAGE:CALL_STACK:'
+,p_report_columns=>'PAGE_NAME:MESSAGE_SINCE:ELAPSED_TIME:EXECUTION_TIME:MESSAGE:CALL_STACK:'
 ,p_sort_column_1=>'MESSAGE_TIMESTAMP'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'ERROR_TIME'

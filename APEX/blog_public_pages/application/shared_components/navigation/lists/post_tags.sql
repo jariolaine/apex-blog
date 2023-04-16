@@ -24,11 +24,9 @@ wwv_flow_imp_shared.create_list(
 '  ,null           as image',
 '  ,null           as image_attribute',
 '  ,null           as image_alt_attribute',
-'  ,case v1.show_post_count',
-'    when ''INCLUDE'' then v1.posts_count',
-'  end             as attribute1',
+'  ,v1.list_badge  as attribute1',
 '  ,v1.tag_bucket  as attribute2',
-'from #OWNER#.blog_v_tags v1',
+'from blog_v_tags v1',
 'where 1 = 1',
 'order by v1.tag'))
 ,p_list_status=>'PUBLIC'

@@ -17,27 +17,21 @@ wwv_flow_imp_shared.create_list(
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   1                as link_level',
-'  ,v1.archive_year  as link_text',
-'  ,v1.archive_url   as target_url',
-'-- list is cached, we can''t use is_current attribute',
-'  ,''NO''             as is_current',
-'  ,''fa-folder-o''    as image',
-'  ,null             as image_attribute',
-'  ,null             as image_alt_attribute',
-'  ,case v1.show_post_count',
-'    when ''INCLUDE'' then v1.post_count',
-'  end               as attribute1',
-'-- add archive id to data attribute',
-'-- we can use it then in dynamic action',
-'-- set class for current list item',
-'  ,''data-blog-content-id="''',
-'    || v1.archive_year',
-'    || ''"''          as attribute2',
-'  ,''z-linkList''     as attribute3',
-'from #OWNER#.blog_v_archive_year v1',
-'order by v1.archive_year desc',
-''))
+'   1                  as link_level',
+'  ,v1.archive_year    as link_text',
+'  ,v1.archive_url     as target_url',
+'-- list is cached, can''t use is_current attribute.',
+'  ,''NO''               as is_current',
+'  ,''fa-chevron-right'' as image',
+'  ,null               as image_attribute',
+'  ,null               as image_alt_attribute',
+'  ,v1.list_badge      as attribute1',
+'-- Archive id data attribute.',
+'-- Used in dynamic action to set class for current list item.',
+'  ,v1.list_attr       as attribute2',
+'  ,''z-linkList''       as attribute3',
+'from blog_v_archive_year v1',
+'order by v1.archive_year desc'))
 ,p_list_status=>'PUBLIC'
 ,p_required_patch=>wwv_flow_imp.id(8670890848739263)
 );

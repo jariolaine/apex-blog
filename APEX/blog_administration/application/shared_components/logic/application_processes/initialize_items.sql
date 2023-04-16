@@ -18,7 +18,7 @@ wwv_flow_imp_shared.create_flow_process(
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Initialize Items'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_util.initialize_items(',
+'blog_util.initialize_items(',
 '  p_app_id => :APP_ID',
 ');'))
 ,p_process_clob_language=>'PLSQL'

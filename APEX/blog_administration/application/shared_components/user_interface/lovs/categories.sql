@@ -15,16 +15,12 @@ wwv_flow_imp_shared.create_list_of_values(
  p_id=>wwv_flow_imp.id(6986423229479201)
 ,p_lov_name=>'CATEGORIES'
 ,p_lov_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select title    as return_value',
-'  ,title        as display_value',
-'  ,case is_active',
-'  when 1',
-'  then apex_lang.message( ''BLOG_LOV_IS_ACTIVE_ENABLED'' )',
-'  else apex_lang.message( ''BLOG_LOV_IS_ACTIVE_DISABLED'' )',
-'  end           as status',
-'  ,display_seq  as display_seq',
-'from #OWNER#.blog_v_all_categories',
-'where 1 = 1'))
+'select ',
+'  v1.title                  as return_value',
+'  ,v1.title                 as display_value',
+'  ,v1.category_status_text  as status',
+'  ,v1.display_seq           as display_seq',
+'from blog_v_all_categories v1'))
 ,p_source_type=>'SQL'
 ,p_location=>'LOCAL'
 ,p_use_local_sync_table=>false
@@ -40,6 +36,15 @@ wwv_flow_imp_shared.create_list_of_values_cols(
 ,p_query_column_name=>'RETURN_VALUE'
 ,p_display_sequence=>10
 ,p_data_type=>'VARCHAR2'
+,p_is_visible=>'N'
+,p_is_searchable=>'N'
+);
+wwv_flow_imp_shared.create_list_of_values_cols(
+ p_id=>wwv_flow_imp.id(37784846021316914)
+,p_query_column_name=>'DISPLAY_SEQ'
+,p_heading=>'Sequence'
+,p_display_sequence=>10
+,p_data_type=>'NUMBER'
 ,p_is_visible=>'N'
 ,p_is_searchable=>'N'
 );

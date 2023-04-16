@@ -18,7 +18,7 @@ wwv_flow_imp_shared.create_flow_process(
 ,p_process_type=>'NATIVE_PLSQL'
 ,p_process_name=>'Get Blogger Details'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'#OWNER#.blog_cm.get_blogger_details(',
+'blog_cm.get_blogger_details(',
 '   p_app_id   => :APP_ID  ',
 '  ,p_username => :APP_USER',
 '  ,p_id       => :G_BLOGGER_ID',

@@ -21,9 +21,13 @@ wwv_flow_imp_page.create_page(
 ,p_group_id=>wwv_flow_imp.id(20246051173750852)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<p>The administration page allows blogger to configure the application and maintain common data used across the application.',
+'By selecting one of the available settings, blogger can potentially change how the application is displayed and/or features available to the end users.</p>',
+'<p>This page also has links to various reports on the activity of this application.</p>'))
 ,p_page_component_map=>'06'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230117102931'
+,p_last_upd_yyyymmddhh24miss=>'20230409171236'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(51691560566605050)

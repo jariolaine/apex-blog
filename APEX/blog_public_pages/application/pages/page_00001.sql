@@ -15,7 +15,7 @@ wwv_flow_imp_page.create_page(
  p_id=>1
 ,p_name=>'Home'
 ,p_alias=>'HOME'
-,p_step_title=>'&G_APP_NAME.'
+,p_step_title=>'Home | &G_APP_NAME.'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(20718112665951240)
@@ -27,7 +27,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230228105126'
+,p_last_upd_yyyymmddhh24miss=>'20230412172110'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6432040642894060)
@@ -41,18 +41,16 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   v1.post_id         as post_id',
-'  ,v1.category_id     as category_id',
-'  ,v1.published_on    as published_on',
-'  ,v1.published_on    as pubdate',
-'  ,v1.post_title      as post_title',
-'  ,v1.category_title  as category_title',
-'  ,v1.first_paragraph as body_html',
-'  ,null               as tags_html',
-'  ,v1.txt_read_more   as read_more_link',
-'  ,v1.txt_posted_on   as txt_posted_on',
-'  ,v1.txt_category    as txt_category',
-'from #OWNER#.blog_v_posts v1',
+'   v1.post_id                   as post_id',
+'  ,v1.category_id               as category_id',
+'  ,v1.published_on              as published_on',
+'  ,v1.published_on              as pubdate',
+'  ,v1.post_title                as post_title',
+'  ,v1.category_title            as category_title',
+'  ,v1.first_paragraph           as body_html',
+'  ,null                         as tags_html',
+'  ,:APP_TEXT$BLOG_TXT_READ_MORE as read_more_link',
+'from blog_v_posts v1',
 'where 1 = 1',
 'order by v1.published_on desc',
 ''))
@@ -169,26 +167,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_use_as_row_header=>'N'
 ,p_column_link=>'f?p=&APP_ID.:2:&SESSION.::&DEBUG.::P2_POST_ID:#POST_ID#'
 ,p_column_linktext=>'#READ_MORE_LINK#<span aria-hidden="true" class="fa fa-angle-double-right u-alignMiddle margin-left-sm"></span>'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(11417084664329128)
-,p_query_column_id=>10
-,p_column_alias=>'TXT_POSTED_ON'
-,p_column_display_sequence=>82
-,p_column_heading=>'Txt Posted On'
-,p_use_as_row_header=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(11417134342329129)
-,p_query_column_id=>11
-,p_column_alias=>'TXT_CATEGORY'
-,p_column_display_sequence=>92
-,p_column_heading=>'Txt Category'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );

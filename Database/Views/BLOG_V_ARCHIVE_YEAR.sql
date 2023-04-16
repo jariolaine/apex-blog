@@ -1,15 +1,22 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_ARCHIVE_YEAR
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ARCHIVE_YEAR" ("ARCHIVE_YEAR", "POST_COUNT", "CHANGED_ON", "ARCHIVE_URL", "SHOW_POST_COUNT") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ARCHIVE_YEAR" ("ARCHIVE_YEAR", "POST_COUNT", "CHANGED_ON", "ARCHIVE_URL", "SHOW_POST_COUNT", "LIST_BADGE", "LIST_ATTR") AS
 select
    v1.archive_year      as archive_year
-  ,count( v1.post_id )  as post_count
+  ,count(1)             as post_count
   ,max( v1.changed_on ) as changed_on
   ,blog_url.get_archive(
     p_archive_id => v1.archive_year
   )                     as archive_url
   ,feat.show_post_count as show_post_count
+  ,case feat.show_post_count
+    when 'INCLUDE' then count(1)
+  end                   as list_badge
+  ,apex_string.format(
+    p_message => 'data-item-id="%s"'
+    ,p0 => v1.archive_year
+  )                     as list_attr
 from blog_v_posts v1
 cross join(
   select

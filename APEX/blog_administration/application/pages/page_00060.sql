@@ -1,7 +1,7 @@
-prompt --application/pages/page_00030
+prompt --application/pages/page_00060
 begin
 --   Manifest
---     PAGE: 00030
+--     PAGE: 00060
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
@@ -12,7 +12,7 @@ wwv_flow_imp.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_page.create_page(
- p_id=>30
+ p_id=>60
 ,p_name=>'Comments'
 ,p_alias=>'COMMENTS'
 ,p_step_title=>'Comments'
@@ -22,10 +22,10 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230310220744'
+,p_last_upd_yyyymmddhh24miss=>'20230410121421'
 );
 wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(27412346667552217)
+ p_id=>wwv_flow_imp.id(65609751049299759)
 ,p_plug_name=>'Comments Report'
 ,p_region_css_classes=>'z-IR--iconLinks'
 ,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
@@ -34,88 +34,44 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_point=>'REGION_POSITION_08'
 ,p_query_type=>'SQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select ',
-'   v1.id                    as comment_id',
-'  ,v1.post_id               as post_id',
-'  ,v1.parent_id             as parent_id',
-'  ,v1.created_on            as created_on',
-'  ,v1.created_on            as created_since',
-'  ,v1.created_by            as created_by',
-'  ,v1.changed_on            as changed_on',
-'  ,v1.changed_on            as changed_since',
-'  ,v1.changed_by            as changed_by',
-'  ,v1.comment_by            as comment_by',
-'  ,v1.post_title            as post_title',
-'  ,status_lov.display_value as status',
-'  ,flag_lov.display_value   as flag',
-'  ,case v1.status ',
-'    when ''MODERATE'' ',
-'    then ''fa-exclamation-circle u-warning-text''',
-'    when ''ENABLED''',
-'    then ''fa-check-circle u-success-text''',
-'    else ''fa-minus-circle u-danger-text''',
-'  end                       as status_icon',
-'  ,case v1.flag',
-'    when ''REPLY''',
-'    then ''fa-send-o''',
-'    when ''NEW''',
-'    then ''fa-envelope-arrow-down''',
-'    when ''UNREAD''',
-'    then ''fa-envelope-o''',
-'    else ''fa-envelope-open-o''',
-'  end                       as flag_icon',
-'  ,btn.title_open           as title_open',
-'  ,case ',
-'    when v1.flag in( ''NEW'', ''UNREAD'' )',
-'    then',
-'      ''true''',
-'    else',
-'      ''false''',
-'  end                       as btn_data_unread',
-'  ,v1.body_html             as comment_body',
+' select ',
+'   v1.id                            as comment_id',
+'  ,v1.post_id                       as post_id',
+'  ,v1.parent_id                     as parent_id',
+'  ,v1.created_on                    as created_on',
+'  ,v1.created_on                    as created_since',
+'  ,v1.created_by                    as created_by',
+'  ,v1.changed_on                    as changed_on',
+'  ,v1.changed_on                    as changed_since',
+'  ,v1.changed_by                    as changed_by',
+'  ,v1.comment_by                    as comment_by',
+'  ,v1.post_title                    as post_title',
+'  ,v1.comment_status_text           as comment_status -- see column HTML Expression',
+'  ,v1.comment_flag_text             as comment_flag   -- see column HTML Expression',
+'  ,v1.comment_status_icon           as status_icon',
+'  ,v1.comment_flag_icon             as flag_icon',
+'  ,v1.data_unread                   as btn_data_unread',
+'  ,v1.body_html                     as comment_body',
+'  ,v1.ctx_search                    as ctx_search',
 '  ,apex_page.get_url(',
-'     p_page   => 31',
-'    ,p_clear_cache => 31',
-'    ,p_items  => ''P31_ID,P31_POST_ID''',
-'    ,p_values => ',
-'      apex_string.format(',
-'         p_message => ''%s,%s''',
-'        ,p0 => v1.id',
-'        ,p1 => v1.post_id',
-'      )',
-'   )                        as edit_url',
-'from #OWNER#.blog_v_all_comments v1',
-'-- because APEX bug that IR not use LOV values in detail view',
-'join (',
-'  select lov.display_value',
-'    ,lov.return_value',
-'  from #OWNER#.blog_v_lov lov',
-'  where 1 = 1',
-'  and lov.lov_name = ''COMMENT_STATUS''',
-') status_lov on status_lov.return_value = v1.status',
-'-- because APEX bug that IR not use LOV values in detail view',
-'join (',
-'  select lov.display_value',
-'    ,return_value',
-'  from #OWNER#.blog_v_lov lov',
-'  where 1 = 1',
-'  and lov.lov_name = ''COMMENT_FLAG''',
-') flag_lov on flag_lov.return_value = v1.flag',
-'-- link column button title',
-'cross join (',
-'  select apex_lang.message( ''BLOG_BTN_TITLE_OPEN_COMMENT'' ) as title_open',
-'  from dual',
-') btn'))
+'     p_page         => 61',
+'    ,p_clear_cache  => 61',
+'    ,p_items        => ''P61_ID,P61_POST_ID''',
+'    ,p_values       => v1.id || '','' || v1.post_id',
+'   )                                as edit_url',
+'   ,:APP_TEXT$BLOG_TXT_OPEN_COMMENT as btn_label',
+'from blog_v_all_comments v1'))
 ,p_plug_source_type=>'NATIVE_IR'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_prn_content_disposition=>'ATTACHMENT'
 );
 wwv_flow_imp_page.create_worksheet(
- p_id=>wwv_flow_imp.id(27412486259552217)
+ p_id=>wwv_flow_imp.id(65609890641299759)
 ,p_name=>'Comments'
 ,p_max_row_count_message=>'The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.'
 ,p_no_data_found_message=>'No data found.'
+,p_oracle_text_index_column=>'CTX_SEARCH'
 ,p_show_nulls_as=>'-'
 ,p_pagination_type=>'ROWS_X_TO_Y'
 ,p_pagination_display_pos=>'BOTTOM_RIGHT'
@@ -127,33 +83,35 @@ wwv_flow_imp_page.create_worksheet(
 ,p_enable_mail_download=>'Y'
 ,p_detail_link=>'#EDIT_URL#'
 ,p_detail_link_text=>'<span class="t-Icon fa fa-pencil" aria-hidden="true"></span>'
-,p_detail_link_attr=>'data-unread="#BTN_DATA_UNREAD#" data-id="CF#COMMENT_ID#" title="#TITLE_OPEN#"" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
+,p_detail_link_attr=>'data-unread="#BTN_DATA_UNREAD#" data-id="CF#COMMENT_ID#" title="#BTN_LABEL#" aria-label="#BTN_LABEL#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
 ,p_detail_view_enabled_yn=>'Y'
 ,p_detail_view_for_each_row=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="z-comment-IR">',
 '  <div class="z-commentIcon">',
-'    <span arial-label="#FLAG#" title="#FLAG#" class="t-Icon fa fa-lg #FLAG_ICON#" id="CF#COMMENT_ID#"></span>',
+'    <span title="#COMMENT_FLAG#" arial-label="#COMMENT_FLAG#" class="t-Icon fa fa-lg #FLAG_ICON#" id="CF#COMMENT_ID#"></span>',
 '  </div>',
 '  <div class="z-commentContainer">',
-'    <div class="z-commentTitle">',
-'      <a href="#EDIT_URL#" data-unread="#BTN_DATA_UNREAD#" data-id="CF#COMMENT_ID#">#POST_TITLE#</a>',
-'    </div>',
-'    <div class="z-commentSubtitle">',
-'      #COMMENT_BY# &middot; #CREATED_ON#',
+'    <div class="z-commentTitle u-flex">',
+'      <a class="w100p" href="#EDIT_URL#" data-unread="#DATA_UNREAD#" data-id="CF#COMMENT_ID#">',
+'        #POST_TITLE#',
+'        <div class="z-commentSubtitle">',
+'          #COMMENT_BY# &middot; #CREATED_ON#',
+'        </div>',
+'      </a>',
 '    </div>',
 '    <div class="z-commentBody">',
 '      #COMMENT_BODY#',
 '    </div>',
 '  </div>',
 '  <div class="z-commentStatus">',
-'    <span arial-label="#STATUS#" title="#STATUS#" class="t-Icon fa fa-lg #STATUS_ICON#"></span>',
+'    <span title="#COMMENT_STATUS#" arial-label="#COMMENT_STATUS#" class="t-Icon fa fa-lg #STATUS_ICON#"></span>',
 '  </div>',
 '</div>'))
 ,p_owner=>'LAINFJAR'
-,p_internal_uid=>27412486259552217
+,p_internal_uid=>65609890641299759
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(27412896770552221)
+ p_id=>wwv_flow_imp.id(38201510708747553)
 ,p_db_column_name=>'COMMENT_ID'
 ,p_display_order=>10
 ,p_column_identifier=>'A'
@@ -163,7 +121,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(27413658046552222)
+ p_id=>wwv_flow_imp.id(38201920038747553)
 ,p_db_column_name=>'POST_ID'
 ,p_display_order=>20
 ,p_column_identifier=>'C'
@@ -173,7 +131,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(27414040338552222)
+ p_id=>wwv_flow_imp.id(38202391418747554)
 ,p_db_column_name=>'PARENT_ID'
 ,p_display_order=>30
 ,p_column_identifier=>'D'
@@ -183,7 +141,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(27414403838552223)
+ p_id=>wwv_flow_imp.id(38202796536747554)
 ,p_db_column_name=>'CREATED_ON'
 ,p_display_order=>40
 ,p_column_identifier=>'E'
@@ -195,7 +153,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(21640383578282131)
+ p_id=>wwv_flow_imp.id(38199197361747551)
 ,p_db_column_name=>'CREATED_SINCE'
 ,p_display_order=>50
 ,p_column_identifier=>'AC'
@@ -207,7 +165,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(21640460854282132)
+ p_id=>wwv_flow_imp.id(38199520234747551)
 ,p_db_column_name=>'CREATED_BY'
 ,p_display_order=>60
 ,p_column_identifier=>'AD'
@@ -216,7 +174,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(27276071435075439)
+ p_id=>wwv_flow_imp.id(38200318021747552)
 ,p_db_column_name=>'CHANGED_ON'
 ,p_display_order=>80
 ,p_column_identifier=>'J'
@@ -228,7 +186,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(21640512619282133)
+ p_id=>wwv_flow_imp.id(38199939626747552)
 ,p_db_column_name=>'CHANGED_SINCE'
 ,p_display_order=>90
 ,p_column_identifier=>'AE'
@@ -240,7 +198,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(27276125787075440)
+ p_id=>wwv_flow_imp.id(38200749313747552)
 ,p_db_column_name=>'CHANGED_BY'
 ,p_display_order=>100
 ,p_column_identifier=>'K'
@@ -250,7 +208,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(27414847566552223)
+ p_id=>wwv_flow_imp.id(38203120636747554)
 ,p_db_column_name=>'COMMENT_BY'
 ,p_display_order=>110
 ,p_column_identifier=>'F'
@@ -260,7 +218,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(27276240284075441)
+ p_id=>wwv_flow_imp.id(38201118956747553)
 ,p_db_column_name=>'POST_TITLE'
 ,p_display_order=>120
 ,p_column_identifier=>'L'
@@ -270,73 +228,58 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'Y'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(36228982614379748)
-,p_db_column_name=>'STATUS'
+ p_id=>wwv_flow_imp.id(38204393984747556)
+,p_db_column_name=>'COMMENT_FLAG'
 ,p_display_order=>130
-,p_column_identifier=>'O'
+,p_column_identifier=>'AL'
+,p_column_label=>'Flag'
+,p_column_html_expression=>'<span title="#COMMENT_FLAG#" aria-label="#COMMENT_FLAG#" class="w100p fa #FLAG_ICON#" id="CF#COMMENT_ID#"></span>'
+,p_column_type=>'STRING'
+,p_column_alignment=>'CENTER'
+,p_use_as_row_header=>'N'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(38203989442747555)
+,p_db_column_name=>'COMMENT_STATUS'
+,p_display_order=>150
+,p_column_identifier=>'AK'
 ,p_column_label=>'Status'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<span aria-hidden="true" title="#STATUS#" class="fa #STATUS_ICON#"></span>',
-'<span class="u-VisuallyHidden">#STATUS#</span>'))
+'<span title="#COMMENT_STATUS#" aria-hidden="true" class="fa #STATUS_ICON# w100p"></span>',
+'<span class="u-VisuallyHidden">#COMMENT_STATUS#</span>'))
 ,p_column_type=>'STRING'
-,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
-,p_rpt_named_lov=>wwv_flow_imp.id(11795273774701730)
-,p_rpt_show_filter_lov=>'1'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(11414619307329104)
-,p_db_column_name=>'FLAG'
-,p_display_order=>140
-,p_column_identifier=>'T'
-,p_column_label=>'Flag'
-,p_column_html_expression=>'<span aria-label="#FLAG#" title="#FLAG#" class="fa #FLAG_ICON#" id="CF#COMMENT_ID#"></span>'
-,p_column_type=>'STRING'
-,p_display_text_as=>'LOV_ESCAPE_SC'
-,p_column_alignment=>'CENTER'
-,p_rpt_named_lov=>wwv_flow_imp.id(11794321487687925)
-,p_rpt_show_filter_lov=>'1'
-,p_use_as_row_header=>'N'
-);
-wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(36229030214379749)
+ p_id=>wwv_flow_imp.id(38205174222747556)
 ,p_db_column_name=>'STATUS_ICON'
-,p_display_order=>150
-,p_column_identifier=>'P'
+,p_display_order=>160
+,p_column_identifier=>'AO'
 ,p_column_label=>'Status Icon'
 ,p_column_type=>'STRING'
-,p_display_text_as=>'HIDDEN'
+,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(11414732996329105)
+ p_id=>wwv_flow_imp.id(38198306677747550)
 ,p_db_column_name=>'FLAG_ICON'
-,p_display_order=>160
+,p_display_order=>170
 ,p_column_identifier=>'U'
 ,p_column_label=>'Flag Icon'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(11415051185329108)
-,p_db_column_name=>'TITLE_OPEN'
-,p_display_order=>170
-,p_column_identifier=>'W'
-,p_column_label=>'Title Open'
-,p_column_type=>'STRING'
-,p_display_text_as=>'HIDDEN_ESCAPE_SC'
-);
-wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(21076424539846833)
+ p_id=>wwv_flow_imp.id(38203516074747555)
 ,p_db_column_name=>'BTN_DATA_UNREAD'
 ,p_display_order=>180
-,p_column_identifier=>'AB'
+,p_column_identifier=>'AJ'
 ,p_column_label=>'Btn Data Unread'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(11414314704329101)
+ p_id=>wwv_flow_imp.id(38198050009747548)
 ,p_db_column_name=>'COMMENT_BODY'
 ,p_display_order=>190
 ,p_column_identifier=>'S'
@@ -345,24 +288,41 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_text_as=>'HIDDEN'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(11416096664329118)
-,p_db_column_name=>'EDIT_URL'
+ p_id=>wwv_flow_imp.id(38590595398274306)
+,p_db_column_name=>'CTX_SEARCH'
 ,p_display_order=>200
+,p_column_identifier=>'AQ'
+,p_column_label=>'Ctx Search'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(38198763823747550)
+,p_db_column_name=>'EDIT_URL'
+,p_display_order=>210
 ,p_column_identifier=>'Z'
-,p_column_label=>'Edit Url'
+,p_column_label=>'Edit URL Link'
+,p_column_type=>'STRING'
+,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(38204741874747556)
+,p_db_column_name=>'BTN_LABEL'
+,p_display_order=>220
+,p_column_identifier=>'AM'
+,p_column_label=>'Button Label'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
 wwv_flow_imp_page.create_worksheet_rpt(
- p_id=>wwv_flow_imp.id(27416916886555549)
+ p_id=>wwv_flow_imp.id(65614321268303091)
 ,p_application_user=>'APXWS_DEFAULT'
 ,p_report_seq=>10
 ,p_report_type=>'REPORT'
 ,p_report_alias=>'274170'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_view_mode=>'REPORT'
-,p_report_columns=>'POST_TITLE:COMMENT_BY:CREATED_SINCE:FLAG:STATUS:'
+,p_report_columns=>'POST_TITLE:COMMENT_BY:CREATED_SINCE:COMMENT_FLAG:COMMENT_STATUS'
 ,p_sort_column_1=>'CREATED_ON'
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'0'
@@ -377,8 +337,8 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_sort_direction_6=>'ASC'
 );
 wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(52335565859375132)
-,p_plug_name=>'Breadcumb'
+ p_id=>wwv_flow_imp.id(101593570443725326)
+,p_plug_name=>'Breadcrumb'
 ,p_region_template_options=>'#DEFAULT#:t-BreadcrumbRegion--useBreadcrumbTitle'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(8506230469518215)
@@ -390,9 +350,9 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
 wwv_flow_imp_page.create_page_button(
- p_id=>wwv_flow_imp.id(27425950946632839)
+ p_id=>wwv_flow_imp.id(38205813987747561)
 ,p_button_sequence=>10
-,p_button_plug_id=>wwv_flow_imp.id(27412346667552217)
+,p_button_plug_id=>wwv_flow_imp.id(65609751049299759)
 ,p_button_name=>'RESET_REPORT'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#'
@@ -403,18 +363,18 @@ wwv_flow_imp_page.create_page_button(
 ,p_icon_css_classes=>'fa-undo-alt'
 );
 wwv_flow_imp_page.create_page_da_event(
- p_id=>wwv_flow_imp.id(37644907003287115)
+ p_id=>wwv_flow_imp.id(38206871236747562)
 ,p_name=>'Process Comments Report'
 ,p_event_sequence=>10
 ,p_triggering_element_type=>'REGION'
-,p_triggering_region_id=>wwv_flow_imp.id(27412346667552217)
+,p_triggering_region_id=>wwv_flow_imp.id(65609751049299759)
 ,p_bind_type=>'bind'
 ,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'apexafterrefresh'
 );
 wwv_flow_imp_page.create_page_da_action(
- p_id=>wwv_flow_imp.id(37645018465287116)
-,p_event_id=>wwv_flow_imp.id(37644907003287115)
+ p_id=>wwv_flow_imp.id(38207370031747563)
+,p_event_id=>wwv_flow_imp.id(38206871236747562)
 ,p_event_result=>'TRUE'
 ,p_action_sequence=>10
 ,p_execute_on_page_init=>'Y'
@@ -424,24 +384,24 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_da_action_comment=>'Attach one time click event listener to report links having data attribute. When report link is clicked change link icon class.'
 );
 wwv_flow_imp_page.create_page_da_event(
- p_id=>wwv_flow_imp.id(43467068897898202)
+ p_id=>wwv_flow_imp.id(38207765741747563)
 ,p_name=>'Process Comment'
 ,p_event_sequence=>20
 ,p_triggering_element_type=>'REGION'
-,p_triggering_region_id=>wwv_flow_imp.id(27412346667552217)
+,p_triggering_region_id=>wwv_flow_imp.id(65609751049299759)
 ,p_bind_type=>'bind'
 ,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'apexafterclosedialog'
 );
 wwv_flow_imp_page.create_page_da_action(
- p_id=>wwv_flow_imp.id(43467195075898203)
-,p_event_id=>wwv_flow_imp.id(43467068897898202)
+ p_id=>wwv_flow_imp.id(38208237872747563)
+,p_event_id=>wwv_flow_imp.id(38207765741747563)
 ,p_event_result=>'TRUE'
 ,p_action_sequence=>10
 ,p_execute_on_page_init=>'N'
 ,p_action=>'NATIVE_REFRESH'
 ,p_affected_elements_type=>'REGION'
-,p_affected_region_id=>wwv_flow_imp.id(27412346667552217)
+,p_affected_region_id=>wwv_flow_imp.id(65609751049299759)
 );
 wwv_flow_imp.component_end;
 end;

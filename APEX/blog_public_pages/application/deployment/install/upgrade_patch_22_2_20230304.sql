@@ -1,7 +1,7 @@
 prompt --application/deployment/install/upgrade_patch_22_2_20230304
 begin
 --   Manifest
---     INSTALL: UPGRADE-patch_22.2.20230304
+--     INSTALL: UPGRADE-Patch 22.2.20230304
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
@@ -14,7 +14,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(31992677792885680)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
-,p_name=>'patch_22.2.20230304'
+,p_name=>'Patch 22.2.20230304'
 ,p_sequence=>80
 ,p_script_type=>'UPGRADE'
 ,p_condition_type=>'EXISTS'
