@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -24,11 +24,9 @@ wwv_flow_imp_shared.create_list(
 '  ,null           as image',
 '  ,null           as image_attribute',
 '  ,null           as image_alt_attribute',
-'  ,case v1.show_post_count',
-'    when ''INCLUDE'' then v1.posts_count',
-'  end             as attribute1',
+'  ,v1.list_badge  as attribute1',
 '  ,v1.tag_bucket  as attribute2',
-'from #OWNER#.blog_v_tags v1',
+'from blog_v_tags v1',
 'where 1 = 1',
 'order by v1.tag'))
 ,p_list_status=>'PUBLIC'

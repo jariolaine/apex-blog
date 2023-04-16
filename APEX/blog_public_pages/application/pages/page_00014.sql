@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -21,10 +21,11 @@ wwv_flow_imp_page.create_page(
 ,p_group_id=>wwv_flow_imp.id(8697986188142973)
 ,p_html_page_header=>'"BLOG_CANONICAL_LINK_CATEGORY"'
 ,p_page_template_options=>'#DEFAULT#'
+,p_required_patch=>wwv_flow_imp.id(8635355820099640)
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230228104514'
+,p_last_upd_yyyymmddhh24miss=>'20230410173114'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(40117793173805532)
@@ -41,15 +42,16 @@ wwv_flow_imp_page.create_report_region(
 '   v1.post_title    as search_title',
 '  ,v1.post_url      as search_link',
 '  ,v1.post_desc     as search_desc',
-'  ,v1.txt_posted_by as label_01',
+' -- see label columns HTML expression',
+'  ,''Y''              as label_01',
 '  ,v1.blogger_name  as value_01',
-'  ,v1.txt_posted_on as label_02',
+'  ,''Y''              as label_02',
 '  ,v1.published_on  as value_02',
-'  ,v1.txt_tags      as label_03',
+'  ,''Y''              as label_03',
 '  ,v1.tags_html1    as value_03',
 '  ,null             as label_04',
 '  ,null             as value_04',
-'from #OWNER#.blog_v_posts v1',
+'from blog_v_posts v1',
 'where 1 = 1',
 '  and v1.category_id = :P14_CATEGORY_ID',
 'order by v1.published_on desc'))
@@ -112,6 +114,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>4
 ,p_column_heading=>'Label 01'
 ,p_use_as_row_header=>'N'
+,p_column_html_expression=>'&APP_TEXT$BLOG_TXT_POSTED_BY.'
 ,p_heading_alignment=>'LEFT'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -134,6 +137,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>6
 ,p_column_heading=>'Label 02'
 ,p_use_as_row_header=>'N'
+,p_column_html_expression=>'&APP_TEXT$BLOG_TXT_POSTED_ON.'
 ,p_heading_alignment=>'LEFT'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -156,6 +160,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>8
 ,p_column_heading=>'Label 03'
 ,p_use_as_row_header=>'N'
+,p_column_html_expression=>'&APP_TEXT$BLOG_TXT_TAGS.'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -165,7 +170,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'VALUE_03'
 ,p_column_display_sequence=>9
 ,p_column_heading=>'Value 03'
-,p_use_as_row_header=>'N'
 ,p_display_as=>'RICH_TEXT'
 ,p_attribute_01=>'HTML'
 ,p_derived_column=>'N'

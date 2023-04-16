@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -37,10 +37,10 @@ wwv_flow_imp_shared.create_list_item(
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(25756063318250538)
 ,p_list_item_display_sequence=>40
-,p_list_item_link_text=>'Modal Pages'
-,p_list_item_link_target=>'f?p=&APP_ID.:25:&SESSION.::&DEBUG.::::'
+,p_list_item_link_text=>'Popup Pages'
+,p_list_item_link_target=>'f?p=&APP_ID.:80:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-list'
-,p_list_text_01=>'Create and maintain modal pages. A link to the page will appear in the blog footer. For example, create a page for a disclaimer or cookie policy.'
+,p_list_text_01=>'Create and maintain popup pages. A link to the page will appear in the blog footer. For example, create a page for a disclaimer or cookie policy.'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp.component_end;

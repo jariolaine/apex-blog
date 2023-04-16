@@ -1,8 +1,8 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS_LAST20
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "PUBLISHED_ON", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE", "POST_URL") AS
-  select
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "PUBLISHED_ON", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE", "POST_URL", "LIST_ATTR") AS
+select
    rownum             as display_seq
   ,q1.post_id         as post_id
   ,q1.published_on    as published_on
@@ -11,6 +11,10 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "P
   ,q1.post_desc       as post_desc
   ,q1.category_title  as category_title
   ,q1.post_url        as post_url
+  ,apex_string.format(
+    p_message => 'data-item-id="%s"'
+    ,p0 => q1.post_id
+  )                   as list_attr
 from (
   select --+ first_rows(20)
      v1.post_id

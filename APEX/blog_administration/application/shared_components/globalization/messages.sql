@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -18,41 +18,11 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(31239116333152817)
-,p_name=>'BLOG_BTN_TITLE_COPY_TO_CLIPBOARD'
-,p_message_text=>'Copy Full URL to Clipboard'
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(31260830488872355)
-,p_name=>'BLOG_BTN_TITLE_EDIT'
-,p_message_text=>'Edit'
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(65330915785227244)
-,p_name=>'BLOG_BTN_TITLE_HELP'
-,p_message_text=>'Help'
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(38326544290801225)
-,p_name=>'BLOG_BTN_TITLE_OPEN_COMMENT'
-,p_message_text=>'Open Comment'
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(13634454910152809)
-,p_name=>'BLOG_BTN_TITLE_TAGS'
-,p_message_text=>'Edit Tags'
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(26356711295747260)
-,p_name=>'BLOG_BTN_TITLE_VIEW_POSTS'
-,p_message_text=>'View Posts'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(10038616769932485)
@@ -88,12 +58,6 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(19324753900501668)
 ,p_name=>'BLOG_CONFIRM_LINK_GROUP_DELETE'
 ,p_message_text=>'You have requested the permanent deletion of links label. Following link(s) will be also deleted.'
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(16723151198968143)
-,p_name=>'BLOG_EDITOR_OPEN_NEW_TAB'
-,p_message_text=>'Open in a new tab'
-,p_is_js_message=>true
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(30112367443952323)
@@ -181,6 +145,11 @@ wwv_flow_imp_shared.create_message(
 ,p_message_text=>'RSS feed link'
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(38748347337001747)
+,p_name=>'BLOG_FEATURE_SEARCH'
+,p_message_text=>'Search'
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(25687100030320389)
 ,p_name=>'BLOG_FEATURE_SEARCH_FILES'
 ,p_message_text=>'Search from files'
@@ -233,87 +202,92 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21952495135451489)
 ,p_name=>'BLOG_HELP_FEATURE_ABOUT'
-,p_message_text=>'Show "About" tab in public pages.'
+,p_message_text=>'Enable or disable "About" tab.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21480702253327342)
 ,p_name=>'BLOG_HELP_FEATURE_ALLOW_COMMENTS'
-,p_message_text=>'Is public commenting allowed on blog posts.'
+,p_message_text=>'Enable or disable commenting on blog posts.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21968614313753451)
 ,p_name=>'BLOG_HELP_FEATURE_ARCHIVE'
-,p_message_text=>'Link list to the archives.'
+,p_message_text=>'Enable or disable archives list.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21968854038758598)
 ,p_name=>'BLOG_HELP_FEATURE_ARCHIVE_POST_COUNT'
-,p_message_text=>'Show post count in the archive list.'
+,p_message_text=>'Enable or disable post count in the archive list.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21968269442744987)
 ,p_name=>'BLOG_HELP_FEATURE_CATEGORY'
-,p_message_text=>'Show link list to the categories.'
+,p_message_text=>'Enable or disable categories link list.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21968490295748783)
 ,p_name=>'BLOG_HELP_FEATURE_CATEGORY_POST_COUNT'
-,p_message_text=>'Show post count in the category list.'
+,p_message_text=>'Enable or disable post count in the category list.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21499163815310526)
 ,p_name=>'BLOG_HELP_FEATURE_FILES'
-,p_message_text=>'Show "Files" tab in public pages.'
+,p_message_text=>'Enable or disable the "Files" tab. If it is disabled, file search is also disabled.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21481638153374207)
 ,p_name=>'BLOG_HELP_FEATURE_LATEST_POSTS'
-,p_message_text=>'Show link list to the latest blog posts.'
+,p_message_text=>'Enable or disable the latest blog posts list.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21498914254307400)
 ,p_name=>'BLOG_HELP_FEATURE_LINKS'
-,p_message_text=>'Show "Links" tab in public pages.'
+,p_message_text=>'Enable or disable the "Links" tab. If it is disabled, link search is also disabled.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21481968660385994)
 ,p_name=>'BLOG_HELP_FEATURE_MODAL_PAGES'
-,p_message_text=>'Show modal pages links in blog footer.'
+,p_message_text=>'Enable or disable popup pages links in blog footer.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21480924593335899)
 ,p_name=>'BLOG_HELP_FEATURE_MODERATE_COMMENTS'
-,p_message_text=>'Comments must be approved manually before they are be published.'
+,p_message_text=>'Enable or disable comments manual approval before they are published.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21481423437369380)
 ,p_name=>'BLOG_HELP_FEATURE_POST_PAGINATION'
-,p_message_text=>'Show links to previous and / or newer posts.'
+,p_message_text=>'Enable or disable links to previous and / or newer posts.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21969179471767472)
 ,p_name=>'BLOG_HELP_FEATURE_RSS'
-,p_message_text=>'Link to the RSS feed.'
+,p_message_text=>'Enable or disable link to the RSS feed.'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(38751545807213506)
+,p_name=>'BLOG_HELP_FEATURE_SEARCH'
+,p_message_text=>'Enable or disable "Search" tab.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21500166358341864)
 ,p_name=>'BLOG_HELP_FEATURE_SEARCH_FILES'
-,p_message_text=>'Allow search and show search field in "Files" page.'
+,p_message_text=>'Enable or disable file search. Search is available if the "Files" tab is also enabled.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21499316517316056)
 ,p_name=>'BLOG_HELP_FEATURE_SEARCH_LINKS'
-,p_message_text=>'Allow search and show search field in "Links" page.'
+,p_message_text=>'Enable or disable link search. Search is available if the "Link" tab is also enabled.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21968065227738854)
 ,p_name=>'BLOG_HELP_FEATURE_SEARCH_POSTS'
-,p_message_text=>'Allow search and show search field in right column.'
+,p_message_text=>'Enable or disable post search.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21482145994393818)
 ,p_name=>'BLOG_HELP_FEATURE_SITEMAP'
-,p_message_text=>'Generate sitemap index and sitemaps for public pages. See sitemap URL from this application home page.'
+,p_message_text=>'Enable or disable generating sitemap index and sitemaps for public pages. See sitemap URL from this application home page.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21481269068360471)
@@ -323,12 +297,12 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(13263270037759990)
 ,p_name=>'BLOG_HELP_FEATURE_TAG_CLOUD'
-,p_message_text=>'Show tag cloud.'
+,p_message_text=>'Enable or disable tag cloud.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(13259930374705339)
 ,p_name=>'BLOG_HELP_FEATURE_TAG_CLOUD_POST_COUNT'
-,p_message_text=>'Show post count in the tag cloud'
+,p_message_text=>'Enable or disable post count in the tag cloud'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(19897213779441945)
@@ -438,6 +412,7 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(11806971482595261)
 ,p_name=>'BLOG_LOV_COMMENT_FLAG_READ'
 ,p_message_text=>'Read'
+,p_is_js_message=>true
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(11806625459595261)
@@ -450,44 +425,14 @@ wwv_flow_imp_shared.create_message(
 ,p_message_text=>'Unread'
 );
 wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(11807543691595262)
-,p_name=>'BLOG_LOV_COMMENT_STATUS_DISABLED'
-,p_message_text=>'Disabled'
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(11807206377595261)
-,p_name=>'BLOG_LOV_COMMENT_STATUS_ENABLED'
-,p_message_text=>'Enabled'
-);
-wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(11807801060595262)
 ,p_name=>'BLOG_LOV_COMMENT_STATUS_MODERATE'
 ,p_message_text=>'Not Approved'
 );
 wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(11808452983595262)
-,p_name=>'BLOG_LOV_IS_ACTIVE_DISABLED'
-,p_message_text=>'Disabled'
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(11808101526595262)
-,p_name=>'BLOG_LOV_IS_ACTIVE_ENABLED'
-,p_message_text=>'Enabled'
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(11809055803595263)
-,p_name=>'BLOG_LOV_LINK_STATUS_DISABLED'
-,p_message_text=>'Disabled'
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(11808799753595263)
-,p_name=>'BLOG_LOV_LINK_STATUS_ENABLED'
-,p_message_text=>'Enabled'
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(11809382608595264)
-,p_name=>'BLOG_LOV_LINK_STATUS_LABEL_DISABLED'
-,p_message_text=>'Label is Disabled'
+ p_id=>wwv_flow_imp.id(37793480369575211)
+,p_name=>'BLOG_LOV_LINK_STATUS_GROUP_DISABLED'
+,p_message_text=>'Group is Disabled'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(11810829232595266)
@@ -530,9 +475,38 @@ wwv_flow_imp_shared.create_message(
 ,p_message_text=>'Changes to some settings only take effect for new sessions in the public application.'
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(37487208542792958)
+,p_name=>'BLOG_MSG_CATEGORIES_RESEQUENCED'
+,p_message_text=>'Categories resequenced.'
+,p_is_js_message=>true
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(38635396322275585)
+,p_name=>'BLOG_MSG_ENTER_SEARCH_TERM'
+,p_message_text=>'Please enter a search term in the search box.'
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(25114336930810124)
 ,p_name=>'BLOG_MSG_NO_DATA_FOUND'
-,p_message_text=>'No Records Found'
+,p_message_text=>'No records found.'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(37488439234807046)
+,p_name=>'BLOG_MSG_TAGS_RESEQUENCED'
+,p_message_text=>'Tags resequenced.'
+,p_is_js_message=>true
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(37482135614712288)
+,p_name=>'BLOG_MSG_UNUSED_CATEGORIES_DELETED'
+,p_message_text=>'Unused categories deleted.'
+,p_is_js_message=>true
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(37481975424710084)
+,p_name=>'BLOG_MSG_UNUSED_TAGS_DELETED'
+,p_message_text=>'Unused tags deleted.'
+,p_is_js_message=>true
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(7002883853109006)
@@ -543,6 +517,11 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(31976065517652232)
 ,p_name=>'BLOG_POSTS_UK1'
 ,p_message_text=>'Post with same published on date and time already exists.'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(38126994921169888)
+,p_name=>'BLOG_POST_TAGS_UK1'
+,p_message_text=>'Post have duplicate tags.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(42684822108701097)
@@ -685,9 +664,55 @@ wwv_flow_imp_shared.create_message(
 ,p_message_text=>'Tag with same name already exists.'
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(31239116333152817)
+,p_name=>'BLOG_TXT_COPY_TO_CLIPBOARD'
+,p_message_text=>'Copy Full URL to Clipboard'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(37792602476566104)
+,p_name=>'BLOG_TXT_DISABLED'
+,p_message_text=>'Disabled'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(31260830488872355)
+,p_name=>'BLOG_TXT_EDIT'
+,p_message_text=>'Edit'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(37792871553567374)
+,p_name=>'BLOG_TXT_ENABLED'
+,p_message_text=>'Enabled'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(65330915785227244)
+,p_name=>'BLOG_TXT_HELP'
+,p_message_text=>'Help'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(38326544290801225)
+,p_name=>'BLOG_TXT_OPEN_COMMENT'
+,p_message_text=>'Open Comment'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(16723151198968143)
+,p_name=>'BLOG_TXT_OPEN_NEW_TAB'
+,p_message_text=>'Open in a new tab'
+,p_is_js_message=>true
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(13411744988522858)
 ,p_name=>'BLOG_TXT_SEQUENCE'
-,p_message_text=>'Sequence %0'
+,p_message_text=>'Sequence'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(37919359181996088)
+,p_name=>'BLOG_TXT_STATUS'
+,p_message_text=>'Status'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(26356711295747260)
+,p_name=>'BLOG_TXT_VIEW_POSTS'
+,p_message_text=>'View Posts'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(27348583930349647)

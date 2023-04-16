@@ -16,25 +16,28 @@ begin
 
   for c1 in(
     select t1.id
-      ,published_on + numtodsinterval( rownum / 1000000 ,'second' ) as new_published_on
+      ,t1.published_on + numtodsinterval(
+        ( row_number() over( partition by t1.published_on order by t1.id ) - 1 ) / 1000000
+        ,'second'
+      ) as new_published_on
     from blog_posts t1
     where 1 = 1
     and exists(
       select 1
       from blog_posts x1
       where 1 = 1
-      and x1.published_on = t1.published_on
+        and x1.published_on = t1.published_on
       group by x1.published_on
       having count(1) > 1
     )
-    order by t1.id desc
   ) loop
 
-    update blog_posts
+    update blog_posts t1
       set published_on = c1.new_published_on
-      where 1 = 1
-        and id = c1.id
-      ;
+    where 1 = 1
+      and t1.id = c1.id
+      and t1.published_on != c1.new_published_on
+    ;
 
   end loop;
 

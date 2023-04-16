@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -18,7 +18,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -30,9 +30,14 @@ wwv_flow_imp_shared.create_message(
 ,p_message_text=>'Ooops... We are sorry! Unexpected internal error have occurred. Please try again later.'
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(38726719560531351)
+,p_name=>'BLOG_MSG_ENTER_SEARCH_TERM'
+,p_message_text=>'Please enter a search term in the search box.'
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(41895368735673735)
 ,p_name=>'BLOG_MSG_LAST_UPDATED'
-,p_message_text=>'Document was last updated on %0.'
+,p_message_text=>'Document was last updated on'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(31915575291785585)

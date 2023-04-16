@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'12'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230225092514'
+,p_last_upd_yyyymmddhh24miss=>'20230406091630'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8575301514518303)
@@ -72,8 +72,7 @@ wwv_flow_imp_page.create_page_plug(
 'where 1 = 1',
 '  and application_id = :APP_ID',
 '  and build_option_status = ''Include''',
-'  and build_option_name != ''BLOG_AUTHENTICATION_APEX''',
-'  and build_option_name like ''%Authentication''',
+'  and lower( build_option_name ) like ''% authentication''',
 ' having count(1) > 1'))
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'HTML'
@@ -182,33 +181,121 @@ wwv_flow_imp_page.create_page_item(
 '</p>'))
 ,p_attribute_01=>'1'
 );
+wwv_flow_imp_page.create_page_computation(
+ p_id=>wwv_flow_imp.id(38477391642283544)
+,p_computation_sequence=>10
+,p_computation_item=>'P9999_REMEMBER'
+,p_computation_point=>'AFTER_HEADER'
+,p_computation_type=>'STATIC_ASSIGNMENT'
+,p_computation=>'Y'
+,p_compute_when=>'P9999_USERNAME'
+,p_compute_when_type=>'ITEM_IS_NOT_NULL'
+);
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(8578843525518309)
 ,p_process_sequence=>10
 ,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_PLSQL'
+,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Set Username Cookie'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex_authentication.send_login_username_cookie (',
-'    p_username => lower(:P9999_USERNAME),',
-'    p_consent  => :P9999_REMEMBER = ''Y'' );'))
-,p_process_clob_language=>'PLSQL'
+,p_attribute_01=>'PLSQL_PACKAGE'
+,p_attribute_03=>'APEX_AUTHENTICATION'
+,p_attribute_04=>'SEND_LOGIN_USERNAME_COOKIE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_imp.id(35674953070739317)
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(38477482362283545)
+,p_page_process_id=>wwv_flow_imp.id(8578843525518309)
+,p_page_id=>9999
+,p_name=>'p_username'
+,p_direction=>'IN'
+,p_data_type=>'VARCHAR2'
+,p_has_default=>false
+,p_display_sequence=>10
+,p_value_type=>'ITEM'
+,p_value=>'P9999_USERNAME'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(38477521411283546)
+,p_page_process_id=>wwv_flow_imp.id(8578843525518309)
+,p_page_id=>9999
+,p_name=>'p_cookie_name'
+,p_direction=>'IN'
+,p_data_type=>'VARCHAR2'
+,p_has_default=>true
+,p_display_sequence=>20
+,p_value_type=>'API_DEFAULT'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(38477624005283547)
+,p_page_process_id=>wwv_flow_imp.id(8578843525518309)
+,p_page_id=>9999
+,p_name=>'p_consent'
+,p_direction=>'IN'
+,p_data_type=>'BOOLEAN'
+,p_has_default=>true
+,p_display_sequence=>30
+,p_value_type=>'EXPRESSION'
+,p_value_language=>'PLSQL'
+,p_value=>':P9999_REMEMBER = ''Y'''
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(8578406811518309)
 ,p_process_sequence=>20
 ,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_PLSQL'
+,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Login'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex_authentication.login(',
-'    p_username => :P9999_USERNAME,',
-'    p_password => :P9999_PASSWORD );'))
-,p_process_clob_language=>'PLSQL'
+,p_attribute_01=>'PLSQL_PACKAGE'
+,p_attribute_03=>'APEX_AUTHENTICATION'
+,p_attribute_04=>'LOGIN'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_imp.id(35674953070739317)
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(38477786995283548)
+,p_page_process_id=>wwv_flow_imp.id(8578406811518309)
+,p_page_id=>9999
+,p_name=>'p_username'
+,p_direction=>'IN'
+,p_data_type=>'VARCHAR2'
+,p_has_default=>false
+,p_display_sequence=>10
+,p_value_type=>'ITEM'
+,p_value=>'P9999_USERNAME'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(38477841722283549)
+,p_page_process_id=>wwv_flow_imp.id(8578406811518309)
+,p_page_id=>9999
+,p_name=>'p_password'
+,p_direction=>'IN'
+,p_data_type=>'VARCHAR2'
+,p_has_default=>false
+,p_display_sequence=>20
+,p_value_type=>'ITEM'
+,p_value=>'P9999_PASSWORD'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(38477926978283550)
+,p_page_process_id=>wwv_flow_imp.id(8578406811518309)
+,p_page_id=>9999
+,p_name=>'p_uppercase_username'
+,p_direction=>'IN'
+,p_data_type=>'BOOLEAN'
+,p_has_default=>true
+,p_display_sequence=>30
+,p_value_type=>'API_DEFAULT'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(38590005503274301)
+,p_page_process_id=>wwv_flow_imp.id(8578406811518309)
+,p_page_id=>9999
+,p_name=>'p_set_persistent_auth'
+,p_direction=>'IN'
+,p_data_type=>'BOOLEAN'
+,p_has_default=>true
+,p_display_sequence=>40
+,p_value_type=>'API_DEFAULT'
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(8579610184518310)
@@ -224,13 +311,34 @@ wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(8579277880518310)
 ,p_process_sequence=>10
 ,p_process_point=>'BEFORE_HEADER'
-,p_process_type=>'NATIVE_PLSQL'
+,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Get Username Cookie'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-':P9999_USERNAME := apex_authentication.get_login_username_cookie;',
-':P9999_REMEMBER := case when :P9999_USERNAME is not null then ''Y'' end;'))
-,p_process_clob_language=>'PLSQL'
+,p_attribute_01=>'PLSQL_PACKAGE'
+,p_attribute_03=>'APEX_AUTHENTICATION'
+,p_attribute_04=>'GET_LOGIN_USERNAME_COOKIE'
 ,p_required_patch=>wwv_flow_imp.id(35674953070739317)
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(38477038839283541)
+,p_page_process_id=>wwv_flow_imp.id(8579277880518310)
+,p_page_id=>9999
+,p_direction=>'OUT'
+,p_data_type=>'VARCHAR2'
+,p_ignore_output=>false
+,p_display_sequence=>10
+,p_value_type=>'ITEM'
+,p_value=>'P9999_USERNAME'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(38477115365283542)
+,p_page_process_id=>wwv_flow_imp.id(8579277880518310)
+,p_page_id=>9999
+,p_name=>'p_cookie_name'
+,p_direction=>'IN'
+,p_data_type=>'VARCHAR2'
+,p_has_default=>true
+,p_display_sequence=>20
+,p_value_type=>'API_DEFAULT'
 );
 wwv_flow_imp.component_end;
 end;

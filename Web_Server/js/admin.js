@@ -8,11 +8,13 @@ var blog = blog || {};
   // on page ready
   // hide automatically success message
   $(function() {
+
     apex.theme42.util.configAPEXMsgs({
       autoDismiss: true
       // duration is optional (Default is 3000 milliseconds)
       ,duration: 5000
     });
+
   });
 
   /**
@@ -20,12 +22,18 @@ var blog = blog || {};
   **/
   blog.admin = {
     /**
-    * @function showMessage
+    * @function showSuccessMessage
     * @summary Show APEX success message
     * @desc
     **/
-    showMessage: function( message ){
-      message !== undefined ? apex.message.showPageSuccess( message.text ) : null;
+    showSuccessMessage: function( message ){
+      if( typeof message === "object" ){
+        if( "text" in message ){
+          apex.message.showPageSuccess( message.text );
+        } else if ( "messageKey" in message ){
+          apex.message.showPageSuccess( apex.lang.getMessage( message.messageKey ) );
+        }
+      }
     },
     /**
     * @function filesIrAfterRefresh
@@ -43,15 +51,23 @@ var blog = blog || {};
           "t-Button"
           ,"t-Button--noLabel"
           ,"t-Button--icon"
-          ,"t-Button--link"
           ,"t-Button--small"
-          ,"t-Button--stretch"
-          ,"padding-none"
+          ,"w100p"
+          ,"mxw100"
         ]
       }, options );
 
-      // Remove alt and title attribute from download link. APEX bug??
-      options.region$.find( options.downloadLink ).removeAttr( "alt title" ).addClass( options.downloadLinkClass ).end()
+      // Copy from child data attribute for link title and aria-label
+      options.region$.find( options.downloadLink ).each(function(){
+
+        var this$ = $(this)
+          , fileInfo = this$.children( "span" ).data( "file-info" )
+        ;
+
+        this$.attr({ "title" : fileInfo, "aria-label" : fileInfo });
+
+      // Remove alt attribute from download link. APEX bug??
+      }).removeAttr( "alt" ).addClass( options.downloadLinkClass ).end()
       // Find column that have copy URL button and attach click event
       .find( options.copyLink ).click( function(){
         navigator.clipboard.writeText( $( this ).data( options.copySource ) );
@@ -67,16 +83,21 @@ var blog = blog || {};
 
       // set defaults
       options = $.extend({
-        openLink: "a[data-unread=true]"
+        openLink: "a[data-unread=\"true\"]"
         ,newClass: "fa-envelope-open-o"
         ,oldClass: ["fa-envelope-o", "fa-envelope-arrow-down"]
+        ,messageKey: "BLOG_LOV_COMMENT_FLAG_READ"
       }, options );
+
+      // Get title and aria label
+      var newLabel = apex.lang.getMessage( options.messageKey );
 
       // change link column css class
       options.region$.find( options.openLink ).one( "click", function(){
         $( $x( $( this ).data( "id" ) ) )
           .removeClass( options.oldClass )
-          .addClass( options.newClass );
+          .addClass( options.newClass )
+          .attr({ "aria-label": newLabel, "title": newLabel })
       });
 
     },
@@ -202,14 +223,6 @@ var blog = blog || {};
 
         return options;
 
-      },
-      /**
-      * @function setEditMode
-      * @summary change IG to edit mode
-      * @desc
-      **/
-      setEditMode: function( regionId ){
-        region( regionId ).call( "getActions" ).set( "edit", true );
       }
 
     },
@@ -224,8 +237,7 @@ var blog = blog || {};
       **/
       initItem: function( options ){
 
-        var messageKey    = "BLOG_EDITOR_OPEN_NEW_TAB"
-          , defaultLabel  = "Open in a new tab"
+        var messageKey    = "BLOG_TXT_OPEN_NEW_TAB"
           , linkTarget    = "_blank"
         ;
 
@@ -236,7 +248,7 @@ var blog = blog || {};
               decorators: {
                 openInNewTab: {
                   mode: "manual"
-                  ,label: apex.lang.hasMessage( messageKey ) ? apex.lang.getMessage( messageKey ) : defaultLabel
+                  ,label: apex.lang.getMessage( messageKey )
                   ,attributes: {
                     target: linkTarget
                   }

@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -35,18 +35,15 @@ wwv_flow_imp.create_flow(
 ,p_flow_language_derived_from=>'BROWSER'
 ,p_date_format=>'&G_APP_DATE_FORMAT.'
 ,p_timestamp_format=>'&G_APP_DATE_FORMAT.'
+,p_timestamp_tz_format=>'&G_APP_DATE_FORMAT.'
 ,p_direction_right_to_left=>'N'
 ,p_flow_image_prefix => nvl(wwv_flow_application_install.get_image_prefix,'')
 ,p_documentation_banner=>'https://github.com/jariolaine/apex-blog'
 ,p_authentication=>'PLUGIN'
 ,p_authentication_id=>wwv_flow_imp.id(25278990329788475)
 ,p_application_tab_set=>1
-,p_logo_type=>'C'
-,p_logo=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<span class="z-app-logo">',
-'  <span class="z-app-name">&G_APP_NAME.</span>',
-'  <span class="z-app-desc">&G_APP_DESC.</span>',
-'</span>'))
+,p_logo_type=>'T'
+,p_logo_text=>'&G_APP_DESC.'
 ,p_public_user=>'APEX_PUBLIC_USER'
 ,p_proxy_server=>nvl(wwv_flow_application_install.get_proxy,'')
 ,p_no_proxy_domains=>nvl(wwv_flow_application_install.get_no_proxy_domains,'')
@@ -60,12 +57,12 @@ wwv_flow_imp.create_flow(
 ,p_rejoin_existing_sessions=>'P'
 ,p_csv_encoding=>'Y'
 ,p_auto_time_zone=>'N'
-,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
+,p_error_handling_function=>'blog_util.apex_error_handler'
 ,p_tokenize_row_search=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230305071817'
+,p_last_upd_yyyymmddhh24miss=>'20230416045553'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>548
+,p_files_version=>630
 ,p_print_server_type=>'INSTANCE'
 ,p_is_pwa=>'N'
 ,p_copyright_banner=>wwv_flow_string.join(wwv_flow_t_varchar2(

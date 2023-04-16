@@ -1,17 +1,25 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_CATEGORIES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT", "CHANGED_ON", "CATEGORY_URL", "SHOW_POST_COUNT") AS
-  select
+CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT", "CHANGED_ON", "CATEGORY_URL", "SHOW_POST_COUNT", "LIST_BADGE", "LIST_ATTR") AS
+select
    v1.category_id       as category_id
   ,v1.category_title    as category_title
   ,v1.category_seq      as display_seq
-  ,count( v1.post_id )  as posts_count
+  ,count(1)             as posts_count
+-- if category is changed, trigger tickles text index and post changes
   ,max( v1.changed_on ) as changed_on
   ,blog_url.get_category(
     p_category_id => v1.category_id
   )                     as category_url
   ,feat.show_post_count as show_post_count
+  ,case feat.show_post_count
+    when 'INCLUDE' then count(1)
+  end                   as list_badge
+  ,apex_string.format(
+    p_message => 'data-item-id="%s"'
+    ,p0 => v1.category_id
+  )                     as list_attr
 from blog_v_posts v1
 cross join(
   select

@@ -2,7 +2,7 @@
 --  DDL for View BLOG_V_ALL_DYNAMIC_CONTENT
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "CONTENT_TYPE", "DISPLAY_SEQ", "SHOW_CHANGED_ON", "CONTENT_DESC", "CONTENT_HTML") AS
-  select
+select
    t1.id                as id
   ,t1.row_version       as row_version
   ,t1.created_on        as created_on

@@ -1,15 +1,21 @@
 --------------------------------------------------------
---  Create text index preferences
+--  Create text index preferences for index BLOG_POSTS_CTX
 --------------------------------------------------------
 begin
 
   ctx_ddl.create_preference(
-     preference_name  => 'BLOG_POST_UDS_DS'
+     preference_name  => 'BLOG_POSTS_UDS'
     ,object_name      => 'USER_DATASTORE'
   );
 
   ctx_ddl.set_attribute(
-    preference_name   => 'BLOG_POST_UDS_DS'
+    preference_name   => 'BLOG_POSTS_UDS'
+    ,attribute_name   => 'OUTPUT_TYPE'
+    ,attribute_value  => 'CLOB'
+  );
+
+  ctx_ddl.set_attribute(
+    preference_name   => 'BLOG_POSTS_UDS'
     ,attribute_name   => 'PROCEDURE'
     ,attribute_value  =>
       apex_string.format(
@@ -18,44 +24,15 @@ begin
       )
   );
 
-  ctx_ddl.set_attribute(
-    preference_name   => 'BLOG_POST_UDS_DS'
-    ,attribute_name   => 'OUTPUT_TYPE'
-    ,attribute_value  => 'CLOB'
-  );
-
-  ctx_ddl.create_preference(
-    preference_name   => 'BLOG_POST_UDS_LX'
-    ,object_name      => 'BASIC_LEXER'
-  );
-
-  ctx_ddl.set_attribute(
-    preference_name   => 'BLOG_POST_UDS_LX'
-    ,attribute_name   => 'MIXED_CASE'
-    ,attribute_value  => 'NO'
-  );
-
-  ctx_ddl.set_attribute(
-    preference_name   => 'BLOG_POST_UDS_LX'
-    ,attribute_name   => 'BASE_LETTER'
-    ,attribute_value  => 'YES'
-  );
-
-  ctx_ddl.set_attribute(
-    preference_name   => 'BLOG_POST_UDS_LX'
-    ,attribute_name   => 'BASE_LETTER_TYPE'
-    ,attribute_value  => 'GENERIC'
-  );
-
 end;
 /
 --------------------------------------------------------
---  Create text index
+--  Create text index BLOG_POSTS_CTX
 --------------------------------------------------------
-create index blog_posts_ctx on blog_posts( post_txt_search )
+create index blog_posts_ctx on blog_posts( ctx_search )
 indextype is ctxsys.context parameters(
-  'datastore      blog_post_uds_ds
-   lexer          blog_post_uds_lx
+  'datastore      blog_posts_uds
+   lexer          ctxsys.default_lexer
    section group  ctxsys.auto_section_group
    stoplist       ctxsys.empty_stoplist
    filter         ctxsys.null_filter

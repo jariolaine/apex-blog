@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230116070723'
+,p_last_upd_yyyymmddhh24miss=>'20230409190059'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(65300325259080906)
@@ -56,17 +56,17 @@ wwv_flow_imp_page.create_report_region(
 '    ,p0 => v1.int_min',
 '    ,p1 => v1.int_max',
 '  )                   as help',
-'from #OWNER#.blog_v_all_settings v1',
+'from blog_v_settings v1',
 'where 1 = 1',
 '  and :REQUEST = ''SETTINGS''',
 '  and v1.id = :P20100_ID',
 'union all',
 'select',
-'  v1.feature_name     as label',
+'  v1.feature_desc     as label',
 '  ,apex_lang.message(',
 '    p_name => v1.help_message',
 '  )                   as help',
-'from #OWNER#.blog_v_all_features v1',
+'from blog_v_features v1',
 'where 1 = 1',
 '  and :REQUEST = ''FEATURES''',
 '  and v1.id = :P20100_ID'))
@@ -86,7 +86,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'LABEL'
 ,p_column_display_sequence=>10
 ,p_column_heading=>'&nbsp;'
-,p_use_as_row_header=>'N'
+,p_use_as_row_header=>'Y'
 ,p_column_css_class=>'u-bold'
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'

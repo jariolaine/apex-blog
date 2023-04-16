@@ -8,27 +8,18 @@ blockquote::after {
   content: close-quote;
 }
 /**************************************
-* Public application logo
+* Public application header
 **************************************/
-.z-app-logo {
-  display: flex;
-  align-items: baseline;
-}
-.z-app-logo .z-app-desc {
-  white-space: normal;
-  font-style: oblique;
-  font-size: 0.875rem;
-  margin-left: 0.5rem;
-}
-@media only screen and (max-width: 640px) {
-  .z-app-logo {
-    flex-direction: column;
-  }
-  .z-app-logo .z-app-desc {
-    font-size: 0.75rem;
-    line-height: 1rem;
-    margin-left: 0;
-  }
+.z-app-banner {
+  background-color: var(--ut-header-background-color);
+  padding: 1rem 1rem 0;
+  font-size: 1.75rem;
+  font-weight: var(--ut-logo-font-weight, var(--a-base-font-weight-semibold, 500));
+  color: var(--ut-header-text-color, inherit);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
 }
 /**************************************
 * Public app media list report extra classes
@@ -169,6 +160,12 @@ blockquote::after {
   .z-posts .z-post .z-post--footer .z-post--tags {
     justify-content: space-evenly;
   }
+}
+/**************************************
+* Post paginaion button
+**************************************/
+.z-text-wrap {
+  white-space: pre-wrap;
 }
 /**************************************
 * Public app custom report template:
@@ -366,11 +363,10 @@ pre.z-program-code code,
   content: ",";
 }
 /**************************************
-* Modifiers
+* Public application search field
 **************************************/
-.z-text-wrap {
-  white-space: pre-wrap;
-}
-.z-overflowHidden {
-  overflow: hidden;
+.z-search-field {
+  border-radius: var(--ut-component-border-radius);
+  margin-bottom: 0.5rem;
+  margin-left: 0.25rem;
 }

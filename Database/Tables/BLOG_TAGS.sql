@@ -13,8 +13,7 @@ create table blog_tags (
   tag_unique varchar2( 256 char ) as ( upper( trim( tag ) ) ) virtual not null,
   notes varchar2( 4000 byte ),
   constraint blog_tags_pk primary key( id ),
-  constraint blog_tags_uk1 unique( tag ),
-  constraint blog_tags_uk2 unique( tag_unique ),
+  constraint blog_tags_uk1 unique( tag_unique ),
   constraint blog_tags_ck1 check( row_version > 0 ),
   constraint blog_tags_ck2 check( is_active in( 0 , 1 ) )
 )

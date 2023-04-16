@@ -398,16 +398,7 @@ as
     if not regexp_like( p_email, '^.*\@.*\..*$' )
     then
       -- if validation fails prepare error message
-      l_err_mesg := apex_lang.message(
-        p_name => p_err_mesg
-      );
-
-      if l_err_mesg = apex_escape.html(
-        p_string => p_err_mesg
-      )
-      then
-        l_err_mesg := p_err_mesg;
-      end if;
+      l_err_mesg := p_err_mesg;
 
     end if;
 
@@ -585,7 +576,7 @@ as
       where 1 = 1
         and t1.is_active
           * t2.is_active
-          * case v1.post_status when 'PUBLISHED' then 1 else 0 end
+          * case v1.post_status_code when 'PUBLISHED' then 1 else 0 end
           = 1
         and v1.id = l_post_id
         -- send notification if subscription is created less than months ago specified in settings

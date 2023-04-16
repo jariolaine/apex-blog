@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -26,13 +26,6 @@ wwv_flow_imp_shared.create_build_option(
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable commenting to posts'
-);
-wwv_flow_imp_shared.create_build_option(
- p_id=>wwv_flow_imp.id(7122597691878829)
-,p_build_option_name=>'Under development'
-,p_build_option_status=>'EXCLUDE'
-,p_default_on_export=>'EXCLUDE'
-,p_build_option_comment=>'Objects whose development is ongoing'
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(8635198962090938)
@@ -152,6 +145,20 @@ wwv_flow_imp_shared.create_build_option(
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable the ability to subscribe to email notification of new comments'
+);
+wwv_flow_imp_shared.create_build_option(
+ p_id=>wwv_flow_imp.id(38733755214623299)
+,p_build_option_name=>'Obsolete'
+,p_build_option_status=>'EXCLUDE'
+,p_default_on_export=>'EXCLUDE'
+);
+wwv_flow_imp_shared.create_build_option(
+ p_id=>wwv_flow_imp.id(39030203881986717)
+,p_build_option_name=>'BLOG_FEATURE_SEARCH'
+,p_build_option_status=>'INCLUDE'
+,p_default_on_export=>'INCLUDE'
+,p_on_upgrade_keep_status=>true
+,p_build_option_comment=>'Enable/disable search page'
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(41172379976935637)

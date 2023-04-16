@@ -16,7 +16,7 @@ create table blog_posts(
   body_html clob not null,
   first_paragraph varchar2( 4000 byte ) not null,
   published_on timestamp( 6 ) with local time zone not null,
-  post_txt_search char( 1 byte ) not null,
+  ctx_search char( 1 byte ) not null,
   notes varchar2( 4000 byte ),
   body_length number( 38, 0 ) as ( sys.dbms_lob.getlength( body_html ) ) virtual not null,
   archive_year_month number( 6, 0 ) as ( to_number( to_char( published_on, 'YYYYMM' ) ) ) virtual not null,

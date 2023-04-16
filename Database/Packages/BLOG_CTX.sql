@@ -20,6 +20,11 @@ as
     tlob      in out nocopy clob
   );
 --------------------------------------------------------------------------------
+  procedure generate_comment_datastore(
+    rid   in rowid,
+    tlob  in out nocopy clob
+  );
+--------------------------------------------------------------------------------
   function get_post_search(
     p_search  in varchar2
   ) return varchar2;
@@ -61,7 +66,9 @@ as
           ,xmlelement( "category", v1.category_title )
           ,xmlelement( "description", v1.post_desc )
           ,xmlelement( "body", apex_escape.striphtml( v1.body_html ) )
-          ,xmlelement( "tags", v1.visible_tags )
+          ,xmlelement( "tag", v1.visible_tags )
+          ,xmlelement( "author", v1.blogger_name )
+          --,xmlelement( "notes", v1.notes )
         )
       )
     into tlob
@@ -73,11 +80,34 @@ as
   end generate_post_datastore;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  procedure generate_comment_datastore(
+    rid   in rowid,
+    tlob  in out nocopy clob
+  )
+  as
+  begin
+
+    select
+      xmlserialize( content
+        xmlconcat(
+           xmlelement( "body", apex_escape.striphtml( v1.body_html ) )
+          ,xmlelement( "author", v1.comment_by )
+        )
+      )
+    into tlob
+    from blog_v_all_comments v1
+    where 1 = 1
+      and v1.ctx_rid = rid
+    ;
+
+  end generate_comment_datastore;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   function get_post_search(
     p_search in varchar2
   ) return varchar2
   as
-    c_xml constant varchar2(32767)
+    l_xml varchar2(32767)
       := '<query><textquery><progression>'
       ||    '<seq>#NORMAL#</seq>'
       ||    '<seq>#WILDCARD#</seq>'
@@ -89,12 +119,12 @@ as
     l_tokens    apex_t_varchar2;
 
     function generate_query(
-      p_feature in varchar2,
-      p_combine in varchar2 default null
+      p_feature in varchar2
     ) return varchar2
     as
-      l_token   varchar2(32767);
-      l_query   varchar2(32767);
+      l_token       varchar2(32767);
+      l_query       varchar2(32767);
+      l_within      apex_t_varchar2;
     begin
 
       for i in 1 .. l_tokens.count
@@ -102,31 +132,53 @@ as
 
         l_token := trim( l_tokens(i) );
 
-        if l_token is not null
+        if l_token = 'or'
         then
 
+          l_query := rtrim( l_query, 'and' );
+          l_query := rtrim( l_query, 'or' );
+          l_query := l_query || 'or';
+
+        elsif l_token is not null
+        and l_token not in( 'and', ':' )
+        then
+
+          l_within := apex_string.split( l_token, ':' );
+
+          if l_within.count() = 2
+          then
             l_query :=
               apex_string.format(
                 p_message =>
                   case p_feature
-                  when 'FUZZY' then '%s fuzzy({%s}, 55, 500) %s '
-                  when 'WILDCARD' then '%s {%s}%% %s '
-                  else '%s {%s} %s ' end
+                  when 'FUZZY' then ' %s fuzzy({%s}) within {%s} and'
+                  when 'WILDCARD' then ' %s {%s}%% within {%s} and'
+                  else ' %s {%s} within {%s} and' end
                 ,p0 => l_query
-                ,p1 => l_token
-                ,p2 => case p_combine when 'OR' then 'or' else 'and' end
+                ,p1 => l_within(2)
+                ,p2 => l_within(1)
               )
             ;
+          else
+            l_query :=
+              apex_string.format(
+                p_message =>
+                  case p_feature
+                  when 'FUZZY' then ' %s fuzzy({%s}) and'
+                  when 'WILDCARD' then ' %s {%s}%% and'
+                  else ' %s {%s} and' end
+                ,p0 => l_query
+                ,p1 => l_token
+              )
+            ;
+          end if;
 
         end if;
 
       end loop;
 
-      if p_combine = 'AND' then
-          l_query := substr( l_query, 1, length( l_query ) - 5 );
-      else
-          l_query := substr( l_query, 1, length( l_query ) - 4 );
-      end if;
+      l_query := rtrim( l_query, 'and' );
+      l_query := rtrim( l_query, 'or' );
 
       return trim( l_query );
 
@@ -136,25 +188,39 @@ as
 
     if substr( p_search, 1, 8 ) = 'ORATEXT:'
     then
-      l_search := substr( p_search, 9 );
+      l_search := trim( substr( apex_escape.striphtml( p_search ), 9 ) );
     else
 
       -- remove special characters; irrelevant for full text search
-      l_search := trim( regexp_replace( lower( p_search ), '[<>{}/()*%&!$?.:,;\+#]' ) );
+      l_search := apex_escape.striphtml( p_search );
+      l_search := regexp_replace( l_search, '[<>{}/()*%&!$?.,;\+#]', ' ');
+      l_search := regexp_replace( l_search, '(^[:]+|[:]+$|\s+[:]+|[:]+\s+|[:][:]+)', ' ' );
+      l_search := trim( lower( l_search ) );
+
+      l_tokens := apex_string.split( l_search, ' ' );
+
+      l_search := generate_query( 'NORMAL' );
 
       if l_search is not null
       then
-
-        l_tokens := apex_string.split( l_search, ' ' );
-
-        l_search := c_xml;
-        l_search := replace( l_search, '#NORMAL#', generate_query( 'NORMAL' ) );
+        l_search := replace( l_xml, '#NORMAL#', l_search );
         l_search := replace( l_search, '#WILDCARD#', generate_query( 'WILDCARD' ) );
         l_search := replace( l_search, '#FUZZY#', generate_query( 'FUZZY' ) );
-
       end if;
 
     end if;
+
+    l_search :=
+      case when l_search is null
+        then '{ }'
+        else l_search
+      end
+    ;
+
+    apex_debug.info(
+      p_message => 'Function get_post_search returns: %s'
+      ,p0 => l_search
+    );
 
     return l_search;
 

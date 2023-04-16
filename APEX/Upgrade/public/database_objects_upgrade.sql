@@ -22,6 +22,11 @@ as
     tlob      in out nocopy clob
   );
 --------------------------------------------------------------------------------
+  procedure generate_comment_datastore(
+    rid   in rowid,
+    tlob  in out nocopy clob
+  );
+--------------------------------------------------------------------------------
   function get_post_search(
     p_search  in varchar2
   ) return varchar2;
@@ -83,6 +88,8 @@ as
 --                            - g_nls_date_lang
 --                            - g_iso_8601_date
 --                            - g_rfc_2822_date
+--    Jari Laine 08.04.2023 - Parameter p_page_id to procedure redirect_search
+--                            Removed ORA errors between -20999 and 20901 display position handlimg from function apex_error_handler
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -167,6 +174,7 @@ as
   procedure redirect_search(
     p_value           in varchar2,
     p_app_id          in varchar2 default null,
+    p_page_id         in varchar2 default 'SEARCH',
     p_session         in varchar2 default null
   );
 --------------------------------------------------------------------------------
@@ -226,6 +234,8 @@ as
 --                              resequence_categories
 --                              resequence_tags
 --    Jari Laine 09.05.2022 - Removed obsolete procedure run_settings_post_expression
+--    Jari Laine 08.03.2023 - Changed function is_date_format validate as date instead of timestamp
+--    Jari Laine 03.04.2023 - Changed function file_upload to procedure with out parameter
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -273,11 +283,12 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 22 Processing process "Close Dialog" condition
-  function file_upload(
+--  admin app page 22 processing
+  procedure file_upload(
     p_file_name       in varchar2,
-    p_collection_name in varchar2
-  ) return boolean;
+    p_collection_name in varchar2,
+    p_files_merged    out nocopy varchar2
+  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  admin app page 12
@@ -295,7 +306,7 @@ as
 -- Called from:
 --  admin app page 12 Processing process "Process Category"
   procedure add_category(
-    p_title           in varchar2,
+    p_category_title  in varchar2,
     p_category_id     out nocopy number
   );
 --------------------------------------------------------------------------------
@@ -673,12 +684,13 @@ as
 --                          - Added parameter p_message to function get_rss_anchor
 --    Jari Laine 27.04.2022 - Removed obsolete functions get_tag_anchor and get_post_tags
 --    Jari Laine 16.11.2022 - Removed obsolete functions:
---                              - get_robots_noindex_meta
 --                              - get_post_description_meta
 --                              - get_description_meta
 --    Jari Laine 25.11.2022 - Removed unused parameters
 --
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_robots_noindex_meta return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAB
@@ -820,113 +832,10 @@ as
 end "BLOG_XML";
 /
 --------------------------------------------------------
---  DDL for View BLOG_V_ALL_CATEGORIES
---------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_CATEGORIES" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "DISPLAY_SEQ", "TITLE", "TITLE_UNIQUE", "NOTES", "POSTS_COUNT", "ALLOWED_ROW_OPERATION") AS
-  select
-   t1.id                as id
-  ,t1.row_version       as row_version
-  ,t1.created_on        as created_on
-  ,lower(t1.created_by) as created_by
-  ,t1.changed_on        as changed_on
-  ,lower(t1.changed_by) as changed_by
-  ,t1.is_active         as is_active
-  ,t1.display_seq       as display_seq
-  ,t1.title             as title
-  ,t1.title_unique      as title_unique
-  ,t1.notes             as notes
-  ,(
-    select count(l1.id)
-    from blog_posts l1
-    where 1 = 1
-    and l1.category_id = t1.id
-   )                    as posts_count
-  ,case
-    when exists(
-      select 1
-      from blog_posts l2
-      where 1 = 1
-      and l2.category_id = t1.id
-    )
-    then 'U'
-    else 'UD'
-  end                   as allowed_row_operation
-from blog_categories t1
-/
---------------------------------------------------------
---  DDL for View BLOG_V_ALL_COMMENTS
---------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "PARENT_ID", "POST_TITLE", "BODY_HTML", "COMMENT_BY", "STATUS", "FLAG", "USER_ICON", "ICON_MODIFIER")  AS
-  select
-   t1.id                as id
-  ,t1.row_version       as row_version
-  ,t1.created_on        as created_on
-  ,lower(t1.created_by) as created_by
-  ,t1.changed_on        as changed_on
-  ,lower(t1.changed_by) as changed_by
-  ,t1.is_active         as is_active
-  ,t1.post_id           as post_id
-  ,t1.parent_id         as parent_id
-  ,(
-    select title
-    from blog_posts l1
-    where 1 = 1
-    and l1.id = t1.post_id
-   )                    as post_title
-  ,t1.body_html         as body_html
-  ,t1.comment_by        as comment_by
-  ,case
-    when exists(
-      select 1
-      from blog_comment_flags f1
-      where 1 = 1
-        and f1.comment_id = t1.id
-        and f1.flag = 'MODERATE'
-    )
-    then 'MODERATE'
-    else
-      case t1.is_active
-        when 1
-        then 'ENABLED'
-        else 'DISABLED'
-      end
-   end                  as status
-   ,case
-     when exists(
-       select 1
-       from blog_comment_flags f1
-       where 1 = 1
-         and f1.comment_id = t1.id
-         and f1.flag = 'NEW'
-     )
-     then 'NEW'
-     when exists(
-       select 1
-       from blog_comment_flags f1
-       where 1 = 1
-         and f1.comment_id = t1.id
-         and f1.flag = 'UNREAD'
-     )
-     then 'UNREAD'
-     when t1.parent_id is not null
-     then 'REPLY'
-     else 'READ'
-    end                 as flag
-  ,apex_string.get_initials(
-    p_str => t1.comment_by
-  )                     as user_icon
-  ,apex_string.format(
-     p_message => 'u-color-%s'
-    ,p0 => ora_hash( lower( t1.comment_by ), 44 ) + 1
-  )                     as icon_modifier
-from blog_comments t1
-where 1 = 1
-/
---------------------------------------------------------
 --  DDL for View BLOG_V_ALL_DYNAMIC_CONTENT
 --------------------------------------------------------
 CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "CONTENT_TYPE", "DISPLAY_SEQ", "SHOW_CHANGED_ON", "CONTENT_DESC", "CONTENT_HTML") AS
-  select
+select
    t1.id                as id
   ,t1.row_version       as row_version
   ,t1.created_on        as created_on
@@ -943,46 +852,10 @@ from blog_dynamic_content t1
 where 1 = 1
 /
 --------------------------------------------------------
---  DDL for View BLOG_V_ALL_FEATURES
---------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "BUILD_OPTION_NAME", "BUILD_OPTION_GROUP", "DISPLAY_SEQ", "FEATURE_NAME", "FEATURE_GROUP", "FEATURE_GROUP_SEQ", "BUILD_OPTION_STATUS", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "IS_ACTIVE", "FEATURE_PARENT", "HELP_MESSAGE") AS
-  select
-   t2.id                        as id
-  ,t1.application_id            as application_id
-  ,t1.build_option_id           as build_option_id
-  ,t2.build_option_name         as build_option_name
-  ,t2.build_option_group        as build_option_group
-  ,t2.display_seq               as display_seq
-  ,apex_lang.message(
-    p_name => t2.build_option_name
-  )                             as feature_name
-  ,apex_lang.message(
-    p_name => t2.build_option_group
-  )                             as feature_group
-  ,min( t2.display_seq ) over(
-    partition by t2.build_option_group
-  )                             as feature_group_seq
-  ,t1.build_option_status       as build_option_status
-  ,t1.last_updated_on           as last_updated_on
-  ,lower( t1.last_updated_by )  as last_updated_by
-  ,t2.is_active                 as is_active
-  ,t2.build_option_parent       as feature_parent
-  ,regexp_replace(
-    t2.build_option_name
-    ,'^(BLOG)'
-    ,'\1_HELP'
-  )                             as help_message
-from apex_application_build_options t1
-join blog_features t2
-  on t1.build_option_name = t2.build_option_name
-where 1 = 1
-with read only
-/
---------------------------------------------------------
 --  DDL for View BLOG_V_ALL_FILES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FILES" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC", "NOTES") AS
-  select
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FILES" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC", "NOTES", "FILE_SIZE_DISPLAY", "FILE_STATUS_ICON", "FILE_TYPE_ICON") AS
+select
    t1.id                as id
   ,t1.row_version       as row_version
   ,t1.created_on        as created_on
@@ -998,39 +871,57 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FILES" ("ID", "ROW_VERSION", "CREATED_O
   ,t1.file_charset      as file_charset
   ,t1.file_desc         as file_desc
   ,t1.notes             as notes
+  ,apex_string_util.to_display_filesize(
+    p_size_in_bytes => t1.file_size
+  )                     as file_size_display
+  ,case t1.is_active
+    when 1
+    then 'fa-check-circle u-success-text'
+    else 'fa-minus-circle u-danger-text'
+   end                  as file_status_icon
+  ,case t1.is_download
+    when 1
+    then 'fa-check'
+    else 'fa-minus'
+   end                  as file_type_icon
 from blog_files t1
 where 1 = 1
 /
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_LINKS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINKS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "LINK_GROUP_ID", "IS_ACTIVE", "LINK_GROUP_IS_ACTIVE", "DISPLAY_SEQ", "LINK_GROUP_DISPLAY_SEQ", "TITLE", "LINK_GROUP_TITLE", "LINK_DESC", "NOTES", "LINK_URL", "LINK_STATUS") AS
-  select
-   t1.id                        as id
-  ,t1.row_version               as row_version
-  ,t1.created_on                as created_on
-  ,lower(t1.created_by)         as created_by
-  ,t1.changed_on                as changed_on
-  ,lower(t1.changed_by)         as changed_by
-  ,t2.id                        as link_group_id
-  ,t1.is_active                 as is_active
-  ,t2.is_active                 as link_group_is_active
-  ,t1.display_seq               as display_seq
-  ,t2.display_seq               as link_group_display_seq
-  ,t1.title                     as title
-  ,t2.title                     as link_group_title
-  ,t1.link_desc                 as link_desc
-  ,t1.notes                     as notes
-  ,t1.link_url                  as link_url
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINKS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "LINK_GROUP_ID", "IS_ACTIVE", "LINK_GROUP_IS_ACTIVE", "DISPLAY_SEQ", "LINK_GROUP_DISPLAY_SEQ", "TITLE", "LINK_GROUP_TITLE", "LINK_DESC", "NOTES", "LINK_URL", "LINK_STATUS_CODE", "LINK_STATUS_ICON") AS
+select
+   t1.id                as id
+  ,t1.row_version       as row_version
+  ,t1.created_on        as created_on
+  ,lower(t1.created_by) as created_by
+  ,t1.changed_on        as changed_on
+  ,lower(t1.changed_by) as changed_by
+  ,t2.id                as link_group_id
+  ,t1.is_active         as is_active
+  ,t2.is_active         as link_group_is_active
+  ,t1.display_seq       as display_seq
+  ,t2.display_seq       as link_group_display_seq
+  ,t1.title             as title
+  ,t2.title             as link_group_title
+  ,t1.link_desc         as link_desc
+  ,t1.notes             as notes
+  ,t1.link_url          as link_url
   ,case t2.is_active
-   when 1
-   then case t1.is_active
-     when 1
-     then 'ENABLED'
-     else 'DISABLED'
-     end
-   else 'GROUP_DISABLED'
-   end                          as link_status
+    when 1 then
+      case t1.is_active
+        when 1
+        then 'ENABLED'
+        else 'DISABLED'
+        end
+    else 'GROUP_DISABLED'
+  end                   as link_status_code
+  ,case t1.is_active * t2.is_active
+    when 1
+    then 'fa-check-circle u-success-text'
+    else 'fa-minus-circle u-danger-text'
+  end                   as link_status_icon
 from blog_links t1
 join blog_link_groups t2
   on t1.link_group_id = t2.id
@@ -1039,26 +930,37 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_LINK_GROUPS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINK_GROUPS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "DISPLAY_SEQ", "TITLE", "TITLE_UNIQUE", "NOTES", "LINK_COUNT") AS
-  select
-   t1.id                as id
-  ,t1.row_version       as row_version
-  ,t1.created_on        as created_on
-  ,lower(t1.created_by) as created_by
-  ,t1.changed_on        as changed_on
-  ,lower(t1.changed_by) as changed_by
-  ,t1.is_active         as is_active
-  ,t1.display_seq       as display_seq
-  ,t1.title             as title
-  ,t1.title_unique      as title_unique
-  ,t1.notes             as notes
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINK_GROUPS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "DISPLAY_SEQ", "TITLE", "TITLE_UNIQUE", "NOTES", "STATUS_TEXT", "LINK_COUNT") AS
+select
+   t1.id                  as id
+  ,t1.row_version         as row_version
+  ,t1.created_on          as created_on
+  ,lower( t1.created_by ) as created_by
+  ,t1.changed_on          as changed_on
+  ,lower (t1.changed_by ) as changed_by
+  ,t1.is_active           as is_active
+  ,t1.display_seq         as display_seq
+  ,t1.title               as title
+  ,t1.title_unique        as title_unique
+  ,t1.notes               as notes
+  ,case t1.is_active
+    when 1
+    then c.txt_enabled
+    else c.txt_disabled
+  end                     as status_text
   ,(
-    select count(l1.id)
-    from blog_links l1
-    where 1 = 1
-    and l1.link_group_id = t1.id
-   )                    as link_count
+    select
+      count(1) as cnt
+    from blog_links lkp
+    where lkp.link_group_id = t1.id
+  )                       as link_count
 from blog_link_groups t1
+cross join (
+  select
+     apex_lang.message( 'BLOG_TXT_ENABLED' )  as txt_enabled
+    ,apex_lang.message( 'BLOG_TXT_DISABLED' ) as txt_disabled
+  from dual
+) c
 where 1 = 1
 /
 --------------------------------------------------------
@@ -1092,46 +994,10 @@ from blog_post_tags t1
 where 1 = 1
 /
 --------------------------------------------------------
---  DDL for View BLOG_V_ALL_SETTINGS
---------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_SETTINGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_NAME", "ATTRIBUTE_VALUE", "DATA_TYPE", "ATTRIBUTE_MESSAGE", "ATTRIBUTE_DESC", "ATTRIBUTE_GROUP_MESSAGE", "ATTRIBUTE_GROUP", "ATTRIBUTE_GROUP_SEQ", "INT_MIN", "INT_MAX", "HELP_MESSAGE") AS
-  select
-   t1.id                      as id
-  ,t1.row_version             as row_version
-  ,t1.created_on              as created_on
-  ,lower(t1.created_by)       as created_by
-  ,t1.changed_on              as changed_on
-  ,lower(t1.changed_by)       as changed_by
-  ,t1.is_nullable             as is_nullable
-  ,t1.display_seq             as display_seq
-  ,t1.attribute_name          as attribute_name
-  ,t1.attribute_value         as attribute_value
-  ,t1.data_type               as data_type
-  ,t1.attribute_message       as attribute_message
-  ,apex_lang.message(
-    p_name => t1.attribute_message
-  )                           as attribute_desc
-  ,t1.attribute_group_message as attribute_group_message
-  ,apex_lang.message(
-    p_name => t1.attribute_group_message
-  )                           as attribute_group
-  ,(
-    select min( lkp.display_seq )
-    from blog_settings lkp
-    where 1 = 1
-      and lkp.attribute_group_message = t1.attribute_group_message
-  )                           as attribute_group_seq
-  ,t1.int_min                 as int_min
-  ,t1.int_max                 as int_max
-  ,t1.help_message            as help_message
-from blog_settings t1
-where 1 = 1
-/
---------------------------------------------------------
 --  DDL for View BLOG_V_ALL_TAGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "TAG", "TAG_UNIQUE", "NOTES", "POSTS_COUNT", "ALLOWED_ROW_OPERATION") AS
-  select
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "TAG", "TAG_UNIQUE", "NOTES", "TAG_STATUS_TEXT", "POSTS_COUNT", "ALLOWED_ROW_OPERATION") AS
+select
    t1.id                as id
   ,t1.row_version       as row_version
   ,t1.created_on        as created_on
@@ -1142,23 +1008,34 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_TAGS" ("ID", "ROW_VERSION", "CREATED_ON
   ,t1.tag               as tag
   ,t1.tag_unique        as tag_unique
   ,t1.notes             as notes
+  ,case t1.is_active
+    when 1
+      then c.txt_enabled
+      else c.txt_disabled
+  end                   as tag_status_text
   ,(
-    select count(l1.id)
-    from blog_post_tags l1
+    select count(1)
+    from blog_post_tags lkp
     where 1 = 1
-    and l1.tag_id = t1.id
+    and lkp.tag_id = t1.id
    )                    as posts_count
   ,case
     when exists(
       select 1
-      from blog_post_tags l2
+      from blog_post_tags lkp
       where 1 = 1
-      and l2.tag_id = t1.id
+      and lkp.tag_id = t1.id
     )
     then 'U'
     else 'UD'
   end                   as allowed_row_operation
 from blog_tags t1
+cross join (
+  select
+     apex_lang.message( 'BLOG_TXT_ENABLED' )    as txt_enabled
+    ,apex_lang.message( 'BLOG_TXT_DISABLED' )   as txt_disabled
+  from dual
+) c
 where 1 = 1
 /
 --------------------------------------------------------
@@ -1177,7 +1054,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_COMMENTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "USER_ICON", "ICON_MODIFIER") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "CTX_SEARCH", "USER_ICON", "ICON_MODIFIER") AS
   select
    t1.id          as comment_id
   ,t1.post_id     as post_id
@@ -1185,6 +1062,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "POST_ID", "PARENT
   ,t1.created_on  as created_on
   ,t1.comment_by  as comment_by
   ,t1.body_html   as comment_body
+  ,t1.ctx_search  as ctx_search
   ,apex_string.get_initials(
     p_str => t1.comment_by
   )               as user_icon
@@ -1225,9 +1103,55 @@ and t1.is_active = 1
 with read only
 /
 --------------------------------------------------------
+--  DDL for View BLOG_V_FEATURES
+--------------------------------------------------------
+CREATE OR REPLACE FORCE VIEW "BLOG_V_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "DISPLAY_SEQ", "BUILD_OPTION_NAME", "BUILD_OPTION_STATUS", "BUILD_OPTION_PARENT", "FEATURE_DESC", "HELP_MESSAGE", "FEATURE_GROUP_HTML") AS
+select
+   t1.id                        as id
+  ,v1.application_id            as application_id
+  ,v1.build_option_id           as build_option_id
+  ,v1.last_updated_on           as last_updated_on
+  ,lower( v1.last_updated_by )  as last_updated_by
+  ,t1.display_seq               as display_seq
+  ,t1.build_option_name         as build_option_name
+  ,v1.build_option_status       as build_option_status
+  ,t1.build_option_parent       as build_option_parent
+  ,apex_lang.message(
+    p_name => t1.build_option_name
+  )                             as feature_desc
+  ,regexp_replace(
+    t1.build_option_name
+    ,'^(BLOG)'
+    ,'\1_HELP'
+  )                             as help_message
+-- HTML in query because IG removes HTML from column HTM expression in control break column
+-- Contrel break is soretd and attribute data-sort-order gives correct sort order
+  ,apex_string.format(
+     p_message => '<span data-sort-order="%s" class="u-bold">%s</span>'
+    ,p0 => lpad( min( t1.display_seq ) over( partition by t1.build_option_group ), 5, '0' )
+    ,p1 =>
+      apex_lang.message(
+        p_name => t1.build_option_group
+      )
+  )                             as feature_group_html
+from blog_features t1
+join apex_application_build_options v1
+  on t1.build_option_name = v1.build_option_name
+where 1 = 1
+and t1.is_active = 1
+and not exists(
+  select 1
+  from apex_application_build_options x1
+  where x1.build_option_status = 'Exclude'
+    and x1.application_id = v1.application_id
+    and x1.build_option_name = t1.build_option_parent
+)
+with read only
+/
+--------------------------------------------------------
 --  DDL for View BLOG_V_FILES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "ROW_VERSION", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "ROW_VERSION", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC", "FILE_URL") AS
 select
    t1.id            as file_id
   ,t1.row_version   as row_version
@@ -1237,9 +1161,18 @@ select
   ,t1.file_name     as file_name
   ,t1.mime_type     as mime_type
   ,t1.blob_content  as blob_content
-  ,t1.file_size     as file_size
+  ,apex_string_util.to_display_filesize(
+    p_size_in_bytes => t1.file_size
+  )                 as file_size
   ,t1.file_charset  as file_charset
   ,t1.file_desc     as file_desc
+  ,apex_page.get_url(
+     p_page     => '1003'
+    ,p_session  => null
+    ,p_request  => 'application_process=download'
+    ,p_items    => 'P1003_FILE_NAME'
+    ,p_values   => t1.file_name
+  )                 as file_url
 from blog_files t1
 where 1 = 1
 and t1.is_active = 1
@@ -1392,77 +1325,281 @@ where 1 = 1
 and attribute_name = 'G_APP_VERSION'
 /
 --------------------------------------------------------
---  DDL for View BLOG_V_ALL_POSTS
+--  DDL for View BLOG_V_ALL_CATEGORIES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "POST_TXT_SEARCH", "NOTES", "CTX_RID", "PUBLISHED_DISPLAY", "TAG_ID", "POST_TAGS", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_COUNT", "PUBLISHED_COMMENTS_COUNT", "UNREAD_COMMENTS_COUNT", "MODERATE_COMMENTS_COUNT", "DISABLED_COMMENTS_COUNT", "POST_STATUS", "TAGS_HTML") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_CATEGORIES" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "DISPLAY_SEQ", "TITLE", "TITLE_UNIQUE", "NOTES", "CATEGORY_STATUS_TEXT", "POSTS_COUNT", "ALLOWED_ROW_OPERATION") AS
 select
    t1.id                as id
-  ,t1.category_id       as category_id
-  ,t1.blogger_id        as blogger_id
   ,t1.row_version       as row_version
   ,t1.created_on        as created_on
   ,lower(t1.created_by) as created_by
   ,t1.changed_on        as changed_on
   ,lower(t1.changed_by) as changed_by
-  ,t3.blogger_name      as blogger_name
-  ,t3.email             as blogger_email
-  ,t2.title             as category_title
+  ,t1.is_active         as is_active
+  ,t1.display_seq       as display_seq
   ,t1.title             as title
-  ,t1.post_desc         as post_desc
-  ,t1.body_html         as body_html
-  ,t1.body_length       as body_length
-  ,t1.published_on      as published_on
-  ,t1.post_txt_search   as post_txt_search
+  ,t1.title_unique      as title_unique
   ,t1.notes             as notes
-  ,t1.rowid             as ctx_rid
-  ,case t1.is_active * t2.is_active * t3.is_active
-    when 1
-    then t1.published_on
-   end                  as published_display
-   ,(
-     select listagg( tags.tag_id, ':' )  within group( order by tags.display_seq )
+  ,(
+    select lkp.display_value
+    from blog_v_lov lkp
+    where lkp.lov_name = 'IS_ACTIVE'
+      and to_number( lkp.return_value ) = t1.is_active
+  )                     as category_status_text
+  ,(
+    select count(1)
+    from blog_posts lkp
+    where lkp.category_id = t1.id
+   )                    as posts_count
+  ,case
+    when exists(
+      select 1
+      from blog_posts lkp
+      where lkp.category_id = t1.id
+    )
+    then 'U'
+    else 'UD'
+  end                   as allowed_row_operation
+from blog_categories t1
+where 1 = 1
+/
+--------------------------------------------------------
+--  DDL for View BLOG_V_ALL_COMMENTS
+--------------------------------------------------------
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "PARENT_ID", "POST_TITLE", "BODY_HTML", "COMMENT_BY", "CTX_SEARCH", "CTX_RID", "COMMENT_STATUS_CODE", "COMMENT_FLAG_CODE", "DATA_UNREAD", "COMMENT_STATUS_TEXT", "COMMENT_FLAG_TEXT", "COMMENT_STATUS_ICON", "COMMENT_FLAG_ICON", "SEARCH_DESC")  AS
+with q1 as(
+  select
+     t1.id
+    ,t1.row_version
+    ,t1.created_on
+    ,t1.created_by
+    ,t1.changed_on
+    ,t1.changed_by
+    ,t1.is_active
+    ,t1.post_id
+    ,t1.parent_id
+    ,t1.body_html
+    ,t1.comment_by
+    ,t1.ctx_search
+    ,t1.rowid as ctx_rid
+    ,case
+      when exists(
+        select 1
+        from blog_comment_flags f1
+        where f1.flag = 'MODERATE'
+          and f1.comment_id = t1.id
+      )
+        then 'MODERATE'
+      when t1.is_active = 1
+        then 'ENABLED'
+        else 'DISABLED'
+    end as comment_status_code
+    ,case
+      when exists(
+        select 1
+        from blog_comment_flags f1
+        where f1.flag = 'NEW'
+          and f1.comment_id = t1.id
+      )
+        then 'NEW'
+      when exists(
+        select 1
+        from blog_comment_flags f1
+        where f1.flag = 'UNREAD'
+          and f1.comment_id = t1.id
+      )
+        then 'UNREAD'
+      when t1.parent_id is not null
+        then 'REPLY'
+        else 'READ'
+    end as comment_flag_code
+    ,apex_escape.striphtml(
+      p_string => t1.body_html
+    ) as search_desc
+  from blog_comments t1
+)
+select
+   q1.id                  as id
+  ,q1.row_version         as row_version
+  ,q1.created_on          as created_on
+  ,lower( q1.created_by ) as created_by
+  ,q1.changed_on          as changed_on
+  ,lower( q1.changed_by ) as changed_by
+  ,q1.is_active           as is_active
+  ,q1.post_id             as post_id
+  ,q1.parent_id           as parent_id
+  ,t2.title               as post_title
+  ,q1.body_html           as body_html
+  ,q1.comment_by          as comment_by
+  ,q1.ctx_search          as ctx_search
+  ,q1.rowid               as ctx_rid
+  ,q1.comment_status_code as comment_status_code
+  ,q1.comment_flag_code   as comment_flag_code
+  ,case
+    when q1.comment_flag_code in( 'NEW', 'UNREAD' )
+      then 'true'
+      else 'false'
+  end                     as data_unread
+  ,(
+    select
+      lov.display_value
+    from blog_v_lov lov
+    where lov.lov_name = 'COMMENT_STATUS'
+    and lov.return_value = q1.comment_status_code
+  )                       as comment_status_text
+  ,(
+    select
+      lov.display_value
+    from blog_v_lov lov
+    where lov.lov_name = 'COMMENT_FLAG'
+    and lov.return_value = q1.comment_flag_code
+  )                       as comment_flag_text
+  ,case q1.comment_status_code
+    when 'MODERATE'
+      then 'fa-exclamation-circle u-warning-text'
+    when 'ENABLED'
+      then 'fa-check-circle u-success-text'
+      else 'fa-minus-circle u-danger-text'
+  end                     as comment_status_icon
+  ,case q1.comment_flag_code
+    when 'REPLY'
+      then 'fa-send-o'
+    when 'NEW'
+      then 'fa-envelope-arrow-down'
+    when 'UNREAD'
+      then 'fa-envelope-o'
+      else 'fa-envelope-open-o'
+  end                     as comment_flag_icon
+  ,substr( q1.search_desc, 1 , 128 ) || case when length( q1.search_desc ) > 128
+    then ' ...'
+  end                     as search_desc
+from q1
+join blog_posts t2 on q1.post_id = t2.id
+where 1 = 1
+/
+--------------------------------------------------------
+--  DDL for View BLOG_V_ALL_POSTS
+--------------------------------------------------------
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "PUBLISHED_DISPLAY", "POST_STATUS_CODE", "CTX_SEARCH", "CTX_RID", "POST_STATUS_ICON", "TAG_ID", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_CNT", "PUBLISHED_COMMENTS_CNT", "UNREAD_COMMENTS_CNT", "MODERATE_COMMENTS_CNT", "DISABLED_COMMENTS_CNT", "POST_STATUS_TXT", "TAGS_HTML", "SEARCH_DESC") AS
+with q1 as(
+  select
+     t1.id              as id
+    ,t1.category_id     as category_id
+    ,t1.blogger_id      as blogger_id
+    ,t1.row_version     as row_version
+    ,t1.created_on      as created_on
+    ,t1.created_by      as created_by
+    ,t1.changed_on      as changed_on
+    ,t1.changed_by      as changed_by
+    ,t3.blogger_name    as blogger_name
+    ,t3.email           as blogger_email
+    ,t2.title           as category_title
+    ,t1.title           as title
+    ,t1.post_desc       as post_desc
+    ,t1.first_paragraph as first_paragraph
+    ,t1.body_html       as body_html
+    ,t1.body_length     as body_length
+    ,t1.published_on    as published_on
+    ,t1.notes           as notes
+    ,t1.ctx_search      as ctx_search
+    ,t1.rowid           as ctx_rid
+    ,case t1.is_active * t2.is_active * t3.is_active
+      when 1
+      then t1.published_on
+     end                as published_display
+    ,case
+      when t3.is_active = 0
+        then 'BLOGGER_DISABLED'
+      when t2.is_active = 0
+        then 'CATEGORY_DISABLED'
+      when t1.is_active = 0
+        then 'DRAFT'
+      when t1.published_on > localtimestamp
+        then 'SCHEDULED'
+        else 'PUBLISHED'
+    end                 as post_status_code
+  from blog_posts t1
+  join blog_categories t2
+    on t1.category_id = t2.id
+  join blog_bloggers t3
+    on t1.blogger_id = t3.id
+  where 1 = 1
+)
+select
+   q1.id                  as id
+  ,q1.category_id         as category_id
+  ,q1.blogger_id          as blogger_id
+  ,q1.row_version         as row_version
+  ,q1.created_on          as created_on
+  ,lower( q1.created_by ) as created_by
+  ,q1.changed_on          as changed_on
+  ,lower( q1.changed_by ) as changed_by
+  ,q1.blogger_name        as blogger_name
+  ,q1.blogger_email       as blogger_email
+  ,q1.category_title      as category_title
+  ,q1.title               as title
+  ,q1.post_desc           as post_desc
+  ,q1.first_paragraph     as first_paragraph
+  ,q1.body_html           as body_html
+  ,q1.body_length         as body_length
+  ,q1.published_on        as published_on
+  ,q1.notes               as notes
+  ,q1.published_display   as published_display
+  ,q1.post_status_code    as post_status_code
+  ,q1.ctx_search          as ctx_search
+  ,q1.ctx_rid             as ctx_rid
+  ,case q1.post_status_code
+    when 'BLOGGER_DISABLED' then 'fa-stop-circle u-danger-text'
+    when 'CATEGORY_DISABLED'then 'fa-minus-circle u-danger-text'
+    when 'DRAFT'            then 'fa-pause-circle u-warning-text'
+    when 'SCHEDULED'        then 'fa-clock-o u-info-text'
+    when 'PUBLISHED'        then 'fa-check-circle u-success-text'
+                            else 'fa-question-circle'
+   end                    as post_status_icon
+  ,(
+     select
+      listagg( tags.tag_id, ':' )  within group( order by tags.display_seq ) as tag_ids
      from blog_v_all_post_tags tags
      where 1 = 1
-     and tags.post_id = t1.id
-   )                     as tag_id
+     and tags.post_id = q1.id
+   )                      as tag_id
   ,(
-    select listagg( tags.tag, ', ' )  within group( order by tags.display_seq )
+    select
+      listagg( tags.tag, ', ' )  within group( order by tags.display_seq ) as tags
     from blog_v_all_post_tags tags
     where 1 = 1
-    and tags.post_id = t1.id
-  )                     as post_tags
-  ,(
-    select listagg( tags.tag, ', ' )  within group( order by tags.display_seq )
-    from blog_v_all_post_tags tags
-    where 1 = 1
-    and tags.post_id = t1.id
+    and tags.post_id = q1.id
     and tags.is_active * tags.tag_is_active = 1
-  )                     as visible_tags
+  )                       as visible_tags
   ,(
-    select listagg( tags.tag, ', ' )  within group( order by tags.display_seq )
+    select
+      listagg( tags.tag, ', ' )  within group( order by tags.display_seq ) as tags
     from blog_v_all_post_tags tags
     where 1 = 1
-    and tags.post_id = t1.id
+    and tags.post_id = q1.id
     and tags.is_active * tags.tag_is_active = 0
-  )                     as hidden_tags
+  )                       as hidden_tags
   ,(
-    select count( co.id )
+    select
+      count(1) as cnt
     from blog_comments co
     where 1 = 1
-    and co.post_id  = t1.id
-  )                     as comments_count
+    and co.post_id  = q1.id
+  )                       as comments_cnt
   ,(
-    select count( co.id )
+    select
+      count(1) as cnt
     from blog_comments co
     where 1 = 1
     and co.is_active = 1
-    and co.post_id  = t1.id
-  )                     as published_comments_count
+    and co.post_id  = q1.id
+  )                       as published_comments_cnt
   ,(
-    select count( co.id )
+    select
+      count(1) as cnt
     from blog_comments co
     where 1 = 1
-    and co.post_id  = t1.id
+    and co.post_id  = q1.id
     and exists(
       select 1
       from blog_comment_flags x1
@@ -1470,12 +1607,13 @@ select
       and x1.flag in( 'NEW', 'UNREAD' )
       and x1.comment_id = co.id
     )
-  )                     as unread_comments_count
+  )                       as unread_comments_cnt
   ,(
-    select count( co.id )
+    select
+      count(1) as cnt
     from blog_comments co
     where 1 = 1
-    and co.post_id  = t1.id
+    and co.post_id  = q1.id
     and exists(
       select 1
       from blog_comment_flags x1
@@ -1483,12 +1621,13 @@ select
       and x1.flag = 'MODERATE'
       and x1.comment_id = co.id
     )
-  )                     as moderate_comments_count
+  )                       as moderate_comments_cnt
   ,(
-    select count( co.id )
+    select
+      count(1) as cnt
     from blog_comments co
     where 1 = 1
-    and co.post_id  = t1.id
+    and co.post_id  = q1.id
     and co.is_active = 0
     and not exists(
       select 1
@@ -1497,19 +1636,16 @@ select
       and x1.flag = 'MODERATE'
       and x1.comment_id = co.id
     )
-  )                     as disabled_comments_count
-  ,case
-    when t3.is_active = 0
-    then 'BLOGGER_DISABLED'
-    when t2.is_active = 0
-    then 'CATEGORY_DISABLED'
-    when t1.is_active = 0
-    then 'DRAFT'
-    when t1.published_on > localtimestamp
-    then 'SCHEDULED'
-    else 'PUBLISHED'
-  end                   as post_status
--- Post tags for detail view
+  )                       as disabled_comments_cnt
+  ,(
+    select
+      lov.display_value
+    from blog_v_lov lov
+    where 1 = 1
+      and lov.lov_name = 'POST_STATUS'
+      and lov.return_value = q1.post_status_code
+  )                       as post_status_txt
+-- Post tags for admin app page 11 IR detail view
   ,(
     select
       xmlserialize(
@@ -1517,61 +1653,66 @@ select
       )
     from blog_v_post_tags lkp1
     where 1 = 1
-      and lkp1.post_id = t1.id
-  )                     as tags_html
+      and lkp1.post_id = q1.id
+  )                       as tags_html
+  ,apex_escape.striphtml(
+    p_string => q1.first_paragraph
+  )                       as search_desc
+from q1
+where 1 = 1
+/
+--------------------------------------------------------
+--  DDL for View BLOG_V_FORM_POST
+--------------------------------------------------------
+CREATE OR REPLACE FORCE VIEW "BLOG_V_FORM_POST" ("ID", "BLOGGER_ID", "CATEGORY_ID", "FIRST_PARAGRAPH", "IS_ACTIVE", "POST_DESC", "CATEGORY_TITLE", "TAGS", "PUBLISHED_ON", "TITLE", "BODY_HTML", "NOTES") AS
+select
+  t1.id               as id
+  ,t1.blogger_id      as blogger_id
+  ,t1.category_id     as category_id
+  ,t1.first_paragraph as first_paragraph
+  ,t1.is_active       as is_active
+  ,t1.post_desc       as post_desc
+  ,(
+    select lkp.title
+    from blog_categories lkp
+    where 1 = 1
+      and lkp.id = t1.category_id
+  )                   as category_title
+  ,(
+    select
+      listagg( lkp.tag, ',' )
+        within group( order by lkp.display_seq )
+    from blog_v_all_post_tags lkp
+    where 1 = 1
+      and lkp.post_id = t1.id
+  )                   as tags
+  ,t1.published_on    as published_on
+  ,t1.title           as title
+  ,t1.body_html       as body_html
+  ,t1.notes           as notes
 from blog_posts t1
-join blog_categories t2
-  on t1.category_id = t2.id
-join blog_bloggers t3
-  on t1.blogger_id = t3.id
 where 1 = 1
 /
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "POST_TXT_SEARCH", "CHANGED_ON", "ARCHIVE_YEAR", "CATEGORY_SEQ", "POST_URL", "TAGS_HTML1", "TAGS_HTML2", "TXT_POSTED_BY", "TXT_POSTED_ON", "TXT_CATEGORY", "TXT_READ_MORE", "TXT_TAGS", "NEXT_POST", "PREV_POST") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CTX_SEARCH", "CHANGED_ON", "ARCHIVE_YEAR", "CATEGORY_SEQ", "POST_URL", "TAGS", "TAGS_HTML1", "TAGS_HTML2", "NEXT_POST", "PREV_POST") AS
 with q1 as(
   select
-     t1.id                as post_id
-    ,t3.id                as category_id
-    ,t2.id                as blogger_id
-    ,t2.blogger_name      as blogger_name
-    ,t1.title             as post_title
-    ,t3.title             as category_title
-    ,t1.post_desc         as post_desc
-    ,t1.first_paragraph   as first_paragraph
-    ,t1.body_html         as body_html
-    ,t1.published_on      as published_on
-    ,t1.post_txt_search   as post_txt_search
-    ,greatest(
-       t1.published_on
-      ,t1.changed_on
-    )                     as changed_on
-    ,t1.archive_year      as archive_year
-    ,t3.display_seq       as category_seq
-  -- Generate post URL
-    ,blog_url.get_post(
-      p_post_id => t1.id
-    )                     as post_url
-  -- Aggregate tag HTML for post
-    ,(
-      select
-        xmlserialize(
-          content xmlagg( lkp_tag.tag_html1 order by lkp_tag.display_seq )
-        ) as tags_html
-      from blog_v_post_tags lkp_tag
-      where 1 = 1
-        and lkp_tag.post_id = t1.id
-    )                     as tags_html1
-    ,(
-      select
-        xmlserialize(
-          content xmlagg( lkp_tag.tag_html2 order by lkp_tag.display_seq )
-        ) as tags_html
-      from blog_v_post_tags lkp_tag
-      where 1 = 1
-        and lkp_tag.post_id = t1.id
-    )                     as tags_html2
+     t1.id              as post_id
+    ,t3.id              as category_id
+    ,t2.id              as blogger_id
+    ,t2.blogger_name    as blogger_name
+    ,t1.title           as post_title
+    ,t3.title           as category_title
+    ,t1.post_desc       as post_desc
+    ,t1.first_paragraph as first_paragraph
+    ,t1.body_html       as body_html
+    ,t1.published_on    as published_on
+    ,t1.ctx_search      as ctx_search
+    ,t1.changed_on      as changed_on
+    ,t1.archive_year    as archive_year
+    ,t3.display_seq     as category_seq
   from blog_posts t1
   join blog_bloggers t2
     on t1.blogger_id  = t2.id
@@ -1584,32 +1725,50 @@ with q1 as(
     and t1.published_on <= current_timestamp
 )
 select
-   q1.post_id           as post_id
-  ,q1.category_id       as category_id
-  ,q1.blogger_id        as blogger_id
-  ,q1.blogger_name      as blogger_name
-  ,q1.post_title        as post_title
-  ,q1.category_title    as category_title
-  ,q1.post_desc         as post_desc
-  ,q1.first_paragraph   as first_paragraph
-  ,q1.body_html         as body_html
-  ,q1.published_on      as published_on
-  ,q1.post_txt_search   as post_txt_search
-  ,q1.changed_on        as changed_on
-  ,q1.archive_year      as archive_year
-  ,q1.category_seq      as category_seq
-  ,q1.post_url          as post_url
-  ,q1.tags_html1        as tags_html1
-  ,q1.tags_html2        as tags_html2
--- text, label etc. for APEX reports
-  ,txt.posted_by        as txt_posted_by
-  ,txt.posted_on        as txt_posted_on
-  ,txt.category         as txt_category
-  ,txt.read_more        as txt_read_more
-  ,case
-    when q1.tags_html1 is not null
-    then txt.tags
-  end                   as txt_tags
+   q1.post_id         as post_id
+  ,q1.category_id     as category_id
+  ,q1.blogger_id      as blogger_id
+  ,q1.blogger_name    as blogger_name
+  ,q1.post_title      as post_title
+  ,q1.category_title  as category_title
+  ,q1.post_desc       as post_desc
+  ,q1.first_paragraph as first_paragraph
+  ,q1.body_html       as body_html
+  ,q1.published_on    as published_on
+  ,q1.ctx_search      as ctx_search
+  ,q1.changed_on      as changed_on
+  ,q1.archive_year    as archive_year
+  ,q1.category_seq    as category_seq
+-- Generate post URL
+  ,blog_url.get_post(
+    p_post_id => q1.post_id
+  )                   as post_url
+  ,(
+    select
+      listagg( lkp.tag, ', ' )  within group( order by lkp.display_seq ) as tags
+    from blog_v_post_tags lkp
+    where 1 = 1
+    and lkp.post_id = q1.post_id
+  )                   as tags
+-- Aggregate tag HTML for post
+  ,(
+    select
+      xmlserialize(
+        content xmlagg( lkp_tag.tag_html1 order by lkp_tag.display_seq )
+      ) as tags_html
+    from blog_v_post_tags lkp_tag
+    where 1 = 1
+      and lkp_tag.post_id = q1.post_id
+  )                   as tags_html1
+  ,(
+    select
+      xmlserialize(
+        content xmlagg( lkp_tag.tag_html2 order by lkp_tag.display_seq )
+      ) as tags_html
+    from blog_v_post_tags lkp_tag
+    where 1 = 1
+      and lkp_tag.post_id = q1.post_id
+  )                   as tags_html2
 -- Fetch next post id and title
   ,(
     select
@@ -1622,7 +1781,7 @@ select
       and lkp_post.published_on > q1.published_on
     order by lkp_post.published_on asc
     fetch first 1 rows only
-  )                     as next_post
+  )                   as next_post
 -- Fetch previous post id and title
   ,(
     select
@@ -1635,32 +1794,70 @@ select
       and lkp_post.published_on < q1.published_on
     order by lkp_post.published_on desc
     fetch first 1 rows only
-  )                     as prev_post
+  )                   as prev_post
 from q1
--- Fetch APEX messages
-cross join(
-  select
-     apex_lang.message( 'BLOG_TXT_POSTED_BY' )  as posted_by
-    ,apex_lang.message( 'BLOG_TXT_POSTED_ON' )  as posted_on
-    ,apex_lang.message( 'BLOG_TXT_CATEGORY' )   as category
-    ,apex_lang.message( 'BLOG_TXT_TAGS' )       as tags
-    ,apex_lang.message( 'BLOG_TXT_READ_MORE' )  as read_more
-  from dual
-) txt
+where 1 = 1
+with read only
+/
+--------------------------------------------------------
+--  DDL for View BLOG_V_SETTINGS
+--------------------------------------------------------
+CREATE OR REPLACE FORCE VIEW "BLOG_V_SETTINGS" ("ID", "ROW_VERSION", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_DESC", "ATTRIBUTE_VALUE", "DATA_TYPE", "INT_MIN", "INT_MAX", "HELP_MESSAGE", "VALUE_REQUIRED", "ATTRIBUTE_GROUP_HTML") AS
+select
+   t1.id                      as id
+  ,t1.row_version             as row_version
+  ,t1.changed_on              as changed_on
+  ,lower(t1.changed_by)       as changed_by
+  ,t1.is_nullable             as is_nullable
+  ,t1.display_seq             as display_seq
+  ,apex_lang.message(
+    p_name => t1.attribute_message
+  )                           as attribute_desc
+  ,t1.attribute_value         as attribute_value
+  ,t1.data_type               as data_type
+  ,t1.int_min                 as int_min
+  ,t1.int_max                 as int_max
+  ,t1.help_message            as help_message
+  ,(
+    select lov.display_value
+    from blog_v_lov lov
+    where lov.lov_name = 'YES_NO'
+    and to_number( lov.return_value ) = ( t1.is_nullable - 1 ) * -1
+  )                           as value_required
+-- HTML in query because IG removes HTML from column HTM expression in control break column
+-- Contrel break is soretd and attribute data-sort-order gives correct sort order
+  ,apex_string.format(
+     p_message => '<span data-sort-order="%s" class="u-bold">%s</span>'
+    ,p0 => lpad( min( t1.display_seq ) over( partition by t1.attribute_group_message ), 5, '0' )
+    ,p1 =>
+      apex_lang.message(
+        p_name => t1.attribute_group_message
+      )
+  )                           as attribute_group_html
+from blog_settings t1
+where 1 = 1
+and t1.attribute_group_message != 'INTERNAL'
 with read only
 /
 --------------------------------------------------------
 --  DDL for View BLOG_V_ARCHIVE_YEAR
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ARCHIVE_YEAR" ("ARCHIVE_YEAR", "POST_COUNT", "CHANGED_ON", "ARCHIVE_URL", "SHOW_POST_COUNT") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ARCHIVE_YEAR" ("ARCHIVE_YEAR", "POST_COUNT", "CHANGED_ON", "ARCHIVE_URL", "SHOW_POST_COUNT", "LIST_BADGE", "LIST_ATTR") AS
 select
    v1.archive_year      as archive_year
-  ,count( v1.post_id )  as post_count
+  ,count(1)             as post_count
   ,max( v1.changed_on ) as changed_on
   ,blog_url.get_archive(
     p_archive_id => v1.archive_year
   )                     as archive_url
   ,feat.show_post_count as show_post_count
+  ,case feat.show_post_count
+    when 'INCLUDE' then count(1)
+  end                   as list_badge
+  ,apex_string.format(
+    p_message => 'data-item-id="%s"'
+    ,p0 => v1.archive_year
+  )                     as list_attr
 from blog_v_posts v1
 cross join(
   select
@@ -1678,17 +1875,25 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_CATEGORIES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT", "CHANGED_ON", "CATEGORY_URL", "SHOW_POST_COUNT") AS
-  select
+CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT", "CHANGED_ON", "CATEGORY_URL", "SHOW_POST_COUNT", "LIST_BADGE", "LIST_ATTR") AS
+select
    v1.category_id       as category_id
   ,v1.category_title    as category_title
   ,v1.category_seq      as display_seq
-  ,count( v1.post_id )  as posts_count
+  ,count(1)             as posts_count
+-- if category is changed, trigger tickles text index and post changes
   ,max( v1.changed_on ) as changed_on
   ,blog_url.get_category(
     p_category_id => v1.category_id
   )                     as category_url
   ,feat.show_post_count as show_post_count
+  ,case feat.show_post_count
+    when 'INCLUDE' then count(1)
+  end                   as list_badge
+  ,apex_string.format(
+    p_message => 'data-item-id="%s"'
+    ,p0 => v1.category_id
+  )                     as list_attr
 from blog_v_posts v1
 cross join(
   select
@@ -1708,8 +1913,8 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS_LAST20
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "PUBLISHED_ON", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE", "POST_URL") AS
-  select
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "PUBLISHED_ON", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE", "POST_URL", "LIST_ATTR") AS
+select
    rownum             as display_seq
   ,q1.post_id         as post_id
   ,q1.published_on    as published_on
@@ -1718,6 +1923,10 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "P
   ,q1.post_desc       as post_desc
   ,q1.category_title  as category_title
   ,q1.post_url        as post_url
+  ,apex_string.format(
+    p_message => 'data-item-id="%s"'
+    ,p0 => q1.post_id
+  )                   as list_attr
 from (
   select --+ first_rows(20)
      v1.post_id
@@ -1737,18 +1946,14 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_TAGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "TAG_URL", "POSTS_COUNT", "CHANGED_ON", "TAG_BUCKET", "SHOW_POST_COUNT") AS
-  select
+CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "TAG_URL", "POSTS_COUNT", "CHANGED_ON", "TAG_BUCKET", "SHOW_POST_COUNT", "LIST_BADGE") AS
+select
    v1.tag_id            as tag_id
   ,v1.tag               as tag
   ,v1.tag_url           as tag_url
   ,count( 1 )           as posts_count
-  ,max(
-    greatest(
-       v1.changed_on
-      ,v2.changed_on
-    )
-  )                     as changed_on
+-- if tag is changed, trigger tickles text index and post changes
+  ,max( v2.changed_on ) as changed_on
   ,width_bucket(
      count( 1 )
     ,min( count( 1 ) ) over()
@@ -1756,6 +1961,9 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "TAG_URL", "POSTS_C
     ,7
   )                     as tag_bucket
   ,feat.show_post_count as show_post_count
+  ,case feat.show_post_count
+    when 'INCLUDE' then count(1)
+  end                   as list_badge
 from blog_v_post_tags v1
 join blog_v_posts v2 on v1.post_id = v2.post_id
 -- Fetch APEX messages
@@ -1870,6 +2078,9 @@ begin
     ,sys_context( 'USERENV', 'PROXY_USER' )
     ,sys_context( 'USERENV', 'SESSION_USER' )
   );
+
+  -- tickle text index
+  :new.ctx_search := 'X';
 
 end;
 /
@@ -2207,7 +2418,7 @@ begin
   );
 
   -- tickle text index
-  :new.post_txt_search   := 'X';
+  :new.ctx_search   := 'X';
 
 end;
 /
@@ -2258,7 +2469,7 @@ begin
   then
 
     update blog_posts t1
-      set post_txt_search = post_txt_search
+      set ctx_search = ctx_search
     where 1 = 1
       and t1.category_id = :new.id
     ;
@@ -2290,7 +2501,7 @@ compound trigger
     else
 
       update blog_posts t1
-        set post_txt_search = post_txt_search
+        set ctx_search = ctx_search
       where 1 = 1
         and t1.id = :new.post_id
       ;
@@ -2303,7 +2514,7 @@ compound trigger
   begin
 
     update blog_posts t1
-      set post_txt_search = post_txt_search
+      set ctx_search = ctx_search
     where 1 = 1
       and exists(
         select 1
@@ -2331,7 +2542,7 @@ begin
   then
 
     update blog_posts t1
-      set post_txt_search = post_txt_search
+      set ctx_search = ctx_search
     where 1 = 1
     and exists(
       select 1
@@ -2478,7 +2689,9 @@ as
           ,xmlelement( "category", v1.category_title )
           ,xmlelement( "description", v1.post_desc )
           ,xmlelement( "body", apex_escape.striphtml( v1.body_html ) )
-          ,xmlelement( "tags", v1.visible_tags )
+          ,xmlelement( "tag", v1.visible_tags )
+          ,xmlelement( "author", v1.blogger_name )
+          --,xmlelement( "notes", v1.notes )
         )
       )
     into tlob
@@ -2490,11 +2703,34 @@ as
   end generate_post_datastore;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  procedure generate_comment_datastore(
+    rid   in rowid,
+    tlob  in out nocopy clob
+  )
+  as
+  begin
+
+    select
+      xmlserialize( content
+        xmlconcat(
+           xmlelement( "body", apex_escape.striphtml( v1.body_html ) )
+          ,xmlelement( "author", v1.comment_by )
+        )
+      )
+    into tlob
+    from blog_v_all_comments v1
+    where 1 = 1
+      and v1.ctx_rid = rid
+    ;
+
+  end generate_comment_datastore;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   function get_post_search(
     p_search in varchar2
   ) return varchar2
   as
-    c_xml constant varchar2(32767)
+    l_xml varchar2(32767)
       := '<query><textquery><progression>'
       ||    '<seq>#NORMAL#</seq>'
       ||    '<seq>#WILDCARD#</seq>'
@@ -2506,12 +2742,12 @@ as
     l_tokens    apex_t_varchar2;
 
     function generate_query(
-      p_feature in varchar2,
-      p_combine in varchar2 default null
+      p_feature in varchar2
     ) return varchar2
     as
-      l_token   varchar2(32767);
-      l_query   varchar2(32767);
+      l_token       varchar2(32767);
+      l_query       varchar2(32767);
+      l_within      apex_t_varchar2;
     begin
 
       for i in 1 .. l_tokens.count
@@ -2519,31 +2755,53 @@ as
 
         l_token := trim( l_tokens(i) );
 
-        if l_token is not null
+        if l_token = 'or'
         then
 
+          l_query := rtrim( l_query, 'and' );
+          l_query := rtrim( l_query, 'or' );
+          l_query := l_query || 'or';
+
+        elsif l_token is not null
+        and l_token not in( 'and', ':' )
+        then
+
+          l_within := apex_string.split( l_token, ':' );
+
+          if l_within.count() = 2
+          then
             l_query :=
               apex_string.format(
                 p_message =>
                   case p_feature
-                  when 'FUZZY' then '%s fuzzy({%s}, 55, 500) %s '
-                  when 'WILDCARD' then '%s {%s}%% %s '
-                  else '%s {%s} %s ' end
+                  when 'FUZZY' then ' %s fuzzy({%s}) within {%s} and'
+                  when 'WILDCARD' then ' %s {%s}%% within {%s} and'
+                  else ' %s {%s} within {%s} and' end
                 ,p0 => l_query
-                ,p1 => l_token
-                ,p2 => case p_combine when 'OR' then 'or' else 'and' end
+                ,p1 => l_within(2)
+                ,p2 => l_within(1)
               )
             ;
+          else
+            l_query :=
+              apex_string.format(
+                p_message =>
+                  case p_feature
+                  when 'FUZZY' then ' %s fuzzy({%s}) and'
+                  when 'WILDCARD' then ' %s {%s}%% and'
+                  else ' %s {%s} and' end
+                ,p0 => l_query
+                ,p1 => l_token
+              )
+            ;
+          end if;
 
         end if;
 
       end loop;
 
-      if p_combine = 'AND' then
-          l_query := substr( l_query, 1, length( l_query ) - 5 );
-      else
-          l_query := substr( l_query, 1, length( l_query ) - 4 );
-      end if;
+      l_query := rtrim( l_query, 'and' );
+      l_query := rtrim( l_query, 'or' );
 
       return trim( l_query );
 
@@ -2553,25 +2811,39 @@ as
 
     if substr( p_search, 1, 8 ) = 'ORATEXT:'
     then
-      l_search := substr( p_search, 9 );
+      l_search := trim( substr( apex_escape.striphtml( p_search ), 9 ) );
     else
 
       -- remove special characters; irrelevant for full text search
-      l_search := trim( regexp_replace( lower( p_search ), '[<>{}/()*%&!$?.:,;\+#]' ) );
+      l_search := apex_escape.striphtml( p_search );
+      l_search := regexp_replace( l_search, '[<>{}/()*%&!$?.,;\+#]', ' ');
+      l_search := regexp_replace( l_search, '(^[:]+|[:]+$|\s+[:]+|[:]+\s+|[:][:]+)', ' ' );
+      l_search := trim( lower( l_search ) );
+
+      l_tokens := apex_string.split( l_search, ' ' );
+
+      l_search := generate_query( 'NORMAL' );
 
       if l_search is not null
       then
-
-        l_tokens := apex_string.split( l_search, ' ' );
-
-        l_search := c_xml;
-        l_search := replace( l_search, '#NORMAL#', generate_query( 'NORMAL' ) );
+        l_search := replace( l_xml, '#NORMAL#', l_search );
         l_search := replace( l_search, '#WILDCARD#', generate_query( 'WILDCARD' ) );
         l_search := replace( l_search, '#FUZZY#', generate_query( 'FUZZY' ) );
-
       end if;
 
     end if;
+
+    l_search :=
+      case when l_search is null
+        then '{ }'
+        else l_search
+      end
+    ;
+
+    apex_debug.info(
+      p_message => 'Function get_post_search returns: %s'
+      ,p0 => l_search
+    );
 
     return l_search;
 
@@ -2615,6 +2887,7 @@ as
     p_error in apex_error.t_error
   ) return apex_error.t_error_result
   as
+
     l_genereric_error constant varchar2(255) := 'BLOG_GENERIC_ERROR';
 
     l_result          apex_error.t_error_result;
@@ -2629,37 +2902,27 @@ as
     l_result :=
       apex_error.init_error_result(
         p_error => p_error
-      );
-
+      )
+    ;
     -- If it's an internal error raised by APEX, like an invalid statement or
     -- code which can't be executed, the error text might contain security sensitive
     -- information. To avoid this security problem we can rewrite the error to
     -- a generic error message and log the original error message for further
     -- investigation by the help desk.
-    if p_error.is_internal_error then
-
-      if not p_error.is_common_runtime_error then
+    if p_error.is_internal_error
+    then
+      if not p_error.is_common_runtime_error
+      then
         -- Change the message to the generic error message which doesn't expose
         -- any sensitive information.
-        l_result.message := apex_lang.message(
-          p_name => l_genereric_error
-        );
+        l_result.message :=
+          apex_lang.message(
+            p_name => l_genereric_error
+          )
+        ;
         l_result.additional_info := null;
       end if;
-
     else
-
-      -- Don't change display position for specific ORA eror codes
-      if not p_error.ora_sqlcode between -20999 and -20901
-      then
-        -- Always show the error as inline error
-        l_result.display_location := case
-          when l_result.display_location = apex_error.c_on_error_page
-          then apex_error.c_inline_in_notification
-          else l_result.display_location
-          end
-       ;
-      end if;
 
       -- If it's a constraint violation like
       --
@@ -2673,23 +2936,24 @@ as
       -- If we don't find the constraint in our lookup table we fallback to
       -- the original ORA error message.
 
-      if p_error.ora_sqlcode in (-1, -2091, -2290, -2291, -2292) then
-
+      if p_error.ora_sqlcode in (-1, -2091, -2290, -2291, -2292)
+      then
         l_constraint_name :=
           apex_error.extract_constraint_name(
             p_error => p_error
-          );
-
-        l_err_mesg := apex_lang.message(
-          p_name => l_constraint_name
-        );
-
+          )
+        ;
+        l_err_mesg :=
+          apex_lang.message(
+            p_name => l_constraint_name
+          )
+        ;
         -- not every constraint has to be in our lookup table
-        if not l_err_mesg = l_constraint_name then
+        if not l_err_mesg = l_constraint_name
+        then
           l_result.message := l_err_mesg;
           l_result.additional_info := null;
         end if;
-
       end if;
 
       -- If an ORA error has been raised, for example a raise_application_error(-20xxx, '...')
@@ -2702,7 +2966,8 @@ as
         l_result.message :=
           apex_error.get_first_ora_error_text (
             p_error => p_error
-          );
+          )
+        ;
         l_result.additional_info := null;
       end if;
 
@@ -2710,13 +2975,12 @@ as
       -- apex_error.auto_set_associated_item to automatically guess the affected
       -- error field by examine the ORA error for constraint names or column names.
       if l_result.page_item_name is null
-      and l_result.column_alias is null then
-
+      and l_result.column_alias is null
+      then
         apex_error.auto_set_associated_item (
            p_error => p_error
           ,p_error_result => l_result
         );
-
       end if;
 
     end if;
@@ -3201,9 +3465,10 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure redirect_search(
-    p_value         in varchar2,
-    p_app_id        in varchar2 default null,
-    p_session       in varchar2 default null
+    p_value   in varchar2,
+    p_app_id  in varchar2 default null,
+    p_page_id in varchar2 default 'SEARCH',
+    p_session in varchar2 default null
   )
   as
   begin
@@ -3211,7 +3476,7 @@ as
     apex_util.redirect_url (
       apex_page.get_url(
          p_application => p_app_id
-        ,p_page        => 'SEARCH'
+        ,p_page        => p_page_id
         ,p_session     => p_session
 --          ,p_clear_cache => 'RP'
         ,p_items       => 'P0_SEARCH'
@@ -3583,17 +3848,17 @@ as
   end get_first_paragraph;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function file_upload(
+  procedure file_upload(
     p_file_name       in varchar2,
-    p_collection_name in varchar2
-  ) return boolean
+    p_collection_name in varchar2,
+    p_files_merged    out nocopy varchar2
+  )
   as
-    l_file_exists boolean;
     l_file_names  apex_t_varchar2;
     l_file_name   varchar2(256);
   begin
 
-    l_file_exists := false;
+    p_files_merged := 'YES';
 
     -- Get file names
     l_file_names := apex_string.split (
@@ -3629,10 +3894,10 @@ as
         and t1.name = l_file_names(i)
       ) loop
 
-        l_file_exists := case
+        p_files_merged := case
           when c1.file_id is not null
-          then true
-          else l_file_exists
+            then 'NO'
+            else p_files_merged
           end
         ;
 
@@ -3651,13 +3916,11 @@ as
     end loop;
 
     -- if non of files exists, insert files to blog_files
-    if not l_file_exists then
+    if p_files_merged = 'YES' then
       merge_files(
         p_collection_name => p_collection_name
       );
     end if;
-
-    return not l_file_exists;
 
   end file_upload;
 --------------------------------------------------------------------------------
@@ -3718,7 +3981,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure add_category(
-    p_title       in varchar2,
+    p_category_title  in varchar2,
     p_category_id out nocopy number
   )
   as
@@ -3728,7 +3991,7 @@ as
   begin
 
     -- remove whitespace from category title
-    l_title := remove_whitespace( p_title );
+    l_title := remove_whitespace( p_category_title );
     l_title_unique := upper( l_title );
 
     -- check if category already exists and fetch id
@@ -4002,14 +4265,7 @@ as
     if not regexp_like(p_value, '^https?\:\/\/.*$')
     then
       -- if validation fails prepare error message
-      l_err_mesg := apex_lang.message(
-        p_name => p_err_mesg
-      );
-
-      if l_err_mesg = apex_escape.html( upper( p_err_mesg ) )
-      then
-        l_err_mesg := p_err_mesg;
-      end if;
+      l_err_mesg := p_err_mesg;
 
     end if;
 
@@ -4029,17 +4285,10 @@ as
   begin
 
     -- prepare validation error message
-    l_err_mesg := apex_lang.message(
-      p_name => p_err_mesg
-    );
-
-    if l_err_mesg = apex_escape.html( upper( p_err_mesg ) )
-    then
-      l_err_mesg := p_err_mesg;
-    end if;
+    l_err_mesg := p_err_mesg;
 
     -- try convert timestamp to string
-    if to_char( systimestamp, p_value ) is not null
+    if to_char( sysdate, p_value ) is not null
     then
       -- if validation passes, clear error meassage
       l_err_mesg := null;
@@ -5032,16 +5281,7 @@ as
     if not regexp_like( p_email, '^.*\@.*\..*$' )
     then
       -- if validation fails prepare error message
-      l_err_mesg := apex_lang.message(
-        p_name => p_err_mesg
-      );
-
-      if l_err_mesg = apex_escape.html(
-        p_string => p_err_mesg
-      )
-      then
-        l_err_mesg := p_err_mesg;
-      end if;
+      l_err_mesg := p_err_mesg;
 
     end if;
 
@@ -5219,7 +5459,7 @@ as
       where 1 = 1
         and t1.is_active
           * t2.is_active
-          * case v1.post_status when 'PUBLISHED' then 1 else 0 end
+          * case v1.post_status_code when 'PUBLISHED' then 1 else 0 end
           = 1
         and v1.id = l_post_id
         -- send notification if subscription is created less than months ago specified in settings
@@ -5341,6 +5581,14 @@ as
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function get_robots_noindex_meta
+  return varchar2
+  as
+  begin
+    return '<meta name="robots" value="noindex">';
+  end get_robots_noindex_meta;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   function get_tab_canonical_link(
     p_page in varchar2
   ) return varchar2
@@ -5362,7 +5610,7 @@ as
     else
       -- if p_page is not defined
       apex_debug.warn( 'Canonical link tag not generated for tab.' );
-      l_html := null;
+      l_html := get_robots_noindex_meta;
     end if;
     -- return generated HTML
     return l_html;
@@ -5390,7 +5638,7 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for post.' );
-      l_html := null;
+      l_html := get_robots_noindex_meta;
     end if;
     -- return generated HTML
     return l_html;
@@ -5419,7 +5667,7 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for category.' );
-      l_html := null;
+      l_html := get_robots_noindex_meta;
     end if;
     -- return generated HTML
     return l_html;
@@ -5448,7 +5696,7 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for archive.' );
-      l_html := null;
+      l_html := get_robots_noindex_meta;
     end if;
     -- return generated HTML
     return l_html;
@@ -5477,7 +5725,7 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for tag.' );
-      l_html := null;
+      l_html := get_robots_noindex_meta;
     end if;
 
     -- return generated HTML

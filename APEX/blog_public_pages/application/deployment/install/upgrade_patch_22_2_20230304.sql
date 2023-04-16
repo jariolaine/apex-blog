@@ -1,11 +1,11 @@
 prompt --application/deployment/install/upgrade_patch_22_2_20230304
 begin
 --   Manifest
---     INSTALL: UPGRADE-patch_22.2.20230304
+--     INSTALL: UPGRADE-Patch 22.2.20230304
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -14,7 +14,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(31992677792885680)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
-,p_name=>'patch_22.2.20230304'
+,p_name=>'Patch 22.2.20230304'
 ,p_sequence=>80
 ,p_script_type=>'UPGRADE'
 ,p_condition_type=>'EXISTS'
@@ -42,25 +42,28 @@ wwv_flow_imp_shared.create_install_script(
 '',
 '  for c1 in(',
 '    select t1.id',
-'      ,published_on + numtodsinterval( rownum / 1000000 ,''second'' ) as new_published_on',
+'      ,t1.published_on + numtodsinterval(',
+'        ( row_number() over( partition by t1.published_on order by t1.id ) - 1 ) / 1000000',
+'        ,''second''',
+'      ) as new_published_on',
 '    from blog_posts t1',
 '    where 1 = 1',
 '    and exists(',
 '      select 1',
 '      from blog_posts x1',
 '      where 1 = 1',
-'      and x1.published_on = t1.published_on',
+'        and x1.published_on = t1.published_on',
 '      group by x1.published_on',
 '      having count(1) > 1',
 '    )',
-'    order by t1.id desc',
 '  ) loop',
 '',
-'    update blog_posts',
+'    update blog_posts t1',
 '      set published_on = c1.new_published_on',
-'      where 1 = 1',
-'        and id = c1.id',
-'      ;',
+'    where 1 = 1',
+'      and t1.id = c1.id',
+'      and t1.published_on != c1.new_published_on',
+'    ;',
 '',
 '  end loop;',
 '',

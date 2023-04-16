@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -27,7 +27,7 @@ wwv_flow_imp.create_flow(
 ,p_accept_old_checksums=>false
 ,p_compatibility_mode=>'21.2'
 ,p_flow_language=>'en'
-,p_flow_language_derived_from=>'BROWSER'
+,p_flow_language_derived_from=>'FLOW_PRIMARY_LANGUAGE'
 ,p_allow_feedback_yn=>'Y'
 ,p_date_format=>'&G_USER_DATE_TIME_FORMAT.'
 ,p_date_time_format=>'&G_USER_DATE_TIME_FORMAT.'
@@ -61,17 +61,17 @@ wwv_flow_imp.create_flow(
 ,p_rejoin_existing_sessions=>'N'
 ,p_csv_encoding=>'Y'
 ,p_auto_time_zone=>'Y'
-,p_error_handling_function=>'#OWNER#.blog_util.apex_error_handler'
+,p_error_handling_function=>'blog_util.apex_error_handler'
+,p_oracle_text_function=>'blog_ctx.get_post_search'
 ,p_tokenize_row_search=>'N'
-,p_friendly_url=>'N'
 ,p_substitution_string_01=>'BLOG_FILE_UPLOAD_COLLECTION'
 ,p_substitution_value_01=>'BLOG_FILE_UPLOAD'
 ,p_substitution_string_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_02=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230305071947'
+,p_last_upd_yyyymmddhh24miss=>'20230416045325'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>679
+,p_files_version=>729
 ,p_print_server_type=>'INSTANCE'
 ,p_is_pwa=>'N'
 ,p_copyright_banner=>wwv_flow_string.join(wwv_flow_t_varchar2(

@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -26,7 +26,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230228105324'
+,p_last_upd_yyyymmddhh24miss=>'20230411164152'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(19452283963363502)
@@ -41,19 +41,15 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   v1.content_html        as body_html',
-'  ,case v1.show_changed_on',
-'    when 1',
-'    then',
-'      apex_lang.message(',
-'         p_name => ''BLOG_MSG_LAST_UPDATED''',
-'        ,p0 => to_char( v1.changed_on, :APP_NLS_DATE_FORMAT )',
-'      )     ',
-'  end                     as changed_on',
+'   null             as region_title',
+'  ,v1.content_html  as body_html',
 ' -- save content_desc to compute item after regions',
 '  ,apex_util.savekey_vc2(',
 '    p_val => v1.content_desc',
-'  )                       as dialog_title',
+'  )                 as dialog_title',
+'  ,case v1.show_changed_on',
+'    when 1 then v1.changed_on ',
+'  end               as changed_on',
 'from blog_v_dynamic_content v1',
 'where 1 = 1',
 'and v1.content_id = :REQUEST',
@@ -70,23 +66,23 @@ wwv_flow_imp_page.create_report_region(
 ,p_plug_query_strip_html=>'N'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(19454652674363526)
+ p_id=>wwv_flow_imp.id(20472285543872837)
 ,p_query_column_id=>1
-,p_column_alias=>'BODY_HTML'
+,p_column_alias=>'REGION_TITLE'
 ,p_column_display_sequence=>10
-,p_column_heading=>'Body Html'
-,p_display_as=>'RICH_TEXT'
-,p_attribute_01=>'HTML'
+,p_column_heading=>'Region Title'
+,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(19453808827363518)
+ p_id=>wwv_flow_imp.id(19454652674363526)
 ,p_query_column_id=>2
-,p_column_alias=>'CHANGED_ON'
+,p_column_alias=>'BODY_HTML'
 ,p_column_display_sequence=>20
-,p_column_heading=>'Changed On'
-,p_use_as_row_header=>'N'
+,p_column_heading=>'Body Html'
+,p_display_as=>'RICH_TEXT'
+,p_attribute_01=>'HTML'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -97,6 +93,17 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>30
 ,p_column_heading=>'Dialog Title'
 ,p_use_as_row_header=>'Y'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(19453808827363518)
+,p_query_column_id=>4
+,p_column_alias=>'CHANGED_ON'
+,p_column_display_sequence=>40
+,p_column_heading=>'Changed On'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'{if CHANGED_ON/}<p>&APP_TEXT$BLOG_MSG_LAST_UPDATED. #CHANGED_ON#.</p>{endif/}'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -158,6 +165,7 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_name=>'Set Dialog Title'
 ,p_event_sequence=>20
 ,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'ready'
 );
 wwv_flow_imp_page.create_page_da_action(

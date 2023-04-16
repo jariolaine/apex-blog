@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230225084402'
+,p_last_upd_yyyymmddhh24miss=>'20230409184359'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8582113239518316)
@@ -37,70 +37,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_attribute_02=>'HTML'
 );
 wwv_flow_imp_page.create_report_region(
- p_id=>wwv_flow_imp.id(17115504500199917)
-,p_name=>'Page Load Time in Seconds'
-,p_template=>wwv_flow_imp.id(8490381578518205)
-,p_display_sequence=>40
-,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols t-BadgeList--3cols:t-Report--hideNoPagination'
-,p_source_type=>'NATIVE_SQL_REPORT'
-,p_query_type=>'SQL'
-,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select ',
-'   ls.average_elapsed_time  as average_elapsed_time',
-'  ,ls.minimum_elapsed_time  as minimum_elapsed_time',
-'  ,ls.maximum_elapsed_time  as maximum_elapsed_time',
-'from apex_workspace_log_summary ls',
-'where 1 = 1',
-'  and ls.application_id = :G_PUB_APP_ID',
-''))
-,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
-,p_ajax_enabled=>'Y'
-,p_lazy_loading=>false
-,p_query_row_template=>wwv_flow_imp.id(8515750866518222)
-,p_query_num_rows=>15
-,p_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_query_show_nulls_as=>'0'
-,p_csv_output=>'N'
-,p_prn_output=>'N'
-,p_sort_null=>'L'
-,p_plug_query_strip_html=>'N'
-,p_required_patch=>wwv_flow_imp.id(24687280101070827)
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(17115986049199921)
-,p_query_column_id=>1
-,p_column_alias=>'AVERAGE_ELAPSED_TIME'
-,p_column_display_sequence=>40
-,p_column_heading=>'Average '
-,p_use_as_row_header=>'N'
-,p_column_format=>'999999999999990D000'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(17116047592199922)
-,p_query_column_id=>2
-,p_column_alias=>'MINIMUM_ELAPSED_TIME'
-,p_column_display_sequence=>50
-,p_column_heading=>'Minimum'
-,p_use_as_row_header=>'N'
-,p_column_format=>'999999999999990D000'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(17116146435199923)
-,p_query_column_id=>3
-,p_column_alias=>'MAXIMUM_ELAPSED_TIME'
-,p_column_display_sequence=>60
-,p_column_heading=>'Maximum'
-,p_use_as_row_header=>'N'
-,p_column_format=>'999999999999990D000'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(37646499764287130)
 ,p_name=>'Posts'
 ,p_template=>wwv_flow_imp.id(8490381578518205)
@@ -113,28 +49,29 @@ wwv_flow_imp_page.create_report_region(
 'select',
 '  count( v1.id )        as num_posts',
 '  ,sum(',
-'    case v1.post_status',
+'    case v1.post_status_code',
 '    when ''PUBLISHED''',
 '      then 1',
 '      else 0',
 '    end',
 '   )                    as num_published_posts',
 '  ,sum(',
-'    case v1.post_status',
+'    case v1.post_status_code',
 '    when ''DRAFT''',
 '      then 1',
 '      else 0',
 '    end',
 '   )                    as num_draft_posts',
 '  ,sum(',
-'    case v1.post_status',
+'    case v1.post_status_code',
 '    when ''SCHEDULED''',
 '      then 1',
 '      else 0',
 '    end',
 '   )                    as num_scheduled_posts',
-'from #OWNER#.blog_v_all_posts v1',
-'where 1 = 1'))
+'from blog_v_all_posts v1',
+'where 1 = 1',
+'order by 1'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
@@ -153,7 +90,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'NUM_POSTS'
 ,p_column_display_sequence=>10
 ,p_column_heading=>'Total'
-,p_use_as_row_header=>'N'
+,p_use_as_row_header=>'Y'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -199,13 +136,13 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   sum( v1.comments_count )           as num_comments',
-'  ,sum( v1.unread_comments_count )    as num_unread_comments',
-'  ,sum( v1.moderate_comments_count )  as num_moderate_comments',
-'  ,sum( v1.published_comments_count ) as num_published_comments',
-'from #OWNER#.blog_v_all_posts v1',
+'   sum( v1.comments_cnt )           as num_comments',
+'  ,sum( v1.unread_comments_cnt )    as num_unread_comments',
+'  ,sum( v1.moderate_comments_cnt )  as num_moderate_comments',
+'  ,sum( v1.published_comments_cnt ) as num_published_comments',
+'from blog_v_all_posts v1',
 'where 1 = 1',
-''))
+'order by 1'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
@@ -224,7 +161,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'NUM_COMMENTS'
 ,p_column_display_sequence=>10
 ,p_column_heading=>'Total'
-,p_use_as_row_header=>'N'
+,p_use_as_row_header=>'Y'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -275,7 +212,8 @@ wwv_flow_imp_page.create_report_region(
 '  ,sum( ls.ip_addresses )       as ip_addresses',
 'from apex_workspace_log_summary ls',
 'where 1 = 1',
-'  and ls.application_id = :G_PUB_APP_ID'))
+'  and ls.application_id = :G_PUB_APP_ID',
+'order by 1'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
@@ -283,7 +221,6 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_num_rows=>15
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_show_nulls_as=>'0'
-,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
 ,p_csv_output=>'N'
 ,p_prn_output=>'N'
 ,p_sort_null=>'L'
@@ -295,7 +232,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'PAGE_VIEWS'
 ,p_column_display_sequence=>10
 ,p_column_heading=>'Page Views'
-,p_use_as_row_header=>'N'
+,p_use_as_row_header=>'Y'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );

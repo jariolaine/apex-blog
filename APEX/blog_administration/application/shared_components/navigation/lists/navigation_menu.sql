@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -37,16 +37,15 @@ wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(27411961204552217)
 ,p_list_item_display_sequence=>30
 ,p_list_item_link_text=>'Comments'
-,p_list_item_link_target=>'f?p=&APP_ID.:30:&SESSION.::&DEBUG.::::'
+,p_list_item_link_target=>'f?p=&APP_ID.:60:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-comments-o'
-,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
-,p_list_item_current_for_pages=>'30'
+,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(6831291448017455)
 ,p_list_item_display_sequence=>40
 ,p_list_item_link_text=>'Links'
-,p_list_item_link_target=>'f?p=&APP_ID.:17:&SESSION.::&DEBUG.::::'
+,p_list_item_link_target=>'f?p=&APP_ID.:50:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-link'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
@@ -54,9 +53,19 @@ wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(6831573656020954)
 ,p_list_item_display_sequence=>50
 ,p_list_item_link_text=>'Files'
-,p_list_item_link_target=>'f?p=&APP_ID.:15:&SESSION.::&DEBUG.::::'
+,p_list_item_link_target=>'f?p=&APP_ID.:70:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-database-file'
 ,p_list_item_current_type=>'TARGET_PAGE'
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(38534431679746113)
+,p_list_item_display_sequence=>60
+,p_list_item_link_text=>'Search'
+,p_list_item_link_target=>'f?p=&APP_ID.:90:&APP_SESSION.::&DEBUG.:::'
+,p_list_item_icon=>'fa-search'
+,p_required_patch=>wwv_flow_imp.id(8935943081653812)
+,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
+,p_list_item_current_for_pages=>'90'
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(24902524516683500)

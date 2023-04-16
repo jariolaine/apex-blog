@@ -52,6 +52,8 @@ as
 --                              resequence_categories
 --                              resequence_tags
 --    Jari Laine 09.05.2022 - Removed obsolete procedure run_settings_post_expression
+--    Jari Laine 08.03.2023 - Changed function is_date_format validate as date instead of timestamp
+--    Jari Laine 03.04.2023 - Changed function file_upload to procedure with out parameter
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -99,11 +101,12 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 22 Processing process "Close Dialog" condition
-  function file_upload(
+--  admin app page 22 processing
+  procedure file_upload(
     p_file_name       in varchar2,
-    p_collection_name in varchar2
-  ) return boolean;
+    p_collection_name in varchar2,
+    p_files_merged    out nocopy varchar2
+  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  admin app page 12
@@ -121,7 +124,7 @@ as
 -- Called from:
 --  admin app page 12 Processing process "Process Category"
   procedure add_category(
-    p_title           in varchar2,
+    p_category_title  in varchar2,
     p_category_id     out nocopy number
   );
 --------------------------------------------------------------------------------
@@ -562,17 +565,17 @@ as
   end get_first_paragraph;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function file_upload(
+  procedure file_upload(
     p_file_name       in varchar2,
-    p_collection_name in varchar2
-  ) return boolean
+    p_collection_name in varchar2,
+    p_files_merged    out nocopy varchar2
+  )
   as
-    l_file_exists boolean;
     l_file_names  apex_t_varchar2;
     l_file_name   varchar2(256);
   begin
 
-    l_file_exists := false;
+    p_files_merged := 'YES';
 
     -- Get file names
     l_file_names := apex_string.split (
@@ -608,10 +611,10 @@ as
         and t1.name = l_file_names(i)
       ) loop
 
-        l_file_exists := case
+        p_files_merged := case
           when c1.file_id is not null
-          then true
-          else l_file_exists
+            then 'NO'
+            else p_files_merged
           end
         ;
 
@@ -630,13 +633,11 @@ as
     end loop;
 
     -- if non of files exists, insert files to blog_files
-    if not l_file_exists then
+    if p_files_merged = 'YES' then
       merge_files(
         p_collection_name => p_collection_name
       );
     end if;
-
-    return not l_file_exists;
 
   end file_upload;
 --------------------------------------------------------------------------------
@@ -697,7 +698,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure add_category(
-    p_title       in varchar2,
+    p_category_title  in varchar2,
     p_category_id out nocopy number
   )
   as
@@ -707,7 +708,7 @@ as
   begin
 
     -- remove whitespace from category title
-    l_title := remove_whitespace( p_title );
+    l_title := remove_whitespace( p_category_title );
     l_title_unique := upper( l_title );
 
     -- check if category already exists and fetch id
@@ -981,14 +982,7 @@ as
     if not regexp_like(p_value, '^https?\:\/\/.*$')
     then
       -- if validation fails prepare error message
-      l_err_mesg := apex_lang.message(
-        p_name => p_err_mesg
-      );
-
-      if l_err_mesg = apex_escape.html( upper( p_err_mesg ) )
-      then
-        l_err_mesg := p_err_mesg;
-      end if;
+      l_err_mesg := p_err_mesg;
 
     end if;
 
@@ -1008,17 +1002,10 @@ as
   begin
 
     -- prepare validation error message
-    l_err_mesg := apex_lang.message(
-      p_name => p_err_mesg
-    );
-
-    if l_err_mesg = apex_escape.html( upper( p_err_mesg ) )
-    then
-      l_err_mesg := p_err_mesg;
-    end if;
+    l_err_mesg := p_err_mesg;
 
     -- try convert timestamp to string
-    if to_char( systimestamp, p_value ) is not null
+    if to_char( sysdate, p_value ) is not null
     then
       -- if validation passes, clear error meassage
       l_err_mesg := null;

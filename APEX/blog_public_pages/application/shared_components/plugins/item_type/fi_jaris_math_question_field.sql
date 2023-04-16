@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -19,9 +19,9 @@ wwv_flow_imp_shared.create_plugin(
 ,p_supported_component_types=>'APEX_APPLICATION_PAGE_ITEMS'
 ,p_image_prefix => nvl(wwv_flow_application_install.get_static_plugin_file_prefix('ITEM TYPE','FI.JARIS.MATH_QUESTION_FIELD'),'')
 ,p_api_version=>2
-,p_render_function=>'#OWNER#.blog_plugin.render_math_question_field'
-,p_ajax_function=>'#OWNER#.blog_plugin.ajax_math_question_field'
-,p_validation_function=>'#OWNER#.blog_plugin.validate_math_question_field'
+,p_render_function=>'blog_plugin.render_math_question_field'
+,p_ajax_function=>'blog_plugin.ajax_math_question_field'
+,p_validation_function=>'blog_plugin.validate_math_question_field'
 ,p_standard_attributes=>'VISIBLE:FORM_ELEMENT:SESSION_STATE:ELEMENT:WIDTH:PLACEHOLDER:ICON'
 ,p_substitute_attributes=>true
 ,p_subscribe_plugin_settings=>true

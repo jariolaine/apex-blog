@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_COMMENTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "USER_ICON", "ICON_MODIFIER") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "CTX_SEARCH", "USER_ICON", "ICON_MODIFIER") AS
   select
    t1.id          as comment_id
   ,t1.post_id     as post_id
@@ -9,6 +9,7 @@ CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "POST_ID", "PARENT
   ,t1.created_on  as created_on
   ,t1.comment_by  as comment_by
   ,t1.body_html   as comment_body
+  ,t1.ctx_search  as ctx_search
   ,apex_string.get_initials(
     p_str => t1.comment_by
   )               as user_icon

@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  Drop index BLOG_POST_UDS_CTX
+--  Drop index BLOG_POSTS_CTX
 --------------------------------------------------------
 declare
   index_not_exists exception;
@@ -11,14 +11,13 @@ exception when index_not_exists then
 end;
 /
 --------------------------------------------------------
---  Drop text index preferences
+--  Drop text index BLOG_POSTS_CTX preferences
 --------------------------------------------------------
 declare
   ctx_ddl_error exception;
   pragma exception_init ( ctx_ddl_error, -20000 );
 begin
-  ctx_ddl.drop_preference( 'BLOG_POST_UDS_DS' );
-  ctx_ddl.drop_preference( 'BLOG_POST_UDS_LX' );
+  ctx_ddl.drop_preference( 'BLOG_POSTS_UDS' );
 exception when ctx_ddl_error then
   null;
 end;

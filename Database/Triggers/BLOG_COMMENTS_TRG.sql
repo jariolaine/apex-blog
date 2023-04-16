@@ -29,5 +29,8 @@ begin
     ,sys_context( 'USERENV', 'SESSION_USER' )
   );
 
+  -- tickle text index
+  :new.ctx_search := 'X';
+
 end;
 /

@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -33,7 +33,7 @@ wwv_flow_imp_shared.create_list_template(
 ,p_theme_class_id=>10
 ,p_list_template_before_rows=>' <ul class="z-tagCloud #COMPONENT_CSS_CLASSES#" id="#LIST_ID#">'
 ,p_list_template_after_rows=>' </ul>'
-,p_a01_label=>'Badge'
+,p_a01_label=>'Badge. For example, the number of posts with a tag'
 ,p_a02_label=>'Tag weight as an integer between 1 and 8'
 );
 wwv_flow_imp.component_end;

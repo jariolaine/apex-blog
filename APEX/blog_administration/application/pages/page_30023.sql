@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.2'
+,p_release=>'22.2.4'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -29,7 +29,7 @@ wwv_flow_imp_page.create_page(
 ||'he default settings.</p>'))
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20221125172946'
+,p_last_upd_yyyymmddhh24miss=>'20230310221113'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(43851444064616938)
@@ -128,7 +128,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_html_expression=>'#PAGE#. #PAGE_NAME#'
 ,p_column_type=>'STRING'
 ,p_heading_alignment=>'LEFT'
-,p_use_as_row_header=>'N'
+,p_use_as_row_header=>'Y'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(43853274918616947)
