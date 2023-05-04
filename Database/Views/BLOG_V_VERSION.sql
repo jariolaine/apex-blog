@@ -8,4 +8,5 @@ select
 from blog_settings
 where 1 = 1
 and attribute_name = 'G_APP_VERSION'
+with read only
 /

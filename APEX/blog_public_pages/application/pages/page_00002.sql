@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230412172154'
+,p_last_upd_yyyymmddhh24miss=>'20230501051637'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6915627356677149)
@@ -552,7 +552,7 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_imp.id(6913618929677129)
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog.UI.setListCurrentItem({',
+'blog.ui.setListCurrentItem({',
 '   affectedElements: this.affectedElements',
 '  ,pageItem: "P2_POST_ID"',
 '});',

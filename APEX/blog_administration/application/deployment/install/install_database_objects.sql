@@ -2468,7 +2468,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end                   as list_badge',
 'from blog_v_post_tags v1',
 'join blog_v_posts v2 on v1.post_id = v2.post_id',
-'-- Fetch APEX messages',
+'-- Get feature tag post count status',
 'cross join(',
 '  select',
 '    apex_util.get_build_option_status(',
@@ -3300,7 +3300,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        )',
 '      )',
 '    into tlob',
-'    from blog_v_all_comment'))
+'    from blog'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3318,7 +3318,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'s v1',
+'_v_all_comments v1',
 '    where 1 = 1',
 '      and v1.ctx_rid = rid',
 '    ;',
@@ -4345,7 +4345,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ) return varchar2',
 '  as',
 '    l_link_group_id number;',
-'    l_max_seq       blog_v_all_lin'))
+'    l_max_seq       '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4363,7 +4363,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ks.display_seq%type;',
+'blog_v_all_links.display_seq%type;',
 '    l_next_seq      varchar2(256);',
 '  begin',
 '',
@@ -5375,7 +5375,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    return',
 '      get_archive(',
 '         p_archive_id => l_archive_id',
-'        ,p_canonical  => p_canonical'))
+'        ,p_canonical  '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5393,7 +5393,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'=> p_canonical',
 '      );',
 '',
 '  end get_archive;',
@@ -6399,8 +6399,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '          || ''<span aria-hidden="true" class="%s"></span>''',
 '          || ''</a>''',
 '        ,p0 => l_rss_url',
-'        ,p1 => apex_escape.html_attribute( l_rss_title )',
-' '))
+'        ,p1 => apex_escape.html_attribute( l'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6418,7 +6417,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'       ,p2 => ''application/rss+xml''',
+'_rss_title )',
+'        ,p2 => ''application/rss+xml''',
 '        ,p3 => ''t-Button t-Button--noLabel t-Button--icon t-Button--link''',
 '        ,p4 => ''fa fa-rss-square fa-3x fa-lg u-color-8-text''',
 '      )',

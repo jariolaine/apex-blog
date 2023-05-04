@@ -1363,6 +1363,7 @@ wwv_flow_imp_shared.append_to_install_script(
 'from blog_settings',
 'where 1 = 1',
 'and attribute_name = ''G_APP_VERSION''',
+'with read only',
 '/',
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_CATEGORIES',
@@ -1498,8 +1499,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  )                       as comment_flag_text',
 '  ,case q1.comment_status_code',
 '    when ''MODERATE''',
-'      then ''fa-exclamation-circle u-warning-text''',
-'    '))
+'      then ''fa-exclamation-circle u-war'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1517,7 +1517,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'when ''ENABLED''',
+'ning-text''',
+'    when ''ENABLED''',
 '      then ''fa-check-circle u-success-text''',
 '      else ''fa-minus-circle u-danger-text''',
 '  end                     as comment_status_icon',
@@ -2030,7 +2031,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end                   as list_badge',
 'from blog_v_post_tags v1',
 'join blog_v_posts v2 on v1.post_id = v2.post_id',
-'-- Fetch APEX messages',
+'-- Get feature tag post count status',
 'cross join(',
 '  select',
 '    apex_util.get_build_option_status(',
@@ -2449,8 +2450,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '/',
 '--------------------------------------------------------',
 '--  DDL for Trigger BLOG_POSTS_TRG',
-'--------------------------------------------------------',
-'CREATE O'))
+'------------------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2468,7 +2468,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'R REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_TRG"',
+'--------------------',
+'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_TRG"',
 'before',
 'insert or',
 'update on blog_posts',
@@ -3526,10 +3527,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      p_blob_content    => l_file_t.blob_content',
 '      ,p_mime_type      => l_file_t.mime_type',
 '      ,p_header_names   => l_header_names',
-'      ,p_header_values  => l_header_values',
-'    );',
-'',
-'  -- handle error'))
+'      ,p_header_values  => l_header_val'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3547,7 +3545,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'s',
+'ues',
+'    );',
+'',
+'  -- handle errors',
 '  exception',
 '  when no_data_found',
 '  then',
@@ -4567,8 +4568,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    end if;',
 '',
-'  end render_math_question_field;',
-'-----'))
+'  end rend'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4586,7 +4586,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'---------------------------------------------------------------------------',
+'er_math_question_field;',
+'--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure ajax_math_question_field(',
 '    p_item   in            apex_plugin.t_item,',
@@ -5580,7 +5581,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '          * case v1.post_status_code when ''PUBLISHED'' then 1 else 0 end',
 '          = 1',
 '        and v1.id = l_post_id',
-'        -- send notification if subscr'))
+'        -'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5598,7 +5599,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'iption is created less than months ago specified in settings',
+'- send notification if subscription is created less than months ago specified in settings',
 '        and t1.subscription_date > l_watch_end',
 '    ) loop',
 '',
@@ -6592,8 +6593,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        (',
 '          xmlagg(',
 '            xmlelement( "url"',
-'              ,xmlelement( "loc",',
-'                blo'))
+'              ,xmlelemen'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6611,7 +6611,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'g_url.get_tag(',
+'t( "loc",',
+'                blog_url.get_tag(',
 '                   p_tag_id     => tags.tag_id',
 '                  ,p_canonical  => ''YES''',
 '                )',

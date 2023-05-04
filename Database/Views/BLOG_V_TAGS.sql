@@ -21,7 +21,7 @@ select
   end                   as list_badge
 from blog_v_post_tags v1
 join blog_v_posts v2 on v1.post_id = v2.post_id
--- Fetch APEX messages
+-- Get feature tag post count status
 cross join(
   select
     apex_util.get_build_option_status(

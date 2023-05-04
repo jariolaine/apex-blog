@@ -22,11 +22,12 @@ var blog = blog || {};
   **/
   blog.admin = {
     /**
-    * @function showSuccessMessage
+    * @function blog.admin.showSuccessMessage
     * @summary Show APEX success message
     * @desc
     **/
     showSuccessMessage: function( message ){
+
       if( typeof message === "object" ){
         if( "text" in message ){
           apex.message.showPageSuccess( message.text );
@@ -34,86 +35,97 @@ var blog = blog || {};
           apex.message.showPageSuccess( apex.lang.getMessage( message.messageKey ) );
         }
       }
-    },
-    /**
-    * @function filesIrAfterRefresh
-    * @summary Handle page 15 "Files" interactive report after refresh actions
-    * @desc
-    **/
-    filesIrAfterRefresh: function( options ){
-
-      // set defaults
-      options = $.extend({
-        copyLink: "[data-clipboard-source]"
-        ,copySource: "clipboard-source"
-        ,downloadLink: "td[headers=DOWNLOAD] a"
-        ,downloadLinkClass: [
-          "t-Button"
-          ,"t-Button--noLabel"
-          ,"t-Button--icon"
-          ,"t-Button--small"
-          ,"w100p"
-          ,"mxw100"
-        ]
-      }, options );
-
-      // Copy from child data attribute for link title and aria-label
-      options.region$.find( options.downloadLink ).each(function(){
-
-        var this$ = $(this)
-          , fileInfo = this$.children( "span" ).data( "file-info" )
-        ;
-
-        this$.attr({ "title" : fileInfo, "aria-label" : fileInfo });
-
-      // Remove alt attribute from download link. APEX bug??
-      }).removeAttr( "alt" ).addClass( options.downloadLinkClass ).end()
-      // Find column that have copy URL button and attach click event
-      .find( options.copyLink ).click( function(){
-        navigator.clipboard.writeText( $( this ).data( options.copySource ) );
-      });
 
     },
+
     /**
-    * @function commentsIrAfterRefresh
-    * @summary Handle page 30 "Comments" interactive report after refresh actions
-    * @desc
+    * @module blog.admin.ir
     **/
-    commentsIrAfterRefresh: function( options ){
+    ir: {
 
-      // set defaults
-      options = $.extend({
-        openLink: "a[data-unread=\"true\"]"
-        ,newClass: "fa-envelope-open-o"
-        ,oldClass: ["fa-envelope-o", "fa-envelope-arrow-down"]
-        ,messageKey: "BLOG_LOV_COMMENT_FLAG_READ"
-      }, options );
+      /**
+      * @function blog.admin.ir.filesAfterRefresh
+      * @summary Handle page 15 "Files" interactive report after refresh actions
+      * @desc
+      **/
+      filesAfterRefresh: function( options ){
 
-      // Get title and aria label
-      var newLabel = apex.lang.getMessage( options.messageKey );
+        // set defaults
+        options = $.extend({
+          copySource: "clipboard-source"
+          ,downloadLink: "td[headers=DOWNLOAD] a"
+          ,downloadLinkClass: [
+            "t-Button"
+            ,"t-Button--noLabel"
+            ,"t-Button--icon"
+            ,"t-Button--small"
+            ,"w100p"
+            ,"mxw100"
+          ]
+        }, options );
 
-      // change link column css class
-      options.region$.find( options.openLink ).one( "click", function(){
-        $( $x( $( this ).data( "id" ) ) )
-          .removeClass( options.oldClass )
-          .addClass( options.newClass )
-          .attr({ "aria-label": newLabel, "title": newLabel })
-      });
+        // Copy from child data attribute for link title and aria-label
+        options.region$.find( options.downloadLink ).each(function(){
+
+          var this$ = $(this)
+            , fileInfo = this$.children( "span" ).data( "file-info" )
+          ;
+
+          this$.attr({ "title" : fileInfo, "aria-label" : fileInfo });
+
+        // Remove alt attribute from download link. APEX bug??
+        }).removeAttr( "alt" ).addClass( options.downloadLinkClass ).end()
+        // Find column that have copy URL button and attach click event
+        .find( "[data-" + options.copySource + "]" ).click( function(){
+          navigator.clipboard.writeText( $( this ).data( options.copySource ) );
+        });
+
+      },
+
+      /**
+      * @function blog.admin.ir.commentsAfterRefresh
+      * @summary Handle page 30 "Comments" interactive report after refresh actions
+      * @desc
+      **/
+      commentsAfterRefresh: function( options ){
+
+        // set defaults
+        options = $.extend({
+          openLink: "a[data-unread=\"true\"]"
+          ,newClass: "fa-envelope-open-o"
+          ,oldClass: ["fa-envelope-o", "fa-envelope-arrow-down"]
+          ,messageKey: "BLOG_LOV_COMMENT_FLAG_READ"
+        }, options );
+
+        // Get title and aria label
+        var newLabel = apex.lang.getMessage( options.messageKey );
+
+        // change link column css class
+        options.region$.find( options.openLink ).one( "click", function(){
+          $( $x( $( this ).data( "id" ) ) )
+            .removeClass( options.oldClass )
+            .addClass( options.newClass )
+            .attr({ "aria-label": newLabel, "title": newLabel })
+          ;
+        });
+
+      }
 
     },
+
     /**
-    * @module blog.admin.configIG
+    * @module blog.admin.ig
     **/
-    configIG : {
+    ig : {
 
       options: {},
 
       /**
-      * @function initOnPageLoad
+      * @function blog.admin.ig.pageLoad
       * @summary IG initialization code on page load
-      * @desc put blog.admin.configIG.initOnPageLoad in page JavaScript: Function and Global Variable Declaration
+      * @desc palce blog.admin.ig.pageLoad in page JavaScript: Function and Global Variable Declaration
       **/
-      initOnPageLoad: function( options ){
+      pageLoad: function( options ){
 
         // defaults for IG custom button data attribute values
         options = $.extend({
@@ -123,10 +135,10 @@ var blog = blog || {};
 
         // if sequence column defined
         if( options.sequenceField !== undefined ){
-          blog.admin.configIG.options = $.extend({
+          blog.admin.ig.options = $.extend({
             sequenceField: options.sequenceField
             ,sequenceStep: 10
-          }, blog.admin.configIG.options );
+          }, blog.admin.ig.options );
         }
 
         // Set IG to edit mode by default on page load
@@ -161,12 +173,13 @@ var blog = blog || {};
         });
 
       },
+
       /**
-      * @function initRegion
+      * @function blog.admin.ig.region
       * @summary IG region initialization code
-      * @desc put blog.admin.configIG.initRegion in region Advanced: JavaScript Initialization Code
+      * @desc place blog.admin.ig.region in region Advanced: JavaScript Initialization Code
       **/
-      initRegion: function( options ){
+      region: function( options ){
 
         // remove default "Save" and "Add Row" buttons form IG toolbar
         var toolbarData = $.apex.interactiveGrid.copyDefaultToolbar();
@@ -179,11 +192,11 @@ var blog = blog || {};
         }, options );
 
         // if sequence column defined in page load
-        if( blog.admin.configIG.options.sequenceField !== undefined ){
+        if( blog.admin.ig.options.sequenceField !== undefined ){
           options = $.extend({
             defaultModelOptions: {
-              sequenceField: blog.admin.configIG.options.sequenceField,
-              sequenceStep: blog.admin.configIG.options.sequenceStep
+              sequenceField: blog.admin.ig.options.sequenceField,
+              sequenceStep: blog.admin.ig.options.sequenceStep
             }
           }, options );
         }
@@ -207,12 +220,13 @@ var blog = blog || {};
         return options;
 
       },
+
       /**
-      * @function initColumn
+      * @function blog.admin.ig.cloumn
       * @summary IG columns initialization code
-      * @desc put blog.admin.configIG.initColumn in column Advanced: JavaScript Initialization Code
+      * @desc place blog.admin.ig.cloumn in column Advanced: JavaScript Initialization Code
       **/
-      initColumn: function( options ){
+      column: function( options ){
 
         // remove headers actions
         options = $.extend({
@@ -226,16 +240,17 @@ var blog = blog || {};
       }
 
     },
+
     /**
     * @module blog.admin.editor
     **/
     editor: {
       /**
-      * @function initItem
+      * @function blog.admin.editor.init
       * @summary Editor item initialization code
-      * @desc put blog.admin.editor.initItem in item Advanced: JavaScript Initialization Code
+      * @desc place blog.admin.editor.init in item Advanced: JavaScript Initialization Code
       **/
-      initItem: function( options ){
+      init: function( options ){
 
         var messageKey    = "BLOG_TXT_OPEN_NEW_TAB"
           , linkTarget    = "_blank"

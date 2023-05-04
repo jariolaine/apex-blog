@@ -20,7 +20,7 @@ wwv_flow_imp_page.create_page(
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8929534050595858)
 ,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog.admin.configIG.initOnPageLoad({',
+'blog.admin.ig.pageLoad({',
 '  regionId: "categories"',
 '  ,sequenceField: "DISPLAY_SEQ"',
 '});'))
@@ -32,7 +32,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230410090539'
+,p_last_upd_yyyymmddhh24miss=>'20230501044513'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(9834087769215232)
@@ -417,7 +417,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_link_attributes=>'title="&APP_TEXT$BLOG_TXT_VIEW_POSTS." aria-label="&APP_TEXT$BLOG_TXT_VIEW_POSTS." class="t-Button--stretch w100p mxw100"'
 ,p_filter_is_required=>false
 ,p_use_as_row_header=>false
-,p_javascript_code=>'blog.admin.configIG.initColumn'
+,p_javascript_code=>'blog.admin.ig.column'
 ,p_enable_hide=>true
 ,p_escape_on_http_output=>true
 ,p_help_text=>'Filter posts report by this category.'
@@ -452,7 +452,7 @@ wwv_flow_imp_page.create_interactive_grid(
 ,p_fixed_header_max_height=>440
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false
-,p_javascript_code=>'blog.admin.configIG.initRegion'
+,p_javascript_code=>'blog.admin.ig.region'
 );
 wwv_flow_imp_page.create_ig_report(
  p_id=>wwv_flow_imp.id(15190897476050378)

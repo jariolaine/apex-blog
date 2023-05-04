@@ -16,9 +16,9 @@ var blog = blog || {};
   });
 
   /**
-  * @module blog.UI
+  * @function blog.search
+  * @example return blog.search( this, { currentPage:'&APP_PAGE_ID.',submitIfEnter:event } )
   **/
-
   blog.search = function( element, options ){
 
     options = $.extend({
@@ -41,12 +41,15 @@ var blog = blog || {};
       ,showWait: options.showWait
     });
 
-  }
+  },
 
-  blog.UI = {
+  /**
+  * @module blog.ui
+  **/
+  blog.ui = {
 
     /**
-    * @function setListCurrentItem
+    * @function blog.ui.setListCurrentItem
     * @example blog.UI.setListCurrentItem({ affectedElements: this.affectedElements, pageItem: "PX_ITEM" });
     **/
     setListCurrentItem: function( options ){
@@ -76,7 +79,7 @@ var blog = blog || {};
     },
 
     /**
-    * @function setDialogTitle
+    * @function blog.ui.setDialogTitle
     * @example blog.UI.setDialogTitle("Dialog Title");
     **/
     setDialogTitle: function( title ){

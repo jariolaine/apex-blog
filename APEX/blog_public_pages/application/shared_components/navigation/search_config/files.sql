@@ -26,9 +26,11 @@ wwv_flow_imp_shared.create_search_config(
 '  ,v1.file_desc as file_desc',
 '  ,v1.file_size as file_size',
 '  ,v1.file_url  as file_url',
-'from blog_v_files v1'))
+'from blog_v_files v1',
+'where 1 = 1',
+'  and v1.is_download = 1',
+'  order by v1.file_name'))
 ,p_searchable_columns=>'FILE_NAME:FILE_DESC'
-,p_query_order_by=>'file_name'
 ,p_pk_column_name=>'FILE_ID'
 ,p_title_column_name=>'FILE_NAME'
 ,p_description_column_name=>'FILE_DESC'

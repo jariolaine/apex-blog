@@ -19,7 +19,7 @@ wwv_flow_imp_shared.create_list(
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(6892786786267448)
-,p_list_item_display_sequence=>10
+,p_list_item_display_sequence=>20
 ,p_list_item_link_text=>'&APP_USER.'
 ,p_list_item_link_target=>'#'
 ,p_list_item_icon=>'fa-user'
@@ -29,7 +29,7 @@ wwv_flow_imp_shared.create_list_item(
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(6893288762267448)
-,p_list_item_display_sequence=>20
+,p_list_item_display_sequence=>30
 ,p_list_item_link_text=>'---'
 ,p_list_item_link_target=>'separator'
 ,p_parent_list_item_id=>wwv_flow_imp.id(6892786786267448)
@@ -37,7 +37,7 @@ wwv_flow_imp_shared.create_list_item(
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(6893638948267449)
-,p_list_item_display_sequence=>30
+,p_list_item_display_sequence=>40
 ,p_list_item_link_text=>'Sign Out'
 ,p_list_item_link_target=>'&LOGOUT_URL.'
 ,p_list_item_icon=>'fa-sign-out'
