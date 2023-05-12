@@ -340,6 +340,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'File Status Icon'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(38334110345943633)
@@ -349,6 +350,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'File Type Icon'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(38333721148943632)
@@ -358,6 +360,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Btn Label Edit'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_rpt(
  p_id=>wwv_flow_imp.id(45063664044895990)

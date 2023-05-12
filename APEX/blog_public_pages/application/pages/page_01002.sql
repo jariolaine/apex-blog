@@ -81,6 +81,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'BODY_HTML'
 ,p_column_display_sequence=>20
 ,p_column_heading=>'Body Html'
+,p_use_as_row_header=>'N'
 ,p_display_as=>'RICH_TEXT'
 ,p_attribute_01=>'HTML'
 ,p_derived_column=>'N'

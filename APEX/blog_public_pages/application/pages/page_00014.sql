@@ -170,6 +170,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'VALUE_03'
 ,p_column_display_sequence=>9
 ,p_column_heading=>'Value 03'
+,p_use_as_row_header=>'N'
 ,p_display_as=>'RICH_TEXT'
 ,p_attribute_01=>'HTML'
 ,p_derived_column=>'N'

@@ -110,6 +110,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_type=>'DB_COLUMN'
 ,p_source_expression=>'TITLE'
 ,p_data_type=>'VARCHAR2'
+,p_session_state_data_type=>'VARCHAR2'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_TEXT_FIELD'
 ,p_heading=>'Title'
@@ -158,6 +159,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_type=>'DB_COLUMN'
 ,p_source_expression=>'IS_ACTIVE'
 ,p_data_type=>'NUMBER'
+,p_session_state_data_type=>'VARCHAR2'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_YES_NO'
 ,p_heading=>'Status'
@@ -191,6 +193,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_type=>'DB_COLUMN'
 ,p_source_expression=>'DISPLAY_SEQ'
 ,p_data_type=>'NUMBER'
+,p_session_state_data_type=>'VARCHAR2'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_NUMBER_FIELD'
 ,p_heading=>'Sequence'
@@ -407,6 +410,7 @@ wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(31246816612982908)
 ,p_name=>'VIEW_POST_LINK'
 ,p_source_type=>'NONE'
+,p_session_state_data_type=>'VARCHAR2'
 ,p_item_type=>'NATIVE_LINK'
 ,p_label=>'Link to Posts'
 ,p_heading_alignment=>'CENTER'

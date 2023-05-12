@@ -327,7 +327,7 @@ as
       -- generate HTML
       l_rss_url :=
         apex_string.format(
-          p_message => '<link href="%s" title="%s" rel="alternate" type="application/rss+xml" />'
+          p_message => '<link href="%s" title="%s" rel="alternate" type="application/rss+xml">'
           ,p0 => l_rss_url
           ,p1 =>
             apex_escape.html_attribute(

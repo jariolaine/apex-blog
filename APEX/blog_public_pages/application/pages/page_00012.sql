@@ -49,6 +49,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
 ,p_plug_cache_when_condition_e1=>'DEBUG'
 ,p_plug_cache_when_condition_e2=>'NO'
+,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
 ,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(30641878306098019)
 ,p_query_headings_type=>'NO_HEADINGS'

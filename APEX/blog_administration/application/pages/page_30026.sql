@@ -236,6 +236,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Interactive Report Id'
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(19651096732399866)
@@ -245,6 +246,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Ir Saved Report Id'
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(19651496678399867)
@@ -254,6 +256,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Ir Search'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(19651833986399867)

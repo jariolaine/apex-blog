@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230410101133'
+,p_last_upd_yyyymmddhh24miss=>'20230507062514'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(59057096840035448)
@@ -37,12 +37,18 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   v1.c001  as file_name',
-'  ,v1.c002  as file_desc',
-'from apex_collections v1',
-'where 1 = 1',
-'and v1.collection_name = :BLOG_FILE_UPLOAD_COLLECTION',
-'order by v1.seq_id'))
+'   t1.file_name as file_name',
+'  ,t1.file_desc as file_desc',
+'from blog_files t1',
+'where 1= 1',
+'and exists(',
+'  select 1',
+'  from apex_collections x1',
+'  where 1 = 1',
+'  and x1.collection_name = ''FILE_NAMES''',
+'  and x1.c002 = t1.file_name',
+')',
+'order by 1'))
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(8519378220518224)
@@ -114,6 +120,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Cancel'
 ,p_button_position=>'CLOSE'
+,p_button_execute_validations=>'N'
 ,p_warn_on_unsaved_changes=>null
 ,p_icon_css_classes=>'fa-close'
 );
@@ -128,6 +135,19 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_image_alt=>'Replace File(s)'
 ,p_button_position=>'NEXT'
 ,p_icon_css_classes=>'fa-save'
+);
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(39335982031650419)
+,p_button_sequence=>30
+,p_button_plug_id=>wwv_flow_imp.id(89448780504977967)
+,p_button_name=>'BACK'
+,p_button_action=>'REDIRECT_PAGE'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
+,p_button_image_alt=>'Back'
+,p_button_position=>'PREVIOUS'
+,p_button_redirect_url=>'f?p=&APP_ID.:72:&SESSION.::&DEBUG.:::'
+,p_icon_css_classes=>'fa-chevron-left'
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(38272995250830518)
@@ -168,8 +188,8 @@ wwv_flow_imp_shared.create_invokeapi_comp_param(
 ,p_data_type=>'VARCHAR2'
 ,p_has_default=>false
 ,p_display_sequence=>10
-,p_value_type=>'ITEM'
-,p_value=>'BLOG_FILE_UPLOAD_COLLECTION'
+,p_value_type=>'STATIC'
+,p_value=>'FILE_NAMES'
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(39248897148164524)

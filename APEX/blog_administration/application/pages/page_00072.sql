@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'17'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230410101053'
+,p_last_upd_yyyymmddhh24miss=>'20230507060516'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(59012357582031689)
@@ -104,7 +104,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
 ,p_attribute_01=>'APEX_APPLICATION_TEMP_FILES'
-,p_attribute_09=>'REQUEST'
+,p_attribute_09=>'SESSION'
 ,p_attribute_10=>'Y'
 ,p_attribute_12=>'DROPZONE_BLOCK'
 );
@@ -170,8 +170,8 @@ wwv_flow_imp_shared.create_invokeapi_comp_param(
 ,p_data_type=>'VARCHAR2'
 ,p_has_default=>false
 ,p_display_sequence=>20
-,p_value_type=>'ITEM'
-,p_value=>'BLOG_FILE_UPLOAD_COLLECTION'
+,p_value_type=>'STATIC'
+,p_value=>'FILE_NAMES'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(38266787569825086)

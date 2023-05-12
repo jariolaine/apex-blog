@@ -432,6 +432,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Btn Label Edit'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(33133905393313202)
@@ -441,6 +442,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Post Status Icon'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(25132885666432510)
@@ -450,6 +452,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Edit Url'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(33134369371313206)
@@ -459,6 +462,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Detail View Published'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3880372195180120)
@@ -468,6 +472,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Body Html'
 ,p_column_type=>'CLOB'
 ,p_display_text_as=>'HIDDEN'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(21076848274846837)
@@ -477,6 +482,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Tags Html'
 ,p_column_type=>'CLOB'
 ,p_display_text_as=>'HIDDEN'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(38590436638274305)
@@ -486,6 +492,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Ctx Search'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_rpt(
  p_id=>wwv_flow_imp.id(8604892694799317)

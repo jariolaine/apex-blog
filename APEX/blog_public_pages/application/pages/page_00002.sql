@@ -108,6 +108,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'COMMENT_TEXT'
 ,p_column_display_sequence=>32
 ,p_column_heading=>'Comment Text'
+,p_use_as_row_header=>'N'
 ,p_display_as=>'RICH_TEXT'
 ,p_attribute_01=>'HTML'
 ,p_derived_column=>'N'

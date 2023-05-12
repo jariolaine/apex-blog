@@ -364,6 +364,7 @@ wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(69724843803295910)
 ,p_name=>'VIEW_POSTS_LINK'
 ,p_source_type=>'NONE'
+,p_session_state_data_type=>'VARCHAR2'
 ,p_item_type=>'NATIVE_LINK'
 ,p_label=>'Link to Posts'
 ,p_heading_alignment=>'CENTER'

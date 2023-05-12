@@ -37,6 +37,7 @@ wwv_flow_imp_shared.create_row_template(
 ,p_row_template_display_cond4=>'NOT_CONDITIONAL'
 ,p_theme_id=>42
 ,p_theme_class_id=>8
+,p_translate_this_template=>'N'
 );
 wwv_flow_imp.component_end;
 end;
