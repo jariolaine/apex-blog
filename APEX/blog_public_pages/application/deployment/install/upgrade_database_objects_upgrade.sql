@@ -673,7 +673,12 @@ wwv_flow_imp_shared.create_install_script(
 '  );',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
-'--  public app page 2',
+'--  public app pa'))
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ge 2',
 '  procedure unsubscribe(',
 '    p_subscription_id   in varchar2',
 '  );',
@@ -692,24 +697,7 @@ wwv_flow_imp_shared.create_install_script(
 '--  MODIFIED (DD.MM.YYYY)',
 '--    Jari Laine 22.04.2019 - Created',
 '--    Jari Laine 29.04.2020 - New function get_robots_noindex_meta',
-'--                            Functions to generate canonical li'))
-);
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'nk outputs robot noindex meta tag',
+'--                            Functions to generate canonical link outputs robot noindex meta tag',
 '--                            if proper link can''t be generated',
 '--                            Added apex_debug to functions generating meta and canonical link',
 '--    Jari Laine 10.05.2020 - Utilize blog_url functions p_canonical',
@@ -1456,7 +1444,24 @@ wwv_flow_imp_shared.append_to_install_script(
 '      when t1.parent_id is not null',
 '        then ''REPLY''',
 '        else ''READ''',
-'    end as comment_flag_code',
+'    end as '))
+);
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.4'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'comment_flag_code',
 '    ,apex_escape.striphtml(',
 '      p_string => t1.body_html',
 '    ) as search_desc',
@@ -1498,25 +1503,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    where lov.lov_name = ''COMMENT_FLAG''',
 '    and lov.return_value = q1.comment_flag_code',
 '  )                       as comment_flag_text',
-'  ,case q1.co'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'mment_status_code',
+'  ,case q1.comment_status_code',
 '    when ''MODERATE''',
 '      then ''fa-exclamation-circle u-warning-text''',
 '    when ''ENABLED''',
@@ -2375,7 +2362,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
-'  :new.changed_by := coalesce(',
+'  :new.cha'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.4'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'nged_by := coalesce(',
 '     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
 '    ,sys_context( ''USERENV'', ''PROXY_USER'' )',
 '    ,sys_context( ''USERENV'', ''SESSION_USER'' )',
@@ -2449,25 +2454,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 'end;',
 '/',
-'---------------------------------------------------'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----',
+'--------------------------------------------------------',
 '--  DDL for Trigger BLOG_POSTS_TRG',
 '--------------------------------------------------------',
 'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POSTS_TRG"',
@@ -3398,7 +3385,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '      );',
 '      -- output HTTP header',
 '      sys.htp.p(',
-'        apex_string.format(',
+'        '))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.4'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex_string.format(',
 '           p_message => ''%s: %s''',
 '          ,p0 => p_header_names(i)',
 '          ,p1 => p_header_values(i)',
@@ -3527,25 +3532,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    download_file(',
 '      p_blob_content    => l_file_t.blob_content',
 '      ,p_mime_type      => l_file_t.mime_type',
-'    '))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'  ,p_header_names   => l_header_names',
+'      ,p_header_names   => l_header_names',
 '      ,p_header_values  => l_header_values',
 '    );',
 '',
@@ -4440,7 +4427,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end resequence_link_groups;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure resequence_links(',
+'  pr'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.4'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ocedure resequence_links(',
 '    p_link_group_id in varchar2',
 '  )',
 '  as',
@@ -4568,25 +4573,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        p_code =>',
 '          apex_string.format(',
 '            p_message => ''blog.comment.question(%s)''',
-'            ,p0 => apex_json.get'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_clob_output',
+'            ,p0 => apex_json.get_clob_output',
 '          )',
 '      );',
 '',
@@ -5405,7 +5392,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- TO DO see item 3 from package specs',
 '',
 '    -- do some basic check for email address',
-'    if not regexp_like( p_email, ''^.*\@.*\..*$'' )',
+'    if not regexp'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.4'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'_like( p_email, ''^.*\@.*\..*$'' )',
 '    then',
 '      -- if validation fails prepare error message',
 '      l_err_mesg := p_err_mesg;',
@@ -5586,25 +5591,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      where 1 = 1',
 '        and t1.is_active',
 '          * t2.is_active',
-'          * case v1.post_status_code when ''PUBLISHED'' then 1 els'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'e 0 end',
+'          * case v1.post_status_code when ''PUBLISHED'' then 1 else 0 end',
 '          = 1',
 '        and v1.id = l_post_id',
 '        -- send notification if subscription is created less than months ago specified in settings',
@@ -6377,7 +6364,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- show http error',
 '    blog_util.raise_http_error( 500 );',
-'    raise;',
+'    '))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.4'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'raise;',
 '',
 '  end sitemap_main;',
 '--------------------------------------------------------------------------------',
@@ -6599,25 +6604,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        "urlset",',
 '        xmlattributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns"),',
 '        (',
-'          xml'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'agg(',
+'          xmlagg(',
 '            xmlelement( "url"',
 '              ,xmlelement( "loc",',
 '                blog_url.get_tag(',
