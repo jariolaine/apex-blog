@@ -399,13 +399,14 @@ as
 --    Jari Laine 22.04.2019 - Created
 --    Jari Laine 03.01.2020 - Comments to package specs
 --    Jari Laine 13.04.2022 - Bug fix to procedure validate_math_question_field error message handling
+--    Jari Laine 07.05.2023 - Minor changes
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure render_math_question_field(
-    p_item    in apex_plugin.t_item,
-    p_plugin  in apex_plugin.t_plugin,
-    p_param   in apex_plugin.t_item_render_param,
+    p_item    in            apex_plugin.t_item,
+    p_plugin  in            apex_plugin.t_plugin,
+    p_param   in            apex_plugin.t_item_render_param,
     p_result  in out nocopy apex_plugin.t_item_render_result
   );
 --------------------------------------------------------------------------------
@@ -1323,6 +1324,7 @@ select
 from blog_settings
 where 1 = 1
 and attribute_name = 'G_APP_VERSION'
+with read only
 /
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_CATEGORIES
@@ -1966,7 +1968,7 @@ select
   end                   as list_badge
 from blog_v_post_tags v1
 join blog_v_posts v2 on v1.post_id = v2.post_id
--- Fetch APEX messages
+-- Get feature tag post count status
 cross join(
   select
     apex_util.get_build_option_status(
@@ -3855,10 +3857,8 @@ as
   )
   as
     l_file_names  apex_t_varchar2;
-    l_file_name   varchar2(256);
+    l_exists_cnt  number;
   begin
-
-    p_files_merged := 'YES';
 
     -- Get file names
     l_file_names := apex_string.split (
@@ -3866,54 +3866,37 @@ as
       ,p_sep => ':'
     );
 
-    -- create apex_collection for storing files
-    -- collection is used to show what files already exists in repository
-    -- we prompt user to confirm those files overwrite
+    -- create apex_collection for storing file name
     apex_collection.create_or_truncate_collection(
       p_collection_name => p_collection_name
     );
 
-    -- store uploaded files to apex_collection
+    -- store file names to collection
     for i in 1 .. l_file_names.count
     loop
-
-      l_file_name := substr(l_file_names(i), instr(l_file_names(i), '/') + 1);
-
-      for c1 in(
-        select
-           t2.id            as file_id
-          ,t2.row_version   as row_version
-          ,t2.is_active     as is_active
-          ,t2.is_download   as is_download
-          ,t2.file_desc     as file_desc
-          ,t1.mime_type     as mime_type
-          ,t1.blob_content  as blob_content
-        from apex_application_temp_files t1
-        left join blog_v_all_files t2 on t2.file_name = l_file_name
-        where 1 = 1
-        and t1.name = l_file_names(i)
-      ) loop
-
-        p_files_merged := case
-          when c1.file_id is not null
-            then 'NO'
-            else p_files_merged
-          end
-        ;
-
-        apex_collection.add_member(
-           p_collection_name => p_collection_name
-          ,p_n001     => c1.file_id
-          ,p_n002     => coalesce( c1.is_active, 1 )
-          ,p_n003     => coalesce( c1.is_download, 0 )
-          ,p_c001     => l_file_name
-          ,p_c002     => c1.file_desc
-          ,p_c003     => c1.mime_type
-          ,p_blob001  => c1.blob_content
-        );
-
-      end loop;
+      apex_collection.add_member(
+        p_collection_name => p_collection_name
+        ,p_c001 => l_file_names(i)
+        ,p_c002 => substr( l_file_names(i), instr( l_file_names(i), '/') + 1)
+      );
     end loop;
+
+    -- check if any file already exists
+    select
+      count(1) as num_rows
+    into l_exists_cnt
+    from blog_v_all_files t1
+    join apex_collections t2 on t1.file_name = t2.c002
+      and t2.collection_name = p_collection_name
+    ;
+
+    -- set out parameter
+    p_files_merged := case
+      when l_exists_cnt = 0
+        then 'YES'
+        else 'NO'
+      end
+    ;
 
     -- if non of files exists, insert files to blog_files
     if p_files_merged = 'YES' then
@@ -3944,16 +3927,17 @@ as
     -- insert new files and overwrite existing
     merge into blog_files t1 using (
       select
-         n001     as id
-        ,n002     as is_active
-        ,n003     as is_download
-        ,c001     as file_name
-        ,c002     as file_desc
-        ,c003     as mime_type
-        ,blob001  as blob_content
-      from apex_collections
-      where 1 = 1
-      and collection_name = p_collection_name
+        t3.id             as id
+        ,t3.is_active     as is_active
+        ,t3.is_download   as is_download
+        ,t2.c002          as file_name
+        ,t3.file_desc     as file_desc
+        ,t1.mime_type     as mime_type
+        ,t1.blob_content  as blob_content
+      from apex_application_temp_files t1
+      join apex_collections t2 on t1.name = t2.c001
+        and t2.collection_name = p_collection_name
+      left join blog_v_all_files t3 on t2.c002 = t3.file_name
     ) new_files
     on ( t1.id = new_files.id )
     when matched then
@@ -3961,7 +3945,7 @@ as
         set t1.blob_content = new_files.blob_content
     when not matched then
       insert (
-         is_active
+        is_active
         ,is_download
         ,file_name
         ,mime_type
@@ -3969,13 +3953,24 @@ as
         ,file_desc
       )
       values (
-         new_files.is_active
-        ,new_files.is_download
+        coalesce( new_files.is_active, 1)
+        ,coalesce( new_files.is_download, 0 )
         ,new_files.file_name
         ,new_files.mime_type
         ,new_files.blob_content
         ,new_files.file_desc
       );
+
+    -- cleanup. delete files from temp table.
+    delete from apex_application_temp_files t1
+    where 1 = 1
+    and exists(
+      select 1
+      from apex_collections x1
+      where 1 = 1
+      and x1.collection_name = p_collection_name
+      and x1.c001 = t1.name
+    );
 
   end merge_files;
 --------------------------------------------------------------------------------
@@ -4418,20 +4413,28 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure render_math_question_field(
-    p_item in apex_plugin.t_item,
-    p_plugin in apex_plugin.t_plugin,
-    p_param in apex_plugin.t_item_render_param,
-    p_result in out nocopy apex_plugin.t_item_render_result
+    p_item    in            apex_plugin.t_item,
+    p_plugin  in            apex_plugin.t_plugin,
+    p_param   in            apex_plugin.t_item_render_param,
+    p_result  in out nocopy apex_plugin.t_item_render_result
   )
   as
-    l_name varchar2(30);
+    l_name varchar2(256);
   begin
+
+    if apex_application.g_debug
+    then
+      apex_plugin_util.debug_page_item (
+        p_plugin      => p_plugin
+        ,p_page_item  => p_item
+      );
+    end if;
 
     l_name := apex_plugin.get_input_name_for_page_item(false);
 
-    if not (p_param.is_readonly or p_param.is_printer_friendly) then
+    if not ( p_param.is_readonly or p_param.is_printer_friendly ) then
 
-      sys.htp.p('<input type="text" '
+      sys.htp.p( '<input type="text" '
         || case when p_item.element_width is not null
             then'size="' || p_item.element_width ||'" '
            end
@@ -4444,7 +4447,7 @@ as
             ,p_name           => l_name
             ,p_default_class  => 'text_field apex-item-text'
           )
-        || 'value="" />'
+        || 'value="">'
       );
 
       if p_item.icon_css_classes is not null
@@ -4455,13 +4458,20 @@ as
         );
       end if;
 
+      apex_json.initialize_clob_output;
+      apex_json.open_object;
+      apex_json.write( 'itemId', p_item.name );
+      apex_json.write( 'ajaxIdentifier', apex_plugin.get_ajax_identifier );
+      apex_json.close_object;
+
       apex_javascript.add_onload_code (
-        p_code => 'apex.server.plugin("' || apex_plugin.get_ajax_identifier || '",{},{'
-        || 'dataType:"text",'
-        || 'success:function(data){'
-        || '$(data).insertBefore($("#' || p_item.name || '_LABEL").children());'
-        || '}});'
+        p_code =>
+          apex_string.format(
+            p_message => 'blog.comment.question(%s)'
+            ,p0 => apex_json.get_clob_output
+          )
       );
+
       -- Tell APEX that this textarea is navigable
       p_result.is_navigable := true;
 
@@ -4471,14 +4481,13 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure ajax_math_question_field(
-    p_item   in            apex_plugin.t_item,
-    p_plugin in            apex_plugin.t_plugin,
-    p_param  in            apex_plugin.t_item_ajax_param,
-    p_result in out nocopy apex_plugin.t_item_ajax_result
+    p_item    in            apex_plugin.t_item,
+    p_plugin  in            apex_plugin.t_plugin,
+    p_param   in            apex_plugin.t_item_ajax_param,
+    p_result  in out nocopy apex_plugin.t_item_ajax_result
   )
   as
     l_err   varchar2(4000);
-    l_data  varchar2(4000);
     l_min   number;
     l_max   number;
     l_num_1 number;
@@ -4494,15 +4503,6 @@ as
     l_max   := to_number( p_item.attribute_04 );
     l_num_2 := round( sys.dbms_random.value( l_min, l_max ) );
 
-    l_data  :=
-      apex_string.format(
-        p_message =>'<span class="z-question">%s&nbsp;&#%s&nbsp;%s&#%s</span>'
-        ,p0 => to_html_entities( l_num_1 )
-        ,p1 => ascii('+')
-        ,p2 => to_html_entities( l_num_2 )
-        ,p3 => ascii('?')
-      )
-    ;
     -- set correct answer to item session state
     apex_util.set_session_state(
        p_name   => p_item.attribute_05
@@ -4511,12 +4511,21 @@ as
     );
 
     -- Write header for the output
-    sys.owa_util.mime_header('text/plain', false);
-    sys.htp.p('Cache-Control: no-cache');
-    sys.htp.p('Pragma: no-cache');
-    sys.owa_util.http_header_close;
+    apex_plugin_util.print_json_http_header;
     -- Write output
-    sys.htp.prn( l_data );
+    apex_json.open_object;
+    apex_json.write(
+      'label'
+      ,apex_string.format(
+        p_message => '%s %s&nbsp;&#%s&nbsp;%s&#%s'
+        ,p0 => p_item.plain_label
+        ,p1 => to_html_entities( l_num_1 )
+        ,p2 => ascii('+')
+        ,p3 => to_html_entities( l_num_2 )
+        ,p4 => ascii('?')
+      )
+    );
+    apex_json.close_all;
 
   exception when others
   then
@@ -4534,10 +4543,10 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure validate_math_question_field(
-    p_item   in            apex_plugin.t_item,
-    p_plugin in            apex_plugin.t_plugin,
-    p_param  in            apex_plugin.t_item_validation_param,
-    p_result in out nocopy apex_plugin.t_item_validation_result
+    p_item    in            apex_plugin.t_item,
+    p_plugin  in            apex_plugin.t_plugin,
+    p_param   in            apex_plugin.t_item_validation_param,
+    p_result  in out nocopy apex_plugin.t_item_validation_result
   )
   as
     l_answer  varchar2(4000);
@@ -5806,7 +5815,7 @@ as
       -- generate HTML
       l_rss_url :=
         apex_string.format(
-          p_message => '<link href="%s" title="%s" rel="alternate" type="application/rss+xml" />'
+          p_message => '<link href="%s" title="%s" rel="alternate" type="application/rss+xml">'
           ,p0 => l_rss_url
           ,p1 =>
             apex_escape.html_attribute(

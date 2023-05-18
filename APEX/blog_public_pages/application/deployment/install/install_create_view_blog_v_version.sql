@@ -28,6 +28,7 @@ wwv_flow_imp_shared.create_install_script(
 'from blog_settings',
 'where 1 = 1',
 'and attribute_name = ''G_APP_VERSION''',
+'with read only',
 '/',
 ''))
 );

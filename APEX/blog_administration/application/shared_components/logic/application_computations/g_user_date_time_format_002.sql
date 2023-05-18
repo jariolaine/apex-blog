@@ -19,9 +19,8 @@ wwv_flow_imp_shared.create_flow_computation(
 ,p_computation_type=>'STATIC_ASSIGNMENT'
 ,p_computation_processed=>'REPLACE_EXISTING'
 ,p_computation=>'DD.MM.YYYY HH24:MI'
-,p_compute_when=>':G_USER_DATE_TIME_FORMAT is null or :G_USER_DATE_TIME_FORMAT = ''SINCE'''
-,p_compute_when_text=>'PLSQL'
-,p_compute_when_type=>'EXPRESSION'
+,p_compute_when=>'G_USER_DATE_TIME_FORMAT'
+,p_compute_when_type=>'ITEM_IS_NULL'
 );
 wwv_flow_imp.component_end;
 end;

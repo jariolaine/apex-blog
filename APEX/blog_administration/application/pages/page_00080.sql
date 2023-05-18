@@ -232,6 +232,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Btn Label'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_rpt(
  p_id=>wwv_flow_imp.id(80290492160189969)

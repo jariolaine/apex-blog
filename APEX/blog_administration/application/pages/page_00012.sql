@@ -71,7 +71,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230410122738'
+,p_last_upd_yyyymmddhh24miss=>'20230507055613'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8640589331194982)
@@ -445,11 +445,11 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
 ,p_help_text=>'Refer online document <a target="_blank" href="https://ckeditor.com/docs/ckeditor5/latest/features/basic-styles.html">Basic Text Styles: Bold, Italic and More</a> how style your post.'
-,p_plugin_init_javascript_code=>'blog.admin.editor.initItem'
+,p_plugin_init_javascript_code=>'blog.admin.editor.init'
 ,p_attribute_01=>'HTML'
 ,p_attribute_02=>'FULL'
 ,p_attribute_03=>'MULTILINE'
-,p_attribute_04=>'210'
+,p_attribute_04=>'280'
 ,p_attribute_07=>'Y'
 );
 wwv_flow_imp_page.create_page_item(

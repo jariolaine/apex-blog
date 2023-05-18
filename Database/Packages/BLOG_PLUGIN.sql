@@ -11,13 +11,14 @@ as
 --    Jari Laine 22.04.2019 - Created
 --    Jari Laine 03.01.2020 - Comments to package specs
 --    Jari Laine 13.04.2022 - Bug fix to procedure validate_math_question_field error message handling
+--    Jari Laine 07.05.2023 - Minor changes
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure render_math_question_field(
-    p_item    in apex_plugin.t_item,
-    p_plugin  in apex_plugin.t_plugin,
-    p_param   in apex_plugin.t_item_render_param,
+    p_item    in            apex_plugin.t_item,
+    p_plugin  in            apex_plugin.t_plugin,
+    p_param   in            apex_plugin.t_item_render_param,
     p_result  in out nocopy apex_plugin.t_item_render_result
   );
 --------------------------------------------------------------------------------
@@ -80,20 +81,28 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure render_math_question_field(
-    p_item in apex_plugin.t_item,
-    p_plugin in apex_plugin.t_plugin,
-    p_param in apex_plugin.t_item_render_param,
-    p_result in out nocopy apex_plugin.t_item_render_result
+    p_item    in            apex_plugin.t_item,
+    p_plugin  in            apex_plugin.t_plugin,
+    p_param   in            apex_plugin.t_item_render_param,
+    p_result  in out nocopy apex_plugin.t_item_render_result
   )
   as
-    l_name varchar2(30);
+    l_name varchar2(256);
   begin
+
+    if apex_application.g_debug
+    then
+      apex_plugin_util.debug_page_item (
+        p_plugin      => p_plugin
+        ,p_page_item  => p_item
+      );
+    end if;
 
     l_name := apex_plugin.get_input_name_for_page_item(false);
 
-    if not (p_param.is_readonly or p_param.is_printer_friendly) then
+    if not ( p_param.is_readonly or p_param.is_printer_friendly ) then
 
-      sys.htp.p('<input type="text" '
+      sys.htp.p( '<input type="text" '
         || case when p_item.element_width is not null
             then'size="' || p_item.element_width ||'" '
            end
@@ -106,7 +115,7 @@ as
             ,p_name           => l_name
             ,p_default_class  => 'text_field apex-item-text'
           )
-        || 'value="" />'
+        || 'value="">'
       );
 
       if p_item.icon_css_classes is not null
@@ -117,13 +126,20 @@ as
         );
       end if;
 
+      apex_json.initialize_clob_output;
+      apex_json.open_object;
+      apex_json.write( 'itemId', p_item.name );
+      apex_json.write( 'ajaxIdentifier', apex_plugin.get_ajax_identifier );
+      apex_json.close_object;
+
       apex_javascript.add_onload_code (
-        p_code => 'apex.server.plugin("' || apex_plugin.get_ajax_identifier || '",{},{'
-        || 'dataType:"text",'
-        || 'success:function(data){'
-        || '$(data).insertBefore($("#' || p_item.name || '_LABEL").children());'
-        || '}});'
+        p_code =>
+          apex_string.format(
+            p_message => 'blog.comment.question(%s)'
+            ,p0 => apex_json.get_clob_output
+          )
       );
+
       -- Tell APEX that this textarea is navigable
       p_result.is_navigable := true;
 
@@ -133,14 +149,13 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure ajax_math_question_field(
-    p_item   in            apex_plugin.t_item,
-    p_plugin in            apex_plugin.t_plugin,
-    p_param  in            apex_plugin.t_item_ajax_param,
-    p_result in out nocopy apex_plugin.t_item_ajax_result
+    p_item    in            apex_plugin.t_item,
+    p_plugin  in            apex_plugin.t_plugin,
+    p_param   in            apex_plugin.t_item_ajax_param,
+    p_result  in out nocopy apex_plugin.t_item_ajax_result
   )
   as
     l_err   varchar2(4000);
-    l_data  varchar2(4000);
     l_min   number;
     l_max   number;
     l_num_1 number;
@@ -156,15 +171,6 @@ as
     l_max   := to_number( p_item.attribute_04 );
     l_num_2 := round( sys.dbms_random.value( l_min, l_max ) );
 
-    l_data  :=
-      apex_string.format(
-        p_message =>'<span class="z-question">%s&nbsp;&#%s&nbsp;%s&#%s</span>'
-        ,p0 => to_html_entities( l_num_1 )
-        ,p1 => ascii('+')
-        ,p2 => to_html_entities( l_num_2 )
-        ,p3 => ascii('?')
-      )
-    ;
     -- set correct answer to item session state
     apex_util.set_session_state(
        p_name   => p_item.attribute_05
@@ -173,12 +179,21 @@ as
     );
 
     -- Write header for the output
-    sys.owa_util.mime_header('text/plain', false);
-    sys.htp.p('Cache-Control: no-cache');
-    sys.htp.p('Pragma: no-cache');
-    sys.owa_util.http_header_close;
+    apex_plugin_util.print_json_http_header;
     -- Write output
-    sys.htp.prn( l_data );
+    apex_json.open_object;
+    apex_json.write(
+      'label'
+      ,apex_string.format(
+        p_message => '%s %s&nbsp;&#%s&nbsp;%s&#%s'
+        ,p0 => p_item.plain_label
+        ,p1 => to_html_entities( l_num_1 )
+        ,p2 => ascii('+')
+        ,p3 => to_html_entities( l_num_2 )
+        ,p4 => ascii('?')
+      )
+    );
+    apex_json.close_all;
 
   exception when others
   then
@@ -196,10 +211,10 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure validate_math_question_field(
-    p_item   in            apex_plugin.t_item,
-    p_plugin in            apex_plugin.t_plugin,
-    p_param  in            apex_plugin.t_item_validation_param,
-    p_result in out nocopy apex_plugin.t_item_validation_result
+    p_item    in            apex_plugin.t_item,
+    p_plugin  in            apex_plugin.t_plugin,
+    p_param   in            apex_plugin.t_item_validation_param,
+    p_result  in out nocopy apex_plugin.t_item_validation_result
   )
   as
     l_answer  varchar2(4000);
