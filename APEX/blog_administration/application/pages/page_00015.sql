@@ -19,21 +19,16 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'Tags'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8929534050595858)
-,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog.admin.ig.pageLoad({',
-'  regionId: "tags"',
-'});'))
 ,p_step_template=>wwv_flow_imp.id(8456403392518180)
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230501044621'
+,p_last_upd_yyyymmddhh24miss=>'20230528120037'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(48358046251075855)
 ,p_plug_name=>'Add/Edit Tags'
-,p_region_name=>'tags'
 ,p_region_template_options=>'#DEFAULT#:margin-bottom-none'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(8495746153518209)
@@ -655,7 +650,7 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog.admin.showSuccessMessage({',
-'  "messageKey": "BLOG_MSG_UNUSED_TAGS_DELETED"',
+'  "text": "BLOG_MSG_TAGS_UNUSED_DELETED"',
 '});'))
 );
 wwv_flow_imp_page.create_page_da_event(

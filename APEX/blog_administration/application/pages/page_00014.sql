@@ -21,8 +21,7 @@ wwv_flow_imp_page.create_page(
 ,p_group_id=>wwv_flow_imp.id(8929534050595858)
 ,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog.admin.ig.pageLoad({',
-'  regionId: "categories"',
-'  ,sequenceField: "DISPLAY_SEQ"',
+'  sequenceField: "DISPLAY_SEQ"',
 '});'))
 ,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '',
@@ -32,7 +31,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230501044513'
+,p_last_upd_yyyymmddhh24miss=>'20230528120016'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(9834087769215232)
@@ -50,7 +49,6 @@ wwv_flow_imp_page.create_page_plug(
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(15190060145050375)
 ,p_plug_name=>'Add/Edit Categories'
-,p_region_name=>'categories'
 ,p_region_template_options=>'#DEFAULT#:margin-bottom-none'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(8495746153518209)
@@ -739,7 +737,7 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog.admin.showSuccessMessage({',
-'  "messageKey": "BLOG_MSG_CATEGORIES_RESEQUENCED"',
+'  "text": "BLOG_MSG_CATEGORIES_RESEQUENCED"',
 '});'))
 );
 wwv_flow_imp_page.create_page_da_event(
@@ -786,7 +784,7 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog.admin.showSuccessMessage({',
-'  "messageKey": "BLOG_MSG_UNUSED_CATEGORIES_DELETED"',
+'  "text": "BLOG_MSG_CATEGORIES_UNUSED_DELETED"',
 '});'))
 );
 wwv_flow_imp_page.create_page_da_event(

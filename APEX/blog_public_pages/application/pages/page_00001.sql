@@ -27,7 +27,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230412172110'
+,p_last_upd_yyyymmddhh24miss=>'20230525045133'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6432040642894060)
@@ -41,15 +41,15 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   v1.post_id                   as post_id',
-'  ,v1.category_id               as category_id',
-'  ,v1.published_on              as published_on',
-'  ,v1.published_on              as pubdate',
-'  ,v1.post_title                as post_title',
-'  ,v1.category_title            as category_title',
-'  ,v1.first_paragraph           as body_html',
-'  ,null                         as tags_html',
-'  ,:APP_TEXT$BLOG_TXT_READ_MORE as read_more_link',
+'   v1.post_id         as post_id',
+'  ,v1.category_id     as category_id',
+'  ,v1.published_on    as published_on',
+'  ,v1.published_on    as pubdate',
+'  ,v1.post_title      as post_title',
+'  ,v1.category_title  as category_title',
+'  ,v1.first_paragraph as body_html',
+'  ,null               as tags_html',
+'  ,''Y''                as read_more_link',
 'from blog_v_posts v1',
 'where 1 = 1',
 'order by v1.published_on desc',
@@ -166,7 +166,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_heading=>'Read More Link'
 ,p_use_as_row_header=>'N'
 ,p_column_link=>'f?p=&APP_ID.:2:&SESSION.::&DEBUG.::P2_POST_ID:#POST_ID#'
-,p_column_linktext=>'#READ_MORE_LINK#<span aria-hidden="true" class="fa fa-angle-double-right u-alignMiddle margin-left-sm"></span>'
+,p_column_linktext=>'&APP_TEXT$BLOG_TXT_READ_MORE.<span aria-hidden="true" class="fa fa-angle-double-right u-alignMiddle margin-left-sm"></span>'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );

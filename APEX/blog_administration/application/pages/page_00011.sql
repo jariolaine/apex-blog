@@ -66,7 +66,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230409184438'
+,p_last_upd_yyyymmddhh24miss=>'20230528124050'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8596898648797585)
@@ -391,7 +391,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'AM'
 ,p_column_label=>'Status'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<span title="#POST_STATUS#" aria-hidden="true" class="fa #POST_STATUS_ICON# w100p"></span>',
+'<span title="#POST_STATUS#" aria-hidden="true" class="t-Icon fa #POST_STATUS_ICON# w60"></span>',
 '<span class="u-VisuallyHidden">#POST_STATUS#</span>',
 '',
 ''))
@@ -410,7 +410,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Edit Tags'
 ,p_column_link=>'f?p=&APP_ID.:16:&SESSION.::&DEBUG.::P16_POST_ID:#POST_ID#'
 ,p_column_linktext=>'<span aria-hidden="true" class="t-Icon fa fa-tag"></span>'
-,p_column_link_attr=>'title="#BTN_EDIT_TAGS#" aria-label="#BTN_EDIT_TAGS#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small w100p mxw100"'
+,p_column_link_attr=>'title="#BTN_EDIT_TAGS#" aria-label="#BTN_EDIT_TAGS#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small w60"'
 ,p_allow_sorting=>'N'
 ,p_allow_filtering=>'N'
 ,p_allow_highlighting=>'N'
@@ -584,7 +584,7 @@ wwv_flow_imp_page.create_page_button(
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(13944956080359343)
-,p_name=>'Close New Post'
+,p_name=>'Create Post'
 ,p_event_sequence=>10
 ,p_triggering_element_type=>'BUTTON'
 ,p_triggering_button_id=>wwv_flow_imp.id(24911046946771849)
@@ -644,13 +644,13 @@ wwv_flow_imp_page.create_page_da_action(
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(13945452969359348)
-,p_name=>'Opened from Report'
+,p_name=>'Change Post'
 ,p_event_sequence=>40
 ,p_triggering_element_type=>'REGION'
 ,p_triggering_region_id=>wwv_flow_imp.id(8596898648797585)
 ,p_bind_type=>'bind'
 ,p_execution_type=>'IMMEDIATE'
-,p_bind_event_type=>'apexafterclosecanceldialog'
+,p_bind_event_type=>'apexafterclosedialog'
 );
 wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(13945573412359349)

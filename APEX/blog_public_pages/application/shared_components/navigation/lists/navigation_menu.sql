@@ -50,7 +50,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_display_sequence=>40
 ,p_list_item_link_text=>'About'
 ,p_list_item_link_target=>'f?p=&APP_ID.:12:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-info'
+,p_list_item_icon=>'fa-info-square-o'
 ,p_list_text_01=>'z_tab_ABOUT'
 ,p_required_patch=>wwv_flow_imp.id(30111637437970455)
 ,p_list_item_current_type=>'TARGET_PAGE'

@@ -19,21 +19,16 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'Features'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8574375481518289)
-,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog.admin.ig.pageLoad({',
-'  regionId: "features"',
-'});'))
 ,p_step_template=>wwv_flow_imp.id(8456403392518180)
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230501044836'
+,p_last_upd_yyyymmddhh24miss=>'20230522164851'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27063074415689131)
 ,p_plug_name=>'Features'
-,p_region_name=>'features'
 ,p_region_css_classes=>'z-config-ig'
 ,p_region_template_options=>'#DEFAULT#:margin-top-none'
 ,p_plug_template=>wwv_flow_imp.id(8475374748518195)

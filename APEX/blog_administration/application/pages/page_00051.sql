@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230410095140'
+,p_last_upd_yyyymmddhh24miss=>'20230528130245'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45211569698046322)
@@ -360,6 +360,17 @@ wwv_flow_imp_page.create_page_item(
 ,p_restricted_characters=>'US_ONLY'
 ,p_attribute_01=>'Y'
 );
+wwv_flow_imp_page.create_page_computation(
+ p_id=>wwv_flow_imp.id(46749461121361199)
+,p_computation_sequence=>10
+,p_computation_item=>'G_SUCCESS_MESSAGE'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
+,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'blog_cm.request_to_link_success_message(',
+'  p_request => :REQUEST',
+')'))
+);
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(38409531653151561)
 ,p_name=>'Close Dialog'
@@ -427,33 +438,13 @@ wwv_flow_imp_shared.create_invokeapi_comp_param(
 ,p_value=>'10'
 );
 wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(38408315358151561)
-,p_process_sequence=>40
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'Close Dialog Create'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when_button_id=>wwv_flow_imp.id(38398800674151552)
-,p_process_success_message=>'Link created.'
-);
-wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(38409129753151561)
-,p_process_sequence=>50
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'Dialog Clode Delete'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when_button_id=>wwv_flow_imp.id(38398002144151551)
-,p_process_success_message=>'Link deleted.'
-);
-wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(38408763511151561)
 ,p_process_sequence=>60
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'Close Dialog Update'
+,p_process_name=>'Close Dialog'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_success_message=>'Link updated.'
+,p_process_success_message=>'&G_SUCCESS_MESSAGE.'
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(38407907020151560)

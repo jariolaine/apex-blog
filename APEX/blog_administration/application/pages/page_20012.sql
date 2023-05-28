@@ -19,21 +19,16 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'Settings'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8574375481518289)
-,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog.admin.ig.pageLoad({',
-'  regionId: "preferences"',
-'});'))
 ,p_step_template=>wwv_flow_imp.id(8456403392518180)
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230501044953'
+,p_last_upd_yyyymmddhh24miss=>'20230522164831'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27272383079075402)
 ,p_plug_name=>'Settings'
-,p_region_name=>'preferences'
 ,p_region_css_classes=>'z-config-ig'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(8495746153518209)

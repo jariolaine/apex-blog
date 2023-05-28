@@ -3,7 +3,7 @@
 **/
 var blog = blog || {};
 
-( function( $, region, blog ) {
+( function( $, blog ) {
 
   // on page ready
   // hide automatically success message
@@ -28,11 +28,14 @@ var blog = blog || {};
     **/
     showSuccessMessage: function( message ){
 
+      var lMsg;
+
       if( typeof message === "object" ){
         if( "text" in message ){
-          apex.message.showPageSuccess( message.text );
-        } else if ( "messageKey" in message ){
-          apex.message.showPageSuccess( apex.lang.getMessage( message.messageKey ) );
+          if( message.text ){
+            lMsg = apex.lang.hasMessage( message.text ) ? apex.lang.getMessage( message.text ) : message.text;
+            apex.message.showPageSuccess( lMsg );
+          }
         }
       }
 
@@ -52,15 +55,14 @@ var blog = blog || {};
 
         // set defaults
         options = $.extend({
-          copySource: "clipboard-source"
-          ,downloadLink: "td[headers=DOWNLOAD] a"
+          dataCopySource: "clipboard-source"
+          ,downloadLink: "a[download]"
           ,downloadLinkClass: [
             "t-Button"
             ,"t-Button--noLabel"
             ,"t-Button--icon"
             ,"t-Button--small"
-            ,"w100p"
-            ,"mxw100"
+            ,"w60"
           ]
         }, options );
 
@@ -76,8 +78,8 @@ var blog = blog || {};
         // Remove alt attribute from download link. APEX bug??
         }).removeAttr( "alt" ).addClass( options.downloadLinkClass ).end()
         // Find column that have copy URL button and attach click event
-        .find( "[data-" + options.copySource + "]" ).click( function(){
-          navigator.clipboard.writeText( $( this ).data( options.copySource ) );
+        .find( "[data-" + options.dataCopySource + "]" ).click( function(){
+          navigator.clipboard.writeText( $( this ).data( options.dataCopySource ) );
         });
 
       },
@@ -107,6 +109,7 @@ var blog = blog || {};
             .addClass( options.newClass )
             .attr({ "aria-label": newLabel, "title": newLabel })
           ;
+          return true;
         });
 
       }
@@ -127,12 +130,6 @@ var blog = blog || {};
       **/
       pageLoad: function( options ){
 
-        // defaults for IG custom button data attribute values
-        options = $.extend({
-          btnSave: "save"
-          ,btnAddRow: "selection-add-row"
-        }, options );
-
         // if sequence column defined
         if( options.sequenceField !== undefined ){
           blog.admin.ig.options = $.extend({
@@ -140,37 +137,6 @@ var blog = blog || {};
             ,sequenceStep: 10
           }, blog.admin.ig.options );
         }
-
-        // Set IG to edit mode by default on page load
-        $( window ).on( "theme42ready", function(){
-          region( options.regionId  ).call( "getActions" ).set( "edit", true );
-        });
-
-        // run coode when page is ready
-        $(function(){
-
-          // Set IG save action to custom button
-          apex.actions.add([{
-            name: options.btnSave
-            ,action: function(){
-              region( options.regionId ).call( "getActions" ).invoke( "save" );
-            }
-          }]);
-
-          // don't include "Add Row" button to blog features and settings IG
-          if( !$( $x( options.regionId ) ).hasClass( "z-config-ig" ) ) {
-
-            // Set IG add row action to custom button
-            apex.actions.add([{
-              name: options.btnAddRow
-              ,action: function(){
-                region( options.regionId ).call( "getActions" ).invoke( "selection-add-row" );
-              }
-            }]);
-
-          }
-
-        });
 
       },
 
@@ -203,7 +169,7 @@ var blog = blog || {};
 
         if( $( $x( options.regionStaticId ) ).hasClass( "z-config-ig" ) ) {
 
-          // disable options from IG that are used manage blog features and settings
+          // disable options from features and settings IG
           options = $.extend({
             reportSettingsArea: false,
             defaultGridViewOptions: {
@@ -216,6 +182,37 @@ var blog = blog || {};
           }, options );
 
         }
+
+        // run coode when page is ready
+        $(function(){
+
+          // Set IG save action to custom button
+          apex.actions.add({
+            name: "save"
+            ,action: function(){
+              apex.region( options.regionStaticId ).call( "getActions" ).invoke( "save" );
+            }
+          });
+
+          // don't include "Add Row" button to blog features and settings IG
+          if( !$( $x( options.regionStaticId ) ).hasClass( "z-config-ig" ) ) {
+
+            // Set IG add row action to custom button
+            apex.actions.add({
+              name: "selection-add-row"
+              ,action: function(){
+                apex.region( options.regionStaticId ).call( "getActions" ).invoke( "selection-add-row" );
+              }
+            });
+
+          }
+
+        });
+
+        // Set IG to edit mode by default on page load
+        $( window ).on( "theme42ready", function(){
+          apex.region( options.regionStaticId  ).call( "getActions" ).set( "edit", true );
+        });
 
         return options;
 
@@ -278,4 +275,4 @@ var blog = blog || {};
       }
     }
   }
-})( apex.jQuery, apex.region, blog );
+})( apex.jQuery, blog );

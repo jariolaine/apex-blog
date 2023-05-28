@@ -19,7 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'D'
 ,p_page_component_map=>'14'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230507030303'
+,p_last_upd_yyyymmddhh24miss=>'20230525074027'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6433141607894071)
@@ -149,20 +149,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_comment=>'Archives link list'
 );
 wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(39334441815650404)
-,p_plug_name=>'Search from Blog'
-,p_region_css_classes=>'w100p mxw340'
-,p_region_template_options=>'#DEFAULT#:t-Form--noPadding:t-Form--large:t-Form--stretchInputs:t-Form--labelsAbove'
-,p_plug_template=>wwv_flow_imp.id(9264563603556088)
-,p_plug_display_sequence=>1
-,p_plug_display_point=>'BEFORE_NAVIGATION_BAR'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_required_patch=>wwv_flow_imp.id(39030203881986717)
-,p_landmark_type=>'search'
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
-);
-wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(39334600992650406)
 ,p_plug_name=>'Powered by APEX Blog'
 ,p_region_template_options=>'#DEFAULT#'
@@ -188,11 +174,11 @@ wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(39335143698650411)
 ,p_plug_name=>'Application Banner'
 ,p_region_css_classes=>'z-app-banner'
-,p_icon_css_classes=>'fa-apex'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(6781539027267375)
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'REGION_POSITION_07'
+,p_plug_item_display_point=>'BELOW'
 ,p_plug_source=>'&G_APP_NAME.'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -222,7 +208,7 @@ wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(39215190511831947)
 ,p_name=>'P0_SEARCH'
 ,p_item_sequence=>10
-,p_item_plug_id=>wwv_flow_imp.id(39334441815650404)
+,p_item_display_point=>'BEFORE_NAVIGATION_BAR'
 ,p_prompt=>'Search'
 ,p_placeholder=>'Search ...'
 ,p_display_as=>'NATIVE_TEXT_FIELD'
@@ -230,12 +216,13 @@ wwv_flow_imp_page.create_page_item(
 ,p_cMaxlength=>256
 ,p_tag_attributes=>'onkeypress="return blog.search({element:this,currentPage:''&APP_PAGE_ID.'',submitIfEnter:event})"'
 ,p_field_template=>wwv_flow_imp.id(6854381477267413)
-,p_item_css_classes=>'z-search-field'
+,p_item_css_classes=>'z-search-field w100p mxw320'
 ,p_item_icon_css_classes=>'fa-search'
-,p_item_template_options=>'#DEFAULT#'
+,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--stretchInputs:t-Form-fieldContainer--large'
 ,p_warn_on_unsaved_changes=>'I'
 ,p_is_persistent=>'N'
 ,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
+,p_required_patch=>wwv_flow_imp.id(39030203881986717)
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'SEARCH'

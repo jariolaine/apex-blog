@@ -41,7 +41,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230410094628'
+,p_last_upd_yyyymmddhh24miss=>'20230528130306'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45219411531225453)
@@ -195,7 +195,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'BA'
 ,p_column_label=>'Status'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<span title="#LINK_STATUS#" aria-hidden="true" class="fa #LINK_STATUS_ICON# w100p"></span>',
+'<span title="#LINK_STATUS#" aria-hidden="true" class="t-Icon fa #LINK_STATUS_ICON# w60"></span>',
 '<span class="u-VisuallyHidden">#LINK_STATUS#</span>',
 ''))
 ,p_column_type=>'STRING'
@@ -801,6 +801,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_03=>'BLOG_CM'
 ,p_attribute_04=>'RESEQUENCE_LINK_GROUPS'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_when_button_id=>wwv_flow_imp.id(38394580371131050)
 ,p_process_success_message=>'Groups resequenced.'
 ,p_process_comment=>'Resequence link groups.'
 );

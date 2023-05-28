@@ -481,14 +481,50 @@ wwv_flow_imp_shared.create_message(
 ,p_is_js_message=>true
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(37482135614712288)
+,p_name=>'BLOG_MSG_CATEGORIES_UNUSED_DELETED'
+,p_message_text=>'Unused categories deleted.'
+,p_is_js_message=>true
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(38635396322275585)
 ,p_name=>'BLOG_MSG_ENTER_SEARCH_TERM'
 ,p_message_text=>'Please enter a search term in the search box.'
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(46145424535009976)
+,p_name=>'BLOG_MSG_LINK_CREATED'
+,p_message_text=>'Link created.'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(46145891002014372)
+,p_name=>'BLOG_MSG_LINK_DELETED'
+,p_message_text=>'Link deleted.'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(46145685785012179)
+,p_name=>'BLOG_MSG_LINK_UPDATED'
+,p_message_text=>'Link updated.'
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(25114336930810124)
 ,p_name=>'BLOG_MSG_NO_DATA_FOUND'
 ,p_message_text=>'No records found.'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(46139123933789353)
+,p_name=>'BLOG_MSG_POST_CREATED'
+,p_message_text=>'Post created.'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(46138932551786633)
+,p_name=>'BLOG_MSG_POST_DELETED'
+,p_message_text=>'Post deleted.'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(46139522381794178)
+,p_name=>'BLOG_MSG_POST_UPDATED'
+,p_message_text=>'Post updated.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(37488439234807046)
@@ -497,14 +533,8 @@ wwv_flow_imp_shared.create_message(
 ,p_is_js_message=>true
 );
 wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(37482135614712288)
-,p_name=>'BLOG_MSG_UNUSED_CATEGORIES_DELETED'
-,p_message_text=>'Unused categories deleted.'
-,p_is_js_message=>true
-);
-wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(37481975424710084)
-,p_name=>'BLOG_MSG_UNUSED_TAGS_DELETED'
+,p_name=>'BLOG_MSG_TAGS_UNUSED_DELETED'
 ,p_message_text=>'Unused tags deleted.'
 ,p_is_js_message=>true
 );
@@ -666,7 +696,7 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(31239116333152817)
 ,p_name=>'BLOG_TXT_COPY_TO_CLIPBOARD'
-,p_message_text=>'Copy Full URL to Clipboard'
+,p_message_text=>'Copy URL to Clipboard'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(37792602476566104)

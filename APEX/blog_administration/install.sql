@@ -13,9 +13,9 @@ prompt --install
 @@application/shared_components/files/icons_app_icon_192_png.sql
 @@application/shared_components/files/icons_app_icon_512_png.sql
 @@application/shared_components/files/css_admin_min_css.sql
-@@application/shared_components/files/js_admin_min_js.sql
 @@application/shared_components/files/css_admin_css.sql
 @@application/shared_components/files/js_admin_js.sql
+@@application/shared_components/files/js_admin_min_js.sql
 @@application/plugin_settings.sql
 @@application/shared_components/security/authorizations/bloggers.sql
 @@application/shared_components/navigation/navigation_bar.sql
@@ -28,6 +28,7 @@ prompt --install
 @@application/shared_components/logic/application_items/g_blogger_name.sql
 @@application/shared_components/logic/application_items/g_post_title_date_format.sql
 @@application/shared_components/logic/application_items/g_pub_app_id.sql
+@@application/shared_components/logic/application_items/g_success_message.sql
 @@application/shared_components/logic/application_items/g_user_date_time_format.sql
 @@application/shared_components/logic/application_items/g_user_input_date_time_format.sql
 @@application/shared_components/logic/application_computations/g_user_date_time_format.sql

@@ -15,9 +15,9 @@ prompt --install
 @@application/shared_components/files/icons_app_icon_512_png.sql
 @@application/shared_components/files/css_rss_xsl_min_css.sql
 @@application/shared_components/files/js_blog_min_js.sql
-@@application/shared_components/files/css_style_min_css.sql
 @@application/shared_components/files/css_rss_xsl_css.sql
 @@application/shared_components/files/js_blog_js.sql
+@@application/shared_components/files/css_style_min_css.sql
 @@application/shared_components/files/css_style_css.sql
 @@application/plugin_settings.sql
 @@application/shared_components/navigation/navigation_bar.sql

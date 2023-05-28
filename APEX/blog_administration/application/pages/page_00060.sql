@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230501050429'
+,p_last_upd_yyyymmddhh24miss=>'20230524164506'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(65609751049299759)
@@ -233,7 +233,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_order=>130
 ,p_column_identifier=>'AL'
 ,p_column_label=>'Flag'
-,p_column_html_expression=>'<span title="#COMMENT_FLAG#" aria-label="#COMMENT_FLAG#" class="w100p fa #FLAG_ICON#" id="CF#COMMENT_ID#"></span>'
+,p_column_html_expression=>'<span title="#COMMENT_FLAG#" aria-label="#COMMENT_FLAG#" class="t-Icon fa #FLAG_ICON# w60" id="CF#COMMENT_ID#"></span>'
 ,p_column_type=>'STRING'
 ,p_column_alignment=>'CENTER'
 ,p_use_as_row_header=>'N'
@@ -245,7 +245,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'AK'
 ,p_column_label=>'Status'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<span title="#COMMENT_STATUS#" aria-hidden="true" class="fa #STATUS_ICON# w100p"></span>',
+'<span title="#COMMENT_STATUS#" aria-hidden="true" class="t-Icon fa #STATUS_ICON# w60"></span>',
 '<span class="u-VisuallyHidden">#COMMENT_STATUS#</span>'))
 ,p_column_type=>'STRING'
 ,p_column_alignment=>'CENTER'

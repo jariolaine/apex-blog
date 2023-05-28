@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230512091209'
+,p_last_upd_yyyymmddhh24miss=>'20230528115418'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8582113239518316)
@@ -225,6 +225,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_prn_output=>'N'
 ,p_sort_null=>'L'
 ,p_plug_query_strip_html=>'N'
+,p_required_patch=>wwv_flow_imp.id(24687280101070827)
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(20240924845665086)
@@ -286,6 +287,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'US_ONLY'
+,p_required_patch=>wwv_flow_imp.id(24687280101070827)
 ,p_attribute_01=>'Y'
 );
 wwv_flow_imp_page.create_page_computation(
@@ -299,6 +301,7 @@ wwv_flow_imp_page.create_page_computation(
 'from apex_workspace_log_summary ls',
 'where 1 = 1',
 '  and ls.application_id = :G_PUB_APP_ID'))
+,p_required_patch=>wwv_flow_imp.id(10006498624902877)
 );
 wwv_flow_imp.component_end;
 end;

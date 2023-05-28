@@ -667,6 +667,7 @@ as
 --    Jari Laine 09.05.2022 - Removed obsolete procedure run_settings_post_expression
 --    Jari Laine 08.03.2023 - Changed function is_date_format validate as date instead of timestamp
 --    Jari Laine 03.04.2023 - Changed function file_upload to procedure with out parameter
+--    Jari Laine 28.05.2023 - New function request_to_post_success_message
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -688,15 +689,15 @@ as
   function get_category_seq return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 20
+--  admin app page 52
   function get_link_grp_seq return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page xx
+--  admin app page 81
   function get_modal_page_seq return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 18
+--  admin app page 51
   function get_link_seq(
     p_link_group_id   in varchar2
   ) return varchar2;
@@ -714,7 +715,19 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 22 processing
+--  admin app page 12
+  function request_to_post_success_message(
+    p_request         in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 12
+  function request_to_link_success_message(
+    p_request         in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 72 processing
   procedure file_upload(
     p_file_name       in varchar2,
     p_collection_name in varchar2,
@@ -729,7 +742,7 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 23 and procedure blog_cm.file_upload
+--  admin app page 73 and procedure blog_cm.file_upload
   procedure merge_files(
     p_collection_name in varchar2
   );
@@ -750,7 +763,7 @@ as
   procedure resequence_categories;
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 24 and inside this package
+--  admin app page 16 and inside this package
   procedure add_tag(
     p_tag             in varchar2,
     p_tag_id          out nocopy number
@@ -765,11 +778,11 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 19
+--  admin app page 15
   procedure remove_unused_tags;
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 24
+--  admin app page 16
   procedure resequence_tags(
     p_post_id         in varchar2
   );
@@ -806,11 +819,11 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 17
+--  admin app page 50
   procedure resequence_link_groups;
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 17
+--  admin app page 50
   procedure resequence_links(
     p_link_group_id in varchar2
   );
@@ -4286,6 +4299,41 @@ as
     end;
 
   end request_to_post_status;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function request_to_post_success_message(
+    p_request         in varchar2
+  ) return varchar2
+  as
+  begin
+
+    return
+      case p_request
+        when 'CREATE'       then apex_lang.message( 'BLOG_MSG_POST_CREATED' )
+        when 'CREATE_DRAFT' then apex_lang.message( 'BLOG_MSG_POST_CREATED' )
+        when 'DELETE'       then apex_lang.message( 'BLOG_MSG_POST_DELETED' )
+                            else apex_lang.message( 'BLOG_MSG_POST_UPDATED' )
+      end
+    ;
+
+  end request_to_post_success_message;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function request_to_link_success_message(
+    p_request         in varchar2
+  ) return varchar2
+  as
+  begin
+
+    return
+      case p_request
+        when 'CREATE'       then apex_lang.message( 'BLOG_MSG_LINK_CREATED' )
+        when 'DELETE'       then apex_lang.message( 'BLOG_MSG_LINK_DELETED' )
+                            else apex_lang.message( 'BLOG_MSG_LINK_UPDATED' )
+      end
+    ;
+
+  end request_to_link_success_message;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_first_paragraph(

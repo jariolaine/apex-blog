@@ -71,7 +71,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230507055613'
+,p_last_upd_yyyymmddhh24miss=>'20230528125754'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8640589331194982)
@@ -642,6 +642,17 @@ wwv_flow_imp_page.create_page_computation(
 ')'))
 ,p_computation_comment=>'Get first paragraph fro post as preview. Must be run after computation of P12_HTML_BODY.'
 );
+wwv_flow_imp_page.create_page_computation(
+ p_id=>wwv_flow_imp.id(46740201876045604)
+,p_computation_sequence=>80
+,p_computation_item=>'G_SUCCESS_MESSAGE'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
+,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'blog_cm.request_to_post_success_message(',
+'  p_request => :REQUEST',
+')'))
+);
 wwv_flow_imp_page.create_page_validation(
  p_id=>wwv_flow_imp.id(8793505538610781)
 ,p_validation_name=>'P12_VALID_FROM must be timestamp'
@@ -873,7 +884,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_point=>'AFTER_HEADER'
 ,p_region_id=>wwv_flow_imp.id(8640589331194982)
 ,p_process_type=>'NATIVE_FORM_INIT'
-,p_process_name=>'Initialize form Post'
+,p_process_name=>'Initialize Form Post'
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(27060510671689106)
@@ -932,7 +943,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_region_id=>wwv_flow_imp.id(8640589331194982)
 ,p_process_type=>'NATIVE_FORM_DML'
-,p_process_name=>'Process form Post'
+,p_process_name=>'Process Form Post'
 ,p_attribute_01=>'REGION_SOURCE'
 ,p_attribute_05=>'Y'
 ,p_attribute_06=>'Y'
@@ -1037,43 +1048,13 @@ wwv_flow_imp_shared.create_invokeapi_comp_param(
 ,p_value=>'0'
 );
 wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(38476123080283532)
-,p_process_sequence=>50
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'Close Dialog Post Deleted'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when_button_id=>wwv_flow_imp.id(8786578519610764)
-,p_process_success_message=>'Post deleted.'
-);
-wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(38476335745283534)
-,p_process_sequence=>60
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'Close Dialog Post Created'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when_button_id=>wwv_flow_imp.id(8786300121610764)
-,p_process_success_message=>'Post created.'
-);
-wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(38476437912283535)
-,p_process_sequence=>70
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'Close Dialog Post Draft Created'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when_button_id=>wwv_flow_imp.id(19020291458830226)
-,p_process_success_message=>'Post draft created.'
-);
-wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(38476711128283538)
 ,p_process_sequence=>110
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'Close Dialog Post Updated'
+,p_process_name=>'Close Dialog'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_success_message=>'Post updated.'
+,p_process_success_message=>'&G_SUCCESS_MESSAGE.'
 );
 wwv_flow_imp.component_end;
 end;

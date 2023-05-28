@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230501050342'
+,p_last_upd_yyyymmddhh24miss=>'20230524164556'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45054908267895533)
@@ -196,7 +196,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'AA'
 ,p_column_label=>'Status'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<span title="#IS_ACTIVE#" aria-hidden="true" class="fa #FILE_STATUS_ICON# w100p"></span>',
+'<span title="#IS_ACTIVE#" aria-hidden="true" class="t-Icon fa #FILE_STATUS_ICON# w60"></span>',
 '<span class="u-VisuallyHidden">#IS_ACTIVE#</span>',
 ''))
 ,p_column_type=>'NUMBER'
@@ -213,7 +213,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'H'
 ,p_column_label=>'Attachment'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<span title="#IS_DOWNLOAD#" aria-hidden="true" class="fa #FILE_TYPE_ICON# w100p"></span>',
+'<span title="#IS_DOWNLOAD#" aria-hidden="true" class="t-Icon fa #FILE_TYPE_ICON# w60"></span>',
 '<span class="u-VisuallyHidden">#IS_DOWNLOAD#</span>',
 ''))
 ,p_column_type=>'NUMBER'
@@ -304,7 +304,6 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_type=>'NUMBER'
 ,p_column_alignment=>'CENTER'
 ,p_format_mask=>'DOWNLOAD:BLOG_V_ALL_FILES:BLOB_CONTENT:ID::MIME_TYPE:FILE_NAME:CHANGED_ON:FILE_CHARSET:attachment:<span data-file-info="#FILE_NAME# #FILE_SIZE#" class="fa fa-download" aria-hidden="true"></span>:'
-,p_static_id=>'DOWNLOAD'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
@@ -314,8 +313,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'AO'
 ,p_column_label=>'Copy URL'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<button title="&APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD." aria-label="&APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD." type="button" class="t-Button t-Button--noLabel t-Button--icon t-Button--small w100p mxw100" onclick="void(0);" data-clipboard-source="#RELATIVE_'
-||'PATH#">',
+'<button title="&APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD." aria-label="&APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD." type="button" class="t-Button t-Button--noLabel t-Button--icon t-Button--small w60" data-clipboard-source="#RELATIVE_PATH#">',
 '  <span class="fa fa-clone" aria-hidden="true"></span>',
 '</button>'))
 ,p_allow_sorting=>'N'
@@ -329,7 +327,6 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_allow_pivot=>'N'
 ,p_column_type=>'STRING'
 ,p_column_alignment=>'CENTER'
-,p_static_id=>'COPY_URL'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
@@ -484,7 +481,7 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_event_result=>'TRUE'
 ,p_action_sequence=>10
 ,p_execute_on_page_init=>'Y'
-,p_name=>'Modify download link'
+,p_name=>'Download link and copy to clipboard'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_affected_elements_type=>'TRIGGERING_ELEMENT'
 ,p_attribute_01=>'blog.admin.ir.filesAfterRefresh({ "region$": this.affectedElements });'
