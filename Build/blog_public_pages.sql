@@ -155,7 +155,7 @@ wwv_flow_imp.create_flow(
 ,p_error_handling_function=>'blog_util.apex_error_handler'
 ,p_tokenize_row_search=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230528175400'
+,p_last_upd_yyyymmddhh24miss=>'20230601075213'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>692
 ,p_print_server_type=>'INSTANCE'
@@ -19772,7 +19772,7 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 22.2.4.20230528'');',
+'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 22.2.4.20230601'');',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''20'',''0'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,blog_util.int_to_vc2(apex_application_install.get_applica'
 ||'tion_id));',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''110'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,''My Blog'');',
@@ -20884,6 +20884,9 @@ wwv_flow_imp_shared.create_install_script(
 '--    Jari Laine 08.03.2023 - Changed function is_date_format validate as date instead of timestamp',
 '--    Jari Laine 03.04.2023 - Changed function file_upload to procedure with out parameter',
 '--    Jari Laine 28.05.2023 - New function request_to_post_success_message',
+'--    Jari Laine 01.06.2023 - Removed procedure file_upload',
+'--                          - New function file_exists',
+'--                          - Changed procedure merge_files',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -20920,12 +20923,6 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  admin app page 12',
-'  function get_first_paragraph(',
-'    p_body_html       in clob',
-'  ) return varchar2;',
-'--------------------------------------------------------------------------------',
-'-- Called from:',
-'--  admin app page 12',
 '  function request_to_post_status(',
 '    p_request         in varchar2',
 '  ) return varchar2;',
@@ -20937,18 +20934,10 @@ wwv_flow_imp_shared.create_install_script(
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
-'--  admin app page 12',
+'--  admin app page 51',
 '  function request_to_link_success_message(',
 '    p_request         in varchar2',
 '  ) return varchar2;',
-'--------------------------------------------------------------------------------',
-'-- Called from:',
-'--  admin app page 72 processing',
-'  procedure file_upload(',
-'    p_file_name       in varchar2,',
-'    p_collection_name in varchar2,',
-'    p_files_merged    out nocopy varchar2',
-'  );',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  admin app page 12',
@@ -20958,9 +20947,21 @@ wwv_flow_imp_shared.create_install_script(
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
-'--  admin app page 73 and procedure blog_cm.file_upload',
+'--  admin app page 12',
+'  function get_first_paragraph(',
+'    p_body_html       in clob',
+'  ) return varchar2;',
+'--------------------------------------------------------------------------------',
+'-- Called from:',
+'--  admin app page 72 processing',
+'  function file_exists(',
+'    p_file_name       in varchar2',
+'  ) return varchar2;',
+'--------------------------------------------------------------------------------',
+'-- Called from:',
+'--  admin app page 72 and 73',
 '  procedure merge_files(',
-'    p_collection_name in varchar2',
+'    p_file_name       in varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
@@ -21315,9 +21316,7 @@ wwv_flow_imp_shared.create_install_script(
 '-- Called from:',
 '--  public app page 2',
 '  procedure unsubscribe(',
-'    p_subscription_id   in varchar2',
-'  );',
-'-------------------------------------------------------------------------'))
+'    p_subscription_id   in va'))
 );
 end;
 /
@@ -21325,7 +21324,9 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-------',
+'rchar2',
+'  );',
+'--------------------------------------------------------------------------------',
 'end "BLOG_COMM";',
 '/',
 'create or replace package "BLOG_HTML"',
@@ -22109,9 +22110,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,q1.ctx_search          as ctx_search',
 '  ,q1.rowid               as ctx_rid',
 '  ,q1.comment_status_code as comment_status_code',
-'  ,q1.comment_flag_code   as comment_flag_code',
-'  ,case',
-'    when q1.comment_flag_code in( ''N'))
+'  ,q1.'))
 );
 null;
 end;
@@ -22120,7 +22119,9 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'EW'', ''UNREAD'' )',
+'comment_flag_code   as comment_flag_code',
+'  ,case',
+'    when q1.comment_flag_code in( ''NEW'', ''UNREAD'' )',
 '      then ''true''',
 '      else ''false''',
 '  end                     as data_unread',
@@ -23051,9 +23052,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  if inserting then',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
-'    :new.created_by   := coalesce(',
-'      :ne'))
+'    :new.created_on   := coal'))
 );
 null;
 end;
@@ -23062,7 +23061,9 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'w.created_by',
+'esce( :new.created_on, localtimestamp );',
+'    :new.created_by   := coalesce(',
+'      :new.created_by',
 '      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
 '      ,sys_context( ''USERENV'', ''PROXY_USER'' )',
 '      ,sys_context( ''USERENV'', ''SESSION_USER'' )',
@@ -24116,10 +24117,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        )',
 '    );',
 '',
-'    -- add Content-Disposition header',
-'    apex_string.push(',
-'      p_table => l_header_names',
-'     ,p_value => ''Conten'))
+'    -- add Content-Disposition '))
 );
 null;
 end;
@@ -24128,7 +24126,10 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'t-Disposition''',
+'header',
+'    apex_string.push(',
+'      p_table => l_header_names',
+'     ,p_value => ''Content-Disposition''',
 '    );',
 '    apex_string.push(',
 '      p_table => l_header_values',
@@ -24528,6 +24529,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end request_to_link_success_message;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
+'  function remove_whitespace(',
+'    p_string  in varchar2',
+'  ) return varchar2',
+'  as',
+'  begin',
+'    -- remove whitespace characters from string',
+'    return trim( regexp_replace( p_string, ''\s+'', '' '' ) );',
+'  end remove_whitespace;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '  function get_first_paragraph(',
 '    p_body_html in clob',
 '  ) return varchar2',
@@ -24589,14 +24600,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end get_first_paragraph;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure file_upload(',
-'    p_file_name       in varchar2,',
-'    p_collection_name in varchar2,',
-'    p_files_merged    out nocopy varchar2',
-'  )',
+'  function file_exists(',
+'    p_file_name in varchar2',
+'  ) return varchar2',
 '  as',
+'    l_file_exists varchar2(6);',
 '    l_file_names  apex_t_varchar2;',
-'    l_exists_cnt  number;',
 '  begin',
 '',
 '    -- Get file names',
@@ -24605,78 +24614,63 @@ wwv_flow_imp_shared.append_to_install_script(
 '      ,p_sep => '':''',
 '    );',
 '',
-'    -- create apex_collection for storing file name',
-'    apex_collection.create_or_truncate_collection(',
-'      p_collection_name => p_collection_name',
-'    );',
-'',
-'    -- store file names to collection',
-'    for i in 1 .. l_file_names.count',
-'    loop',
-'      apex_collection.add_member(',
-'        p_collection_name => p_collection_name',
-'        ,p_c001 => l_file_names(i)',
-'        ,p_c002 => substr( l_file_names(i), instr( l_file_names(i), ''/'') + 1)',
-'      );',
-'    end loop;',
-'',
-'    -- check if any file already exists',
+'    -- check if any of files already exists',
 '    select',
-'      count(1) as num_rows',
-'    into l_exists_cnt',
+'      case',
+'        when count(1) = 0',
+'        then ''NO''',
+'        else ''YES''',
+'      end as file_exists',
+'    into l_file_exists',
 '    from blog_v_all_files t1',
-'    join apex_collections t2 on t1.file_name = t2.c002',
-'      and t2.collection_name = p_collection_name',
+'    where 1 = 1',
+'      and exists(',
+'        select 1',
+'        from apex_application_temp_files x1',
+'        join table( l_file_names ) x2',
+'          on x1.name = x2.column_value',
+'        where 1 = 1',
+'          and x1.filename = t1.file_name',
+'      )',
 '    ;',
 '',
-'    -- set out parameter',
-'    p_files_merged := case',
-'      when l_exists_cnt = 0',
-'        then ''YES''',
-'        else ''NO''',
-'      end',
-'    ;',
+'    return l_file_exists;',
 '',
-'    -- if non of files exists, insert files to blog_files',
-'    if p_files_merged = ''YES'' then',
-'      merge_files(',
-'        p_collection_name => p_collection_name',
-'      );',
-'    end if;',
-'',
-'  end file_upload;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function remove_whitespace(',
-'    p_string  in varchar2',
-'  ) return varchar2',
-'  as',
-'  begin',
-'    -- remove whitespace characters from string',
-'    return trim( regexp_replace( p_string, ''\s+'', '' '' ) );',
-'  end remove_whitespace;',
+'  end file_exists;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure merge_files(',
-'    p_collection_name in varchar2',
+'    p_file_name in varchar2',
 '  )',
 '  as',
+'    l_file_names apex_t_varchar2;',
 '  begin',
+'',
+'    -- Get file names',
+'    l_file_names := apex_string.split (',
+'      p_str => p_file_name',
+'      ,p_sep => '':''',
+'    );',
 '',
 '    -- insert new files and overwrite existing',
 '    merge into blog_files t1 using (',
 '      select',
-'        t3.id             as id',
-'        ,t3.is_active     as is_active',
-'        ,t3.is_download   as is_download',
-'        ,t2.c002          as file_name',
-'        ,t3.file_desc     as file_desc',
+'        t2.id             as id',
+'        ,t2.is_active     as is_active',
+'        ,t2.is_download   as is_download',
+'        ,t1.filename      as file_name',
+'        ,t2.file_desc     as file_desc',
 '        ,t1.mime_type     as mime_type',
 '        ,t1.blob_content  as blob_content',
 '      from apex_application_temp_files t1',
-'      join apex_collections t2 on t1.name = t2.c001',
-'        and t2.collection_name = p_collection_name',
-'      left join blog_v_all_files t3 on t2.c002 = t3.file_name',
+'      left join blog_v_all_files t2 on t1.filename = t2.file_name',
+'      where 1 = 1',
+'        and exists(',
+'          select 1',
+'          from table( l_file_names ) x1',
+'          where 1 = 1',
+'            and x1.column_value = t1.name',
+'        )',
 '    ) new_files',
 '    on ( t1.id = new_files.id )',
 '    when matched then',
@@ -24705,10 +24699,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '    where 1 = 1',
 '    and exists(',
 '      select 1',
-'      from apex_collections x1',
+'      from table( l_file_names ) x1',
 '      where 1 = 1',
-'      and x1.collection_name = p_collection_name',
-'      and x1.c001 = t1.name',
+'        and x1.column_value = t1.name',
 '    );',
 '',
 '  end merge_files;',
@@ -25150,16 +25143,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '-- Global procedures and functions',
 '--------------------------------------------------------------------------------',
-'-----------------------------------------------------------------------------'))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'---',
+'--------------------------------------------------------------------------------',
 '  procedure render_math_question_field(',
 '    p_item    in            apex_plugin.t_item,',
 '    p_plugin  in            apex_plugin.t_plugin,',
@@ -25170,7 +25154,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_name varchar2(256);',
 '  begin',
 '',
-'    if apex_application.g_debug',
+'    if apex_applicat'))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ion.g_debug',
 '    then',
 '      apex_plugin_util.debug_page_item (',
 '        p_plugin      => p_plugin',
@@ -26159,16 +26152,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure reply_notify(',
-'    p_app_id        '))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'  in varchar2,',
+'    p_app_id          in varchar2,',
 '    p_app_name        in varchar2,',
 '    p_post_id         in varchar2,',
 '    p_email_template  in varchar2',
@@ -26182,7 +26166,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    l_post_id := to_number( p_post_id );',
 '',
-'    -- fetch application email address',
+'    -- fetch application email '))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'address',
 '    l_app_email := blog_util.get_attribute_value( ''G_APP_EMAIL'' );',
 '    -- if application email address is not set, exit from procedure',
 '    if l_app_email is null',
@@ -27155,16 +27148,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '          xmlagg(',
 '            xmlelement( "url"',
 '              ,xmlelement( "loc",',
-'                blog_u'))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'rl.get_archive(',
+'                blog_url.get_archive(',
 '                   p_archive_id => arc.archive_year',
 '                  ,p_canonical  => ''YES''',
 '                )',
@@ -27174,7 +27158,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '                  sys_extract_utc( arc.changed_on )',
 '                  ,blog_util.g_iso_8601_date',
 '                )',
-'              )',
+'       '))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'       )',
 '            ) order by arc.archive_year desc',
 '          )',
 '        )',
@@ -27423,7 +27416,7 @@ wwv_flow_imp_shared.create_install_script(
 '-- Update version info',
 '--------------------------------------------------------',
 'update blog_settings',
-'  set attribute_value = ''Release 22.2.4.20230528''',
+'  set attribute_value = ''Release 22.2.4.20230601''',
 'where 1 = 1',
 '  and attribute_name = ''G_APP_VERSION''',
 ';',

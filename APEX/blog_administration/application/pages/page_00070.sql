@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230524164556'
+,p_last_upd_yyyymmddhh24miss=>'20230601074753'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45054908267895533)
@@ -303,7 +303,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_allow_pivot=>'N'
 ,p_column_type=>'NUMBER'
 ,p_column_alignment=>'CENTER'
-,p_format_mask=>'DOWNLOAD:BLOG_V_ALL_FILES:BLOB_CONTENT:ID::MIME_TYPE:FILE_NAME:CHANGED_ON:FILE_CHARSET:attachment:<span data-file-info="#FILE_NAME# #FILE_SIZE#" class="fa fa-download" aria-hidden="true"></span>:'
+,p_format_mask=>'DOWNLOAD:BLOG_V_ALL_FILES:BLOB_CONTENT:ID::MIME_TYPE:FILE_NAME:CHANGED_ON:FILE_CHARSET:attachment:<span data-file-info="#FILE_NAME# #FILE_SIZE#" class="t-Icon fa fa-download" aria-hidden="true"></span>:'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
@@ -367,13 +367,13 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_report_alias=>'29915'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'FILE_NAME:FILE_SIZE:IS_DOWNLOAD:BTN_COPY_URL:FILE_DOWNLOAD:IS_ACTIVE:CHANGED_SINCE:'
-,p_sort_column_1=>'FILE_NAME'
-,p_sort_direction_1=>'ASC'
-,p_sort_column_2=>'CHANGED_ON'
-,p_sort_direction_2=>'DESC'
-,p_sort_column_3=>'0'
-,p_sort_direction_3=>'ASC'
+,p_report_columns=>'FILE_NAME:FILE_SIZE:CHANGED_SINCE:IS_DOWNLOAD:BTN_COPY_URL:FILE_DOWNLOAD:IS_ACTIVE:'
+,p_sort_column_1=>'CHANGED_SINCE'
+,p_sort_direction_1=>'DESC'
+,p_sort_column_2=>'FILE_NAME'
+,p_sort_direction_2=>'ASC'
+,p_sort_column_3=>'CHANGED_ON'
+,p_sort_direction_3=>'DESC'
 ,p_sort_column_4=>'0'
 ,p_sort_direction_4=>'ASC'
 ,p_sort_column_5=>'0'

@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'17'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230507060516'
+,p_last_upd_yyyymmddhh24miss=>'20230601071614'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(59012357582031689)
@@ -85,8 +85,8 @@ wwv_flow_imp_page.create_page_branch(
 ,p_branch_type=>'REDIRECT_URL'
 ,p_branch_sequence=>20
 ,p_branch_condition_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
-,p_branch_condition=>'P72_FILES_MERGED'
-,p_branch_condition_text=>'NO'
+,p_branch_condition=>'P72_FILE_EXISTS'
+,p_branch_condition_text=>'YES'
 ,p_branch_comment=>'Branch to confirm overwrite file(s)'
 );
 wwv_flow_imp_page.create_page_item(
@@ -101,7 +101,6 @@ wwv_flow_imp_page.create_page_item(
 ,p_cSize=>30
 ,p_field_template=>wwv_flow_imp.id(8548807733518243)
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--stretchInputs'
-,p_is_persistent=>'N'
 ,p_protection_level=>'S'
 ,p_attribute_01=>'APEX_APPLICATION_TEMP_FILES'
 ,p_attribute_09=>'SESSION'
@@ -110,7 +109,7 @@ wwv_flow_imp_page.create_page_item(
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(38263304366825083)
-,p_name=>'P72_FILES_MERGED'
+,p_name=>'P72_FILE_EXISTS'
 ,p_item_sequence=>30
 ,p_item_plug_id=>wwv_flow_imp.id(59012357582031689)
 ,p_use_cache_before_default=>'NO'
@@ -142,10 +141,10 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_sequence=>10
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_INVOKE_API'
-,p_process_name=>'Process file(s)'
+,p_process_name=>'Check if Files Exists'
 ,p_attribute_01=>'PLSQL_PACKAGE'
 ,p_attribute_03=>'BLOG_CM'
-,p_attribute_04=>'FILE_UPLOAD'
+,p_attribute_04=>'FILE_EXISTS'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_comment=>'Process file(s) to apex_collection and set out parameter p_files_merged to indicate if file(s) overwrite need to be confirmed.'
 );
@@ -162,32 +161,45 @@ wwv_flow_imp_shared.create_invokeapi_comp_param(
 ,p_value=>'P72_FILE_NAME'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
- p_id=>wwv_flow_imp.id(38266208337825086)
+ p_id=>wwv_flow_imp.id(46740316345045605)
 ,p_page_process_id=>wwv_flow_imp.id(38265273954825085)
 ,p_page_id=>72
-,p_name=>'p_collection_name'
-,p_direction=>'IN'
-,p_data_type=>'VARCHAR2'
-,p_has_default=>false
-,p_display_sequence=>20
-,p_value_type=>'STATIC'
-,p_value=>'FILE_NAMES'
-);
-wwv_flow_imp_shared.create_invokeapi_comp_param(
- p_id=>wwv_flow_imp.id(38266787569825086)
-,p_page_process_id=>wwv_flow_imp.id(38265273954825085)
-,p_page_id=>72
-,p_name=>'p_files_merged'
 ,p_direction=>'OUT'
 ,p_data_type=>'VARCHAR2'
 ,p_ignore_output=>false
-,p_display_sequence=>30
+,p_display_sequence=>20
 ,p_value_type=>'ITEM'
-,p_value=>'P72_FILES_MERGED'
+,p_value=>'P72_FILE_EXISTS'
+);
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(46740406615045606)
+,p_process_sequence=>20
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_INVOKE_API'
+,p_process_name=>'Merge Files'
+,p_attribute_01=>'PLSQL_PACKAGE'
+,p_attribute_03=>'BLOG_CM'
+,p_attribute_04=>'MERGE_FILES'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_when=>'P72_FILE_EXISTS'
+,p_process_when_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
+,p_process_when2=>'NO'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(46740528375045607)
+,p_page_process_id=>wwv_flow_imp.id(46740406615045606)
+,p_page_id=>72
+,p_name=>'p_file_name'
+,p_direction=>'IN'
+,p_data_type=>'VARCHAR2'
+,p_has_default=>false
+,p_display_sequence=>10
+,p_value_type=>'ITEM'
+,p_value=>'P72_FILE_NAME'
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(39247081074156974)
-,p_process_sequence=>20
+,p_process_sequence=>30
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Purge Public Application Files Page Cache'
@@ -195,9 +207,9 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_03=>'APEX_UTIL'
 ,p_attribute_04=>'CACHE_PURGE_BY_PAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when=>'P72_FILES_MERGED'
+,p_process_when=>'P72_FILE_EXISTS'
 ,p_process_when_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
-,p_process_when2=>'YES'
+,p_process_when2=>'NO'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(39213851122831934)
@@ -225,14 +237,14 @@ wwv_flow_imp_shared.create_invokeapi_comp_param(
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(38264878069825085)
-,p_process_sequence=>30
+,p_process_sequence=>40
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
 ,p_process_name=>'Close Dialog'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when=>'P72_FILES_MERGED'
+,p_process_when=>'P72_FILE_EXISTS'
 ,p_process_when_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
-,p_process_when2=>'YES'
+,p_process_when2=>'NO'
 ,p_process_success_message=>'File(s) uploaded.'
 ,p_process_comment=>'Close dialog if file(s) merged. If uploaded file(s) aren''t merged, then branch to file overwrite confirmation page.'
 );
