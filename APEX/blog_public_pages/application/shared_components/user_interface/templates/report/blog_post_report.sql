@@ -32,6 +32,7 @@ wwv_flow_imp_shared.create_row_template(
 '    #BODY_HTML#',
 '    <p>#READ_MORE_LINK#</p>',
 '  </div>',
+'  <footer class="z-post--footer"></footer>',
 '</article>'))
 ,p_row_template_condition1=>':READ_MORE_LINK is not null'
 ,p_row_template2=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -70,6 +71,7 @@ wwv_flow_imp_shared.create_row_template(
 '    </div>',
 '  </header>',
 '  <div class="z-post--body">#BODY_HTML#</div>',
+'  <footer class="z-post--footer"></footer>',
 '</article>'))
 ,p_row_template_before_rows=>'<div class="z-posts #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_posts" data-region-id="#REGION_STATIC_ID#">'
 ,p_row_template_after_rows=>wwv_flow_string.join(wwv_flow_t_varchar2(

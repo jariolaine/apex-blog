@@ -155,7 +155,7 @@ wwv_flow_imp.create_flow(
 ,p_error_handling_function=>'blog_util.apex_error_handler'
 ,p_tokenize_row_search=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230601075213'
+,p_last_upd_yyyymmddhh24miss=>'20230601083424'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>692
 ,p_print_server_type=>'INSTANCE'
@@ -7544,6 +7544,7 @@ wwv_flow_imp_shared.create_row_template(
 '    #BODY_HTML#',
 '    <p>#READ_MORE_LINK#</p>',
 '  </div>',
+'  <footer class="z-post--footer"></footer>',
 '</article>'))
 ,p_row_template_condition1=>':READ_MORE_LINK is not null'
 ,p_row_template2=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -7582,6 +7583,7 @@ wwv_flow_imp_shared.create_row_template(
 '    </div>',
 '  </header>',
 '  <div class="z-post--body">#BODY_HTML#</div>',
+'  <footer class="z-post--footer"></footer>',
 '</article>'))
 ,p_row_template_before_rows=>'<div class="z-posts #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_posts" data-region-id="#REGION_STATIC_ID#">'
 ,p_row_template_after_rows=>wwv_flow_string.join(wwv_flow_t_varchar2(
