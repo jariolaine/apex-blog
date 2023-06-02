@@ -96,7 +96,7 @@ wwv_flow_imp_shared.create_install_script(
 'end;',
 '/',
 '--------------------------------------------------------',
-'--  Truncate table BLOG_FEATURES and reinstert metadata',
+'--  Truncate table BLOG_FEATURES and reinsert metadata',
 '--------------------------------------------------------',
 'truncate table blog_features;',
 'insert into blog_features(is_active,display_seq,build_option_name,build_option_group,build_option_parent) values(''1'',''110'',''BLOG_FEATURE_LINKS'',''BLOG_FEATURE_GROUP_PAGE'',null);',

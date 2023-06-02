@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230528130245'
+,p_last_upd_yyyymmddhh24miss=>'20230602050504'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45211569698046322)
@@ -360,17 +360,6 @@ wwv_flow_imp_page.create_page_item(
 ,p_restricted_characters=>'US_ONLY'
 ,p_attribute_01=>'Y'
 );
-wwv_flow_imp_page.create_page_computation(
- p_id=>wwv_flow_imp.id(46749461121361199)
-,p_computation_sequence=>10
-,p_computation_item=>'G_SUCCESS_MESSAGE'
-,p_computation_type=>'EXPRESSION'
-,p_computation_language=>'PLSQL'
-,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_cm.request_to_link_success_message(',
-'  p_request => :REQUEST',
-')'))
-);
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(38409531653151561)
 ,p_name=>'Close Dialog'
@@ -438,8 +427,42 @@ wwv_flow_imp_shared.create_invokeapi_comp_param(
 ,p_value=>'10'
 );
 wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(46741104422045613)
+,p_process_sequence=>40
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_INVOKE_API'
+,p_process_name=>'Get Success Message'
+,p_attribute_01=>'PLSQL_PACKAGE'
+,p_attribute_03=>'BLOG_CM'
+,p_attribute_04=>'REQUEST_TO_LINK_SUCCESS_MESSAGE'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(46741269685045614)
+,p_page_process_id=>wwv_flow_imp.id(46741104422045613)
+,p_page_id=>51
+,p_direction=>'OUT'
+,p_data_type=>'VARCHAR2'
+,p_ignore_output=>false
+,p_display_sequence=>20
+,p_value_type=>'ITEM'
+,p_value=>'G_SUCCESS_MESSAGE'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(46741397971045615)
+,p_page_process_id=>wwv_flow_imp.id(46741104422045613)
+,p_page_id=>51
+,p_name=>'p_request'
+,p_direction=>'IN'
+,p_data_type=>'VARCHAR2'
+,p_has_default=>false
+,p_display_sequence=>10
+,p_value_type=>'ITEM'
+,p_value=>'REQUEST'
+);
+wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(38408763511151561)
-,p_process_sequence=>60
+,p_process_sequence=>50
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
 ,p_process_name=>'Close Dialog'

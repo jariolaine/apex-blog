@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230528120037'
+,p_last_upd_yyyymmddhh24miss=>'20230602045212'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(48358046251075855)
@@ -63,7 +63,6 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_type=>'DB_COLUMN'
 ,p_source_expression=>'IS_ACTIVE'
 ,p_data_type=>'NUMBER'
-,p_session_state_data_type=>'VARCHAR2'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_YES_NO'
 ,p_heading=>'Status'
@@ -90,7 +89,6 @@ wwv_flow_imp_page.create_region_column(
 ,p_include_in_export=>true
 ,p_help_text=>'Is tag enabled or disabled. If you disable existing tag, it will be hidden form all post from readers. Also tag is not available anymore in "Tags" field search when creating or changing posts. Still you can use disabled tag by typing it e.g. for new '
 ||'post. If enabling tag again it is then visible on all post where it is linked.'
-,p_column_comment=>'Considere use switch in future. APEX 19.2 switch has bug: off value can''t be zero (0)'
 );
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(48310179885528216)
@@ -359,7 +357,6 @@ wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(69724843803295910)
 ,p_name=>'VIEW_POSTS_LINK'
 ,p_source_type=>'NONE'
-,p_session_state_data_type=>'VARCHAR2'
 ,p_item_type=>'NATIVE_LINK'
 ,p_label=>'Link to Posts'
 ,p_heading_alignment=>'CENTER'
@@ -367,7 +364,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_value_alignment=>'CENTER'
 ,p_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.:CR,:IRC_TAG_ID:&ID.'
 ,p_link_text=>'<span aria-hidden="true" class="t-Icon fa fa-external-link"></span>'
-,p_link_attributes=>'title="&APP_TEXT$BLOG_TXT_VIEW_POSTS." aria-label="&APP_TEXT$BLOG_TXT_VIEW_POSTS." class="t-Button--stretch w100p mxw100"'
+,p_link_attributes=>'title="&APP_TEXT$BLOG_TXT_VIEW_POSTS." class="t-Button--stretch"'
 ,p_filter_is_required=>false
 ,p_use_as_row_header=>false
 ,p_javascript_code=>'blog.admin.ig.column'
@@ -433,6 +430,7 @@ wwv_flow_imp_page.create_ig_report_column(
 ,p_column_id=>wwv_flow_imp.id(48359704822075859)
 ,p_is_visible=>true
 ,p_is_frozen=>true
+,p_width=>42
 );
 wwv_flow_imp_page.create_ig_report_column(
  p_id=>wwv_flow_imp.id(48361344808075861)
@@ -489,7 +487,7 @@ wwv_flow_imp_page.create_ig_report_column(
 wwv_flow_imp_page.create_ig_report_column(
  p_id=>wwv_flow_imp.id(48373856635308138)
 ,p_view_id=>wwv_flow_imp.id(48359001332075857)
-,p_display_seq=>12
+,p_display_seq=>11
 ,p_column_id=>wwv_flow_imp.id(48310437676528218)
 ,p_is_visible=>false
 ,p_is_frozen=>false
@@ -497,7 +495,7 @@ wwv_flow_imp_page.create_ig_report_column(
 wwv_flow_imp_page.create_ig_report_column(
  p_id=>wwv_flow_imp.id(48374446121308140)
 ,p_view_id=>wwv_flow_imp.id(48359001332075857)
-,p_display_seq=>13
+,p_display_seq=>12
 ,p_column_id=>wwv_flow_imp.id(48310516751528219)
 ,p_is_visible=>false
 ,p_is_frozen=>false
@@ -505,7 +503,7 @@ wwv_flow_imp_page.create_ig_report_column(
 wwv_flow_imp_page.create_ig_report_column(
  p_id=>wwv_flow_imp.id(48374941237308142)
 ,p_view_id=>wwv_flow_imp.id(48359001332075857)
-,p_display_seq=>15
+,p_display_seq=>13
 ,p_column_id=>wwv_flow_imp.id(48310622514528220)
 ,p_is_visible=>false
 ,p_is_frozen=>false
@@ -534,7 +532,7 @@ wwv_flow_imp_page.create_ig_report_column(
 ,p_column_id=>wwv_flow_imp.id(69724843803295910)
 ,p_is_visible=>true
 ,p_is_frozen=>false
-,p_width=>55.2
+,p_width=>42
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(58344261184940521)

@@ -258,12 +258,15 @@ as
     )
     when matched then
     -- update display sequence if it changed
-      update set t1.display_seq = p_display_seq
-        where t1.display_seq != p_display_seq
+      update
+        set t1.display_seq = p_display_seq
+      where t1.display_seq != p_display_seq
     -- insert post id, tag id and display sequency to table
     when not matched then
-      insert ( is_active, post_id, tag_id, display_seq )
-        values ( 1, p_post_id, p_tag_id, p_display_seq )
+      insert
+        ( is_active, post_id, tag_id, display_seq )
+      values
+        ( 1, p_post_id, p_tag_id, p_display_seq )
     ;
 
   end add_tag_to_post;
@@ -526,8 +529,8 @@ as
 
     return
       case p_request
-        when 'CREATE'       then apex_lang.message( 'BLOG_MSG_POST_CREATED' )
         when 'CREATE_DRAFT' then apex_lang.message( 'BLOG_MSG_POST_CREATED' )
+        when 'CREATE'       then apex_lang.message( 'BLOG_MSG_POST_CREATED' )
         when 'DELETE'       then apex_lang.message( 'BLOG_MSG_POST_DELETED' )
                             else apex_lang.message( 'BLOG_MSG_POST_UPDATED' )
       end
@@ -544,9 +547,9 @@ as
 
     return
       case p_request
-        when 'CREATE'       then apex_lang.message( 'BLOG_MSG_LINK_CREATED' )
-        when 'DELETE'       then apex_lang.message( 'BLOG_MSG_LINK_DELETED' )
-                            else apex_lang.message( 'BLOG_MSG_LINK_UPDATED' )
+        when 'CREATE' then apex_lang.message( 'BLOG_MSG_LINK_CREATED' )
+        when 'DELETE' then apex_lang.message( 'BLOG_MSG_LINK_DELETED' )
+                      else apex_lang.message( 'BLOG_MSG_LINK_UPDATED' )
       end
     ;
 
@@ -762,7 +765,8 @@ as
       -- insert category and return id for out parameter.
       insert into blog_categories
         ( is_active, display_seq, title )
-          values( 1, l_next_seq, l_title )
+      values
+        ( 1, l_next_seq, l_title )
       returning id into p_category_id
       ;
     end;
@@ -841,8 +845,10 @@ as
         ;
       -- if tag not exists insert and return id
       exception when no_data_found then
-        insert into blog_tags( is_active, tag )
-        values ( 1, l_value )
+        insert into blog_tags
+          ( is_active, tag )
+        values
+          ( 1, l_value )
         returning id into p_tag_id
         ;
       end;

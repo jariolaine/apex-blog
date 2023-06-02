@@ -32,7 +32,7 @@ as
   function get_canonical_host return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
--- package blog_html
+-- packages blog_html, blog_xml
   function get_tab(
     p_page            in varchar2,
     p_application     in varchar2 default null,

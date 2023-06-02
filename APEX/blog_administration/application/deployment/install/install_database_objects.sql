@@ -942,7 +942,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  function get_canonical_host return varchar2;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
-'-- package blog_html',
+'-- packages blog_html, blog_xml',
 '  function get_tab(',
 '    p_page            in varchar2,',
 '    p_application     in varchar2 default null,',
@@ -1119,7 +1119,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  );',
 '--------------------------------------------------------------------------------',
 '  -- Called from:',
-'  --  admin app pages 32',
+'  --  admin app pages 62',
 '  procedure reply_notify(',
 '    p_app_id            in varchar2,',
 '    p_app_name          in varchar2,',
@@ -1374,7 +1374,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_LINKS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINKS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "LINK_GROUP_ID", "IS_ACTIVE", "LINK_GRO'))
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINKS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "LINK_GROUP_ID", "IS_ACTIVE"'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1392,7 +1392,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'UP_IS_ACTIVE", "DISPLAY_SEQ", "LINK_GROUP_DISPLAY_SEQ", "TITLE", "LINK_GROUP_TITLE", "LINK_DESC", "NOTES", "LINK_URL", "LINK_STATUS_CODE", "LINK_STATUS_ICON") AS',
+', "LINK_GROUP_IS_ACTIVE", "DISPLAY_SEQ", "LINK_GROUP_DISPLAY_SEQ", "TITLE", "LINK_GROUP_TITLE", "LINK_DESC", "NOTES", "LINK_URL", "LINK_STATUS_CODE", "LINK_STATUS_ICON") AS',
 'select',
 '   t1.id                as id',
 '  ,t1.row_version       as row_version',
@@ -2286,7 +2286,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '         lkp_post.post_id',
 '        ,lkp_post.post_title',
 '      ) as post',
-'    from q1 lkp'))
+'    '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2304,7 +2304,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_post',
+'from q1 lkp_post',
 '    where 1 = 1',
 '      and lkp_post.published_on < q1.published_on',
 '    order by lkp_post.published_on desc',
@@ -2341,7 +2341,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    and to_number( lov.return_value ) = ( t1.is_nullable - 1 ) * -1',
 '  )                           as value_required',
 '-- HTML in query because IG removes HTML from column HTM expression in control break column',
-'-- Contrel break is soretd and attribute data-sort-order gives correct sort order',
+'-- Control break is sorted and attribute data-sort-order gives correct order',
 '  ,apex_string.format(',
 '     p_message => ''<span data-sort-order="%s" class="u-bold">%s</span>''',
 '    ,p0 => lpad( min( t1.display_seq ) over( partition by t1.attribute_group_message ), 5, ''0'' )',
@@ -3287,7 +3287,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '          ,xmlelement( "body", apex_escape.striphtml( v1.body_html ) )',
 '          ,xmlelement( "tag", v1.visible_tags )',
 '          ,xmlelement( "author", v1.blogger_name )',
-'      '))
+''))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3305,7 +3305,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'    --,xmlelement( "notes", v1.notes )',
+'          --,xmlelement( "notes", v1.notes )',
 '        )',
 '      )',
 '    into tlob',
@@ -4141,12 +4141,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '    )',
 '    when matched then',
 '    -- update display sequence if it changed',
-'      update set t1.display_seq = p_display_seq',
-'        where t1.display_seq != p_display_seq',
+'      update',
+'        set t1.display_seq = p_display_seq',
+'      where t1.display_seq != p_display_seq',
 '    -- insert post id, tag id and display sequency to table',
 '    when not matched then',
-'      insert ( is_active, post_id, tag_id, display_seq )',
-'        values ( 1, p_post_id, p_tag_id, p_display_seq )',
+'      insert',
+'        ( is_active, post_id, tag_id, display_seq )',
+'      values',
+'        ( 1, p_post_id, p_tag_id, p_display_seq )',
 '    ;',
 '',
 '  end add_tag_to_post;',
@@ -4337,8 +4340,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  function get_modal_page_seq',
 '  return varchar2',
 '  as',
-'    l_max_seq   blog_v_all_dynamic_content.display_seq%type;',
-'    l_next_seq  varcha'))
+'    l_max_seq   blog_v_all_dynamic_content.display_seq%ty'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4356,7 +4358,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'r2(256);',
+'pe;',
+'    l_next_seq  varchar2(256);',
 '  begin',
 '',
 '    -- fetch max link group display sequence',
@@ -4427,8 +4430,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    return',
 '      case p_request',
-'        when ''CREATE''       then apex_lang.message( ''BLOG_MSG_POST_CREATED'' )',
 '        when ''CREATE_DRAFT'' then apex_lang.message( ''BLOG_MSG_POST_CREATED'' )',
+'        when ''CREATE''       then apex_lang.message( ''BLOG_MSG_POST_CREATED'' )',
 '        when ''DELETE''       then apex_lang.message( ''BLOG_MSG_POST_DELETED'' )',
 '                            else apex_lang.message( ''BLOG_MSG_POST_UPDATED'' )',
 '      end',
@@ -4445,9 +4448,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    return',
 '      case p_request',
-'        when ''CREATE''       then apex_lang.message( ''BLOG_MSG_LINK_CREATED'' )',
-'        when ''DELETE''       then apex_lang.message( ''BLOG_MSG_LINK_DELETED'' )',
-'                            else apex_lang.message( ''BLOG_MSG_LINK_UPDATED'' )',
+'        when ''CREATE'' then apex_lang.message( ''BLOG_MSG_LINK_CREATED'' )',
+'        when ''DELETE'' then apex_lang.message( ''BLOG_MSG_LINK_DELETED'' )',
+'                      else apex_lang.message( ''BLOG_MSG_LINK_UPDATED'' )',
 '      end',
 '    ;',
 '',
@@ -4663,7 +4666,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '      -- insert category and return id for out parameter.',
 '      insert into blog_categories',
 '        ( is_active, display_seq, title )',
-'          values( 1, l_next_seq, l_title )',
+'      values',
+'        ( 1, l_next_seq, l_title )',
 '      returning id into p_category_id',
 '      ;',
 '    end;',
@@ -4742,8 +4746,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '        ;',
 '      -- if tag not exists insert and return id',
 '      exception when no_data_found then',
-'        insert into blog_tags( is_active, tag )',
-'        values ( 1, l_value )',
+'        insert into blog_tags',
+'          ( is_active, tag )',
+'        values',
+'          ( 1, l_value )',
 '        returning id into p_tag_id',
 '        ;',
 '      end;',
@@ -5368,7 +5374,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end get_post;',
 '--------------------------------------------------------------------------------',
-'----------------------------------------------'))
+'------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5386,7 +5392,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----------------------------------',
+'--------------------------------------------------------------------',
 '  function get_category(',
 '    p_category_id in number,',
 '    p_canonical   in varchar2 default ''NO''',
@@ -6387,8 +6393,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end get_archive_canonical_link;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function get_tag_canonical_'))
+'----------------------------------------------------------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6406,7 +6411,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'link(',
+'----',
+'  function get_tag_canonical_link(',
 '    p_tag_id in varchar2',
 '  ) return varchar2',
 '  as',

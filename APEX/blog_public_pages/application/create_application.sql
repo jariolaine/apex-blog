@@ -38,7 +38,7 @@ wwv_flow_imp.create_flow(
 ,p_timestamp_tz_format=>'&G_APP_DATE_FORMAT.'
 ,p_direction_right_to_left=>'N'
 ,p_flow_image_prefix => nvl(wwv_flow_application_install.get_image_prefix,'')
-,p_documentation_banner=>'https://github.com/jariolaine/apex-blog'
+,p_documentation_banner=>'Source code: https://github.com/jariolaine/apex-blog'
 ,p_authentication=>'PLUGIN'
 ,p_authentication_id=>wwv_flow_imp.id(25278990329788475)
 ,p_application_tab_set=>1
@@ -60,7 +60,7 @@ wwv_flow_imp.create_flow(
 ,p_error_handling_function=>'blog_util.apex_error_handler'
 ,p_tokenize_row_search=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230601083424'
+,p_last_upd_yyyymmddhh24miss=>'20230602053456'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>692
 ,p_print_server_type=>'INSTANCE'

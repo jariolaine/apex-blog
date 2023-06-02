@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230524164506'
+,p_last_upd_yyyymmddhh24miss=>'20230601151928'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(65609751049299759)
@@ -329,8 +329,9 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_report_alias=>'274170'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
+,p_view_mode=>'REPORT'
 ,p_report_columns=>'POST_TITLE:COMMENT_BY:CREATED_SINCE:COMMENT_FLAG:COMMENT_STATUS'
-,p_sort_column_1=>'CREATED_ON'
+,p_sort_column_1=>'CREATED_SINCE'
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'0'
 ,p_sort_direction_2=>'ASC'

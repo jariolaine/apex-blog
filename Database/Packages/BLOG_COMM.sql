@@ -67,7 +67,7 @@ as
   );
 --------------------------------------------------------------------------------
   -- Called from:
-  --  admin app pages 32
+  --  admin app pages 62
   procedure reply_notify(
     p_app_id            in varchar2,
     p_app_name          in varchar2,

@@ -71,7 +71,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230528125754'
+,p_last_upd_yyyymmddhh24miss=>'20230602050104'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8640589331194982)
@@ -642,17 +642,6 @@ wwv_flow_imp_page.create_page_computation(
 ')'))
 ,p_computation_comment=>'Get first paragraph fro post as preview. Must be run after computation of P12_HTML_BODY.'
 );
-wwv_flow_imp_page.create_page_computation(
- p_id=>wwv_flow_imp.id(46740201876045604)
-,p_computation_sequence=>80
-,p_computation_item=>'G_SUCCESS_MESSAGE'
-,p_computation_type=>'EXPRESSION'
-,p_computation_language=>'PLSQL'
-,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_cm.request_to_post_success_message(',
-'  p_request => :REQUEST',
-')'))
-);
 wwv_flow_imp_page.create_page_validation(
  p_id=>wwv_flow_imp.id(8793505538610781)
 ,p_validation_name=>'P12_VALID_FROM must be timestamp'
@@ -1048,8 +1037,42 @@ wwv_flow_imp_shared.create_invokeapi_comp_param(
 ,p_value=>'0'
 );
 wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(46740818170045610)
+,p_process_sequence=>50
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_INVOKE_API'
+,p_process_name=>'Get Success Message'
+,p_attribute_01=>'PLSQL_PACKAGE'
+,p_attribute_03=>'BLOG_CM'
+,p_attribute_04=>'REQUEST_TO_POST_SUCCESS_MESSAGE'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(46740966744045611)
+,p_page_process_id=>wwv_flow_imp.id(46740818170045610)
+,p_page_id=>12
+,p_direction=>'OUT'
+,p_data_type=>'VARCHAR2'
+,p_ignore_output=>false
+,p_display_sequence=>30
+,p_value_type=>'ITEM'
+,p_value=>'G_SUCCESS_MESSAGE'
+);
+wwv_flow_imp_shared.create_invokeapi_comp_param(
+ p_id=>wwv_flow_imp.id(46741042890045612)
+,p_page_process_id=>wwv_flow_imp.id(46740818170045610)
+,p_page_id=>12
+,p_name=>'p_request'
+,p_direction=>'IN'
+,p_data_type=>'VARCHAR2'
+,p_has_default=>false
+,p_display_sequence=>20
+,p_value_type=>'ITEM'
+,p_value=>'REQUEST'
+);
+wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(38476711128283538)
-,p_process_sequence=>110
+,p_process_sequence=>60
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
 ,p_process_name=>'Close Dialog'

@@ -474,7 +474,7 @@ as
   function get_canonical_host return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
--- package blog_html
+-- packages blog_html, blog_xml
   function get_tab(
     p_page            in varchar2,
     p_application     in varchar2 default null,
@@ -651,7 +651,7 @@ as
   );
 --------------------------------------------------------------------------------
   -- Called from:
-  --  admin app pages 32
+  --  admin app pages 62
   procedure reply_notify(
     p_app_id            in varchar2,
     p_app_name          in varchar2,
@@ -1841,7 +1841,7 @@ select
     and to_number( lov.return_value ) = ( t1.is_nullable - 1 ) * -1
   )                           as value_required
 -- HTML in query because IG removes HTML from column HTM expression in control break column
--- Contrel break is soretd and attribute data-sort-order gives correct sort order
+-- Control break is sorted and attribute data-sort-order gives correct order
   ,apex_string.format(
      p_message => '<span data-sort-order="%s" class="u-bold">%s</span>'
     ,p0 => lpad( min( t1.display_seq ) over( partition by t1.attribute_group_message ), 5, '0' )
@@ -3543,12 +3543,15 @@ as
     )
     when matched then
     -- update display sequence if it changed
-      update set t1.display_seq = p_display_seq
-        where t1.display_seq != p_display_seq
+      update
+        set t1.display_seq = p_display_seq
+      where t1.display_seq != p_display_seq
     -- insert post id, tag id and display sequency to table
     when not matched then
-      insert ( is_active, post_id, tag_id, display_seq )
-        values ( 1, p_post_id, p_tag_id, p_display_seq )
+      insert
+        ( is_active, post_id, tag_id, display_seq )
+      values
+        ( 1, p_post_id, p_tag_id, p_display_seq )
     ;
 
   end add_tag_to_post;
@@ -3811,8 +3814,8 @@ as
 
     return
       case p_request
-        when 'CREATE'       then apex_lang.message( 'BLOG_MSG_POST_CREATED' )
         when 'CREATE_DRAFT' then apex_lang.message( 'BLOG_MSG_POST_CREATED' )
+        when 'CREATE'       then apex_lang.message( 'BLOG_MSG_POST_CREATED' )
         when 'DELETE'       then apex_lang.message( 'BLOG_MSG_POST_DELETED' )
                             else apex_lang.message( 'BLOG_MSG_POST_UPDATED' )
       end
@@ -3829,9 +3832,9 @@ as
 
     return
       case p_request
-        when 'CREATE'       then apex_lang.message( 'BLOG_MSG_LINK_CREATED' )
-        when 'DELETE'       then apex_lang.message( 'BLOG_MSG_LINK_DELETED' )
-                            else apex_lang.message( 'BLOG_MSG_LINK_UPDATED' )
+        when 'CREATE' then apex_lang.message( 'BLOG_MSG_LINK_CREATED' )
+        when 'DELETE' then apex_lang.message( 'BLOG_MSG_LINK_DELETED' )
+                      else apex_lang.message( 'BLOG_MSG_LINK_UPDATED' )
       end
     ;
 
@@ -4047,7 +4050,8 @@ as
       -- insert category and return id for out parameter.
       insert into blog_categories
         ( is_active, display_seq, title )
-          values( 1, l_next_seq, l_title )
+      values
+        ( 1, l_next_seq, l_title )
       returning id into p_category_id
       ;
     end;
@@ -4126,8 +4130,10 @@ as
         ;
       -- if tag not exists insert and return id
       exception when no_data_found then
-        insert into blog_tags( is_active, tag )
-        values ( 1, l_value )
+        insert into blog_tags
+          ( is_active, tag )
+        values
+          ( 1, l_value )
         returning id into p_tag_id
         ;
       end;

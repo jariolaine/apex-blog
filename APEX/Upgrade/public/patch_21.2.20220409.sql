@@ -12,7 +12,7 @@ begin
   ;
   -- Update default value to column IS_ACTIVE
   update blog_comment_subscribers set is_active = 1;
-  -- Change column noy null
+  -- Change column not null
   execute immediate
     'alter table blog_comment_subscribers modify is_active not null'
   ;

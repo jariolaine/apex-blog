@@ -24,7 +24,7 @@ select
     and to_number( lov.return_value ) = ( t1.is_nullable - 1 ) * -1
   )                           as value_required
 -- HTML in query because IG removes HTML from column HTM expression in control break column
--- Contrel break is soretd and attribute data-sort-order gives correct sort order
+-- Control break is sorted and attribute data-sort-order gives correct order
   ,apex_string.format(
      p_message => '<span data-sort-order="%s" class="u-bold">%s</span>'
     ,p0 => lpad( min( t1.display_seq ) over( partition by t1.attribute_group_message ), 5, '0' )
