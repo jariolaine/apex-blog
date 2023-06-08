@@ -7,6 +7,10 @@ Blog application built with Oracle Application Express (APEX).
 
 ## Install
 
+### Note for APEX 23.1
+Supporting object install and upgrade will fail on APEX 23.1.0 due to bug 35410651 in APEX.
+Workaround is run scripts using e.g. SQL Developer or other SQL client.
+
 ### System Requirements
 * Oracle database version 19c or later
 * Oracle Application Express version 22.2 or later
