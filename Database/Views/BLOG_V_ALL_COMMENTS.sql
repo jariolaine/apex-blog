@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_COMMENTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "PARENT_ID", "POST_TITLE", "BODY_HTML", "COMMENT_BY", "CTX_SEARCH", "CTX_RID", "COMMENT_STATUS_CODE", "COMMENT_FLAG_CODE", "DATA_UNREAD", "COMMENT_STATUS_TEXT", "COMMENT_FLAG_TEXT", "COMMENT_STATUS_ICON", "COMMENT_FLAG_ICON", "SEARCH_DESC")  AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "PARENT_ID", "POST_TITLE", "BODY_HTML", "COMMENT_BY", "CTX_SEARCH", "CTX_RID", "COMMENT_STATUS_CODE", "COMMENT_FLAG_CODE", "DATA_UNREAD", "COMMENT_STATUS_TEXT", "COMMENT_FLAG_TEXT", "COMMENT_STATUS_ICON", "COMMENT_FLAG_ICON", "SEARCH_DESC", "CTX_DATASTORE") AS
 with q1 as(
   select
      t1.id
@@ -108,6 +108,14 @@ select
   ,substr( q1.search_desc, 1 , 128 ) || case when length( q1.search_desc ) > 128
     then ' ...'
   end                     as search_desc
+  ,xmlserialize( content
+    xmlforest(
+      q1.comment_by as "commented"
+      ,apex_escape.striphtml(
+        p_string => q1.body_html
+      )             as "body"
+    )
+  )                       as ctx_datastore
 from q1
 join blog_posts t2 on q1.post_id = t2.id
 where 1 = 1

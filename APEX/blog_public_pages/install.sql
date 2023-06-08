@@ -161,6 +161,7 @@ prompt --install
 @@application/deployment/install/upgrade_patch_22_2_20230304.sql
 @@application/deployment/install/upgrade_patch_22_2_20230416.sql
 @@application/deployment/install/upgrade_drop_index_blog_posts_ctx.sql
+@@application/deployment/install/upgrade_drop_index_blog_comments_ctx.sql
 @@application/deployment/install/upgrade_database_objects_upgrade.sql
 @@application/deployment/install/upgrade_create_index_blog_posts_ctx.sql
 @@application/deployment/install/upgrade_create_index_blog_comments_ctx.sql

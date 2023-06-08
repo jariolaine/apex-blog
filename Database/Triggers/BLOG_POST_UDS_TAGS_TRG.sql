@@ -7,10 +7,11 @@ update on blog_tags
 for each row
 begin
 
-  if :new.tag != :old.tag
+  if :new.tag_unique != :old.tag_unique
   or :new.is_active != :old.is_active
   then
 
+  -- if tag is changed, update blog_posts table text index column
     update blog_posts t1
       set ctx_search = ctx_search
     where 1 = 1

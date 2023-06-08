@@ -7,17 +7,13 @@ update on blog_categories
 for each row
 begin
 
-  -- if category change update post user datastore table
-  if :new.title != :old.title
-  then
-
-    update blog_posts t1
-      set ctx_search = ctx_search
-    where 1 = 1
-      and t1.category_id = :new.id
-    ;
-
-  end if;
+-- if category is changed, update blog_posts table text index column
+  update blog_posts t1
+    set ctx_search = ctx_search
+  where 1 = 1
+    and :new.title_unique != :old.title_unique
+    and t1.category_id = :new.id
+  ;
 
 end;
 /

@@ -66,7 +66,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230601151906'
+,p_last_upd_yyyymmddhh24miss=>'20230608100728'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8596898648797585)
@@ -161,6 +161,16 @@ wwv_flow_imp_page.create_worksheet(
 ,p_owner=>'LAINFJAR'
 ,p_internal_uid=>4850446289826818
 );
+wwv_flow_imp_page.create_worksheet_col_group(
+ p_id=>wwv_flow_imp.id(46741405563045616)
+,p_name=>'Audit Details'
+,p_display_sequence=>10
+);
+wwv_flow_imp_page.create_worksheet_col_group(
+ p_id=>wwv_flow_imp.id(46741533087045617)
+,p_name=>'Tags'
+,p_display_sequence=>20
+);
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3879808787180115)
 ,p_db_column_name=>'POST_ID'
@@ -195,6 +205,7 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(27275478849075433)
 ,p_db_column_name=>'CREATED_ON'
 ,p_display_order=>50
+,p_group_id=>wwv_flow_imp.id(46741405563045616)
 ,p_column_identifier=>'BH'
 ,p_column_label=>'Created on'
 ,p_column_type=>'DATE'
@@ -207,6 +218,7 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(21638870596282116)
 ,p_db_column_name=>'CREATED_SINCE'
 ,p_display_order=>60
+,p_group_id=>wwv_flow_imp.id(46741405563045616)
 ,p_column_identifier=>'BR'
 ,p_column_label=>'Created'
 ,p_column_type=>'DATE'
@@ -219,6 +231,7 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(27275565959075434)
 ,p_db_column_name=>'CREATED_BY'
 ,p_display_order=>70
+,p_group_id=>wwv_flow_imp.id(46741405563045616)
 ,p_column_identifier=>'BI'
 ,p_column_label=>'Created by'
 ,p_column_type=>'STRING'
@@ -229,6 +242,7 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(8599408102797592)
 ,p_db_column_name=>'CHANGED_ON'
 ,p_display_order=>90
+,p_group_id=>wwv_flow_imp.id(46741405563045616)
 ,p_column_identifier=>'F'
 ,p_column_label=>'Changed on'
 ,p_column_type=>'DATE'
@@ -241,6 +255,7 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(21638986428282117)
 ,p_db_column_name=>'CHANGED_SINCE'
 ,p_display_order=>100
+,p_group_id=>wwv_flow_imp.id(46741405563045616)
 ,p_column_identifier=>'BS'
 ,p_column_label=>'Changed'
 ,p_column_type=>'DATE'
@@ -253,6 +268,7 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(8599862540797593)
 ,p_db_column_name=>'CHANGED_BY'
 ,p_display_order=>110
+,p_group_id=>wwv_flow_imp.id(46741405563045616)
 ,p_column_identifier=>'G'
 ,p_column_label=>'Changed by'
 ,p_column_type=>'STRING'
@@ -263,6 +279,7 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(24468689536361506)
 ,p_db_column_name=>'PUBLISHED_ON'
 ,p_display_order=>120
+,p_group_id=>wwv_flow_imp.id(46741405563045616)
 ,p_column_identifier=>'AY'
 ,p_column_label=>'Published on'
 ,p_column_type=>'DATE'
@@ -275,6 +292,7 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(21639087960282118)
 ,p_db_column_name=>'PUBLISHED_SINCE'
 ,p_display_order=>130
+,p_group_id=>wwv_flow_imp.id(46741405563045616)
 ,p_column_identifier=>'BT'
 ,p_column_label=>'Published'
 ,p_column_type=>'DATE'
@@ -330,6 +348,7 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(24471943643361539)
 ,p_db_column_name=>'VISIBLE_TAGS'
 ,p_display_order=>180
+,p_group_id=>wwv_flow_imp.id(46741533087045617)
 ,p_column_identifier=>'BB'
 ,p_column_label=>'Tags (Enabled)'
 ,p_column_type=>'STRING'
@@ -343,6 +362,7 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(24471868067361538)
 ,p_db_column_name=>'HIDDEN_TAGS'
 ,p_display_order=>190
+,p_group_id=>wwv_flow_imp.id(46741533087045617)
 ,p_column_identifier=>'BA'
 ,p_column_label=>'Tags (Disabled)'
 ,p_column_type=>'STRING'
@@ -406,6 +426,7 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(37425249219377349)
 ,p_db_column_name=>'BTN_EDIT_TAGS'
 ,p_display_order=>250
+,p_group_id=>wwv_flow_imp.id(46741533087045617)
 ,p_column_identifier=>'CA'
 ,p_column_label=>'Edit Tags'
 ,p_column_link=>'f?p=&APP_ID.:16:&SESSION.::&DEBUG.::P16_POST_ID:#POST_ID#'

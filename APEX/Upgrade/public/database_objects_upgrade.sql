@@ -1382,7 +1382,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_COMMENTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "PARENT_ID", "POST_TITLE", "BODY_HTML", "COMMENT_BY", "CTX_SEARCH", "CTX_RID", "COMMENT_STATUS_CODE", "COMMENT_FLAG_CODE", "DATA_UNREAD", "COMMENT_STATUS_TEXT", "COMMENT_FLAG_TEXT", "COMMENT_STATUS_ICON", "COMMENT_FLAG_ICON", "SEARCH_DESC")  AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "PARENT_ID", "POST_TITLE", "BODY_HTML", "COMMENT_BY", "CTX_SEARCH", "CTX_RID", "COMMENT_STATUS_CODE", "COMMENT_FLAG_CODE", "DATA_UNREAD", "COMMENT_STATUS_TEXT", "COMMENT_FLAG_TEXT", "COMMENT_STATUS_ICON", "COMMENT_FLAG_ICON", "SEARCH_DESC", "CTX_DATASTORE") AS
 with q1 as(
   select
      t1.id
@@ -1489,6 +1489,14 @@ select
   ,substr( q1.search_desc, 1 , 128 ) || case when length( q1.search_desc ) > 128
     then ' ...'
   end                     as search_desc
+  ,xmlserialize( content
+    xmlforest(
+      q1.comment_by as "commented"
+      ,apex_escape.striphtml(
+        p_string => q1.body_html
+      )             as "body"
+    )
+  )                       as ctx_datastore
 from q1
 join blog_posts t2 on q1.post_id = t2.id
 where 1 = 1
@@ -1496,7 +1504,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "PUBLISHED_DISPLAY", "POST_STATUS_CODE", "CTX_SEARCH", "CTX_RID", "POST_STATUS_ICON", "TAG_ID", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_CNT", "PUBLISHED_COMMENTS_CNT", "UNREAD_COMMENTS_CNT", "MODERATE_COMMENTS_CNT", "DISABLED_COMMENTS_CNT", "POST_STATUS_TXT", "TAGS_HTML", "SEARCH_DESC") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "PUBLISHED_DISPLAY", "POST_STATUS_CODE", "CTX_SEARCH", "CTX_RID", "POST_STATUS_ICON", "TAG_ID", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_CNT", "PUBLISHED_COMMENTS_CNT", "UNREAD_COMMENTS_CNT", "MODERATE_COMMENTS_CNT", "DISABLED_COMMENTS_CNT", "POST_STATUS_TXT", "TAGS_HTML", "SEARCH_DESC", "CTX_DATASTORE") AS
 with q1 as(
   select
      t1.id              as id
@@ -1674,6 +1682,27 @@ select
   ,apex_escape.striphtml(
     p_string => q1.first_paragraph
   )                       as search_desc
+-- XML for text index user datastore
+  ,xmlserialize( content
+    xmlforest(
+      q1.blogger_name     as "author"
+      ,q1.title           as "title"
+      ,q1.category_title  as "category"
+      ,q1.post_desc       as "description"
+      --,q1.notes           as "notes"
+      ,apex_escape.striphtml(
+        p_string => q1.body_html
+      )                   as "body"
+      ,(
+        select
+          xmlagg( xmlforest( tags.tag as "tag" ) )
+        from blog_v_all_post_tags tags
+        where 1 = 1
+        and tags.post_id = q1.id
+        and tags.is_active * tags.tag_is_active = 1
+      )                   as "tags"
+    )
+  )                       as ctx_datastore
 from q1
 where 1 = 1
 /
@@ -1712,7 +1741,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CTX_SEARCH", "CHANGED_ON", "ARCHIVE_YEAR", "CATEGORY_SEQ", "POST_URL", "TAGS", "TAGS_HTML1", "TAGS_HTML2", "NEXT_POST", "PREV_POST") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CTX_SEARCH", "CHANGED_ON", "ARCHIVE_YEAR", "CATEGORY_SEQ", "POST_URL", "TAGS_HTML1", "TAGS_HTML2", "NEXT_POST", "PREV_POST") AS
 with q1 as(
   select
      t1.id              as post_id
@@ -1759,13 +1788,6 @@ select
   ,blog_url.get_post(
     p_post_id => q1.post_id
   )                   as post_url
-  ,(
-    select
-      listagg( lkp.tag, ', ' )  within group( order by lkp.display_seq ) as tags
-    from blog_v_post_tags lkp
-    where 1 = 1
-    and lkp.post_id = q1.post_id
-  )                   as tags
 -- Aggregate tag HTML for post
   ,(
     select
@@ -2480,17 +2502,13 @@ update on blog_categories
 for each row
 begin
 
-  -- if category change update post user datastore table
-  if :new.title != :old.title
-  then
-
-    update blog_posts t1
-      set ctx_search = ctx_search
-    where 1 = 1
-      and t1.category_id = :new.id
-    ;
-
-  end if;
+-- if category is changed, update blog_posts table text index column
+  update blog_posts t1
+    set ctx_search = ctx_search
+  where 1 = 1
+    and :new.title_unique != :old.title_unique
+    and t1.category_id = :new.id
+  ;
 
 end;
 /
@@ -2509,6 +2527,7 @@ compound trigger
   after each row is
   begin
 
+    -- if tag is removed from post, save post id for after statement handling
     if deleting
     then
 
@@ -2516,6 +2535,7 @@ compound trigger
 
     else
 
+    -- if updating or inserting post tag, update blog_posts table text index column
       update blog_posts t1
         set ctx_search = ctx_search
       where 1 = 1
@@ -2529,6 +2549,7 @@ compound trigger
   after statement is
   begin
 
+    -- handle removed tags and update blog_posts table text index column
     update blog_posts t1
       set ctx_search = ctx_search
     where 1 = 1
@@ -2553,10 +2574,11 @@ update on blog_tags
 for each row
 begin
 
-  if :new.tag != :old.tag
+  if :new.tag_unique != :old.tag_unique
   or :new.is_active != :old.is_active
   then
 
+  -- if tag is changed, update blog_posts table text index column
     update blog_posts t1
       set ctx_search = ctx_search
     where 1 = 1
@@ -2699,17 +2721,7 @@ as
   begin
 
     select
-      xmlserialize( content
-        xmlconcat(
-           xmlelement( "title", v1.title )
-          ,xmlelement( "category", v1.category_title )
-          ,xmlelement( "description", v1.post_desc )
-          ,xmlelement( "body", apex_escape.striphtml( v1.body_html ) )
-          ,xmlelement( "tag", v1.visible_tags )
-          ,xmlelement( "author", v1.blogger_name )
-          --,xmlelement( "notes", v1.notes )
-        )
-      )
+      ctx_datastore
     into tlob
     from blog_v_all_posts v1
     where 1 = 1
@@ -2727,12 +2739,7 @@ as
   begin
 
     select
-      xmlserialize( content
-        xmlconcat(
-           xmlelement( "body", apex_escape.striphtml( v1.body_html ) )
-          ,xmlelement( "author", v1.comment_by )
-        )
-      )
+      ctx_datastore
     into tlob
     from blog_v_all_comments v1
     where 1 = 1
@@ -2790,9 +2797,10 @@ as
               apex_string.format(
                 p_message =>
                   case p_feature
-                  when 'FUZZY' then ' %s fuzzy({%s}) within {%s} and'
-                  when 'WILDCARD' then ' %s {%s}%% within {%s} and'
-                  else ' %s {%s} within {%s} and' end
+                    when 'FUZZY'    then ' %s fuzzy({%s}) within {%s} and'
+                    when 'WILDCARD' then ' %s {%s}%% within {%s} and'
+                                    else ' %s {%s} within {%s} and'
+                  end
                 ,p0 => l_query
                 ,p1 => l_within(2)
                 ,p2 => l_within(1)
@@ -2830,11 +2838,21 @@ as
       l_search := trim( substr( apex_escape.striphtml( p_search ), 9 ) );
     else
 
+      apex_debug.info(
+        p_message => 'User search string: %s'
+        ,p0 => p_search
+      );
+
       -- remove special characters; irrelevant for full text search
       l_search := apex_escape.striphtml( p_search );
       l_search := regexp_replace( l_search, '[<>{}/()*%&!$?.,;\+#]', ' ');
       l_search := regexp_replace( l_search, '(^[:]+|[:]+$|\s+[:]+|[:]+\s+|[:][:]+)', ' ' );
       l_search := trim( lower( l_search ) );
+
+      apex_debug.info(
+        p_message => 'User search string after cleanup: %s'
+        ,p0 => l_search
+      );
 
       l_tokens := apex_string.split( l_search, ' ' );
 

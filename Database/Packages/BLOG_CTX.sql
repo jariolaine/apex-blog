@@ -60,17 +60,7 @@ as
   begin
 
     select
-      xmlserialize( content
-        xmlconcat(
-           xmlelement( "title", v1.title )
-          ,xmlelement( "category", v1.category_title )
-          ,xmlelement( "description", v1.post_desc )
-          ,xmlelement( "body", apex_escape.striphtml( v1.body_html ) )
-          ,xmlelement( "tag", v1.visible_tags )
-          ,xmlelement( "author", v1.blogger_name )
-          --,xmlelement( "notes", v1.notes )
-        )
-      )
+      ctx_datastore
     into tlob
     from blog_v_all_posts v1
     where 1 = 1
@@ -88,12 +78,7 @@ as
   begin
 
     select
-      xmlserialize( content
-        xmlconcat(
-           xmlelement( "body", apex_escape.striphtml( v1.body_html ) )
-          ,xmlelement( "author", v1.comment_by )
-        )
-      )
+      ctx_datastore
     into tlob
     from blog_v_all_comments v1
     where 1 = 1
@@ -151,9 +136,10 @@ as
               apex_string.format(
                 p_message =>
                   case p_feature
-                  when 'FUZZY' then ' %s fuzzy({%s}) within {%s} and'
-                  when 'WILDCARD' then ' %s {%s}%% within {%s} and'
-                  else ' %s {%s} within {%s} and' end
+                    when 'FUZZY'    then ' %s fuzzy({%s}) within {%s} and'
+                    when 'WILDCARD' then ' %s {%s}%% within {%s} and'
+                                    else ' %s {%s} within {%s} and'
+                  end
                 ,p0 => l_query
                 ,p1 => l_within(2)
                 ,p2 => l_within(1)
@@ -191,11 +177,21 @@ as
       l_search := trim( substr( apex_escape.striphtml( p_search ), 9 ) );
     else
 
+      apex_debug.info(
+        p_message => 'User search string: %s'
+        ,p0 => p_search
+      );
+
       -- remove special characters; irrelevant for full text search
       l_search := apex_escape.striphtml( p_search );
       l_search := regexp_replace( l_search, '[<>{}/()*%&!$?.,;\+#]', ' ');
       l_search := regexp_replace( l_search, '(^[:]+|[:]+$|\s+[:]+|[:]+\s+|[:][:]+)', ' ' );
       l_search := trim( lower( l_search ) );
+
+      apex_debug.info(
+        p_message => 'User search string after cleanup: %s'
+        ,p0 => l_search
+      );
 
       l_tokens := apex_string.split( l_search, ' ' );
 

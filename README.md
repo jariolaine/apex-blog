@@ -1,6 +1,6 @@
 # APEX Blog
-![](https://img.shields.io/badge/Oracle_Database-19c-red)
-![](https://img.shields.io/badge/APEX-22.2-blue)
+![Oracle_Database 19c](https://img.shields.io/badge/Oracle_Database-19c-red)
+![Oracle Application Express 22.2](https://img.shields.io/badge/APEX-22.2-blue)
 
 
 Blog application built with Oracle Application Express (APEX).

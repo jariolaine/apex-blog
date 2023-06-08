@@ -19,7 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'D'
 ,p_page_component_map=>'14'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230525074027'
+,p_last_upd_yyyymmddhh24miss=>'20230606053904'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6433141607894071)
@@ -53,7 +53,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
 ,p_plug_cache_when_condition_e1=>'DEBUG'
 ,p_plug_cache_when_condition_e2=>'NO'
-,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
+,p_plug_cache_depends_on_items=>'APP_ID'
 ,p_landmark_type=>'exclude_landmark'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
@@ -165,7 +165,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
 ,p_plug_cache_when_condition_e1=>'DEBUG'
 ,p_plug_cache_when_condition_e2=>'NO'
-,p_plug_cache_depends_on_items=>'APP_REQUEST_DATA_HASH'
+,p_plug_cache_depends_on_items=>'APP_ID'
 ,p_landmark_type=>'exclude_landmark'
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'HTML'

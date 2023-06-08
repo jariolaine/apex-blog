@@ -103,6 +103,7 @@ blockquote::after {
 **************************************/
 .z-posts .z-post {
   margin-bottom: 1rem;
+  padding: 1rem;
   border: var(--ut-component-border-width) solid var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
@@ -110,7 +111,6 @@ blockquote::after {
 }
 .z-posts .z-post .z-post--header {
   clear: both;
-  padding: 1rem;
 }
 .z-posts .z-post .z-post--header .z-post--date {
   font-size: 1.125em;
@@ -122,10 +122,7 @@ blockquote::after {
 }
 .z-posts .z-post .z-post--header .z-post--category {
   font-size: 1em;
-}
-.z-posts .z-post .z-post--body {
-  padding: 0 1rem 1rem;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem;
 }
 .z-posts .z-post .z-post--body img {
   max-width: 100%;
@@ -137,11 +134,12 @@ blockquote::after {
 .z-posts .z-post .z-post--footer {
   width: 100%;
   clear: both;
+  padding-top: 1rem;
 }
 .z-posts .z-post .z-post--footer .z-post--tags {
   width: 100%;
   clear: both;
-  padding: 1rem;
+  padding-top: 1rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -160,18 +158,24 @@ blockquote::after {
   visibility: hidden!important;
 }
 @media only screen and (max-width: 640px) {
-  .z-posts .z-post .z-post--header {
-    padding: 0.5rem 0.5rem 1rem;
+  .z-posts .z-post {
+    padding: 0.5rem;
   }
   .z-posts .z-post .z-post--header .z-post--title {
     font-size: 1.375em;
   }
-  .z-posts .z-post .z-post--body {
-    padding: 0 0.5rem 1rem;
-  }
   .z-posts .z-post .z-post--footer .z-post--tags {
     justify-content: space-evenly;
-    padding: 0.5rem;
+  }
+  .z-posts .z-posts--pagination .pagination {
+    display: flex;
+    justify-content: center;
+  }
+  .z-posts .z-posts--pagination .pagination .t-Report-paginationText {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }
 /**************************************

@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "PUBLISHED_DISPLAY", "POST_STATUS_CODE", "CTX_SEARCH", "CTX_RID", "POST_STATUS_ICON", "TAG_ID", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_CNT", "PUBLISHED_COMMENTS_CNT", "UNREAD_COMMENTS_CNT", "MODERATE_COMMENTS_CNT", "DISABLED_COMMENTS_CNT", "POST_STATUS_TXT", "TAGS_HTML", "SEARCH_DESC") AS
+CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "PUBLISHED_DISPLAY", "POST_STATUS_CODE", "CTX_SEARCH", "CTX_RID", "POST_STATUS_ICON", "TAG_ID", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_CNT", "PUBLISHED_COMMENTS_CNT", "UNREAD_COMMENTS_CNT", "MODERATE_COMMENTS_CNT", "DISABLED_COMMENTS_CNT", "POST_STATUS_TXT", "TAGS_HTML", "SEARCH_DESC", "CTX_DATASTORE") AS
 with q1 as(
   select
      t1.id              as id
@@ -179,6 +179,27 @@ select
   ,apex_escape.striphtml(
     p_string => q1.first_paragraph
   )                       as search_desc
+-- XML for text index user datastore
+  ,xmlserialize( content
+    xmlforest(
+      q1.blogger_name     as "author"
+      ,q1.title           as "title"
+      ,q1.category_title  as "category"
+      ,q1.post_desc       as "description"
+      --,q1.notes           as "notes"
+      ,apex_escape.striphtml(
+        p_string => q1.body_html
+      )                   as "body"
+      ,(
+        select
+          xmlagg( xmlforest( tags.tag as "tag" ) )
+        from blog_v_all_post_tags tags
+        where 1 = 1
+        and tags.post_id = q1.id
+        and tags.is_active * tags.tag_is_active = 1
+      )                   as "tags"
+    )
+  )                       as ctx_datastore
 from q1
 where 1 = 1
 /
