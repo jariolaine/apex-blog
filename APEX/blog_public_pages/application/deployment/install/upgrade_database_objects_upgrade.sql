@@ -1895,7 +1895,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--  DDL for View BLOG_V_POSTS',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CTX_SEARCH", "CHANGED_ON", "ARCHIVE_YEAR", "CATEGORY_SE'
-||'Q", "POST_URL", "TAGS_HTML1", "TAGS_HTML2", "NEXT_POST", "PREV_POST") AS',
+||'Q", "POST_URL", "TAGS", "TAGS_HTML1", "TAGS_HTML2", "NEXT_POST", "PREV_POST") AS',
 'with q1 as(',
 '  select',
 '     t1.id              as post_id',
@@ -1942,6 +1942,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,blog_url.get_post(',
 '    p_post_id => q1.post_id',
 '  )                   as post_url',
+'  ,(',
+'    select',
+'      listagg( lkp.tag, '', '' )  within group( order by lkp.display_seq ) as tags',
+'    from blog_v_post_tags lkp',
+'    where 1 = 1',
+'    and lkp.post_id = q1.post_id',
+'  )                   as tags',
 '-- Aggregate tag HTML for post',
 '  ,(',
 '    select',
@@ -2440,14 +2447,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    ,sys_context( ''USERENV'', ''SESSION_USER'' )',
 '  );',
 '',
-'  :new.file_size := sys.dbms_lob.getlength( :new.blob_content );',
-'',
-'end;',
-'/',
-'--------------------------------------------------------',
-'--  DDL for Trigger BLOG_INIT_ITEMS_TRG',
-'--------------------------------------------------------',
-'CREAT'))
+'  :new.file_size :'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2465,7 +2465,14 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'E OR REPLACE EDITIONABLE TRIGGER "BLOG_INIT_ITEMS_TRG"',
+'= sys.dbms_lob.getlength( :new.blob_content );',
+'',
+'end;',
+'/',
+'--------------------------------------------------------',
+'--  DDL for Trigger BLOG_INIT_ITEMS_TRG',
+'--------------------------------------------------------',
+'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_INIT_ITEMS_TRG"',
 'before',
 'insert or',
 'update on blog_init_items',
@@ -3485,14 +3492,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end get_tag;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure download_file (',
-'    p_blob_content    in out nocopy blob,',
-'    p_mime_type       in varchar2,',
-'    p_header_names    in apex_t_varchar2,',
-'    p_header_values   in apex_t_varchar2,',
-'    p_charset         in varchar2 default null',
-'  )',
-''))
+'  procedure download_file '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3510,6 +3510,13 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'(',
+'    p_blob_content    in out nocopy blob,',
+'    p_mime_type       in varchar2,',
+'    p_header_names    in apex_t_varchar2,',
+'    p_header_values   in apex_t_varchar2,',
+'    p_charset         in varchar2 default null',
+'  )',
 '  as',
 '  begin',
 '',
@@ -4572,16 +4579,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end update_feature;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure resequence_link_groups',
-'  as',
-'  begin',
-'',
-'    -- update link groups display_seq if it different than new',
-'    merge into blog_link_groups t1',
-'    using (',
-'      select id',
-'        ,row_nu'))
+'---------------------------------------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4599,7 +4597,16 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'mber() over(',
+'-----------------------',
+'  procedure resequence_link_groups',
+'  as',
+'  begin',
+'',
+'    -- update link groups display_seq if it different than new',
+'    merge into blog_link_groups t1',
+'    using (',
+'      select id',
+'        ,row_number() over(',
 '          order by display_seq, created_on',
 '        ) * 10 as new_display_seq',
 '      from blog_link_groups',
@@ -5571,14 +5578,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    return l_err_mesg;',
 '',
 '  end is_email;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure flag_comment(',
-'    p_comment_id  in varchar2,',
-'    p_flags       in varchar2',
-'  )',
-'  as',
-'    l_flags'))
+'-------------------------------------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5596,7 +5596,14 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' apex_t_varchar2;',
+'-------------------------',
+'--------------------------------------------------------------------------------',
+'  procedure flag_comment(',
+'    p_comment_id  in varchar2,',
+'    p_flags       in varchar2',
+'  )',
+'  as',
+'    l_flags apex_t_varchar2;',
 '  begin',
 '',
 '    l_flags := apex_string.split( p_flags, '':'' );',
@@ -6577,14 +6584,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    l_cache_control :=',
 '      apex_string.format(',
-'         p_message => ''max-age=%s''',
-'        ,p0 => blog_util.get_attribute_value( ''G_MAX_AGE_SITEMAP'' )',
-'      )',
-'    ;',
-'',
-'    blog_util.download_file(',
-'       p_blob_content   => l_xml',
-'      ,p_mime_type      => ''applic'))
+''))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6602,7 +6602,14 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ation/xml''',
+'         p_message => ''max-age=%s''',
+'        ,p0 => blog_util.get_attribute_value( ''G_MAX_AGE_SITEMAP'' )',
+'      )',
+'    ;',
+'',
+'    blog_util.download_file(',
+'       p_blob_content   => l_xml',
+'      ,p_mime_type      => ''application/xml''',
 '      ,p_header_names   => apex_t_varchar2( ''Cache-Control'', ''Content-Disposition'' )',
 '      ,p_header_values  => apex_t_varchar2( l_cache_control, ''inline; filename="sitemap-posts.xml"'' )',
 '      ,p_charset        => ''UTF-8''',

@@ -159,7 +159,7 @@ wwv_flow_imp.create_flow(
 ,p_substitution_string_01=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_01=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230609055033'
+,p_last_upd_yyyymmddhh24miss=>'20230609070725'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>785
 ,p_print_server_type=>'INSTANCE'
@@ -33825,7 +33825,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--  DDL for View BLOG_V_POSTS',
 '--------------------------------------------------------',
 'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CTX_SEARCH", "CHANGED_ON", "ARCHIVE_YEAR", "CATEGORY_SE'
-||'Q", "POST_URL", "TAGS_HTML1", "TAGS_HTML2", "NEXT_POST", "PREV_POST") AS',
+||'Q", "POST_URL", "TAGS", "TAGS_HTML1", "TAGS_HTML2", "NEXT_POST", "PREV_POST") AS',
 'with q1 as(',
 '  select',
 '     t1.id              as post_id',
@@ -33872,6 +33872,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,blog_url.get_post(',
 '    p_post_id => q1.post_id',
 '  )                   as post_url',
+'  ,(',
+'    select',
+'      listagg( lkp.tag, '', '' )  within group( order by lkp.display_seq ) as tags',
+'    from blog_v_post_tags lkp',
+'    where 1 = 1',
+'    and lkp.post_id = q1.post_id',
+'  )                   as tags',
 '-- Aggregate tag HTML for post',
 '  ,(',
 '    select',
@@ -34786,7 +34793,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  ctx_ddl.create_preference(',
 '     preference_name  => ''BLOG_COMMENTS_UDS''',
-'    ,object_name      => ''USER_DATASTORE''',
+'    ,object_name     '))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+' => ''USER_DATASTORE''',
 '  );',
 '',
 '  ctx_ddl.set_attribute(',
@@ -34796,16 +34812,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  );',
 '',
 '  ctx_ddl.set_attribute(',
-'    preference_'))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'name   => ''BLOG_COMMENTS_UDS''',
+'    preference_name   => ''BLOG_COMMENTS_UDS''',
 '    ,attribute_name   => ''PROCEDURE''',
 '    ,attribute_value  =>',
 '      apex_string.format(',
@@ -35813,7 +35820,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Global functions and procedures',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure post_authentication',
+'  procedure post_authentica'))
+);
+null;
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'tion',
 '  as',
 '    l_group_names apex_t_varchar2;',
 '  begin',
@@ -35823,16 +35839,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      select group_name',
 '      from apex_workspace_group_users',
 '      where 1 = 1',
-'        and user_name '))
-);
-null;
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'= sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'        and user_name = sys_context( ''APEX$SESSION'', ''APP_USER'' )',
 '    ) loop',
 '      apex_string.push( l_group_names, c1.group_name );',
 '    end loop;',
@@ -36849,13 +36856,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  c_archive_page  constant t_page_item := t_page_item( ''ARCHIVES'',  ''P15_ARCHIVE_ID'' );',
 '  c_tags_page     constant t_page_item := t_page_item( ''TAG'',       ''P6_TAG_ID'' );',
 '',
-'-- cache rss url',
-'  g_rss_url       varchar2(1024);',
-'-- cache canonical host',
-'  g_canonical_url varchar2(1024);',
-'',
-'--------------------------------------------------------------------------------',
-'------------------------------'))
+'-- cach'))
 );
 null;
 end;
@@ -36864,7 +36865,13 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'--------------------------------------------------',
+'e rss url',
+'  g_rss_url       varchar2(1024);',
+'-- cache canonical host',
+'  g_canonical_url varchar2(1024);',
+'',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -37853,12 +37860,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  begin',
 '    return ''<meta name="robots" value="noindex">'';',
 '  end get_robots_noindex_meta;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function get_tab_canonical_link(',
-'    p_page in varchar2',
-'  ) return varchar2',
-'  as'))
+'------------------------------'))
 );
 null;
 end;
@@ -37867,7 +37869,12 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'--------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  function get_tab_canonical_link(',
+'    p_page in varchar2',
+'  ) return varchar2',
+'  as',
 '    l_html varchar2(32700);',
 '  begin',
 '    -- generate canonical link for tab',
