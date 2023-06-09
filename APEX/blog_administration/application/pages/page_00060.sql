@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230601151928'
+,p_last_upd_yyyymmddhh24miss=>'20230609050432'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(65609751049299759)
@@ -60,7 +60,9 @@ wwv_flow_imp_page.create_page_plug(
 '    ,p_values       => v1.id || '','' || v1.post_id',
 '   )                                as edit_url',
 '   ,:APP_TEXT$BLOG_TXT_OPEN_COMMENT as btn_label',
-'from blog_v_all_comments v1'))
+'from blog_v_all_comments v1',
+'where 1 = 1',
+''))
 ,p_plug_source_type=>'NATIVE_IR'
 ,p_translate_title=>'N'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'

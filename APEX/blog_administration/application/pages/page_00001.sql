@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230528115418'
+,p_last_upd_yyyymmddhh24miss=>'20230608161657'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8582113239518316)
@@ -201,7 +201,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_template=>wwv_flow_imp.id(8490381578518205)
 ,p_display_sequence=>30
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:t-BadgeList--medium:t-BadgeList--dash:t-BadgeList--cols t-BadgeList--4cols:t-Report--hideNoPagination'
+,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols t-BadgeList--4cols:t-Report--hideNoPagination'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -297,11 +297,12 @@ wwv_flow_imp_page.create_page_computation(
 ,p_computation_point=>'BEFORE_BOX_BODY'
 ,p_computation_type=>'QUERY'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select round( ls.period_in_days ) as period_in_days',
+'select',
+'  round( ls.period_in_days ) as period_in_days',
 'from apex_workspace_log_summary ls',
 'where 1 = 1',
 '  and ls.application_id = :G_PUB_APP_ID'))
-,p_required_patch=>wwv_flow_imp.id(10006498624902877)
+,p_required_patch=>wwv_flow_imp.id(24687280101070827)
 );
 wwv_flow_imp.component_end;
 end;

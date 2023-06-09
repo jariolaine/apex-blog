@@ -39,8 +39,6 @@ prompt --install
 @@application/shared_components/navigation/tabs/standard.sql
 @@application/shared_components/navigation/tabs/parent.sql
 @@application/shared_components/user_interface/lovs/categories.sql
-@@application/shared_components/user_interface/lovs/comment_flag.sql
-@@application/shared_components/user_interface/lovs/comment_status.sql
 @@application/shared_components/user_interface/lovs/is_active.sql
 @@application/shared_components/user_interface/lovs/link_status.sql
 @@application/shared_components/user_interface/lovs/login_remember_username.sql

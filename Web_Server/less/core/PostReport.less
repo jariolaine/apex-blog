@@ -4,14 +4,14 @@
 **************************************/
 .z-posts{
   .z-post {
-    margin-bottom: 1rem;
-    padding: @post-padding;
+    margin-bottom: @post-padding;;
     border: var(--ut-component-border-width) solid var(--ut-component-border-color);
     border-radius: var(--ut-component-border-radius);
     box-shadow: var(--ut-shadow-sm);
     background-color: var(--ut-component-background-color);
     .z-post--header {
       clear: both;
+      padding: @post-padding;
       .z-post--date {
         font-size: @post-date-font-size;
         margin: 0 0 0.25rem;
@@ -22,10 +22,11 @@
       }
       .z-post--category {
         font-size: @post-category-font-size ;
-        margin: 0 0 1rem;
       }
     }
     .z-post--body {
+      padding: 0 @post-padding @post-padding;
+      margin-bottom: @post-padding;
       img {
         max-width: 100%;
         height: auto;
@@ -37,11 +38,10 @@
     .z-post--footer {
       width: 100%;
       clear: both;
-      padding-top: 1rem;
       .z-post--tags {
         width: 100%;
         clear: both;
-        padding-top: 1rem;
+        padding: @post-padding;
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
@@ -67,15 +67,19 @@
 @media only screen and (max-width: 640px) {
   .z-posts {
     .z-post {
-      padding: @post-padding - 0.5rem;
       .z-post--header {
+          padding: @post-padding - 0.5rem @post-padding - 0.5rem @post-padding ;
         .z-post--title {
           font-size: @post-title-font-size - 0.25em;
         }
       }
+      .z-post--body {
+        padding: 0 @post-padding - 0.5rem @post-padding;
+      }
       .z-post--footer {
         .z-post--tags {
             justify-content: space-evenly;
+            padding: @post-padding - 0.5rem;
         }
       }
     }

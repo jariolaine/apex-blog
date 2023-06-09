@@ -1398,40 +1398,117 @@ with q1 as(
     ,t1.comment_by
     ,t1.ctx_search
     ,t1.rowid as ctx_rid
+    ,apex_escape.striphtml(
+      p_string => t1.body_html
+    ) as search_desc
     ,case
       when exists(
         select 1
-        from blog_comment_flags f1
-        where f1.flag = 'MODERATE'
-          and f1.comment_id = t1.id
+        from blog_comment_flags f11
+        where f11.flag = 'MODERATE'
+          and f11.comment_id = t1.id
       )
         then 'MODERATE'
       when t1.is_active = 1
         then 'ENABLED'
         else 'DISABLED'
     end as comment_status_code
+    -- because issue: column single-row subquery returns more than one row
+    -- and APEX IR not use LOV in detail view
     ,case
       when exists(
         select 1
-        from blog_comment_flags f1
-        where f1.flag = 'NEW'
-          and f1.comment_id = t1.id
+        from blog_comment_flags f11
+        where f11.flag = 'MODERATE'
+          and f11.comment_id = t1.id
+      )
+        then (
+          select
+            lov1.display_value
+          from blog_v_lov lov1
+          where lov1.lov_name = 'COMMENT_STATUS'
+            and lov1.return_value = 'MODERATE'
+        )
+      when t1.is_active = 1
+        then (
+          select
+            lov1.display_value
+          from blog_v_lov lov1
+          where lov1.lov_name = 'COMMENT_STATUS'
+            and lov1.return_value = 'ENABLED'
+        )
+        else (
+          select
+            lov1.display_value
+          from blog_v_lov lov1
+          where lov1.lov_name = 'COMMENT_STATUS'
+            and lov1.return_value = 'DISABLED'
+        )
+    end as comment_status_text
+    ,case
+      when exists(
+        select 1
+        from blog_comment_flags f12
+        where f12.flag = 'NEW'
+          and f12.comment_id = t1.id
       )
         then 'NEW'
       when exists(
         select 1
-        from blog_comment_flags f1
-        where f1.flag = 'UNREAD'
-          and f1.comment_id = t1.id
+        from blog_comment_flags f13
+        where f13.flag = 'UNREAD'
+          and f13.comment_id = t1.id
       )
         then 'UNREAD'
       when t1.parent_id is not null
         then 'REPLY'
         else 'READ'
     end as comment_flag_code
-    ,apex_escape.striphtml(
-      p_string => t1.body_html
-    ) as search_desc
+    -- because issue: column single-row subquery returns more than one row
+    -- and APEX IR not use LOV in detail view
+    ,case
+      when exists(
+        select 1
+        from blog_comment_flags f12
+        where f12.flag = 'NEW'
+          and f12.comment_id = t1.id
+      )
+        then (
+          select
+            lov2.display_value
+          from blog_v_lov lov2
+          where lov2.lov_name = 'COMMENT_FLAG'
+            and lov2.return_value = 'NEW'
+        )
+      when exists(
+        select 1
+        from blog_comment_flags f13
+        where f13.flag = 'UNREAD'
+          and f13.comment_id = t1.id
+      )
+        then (
+          select
+            lov2.display_value
+          from blog_v_lov lov2
+          where lov2.lov_name = 'COMMENT_FLAG'
+            and lov2.return_value = 'UNREAD'
+        )
+      when t1.parent_id is not null
+        then (
+          select
+            lov2.display_value
+          from blog_v_lov lov2
+          where lov2.lov_name = 'COMMENT_FLAG'
+            and lov2.return_value = 'REPLY'
+        )
+        else (
+          select
+            lov2.display_value
+          from blog_v_lov lov2
+          where lov2.lov_name = 'COMMENT_FLAG'
+            and lov2.return_value = 'READ'
+        )
+    end as comment_flag_text
   from blog_comments t1
 )
 select
@@ -1444,7 +1521,13 @@ select
   ,q1.is_active           as is_active
   ,q1.post_id             as post_id
   ,q1.parent_id           as parent_id
-  ,t2.title               as post_title
+  ,(
+    select
+      lkp.title
+    from blog_posts lkp
+    where 1 = 1
+      and q1.post_id = lkp.id
+  )                       as post_title
   ,q1.body_html           as body_html
   ,q1.comment_by          as comment_by
   ,q1.ctx_search          as ctx_search
@@ -1456,20 +1539,28 @@ select
       then 'true'
       else 'false'
   end                     as data_unread
+/*
+-- because issue: column single-row subquery returns more than one row
   ,(
     select
-      lov.display_value
-    from blog_v_lov lov
-    where lov.lov_name = 'COMMENT_STATUS'
-    and lov.return_value = q1.comment_status_code
+      lov1.display_value
+    from blog_v_lov lov1
+    where lov1.lov_name = 'COMMENT_STATUS'
+      and lov1.return_value = q1.comment_status_code
   )                       as comment_status_text
+*/
+  ,q1.comment_status_text as comment_status_text
+/*
+-- because issue: column single-row subquery returns more than one row
   ,(
     select
-      lov.display_value
-    from blog_v_lov lov
-    where lov.lov_name = 'COMMENT_FLAG'
-    and lov.return_value = q1.comment_flag_code
+      lov2.display_value
+    from blog_v_lov lov2
+    where lov2.lov_name = 'COMMENT_FLAG'
+      and lov2.return_value = q1.comment_flag_code
   )                       as comment_flag_text
+*/
+  ,q1.comment_flag_text   as comment_flag_text
   ,case q1.comment_status_code
     when 'MODERATE'
       then 'fa-exclamation-circle u-warning-text'
@@ -1486,7 +1577,8 @@ select
       then 'fa-envelope-o'
       else 'fa-envelope-open-o'
   end                     as comment_flag_icon
-  ,substr( q1.search_desc, 1 , 128 ) || case when length( q1.search_desc ) > 128
+  ,substr( q1.search_desc, 1 , 128 )
+  || case when length( q1.search_desc ) > 128
     then ' ...'
   end                     as search_desc
   ,xmlserialize( content
@@ -1498,7 +1590,6 @@ select
     )
   )                       as ctx_datastore
 from q1
-join blog_posts t2 on q1.post_id = t2.id
 where 1 = 1
 /
 --------------------------------------------------------

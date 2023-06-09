@@ -1440,58 +1440,58 @@ wwv_flow_imp_shared.append_to_install_script(
 '    ,t1.comment_by',
 '    ,t1.ctx_search',
 '    ,t1.rowid as ctx_rid',
+'    ,apex_escape.striphtml(',
+'      p_string => t1.body_html',
+'    ) as search_desc',
 '    ,case',
 '      when exists(',
 '        select 1',
-'        from blog_comment_flags f1',
-'        where f1.flag = ''MODERATE''',
-'          and f1.comment_id = t1.id',
+'        from blog_comment_flags f11',
+'        where f11.flag = ''MODERATE''',
+'          and f11.comment_id = t1.id',
 '      )',
 '        then ''MODERATE''',
 '      when t1.is_active = 1',
 '        then ''ENABLED''',
 '        else ''DISABLED''',
 '    end as comment_status_code',
+'    -- because issue: column single-row subquery returns more than one row',
+'    -- and APEX IR not use LOV in detail view',
 '    ,case',
 '      when exists(',
 '        select 1',
-'        from blog_comment_flags f1',
-'        where f1.flag = ''NEW''',
-'          and f1.comment_id = t1.id',
+'        from blog_comment_flags f11',
+'        where f11.flag = ''MODERATE''',
+'          and f11.comment_id = t1.id',
 '      )',
-'        then ''NEW''',
+'        then (',
+'          select',
+'            lov1.display_value',
+'          from blog_v_lov lov1',
+'          where lov1.lov_name = ''COMMENT_STATUS''',
+'            and lov1.return_value = ''MODERATE''',
+'        )',
+'      when t1.is_active = 1',
+'        then (',
+'          select',
+'            lov1.display_value',
+'          from blog_v_lov lov1',
+'          where lov1.lov_name = ''COMMENT_STATUS''',
+'            and lov1.return_value = ''ENABLED''',
+'        )',
+'        else (',
+'          select',
+'            lov1.display_value',
+'          from blog_v_lov lov1',
+'          where lov1.lov_name = ''COMMENT_STATUS''',
+'            and lov1.return_value = ''DISABLED''',
+'        )',
+'    end as comment_status_text',
+'    ,case',
 '      when exists(',
 '        select 1',
-'        from blog_comment_flags f1',
-'        where f1.flag = ''UNREAD''',
-'          and f1.comment_id = t1.id',
-'      )',
-'        then ''UNREAD''',
-'      when t1.parent_id is not null',
-'        then ''REPLY''',
-'        else ''READ''',
-'    end as comment_flag_code',
-'    ,apex_escape.striphtml(',
-'      p_string => t1.body_html',
-'    ) as search_desc',
-'  from blog_comments t1',
-')',
-'select',
-'   q1.id                  as id',
-'  ,q1.row_version         as row_version',
-'  ,q1.created_on          as created_on',
-'  ,lower( q1.created_by ) as created_by',
-'  ,q1.changed_on          as changed_on',
-'  ,lower( q1.changed_by ) as changed_by',
-'  ,q1.is_active           as is_active',
-'  ,q1.post_id             as post_id',
-'  ,q1.parent_id           as parent_id',
-'  ,t2.title               as post_title',
-'  ,q1.body_html           as body_html',
-'  ,q1.comment_by          as comment_by',
-'  ,q1.ctx_search          as ctx_search',
-'  ,q1.rowid               as ctx_rid',
-'  ,q1.comment_status_code as'))
+'        from blog_comment_flags f12',
+'        where f12.flag = ''NE'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1509,27 +1509,118 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' comment_status_code',
+'W''',
+'          and f12.comment_id = t1.id',
+'      )',
+'        then ''NEW''',
+'      when exists(',
+'        select 1',
+'        from blog_comment_flags f13',
+'        where f13.flag = ''UNREAD''',
+'          and f13.comment_id = t1.id',
+'      )',
+'        then ''UNREAD''',
+'      when t1.parent_id is not null',
+'        then ''REPLY''',
+'        else ''READ''',
+'    end as comment_flag_code',
+'    -- because issue: column single-row subquery returns more than one row',
+'    -- and APEX IR not use LOV in detail view',
+'    ,case',
+'      when exists(',
+'        select 1',
+'        from blog_comment_flags f12',
+'        where f12.flag = ''NEW''',
+'          and f12.comment_id = t1.id',
+'      )',
+'        then (',
+'          select',
+'            lov2.display_value',
+'          from blog_v_lov lov2',
+'          where lov2.lov_name = ''COMMENT_FLAG''',
+'            and lov2.return_value = ''NEW''',
+'        )',
+'      when exists(',
+'        select 1',
+'        from blog_comment_flags f13',
+'        where f13.flag = ''UNREAD''',
+'          and f13.comment_id = t1.id',
+'      )',
+'        then (',
+'          select',
+'            lov2.display_value',
+'          from blog_v_lov lov2',
+'          where lov2.lov_name = ''COMMENT_FLAG''',
+'            and lov2.return_value = ''UNREAD''',
+'        )',
+'      when t1.parent_id is not null',
+'        then (',
+'          select',
+'            lov2.display_value',
+'          from blog_v_lov lov2',
+'          where lov2.lov_name = ''COMMENT_FLAG''',
+'            and lov2.return_value = ''REPLY''',
+'        )',
+'        else (',
+'          select',
+'            lov2.display_value',
+'          from blog_v_lov lov2',
+'          where lov2.lov_name = ''COMMENT_FLAG''',
+'            and lov2.return_value = ''READ''',
+'        )',
+'    end as comment_flag_text',
+'  from blog_comments t1',
+')',
+'select',
+'   q1.id                  as id',
+'  ,q1.row_version         as row_version',
+'  ,q1.created_on          as created_on',
+'  ,lower( q1.created_by ) as created_by',
+'  ,q1.changed_on          as changed_on',
+'  ,lower( q1.changed_by ) as changed_by',
+'  ,q1.is_active           as is_active',
+'  ,q1.post_id             as post_id',
+'  ,q1.parent_id           as parent_id',
+'  ,(',
+'    select',
+'      lkp.title',
+'    from blog_posts lkp',
+'    where 1 = 1',
+'      and q1.post_id = lkp.id',
+'  )                       as post_title',
+'  ,q1.body_html           as body_html',
+'  ,q1.comment_by          as comment_by',
+'  ,q1.ctx_search          as ctx_search',
+'  ,q1.rowid               as ctx_rid',
+'  ,q1.comment_status_code as comment_status_code',
 '  ,q1.comment_flag_code   as comment_flag_code',
 '  ,case',
 '    when q1.comment_flag_code in( ''NEW'', ''UNREAD'' )',
 '      then ''true''',
 '      else ''false''',
 '  end                     as data_unread',
+'/*',
+'-- because issue: column single-row subquery returns more than one row',
 '  ,(',
 '    select',
-'      lov.display_value',
-'    from blog_v_lov lov',
-'    where lov.lov_name = ''COMMENT_STATUS''',
-'    and lov.return_value = q1.comment_status_code',
+'      lov1.display_value',
+'    from blog_v_lov lov1',
+'    where lov1.lov_name = ''COMMENT_STATUS''',
+'      and lov1.return_value = q1.comment_status_code',
 '  )                       as comment_status_text',
+'*/',
+'  ,q1.comment_status_text as comment_status_text',
+'/*',
+'-- because issue: column single-row subquery returns more than one row',
 '  ,(',
 '    select',
-'      lov.display_value',
-'    from blog_v_lov lov',
-'    where lov.lov_name = ''COMMENT_FLAG''',
-'    and lov.return_value = q1.comment_flag_code',
+'      lov2.display_value',
+'    from blog_v_lov lov2',
+'    where lov2.lov_name = ''COMMENT_FLAG''',
+'      and lov2.return_value = q1.comment_flag_code',
 '  )                       as comment_flag_text',
+'*/',
+'  ,q1.comment_flag_text   as comment_flag_text',
 '  ,case q1.comment_status_code',
 '    when ''MODERATE''',
 '      then ''fa-exclamation-circle u-warning-text''',
@@ -1546,7 +1637,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '      then ''fa-envelope-o''',
 '      else ''fa-envelope-open-o''',
 '  end                     as comment_flag_icon',
-'  ,substr( q1.search_desc, 1 , 128 ) || case when length( q1.search_desc ) > 128',
+'  ,substr( q1.search_desc, 1 , 128 )',
+'  || case when length( q1.search_desc ) > 128',
 '    then '' ...''',
 '  end                     as search_desc',
 '  ,xmlserialize( content',
@@ -1558,7 +1650,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '    )',
 '  )                       as ctx_datastore',
 'from q1',
-'join blog_posts t2 on q1.post_id = t2.id',
 'where 1 = 1',
 '/',
 '--------------------------------------------------------',
@@ -2356,7 +2447,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for Trigger BLOG_INIT_ITEMS_TRG',
 '--------------------------------------------------------',
-'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_INIT_ITEMS_TRG"',
+'CREAT'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.4'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'E OR REPLACE EDITIONABLE TRIGGER "BLOG_INIT_ITEMS_TRG"',
 'before',
 'insert or',
 'update on blog_init_items',
@@ -2440,25 +2549,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      ,sys_context( ''USERENV'', ''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
-'    :new.row_ver'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'sion := :old.row_version + 1;',
+'    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
 '  :new.changed_on := localtimestamp;',
@@ -3401,6 +3492,24 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_header_values   in apex_t_varchar2,',
 '    p_charset         in varchar2 default null',
 '  )',
+''))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.4'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '  as',
 '  begin',
 '',
@@ -3508,25 +3617,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- If values are equal then set status header and exit from procedure',
 '    if sys.owa_util.get_cgi_env(''HTTP_IF_MODIFIED_SINCE'') = l_header_values(1)',
 '    then',
-'    '))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'  sys.owa_util.status_line( 304 );',
+'      sys.owa_util.status_line( 304 );',
 '      apex_debug.info(',
 '         p_message => ''File not sent. If-Modified-Since: %s''',
 '        ,p0 => l_header_values(1)',
@@ -4490,7 +4581,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '    merge into blog_link_groups t1',
 '    using (',
 '      select id',
-'        ,row_number() over(',
+'        ,row_nu'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.4'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'mber() over(',
 '          order by display_seq, created_on',
 '        ) * 10 as new_display_seq',
 '      from blog_link_groups',
@@ -4567,25 +4676,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '          ,p0 => l_result',
 '          ,p1 => ascii( substr( l_string, i, 1 ) )',
 '        )',
-'  '))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'    ;',
+'      ;',
 '    end loop;',
 '    return l_result;',
 '',
@@ -5487,7 +5578,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_flags       in varchar2',
 '  )',
 '  as',
-'    l_flags apex_t_varchar2;',
+'    l_flags'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.4'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+' apex_t_varchar2;',
 '  begin',
 '',
 '    l_flags := apex_string.split( p_flags, '':'' );',
@@ -5582,25 +5691,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      );',
 '      -- send notify email',
 '      apex_mail.send (',
-'         p_to                 =>'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' c1.blogger_email',
+'         p_to                 => c1.blogger_email',
 '        ,p_from               => l_app_email',
 '        ,p_template_static_id => p_email_template',
 '        ,p_placeholders       => c1.placeholders',
@@ -6493,7 +6584,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    blog_util.download_file(',
 '       p_blob_content   => l_xml',
-'      ,p_mime_type      => ''application/xml''',
+'      ,p_mime_type      => ''applic'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.10.07'
+,p_release=>'22.2.4'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ation/xml''',
 '      ,p_header_names   => apex_t_varchar2( ''Cache-Control'', ''Content-Disposition'' )',
 '      ,p_header_values  => apex_t_varchar2( l_cache_control, ''inline; filename="sitemap-posts.xml"'' )',
 '      ,p_charset        => ''UTF-8''',
@@ -6584,25 +6693,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end sitemap_categories;',
 '--------------------------------------------------------------------------------',
-'-----------------------------'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'---------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '  procedure sitemap_archives',
 '  as',
 '    l_xml           blob;',

@@ -66,7 +66,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230608100728'
+,p_last_upd_yyyymmddhh24miss=>'20230608161856'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8596898648797585)
@@ -165,11 +165,6 @@ wwv_flow_imp_page.create_worksheet_col_group(
  p_id=>wwv_flow_imp.id(46741405563045616)
 ,p_name=>'Audit Details'
 ,p_display_sequence=>10
-);
-wwv_flow_imp_page.create_worksheet_col_group(
- p_id=>wwv_flow_imp.id(46741533087045617)
-,p_name=>'Tags'
-,p_display_sequence=>20
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3879808787180115)
@@ -348,7 +343,6 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(24471943643361539)
 ,p_db_column_name=>'VISIBLE_TAGS'
 ,p_display_order=>180
-,p_group_id=>wwv_flow_imp.id(46741533087045617)
 ,p_column_identifier=>'BB'
 ,p_column_label=>'Tags (Enabled)'
 ,p_column_type=>'STRING'
@@ -362,7 +356,6 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(24471868067361538)
 ,p_db_column_name=>'HIDDEN_TAGS'
 ,p_display_order=>190
-,p_group_id=>wwv_flow_imp.id(46741533087045617)
 ,p_column_identifier=>'BA'
 ,p_column_label=>'Tags (Disabled)'
 ,p_column_type=>'STRING'
@@ -426,7 +419,6 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(37425249219377349)
 ,p_db_column_name=>'BTN_EDIT_TAGS'
 ,p_display_order=>250
-,p_group_id=>wwv_flow_imp.id(46741533087045617)
 ,p_column_identifier=>'CA'
 ,p_column_label=>'Edit Tags'
 ,p_column_link=>'f?p=&APP_ID.:16:&SESSION.::&DEBUG.::P16_POST_ID:#POST_ID#'
