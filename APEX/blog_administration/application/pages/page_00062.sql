@@ -4,8 +4,8 @@ begin
 --     PAGE: 00062
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -189,7 +189,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_edit_operations=>'i:u'
 ,p_lost_update_check_type=>'VALUES'
 ,p_plug_source_type=>'NATIVE_FORM'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(144668297086183469)
@@ -198,7 +197,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_template=>wwv_flow_imp.id(8476383962518195)
 ,p_plug_display_sequence=>20
 ,p_plug_display_point=>'REGION_POSITION_03'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'TEXT'
 ,p_attribute_03=>'Y'
@@ -376,6 +374,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_03=>'MULTILINE'
 ,p_attribute_04=>'180'
 ,p_attribute_07=>'Y'
+,p_attribute_25=>'CKEDITOR'
 );
 wwv_flow_imp_page.create_page_computation(
  p_id=>wwv_flow_imp.id(38598619262472473)
@@ -399,6 +398,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_06=>'Y'
 ,p_attribute_08=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>38172754113729062
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(38174693289729064)
@@ -419,6 +419,7 @@ wwv_flow_imp_page.create_page_process(
 ''))
 ,p_process_when_type=>'EXPRESSION'
 ,p_process_when2=>'PLSQL'
+,p_internal_uid=>38174693289729064
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(38473376893283504)
@@ -477,6 +478,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_imp.id(38173431995729063)
 ,p_process_success_message=>'Reply to comment sent.'
+,p_internal_uid=>38590247640274303
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(38172399620729062)
@@ -486,6 +488,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_FORM_INIT'
 ,p_process_name=>'Initialize form Comment'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>38172399620729062
 );
 wwv_flow_imp.component_end;
 end;

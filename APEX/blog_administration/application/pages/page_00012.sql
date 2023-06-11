@@ -4,8 +4,8 @@ begin
 --     PAGE: 00012
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -86,7 +86,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_include_rowid_column=>false
 ,p_is_editable=>false
 ,p_plug_source_type=>'NATIVE_FORM'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(9832631916215218)
@@ -96,7 +95,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_plug_grid_column_span=>9
 ,p_plug_grid_column_css_classes=>'padding-right-none'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
@@ -109,7 +107,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_03'
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
@@ -119,7 +116,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(8475374748518195)
 ,p_plug_display_sequence=>60
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'ITEM_IS_NOT_NULL'
 ,p_plug_display_when_condition=>'P12_ID'
 ,p_required_patch=>wwv_flow_imp.id(8935943081653812)
@@ -451,6 +447,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_03=>'MULTILINE'
 ,p_attribute_04=>'280'
 ,p_attribute_07=>'Y'
+,p_attribute_25=>'CKEDITOR'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(8795875029610783)
@@ -874,6 +871,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_region_id=>wwv_flow_imp.id(8640589331194982)
 ,p_process_type=>'NATIVE_FORM_INIT'
 ,p_process_name=>'Initialize Form Post'
+,p_internal_uid=>8801973868610789
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(27060510671689106)
@@ -887,6 +885,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_when=>'P12_IS_ACTIVE'
 ,p_process_when_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
 ,p_process_when2=>'0'
+,p_internal_uid=>27060510671689106
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(6929777493150993)
@@ -900,6 +899,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'DELETE'
 ,p_process_when_type=>'REQUEST_NOT_EQUAL_CONDITION'
+,p_internal_uid=>6929777493150993
 ,p_process_comment=>'Add new category if not exists and get category id. If category exists return category id. Run only when post is inserted or updated.'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
@@ -938,6 +938,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_06=>'Y'
 ,p_attribute_08=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>19355288927963204
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(7077714087172775)
@@ -951,6 +952,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'DELETE'
 ,p_process_when_type=>'REQUEST_NOT_EQUAL_CONDITION'
+,p_internal_uid=>7077714087172775
 ,p_process_comment=>'Add and or remove tags from post. Run only when post is inserted or updated.'
 );
 wwv_flow_imp.component_end;
@@ -958,8 +960,8 @@ end;
 /
 begin
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -1010,6 +1012,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_03=>'APEX_UTIL'
 ,p_attribute_04=>'CACHE_PURGE_BY_PAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>26610837157511893
 ,p_process_comment=>'Purge public application cached regions.'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
@@ -1046,6 +1049,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_03=>'BLOG_CM'
 ,p_attribute_04=>'REQUEST_TO_POST_SUCCESS_MESSAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>46740818170045610
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(46740966744045611)
@@ -1078,6 +1082,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'Close Dialog'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_success_message=>'&G_SUCCESS_MESSAGE.'
+,p_internal_uid=>38476711128283538
 );
 wwv_flow_imp.component_end;
 end;

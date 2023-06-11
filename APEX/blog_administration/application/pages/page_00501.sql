@@ -4,8 +4,8 @@ begin
 --     PAGE: 00501
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -39,7 +39,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_is_editable=>false
 ,p_plug_source_type=>'NATIVE_FORM'
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(41876878447408309)
@@ -51,7 +50,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_new_grid_row=>false
 ,p_plug_display_column=>10
 ,p_plug_display_point=>'SUB_REGIONS'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
@@ -63,7 +61,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_template=>wwv_flow_imp.id(8496813422518209)
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'SUB_REGIONS'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
@@ -76,7 +73,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>20
 ,p_plug_display_point=>'SUB_REGIONS'
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'TEXT'
 ,p_attribute_03=>'Y'
@@ -90,7 +86,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>40
 ,p_plug_grid_column_css_classes=>'padding-right-none'
 ,p_plug_display_point=>'SUB_REGIONS'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
@@ -102,7 +97,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>20
 ,p_plug_display_point=>'REGION_POSITION_03'
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'TEXT'
 ,p_attribute_03=>'Y'
@@ -204,6 +198,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_03=>'MULTILINE'
 ,p_attribute_04=>'180'
 ,p_attribute_07=>'Y'
+,p_attribute_25=>'CKEDITOR'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(27061385140689114)
@@ -384,6 +379,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_02=>'BLOG_DISPLAY_DATE_FORMAT'
 ,p_attribute_03=>'P501_DISPLAY_DATE_FORMAT'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>45788891854655025
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(45789130633656044)
@@ -395,6 +391,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_02=>'BLOG_INPUT_DATE_FORMAT'
 ,p_attribute_03=>'P501_INPUT_DATE_FORMAT'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>45789130633656044
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(43469257085898224)
@@ -406,6 +403,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_02=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_attribute_03=>'P501_DEFAULT_TIMEFRAME'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>43469257085898224
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(45789440480656875)
@@ -418,6 +416,7 @@ wwv_flow_imp_page.create_page_process(
 'apex_util.set_session_state(''G_USER_INPUT_DATE_TIME_FORMAT'', :P501_INPUT_DATE_FORMAT, false);'))
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>45789440480656875
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(8871718756695793)
@@ -433,6 +432,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_error_message=>'Profile Update Failed.'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_imp.id(8857640492695778)
+,p_internal_uid=>8871718756695793
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(26381038521542603)
@@ -445,6 +445,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_04=>'CACHE_PURGE_BY_PAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_imp.id(8857640492695778)
+,p_internal_uid=>26381038521542603
 ,p_process_comment=>'Purge public application about page cached region.'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
@@ -491,6 +492,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_imp.id(8857640492695778)
 ,p_process_success_message=>'Profile Updated.'
+,p_internal_uid=>33489668168471576
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(27061285324689113)
@@ -500,6 +502,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_FORM_INIT'
 ,p_process_name=>'Initialize form My Profile'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>27061285324689113
 );
 wwv_flow_imp.component_end;
 end;

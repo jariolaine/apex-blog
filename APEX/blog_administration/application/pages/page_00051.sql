@@ -4,8 +4,8 @@ begin
 --     PAGE: 00051
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -34,7 +34,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_03'
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
@@ -53,7 +52,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_row_version_column=>'ROW_VERSION'
 ,p_plug_source_type=>'NATIVE_FORM'
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(38397603397151551)
@@ -390,6 +388,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_06=>'Y'
 ,p_attribute_08=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>38407599199151560
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(39208375469806974)
@@ -401,6 +400,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_03=>'APEX_UTIL'
 ,p_attribute_04=>'CACHE_PURGE_BY_PAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>39208375469806974
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(38594491166274345)
@@ -436,6 +436,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_03=>'BLOG_CM'
 ,p_attribute_04=>'REQUEST_TO_LINK_SUCCESS_MESSAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>46741104422045613
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(46741269685045614)
@@ -468,6 +469,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'Close Dialog'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_success_message=>'&G_SUCCESS_MESSAGE.'
+,p_internal_uid=>38408763511151561
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(38407907020151560)
@@ -476,6 +478,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_region_id=>wwv_flow_imp.id(45233986889252392)
 ,p_process_type=>'NATIVE_FORM_INIT'
 ,p_process_name=>'Initialize form Link Properties'
+,p_internal_uid=>38407907020151560
 );
 wwv_flow_imp.component_end;
 end;

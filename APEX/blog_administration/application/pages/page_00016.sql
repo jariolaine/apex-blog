@@ -4,8 +4,8 @@ begin
 --     PAGE: 00016
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -42,7 +42,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_query_where=>'post_id = :P16_POST_ID'
 ,p_include_rowid_column=>false
 ,p_plug_source_type=>'NATIVE_IG'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_prn_units=>'INCHES'
 ,p_prn_paper_size=>'LETTER'
 ,p_prn_width=>11
@@ -589,7 +588,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>20
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
@@ -765,6 +763,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_03=>'BLOG_CM'
 ,p_attribute_04=>'ADD_TAG'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>38504002544327702
 ,p_process_comment=>'Add new tags to repository.'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
@@ -803,6 +802,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_06=>'Y'
 ,p_attribute_08=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>38503631725327701
 );
 wwv_flow_imp.component_end;
 end;

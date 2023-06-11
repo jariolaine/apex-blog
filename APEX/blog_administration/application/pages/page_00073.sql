@@ -4,8 +4,8 @@ begin
 --     PAGE: 00073
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -94,7 +94,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_point=>'REGION_POSITION_01'
 ,p_plug_source=>'&APP_TEXT$BLOG_CONFIRM_FILE_OVERWRITE.'
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
@@ -107,7 +106,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_03'
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
@@ -178,6 +176,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_03=>'BLOG_CM'
 ,p_attribute_04=>'MERGE_FILES'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>38271624326830517
 ,p_process_comment=>'Merge uploaded file(s) to database.'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
@@ -202,6 +201,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_03=>'APEX_UTIL'
 ,p_attribute_04=>'CACHE_PURGE_BY_PAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>39248897148164524
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(39214432232831940)
@@ -236,6 +236,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_01=>'CLEAR_CACHE_FOR_PAGES'
 ,p_attribute_04=>'72'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>46740738163045609
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(38272560863830518)
@@ -245,6 +246,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'Close Dialog'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_success_message=>'File(s) uploaded'
+,p_internal_uid=>38272560863830518
 );
 wwv_flow_imp.component_end;
 end;

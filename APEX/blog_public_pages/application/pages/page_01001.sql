@@ -4,8 +4,8 @@ begin
 --     PAGE: 01001
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -45,7 +45,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>30
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_03'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
@@ -58,7 +57,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_01'
 ,p_plug_source=>'&APP_TEXT$BLOG_MSG_MODERATE_ENABLED.'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'EXPRESSION'
 ,p_plug_display_when_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog_util.get_attribute_value(''G_APP_EMAIL'') is not null',
@@ -87,7 +85,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_lost_update_check_type=>'VALUES'
 ,p_plug_source_type=>'NATIVE_FORM'
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(6283058393551656)
@@ -371,6 +368,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_08=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_imp.id(6283414650551656)
+,p_internal_uid=>26968482248257312
 ,p_process_comment=>'Save comment'
 );
 wwv_flow_imp_page.create_page_process(
@@ -383,6 +381,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_03=>'BLOG_COMM'
 ,p_attribute_04=>'FLAG_COMMENT'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>36228428060379743
 ,p_process_comment=>'Mark new comment as unread'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
@@ -420,6 +419,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_04=>'FLAG_COMMENT'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_imp.id(28281277020489892)
+,p_internal_uid=>36228592519379744
 ,p_process_comment=>'Mark new comment to be moderated if feature "Comments need to moderated" ia enabled'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
@@ -456,6 +456,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_03=>'BLOG_COMM'
 ,p_attribute_04=>'NEW_COMMENT_NOTIFY'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>26970862080257336
 ,p_process_comment=>'Notify blogger about new comment for post'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
@@ -507,6 +508,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_when=>'P1001_EMAIL'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
 ,p_required_patch=>wwv_flow_imp.id(33703543205326403)
+,p_internal_uid=>31248826734982928
 ,p_process_comment=>'Save user email for notification for new replies to comment if user provides email address and feature "Sent email notification of new comments" is enabled'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
@@ -541,6 +543,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'Clear page items'
 ,p_attribute_01=>'CLEAR_CACHE_CURRENT_PAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>31247931198982919
 ,p_process_comment=>'At least question answer item saves session state to disk. Clear all page items session state.'
 );
 wwv_flow_imp_page.create_page_process(
@@ -552,6 +555,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_success_message=>'Thanks for commenting. Your comment will be published after author has review it.'
 ,p_required_patch=>wwv_flow_imp.id(28281277020489892)
+,p_internal_uid=>31617539210094011
 ,p_process_comment=>'Comments are moderated'
 );
 wwv_flow_imp_page.create_page_process(
@@ -563,6 +567,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_success_message=>'Thanks for commenting.'
 ,p_required_patch=>-wwv_flow_imp.id(28281277020489892)
+,p_internal_uid=>26385226571542645
 ,p_process_comment=>'Comments aren''t moderated'
 );
 wwv_flow_imp_page.create_page_process(
@@ -573,6 +578,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_FORM_INIT'
 ,p_process_name=>'Initialize form Leave Reply'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>26385626116542649
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(26385135588542644)
@@ -583,6 +589,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'P1001_LAST_NAME'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
+,p_internal_uid=>26385135588542644
 ,p_process_comment=>'Close dialog if not for human input field is not null'
 );
 wwv_flow_imp_page.create_page_process(
@@ -597,6 +604,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'P1001_COMMENT'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
+,p_internal_uid=>20471016925872825
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(20471102905872826)

@@ -1,8 +1,8 @@
 prompt --application/plugin_settings
 begin
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -25,15 +25,6 @@ wwv_flow_imp_shared.create_plugin_setting(
  p_id=>wwv_flow_imp.id(1401315958916089)
 ,p_plugin_type=>'ITEM TYPE'
 ,p_plugin=>'NATIVE_DATE_PICKER_APEX'
-,p_attribute_01=>'MONTH-PICKER:YEAR-PICKER'
-,p_attribute_02=>'VISIBLE'
-,p_attribute_03=>'15'
-,p_attribute_04=>'FOCUS'
-);
-wwv_flow_imp_shared.create_plugin_setting(
- p_id=>wwv_flow_imp.id(1575365350921366)
-,p_plugin_type=>'ITEM TYPE'
-,p_plugin=>'NATIVE_DATE_PICKER_JET'
 ,p_attribute_01=>'MONTH-PICKER:YEAR-PICKER'
 ,p_attribute_02=>'VISIBLE'
 ,p_attribute_03=>'15'

@@ -4,8 +4,8 @@ begin
 --     PAGE: 00061
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -33,7 +33,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_03'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
@@ -51,7 +50,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_lost_update_check_type=>'COLUMN'
 ,p_row_version_column=>'ROW_VERSION'
 ,p_plug_source_type=>'NATIVE_FORM'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(99217848580193002)
@@ -498,6 +496,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_01=>'PLSQL_PACKAGE'
 ,p_attribute_03=>'BLOG_COMM'
 ,p_attribute_04=>'UNFLAG_COMMENT'
+,p_internal_uid=>38191460475731801
 ,p_process_comment=>'When view comment remove new and unread flags.'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
@@ -537,6 +536,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_06=>'Y'
 ,p_attribute_08=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>38185137430731790
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(38191811002731801)
@@ -550,6 +550,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_imp.id(38176354843731777)
 ,p_process_success_message=>'Comment approved.'
+,p_internal_uid=>38191811002731801
 ,p_process_comment=>'Remove moderate flag from comment.'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
@@ -587,6 +588,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_04=>'FLAG_COMMENT'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_imp.id(38177963674731780)
+,p_internal_uid=>38193234448731805
 ,p_process_comment=>'Set unread flag to comment.'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
@@ -622,6 +624,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_imp.id(38177963674731780)
 ,p_process_success_message=>'Comment marked as unread.'
+,p_internal_uid=>38590181651274302
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(38184705007731789)
@@ -631,6 +634,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_FORM_INIT'
 ,p_process_name=>'Initialize form Items'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>38184705007731789
 );
 wwv_flow_imp.component_end;
 end;

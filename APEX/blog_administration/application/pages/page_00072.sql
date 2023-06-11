@@ -4,8 +4,8 @@ begin
 --     PAGE: 00072
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -34,7 +34,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
@@ -47,7 +46,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_03'
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 );
@@ -146,6 +144,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_03=>'BLOG_CM'
 ,p_attribute_04=>'FILE_EXISTS'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_internal_uid=>38265273954825085
 ,p_process_comment=>'Process file(s) to apex_collection and set out parameter p_files_merged to indicate if file(s) overwrite need to be confirmed.'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
@@ -184,6 +183,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_when=>'P72_FILE_EXISTS'
 ,p_process_when_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
 ,p_process_when2=>'NO'
+,p_internal_uid=>46740406615045606
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(46740528375045607)
@@ -210,6 +210,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_when=>'P72_FILE_EXISTS'
 ,p_process_when_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
 ,p_process_when2=>'NO'
+,p_internal_uid=>39247081074156974
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(39213851122831934)
@@ -246,6 +247,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_when_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
 ,p_process_when2=>'NO'
 ,p_process_success_message=>'File(s) uploaded.'
+,p_internal_uid=>38264878069825085
 ,p_process_comment=>'Close dialog if file(s) merged. If uploaded file(s) aren''t merged, then branch to file overwrite confirmation page.'
 );
 wwv_flow_imp.component_end;

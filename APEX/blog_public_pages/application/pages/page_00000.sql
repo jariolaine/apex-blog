@@ -4,8 +4,8 @@ begin
 --     PAGE: 00000
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -29,7 +29,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>130
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'NEVER'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
@@ -45,7 +44,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_grid_column_css_classes=>'z-global-column'
 ,p_plug_display_column=>10
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
 ,p_plug_display_when_condition=>'1001,1002,1003,9999'
 ,p_plug_caching=>'CACHE'
@@ -71,7 +69,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_list_id=>wwv_flow_imp.id(6941496811819617)
 ,p_plug_source_type=>'NATIVE_LIST'
 ,p_list_template_id=>wwv_flow_imp.id(6842938924267407)
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_required_patch=>wwv_flow_imp.id(8635355820099640)
 ,p_landmark_type=>'navigation'
 ,p_plug_comment=>'Categories link list'
@@ -88,7 +85,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_list_id=>wwv_flow_imp.id(6945203882938984)
 ,p_plug_source_type=>'NATIVE_LIST'
 ,p_list_template_id=>wwv_flow_imp.id(6842938924267407)
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_required_patch=>wwv_flow_imp.id(8677319562925389)
 ,p_landmark_type=>'navigation'
 ,p_plug_comment=>'Latest post link list'
@@ -109,7 +105,6 @@ wwv_flow_imp_page.create_page_plug(
 ');'))
 ,p_lazy_loading=>false
 ,p_plug_source_type=>'NATIVE_DYNAMIC_CONTENT'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_required_patch=>wwv_flow_imp.id(8635198962090938)
 ,p_landmark_type=>'navigation'
 ,p_plug_comment=>'Holds "Subscribe in a Reader" button shortcut'
@@ -126,7 +121,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_list_id=>wwv_flow_imp.id(13220237658425595)
 ,p_plug_source_type=>'NATIVE_LIST'
 ,p_list_template_id=>wwv_flow_imp.id(13219456187408808)
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_required_patch=>wwv_flow_imp.id(13229141933919002)
 ,p_landmark_type=>'navigation'
 ,p_plug_comment=>'Tags link list'
@@ -143,7 +137,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_list_id=>wwv_flow_imp.id(30076925956418880)
 ,p_plug_source_type=>'NATIVE_LIST'
 ,p_list_template_id=>wwv_flow_imp.id(6842938924267407)
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_required_patch=>wwv_flow_imp.id(8670890848739263)
 ,p_landmark_type=>'navigation'
 ,p_plug_comment=>'Archives link list'
@@ -157,7 +150,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_plug_source=>'"BLOG_POWERED_BY"'
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
 ,p_plug_display_when_condition=>'1001,1002,1003,9999'
 ,p_plug_caching=>'CACHE'
@@ -181,7 +173,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_item_display_point=>'BELOW'
 ,p_plug_source=>'&G_APP_NAME.'
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_landmark_type=>'exclude_landmark'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
@@ -198,7 +189,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_source_type=>'NATIVE_LIST'
 ,p_list_template_id=>wwv_flow_imp.id(61358318182072659)
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
 ,p_plug_display_when_condition=>'1001,1002,1003,9999'
 ,p_required_patch=>wwv_flow_imp.id(42618909236023987)

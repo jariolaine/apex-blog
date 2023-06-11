@@ -4,8 +4,8 @@ begin
 --     PAGE: 00002
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -328,7 +328,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_new_grid_row=>false
 ,p_plug_new_grid_column=>false
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'EXPRESSION'
 ,p_plug_display_when_condition=>'not( :P2_NEXT_POST_ID is null and :P2_PREV_POST_ID is null )'
 ,p_plug_display_when_cond2=>'PLSQL'
@@ -599,6 +598,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_03=>'BLOG_UTIL'
 ,p_attribute_04=>'GET_POST_DETAILS'
 ,p_process_error_message=>'Post not found.'
+,p_internal_uid=>27862651784256825
 ,p_process_comment=>'Fetch post details for meta tags and pagination'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
@@ -740,6 +740,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_RESET_PAGINATION'
 ,p_process_name=>'Reset comments pagination'
 ,p_attribute_01=>'THIS_PAGE'
+,p_internal_uid=>26063395480107811
 ,p_process_comment=>'Reset comments report pagination'
 );
 wwv_flow_imp_page.create_page_process(
@@ -754,6 +755,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_when=>'P2_SUBSCRIPTION_ID'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
 ,p_process_success_message=>'You have now unsubscribed from notifications for this post comments.'
+,p_internal_uid=>31249019378982930
 ,p_process_comment=>'Remove user subscription from getting notifications of new comments'
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(

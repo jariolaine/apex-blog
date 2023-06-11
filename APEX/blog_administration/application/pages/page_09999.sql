@@ -4,8 +4,8 @@ begin
 --     PAGE: 09999
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -35,7 +35,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_template=>wwv_flow_imp.id(8496352815518209)
 ,p_plug_display_sequence=>10
 ,p_translate_title=>'N'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'TEXT'
 ,p_attribute_03=>'Y'
@@ -53,7 +52,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_source_type=>'NATIVE_PLSQL'
 ,p_translate_title=>'N'
 ,p_plug_query_num_rows=>15
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(20999976530414726)
@@ -64,7 +62,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'SUB_REGIONS'
 ,p_plug_source=>'"SIGN_IN_USING_ANOTHER_IDENTITY_PROVIDER"'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_plug_display_condition_type=>'EXISTS'
 ,p_plug_display_when_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select 1',
@@ -87,7 +84,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_template=>wwv_flow_imp.id(8475374748518195)
 ,p_plug_display_sequence=>20
 ,p_plug_display_point=>'SUB_REGIONS'
-,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_required_patch=>wwv_flow_imp.id(35675193135740905)
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'HTML'
@@ -202,6 +198,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_04=>'SEND_LOGIN_USERNAME_COOKIE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_imp.id(35674953070739317)
+,p_internal_uid=>8578843525518309
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(38477482362283545)
@@ -250,6 +247,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_04=>'LOGIN'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_imp.id(35674953070739317)
+,p_internal_uid=>8578406811518309
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(38477786995283548)
@@ -306,6 +304,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_01=>'CLEAR_CACHE_CURRENT_PAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_required_patch=>wwv_flow_imp.id(35674953070739317)
+,p_internal_uid=>8579610184518310
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(8579277880518310)
@@ -317,6 +316,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_03=>'APEX_AUTHENTICATION'
 ,p_attribute_04=>'GET_LOGIN_USERNAME_COOKIE'
 ,p_required_patch=>wwv_flow_imp.id(35674953070739317)
+,p_internal_uid=>8579277880518310
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(38477038839283541)

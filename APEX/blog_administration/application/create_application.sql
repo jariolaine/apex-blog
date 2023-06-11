@@ -4,14 +4,14 @@ begin
 --     FLOW: 402
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2022.10.07'
-,p_release=>'22.2.4'
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
 ,p_default_owner=>'BLOG_040000'
 );
-wwv_flow_imp.create_flow(
+wwv_imp_workspace.create_flow(
  p_id=>wwv_flow.g_flow_id
 ,p_owner=>nvl(wwv_flow_application_install.get_schema,'BLOG_040000')
 ,p_name=>nvl(wwv_flow_application_install.get_application_name,'Blog Administration')
@@ -26,6 +26,7 @@ wwv_flow_imp.create_flow(
 ,p_bookmark_checksum_function=>'SH512'
 ,p_accept_old_checksums=>false
 ,p_compatibility_mode=>'21.2'
+,p_session_state_commits=>'IMMEDIATE'
 ,p_flow_language=>'en'
 ,p_flow_language_derived_from=>'FLOW_PRIMARY_LANGUAGE'
 ,p_allow_feedback_yn=>'Y'
@@ -36,7 +37,6 @@ wwv_flow_imp.create_flow(
 ,p_direction_right_to_left=>'N'
 ,p_flow_image_prefix => nvl(wwv_flow_application_install.get_image_prefix,'')
 ,p_documentation_banner=>'Source code: https://github.com/jariolaine/apex-blog'
-,p_authentication=>'PLUGIN'
 ,p_authentication_id=>wwv_flow_imp.id(24462639138097628)
 ,p_populate_roles=>'A'
 ,p_application_tab_set=>1
@@ -52,6 +52,7 @@ wwv_flow_imp.create_flow(
 ,p_browser_cache=>'N'
 ,p_browser_frame=>'D'
 ,p_runtime_api_usage=>'T:O'
+,p_pass_ecid=>'N'
 ,p_security_scheme=>wwv_flow_imp.id(28359530175115492)
 ,p_rejoin_existing_sessions=>'N'
 ,p_csv_encoding=>'Y'
