@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.0'
+,p_release=>'23.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -19,7 +19,7 @@ wwv_flow_imp_shared.create_plug_template(
 '  #BODY#',
 '  <div class="t-TabsRegion-items">#SUB_REGIONS#</div>',
 '</div>'))
-,p_sub_plug_template=>'<div data-label="#SUB_REGION_TITLE#" id="SR_#SUB_REGION_ID#">#SUB_REGION#</div>'
+,p_sub_plug_template=>'<div data-label="#SUB_REGION_TITLE!ATTR#" id="SR_#SUB_REGION_ID#">#SUB_REGION#</div>'
 ,p_page_plug_template_name=>'Tabs Container'
 ,p_internal_name=>'TABS_CONTAINER'
 ,p_javascript_file_urls=>'#APEX_FILES#libraries/apex/#MIN_DIRECTORY#widget.apexTabs#MIN#.js?v=#APEX_VERSION#'
@@ -32,7 +32,7 @@ wwv_flow_imp_shared.create_plug_template(
 ,p_translate_this_template=>'N'
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(10001953369694353)
+ p_id=>wwv_flow_imp.id(14080926690202844)
 ,p_plug_template_id=>wwv_flow_imp.id(8503643388518213)
 ,p_name=>'Region Body'
 ,p_placeholder=>'BODY'
@@ -43,7 +43,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(10002468588694353)
+ p_id=>wwv_flow_imp.id(14081439225202844)
 ,p_plug_template_id=>wwv_flow_imp.id(8503643388518213)
 ,p_name=>'Tabs'
 ,p_placeholder=>'SUB_REGIONS'

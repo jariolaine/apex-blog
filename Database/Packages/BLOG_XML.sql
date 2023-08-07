@@ -12,12 +12,11 @@ as
 --    Jari Laine 08.01.2020 - Removed categories sitemap
 --    Jari Laine 08.01.2020 - Modified use ORDS and blog version 4
 --    Jari Laine 09.04.2020 - Utilize blog_url functions parameter p_canonical
---    Jari Laine 17.05.2020 - Removed private function get_app_alias
---                            and constant c_pub_app_id
---                            Moved private function get_ords_service to blog_ords package
+--    Jari Laine 17.05.2020 - Removed private function get_app_alias and constant c_pub_app_id
+--                          - Moved private function get_ords_service to blog_ords package
 --    Jari Laine 23.05.2020 - Changed procedure sitemap_main to use table blog_pages
---                            Modifications to remove ORDS depency
---                            New procedures:
+--                          - Modifications to remove ORDS depency
+--                          - New procedures:
 --                              sitemap_categories
 --                              sitemap_archives
 --                              sitemap_tags
@@ -26,7 +25,7 @@ as
 --    Jari Laine 30.12.2021 - Changed procedure rss_xsl. CSS file name moved to application settings
 --    Jari Laine 05.01.2021 - Added parameter p_css_file to procedure rss_xsl
 --    Jari Laine 13.03.2022 - Added parameter p_process_nae to procedure sitemap_index
---                            Removed build option check from query producing XML in procedure sitemap_index
+--                          - Removed build option check from query producing XML in procedure sitemap_index
 --    Jari Laine 19.04.2022 - Changes relating procedure blog_util.download_file
 --    Jari Laine 26.04.2022 - Added element lastmod to XML to functions:
 --                              sitemap_categories
@@ -41,6 +40,7 @@ as
 --                          - Replaced private constant c_pubdate_lang with blog.util.g_nls_date_lang
 --                          - Replaced private constant c_lastmod_format with blog_util.g_iso_8601_date
 --                          - Replaced private constant c_pubdate_format with blog_util.g_rfc_2822_date
+--    Jari Laine 30.07.2023 - Replaced apex_util.get_build_option_status with apex_application_admin.get_build_option_status
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -463,7 +463,7 @@ as
         when v1.build_option is null
         then 'INCLUDE'
         else
-          apex_util.get_build_option_status(
+          apex_application_admin.get_build_option_status(
              p_application_id    => p_app_id
             ,p_build_option_name => v1.build_option
           )

@@ -10,13 +10,13 @@ as
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 22.04.2019 - Created
 --    Jari Laine 09.05.2020 - Functions that are called only from APEX
---                            number return value and number input parameters changed to varchar2.
---                            Functions that are also used in query
---                            another signature with varchar2 input and return values created for APEX
---                            Added parameter p_canonical to functions returning URL
+--                          - Number return value and number input parameters changed to varchar2.
+--                          - Functions that are also used in query
+--                          - Another signature with varchar2 input and return values created for APEX
+--                          - Added parameter p_canonical to functions returning URL
 --    Jari Laine 10.05.2020 - New function get_unsubscribe
 --    Jari Laine 19.05.2020 - Changed page and items name to "hard coded" values
---                            and removed global constants from blog_util package
+--                          - Removed global constants from blog_util package
 --    Jari Laine 23.05.2020 - Removed default from function get_tab parameter p_app_page_id
 --    Jari Laine 13.11.2021 - New funtions get_sitemap_index, get_rss and get get_rss_xsl
 --    Jari Laine 18.12.2021 - Moved procedure redirect_search to package blog_util.

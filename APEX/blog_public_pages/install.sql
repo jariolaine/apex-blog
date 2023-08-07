@@ -129,6 +129,13 @@ prompt --install
 @@application/shared_components/user_interface/shortcuts/blog_powered_by.sql
 @@application/shared_components/email/templates/blog_new_comment_notify.sql
 @@application/shared_components/security/authentications/application_express_authentication.sql
+@@application/shared_components/plugins/template_component/theme_42_avatar.sql
+@@application/shared_components/plugins/template_component/theme_42_badge.sql
+@@application/shared_components/plugins/template_component/theme_42_comments.sql
+@@application/shared_components/plugins/template_component/theme_42_button.sql
+@@application/shared_components/plugins/template_component/theme_42_timeline.sql
+@@application/shared_components/plugins/template_component/theme_42_content_row.sql
+@@application/shared_components/plugins/template_component/theme_42_media_list.sql
 @@application/shared_components/plugins/item_type/fi_jaris_math_question_field.sql
 @@application/shared_components/navigation/search_config/posts.sql
 @@application/shared_components/navigation/search_config/files.sql

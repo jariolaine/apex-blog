@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.0'
+,p_release=>'23.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -41,7 +41,7 @@ wwv_flow_imp_shared.create_plug_template(
 ,p_translate_this_template=>'N'
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(9126356734555986)
+ p_id=>wwv_flow_imp.id(14827104541208954)
 ,p_plug_template_id=>wwv_flow_imp.id(6796339335267382)
 ,p_name=>'Region Body'
 ,p_placeholder=>'BODY'
@@ -52,7 +52,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(9126819642555986)
+ p_id=>wwv_flow_imp.id(14827669368208955)
 ,p_plug_template_id=>wwv_flow_imp.id(6796339335267382)
 ,p_name=>'Change'
 ,p_placeholder=>'CHANGE'
@@ -63,7 +63,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(9127391125555987)
+ p_id=>wwv_flow_imp.id(14828191051208955)
 ,p_plug_template_id=>wwv_flow_imp.id(6796339335267382)
 ,p_name=>'Edit'
 ,p_placeholder=>'EDIT'
@@ -74,7 +74,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(9127825282555987)
+ p_id=>wwv_flow_imp.id(14828681401208955)
 ,p_plug_template_id=>wwv_flow_imp.id(6796339335267382)
 ,p_name=>'Next'
 ,p_placeholder=>'NEXT'
@@ -85,7 +85,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(9128307236555987)
+ p_id=>wwv_flow_imp.id(14829131065208956)
 ,p_plug_template_id=>wwv_flow_imp.id(6796339335267382)
 ,p_name=>'Previous'
 ,p_placeholder=>'PREVIOUS'
@@ -96,7 +96,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(9128883443555987)
+ p_id=>wwv_flow_imp.id(14829676944208956)
 ,p_plug_template_id=>wwv_flow_imp.id(6796339335267382)
 ,p_name=>'Sub Regions'
 ,p_placeholder=>'SUB_REGIONS'

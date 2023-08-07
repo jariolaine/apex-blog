@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.0'
+,p_release=>'23.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -19,7 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'D'
 ,p_page_component_map=>'14'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230606053904'
+,p_last_upd_yyyymmddhh24miss=>'20230801043754'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6433141607894071)
@@ -71,7 +71,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_list_template_id=>wwv_flow_imp.id(6842938924267407)
 ,p_required_patch=>wwv_flow_imp.id(8635355820099640)
 ,p_landmark_type=>'navigation'
-,p_plug_comment=>'Categories link list'
+,p_plug_comment=>'Post categories link list'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6913618929677129)
@@ -107,7 +107,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_source_type=>'NATIVE_DYNAMIC_CONTENT'
 ,p_required_patch=>wwv_flow_imp.id(8635198962090938)
 ,p_landmark_type=>'navigation'
-,p_plug_comment=>'Holds "Subscribe in a Reader" button shortcut'
+,p_plug_comment=>'Displays link to RSS feed'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(25734481162476838)
@@ -123,7 +123,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_list_template_id=>wwv_flow_imp.id(13219456187408808)
 ,p_required_patch=>wwv_flow_imp.id(13229141933919002)
 ,p_landmark_type=>'navigation'
-,p_plug_comment=>'Tags link list'
+,p_plug_comment=>'Post tags link list'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(28587492454643033)
@@ -139,7 +139,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_list_template_id=>wwv_flow_imp.id(6842938924267407)
 ,p_required_patch=>wwv_flow_imp.id(8670890848739263)
 ,p_landmark_type=>'navigation'
-,p_plug_comment=>'Archives link list'
+,p_plug_comment=>'Post archives link list'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(39334600992650406)
@@ -161,6 +161,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_landmark_type=>'exclude_landmark'
 ,p_attribute_01=>'Y'
 ,p_attribute_02=>'HTML'
+,p_plug_comment=>'Displays link to blog application source code in GitHub'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(39335143698650411)
@@ -176,6 +177,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_landmark_type=>'exclude_landmark'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
+,p_plug_comment=>'Displays blog name'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(40726951471800848)
@@ -217,7 +219,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'SEARCH'
 ,p_attribute_05=>'BOTH'
-,p_item_comment=>'When user press enter on field page is summitted. Application process "Redirect to search page" handles redirect to search result page.'
+,p_item_comment=>'When user press enter on field, page is submitted. Application process "Redirect to search page" handles redirect to search result page.'
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(7052827756664737)

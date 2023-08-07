@@ -1,6 +1,6 @@
 # APEX Blog
 ![Oracle_Database 19c](https://img.shields.io/badge/Oracle_Database-19c-red)
-![Oracle Application Express 22.2](https://img.shields.io/badge/APEX-22.2-blue)
+![Oracle Application Express 23.1](https://img.shields.io/badge/APEX-23.1-blue)
 
 
 Blog application built with Oracle Application Express (APEX).
@@ -13,7 +13,7 @@ Workaround is run scripts using e.g. SQL Developer or other SQL client.
 
 ### System Requirements
 * Oracle database version 19c or later
-* Oracle Application Express version 22.2 or later
+* Oracle Application Express version 23.1 or later
 
 ### Needed Privileges
 Ensure target schema associated to your APEX workspace has following system privileges and roles:

@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.0'
+,p_release=>'23.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -21,7 +21,7 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 23.1.0.20230611'');',
+'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 23.1.2.20230807'');',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''20'',''0'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,blog_util.int_to_vc2(apex_application_install.get_applica'
 ||'tion_id));',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''110'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,''My Blog'');',

@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.0'
+,p_release=>'23.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -18,6 +18,7 @@ wwv_flow_imp_shared.create_plug_template(
 '<div class="t-HeroRegion #REGION_CSS_CLASSES#" id="#REGION_STATIC_ID#" #REGION_LANDMARK_ATTRIBUTES# #REGION_ATTRIBUTES#>',
 '  <div class="t-HeroRegion-top">',
 '    <div class="t-HeroRegion-wrap">',
+'      <div class="t-HeroRegion-col t-HeroRegion-col--beforeIcon">#UP#</div>',
 '      <div class="t-HeroRegion-col t-HeroRegion-col--left">#REGION_IMAGE#<span class="t-HeroRegion-icon t-Icon #ICON_CSS_CLASSES#"></span></div>',
 '      <div class="t-HeroRegion-col t-HeroRegion-col--content">',
 '        <h1 id="#REGION_STATIC_ID#_heading" class="t-HeroRegion-title" data-apex-heading>#TITLE#</h1>',
@@ -42,7 +43,7 @@ wwv_flow_imp_shared.create_plug_template(
 ,p_translate_this_template=>'N'
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(9903872671694287)
+ p_id=>wwv_flow_imp.id(13970006336202772)
 ,p_plug_template_id=>wwv_flow_imp.id(8492139706518207)
 ,p_name=>'Region Body'
 ,p_placeholder=>'BODY'
@@ -50,10 +51,10 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_has_region_support=>true
 ,p_has_item_support=>true
 ,p_has_button_support=>true
-,p_glv_new_row=>false
+,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(9904341080694288)
+ p_id=>wwv_flow_imp.id(13970506907202772)
 ,p_plug_template_id=>wwv_flow_imp.id(8492139706518207)
 ,p_name=>'Next'
 ,p_placeholder=>'NEXT'
@@ -64,7 +65,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(9904858550694288)
+ p_id=>wwv_flow_imp.id(13971018587202773)
 ,p_plug_template_id=>wwv_flow_imp.id(8492139706518207)
 ,p_name=>'Search Field and Smart Filters'
 ,p_placeholder=>'SMART_FILTERS'
@@ -75,7 +76,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(9905388403694288)
+ p_id=>wwv_flow_imp.id(13971570247202773)
 ,p_plug_template_id=>wwv_flow_imp.id(8492139706518207)
 ,p_name=>'Sub Regions'
 ,p_placeholder=>'SUB_REGIONS'
@@ -84,6 +85,17 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_has_item_support=>false
 ,p_has_button_support=>false
 ,p_glv_new_row=>true
+);
+wwv_flow_imp_shared.create_plug_tmpl_display_point(
+ p_id=>wwv_flow_imp.id(13972069914202773)
+,p_plug_template_id=>wwv_flow_imp.id(8492139706518207)
+,p_name=>'Up'
+,p_placeholder=>'UP'
+,p_has_grid_support=>false
+,p_has_region_support=>false
+,p_has_item_support=>false
+,p_has_button_support=>true
+,p_glv_new_row=>false
 );
 wwv_flow_imp.component_end;
 end;

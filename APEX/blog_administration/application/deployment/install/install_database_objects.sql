@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.0'
+,p_release=>'23.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -498,21 +498,20 @@ wwv_flow_imp_shared.create_install_script(
 '--    Jari Laine 28.03.2020 - Signature 2 of get_year_month function',
 '--    Jari Laine 15.04.2020 - function validate_comment',
 '--    Jari Laine 26.04.2020 - Changed validate_comment us apex_util.savekey_vc2',
-'--                            and removed custom functions that was doing same thing',
+'--                          - Removed custom functions that was doing same thing',
 '--    Jari Laine 08.05.2020 - Functions get_year_month are obsolete',
-'--                            application changed to group archives by year',
+'--                          - Application changed to group archives by year',
 '--    Jari Laine 10.05.2020 - Procedure new_comment_notify to notify blogger about new comments',
-'--                            Procedure subscribe to subscribe comment reply',
-'--                            Procedure unsubscribe for unsubscribe comment reply',
+'--                          - Procedure subscribe to subscribe comment reply',
+'--                          - Procedure unsubscribe for unsubscribe comment reply',
 '--    Jari Laine 11.05.2020 - Procedures and functions relating comments moved to package blog_comm',
 '--    Jari Laine 17.05.2020 - Added out parameters p_older_title and p_newer_title to procedure get_post_pagination',
-'--                            Materialized view blog_items_init changed to view',
-'--                            Removed function get_item_init_value',
+'--                          - Materialized view blog_items_init changed to view',
+'--                          - Removed function get_item_init_value',
 '--    Jari Laine 18.05.2020 - Moved ORDS specific global constants',
 '--    Jari Laine 19.05.2020 - Changed apex_debug to warn in no_data_found exception handlers',
-'--                            Changed apex_error_handler honor error display position when',
-'--                            ORA error is between -20999 and 20901',
-'--                            Changed procedure get_post_pagination to raises ORA -20901 when no data found',
+'--                          - Changed apex_error_handler honor error display position when ORA error is between -20999 and 20901',
+'--                          - Changed procedure get_post_pagination to raises ORA -20901 when no data found',
 '--    Jari Laine 19.05.2020 - Removed global constants',
 '--    Jari Laine 23.05.2020 - Modifications to remove ORDS depency',
 '--    Jari Laine 05.11.2020 - Procedure render_dynamic_content',
@@ -536,11 +535,11 @@ wwv_flow_imp_shared.create_install_script(
 '--    Jari Laine 15.01.2023 - Removed obsolete procedure render_dynamic_content',
 '--    Jari Laine 19.01.2023 - Changed procedure get_post_details parameter names',
 '--                          - Added global constants',
-'--                            - g_nls_date_lang',
-'--                            - g_iso_8601_date',
-'--                            - g_rfc_2822_date',
+'--                              g_nls_date_lang',
+'--                              g_iso_8601_date',
+'--                              g_rfc_2822_date',
 '--    Jari Laine 08.04.2023 - Parameter p_page_id to procedure redirect_search',
-'--                            Removed ORA errors between -20999 and 20901 display position handlimg from function apex_error_handler',
+'--                          - Removed ORA errors between -20999 and 20901 display position handlimg from function apex_error_handler',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -646,26 +645,27 @@ wwv_flow_imp_shared.create_install_script(
 '--    Jari Laine 12.01.2020 - Added function prepare_file_path',
 '--    Jari Laine 09.04.2020 - Handling tags case insensitive',
 '--    Jari Laine 09.05.2020 - Procedures and functions number input parameters changed to varchar2',
-'--                            New functions get_comment_post_id and is_email',
+'--                          - New functions get_comment_post_id and is_email',
 '--    Jari Laine 10.05.2020 - Procedure send_reply_notify to send notify on reply to comment',
 '--    Jari Laine 12.05.2020 - Removed function prepare_file_path',
-'--    Jari Laine 17.05.2020 - Removed parameter p_err_mesg from function get_first_paragraph,',
-'--                            function is called now from APEX application conputation',
+'--    Jari Laine 17.05.2020 - Removed parameter p_err_mesg from function get_first_paragraph',
 '--    Jari Laine 19.05.2020 - Removed obsolete function get_post_title',
 '--    Jari Laine 24.05.2020 - Added procedures:',
 '--                              run_settings_post_expression',
 '--                              run_feature_post_expression',
 '--                              update_feature',
 '--    Jari Laine 22.06.2020 - Bug fix to function is_integer',
-'--                            Added parameters p_min and p_max to function is_integer',
+'--                          - Added parameters p_min and p_max to function is_integer',
 '--    Jari Laine 30.09.2020 - Added procedure google_post_authentication',
 '--    Jari Laine 28.11.2020 - Removed obsolete function get_comment_post_id',
-'--                            Renamed function google_post_authentication to post_authentication',
+'--                          - Renamed function google_post_authentication to post_authentication',
 '--    Jari Laine 28.02.2020 - New function get_footer_link_seq',
 '--    Jari Laine 23.05.2020 - Modifications to remove ORDS depency',
 '--    Jari Laine 21.03.2021 - Changed procedure get_blogger_details fetch authorization group name stored to BLOG_SETTINGS table',
-'--                            Added trim to function remove_whitespace',
-'--                            Changed procedures add_category and add_t'))
+'--                          - Added trim to function remove_whitespace',
+'--                          - Changed procedures add_category and add_tag use function remove_whitespace',
+'--    Jari Laine 11.04.2021 - Procedure send_reply_notify moved to package BLOG_COMM',
+'-- '))
 );
 wwv_flow_imp.component_end;
 end;
@@ -673,7 +673,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.0'
+,p_release=>'23.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -682,21 +682,19 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ag use function remove_whitespace',
-'--    Jari Laine 11.04.2021 - Procedure send_reply_notify moved to package BLOG_COMM',
-'--    Jari Laine 13.04.2021 - Changes to procedure post_authentication',
-'--                            Function get_footer_link_seq renamed to get_modal_page_seq',
-'--                            Removed procedure run_feature_post_expression',
+'   Jari Laine 13.04.2021 - Changes to procedure post_authentication',
+'--                          - Function get_footer_link_seq renamed to get_modal_page_seq',
+'--                          - Removed procedure run_feature_post_expression',
 '--    Jari Laine 18.04.2021 - Function is_email moved to package BLOG_COMM',
 '--    Jari Laine 05.01.2022 - Removed unused parameters and variables from procedures: post_authentication, update_feature, get_blogger_details and add_blogger',
 '--    Jari Laine 27.03.2022 - Fixed bug on function get_first_paragraph when search nested elements',
-'--                            Removed obsolete procedures remove_unused_tags, purge_post_preview, purge_post_preview_job and save_post_preview',
+'--                          - Removed obsolete procedures remove_unused_tags, purge_post_preview, purge_post_preview_job and save_post_preview',
 '--    Jari Laine 13.04.2022 - Bug fix to functions is_integer, is_url and is_date_format error message handling',
 '--    Jari Laine 01.05.2022 - Simple logic to function request_to_post_status',
 '--    Jari Laine 07.05.2022 - Added procedure remove_unused_tags and remove_unused_categories',
-'--                            Chenged private procedure add_tag to public',
-'--                            Removed obsolete functions get_post_tags and get_category_title',
-'--                            New procedures:',
+'--                          - Chenged private procedure add_tag to public',
+'--                          - Removed obsolete functions get_post_tags and get_category_title',
+'--                          - New procedures:',
 '--                              resequence_link_groups',
 '--                              resequence_links',
 '--                              resequence_categories',
@@ -708,6 +706,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '--    Jari Laine 01.06.2023 - Removed procedure file_upload',
 '--                          - New function file_exists',
 '--                          - Changed procedure merge_files',
+'--    Jari Laine 30.07.2023 - Added check is workspace user locked to procedure post_authentication',
+'--                          - Replaced apex_util.set_build_option_status with apex_application_admin.set_build_option_status',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -920,13 +920,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '--  MODIFIED (DD.MM.YYYY)',
 '--    Jari Laine 22.04.2019 - Created',
 '--    Jari Laine 09.05.2020 - Functions that are called only from APEX',
-'--                            number return value and number input parameters changed to varchar2.',
-'--                            Functions that are also used in query',
-'--                            another signature with varchar2 input and return values created for APEX',
-'--                            Added parameter p_canonical to functions returning URL',
+'--                          - Number return value and number input parameters changed to varchar2.',
+'--                          - Functions that are also used in query',
+'--                          - Another signature with varchar2 input and return values created for APEX',
+'--                          - Added parameter p_canonical to functions returning URL',
 '--    Jari Laine 10.05.2020 - New function get_unsubscribe',
 '--    Jari Laine 19.05.2020 - Changed page and items name to "hard coded" values',
-'--                            and removed global constants from blog_util package',
+'--                          - Removed global constants from blog_util package',
 '--    Jari Laine 23.05.2020 - Removed default from function get_tab parameter p_app_page_id',
 '--    Jari Laine 13.11.2021 - New funtions get_sitemap_index, get_rss and get get_rss_xsl',
 '--    Jari Laine 18.12.2021 - Moved procedure redirect_search to package blog_util.',
@@ -1062,11 +1062,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '--  MODIFIED (DD.MM.YYYY)',
 '--    Jari Laine 11.05.2020 - Created',
 '--    Jari Laine 11.04.2021 - New procedure reply_notify',
-'--                            New functions validate_email and is_email_verified',
+'--                          - New functions validate_email and is_email_verified',
 '--    Jari Laine 18.04.2021 - New functions is_email',
 '--    Jari Laine 30.10.2021 - Removed functions validate_email and is_email_verified',
 '--    Jari Laine 13.04.2022 - Posibility add multiple flags using procedure flag_comment',
-'--                            Posibility remove multiple flags using procedure unflag_comment',
+'--                          - Posibility remove multiple flags using procedure unflag_comment',
 '--    Jari Laine 27.11.2022 - Changed procedure build_code_tab remove leading and trailing line breaks from posted code',
 '--',
 '--  TO DO:',
@@ -1154,22 +1154,22 @@ wwv_flow_imp_shared.append_to_install_script(
 '--  MODIFIED (DD.MM.YYYY)',
 '--    Jari Laine 22.04.2019 - Created',
 '--    Jari Laine 29.04.2020 - New function get_robots_noindex_meta',
-'--                            Functions to generate canonical link outputs robot noindex meta tag',
-'--                            if proper link can''t be generated',
-'--                            Added apex_debug to functions generating meta and canonical link',
+'--                          - Functions to generate canonical link outputs robot noindex meta tag if proper link can''t be generated',
+'--                          - Added apex_debug to functions generating meta and canonical link',
 '--    Jari Laine 10.05.2020 - Utilize blog_url functions p_canonical',
 '--    Jari Laine 19.05.2020 - Removed obsolete function get_search_button',
 '--    Jari Laine 06.07.2020 - Added parameter p_rss_url to functions get_rss_link and get_rss_anchor',
-'--                            Removed parameter p_build_option_status from function get_rss_link',
+'--                          - Removed parameter p_build_option_status from function get_rss_link',
 '--    Jari Laine 13.11.2021 - Changes to funtion get_rss_anchor and get get_rss_link',
 '--                          - Removed obsolete functions',
 '--    Jari Laine 27.03.2022 - Added parameter p_build_option and p_message to function get_rss_link',
 '--                          - Added parameter p_message to function get_rss_anchor',
 '--    Jari Laine 27.04.2022 - Removed obsolete functions get_tag_anchor and get_post_tags',
 '--    Jari Laine 16.11.2022 - Removed obsolete functions:',
-'--                              - get_post_description_meta',
-'--                              - get_description_meta',
+'--                              get_post_description_meta',
+'--                              get_description_meta',
 '--    Jari Laine 25.11.2022 - Removed unused parameters',
+'--    Jari Laine 30.07.2023 - Replaced apex_util.get_build_option_status with apex_application_admin.get_build_option_status',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -1237,12 +1237,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '--    Jari Laine 08.01.2020 - Removed categories sitemap',
 '--    Jari Laine 08.01.2020 - Modified use ORDS and blog version 4',
 '--    Jari Laine 09.04.2020 - Utilize blog_url functions parameter p_canonical',
-'--    Jari Laine 17.05.2020 - Removed private function get_app_alias',
-'--                            and constant c_pub_app_id',
-'--                            Moved private function get_ords_service to blog_ords package',
+'--    Jari Laine 17.05.2020 - Removed private function get_app_alias and constant c_pub_app_id',
+'--                          - Moved private function get_ords_service to blog_ords package',
 '--    Jari Laine 23.05.2020 - Changed procedure sitemap_main to use table blog_pages',
-'--                            Modifications to remove ORDS depency',
-'--                            New procedures:',
+'--                          - Modifications to remove ORDS depency',
+'--                          - New procedures:',
 '--                              sitemap_categories',
 '--                              sitemap_archives',
 '--                              sitemap_tags',
@@ -1251,7 +1250,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--    Jari Laine 30.12.2021 - Changed procedure rss_xsl. CSS file name moved to application settings',
 '--    Jari Laine 05.01.2021 - Added parameter p_css_file to procedure rss_xsl',
 '--    Jari Laine 13.03.2022 - Added parameter p_process_nae to procedure sitemap_index',
-'--                            Removed build option check from query producing XML in procedure sitemap_index',
+'--                          - Removed build option check from query producing XML in procedure sitemap_index',
 '--    Jari Laine 19.04.2022 - Changes relating procedure blog_util.download_file',
 '--    Jari Laine 26.04.2022 - Added element lastmod to XML to functions:',
 '--                              sitemap_categories',
@@ -1266,6 +1265,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--                          - Replaced private constant c_pubdate_lang with blog.util.g_nls_date_lang',
 '--                          - Replaced private constant c_lastmod_format with blog_util.g_iso_8601_date',
 '--                          - Replaced private constant c_pubdate_format with blog_util.g_rfc_2822_date',
+'--    Jari Laine 30.07.2023 - Replaced apex_util.get_build_option_status with apex_application_admin.get_build_option_status',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -1373,8 +1373,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '/',
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_LINKS',
-'--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINKS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "LINK_GROUP_ID", "IS_ACTIVE"'))
+'----------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1383,7 +1382,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.0'
+,p_release=>'23.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -1392,7 +1391,9 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-', "LINK_GROUP_IS_ACTIVE", "DISPLAY_SEQ", "LINK_GROUP_DISPLAY_SEQ", "TITLE", "LINK_GROUP_TITLE", "LINK_DESC", "NOTES", "LINK_URL", "LINK_STATUS_CODE", "LINK_STATUS_ICON") AS',
+'----------------------------------------',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINKS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "LINK_GROUP_ID", "IS_ACTIVE", "LINK_GROUP_IS_ACTIVE", "DISPLAY_SEQ", "LINK_GROUP_DISPLAY_SEQ", "TITLE", "LINK_GROUP_TITLE", '
+||'"LINK_DESC", "NOTES", "LINK_URL", "LINK_STATUS_CODE", "LINK_STATUS_ICON") AS',
 'select',
 '   t1.id                as id',
 '  ,t1.row_version       as row_version',
@@ -2288,16 +2289,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,t1.first_paragraph as first_paragraph',
 '  ,t1.is_active       as is_active',
 '  ,t1.post_desc       as post_desc',
-'  ,(',
-'    select lkp.title',
-'    from blog_categories lkp',
-'    where 1 = 1',
-'      and lkp.id = t1.category_id',
-'  )                   as category_title',
-'  ,(',
-'    select',
-'      listagg( lkp.tag, '','' )',
-'        '))
+'  ,('))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2306,7 +2298,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.0'
+,p_release=>'23.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -2315,7 +2307,16 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'within group( order by lkp.display_seq )',
+'',
+'    select lkp.title',
+'    from blog_categories lkp',
+'    where 1 = 1',
+'      and lkp.id = t1.category_id',
+'  )                   as category_title',
+'  ,(',
+'    select',
+'      listagg( lkp.tag, '','' )',
+'        within group( order by lkp.display_seq )',
 '    from blog_v_all_post_tags lkp',
 '    where 1 = 1',
 '      and lkp.post_id = t1.id',
@@ -3293,13 +3294,7 @@ wwv_flow_imp_shared.append_to_install_script(
 'end;',
 '/',
 '--------------------------------------------------------',
-'--  Create text index preferences for index BLOG_COMMENTS_CTX',
-'--------------------------------------------------------',
-'begin',
-'',
-'  ctx_ddl.create_preference(',
-'     preference_name  => ''BLOG_COMMENTS_UDS''',
-'    ,object_name     '))
+'--  Create text index pref'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3308,7 +3303,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.0'
+,p_release=>'23.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -3317,7 +3312,13 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' => ''USER_DATASTORE''',
+'erences for index BLOG_COMMENTS_CTX',
+'--------------------------------------------------------',
+'begin',
+'',
+'  ctx_ddl.create_preference(',
+'     preference_name  => ''BLOG_COMMENTS_UDS''',
+'    ,object_name      => ''USER_DATASTORE''',
 '  );',
 '',
 '  ctx_ddl.set_attribute(',
@@ -4332,10 +4333,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end add_blogger;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'-- Global functions and procedures',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure post_authentica'))
+'-- Global functions and proce'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4344,7 +4342,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.0'
+,p_release=>'23.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -4353,19 +4351,31 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'tion',
+'dures',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  procedure post_authentication',
 '  as',
 '    l_group_names apex_t_varchar2;',
 '  begin',
 '',
 '    -- collect user groups to PL/SQL table',
 '    for c1 in(',
-'      select group_name',
-'      from apex_workspace_group_users',
+'      select g.group_name',
+'      from apex_workspace_group_users g',
 '      where 1 = 1',
-'        and user_name = sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'        and g.user_name = sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'        and exists(',
+'          select 1',
+'          from apex_workspace_apex_users u',
+'          where 1 = 1',
+'            and u.account_locked = ''No''',
+'            and u.user_name = g.user_name',
+'        )',
 '    ) loop',
+'',
 '      apex_string.push( l_group_names, c1.group_name );',
+'',
 '    end loop;',
 '',
 '    -- Enable user groups',
@@ -5087,7 +5097,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  begin',
 '',
 '    -- update build option value',
-'    apex_util.set_build_option_status(',
+'    apex_application_admin.set_build_option_status(',
 '       p_application_id => p_app_id',
 '      ,p_id => p_build_option_id',
 '      ,p_build_status => upper( p_build_status )',
@@ -5372,15 +5382,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  type t_page_item is record(',
 '    page_alias  varchar2(256),',
-'    item_name   varchar2(256)',
-'  );',
-'-- constants for pages and id items',
-'  c_post_page     constant t_page_item := t_page_item( ''POST'',      ''P2_POST_ID'' );',
-'  c_category_page constant t_page_item := t_page_item( ''CATEGORY'',  ''P14_CATEGORY_ID'' );',
-'  c_archive_page  constant t_page_item := t_page_item( ''ARCHIVES'',  ''P15_ARCHIVE_ID'' );',
-'  c_tags_page     constant t_page_item := t_page_item( ''TAG'',       ''P6_TAG_ID'' );',
-'',
-'-- cach'))
+'    item_na'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5389,7 +5391,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.0'
+,p_release=>'23.1.2'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -5398,7 +5400,15 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'e rss url',
+'me   varchar2(256)',
+'  );',
+'-- constants for pages and id items',
+'  c_post_page     constant t_page_item := t_page_item( ''POST'',      ''P2_POST_ID'' );',
+'  c_category_page constant t_page_item := t_page_item( ''CATEGORY'',  ''P14_CATEGORY_ID'' );',
+'  c_archive_page  constant t_page_item := t_page_item( ''ARCHIVES'',  ''P15_ARCHIVE_ID'' );',
+'  c_tags_page     constant t_page_item := t_page_item( ''TAG'',       ''P6_TAG_ID'' );',
+'',
+'-- cache rss url',
 '  g_rss_url       varchar2(1024);',
 '-- cache canonical host',
 '  g_canonical_url varchar2(1024);',
@@ -6383,7 +6393,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '-- none',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
+'--------------------------------------------'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.2'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'------------------------------------',
 '-- Global functions and procedures',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -6393,25 +6421,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  begin',
 '    return ''<meta name="robots" value="noindex">'';',
 '  end get_robots_noindex_meta;',
-'------------------------------'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'--------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function get_tab_canonical_link(',
 '    p_page in varchar2',
@@ -6614,7 +6624,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_app_id := to_number( p_app_id );',
 '',
 '    -- check build option should HTML generated',
-'    if apex_util.get_build_option_status(',
+'    if apex_application_admin.get_build_option_status(',
 '       p_application_id     => l_app_id',
 '      ,p_build_option_name  => p_build_option',
 '    ) = ''INCLUDE''',
@@ -7021,7 +7031,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        when v1.build_option is null',
 '        then ''INCLUDE''',
 '        else',
-'          apex_util.get_build_option_status(',
+'          apex_application_admin.get_build_option_status(',
 '             p_application_id    => p_app_id',
 '            ,p_build_option_name => v1.build_option',
 '          )',

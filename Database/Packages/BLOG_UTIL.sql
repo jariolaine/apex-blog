@@ -12,21 +12,20 @@ as
 --    Jari Laine 28.03.2020 - Signature 2 of get_year_month function
 --    Jari Laine 15.04.2020 - function validate_comment
 --    Jari Laine 26.04.2020 - Changed validate_comment us apex_util.savekey_vc2
---                            and removed custom functions that was doing same thing
+--                          - Removed custom functions that was doing same thing
 --    Jari Laine 08.05.2020 - Functions get_year_month are obsolete
---                            application changed to group archives by year
+--                          - Application changed to group archives by year
 --    Jari Laine 10.05.2020 - Procedure new_comment_notify to notify blogger about new comments
---                            Procedure subscribe to subscribe comment reply
---                            Procedure unsubscribe for unsubscribe comment reply
+--                          - Procedure subscribe to subscribe comment reply
+--                          - Procedure unsubscribe for unsubscribe comment reply
 --    Jari Laine 11.05.2020 - Procedures and functions relating comments moved to package blog_comm
 --    Jari Laine 17.05.2020 - Added out parameters p_older_title and p_newer_title to procedure get_post_pagination
---                            Materialized view blog_items_init changed to view
---                            Removed function get_item_init_value
+--                          - Materialized view blog_items_init changed to view
+--                          - Removed function get_item_init_value
 --    Jari Laine 18.05.2020 - Moved ORDS specific global constants
 --    Jari Laine 19.05.2020 - Changed apex_debug to warn in no_data_found exception handlers
---                            Changed apex_error_handler honor error display position when
---                            ORA error is between -20999 and 20901
---                            Changed procedure get_post_pagination to raises ORA -20901 when no data found
+--                          - Changed apex_error_handler honor error display position when ORA error is between -20999 and 20901
+--                          - Changed procedure get_post_pagination to raises ORA -20901 when no data found
 --    Jari Laine 19.05.2020 - Removed global constants
 --    Jari Laine 23.05.2020 - Modifications to remove ORDS depency
 --    Jari Laine 05.11.2020 - Procedure render_dynamic_content
@@ -50,11 +49,11 @@ as
 --    Jari Laine 15.01.2023 - Removed obsolete procedure render_dynamic_content
 --    Jari Laine 19.01.2023 - Changed procedure get_post_details parameter names
 --                          - Added global constants
---                            - g_nls_date_lang
---                            - g_iso_8601_date
---                            - g_rfc_2822_date
+--                              g_nls_date_lang
+--                              g_iso_8601_date
+--                              g_rfc_2822_date
 --    Jari Laine 08.04.2023 - Parameter p_page_id to procedure redirect_search
---                            Removed ORA errors between -20999 and 20901 display position handlimg from function apex_error_handler
+--                          - Removed ORA errors between -20999 and 20901 display position handlimg from function apex_error_handler
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

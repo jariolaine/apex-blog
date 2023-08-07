@@ -10,22 +10,22 @@ as
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 22.04.2019 - Created
 --    Jari Laine 29.04.2020 - New function get_robots_noindex_meta
---                            Functions to generate canonical link outputs robot noindex meta tag
---                            if proper link can't be generated
---                            Added apex_debug to functions generating meta and canonical link
+--                          - Functions to generate canonical link outputs robot noindex meta tag if proper link can't be generated
+--                          - Added apex_debug to functions generating meta and canonical link
 --    Jari Laine 10.05.2020 - Utilize blog_url functions p_canonical
 --    Jari Laine 19.05.2020 - Removed obsolete function get_search_button
 --    Jari Laine 06.07.2020 - Added parameter p_rss_url to functions get_rss_link and get_rss_anchor
---                            Removed parameter p_build_option_status from function get_rss_link
+--                          - Removed parameter p_build_option_status from function get_rss_link
 --    Jari Laine 13.11.2021 - Changes to funtion get_rss_anchor and get get_rss_link
 --                          - Removed obsolete functions
 --    Jari Laine 27.03.2022 - Added parameter p_build_option and p_message to function get_rss_link
 --                          - Added parameter p_message to function get_rss_anchor
 --    Jari Laine 27.04.2022 - Removed obsolete functions get_tag_anchor and get_post_tags
 --    Jari Laine 16.11.2022 - Removed obsolete functions:
---                              - get_post_description_meta
---                              - get_description_meta
+--                              get_post_description_meta
+--                              get_description_meta
 --    Jari Laine 25.11.2022 - Removed unused parameters
+--    Jari Laine 30.07.2023 - Replaced apex_util.get_build_option_status with apex_application_admin.get_build_option_status
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -311,7 +311,7 @@ as
     l_app_id := to_number( p_app_id );
 
     -- check build option should HTML generated
-    if apex_util.get_build_option_status(
+    if apex_application_admin.get_build_option_status(
        p_application_id     => l_app_id
       ,p_build_option_name  => p_build_option
     ) = 'INCLUDE'

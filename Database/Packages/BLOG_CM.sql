@@ -13,40 +13,39 @@ as
 --    Jari Laine 12.01.2020 - Added function prepare_file_path
 --    Jari Laine 09.04.2020 - Handling tags case insensitive
 --    Jari Laine 09.05.2020 - Procedures and functions number input parameters changed to varchar2
---                            New functions get_comment_post_id and is_email
+--                          - New functions get_comment_post_id and is_email
 --    Jari Laine 10.05.2020 - Procedure send_reply_notify to send notify on reply to comment
 --    Jari Laine 12.05.2020 - Removed function prepare_file_path
---    Jari Laine 17.05.2020 - Removed parameter p_err_mesg from function get_first_paragraph,
---                            function is called now from APEX application conputation
+--    Jari Laine 17.05.2020 - Removed parameter p_err_mesg from function get_first_paragraph
 --    Jari Laine 19.05.2020 - Removed obsolete function get_post_title
 --    Jari Laine 24.05.2020 - Added procedures:
 --                              run_settings_post_expression
 --                              run_feature_post_expression
 --                              update_feature
 --    Jari Laine 22.06.2020 - Bug fix to function is_integer
---                            Added parameters p_min and p_max to function is_integer
+--                          - Added parameters p_min and p_max to function is_integer
 --    Jari Laine 30.09.2020 - Added procedure google_post_authentication
 --    Jari Laine 28.11.2020 - Removed obsolete function get_comment_post_id
---                            Renamed function google_post_authentication to post_authentication
+--                          - Renamed function google_post_authentication to post_authentication
 --    Jari Laine 28.02.2020 - New function get_footer_link_seq
 --    Jari Laine 23.05.2020 - Modifications to remove ORDS depency
 --    Jari Laine 21.03.2021 - Changed procedure get_blogger_details fetch authorization group name stored to BLOG_SETTINGS table
---                            Added trim to function remove_whitespace
---                            Changed procedures add_category and add_tag use function remove_whitespace
+--                          - Added trim to function remove_whitespace
+--                          - Changed procedures add_category and add_tag use function remove_whitespace
 --    Jari Laine 11.04.2021 - Procedure send_reply_notify moved to package BLOG_COMM
 --    Jari Laine 13.04.2021 - Changes to procedure post_authentication
---                            Function get_footer_link_seq renamed to get_modal_page_seq
---                            Removed procedure run_feature_post_expression
+--                          - Function get_footer_link_seq renamed to get_modal_page_seq
+--                          - Removed procedure run_feature_post_expression
 --    Jari Laine 18.04.2021 - Function is_email moved to package BLOG_COMM
 --    Jari Laine 05.01.2022 - Removed unused parameters and variables from procedures: post_authentication, update_feature, get_blogger_details and add_blogger
 --    Jari Laine 27.03.2022 - Fixed bug on function get_first_paragraph when search nested elements
---                            Removed obsolete procedures remove_unused_tags, purge_post_preview, purge_post_preview_job and save_post_preview
+--                          - Removed obsolete procedures remove_unused_tags, purge_post_preview, purge_post_preview_job and save_post_preview
 --    Jari Laine 13.04.2022 - Bug fix to functions is_integer, is_url and is_date_format error message handling
 --    Jari Laine 01.05.2022 - Simple logic to function request_to_post_status
 --    Jari Laine 07.05.2022 - Added procedure remove_unused_tags and remove_unused_categories
---                            Chenged private procedure add_tag to public
---                            Removed obsolete functions get_post_tags and get_category_title
---                            New procedures:
+--                          - Chenged private procedure add_tag to public
+--                          - Removed obsolete functions get_post_tags and get_category_title
+--                          - New procedures:
 --                              resequence_link_groups
 --                              resequence_links
 --                              resequence_categories
@@ -58,6 +57,8 @@ as
 --    Jari Laine 01.06.2023 - Removed procedure file_upload
 --                          - New function file_exists
 --                          - Changed procedure merge_files
+--    Jari Laine 30.07.2023 - Added check is workspace user locked to procedure post_authentication
+--                          - Replaced apex_util.set_build_option_status with apex_application_admin.set_build_option_status
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -343,12 +344,21 @@ as
 
     -- collect user groups to PL/SQL table
     for c1 in(
-      select group_name
-      from apex_workspace_group_users
+      select g.group_name
+      from apex_workspace_group_users g
       where 1 = 1
-        and user_name = sys_context( 'APEX$SESSION', 'APP_USER' )
+        and g.user_name = sys_context( 'APEX$SESSION', 'APP_USER' )
+        and exists(
+          select 1
+          from apex_workspace_apex_users u
+          where 1 = 1
+            and u.account_locked = 'No'
+            and u.user_name = g.user_name
+        )
     ) loop
+
       apex_string.push( l_group_names, c1.group_name );
+
     end loop;
 
     -- Enable user groups
@@ -1070,7 +1080,7 @@ as
   begin
 
     -- update build option value
-    apex_util.set_build_option_status(
+    apex_application_admin.set_build_option_status(
        p_application_id => p_app_id
       ,p_id => p_build_option_id
       ,p_build_status => upper( p_build_status )

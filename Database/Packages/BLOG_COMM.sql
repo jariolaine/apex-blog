@@ -10,11 +10,11 @@ as
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 11.05.2020 - Created
 --    Jari Laine 11.04.2021 - New procedure reply_notify
---                            New functions validate_email and is_email_verified
+--                          - New functions validate_email and is_email_verified
 --    Jari Laine 18.04.2021 - New functions is_email
 --    Jari Laine 30.10.2021 - Removed functions validate_email and is_email_verified
 --    Jari Laine 13.04.2022 - Posibility add multiple flags using procedure flag_comment
---                            Posibility remove multiple flags using procedure unflag_comment
+--                          - Posibility remove multiple flags using procedure unflag_comment
 --    Jari Laine 27.11.2022 - Changed procedure build_code_tab remove leading and trailing line breaks from posted code
 --
 --  TO DO:
