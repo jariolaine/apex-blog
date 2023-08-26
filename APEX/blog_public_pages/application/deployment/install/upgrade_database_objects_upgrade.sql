@@ -723,7 +723,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--  MODIFIED (DD.MM.YYYY)',
 '--    Jari Laine 22.04.2019 - Created',
 '--    Jari Laine 29.04.2020 - New function get_robots_noindex_meta',
-'--                          - Functions to generate canonical link outputs robot noindex meta tag if proper link can''t be generated',
+'--                          - Functions generating canonical link returns robot noindex meta tag if proper link not generated',
 '--                          - Added apex_debug to functions generating meta and canonical link',
 '--    Jari Laine 10.05.2020 - Utilize blog_url functions p_canonical',
 '--    Jari Laine 19.05.2020 - Removed obsolete function get_search_button',
@@ -1484,7 +1484,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '            lov1.display_value',
 '          from blog_v_lov lov1',
 '          where lov1.lov_name = ''COMMENT_STATUS''',
-'   '))
+'         '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1502,7 +1502,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'         and lov1.return_value = ''DISABLED''',
+'   and lov1.return_value = ''DISABLED''',
 '        )',
 '    end as comment_status_text',
 '    ,case',
@@ -2440,7 +2440,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '    :new.row_version := :old.row_version + 1;',
 '  end if;',
 '',
-'  :new.changed_on := localtimestam'))
+'  :new.changed_on := localtimestamp;',
+'  :'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2458,8 +2459,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'p;',
-'  :new.changed_by := coalesce(',
+'new.changed_by := coalesce(',
 '     sys_context( ''APEX$SESSION'', ''APP_USER'' )',
 '    ,sys_context( ''USERENV'', ''PROXY_USER'' )',
 '    ,sys_context( ''USERENV'', ''SESSION_USER'' )',
@@ -3489,7 +3489,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    raise_http_error( 404 );',
 '    raise;',
 '',
-'  end ge'))
+'  end get_tag;'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3507,7 +3507,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'t_tag;',
+'',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure download_file (',
@@ -4574,7 +4574,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  procedure update_feature(',
 '    p_app_id          in number,',
 '    p_build_option_id in number,',
-'    p_build'))
+'    p_build_statu'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4592,7 +4592,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_status    in varchar2',
+'s    in varchar2',
 '  )',
 '  as',
 '  begin',
@@ -5569,7 +5569,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  function is_email(',
 '    p_email     in varchar2,',
-'    p_err_mesg  in va'))
+'    p_err_mesg  in varchar2'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5587,7 +5587,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'rchar2',
+'',
 '  ) return varchar2',
 '  as',
 '    l_err_mesg varchar2(32700);',
@@ -5913,7 +5913,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_html varchar2(32700);',
 '  begin',
 '    -- generate canonical link for tab',
-'    if p_page is not null then',
+'    if p_page is not null',
+'    then',
 '      l_html :=',
 '        apex_string.format(',
 '          p_message => c_link_canonical',
@@ -5942,7 +5943,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_html varchar2(32700);',
 '  begin',
 '    -- generate canonical link for post',
-'    if p_post_id is not null then',
+'    if p_post_id is not null',
+'    then',
 '      l_html :=',
 '        apex_string.format(',
 '          p_message => c_link_canonical',
@@ -6107,10 +6109,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_app_id := to_number( p_app_id );',
 '',
 '    -- check build option should HTML generated',
-'    if apex_application_admin.get_build_option_status(',
-'       p_application_id     => l_app_id',
-'      ,p_build_option_name  => p_build_option',
-'    ) = ''INCLUDE''',
+'    if',
+'      apex_application_admin.get_build_option_status(',
+'        p_application_id      => l_app_id',
+'        ,p_build_option_name  => p_build_option',
+'      ) = apex_application_admin.c_build_option_status_include',
 '    then',
 '      -- get rss url',
 '      l_rss_url := blog_url.get_rss;',
@@ -6512,13 +6515,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '      and v1.page_alias in ( ''HOME'', ''LINKS'', ''REPOSITORY'', ''ABOUT'' )',
 '      and case',
 '        when v1.build_option is null',
-'        then ''INCLUDE''',
+'        then apex_application_admin.c_build_option_status_include',
 '        else',
 '          apex_application_admin.get_build_option_status(',
 '             p_application_id    => p_app_id',
 '            ,p_build_option_name => v1.build_option',
 '          )',
-'      end = ''INCLUDE''',
+'      end = apex_application_admin.c_build_option_status_include',
 '    ;',
 '',
 '    l_cache_control :=',
@@ -6569,12 +6572,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '            xmlelement( "url"',
 '              ,xmlelement( "loc",',
 '                blog_url.get_post(',
-'                   p_post_id    => posts.post_id',
-'                  ,p_canonical  => ''YES''',
-'                )',
-'              )',
-'              ,xmlelement( "lastmod",',
-'                to_'))
+'                   p_post_id    => pos'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6592,7 +6590,12 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'char(',
+'ts.post_id',
+'                  ,p_canonical  => ''YES''',
+'                )',
+'              )',
+'              ,xmlelement( "lastmod",',
+'                to_char(',
 '                  sys_extract_utc(',
 '                    greatest( posts.published_on, posts.changed_on )',
 '                  )',

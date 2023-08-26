@@ -15,7 +15,7 @@ wwv_imp_workspace.create_flow(
  p_id=>wwv_flow.g_flow_id
 ,p_owner=>nvl(wwv_flow_application_install.get_schema,'BLOG_040000')
 ,p_name=>nvl(wwv_flow_application_install.get_application_name,'Blog Administration')
-,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'BLOG_ADMIN')
+,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'BLOG-ADMIN')
 ,p_application_group=>wwv_flow_imp.id(7755621288593240)
 ,p_application_group_name=>'APEX Blog'
 ,p_application_group_comment=>'APEX Blog applications'
@@ -25,6 +25,8 @@ wwv_imp_workspace.create_flow(
 ,p_checksum_salt_last_reset=>'20200329211509'
 ,p_bookmark_checksum_function=>'SH512'
 ,p_accept_old_checksums=>false
+,p_max_session_length_sec=>21600
+,p_max_session_idle_sec=>14400
 ,p_compatibility_mode=>'21.2'
 ,p_session_state_commits=>'IMMEDIATE'
 ,p_flow_language=>'en'
@@ -45,7 +47,7 @@ wwv_imp_workspace.create_flow(
 ,p_public_user=>'APEX_PUBLIC_USER'
 ,p_proxy_server=>nvl(wwv_flow_application_install.get_proxy,'')
 ,p_no_proxy_domains=>nvl(wwv_flow_application_install.get_no_proxy_domains,'')
-,p_flow_version=>'&G_APP_VERSION.'
+,p_flow_version=>'Release 23.1.2.20230826'
 ,p_flow_status=>'AVAILABLE_W_EDIT_LINK'
 ,p_flow_unavailable_text=>'This application is currently unavailable at this time.'
 ,p_exact_substitutions_only=>'Y'
@@ -63,9 +65,9 @@ wwv_imp_workspace.create_flow(
 ,p_substitution_string_01=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_01=>'3600'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230807204851'
+,p_last_upd_yyyymmddhh24miss=>'20230826174421'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>785
+,p_files_version=>799
 ,p_print_server_type=>'INSTANCE'
 ,p_is_pwa=>'N'
 ,p_copyright_banner=>wwv_flow_string.join(wwv_flow_t_varchar2(

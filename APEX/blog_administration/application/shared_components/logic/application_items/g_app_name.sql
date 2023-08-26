@@ -15,7 +15,7 @@ wwv_flow_imp_shared.create_flow_item(
  p_id=>wwv_flow_imp.id(8615126468915955)
 ,p_name=>'G_APP_NAME'
 ,p_protection_level=>'I'
-,p_item_comment=>'Application name'
+,p_item_comment=>'Application name. The value is set in the application process "Initialize Items".'
 );
 wwv_flow_imp.component_end;
 end;

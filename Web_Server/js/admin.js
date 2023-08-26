@@ -3,7 +3,7 @@
 **/
 var blog = blog || {};
 
-( function( $, blog ) {
+( function( $, region, blog ) {
 
   // on page ready
   // hide automatically success message
@@ -121,7 +121,9 @@ var blog = blog || {};
     **/
     ig : {
 
-      options: {},
+      options: {
+        sequenceStep: 10
+      },
 
       /**
       * @function blog.admin.ig.pageLoad
@@ -134,7 +136,6 @@ var blog = blog || {};
         if( options.sequenceField !== undefined ){
           blog.admin.ig.options = $.extend({
             sequenceField: options.sequenceField
-            ,sequenceStep: 10
           }, blog.admin.ig.options );
         }
 
@@ -147,8 +148,11 @@ var blog = blog || {};
       **/
       region: function( options ){
 
-        // remove default "Save" and "Add Row" buttons form IG toolbar
-        var toolbarData = $.apex.interactiveGrid.copyDefaultToolbar();
+        var igId        = options.regionStaticId
+          , isConfigIg  = region( igId ).element.hasClass( "z-config-ig" )
+          // remove default "Save" and "Add Row" buttons form IG toolbar
+          , toolbarData = $.apex.interactiveGrid.copyDefaultToolbar()
+        ;
 
         toolbarData.toolbarRemove( "save" );
         toolbarData.toolbarRemove( "selection-add-row" );
@@ -167,9 +171,9 @@ var blog = blog || {};
           }, options );
         }
 
-        if( $( $x( options.regionStaticId ) ).hasClass( "z-config-ig" ) ) {
+        // disable options from features and settings IG
+        if( isConfigIg ) {
 
-          // disable options from features and settings IG
           options = $.extend({
             reportSettingsArea: false,
             defaultGridViewOptions: {
@@ -181,6 +185,10 @@ var blog = blog || {};
             }
           }, options );
 
+          options.columns.forEach( column => {
+            $.extend( true, column, { defaultGridColumnOptions: { noHeaderActivate: true } } );
+          });
+
         }
 
         // run coode when page is ready
@@ -190,18 +198,18 @@ var blog = blog || {};
           apex.actions.add({
             name: "save"
             ,action: function(){
-              apex.region( options.regionStaticId ).call( "getActions" ).invoke( "save" );
+              region( igId ).call( "getActions" ).invoke( "save" );
             }
           });
 
           // don't include "Add Row" button to blog features and settings IG
-          if( !$( $x( options.regionStaticId ) ).hasClass( "z-config-ig" ) ) {
+          if( !isConfigIg ) {
 
             // Set IG add row action to custom button
             apex.actions.add({
               name: "selection-add-row"
               ,action: function(){
-                apex.region( options.regionStaticId ).call( "getActions" ).invoke( "selection-add-row" );
+                region( igId ).call( "getActions" ).invoke( "selection-add-row" );
               }
             });
 
@@ -211,7 +219,7 @@ var blog = blog || {};
 
         // Set IG to edit mode by default on page load
         $( window ).on( "theme42ready", function(){
-          apex.region( options.regionStaticId  ).call( "getActions" ).set( "edit", true );
+          region( igId ).call( "getActions" ).set( "edit", true );
         });
 
         return options;
@@ -275,4 +283,4 @@ var blog = blog || {};
       }
     }
   }
-})( apex.jQuery, blog );
+})( apex.jQuery, apex.region, blog );

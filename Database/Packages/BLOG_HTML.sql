@@ -10,7 +10,7 @@ as
 --  MODIFIED (DD.MM.YYYY)
 --    Jari Laine 22.04.2019 - Created
 --    Jari Laine 29.04.2020 - New function get_robots_noindex_meta
---                          - Functions to generate canonical link outputs robot noindex meta tag if proper link can't be generated
+--                          - Functions generating canonical link returns robot noindex meta tag if proper link not generated
 --                          - Added apex_debug to functions generating meta and canonical link
 --    Jari Laine 10.05.2020 - Utilize blog_url functions p_canonical
 --    Jari Laine 19.05.2020 - Removed obsolete function get_search_button
@@ -117,7 +117,8 @@ as
     l_html varchar2(32700);
   begin
     -- generate canonical link for tab
-    if p_page is not null then
+    if p_page is not null
+    then
       l_html :=
         apex_string.format(
           p_message => c_link_canonical
@@ -146,7 +147,8 @@ as
     l_html varchar2(32700);
   begin
     -- generate canonical link for post
-    if p_post_id is not null then
+    if p_post_id is not null
+    then
       l_html :=
         apex_string.format(
           p_message => c_link_canonical
@@ -311,10 +313,11 @@ as
     l_app_id := to_number( p_app_id );
 
     -- check build option should HTML generated
-    if apex_application_admin.get_build_option_status(
-       p_application_id     => l_app_id
-      ,p_build_option_name  => p_build_option
-    ) = 'INCLUDE'
+    if
+      apex_application_admin.get_build_option_status(
+        p_application_id      => l_app_id
+        ,p_build_option_name  => p_build_option
+      ) = apex_application_admin.c_build_option_status_include
     then
       -- get rss url
       l_rss_url := blog_url.get_rss;

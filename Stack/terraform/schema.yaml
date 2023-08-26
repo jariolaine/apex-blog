@@ -1,0 +1,282 @@
+#
+title: APEX Blog
+description: Blog application built with Oracle Application Express (APEX) on Always-Free Oracle Cloud Infrastructure
+schemaVersion: 1.2.0
+version: 20230508
+
+source:
+  type: quickstart
+logoUrl: data:image/png;base64,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
+
+locale: en
+groupings:
+  - title: General information
+    visible: false
+    variables:
+      - compartment_ocid
+      - tenancy_ocid
+      - region
+
+  - title: Hidden variables
+    visible: false
+    variables:
+      - adb_db_version
+      - adb_workload
+      - adb_license_model
+      - adb_is_free_tier
+      - adb_cpu_count
+      - adb_data_storage_size_in_tbs
+      - adb_visibility
+      - adb_wallet_generate_type
+      - compute_shape
+      - compute_image_ocid
+      - image_operating_system
+      - image_operating_system_version
+      - admin_app_download_url
+      - public_app_download_url
+
+  - title: Deployment
+    visible: true
+    variables:
+      - resources_prefix
+
+  - title: Autonomous database
+    visible: true
+    variables:
+      - app_user_name
+      - apex_workspace_name
+      - adb_advanced_options
+      - apex_image_prefix
+
+  - title: Compute
+    visible: true
+    variables:
+      - compute_count
+      - compute_generate_ssh_key
+      - compute_ssh_public_key
+      - compute_advanced_options
+      - compute_cpu_count
+      - compute_memory_gbs
+      - compute_ad
+
+  - title: Network
+    visible: true
+    variables:
+      - network_details
+
+variables:
+  compartment_ocid:
+    type: oci:identity:compartment:id
+    required: true
+    title: Compartment
+    description: The compartment in which to create compute instance(s) and ATP.
+
+# Deployment
+  resources_prefix:
+    type: string
+    required: true
+    title: Resources prefix
+    description: Resources name prefix.
+
+# Autonomous database
+  app_user_name:
+    type: string
+    required: true
+    title: User name
+    description: Application database user name.
+
+  apex_workspace_name:
+    type: string
+    required: true
+    title: Workspace
+    description: Application APEX workspace name.
+
+  adb_advanced_options:
+    type: boolean
+    title: Advanced options
+    description: Show database advanced options.
+    visible: true
+
+  apex_image_prefix:
+    type: string
+    title: APEX image prefix
+    description: Leave blank to keep database default value. It is recomended use APEX CDN url.
+    visible:
+      and:
+        - adb_advanced_options
+
+# Compute
+  compute_count:
+    type: integer
+    title: Instance count
+    description: The number of compute instances provisioned.
+    required: true
+    default: 1
+    minimum: 1
+    maximum: 4
+
+  compute_generate_ssh_key:
+    type: boolean
+    title: "Auto-generate public ssh key?"
+    description: "Auto-generate a public key and assign to the compute instances. Uncheck to provide your own public key or leave blank not to use any attach any key to the compute instance."
+    visible: true
+
+  compute_ssh_public_key:
+    title: SSH public key
+    description: Public SSH key to be included in the ~/.ssh/authorized_keys file for the default user on the instance
+    # renders variable as an SSH key control
+    type: oci:core:ssh:publickey
+    additionalProps:
+      allowMultiple: true
+    required: false
+    default: [""]
+    pattern: ((^(ssh-rsa AAAAB3NzaC1yc2|ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNT|ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzOD|ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1Mj|ssh-ed25519 AAAAC3NzaC1lZDI1NTE5|ssh-dss AAAAB3NzaC1kc3)[0-9A-Za-z+\/]+[=]{0,3})( [^,]*)?)(,((ssh-rsa AAAAB3NzaC1yc2|ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNT|ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzOD|ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1Mj|ssh-ed25519 AAAAC3NzaC1lZDI1NTE5|ssh-dss AAAAB3NzaC1kc3)[0-9A-Za-z+\/]+[=]{0,3})( [^,]*)?)*$
+    visible:
+      and:
+      - not:
+        - compute_generate_ssh_key
+
+  compute_advanced_options:
+    type: boolean
+    title: Advanced options
+    description: Show compute advanced options.
+    visible: true
+
+  compute_ad:
+    type: oci:identity:availabilitydomain:name
+    title: Availability domain
+    description: If now value selected span instances a cross availability domains.
+    default: " "
+    dependsOn:
+      compartmentId: compartment_ocid
+    visible:
+      and:
+        - compute_advanced_options
+
+  compute_cpu_count:
+    type: integer
+    title: CPU count
+    default: 1
+    minimum: 1
+    maximum: 4
+    required: true
+    visible:
+      and:
+        - compute_advanced_options
+
+  compute_memory_gbs:
+    type: integer
+    title: Memory in GB
+    default: 6
+    minimum: 1
+    maximum: 24
+    required: true
+    visible:
+      and:
+        - compute_advanced_options
+
+# Network
+  network_details:
+    type: text
+    required: true
+    multiline: true
+    title: Network details
+    description: The network details in JSON format.
+
+outputGroups:
+
+  - title: Application Details
+    outputs:
+      - app_version
+      - app_source_code
+
+  - title: Database Details
+    outputs:
+      - adb_version
+      - adb_workload
+      - adb_is_free_tier
+
+  - title: Compute Details
+    outputs:
+      - compute_display_name
+      - compute_private_ip
+      - compute_public_ip
+
+  - title: Load Balancer
+    outputs:
+      - lb_ip
+
+  - title: Passwords and Keys
+    outputs:
+      - adb_admin_password
+      - app_user_password
+      - compute_private_key_pem
+
+outputs:
+
+  app_version:
+    type: string
+    title: Version
+    visible: true
+
+  app_source_code:
+    type: link
+    title: Source code
+    visible: true
+
+  adb_version:
+    type: string
+    title: Version
+    visible: true
+
+  adb_workload:
+    type: string
+    title: Workload type
+    visible: true
+
+  adb_is_free_tier:
+    type: string
+    title: Free tier
+    visible: true
+
+  adb_admin_password:
+    type: copyableString
+    title: Database admin
+    visible: true
+    sensitive: true
+
+  app_user_password:
+    type: copyableString
+    title: Database application user
+    visible: true
+    sensitive: true
+
+  compute_private_key_pem:
+    type: copyableString
+    title: Generated Private Key for SSH Access
+    visible: true
+    sensitive: true
+
+  compute_display_name:
+    type: string
+    title: Instance names
+
+  compute_private_ip:
+    type: string
+    title: Private IP addresses
+
+  compute_public_ip:
+    type: string
+    title: Public IP addresses
+
+  lb_ip:
+    type: copyableString
+    title: Public IP address
+
+  app_public_url_button:
+    type: link
+    title: Application URL Button
+    displayText: Open Application
+    visible: true
+
+primaryOutputButton: ${app_public_url_button}

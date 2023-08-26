@@ -461,13 +461,13 @@ as
       and v1.page_alias in ( 'HOME', 'LINKS', 'REPOSITORY', 'ABOUT' )
       and case
         when v1.build_option is null
-        then 'INCLUDE'
+        then apex_application_admin.c_build_option_status_include
         else
           apex_application_admin.get_build_option_status(
              p_application_id    => p_app_id
             ,p_build_option_name => v1.build_option
           )
-      end = 'INCLUDE'
+      end = apex_application_admin.c_build_option_status_include
     ;
 
     l_cache_control :=

@@ -1,0 +1,219 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+packages:
+  - zip
+  - unzip
+  - jq
+  - tomcat9
+  - apache2
+  - libapache2-mod-jk
+
+write_files:
+
+  - path: /root/.nanorc
+    permissions: "0644"
+    owner: "root:root"
+    defer: true
+    content: |
+      # Use this tab size instead of the default; it must be greater than 0.
+      set tabsize 2
+      # Convert typed tabs to spaces.
+      set tabstospaces
+
+  - path: ${tomcat_server_xml_file}
+    encoding: "gzip+base64"
+    permissions: "0600"
+    owner: "root:root"
+    defer: true
+    content: ${tomcat_server_xml_content}
+
+  - path: ${jk_workers_properties_file}
+    encoding: "gzip+base64"
+    permissions: "0600"
+    owner: "root:root"
+    defer: true
+    content: ${jk_workers_properties_content}
+
+  - path: ${httpd_apache2_conf_file}
+    encoding: "gzip+base64"
+    permissions: "0644"
+    owner: "root:root"
+    defer: true
+    content: ${httpd_apache2_conf_content}
+
+  - path: ${httpd_site_conf_file}
+    encoding: "gzip+base64"
+    permissions: "0644"
+    owner: "root:root"
+    defer: true
+    content: ${httpd_site_conf_content}
+
+  - path: ${httpd_cache_disk_conf_file}
+    encoding: "gzip+base64"
+    permissions: "0644"
+    owner: "root:root"
+    defer: true
+    content: ${httpd_cache_disk_conf_content}
+
+  - path: ${httpd_deflate_conf_file}
+    encoding: "gzip+base64"
+    permissions: "0644"
+    owner: "root:root"
+    defer: true
+    content: ${httpd_deflate_conf_content}
+
+  - path: ${httpd_headers_conf_file}
+    encoding: "gzip+base64"
+    permissions: "0644"
+    owner: "root:root"
+    defer: true
+    content: ${httpd_headers_conf_content}
+
+  - path: ${httpd_remoteip_conf_file}
+    encoding: "gzip+base64"
+    permissions: "0644"
+    owner: "root:root"
+    defer: true
+    content: ${httpd_remoteip_conf_content}
+
+%{ if run_db_setup == "true" }
+  - path: ${database_setup_file}
+    encoding: "gzip+base64"
+    permissions: "0600"
+    owner: "root:root"
+    defer: true
+    content: ${database_setup_content}
+%{ endif }
+
+runcmd:
+# Variables
+  - JDK_ZIP="/tmp/$(basename '${jdk_download_url}')"
+
+  - SQLCL_ZIP="/tmp/$(basename '${sqlcl_download_url}')"
+
+  - ORDS_ZIP="/tmp/$(basename '${ords_download_url}')"
+  - ORDS_PASSWORD_FILE="/tmp/ords-password.txt"
+
+  - WALLET_B64="/tmp/wallet.b64"
+  - WALLET_ZIP="${ords_conf_dir}/Wallet_${adb_name}.zip"
+  - WALLET_SERVICE_NAME="${adb_name}_low"
+
+# Install JDK
+  - mkdir -p ${jdk_install_dir}
+  - wget -nv -O $JDK_ZIP ${jdk_download_url}
+  - tar xf $JDK_ZIP -C ${jdk_install_dir}
+
+  - JDK_VERSION_DIR="${jdk_install_dir}/$(ls ${jdk_install_dir} | xargs)"
+
+  - ln -s $JDK_VERSION_DIR/ ${jdk_install_dir}/latest
+  - ln -s ${jdk_install_dir}/latest/ /lib/jvm/oracle-jdk
+  - rm /lib/jvm/default-java
+  - ln -s /lib/jvm/oracle-jdk/ /lib/jvm/default-java
+
+  - update-alternatives --install /usr/bin/java java /usr/lib/jvm/oracle-jdk/bin/java 99999
+  - export JAVA_HOME="${jdk_install_dir}/latest"
+
+# Install SQLcl
+  - wget -nv -O $SQLCL_ZIP ${sqlcl_download_url}
+  - unzip -q $SQLCL_ZIP -d ${sqlcl_install_dir}
+
+  - export PATH="${sqlcl_install_dir}/sqlcl/bin:$PATH"
+
+# Install ORDS
+  ## Download ORDS
+  - wget -nv -O $ORDS_ZIP ${ords_download_url}
+  - unzip -q $ORDS_ZIP -d ${ords_install_dir}
+
+  - ln -s ${ords_install_dir}/ords.war /var/lib/tomcat9/webapps/ords.war
+
+  - mkdir -p ${ords_conf_dir}
+  - export PATH="${ords_install_dir}/bin:$PATH"
+  - export ORDS_CONFIG="${ords_conf_dir}"
+
+  ## Get wallet from object storage bucket
+  - wget -nv -O $WALLET_B64 ${adb_wallet_url}
+  - chmod 0600 $WALLET_B64
+  - base64 -d $WALLET_B64 > $WALLET_ZIP
+
+  ## Set ORDS passwords
+  - touch $ORDS_PASSWORD_FILE
+  - chmod 0600 $ORDS_PASSWORD_FILE
+  - echo "${adb_admin_password}" > $ORDS_PASSWORD_FILE
+  - echo "${ords_public_user_password}" >> $ORDS_PASSWORD_FILE
+  - echo "${ords_plsql_gateway_password}" >> $ORDS_PASSWORD_FILE
+
+  ## Configure ORDS
+  - ords install adb --admin-user ADMIN --db-user ORDS_PUBLIC_USER2 --gateway-user ORDS_PLSQL_GATEWAY2 --wallet $WALLET_ZIP --wallet-service-name $WALLET_SERVICE_NAME --feature-sdw true --log-folder /root --password-stdin < $ORDS_PASSWORD_FILE
+
+# Configure Tomcat
+  - cp -v --suffix=.original ${tomcat_server_xml_file} /etc/tomcat9/server.xml
+  - chmod 0440 /etc/tomcat9/server.xml.original
+
+  - chgrp tomcat /etc/tomcat9/server.xml
+  - chmod 0640 /etc/tomcat9/server.xml
+
+  - cp -v /etc/default/tomcat9 /etc/default/tomcat9.original
+  - chmod 0440 /etc/default/tomcat9.original
+
+  - echo "JAVA_OPTS=\"$${JAVA_OPTS} -Duser.timezone=UTC -Dconfig.url=${ords_conf_dir}\"" >> /etc/default/tomcat9
+
+# Configure Apache2
+  ## Open HTTP port to virtual network
+  - iptables-save > /etc/iptables/rules.v4.original
+  - chmod 0440 /etc/iptables/rules.v4.original
+
+  - iptables -I INPUT 2 -s ${lb_subnet_cidr} -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
+  - iptables-save > /etc/iptables/rules.v4
+
+  ## Create new apache2.conf
+  - sed -i "s|#SERVERNAME#|$(hostname)|g" ${httpd_apache2_conf_file}
+  - sed -i "s|#ADB_BASE_URL#|${adb_base_url}|g" ${httpd_site_conf_file}
+  - cp -v --suffix=.original ${httpd_apache2_conf_file} /etc/apache2/apache2.conf
+  - chmod 0440 /etc/apache2/apache2.conf.original
+
+  ## Disable default site
+  - a2dissite 000-default.conf
+
+  ## Enable config, modules and sites
+  - a2enconf cache_disk deflate headers remoteip
+  - a2enmod cache_disk headers remoteip rewrite proxy_http ssl
+  - a2ensite $(basename "${httpd_site_conf_file}")
+
+  ## Setup mod_jk
+    ## Create new workers.properties
+  - cp -v --suffix=.original ${jk_workers_properties_file} /etc/libapache2-mod-jk/workers.properties
+  - chmod 0440 /etc/libapache2-mod-jk/workers.properties.original
+
+# Set enviromenment variables and aliases for root
+  - cp -v /root/.bashrc /root/.bashrc.original
+  - chmod 0440 /root/.bashrc.original
+  - echo 'export PATH="${ords_install_dir}/bin:$PATH"' >> /root/.bashrc
+  - echo 'export PATH="${sqlcl_install_dir}/sqlcl/bin:$PATH"' >> /root/.bashrc
+  - echo 'export ORDS_CONFIG="${ords_conf_dir}"' >> /root/.bashrc
+  - echo "export WALLET_SERVICE_NAME=\"$WALLET_SERVICE_NAME\"" >> /root/.bashrc
+  - echo "alias sql=\"sql -cloudconfig $WALLET_ZIP\"" >> /root/.bash_aliases
+
+# Restart Tomcat and Apache2
+  - systemctl restart tomcat9.service
+  - systemctl restart apache2.service
+
+%{ if run_db_setup == "true" }
+# Install application
+  ## Variables
+  - ADMIN_APP_SQL="/tmp/$(basename '${admin_app_download_url}')"
+  - PUBLIC_APP_SQL="/tmp/$(basename '${public_app_download_url}')"
+
+  ## Download applications
+  - wget -nv -O $ADMIN_APP_SQL ${admin_app_download_url}
+  - wget -nv -O $PUBLIC_APP_SQL ${public_app_download_url}
+
+  ## Append execute application install files to database setup file
+  - sed -i "s|#ADMIN_APP_SQL#|$ADMIN_APP_SQL|g" ${database_setup_file}
+  - sed -i "s|#PUBLIC_APP_SQL#|$PUBLIC_APP_SQL|g" ${database_setup_file}
+
+  ## Execute database setup
+  - sql -cloudconfig $WALLET_ZIP admin/"${adb_admin_password}"@$WALLET_SERVICE_NAME < ${database_setup_file}
+%{ endif }
+
+output: {all: '| tee -a /root/cloud-init-output.log'}
