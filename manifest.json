@@ -4,11 +4,11 @@
     "name": "APEX Blog Administration",
     "description": "Blog application administration pages.",
     "author": "Jari Laine",
-    "version": "Release 23.1.2.20230826",
+    "version": "Release 23.1.2.20230829",
     "icon": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/Web_Server/icons/app-icon-192.png",
     "url": "https://github.com/jariolaine/apex-blog/tree/master",
-    "source": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/Build/blog_administration.sql",
-    "zip": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/Build/blog_administration.zip",
+    "source": "https://github.com/jariolaine/apex-blog/releases/latest/download/blog_administration-latest.sql",
+    "zip": "https://github.com/jariolaine/apex-blog/releases/latest/download/blog_administration-latest.zip",
     "license": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/LICENSE.txt"
   },
   {
@@ -16,11 +16,11 @@
     "name": "APEX Blog",
     "description": "Blog application public pages. Please install first APEX Blog Administration application.",
     "author": "Jari Laine",
-    "version": "Release 23.1.2.20230826",
+    "version": "Release 23.1.2.20230829",
     "icon": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/Web_Server/icons/app-icon-192.png",
     "url": "https://github.com/jariolaine/apex-blog/tree/master",
-    "source": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/Build/blog_public_pages.sql",
-    "zip": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/Build/blog_public_pages.zip",
+    "source": "https://github.com/jariolaine/apex-blog/releases/latest/download/blog_public_pages-latest.sql",
+    "zip": "https://github.com/jariolaine/apex-blog/releases/latest/download/blog_public_pages-latest.zip",
     "license": "https://raw.githubusercontent.com/jariolaine/apex-blog/master/LICENSE.txt"
   }]
 }
