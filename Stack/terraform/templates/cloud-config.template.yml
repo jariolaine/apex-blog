@@ -9,6 +9,14 @@ packages:
   - apache2
   - libapache2-mod-jk
 
+users:
+  - name: ${compute_username}
+    groups: [adm, sudo]
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ${ssh_authorized_keys}
+
 write_files:
 
   - path: /root/.nanorc
@@ -23,14 +31,14 @@ write_files:
 
   - path: ${tomcat_server_xml_file}
     encoding: "gzip+base64"
-    permissions: "0600"
-    owner: "root:root"
+    permissions: "0640"
+    owner: "root:tomcat"
     defer: true
     content: ${tomcat_server_xml_content}
 
   - path: ${jk_workers_properties_file}
     encoding: "gzip+base64"
-    permissions: "0600"
+    permissions: "0640"
     owner: "root:root"
     defer: true
     content: ${jk_workers_properties_content}
@@ -117,7 +125,6 @@ runcmd:
 # Install SQLcl
   - wget -nv -O $SQLCL_ZIP ${sqlcl_download_url}
   - unzip -q $SQLCL_ZIP -d ${sqlcl_install_dir}
-
   - export PATH="${sqlcl_install_dir}/sqlcl/bin:$PATH"
 
 # Install ORDS
@@ -147,30 +154,16 @@ runcmd:
   - ords install adb --admin-user ADMIN --db-user ORDS_PUBLIC_USER2 --gateway-user ORDS_PLSQL_GATEWAY2 --wallet $WALLET_ZIP --wallet-service-name $WALLET_SERVICE_NAME --feature-sdw true --log-folder /root --password-stdin < $ORDS_PASSWORD_FILE
 
 # Configure Tomcat
-  - cp -v --suffix=.original ${tomcat_server_xml_file} /etc/tomcat9/server.xml
-  - chmod 0440 /etc/tomcat9/server.xml.original
-
-  - chgrp tomcat /etc/tomcat9/server.xml
-  - chmod 0640 /etc/tomcat9/server.xml
-
-  - cp -v /etc/default/tomcat9 /etc/default/tomcat9.original
-  - chmod 0440 /etc/default/tomcat9.original
-
   - echo "JAVA_OPTS=\"$${JAVA_OPTS} -Duser.timezone=UTC -Dconfig.url=${ords_conf_dir}\"" >> /etc/default/tomcat9
 
 # Configure Apache2
   ## Open HTTP port to virtual network
-  - iptables-save > /etc/iptables/rules.v4.original
-  - chmod 0440 /etc/iptables/rules.v4.original
-
   - iptables -I INPUT 2 -s ${lb_subnet_cidr} -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
   - iptables-save > /etc/iptables/rules.v4
 
   ## Create new apache2.conf
   - sed -i "s|#SERVERNAME#|$(hostname)|g" ${httpd_apache2_conf_file}
   - sed -i "s|#ADB_BASE_URL#|${adb_base_url}|g" ${httpd_site_conf_file}
-  - cp -v --suffix=.original ${httpd_apache2_conf_file} /etc/apache2/apache2.conf
-  - chmod 0440 /etc/apache2/apache2.conf.original
 
   ## Disable default site
   - a2dissite 000-default.conf
@@ -180,14 +173,7 @@ runcmd:
   - a2enmod cache_disk headers remoteip rewrite proxy_http ssl
   - a2ensite $(basename "${httpd_site_conf_file}")
 
-  ## Setup mod_jk
-    ## Create new workers.properties
-  - cp -v --suffix=.original ${jk_workers_properties_file} /etc/libapache2-mod-jk/workers.properties
-  - chmod 0440 /etc/libapache2-mod-jk/workers.properties.original
-
 # Set enviromenment variables and aliases for root
-  - cp -v /root/.bashrc /root/.bashrc.original
-  - chmod 0440 /root/.bashrc.original
   - echo 'export PATH="${ords_install_dir}/bin:$PATH"' >> /root/.bashrc
   - echo 'export PATH="${sqlcl_install_dir}/sqlcl/bin:$PATH"' >> /root/.bashrc
   - echo 'export ORDS_CONFIG="${ords_conf_dir}"' >> /root/.bashrc

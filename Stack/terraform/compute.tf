@@ -38,8 +38,7 @@ resource "oci_core_instance" "web_server" {
 		are_legacy_imds_endpoints_disabled = "true"
 	}
 	metadata = {
-		ssh_authorized_keys = var.compute_generate_ssh_key ? tls_private_key.compute_new_ssh_key.public_key_openssh : var.compute_ssh_public_key
-		user_data						= data.cloudinit_config.nodes.*.rendered[count.index]
+		user_data	= data.cloudinit_config.nodes.*.rendered[count.index]
 	}
 	shape_config {
 		memory_in_gbs	= var.compute_memory_gbs

@@ -21,7 +21,17 @@ resource "random_string" "adb_admin_password" {
   override_special = "{}#^*<>[]%~"
 }
 
-resource "random_string" "app_user_password" {
+resource "random_string" "app_owner_password" {
+  length           = 12
+  special          = true
+  min_upper        = 3
+  min_lower        = 3
+  min_numeric      = 3
+  min_special      = 3
+  override_special = "{}#^*<>[]%~"
+}
+
+resource "random_string" "apex_user_password" {
   length           = 12
   special          = true
   min_upper        = 3
@@ -133,9 +143,11 @@ locals {
   httpd_apache2_conf      = file("${path.module}/templates/httpd/apache2.template.conf")
 
   database_setup_template = templatefile("${path.module}/templates/database/database-setup.template.sql", {
-    app_user_name         = var.app_user_name
-    app_user_password     = random_string.app_user_password.result
-    apex_workspace_name   = var.apex_workspace_name
+    app_owner_name        = upper( var.app_owner_name )
+    app_owner_password    = random_string.app_owner_password.result
+    apex_username         = upper( var.apex_username )
+    apex_user_password    = random_string.apex_user_password.result
+    apex_workspace_name   = upper( var.apex_workspace_name )
     apex_image_prefix     = var.apex_image_prefix
   })
 
@@ -151,6 +163,9 @@ data "cloudinit_config" "nodes" {
     content_type  = "text/cloud-config"
     content       = templatefile( "${path.module}/templates/cloud-config.template.yml", {
 
+      compute_username              = var.compute_username
+      ssh_authorized_keys           = var.compute_generate_ssh_key ? tls_private_key.compute_new_ssh_key.public_key_openssh : var.compute_ssh_public_key
+
       adb_name                      = upper( oci_database_autonomous_database.app_db.db_name )
       adb_base_url                  = trimsuffix( lower( lookup( oci_database_autonomous_database.app_db.connection_urls[0], "apex_url" ) ), "/ords/apex" )
       adb_admin_password            = random_string.adb_admin_password.result
@@ -161,16 +176,16 @@ data "cloudinit_config" "nodes" {
 
       lb_subnet_cidr                = lookup( var.network_details, "LB-SUBNET-CIDR" )
 
-      tomcat_server_xml_file        = "/tmp/server.xml"
+      tomcat_server_xml_file        = "/etc/tomcat9/server.xml"
       tomcat_server_xml_content     = base64gzip( local.tomcat_server_xml )
 
       database_setup_file           = "/tmp/database_setup.sql"
       database_setup_content        = base64gzip( local.database_setup_template )
 
-      jk_workers_properties_file    = "/tmp/workers.properties"
+      jk_workers_properties_file    = "/etc/libapache2-mod-jk/workers.properties"
       jk_workers_properties_content = base64gzip( local.jk_workers_properties )
 
-      httpd_apache2_conf_file       = "/tmp/apache2.conf"
+      httpd_apache2_conf_file       = "/etc/apache2/apache2.conf"
       httpd_apache2_conf_content    = base64gzip( local.httpd_apache2_conf )
 
       httpd_site_conf_file          = "/etc/apache2/sites-available/adb-site.conf"

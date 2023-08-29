@@ -60,7 +60,7 @@ resource oci_load_balancer_listener listener_https {
   ssl_configuration {
     certificate_name  = oci_load_balancer_certificate.lb_certificate.certificate_name
     cipher_suite_name = "oci-default-ssl-cipher-suite-v1"
-    certificate_ids = []
+    certificate_ids   = []
     protocols = [
       "TLSv1.2",
     ]

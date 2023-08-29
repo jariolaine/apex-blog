@@ -20,6 +20,7 @@ groupings:
   - title: Hidden variables
     visible: false
     variables:
+      - adb_admin_user
       - adb_db_version
       - adb_workload
       - adb_license_model
@@ -43,14 +44,16 @@ groupings:
   - title: Autonomous database
     visible: true
     variables:
-      - app_user_name
-      - apex_workspace_name
+      - apex_username
       - adb_advanced_options
+      - app_owner_name
+      - apex_workspace_name
       - apex_image_prefix
 
   - title: Compute
     visible: true
     variables:
+      - compute_username
       - compute_count
       - compute_generate_ssh_key
       - compute_ssh_public_key
@@ -79,17 +82,12 @@ variables:
     description: Resources name prefix.
 
 # Autonomous database
-  app_user_name:
+  apex_username:
     type: string
     required: true
-    title: User name
-    description: Application database user name.
-
-  apex_workspace_name:
-    type: string
-    required: true
-    title: Workspace
-    description: Application APEX workspace name.
+    title: APEX user
+    description: User name to login to APEX workspace and application.
+    pattern: "^[a-zA-Z0-9_]*$"
 
   adb_advanced_options:
     type: boolean
@@ -97,15 +95,44 @@ variables:
     description: Show database advanced options.
     visible: true
 
+  app_owner_name:
+    type: string
+    required: true
+    title: Application parsing schema
+    description: Database user owning application objects.
+    pattern: ^[a-zA-Z0-9_]*$
+    visible:
+      and:
+        - adb_advanced_options
+
+  apex_workspace_name:
+    type: string
+    required: true
+    title: Workspace
+    description: Application APEX workspace name.
+    pattern: ^[a-zA-Z0-9_]*$
+    visible:
+      and:
+        - adb_advanced_options
+
   apex_image_prefix:
     type: string
     title: APEX image prefix
     description: Leave blank to keep database default value. It is recomended use APEX CDN url.
+    default: ""
+    pattern: ^(https:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)\/|^)$
     visible:
       and:
         - adb_advanced_options
 
 # Compute
+  compute_username:
+    title: Username
+    description: Username for ssh login
+    required: true
+    default: ""
+    pattern: ^[a-zA-Z0-9]*$
+
   compute_count:
     type: integer
     title: Instance count
@@ -115,6 +142,7 @@ variables:
     minimum: 1
     maximum: 4
 
+
   compute_generate_ssh_key:
     type: boolean
     title: "Auto-generate public ssh key?"
@@ -123,8 +151,7 @@ variables:
 
   compute_ssh_public_key:
     title: SSH public key
-    description: Public SSH key to be included in the ~/.ssh/authorized_keys file for the default user on the instance
-    # renders variable as an SSH key control
+    description: Public SSH key to be included in the ~/.ssh/authorized_keys file for the user on the instance
     type: oci:core:ssh:publickey
     additionalProps:
       allowMultiple: true
@@ -192,12 +219,21 @@ outputGroups:
 
   - title: Database Details
     outputs:
-      - adb_version
-      - adb_workload
-      - adb_is_free_tier
+      - adb_admin_username
+      - adb_admin_password
+      - app_owner_name
+
+  - title: APEX Details
+    outputs:
+      - apex_workspace_name
+      - apex_username
+      - apex_user_password
+      - apex_url
 
   - title: Compute Details
     outputs:
+      - compute_username
+      - compute_private_key_pem
       - compute_display_name
       - compute_private_ip
       - compute_public_ip
@@ -206,14 +242,8 @@ outputGroups:
     outputs:
       - lb_ip
 
-  - title: Passwords and Keys
-    outputs:
-      - adb_admin_password
-      - app_user_password
-      - compute_private_key_pem
-
 outputs:
-
+# Output application details
   app_version:
     type: string
     title: Version
@@ -224,35 +254,53 @@ outputs:
     title: Source code
     visible: true
 
-  adb_version:
+# Output database details
+  adb_admin_username:
     type: string
-    title: Version
-    visible: true
-
-  adb_workload:
-    type: string
-    title: Workload type
-    visible: true
-
-  adb_is_free_tier:
-    type: string
-    title: Free tier
+    title: Admin username
     visible: true
 
   adb_admin_password:
-    type: copyableString
-    title: Database admin
+    type: string
+    title: Admin password
     visible: true
     sensitive: true
 
-  app_user_password:
-    type: copyableString
-    title: Database application user
+  app_owner_name:
+    type: string
+    title: Application parsing schema
+    visible: true
+
+# Output APEX details
+  apex_workspace_name:
+    type: string
+    title: Workspace
+    visible: true
+
+  apex_username:
+    type: string
+    title: Username
+    visible: true
+
+  apex_user_password:
+    type: string
+    title: Password
     visible: true
     sensitive: true
+
+  apex_url:
+    type: string
+    title: URL
+    visible: true
+
+# Output compute detais
+  compute_username:
+    type: string
+    title: Username
+    visible: true
 
   compute_private_key_pem:
-    type: copyableString
+    type: string
     title: Generated Private Key for SSH Access
     visible: true
     sensitive: true
@@ -269,10 +317,12 @@ outputs:
     type: string
     title: Public IP addresses
 
+# Load balancer
   lb_ip:
-    type: copyableString
+    type: string
     title: Public IP address
 
+# Button
   app_public_url_button:
     type: link
     title: Application URL Button

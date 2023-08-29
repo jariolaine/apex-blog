@@ -21,6 +21,9 @@ variable "network_details" {
 }
 
 ## Compute
+variable "compute_username" {
+  default = ""
+}
 variable "compute_count" {
   default = 1
 }
@@ -53,11 +56,18 @@ variable "image_operating_system_version" {
 }
 
 ## Autonomous Database
-variable "app_user_name" {
+variable "adb_admin_user"{
+  default = "ADMIN"
+}
+
+variable "app_owner_name" {
   default = "WKSP_BLOG_APP"
 }
 variable "apex_workspace_name" {
   default = "BLOG_APP"
+}
+variable "apex_username" {
+  default = ""
 }
 variable "adb_advanced_options" {
   default = false
