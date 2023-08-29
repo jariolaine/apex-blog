@@ -187,12 +187,19 @@ runcmd:
 %{ if run_db_setup == "true" }
 # Install application
   ## Variables
-  - ADMIN_APP_SQL="/tmp/$(basename '${admin_app_download_url}')"
-  - PUBLIC_APP_SQL="/tmp/$(basename '${public_app_download_url}')"
+  - ADMIN_APP_ZIP="/tmp/$(basename '${admin_app_download_url}')"
+  - ADMIN_APP_SQL="$${ADMIN_APP_ZIP%-latest.zip}/install.sql"
+
+  - PUBLIC_APP_ZIP="/tmp/$(basename '${public_app_download_url}')"
+  - PUBLIC_APP_SQL="$${PUBLIC_APP_ZIP%-latest.zip}/install.sql"
 
   ## Download applications
-  - wget -nv -O $ADMIN_APP_SQL ${admin_app_download_url}
-  - wget -nv -O $PUBLIC_APP_SQL ${public_app_download_url}
+  - wget -nv -O $ADMIN_APP_ZIP ${admin_app_download_url}
+  - wget -nv -O $PUBLIC_APP_ZIP  ${public_app_download_url}
+
+  ## Unzip
+  - unzip -q $ADMIN_APP_ZIP -d /tmp
+  - unzip -q $PUBLIC_APP_ZIP -d /tmp
 
   ## Append execute application install files to database setup file
   - sed -i "s|#ADMIN_APP_SQL#|$ADMIN_APP_SQL|g" ${database_setup_file}

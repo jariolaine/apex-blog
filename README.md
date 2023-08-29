@@ -25,7 +25,7 @@ Ensure target schema associated to your APEX workspace has following system priv
 APEX workspace administrator privileges are required to create a user group for authorization.
 
 ### Download
-[Download latest version.](https://github.com/jariolaine/apex-blog/releases/latest/download/apex-blog-latest.zip)
+Download [latest version](https://github.com/jariolaine/apex-blog/releases/latest/download/apex-blog-latest.zip) and extract zip archive.
 
 ### Import Applications
 1. Access your target APEX workspace
