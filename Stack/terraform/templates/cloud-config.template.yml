@@ -8,6 +8,8 @@ packages:
   - tomcat9
   - apache2
   - libapache2-mod-jk
+  - libc-icap-mod-virus-scan
+  - libclamunrar
 
 users:
   - name: ${compute_username}
@@ -180,9 +182,21 @@ runcmd:
   - echo "export WALLET_SERVICE_NAME=\"$WALLET_SERVICE_NAME\"" >> /root/.bashrc
   - echo "alias sql=\"sql -cloudconfig $WALLET_ZIP\"" >> /root/.bash_aliases
 
+# Configure C-ICAP
+  - sed -i "s|START=no|START=yes|g" /etc/default/c-icap
+  - echo "Include virus_scan.conf" >> /etc/c-icap/c-icap.conf
+  - echo "Include clamav_mod.conf" >> /etc/c-icap/c-icap.conf
+  - echo "virus_scan.DefaultEngine clamav" >> /etc/c-icap/c-icap.conf
+  - echo "virus_scan.ScanFileTypes TEXT DATA EXECUTABLE ARCHIVE GRAPHICS STREAM DOCUMENT" >> /etc/c-icap/c-icap.conf
+  - echo "ServiceAlias AVSCAN virus_scan?allow204=on&sizelimit=off&mode=simple" >> /etc/c-icap/c-icap.conf
+
+  - ords conf set icap.server 127.0.0.1
+  - ords conf set icap.port 1344
+
 # Restart Tomcat and Apache2
   - systemctl restart tomcat9.service
   - systemctl restart apache2.service
+  - systemctl restart c-icap.service
 
 %{ if run_db_setup == "true" }
 # Install application
