@@ -28,16 +28,6 @@ wwv_flow_imp_shared.create_install_script(
 'start with 100001',
 '/',
 '--------------------------------------------------------',
-'--  DDL for Type BLOG_T_POST',
-'--------------------------------------------------------',
-'CREATE OR REPLACE TYPE "BLOG_T_POST"',
-'authid definer',
-'as object(',
-'  post_id     number(38,0),',
-'  post_title  varchar2(256 char)',
-');',
-'/',
-'--------------------------------------------------------',
 '--  DDL for Table BLOG_BLOGGERS',
 '--------------------------------------------------------',
 'create table blog_bloggers(',
@@ -540,6 +530,7 @@ wwv_flow_imp_shared.create_install_script(
 '--                              g_rfc_2822_date',
 '--    Jari Laine 08.04.2023 - Parameter p_page_id to procedure redirect_search',
 '--                          - Removed ORA errors between -20999 and 20901 display position handlimg from function apex_error_handler',
+'--    Jari Laine 05.09.2023 - Removed use of type blog_t_post from procedure get_post_details',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -665,7 +656,9 @@ wwv_flow_imp_shared.create_install_script(
 '--                          - Added trim to function remove_whitespace',
 '--                          - Changed procedures add_category and add_tag use function remove_whitespace',
 '--    Jari Laine 11.04.2021 - Procedure send_reply_notify moved to package BLOG_COMM',
-'-- '))
+'--    Jari Laine 13.04.2021 - Changes to procedure post_authentication',
+'--                          - Function get_footer_link_seq renamed to get_modal_page_seq',
+'--                   '))
 );
 wwv_flow_imp.component_end;
 end;
@@ -682,9 +675,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   Jari Laine 13.04.2021 - Changes to procedure post_authentication',
-'--                          - Function get_footer_link_seq renamed to get_modal_page_seq',
-'--                          - Removed procedure run_feature_post_expression',
+'       - Removed procedure run_feature_post_expression',
 '--    Jari Laine 18.04.2021 - Function is_email moved to package BLOG_COMM',
 '--    Jari Laine 05.01.2022 - Removed unused parameters and variables from procedures: post_authentication, update_feature, get_blogger_details and add_blogger',
 '--    Jari Laine 27.03.2022 - Fixed bug on function get_first_paragraph when search nested elements',
@@ -1373,7 +1364,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '/',
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_LINKS',
-'----------------------'))
+'--------------------------------------------------------',
+'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINKS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "LINK_GROUP_ID", '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1391,9 +1383,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINKS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "LINK_GROUP_ID", "IS_ACTIVE", "LINK_GROUP_IS_ACTIVE", "DISPLAY_SEQ", "LINK_GROUP_DISPLAY_SEQ", "TITLE", "LINK_GROUP_TITLE", '
-||'"LINK_DESC", "NOTES", "LINK_URL", "LINK_STATUS_CODE", "LINK_STATUS_ICON") AS',
+'"IS_ACTIVE", "LINK_GROUP_IS_ACTIVE", "DISPLAY_SEQ", "LINK_GROUP_DISPLAY_SEQ", "TITLE", "LINK_GROUP_TITLE", "LINK_DESC", "NOTES", "LINK_URL", "LINK_STATUS_CODE", "LINK_STATUS_ICON") AS',
 'select',
 '   t1.id                as id',
 '  ,t1.row_version       as row_version',
@@ -2290,7 +2280,14 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,t1.is_active       as is_active',
 '  ,t1.post_desc       as post_desc',
 '  ,(',
-'    s'))
+'    select lkp.title',
+'    from blog_categories lkp',
+'    where 1 = 1',
+'      and lkp.id = t1.category_id',
+'  )                   as category_title',
+'  ,(',
+'    select',
+'      listagg( lkp.tag, '','''))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2308,14 +2305,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'elect lkp.title',
-'    from blog_categories lkp',
-'    where 1 = 1',
-'      and lkp.id = t1.category_id',
-'  )                   as category_title',
-'  ,(',
-'    select',
-'      listagg( lkp.tag, '','' )',
+' )',
 '        within group( order by lkp.display_seq )',
 '    from blog_v_all_post_tags lkp',
 '    where 1 = 1',
@@ -2408,9 +2398,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Fetch next post id and title',
 '  ,(',
 '    select',
-'      blog_t_post(',
-'         lkp_post.post_id',
-'        ,lkp_post.post_title',
+'      json_object(',
+'         ''post_id''    is lkp_post.post_id',
+'        ,''post_title'' is lkp_post.post_title',
 '      ) as post',
 '    from q1 lkp_post',
 '    where 1 = 1',
@@ -2421,9 +2411,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Fetch previous post id and title',
 '  ,(',
 '    select',
-'      blog_t_post(',
-'         lkp_post.post_id',
-'        ,lkp_post.post_title',
+'      json_object(',
+'         ''post_id''    is lkp_post.post_id',
+'        ,''post_title'' is lkp_post.post_title',
 '      ) as post',
 '    from q1 lkp_post',
 '    where 1 = 1',
@@ -3294,7 +3284,11 @@ wwv_flow_imp_shared.append_to_install_script(
 'end;',
 '/',
 '--------------------------------------------------------',
-'--  Create text index preference'))
+'--  Create text index preferences for index BLOG_COMMENTS_CTX',
+'--------------------------------------------------------',
+'begin',
+'',
+'  ctx_ddl.create_pre'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3312,11 +3306,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'s for index BLOG_COMMENTS_CTX',
-'--------------------------------------------------------',
-'begin',
-'',
-'  ctx_ddl.create_preference(',
+'ference(',
 '     preference_name  => ''BLOG_COMMENTS_UDS''',
 '    ,object_name      => ''USER_DATASTORE''',
 '  );',
@@ -3842,20 +3832,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '  )',
 '  as',
 '    l_post_id       number;',
-'    l_next          blog_t_post;',
-'    l_prev          blog_t_post;',
 '    l_published_on  blog_v_posts.published_on%type;',
 '    l_changed_on    blog_v_posts.changed_on%type;',
 '  begin',
-'',
 '    -- raise no data found error if parameter p_post_id is null',
 '    if p_post_id is null then',
 '      raise no_data_found;',
 '    end if;',
-'',
 '    -- conver post id string to number',
 '    l_post_id := to_number( p_post_id );',
-'',
 '    -- fetch post title and description by post id',
 '    -- also fetch prev and next post id and title',
 '    select',
@@ -3865,26 +3850,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '      ,v1.blogger_name',
 '      ,v1.published_on',
 '      ,v1.changed_on',
-'      ,v1.next_post',
-'      ,v1.prev_post',
+'      ,int_to_vc2( v1.next_post.post_id )',
+'      ,v1.next_post.post_title',
+'      ,int_to_vc2( v1.prev_post.post_id )',
+'      ,v1.prev_post.post_title',
 '    into p_post_title',
 '      ,p_post_desc',
 '      ,p_post_category',
 '      ,p_post_author',
 '      ,l_published_on',
 '      ,l_changed_on',
-'      ,l_next',
-'      ,l_prev',
+'      ,p_next_post_id',
+'      ,p_next_post_title',
+'      ,p_prev_post_id',
+'      ,p_prev_post_title',
 '    from blog_v_posts v1',
 '    where 1 = 1',
 '      and post_id = l_post_id',
 '    ;',
 '',
-'    -- set procedure out parameters',
-'    p_next_post_id    := int_to_vc2( l_next.post_id );',
-'    p_next_post_title := l_next.post_title;',
-'    p_prev_post_id    := int_to_vc2( l_prev.post_id );',
-'    p_prev_post_title := l_prev.post_title;',
 '    -- Get post published and modified UTC time',
 '    p_post_published := to_char(',
 '       sys_extract_utc( l_published_on )',
@@ -4334,7 +4318,14 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Global functions and procedures',
-''))
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  procedure post_authentication',
+'  as',
+'    l_group_names apex_t_varchar2;',
+'  begin',
+'',
+'  '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4352,14 +4343,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure post_authentication',
-'  as',
-'    l_group_names apex_t_varchar2;',
-'  begin',
-'',
-'    -- collect user groups to PL/SQL table',
+'  -- collect user groups to PL/SQL table',
 '    for c1 in(',
 '      select g.group_name',
 '      from apex_workspace_group_users g',
@@ -5382,7 +5366,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  type t_page_item is record(',
 '    page_alias  varchar2(256),',
-'    item_name   v'))
+'    item_name   varchar2(256)',
+'  );',
+'-- constants for pages and id items',
+'  c_post_page     constant t_page_item := t_page_item( ''POST'',      ''P2_POST_ID'' );',
+'  c_category_page constant t_page_item := t_page_item( ''CATEGORY'',  ''P14_CATEGORY_ID'' );',
+'  c_archive_page  '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5400,12 +5389,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'archar2(256)',
-'  );',
-'-- constants for pages and id items',
-'  c_post_page     constant t_page_item := t_page_item( ''POST'',      ''P2_POST_ID'' );',
-'  c_category_page constant t_page_item := t_page_item( ''CATEGORY'',  ''P14_CATEGORY_ID'' );',
-'  c_archive_page  constant t_page_item := t_page_item( ''ARCHIVES'',  ''P15_ARCHIVE_ID'' );',
+'constant t_page_item := t_page_item( ''ARCHIVES'',  ''P15_ARCHIVE_ID'' );',
 '  c_tags_page     constant t_page_item := t_page_item( ''TAG'',       ''P6_TAG_ID'' );',
 '',
 '-- cache rss url',
@@ -6393,7 +6377,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '-- none',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------'))
+'--------------------------------------------------------------------------------',
+'-- Global functions and procedures',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  function get_ro'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6411,11 +6399,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'------------------------------',
-'-- Global functions and procedures',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function get_robots_noindex_meta',
+'bots_noindex_meta',
 '  return varchar2',
 '  as',
 '  begin',

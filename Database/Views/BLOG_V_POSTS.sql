@@ -77,9 +77,9 @@ select
 -- Fetch next post id and title
   ,(
     select
-      blog_t_post(
-         lkp_post.post_id
-        ,lkp_post.post_title
+      json_object(
+         'post_id'    is lkp_post.post_id
+        ,'post_title' is lkp_post.post_title
       ) as post
     from q1 lkp_post
     where 1 = 1
@@ -90,9 +90,9 @@ select
 -- Fetch previous post id and title
   ,(
     select
-      blog_t_post(
-         lkp_post.post_id
-        ,lkp_post.post_title
+      json_object(
+         'post_id'    is lkp_post.post_id
+        ,'post_title' is lkp_post.post_title
       ) as post
     from q1 lkp_post
     where 1 = 1

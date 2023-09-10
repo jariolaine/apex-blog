@@ -13,7 +13,7 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_page.create_page(
  p_id=>2
-,p_name=>'Post and Comments'
+,p_name=>'Single Post'
 ,p_alias=>'POST'
 ,p_step_title=>'&P2_POST_TITLE. | &G_APP_NAME.'
 ,p_warn_on_unsaved_changes=>'N'
@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230608144109'
+,p_last_upd_yyyymmddhh24miss=>'20230831051819'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6915627356677149)

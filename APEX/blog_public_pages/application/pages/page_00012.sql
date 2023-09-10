@@ -25,13 +25,13 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230608144154'
+,p_last_upd_yyyymmddhh24miss=>'20230905192040'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(30430710498753130)
 ,p_name=>'About Bloggers'
 ,p_template=>wwv_flow_imp.id(6781372168267375)
-,p_display_sequence=>20
+,p_display_sequence=>10
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'#DEFAULT#:t-Report--hideNoPagination'
 ,p_source_type=>'NATIVE_SQL_REPORT'

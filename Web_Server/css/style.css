@@ -245,6 +245,9 @@ pre.z-program-code code,
   display: flex;
   flex-direction: column;
 }
+.z-author-container .z-author-right {
+  font-size: 1rem;
+}
 .z-author-container .z-author-right .z-author-badges {
   display: flex;
   flex-direction: column;

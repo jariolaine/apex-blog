@@ -89,6 +89,7 @@ as
 --                              g_rfc_2822_date
 --    Jari Laine 08.04.2023 - Parameter p_page_id to procedure redirect_search
 --                          - Removed ORA errors between -20999 and 20901 display position handlimg from function apex_error_handler
+--    Jari Laine 05.09.2023 - Removed use of type blog_t_post from procedure get_post_details
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1908,9 +1909,9 @@ select
 -- Fetch next post id and title
   ,(
     select
-      blog_t_post(
-         lkp_post.post_id
-        ,lkp_post.post_title
+      json_object(
+         'post_id'    is lkp_post.post_id
+        ,'post_title' is lkp_post.post_title
       ) as post
     from q1 lkp_post
     where 1 = 1
@@ -1921,9 +1922,9 @@ select
 -- Fetch previous post id and title
   ,(
     select
-      blog_t_post(
-         lkp_post.post_id
-        ,lkp_post.post_title
+      json_object(
+         'post_id'    is lkp_post.post_id
+        ,'post_title' is lkp_post.post_title
       ) as post
     from q1 lkp_post
     where 1 = 1
@@ -3243,20 +3244,15 @@ as
   )
   as
     l_post_id       number;
-    l_next          blog_t_post;
-    l_prev          blog_t_post;
     l_published_on  blog_v_posts.published_on%type;
     l_changed_on    blog_v_posts.changed_on%type;
   begin
-
     -- raise no data found error if parameter p_post_id is null
     if p_post_id is null then
       raise no_data_found;
     end if;
-
     -- conver post id string to number
     l_post_id := to_number( p_post_id );
-
     -- fetch post title and description by post id
     -- also fetch prev and next post id and title
     select
@@ -3266,26 +3262,25 @@ as
       ,v1.blogger_name
       ,v1.published_on
       ,v1.changed_on
-      ,v1.next_post
-      ,v1.prev_post
+      ,int_to_vc2( v1.next_post.post_id )
+      ,v1.next_post.post_title
+      ,int_to_vc2( v1.prev_post.post_id )
+      ,v1.prev_post.post_title
     into p_post_title
       ,p_post_desc
       ,p_post_category
       ,p_post_author
       ,l_published_on
       ,l_changed_on
-      ,l_next
-      ,l_prev
+      ,p_next_post_id
+      ,p_next_post_title
+      ,p_prev_post_id
+      ,p_prev_post_title
     from blog_v_posts v1
     where 1 = 1
       and post_id = l_post_id
     ;
 
-    -- set procedure out parameters
-    p_next_post_id    := int_to_vc2( l_next.post_id );
-    p_next_post_title := l_next.post_title;
-    p_prev_post_id    := int_to_vc2( l_prev.post_id );
-    p_prev_post_title := l_prev.post_title;
     -- Get post published and modified UTC time
     p_post_published := to_char(
        sys_extract_utc( l_published_on )
