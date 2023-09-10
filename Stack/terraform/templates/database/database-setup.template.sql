@@ -150,7 +150,7 @@ begin
   apex_application_install.generate_offset;
 end;
 /
-@#ADMIN_APP_SQL#
+@/tmp/blog-administration-latest.sql
 
 begin
   apex_application_install.set_auto_install_sup_obj( p_auto_install_sup_obj => true );
@@ -160,7 +160,7 @@ begin
   apex_application_install.generate_offset;
 end;
 /
-@#PUBLIC_APP_SQL#
+@/tmp/blog-public-pages-latest.sql
 
 %{ if apex_image_prefix != "" }
 -- Set APEX static files image prefix

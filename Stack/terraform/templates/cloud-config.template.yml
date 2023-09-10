@@ -52,6 +52,13 @@ write_files:
     defer: true
     content: ${httpd_apache2_conf_content}
 
+  - path: ${httpd_jk_conf_file}
+    encoding: "gzip+base64"
+    permissions: "0644"
+    owner: "root:root"
+    defer: true
+    content: ${httpd_jk_conf_content}
+
   - path: ${httpd_site_conf_file}
     encoding: "gzip+base64"
     permissions: "0644"
@@ -201,24 +208,11 @@ runcmd:
 %{ if run_db_setup == "true" }
 # Install application
   ## Variables
-  - ADMIN_APP_ZIP="/tmp/$(basename '${admin_app_download_url}')"
-  - ADMIN_APP_SQL="$${ADMIN_APP_ZIP%-latest.zip}/install.sql"
-
-  - PUBLIC_APP_ZIP="/tmp/$(basename '${public_app_download_url}')"
-  - PUBLIC_APP_SQL="$${PUBLIC_APP_ZIP%-latest.zip}/install.sql"
-
+  - BLOG_APP_ZIP="/tmp/$(basename '${app_download_url}')"
   ## Download applications
-  - wget -nv -O $ADMIN_APP_ZIP ${admin_app_download_url}
-  - wget -nv -O $PUBLIC_APP_ZIP  ${public_app_download_url}
-
+  - wget -nv -O $BLOG_APP_ZIP ${app_download_url}
   ## Unzip
-  - unzip -q $ADMIN_APP_ZIP -d /tmp
-  - unzip -q $PUBLIC_APP_ZIP -d /tmp
-
-  ## Append execute application install files to database setup file
-  - sed -i "s|#ADMIN_APP_SQL#|$ADMIN_APP_SQL|g" ${database_setup_file}
-  - sed -i "s|#PUBLIC_APP_SQL#|$PUBLIC_APP_SQL|g" ${database_setup_file}
-
+  - unzip -q $BLOG_APP_ZIP -d /tmp
   ## Execute database setup
   - sql -cloudconfig $WALLET_ZIP admin/"${adb_admin_password}"@$WALLET_SERVICE_NAME < ${database_setup_file}
 %{ endif }

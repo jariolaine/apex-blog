@@ -100,9 +100,6 @@ variable "adb_wallet_generate_type" {
   default = "SINGLE"
 }
 ## Application
-variable admin_app_download_url {
-  default = "https://github.com/jariolaine/apex-blog/releases/latest/download/blog_administration-latest.zip"
-}
-variable public_app_download_url {
-  default = "https://github.com/jariolaine/apex-blog/releases/latest/download/blog_public_pages-latest.zip"
+variable app_download_url {
+  default = "https://github.com/jariolaine/apex-blog/releases/latest/download/apex-blog-latest.zip"
 }

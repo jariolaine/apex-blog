@@ -141,6 +141,7 @@ locals {
   httpd_headers_conf      = file("${path.module}/templates/httpd/headers.template.conf")
   httpd_remoteip_conf     = file("${path.module}/templates/httpd/remoteip.template.conf")
   httpd_apache2_conf      = file("${path.module}/templates/httpd/apache2.template.conf")
+  httpd_jk_conf           = file("${path.module}/templates/httpd/jk.template.conf")
 
   database_setup_template = templatefile("${path.module}/templates/database/database-setup.template.sql", {
     app_owner_name        = upper( var.app_owner_name )
@@ -185,6 +186,9 @@ data "cloudinit_config" "nodes" {
       jk_workers_properties_file    = "/etc/libapache2-mod-jk/workers.properties"
       jk_workers_properties_content = base64gzip( local.jk_workers_properties )
 
+      httpd_jk_conf_file            = "/etc/apache2/mods-available/jk.conf"
+      httpd_jk_conf_content         = base64gzip( local.httpd_jk_conf )
+
       httpd_apache2_conf_file       = "/etc/apache2/apache2.conf"
       httpd_apache2_conf_content    = base64gzip( local.httpd_apache2_conf )
 
@@ -213,8 +217,7 @@ data "cloudinit_config" "nodes" {
       sqlcl_download_url            = "https://download.oracle.com/otn_software/java/sqldeveloper/sqlcl-latest.zip"
       sqlcl_install_dir             = "/opt/oracle"
 
-      admin_app_download_url        = var.admin_app_download_url
-      public_app_download_url       = var.public_app_download_url
+      app_download_url              = var.app_download_url
       run_db_setup                  = count.index != 0 ? "false" : "true"
 
     })
