@@ -17,7 +17,6 @@ Ensure target schema associated to your APEX workspace has following system priv
 * CREATE SEQUENCE
 * CREATE TABLE
 * CREATE TRIGGER
-* CREATE TYPE
 * CREATE VIEW
 * CTXAPP
 
