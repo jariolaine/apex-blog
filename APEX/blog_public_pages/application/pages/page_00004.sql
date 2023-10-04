@@ -26,20 +26,22 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'26'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230412172254'
+,p_last_upd_yyyymmddhh24miss=>'20230917204423'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(38694166324057112)
 ,p_plug_name=>'Search Results'
-,p_region_template_options=>'#DEFAULT#:t-Form--xlarge:t-Form--stretchInputs:margin-bottom-md'
+,p_region_template_options=>'#DEFAULT#:t-ResultsRegion--boxed:margin-bottom-md'
 ,p_plug_template=>wwv_flow_imp.id(9260227573556082)
 ,p_plug_display_sequence=>20
 ,p_plug_source_type=>'NATIVE_SEARCH_REGION'
+,p_ajax_items_to_submit=>'P4_SEARCH_FROM'
 ,p_attribute_02=>'N'
-,p_attribute_04=>'N'
-,p_attribute_05=>'P0_SEARCH'
+,p_attribute_04=>'Y'
+,p_attribute_05=>'P4_SEARCH'
 ,p_attribute_06=>'N'
 ,p_attribute_11=>'N'
+,p_attribute_12=>'0'
 ,p_attribute_13=>'<span class="nodatafound">&APP_TEXT$BLOG_MSG_ENTER_SEARCH_TERM.</span>'
 ,p_attribute_14=>'15'
 ,p_attribute_15=>'Y'
@@ -52,25 +54,70 @@ wwv_flow_imp_page.create_search_region_source(
 ,p_use_as_initial_result=>false
 ,p_display_sequence=>10
 ,p_name=>'Posts'
+,p_condition_type=>'VALUE_OF_ITEM_IN_CONDITION_IN_COLON_DELIMITED_LIST'
+,p_condition_expr1=>'P4_SEARCH_FROM'
+,p_condition_expr2=>'ALL:POSTS'
 ,p_build_option_id=>wwv_flow_imp.id(8667733481689180)
-);
-wwv_flow_imp_page.create_search_region_source(
- p_id=>wwv_flow_imp.id(38592276819274323)
-,p_region_id=>wwv_flow_imp.id(38694166324057112)
-,p_search_config_id=>wwv_flow_imp.id(38726917014540459)
-,p_use_as_initial_result=>false
-,p_display_sequence=>20
-,p_name=>'Files'
-,p_build_option_id=>wwv_flow_imp.id(25684564406281886)
 );
 wwv_flow_imp_page.create_search_region_source(
  p_id=>wwv_flow_imp.id(38592376771274324)
 ,p_region_id=>wwv_flow_imp.id(38694166324057112)
 ,p_search_config_id=>wwv_flow_imp.id(38744651530749493)
 ,p_use_as_initial_result=>false
-,p_display_sequence=>30
+,p_display_sequence=>20
 ,p_name=>'Links'
+,p_condition_type=>'VALUE_OF_ITEM_IN_CONDITION_IN_COLON_DELIMITED_LIST'
+,p_condition_expr1=>'P4_SEARCH_FROM'
+,p_condition_expr2=>'ALL:LINKS'
 ,p_build_option_id=>wwv_flow_imp.id(25684767186283357)
+);
+wwv_flow_imp_page.create_search_region_source(
+ p_id=>wwv_flow_imp.id(38592276819274323)
+,p_region_id=>wwv_flow_imp.id(38694166324057112)
+,p_search_config_id=>wwv_flow_imp.id(38726917014540459)
+,p_use_as_initial_result=>false
+,p_display_sequence=>30
+,p_name=>'Files'
+,p_condition_type=>'VALUE_OF_ITEM_IN_CONDITION_IN_COLON_DELIMITED_LIST'
+,p_condition_expr1=>'P4_SEARCH_FROM'
+,p_condition_expr2=>'ALL:FILES'
+,p_build_option_id=>wwv_flow_imp.id(25684564406281886)
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(24668903539850539)
+,p_name=>'P4_SEARCH_FROM'
+,p_item_sequence=>10
+,p_item_plug_id=>wwv_flow_imp.id(38694166324057112)
+,p_item_display_point=>'SEARCH_FIELD'
+,p_item_default=>'ALL'
+,p_prompt=>'Search From'
+,p_display_as=>'NATIVE_RADIOGROUP'
+,p_named_lov=>'SEARCH_SOURCE'
+,p_lov=>'.'||wwv_flow_imp.id(24721310666439263)||'.'
+,p_field_template=>wwv_flow_imp.id(6854610443267413)
+,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--large:t-Form-fieldContainer--radioButtonGroup'
+,p_lov_display_extra=>'NO'
+,p_attribute_01=>'4'
+,p_attribute_02=>'NONE'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(24669360219850543)
+,p_name=>'P4_SEARCH'
+,p_item_sequence=>20
+,p_item_plug_id=>wwv_flow_imp.id(38694166324057112)
+,p_item_display_point=>'SEARCH_FIELD'
+,p_prompt=>'Search'
+,p_display_as=>'NATIVE_TEXT_FIELD'
+,p_cSize=>30
+,p_cMaxlength=>256
+,p_field_template=>wwv_flow_imp.id(6854643778267413)
+,p_item_icon_css_classes=>'fa-search'
+,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--stretchInputs'
+,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
+,p_attribute_01=>'N'
+,p_attribute_02=>'N'
+,p_attribute_04=>'SEARCH'
+,p_attribute_05=>'BOTH'
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(38592086344274321)
@@ -93,6 +140,26 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_name=>'Scroll Top'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_attribute_01=>'apex.theme42.util.scrollTo("wwvFlowForm");'
+);
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(24669080786850540)
+,p_name=>'Search'
+,p_event_sequence=>20
+,p_triggering_element_type=>'ITEM'
+,p_triggering_element=>'P4_SEARCH_FROM'
+,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
+,p_bind_event_type=>'change'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(24669175231850541)
+,p_event_id=>wwv_flow_imp.id(24669080786850540)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_imp.id(38694166324057112)
 );
 wwv_flow_imp.component_end;
 end;

@@ -135,7 +135,7 @@ as
       apex_javascript.add_onload_code (
         p_code =>
           apex_string.format(
-            p_message => 'blog.comment.question(%s)'
+            p_message => 'blog.plugin.mathQuestionField.getQuestion(%s)'
             ,p0 => apex_json.get_clob_output
           )
       );

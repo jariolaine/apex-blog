@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230601152046'
+,p_last_upd_yyyymmddhh24miss=>'20231004174505'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45054908267895533)
@@ -312,7 +312,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'AO'
 ,p_column_label=>'Copy URL'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<button title="&APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD." aria-label="&APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD." type="button" class="t-Button t-Button--noLabel t-Button--icon t-Button--small w60" data-clipboard-source="#RELATIVE_PATH#">',
+'<button type="button" title="&APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD." class="t-Button t-Button--noLabel t-Button--icon t-Button--small w60" data-clipboard-source="#RELATIVE_PATH#">',
 '  <span class="fa fa-clone" aria-hidden="true"></span>',
 '</button>'))
 ,p_allow_sorting=>'N'

@@ -55,8 +55,7 @@ var blog = blog || {};
 
         // set defaults
         options = $.extend({
-          dataCopySource: "clipboard-source"
-          ,downloadLink: "a[download]"
+          downloadLink: "a[download]"
           ,downloadLinkClass: [
             "t-Button"
             ,"t-Button--noLabel"
@@ -73,14 +72,10 @@ var blog = blog || {};
             , fileInfo = this$.children( "span" ).data( "file-info" )
           ;
 
-          this$.attr({ "title" : fileInfo, "aria-label" : fileInfo });
+          this$.attr( "title", fileInfo );
 
         // Remove alt attribute from download link. APEX bug??
-        }).removeAttr( "alt" ).addClass( options.downloadLinkClass ).end()
-        // Find column that have copy URL button and attach click event
-        .find( "[data-" + options.dataCopySource + "]" ).click( function(){
-          navigator.clipboard.writeText( $( this ).data( options.dataCopySource ) );
-        });
+        }).removeAttr( "alt" ).addClass( options.downloadLinkClass );
 
       },
 
@@ -107,7 +102,7 @@ var blog = blog || {};
           $( $x( $( this ).data( "id" ) ) )
             .removeClass( options.oldClass )
             .addClass( options.newClass )
-            .attr({ "aria-label": newLabel, "title": newLabel })
+            .attr( "title", newLabel )
           ;
           return true;
         });

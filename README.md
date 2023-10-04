@@ -43,8 +43,8 @@ Before starting the upgrade, backup the application parsing schema data and obje
 ### Import Applications
 1. Access your target APEX workspace
 2. Select the Application Builder
-3. Import and install *blog_administration-latest.sql* and select upgrade supporting objects.
-4. Import and install *blog_public_pages-latest.sql* and select upgrade supporting objects.
+3. Import and install *blog-administration-latest.sql* and select upgrade supporting objects.
+4. Import and install *blog-public-pages-latest.sql* and select upgrade supporting objects.
 
 # License
 This code is released under [MIT license](https://raw.githubusercontent.com/jariolaine/apex-blog/master/LICENSE.txt) by Jari Laine.

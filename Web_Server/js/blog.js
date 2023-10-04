@@ -18,7 +18,7 @@ var blog = blog || {};
 
   /**
   * @function blog.search
-  * @example return blog.search( { element: this, currentPage:'&APP_PAGE_ID.',submitIfEnter:event } )
+  * @example onkeypress="return blog.search({element:this,currentPage:'&APP_PAGE_ID.',submitIfEnter:event});"
   * @summary hadle search field
   * @desc submit page if enter is pressed, search field is not empty and parameters currentPage and noSubmitPage are not same.
   **/
@@ -96,30 +96,37 @@ var blog = blog || {};
   };
 
   /**
-  * @module blog.comment
+  * @module blog.plugin
   **/
-  blog.comment = {
+  blog.plugin = {
 
     /**
-    * @function blog.comment.question
-    * @example blog.comment.question( "ajaxIdentifier": "xxxx" );
-    * @summary set question field label
-    * @desc set result from ajax call to item label. function relates question field APEX plugin.
+    * @module blog.plugin.mathQuestionField
     **/
-    question: function( options ){
+    mathQuestionField : {
 
-      apex.server.plugin( options.ajaxIdentifier, {}, {
-        success:function( data ){
+      /**
+      * @function blog.plugin.mathQuestionField.getQuestion
+      * @example blog.comment.question( "ajaxIdentifier": "xxxx" );
+      * @summary set question field label
+      * @desc set result from ajax call to item label. function relates question field APEX plugin.
+      **/
+      getQuestion: function( options ){
 
-          var this$     = $( "[for=\"" + options.itemId + "\"]" )
-            , required$ = this$.children().detach()
-          ;
+        apex.server.plugin( options.ajaxIdentifier, {}, {
+          success:function( data ){
 
-          this$.empty().html( data.label ).append( required$ );
+            var this$     = $( "[for=\"" + options.itemId + "\"]" )
+              , required$ = this$.children().detach()
+            ;
 
-        }
+            this$.empty().html( data.label ).append( required$ );
 
-      });
+          }
+
+        });
+
+      }
 
     }
 

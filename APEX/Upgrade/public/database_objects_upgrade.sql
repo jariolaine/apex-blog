@@ -3532,6 +3532,7 @@ as
         p_table => l_header_names
        ,p_value => 'Cache-Control'
     );
+
     apex_string.push(
        p_table => l_header_values
       ,p_value =>
@@ -3551,6 +3552,7 @@ as
       p_table => l_header_names
      ,p_value => 'Content-Disposition'
     );
+
     apex_string.push(
       p_table => l_header_values
      ,p_value =>
@@ -3605,8 +3607,7 @@ as
          p_application => p_app_id
         ,p_page        => p_page_id
         ,p_session     => p_session
---          ,p_clear_cache => 'RP'
-        ,p_items       => 'P0_SEARCH'
+        ,p_items       => 'P4_SEARCH'
         ,p_values      => p_value
         ,p_plain_url   => true
       )
@@ -4634,7 +4635,7 @@ as
       apex_javascript.add_onload_code (
         p_code =>
           apex_string.format(
-            p_message => 'blog.comment.question(%s)'
+            p_message => 'blog.plugin.mathQuestionField.getQuestion(%s)'
             ,p0 => apex_json.get_clob_output
           )
       );

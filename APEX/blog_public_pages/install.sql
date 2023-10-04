@@ -33,7 +33,7 @@ prompt --install
 @@application/shared_components/logic/application_settings.sql
 @@application/shared_components/navigation/tabs/standard.sql
 @@application/shared_components/navigation/tabs/parent.sql
-@@application/shared_components/user_interface/lovs/link_groups.sql
+@@application/shared_components/user_interface/lovs/search_source.sql
 @@application/pages/page_groups.sql
 @@application/comments.sql
 @@application/shared_components/navigation/breadcrumbentry.sql

@@ -4120,6 +4120,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        p_table => l_header_names',
 '       ,p_value => ''Cache-Control''',
 '    );',
+'',
 '    apex_string.push(',
 '       p_table => l_header_values',
 '      ,p_value =>',
@@ -4139,6 +4140,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      p_table => l_header_names',
 '     ,p_value => ''Content-Disposition''',
 '    );',
+'',
 '    apex_string.push(',
 '      p_table => l_header_values',
 '     ,p_value =>',
@@ -4193,8 +4195,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '         p_application => p_app_id',
 '        ,p_page        => p_page_id',
 '        ,p_session     => p_session',
-'--          ,p_clear_cache => ''RP''',
-'        ,p_items       => ''P0_SEARCH''',
+'        ,p_items       => ''P4_SEARCH''',
 '        ,p_values      => p_value',
 '        ,p_plain_url   => true',
 '      )',
@@ -4325,7 +4326,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_group_names apex_t_varchar2;',
 '  begin',
 '',
-'  '))
+'    -- collect user groups to PL/SQ'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4343,7 +4344,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'  -- collect user groups to PL/SQL table',
+'L table',
 '    for c1 in(',
 '      select g.group_name',
 '      from apex_workspace_group_users g',
@@ -5240,7 +5241,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      apex_javascript.add_onload_code (',
 '        p_code =>',
 '          apex_string.format(',
-'            p_message => ''blog.comment.question(%s)''',
+'            p_message => ''blog.plugin.mathQuestionField.getQuestion(%s)''',
 '            ,p0 => apex_json.get_clob_output',
 '          )',
 '      );',
@@ -5371,7 +5372,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- constants for pages and id items',
 '  c_post_page     constant t_page_item := t_page_item( ''POST'',      ''P2_POST_ID'' );',
 '  c_category_page constant t_page_item := t_page_item( ''CATEGORY'',  ''P14_CATEGORY_ID'' );',
-'  c_archive_page  '))
+'  c_archive_page  constant t_pa'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5389,7 +5390,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'constant t_page_item := t_page_item( ''ARCHIVES'',  ''P15_ARCHIVE_ID'' );',
+'ge_item := t_page_item( ''ARCHIVES'',  ''P15_ARCHIVE_ID'' );',
 '  c_tags_page     constant t_page_item := t_page_item( ''TAG'',       ''P6_TAG_ID'' );',
 '',
 '-- cache rss url',
@@ -6381,7 +6382,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Global functions and procedures',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  function get_ro'))
+'  function get_robots_noindex_'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6399,7 +6400,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'bots_noindex_meta',
+'meta',
 '  return varchar2',
 '  as',
 '  begin',

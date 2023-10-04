@@ -100,7 +100,6 @@ wwv_flow_imp_shared.create_install(
 'drop table blog_settings;',
 'drop table blog_subscribers_email;',
 'drop table blog_tags;',
-'drop type blog_t_post;',
 'drop view blog_v_all_categories;',
 'drop view blog_v_all_comments;',
 'drop view blog_v_all_dynamic_content;',
@@ -137,8 +136,7 @@ wwv_flow_imp_shared.create_install(
 'begin',
 '  ctx_ddl.drop_preference( ''BLOG_POSTS_UDS'' );',
 'end;',
-'/',
-''))
+'/'))
 ,p_required_free_kb=>200
 ,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE TYPE :CREATE VIEW'
 );

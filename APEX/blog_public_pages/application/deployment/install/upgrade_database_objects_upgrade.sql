@@ -3632,6 +3632,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        p_table => l_header_names',
 '       ,p_value => ''Cache-Control''',
 '    );',
+'',
 '    apex_string.push(',
 '       p_table => l_header_values',
 '      ,p_value =>',
@@ -3651,6 +3652,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      p_table => l_header_names',
 '     ,p_value => ''Content-Disposition''',
 '    );',
+'',
 '    apex_string.push(',
 '      p_table => l_header_values',
 '     ,p_value =>',
@@ -3705,8 +3707,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '         p_application => p_app_id',
 '        ,p_page        => p_page_id',
 '        ,p_session     => p_session',
-'--          ,p_clear_cache => ''RP''',
-'        ,p_items       => ''P0_SEARCH''',
+'        ,p_items       => ''P4_SEARCH''',
 '        ,p_values      => p_value',
 '        ,p_plain_url   => true',
 '      )',
@@ -4568,7 +4569,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  procedure update_feature(',
 '    p_app_id          in number,',
-'    p_build_option_id i'))
+'    p_build_option_id in number,',
+'    p_build_status    i'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4586,8 +4588,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'n number,',
-'    p_build_status    in varchar2',
+'n varchar2',
 '  )',
 '  as',
 '  begin',
@@ -4752,7 +4753,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      apex_javascript.add_onload_code (',
 '        p_code =>',
 '          apex_string.format(',
-'            p_message => ''blog.comment.question(%s)''',
+'            p_message => ''blog.plugin.mathQuestionField.getQuestion(%s)''',
 '            ,p0 => apex_json.get_clob_output',
 '          )',
 '      );',
@@ -5564,7 +5565,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  function is_email(',
 '    p_email     in varchar2,',
-''))
+'    p_err_mes'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5582,7 +5583,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'    p_err_mesg  in varchar2',
+'g  in varchar2',
 '  ) return varchar2',
 '  as',
 '    l_err_mesg varchar2(32700);',
@@ -6567,7 +6568,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '            xmlelement( "url"',
 '              ,xmlelement( "loc",',
 '                blog_url.get_post(',
-'           '))
+'                   p_pos'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6585,7 +6586,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'        p_post_id    => posts.post_id',
+'t_id    => posts.post_id',
 '                  ,p_canonical  => ''YES''',
 '                )',
 '              )',
