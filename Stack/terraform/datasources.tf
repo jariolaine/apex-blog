@@ -21,17 +21,7 @@ resource "random_string" "adb_admin_password" {
   override_special = "{}#^*<>[]%~"
 }
 
-resource "random_string" "app_owner_password" {
-  length           = 12
-  special          = true
-  min_upper        = 3
-  min_lower        = 3
-  min_numeric      = 3
-  min_special      = 3
-  override_special = "{}#^*<>[]%~"
-}
-
-resource "random_string" "apex_user_password" {
+resource "random_string" "user_password" {
   length           = 12
   special          = true
   min_upper        = 3
@@ -144,12 +134,11 @@ locals {
   httpd_jk_conf           = file("${path.module}/templates/httpd/jk.template.conf")
 
   database_setup_template = templatefile("${path.module}/templates/database/database-setup.template.sql", {
-    app_owner_name        = upper( var.app_owner_name )
-    app_owner_password    = random_string.app_owner_password.result
-    apex_username         = upper( var.apex_username )
-    apex_user_password    = random_string.apex_user_password.result
-    apex_workspace_name   = upper( var.apex_workspace_name )
-    apex_image_prefix     = var.apex_image_prefix
+    app_owner_name      = upper( var.app_owner_name )
+    apex_username       = upper( var.username )
+    user_password       = random_string.user_password.result
+    apex_workspace_name = upper( var.apex_workspace_name )
+    apex_image_prefix   = var.apex_image_prefix
   })
 
 }
@@ -164,7 +153,7 @@ data "cloudinit_config" "nodes" {
     content_type  = "text/cloud-config"
     content       = templatefile( "${path.module}/templates/cloud-config.template.yml", {
 
-      compute_username              = var.compute_username
+      compute_username              = var.username
       ssh_authorized_keys           = var.compute_generate_ssh_key ? tls_private_key.compute_new_ssh_key.public_key_openssh : var.compute_ssh_public_key
 
       adb_name                      = upper( oci_database_autonomous_database.app_db.db_name )

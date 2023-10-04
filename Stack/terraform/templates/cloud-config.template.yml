@@ -114,7 +114,7 @@ runcmd:
 
   - WALLET_B64="/tmp/wallet.b64"
   - WALLET_ZIP="${ords_conf_dir}/Wallet_${adb_name}.zip"
-  - WALLET_SERVICE_NAME="${adb_name}_low"
+  - WALLET_SERV_NAME="${adb_name}_low"
 
 # Install JDK
   - mkdir -p ${jdk_install_dir}
@@ -160,7 +160,7 @@ runcmd:
   - echo "${ords_plsql_gateway_password}" >> $ORDS_PASSWORD_FILE
 
   ## Configure ORDS
-  - ords install adb --admin-user ADMIN --db-user ORDS_PUBLIC_USER2 --gateway-user ORDS_PLSQL_GATEWAY2 --wallet $WALLET_ZIP --wallet-service-name $WALLET_SERVICE_NAME --feature-sdw true --log-folder /root --password-stdin < $ORDS_PASSWORD_FILE
+  - ords install adb --admin-user ADMIN --db-user ORDS_PUBLIC_USER2 --gateway-user ORDS_PLSQL_GATEWAY2 --wallet $WALLET_ZIP --wallet-service-name $WALLET_SERV_NAME --feature-sdw true --log-folder /root --password-stdin < $ORDS_PASSWORD_FILE
 
 # Configure Tomcat
   - echo "JAVA_OPTS=\"$${JAVA_OPTS} -Duser.timezone=UTC -Dconfig.url=${ords_conf_dir}\"" >> /etc/default/tomcat9
@@ -186,7 +186,8 @@ runcmd:
   - echo 'export PATH="${ords_install_dir}/bin:$PATH"' >> /root/.bashrc
   - echo 'export PATH="${sqlcl_install_dir}/sqlcl/bin:$PATH"' >> /root/.bashrc
   - echo 'export ORDS_CONFIG="${ords_conf_dir}"' >> /root/.bashrc
-  - echo "export WALLET_SERVICE_NAME=\"$WALLET_SERVICE_NAME\"" >> /root/.bashrc
+  - echo "export WALLET_ZIP=\"$WALLET_ZIP\"" >> /root/.bashrc
+  - echo "export WALLET_SERV_NAME=\"$WALLET_SERV_NAME\"" >> /root/.bashrc
   - echo "alias sql=\"sql -cloudconfig $WALLET_ZIP\"" >> /root/.bash_aliases
 
 # Configure C-ICAP
@@ -197,8 +198,8 @@ runcmd:
   - echo "virus_scan.ScanFileTypes TEXT DATA EXECUTABLE ARCHIVE GRAPHICS STREAM DOCUMENT" >> /etc/c-icap/c-icap.conf
   - echo "ServiceAlias AVSCAN virus_scan?allow204=on&sizelimit=off&mode=simple" >> /etc/c-icap/c-icap.conf
 
-  - ords conf set icap.server 127.0.0.1
-  - ords conf set icap.port 1344
+  - ords config set icap.server 127.0.0.1
+  - ords config set icap.port 1344
 
 # Restart Tomcat and Apache2
   - systemctl restart tomcat9.service
@@ -214,7 +215,7 @@ runcmd:
   ## Unzip
   - unzip -q $BLOG_APP_ZIP -d /tmp
   ## Execute database setup
-  - sql -cloudconfig $WALLET_ZIP admin/"${adb_admin_password}"@$WALLET_SERVICE_NAME < ${database_setup_file}
+  - sql -cloudconfig $WALLET_ZIP admin/"${adb_admin_password}"@$WALLET_SERV_NAME < ${database_setup_file}
 %{ endif }
 
 output: {all: '| tee -a /root/cloud-init-output.log'}

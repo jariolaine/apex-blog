@@ -11,10 +11,10 @@ output "apex_workspace_name" {
   value     = upper( var.apex_workspace_name )
 }
 output "apex_username" {
-  value     = upper( var.apex_username )
+  value     = upper( var.username )
 }
-output "apex_user_password" {
-  value     = random_string.apex_user_password.result
+output "user_password" {
+  value     = random_string.user_password.result
   sensitive = true
 }
 output "apex_url" {
@@ -35,7 +35,7 @@ output "app_owner_name" {
 
 # Compute details
 output "compute_username" {
-  value     = var.compute_username
+  value     = var.username
 }
 output "compute_private_key_pem" {
   value     = var.compute_generate_ssh_key ? tls_private_key.compute_new_ssh_key.private_key_pem : "No Keys Auto Generated"

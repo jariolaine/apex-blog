@@ -24,18 +24,17 @@ end;
 /
 
 -- Create user for login to APEX
-create user ${apex_username} identified by "${apex_user_password}";
-grant dwrole to ${apex_username};
+create user ${apex_username} identified by "${user_password}";
+grant connect, resource, dwrole to ${apex_username};
 alter user ${apex_username} default role all;
 
 -- Create user for application
 whenever sqlerror exit sql.sqlcode
 
-create user ${app_owner_name} identified by "${app_owner_password}";
+create user ${app_owner_name} no authentication;
 
 -- Grant roles
 grant ctxapp to ${app_owner_name};
-grant dwrole to ${app_owner_name};
 alter user ${app_owner_name} default role all;
 
 -- Grant default APEX parsing schema privileges
@@ -130,7 +129,7 @@ begin
   -- Create workspace admin user and assign workspace group
   apex_util.create_user(
     p_user_name                     => '${apex_username}'
-    ,p_web_password                 => '${apex_user_password}'
+    ,p_web_password                 => '${user_password}'
     ,p_developer_privs              => 'ADMIN:CREATE:DATA_LOADER:EDIT:HELP:MONITOR:SQL'
     ,p_group_ids                    => l_app_ws_group_id
     ,p_change_password_on_first_use => 'Y'

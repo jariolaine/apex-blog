@@ -39,11 +39,11 @@ groupings:
     visible: true
     variables:
       - resources_prefix
+      - username
 
   - title: Autonomous database
     visible: true
     variables:
-      - apex_username
       - adb_advanced_options
       - app_owner_name
       - apex_workspace_name
@@ -52,7 +52,6 @@ groupings:
   - title: Compute
     visible: true
     variables:
-      - compute_username
       - compute_count
       - compute_generate_ssh_key
       - compute_ssh_public_key
@@ -80,14 +79,14 @@ variables:
     title: Resources prefix
     description: Resources name prefix.
 
-# Autonomous database
-  apex_username:
+  username:
     type: string
     required: true
-    title: APEX user
-    description: User name to login to APEX workspace and application.
+    title: Username
+    description: Username to login to compute instance, APEX workspace and application.
     pattern: "^[a-zA-Z0-9_]*$"
 
+# Autonomous database
   adb_advanced_options:
     type: boolean
     title: Advanced options
@@ -125,13 +124,6 @@ variables:
         - adb_advanced_options
 
 # Compute
-  compute_username:
-    title: Username
-    description: Username for ssh login
-    required: true
-    default: ""
-    pattern: ^[a-zA-Z0-9]*$
-
   compute_count:
     type: integer
     title: Instance count
@@ -140,7 +132,6 @@ variables:
     default: 1
     minimum: 1
     maximum: 4
-
 
   compute_generate_ssh_key:
     type: boolean
@@ -226,7 +217,7 @@ outputGroups:
     outputs:
       - apex_workspace_name
       - apex_username
-      - apex_user_password
+      - user_password
       - apex_url
 
   - title: Compute Details
@@ -281,14 +272,14 @@ outputs:
     title: Username
     visible: true
 
-  apex_user_password:
+  user_password:
     type: string
     title: Password
     visible: true
     sensitive: true
 
   apex_url:
-    type: string
+    type: copyableString
     title: URL
     visible: true
 
@@ -309,11 +300,11 @@ outputs:
     title: Instance names
 
   compute_private_ip:
-    type: string
+    type: copyableString
     title: Private IP addresses
 
   compute_public_ip:
-    type: string
+    type: copyableString
     title: Public IP addresses
 
 # Load balancer

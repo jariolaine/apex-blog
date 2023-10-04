@@ -20,10 +20,11 @@ variable "network_details" {
   }
 }
 
-## Compute
-variable "compute_username" {
+variable "username" {
   default = ""
 }
+
+## Compute
 variable "compute_count" {
   default = 1
 }
@@ -65,9 +66,6 @@ variable "app_owner_name" {
 }
 variable "apex_workspace_name" {
   default = "BLOG_APP"
-}
-variable "apex_username" {
-  default = ""
 }
 variable "adb_advanced_options" {
   default = false
