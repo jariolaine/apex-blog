@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_FILES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "ROW_VERSION", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC", "FILE_URL") AS
+create or replace force view blog_v_files as
 select
    t1.id            as file_id
   ,t1.row_version   as row_version

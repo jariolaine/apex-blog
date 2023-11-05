@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_BLOGGERS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_BLOGGERS" ("BLOGGER_ID", "DISPLAY_SEQ", "BLOGGER_NAME", "BLOGGER_DESC") AS
+create or replace force view blog_v_bloggers as
 select t1.id        as blogger_id
   ,t1.display_seq   as display_seq
   ,t1.blogger_name  as blogger_name

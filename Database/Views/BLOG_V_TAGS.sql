@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_TAGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "TAG_URL", "POSTS_COUNT", "CHANGED_ON", "TAG_BUCKET", "SHOW_POST_COUNT", "LIST_BADGE") AS
+create or replace force view blog_v_tags as
 select
    v1.tag_id            as tag_id
   ,v1.tag               as tag

@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CTX_SEARCH", "CHANGED_ON", "ARCHIVE_YEAR", "CATEGORY_SEQ", "POST_URL", "TAGS", "TAGS_HTML1", "TAGS_HTML2", "NEXT_POST", "PREV_POST") AS
+create or replace force view blog_v_posts as
 with q1 as(
   select
      t1.id              as post_id

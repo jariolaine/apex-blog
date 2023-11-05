@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_ARCHIVE_YEAR
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ARCHIVE_YEAR" ("ARCHIVE_YEAR", "POST_COUNT", "CHANGED_ON", "ARCHIVE_URL", "SHOW_POST_COUNT", "LIST_BADGE", "LIST_ATTR") AS
+create or replace force view blog_v_archive_year as
 select
    v1.archive_year      as archive_year
   ,count(1)             as post_count

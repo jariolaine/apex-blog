@@ -13,37 +13,19 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_shared.create_install(
  p_id=>wwv_flow_imp.id(31706870664802069)
-,p_welcome_message=>'This application installer will guide you through the process of creating database objects and meta data necessary to run the APEX Blog application.'
+,p_welcome_message=>'This application installer will guide you through the process of creating database objects and metadata necessary to run the application.'
 ,p_license_message=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<pre>The MIT License (MIT)',
+'Please read license from',
 '',
-'Copyright (c) 2021, 2023, Jari Laine',
-'',
-'Permission is hereby granted, free of charge, to any person obtaining a copy of',
-'this software and associated documentation files (the "Software"), to deal in',
-'the Software without restriction, including without limitation the rights to',
-'use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of',
-'the Software, and to permit persons to whom the Software is furnished to do so,',
-'subject to the following conditions:',
-'',
-'The above copyright notice and this permission notice shall be included in all',
-'copies or substantial portions of the Software.',
-'',
-'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR',
-'IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS',
-'FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR',
-'COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER',
-'IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN',
-'CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.',
-'</pre>'))
+'https://raw.githubusercontent.com/jariolaine/apex-blog/master/LICENSE.txt'))
 ,p_configuration_message=>'You can configure the following attributes of your application.'
 ,p_build_options_message=>'You can choose to include the following build options.'
 ,p_validation_message=>'The following validations will be performed to ensure your system is compatible with this application.'
 ,p_install_message=>'Please confirm that you would like to install this application''s supporting objects.'
 ,p_install_success_message=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'APEX Blog supporting objects have been installed successfully.',
+'Supporting objects have been installed successfully.',
 '',
-'For login to Blog Administration Area, you must create APEX workspace user group "Bloggers" and assign APEX user to this group.'))
+'For login to blog administration application, you must create APEX workspace user group called "Bloggers" and assign APEX user to this group.'))
 ,p_install_failure_message=>'Installation of database objects and meta data has failed.'
 ,p_upgrade_message=>'The application installer has detected that this application''s supporting objects were previously installed.  This wizard will guide you through the process of upgrading these supporting objects.'
 ,p_upgrade_confirm_message=>'Please confirm that you would like to install this application''s supporting objects.'

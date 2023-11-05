@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_SETTINGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_SETTINGS" ("ID", "ROW_VERSION", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_DESC", "ATTRIBUTE_VALUE", "DATA_TYPE", "INT_MIN", "INT_MAX", "HELP_MESSAGE", "VALUE_REQUIRED", "ATTRIBUTE_GROUP_HTML") AS
+create or replace force view blog_v_settings as
 select
    t1.id                      as id
   ,t1.row_version             as row_version

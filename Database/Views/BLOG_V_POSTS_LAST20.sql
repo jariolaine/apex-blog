@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS_LAST20
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "PUBLISHED_ON", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE", "POST_URL", "LIST_ATTR") AS
+create or replace force view blog_v_posts_last20 as
 select
    rownum             as display_seq
   ,q1.post_id         as post_id

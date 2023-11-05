@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_FORM_POST
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_FORM_POST" ("ID", "BLOGGER_ID", "CATEGORY_ID", "FIRST_PARAGRAPH", "IS_ACTIVE", "POST_DESC", "CATEGORY_TITLE", "TAGS", "PUBLISHED_ON", "TITLE", "BODY_HTML", "NOTES") AS
+create or replace force view blog_v_form_post as
 select
   t1.id               as id
   ,t1.blogger_id      as blogger_id

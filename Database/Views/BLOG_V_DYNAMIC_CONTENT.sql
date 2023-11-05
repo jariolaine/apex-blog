@@ -1,8 +1,8 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_DYNAMIC_CONTENT
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_DYNAMIC_CONTENT" ("CONTENT_ID", "CONTENT_TYPE", "CHANGED_ON", "DISPLAY_SEQ", "SHOW_CHANGED_ON", "CONTENT_DESC", "CONTENT_HTML", "CONTENT_URL") AS
-  select
+create or replace force view blog_v_dynamic_content as
+select
    t1.id              as content_id
   ,t1.content_type    as content_type
   ,t1.changed_on      as changed_on

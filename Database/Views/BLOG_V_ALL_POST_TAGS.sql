@@ -1,8 +1,8 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POST_TAGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POST_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG", "TAG_IS_ACTIVE") AS
-  select
+create or replace force view blog_v_all_post_tags as
+select
    t1.id                        as id
   ,t1.row_version               as row_version
   ,t1.created_on                as created_on

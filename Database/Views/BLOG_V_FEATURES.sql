@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_FEATURES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "DISPLAY_SEQ", "BUILD_OPTION_NAME", "BUILD_OPTION_STATUS", "BUILD_OPTION_PARENT", "FEATURE_DESC", "HELP_MESSAGE", "FEATURE_GROUP_HTML") AS
+create or replace force view blog_v_features as
 select
    t1.id                        as id
   ,v1.application_id            as application_id

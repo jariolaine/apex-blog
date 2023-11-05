@@ -1,8 +1,8 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_LOV
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_LOV" ("LOV_NAME", "DISPLAY_SEQ", "RETURN_VALUE", "DISPLAY_MESSAGE", "DISPLAY_VALUE") AS
-  select
+create or replace force view blog_v_lov as
+select
    t1.lov_name                              as lov_name
   ,t1.display_seq                           as display_seq
   ,t1.return_value                          as return_value

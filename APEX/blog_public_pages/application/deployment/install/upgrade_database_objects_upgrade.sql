@@ -887,7 +887,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_DYNAMIC_CONTENT',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "CONTENT_TYPE", "DISPLAY_SEQ", "SHOW_CHANGED_ON", "CONTENT_DESC", "CONTENT_HTML") AS',
+'create or replace force view blog_v_all_dynamic_content as',
 'select',
 '   t1.id                as id',
 '  ,t1.row_version       as row_version',
@@ -907,8 +907,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_FILES',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FILES" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC", "NOTES", "FI'
-||'LE_SIZE_DISPLAY", "FILE_STATUS_ICON", "FILE_TYPE_ICON") AS',
+'create or replace force view blog_v_all_files as',
 'select',
 '   t1.id                as id',
 '  ,t1.row_version       as row_version',
@@ -944,8 +943,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_LINKS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINKS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "LINK_GROUP_ID", "IS_ACTIVE", "LINK_GROUP_IS_ACTIVE", "DISPLAY_SEQ", "LINK_GROUP_DISPLAY_SEQ", "TITLE", "LINK_GROUP_TITLE", '
-||'"LINK_DESC", "NOTES", "LINK_URL", "LINK_STATUS_CODE", "LINK_STATUS_ICON") AS',
+'create or replace force view blog_v_all_links as',
 'select',
 '   t1.id                as id',
 '  ,t1.row_version       as row_version',
@@ -985,7 +983,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_LINK_GROUPS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINK_GROUPS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "DISPLAY_SEQ", "TITLE", "TITLE_UNIQUE", "NOTES", "STATUS_TEXT", "LINK_COUNT") AS',
+'create or replace force view blog_v_all_link_groups as',
 'select',
 '   t1.id                  as id',
 '  ,t1.row_version         as row_version',
@@ -1021,8 +1019,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_POST_TAGS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POST_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG", "TAG_IS_ACTIVE") AS',
-'  select',
+'create or replace force view blog_v_all_post_tags as',
+'select',
 '   t1.id                        as id',
 '  ,t1.row_version               as row_version',
 '  ,t1.created_on                as created_on',
@@ -1051,7 +1049,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_TAGS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "TAG", "TAG_UNIQUE", "NOTES", "TAG_STATUS_TEXT", "POSTS_COUNT", "ALLOWED_ROW_OPERATION") AS',
+'create or replace force view blog_v_all_tags as',
 'select',
 '   t1.id                as id',
 '  ,t1.row_version       as row_version',
@@ -1096,7 +1094,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_BLOGGERS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_BLOGGERS" ("BLOGGER_ID", "DISPLAY_SEQ", "BLOGGER_NAME", "BLOGGER_DESC") AS',
+'create or replace force view blog_v_bloggers as',
 'select t1.id        as blogger_id',
 '  ,t1.display_seq   as display_seq',
 '  ,t1.blogger_name  as blogger_name',
@@ -1109,8 +1107,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_COMMENTS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "CTX_SEARCH", "USER_ICON", "ICON_MODIFIER") AS',
-'  select',
+'create or replace force view blog_v_comments as',
+'select',
 '   t1.id          as comment_id',
 '  ,t1.post_id     as post_id',
 '  ,t1.parent_id   as parent_id',
@@ -1140,8 +1138,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_DYNAMIC_CONTENT',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_DYNAMIC_CONTENT" ("CONTENT_ID", "CONTENT_TYPE", "CHANGED_ON", "DISPLAY_SEQ", "SHOW_CHANGED_ON", "CONTENT_DESC", "CONTENT_HTML", "CONTENT_URL") AS',
-'  select',
+'create or replace force view blog_v_dynamic_content as',
+'select',
 '   t1.id              as content_id',
 '  ,t1.content_type    as content_type',
 '  ,t1.changed_on      as changed_on',
@@ -1160,8 +1158,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_FEATURES',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "DISPLAY_SEQ", "BUILD_OPTION_NAME", "BUILD_OPTION_STATUS", "BUILD_OPTION_PARENT", "FEATURE_DESC", "HELP_MESSAGE", "FEATUR'
-||'E_GROUP_HTML") AS',
+'create or replace force view blog_v_features as',
 'select',
 '   t1.id                        as id',
 '  ,v1.application_id            as application_id',
@@ -1207,7 +1204,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_FILES',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "ROW_VERSION", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC", "FILE_URL") AS',
+'create or replace force view blog_v_files as',
 'select',
 '   t1.id            as file_id',
 '  ,t1.row_version   as row_version',
@@ -1237,8 +1234,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_INIT_ITEMS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_INIT_ITEMS" ("APPLICATION_ID", "ITEM_NAME", "ITEM_VALUE") AS',
-'  select',
+'create or replace force view blog_v_init_items as',
+'select',
 '   i.application_id   as application_id',
 '  ,i.item_name        as item_name',
 '  ,s.attribute_value  as item_value',
@@ -1252,8 +1249,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_LINKS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ", "DISPLAY_SEQ", "LINK_TITLE", "LINK_DESC", "LINK_URL", "LINK_ATTR") AS',
-'  select',
+'create or replace force view blog_v_links as',
+'select',
 '   t1.id          as link_id',
 '  ,t2.id          as group_id',
 '  ,t2.title       as group_title',
@@ -1284,8 +1281,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_LOV',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_LOV" ("LOV_NAME", "DISPLAY_SEQ", "RETURN_VALUE", "DISPLAY_MESSAGE", "DISPLAY_VALUE") AS',
-'  select',
+'create or replace force view blog_v_lov as',
+'select',
 '   t1.lov_name                              as lov_name',
 '  ,t1.display_seq                           as display_seq',
 '  ,t1.return_value                          as return_value',
@@ -1299,7 +1296,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_POSTS_TAGS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_POST_TAGS" ("POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG", "CHANGED_ON", "TAG_URL", "TAG_HTML1", "TAG_HTML2", "TAG_HTML3") AS',
+'create or replace force view blog_v_post_tags as',
 'with q1 as(',
 '  select',
 '     t2.post_id     as post_id',
@@ -1372,7 +1369,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_VERSION',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_VERSION" ("APPLICATION_VERSION", "APPLICATION_DATE") AS',
+'create or replace force view blog_v_version as',
 'select',
 '  attribute_value                             as application_version',
 '  ,to_number( substr( attribute_value, -8 ) ) as application_date',
@@ -1384,8 +1381,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_CATEGORIES',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_CATEGORIES" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "DISPLAY_SEQ", "TITLE", "TITLE_UNIQUE", "NOTES", "CATEGORY_STATUS_TEXT", "POSTS_COUNT", "ALLOWED_ROW_OPERA'
-||'TION") AS',
+'create or replace force view blog_v_all_categories as',
 'select',
 '   t1.id                as id',
 '  ,t1.row_version       as row_version',
@@ -1424,8 +1420,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_COMMENTS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "PARENT_ID", "POST_TITLE", "BODY_HTML", "COMMENT_BY", "CTX_SEARCH", "CTX_RID", "COMMENT_STATUS_CO'
-||'DE", "COMMENT_FLAG_CODE", "DATA_UNREAD", "COMMENT_STATUS_TEXT", "COMMENT_FLAG_TEXT", "COMMENT_STATUS_ICON", "COMMENT_FLAG_ICON", "SEARCH_DESC", "CTX_DATASTORE") AS',
+'create or replace force view blog_v_all_comments as',
 'with q1 as(',
 '  select',
 '     t1.id',
@@ -1482,25 +1477,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        )',
 '        else (',
 '          select',
-'            lov1.display_val'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.5'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ue',
+'            lov1.display_value',
 '          from blog_v_lov lov1',
 '          where lov1.lov_name = ''COMMENT_STATUS''',
 '            and lov1.return_value = ''DISABLED''',
@@ -1604,7 +1581,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- because issue: column single-row subquery returns more than one row',
 '  ,(',
 '    select',
-'      lov1.display_value',
+'      lov1.display_v'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.5'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'alue',
 '    from blog_v_lov lov1',
 '    where lov1.lov_name = ''COMMENT_STATUS''',
 '      and lov1.return_value = q1.comment_status_code',
@@ -1656,9 +1651,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ALL_POSTS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BO'
-||'DY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "PUBLISHED_DISPLAY", "POST_STATUS_CODE", "CTX_SEARCH", "CTX_RID", "POST_STATUS_ICON", "TAG_ID", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_CNT", "PUBLISHED_COMMENTS_CNT", "UNREAD_COMMENTS_CNT", "MODERAT'
-||'E_COMMENTS_CNT", "DISABLED_COMMENTS_CNT", "POST_STATUS_TXT", "TAGS_HTML", "SEARCH_DESC", "CTX_DATASTORE") AS',
+'create or replace force view blog_v_all_posts as',
 'with q1 as(',
 '  select',
 '     t1.id              as id',
@@ -1863,7 +1856,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_FORM_POST',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_FORM_POST" ("ID", "BLOGGER_ID", "CATEGORY_ID", "FIRST_PARAGRAPH", "IS_ACTIVE", "POST_DESC", "CATEGORY_TITLE", "TAGS", "PUBLISHED_ON", "TITLE", "BODY_HTML", "NOTES") AS',
+'create or replace force view blog_v_form_post as',
 'select',
 '  t1.id               as id',
 '  ,t1.blogger_id      as blogger_id',
@@ -1895,8 +1888,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_POSTS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CTX_SEARCH", "CHANGED_ON", "ARCHIVE_YEAR", "CATEGORY_SE'
-||'Q", "POST_URL", "TAGS", "TAGS_HTML1", "TAGS_HTML2", "NEXT_POST", "PREV_POST") AS',
+'create or replace force view blog_v_posts as',
 'with q1 as(',
 '  select',
 '     t1.id              as post_id',
@@ -2002,8 +1994,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_SETTINGS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_SETTINGS" ("ID", "ROW_VERSION", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_DESC", "ATTRIBUTE_VALUE", "DATA_TYPE", "INT_MIN", "INT_MAX", "HELP_MESSAGE", "VALUE_REQUIRED", "ATTRIBUTE_GROUP_'
-||'HTML") AS',
+'create or replace force view blog_v_settings as',
 'select',
 '   t1.id                      as id',
 '  ,t1.row_version             as row_version',
@@ -2043,7 +2034,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_ARCHIVE_YEAR',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_ARCHIVE_YEAR" ("ARCHIVE_YEAR", "POST_COUNT", "CHANGED_ON", "ARCHIVE_URL", "SHOW_POST_COUNT", "LIST_BADGE", "LIST_ATTR") AS',
+'create or replace force view blog_v_archive_year as',
 'select',
 '   v1.archive_year      as archive_year',
 '  ,count(1)             as post_count',
@@ -2076,7 +2067,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_CATEGORIES',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT", "CHANGED_ON", "CATEGORY_URL", "SHOW_POST_COUNT", "LIST_BADGE", "LIST_ATTR") AS',
+'create or replace force view blog_v_categories as',
 'select',
 '   v1.category_id       as category_id',
 '  ,v1.category_title    as category_title',
@@ -2114,7 +2105,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_POSTS_LAST20',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "PUBLISHED_ON", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE", "POST_URL", "LIST_ATTR") AS',
+'create or replace force view blog_v_posts_last20 as',
 'select',
 '   rownum             as display_seq',
 '  ,q1.post_id         as post_id',
@@ -2147,7 +2138,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_TAGS',
 '--------------------------------------------------------',
-'CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "TAG_URL", "POSTS_COUNT", "CHANGED_ON", "TAG_BUCKET", "SHOW_POST_COUNT", "LIST_BADGE") AS',
+'create or replace force view blog_v_tags as',
 'select',
 '   v1.tag_id            as tag_id',
 '  ,v1.tag               as tag',
@@ -2435,25 +2426,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      :new.created_by',
 '      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
 '      ,sys_context( ''USERENV'', ''PROXY_USER'' )',
-'      ,sys_context'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.5'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'( ''USERENV'', ''SESSION_USER'' )',
+'      ,sys_context( ''USERENV'', ''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
 '    :new.row_version := :old.row_version + 1;',
@@ -2609,7 +2582,25 @@ wwv_flow_imp_shared.append_to_install_script(
 'before',
 'insert or',
 'update on blog_posts',
-'for each row',
+'for each ro'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.5'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'w',
 'begin',
 '',
 '  if inserting then',
@@ -3484,25 +3475,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      ,p3 => coalesce( p_tag_id, ''(null)'' )',
 '    );',
 '',
-'    -- sho'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.5'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'w http error',
+'    -- show http error',
 '    raise_http_error( 404 );',
 '    raise;',
 '',
@@ -3687,7 +3660,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '    apex_debug.error(',
 '       p_message => ''Error: %s %s( %s => %s )''',
 '      ,p0 => sqlerrm',
-'      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'      ,p1 => utl_call_stack.concatenate_subprogram(utl_c'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.5'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'all_stack.subprogram(1))',
 '      ,p2 => ''p_file_name''',
 '      ,p3 => coalesce( p_file_name, ''(null)'' )',
 '    );',
@@ -4571,25 +4562,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    return l_err_mesg;',
 '  end is_date_format;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.5'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'--------------------------------------------------------------------------------',
 '  procedure update_feature(',
 '    p_app_id          in number,',
 '    p_build_option_id in number,',
@@ -4732,7 +4705,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '        || case when p_item.element_max_length  is not null',
 '            then ''maxlength="'' || p_item.element_max_length || ''" ''',
 '           end',
-'        ||',
+'  '))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.5'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'      ||',
 '          apex_plugin_util.get_element_attributes(',
 '             p_item           => p_item',
 '            ,p_name           => l_name',
@@ -5567,25 +5558,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end validate_comment;',
 '--------------------------------------------------------------------------------',
-'--------------------------'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.5'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '  function is_email(',
 '    p_email     in varchar2,',
 '    p_err_mesg  in varchar2',
@@ -5752,6 +5725,24 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- send notify users that have subscribed to replies to comment',
 '    for c1 in(',
+''))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.5'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '      select t2.email',
 '      ,json_object (',
 '         ''APP_NAME''         value p_app_name',
@@ -6570,25 +6561,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        xmlattributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns"),',
 '        (',
 '          xmlagg(',
-'     '))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.5'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'       xmlelement( "url"',
+'            xmlelement( "url"',
 '              ,xmlelement( "loc",',
 '                blog_url.get_post(',
 '                   p_post_id    => posts.post_id',
@@ -6757,7 +6730,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '    ;',
 '',
 '    blog_util.download_file(',
-'       p_blob_content   => l_xml',
+'       p_blo'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.04.28'
+,p_release=>'23.1.5'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'b_content   => l_xml',
 '      ,p_mime_type      => ''application/xml''',
 '      ,p_header_names   => apex_t_varchar2( ''Cache-Control'', ''Content-Disposition'' )',
 '      ,p_header_values  => apex_t_varchar2( l_cache_control, ''inline; filename="sitemap-archives.xml"'' )',

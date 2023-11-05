@@ -1,8 +1,8 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_LINKS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ", "DISPLAY_SEQ", "LINK_TITLE", "LINK_DESC", "LINK_URL", "LINK_ATTR") AS
-  select
+create or replace force view blog_v_links as
+select
    t1.id          as link_id
   ,t2.id          as group_id
   ,t2.title       as group_title

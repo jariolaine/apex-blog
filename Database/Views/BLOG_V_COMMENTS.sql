@@ -1,8 +1,8 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_COMMENTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "CTX_SEARCH", "USER_ICON", "ICON_MODIFIER") AS
-  select
+create or replace force view blog_v_comments as
+select
    t1.id          as comment_id
   ,t1.post_id     as post_id
   ,t1.parent_id   as parent_id

@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  DDL for View BLOG_V_CATEGORIES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT", "CHANGED_ON", "CATEGORY_URL", "SHOW_POST_COUNT", "LIST_BADGE", "LIST_ATTR") AS
+create or replace force view blog_v_categories as
 select
    v1.category_id       as category_id
   ,v1.category_title    as category_title

@@ -850,7 +850,7 @@ end "BLOG_XML";
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_DYNAMIC_CONTENT
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_DYNAMIC_CONTENT" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "CONTENT_TYPE", "DISPLAY_SEQ", "SHOW_CHANGED_ON", "CONTENT_DESC", "CONTENT_HTML") AS
+create or replace force view blog_v_all_dynamic_content as
 select
    t1.id                as id
   ,t1.row_version       as row_version
@@ -870,7 +870,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_FILES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_FILES" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC", "NOTES", "FILE_SIZE_DISPLAY", "FILE_STATUS_ICON", "FILE_TYPE_ICON") AS
+create or replace force view blog_v_all_files as
 select
    t1.id                as id
   ,t1.row_version       as row_version
@@ -906,7 +906,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_LINKS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINKS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "LINK_GROUP_ID", "IS_ACTIVE", "LINK_GROUP_IS_ACTIVE", "DISPLAY_SEQ", "LINK_GROUP_DISPLAY_SEQ", "TITLE", "LINK_GROUP_TITLE", "LINK_DESC", "NOTES", "LINK_URL", "LINK_STATUS_CODE", "LINK_STATUS_ICON") AS
+create or replace force view blog_v_all_links as
 select
    t1.id                as id
   ,t1.row_version       as row_version
@@ -946,7 +946,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_LINK_GROUPS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_LINK_GROUPS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "DISPLAY_SEQ", "TITLE", "TITLE_UNIQUE", "NOTES", "STATUS_TEXT", "LINK_COUNT") AS
+create or replace force view blog_v_all_link_groups as
 select
    t1.id                  as id
   ,t1.row_version         as row_version
@@ -982,8 +982,8 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POST_TAGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POST_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG", "TAG_IS_ACTIVE") AS
-  select
+create or replace force view blog_v_all_post_tags as
+select
    t1.id                        as id
   ,t1.row_version               as row_version
   ,t1.created_on                as created_on
@@ -1012,7 +1012,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_TAGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_TAGS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "TAG", "TAG_UNIQUE", "NOTES", "TAG_STATUS_TEXT", "POSTS_COUNT", "ALLOWED_ROW_OPERATION") AS
+create or replace force view blog_v_all_tags as
 select
    t1.id                as id
   ,t1.row_version       as row_version
@@ -1057,7 +1057,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_BLOGGERS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_BLOGGERS" ("BLOGGER_ID", "DISPLAY_SEQ", "BLOGGER_NAME", "BLOGGER_DESC") AS
+create or replace force view blog_v_bloggers as
 select t1.id        as blogger_id
   ,t1.display_seq   as display_seq
   ,t1.blogger_name  as blogger_name
@@ -1070,8 +1070,8 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_COMMENTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_COMMENTS" ("COMMENT_ID", "POST_ID", "PARENT_ID", "CREATED_ON", "COMMENT_BY", "COMMENT_BODY", "CTX_SEARCH", "USER_ICON", "ICON_MODIFIER") AS
-  select
+create or replace force view blog_v_comments as
+select
    t1.id          as comment_id
   ,t1.post_id     as post_id
   ,t1.parent_id   as parent_id
@@ -1101,8 +1101,8 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_DYNAMIC_CONTENT
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_DYNAMIC_CONTENT" ("CONTENT_ID", "CONTENT_TYPE", "CHANGED_ON", "DISPLAY_SEQ", "SHOW_CHANGED_ON", "CONTENT_DESC", "CONTENT_HTML", "CONTENT_URL") AS
-  select
+create or replace force view blog_v_dynamic_content as
+select
    t1.id              as content_id
   ,t1.content_type    as content_type
   ,t1.changed_on      as changed_on
@@ -1121,7 +1121,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_FEATURES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_FEATURES" ("ID", "APPLICATION_ID", "BUILD_OPTION_ID", "LAST_UPDATED_ON", "LAST_UPDATED_BY", "DISPLAY_SEQ", "BUILD_OPTION_NAME", "BUILD_OPTION_STATUS", "BUILD_OPTION_PARENT", "FEATURE_DESC", "HELP_MESSAGE", "FEATURE_GROUP_HTML") AS
+create or replace force view blog_v_features as
 select
    t1.id                        as id
   ,v1.application_id            as application_id
@@ -1167,7 +1167,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_FILES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_FILES" ("FILE_ID", "ROW_VERSION", "CREATED_ON", "CHANGED_ON", "IS_DOWNLOAD", "FILE_NAME", "MIME_TYPE", "BLOB_CONTENT", "FILE_SIZE", "FILE_CHARSET", "FILE_DESC", "FILE_URL") AS
+create or replace force view blog_v_files as
 select
    t1.id            as file_id
   ,t1.row_version   as row_version
@@ -1197,8 +1197,8 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_INIT_ITEMS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_INIT_ITEMS" ("APPLICATION_ID", "ITEM_NAME", "ITEM_VALUE") AS
-  select
+create or replace force view blog_v_init_items as
+select
    i.application_id   as application_id
   ,i.item_name        as item_name
   ,s.attribute_value  as item_value
@@ -1212,8 +1212,8 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_LINKS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_LINKS" ("LINK_ID", "GROUP_ID", "GROUP_TITLE", "GROUP_DISPLAY_SEQ", "DISPLAY_SEQ", "LINK_TITLE", "LINK_DESC", "LINK_URL", "LINK_ATTR") AS
-  select
+create or replace force view blog_v_links as
+select
    t1.id          as link_id
   ,t2.id          as group_id
   ,t2.title       as group_title
@@ -1244,8 +1244,8 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_LOV
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_LOV" ("LOV_NAME", "DISPLAY_SEQ", "RETURN_VALUE", "DISPLAY_MESSAGE", "DISPLAY_VALUE") AS
-  select
+create or replace force view blog_v_lov as
+select
    t1.lov_name                              as lov_name
   ,t1.display_seq                           as display_seq
   ,t1.return_value                          as return_value
@@ -1259,7 +1259,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS_TAGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POST_TAGS" ("POST_ID", "TAG_ID", "DISPLAY_SEQ", "TAG", "CHANGED_ON", "TAG_URL", "TAG_HTML1", "TAG_HTML2", "TAG_HTML3") AS
+create or replace force view blog_v_post_tags as
 with q1 as(
   select
      t2.post_id     as post_id
@@ -1332,7 +1332,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_VERSION
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_VERSION" ("APPLICATION_VERSION", "APPLICATION_DATE") AS
+create or replace force view blog_v_version as
 select
   attribute_value                             as application_version
   ,to_number( substr( attribute_value, -8 ) ) as application_date
@@ -1344,7 +1344,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_CATEGORIES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_CATEGORIES" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "DISPLAY_SEQ", "TITLE", "TITLE_UNIQUE", "NOTES", "CATEGORY_STATUS_TEXT", "POSTS_COUNT", "ALLOWED_ROW_OPERATION") AS
+create or replace force view blog_v_all_categories as
 select
    t1.id                as id
   ,t1.row_version       as row_version
@@ -1383,7 +1383,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_COMMENTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_COMMENTS" ("ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "IS_ACTIVE", "POST_ID", "PARENT_ID", "POST_TITLE", "BODY_HTML", "COMMENT_BY", "CTX_SEARCH", "CTX_RID", "COMMENT_STATUS_CODE", "COMMENT_FLAG_CODE", "DATA_UNREAD", "COMMENT_STATUS_TEXT", "COMMENT_FLAG_TEXT", "COMMENT_STATUS_ICON", "COMMENT_FLAG_ICON", "SEARCH_DESC", "CTX_DATASTORE") AS
+create or replace force view blog_v_all_comments as
 with q1 as(
   select
      t1.id
@@ -1596,7 +1596,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ALL_POSTS" ("ID", "CATEGORY_ID", "BLOGGER_ID", "ROW_VERSION", "CREATED_ON", "CREATED_BY", "CHANGED_ON", "CHANGED_BY", "BLOGGER_NAME", "BLOGGER_EMAIL", "CATEGORY_TITLE", "TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "BODY_LENGTH", "PUBLISHED_ON", "NOTES", "PUBLISHED_DISPLAY", "POST_STATUS_CODE", "CTX_SEARCH", "CTX_RID", "POST_STATUS_ICON", "TAG_ID", "VISIBLE_TAGS", "HIDDEN_TAGS", "COMMENTS_CNT", "PUBLISHED_COMMENTS_CNT", "UNREAD_COMMENTS_CNT", "MODERATE_COMMENTS_CNT", "DISABLED_COMMENTS_CNT", "POST_STATUS_TXT", "TAGS_HTML", "SEARCH_DESC", "CTX_DATASTORE") AS
+create or replace force view blog_v_all_posts as
 with q1 as(
   select
      t1.id              as id
@@ -1801,7 +1801,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_FORM_POST
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_FORM_POST" ("ID", "BLOGGER_ID", "CATEGORY_ID", "FIRST_PARAGRAPH", "IS_ACTIVE", "POST_DESC", "CATEGORY_TITLE", "TAGS", "PUBLISHED_ON", "TITLE", "BODY_HTML", "NOTES") AS
+create or replace force view blog_v_form_post as
 select
   t1.id               as id
   ,t1.blogger_id      as blogger_id
@@ -1833,7 +1833,7 @@ where 1 = 1
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS" ("POST_ID", "CATEGORY_ID", "BLOGGER_ID", "BLOGGER_NAME", "POST_TITLE", "CATEGORY_TITLE", "POST_DESC", "FIRST_PARAGRAPH", "BODY_HTML", "PUBLISHED_ON", "CTX_SEARCH", "CHANGED_ON", "ARCHIVE_YEAR", "CATEGORY_SEQ", "POST_URL", "TAGS", "TAGS_HTML1", "TAGS_HTML2", "NEXT_POST", "PREV_POST") AS
+create or replace force view blog_v_posts as
 with q1 as(
   select
      t1.id              as post_id
@@ -1939,7 +1939,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_SETTINGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_SETTINGS" ("ID", "ROW_VERSION", "CHANGED_ON", "CHANGED_BY", "IS_NULLABLE", "DISPLAY_SEQ", "ATTRIBUTE_DESC", "ATTRIBUTE_VALUE", "DATA_TYPE", "INT_MIN", "INT_MAX", "HELP_MESSAGE", "VALUE_REQUIRED", "ATTRIBUTE_GROUP_HTML") AS
+create or replace force view blog_v_settings as
 select
    t1.id                      as id
   ,t1.row_version             as row_version
@@ -1979,7 +1979,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_ARCHIVE_YEAR
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_ARCHIVE_YEAR" ("ARCHIVE_YEAR", "POST_COUNT", "CHANGED_ON", "ARCHIVE_URL", "SHOW_POST_COUNT", "LIST_BADGE", "LIST_ATTR") AS
+create or replace force view blog_v_archive_year as
 select
    v1.archive_year      as archive_year
   ,count(1)             as post_count
@@ -2012,7 +2012,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_CATEGORIES
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_CATEGORIES" ("CATEGORY_ID", "CATEGORY_TITLE", "DISPLAY_SEQ", "POSTS_COUNT", "CHANGED_ON", "CATEGORY_URL", "SHOW_POST_COUNT", "LIST_BADGE", "LIST_ATTR") AS
+create or replace force view blog_v_categories as
 select
    v1.category_id       as category_id
   ,v1.category_title    as category_title
@@ -2050,7 +2050,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS_LAST20
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_POSTS_LAST20" ("DISPLAY_SEQ", "POST_ID", "PUBLISHED_ON", "BLOGGER_NAME", "POST_TITLE", "POST_DESC", "CATEGORY_TITLE", "POST_URL", "LIST_ATTR") AS
+create or replace force view blog_v_posts_last20 as
 select
    rownum             as display_seq
   ,q1.post_id         as post_id
@@ -2083,7 +2083,7 @@ with read only
 --------------------------------------------------------
 --  DDL for View BLOG_V_TAGS
 --------------------------------------------------------
-CREATE OR REPLACE FORCE VIEW "BLOG_V_TAGS" ("TAG_ID", "TAG", "TAG_URL", "POSTS_COUNT", "CHANGED_ON", "TAG_BUCKET", "SHOW_POST_COUNT", "LIST_BADGE") AS
+create or replace force view blog_v_tags as
 select
    v1.tag_id            as tag_id
   ,v1.tag               as tag
