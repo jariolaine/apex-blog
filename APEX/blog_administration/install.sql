@@ -141,6 +141,8 @@ prompt --install
 @@application/shared_components/plugins/template_component/theme_42_timeline.sql
 @@application/shared_components/plugins/template_component/theme_42_content_row.sql
 @@application/shared_components/plugins/template_component/theme_42_media_list.sql
+@@application/shared_components/plugins/template_component/theme_42_icon_custom_1.sql
+@@application/shared_components/plugins/template_component/theme_42_button_custom_2.sql
 @@application/shared_components/navigation/search_config/posts.sql
 @@application/shared_components/navigation/search_config/files.sql
 @@application/shared_components/navigation/search_config/links.sql

@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.2'
+,p_release=>'23.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -26,22 +26,26 @@ wwv_flow_imp_page.create_page(
 '  flex-direction: column;',
 '  overflow: hidden;',
 '}',
+'/* Format Search Region */',
+'.search-region {',
+'  flex-shrink: 0;',
+'}',
+'/* Format search results */',
 '.search-results {',
 '  flex: 1;',
 '  overflow: auto;',
-'  border-bottom: 1px solid rgba(0,0,0,.1);',
 '}',
-'/* Format Search Region */',
-'.search-region {',
+'.search-results-items {',
+'  border-top: 1px solid rgba(0,0,0,.1);',
 '  border-bottom: 1px solid rgba(0,0,0,.1);',
-'  flex-shrink: 0;',
 '}'))
 ,p_step_template=>wwv_flow_imp.id(8457924893518181)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
+,p_help_text=>'No help available for this page.'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230528130306'
+,p_last_upd_yyyymmddhh24miss=>'20231005191627'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45219411531225453)
@@ -194,9 +198,10 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'BA'
 ,p_column_label=>'Status'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<span title="#LINK_STATUS#" aria-hidden="true" class="t-Icon fa #LINK_STATUS_ICON# w60"></span>',
-'<span class="u-VisuallyHidden">#LINK_STATUS#</span>',
-''))
+'{with/}',
+'TITLE:=#LINK_STATUS#',
+'ICON_CLASSES:=#LINK_STATUS_ICON# w60',
+'{apply THEME$ICON_CUSTOM_1/}'))
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
@@ -425,7 +430,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>150
 ,p_column_heading=>'List Text'
 ,p_use_as_row_header=>'N'
-,p_column_html_expression=>'#LIST_TEXT#'
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -496,6 +500,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_template=>wwv_flow_imp.id(8475523710518195)
 ,p_display_sequence=>70
 ,p_region_css_classes=>'search-results'
+,p_region_sub_css_classes=>'search-results-items'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'t-MediaList--stack:t-MediaList--iconsRounded:t-Report--hideNoPagination'
 ,p_display_point=>'REGION_POSITION_02'

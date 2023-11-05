@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.2'
+,p_release=>'23.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -20,9 +20,10 @@ wwv_flow_imp_page.create_page(
 ,p_group_id=>wwv_flow_imp.id(18976025248736506)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
+,p_help_text=>'No help available for this page.'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231004174505'
+,p_last_upd_yyyymmddhh24miss=>'20231005192750'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45054908267895533)
@@ -195,9 +196,10 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'AA'
 ,p_column_label=>'Status'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<span title="#IS_ACTIVE#" aria-hidden="true" class="t-Icon fa #FILE_STATUS_ICON# w60"></span>',
-'<span class="u-VisuallyHidden">#IS_ACTIVE#</span>',
-''))
+'{with/}',
+'TITLE:=#IS_ACTIVE#',
+'ICON_CLASSES:=#FILE_STATUS_ICON# w60',
+'{apply THEME$ICON_CUSTOM_1/}'))
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
@@ -212,9 +214,10 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'H'
 ,p_column_label=>'Attachment'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<span title="#IS_DOWNLOAD#" aria-hidden="true" class="t-Icon fa #FILE_TYPE_ICON# w60"></span>',
-'<span class="u-VisuallyHidden">#IS_DOWNLOAD#</span>',
-''))
+'{with/}',
+'TITLE:=#IS_DOWNLOAD#',
+'ICON_CLASSES:=#FILE_TYPE_ICON# w60',
+'{apply THEME$ICON_CUSTOM_1/}'))
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
@@ -312,9 +315,13 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'AO'
 ,p_column_label=>'Copy URL'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<button type="button" title="&APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD." class="t-Button t-Button--noLabel t-Button--icon t-Button--small w60" data-clipboard-source="#RELATIVE_PATH#">',
-'  <span class="fa fa-clone" aria-hidden="true"></span>',
-'</button>'))
+'{with/}',
+'LABEL:=&APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD.',
+'BUTTON_ATTR:=data-clipboard-source="#RELATIVE_PATH#"',
+'CSS_CLASSES:=t-Button--small w60',
+'ICON_CLASSES:=fa fa-clone',
+'IS_ICON_ONLY:=Y',
+'{apply THEME$BUTTON_CUSTOM_2/}'))
 ,p_allow_sorting=>'N'
 ,p_allow_filtering=>'N'
 ,p_allow_highlighting=>'N'

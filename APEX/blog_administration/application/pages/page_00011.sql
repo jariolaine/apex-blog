@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.2'
+,p_release=>'23.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -66,7 +66,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230608161856'
+,p_last_upd_yyyymmddhh24miss=>'20231005182425'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8596898648797585)
@@ -403,10 +403,10 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'AM'
 ,p_column_label=>'Status'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<span title="#POST_STATUS#" aria-hidden="true" class="t-Icon fa #POST_STATUS_ICON# w60"></span>',
-'<span class="u-VisuallyHidden">#POST_STATUS#</span>',
-'',
-''))
+'{with/}',
+'TITLE:=#POST_STATUS#',
+'ICON_CLASSES:=#POST_STATUS_ICON# w60',
+'{apply THEME$ICON_CUSTOM_1/}'))
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'

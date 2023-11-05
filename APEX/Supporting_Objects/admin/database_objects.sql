@@ -601,7 +601,7 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
-CREATE OR REPLACE package "BLOG_CM"
+create or replace package "BLOG_CM"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -862,7 +862,7 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_PLUGIN";
 /
-  create or replace package "BLOG_URL"
+create or replace package "BLOG_URL"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -3502,6 +3502,10 @@ as
     owa_util.status_line( p_error_code );
     -- stop APEX
     apex_application.stop_apex_engine;
+
+  exception when others
+  then
+    raise;
   end raise_http_error;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -3957,7 +3961,7 @@ as
     );
 
     -- show http error
-    raise_http_error( 500 );
+    raise_http_error( 400 );
     raise;
 
   end download_file;
@@ -4066,17 +4070,18 @@ as
     );
 
   -- handle errors
-  exception
-  when no_data_found
+  exception when others
   then
 
     apex_debug.error(
-       p_message => '%s Error: %s'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => sqlerrm
+       p_message => 'Error: %s %s( %s => %s )'
+      ,p0 => sqlerrm
+      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p2 => 'p_file_name'
+      ,p3 => coalesce( p_file_name, '(null)' )
     );
 
-    raise_http_error( 404 );
+    raise_http_error( 400 );
     raise;
 
   end download_file;
@@ -4106,7 +4111,7 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
-CREATE OR REPLACE package body "BLOG_CM"
+create or replace package body "BLOG_CM"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

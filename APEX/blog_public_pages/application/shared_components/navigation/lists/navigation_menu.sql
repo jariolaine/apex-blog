@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.2'
+,p_release=>'23.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -22,7 +22,6 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_link_text=>'Home'
 ,p_list_item_link_target=>'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-home'
-,p_list_text_01=>'z_tab_HOME'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
@@ -31,7 +30,6 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_link_text=>'Links'
 ,p_list_item_link_target=>'f?p=&APP_ID.:10:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-external-link'
-,p_list_text_01=>'z_tab_LINKS'
 ,p_required_patch=>wwv_flow_imp.id(6905258727754156)
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
@@ -41,7 +39,6 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_link_text=>'Files'
 ,p_list_item_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-download'
-,p_list_text_01=>'z_tab_FILES'
 ,p_required_patch=>wwv_flow_imp.id(24626889314854172)
 ,p_list_item_current_type=>'TARGET_PAGE'
 );

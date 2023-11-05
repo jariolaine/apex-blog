@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.2'
+,p_release=>'23.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -22,13 +22,11 @@ wwv_flow_imp_shared.create_install_check(
 'from user_role_privs',
 'where 1 = 1',
 'and granted_role = ''CTXAPP''',
-'and rownum = 1',
 'union all',
 'select 1',
 'from all_objects',
 'where owner = ''CTXSYS''',
-'and object_name = ''CTX_DDL''',
-'and rownum = 1'))
+'and object_name = ''CTX_DDL'''))
 ,p_failure_message=>'Application parsing schema must have role CTXAPP or execute privilege to package CTX_DDL.'
 );
 wwv_flow_imp.component_end;
