@@ -60,33 +60,13 @@ wwv_imp_workspace.create_flow(
 ,p_tokenize_row_search=>'N'
 ,p_substitution_string_01=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_01=>'3600'
-,p_last_updated_by=>'BLOG_040000'
-,p_last_upd_yyyymmddhh24miss=>'20231105090723'
+,p_last_updated_by=>'LAINFJAR'
+,p_last_upd_yyyymmddhh24miss=>'20231105114300'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>812
 ,p_print_server_type=>'INSTANCE'
 ,p_is_pwa=>'N'
-,p_copyright_banner=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'The MIT License (MIT)',
-'',
-'Copyright (c) 2021, #YEAR#, Jari Laine',
-'',
-'Permission is hereby granted, free of charge, to any person obtaining a copy of',
-'this software and associated documentation files (the "Software"), to deal in',
-'the Software without restriction, including without limitation the rights to',
-'use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of',
-'the Software, and to permit persons to whom the Software is furnished to do so,',
-'subject to the following conditions:',
-'',
-'The above copyright notice and this permission notice shall be included in all',
-'copies or substantial portions of the Software.',
-'',
-'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR',
-'IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS',
-'FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR',
-'COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER',
-'IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN',
-'CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.'))
+,p_copyright_banner=>'License: https://raw.githubusercontent.com/jariolaine/apex-blog/master/LICENSE.txt'
 );
 wwv_flow_imp.component_end;
 end;
