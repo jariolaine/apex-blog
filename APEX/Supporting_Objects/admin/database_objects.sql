@@ -1653,7 +1653,7 @@ select
       then 'rel="external"'
       else 'target="_blank"'
     end
-  end as
+  end as link_attr
 from blog_links t1
 join blog_link_groups t2
   on t1.link_group_id = t2.id

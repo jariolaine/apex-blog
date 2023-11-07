@@ -1269,7 +1269,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      then ''rel="external"''',
 '      else ''target="_blank"''',
 '    end',
-'  end as',
+'  end as link_attr',
 'from blog_links t1',
 'join blog_link_groups t2',
 '  on t1.link_group_id = t2.id',
@@ -1581,7 +1581,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- because issue: column single-row subquery returns more than one row',
 '  ,(',
 '    select',
-'      lov1.display_v'))
+'      lov1'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1599,7 +1599,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'alue',
+'.display_value',
 '    from blog_v_lov lov1',
 '    where lov1.lov_name = ''COMMENT_STATUS''',
 '      and lov1.return_value = q1.comment_status_code',
@@ -2582,7 +2582,7 @@ wwv_flow_imp_shared.append_to_install_script(
 'before',
 'insert or',
 'update on blog_posts',
-'for each ro'))
+'f'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2600,7 +2600,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'w',
+'or each row',
 'begin',
 '',
 '  if inserting then',
@@ -3660,7 +3660,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    apex_debug.error(',
 '       p_message => ''Error: %s %s( %s => %s )''',
 '      ,p0 => sqlerrm',
-'      ,p1 => utl_call_stack.concatenate_subprogram(utl_c'))
+'      ,p1 => utl_call_stack.concatenate_subpro'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3678,7 +3678,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'all_stack.subprogram(1))',
+'gram(utl_call_stack.subprogram(1))',
 '      ,p2 => ''p_file_name''',
 '      ,p3 => coalesce( p_file_name, ''(null)'' )',
 '    );',
@@ -4704,8 +4704,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '           end',
 '        || case when p_item.element_max_length  is not null',
 '            then ''maxlength="'' || p_item.element_max_length || ''" ''',
-'           end',
-'  '))
+'       '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4723,7 +4722,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'      ||',
+'    end',
+'        ||',
 '          apex_plugin_util.get_element_attributes(',
 '             p_item           => p_item',
 '            ,p_name           => l_name',
@@ -5724,8 +5724,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_watch_end := add_months( trunc( sysdate ), l_watch_months );',
 '',
 '    -- send notify users that have subscribed to replies to comment',
-'    for c1 in(',
-''))
+'    f'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5743,6 +5742,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'or c1 in(',
 '      select t2.email',
 '      ,json_object (',
 '         ''APP_NAME''         value p_app_name',
@@ -6730,7 +6730,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    ;',
 '',
 '    blog_util.download_file(',
-'       p_blo'))
+'  '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6748,7 +6748,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'b_content   => l_xml',
+'     p_blob_content   => l_xml',
 '      ,p_mime_type      => ''application/xml''',
 '      ,p_header_names   => apex_t_varchar2( ''Cache-Control'', ''Content-Disposition'' )',
 '      ,p_header_values  => apex_t_varchar2( l_cache_control, ''inline; filename="sitemap-archives.xml"'' )',

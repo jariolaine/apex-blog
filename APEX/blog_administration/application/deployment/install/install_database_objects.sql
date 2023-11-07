@@ -1708,7 +1708,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      then ''rel="external"''',
 '      else ''target="_blank"''',
 '    end',
-'  end as',
+'  end as link_attr',
 'from blog_links t1',
 'join blog_link_groups t2',
 '  on t1.link_group_id = t2.id',
@@ -2402,7 +2402,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '/',
 '--------------------------------------------------------',
 '--  DDL for View BLOG_V_SETTINGS',
-'-------------------'))
+'---------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2420,7 +2420,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-------------------------------------',
+'-----------------------------------------------',
 'create or replace force view blog_v_settings as',
 'select',
 '   t1.id                      as id',
@@ -3423,7 +3423,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    ;',
 '',
 '    l_search    varchar2(32767);',
-'    l_tokens '))
+'   '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3441,7 +3441,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   apex_t_varchar2;',
+' l_tokens    apex_t_varchar2;',
 '',
 '    function generate_query(',
 '      p_feature in varchar2',
@@ -4475,7 +4475,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  begin',
 '',
 '    -- conver link group id string to number',
-'    l_link_group_id := to_number( p_link_group_'))
+'    l_link_group_id := to_number( p_l'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4493,7 +4493,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'id );',
+'ink_group_id );',
 '',
 '    -- fetch max link display sequence',
 '    select max( v1.display_seq ) as display_seq',
@@ -5513,7 +5513,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      case p_canonical',
 '        when ''YES'' then get_canonical_host',
 '      end ||',
-'      apex_page.g'))
+'      a'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5531,7 +5531,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'et_url(',
+'pex_page.get_url(',
 '         p_page       => c_category_page.page_alias',
 '        ,p_session    => ''''',
 '        ,p_items      => c_category_page.item_name',
@@ -6534,7 +6534,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end get_tag_canonical_link;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  function g'))
+'  '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6552,7 +6552,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'et_rss_anchor(',
+'function get_rss_anchor(',
 '    p_app_name  in varchar2,',
 '    p_message   in varchar2',
 '  ) return varchar2',
