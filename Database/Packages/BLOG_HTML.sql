@@ -77,6 +77,15 @@ as
     p_build_option  in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--  pub app shortcut BLOG_ATOM_LINK
+  function get_atom_link(
+    p_app_id        in varchar2,
+    p_app_name      in varchar2,
+    p_message       in varchar2,
+    p_build_option  in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
 end "BLOG_HTML";
 /
 
@@ -344,6 +353,54 @@ as
     return l_rss_url;
 
   end get_rss_link;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_atom_link(
+    p_app_id        in varchar2,
+    p_app_name      in varchar2,
+    p_message       in varchar2,
+    p_build_option  in varchar2
+  ) return varchar2
+  as
+    l_app_id      number;
+    l_atom_url    varchar2(4000);
+    l_atom_title  varchar2(4000);
+  begin
+
+    l_app_id := to_number( p_app_id );
+
+    -- check build option should HTML generated
+    if
+      apex_application_admin.get_build_option_status(
+        p_application_id      => l_app_id
+        ,p_build_option_name  => p_build_option
+      ) = apex_application_admin.c_build_option_status_include
+    then
+      -- get atom url
+      l_atom_url := blog_url.get_atom;
+
+    -- generate link for atom
+      l_atom_title := apex_lang.message(
+        p_name => p_message
+        ,p0 => p_app_name
+      );
+      -- generate HTML
+      l_atom_url :=
+        apex_string.format(
+          p_message => '<link href="%s" title="%s" rel="alternate" type="application/atom+xml">'
+          ,p0 => l_atom_url
+          ,p1 =>
+            apex_escape.html_attribute(
+              p_string => l_atom_title
+            )
+        )
+      ;
+
+    end if;
+    -- return generated HTML
+    return l_atom_url;
+
+  end get_atom_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_HTML";

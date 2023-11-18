@@ -126,6 +126,7 @@ prompt --install
 @@application/shared_components/user_interface/shortcuts/blog_canonical_link_tag.sql
 @@application/shared_components/user_interface/shortcuts/blog_canonical_link_archive.sql
 @@application/shared_components/user_interface/shortcuts/blog_canonical_link_tab.sql
+@@application/shared_components/user_interface/shortcuts/blog_atom_link.sql
 @@application/shared_components/user_interface/shortcuts/blog_powered_by.sql
 @@application/shared_components/email/templates/blog_new_comment_notify.sql
 @@application/shared_components/security/authentications/application_express_authentication.sql
@@ -167,6 +168,7 @@ prompt --install
 @@application/deployment/install/upgrade_patch_22_2_20230205.sql
 @@application/deployment/install/upgrade_patch_22_2_20230304.sql
 @@application/deployment/install/upgrade_patch_22_2_20230416.sql
+@@application/deployment/install/upgrade_patch_23_1_20231118.sql
 @@application/deployment/install/upgrade_drop_index_blog_posts_ctx.sql
 @@application/deployment/install/upgrade_drop_index_blog_comments_ctx.sql
 @@application/deployment/install/upgrade_database_objects_upgrade.sql

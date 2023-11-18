@@ -21,7 +21,7 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------',
 '--  Inserting into BLOG_SETTINGS',
 '--------------------------------------------------------',
-'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 23.1.5.20231107'');',
+'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''10'',''0'',''G_APP_VERSION'',''STRING'',''INTERNAL'',null,null,''Release 23.1.5.20231118'');',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''20'',''0'',''G_PUB_APP_ID'',''STRING'',''INTERNAL'',null,null,blog_util.int_to_vc2(apex_application_install.get_applica'
 ||'tion_id));',
 'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''110'',''0'',''G_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,''My Blog'');',
@@ -66,6 +66,7 @@ wwv_flow_imp_shared.create_install_script(
 'insert into blog_features(is_active,display_seq,build_option_name,build_option_group,build_option_parent) values(''1'',''410'',''BLOG_FEATURE_POST_PAGINATION'',''BLOG_FEATURE_GROUP_MISC'',null);',
 'insert into blog_features(is_active,display_seq,build_option_name,build_option_group,build_option_parent) values(''1'',''420'',''BLOG_FEATURE_MODAL_PAGES'',''BLOG_FEATURE_GROUP_MISC'',null);',
 'insert into blog_features(is_active,display_seq,build_option_name,build_option_group,build_option_parent) values(''1'',''430'',''BLOG_FEATURE_SITEMAP'',''BLOG_FEATURE_GROUP_MISC'',null);',
+'insert into blog_features(is_active,display_seq,build_option_name,build_option_group,build_option_parent) values(''1'',''440'',''BLOG_FEATURE_ATOM'',''BLOG_FEATURE_GROUP_MISC'',null);',
 '--------------------------------------------------------',
 '--  Inserting into BLOG_LIST_OF_VALUES',
 '--------------------------------------------------------',

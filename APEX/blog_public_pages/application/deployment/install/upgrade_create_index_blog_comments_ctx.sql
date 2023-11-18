@@ -15,7 +15,7 @@ wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(38641094788767068)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
 ,p_name=>'Create index blog_comments_ctx'
-,p_sequence=>140
+,p_sequence=>150
 ,p_script_type=>'UPGRADE'
 ,p_condition_type=>'EXISTS'
 ,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(

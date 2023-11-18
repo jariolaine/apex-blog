@@ -11,6 +11,8 @@ select
   ,q1.post_desc       as post_desc
   ,q1.category_title  as category_title
   ,q1.post_url        as post_url
+  ,q1.body_html       as body_html
+  ,q1.absolute_url    as absolute_url
   ,apex_string.format(
     p_message => 'data-item-id="%s"'
     ,p0 => q1.post_id
@@ -24,6 +26,11 @@ from (
     ,v1.post_desc
     ,v1.category_title
     ,v1.post_url
+    ,v1.body_html
+    ,blog_url.get_post(
+      p_post_id     => v1.post_id
+      ,p_canonical  => 'YES'
+    ) as absolute_url
   from blog_v_posts v1
   order by v1.published_on desc
 ) q1

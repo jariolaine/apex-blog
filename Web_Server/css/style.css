@@ -389,3 +389,12 @@ pre.z-program-code code,
   margin-bottom: 0.5rem;
   margin-left: 0.25rem;
 }
+/**************************************
+* Public app tabs
+**************************************/
+.t-NavTabs-item.is-active {
+  --ut-navtabs-item-border-color: var(--ut-navtabs-item-active-background-color);
+}
+.t-NavTabs-item {
+  border-bottom: var(--ut-navtabs-item-border-width, 1px) solid var(--ut-navtabs-item-border-color);
+}

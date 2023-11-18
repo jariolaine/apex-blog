@@ -22,12 +22,13 @@ wwv_flow_imp_page.create_page(
 ,p_html_page_header=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '"BLOG_CANONICAL_LINK_TAB"',
 '"BLOG_RSS_LINK"',
+'"BLOG_ATOM_LINK"',
 ''))
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230905151945'
+,p_last_upd_yyyymmddhh24miss=>'20231118052601'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6432040642894060)

@@ -25,6 +25,11 @@ wwv_flow_imp.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(39147943567749366)
+,p_name=>'BLOG_ATOM_TITLE'
+,p_message_text=>'%0 &raquo; Atom Feed'
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(7036756648298659)
 ,p_name=>'BLOG_GENERIC_ERROR'
 ,p_message_text=>'Ooops... We are sorry! Unexpected internal error have occurred. Please try again later.'
@@ -57,7 +62,7 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(7042120500196275)
 ,p_name=>'BLOG_RSS_TITLE'
-,p_message_text=>'%0 &raquo; Feed'
+,p_message_text=>'%0 &raquo; RSS Feed'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(30074031496663213)

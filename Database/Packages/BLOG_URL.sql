@@ -127,6 +127,13 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
+-- packages blog_html, blog_xml
+-- Blog Administration > Lists > Public Application Links
+  function get_atom(
+    p_application     in varchar2 default null
+  ) return varchar2;
+--------------------------------------------------------------------------------
+-- Called from:
 -- packages blog_xml
   function get_rss_xsl(
     p_application     in varchar2 default null
@@ -159,8 +166,9 @@ as
   c_archive_page  constant t_page_item := t_page_item( 'ARCHIVES',  'P15_ARCHIVE_ID' );
   c_tags_page     constant t_page_item := t_page_item( 'TAG',       'P6_TAG_ID' );
 
--- cache rss url
+-- cache rss and atom url
   g_rss_url       varchar2(1024);
+  g_atom_url      varchar2(1024);
 -- cache canonical host
   g_canonical_url varchar2(1024);
 
@@ -496,6 +504,27 @@ as
     return g_rss_url;
 
   end get_rss;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_atom(
+    p_application in varchar2 default null
+  ) return varchar2
+  as
+  begin
+
+    -- cache value to package private variable
+    if g_atom_url is null
+    then
+      g_atom_url :=
+        get_process(
+            p_application  => p_application
+          ,p_process      => 'atom.xml'
+        );
+    end if;
+
+    return g_atom_url;
+
+  end get_atom;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss_xsl(

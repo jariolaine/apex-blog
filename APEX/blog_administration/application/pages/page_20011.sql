@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231005185943'
+,p_last_upd_yyyymmddhh24miss=>'20231118051153'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27063074415689131)
@@ -279,7 +279,7 @@ wwv_flow_imp_page.create_interactive_grid(
 ,p_show_nulls_as=>'-'
 ,p_select_first_row=>false
 ,p_fixed_row_height=>true
-,p_pagination_type=>'SCROLL'
+,p_pagination_type=>'SET'
 ,p_show_total_row_count=>false
 ,p_show_toolbar=>false
 ,p_toolbar_buttons=>null
@@ -289,7 +289,6 @@ wwv_flow_imp_page.create_interactive_grid(
 ,p_define_chart_view=>false
 ,p_enable_download=>false
 ,p_download_formats=>null
-,p_enable_mail_download=>true
 ,p_fixed_header=>'NONE'
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false
@@ -301,6 +300,7 @@ wwv_flow_imp_page.create_ig_report(
 ,p_static_id=>'249339'
 ,p_type=>'PRIMARY'
 ,p_default_view=>'GRID'
+,p_rows_per_page=>1000
 ,p_show_row_number=>false
 ,p_settings_area_expanded=>false
 );

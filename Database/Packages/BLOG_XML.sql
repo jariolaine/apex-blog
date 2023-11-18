@@ -41,12 +41,21 @@ as
 --                          - Replaced private constant c_lastmod_format with blog_util.g_iso_8601_date
 --                          - Replaced private constant c_pubdate_format with blog_util.g_rfc_2822_date
 --    Jari Laine 30.07.2023 - Replaced apex_util.get_build_option_status with apex_application_admin.get_build_option_status
+--    Jari Laine 12.11.2023 - Changes to procedures rss and rss_xsl
+--    Jari Laine 13.11.2023 - New procedure atom
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "rss.xml"
   procedure rss(
+    p_app_name      in varchar2,
+    p_app_desc      in varchar2
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+--  public app page 1003 Ajax Callback process "atom.xml"
+  procedure atom(
     p_app_name      in varchar2,
     p_app_desc      in varchar2
   );
@@ -97,7 +106,8 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- none
+  c_mime_xml constant varchar2(20)  := 'application/xml';
+  c_char_set constant varchar2(10)  := 'UTF-8';
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -166,9 +176,10 @@ as
         end,
         xmlelement(
           "rss", xmlattributes(
-             l_rss_version                      as "version"
-            ,'http://purl.org/dc/elements/1.1/' as "xmlns:dc"
-            ,'http://www.w3.org/2005/Atom'      as "xmlns:atom"
+             l_rss_version                              as "version"
+            ,'http://purl.org/dc/elements/1.1/'         as "xmlns:dc"
+            ,'http://purl.org/rss/1.0/modules/content/' as "xmlns:content"
+            ,'http://www.w3.org/2005/Atom'              as "xmlns:atom"
           )
           ,xmlelement(
             "channel"
@@ -189,19 +200,15 @@ as
             ,xmlagg(
               xmlelement(
                 "item"
-                ,xmlelement( "title",       posts.post_title )
-                ,xmlelement( "dc:creator",  posts.blogger_name )
-                ,xmlelement( "category",    posts.category_title )
-                ,xmlelement( "link",
-                  blog_url.get_post(
-                     p_post_id    => posts.post_id
-                    ,p_canonical  => 'YES'
-                  )
-                )
-                ,xmlelement( "description", posts.post_desc )
+                ,xmlelement( "title",           posts.post_title )
+                ,xmlelement( "dc:creator",      posts.blogger_name )
+                ,xmlelement( "category",        posts.category_title )
+                ,xmlelement( "link",            posts.absolute_url )
+                ,xmlelement( "description",     posts.post_desc )
+                ,xmlelement( "content:encoded", xmlcdata( posts.body_html ) )
                 ,xmlelement( "pubDate",
                   to_char(
-                     sys_extract_utc( posts.published_on )
+                    sys_extract_utc( posts.published_on )
                     ,blog_util.g_rfc_2822_date
                     ,blog_util.g_nls_date_lang
                   )
@@ -212,7 +219,7 @@ as
           )
         )
       )
-      as blob encoding 'UTF-8' indent size = 2
+      as blob encoding c_char_set indent size = 2
     )
     ,max( posts.published_on ) as max_published
     into l_rss, l_max_published
@@ -236,10 +243,10 @@ as
 
     blog_util.download_file(
        p_blob_content   => l_rss
-      ,p_mime_type      => 'application/xml'
+      ,p_mime_type      => c_mime_xml
       ,p_header_names   => apex_t_varchar2( 'Cache-Control',  'Content-Disposition',        'Last-Modified' )
       ,p_header_values  => apex_t_varchar2( l_cache_control,  'inline; filename="rss.xml"', l_last_modified  )
-      ,p_charset        => 'UTF-8'
+      ,p_charset        => c_char_set
     );
 
   -- handle errors
@@ -258,6 +265,143 @@ as
     raise;
 
   end rss;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure atom(
+    p_app_name  in varchar2,
+    p_app_desc  in varchar2
+  )
+  as
+    l_xml           xmltype;
+    l_atom          blob;
+    l_app_id        varchar2(256);
+    l_atom_url      varchar2(4000);
+    l_home_url      varchar2(4000);
+    l_app_name      varchar2(4000);
+    l_app_desc      varchar2(4000);
+    l_cache_control varchar2(256);
+    l_last_modified varchar2(256);
+    l_max_published timestamp;
+  begin
+
+    -- atom feed URL
+    l_atom_url   := blog_url.get_atom;
+    -- blog name
+    l_app_name := coalesce(
+       p_app_name
+      ,blog_util.get_attribute_value( 'G_APP_NAME' )
+    );
+    -- atom feed description
+    l_app_desc  := coalesce(
+       p_app_desc
+      ,blog_util.get_attribute_value( 'G_APP_DESC' )
+    );
+    -- blog home page absulute URL
+    l_home_url  := blog_url.get_tab(
+       p_page       => 'HOME'
+      ,p_canonical  => 'YES'
+    );
+
+    -- generate atom feed
+    select xmlserialize( content
+      xmlelement(
+        "feed", xmlattributes(
+          'http://www.w3.org/2005/Atom' as "xmlns"
+        )
+        ,xmlelement( "link"
+          ,xmlattributes(
+            'self'                  as "rel"
+            ,l_atom_url             as "href"
+            ,'application/atom+xml' as "type"
+          )
+        )
+        ,xmlforest(
+          l_app_name  as "title"
+          ,l_app_desc as "subtitle"
+          ,l_atom_url as "id"
+          ,to_char(
+            sys_extract_utc( max( posts.published_on ) )
+            ,blog_util.g_iso_8601_date
+            ,blog_util.g_nls_date_lang
+          )           as "updated"
+        )
+        ,xmlagg(
+          xmlelement( "entry"
+            ,xmlelement( "title", posts.post_title )
+            ,xmlelement( "author"
+              ,xmlelement( "name", posts.blogger_name )
+            )
+            ,xmlelement( "category"
+              ,xmlattributes(
+                posts.category_title  as "label"
+                ,posts.category_title as "term"
+              )
+            )
+            ,xmlelement( "link"
+              ,xmlattributes( posts.absolute_url as "href" )
+            )
+            ,xmlelement( "summary", posts.post_desc )
+            ,xmlelement( "content"
+              ,xmlattributes( 'html' as "type" )
+              ,xmlcdata( posts.body_html )
+            )
+            ,xmlelement( "updated",
+              to_char(
+                sys_extract_utc( posts.published_on )
+                ,blog_util.g_iso_8601_date
+                ,blog_util.g_nls_date_lang
+              )
+            )
+            ,xmlelement( "id",  posts.absolute_url )
+          ) order by posts.published_on desc
+        )
+      )
+      as blob encoding c_char_set indent size = 2
+    )
+    ,max( posts.published_on ) as max_published
+    into l_atom, l_max_published
+    from blog_v_posts_last20 posts
+    ;
+
+    l_cache_control :=
+      apex_string.format(
+         p_message => 'max-age=%s'
+        ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_RSS' )
+      )
+    ;
+
+    l_last_modified :=
+      to_char(
+         sys_extract_utc( l_max_published )
+        ,blog_util.g_rfc_2822_date
+        ,blog_util.g_nls_date_lang
+      )
+    ;
+
+    blog_util.download_file(
+       p_blob_content   => l_atom
+      ,p_mime_type      => c_mime_xml
+      ,p_header_names   => apex_t_varchar2( 'Cache-Control',  'Content-Disposition',        'Last-Modified' )
+      ,p_header_values  => apex_t_varchar2( l_cache_control,  'inline; filename="atom.xml"', l_last_modified  )
+      ,p_charset        => c_char_set
+    );
+
+  -- handle errors
+  exception
+  when others
+  then
+
+    apex_debug.error(
+       p_message => '%s Error: %s'
+      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+      ,p1 => sqlerrm
+    );
+
+    -- show http error
+    blog_util.raise_http_error( 500 );
+    raise;
+
+  end atom;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure rss_xsl(
@@ -279,14 +423,13 @@ as
       xmltype(
         apex_string.format(
           p_message => '
-            <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+            <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
               <!-- This causes the HTML doctype (<!doctype hmlt>) to be rendered. -->
               <xsl:output method="html" doctype-system="about:legacy-compat" indent="yes" />
               <!-- Start matching at the Channel node within the XML RSS feed. -->
               <xsl:template match="/rss/channel">
                 <html lang="%s">
                 <head>
-                  <meta charset="utf-8" />
                   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                   <title>
                     <xsl:value-of select="title" />
@@ -316,7 +459,7 @@ as
 
     select
       xmlserialize(
-        content l_xml as blob encoding 'UTF-8' indent size = 2
+        content l_xml as blob encoding c_char_set indent size = 2
       ) xsl
     into l_xsl
     from dual
@@ -331,10 +474,10 @@ as
 
     blog_util.download_file(
        p_blob_content   => l_xsl
-      ,p_mime_type      => 'application/xml'
+      ,p_mime_type      => c_mime_xml
       ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xsl"' )
-      ,p_charset        => 'UTF-8'
+      ,p_charset        => c_char_set
     );
 
   -- handle errors
@@ -383,7 +526,7 @@ as
           )
         )
       )
-      as blob encoding 'UTF-8' indent size = 2
+      as blob encoding c_char_set indent size = 2
     )
     into l_xml
     from apex_application_page_proc t1
@@ -403,10 +546,10 @@ as
 
     blog_util.download_file(
        p_blob_content   => l_xml
-      ,p_mime_type      => 'application/xml'
+      ,p_mime_type      => c_mime_xml
       ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-index.xml"' )
-      ,p_charset        => 'UTF-8'
+      ,p_charset        => c_char_set
     );
 
   -- handle errors
@@ -452,7 +595,7 @@ as
           )
         )
       )
-      as blob encoding 'UTF-8' indent size = 2
+      as blob encoding c_char_set indent size = 2
     )
     into l_xml
     from apex_application_pages v1
@@ -479,10 +622,10 @@ as
 
     blog_util.download_file(
        p_blob_content   => l_xml
-      ,p_mime_type      => 'application/xml'
+      ,p_mime_type      => c_mime_xml
       ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-main.xml"' )
-      ,p_charset        => 'UTF-8'
+      ,p_charset        => c_char_set
     );
 
   -- handle errors
@@ -534,7 +677,7 @@ as
           )
         )
       )
-      as blob encoding 'UTF-8' indent size = 2
+      as blob encoding c_char_set indent size = 2
     )
     into l_xml
     from blog_v_posts posts
@@ -549,10 +692,10 @@ as
 
     blog_util.download_file(
        p_blob_content   => l_xml
-      ,p_mime_type      => 'application/xml'
+      ,p_mime_type      => c_mime_xml
       ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-posts.xml"' )
-      ,p_charset        => 'UTF-8'
+      ,p_charset        => c_char_set
     );
 
   -- handle errors
@@ -602,7 +745,7 @@ as
           )
         )
       )
-      as blob encoding 'UTF-8' indent size = 2
+      as blob encoding c_char_set indent size = 2
     )
     into l_xml
     from blog_v_categories cat
@@ -617,10 +760,10 @@ as
 
     blog_util.download_file(
        p_blob_content   => l_xml
-      ,p_mime_type      => 'application/xml'
+      ,p_mime_type      => c_mime_xml
       ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-categories.xml"' )
-      ,p_charset        => 'UTF-8'
+      ,p_charset        => c_char_set
     );
 
   -- handle errors
@@ -670,7 +813,7 @@ as
           )
         )
       )
-      as blob encoding 'UTF-8' indent size = 2
+      as blob encoding c_char_set indent size = 2
     )
     into l_xml
     from blog_v_archive_year arc
@@ -685,10 +828,10 @@ as
 
     blog_util.download_file(
        p_blob_content   => l_xml
-      ,p_mime_type      => 'application/xml'
+      ,p_mime_type      => c_mime_xml
       ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-archives.xml"' )
-      ,p_charset        => 'UTF-8'
+      ,p_charset        => c_char_set
     );
 
   -- handle errors
@@ -738,7 +881,7 @@ as
           )
         )
       )
-      as blob encoding 'UTF-8' indent size = 2
+      as blob encoding c_char_set indent size = 2
     )
     into l_xml
     from blog_v_tags tags
@@ -753,10 +896,10 @@ as
 
     blog_util.download_file(
        p_blob_content   => l_xml
-      ,p_mime_type      => 'application/xml'
+      ,p_mime_type      => c_mime_xml
       ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
       ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-tags.xml"' )
-      ,p_charset        => 'UTF-8'
+      ,p_charset        => c_char_set
     );
 
   -- handle errors

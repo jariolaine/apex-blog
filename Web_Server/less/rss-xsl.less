@@ -1,45 +1,4 @@
 //out:../css/rss-xsl.css
 
 @import url('core/_variables.less');
-html {
-  font-size: 62.5%;
-}
-html {
-  font-family: sans-serif;
-}
-body {
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
-  font-size: 1.4rem;
-  line-height: 2rem;
-  background-color: #fdfdfd;
-  color: #242424;
-  margin: 16px;
-}
-@media (min-width: 800px) {
-  body {
-    margin: 16px auto;
-    max-width: 760px;
-    padding: 0px 16px;
-  }
-}
-a{
-  color: #006ed0;
-  text-decoration: none;
-}
-.z-rss--title{
-  color: inherit;
-  font-size: 2.4rem;
-}
-.z-rss--description{
-  margin-bottom: 32px;
-}
-.z-rss--post{
-  margin-bottom: 32px;
-}
-.z-rss--postHeader{
-  font-weight: normal;
-  margin-bottom: 8px;
-}
-.z-rss--postBody{
-  margin-top: 0;
-}
+@import url('core/RSS');

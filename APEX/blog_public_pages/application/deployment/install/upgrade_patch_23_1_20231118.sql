@@ -1,7 +1,7 @@
-prompt --application/deployment/install/upgrade_drop_index_blog_comments_ctx
+prompt --application/deployment/install/upgrade_patch_23_1_20231118
 begin
 --   Manifest
---     INSTALL: UPGRADE-Drop index blog_comments_ctx
+--     INSTALL: UPGRADE-Patch 23.1.20231118
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.04.28'
@@ -12,43 +12,28 @@ wwv_flow_imp.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_install_script(
- p_id=>wwv_flow_imp.id(47369591309842898)
+ p_id=>wwv_flow_imp.id(39135416807684840)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
-,p_name=>'Drop index blog_comments_ctx'
-,p_sequence=>120
+,p_name=>'Patch 23.1.20231118'
+,p_sequence=>100
 ,p_script_type=>'UPGRADE'
 ,p_condition_type=>'EXISTS'
 ,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select 1',
 'from blog_v_version',
 'where 1 = 1',
-'and application_date < 20230608'))
+'and application_date < 20231118'))
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'--  Patch 23.1.20231118',
 '--------------------------------------------------------',
-'--  Drop index BLOG_COMMENTS_CTX',
+'--  Insert metadata',
 '--------------------------------------------------------',
-'declare',
-'  index_not_exists exception;',
-'  pragma exception_init ( index_not_exists, -01418 );',
-'begin',
-'  execute immediate ''drop index blog_comments_ctx force'';',
-'exception when index_not_exists then',
-'  null;',
-'end;',
-'/',
+'insert into blog_features (is_active, display_seq, build_option_name, build_option_group)',
+'  values (''1'', ''440'', ''BLOG_FEATURE_ATOM'', ''BLOG_FEATURE_GROUP_MISC'');',
 '--------------------------------------------------------',
-'--  Drop text index BLOG_COMMENTS_CTX preferences',
+'--  Drop obsolete type',
 '--------------------------------------------------------',
-'declare',
-'  ctx_ddl_error exception;',
-'  pragma exception_init ( ctx_ddl_error, -20000 );',
-'begin',
-'  ctx_ddl.drop_preference( ''BLOG_COMMENTS_UDS'' );',
-'exception when ctx_ddl_error then',
-'  null;',
-'end;',
-'/',
-''))
+'drop type blog_t_post;'))
 );
 wwv_flow_imp.component_end;
 end;

@@ -80,6 +80,11 @@ wwv_flow_imp_shared.create_message(
 ,p_message_text=>'Archive post count'
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(39129126425331606)
+,p_name=>'BLOG_FEATURE_ATOM'
+,p_message_text=>'Atom feed'
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(8651520942348857)
 ,p_name=>'BLOG_FEATURE_CATEGORY'
 ,p_message_text=>'Categories list'
@@ -218,6 +223,11 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21968854038758598)
 ,p_name=>'BLOG_HELP_FEATURE_ARCHIVE_POST_COUNT'
 ,p_message_text=>'Enable or disable post count in the archive list.'
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(39129511024342498)
+,p_name=>'BLOG_HELP_FEATURE_ATOM'
+,p_message_text=>'Enable or disable atom feed.'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21968269442744987)
@@ -554,6 +564,11 @@ wwv_flow_imp_shared.create_message(
 ,p_message_text=>'Post have duplicate tags.'
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(39128954460325864)
+,p_name=>'BLOG_PUB_APP_LINK_ATOM'
+,p_message_text=>'Atom feed'
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(42684822108701097)
 ,p_name=>'BLOG_PUB_APP_LINK_HOME'
 ,p_message_text=>'Home page canonical URL'
@@ -646,7 +661,7 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(12336626913574559)
 ,p_name=>'BLOG_SETTING_G_MAX_AGE_RSS'
-,p_message_text=>'RSS feed cache max age'
+,p_message_text=>'RSS and atom feed cache max age'
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(12337953363617184)

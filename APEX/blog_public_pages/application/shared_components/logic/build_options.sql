@@ -161,6 +161,14 @@ wwv_flow_imp_shared.create_build_option(
 ,p_build_option_comment=>'Enable/disable search page'
 );
 wwv_flow_imp_shared.create_build_option(
+ p_id=>wwv_flow_imp.id(39128594354303424)
+,p_build_option_name=>'BLOG_FEATURE_ATOM'
+,p_build_option_status=>'INCLUDE'
+,p_default_on_export=>'INCLUDE'
+,p_on_upgrade_keep_status=>true
+,p_build_option_comment=>'Enable/disable atom feed'
+);
+wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(41172379976935637)
 ,p_build_option_name=>'BLOG_FEATURE_SITEMAP'
 ,p_build_option_status=>'INCLUDE'
