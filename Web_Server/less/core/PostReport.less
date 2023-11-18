@@ -2,29 +2,29 @@
 /**************************************
 * Post report
 **************************************/
-.z-posts{
-  .z-post {
+.blog-posts{
+  .blog-post {
     margin-bottom: @post-padding;;
     border: var(--ut-component-border-width) solid var(--ut-component-border-color);
     border-radius: var(--ut-component-border-radius);
     box-shadow: var(--ut-shadow-sm);
     background-color: var(--ut-component-background-color);
-    .z-post--header {
+    .blog-post--header {
       clear: both;
       padding: @post-padding;
-      .z-post--date {
+      .blog-post--date {
         font-size: @post-date-font-size;
         margin: 0 0 0.25rem;
       }
-      .z-post--title {
+      .blog-post--title {
         font-size: @post-title-font-size;
         margin: 0 0 0.5rem;
       }
-      .z-post--category {
+      .blog-post--category {
         font-size: @post-category-font-size ;
       }
     }
-    .z-post--body {
+    .blog-post--body {
       padding: 0 @post-padding @post-padding;
       margin-bottom: @post-padding;
       img {
@@ -35,10 +35,10 @@
         clear: none!important;
       }
     }
-    .z-post--footer {
+    .blog-post--footer {
       width: 100%;
       clear: both;
-      .z-post--tags {
+      .blog-post--tags {
         width: 100%;
         clear: both;
         padding: @post-padding;
@@ -49,7 +49,7 @@
       }
     }
   }
-  .z-posts--pagination {
+  .blog-posts--pagination {
     margin-bottom: 1rem;
     padding: 0.25rem;
     border: var(--ut-component-border-width) solid  var(--ut-component-border-color);
@@ -57,33 +57,33 @@
     box-shadow: var(--ut-shadow-sm);
     background-color: var(--ut-component-background-color);
   }
-  &.z-posts--paginationHidden {
-    .z-posts--pagination {
+  &.blog-posts--paginationHidden {
+    .blog-posts--pagination {
       display: none!important;
       visibility: hidden!important;
     }
   }
 }
 @media only screen and (max-width: 640px) {
-  .z-posts {
-    .z-post {
-      .z-post--header {
+  .blog-posts {
+    .blog-post {
+      .blog-post--header {
           padding: @post-padding - 0.5rem @post-padding - 0.5rem @post-padding ;
-        .z-post--title {
+        .blog-post--title {
           font-size: @post-title-font-size - 0.25em;
         }
       }
-      .z-post--body {
+      .blog-post--body {
         padding: 0 @post-padding - 0.5rem @post-padding;
       }
-      .z-post--footer {
-        .z-post--tags {
+      .blog-post--footer {
+        .blog-post--tags {
             justify-content: space-evenly;
             padding: @post-padding - 0.5rem;
         }
       }
     }
-    .z-posts--pagination {
+    .blog-posts--pagination {
 	    .pagination {
 	      display: flex;
 	      justify-content: center;
@@ -100,6 +100,6 @@
 /**************************************
 * Post paginaion button
 **************************************/
-.z-text-wrap {
+.blog-text-wrap {
   white-space: pre-wrap;
 }

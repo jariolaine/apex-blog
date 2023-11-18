@@ -1367,8 +1367,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Generate HTML for tags used in APEX reports',
 '  ,xmlelement( "a"',
 '    ,xmlattributes(',
-'      q1.tag_url        as "href"',
-'      ,''z-search--tags'' as "class"',
+'      q1.tag_url            as "href"',
+'      ,''blog-search--tags''  as "class"',
 '    )',
 '    ,q1.tag',
 '  )                                   as tag_html1',
@@ -1575,8 +1575,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  from blog_comments t1',
 ')',
 'select',
-'   q1.id                  as id',
-' '))
+'   q1.id                 '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1594,7 +1593,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' ,q1.row_version         as row_version',
+' as id',
+'  ,q1.row_version         as row_version',
 '  ,q1.created_on          as created_on',
 '  ,lower( q1.created_by ) as created_by',
 '  ,q1.changed_on          as changed_on',
@@ -2575,8 +2575,7 @@ wwv_flow_imp_shared.append_to_install_script(
 'end;',
 '/',
 '--------------------------------------------------------',
-'--  DDL for Trigger BLOG_LIST_OF_VALUES_TRG',
-''))
+'--  DDL for Trigger BLOG_LIST_OF_VAL'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2594,6 +2593,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'UES_TRG',
 '--------------------------------------------------------',
 'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_LIST_OF_VALUES_TRG"',
 'before',
@@ -3646,7 +3646,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '       p_table => l_header_values',
 '      ,p_value =>',
 '        apex_string.format(',
-'           p_message => ''m'))
+'           p_messa'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3664,7 +3664,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ax-age=%s''',
+'ge => ''max-age=%s''',
 '          ,p0 =>',
 '            case l_file_t.is_download',
 '              when 1',
@@ -4704,7 +4704,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end to_html_entities;',
 '--------------------------------------------------------------------------------',
-'----------------------------------------'))
+'--------------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4722,7 +4722,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'----------------------------------------',
+'------------------------------------------------',
 '-- Global procedures and functions',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -5328,7 +5328,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  c_whitelist_tags  constant varchar2(256)  := ''<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>'';',
-'  c_code_block_html constant varchar2(256)  := ''<pre class="z-program-code"><code>%s</code></pre>'';',
+'  c_code_block_html constant varchar2(256)  := ''<pre class="blog-program-code"><code>%s</code></pre>'';',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
@@ -5719,8 +5719,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '                 p_post_id => v1.id',
 '                ,p_canonical => ''YES''',
 '              )',
-'        ) as placeholders',
-''))
+'        ) as pl'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5738,6 +5737,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'aceholders',
 '      from blog_v_all_posts v1',
 '      where 1 = 1',
 '      and v1.id = l_post_id',
@@ -6576,14 +6576,14 @@ wwv_flow_imp_shared.append_to_install_script(
 '                  <link rel="stylesheet" type="text/css" href="%s" />',
 '                </head>',
 '                <body>',
-'                  <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>',
-'                  <h2 class="z-rss--description"><xsl:value-of select="description" /></h2>',
+'                  <h1><a class="blog-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>',
+'                  <h2 class="blog-rss--description"><xsl:value-of select="description" /></h2>',
 '                  <xsl:for-each select="./item">',
-'                    <article class="z-rss--post">',
+'                    <article class="blog-rss--post">',
 '                      <header>',
-'                        <h3 class="z-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h3>',
+'                        <h3 class="blog-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h3>',
 '                      </header>',
-'                      <p class="z-rss--postBody"><xsl:value-of select="description" /></p>',
+'                      <p class="blog-rss--postBody"><xsl:value-of select="description" /></p>',
 '                    </article>',
 '                  </xsl:for-each>',
 '                </body>',
@@ -6703,7 +6703,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    );',
 '',
 '    -- show http error',
-'    blog_util.raise_http_erro'))
+'   '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6721,7 +6721,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'r( 500 );',
+' blog_util.raise_http_error( 500 );',
 '    raise;',
 '',
 '  end sitemap_index;',

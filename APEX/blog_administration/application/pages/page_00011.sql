@@ -66,12 +66,12 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231005182425'
+,p_last_upd_yyyymmddhh24miss=>'20231118082600'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8596898648797585)
 ,p_plug_name=>'Posts Report'
-,p_region_css_classes=>'z-IR--iconLinks z-posts  z-post--IR'
+,p_region_css_classes=>'blog-IR--iconLinks blog-posts blog-post--IR'
 ,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
 ,p_plug_template=>wwv_flow_imp.id(8495746153518209)
 ,p_plug_display_sequence=>20
@@ -144,17 +144,15 @@ wwv_flow_imp_page.create_worksheet(
 ,p_detail_link_attr=>'title="#BTN_LABEL_EDIT#" aria-label="#BTN_LABEL_EDIT#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
 ,p_detail_view_enabled_yn=>'Y'
 ,p_detail_view_for_each_row=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<article role="article" class="z-post">',
-'  <header class="z-post--header">',
-'    <div class="z-post--date">#DETAIL_VIEW_PUBLISHED#</div>',
-'    <h1 class="z-post--title "><a href="#EDIT_URL#" class="u-normal">#POST_TITLE#</a></h1>',
-'    <div class="z-post--category">#CATEGORY_TITLE#</div>',
+'<article role="article" class="blog-post">',
+'  <header class="blog-post--header">',
+'    <div class="blog-post--date">#DETAIL_VIEW_PUBLISHED#</div>',
+'    <h1 class="blog-post--title "><a href="#EDIT_URL#" class="u-normal">#POST_TITLE#</a></h1>',
+'    <div class="blog-post--category">#CATEGORY_TITLE#</div>',
 '  </header>',
-'  <div class="z-post--body">#BODY_HTML#</div>',
-'  <footer class="z-post--footer">',
-'    <div class="z-post--tags">',
-'      #TAGS_HTML#',
-'    </div>',
+'  <div class="blog-post--body">#BODY_HTML#</div>',
+'  <footer class="blog-post--footer">',
+'    <div class="blog-post--tags">#TAGS_HTML#</div>',
 '  </footer>',
 '</article>'))
 ,p_owner=>'LAINFJAR'

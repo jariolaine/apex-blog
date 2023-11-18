@@ -23,12 +23,12 @@ wwv_flow_imp_page.create_page(
 ,p_help_text=>'No help available for this page.'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231005192750'
+,p_last_upd_yyyymmddhh24miss=>'20231118082741'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45054908267895533)
 ,p_plug_name=>'Files Report'
-,p_region_css_classes=>'z-IR--iconLinks'
+,p_region_css_classes=>'blog-IR--iconLinks'
 ,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
 ,p_plug_template=>wwv_flow_imp.id(8495746153518209)
 ,p_plug_display_sequence=>10

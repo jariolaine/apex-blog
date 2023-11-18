@@ -47,8 +47,8 @@ select
 -- Generate HTML for tags used in APEX reports
   ,xmlelement( "a"
     ,xmlattributes(
-      q1.tag_url        as "href"
-      ,'z-search--tags' as "class"
+      q1.tag_url            as "href"
+      ,'blog-search--tags'  as "class"
     )
     ,q1.tag
   )                                   as tag_html1

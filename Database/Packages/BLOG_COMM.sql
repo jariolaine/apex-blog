@@ -100,7 +100,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   c_whitelist_tags  constant varchar2(256)  := '<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>';
-  c_code_block_html constant varchar2(256)  := '<pre class="z-program-code"><code>%s</code></pre>';
+  c_code_block_html constant varchar2(256)  := '<pre class="blog-program-code"><code>%s</code></pre>';
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions

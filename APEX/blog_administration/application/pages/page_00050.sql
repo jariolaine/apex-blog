@@ -19,38 +19,18 @@ wwv_flow_imp_page.create_page(
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(4073365241705286)
-,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'/* Scroll Results Only in Side Column */',
-'.t-Body-side {',
-'  display: flex;',
-'  flex-direction: column;',
-'  overflow: hidden;',
-'}',
-'/* Format Search Region */',
-'.search-region {',
-'  flex-shrink: 0;',
-'}',
-'/* Format search results */',
-'.search-results {',
-'  flex: 1;',
-'  overflow: auto;',
-'}',
-'.search-results-items {',
-'  border-top: 1px solid rgba(0,0,0,.1);',
-'  border-bottom: 1px solid rgba(0,0,0,.1);',
-'}'))
 ,p_step_template=>wwv_flow_imp.id(8457924893518181)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_help_text=>'No help available for this page.'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231005191627'
+,p_last_upd_yyyymmddhh24miss=>'20231118082611'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45219411531225453)
 ,p_plug_name=>'Links'
-,p_region_css_classes=>'z-IR--iconLinks'
+,p_region_css_classes=>'blog-IR--iconLinks'
 ,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
 ,p_plug_template=>wwv_flow_imp.id(8495746153518209)
 ,p_plug_display_sequence=>40
@@ -482,7 +462,7 @@ wwv_flow_imp_page.create_report_columns(
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(66954991551767607)
 ,p_plug_name=>'Search Link Groups'
-,p_region_css_classes=>'search-region padding-sm'
+,p_region_css_classes=>'blog-search-region padding-sm'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(10025905495694368)
 ,p_plug_display_sequence=>10
@@ -499,8 +479,8 @@ wwv_flow_imp_page.create_report_region(
 ,p_name=>'Select Link Group'
 ,p_template=>wwv_flow_imp.id(8475523710518195)
 ,p_display_sequence=>70
-,p_region_css_classes=>'search-results'
-,p_region_sub_css_classes=>'search-results-items'
+,p_region_css_classes=>'blog-search-results'
+,p_region_sub_css_classes=>'blog-search-results-items'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'t-MediaList--stack:t-MediaList--iconsRounded:t-Report--hideNoPagination'
 ,p_display_point=>'REGION_POSITION_02'

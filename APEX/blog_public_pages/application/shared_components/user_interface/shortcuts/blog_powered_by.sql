@@ -15,7 +15,7 @@ wwv_flow_imp_shared.create_shortcut(
  p_id=>wwv_flow_imp.id(61374272106979158)
 ,p_shortcut_name=>'BLOG_POWERED_BY'
 ,p_shortcut_type=>'HTML_TEXT'
-,p_shortcut=>'<div class="z-copyright"><a href="https://github.com/jariolaine/apex-blog" class="z-copyright-link" target="_blank" rel="external" title="Blog application built with Oracle Application Express (APEX)">Powered By APEX Blog</a></div>'
+,p_shortcut=>'<div class="blog-copyright"><a href="https://github.com/jariolaine/apex-blog" class="blog-copyright-link" target="_blank" rel="external" title="Blog application built with Oracle Application Express (APEX)">Powered By APEX Blog</a></div>'
 );
 wwv_flow_imp.component_end;
 end;

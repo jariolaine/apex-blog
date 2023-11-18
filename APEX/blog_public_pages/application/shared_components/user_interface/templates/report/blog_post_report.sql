@@ -16,41 +16,41 @@ wwv_flow_imp_shared.create_row_template(
 ,p_row_template_name=>'Blog Posts (Custom 1)'
 ,p_internal_name=>'BLOG_POST_REPORT'
 ,p_row_template1=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<article class="z-post">',
-'  <header class="z-post--header">',
-'    <div class="z-post--date">',
+'<article class="blog-post">',
+'  <header class="blog-post--header">',
+'    <div class="blog-post--date">',
 '      <span class="u-VisuallyHidden">&APP_TEXT$BLOG_TXT_POSTED_ON.</span>',
 '      <time datetime="#PUBDATE#">#PUBLISHED_ON#</time>',
 '    </div>',
-'    <h1 class="z-post--title">#POST_TITLE#</h1>',
-'    <div class="z-post--category">',
+'    <h1 class="blog-post--title">#POST_TITLE#</h1>',
+'    <div class="blog-post--category">',
 '      <span class="u-VisuallyHidden">&APP_TEXT$BLOG_TXT_CATEGORY.</span>',
 '      #CATEGORY_TITLE#',
 '    </div>',
 '  </header>',
-'  <div class="z-post--body">',
+'  <div class="blog-post--body">',
 '    #BODY_HTML#',
 '    <p>#READ_MORE_LINK#</p>',
 '  </div>',
-'  <footer class="z-post--footer"></footer>',
+'  <footer class="blog-post--footer"></footer>',
 '</article>'))
 ,p_row_template_condition1=>':READ_MORE_LINK is not null'
 ,p_row_template2=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<article class="z-post">',
-'  <header class="z-post--header">',
-'    <div class="z-post--date">',
+'<article class="blog-post">',
+'  <header class="blog-post--header">',
+'    <div class="blog-post--date">',
 '      <span class="u-VisuallyHidden">&APP_TEXT$BLOG_TXT_POSTED_ON.</span>',
 '      <time datetime="#PUBDATE#">#PUBLISHED_ON#</time>',
 '    </div>',
-'    <h1 class="z-post--title">#POST_TITLE#</h1>',
-'    <div class="z-post--category">',
+'    <h1 class="blog-post--title">#POST_TITLE#</h1>',
+'    <div class="blog-post--category">',
 '      <span class="u-VisuallyHidden">&APP_TEXT$BLOG_TXT_CATEGORY.</span>',
 '      #CATEGORY_TITLE#',
 '    </div>',
 '  </header>',
-'  <div class="z-post--body">#BODY_HTML#</div>',
-'  <footer class="z-post--footer">',
-'    <div class="z-post--tags">',
+'  <div class="blog-post--body">#BODY_HTML#</div>',
+'  <footer class="blog-post--footer">',
+'    <div class="blog-post--tags">',
 '      <span class="u-VisuallyHidden">&APP_TEXT$BLOG_TXT_TAGS.</span>',
 '      #TAGS_HTML#',
 '    </div>',
@@ -58,24 +58,24 @@ wwv_flow_imp_shared.create_row_template(
 '</article>'))
 ,p_row_template_condition2=>':TAGS_HTML is not null'
 ,p_row_template3=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<article class="z-post">',
-'  <header class="z-post--header">    ',
-'    <div class="z-post--date">',
+'<article class="blog-post">',
+'  <header class="blog-post--header">    ',
+'    <div class="blog-post--date">',
 '      <span class="u-VisuallyHidden">&APP_TEXT$BLOG_TXT_POSTED_ON.</span>',
 '      <time datetime="#PUBDATE#">#PUBLISHED_ON#</time>',
 '    </div>',
-'    <h1 class="z-post--title">#POST_TITLE#</h1>',
-'    <div class="z-post--category">',
+'    <h1 class="blog-post--title">#POST_TITLE#</h1>',
+'    <div class="blog-post--category">',
 '      <span class="u-VisuallyHidden">&APP_TEXT$BLOG_TXT_CATEGORY.</span>',
 '      #CATEGORY_TITLE#',
 '    </div>',
 '  </header>',
-'  <div class="z-post--body">#BODY_HTML#</div>',
-'  <footer class="z-post--footer"></footer>',
+'  <div class="blog-post--body">#BODY_HTML#</div>',
+'  <footer class="blog-post--footer"></footer>',
 '</article>'))
-,p_row_template_before_rows=>'<div class="z-posts #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_posts" data-region-id="#REGION_STATIC_ID#">'
+,p_row_template_before_rows=>'<div class="blog-posts #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_posts" data-region-id="#REGION_STATIC_ID#">'
 ,p_row_template_after_rows=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<div class="z-posts--pagination">',
+'<div class="blog-posts--pagination">',
 '  <table class="t-Report-pagination t-Report-pagination--bottom" role="presentation">',
 '    #PAGINATION#',
 '  </table>  ',
@@ -107,6 +107,7 @@ wwv_flow_imp_shared.create_row_template(
 '</button>'))
 ,p_theme_id=>42
 ,p_theme_class_id=>7
+,p_translate_this_template=>'N'
 );
 wwv_flow_imp.component_end;
 end;

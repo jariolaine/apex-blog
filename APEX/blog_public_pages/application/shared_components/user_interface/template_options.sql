@@ -5908,7 +5908,7 @@ wwv_flow_imp_shared.create_template_option(
 ,p_display_name=>'Hide Pagination'
 ,p_display_sequence=>10
 ,p_report_template_id=>wwv_flow_imp.id(6894976353301648)
-,p_css_classes=>'z-posts--paginationHidden'
+,p_css_classes=>'blog-posts--paginationHidden'
 ,p_template_types=>'REPORT'
 );
 wwv_flow_imp.component_end;

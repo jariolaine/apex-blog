@@ -14,6 +14,8 @@ prompt --install
 @@application/shared_components/files/icons_app_icon_512_png.sql
 @@application/shared_components/files/css_admin_min_css.sql
 @@application/shared_components/files/css_admin_css.sql
+@@application/shared_components/files/icons_app_icon_144_rounded_png.sql
+@@application/shared_components/files/icons_app_icon_256_rounded_png.sql
 @@application/shared_components/files/js_admin_js.sql
 @@application/shared_components/files/js_admin_min_js.sql
 @@application/plugin_settings.sql

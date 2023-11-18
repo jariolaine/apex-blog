@@ -2,14 +2,14 @@
 /**************************************
 * Page views metric bar column
 **************************************/
-.z-page-view-breakdown {
+.blog-page-view-breakdown {
   .t-Report-colHead:last-child,
   .t-Report-cell:last-child {
     width: 20%;
   }
 }
 @media only screen and (max-width: 684px) {
-  .z-page-view-breakdown {
+  .blog-page-view-breakdown {
     .t-Report-colHead:last-child,
     .t-Report-cell:last-child {
       display: none;
@@ -19,9 +19,9 @@
 /**************************************
 * Posts IR detail view
 **************************************/
-.z-posts {
-  &.z-post--IR {
-    .z-post {
+.blog-posts {
+  &.blog-post--IR {
+    .blog-post {
       font-size: 1rem;
       margin: 2em 1rem;
     }
@@ -30,7 +30,7 @@
 /**************************************
 * Interactive Reports link column
 **************************************/
-.z-IR--iconLinks {
+.blog-IR--iconLinks {
   td:has( .t-Button ),
   td:has( .t-Icon )  {
     width: .1%;
@@ -40,9 +40,31 @@
 /**************************************
 * Settings and features Interactive Grid
 **************************************/
-.z-config-ig {
+.blog-config-ig {
   span.a-GV-breakLabel {
     display: none!important;
     visibility: hidden!important;
   }
+}
+/**************************************
+* Links
+**************************************/
+/* Scroll Results Only in Side Column */
+.t-Body-side {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+/* Format Search Region */
+.blog-search-region {
+  flex-shrink: 0;
+}
+/* Format search results */
+.blog-search-results {
+  flex: 1;
+  overflow: auto;
+}
+.blog-search-results-items {
+  border-top: 1px solid rgba(0,0,0,.1);
+  border-bottom: 1px solid rgba(0,0,0,.1);
 }

@@ -1806,8 +1806,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Generate HTML for tags used in APEX reports',
 '  ,xmlelement( "a"',
 '    ,xmlattributes(',
-'      q1.tag_url        as "href"',
-'      ,''z-search--tags'' as "class"',
+'      q1.tag_url            as "href"',
+'      ,''blog-search--tags''  as "class"',
 '    )',
 '    ,q1.tag',
 '  )                                   as tag_html1',
@@ -2391,8 +2391,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      xmlserialize(',
 '        content xmlagg( lkp_tag.tag_html2 order by lkp_tag.display_seq )',
 '      ) as tags_html',
-'    from blog_v_post_tags lkp_tag',
-'   '))
+'    from blog_v_post_tags lkp'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2410,7 +2409,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' where 1 = 1',
+'_tag',
+'    where 1 = 1',
 '      and lkp_tag.post_id = q1.post_id',
 '  )                   as tags_html2',
 '-- Fetch next post id and title',
@@ -3406,8 +3406,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Global procedures and functions',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure generate_post_datastore(',
-'    ri'))
+'  procedure generate_post_datastore'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3425,7 +3424,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'d   in rowid,',
+'(',
+'    rid   in rowid,',
 '    tlob  in out nocopy clob',
 '  )',
 '  as',
@@ -4474,7 +4474,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- return next link group display sequence',
 '    return l_next_seq;',
 '',
-'  end get'))
+' '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4492,7 +4492,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_link_grp_seq;',
+' end get_link_grp_seq;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function get_modal_page_seq',
@@ -5502,8 +5502,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  return',
 '    case p_canonical',
-'      when ''YES'' then get_canonical_host',
-'  '))
+'      when ''YES'' then get_canonical'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5521,7 +5520,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'  end ||',
+'_host',
+'    end ||',
 '    apex_page.get_url(',
 '      p_application => p_application',
 '     ,p_page        => c_post_page.page_alias',
@@ -5835,7 +5835,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  c_whitelist_tags  constant varchar2(256)  := ''<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>'';',
-'  c_code_block_html constant varchar2(256)  := ''<pre class="z-program-code"><code>%s</code></pre>'';',
+'  c_code_block_html constant varchar2(256)  := ''<pre class="blog-program-code"><code>%s</code></pre>'';',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
@@ -6528,7 +6528,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end get_category_canonical_link;',
 '--------------------------------------------------------------------------------',
-'-------------------'))
+'--------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6546,7 +6546,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-------------------------------------------------------------',
+'------------------------------------------------------------------------',
 '  function get_archive_canonical_link(',
 '    p_archive_id in varchar2',
 '  ) return varchar2',
@@ -7083,14 +7083,14 @@ wwv_flow_imp_shared.append_to_install_script(
 '                  <link rel="stylesheet" type="text/css" href="%s" />',
 '                </head>',
 '                <body>',
-'                  <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>',
-'                  <h2 class="z-rss--description"><xsl:value-of select="description" /></h2>',
+'                  <h1><a class="blog-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>',
+'                  <h2 class="blog-rss--description"><xsl:value-of select="description" /></h2>',
 '                  <xsl:for-each select="./item">',
-'                    <article class="z-rss--post">',
+'                    <article class="blog-rss--post">',
 '                      <header>',
-'                        <h3 class="z-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h3>',
+'                        <h3 class="blog-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h3>',
 '                      </header>',
-'                      <p class="z-rss--postBody"><xsl:value-of select="description" /></p>',
+'                      <p class="blog-rss--postBody"><xsl:value-of select="description" /></p>',
 '                    </article>',
 '                  </xsl:for-each>',
 '                </body>',
@@ -7548,9 +7548,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      ,p_charset        => c_char_set',
 '    );',
 '',
-'  -- handle errors',
-'  exception',
-'  when ot'))
+'  -- handle er'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -7568,7 +7566,9 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'hers',
+'rors',
+'  exception',
+'  when others',
 '  then',
 '',
 '    apex_debug.error(',

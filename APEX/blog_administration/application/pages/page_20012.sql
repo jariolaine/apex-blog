@@ -24,12 +24,12 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231118051259'
+,p_last_upd_yyyymmddhh24miss=>'20231118082844'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27272383079075402)
 ,p_plug_name=>'Settings'
-,p_region_css_classes=>'z-config-ig'
+,p_region_css_classes=>'blog-config-ig'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(8495746153518209)
 ,p_plug_display_sequence=>10
@@ -43,6 +43,7 @@ wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(11417791403329135)
 ,p_name=>'HELP_LINK'
 ,p_source_type=>'NONE'
+,p_session_state_data_type=>'VARCHAR2'
 ,p_item_type=>'NATIVE_LINK'
 ,p_heading=>'Help'
 ,p_heading_alignment=>'CENTER'
@@ -70,7 +71,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_value_alignment=>'CENTER'
 ,p_stretch=>'N'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<div class="z-status-marker z-status-marker--left {case IS_NULLABLE/}{when 0/}z-required{endcase/}">',
+'<div class="blog-status-marker blog-status-marker--left{case IS_NULLABLE/}{when 0/} blog-required{endcase/}">',
 '  &VALUE_REQUIRED.',
 '</div>',
 ''))
@@ -223,6 +224,7 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_type=>'DB_COLUMN'
 ,p_source_expression=>'ATTRIBUTE_VALUE'
 ,p_data_type=>'VARCHAR2'
+,p_session_state_data_type=>'VARCHAR2'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_TEXT_FIELD'
 ,p_heading=>'Value'
@@ -357,6 +359,7 @@ wwv_flow_imp_page.create_interactive_grid(
 ,p_define_chart_view=>false
 ,p_enable_download=>false
 ,p_download_formats=>null
+,p_enable_mail_download=>true
 ,p_fixed_header=>'NONE'
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false

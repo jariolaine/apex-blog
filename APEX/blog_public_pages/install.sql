@@ -15,6 +15,9 @@ prompt --install
 @@application/shared_components/files/icons_app_icon_512_png.sql
 @@application/shared_components/files/css_rss_xsl_min_css.sql
 @@application/shared_components/files/js_blog_min_js.sql
+@@application/shared_components/files/icons_app_icon_144_rounded_png.sql
+@@application/shared_components/files/icons_app_icon_256_rounded_png.sql
+@@application/shared_components/files/icons_about_txt.sql
 @@application/shared_components/files/css_rss_xsl_css.sql
 @@application/shared_components/files/js_blog_js.sql
 @@application/shared_components/files/css_style_min_css.sql
@@ -174,6 +177,7 @@ prompt --install
 @@application/deployment/install/upgrade_database_objects_upgrade.sql
 @@application/deployment/install/upgrade_create_index_blog_posts_ctx.sql
 @@application/deployment/install/upgrade_create_index_blog_comments_ctx.sql
+@@application/deployment/install/upgrade_purge_cached_regions_and_pages.sql
 @@application/deployment/install/upgrade_update_version_info.sql
 @@application/deployment/checks.sql
 @@application/deployment/buildoptions.sql

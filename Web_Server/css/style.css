@@ -10,7 +10,7 @@ blockquote::after {
 /**************************************
 * Public application header
 **************************************/
-.z-app-banner {
+.blog-app-banner {
   background-color: var(--ut-header-background-color);
   padding: 1rem 1rem 0;
   font-size: 1.75rem;
@@ -26,7 +26,7 @@ blockquote::after {
 * Used in file repository report
 * Needed for wrap file name on small screens
 **************************************/
-.z-MediaList--files .t-MediaList-title {
+.blog-MediaList--files .t-MediaList-title {
   word-break: break-word;
 }
 /**************************************
@@ -37,7 +37,7 @@ blockquote::after {
 *   https://epicbootstrap.com/snippets/footer-basic
 *   https://jsfiddle.net/Grobbert/gmqth51o/1/
 **************************************/
-.z-footerList {
+.blog-footerList {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -46,35 +46,35 @@ blockquote::after {
   text-align: center;
   font-size: 1.125rem;
 }
-.z-footerList .z-footerList-item {
+.blog-footerList .blog-footerList-item {
   padding: 0 0.625rem;
   font-size: inherit;
 }
-.z-footerList .z-footerList-link {
+.blog-footerList .blog-footerList-link {
   color: inherit;
   text-decoration: none;
   opacity: 0.6;
 }
-.z-footerList .z-footerList-link:hover {
+.blog-footerList .blog-footerList-link:hover {
   opacity: 1;
 }
-.z-copyright {
+.blog-copyright {
   text-align: center;
   padding: 1rem 0;
 }
-.z-copyright .z-copyright-link {
+.blog-copyright .blog-copyright-link {
   color: inherit;
   font-size: 0.875rem;
   opacity: 0.6;
 }
-.z-copyright .z-copyright-link:hover {
+.blog-copyright .blog-copyright-link:hover {
   opacity: 1;
 }
 @media only screen and (max-width: 640px) {
-  .z-footerList {
+  .blog-footerList {
     flex-direction: column;
   }
-  .z-footerList .z-footerList-item {
+  .blog-footerList .blog-footerList-item {
     padding: 0.75rem 0;
   }
 }
@@ -94,44 +94,44 @@ blockquote::after {
 /**************************************
 * Post report
 **************************************/
-.z-posts .z-post {
+.blog-posts .blog-post {
   margin-bottom: 1rem;
   border: var(--ut-component-border-width) solid var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
   background-color: var(--ut-component-background-color);
 }
-.z-posts .z-post .z-post--header {
+.blog-posts .blog-post .blog-post--header {
   clear: both;
   padding: 1rem;
 }
-.z-posts .z-post .z-post--header .z-post--date {
+.blog-posts .blog-post .blog-post--header .blog-post--date {
   font-size: 1.125em;
   margin: 0 0 0.25rem;
 }
-.z-posts .z-post .z-post--header .z-post--title {
+.blog-posts .blog-post .blog-post--header .blog-post--title {
   font-size: 1.625em;
   margin: 0 0 0.5rem;
 }
-.z-posts .z-post .z-post--header .z-post--category {
+.blog-posts .blog-post .blog-post--header .blog-post--category {
   font-size: 1em;
 }
-.z-posts .z-post .z-post--body {
+.blog-posts .blog-post .blog-post--body {
   padding: 0 1rem 1rem;
   margin-bottom: 1rem;
 }
-.z-posts .z-post .z-post--body img {
+.blog-posts .blog-post .blog-post--body img {
   max-width: 100%;
   height: auto;
 }
-.z-posts .z-post .z-post--body br {
+.blog-posts .blog-post .blog-post--body br {
   clear: none!important;
 }
-.z-posts .z-post .z-post--footer {
+.blog-posts .blog-post .blog-post--footer {
   width: 100%;
   clear: both;
 }
-.z-posts .z-post .z-post--footer .z-post--tags {
+.blog-posts .blog-post .blog-post--footer .blog-post--tags {
   width: 100%;
   clear: both;
   padding: 1rem;
@@ -140,7 +140,7 @@ blockquote::after {
   gap: 0.5rem;
   border-top: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
 }
-.z-posts .z-posts--pagination {
+.blog-posts .blog-posts--pagination {
   margin-bottom: 1rem;
   padding: 0.25rem;
   border: var(--ut-component-border-width) solid var(--ut-component-border-color);
@@ -148,29 +148,29 @@ blockquote::after {
   box-shadow: var(--ut-shadow-sm);
   background-color: var(--ut-component-background-color);
 }
-.z-posts.z-posts--paginationHidden .z-posts--pagination {
+.blog-posts.blog-posts--paginationHidden .blog-posts--pagination {
   display: none!important;
   visibility: hidden!important;
 }
 @media only screen and (max-width: 640px) {
-  .z-posts .z-post .z-post--header {
+  .blog-posts .blog-post .blog-post--header {
     padding: 0.5rem 0.5rem 1rem;
   }
-  .z-posts .z-post .z-post--header .z-post--title {
+  .blog-posts .blog-post .blog-post--header .blog-post--title {
     font-size: 1.375em;
   }
-  .z-posts .z-post .z-post--body {
+  .blog-posts .blog-post .blog-post--body {
     padding: 0 0.5rem 1rem;
   }
-  .z-posts .z-post .z-post--footer .z-post--tags {
+  .blog-posts .blog-post .blog-post--footer .blog-post--tags {
     justify-content: space-evenly;
     padding: 0.5rem;
   }
-  .z-posts .z-posts--pagination .pagination {
+  .blog-posts .blog-posts--pagination .pagination {
     display: flex;
     justify-content: center;
   }
-  .z-posts .z-posts--pagination .pagination .t-Report-paginationText {
+  .blog-posts .blog-posts--pagination .pagination .t-Report-paginationText {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
@@ -180,14 +180,14 @@ blockquote::after {
 /**************************************
 * Post paginaion button
 **************************************/
-.z-text-wrap {
+.blog-text-wrap {
   white-space: pre-wrap;
 }
 /**************************************
 * Public app custom report template:
 *   Blog Content (Custom 2)
 **************************************/
-.z-Content .z-Content--Row {
+.blog-Content .blog-Content--Row {
   border: var(--ut-component-border-width) solid var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
@@ -195,7 +195,7 @@ blockquote::after {
   background-color: var(--ut-component-background-color);
   overflow: hidden;
 }
-.z-Content .z-Content--Title {
+.blog-Content .blog-Content--Title {
   font-size: var(--ut-region-header-font-size, 1rem);
   font-weight: 500;
   border-bottom: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
@@ -203,14 +203,15 @@ blockquote::after {
   padding: var(--ut-region-header-padding-x, 0.75rem);
   margin: 0;
 }
-.z-Content .z-Content--Body {
+.blog-Content .blog-Content--Body {
   padding: 1rem;
 }
 /**************************************
 * Program code formatting
 **************************************/
-/* Pre APEX 22.2 CKEditor 4 */
+/* Legacy */
 pre.z-program-code,
+pre.blog-program-code,
 .ck-content pre:has( code ) {
   clear: both;
   font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace";
@@ -230,6 +231,7 @@ pre.z-program-code,
   box-shadow: var(--ut-shadow-sm);
 }
 pre.z-program-code code,
+pre.blog-program-code code,
 .ck-content pre:has( code ) code {
   font-family: inherit;
   font-size: inherit;
@@ -237,49 +239,49 @@ pre.z-program-code code,
 /**************************************
 * About content
 **************************************/
-.z-author-container {
+.blog-author-container {
   display: flex;
   gap: 1rem;
 }
-.z-author-container .z-author-left {
+.blog-author-container .blog-author-left {
   display: flex;
   flex-direction: column;
 }
-.z-author-container .z-author-right {
+.blog-author-container .blog-author-right {
   font-size: 1rem;
 }
-.z-author-container .z-author-right .z-author-badges {
+.blog-author-container .blog-author-right .blog-author-badges {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   padding: 1rem 0;
 }
 @media only screen and (max-width: 640px) {
-  .z-author-container {
+  .blog-author-container {
     flex-direction: column;
     align-items: center;
   }
-  .z-author-container .z-author-right .z-author-badges {
+  .blog-author-container .blog-author-right .blog-author-badges {
     align-items: center;
   }
 }
 /**************************************
 * Comments classic report
 **************************************/
-.z-comment .t-Comments-body {
+.blog-comment .t-Comments-body {
   width: 0;
 }
-.z-comment .t-Comments-comment {
+.blog-comment .t-Comments-comment {
   overflow-wrap: break-word;
 }
-.z-comment:not(:last-child) {
+.blog-comment:not(:last-child) {
   border-bottom: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
   padding-bottom: var(--ut-comment-item-margin-bottom, 1rem);
 }
 /**************************************
 * Public app right column lists extra class
 **************************************/
-.z-linkList:hover {
+.blog-linkList:hover {
   background-color: var(--ut-linkslist-hover-background-color, var(--ut-component-highlight-background-color));
 }
 /**************************************
@@ -290,7 +292,7 @@ pre.z-program-code code,
 * Credits:
 *   https://dev.to/alvaromontoro/create-a-tag-cloud-with-html-and-css-1e90
 **************************************/
-.z-tagCloud {
+.blog-tagCloud {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
@@ -300,41 +302,41 @@ pre.z-program-code code,
   margin: 0;
   padding: 0;
 }
-.z-tagCloud:not(:empty) {
+.blog-tagCloud:not(:empty) {
   padding: 0.5rem;
 }
-.z-tagCloud .z-tagCloud-link {
+.blog-tagCloud .blog-tagCloud-link {
   display: flex;
   text-decoration: none;
   position: relative;
-  font-size: calc(var(--z-tag-size) * 0.125rem - -0.75rem);
+  font-size: calc(var(--blog-tag-size) * 0.125rem - -0.75rem);
   padding: 0.5rem;
 }
-.z-tagCloud .z-tagCloud-link[data-weight="1"] {
-  --z-tag-size: 1;
+.blog-tagCloud .blog-tagCloud-link[data-weight="1"] {
+  --blog-tag-size: 1;
 }
-.z-tagCloud .z-tagCloud-link[data-weight="2"] {
-  --z-tag-size: 2;
+.blog-tagCloud .blog-tagCloud-link[data-weight="2"] {
+  --blog-tag-size: 2;
 }
-.z-tagCloud .z-tagCloud-link[data-weight="3"] {
-  --z-tag-size: 3;
+.blog-tagCloud .blog-tagCloud-link[data-weight="3"] {
+  --blog-tag-size: 3;
 }
-.z-tagCloud .z-tagCloud-link[data-weight="4"] {
-  --z-tag-size: 4;
+.blog-tagCloud .blog-tagCloud-link[data-weight="4"] {
+  --blog-tag-size: 4;
 }
-.z-tagCloud .z-tagCloud-link[data-weight="5"] {
-  --z-tag-size: 5;
+.blog-tagCloud .blog-tagCloud-link[data-weight="5"] {
+  --blog-tag-size: 5;
 }
-.z-tagCloud .z-tagCloud-link[data-weight="6"] {
-  --z-tag-size: 6;
+.blog-tagCloud .blog-tagCloud-link[data-weight="6"] {
+  --blog-tag-size: 6;
 }
-.z-tagCloud .z-tagCloud-link[data-weight="7"] {
-  --z-tag-size: 7;
+.blog-tagCloud .blog-tagCloud-link[data-weight="7"] {
+  --blog-tag-size: 7;
 }
-.z-tagCloud .z-tagCloud-link[data-weight="8"] {
-  --z-tag-size: 8;
+.blog-tagCloud .blog-tagCloud-link[data-weight="8"] {
+  --blog-tag-size: 8;
 }
-.z-tagCloud .z-tagCloud-link::before {
+.blog-tagCloud .blog-tagCloud-link::before {
   content: "";
   position: absolute;
   top: 0;
@@ -345,11 +347,11 @@ pre.z-program-code code,
   transform: translate(-50%, 0);
   transition: width 0.25s;
 }
-.z-tagCloud .z-tagCloud-link:hover::before,
-.z-tagCloud .z-tagCloud-link:focus::before {
+.blog-tagCloud .blog-tagCloud-link:hover::before,
+.blog-tagCloud .blog-tagCloud-link:focus::before {
   width: 100%;
 }
-.z-tagCloud .z-tagCloud-badge {
+.blog-tagCloud .blog-tagCloud-badge {
   background-color: var(--ut-component-badge-background-color);
   color: var(--ut-component-badge-text-color);
   border-radius: var(--ut-component-badge-border-radius);
@@ -359,32 +361,32 @@ pre.z-program-code code,
   margin-left: 0.25rem;
   padding: 0 0.5rem;
 }
-.z-tagCloud .z-tagCloud-badge:empty {
+.blog-tagCloud .blog-tagCloud-badge:empty {
   display: none;
 }
 @media (prefers-reduced-motion) {
-  ul.z-tagCloud * {
+  ul.blog-tagCloud * {
     transition: none !important;
   }
 }
 /**************************************
 * Public app search result reports tags
 **************************************/
-.z-search--tags {
+.blog-search--tags {
   margin-inline-start: 0.5rem;
   margin-bottom: 0.5rem;
   display: inline-block;
 }
-.z-search--tags:first-child {
+.blog-search--tags:first-child {
   margin-inline-start: 0!important;
 }
-.z-search--tags:not( :last-child )::after {
+.blog-search--tags:not( :last-child )::after {
   content: ",";
 }
 /**************************************
 * Public application search field
 **************************************/
-.z-search-field {
+.blog-search-field {
   border-radius: var(--ut-component-border-radius);
   margin-bottom: 0.5rem;
   margin-left: 0.25rem;
@@ -392,9 +394,9 @@ pre.z-program-code code,
 /**************************************
 * Public app tabs
 **************************************/
-.t-NavTabs-item.is-active {
-  --ut-navtabs-item-border-color: var(--ut-navtabs-item-active-background-color);
-}
 .t-NavTabs-item {
   border-bottom: var(--ut-navtabs-item-border-width, 1px) solid var(--ut-navtabs-item-border-color);
+}
+.t-NavTabs-item.is-active {
+  border-bottom-color: var(--ut-navtabs-item-active-background-color);
 }

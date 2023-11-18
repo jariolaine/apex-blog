@@ -437,14 +437,14 @@ as
                   <link rel="stylesheet" type="text/css" href="%s" />
                 </head>
                 <body>
-                  <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>
-                  <h2 class="z-rss--description"><xsl:value-of select="description" /></h2>
+                  <h1><a class="blog-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>
+                  <h2 class="blog-rss--description"><xsl:value-of select="description" /></h2>
                   <xsl:for-each select="./item">
-                    <article class="z-rss--post">
+                    <article class="blog-rss--post">
                       <header>
-                        <h3 class="z-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h3>
+                        <h3 class="blog-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h3>
                       </header>
-                      <p class="z-rss--postBody"><xsl:value-of select="description" /></p>
+                      <p class="blog-rss--postBody"><xsl:value-of select="description" /></p>
                     </article>
                   </xsl:for-each>
                 </body>

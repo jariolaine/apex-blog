@@ -29,7 +29,7 @@ wwv_flow_imp_shared.create_list(
 '-- Category id data attribute.',
 '-- Used in dynamic action to set class for current list item.',
 '  ,v1.list_attr       as attribute2',
-'  ,''z-linkList''       as attribute3',
+'  ,''blog-linkList''       as attribute3',
 'from blog_v_categories v1',
 'where 1 = 1',
 'order by v1.display_seq'))

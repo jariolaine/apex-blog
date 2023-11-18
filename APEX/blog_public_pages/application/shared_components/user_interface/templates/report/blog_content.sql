@@ -16,9 +16,9 @@ wwv_flow_imp_shared.create_row_template(
 ,p_row_template_name=>'Blog Content (Custom 2)'
 ,p_internal_name=>'BLOG_CONTENT'
 ,p_row_template1=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<div class="z-Content--Row">',
-'  <h3 class="z-Content--Title">#REGION_TITLE#</h3>',
-'  <div class="z-Content--Body">',
+'<div class="blog-Content--Row">',
+'  <h3 class="blog-Content--Title">#REGION_TITLE#</h3>',
+'  <div class="blog-Content--Body">',
 '    #BODY_HTML#',
 '  </div>',
 '</div>'))
@@ -28,7 +28,7 @@ wwv_flow_imp_shared.create_row_template(
 '  #BODY_HTML#',
 '  #CHANGED_ON#',
 '</div>'))
-,p_row_template_before_rows=>'<div class="z-Content #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_report" data-region-id="#REGION_STATIC_ID#">'
+,p_row_template_before_rows=>'<div class="blog-Content #COMPONENT_CSS_CLASSES#" #REPORT_ATTRIBUTES# id="#REGION_STATIC_ID#_report" data-region-id="#REGION_STATIC_ID#">'
 ,p_row_template_after_rows=>'</div>'
 ,p_row_template_type=>'NAMED_COLUMNS'
 ,p_row_template_display_cond1=>'NOT_CONDITIONAL'

@@ -14,18 +14,18 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_list_template(
  p_id=>wwv_flow_imp.id(61358318182072659)
 ,p_list_template_current=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<li class="z-footerList-item">',
-'  <a href="#LINK#" class="z-footerList-link">#TEXT#</a>',
+'<li class="blog-footerList-item">',
+'  <a href="#LINK#" class="blog-footerList-link">#TEXT#</a>',
 '</li>'))
 ,p_list_template_noncurrent=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<li class="z-footerList-item">',
-'  <a href="#LINK#" class="z-footerList-link">#TEXT#</a>',
+'<li class="blog-footerList-item">',
+'  <a href="#LINK#" class="blog-footerList-link">#TEXT#</a>',
 '</li>'))
 ,p_list_template_name=>'Blog Footer Link List (Custom 1)'
 ,p_internal_name=>'BLOG_FOOTER_LINK_LIST'
 ,p_theme_id=>42
 ,p_theme_class_id=>9
-,p_list_template_before_rows=>'<ul class="z-footerList #COMPONENT_CSS_CLASSES#" id="#LIST_ID#">'
+,p_list_template_before_rows=>'<ul class="blog-footerList #COMPONENT_CSS_CLASSES#" id="#LIST_ID#">'
 ,p_list_template_after_rows=>' </ul>'
 );
 wwv_flow_imp.component_end;

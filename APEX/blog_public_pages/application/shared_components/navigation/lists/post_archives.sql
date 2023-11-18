@@ -29,7 +29,7 @@ wwv_flow_imp_shared.create_list(
 '-- Archive id data attribute.',
 '-- Used in dynamic action to set class for current list item.',
 '  ,v1.list_attr       as attribute2',
-'  ,''z-linkList''       as attribute3',
+'  ,''blog-linkList''       as attribute3',
 'from blog_v_archive_year v1',
 'order by v1.archive_year desc'))
 ,p_list_status=>'PUBLIC'

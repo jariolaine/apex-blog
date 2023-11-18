@@ -60,9 +60,9 @@ wwv_imp_workspace.create_flow(
 ,p_error_handling_function=>'blog_util.apex_error_handler'
 ,p_tokenize_row_search=>'N'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231118061823'
+,p_last_upd_yyyymmddhh24miss=>'20231118093236'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>717
+,p_files_version=>750
 ,p_print_server_type=>'INSTANCE'
 ,p_is_pwa=>'N'
 ,p_copyright_banner=>'License: https://raw.githubusercontent.com/jariolaine/apex-blog/master/LICENSE.txt'

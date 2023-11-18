@@ -1,71 +1,93 @@
 /**************************************
 * About content
 **************************************/
-.z-author-container {
+.blog-author-container {
   display: flex;
   gap: 1rem;
 }
-.z-author-container .z-author-left {
+.blog-author-container .blog-author-left {
   display: flex;
   flex-direction: column;
 }
-.z-author-container .z-author-right {
+.blog-author-container .blog-author-right {
   font-size: 1rem;
 }
-.z-author-container .z-author-right .z-author-badges {
+.blog-author-container .blog-author-right .blog-author-badges {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   padding: 1rem 0;
 }
 @media only screen and (max-width: 640px) {
-  .z-author-container {
+  .blog-author-container {
     flex-direction: column;
     align-items: center;
   }
-  .z-author-container .z-author-right .z-author-badges {
+  .blog-author-container .blog-author-right .blog-author-badges {
     align-items: center;
   }
 }
 /**************************************
 * Page views metric bar column
 **************************************/
-.z-page-view-breakdown .t-Report-colHead:last-child,
-.z-page-view-breakdown .t-Report-cell:last-child {
+.blog-page-view-breakdown .t-Report-colHead:last-child,
+.blog-page-view-breakdown .t-Report-cell:last-child {
   width: 20%;
 }
 @media only screen and (max-width: 684px) {
-  .z-page-view-breakdown .t-Report-colHead:last-child,
-  .z-page-view-breakdown .t-Report-cell:last-child {
+  .blog-page-view-breakdown .t-Report-colHead:last-child,
+  .blog-page-view-breakdown .t-Report-cell:last-child {
     display: none;
   }
 }
 /**************************************
 * Posts IR detail view
 **************************************/
-.z-posts.z-post--IR .z-post {
+.blog-posts.blog-post--IR .blog-post {
   font-size: 1rem;
   margin: 2em 1rem;
 }
 /**************************************
 * Interactive Reports link column
 **************************************/
-.z-IR--iconLinks td:has( .t-Button ),
-.z-IR--iconLinks td:has( .t-Icon ) {
+.blog-IR--iconLinks td:has( .t-Button ),
+.blog-IR--iconLinks td:has( .t-Icon ) {
   width: 0.1%;
   padding: 0.25rem 0.5rem;
 }
 /**************************************
 * Settings and features Interactive Grid
 **************************************/
-.z-config-ig span.a-GV-breakLabel {
+.blog-config-ig span.a-GV-breakLabel {
   display: none!important;
   visibility: hidden!important;
 }
 /**************************************
+* Links
+**************************************/
+/* Scroll Results Only in Side Column */
+.t-Body-side {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+/* Format Search Region */
+.blog-search-region {
+  flex-shrink: 0;
+}
+/* Format search results */
+.blog-search-results {
+  flex: 1;
+  overflow: auto;
+}
+.blog-search-results-items {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+/**************************************
 * Admin application comments IR detail view
 **************************************/
-.z-comment-IR {
+.blog-comment-IR {
   display: flex;
   margin: 2em 1rem;
   padding: 1rem;
@@ -74,21 +96,21 @@
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
 }
-.z-comment-IR .z-commentContainer {
+.blog-comment-IR .blog-commentContainer {
   margin: 0 1rem;
   width: 100%;
   overflow: hidden;
 }
-.z-comment-IR .z-commentContainer .z-commentTitle {
+.blog-comment-IR .blog-commentContainer .blog-commentTitle {
   font-size: 1.5em;
   color: var(--ut-component-text-title-color);
 }
-.z-comment-IR .z-commentContainer .z-commentSubtitle {
+.blog-comment-IR .blog-commentContainer .blog-commentSubtitle {
   font-size: 0.875rem;
   color: var(--ut-component-text-subtitle-color);
   margin: 0.5rem 0 1.625rem;
 }
-.z-comment-IR .z-commentContainer .z-commentBody {
+.blog-comment-IR .blog-commentContainer .blog-commentBody {
   font-size: 0.875rem;
   color: var(--ut-component-text-default-color);
 }
@@ -104,44 +126,44 @@ blockquote::after {
 /**************************************
 * Post report
 **************************************/
-.z-posts .z-post {
+.blog-posts .blog-post {
   margin-bottom: 1rem;
   border: var(--ut-component-border-width) solid var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
   box-shadow: var(--ut-shadow-sm);
   background-color: var(--ut-component-background-color);
 }
-.z-posts .z-post .z-post--header {
+.blog-posts .blog-post .blog-post--header {
   clear: both;
   padding: 1rem;
 }
-.z-posts .z-post .z-post--header .z-post--date {
+.blog-posts .blog-post .blog-post--header .blog-post--date {
   font-size: 1.125em;
   margin: 0 0 0.25rem;
 }
-.z-posts .z-post .z-post--header .z-post--title {
+.blog-posts .blog-post .blog-post--header .blog-post--title {
   font-size: 1.625em;
   margin: 0 0 0.5rem;
 }
-.z-posts .z-post .z-post--header .z-post--category {
+.blog-posts .blog-post .blog-post--header .blog-post--category {
   font-size: 1em;
 }
-.z-posts .z-post .z-post--body {
+.blog-posts .blog-post .blog-post--body {
   padding: 0 1rem 1rem;
   margin-bottom: 1rem;
 }
-.z-posts .z-post .z-post--body img {
+.blog-posts .blog-post .blog-post--body img {
   max-width: 100%;
   height: auto;
 }
-.z-posts .z-post .z-post--body br {
+.blog-posts .blog-post .blog-post--body br {
   clear: none!important;
 }
-.z-posts .z-post .z-post--footer {
+.blog-posts .blog-post .blog-post--footer {
   width: 100%;
   clear: both;
 }
-.z-posts .z-post .z-post--footer .z-post--tags {
+.blog-posts .blog-post .blog-post--footer .blog-post--tags {
   width: 100%;
   clear: both;
   padding: 1rem;
@@ -150,7 +172,7 @@ blockquote::after {
   gap: 0.5rem;
   border-top: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
 }
-.z-posts .z-posts--pagination {
+.blog-posts .blog-posts--pagination {
   margin-bottom: 1rem;
   padding: 0.25rem;
   border: var(--ut-component-border-width) solid var(--ut-component-border-color);
@@ -158,29 +180,29 @@ blockquote::after {
   box-shadow: var(--ut-shadow-sm);
   background-color: var(--ut-component-background-color);
 }
-.z-posts.z-posts--paginationHidden .z-posts--pagination {
+.blog-posts.blog-posts--paginationHidden .blog-posts--pagination {
   display: none!important;
   visibility: hidden!important;
 }
 @media only screen and (max-width: 640px) {
-  .z-posts .z-post .z-post--header {
+  .blog-posts .blog-post .blog-post--header {
     padding: 0.5rem 0.5rem 1rem;
   }
-  .z-posts .z-post .z-post--header .z-post--title {
+  .blog-posts .blog-post .blog-post--header .blog-post--title {
     font-size: 1.375em;
   }
-  .z-posts .z-post .z-post--body {
+  .blog-posts .blog-post .blog-post--body {
     padding: 0 0.5rem 1rem;
   }
-  .z-posts .z-post .z-post--footer .z-post--tags {
+  .blog-posts .blog-post .blog-post--footer .blog-post--tags {
     justify-content: space-evenly;
     padding: 0.5rem;
   }
-  .z-posts .z-posts--pagination .pagination {
+  .blog-posts .blog-posts--pagination .pagination {
     display: flex;
     justify-content: center;
   }
-  .z-posts .z-posts--pagination .pagination .t-Report-paginationText {
+  .blog-posts .blog-posts--pagination .pagination .t-Report-paginationText {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
@@ -190,7 +212,7 @@ blockquote::after {
 /**************************************
 * Post paginaion button
 **************************************/
-.z-text-wrap {
+.blog-text-wrap {
   white-space: pre-wrap;
 }
 /**************************************
@@ -209,8 +231,9 @@ blockquote::after {
 /**************************************
 * Program code formatting
 **************************************/
-/* Pre APEX 22.2 CKEditor 4 */
+/* Legacy */
 pre.z-program-code,
+pre.blog-program-code,
 .ck-content pre:has( code ) {
   clear: both;
   font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Bitstream Vera Sans Mono", "Courier New", "monospace";
@@ -230,6 +253,7 @@ pre.z-program-code,
   box-shadow: var(--ut-shadow-sm);
 }
 pre.z-program-code code,
+pre.blog-program-code code,
 .ck-content pre:has( code ) code {
   font-family: inherit;
   font-size: inherit;
@@ -237,13 +261,13 @@ pre.z-program-code code,
 /**************************************
 * Comments classic report
 **************************************/
-.z-comment .t-Comments-body {
+.blog-comment .t-Comments-body {
   width: 0;
 }
-.z-comment .t-Comments-comment {
+.blog-comment .t-Comments-comment {
   overflow-wrap: break-word;
 }
-.z-comment:not(:last-child) {
+.blog-comment:not(:last-child) {
   border-bottom: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
   padding-bottom: var(--ut-comment-item-margin-bottom, 1rem);
 }
@@ -254,12 +278,12 @@ pre.z-program-code code,
 * Credits to fac586:
 *   https://forums.oracle.com/ords/apexds/post/is-there-a-way-to-add-a-visual-marker-to-a-cell-in-a-classi-8415
 **************************************/
-.z-status-marker {
+.blog-status-marker {
   position: relative;
   margin: -0.5rem -0.75rem;
   padding: 0.5rem 0.75rem;
 }
-.z-status-marker.z-status-marker--left::before {
+.blog-status-marker.blog-status-marker--left::before {
   position: absolute;
   top: 0;
   left: 0;
@@ -268,10 +292,10 @@ pre.z-program-code code,
   height: 0;
   content: "";
 }
-.z-status-marker.z-status-marker--left.z-required::before {
+.blog-status-marker.blog-status-marker--left.blog-required::before {
   border-color: var(--u-color-9) transparent transparent var(--u-color-9);
 }
-.z-status-marker.z-status-marker--right::after {
+.blog-status-marker.blog-status-marker--right::after {
   position: absolute;
   top: 0;
   right: 0;
@@ -280,20 +304,20 @@ pre.z-program-code code,
   height: 0;
   content: "";
 }
-.z-status-marker.z-status-marker--right.z-required::after {
+.blog-status-marker.blog-status-marker--right.blog-required::after {
   border-color: var(--u-color-9) var(--u-color-9) transparent transparent;
 }
 /**************************************
 * Admin app login page horizontal ruler
 **************************************/
-.z-hr-section {
+.blog-hr-section {
   display: flex;
   flex-basis: 100%;
   align-items: center;
   margin: 0.5rem 0px;
 }
-.z-hr-section::before,
-.z-hr-section::after {
+.blog-hr-section::before,
+.blog-hr-section::after {
   content: "";
   flex-grow: 1;
   background: rgba(0, 0, 0, 0.35);
@@ -301,9 +325,9 @@ pre.z-program-code code,
   font-size: 0px;
   line-height: 0px;
 }
-.z-hr-section::before {
+.blog-hr-section::before {
   margin-right: 0.5rem;
 }
-.z-hr-section::after {
+.blog-hr-section::after {
   margin-left: 0.5rem;
 }

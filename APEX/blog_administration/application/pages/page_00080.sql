@@ -23,12 +23,12 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230409185816'
+,p_last_upd_yyyymmddhh24miss=>'20231118082751'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(80284348441189607)
 ,p_plug_name=>'Modal Popup Pages'
-,p_region_css_classes=>'z-IR--iconLinks'
+,p_region_css_classes=>'blog-IR--iconLinks'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(8495746153518209)
 ,p_plug_display_sequence=>10

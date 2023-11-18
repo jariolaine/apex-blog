@@ -144,7 +144,7 @@ var blog = blog || {};
       region: function( options ){
 
         var igId        = options.regionStaticId
-          , isConfigIg  = region( igId ).element.hasClass( "z-config-ig" )
+          , isConfigIg  = region( igId ).element.hasClass( "blog-config-ig" )
           // remove default "Save" and "Add Row" buttons form IG toolbar
           , toolbarData = $.apex.interactiveGrid.copyDefaultToolbar()
         ;

@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230602050504'
+,p_last_upd_yyyymmddhh24miss=>'20231118082623'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45211569698046322)
@@ -160,7 +160,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_source=>'IS_ACTIVE'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_YES_NO'
-,p_tag_css_classes=>'z-switch'
+,p_tag_css_classes=>'blog-switch'
 ,p_colspan=>3
 ,p_field_template=>wwv_flow_imp.id(8548970214518243)
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--radioButtonGroup'

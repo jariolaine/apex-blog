@@ -19,7 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'D'
 ,p_page_component_map=>'14'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230917212350'
+,p_last_upd_yyyymmddhh24miss=>'20231118081527'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6433141607894071)
@@ -41,7 +41,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_template=>wwv_flow_imp.id(6781372168267375)
 ,p_plug_display_sequence=>120
 ,p_plug_new_grid_row=>false
-,p_plug_grid_column_css_classes=>'z-global-column'
+,p_plug_grid_column_css_classes=>'blog-global-column'
 ,p_plug_display_column=>10
 ,p_translate_title=>'N'
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
@@ -166,7 +166,7 @@ wwv_flow_imp_page.create_page_plug(
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(39335143698650411)
 ,p_plug_name=>'Application Banner'
-,p_region_css_classes=>'z-app-banner'
+,p_region_css_classes=>'blog-app-banner'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(6781539027267375)
 ,p_plug_display_sequence=>10

@@ -23,12 +23,12 @@ wwv_flow_imp_page.create_page(
 ,p_help_text=>'No help available for this page.'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231005192728'
+,p_last_upd_yyyymmddhh24miss=>'20231118082702'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(65609751049299759)
 ,p_plug_name=>'Comments Report'
-,p_region_css_classes=>'z-IR--iconLinks'
+,p_region_css_classes=>'blog-IR--iconLinks'
 ,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
 ,p_plug_template=>wwv_flow_imp.id(8495746153518209)
 ,p_plug_display_sequence=>10
@@ -88,24 +88,24 @@ wwv_flow_imp_page.create_worksheet(
 ,p_detail_link_attr=>'data-unread="#BTN_DATA_UNREAD#" data-id="CF#COMMENT_ID#" title="#BTN_LABEL#" aria-label="#BTN_LABEL#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
 ,p_detail_view_enabled_yn=>'Y'
 ,p_detail_view_for_each_row=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<div class="z-comment-IR">',
-'  <div class="z-commentIcon">',
+'<div class="blog-comment-IR">',
+'  <div class="blog-commentIcon">',
 '    <span title="#COMMENT_FLAG#" arial-label="#COMMENT_FLAG#" class="t-Icon fa fa-lg #FLAG_ICON#" id="CF#COMMENT_ID#"></span>',
 '  </div>',
-'  <div class="z-commentContainer">',
-'    <div class="z-commentTitle u-flex">',
+'  <div class="blog-commentContainer">',
+'    <div class="blog-commentTitle u-flex">',
 '      <a class="w100p" href="#EDIT_URL#" data-unread="#DATA_UNREAD#" data-id="CF#COMMENT_ID#">',
 '        #POST_TITLE#',
-'        <div class="z-commentSubtitle">',
+'        <div class="blog-commentSubtitle">',
 '          #COMMENT_BY# &middot; #CREATED_ON#',
 '        </div>',
 '      </a>',
 '    </div>',
-'    <div class="z-commentBody">',
+'    <div class="blog-commentBody">',
 '      #COMMENT_BODY#',
 '    </div>',
 '  </div>',
-'  <div class="z-commentStatus">',
+'  <div class="blog-commentStatus">',
 '    <span title="#COMMENT_STATUS#" arial-label="#COMMENT_STATUS#" class="t-Icon fa fa-lg #STATUS_ICON#"></span>',
 '  </div>',
 '</div>'))

@@ -25,14 +25,14 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230831051928'
+,p_last_upd_yyyymmddhh24miss=>'20231118081654'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(65301007014080913)
 ,p_name=>'File Repository'
 ,p_template=>wwv_flow_imp.id(9260227573556082)
 ,p_display_sequence=>20
-,p_region_css_classes=>'z-MediaList--files'
+,p_region_css_classes=>'blog-MediaList--files'
 ,p_region_template_options=>'#DEFAULT#:t-ResultsRegion--boxed'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--stack:t-MediaList--iconsRounded'
 ,p_source_type=>'NATIVE_SQL_REPORT'

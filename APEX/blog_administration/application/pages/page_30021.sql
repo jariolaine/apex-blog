@@ -26,7 +26,7 @@ wwv_flow_imp_page.create_page(
 ,p_help_text=>'High level view of application logging information.'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230525054803'
+,p_last_upd_yyyymmddhh24miss=>'20231118082902'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(87874963598811882)
@@ -46,7 +46,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_name=>'Breakdown by Page'
 ,p_template=>wwv_flow_imp.id(8490381578518205)
 ,p_display_sequence=>30
-,p_region_sub_css_classes=>'z-page-view-breakdown'
+,p_region_sub_css_classes=>'blog-page-view-breakdown'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
 ,p_component_template_options=>'#DEFAULT#:t-Report--stretch:t-Report--altRowsDefault:t-Report--rowHighlight:t-Report--inline'
 ,p_source_type=>'NATIVE_SQL_REPORT'

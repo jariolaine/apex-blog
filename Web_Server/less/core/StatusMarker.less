@@ -6,12 +6,12 @@
 * Credits to fac586:
 *   https://forums.oracle.com/ords/apexds/post/is-there-a-way-to-add-a-visual-marker-to-a-cell-in-a-classi-8415
 **************************************/
-.z-status-marker {
+.blog-status-marker {
   position: relative;
   margin: -0.5rem -0.75rem;
   padding: 0.5rem 0.75rem;
   // Generate a triangle at the top left or right of report cells containing status marker elements
-  &.z-status-marker--left {
+  &.blog-status-marker--left {
     &::before {
       position: absolute;
       top: 0;
@@ -21,14 +21,14 @@
       height: 0;
       content: "";
     }
-    &.z-required {
+    &.blog-required {
       &::before {
         // Colour the triangles according to the specified status class
         border-color: var(--u-color-9) transparent transparent var(--u-color-9);
       }
     }
   }
-  &.z-status-marker--right {
+  &.blog-status-marker--right {
     &::after{
       position: absolute;
       top: 0;
@@ -38,7 +38,7 @@
       height: 0;
       content: "";
     }
-    &.z-required {
+    &.blog-required {
       &::after {
         // Colour the triangles according to the specified status class
         border-color: var(--u-color-9) var(--u-color-9) transparent transparent;

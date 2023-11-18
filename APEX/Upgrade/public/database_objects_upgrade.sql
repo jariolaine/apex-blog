@@ -1330,8 +1330,8 @@ select
 -- Generate HTML for tags used in APEX reports
   ,xmlelement( "a"
     ,xmlattributes(
-      q1.tag_url        as "href"
-      ,'z-search--tags' as "class"
+      q1.tag_url            as "href"
+      ,'blog-search--tags'  as "class"
     )
     ,q1.tag
   )                                   as tag_html1
@@ -5219,7 +5219,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   c_whitelist_tags  constant varchar2(256)  := '<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>';
-  c_code_block_html constant varchar2(256)  := '<pre class="z-program-code"><code>%s</code></pre>';
+  c_code_block_html constant varchar2(256)  := '<pre class="blog-program-code"><code>%s</code></pre>';
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -6449,14 +6449,14 @@ as
                   <link rel="stylesheet" type="text/css" href="%s" />
                 </head>
                 <body>
-                  <h1><a class="z-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>
-                  <h2 class="z-rss--description"><xsl:value-of select="description" /></h2>
+                  <h1><a class="blog-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>
+                  <h2 class="blog-rss--description"><xsl:value-of select="description" /></h2>
                   <xsl:for-each select="./item">
-                    <article class="z-rss--post">
+                    <article class="blog-rss--post">
                       <header>
-                        <h3 class="z-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h3>
+                        <h3 class="blog-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h3>
                       </header>
-                      <p class="z-rss--postBody"><xsl:value-of select="description" /></p>
+                      <p class="blog-rss--postBody"><xsl:value-of select="description" /></p>
                     </article>
                   </xsl:for-each>
                 </body>
