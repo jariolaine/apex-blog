@@ -4,8 +4,8 @@ begin
 --     APPLICATION COMPUTATION: G_USER_DATE_TIME_FORMAT
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.04.28'
-,p_release=>'23.1.5'
+ p_version_yyyy_mm_dd=>'2023.10.31'
+,p_release=>'23.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -19,6 +19,7 @@ wwv_flow_imp_shared.create_flow_computation(
 ,p_computation_type=>'SET_ITEM_EQUAL_THIS_PREFERENCE'
 ,p_computation_processed=>'REPLACE_EXISTING'
 ,p_computation=>'BLOG_DISPLAY_DATE_FORMAT'
+,p_version_scn=>1
 );
 wwv_flow_imp.component_end;
 end;

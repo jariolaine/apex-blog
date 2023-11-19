@@ -1,7 +1,7 @@
-prompt --application/shared_components/navigation/tabs/standard
+prompt --application/shared_components/navigation/listentry
 begin
 --   Manifest
---     TABS: 401
+--     LIST ENTRY: 
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.10.31'
