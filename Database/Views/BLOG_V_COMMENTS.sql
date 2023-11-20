@@ -8,6 +8,13 @@ select
   ,t1.parent_id   as parent_id
   ,t1.created_on  as created_on
   ,t1.comment_by  as comment_by
+  ,(
+    select
+      post_title
+    from blog_v_posts lkp
+    where 1 = 1
+    and lkp.post_id = t1.post_id
+  )               as post_title
   ,t1.body_html   as comment_body
   ,t1.ctx_search  as ctx_search
   ,apex_string.get_initials(

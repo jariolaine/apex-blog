@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231118082800'
+,p_last_upd_yyyymmddhh24miss=>'20231119113303'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27063074415689131)
@@ -192,7 +192,6 @@ wwv_flow_imp_page.create_region_column(
 ,p_source_type=>'DB_COLUMN'
 ,p_source_expression=>'BUILD_OPTION_STATUS'
 ,p_data_type=>'VARCHAR2'
-,p_session_state_data_type=>'VARCHAR2'
 ,p_is_query_only=>false
 ,p_item_type=>'NATIVE_YES_NO'
 ,p_heading=>'Status'
@@ -292,7 +291,6 @@ wwv_flow_imp_page.create_interactive_grid(
 ,p_define_chart_view=>false
 ,p_enable_download=>false
 ,p_download_formats=>null
-,p_enable_mail_download=>true
 ,p_fixed_header=>'NONE'
 ,p_show_icon_view=>false
 ,p_show_detail_view=>false
@@ -536,9 +534,9 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_01=>'PLSQL_CODE'
 ,p_attribute_04=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog_cm.update_feature(',
-'   p_app_id          => :APPLICATION_ID',
-'  ,p_build_option_id => :BUILD_OPTION_ID',
-'  ,p_build_status    => :BUILD_OPTION_STATUS',
+'   p_app_id           => :APPLICATION_ID',
+'  ,p_build_option_id  => :BUILD_OPTION_ID',
+'  ,p_build_status     => :BUILD_OPTION_STATUS',
 ');'))
 ,p_attribute_05=>'Y'
 ,p_attribute_06=>'N'

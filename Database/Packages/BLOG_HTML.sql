@@ -26,6 +26,7 @@ as
 --                              get_description_meta
 --    Jari Laine 25.11.2022 - Removed unused parameters
 --    Jari Laine 30.07.2023 - Replaced apex_util.get_build_option_status with apex_application_admin.get_build_option_status
+--    Jari Laine 18.11.2023 - New function get_atom_link
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -98,7 +99,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
-  c_link_canonical constant varchar2(34) := '<link rel="canonical" href="%s" />';
+  c_link_canonical constant varchar2(64) := '<link rel="canonical" href="%s" />';
+  c_link_alternate constant varchar2(64) := '<link href="%s" title="%s" rel="alternate" type="%s">';
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -339,12 +341,13 @@ as
       -- generate HTML
       l_rss_url :=
         apex_string.format(
-          p_message => '<link href="%s" title="%s" rel="alternate" type="application/rss+xml">'
+          p_message => c_link_alternate
           ,p0 => l_rss_url
           ,p1 =>
             apex_escape.html_attribute(
               p_string => l_rss_title
             )
+          ,p2 => 'application/rss+xml'
         )
       ;
 
@@ -387,12 +390,13 @@ as
       -- generate HTML
       l_atom_url :=
         apex_string.format(
-          p_message => '<link href="%s" title="%s" rel="alternate" type="application/atom+xml">'
+          p_message => c_link_alternate
           ,p0 => l_atom_url
           ,p1 =>
             apex_escape.html_attribute(
               p_string => l_atom_title
             )
+          ,p2 => 'application/atom+xml'
         )
       ;
 

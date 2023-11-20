@@ -261,13 +261,15 @@ pre.blog-program-code code,
 /**************************************
 * Comments classic report
 **************************************/
+.blog-comment .a-ResultsItem-content,
 .blog-comment .t-Comments-body {
-  width: 0;
+  min-width: 0;
 }
+.blog-comment .a-ResultsItem-description,
 .blog-comment .t-Comments-comment {
   overflow-wrap: break-word;
 }
-.blog-comment:not(:last-child) {
+.blog-comment.t-Comments-item:not(:last-child) {
   border-bottom: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
   padding-bottom: var(--ut-comment-item-margin-bottom, 1rem);
 }

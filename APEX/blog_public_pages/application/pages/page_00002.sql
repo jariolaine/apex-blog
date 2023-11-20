@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231118082416'
+,p_last_upd_yyyymmddhh24miss=>'20231119153349'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6915627356677149)
@@ -32,7 +32,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_region_name=>'comments'
 ,p_template=>wwv_flow_imp.id(6802870362267386)
 ,p_display_sequence=>40
-,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Comments--basic:t-Comments--iconsRounded:t-Report--hideNoPagination'
 ,p_new_grid_row=>false
 ,p_new_grid_column=>false
@@ -45,7 +45,7 @@ wwv_flow_imp_page.create_report_region(
 '  ,v1.icon_modifier as icon_modifier',
 '  ,v1.comment_body  as comment_text',
 '  ,v1.created_on    as comment_date',
-'  ,''blog-comment''   as comment_modifiers',
+'  ,null             as comment_modifiers -- see column HTML Expression',
 '  ,null             as actions',
 '  ,null             as attribute_1',
 '  ,null             as attribute_2',
@@ -130,6 +130,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>62
 ,p_column_heading=>'Comment Modifiers'
 ,p_use_as_row_header=>'N'
+,p_column_html_expression=>'blog-comment padding-md'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );

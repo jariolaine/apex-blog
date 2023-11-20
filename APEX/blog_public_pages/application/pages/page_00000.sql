@@ -19,7 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'D'
 ,p_page_component_map=>'14'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231118081527'
+,p_last_upd_yyyymmddhh24miss=>'20231120142904'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6433141607894071)
@@ -148,7 +148,10 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_template=>wwv_flow_imp.id(6781539027267375)
 ,p_plug_display_sequence=>120
 ,p_plug_display_point=>'REGION_POSITION_05'
-,p_plug_source=>'"BLOG_POWERED_BY"'
+,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<div class="blog-copyright">',
+'  <a href="https://github.com/jariolaine/apex-blog" class="blog-copyright-link" target="_blank" rel="external" title="Blog application built with Oracle Application Express (APEX)">Powered By APEX Blog</a>',
+'</div>'))
 ,p_translate_title=>'N'
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
 ,p_plug_display_when_condition=>'1001,1002,1003,9999'
@@ -159,7 +162,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_cache_when_condition_e2=>'NO'
 ,p_plug_cache_depends_on_items=>'APP_ID'
 ,p_landmark_type=>'exclude_landmark'
-,p_attribute_01=>'Y'
+,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 ,p_plug_comment=>'Displays link to blog application source code in GitHub'
 );

@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_help_text=>'No help available for this page.'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231118082702'
+,p_last_upd_yyyymmddhh24miss=>'20231120150029'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(65609751049299759)
@@ -235,14 +235,23 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_order=>130
 ,p_column_identifier=>'AL'
 ,p_column_label=>'Flag'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'{with/}',
-'TITLE:=#COMMENT_FLAG#',
-'ICON_ID:=CF#COMMENT_ID#',
-'ICON_CLASSES:=#FLAG_ICON# w60',
-'{apply THEME$ICON_CUSTOM_1/}'))
+,p_allow_sorting=>'N'
+,p_allow_filtering=>'N'
+,p_allow_highlighting=>'N'
+,p_allow_ctrl_breaks=>'N'
+,p_allow_aggregations=>'N'
+,p_allow_computations=>'N'
+,p_allow_charting=>'N'
+,p_allow_group_by=>'N'
+,p_allow_pivot=>'N'
 ,p_column_type=>'STRING'
+,p_display_text_as=>'TMPL_THEME_42$ICON_CUSTOM_1'
 ,p_column_alignment=>'CENTER'
+,p_attributes=>wwv_flow_string.join_clob(wwv_flow_t_varchar2('{',
+  '"TITLE": "#COMMENT_FLAG#",',
+  '"ICON_CLASSES": "#FLAG_ICON# w60",',
+  '"ICON_ID": "CF#COMMENT_ID#"',
+'}'))
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
@@ -251,13 +260,22 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_order=>150
 ,p_column_identifier=>'AK'
 ,p_column_label=>'Status'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'{with/}',
-'TITLE:=#COMMENT_STATUS#',
-'ICON_CLASSES:=#STATUS_ICON# w60',
-'{apply THEME$ICON_CUSTOM_1/}'))
+,p_allow_sorting=>'N'
+,p_allow_filtering=>'N'
+,p_allow_highlighting=>'N'
+,p_allow_ctrl_breaks=>'N'
+,p_allow_aggregations=>'N'
+,p_allow_computations=>'N'
+,p_allow_charting=>'N'
+,p_allow_group_by=>'N'
+,p_allow_pivot=>'N'
 ,p_column_type=>'STRING'
+,p_display_text_as=>'TMPL_THEME_42$ICON_CUSTOM_1'
 ,p_column_alignment=>'CENTER'
+,p_attributes=>wwv_flow_string.join_clob(wwv_flow_t_varchar2('{',
+  '"TITLE": "#COMMENT_STATUS#",',
+  '"ICON_CLASSES": "#STATUS_ICON# w60"',
+'}'))
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(

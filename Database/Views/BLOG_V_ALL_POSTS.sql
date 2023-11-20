@@ -189,7 +189,7 @@ select
       --,q1.notes           as "notes"
       ,apex_escape.striphtml(
         p_string => q1.body_html
-      )                   as "body"
+      )                   as "post"
       ,(
         select
           xmlagg( xmlforest( tags.tag as "tag" ) )

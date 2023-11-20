@@ -3,14 +3,16 @@
 * Comments classic report
 **************************************/
 .blog-comment {
+  .a-ResultsItem-content,
   .t-Comments-body {
-    width: 0;
+    min-width: 0;
   }
   // long URL e.g.
+  .a-ResultsItem-description,
   .t-Comments-comment {
     overflow-wrap: break-word;
   }
-  &:not(:last-child) {
+  &.t-Comments-item:not(:last-child) {
     border-bottom: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
     padding-bottom: var(--ut-comment-item-margin-bottom, 1rem);
   }

@@ -11,15 +11,16 @@ with q1 as(
     ,t1.changed_on
     ,t1.changed_by
     ,t1.is_active
-    ,t1.post_id
+    ,t2.id as post_id
     ,t1.parent_id
+    ,t2.title as post_title
     ,t1.body_html
     ,t1.comment_by
     ,t1.ctx_search
     ,t1.rowid as ctx_rid
     ,apex_escape.striphtml(
       p_string => t1.body_html
-    ) as search_desc
+    ) as ctx_search_text
     ,case
       when exists(
         select 1
@@ -129,6 +130,7 @@ with q1 as(
         )
     end as comment_flag_text
   from blog_comments t1
+  join blog_posts t2 on  t1.post_id = t2.id
 )
 select
    q1.id                  as id
@@ -140,13 +142,7 @@ select
   ,q1.is_active           as is_active
   ,q1.post_id             as post_id
   ,q1.parent_id           as parent_id
-  ,(
-    select
-      lkp.title
-    from blog_posts lkp
-    where 1 = 1
-      and q1.post_id = lkp.id
-  )                       as post_title
+  ,q1.post_title          as post_title
   ,q1.body_html           as body_html
   ,q1.comment_by          as comment_by
   ,q1.ctx_search          as ctx_search
@@ -196,16 +192,14 @@ select
       then 'fa-envelope-o'
       else 'fa-envelope-open-o'
   end                     as comment_flag_icon
-  ,substr( q1.search_desc, 1 , 128 )
-  || case when length( q1.search_desc ) > 128
+  ,substr( q1.ctx_search_text, 1 , 128 )
+  || case when length( q1.ctx_search_text ) > 128
     then ' ...'
   end                     as search_desc
   ,xmlserialize( content
     xmlforest(
-      q1.comment_by as "commented"
-      ,apex_escape.striphtml(
-        p_string => q1.body_html
-      )             as "body"
+      q1.comment_by       as "commented_by"
+      ,q1.ctx_search_text as "comment"
     )
   )                       as ctx_datastore
 from q1

@@ -17,6 +17,7 @@ wwv_flow_imp_shared.create_plugin(
 ,p_theme_id=>nvl(wwv_flow_application_install.get_theme_id, '42')
 ,p_name=>'THEME_42$ICON_CUSTOM_1'
 ,p_display_name=>'Icon (Custom 1)'
+,p_supported_component_types=>'PARTIAL'
 ,p_image_prefix => nvl(wwv_flow_application_install.get_static_plugin_file_prefix('TEMPLATE COMPONENT','THEME_42$ICON_CUSTOM_1'),'')
 ,p_partial_template=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<span{if TITLE/} title="#TITLE!ATTR#"{endif/} aria-hidden="true" class="t-Icon fa #ICON_CLASSES!ATTR#"{if ICON_ID/} id="#ICON_ID!ATTR#"{endif/}></span>',

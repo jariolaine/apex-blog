@@ -15,14 +15,14 @@ wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(32048697558624826)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
 ,p_name=>'Drop index blog_posts_ctx'
-,p_sequence=>110
+,p_sequence=>120
 ,p_script_type=>'UPGRADE'
 ,p_condition_type=>'EXISTS'
 ,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select 1',
 'from blog_v_version',
 'where 1 = 1',
-'and application_date < 20230608'))
+'and application_date < 20231120'))
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',
 '--  Drop index BLOG_POSTS_CTX',

@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_help_text=>'No help available for this page.'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231118082741'
+,p_last_upd_yyyymmddhh24miss=>'20231120153126'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45054908267895533)
@@ -195,16 +195,22 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_order=>90
 ,p_column_identifier=>'AA'
 ,p_column_label=>'Status'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'{with/}',
-'TITLE:=#IS_ACTIVE#',
-'ICON_CLASSES:=#FILE_STATUS_ICON# w60',
-'{apply THEME$ICON_CUSTOM_1/}'))
+,p_allow_sorting=>'N'
+,p_allow_filtering=>'N'
+,p_allow_highlighting=>'N'
+,p_allow_ctrl_breaks=>'N'
+,p_allow_aggregations=>'N'
+,p_allow_computations=>'N'
+,p_allow_charting=>'N'
+,p_allow_group_by=>'N'
+,p_allow_pivot=>'N'
 ,p_column_type=>'NUMBER'
-,p_display_text_as=>'LOV_ESCAPE_SC'
+,p_display_text_as=>'TMPL_THEME_42$ICON_CUSTOM_1'
 ,p_column_alignment=>'CENTER'
-,p_rpt_named_lov=>wwv_flow_imp.id(11784376262412448)
-,p_rpt_show_filter_lov=>'1'
+,p_attributes=>wwv_flow_string.join_clob(wwv_flow_t_varchar2('{',
+  '"TITLE": "#IS_ACTIVE#",',
+  '"ICON_CLASSES": "#FILE_STATUS_ICON# w60"',
+'}'))
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
@@ -213,16 +219,22 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_order=>100
 ,p_column_identifier=>'H'
 ,p_column_label=>'Attachment'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'{with/}',
-'TITLE:=#IS_DOWNLOAD#',
-'ICON_CLASSES:=#FILE_TYPE_ICON# w60',
-'{apply THEME$ICON_CUSTOM_1/}'))
+,p_allow_sorting=>'N'
+,p_allow_filtering=>'N'
+,p_allow_highlighting=>'N'
+,p_allow_ctrl_breaks=>'N'
+,p_allow_aggregations=>'N'
+,p_allow_computations=>'N'
+,p_allow_charting=>'N'
+,p_allow_group_by=>'N'
+,p_allow_pivot=>'N'
 ,p_column_type=>'NUMBER'
-,p_display_text_as=>'LOV_ESCAPE_SC'
+,p_display_text_as=>'TMPL_THEME_42$ICON_CUSTOM_1'
 ,p_column_alignment=>'CENTER'
-,p_rpt_named_lov=>wwv_flow_imp.id(11789591131543819)
-,p_rpt_show_filter_lov=>'1'
+,p_attributes=>wwv_flow_string.join_clob(wwv_flow_t_varchar2('{',
+  '"TITLE": "#IS_DOWNLOAD#",',
+  '"ICON_CLASSES": "#FILE_TYPE_ICON# w60"',
+'}'))
 ,p_use_as_row_header=>'N'
 ,p_help_text=>'Is file available for download in public application "Files" page.'
 );
@@ -314,14 +326,6 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_order=>180
 ,p_column_identifier=>'AO'
 ,p_column_label=>'Copy URL'
-,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'{with/}',
-'LABEL:=&APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD.',
-'BUTTON_ATTR:=data-clipboard-source="#RELATIVE_PATH#"',
-'CSS_CLASSES:=t-Button--small w60',
-'ICON_CLASSES:=fa fa-clone',
-'IS_ICON_ONLY:=Y',
-'{apply THEME$BUTTON_CUSTOM_2/}'))
 ,p_allow_sorting=>'N'
 ,p_allow_filtering=>'N'
 ,p_allow_highlighting=>'N'
@@ -332,7 +336,17 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_allow_group_by=>'N'
 ,p_allow_pivot=>'N'
 ,p_column_type=>'STRING'
+,p_display_text_as=>'TMPL_THEME_42$BUTTON_CUSTOM_2'
 ,p_column_alignment=>'CENTER'
+,p_attributes=>wwv_flow_string.join_clob(wwv_flow_t_varchar2('{',
+  '"IS_HOT": "N",',
+  '"IS_ICON_ONLY": "Y",',
+  '"ICON_CLASSES": "fa-clone",',
+  '"IS_DISABLED": "N",',
+  '"LABEL": "\u0026APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD.",',
+  '"CSS_CLASSES": "t-Button--small w60",',
+  '"BUTTON_ATTR": "data-clipboard-source=\"#RELATIVE_PATH#\""',
+'}'))
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(

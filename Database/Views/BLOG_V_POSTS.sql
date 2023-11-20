@@ -59,7 +59,7 @@ select
   ,(
     select
       xmlserialize(
-        content xmlagg( lkp_tag.tag_html1 order by lkp_tag.display_seq )
+        content xmlagg( lkp_tag.tag_html1 order by lkp_tag.display_seq ) as varchar2(32700)
       ) as tags_html
     from blog_v_post_tags lkp_tag
     where 1 = 1

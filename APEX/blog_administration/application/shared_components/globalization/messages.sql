@@ -181,6 +181,12 @@ wwv_flow_imp_shared.create_message(
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(9187375700861965)
+,p_name=>'BLOG_FEATURE_SEARCH_COMMENTS'
+,p_message_text=>'Search from comments'
+,p_version_scn=>39901457350025
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(25687100030320389)
 ,p_name=>'BLOG_FEATURE_SEARCH_FILES'
 ,p_message_text=>'Search from files'
@@ -329,6 +335,12 @@ wwv_flow_imp_shared.create_message(
 ,p_name=>'BLOG_HELP_FEATURE_SEARCH'
 ,p_message_text=>'Enable or disable "Search" tab.'
 ,p_version_scn=>1
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(9187755630875345)
+,p_name=>'BLOG_HELP_FEATURE_SEARCH_COMMENTS'
+,p_message_text=>'Enable or disable comment search.'
+,p_version_scn=>39901457471463
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21500166358341864)

@@ -24,23 +24,30 @@ wwv_flow_imp_shared.create_search_config(
 ,p_query_order_by=>'group_display_seq, display_seq'
 ,p_pk_column_name=>'LINK_ID'
 ,p_title_column_name=>'LINK_TITLE'
-,p_description_column_name=>'LINK_DESC'
+,p_description_column_name=>'LINK_TITLE'
 ,p_badge_column_name=>'GROUP_TITLE'
 ,p_icon_source_type=>'STATIC_CLASS'
 ,p_icon_css_classes=>'fa-external-link'
 ,p_default_row_html_expr=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<a class="a-ResultsItem &RESULT_CSS_CLASSES!ATTR." &LINK_ATTR!RAW. href="&LINK_URL!ATTR.">',
-'  <div class="a-ResultsItem-icon u-color-var">',
-'    <span class="fa &ICON_VALUE!ATTR." aria-hidden="true"></span>',
-'  </div>',
+'<div class="a-ResultsItem &RESULT_CSS_CLASSES!ATTR.">',
+'  {if ?ICON_VALUE/}',
+'    {case ICON_TYPE/}',
+'      {when INITIALS/}',
+'        <div class="a-ResultItem-initials u-color-var">&ICON_VALUE.</div>',
+'      {when URL/}',
+'        <div class="a-ResultItem-image"><img src="&ICON_VALUE!ATTR." alt="&ENAME!ATTR." role="presentation" /></div>',
+'      {when CLASS/}',
+'        <div class="a-ResultItem-icon u-color-var"><span class="fa &ICON_VALUE!ATTR." aria-hidden="true"></span></div>',
+'    {endcase/}',
+'  {endif/}',
 '  <div class="a-ResultsItem-content">',
 '    <div class="a-ResultsItem-header">',
-'      <span class="a-ResultsItem-title u-hot-text">&LINK_TITLE.</span>',
+'      <span class="a-ResultsItem-title u-flex-grow-1"><a &LINK_ATTR!RAW. href="&LINK_URL!ATTR.">&LINK_TITLE.</a></span>',
 '      <span class="a-ResultsItem-badge">&GROUP_TITLE.</span>',
 '    </div>',
 '    <div class="a-ResultsItem-description">&LINK_DESC.</div>',
 '  </div>',
-'</a>'))
+'</div>'))
 ,p_build_option_id=>wwv_flow_imp.id(6905258727754156)
 );
 wwv_flow_imp.component_end;

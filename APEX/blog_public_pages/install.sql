@@ -131,7 +131,6 @@ prompt --install
 @@application/shared_components/user_interface/shortcuts/blog_canonical_link_archive.sql
 @@application/shared_components/user_interface/shortcuts/blog_canonical_link_tab.sql
 @@application/shared_components/user_interface/shortcuts/blog_atom_link.sql
-@@application/shared_components/user_interface/shortcuts/blog_powered_by.sql
 @@application/shared_components/email/templates/blog_new_comment_notify.sql
 @@application/shared_components/security/authentications/application_express_authentication.sql
 @@application/shared_components/plugins/template_component/theme_42_avatar.sql
@@ -142,6 +141,7 @@ prompt --install
 @@application/shared_components/plugins/template_component/theme_42_content_row.sql
 @@application/shared_components/plugins/template_component/theme_42_media_list.sql
 @@application/shared_components/plugins/item_type/fi_jaris_math_question_field.sql
+@@application/shared_components/navigation/search_config/comments.sql
 @@application/shared_components/navigation/search_config/posts.sql
 @@application/shared_components/navigation/search_config/files.sql
 @@application/shared_components/navigation/search_config/links.sql
@@ -173,12 +173,12 @@ prompt --install
 @@application/deployment/install/upgrade_patch_22_2_20230304.sql
 @@application/deployment/install/upgrade_patch_22_2_20230416.sql
 @@application/deployment/install/upgrade_patch_23_1_20231118.sql
+@@application/deployment/install/upgrade_patch_23_2_20231120.sql
 @@application/deployment/install/upgrade_drop_index_blog_posts_ctx.sql
 @@application/deployment/install/upgrade_drop_index_blog_comments_ctx.sql
 @@application/deployment/install/upgrade_database_objects_upgrade.sql
 @@application/deployment/install/upgrade_create_index_blog_posts_ctx.sql
 @@application/deployment/install/upgrade_create_index_blog_comments_ctx.sql
-@@application/deployment/install/upgrade_purge_cached_regions_and_pages.sql
 @@application/deployment/install/upgrade_update_version_info.sql
 @@application/deployment/checks.sql
 @@application/deployment/buildoptions.sql

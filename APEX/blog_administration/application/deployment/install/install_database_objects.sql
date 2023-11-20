@@ -925,6 +925,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--    Jari Laine 24.11.2022 - Hard coded values to package private constants',
 '--                          - Removed not used parammeters from functions',
 '--                          - New function get_dynamic_page',
+'--    Jari Laine 18.11.2023 - New function get_atom',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -1168,6 +1169,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--                              get_description_meta',
 '--    Jari Laine 25.11.2022 - Removed unused parameters',
 '--    Jari Laine 30.07.2023 - Replaced apex_util.get_build_option_status with apex_application_admin.get_build_option_status',
+'--    Jari Laine 18.11.2023 - New function get_atom_link',
 '--',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -1372,11 +1374,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,t1.notes             as notes',
 '  ,apex_string_util.to_display_filesize(',
 '    p_size_in_bytes => t1.file_size',
-'  )                     as file_size_display',
-'  ,case t1.is_active',
-'    when 1',
-'    then ''fa-check-circle u-success-text''',
-'    else ''fa-minu'))
+'  )                     as '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1394,7 +1392,11 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'s-circle u-danger-text''',
+'file_size_display',
+'  ,case t1.is_active',
+'    when 1',
+'    then ''fa-check-circle u-success-text''',
+'    else ''fa-minus-circle u-danger-text''',
 '   end                  as file_status_icon',
 '  ,case t1.is_download',
 '    when 1',
@@ -1566,37 +1568,6 @@ wwv_flow_imp_shared.append_to_install_script(
 'from blog_bloggers t1',
 'where 1 = 1',
 'and t1.show_desc = 1',
-'with read only',
-'/',
-'--------------------------------------------------------',
-'--  DDL for View BLOG_V_COMMENTS',
-'--------------------------------------------------------',
-'create or replace force view blog_v_comments as',
-'select',
-'   t1.id          as comment_id',
-'  ,t1.post_id     as post_id',
-'  ,t1.parent_id   as parent_id',
-'  ,t1.created_on  as created_on',
-'  ,t1.comment_by  as comment_by',
-'  ,t1.body_html   as comment_body',
-'  ,t1.ctx_search  as ctx_search',
-'  ,apex_string.get_initials(',
-'    p_str => t1.comment_by',
-'  )               as user_icon',
-'  ,apex_string.format(',
-'     p_message => ''u-color-%s''',
-'    ,p0 => ora_hash( lower( t1.comment_by ), 44 ) + 1',
-'  )               as icon_modifier',
-'from blog_comments t1',
-'where 1 = 1',
-'  and t1.is_active = 1',
-'  and not exists(',
-'    select 1',
-'    from blog_comment_flags x1',
-'    where 1 = 1',
-'      and x1.comment_id = t1.id',
-'      and x1.flag = ''MODERATE''',
-'  )',
 'with read only',
 '/',
 '--------------------------------------------------------',
@@ -1882,15 +1853,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '    ,t1.changed_on',
 '    ,t1.changed_by',
 '    ,t1.is_active',
-'    ,t1.post_id',
+'    ,t2.id as post_id',
 '    ,t1.parent_id',
+'    ,t2.title as post_title',
 '    ,t1.body_html',
 '    ,t1.comment_by',
 '    ,t1.ctx_search',
 '    ,t1.rowid as ctx_rid',
 '    ,apex_escape.striphtml(',
 '      p_string => t1.body_html',
-'    ) as search_desc',
+'    ) as ctx_search_text',
 '    ,case',
 '      when exists(',
 '        select 1',
@@ -2000,6 +1972,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        )',
 '    end as comment_flag_text',
 '  from blog_comments t1',
+'  join blog_posts t2 on  t1.post_id = t2.id',
 ')',
 'select',
 '   q1.id                  as id',
@@ -2011,13 +1984,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,q1.is_active           as is_active',
 '  ,q1.post_id             as post_id',
 '  ,q1.parent_id           as parent_id',
-'  ,(',
-'    select',
-'      lkp.title',
-'    from blog_posts lkp',
-'    where 1 = 1',
-'      and q1.post_id = lkp.id',
-'  )                       as post_title',
+'  ,q1.post_title          as post_title',
 '  ,q1.body_html           as body_html',
 '  ,q1.comment_by          as comment_by',
 '  ,q1.ctx_search          as ctx_search',
@@ -2067,16 +2034,14 @@ wwv_flow_imp_shared.append_to_install_script(
 '      then ''fa-envelope-o''',
 '      else ''fa-envelope-open-o''',
 '  end                     as comment_flag_icon',
-'  ,substr( q1.search_desc, 1 , 128 )',
-'  || case when length( q1.search_desc ) > 128',
+'  ,substr( q1.ctx_search_text, 1 , 128 )',
+'  || case when length( q1.ctx_search_text ) > 128',
 '    then '' ...''',
 '  end                     as search_desc',
 '  ,xmlserialize( content',
 '    xmlforest(',
-'      q1.comment_by as "commented"',
-'      ,apex_escape.striphtml(',
-'        p_string => q1.body_html',
-'      )             as "body"',
+'      q1.comment_by       as "commented_by"',
+'      ,q1.ctx_search_text as "comment"',
 '    )',
 '  )                       as ctx_datastore',
 'from q1',
@@ -2273,7 +2238,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      --,q1.notes           as "notes"',
 '      ,apex_escape.striphtml(',
 '        p_string => q1.body_html',
-'      )                   as "body"',
+'      )                   as "post"',
 '      ,(',
 '        select',
 '          xmlagg( xmlforest( tags.tag as "tag" ) )',
@@ -2380,7 +2345,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,(',
 '    select',
 '      xmlserialize(',
-'        content xmlagg( lkp_tag.tag_html1 order by lkp_tag.display_seq )',
+'        content xmlagg( lkp_tag.tag_html1 order by lkp_tag.display_seq ) as varchar2(32700)',
 '      ) as tags_html',
 '    from blog_v_post_tags lkp_tag',
 '    where 1 = 1',
@@ -2391,25 +2356,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      xmlserialize(',
 '        content xmlagg( lkp_tag.tag_html2 order by lkp_tag.display_seq )',
 '      ) as tags_html',
-'    from blog_v_post_tags lkp'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_tag',
+'    from blog_v_post_tags lkp_tag',
 '    where 1 = 1',
 '      and lkp_tag.post_id = q1.post_id',
 '  )                   as tags_html2',
@@ -2438,7 +2385,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '      and lkp_post.published_on < q1.published_on',
 '    order by lkp_post.published_on desc',
 '    fetch first 1 rows only',
-'  )                   as prev_post',
+'  )               '))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.10.31'
+,p_release=>'23.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'    as prev_post',
 'from q1',
 'where 1 = 1',
 'with read only',
@@ -2552,6 +2517,44 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,v1.category_title',
 '  ,v1.category_seq',
 '  ,feat.show_post_count',
+'with read only',
+'/',
+'--------------------------------------------------------',
+'--  DDL for View BLOG_V_COMMENTS',
+'--------------------------------------------------------',
+'create or replace force view blog_v_comments as',
+'select',
+'   t1.id          as comment_id',
+'  ,t1.post_id     as post_id',
+'  ,t1.parent_id   as parent_id',
+'  ,t1.created_on  as created_on',
+'  ,t1.comment_by  as comment_by',
+'  ,(',
+'    select',
+'      post_title',
+'    from blog_v_posts lkp',
+'    where 1 = 1',
+'    and lkp.post_id = t1.post_id',
+'  )               as post_title',
+'  ,t1.body_html   as comment_body',
+'  ,t1.ctx_search  as ctx_search',
+'  ,apex_string.get_initials(',
+'    p_str => t1.comment_by',
+'  )               as user_icon',
+'  ,apex_string.format(',
+'     p_message => ''u-color-%s''',
+'    ,p0 => ora_hash( lower( t1.comment_by ), 44 ) + 1',
+'  )               as icon_modifier',
+'from blog_comments t1',
+'where 1 = 1',
+'  and t1.is_active = 1',
+'  and not exists(',
+'    select 1',
+'    from blog_comment_flags x1',
+'    where 1 = 1',
+'      and x1.comment_id = t1.id',
+'      and x1.flag = ''MODERATE''',
+'  )',
 'with read only',
 '/',
 '--------------------------------------------------------',
@@ -3403,10 +3406,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- none',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'-- Global procedures and functions',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure generate_post_datastore'))
+'-- Global procedures '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3424,7 +3424,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'(',
+'and functions',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  procedure generate_post_datastore(',
 '    rid   in rowid,',
 '    tlob  in out nocopy clob',
 '  )',
@@ -4467,14 +4470,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- fetch max link group display sequence',
 '    select max( v1.display_seq ) as display_seq',
 '    into l_max_seq',
-'    from blog_v_all_link_groups v1',
-'    ;',
-'    -- get next link group display sequence',
-'    l_next_seq := blog_util.int_to_vc2( next_seq( l_max_seq ) );',
-'    -- return next link group display sequence',
-'    return l_next_seq;',
-'',
-' '))
+'    from bl'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4492,7 +4488,14 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' end get_link_grp_seq;',
+'og_v_all_link_groups v1',
+'    ;',
+'    -- get next link group display sequence',
+'    l_next_seq := blog_util.int_to_vc2( next_seq( l_max_seq ) );',
+'    -- return next link group display sequence',
+'    return l_next_seq;',
+'',
+'  end get_link_grp_seq;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function get_modal_page_seq',
@@ -5493,16 +5496,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  function get_post(',
 '    p_post_id     in varchar2,',
-'    p_application in varchar2 default null,',
-'    p_canonical   in varchar2 default ''NO''',
-'  ) return varchar2',
-'  as',
-'    l_url varchar2(4000);',
-'  begin',
-'',
-'  return',
-'    case p_canonical',
-'      when ''YES'' then get_canonical'))
+' '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5520,7 +5514,16 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_host',
+'   p_application in varchar2 default null,',
+'    p_canonical   in varchar2 default ''NO''',
+'  ) return varchar2',
+'  as',
+'    l_url varchar2(4000);',
+'  begin',
+'',
+'  return',
+'    case p_canonical',
+'      when ''YES'' then get_canonical_host',
 '    end ||',
 '    apex_page.get_url(',
 '      p_application => p_application',
@@ -5751,8 +5754,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '      then',
 '        g_rss_url :=',
 '          get_process(',
-'             p_application  => p_application',
-'            ,p_process      => ''rss.xml''',
+'            p_application => p_application',
+'            ,p_process    => ''rss.xml''',
 '          );',
 '      end if;',
 '    end if;',
@@ -5773,8 +5776,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '    then',
 '      g_atom_url :=',
 '        get_process(',
-'            p_application  => p_application',
-'          ,p_process      => ''atom.xml''',
+'          p_application => p_application',
+'          ,p_process    => ''atom.xml''',
 '        );',
 '    end if;',
 '',
@@ -6420,7 +6423,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '',
-'  c_link_canonical constant varchar2(34) := ''<link rel="canonical" href="%s" />'';',
+'  c_link_canonical constant varchar2(64) := ''<link rel="canonical" href="%s" />'';',
+'  c_link_alternate constant varchar2(64) := ''<link href="%s" title="%s" rel="alternate" type="%s">'';',
 '',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -6519,16 +6523,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '            )',
 '        )',
 '      ;',
-'    else',
-'      apex_debug.warn( ''Canonical link tag not generated for category.'' );',
-'      l_html := get_robots_noindex_meta;',
-'    end if;',
-'    -- return generated HTML',
-'    return l_html;',
-'',
-'  end get_category_canonical_link;',
-'--------------------------------------------------------------------------------',
-'--------'))
+'    els'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6546,7 +6541,16 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'------------------------------------------------------------------------',
+'e',
+'      apex_debug.warn( ''Canonical link tag not generated for category.'' );',
+'      l_html := get_robots_noindex_meta;',
+'    end if;',
+'    -- return generated HTML',
+'    return l_html;',
+'',
+'  end get_category_canonical_link;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '  function get_archive_canonical_link(',
 '    p_archive_id in varchar2',
 '  ) return varchar2',
@@ -6679,12 +6683,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '      -- generate HTML',
 '      l_rss_url :=',
 '        apex_string.format(',
-'          p_message => ''<link href="%s" title="%s" rel="alternate" type="application/rss+xml">''',
+'          p_message => c_link_alternate',
 '          ,p0 => l_rss_url',
 '          ,p1 =>',
 '            apex_escape.html_attribute(',
 '              p_string => l_rss_title',
 '            )',
+'          ,p2 => ''application/rss+xml''',
 '        )',
 '      ;',
 '',
@@ -6727,12 +6732,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '      -- generate HTML',
 '      l_atom_url :=',
 '        apex_string.format(',
-'          p_message => ''<link href="%s" title="%s" rel="alternate" type="application/atom+xml">''',
+'          p_message => c_link_alternate',
 '          ,p0 => l_atom_url',
 '          ,p1 =>',
 '            apex_escape.html_attribute(',
 '              p_string => l_atom_title',
 '            )',
+'          ,p2 => ''application/atom+xml''',
 '        )',
 '      ;',
 '',
@@ -7542,13 +7548,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    blog_util.download_file(',
 '       p_blob_content   => l_xml',
-'      ,p_mime_type      => c_mime_xml',
-'      ,p_header_names   => apex_t_varchar2( ''Cache-Control'', ''Content-Disposition'' )',
-'      ,p_header_values  => apex_t_varchar2( l_cache_control, ''inline; filename="sitemap-tags.xml"'' )',
-'      ,p_charset        => c_char_set',
-'    );',
-'',
-'  -- handle er'))
+'      ,p_mime_t'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -7566,7 +7566,13 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'rors',
+'ype      => c_mime_xml',
+'      ,p_header_names   => apex_t_varchar2( ''Cache-Control'', ''Content-Disposition'' )',
+'      ,p_header_values  => apex_t_varchar2( l_cache_control, ''inline; filename="sitemap-tags.xml"'' )',
+'      ,p_charset        => c_char_set',
+'    );',
+'',
+'  -- handle errors',
 '  exception',
 '  when others',
 '  then',

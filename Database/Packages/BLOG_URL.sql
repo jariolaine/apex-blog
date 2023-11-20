@@ -24,6 +24,7 @@ as
 --    Jari Laine 24.11.2022 - Hard coded values to package private constants
 --                          - Removed not used parammeters from functions
 --                          - New function get_dynamic_page
+--    Jari Laine 18.11.2023 - New function get_atom
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -495,8 +496,8 @@ as
       then
         g_rss_url :=
           get_process(
-             p_application  => p_application
-            ,p_process      => 'rss.xml'
+            p_application => p_application
+            ,p_process    => 'rss.xml'
           );
       end if;
     end if;
@@ -517,8 +518,8 @@ as
     then
       g_atom_url :=
         get_process(
-            p_application  => p_application
-          ,p_process      => 'atom.xml'
+          p_application => p_application
+          ,p_process    => 'atom.xml'
         );
     end if;
 

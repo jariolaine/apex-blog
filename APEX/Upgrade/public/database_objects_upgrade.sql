@@ -467,6 +467,7 @@ as
 --    Jari Laine 24.11.2022 - Hard coded values to package private constants
 --                          - Removed not used parammeters from functions
 --                          - New function get_dynamic_page
+--    Jari Laine 18.11.2023 - New function get_atom
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -710,6 +711,7 @@ as
 --                              get_description_meta
 --    Jari Laine 25.11.2022 - Removed unused parameters
 --    Jari Laine 30.07.2023 - Replaced apex_util.get_build_option_status with apex_application_admin.get_build_option_status
+--    Jari Laine 18.11.2023 - New function get_atom_link
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1093,37 +1095,6 @@ and t1.show_desc = 1
 with read only
 /
 --------------------------------------------------------
---  DDL for View BLOG_V_COMMENTS
---------------------------------------------------------
-create or replace force view blog_v_comments as
-select
-   t1.id          as comment_id
-  ,t1.post_id     as post_id
-  ,t1.parent_id   as parent_id
-  ,t1.created_on  as created_on
-  ,t1.comment_by  as comment_by
-  ,t1.body_html   as comment_body
-  ,t1.ctx_search  as ctx_search
-  ,apex_string.get_initials(
-    p_str => t1.comment_by
-  )               as user_icon
-  ,apex_string.format(
-     p_message => 'u-color-%s'
-    ,p0 => ora_hash( lower( t1.comment_by ), 44 ) + 1
-  )               as icon_modifier
-from blog_comments t1
-where 1 = 1
-  and t1.is_active = 1
-  and not exists(
-    select 1
-    from blog_comment_flags x1
-    where 1 = 1
-      and x1.comment_id = t1.id
-      and x1.flag = 'MODERATE'
-  )
-with read only
-/
---------------------------------------------------------
 --  DDL for View BLOG_V_DYNAMIC_CONTENT
 --------------------------------------------------------
 create or replace force view blog_v_dynamic_content as
@@ -1418,15 +1389,16 @@ with q1 as(
     ,t1.changed_on
     ,t1.changed_by
     ,t1.is_active
-    ,t1.post_id
+    ,t2.id as post_id
     ,t1.parent_id
+    ,t2.title as post_title
     ,t1.body_html
     ,t1.comment_by
     ,t1.ctx_search
     ,t1.rowid as ctx_rid
     ,apex_escape.striphtml(
       p_string => t1.body_html
-    ) as search_desc
+    ) as ctx_search_text
     ,case
       when exists(
         select 1
@@ -1536,6 +1508,7 @@ with q1 as(
         )
     end as comment_flag_text
   from blog_comments t1
+  join blog_posts t2 on  t1.post_id = t2.id
 )
 select
    q1.id                  as id
@@ -1547,13 +1520,7 @@ select
   ,q1.is_active           as is_active
   ,q1.post_id             as post_id
   ,q1.parent_id           as parent_id
-  ,(
-    select
-      lkp.title
-    from blog_posts lkp
-    where 1 = 1
-      and q1.post_id = lkp.id
-  )                       as post_title
+  ,q1.post_title          as post_title
   ,q1.body_html           as body_html
   ,q1.comment_by          as comment_by
   ,q1.ctx_search          as ctx_search
@@ -1603,16 +1570,14 @@ select
       then 'fa-envelope-o'
       else 'fa-envelope-open-o'
   end                     as comment_flag_icon
-  ,substr( q1.search_desc, 1 , 128 )
-  || case when length( q1.search_desc ) > 128
+  ,substr( q1.ctx_search_text, 1 , 128 )
+  || case when length( q1.ctx_search_text ) > 128
     then ' ...'
   end                     as search_desc
   ,xmlserialize( content
     xmlforest(
-      q1.comment_by as "commented"
-      ,apex_escape.striphtml(
-        p_string => q1.body_html
-      )             as "body"
+      q1.comment_by       as "commented_by"
+      ,q1.ctx_search_text as "comment"
     )
   )                       as ctx_datastore
 from q1
@@ -1809,7 +1774,7 @@ select
       --,q1.notes           as "notes"
       ,apex_escape.striphtml(
         p_string => q1.body_html
-      )                   as "body"
+      )                   as "post"
       ,(
         select
           xmlagg( xmlforest( tags.tag as "tag" ) )
@@ -1916,7 +1881,7 @@ select
   ,(
     select
       xmlserialize(
-        content xmlagg( lkp_tag.tag_html1 order by lkp_tag.display_seq )
+        content xmlagg( lkp_tag.tag_html1 order by lkp_tag.display_seq ) as varchar2(32700)
       ) as tags_html
     from blog_v_post_tags lkp_tag
     where 1 = 1
@@ -2070,6 +2035,44 @@ group by v1.category_id
   ,v1.category_title
   ,v1.category_seq
   ,feat.show_post_count
+with read only
+/
+--------------------------------------------------------
+--  DDL for View BLOG_V_COMMENTS
+--------------------------------------------------------
+create or replace force view blog_v_comments as
+select
+   t1.id          as comment_id
+  ,t1.post_id     as post_id
+  ,t1.parent_id   as parent_id
+  ,t1.created_on  as created_on
+  ,t1.comment_by  as comment_by
+  ,(
+    select
+      post_title
+    from blog_v_posts lkp
+    where 1 = 1
+    and lkp.post_id = t1.post_id
+  )               as post_title
+  ,t1.body_html   as comment_body
+  ,t1.ctx_search  as ctx_search
+  ,apex_string.get_initials(
+    p_str => t1.comment_by
+  )               as user_icon
+  ,apex_string.format(
+     p_message => 'u-color-%s'
+    ,p0 => ora_hash( lower( t1.comment_by ), 44 ) + 1
+  )               as icon_modifier
+from blog_comments t1
+where 1 = 1
+  and t1.is_active = 1
+  and not exists(
+    select 1
+    from blog_comment_flags x1
+    where 1 = 1
+      and x1.comment_id = t1.id
+      and x1.flag = 'MODERATE'
+  )
 with read only
 /
 --------------------------------------------------------
@@ -5135,8 +5138,8 @@ as
       then
         g_rss_url :=
           get_process(
-             p_application  => p_application
-            ,p_process      => 'rss.xml'
+            p_application => p_application
+            ,p_process    => 'rss.xml'
           );
       end if;
     end if;
@@ -5157,8 +5160,8 @@ as
     then
       g_atom_url :=
         get_process(
-            p_application  => p_application
-          ,p_process      => 'atom.xml'
+          p_application => p_application
+          ,p_process    => 'atom.xml'
         );
     end if;
 
@@ -5804,7 +5807,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
-  c_link_canonical constant varchar2(34) := '<link rel="canonical" href="%s" />';
+  c_link_canonical constant varchar2(64) := '<link rel="canonical" href="%s" />';
+  c_link_alternate constant varchar2(64) := '<link href="%s" title="%s" rel="alternate" type="%s">';
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -6045,12 +6049,13 @@ as
       -- generate HTML
       l_rss_url :=
         apex_string.format(
-          p_message => '<link href="%s" title="%s" rel="alternate" type="application/rss+xml">'
+          p_message => c_link_alternate
           ,p0 => l_rss_url
           ,p1 =>
             apex_escape.html_attribute(
               p_string => l_rss_title
             )
+          ,p2 => 'application/rss+xml'
         )
       ;
 
@@ -6093,12 +6098,13 @@ as
       -- generate HTML
       l_atom_url :=
         apex_string.format(
-          p_message => '<link href="%s" title="%s" rel="alternate" type="application/atom+xml">'
+          p_message => c_link_alternate
           ,p0 => l_atom_url
           ,p1 =>
             apex_escape.html_attribute(
               p_string => l_atom_title
             )
+          ,p2 => 'application/atom+xml'
         )
       ;
 

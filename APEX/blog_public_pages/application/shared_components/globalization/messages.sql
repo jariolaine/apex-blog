@@ -79,6 +79,24 @@ wwv_flow_imp_shared.create_message(
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(9205558986702730)
+,p_name=>'BLOG_TXT_COMMENT'
+,p_message_text=>'Comment'
+,p_version_scn=>39901465078739
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(9206697868783552)
+,p_name=>'BLOG_TXT_FILE'
+,p_message_text=>'File'
+,p_version_scn=>39901465783278
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(9205751770704031)
+,p_name=>'BLOG_TXT_POST'
+,p_message_text=>'Post'
+,p_version_scn=>39901465089953
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(24586810319770154)
 ,p_name=>'BLOG_TXT_POSTED_BY'
 ,p_message_text=>'Posted by'
