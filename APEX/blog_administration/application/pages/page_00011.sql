@@ -66,7 +66,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231120145727'
+,p_last_upd_yyyymmddhh24miss=>'20231206084104'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8596898648797585)
@@ -101,7 +101,6 @@ wwv_flow_imp_page.create_page_plug(
 '  ,v1.notes                 as notes',
 '  ,v1.post_status_txt       as post_status',
 '  ,:APP_TEXT$BLOG_TXT_EDIT  as btn_edit_tags',
-'  ,:APP_TEXT$BLOG_TXT_EDIT  as btn_label_edit',
 '  ,v1.post_status_icon      as post_status_icon',
 ' -- For get edit URL also for detail view',
 '  ,apex_page.get_url(',
@@ -140,8 +139,8 @@ wwv_flow_imp_page.create_worksheet(
 ,p_download_formats=>'CSV:HTML:XLSX:PDF'
 ,p_enable_mail_download=>'Y'
 ,p_detail_link=>'#EDIT_URL#'
-,p_detail_link_text=>'<span role="img" aria-label="Edit" class="fa fa-edit" title="Edit"></span>'
-,p_detail_link_attr=>'title="#BTN_LABEL_EDIT#" aria-label="#BTN_LABEL_EDIT#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
+,p_detail_link_text=>'<span aria-hidden="true" class="t-Icon fa fa-pencil"></span>'
+,p_detail_link_attr=>'title="&APP_TEXT$BLOG_TXT_EDIT." class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
 ,p_detail_view_enabled_yn=>'Y'
 ,p_detail_view_for_each_row=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<article role="article" class="blog-post">',
@@ -167,6 +166,7 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(3879808787180115)
 ,p_db_column_name=>'POST_ID'
 ,p_display_order=>10
+,p_is_primary_key=>'Y'
 ,p_column_identifier=>'AD'
 ,p_column_label=>'Post ID'
 ,p_column_type=>'NUMBER'
@@ -400,23 +400,19 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_order=>240
 ,p_column_identifier=>'AM'
 ,p_column_label=>'Status'
-,p_allow_sorting=>'N'
-,p_allow_filtering=>'N'
-,p_allow_highlighting=>'N'
-,p_allow_ctrl_breaks=>'N'
-,p_allow_aggregations=>'N'
-,p_allow_computations=>'N'
-,p_allow_charting=>'N'
-,p_allow_group_by=>'N'
-,p_allow_pivot=>'N'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'{with/}',
+'TITLE:=#POST_STATUS#',
+'ICON_CLASSES:=#POST_STATUS_ICON# w60',
+'ICON_ID:=',
+'{apply THEME$ICON_CUSTOM_1/}'))
 ,p_column_type=>'STRING'
-,p_display_text_as=>'TMPL_THEME_42$ICON_CUSTOM_1'
+,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
-,p_attributes=>wwv_flow_string.join_clob(wwv_flow_t_varchar2('{',
-  '"TITLE": "#POST_STATUS#",',
-  '"ICON_CLASSES": "#POST_STATUS_ICON# w60"',
-'}'))
+,p_rpt_named_lov=>wwv_flow_imp.id(37868422966001936)
+,p_rpt_show_filter_lov=>'1'
 ,p_use_as_row_header=>'N'
+,p_column_comment=>'Using HTML Expression because need column filter'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(37425249219377349)
@@ -425,8 +421,8 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'CA'
 ,p_column_label=>'Edit Tags'
 ,p_column_link=>'f?p=&APP_ID.:16:&SESSION.::&DEBUG.::P16_POST_ID:#POST_ID#'
-,p_column_linktext=>'<span aria-hidden="true" class="t-Icon fa fa-tag"></span>'
-,p_column_link_attr=>'title="#BTN_EDIT_TAGS#" aria-label="#BTN_EDIT_TAGS#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small w60"'
+,p_column_linktext=>'<span aria-hidden="true" class="fa fa-tag"></span>'
+,p_column_link_attr=>'title="#BTN_EDIT_TAGS#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small w60"'
 ,p_allow_sorting=>'N'
 ,p_allow_filtering=>'N'
 ,p_allow_highlighting=>'N'
@@ -438,16 +434,6 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_allow_pivot=>'N'
 ,p_column_type=>'STRING'
 ,p_column_alignment=>'CENTER'
-,p_use_as_row_header=>'N'
-);
-wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(37559490661471008)
-,p_db_column_name=>'BTN_LABEL_EDIT'
-,p_display_order=>260
-,p_column_identifier=>'CC'
-,p_column_label=>'Btn Label Edit'
-,p_column_type=>'STRING'
-,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
@@ -518,7 +504,7 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
 ,p_view_mode=>'REPORT'
-,p_report_columns=>'POST_TITLE:CATEGORY_TITLE:VISIBLE_TAGS:PUBLISHED_SINCE:BTN_EDIT_TAGS:POST_STATUS:'
+,p_report_columns=>'POST_TITLE:CATEGORY_TITLE:VISIBLE_TAGS:PUBLISHED_SINCE:BTN_EDIT_TAGS:POST_STATUS'
 ,p_sort_column_1=>'PUBLISHED_SINCE'
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'0'

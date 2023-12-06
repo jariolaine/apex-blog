@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_help_text=>'No help available for this page.'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231120150029'
+,p_last_upd_yyyymmddhh24miss=>'20231206090126'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(65609751049299759)
@@ -47,8 +47,8 @@ wwv_flow_imp_page.create_page_plug(
 '  ,v1.changed_by                    as changed_by',
 '  ,v1.comment_by                    as comment_by',
 '  ,v1.post_title                    as post_title',
-'  ,v1.comment_status_text           as comment_status -- see column HTML Expression',
-'  ,v1.comment_flag_text             as comment_flag   -- see column HTML Expression',
+'  ,v1.comment_status_text           as comment_status',
+'  ,v1.comment_flag_text             as comment_flag',
 '  ,v1.comment_status_icon           as status_icon',
 '  ,v1.comment_flag_icon             as flag_icon',
 '  ,v1.data_unread                   as btn_data_unread',
@@ -60,7 +60,6 @@ wwv_flow_imp_page.create_page_plug(
 '    ,p_items        => ''P61_ID,P61_POST_ID''',
 '    ,p_values       => v1.id || '','' || v1.post_id',
 '   )                                as edit_url',
-'   ,:APP_TEXT$BLOG_TXT_OPEN_COMMENT as btn_label',
 'from blog_v_all_comments v1',
 'where 1 = 1',
 ''))
@@ -84,8 +83,8 @@ wwv_flow_imp_page.create_worksheet(
 ,p_download_formats=>'CSV:HTML:XLSX:PDF'
 ,p_enable_mail_download=>'Y'
 ,p_detail_link=>'#EDIT_URL#'
-,p_detail_link_text=>'<span class="t-Icon fa fa-pencil" aria-hidden="true"></span>'
-,p_detail_link_attr=>'data-unread="#BTN_DATA_UNREAD#" data-id="CF#COMMENT_ID#" title="#BTN_LABEL#" aria-label="#BTN_LABEL#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
+,p_detail_link_text=>'<span aria-hidden="true" class="t-Icon fa fa-pencil"></span>'
+,p_detail_link_attr=>'data-unread="#BTN_DATA_UNREAD#" data-id="CF#COMMENT_ID#" title="&APP_TEXT$BLOG_TXT_OPEN_COMMENT." class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
 ,p_detail_view_enabled_yn=>'Y'
 ,p_detail_view_for_each_row=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="blog-comment-IR">',
@@ -116,11 +115,11 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(38201510708747553)
 ,p_db_column_name=>'COMMENT_ID'
 ,p_display_order=>10
+,p_is_primary_key=>'Y'
 ,p_column_identifier=>'A'
 ,p_column_label=>'Comment Id'
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(38201920038747553)
@@ -235,24 +234,16 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_order=>130
 ,p_column_identifier=>'AL'
 ,p_column_label=>'Flag'
-,p_allow_sorting=>'N'
-,p_allow_filtering=>'N'
-,p_allow_highlighting=>'N'
-,p_allow_ctrl_breaks=>'N'
-,p_allow_aggregations=>'N'
-,p_allow_computations=>'N'
-,p_allow_charting=>'N'
-,p_allow_group_by=>'N'
-,p_allow_pivot=>'N'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'{with/}',
+'TITLE:=#COMMENT_FLAG#',
+'ICON_CLASSES:=#FLAG_ICON# w60',
+'ICON_ID:=CF#COMMENT_ID#',
+'{apply THEME$ICON_CUSTOM_1/}'))
 ,p_column_type=>'STRING'
-,p_display_text_as=>'TMPL_THEME_42$ICON_CUSTOM_1'
 ,p_column_alignment=>'CENTER'
-,p_attributes=>wwv_flow_string.join_clob(wwv_flow_t_varchar2('{',
-  '"TITLE": "#COMMENT_FLAG#",',
-  '"ICON_CLASSES": "#FLAG_ICON# w60",',
-  '"ICON_ID": "CF#COMMENT_ID#"',
-'}'))
 ,p_use_as_row_header=>'N'
+,p_column_comment=>'Using HTML Expression because need column filter'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(38203989442747555)
@@ -260,23 +251,16 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_order=>150
 ,p_column_identifier=>'AK'
 ,p_column_label=>'Status'
-,p_allow_sorting=>'N'
-,p_allow_filtering=>'N'
-,p_allow_highlighting=>'N'
-,p_allow_ctrl_breaks=>'N'
-,p_allow_aggregations=>'N'
-,p_allow_computations=>'N'
-,p_allow_charting=>'N'
-,p_allow_group_by=>'N'
-,p_allow_pivot=>'N'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'{with/}',
+'TITLE:=#COMMENT_STATUS#',
+'ICON_CLASSES:=#STATUS_ICON# w60',
+'ICON_ID:=',
+'{apply THEME$ICON_CUSTOM_1/}'))
 ,p_column_type=>'STRING'
-,p_display_text_as=>'TMPL_THEME_42$ICON_CUSTOM_1'
 ,p_column_alignment=>'CENTER'
-,p_attributes=>wwv_flow_string.join_clob(wwv_flow_t_varchar2('{',
-  '"TITLE": "#COMMENT_STATUS#",',
-  '"ICON_CLASSES": "#STATUS_ICON# w60"',
-'}'))
 ,p_use_as_row_header=>'N'
+,p_column_comment=>'Using HTML Expression because need column filter'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(38205174222747556)
@@ -334,16 +318,6 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_order=>210
 ,p_column_identifier=>'Z'
 ,p_column_label=>'Edit URL Link'
-,p_column_type=>'STRING'
-,p_display_text_as=>'HIDDEN_ESCAPE_SC'
-,p_use_as_row_header=>'N'
-);
-wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(38204741874747556)
-,p_db_column_name=>'BTN_LABEL'
-,p_display_order=>220
-,p_column_identifier=>'AM'
-,p_column_label=>'Button Label'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 ,p_use_as_row_header=>'N'
@@ -425,7 +399,7 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_triggering_region_id=>wwv_flow_imp.id(65609751049299759)
 ,p_bind_type=>'bind'
 ,p_execution_type=>'IMMEDIATE'
-,p_bind_event_type=>'apexafterclosedialog'
+,p_bind_event_type=>'apexafterclosecanceldialog'
 );
 wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(38208237872747563)

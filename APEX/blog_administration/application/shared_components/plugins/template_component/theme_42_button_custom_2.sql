@@ -125,39 +125,6 @@ wwv_flow_imp_shared.create_plugin_attribute(
 ,p_escape_mode=>'HTML'
 ,p_is_translatable=>false
 );
-wwv_flow_imp_shared.create_plugin_attribute(
- p_id=>wwv_flow_imp.id(10502661575387718)
-,p_plugin_id=>wwv_flow_imp.id(30537318695898655)
-,p_attribute_scope=>'COMPONENT'
-,p_attribute_sequence=>8
-,p_display_sequence=>50
-,p_static_id=>'ICON_POSITION'
-,p_prompt=>'Icon Position'
-,p_attribute_type=>'SELECT LIST'
-,p_is_required=>false
-,p_default_value=>'RIGHT'
-,p_escape_mode=>'HTML'
-,p_is_translatable=>false
-,p_depending_on_attribute_id=>wwv_flow_imp.id(30538363521907962)
-,p_depending_on_has_to_exist=>true
-,p_depending_on_condition_type=>'EQUALS'
-,p_depending_on_expression=>'N'
-,p_lov_type=>'STATIC'
-);
-wwv_flow_imp_shared.create_plugin_attr_value(
- p_id=>wwv_flow_imp.id(10503355442388918)
-,p_plugin_attribute_id=>wwv_flow_imp.id(10502661575387718)
-,p_display_sequence=>10
-,p_display_value=>'Right'
-,p_return_value=>'RIGHT'
-);
-wwv_flow_imp_shared.create_plugin_attr_value(
- p_id=>wwv_flow_imp.id(10503803485389806)
-,p_plugin_attribute_id=>wwv_flow_imp.id(10502661575387718)
-,p_display_sequence=>20
-,p_display_value=>'Left'
-,p_return_value=>'LEFT'
-);
 wwv_flow_imp.component_end;
 end;
 /

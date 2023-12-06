@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_help_text=>'No help available for this page.'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231120153126'
+,p_last_upd_yyyymmddhh24miss=>'20231206090620'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45054908267895533)
@@ -62,7 +62,6 @@ wwv_flow_imp_page.create_page_plug(
 '  ,null                     as btn_copy_url   -- see column HTML Expression',
 '  ,v1.file_status_icon      as file_status_icon',
 '  ,v1.file_type_icon        as file_type_icon',
-'  ,:APP_TEXT$BLOG_TXT_EDIT  as btn_label_edit',
 'from blog_v_all_files v1'))
 ,p_plug_source_type=>'NATIVE_IR'
 ,p_prn_content_disposition=>'ATTACHMENT'
@@ -107,8 +106,8 @@ wwv_flow_imp_page.create_worksheet(
 ,p_download_formats=>'CSV:HTML:XLSX:PDF'
 ,p_enable_mail_download=>'Y'
 ,p_detail_link=>'f?p=&APP_ID.:71:&SESSION.::&DEBUG.:RP,71:P71_ID:#ID#'
-,p_detail_link_text=>'<span class="t-Icon fa fa-pencil" aria-hidden="true"></span>'
-,p_detail_link_attr=>'title="#BTN_LABEL_EDIT#" aria-label="#BTN_LABEL_EDIT#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
+,p_detail_link_text=>'<span aria-hidden="true" class="t-Icon fa fa-pencil"></span>'
+,p_detail_link_attr=>'title="&APP_TEXT$BLOG_TXT_EDIT." class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
 ,p_owner=>'LAINFJAR'
 ,p_internal_uid=>45055230342895533
 );
@@ -116,11 +115,11 @@ wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(38330539417943630)
 ,p_db_column_name=>'ID'
 ,p_display_order=>10
+,p_is_primary_key=>'Y'
 ,p_column_identifier=>'AE'
 ,p_column_label=>'File ID'
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(38330979772943630)
@@ -195,23 +194,19 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_order=>90
 ,p_column_identifier=>'AA'
 ,p_column_label=>'Status'
-,p_allow_sorting=>'N'
-,p_allow_filtering=>'N'
-,p_allow_highlighting=>'N'
-,p_allow_ctrl_breaks=>'N'
-,p_allow_aggregations=>'N'
-,p_allow_computations=>'N'
-,p_allow_charting=>'N'
-,p_allow_group_by=>'N'
-,p_allow_pivot=>'N'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'{with/}',
+'TITLE:=#IS_ACTIVE#',
+'ICON_CLASSES:=#FILE_STATUS_ICON# w60',
+'ICON_ID:=',
+'{apply THEME$ICON_CUSTOM_1/}'))
 ,p_column_type=>'NUMBER'
-,p_display_text_as=>'TMPL_THEME_42$ICON_CUSTOM_1'
+,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
-,p_attributes=>wwv_flow_string.join_clob(wwv_flow_t_varchar2('{',
-  '"TITLE": "#IS_ACTIVE#",',
-  '"ICON_CLASSES": "#FILE_STATUS_ICON# w60"',
-'}'))
+,p_rpt_named_lov=>wwv_flow_imp.id(11784376262412448)
+,p_rpt_show_filter_lov=>'1'
 ,p_use_as_row_header=>'N'
+,p_column_comment=>'Using HTML Expression because need column filter'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(38327326794943627)
@@ -219,23 +214,19 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_order=>100
 ,p_column_identifier=>'H'
 ,p_column_label=>'Attachment'
-,p_allow_sorting=>'N'
-,p_allow_filtering=>'N'
-,p_allow_highlighting=>'N'
-,p_allow_ctrl_breaks=>'N'
-,p_allow_aggregations=>'N'
-,p_allow_computations=>'N'
-,p_allow_charting=>'N'
-,p_allow_group_by=>'N'
-,p_allow_pivot=>'N'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'{with/}',
+'TITLE:=#IS_DOWNLOAD#',
+'ICON_CLASSES:=#FILE_TYPE_ICON# w60',
+'ICON_ID:=',
+'{apply THEME$ICON_CUSTOM_1/}'))
 ,p_column_type=>'NUMBER'
-,p_display_text_as=>'TMPL_THEME_42$ICON_CUSTOM_1'
+,p_display_text_as=>'LOV_ESCAPE_SC'
 ,p_column_alignment=>'CENTER'
-,p_attributes=>wwv_flow_string.join_clob(wwv_flow_t_varchar2('{',
-  '"TITLE": "#IS_DOWNLOAD#",',
-  '"ICON_CLASSES": "#FILE_TYPE_ICON# w60"',
-'}'))
+,p_rpt_named_lov=>wwv_flow_imp.id(11789591131543819)
+,p_rpt_show_filter_lov=>'1'
 ,p_use_as_row_header=>'N'
+,p_column_comment=>'Using HTML Expression because need column filter'
 ,p_help_text=>'Is file available for download in public application "Files" page.'
 );
 wwv_flow_imp_page.create_worksheet_column(
@@ -339,13 +330,13 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_text_as=>'TMPL_THEME_42$BUTTON_CUSTOM_2'
 ,p_column_alignment=>'CENTER'
 ,p_attributes=>wwv_flow_string.join_clob(wwv_flow_t_varchar2('{',
-  '"IS_HOT": "N",',
-  '"IS_ICON_ONLY": "Y",',
+  '"BUTTON_ATTR": "data-clipboard-source=\"#RELATIVE_PATH#\"",',
+  '"CSS_CLASSES": "t-Button--small w60",',
   '"ICON_CLASSES": "fa-clone",',
   '"IS_DISABLED": "N",',
-  '"LABEL": "\u0026APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD.",',
-  '"CSS_CLASSES": "t-Button--small w60",',
-  '"BUTTON_ATTR": "data-clipboard-source=\"#RELATIVE_PATH#\""',
+  '"IS_HOT": "N",',
+  '"IS_ICON_ONLY": "Y",',
+  '"LABEL": "\u0026APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD."',
 '}'))
 ,p_use_as_row_header=>'N'
 );
@@ -369,16 +360,6 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 ,p_use_as_row_header=>'N'
 );
-wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(38333721148943632)
-,p_db_column_name=>'BTN_LABEL_EDIT'
-,p_display_order=>220
-,p_column_identifier=>'AZ'
-,p_column_label=>'Btn Label Edit'
-,p_column_type=>'STRING'
-,p_display_text_as=>'HIDDEN_ESCAPE_SC'
-,p_use_as_row_header=>'N'
-);
 wwv_flow_imp_page.create_worksheet_rpt(
  p_id=>wwv_flow_imp.id(45063664044895990)
 ,p_application_user=>'APXWS_DEFAULT'
@@ -387,7 +368,7 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_report_alias=>'29915'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'FILE_NAME:FILE_SIZE:CHANGED_SINCE:IS_DOWNLOAD:BTN_COPY_URL:FILE_DOWNLOAD:IS_ACTIVE:'
+,p_report_columns=>'FILE_NAME:FILE_SIZE:CHANGED_SINCE:IS_DOWNLOAD:BTN_COPY_URL:FILE_DOWNLOAD:IS_ACTIVE'
 ,p_sort_column_1=>'FILE_NAME'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'0'

@@ -33,7 +33,13 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------',
 '--  Drop obsolete type',
 '--------------------------------------------------------',
-'drop type blog_t_post;'))
+'drop type blog_t_post;',
+'--------------------------------------------------------',
+'--  Insert patch version info to BLOG_SETTINGS',
+'--------------------------------------------------------',
+'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,attribute_value)',
+'  values(10,0,''PATCH_20231118'',''STRING'',''INTERNAL'',''Patch 23.1.20231118'')',
+';'))
 );
 wwv_flow_imp.component_end;
 end;
