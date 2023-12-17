@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'12'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230406091630'
+,p_last_upd_yyyymmddhh24miss=>'20231208052123'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8575301514518303)
@@ -94,12 +94,13 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(59284401267356420)
 ,p_button_name=>'LOGIN_GOOGLE'
 ,p_button_action=>'REDIRECT_PAGE'
-,p_button_template_options=>'#DEFAULT#:t-Button--danger'
-,p_button_template_id=>wwv_flow_imp.id(8549115324518244)
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Sign in with Google'
 ,p_button_position=>'NEXT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:HOME:&SESSION.:APEX_AUTHENTICATION=Google:&DEBUG.:::'
-,p_button_css_classes=>'u-bold'
+,p_button_css_classes=>'u-bold u-color-39'
+,p_icon_css_classes=>'fa-google'
 ,p_required_patch=>wwv_flow_imp.id(35675193135740905)
 );
 wwv_flow_imp_page.create_page_button(
@@ -108,11 +109,12 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_plug_id=>wwv_flow_imp.id(8575301514518303)
 ,p_button_name=>'LOGIN'
 ,p_button_action=>'SUBMIT'
-,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>wwv_flow_imp.id(8549115324518244)
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Sign in'
 ,p_button_position=>'NEXT'
+,p_icon_css_classes=>'fa-apex'
 ,p_required_patch=>wwv_flow_imp.id(35674953070739317)
 );
 wwv_flow_imp_page.create_page_item(

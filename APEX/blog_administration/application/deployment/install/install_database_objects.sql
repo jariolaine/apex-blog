@@ -1864,115 +1864,24 @@ wwv_flow_imp_shared.append_to_install_script(
 '      p_string => t1.body_html',
 '    ) as ctx_search_text',
 '    ,case',
-'      when exists(',
-'        select 1',
-'        from blog_comment_flags f11',
-'        where f11.flag = ''MODERATE''',
-'          and f11.comment_id = t1.id',
-'      )',
+'      when t3.flag = ''MODERATE''',
 '        then ''MODERATE''',
 '      when t1.is_active = 1',
 '        then ''ENABLED''',
 '        else ''DISABLED''',
 '    end as comment_status_code',
-'    -- because issue: column single-row subquery returns more than one row',
-'    -- and APEX IR not use LOV in detail view',
 '    ,case',
-'      when exists(',
-'        select 1',
-'        from blog_comment_flags f11',
-'        where f11.flag = ''MODERATE''',
-'          and f11.comment_id = t1.id',
-'      )',
-'        then (',
-'          select',
-'            lov1.display_value',
-'          from blog_v_lov lov1',
-'          where lov1.lov_name = ''COMMENT_STATUS''',
-'            and lov1.return_value = ''MODERATE''',
-'        )',
-'      when t1.is_active = 1',
-'        then (',
-'          select',
-'            lov1.display_value',
-'          from blog_v_lov lov1',
-'          where lov1.lov_name = ''COMMENT_STATUS''',
-'            and lov1.return_value = ''ENABLED''',
-'        )',
-'        else (',
-'          select',
-'            lov1.display_value',
-'          from blog_v_lov lov1',
-'          where lov1.lov_name = ''COMMENT_STATUS''',
-'            and lov1.return_value = ''DISABLED''',
-'        )',
-'    end as comment_status_text',
-'    ,case',
-'      when exists(',
-'        select 1',
-'        from blog_comment_flags f12',
-'        where f12.flag = ''NEW''',
-'          and f12.comment_id = t1.id',
-'      )',
+'      when t3.flag = ''NEW''',
 '        then ''NEW''',
-'      when exists(',
-'        select 1',
-'        from blog_comment_flags f13',
-'        where f13.flag = ''UNREAD''',
-'          and f13.comment_id = t1.id',
-'      )',
+'      when t3.flag = ''UNREAD''',
 '        then ''UNREAD''',
 '      when t1.parent_id is not null',
 '        then ''REPLY''',
 '        else ''READ''',
 '    end as comment_flag_code',
-'    -- because issue: column single-row subquery returns more than one row',
-'    -- and APEX IR not use LOV in detail view',
-'    ,case',
-'      when exists(',
-'        select 1',
-'        from blog_comment_flags f12',
-'        where f12.flag = ''NEW''',
-'          and f12.comment_id = t1.id',
-'      )',
-'        then (',
-'          select',
-'            lov2.display_value',
-'          from blog_v_lov lov2',
-'          where lov2.lov_name = ''COMMENT_FLAG''',
-'            and lov2.return_value = ''NEW''',
-'        )',
-'      when exists(',
-'        select 1',
-'        from blog_comment_flags f13',
-'        where f13.flag = ''UNREAD''',
-'          and f13.comment_id = t1.id',
-'      )',
-'        then (',
-'          select',
-'            lov2.display_value',
-'          from blog_v_lov lov2',
-'          where lov2.lov_name = ''COMMENT_FLAG''',
-'            and lov2.return_value = ''UNREAD''',
-'        )',
-'      when t1.parent_id is not null',
-'        then (',
-'          select',
-'            lov2.display_value',
-'          from blog_v_lov lov2',
-'          where lov2.lov_name = ''COMMENT_FLAG''',
-'            and lov2.return_value = ''REPLY''',
-'        )',
-'        else (',
-'          select',
-'            lov2.display_value',
-'          from blog_v_lov lov2',
-'          where lov2.lov_name = ''COMMENT_FLAG''',
-'            and lov2.return_value = ''READ''',
-'        )',
-'    end as comment_flag_text',
 '  from blog_comments t1',
 '  join blog_posts t2 on  t1.post_id = t2.id',
+'  left join blog_comment_flags t3 on t1.id = t3.comment_id',
 ')',
 'select',
 '   q1.id                  as id',
@@ -1988,7 +1897,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,q1.body_html           as body_html',
 '  ,q1.comment_by          as comment_by',
 '  ,q1.ctx_search          as ctx_search',
-'  ,q1.rowid               as ctx_rid',
+'  ,q1.ctx_rid             as ctx_rid',
 '  ,q1.comment_status_code as comment_status_code',
 '  ,q1.comment_flag_code   as comment_flag_code',
 '  ,case',
@@ -1996,8 +1905,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '      then ''true''',
 '      else ''false''',
 '  end                     as data_unread',
-'/*',
-'-- because issue: column single-row subquery returns more than one row',
 '  ,(',
 '    select',
 '      lov1.display_value',
@@ -2005,10 +1912,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '    where lov1.lov_name = ''COMMENT_STATUS''',
 '      and lov1.return_value = q1.comment_status_code',
 '  )                       as comment_status_text',
-'*/',
-'  ,q1.comment_status_text as comment_status_text',
-'/*',
-'-- because issue: column single-row subquery returns more than one row',
 '  ,(',
 '    select',
 '      lov2.display_value',
@@ -2016,8 +1919,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '    where lov2.lov_name = ''COMMENT_FLAG''',
 '      and lov2.return_value = q1.comment_flag_code',
 '  )                       as comment_flag_text',
-'*/',
-'  ,q1.comment_flag_text   as comment_flag_text',
 '  ,case q1.comment_status_code',
 '    when ''MODERATE''',
 '      then ''fa-exclamation-circle u-warning-text''',
@@ -2385,25 +2286,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      and lkp_post.published_on < q1.published_on',
 '    order by lkp_post.published_on desc',
 '    fetch first 1 rows only',
-'  )               '))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'    as prev_post',
+'  )                   as prev_post',
 'from q1',
 'where 1 = 1',
 'with read only',
@@ -2482,7 +2365,25 @@ wwv_flow_imp_shared.append_to_install_script(
 'with read only',
 '/',
 '--------------------------------------------------------',
-'--  DDL for View BLOG_V_CATEGORIES',
+'--  DDL for View BLOG_V_CATEGORI'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.10.31'
+,p_release=>'23.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'ES',
 '--------------------------------------------------------',
 'create or replace force view blog_v_categories as',
 'select',
@@ -3406,25 +3307,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- none',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'-- Global procedures '))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'and functions',
+'-- Global procedures and functions',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure generate_post_datastore(',
@@ -3526,7 +3409,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '                p_message =>',
 '                  case p_feature',
 '                  when ''FUZZY'' then '' %s fuzzy({%s}) and''',
-'                  when ''WILDCARD'' then '' %s {%s}%% and''',
+'                  when ''WILDCARD'''))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.10.31'
+,p_release=>'23.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+' then '' %s {%s}%% and''',
 '                  else '' %s {%s} and'' end',
 '                ,p0 => l_query',
 '                ,p1 => l_token',
@@ -4470,25 +4371,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- fetch max link group display sequence',
 '    select max( v1.display_seq ) as display_seq',
 '    into l_max_seq',
-'    from bl'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'og_v_all_link_groups v1',
+'    from blog_v_all_link_groups v1',
 '    ;',
 '    -- get next link group display sequence',
 '    l_next_seq := blog_util.int_to_vc2( next_seq( l_max_seq ) );',
@@ -4575,7 +4458,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '      case p_request',
 '        when ''CREATE_DRAFT'' then apex_lang.message( ''BLOG_MSG_POST_CREATED'' )',
 '        when ''CREATE''       then apex_lang.message( ''BLOG_MSG_POST_CREATED'' )',
-'        when ''DELETE''       then apex_lang.message( ''BLOG_MSG_POST_DELETED'' )',
+'        when ''DELETE''  '))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.10.31'
+,p_release=>'23.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'     then apex_lang.message( ''BLOG_MSG_POST_DELETED'' )',
 '                            else apex_lang.message( ''BLOG_MSG_POST_UPDATED'' )',
 '      end',
 '    ;',
@@ -5496,25 +5397,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  function get_post(',
 '    p_post_id     in varchar2,',
-' '))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   p_application in varchar2 default null,',
+'    p_application in varchar2 default null,',
 '    p_canonical   in varchar2 default ''NO''',
 '  ) return varchar2',
 '  as',
@@ -5613,7 +5496,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '        ,p_session    => ''''',
 '        ,p_items      => c_archive_page.item_name',
 '        ,p_values     => p_archive_id',
-'        ,p_plain_url  => true',
+'        ,p_plain_u'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.10.31'
+,p_release=>'23.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'rl  => true',
 '      )',
 '    ;',
 '',
@@ -6523,25 +6424,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '            )',
 '        )',
 '      ;',
-'    els'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'e',
+'    else',
 '      apex_debug.warn( ''Canonical link tag not generated for category.'' );',
 '      l_html := get_robots_noindex_meta;',
 '    end if;',
@@ -6639,7 +6522,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '          || ''<span aria-hidden="true" class="%s"></span>''',
 '          || ''</a>''',
 '        ,p0 => l_rss_url',
-'        ,p1 => apex_escape.html_attribute( l_rss_title )',
+'        ,p1 => apex_escape.html_attribute( l_rss_'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.10.31'
+,p_release=>'23.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'title )',
 '        ,p2 => ''application/rss+xml''',
 '        ,p3 => ''t-Button t-Button--noLabel t-Button--icon t-Button--link''',
 '        ,p4 => ''fa fa-rss-square fa-3x fa-lg u-color-8-text''',
@@ -7548,25 +7449,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    blog_util.download_file(',
 '       p_blob_content   => l_xml',
-'      ,p_mime_t'))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.0'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(32897013199918411)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ype      => c_mime_xml',
+'      ,p_mime_type      => c_mime_xml',
 '      ,p_header_names   => apex_t_varchar2( ''Cache-Control'', ''Content-Disposition'' )',
 '      ,p_header_values  => apex_t_varchar2( l_cache_control, ''inline; filename="sitemap-tags.xml"'' )',
 '      ,p_charset        => c_char_set',
