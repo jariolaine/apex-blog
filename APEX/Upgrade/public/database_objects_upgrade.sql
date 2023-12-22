@@ -1400,16 +1400,31 @@ with q1 as(
       p_string => t1.body_html
     ) as ctx_search_text
     ,case
-      when t3.flag = 'MODERATE'
+      when (
+        select f11.flag
+        from blog_comment_flags f11
+        where f11.flag = 'MODERATE'
+          and f11.comment_id = t1.id
+      ) = 'MODERATE'
         then 'MODERATE'
       when t1.is_active = 1
         then 'ENABLED'
         else 'DISABLED'
     end as comment_status_code
     ,case
-      when t3.flag = 'NEW'
+      when (
+        select f12.flag
+        from blog_comment_flags f12
+        where f12.flag = 'NEW'
+          and f12.comment_id = t1.id
+      ) = 'NEW'
         then 'NEW'
-      when t3.flag = 'UNREAD'
+      when (
+        select f13.flag
+        from blog_comment_flags f13
+        where f13.flag = 'UNREAD'
+          and f13.comment_id = t1.id
+      ) = 'UNREAD'
         then 'UNREAD'
       when t1.parent_id is not null
         then 'REPLY'
@@ -1417,7 +1432,6 @@ with q1 as(
     end as comment_flag_code
   from blog_comments t1
   join blog_posts t2 on  t1.post_id = t2.id
-  left join blog_comment_flags t3 on t1.id = t3.comment_id
 )
 select
    q1.id                  as id
@@ -1889,7 +1903,7 @@ select
 from blog_v_posts v1
 cross join(
   select
-    apex_util.get_build_option_status(
+    apex_application_admin.get_build_option_status(
        p_application_id     => sys_context( 'APEX$SESSION', 'APP_ID' )
       ,p_build_option_name  => 'BLOG_FEATURE_ARCHIVE_POST_COUNT'
     ) as show_post_count
@@ -1925,7 +1939,7 @@ select
 from blog_v_posts v1
 cross join(
   select
-    apex_util.get_build_option_status(
+    apex_application_admin.get_build_option_status(
        p_application_id     => sys_context( 'APEX$SESSION', 'APP_ID' )
       ,p_build_option_name  => 'BLOG_FEATURE_CATEGORY_POST_COUNT'
     ) as show_post_count
@@ -2042,7 +2056,7 @@ join blog_v_posts v2 on v1.post_id = v2.post_id
 -- Get feature tag post count status
 cross join(
   select
-    apex_util.get_build_option_status(
+    apex_application_admin.get_build_option_status(
        p_application_id     => sys_context( 'APEX$SESSION', 'APP_ID' )
       ,p_build_option_name  => 'BLOG_FEATURE_TAG_CLOUD_POST_COUNT'
     ) as show_post_count

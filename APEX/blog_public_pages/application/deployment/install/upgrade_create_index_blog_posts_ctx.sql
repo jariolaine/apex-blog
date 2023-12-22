@@ -22,7 +22,7 @@ wwv_flow_imp_shared.create_install_script(
 'select 1',
 'from blog_v_version',
 'where 1 = 1',
-'and application_date < 20231120'))
+'and application_date < 20231222'))
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',
 '--  Create text index preferences for index BLOG_POSTS_CTX',

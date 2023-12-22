@@ -24,7 +24,7 @@ join blog_v_posts v2 on v1.post_id = v2.post_id
 -- Get feature tag post count status
 cross join(
   select
-    apex_util.get_build_option_status(
+    apex_application_admin.get_build_option_status(
        p_application_id     => sys_context( 'APEX$SESSION', 'APP_ID' )
       ,p_build_option_name  => 'BLOG_FEATURE_TAG_CLOUD_POST_COUNT'
     ) as show_post_count

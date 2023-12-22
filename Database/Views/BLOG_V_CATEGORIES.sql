@@ -23,7 +23,7 @@ select
 from blog_v_posts v1
 cross join(
   select
-    apex_util.get_build_option_status(
+    apex_application_admin.get_build_option_status(
        p_application_id     => sys_context( 'APEX$SESSION', 'APP_ID' )
       ,p_build_option_name  => 'BLOG_FEATURE_CATEGORY_POST_COUNT'
     ) as show_post_count

@@ -1437,16 +1437,31 @@ wwv_flow_imp_shared.append_to_install_script(
 '      p_string => t1.body_html',
 '    ) as ctx_search_text',
 '    ,case',
-'      when t3.flag = ''MODERATE''',
+'      when (',
+'        select f11.flag',
+'        from blog_comment_flags f11',
+'        where f11.flag = ''MODERATE''',
+'          and f11.comment_id = t1.id',
+'      ) = ''MODERATE''',
 '        then ''MODERATE''',
 '      when t1.is_active = 1',
 '        then ''ENABLED''',
 '        else ''DISABLED''',
 '    end as comment_status_code',
 '    ,case',
-'      when t3.flag = ''NEW''',
+'      when (',
+'        select f12.flag',
+'        from blog_comment_flags f12',
+'        where f12.flag = ''NEW''',
+'          and f12.comment_id = t1.id',
+'      ) = ''NEW''',
 '        then ''NEW''',
-'      when t3.flag = ''UNREAD''',
+'      when (',
+'        select f13.flag',
+'        from blog_comment_flags f13',
+'        where f13.flag = ''UNREAD''',
+'          and f13.comment_id = t1.id',
+'      ) = ''UNREAD''',
 '        then ''UNREAD''',
 '      when t1.parent_id is not null',
 '        then ''REPLY''',
@@ -1454,7 +1469,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '    end as comment_flag_code',
 '  from blog_comments t1',
 '  join blog_posts t2 on  t1.post_id = t2.id',
-'  left join blog_comment_flags t3 on t1.id = t3.comment_id',
 ')',
 'select',
 '   q1.id                  as id',
@@ -1543,18 +1557,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    ,t1.first_paragraph as first_paragraph',
 '    ,t1.body_html       as body_html',
 '    ,t1.body_length     as body_length',
-'    ,t1.published_on    as published_on',
-'    ,t1.notes           as notes',
-'    ,t1.ctx_search      as ctx_search',
-'    ,t1.rowid           as ctx_rid',
-'    ,case t1.is_active * t2.is_active * t3.is_active',
-'      when 1',
-'      then t1.published_on',
-'     end                as published_display',
-'    ,case',
-'      when t3.is_active = 0',
-'        then ''BLOGGER_DISABLED''',
-'      wh'))
+'    ,t1.published_on   '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -1572,7 +1575,18 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'en t2.is_active = 0',
+' as published_on',
+'    ,t1.notes           as notes',
+'    ,t1.ctx_search      as ctx_search',
+'    ,t1.rowid           as ctx_rid',
+'    ,case t1.is_active * t2.is_active * t3.is_active',
+'      when 1',
+'      then t1.published_on',
+'     end                as published_display',
+'    ,case',
+'      when t3.is_active = 0',
+'        then ''BLOGGER_DISABLED''',
+'      when t2.is_active = 0',
 '        then ''CATEGORY_DISABLED''',
 '      when t1.is_active = 0',
 '        then ''DRAFT''',
@@ -1944,7 +1958,7 @@ wwv_flow_imp_shared.append_to_install_script(
 'from blog_v_posts v1',
 'cross join(',
 '  select',
-'    apex_util.get_build_option_status(',
+'    apex_application_admin.get_build_option_status(',
 '       p_application_id     => sys_context( ''APEX$SESSION'', ''APP_ID'' )',
 '      ,p_build_option_name  => ''BLOG_FEATURE_ARCHIVE_POST_COUNT''',
 '    ) as show_post_count',
@@ -1980,7 +1994,7 @@ wwv_flow_imp_shared.append_to_install_script(
 'from blog_v_posts v1',
 'cross join(',
 '  select',
-'    apex_util.get_build_option_status(',
+'    apex_application_admin.get_build_option_status(',
 '       p_application_id     => sys_context( ''APEX$SESSION'', ''APP_ID'' )',
 '      ,p_build_option_name  => ''BLOG_FEATURE_CATEGORY_POST_COUNT''',
 '    ) as show_post_count',
@@ -2097,7 +2111,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Get feature tag post count status',
 'cross join(',
 '  select',
-'    apex_util.get_build_option_status(',
+'    apex_application_admin.get_build_option_status(',
 '       p_application_id     => sys_context( ''APEX$SESSION'', ''APP_ID'' )',
 '      ,p_build_option_name  => ''BLOG_FEATURE_TAG_CLOUD_POST_COUNT''',
 '    ) as show_post_count',
@@ -2553,19 +2567,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 '--  DDL for Trigger BLOG_POST_TAGS_TRG',
 '--------------------------------------------------------',
-'CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_TAGS_TRG"',
-'before',
-'insert or',
-'update on blog_post_tags',
-'for each row',
-'begin',
-'',
-'  if inserting then',
-'    :new.id           := coalesce( :new.id, blog_seq.nextval );',
-'    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
-'    :new.created_by   := coalesce(',
-'      :new.c'))
+'CR'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2583,7 +2585,19 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'reated_by',
+'EATE OR REPLACE EDITIONABLE TRIGGER "BLOG_POST_TAGS_TRG"',
+'before',
+'insert or',
+'update on blog_post_tags',
+'for each row',
+'begin',
+'',
+'  if inserting then',
+'    :new.id           := coalesce( :new.id, blog_seq.nextval );',
+'    :new.row_version  := coalesce( :new.row_version, 1 );',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
+'    :new.created_by   := coalesce(',
+'      :new.created_by',
 '      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
 '      ,sys_context( ''USERENV'', ''PROXY_USER'' )',
 '      ,sys_context( ''USERENV'', ''SESSION_USER'' )',
@@ -3628,16 +3642,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    );',
 '  end redirect_search;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'end "BLOG_UTIL";',
-'/',
-'create or replace package body "BLOG_CM"',
-'as',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'-- Private constants and variables',
-'--------------------------------------------------------------------------------',
-'---------------------'))
+'-----------------------------------------------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3655,7 +3660,16 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------------------------------------------------------',
+'---------------',
+'end "BLOG_UTIL";',
+'/',
+'create or replace package body "BLOG_CM"',
+'as',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'-- Private constants and variables',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '-- none',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -4677,13 +4691,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    end if;',
 '',
-'  end render_math_question_field;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure ajax_math_question_field(',
-'    p_item    in            apex_plugin.t_item,',
-'    p_plugin  in            apex_plugin.t_plugin,',
-'    p_param   in            apex_plugin.t_item'))
+''))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4701,7 +4709,13 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_ajax_param,',
+'  end render_math_question_field;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  procedure ajax_math_question_field(',
+'    p_item    in            apex_plugin.t_item,',
+'    p_plugin  in            apex_plugin.t_plugin,',
+'    p_param   in            apex_plugin.t_item_ajax_param,',
 '    p_result  in out nocopy apex_plugin.t_item_ajax_result',
 '  )',
 '  as',
@@ -5695,20 +5709,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '            )',
 '        ,''UNSUBSCRIBE_LINK'' value',
 '            blog_url.get_unsubscribe(',
-'               p_application     => p_app_id',
-'              ,p_post_id         => p_post_id',
-'              ,p_subscription_id => t1.id',
-'            )',
-'       ) as placeholders',
-'      from blog_comment_subscribers t1',
-'      join blog_subscribers_email t2',
-'        on t1.email_id = t2.id',
-'      join blog_v_all_posts v1',
-'        on t1.post_id = v1.id',
-'      where 1 = 1',
-'        and t1.is_active',
-'          * t2.is_active',
-'          *'))
+'               p_application     => p_app'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5726,7 +5727,20 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' case v1.post_status_code when ''PUBLISHED'' then 1 else 0 end',
+'_id',
+'              ,p_post_id         => p_post_id',
+'              ,p_subscription_id => t1.id',
+'            )',
+'       ) as placeholders',
+'      from blog_comment_subscribers t1',
+'      join blog_subscribers_email t2',
+'        on t1.email_id = t2.id',
+'      join blog_v_all_posts v1',
+'        on t1.post_id = v1.id',
+'      where 1 = 1',
+'        and t1.is_active',
+'          * t2.is_active',
+'          * case v1.post_status_code when ''PUBLISHED'' then 1 else 0 end',
 '          = 1',
 '        and v1.id = l_post_id',
 '        -- send notification if subscription is created less than months ago specified in settings',
@@ -6682,23 +6696,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    apex_debug.error(',
 '       p_message => ''%s Error: %s''',
 '      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p1 => sqlerrm',
-'    );',
-'',
-'    -- show http error',
-'    blog_util.raise_http_error( 500 );',
-'    raise;',
-'',
-'  end sitemap_main;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure sitemap_posts',
-'  as',
-'    l_xml           blob;',
-'    l_cache_control varchar2(256);',
-'  begin',
-'',
-'   '))
+'      ,p1 ='))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6716,7 +6714,23 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' select xmlserialize( document',
+'> sqlerrm',
+'    );',
+'',
+'    -- show http error',
+'    blog_util.raise_http_error( 500 );',
+'    raise;',
+'',
+'  end sitemap_main;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  procedure sitemap_posts',
+'  as',
+'    l_xml           blob;',
+'    l_cache_control varchar2(256);',
+'  begin',
+'',
+'    select xmlserialize( document',
 '      xmlelement(',
 '        "urlset",',
 '        xmlattributes(''http://www.sitemaps.org/schemas/sitemap/0.9'' as "xmlns"),',

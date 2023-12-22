@@ -1864,16 +1864,31 @@ wwv_flow_imp_shared.append_to_install_script(
 '      p_string => t1.body_html',
 '    ) as ctx_search_text',
 '    ,case',
-'      when t3.flag = ''MODERATE''',
+'      when (',
+'        select f11.flag',
+'        from blog_comment_flags f11',
+'        where f11.flag = ''MODERATE''',
+'          and f11.comment_id = t1.id',
+'      ) = ''MODERATE''',
 '        then ''MODERATE''',
 '      when t1.is_active = 1',
 '        then ''ENABLED''',
 '        else ''DISABLED''',
 '    end as comment_status_code',
 '    ,case',
-'      when t3.flag = ''NEW''',
+'      when (',
+'        select f12.flag',
+'        from blog_comment_flags f12',
+'        where f12.flag = ''NEW''',
+'          and f12.comment_id = t1.id',
+'      ) = ''NEW''',
 '        then ''NEW''',
-'      when t3.flag = ''UNREAD''',
+'      when (',
+'        select f13.flag',
+'        from blog_comment_flags f13',
+'        where f13.flag = ''UNREAD''',
+'          and f13.comment_id = t1.id',
+'      ) = ''UNREAD''',
 '        then ''UNREAD''',
 '      when t1.parent_id is not null',
 '        then ''REPLY''',
@@ -1881,7 +1896,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '    end as comment_flag_code',
 '  from blog_comments t1',
 '  join blog_posts t2 on  t1.post_id = t2.id',
-'  left join blog_comment_flags t3 on t1.id = t3.comment_id',
 ')',
 'select',
 '   q1.id                  as id',
@@ -2353,19 +2367,7 @@ wwv_flow_imp_shared.append_to_install_script(
 'from blog_v_posts v1',
 'cross join(',
 '  select',
-'    apex_util.get_build_option_status(',
-'       p_application_id     => sys_context( ''APEX$SESSION'', ''APP_ID'' )',
-'      ,p_build_option_name  => ''BLOG_FEATURE_ARCHIVE_POST_COUNT''',
-'    ) as show_post_count',
-'  from dual',
-') feat',
-'where 1 = 1',
-'group by v1.archive_year',
-'  ,feat.show_post_count',
-'with read only',
-'/',
-'--------------------------------------------------------',
-'--  DDL for View BLOG_V_CATEGORI'))
+'    apex_application_admin.get_build_option_sta'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2383,7 +2385,19 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ES',
+'tus(',
+'       p_application_id     => sys_context( ''APEX$SESSION'', ''APP_ID'' )',
+'      ,p_build_option_name  => ''BLOG_FEATURE_ARCHIVE_POST_COUNT''',
+'    ) as show_post_count',
+'  from dual',
+') feat',
+'where 1 = 1',
+'group by v1.archive_year',
+'  ,feat.show_post_count',
+'with read only',
+'/',
+'--------------------------------------------------------',
+'--  DDL for View BLOG_V_CATEGORIES',
 '--------------------------------------------------------',
 'create or replace force view blog_v_categories as',
 'select',
@@ -2407,7 +2421,7 @@ wwv_flow_imp_shared.append_to_install_script(
 'from blog_v_posts v1',
 'cross join(',
 '  select',
-'    apex_util.get_build_option_status(',
+'    apex_application_admin.get_build_option_status(',
 '       p_application_id     => sys_context( ''APEX$SESSION'', ''APP_ID'' )',
 '      ,p_build_option_name  => ''BLOG_FEATURE_CATEGORY_POST_COUNT''',
 '    ) as show_post_count',
@@ -2524,7 +2538,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Get feature tag post count status',
 'cross join(',
 '  select',
-'    apex_util.get_build_option_status(',
+'    apex_application_admin.get_build_option_status(',
 '       p_application_id     => sys_context( ''APEX$SESSION'', ''APP_ID'' )',
 '      ,p_build_option_name  => ''BLOG_FEATURE_TAG_CLOUD_POST_COUNT''',
 '    ) as show_post_count',
@@ -3397,19 +3411,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '                    when ''FUZZY''    then '' %s fuzzy({%s}) within {%s} and''',
 '                    when ''WILDCARD'' then '' %s {%s}%% within {%s} and''',
 '                                    else '' %s {%s} within {%s} and''',
-'                  end',
-'                ,p0 => l_query',
-'                ,p1 => l_within(2)',
-'                ,p2 => l_within(1)',
-'              )',
-'            ;',
-'          else',
-'            l_query :=',
-'              apex_string.format(',
-'                p_message =>',
-'                  case p_feature',
-'                  when ''FUZZY'' then '' %s fuzzy({%s}) and''',
-'                  when ''WILDCARD'''))
+''))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3427,7 +3429,19 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' then '' %s {%s}%% and''',
+'                  end',
+'                ,p0 => l_query',
+'                ,p1 => l_within(2)',
+'                ,p2 => l_within(1)',
+'              )',
+'            ;',
+'          else',
+'            l_query :=',
+'              apex_string.format(',
+'                p_message =>',
+'                  case p_feature',
+'                  when ''FUZZY'' then '' %s fuzzy({%s}) and''',
+'                  when ''WILDCARD'' then '' %s {%s}%% and''',
 '                  else '' %s {%s} and'' end',
 '                ,p0 => l_query',
 '                ,p1 => l_token',
@@ -4447,18 +4461,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end request_to_post_status;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function request_to_post_success_message(',
-'    p_request         in varchar2',
-'  ) return varchar2',
-'  as',
-'  begin',
-'',
-'    return',
-'      case p_request',
-'        when ''CREATE_DRAFT'' then apex_lang.message( ''BLOG_MSG_POST_CREATED'' )',
-'        when ''CREATE''       then apex_lang.message( ''BLOG_MSG_POST_CREATED'' )',
-'        when ''DELETE''  '))
+'--------------------------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -4476,7 +4479,18 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'     then apex_lang.message( ''BLOG_MSG_POST_DELETED'' )',
+'------------------------------------------------------',
+'  function request_to_post_success_message(',
+'    p_request         in varchar2',
+'  ) return varchar2',
+'  as',
+'  begin',
+'',
+'    return',
+'      case p_request',
+'        when ''CREATE_DRAFT'' then apex_lang.message( ''BLOG_MSG_POST_CREATED'' )',
+'        when ''CREATE''       then apex_lang.message( ''BLOG_MSG_POST_CREATED'' )',
+'        when ''DELETE''       then apex_lang.message( ''BLOG_MSG_POST_DELETED'' )',
 '                            else apex_lang.message( ''BLOG_MSG_POST_UPDATED'' )',
 '      end',
 '    ;',
@@ -5482,21 +5496,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  function get_archive(',
 '    p_archive_id  in varchar2,',
-'    p_canonical   in varchar2 default ''NO''',
-'  ) return varchar2',
-'  as',
-'  begin',
-'',
-'    return',
-'      case p_canonical',
-'        when ''YES'' then get_canonical_host',
-'      end  ||',
-'      apex_page.get_url(',
-'         p_page       => c_archive_page.page_alias',
-'        ,p_session    => ''''',
-'        ,p_items      => c_archive_page.item_name',
-'        ,p_values     => p_archive_id',
-'        ,p_plain_u'))
+''))
 );
 null;
 wwv_flow_imp.component_end;
@@ -5514,7 +5514,21 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'rl  => true',
+'    p_canonical   in varchar2 default ''NO''',
+'  ) return varchar2',
+'  as',
+'  begin',
+'',
+'    return',
+'      case p_canonical',
+'        when ''YES'' then get_canonical_host',
+'      end  ||',
+'      apex_page.get_url(',
+'         p_page       => c_archive_page.page_alias',
+'        ,p_session    => ''''',
+'        ,p_items      => c_archive_page.item_name',
+'        ,p_values     => p_archive_id',
+'        ,p_plain_url  => true',
 '      )',
 '    ;',
 '',
@@ -6511,18 +6525,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      )',
 '    ;',
 '',
-'    -- get rss url',
-'    l_rss_url :=  blog_url.get_rss;',
-'',
-'    -- generate RSS anchor',
-'    l_rss_anchor :=',
-'      apex_string.format(',
-'        p_message =>',
-'          ''<a href="%s" aria-label="%s" rel="alternate" type="%s" class="%s">''',
-'          || ''<span aria-hidden="true" class="%s"></span>''',
-'          || ''</a>''',
-'        ,p0 => l_rss_url',
-'        ,p1 => apex_escape.html_attribute( l_rss_'))
+'    '))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6540,7 +6543,18 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'title )',
+'-- get rss url',
+'    l_rss_url :=  blog_url.get_rss;',
+'',
+'    -- generate RSS anchor',
+'    l_rss_anchor :=',
+'      apex_string.format(',
+'        p_message =>',
+'          ''<a href="%s" aria-label="%s" rel="alternate" type="%s" class="%s">''',
+'          || ''<span aria-hidden="true" class="%s"></span>''',
+'          || ''</a>''',
+'        ,p0 => l_rss_url',
+'        ,p1 => apex_escape.html_attribute( l_rss_title )',
 '        ,p2 => ''application/rss+xml''',
 '        ,p3 => ''t-Button t-Button--noLabel t-Button--icon t-Button--link''',
 '        ,p4 => ''fa fa-rss-square fa-3x fa-lg u-color-8-text''',
@@ -7498,7 +7512,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '  REFERENCES "BLOG_BLOGGERS" ("ID") ENABLE;',
 'ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK2" FOREIGN KEY ("CATEGORY_ID")',
 '  REFERENCES "BLOG_CATEGORIES" ("ID") ENABLE;',
-'ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK1" FOREIGN KEY ("POST_ID")',
+'ALTER TABLE "BL'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.10.31'
+,p_release=>'23.2.0'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(32897013199918411)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'OG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK1" FOREIGN KEY ("POST_ID")',
 '  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;',
 'ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK2" FOREIGN KEY ("TAG_ID")',
 '  REFERENCES "BLOG_TAGS" ("ID") ENABLE;',
