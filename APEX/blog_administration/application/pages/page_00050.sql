@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.0'
+,p_release=>'23.2.3'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_help_text=>'No help available for this page.'
 ,p_page_component_map=>'24'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231206090635'
+,p_last_upd_yyyymmddhh24miss=>'20240310074002'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45219411531225453)
@@ -90,6 +90,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Link ID'
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'HIDDEN'
+,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(38374185804124600)
@@ -633,7 +634,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_template_id=>wwv_flow_imp.id(8549081018518243)
 ,p_button_image_alt=>'Resequence Groups'
 ,p_button_position=>'NEXT'
-,p_confirm_message=>'Resequence group entries, incrementing sequence numbers by 10?'
+,p_confirm_message=>'&APP_TEXT$BLOG_CONFIRM_RESEQUENCE_LINK_GROUPS.'
 ,p_confirm_style=>'warning'
 ,p_button_condition=>'P50_LINK_GROUP_ID'
 ,p_button_condition_type=>'ITEM_IS_NOT_NULL'
@@ -676,7 +677,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_template_id=>wwv_flow_imp.id(8549081018518243)
 ,p_button_image_alt=>'Resequence Links'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
-,p_confirm_message=>'Resequence link entries, incrementing sequence numbers by 10?'
+,p_confirm_message=>'&APP_TEXT$BLOG_CONFIRM_RESEQUENCE_LINKS.'
 ,p_confirm_style=>'warning'
 ,p_icon_css_classes=>'fa-sequence'
 );

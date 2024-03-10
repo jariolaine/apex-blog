@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.0'
+,p_release=>'23.2.3'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231118082732'
+,p_last_upd_yyyymmddhh24miss=>'20240121144213'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(114467420590895797)
@@ -183,11 +183,12 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_template=>wwv_flow_imp.id(8475374748518195)
 ,p_plug_display_sequence=>10
 ,p_query_type=>'TABLE'
-,p_query_table=>'BLOG_V_ALL_COMMENTS'
+,p_query_table=>'BLOG_V_ALL_COMMENTS_FORM'
 ,p_include_rowid_column=>false
 ,p_is_editable=>true
 ,p_edit_operations=>'i:u'
-,p_lost_update_check_type=>'VALUES'
+,p_lost_update_check_type=>'COLUMN'
+,p_row_version_column=>'ROW_VERSION'
 ,p_plug_source_type=>'NATIVE_FORM'
 );
 wwv_flow_imp_page.create_page_plug(
@@ -259,6 +260,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_name=>'P62_ID'
 ,p_source_data_type=>'NUMBER'
 ,p_is_primary_key=>true
+,p_is_query_only=>true
 ,p_item_sequence=>20
 ,p_item_plug_id=>wwv_flow_imp.id(144664650286183478)
 ,p_item_source_plug_id=>wwv_flow_imp.id(144664650286183478)
@@ -274,6 +276,7 @@ wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(38167821301729058)
 ,p_name=>'P62_ROW_VERSION'
 ,p_source_data_type=>'NUMBER'
+,p_is_query_only=>true
 ,p_item_sequence=>30
 ,p_item_plug_id=>wwv_flow_imp.id(144664650286183478)
 ,p_item_source_plug_id=>wwv_flow_imp.id(144664650286183478)
@@ -392,8 +395,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_region_id=>wwv_flow_imp.id(144664650286183478)
 ,p_process_type=>'NATIVE_FORM_DML'
 ,p_process_name=>'Process form Comment'
-,p_attribute_01=>'TABLE'
-,p_attribute_03=>'BLOG_COMMENTS'
+,p_attribute_01=>'REGION_SOURCE'
 ,p_attribute_05=>'Y'
 ,p_attribute_06=>'Y'
 ,p_attribute_08=>'Y'
@@ -475,7 +477,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
 ,p_process_name=>'Close Dialog Reply Posted'
-,p_attribute_02=>'N'
+,p_attribute_02=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_imp.id(38173431995729063)
 ,p_process_success_message=>'Reply to comment sent.'

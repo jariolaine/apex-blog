@@ -1,9 +1,10 @@
 --------------------------------------------------------
---  DDL for View BLOG_V_FORM_POST
+--  DDL for View BLOG_V_ALL_POSTS_FORM
 --------------------------------------------------------
-create or replace force view blog_v_form_post as
+create or replace force view blog_v_all_posts_form as
 select
   t1.id               as id
+  ,t1.row_version     as row_version
   ,t1.blogger_id      as blogger_id
   ,t1.category_id     as category_id
   ,t1.first_paragraph as first_paragraph

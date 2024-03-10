@@ -59,6 +59,7 @@ as
 --                          - Changed procedure merge_files
 --    Jari Laine 30.07.2023 - Added check is workspace user locked to procedure post_authentication
 --                          - Replaced apex_util.set_build_option_status with apex_application_admin.set_build_option_status
+--    Jari Laine 10.03.2024 - Bug fix post_authentication procedure to check only current workspace
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -339,21 +340,28 @@ as
 --------------------------------------------------------------------------------
   procedure post_authentication
   as
-    l_group_names apex_t_varchar2;
+    l_group_names   apex_t_varchar2;
+    l_user_name     apex_workspace_apex_users.user_name%type;
+    l_workspace_id  apex_workspace_apex_users.workspace_id%type;
   begin
+
+    l_user_name     := sys_context( 'APEX$SESSION', 'APP_USER' );
+    l_workspace_id  := sys_context( 'APEX$SESSION', 'WORKSPACE_ID' );
 
     -- collect user groups to PL/SQL table
     for c1 in(
       select g.group_name
       from apex_workspace_group_users g
       where 1 = 1
-        and g.user_name = sys_context( 'APEX$SESSION', 'APP_USER' )
         and exists(
           select 1
           from apex_workspace_apex_users u
           where 1 = 1
-            and u.account_locked = 'No'
             and u.user_name = g.user_name
+            and u.workspace_id = l_workspace_id
+            and u.account_locked = 'No'
+            and u.workspace_id = g.workspace_id
+            and u.user_name = l_user_name
         )
     ) loop
 

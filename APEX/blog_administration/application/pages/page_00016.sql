@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.0'
+,p_release=>'23.2.3'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -28,7 +28,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231005185849'
+,p_last_upd_yyyymmddhh24miss=>'20240310074131'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(51010309190311741)
@@ -608,14 +608,14 @@ wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(38506131348327704)
 ,p_button_sequence=>10
 ,p_button_plug_id=>wwv_flow_imp.id(62028937660022767)
-,p_button_name=>'RESEQUENCE'
+,p_button_name=>'RESEQUENCE_TAGS'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#'
 ,p_button_template_id=>wwv_flow_imp.id(8549081018518243)
 ,p_button_image_alt=>'Resequence'
 ,p_button_position=>'NEXT'
 ,p_warn_on_unsaved_changes=>null
-,p_confirm_message=>'Resequence tags, incrementing sequence numbers by 10?'
+,p_confirm_message=>'&APP_TEXT$BLOG_CONFIRM_RESEQUENCE_TAGS.'
 ,p_confirm_style=>'warning'
 ,p_icon_css_classes=>'fa-sequence'
 );

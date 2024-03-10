@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.0'
+,p_release=>'23.2.3'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -84,11 +84,13 @@ wwv_flow_imp_shared.create_install(
 'drop table blog_tags;',
 'drop view blog_v_all_categories;',
 'drop view blog_v_all_comments;',
+'drop view blog_v_all_comments_form;',
 'drop view blog_v_all_dynamic_content;',
 'drop view blog_v_all_files;',
 'drop view blog_v_all_links;',
 'drop view blog_v_all_link_groups;',
 'drop view blog_v_all_posts;',
+'drop view blog_v_all_posts_form;',
 'drop view blog_v_all_post_tags;',
 'drop view blog_v_all_tags;',
 'drop view blog_v_archive_year;',
@@ -98,7 +100,6 @@ wwv_flow_imp_shared.create_install(
 'drop view blog_v_dynamic_content;',
 'drop view blog_v_features;',
 'drop view blog_v_files;',
-'drop view blog_v_form_post;',
 'drop view blog_v_init_items;',
 'drop view blog_v_links;',
 'drop view blog_v_lov;',
@@ -118,7 +119,8 @@ wwv_flow_imp_shared.create_install(
 'begin',
 '  ctx_ddl.drop_preference( ''BLOG_POSTS_UDS'' );',
 'end;',
-'/'))
+'/',
+''))
 ,p_required_free_kb=>200
 ,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
 );

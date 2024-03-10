@@ -43,6 +43,7 @@ as
 --    Jari Laine 30.07.2023 - Replaced apex_util.get_build_option_status with apex_application_admin.get_build_option_status
 --    Jari Laine 12.11.2023 - Changes to procedures rss and rss_xsl
 --    Jari Laine 13.11.2023 - New procedure atom
+--    Jari Laine 10.03.2024 - Changed procedure rss_xsl handle application files absolute URL
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -415,8 +416,12 @@ as
   begin
 
     -- Generate relaive URL for CSS file
-    l_css_url := apex_util.host_url( 'APEX_PATH' );
-    l_css_url := substr( l_css_url, instr( l_css_url, '/', 1, 3 ) );
+    if p_css_file not like 'http%'
+    then
+      l_css_url := apex_util.host_url( 'APEX_PATH' );
+      l_css_url := substr( l_css_url, instr( l_css_url, '/', 1, 3 ) );
+    end if;
+
     l_css_url := l_css_url || p_css_file;
 
     l_xml :=

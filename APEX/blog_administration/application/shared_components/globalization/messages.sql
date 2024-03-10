@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.0'
+,p_release=>'23.2.3'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -18,7 +18,7 @@ end;
 begin
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.0'
+,p_release=>'23.2.3'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -65,6 +65,30 @@ wwv_flow_imp_shared.create_message(
 ,p_name=>'BLOG_CONFIRM_LINK_GROUP_DELETE'
 ,p_message_text=>'You have requested the permanent deletion of links label. Following link(s) will be also deleted.'
 ,p_version_scn=>1
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(36077116368425357)
+,p_name=>'BLOG_CONFIRM_RESEQUENCE_CATEGORIES'
+,p_message_text=>'Resequence categories, incrementing sequence numbers by 10?'
+,p_version_scn=>41102141851437
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(36077759827431234)
+,p_name=>'BLOG_CONFIRM_RESEQUENCE_LINKS'
+,p_message_text=>'Resequence link entries, incrementing sequence numbers by 10?'
+,p_version_scn=>41102142240904
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(36077521830429519)
+,p_name=>'BLOG_CONFIRM_RESEQUENCE_LINK_GROUPS'
+,p_message_text=>'Resequence group entries, incrementing sequence numbers by 10?'
+,p_version_scn=>41102141954013
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(36077305283427470)
+,p_name=>'BLOG_CONFIRM_RESEQUENCE_TAGS'
+,p_message_text=>'Resequence tags, incrementing sequence numbers by 10?'
+,p_version_scn=>41102141901778
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(30112367443952323)
