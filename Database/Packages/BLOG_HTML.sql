@@ -27,6 +27,12 @@ as
 --    Jari Laine 25.11.2022 - Removed unused parameters
 --    Jari Laine 30.07.2023 - Replaced apex_util.get_build_option_status with apex_application_admin.get_build_option_status
 --    Jari Laine 18.11.2023 - New function get_atom_link
+--    Jari Laine 01.04.2024 - Changed functions to procedure
+--                              get_tab_canonical_link
+--                              get_post_canonical_link
+--                              get_category_canonical_link
+--                              get_archive_canonical_link
+--                              get_tag_canonical_link
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -34,33 +40,43 @@ as
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAB
-  function get_tab_canonical_link(
-    p_page          in varchar2
-  ) return varchar2;
+  procedure get_tab_canonical_link(
+    p_page          in varchar2,
+    p_html          out nocopy varchar2,
+    p_url           out nocopy varchar2
+  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_POST
-  function get_post_canonical_link(
-    p_post_id       in varchar2
-  ) return varchar2;
+  procedure get_post_canonical_link(
+    p_post_id       in varchar2,
+    p_html          out nocopy varchar2,
+    p_url           out nocopy varchar2
+  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
-  function get_category_canonical_link(
-    p_category_id   in varchar2
-  ) return varchar2;
+  procedure get_category_canonical_link(
+    p_category_id   in varchar2,
+    p_html          out nocopy varchar2,
+    p_url           out nocopy varchar2
+  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
-  function get_archive_canonical_link(
-    p_archive_id    in varchar2
-  ) return varchar2;
+  procedure get_archive_canonical_link(
+    p_archive_id    in varchar2,
+    p_html          out nocopy varchar2,
+    p_url           out nocopy varchar2
+  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAG
-  function get_tag_canonical_link(
-    p_tag_id        in varchar2
-  ) return varchar2;
+  procedure get_tag_canonical_link(
+    p_tag_id        in varchar2,
+    p_html          out nocopy varchar2,
+    p_url           out nocopy varchar2
+  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_RSS_ANCHOR
@@ -99,8 +115,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
-  c_link_canonical constant varchar2(64) := '<link rel="canonical" href="%s" />';
-  c_link_alternate constant varchar2(64) := '<link href="%s" title="%s" rel="alternate" type="%s">';
+  c_link_canonical_template constant varchar2(64) := '<link rel="canonical" href="%s">';
+  c_link_alternate_template constant varchar2(64) := '<link rel="alternate" href="%s" title="%s" type="%s">';
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -121,149 +137,153 @@ as
   end get_robots_noindex_meta;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_tab_canonical_link(
-    p_page in varchar2
-  ) return varchar2
+  procedure get_tab_canonical_link(
+    p_page  in varchar2,
+    p_html  out nocopy varchar2,
+    p_url   out nocopy varchar2
+  )
   as
-    l_html varchar2(32700);
   begin
     -- generate canonical link for tab
     if p_page is not null
     then
-      l_html :=
+      p_url :=
+        blog_url.get_tab(
+          p_page       => p_page
+        , p_canonical  => 'YES'
+        )
+      ;
+      p_html :=
         apex_string.format(
-          p_message => c_link_canonical
-          ,p0 =>
-            blog_url.get_tab(
-               p_page       => p_page
-              ,p_canonical  => 'YES'
-            )
+          p_message => c_link_canonical_template
+        , p0 => p_url
         )
       ;
     else
       -- if p_page is not defined
       apex_debug.warn( 'Canonical link tag not generated for tab.' );
-      l_html := get_robots_noindex_meta;
+      p_html := get_robots_noindex_meta;
     end if;
-    -- return generated HTML
-    return l_html;
 
   end get_tab_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_post_canonical_link(
-    p_post_id in varchar2
-  ) return varchar2
+  procedure get_post_canonical_link(
+    p_post_id in varchar2,
+    p_html    out nocopy varchar2,
+    p_url     out nocopy varchar2
+  )
   as
-    l_html varchar2(32700);
   begin
     -- generate canonical link for post
     if p_post_id is not null
     then
-      l_html :=
+      p_url :=
+        blog_url.get_post(
+          p_post_id      => p_post_id
+        , p_canonical    => 'YES'
+        )
+      ;
+      p_html :=
         apex_string.format(
-          p_message => c_link_canonical
-          ,p0 =>
-            blog_url.get_post(
-               p_post_id      => p_post_id
-              ,p_canonical    => 'YES'
-            )
+          p_message => c_link_canonical_template
+        , p0 => p_url
         )
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for post.' );
-      l_html := get_robots_noindex_meta;
+      p_html := get_robots_noindex_meta;
     end if;
-    -- return generated HTML
-    return l_html;
 
   end get_post_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_category_canonical_link(
-    p_category_id in varchar2
-  ) return varchar2
+  procedure get_category_canonical_link(
+    p_category_id in varchar2,
+    p_html        out nocopy varchar2,
+    p_url         out nocopy varchar2
+  )
   as
-    l_html varchar2(32700);
   begin
     -- generate canonical link for category
     if p_category_id is not null
     then
-      l_html :=
+      p_url :=
+        blog_url.get_category(
+          p_category_id  => p_category_id
+        , p_canonical    => 'YES'
+        )
+      ;
+      p_html :=
         apex_string.format(
-          p_message => c_link_canonical
-          ,p0 =>
-            blog_url.get_category(
-               p_category_id  => p_category_id
-              ,p_canonical    => 'YES'
-            )
+          p_message => c_link_canonical_template
+        , p0 => p_url
         )
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for category.' );
-      l_html := get_robots_noindex_meta;
+      p_html := get_robots_noindex_meta;
     end if;
-    -- return generated HTML
-    return l_html;
 
   end get_category_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_archive_canonical_link(
-    p_archive_id in varchar2
-  ) return varchar2
+  procedure get_archive_canonical_link(
+    p_archive_id in varchar2,
+    p_html       out nocopy varchar2,
+    p_url        out nocopy varchar2
+  )
   as
-    l_html varchar2(32700);
   begin
       -- generate canonical link for archives
     if p_archive_id is not null
     then
-      l_html :=
+      p_url :=
+        blog_url.get_archive(
+          p_archive_id => p_archive_id
+        , p_canonical  => 'YES'
+        )
+      ;
+      p_html :=
         apex_string.format(
-          p_message => c_link_canonical
-          ,p0 =>
-            blog_url.get_archive(
-               p_archive_id => p_archive_id
-              ,p_canonical  => 'YES'
-            )
+          p_message => c_link_canonical_template
+        , p0 => p_url
         )
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for archive.' );
-      l_html := get_robots_noindex_meta;
+      p_html := get_robots_noindex_meta;
     end if;
-    -- return generated HTML
-    return l_html;
 
   end get_archive_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_tag_canonical_link(
-    p_tag_id in varchar2
-  ) return varchar2
+  procedure get_tag_canonical_link(
+    p_tag_id in varchar2,
+    p_html   out nocopy varchar2,
+    p_url    out nocopy varchar2
+  )
   as
-    l_html varchar2(32700);
   begin
     -- generate canonical link for tags
     if p_tag_id is not null
     then
-      l_html :=
+      p_url :=
+        blog_url.get_tag(
+          p_tag_id     => p_tag_id
+        , p_canonical  => 'YES'
+        )
+      ;
+      p_html :=
         apex_string.format(
-          p_message => c_link_canonical
-          ,p0 =>
-            blog_url.get_tag(
-               p_tag_id     => p_tag_id
-              ,p_canonical  => 'YES'
-            )
+          p_message => c_link_canonical_template
+        , p0 => p_url
         )
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for tag.' );
-      l_html := get_robots_noindex_meta;
+      p_html := get_robots_noindex_meta;
     end if;
-
-    -- return generated HTML
-    return l_html;
 
   end get_tag_canonical_link;
 --------------------------------------------------------------------------------
@@ -281,8 +301,8 @@ as
     -- get rss title
     l_rss_title :=
       apex_lang.message(
-        p_name => p_message
-        ,p0 => p_app_name
+        p_name  => p_message
+      , p0      => p_app_name
       )
     ;
 
@@ -296,11 +316,11 @@ as
           '<a href="%s" aria-label="%s" rel="alternate" type="%s" class="%s">'
           || '<span aria-hidden="true" class="%s"></span>'
           || '</a>'
-        ,p0 => l_rss_url
-        ,p1 => apex_escape.html_attribute( l_rss_title )
-        ,p2 => 'application/rss+xml'
-        ,p3 => 't-Button t-Button--noLabel t-Button--icon t-Button--link'
-        ,p4 => 'fa fa-rss-square fa-3x fa-lg u-color-8-text'
+      , p0 => l_rss_url
+      , p1 => apex_escape.html_attribute( l_rss_title )
+      , p2 => blog_util.g_mime_rss
+      , p3 => 't-Button t-Button--noLabel t-Button--icon t-Button--link'
+      , p4 => 'fa fa-rss-square fa-3x fa-lg u-color-8-text'
       )
     ;
     -- return generated HTML
@@ -326,8 +346,8 @@ as
     -- check build option should HTML generated
     if
       apex_application_admin.get_build_option_status(
-        p_application_id      => l_app_id
-        ,p_build_option_name  => p_build_option
+        p_application_id    => l_app_id
+      , p_build_option_name => p_build_option
       ) = apex_application_admin.c_build_option_status_include
     then
       -- get rss url
@@ -335,19 +355,19 @@ as
 
     -- generate link for RSS
       l_rss_title := apex_lang.message(
-        p_name => p_message
-        ,p0 => p_app_name
+        p_name  => p_message
+      , p0      => p_app_name
       );
       -- generate HTML
       l_rss_url :=
         apex_string.format(
-          p_message => c_link_alternate
-          ,p0 => l_rss_url
-          ,p1 =>
+          p_message => c_link_alternate_template
+        , p0 => l_rss_url
+        , p1 =>
             apex_escape.html_attribute(
               p_string => l_rss_title
             )
-          ,p2 => 'application/rss+xml'
+        , p2 => blog_util.g_mime_rss
         )
       ;
 
@@ -375,8 +395,8 @@ as
     -- check build option should HTML generated
     if
       apex_application_admin.get_build_option_status(
-        p_application_id      => l_app_id
-        ,p_build_option_name  => p_build_option
+        p_application_id    => l_app_id
+      , p_build_option_name => p_build_option
       ) = apex_application_admin.c_build_option_status_include
     then
       -- get atom url
@@ -384,19 +404,19 @@ as
 
     -- generate link for atom
       l_atom_title := apex_lang.message(
-        p_name => p_message
-        ,p0 => p_app_name
+        p_name  => p_message
+      , p0      => p_app_name
       );
       -- generate HTML
       l_atom_url :=
         apex_string.format(
-          p_message => c_link_alternate
-          ,p0 => l_atom_url
-          ,p1 =>
+          p_message => c_link_alternate_template
+        , p0 => l_atom_url
+        , p1 =>
             apex_escape.html_attribute(
               p_string => l_atom_title
             )
-          ,p2 => 'application/atom+xml'
+        , p2 => blog_util.g_mime_atom
         )
       ;
 

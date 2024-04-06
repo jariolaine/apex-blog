@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231120195619'
+,p_last_upd_yyyymmddhh24miss=>'20240401142345'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(65301007014080913)
@@ -175,6 +175,36 @@ wwv_flow_imp_page.create_report_columns(
 ,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'N'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(40686125720261719)
+,p_meta_tag_name=>'description'
+,p_meta_tag_value=>'A file repository where you can download files.'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(40686274247261720)
+,p_meta_tag_name=>'og:description'
+,p_meta_tag_value=>'A file repository where you can download files.'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(40686398726261721)
+,p_meta_tag_name=>'og:image'
+,p_meta_tag_value=>'&APP_FILES.icons/app-icon-512.png'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(40686441590261722)
+,p_meta_tag_name=>'og:title'
+,p_meta_tag_value=>'Files | &G_APP_NAME.'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(40686583316261723)
+,p_meta_tag_name=>'og:type'
+,p_meta_tag_value=>'website'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(40687536374261733)
+,p_meta_tag_name=>'og:url'
+,p_meta_tag_value=>'&G_PAGE_URL.'
 );
 wwv_flow_imp.component_end;
 end;

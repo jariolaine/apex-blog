@@ -116,24 +116,28 @@ var blog = blog || {};
     **/
     ig : {
 
-      options: {
-        sequenceStep: 10
-      },
-
       /**
-      * @function blog.admin.ig.pageLoad
-      * @summary IG initialization code on page load
-      * @desc palce blog.admin.ig.pageLoad in page JavaScript: Function and Global Variable Declaration
+      * @function blog.admin.ig.processChildFeatures
+      * @summary hide / show child features depending pElement type
       **/
-      pageLoad: function( options ){
+      processChildFeatures: function( pElement ){
 
-        // if sequence column defined
-        if( options.sequenceField !== undefined ){
-          blog.admin.ig.options = $.extend({
-            sequenceField: options.sequenceField
-          }, blog.admin.ig.options );
+        var element$ = $( $x( pElement ) )
+          , nextRows = ":has(td:first-child>span.blog-feature-parent),:has(th)"
+
+        if( element$.is( "input" ) ){
+
+          element$.parents( "tr:has(td:first-child>span.blog-feature-parent)" )
+            .nextUntil( nextRows ).toggle()
+          ;
+
+        } else {
+
+          element$.find( "tr:has(td:first-child>span.blog-feature-parent[data-status=\"Exclude\"])" )
+            .nextUntil( nextRows ).hide()
+          ;
+
         }
-
       },
 
       /**
@@ -156,16 +160,6 @@ var blog = blog || {};
           toolbarData: toolbarData
         }, options );
 
-        // if sequence column defined in page load
-        if( blog.admin.ig.options.sequenceField !== undefined ){
-          options = $.extend({
-            defaultModelOptions: {
-              sequenceField: blog.admin.ig.options.sequenceField,
-              sequenceStep: blog.admin.ig.options.sequenceStep
-            }
-          }, options );
-        }
-
         // disable options from features and settings IG
         if( isConfigIg ) {
 
@@ -180,8 +174,26 @@ var blog = blog || {};
             }
           }, options );
 
+
           options.columns.forEach( column => {
             $.extend( true, column, { defaultGridColumnOptions: { noHeaderActivate: true } } );
+          });
+
+        } else {
+
+          options.columns.forEach( column => {
+
+            if( column.name === "DISPLAY_SEQ" ){
+
+              options = $.extend({
+                defaultModelOptions: {
+                  sequenceField: column.name,
+                  sequenceStep: 10
+                }
+              }, options );
+
+            }
+
           });
 
         }
@@ -210,30 +222,14 @@ var blog = blog || {};
 
           }
 
+          blog.admin.ig.processChildFeatures( igId );
+
         });
 
         // Set IG to edit mode by default on page load
         $( window ).on( "theme42ready", function(){
           region( igId ).call( "getActions" ).set( "edit", true );
         });
-
-        return options;
-
-      },
-
-      /**
-      * @function blog.admin.ig.cloumn
-      * @summary IG columns initialization code
-      * @desc place blog.admin.ig.cloumn in column Advanced: JavaScript Initialization Code
-      **/
-      column: function( options ){
-
-        // remove headers actions
-        options = $.extend({
-          defaultGridColumnOptions: {
-            noHeaderActivate: true
-          }
-        }, options );
 
         return options;
 

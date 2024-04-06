@@ -22,9 +22,10 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_browser_cache=>'Y'
+,p_page_comment=>'Page to hold Ajax callback processes e.g. for generate RSS feed and download files.'
 ,p_page_component_map=>'11'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231118051428'
+,p_last_upd_yyyymmddhh24miss=>'20240401075027'
 );
 wwv_flow_imp_page.create_page_branch(
  p_id=>wwv_flow_imp.id(62674058371144805)
@@ -117,7 +118,8 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'sitemap-main.xml'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog_xml.sitemap_main(',
-'  p_app_id => :APP_ID',
+'  p_app_id      => :APP_ID',
+', p_page_group  => ''Sitemap Main''',
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_required_patch=>wwv_flow_imp.id(41172379976935637)

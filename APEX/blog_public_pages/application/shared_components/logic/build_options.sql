@@ -24,7 +24,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(7073708623458378)
 ,p_build_option_name=>'BLOG_FEATURE_ALLOW_COMMENTS'
 ,p_build_option_status=>'INCLUDE'
-,p_version_scn=>1
+,p_version_scn=>41108660913329
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable commenting to posts'
@@ -33,7 +33,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(8635198962090938)
 ,p_build_option_name=>'BLOG_FEATURE_RSS'
 ,p_build_option_status=>'INCLUDE'
-,p_version_scn=>1
+,p_version_scn=>41108683790438
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable "Subscribe in a Reader" link and page header link tag'
@@ -51,7 +51,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(8667733481689180)
 ,p_build_option_name=>'BLOG_FEATURE_SEARCH_POSTS'
 ,p_build_option_status=>'INCLUDE'
-,p_version_scn=>39901462057061
+,p_version_scn=>41108667364271
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable search from posts'
@@ -78,7 +78,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(9183215324713042)
 ,p_build_option_name=>'BLOG_FEATURE_SEARCH_COMMENTS'
 ,p_build_option_status=>'INCLUDE'
-,p_version_scn=>39901460601001
+,p_version_scn=>41108683116626
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable search from comments'
@@ -123,7 +123,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(25684767186283357)
 ,p_build_option_name=>'BLOG_FEATURE_SEARCH_LINKS'
 ,p_build_option_status=>'INCLUDE'
-,p_version_scn=>39901462057061
+,p_version_scn=>41108683094882
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable search from links'
@@ -149,7 +149,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(28281277020489892)
 ,p_build_option_name=>'BLOG_FEATURE_MODERATE_COMMENTS'
 ,p_build_option_status=>'INCLUDE'
-,p_version_scn=>1
+,p_version_scn=>41108660913329
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable comments moderation'
@@ -167,7 +167,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(33703543205326403)
 ,p_build_option_name=>'BLOG_FEATURE_SUBSCRIBE_COMMENTS'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>1
+,p_version_scn=>41108660913329
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable the ability to subscribe to email notification of new comments'
@@ -183,7 +183,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(39030203881986717)
 ,p_build_option_name=>'BLOG_FEATURE_SEARCH'
 ,p_build_option_status=>'INCLUDE'
-,p_version_scn=>1
+,p_version_scn=>41108683116623
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable search page'

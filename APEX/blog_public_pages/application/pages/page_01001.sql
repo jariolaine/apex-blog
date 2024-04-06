@@ -33,9 +33,10 @@ wwv_flow_imp_page.create_page(
 ,p_rejoin_existing_sessions=>'N'
 ,p_read_only_when_type=>'ITEM_IS_NULL'
 ,p_read_only_when=>'P1001_POST_ID'
+,p_page_comment=>'Dialog page to allow users comment blog posts.'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230831051737'
+,p_last_upd_yyyymmddhh24miss=>'20240401075225'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27990916738607115)
@@ -59,11 +60,11 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_source=>'&APP_TEXT$BLOG_MSG_MODERATE_ENABLED.'
 ,p_plug_display_condition_type=>'EXPRESSION'
 ,p_plug_display_when_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_util.get_attribute_value(''G_APP_EMAIL'') is not null',
+'blog_util.get_attribute_value( ''G_APP_EMAIL'' ) is not null',
 'and',
 'apex_util.get_build_option_status(',
-'   p_application_id     => :APP_ID',
-'  ,p_build_option_name  => ''BLOG_FEATURE_SUBSCRIBE_COMMENTS''',
+'  p_application_id    => :APP_ID',
+', p_build_option_name => ''BLOG_FEATURE_SUBSCRIBE_COMMENTS''',
 ') = ''INCLUDE'''))
 ,p_plug_display_when_cond2=>'PLSQL'
 ,p_required_patch=>wwv_flow_imp.id(28281277020489892)

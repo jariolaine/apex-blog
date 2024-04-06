@@ -608,8 +608,8 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(40637327457556920)
 ,p_name=>'BLOG_MSG_BASIC_SETTINGS_INFO'
-,p_message_text=>'Changes to some settings only take effect for new sessions in the public application.'
-,p_version_scn=>1
+,p_message_text=>'Changes to some settings only take effect in new sessions of the public application.'
+,p_version_scn=>41108684774903
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(37487208542792958)

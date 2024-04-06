@@ -90,12 +90,19 @@ as
 --    Jari Laine 08.04.2023 - Parameter p_page_id to procedure redirect_search
 --                          - Removed ORA errors between -20999 and 20901 display position handlimg from function apex_error_handler
 --    Jari Laine 05.09.2023 - Removed use of type blog_t_post from procedure get_post_details
+--    Jari Laine 01.04.2024 - New package global constants and variables
+--                          - Small changes to procedures download_file
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  g_nls_date_lang constant varchar2(30) := 'NLS_DATE_LANGUAGE = ENGLISH';
-  g_iso_8601_date constant varchar2(39) := 'YYYY-MM-DD"T"HH24:MI:SS"Z"';
-  g_rfc_2822_date constant varchar2(39) := 'Dy, DD Mon YYYY HH24:MI:SS "GMT"';
+  g_nls_date_lang constant varchar2(40) := 'NLS_DATE_LANGUAGE = ENGLISH';
+  g_iso_8601_date constant varchar2(40) := 'YYYY-MM-DD"T"HH24:MI:SS"Z"';
+  g_rfc_2822_date constant varchar2(40) := 'Dy, DD Mon YYYY HH24:MI:SS "GMT"';
+
+  g_mime_rss      constant varchar2(40) := 'application/rss+xml';
+  g_mime_atom     constant varchar2(40) := 'application/atom+xml';
+
+  g_link_canonical  varchar2(1024);
 --------------------------------------------------------------------------------
   procedure raise_http_error(
     p_error_code  in number
@@ -469,6 +476,7 @@ as
 --                          - Removed not used parammeters from functions
 --                          - New function get_dynamic_page
 --    Jari Laine 18.11.2023 - New function get_atom
+--    Jari Laine 01.04.2024 - Changed package private constants to json object
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -713,6 +721,12 @@ as
 --    Jari Laine 25.11.2022 - Removed unused parameters
 --    Jari Laine 30.07.2023 - Replaced apex_util.get_build_option_status with apex_application_admin.get_build_option_status
 --    Jari Laine 18.11.2023 - New function get_atom_link
+--    Jari Laine 01.04.2024 - Changed functions to procedure
+--                              get_tab_canonical_link
+--                              get_post_canonical_link
+--                              get_category_canonical_link
+--                              get_archive_canonical_link
+--                              get_tag_canonical_link
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -720,33 +734,43 @@ as
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAB
-  function get_tab_canonical_link(
-    p_page          in varchar2
-  ) return varchar2;
+  procedure get_tab_canonical_link(
+    p_page          in varchar2,
+    p_html          out nocopy varchar2,
+    p_url           out nocopy varchar2
+  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_POST
-  function get_post_canonical_link(
-    p_post_id       in varchar2
-  ) return varchar2;
+  procedure get_post_canonical_link(
+    p_post_id       in varchar2,
+    p_html          out nocopy varchar2,
+    p_url           out nocopy varchar2
+  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
-  function get_category_canonical_link(
-    p_category_id   in varchar2
-  ) return varchar2;
+  procedure get_category_canonical_link(
+    p_category_id   in varchar2,
+    p_html          out nocopy varchar2,
+    p_url           out nocopy varchar2
+  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
-  function get_archive_canonical_link(
-    p_archive_id    in varchar2
-  ) return varchar2;
+  procedure get_archive_canonical_link(
+    p_archive_id    in varchar2,
+    p_html          out nocopy varchar2,
+    p_url           out nocopy varchar2
+  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAG
-  function get_tag_canonical_link(
-    p_tag_id        in varchar2
-  ) return varchar2;
+  procedure get_tag_canonical_link(
+    p_tag_id        in varchar2,
+    p_html          out nocopy varchar2,
+    p_url           out nocopy varchar2
+  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_RSS_ANCHOR
@@ -821,6 +845,8 @@ as
 --    Jari Laine 12.11.2023 - Changes to procedures rss and rss_xsl
 --    Jari Laine 13.11.2023 - New procedure atom
 --    Jari Laine 10.03.2024 - Changed procedure rss_xsl handle application files absolute URL
+--    Jari Laine 01.04.2024 - Parameter p_page_group to procedure sitemap_main
+--                          - Changes to package constants and new constant c_headers
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -855,7 +881,8 @@ as
 -- Called from:
 --  public app page 1003 Ajax Callback process "sitemap-main.xml"
   procedure sitemap_main(
-    p_app_id        in varchar2
+    p_app_id        in varchar2,
+    p_page_group    in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -1181,45 +1208,44 @@ with read only
 --------------------------------------------------------
 create or replace force view blog_v_features as
 select
-   t1.id                        as id
-  ,v1.application_id            as application_id
-  ,v1.build_option_id           as build_option_id
-  ,v1.last_updated_on           as last_updated_on
-  ,lower( v1.last_updated_by )  as last_updated_by
-  ,t1.display_seq               as display_seq
-  ,t1.build_option_name         as build_option_name
-  ,v1.build_option_status       as build_option_status
-  ,t1.build_option_parent       as build_option_parent
-  ,apex_lang.message(
+  t1.id                       as id
+, v1.application_id           as application_id
+, v1.build_option_id          as build_option_id
+, v1.last_updated_on          as last_updated_on
+, lower( v1.last_updated_by ) as last_updated_by
+, t1.display_seq              as display_seq
+, t1.build_option_name        as build_option_name
+, v1.build_option_status      as build_option_status
+, t1.build_option_parent      as build_option_parent
+, case when v2.build_option_name is null
+    then 'Y'
+    else 'N'
+  end                         as is_parent
+, apex_lang.message(
     p_name => t1.build_option_name
-  )                             as feature_desc
+  )                           as feature_desc
   ,regexp_replace(
     t1.build_option_name
     ,'^(BLOG)'
     ,'\1_HELP'
-  )                             as help_message
+  )                           as help_message
 -- HTML in query because IG removes HTML from column HTM expression in control break column
 -- Contrel break is soretd and attribute data-sort-order gives correct sort order
   ,apex_string.format(
-     p_message => '<span data-sort-order="%s" class="u-bold">%s</span>'
-    ,p0 => lpad( min( t1.display_seq ) over( partition by t1.build_option_group ), 5, '0' )
-    ,p1 =>
+    p_message => '<span data-sort-order="%s" class="u-bold">%s</span>'
+  , p0 => lpad( min( t1.display_seq ) over( partition by t1.build_option_group ), 5, '0' )
+  , p1 =>
       apex_lang.message(
         p_name => t1.build_option_group
       )
-  )                             as feature_group_html
+  )                           as feature_group_html
 from blog_features t1
 join apex_application_build_options v1
   on t1.build_option_name = v1.build_option_name
+left join apex_application_build_options v2
+  on t1.build_option_parent = v2.build_option_name
 where 1 = 1
 and t1.is_active = 1
-and not exists(
-  select 1
-  from apex_application_build_options x1
-  where x1.build_option_status = 'Exclude'
-    and x1.application_id = v1.application_id
-    and x1.build_option_name = t1.build_option_parent
-)
 with read only
 /
 --------------------------------------------------------
@@ -1825,8 +1851,8 @@ select
   ,(
     select
       json_object(
-         'post_id'    is lkp_post.post_id
-        ,'post_title' is lkp_post.post_title
+         'post_id'    : lkp_post.post_id
+        ,'post_title' : lkp_post.post_title
       ) as post
     from q1 lkp_post
     where 1 = 1
@@ -1838,8 +1864,8 @@ select
   ,(
     select
       json_object(
-         'post_id'    is lkp_post.post_id
-        ,'post_title' is lkp_post.post_title
+         'post_id'    : lkp_post.post_id
+        ,'post_title' : lkp_post.post_title
       ) as post
     from q1 lkp_post
     where 1 = 1
@@ -2952,7 +2978,7 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- none
+  c_mime_default  constant varchar2(40) := 'application/octet';
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -3355,11 +3381,11 @@ as
   then
 
     apex_debug.error(
-       p_message => 'Error: %s %s( %s => %s )'
-      ,p0 => sqlerrm
-      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p2 => 'p_tag_id'
-      ,p3 => coalesce( p_tag_id, '(null)' )
+      p_message => 'Error: %s %s( %s => %s )'
+    , p0 => sqlerrm
+    , p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+    , p2 => 'p_tag_id'
+    , p3 => coalesce( p_tag_id, '(null)' )
     );
 
     -- show http error
@@ -3385,9 +3411,9 @@ as
 
     -- open HTTP header
     sys.owa_util.mime_header(
-      ccontent_type   => coalesce ( p_mime_type, 'application/octet' )
-      ,bclose_header  => false
-      ,ccharset       => p_charset
+      ccontent_type => coalesce ( p_mime_type, c_mime_default )
+    , bclose_header => false
+    , ccharset      => p_charset
     );
 
     apex_debug.info(
@@ -3400,17 +3426,26 @@ as
 
       apex_debug.info(
          p_message => 'Header name: %s , header value: %s'
-        ,p0 => p_header_names(i)
-        ,p1 => p_header_values(i)
+      , p0 => p_header_names(i)
+      , p1 => p_header_values(i)
       );
-      -- output HTTP header
-      sys.htp.p(
-        apex_string.format(
-           p_message => '%s: %s'
-          ,p0 => p_header_names(i)
-          ,p1 => p_header_values(i)
-        )
-      );
+
+      if p_header_values(i) is not null
+      then
+        -- output HTTP header
+        sys.htp.p(
+          apex_string.format(
+            p_message => '%s: %s'
+          , p0 => p_header_names(i)
+          , p1 => p_header_values(i)
+          )
+        );
+      else
+        apex_debug.info(
+          p_message => 'Header %s value is null. Header not set'
+        , p0 => p_header_names(i)
+        );
+      end if;
 
     end loop;
 
@@ -3426,9 +3461,9 @@ as
   then
 
     apex_debug.error(
-       p_message => '%s Error: %s'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => sqlerrm
+      p_message => '%s Error: %s'
+    , p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+    , p1 => sqlerrm
     );
 
     -- show http error
@@ -3442,6 +3477,7 @@ as
     p_file_name in varchar2
   )
   as
+    l_last_modified varchar2(256);
     l_file_t        blog_v_files%rowtype;
     l_header_names  apex_t_varchar2;
     l_header_values apex_t_varchar2;
@@ -3456,53 +3492,57 @@ as
     and t1.file_name = p_file_name
     ;
 
-    apex_debug.info(
-      p_message => 'File name: %s, file size: %s, mime type: %s'
-      ,p0 => l_file_t.file_name
-      ,p1 => l_file_t.file_size
-      ,p2 => l_file_t.mime_type
-      ,p3 => l_file_t.file_charset
-    );
+    l_last_modified :=
+      to_char(
+        sys_extract_utc( l_file_t.changed_on )
+      , g_rfc_2822_date
+      , g_nls_date_lang
+      )
+    ;
 
-    -- Add Last-Modified header
-    apex_string.push(
-        p_table => l_header_names
-       ,p_value => 'Last-Modified'
-    );
-    apex_string.push(
-       p_table => l_header_values
-      ,p_value =>
-        to_char(
-          sys_extract_utc( l_file_t.changed_on )
-          ,g_rfc_2822_date
-          ,g_nls_date_lang
-        )
+    apex_debug.info(
+      p_message => 'File name: %s, file size: %s, mime type: %s, charset: %s, last modified: %s'
+    , p0 => l_file_t.file_name
+    , p1 => l_file_t.file_size
+    , p2 => l_file_t.mime_type
+    , p3 => l_file_t.file_charset
+    , p4 => l_last_modified
     );
 
     -- Compare request If-Modified-Since header to Last-Modified
     -- If values are equal then set status header and exit from procedure
-    if sys.owa_util.get_cgi_env('HTTP_IF_MODIFIED_SINCE') = l_header_values(1)
+    if sys.owa_util.get_cgi_env( 'HTTP_IF_MODIFIED_SINCE' ) = l_last_modified
     then
       sys.owa_util.status_line( 304 );
       apex_debug.info(
-         p_message => 'File not sent. If-Modified-Since: %s'
-        ,p0 => l_header_values(1)
+        p_message => 'File not sent. If-Modified-Since: %s'
+      , p0 => l_last_modified
       );
       return;
     end if;
 
+    -- Add Last-Modified header
+    apex_string.push(
+      p_table => l_header_names
+    , p_value => 'Last-Modified'
+    );
+    apex_string.push(
+      p_table => l_header_values
+    , p_value => l_last_modified
+    );
+
     -- Add Cache-Control header
     apex_string.push(
-        p_table => l_header_names
-       ,p_value => 'Cache-Control'
+      p_table => l_header_names
+    , p_value => 'Cache-Control'
     );
 
     apex_string.push(
-       p_table => l_header_values
-      ,p_value =>
+      p_table => l_header_values
+    , p_value =>
         apex_string.format(
-           p_message => 'max-age=%s'
-          ,p0 =>
+          p_message => 'max-age=%s'
+        , p0 =>
             case l_file_t.is_download
               when 1
               then get_attribute_value( 'G_MAX_AGE_DOWNLOAD' )
@@ -3514,30 +3554,29 @@ as
     -- add Content-Disposition header
     apex_string.push(
       p_table => l_header_names
-     ,p_value => 'Content-Disposition'
+    , p_value => 'Content-Disposition'
     );
-
     apex_string.push(
       p_table => l_header_values
-     ,p_value =>
+    , p_value =>
         apex_string.format(
-           p_message => '%s; filename="%s"'
-          ,p0 =>
-            case l_file_t.is_download
-              when 1
-              then 'attachment'
-              else 'inline'
-            end
-          ,p1 => l_file_t.file_name
+            p_message => '%s; filename="%s"'
+          , p0 =>
+              case l_file_t.is_download
+                when 1
+                then 'attachment'
+                else 'inline'
+              end
+          , p1 => l_file_t.file_name
         )
     );
 
     -- download file
     download_file(
-      p_blob_content    => l_file_t.blob_content
-      ,p_mime_type      => l_file_t.mime_type
-      ,p_header_names   => l_header_names
-      ,p_header_values  => l_header_values
+      p_blob_content  => l_file_t.blob_content
+    , p_mime_type     => l_file_t.mime_type
+    , p_header_names  => l_header_names
+    , p_header_values => l_header_values
     );
 
   -- handle errors
@@ -3545,11 +3584,11 @@ as
   then
 
     apex_debug.error(
-       p_message => 'Error: %s %s( %s => %s )'
-      ,p0 => sqlerrm
-      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p2 => 'p_file_name'
-      ,p3 => coalesce( p_file_name, '(null)' )
+      p_message => 'Error: %s %s( %s => %s )'
+    , p0 => sqlerrm
+    , p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+    , p2 => 'p_file_name'
+    , p3 => coalesce( p_file_name, '(null)' )
     );
 
     raise_http_error( 400 );
@@ -3569,12 +3608,12 @@ as
     -- Get search page URL and redirect
     apex_util.redirect_url (
       apex_page.get_url(
-         p_application => p_app_id
-        ,p_page        => p_page_id
-        ,p_session     => p_session
-        ,p_items       => 'P4_SEARCH'
-        ,p_values      => p_value
-        ,p_plain_url   => true
+        p_application => p_app_id
+      , p_page        => p_page_id
+      , p_session     => p_session
+      , p_items       => 'P4_SEARCH'
+      , p_values      => p_value
+      , p_plain_url   => true
       )
     );
   end redirect_search;
@@ -4731,21 +4770,19 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  type t_page_item is record(
-    page_alias  varchar2(256),
-    item_name   varchar2(256)
-  );
--- constants for pages and id items
-  c_post_page     constant t_page_item := t_page_item( 'POST',      'P2_POST_ID' );
-  c_category_page constant t_page_item := t_page_item( 'CATEGORY',  'P14_CATEGORY_ID' );
-  c_archive_page  constant t_page_item := t_page_item( 'ARCHIVES',  'P15_ARCHIVE_ID' );
-  c_tags_page     constant t_page_item := t_page_item( 'TAG',       'P6_TAG_ID' );
+-- json for pages and items
+  c_page_and_item constant json_object_t := json_object_t( '{
+    "post": {"page_alias": "POST", "item_name": "P2_POST_ID"},
+    "category": {"page_alias": "CATEGORY", "item_name": "P14_CATEGORY_ID"},
+    "archive": {"page_alias": "ARCHIVES", "item_name": "P15_ARCHIVE_ID"},
+    "tag": {"page_alias": "TAG", "item_name": "P6_TAG_ID"}
+  }' );
 
 -- cache rss and atom url
-  g_rss_url       varchar2(1024);
-  g_atom_url      varchar2(1024);
--- cache canonical host
-  g_canonical_url varchar2(1024);
+  g_rss_url             varchar2(1024);
+  g_atom_url            varchar2(1024);
+-- cache canonical host url
+  g_canonical_host_url  varchar2(1024);
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -4765,21 +4802,21 @@ as
 
     -- get canonical host from blog settings or use APEX provided value
     -- cache value to package private variable
-    if g_canonical_url is null
+    if g_canonical_host_url is null
     then
 
-      g_canonical_url := blog_util.get_attribute_value( 'G_CANONICAL_HOST' );
+      g_canonical_host_url := blog_util.get_attribute_value( 'G_CANONICAL_HOST' );
       -- if host not found from settings, use APEX provided value
-      if g_canonical_url is null
+      if g_canonical_host_url is null
       then
-        g_canonical_url := apex_util.host_url();
+        g_canonical_host_url := apex_util.host_url();
       end if;
       -- remove trailing slash
-      g_canonical_url := rtrim( g_canonical_url, '/' );
+      g_canonical_host_url := rtrim( g_canonical_host_url, '/' );
 
     end if;
 
-    return g_canonical_url;
+    return g_canonical_host_url;
 
   end get_canonical_host;
 --------------------------------------------------------------------------------
@@ -4798,11 +4835,12 @@ as
         when 'YES' then get_canonical_host
       end ||
       apex_page.get_url(
-         p_application  => p_application
-        ,p_page         => p_page
-        ,p_session      => ''
-        ,p_plain_url    => true
-      );
+        p_application => p_application
+      , p_page        => p_page
+      , p_session     => ''
+      , p_plain_url   => true
+      )
+    ;
 
   end get_tab;
 --------------------------------------------------------------------------------
@@ -4820,10 +4858,11 @@ as
 
     return
       get_post(
-         p_post_id      => l_post_id
-        ,p_application  => p_application
-        ,p_canonical    => p_canonical
-      );
+        p_post_id     => l_post_id
+      , p_application => p_application
+      , p_canonical   => p_canonical
+      )
+    ;
 
   end get_post;
 --------------------------------------------------------------------------------
@@ -4834,8 +4873,10 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
-    l_url varchar2(4000);
+    l_json  json_object_t;
   begin
+
+  l_json := c_page_and_item.get_object( 'post' );
 
   return
     case p_canonical
@@ -4843,12 +4884,13 @@ as
     end ||
     apex_page.get_url(
       p_application => p_application
-     ,p_page        => c_post_page.page_alias
-     ,p_session     => ''
-     ,p_items       => c_post_page.item_name
-     ,p_values      => p_post_id
-     ,p_plain_url   => true
-   );
+    , p_page        => l_json.get_string( 'page_alias' )
+    , p_session     => ''
+    , p_items       => l_json.get_string( 'item_name' )
+    , p_values      => p_post_id
+    , p_plain_url   => true
+    )
+  ;
 
   end get_post;
 --------------------------------------------------------------------------------
@@ -4865,9 +4907,10 @@ as
 
     return
       get_category(
-         p_category_id  => l_category_id
-        ,p_canonical    => p_canonical
-      );
+        p_category_id => l_category_id
+      , p_canonical   => p_canonical
+      )
+    ;
 
   end get_category;
 --------------------------------------------------------------------------------
@@ -4877,19 +4920,23 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
+    l_json  json_object_t;
   begin
+
+  l_json := c_page_and_item.get_object( 'category' );
 
     return
       case p_canonical
         when 'YES' then get_canonical_host
       end ||
       apex_page.get_url(
-         p_page       => c_category_page.page_alias
-        ,p_session    => ''
-        ,p_items      => c_category_page.item_name
-        ,p_values     => p_category_id
-        ,p_plain_url  => true
-      );
+        p_page      => l_json.get_string( 'page_alias' )
+      , p_session   => ''
+      , p_items     => l_json.get_string( 'item_name' )
+      , p_values    => p_category_id
+      , p_plain_url => true
+      )
+    ;
 
   end get_category;
 --------------------------------------------------------------------------------
@@ -4906,9 +4953,10 @@ as
 
     return
       get_archive(
-         p_archive_id => l_archive_id
-        ,p_canonical  => p_canonical
-      );
+        p_archive_id  => l_archive_id
+      , p_canonical   => p_canonical
+      )
+    ;
 
   end get_archive;
 --------------------------------------------------------------------------------
@@ -4918,18 +4966,21 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
+    l_json  json_object_t;
   begin
+
+    l_json := c_page_and_item.get_object( 'archive' );
 
     return
       case p_canonical
         when 'YES' then get_canonical_host
       end  ||
       apex_page.get_url(
-         p_page       => c_archive_page.page_alias
-        ,p_session    => ''
-        ,p_items      => c_archive_page.item_name
-        ,p_values     => p_archive_id
-        ,p_plain_url  => true
+        p_page      => l_json.get_string( 'page_alias' )
+      , p_session   => ''
+      , p_items     => l_json.get_string( 'item_name' )
+      , p_values    => p_archive_id
+      , p_plain_url => true
       )
     ;
 
@@ -4948,8 +4999,8 @@ as
 
     return
       get_tag(
-         p_tag_id     => l_tag_id
-        ,p_canonical  => p_canonical
+        p_tag_id    => l_tag_id
+      , p_canonical => p_canonical
       )
     ;
 
@@ -4961,18 +5012,21 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
+    l_json  json_object_t;
   begin
+
+    l_json := c_page_and_item.get_object( 'tag' );
 
     return
       case p_canonical
         when 'YES' then get_canonical_host
       end ||
       apex_page.get_url(
-         p_page       => c_tags_page.page_alias
-        ,p_session    => ''
-        ,p_items      => c_tags_page.item_name
-        ,p_values     => p_tag_id
-        ,p_plain_url  => true
+        p_page      => l_json.get_string( 'page_alias' )
+      , p_session   => ''
+      , p_items     => l_json.get_string( 'item_name' )
+      , p_values    => p_tag_id
+      , p_plain_url => true
       )
     ;
 
@@ -4990,8 +5044,8 @@ as
 
     return
       apex_page.get_url(
-         p_page     => 'information'
-        ,p_request  => l_content_id
+        p_page    => 'information'
+      , p_request => l_content_id
       )
     ;
 
@@ -5007,12 +5061,13 @@ as
 
     return get_canonical_host ||
       apex_page.get_url(
-         p_application  => p_application
-        ,p_page         => 'pgm'
-        ,p_session      => ''
-        ,p_request      => 'application_process=' || p_process
-        ,p_plain_url    => true
-      );
+        p_application => p_application
+      , p_page        => 'pgm'
+      , p_session     => ''
+      , p_request     => 'application_process=' || p_process
+      , p_plain_url   => true
+      )
+    ;
 
   end get_process;
 --------------------------------------------------------------------------------
@@ -5044,10 +5099,11 @@ as
 
     l_url :=
       apex_util.prepare_url(
-         p_url            => l_url
-        ,p_checksum_type  => 'PUBLIC_BOOKMARK'
-        ,p_plain_url      => true
-      );
+        p_url           => l_url
+      , p_checksum_type => 'PUBLIC_BOOKMARK'
+      , p_plain_url     => true
+      )
+    ;
 
     return get_canonical_host || l_url;
 
@@ -5071,8 +5127,9 @@ as
         g_rss_url :=
           get_process(
             p_application => p_application
-            ,p_process    => 'rss.xml'
-          );
+          , p_process     => 'rss.xml'
+          )
+        ;
       end if;
     end if;
 
@@ -5093,8 +5150,9 @@ as
       g_atom_url :=
         get_process(
           p_application => p_application
-          ,p_process    => 'atom.xml'
-        );
+        , p_process     => 'atom.xml'
+        )
+      ;
     end if;
 
     return g_atom_url;
@@ -5116,9 +5174,10 @@ as
     then
       l_xsl_url :=
         get_process(
-           p_application  => p_application
-          ,p_process      => 'rss.xsl'
-        );
+          p_application => p_application
+        , p_process     => 'rss.xsl'
+        )
+      ;
     end if;
 
     return l_xsl_url;
@@ -5135,9 +5194,10 @@ as
 
     l_sitemap_url :=
       get_process(
-         p_application  => p_application
-        ,p_process      => 'sitemap-index.xml'
-      );
+        p_application => p_application
+      , p_process     => 'sitemap-index.xml'
+      )
+    ;
 
     return l_sitemap_url;
 
@@ -5739,8 +5799,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
-  c_link_canonical constant varchar2(64) := '<link rel="canonical" href="%s" />';
-  c_link_alternate constant varchar2(64) := '<link href="%s" title="%s" rel="alternate" type="%s">';
+  c_link_canonical_template constant varchar2(64) := '<link rel="canonical" href="%s">';
+  c_link_alternate_template constant varchar2(64) := '<link rel="alternate" href="%s" title="%s" type="%s">';
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -5761,149 +5821,153 @@ as
   end get_robots_noindex_meta;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_tab_canonical_link(
-    p_page in varchar2
-  ) return varchar2
+  procedure get_tab_canonical_link(
+    p_page  in varchar2,
+    p_html  out nocopy varchar2,
+    p_url   out nocopy varchar2
+  )
   as
-    l_html varchar2(32700);
   begin
     -- generate canonical link for tab
     if p_page is not null
     then
-      l_html :=
+      p_url :=
+        blog_url.get_tab(
+          p_page       => p_page
+        , p_canonical  => 'YES'
+        )
+      ;
+      p_html :=
         apex_string.format(
-          p_message => c_link_canonical
-          ,p0 =>
-            blog_url.get_tab(
-               p_page       => p_page
-              ,p_canonical  => 'YES'
-            )
+          p_message => c_link_canonical_template
+        , p0 => p_url
         )
       ;
     else
       -- if p_page is not defined
       apex_debug.warn( 'Canonical link tag not generated for tab.' );
-      l_html := get_robots_noindex_meta;
+      p_html := get_robots_noindex_meta;
     end if;
-    -- return generated HTML
-    return l_html;
 
   end get_tab_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_post_canonical_link(
-    p_post_id in varchar2
-  ) return varchar2
+  procedure get_post_canonical_link(
+    p_post_id in varchar2,
+    p_html    out nocopy varchar2,
+    p_url     out nocopy varchar2
+  )
   as
-    l_html varchar2(32700);
   begin
     -- generate canonical link for post
     if p_post_id is not null
     then
-      l_html :=
+      p_url :=
+        blog_url.get_post(
+          p_post_id      => p_post_id
+        , p_canonical    => 'YES'
+        )
+      ;
+      p_html :=
         apex_string.format(
-          p_message => c_link_canonical
-          ,p0 =>
-            blog_url.get_post(
-               p_post_id      => p_post_id
-              ,p_canonical    => 'YES'
-            )
+          p_message => c_link_canonical_template
+        , p0 => p_url
         )
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for post.' );
-      l_html := get_robots_noindex_meta;
+      p_html := get_robots_noindex_meta;
     end if;
-    -- return generated HTML
-    return l_html;
 
   end get_post_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_category_canonical_link(
-    p_category_id in varchar2
-  ) return varchar2
+  procedure get_category_canonical_link(
+    p_category_id in varchar2,
+    p_html        out nocopy varchar2,
+    p_url         out nocopy varchar2
+  )
   as
-    l_html varchar2(32700);
   begin
     -- generate canonical link for category
     if p_category_id is not null
     then
-      l_html :=
+      p_url :=
+        blog_url.get_category(
+          p_category_id  => p_category_id
+        , p_canonical    => 'YES'
+        )
+      ;
+      p_html :=
         apex_string.format(
-          p_message => c_link_canonical
-          ,p0 =>
-            blog_url.get_category(
-               p_category_id  => p_category_id
-              ,p_canonical    => 'YES'
-            )
+          p_message => c_link_canonical_template
+        , p0 => p_url
         )
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for category.' );
-      l_html := get_robots_noindex_meta;
+      p_html := get_robots_noindex_meta;
     end if;
-    -- return generated HTML
-    return l_html;
 
   end get_category_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_archive_canonical_link(
-    p_archive_id in varchar2
-  ) return varchar2
+  procedure get_archive_canonical_link(
+    p_archive_id in varchar2,
+    p_html       out nocopy varchar2,
+    p_url        out nocopy varchar2
+  )
   as
-    l_html varchar2(32700);
   begin
       -- generate canonical link for archives
     if p_archive_id is not null
     then
-      l_html :=
+      p_url :=
+        blog_url.get_archive(
+          p_archive_id => p_archive_id
+        , p_canonical  => 'YES'
+        )
+      ;
+      p_html :=
         apex_string.format(
-          p_message => c_link_canonical
-          ,p0 =>
-            blog_url.get_archive(
-               p_archive_id => p_archive_id
-              ,p_canonical  => 'YES'
-            )
+          p_message => c_link_canonical_template
+        , p0 => p_url
         )
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for archive.' );
-      l_html := get_robots_noindex_meta;
+      p_html := get_robots_noindex_meta;
     end if;
-    -- return generated HTML
-    return l_html;
 
   end get_archive_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_tag_canonical_link(
-    p_tag_id in varchar2
-  ) return varchar2
+  procedure get_tag_canonical_link(
+    p_tag_id in varchar2,
+    p_html   out nocopy varchar2,
+    p_url    out nocopy varchar2
+  )
   as
-    l_html varchar2(32700);
   begin
     -- generate canonical link for tags
     if p_tag_id is not null
     then
-      l_html :=
+      p_url :=
+        blog_url.get_tag(
+          p_tag_id     => p_tag_id
+        , p_canonical  => 'YES'
+        )
+      ;
+      p_html :=
         apex_string.format(
-          p_message => c_link_canonical
-          ,p0 =>
-            blog_url.get_tag(
-               p_tag_id     => p_tag_id
-              ,p_canonical  => 'YES'
-            )
+          p_message => c_link_canonical_template
+        , p0 => p_url
         )
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for tag.' );
-      l_html := get_robots_noindex_meta;
+      p_html := get_robots_noindex_meta;
     end if;
-
-    -- return generated HTML
-    return l_html;
 
   end get_tag_canonical_link;
 --------------------------------------------------------------------------------
@@ -5921,8 +5985,8 @@ as
     -- get rss title
     l_rss_title :=
       apex_lang.message(
-        p_name => p_message
-        ,p0 => p_app_name
+        p_name  => p_message
+      , p0      => p_app_name
       )
     ;
 
@@ -5936,11 +6000,11 @@ as
           '<a href="%s" aria-label="%s" rel="alternate" type="%s" class="%s">'
           || '<span aria-hidden="true" class="%s"></span>'
           || '</a>'
-        ,p0 => l_rss_url
-        ,p1 => apex_escape.html_attribute( l_rss_title )
-        ,p2 => 'application/rss+xml'
-        ,p3 => 't-Button t-Button--noLabel t-Button--icon t-Button--link'
-        ,p4 => 'fa fa-rss-square fa-3x fa-lg u-color-8-text'
+      , p0 => l_rss_url
+      , p1 => apex_escape.html_attribute( l_rss_title )
+      , p2 => blog_util.g_mime_rss
+      , p3 => 't-Button t-Button--noLabel t-Button--icon t-Button--link'
+      , p4 => 'fa fa-rss-square fa-3x fa-lg u-color-8-text'
       )
     ;
     -- return generated HTML
@@ -5966,8 +6030,8 @@ as
     -- check build option should HTML generated
     if
       apex_application_admin.get_build_option_status(
-        p_application_id      => l_app_id
-        ,p_build_option_name  => p_build_option
+        p_application_id    => l_app_id
+      , p_build_option_name => p_build_option
       ) = apex_application_admin.c_build_option_status_include
     then
       -- get rss url
@@ -5975,19 +6039,19 @@ as
 
     -- generate link for RSS
       l_rss_title := apex_lang.message(
-        p_name => p_message
-        ,p0 => p_app_name
+        p_name  => p_message
+      , p0      => p_app_name
       );
       -- generate HTML
       l_rss_url :=
         apex_string.format(
-          p_message => c_link_alternate
-          ,p0 => l_rss_url
-          ,p1 =>
+          p_message => c_link_alternate_template
+        , p0 => l_rss_url
+        , p1 =>
             apex_escape.html_attribute(
               p_string => l_rss_title
             )
-          ,p2 => 'application/rss+xml'
+        , p2 => blog_util.g_mime_rss
         )
       ;
 
@@ -6015,8 +6079,8 @@ as
     -- check build option should HTML generated
     if
       apex_application_admin.get_build_option_status(
-        p_application_id      => l_app_id
-        ,p_build_option_name  => p_build_option
+        p_application_id    => l_app_id
+      , p_build_option_name => p_build_option
       ) = apex_application_admin.c_build_option_status_include
     then
       -- get atom url
@@ -6024,19 +6088,19 @@ as
 
     -- generate link for atom
       l_atom_title := apex_lang.message(
-        p_name => p_message
-        ,p0 => p_app_name
+        p_name  => p_message
+      , p0      => p_app_name
       );
       -- generate HTML
       l_atom_url :=
         apex_string.format(
-          p_message => c_link_alternate
-          ,p0 => l_atom_url
-          ,p1 =>
+          p_message => c_link_alternate_template
+        , p0 => l_atom_url
+        , p1 =>
             apex_escape.html_attribute(
               p_string => l_atom_title
             )
-          ,p2 => 'application/atom+xml'
+        , p2 => blog_util.g_mime_atom
         )
       ;
 
@@ -6056,8 +6120,9 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  c_mime_xml constant varchar2(20)  := 'application/xml';
-  c_char_set constant varchar2(10)  := 'UTF-8';
+  c_mime_xml  constant varchar2(40)     := 'application/xml';
+  c_char_set  constant varchar2(5)      := 'UTF-8';
+  c_headers   constant apex_t_varchar2  := apex_t_varchar2( 'Cache-Control', 'Content-Disposition', 'Last-Modified' );
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -6136,9 +6201,9 @@ as
             ,xmlelement(
               "atom:link"
               ,xmlattributes(
-                'self'                  as "rel"
-                ,l_rss_url              as "href"
-                ,'application/rss+xml'  as "type"
+                'self'                as "rel"
+                ,l_rss_url            as "href"
+                ,blog_util.g_mime_rss as "type"
               )
             )
             ,xmlforest(
@@ -6194,8 +6259,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_rss
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control',  'Content-Disposition',        'Last-Modified' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control,  'inline; filename="rss.xml"', l_last_modified  )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xml"', l_last_modified  )
       ,p_charset        => c_char_set
     );
 
@@ -6262,7 +6327,7 @@ as
           ,xmlattributes(
             'self'                  as "rel"
             ,l_atom_url             as "href"
-            ,'application/atom+xml' as "type"
+            ,blog_util.g_mime_atom  as "type"
           )
         )
         ,xmlforest(
@@ -6331,8 +6396,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_atom
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control',  'Content-Disposition',        'Last-Modified' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control,  'inline; filename="atom.xml"', l_last_modified  )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="atom.xml"', l_last_modified  )
       ,p_charset        => c_char_set
     );
 
@@ -6429,8 +6494,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_xsl
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xsl"' )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xsl"', null )
       ,p_charset        => c_char_set
     );
 
@@ -6501,8 +6566,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-index.xml"' )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-index.xml"', null )
       ,p_charset        => c_char_set
     );
 
@@ -6525,7 +6590,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure sitemap_main(
-    p_app_id in varchar2
+    p_app_id      in varchar2,
+    p_page_group  in varchar2
   )
   as
     l_xml   blob;
@@ -6555,7 +6621,7 @@ as
     from apex_application_pages v1
     where 1 = 1
       and v1.application_id = p_app_id
-      and v1.page_alias in ( 'HOME', 'LINKS', 'REPOSITORY', 'ABOUT' )
+      and v1.page_group = p_page_group
       and case
         when v1.build_option is null
         then apex_application_admin.c_build_option_status_include
@@ -6577,8 +6643,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-main.xml"' )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-main.xml"', null )
       ,p_charset        => c_char_set
     );
 
@@ -6647,8 +6713,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-posts.xml"' )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-posts.xml"', null )
       ,p_charset        => c_char_set
     );
 
@@ -6715,8 +6781,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-categories.xml"' )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-categories.xml"', null )
       ,p_charset        => c_char_set
     );
 
@@ -6783,8 +6849,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-archives.xml"' )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-archives.xml"', null )
       ,p_charset        => c_char_set
     );
 
@@ -6851,8 +6917,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-tags.xml"' )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-tags.xml"', null )
       ,p_charset        => c_char_set
     );
 

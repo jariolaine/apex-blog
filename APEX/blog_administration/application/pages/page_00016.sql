@@ -19,16 +19,12 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'Post Tags'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8929534050595858)
-,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog.admin.ig.pageLoad({',
-'  sequenceField: "DISPLAY_SEQ"',
-'});'))
 ,p_step_template=>wwv_flow_imp.id(8456403392518180)
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240310074131'
+,p_last_upd_yyyymmddhh24miss=>'20240406092725'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(51010309190311741)

@@ -19,10 +19,6 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'Categories'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8929534050595858)
-,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog.admin.ig.pageLoad({',
-'  sequenceField: "DISPLAY_SEQ"',
-'});'))
 ,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '',
 ''))
@@ -31,7 +27,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240310074216'
+,p_last_upd_yyyymmddhh24miss=>'20240406095415'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(9834087769215232)
@@ -404,9 +400,8 @@ wwv_flow_imp_page.create_region_column(
 );
 wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(31246816612982908)
-,p_name=>'VIEW_POST_LINK'
+,p_name=>'VIEW_POSTS_LINK'
 ,p_source_type=>'NONE'
-,p_session_state_data_type=>'VARCHAR2'
 ,p_item_type=>'NATIVE_LINK'
 ,p_label=>'Link to Posts'
 ,p_heading_alignment=>'CENTER'
@@ -417,7 +412,6 @@ wwv_flow_imp_page.create_region_column(
 ,p_link_attributes=>'title="&APP_TEXT$BLOG_TXT_VIEW_POSTS." class="t-Button--stretch"'
 ,p_filter_is_required=>false
 ,p_use_as_row_header=>false
-,p_javascript_code=>'blog.admin.ig.column'
 ,p_enable_hide=>true
 ,p_escape_on_http_output=>true
 ,p_help_text=>'Filter posts report by this category.'

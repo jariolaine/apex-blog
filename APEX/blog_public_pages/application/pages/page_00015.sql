@@ -23,9 +23,10 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_required_patch=>wwv_flow_imp.id(8670890848739263)
 ,p_page_is_public_y_n=>'Y'
+,p_page_comment=>'Page to show list of post from selected year.'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230608144259'
+,p_last_upd_yyyymmddhh24miss=>'20240401181651'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(58686289966142463)
@@ -259,6 +260,36 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_01=>'THIS_PAGE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_internal_uid=>26065829198107836
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(40688714345261745)
+,p_meta_tag_name=>'description'
+,p_meta_tag_value=>'Blog posts from year &P15_ARCHIVE_ID..'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(40688811397261746)
+,p_meta_tag_name=>'og:description'
+,p_meta_tag_value=>'Blog post archives from year &P15_ARCHIVE_ID..'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(40689095805261748)
+,p_meta_tag_name=>'og:image'
+,p_meta_tag_value=>'&APP_FILES.icons/app-icon-512.png'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(40689235094261750)
+,p_meta_tag_name=>'og:title'
+,p_meta_tag_value=>'Archives &P15_ARCHIVE_ID. | &G_APP_NAME.'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(45509262356550103)
+,p_meta_tag_name=>'og:type'
+,p_meta_tag_value=>'website'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(45509343070550104)
+,p_meta_tag_name=>'og:url'
+,p_meta_tag_value=>'&G_PAGE_URL.'
 );
 wwv_flow_imp.component_end;
 end;

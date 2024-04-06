@@ -24,9 +24,10 @@ wwv_flow_imp_page.create_page(
 ,p_step_template=>wwv_flow_imp.id(6761688085267365)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
+,p_page_comment=>'Login page. Not used as application is public.'
 ,p_page_component_map=>'12'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230119101833'
+,p_last_upd_yyyymmddhh24miss=>'20240401075054'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(35972740955622136)

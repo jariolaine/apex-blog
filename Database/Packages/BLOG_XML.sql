@@ -44,6 +44,8 @@ as
 --    Jari Laine 12.11.2023 - Changes to procedures rss and rss_xsl
 --    Jari Laine 13.11.2023 - New procedure atom
 --    Jari Laine 10.03.2024 - Changed procedure rss_xsl handle application files absolute URL
+--    Jari Laine 01.04.2024 - Parameter p_page_group to procedure sitemap_main
+--                          - Changes to package constants and new constant c_headers
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -78,7 +80,8 @@ as
 -- Called from:
 --  public app page 1003 Ajax Callback process "sitemap-main.xml"
   procedure sitemap_main(
-    p_app_id        in varchar2
+    p_app_id        in varchar2,
+    p_page_group    in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -107,8 +110,9 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  c_mime_xml constant varchar2(20)  := 'application/xml';
-  c_char_set constant varchar2(10)  := 'UTF-8';
+  c_mime_xml  constant varchar2(40)     := 'application/xml';
+  c_char_set  constant varchar2(5)      := 'UTF-8';
+  c_headers   constant apex_t_varchar2  := apex_t_varchar2( 'Cache-Control', 'Content-Disposition', 'Last-Modified' );
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -187,9 +191,9 @@ as
             ,xmlelement(
               "atom:link"
               ,xmlattributes(
-                'self'                  as "rel"
-                ,l_rss_url              as "href"
-                ,'application/rss+xml'  as "type"
+                'self'                as "rel"
+                ,l_rss_url            as "href"
+                ,blog_util.g_mime_rss as "type"
               )
             )
             ,xmlforest(
@@ -245,8 +249,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_rss
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control',  'Content-Disposition',        'Last-Modified' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control,  'inline; filename="rss.xml"', l_last_modified  )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xml"', l_last_modified  )
       ,p_charset        => c_char_set
     );
 
@@ -313,7 +317,7 @@ as
           ,xmlattributes(
             'self'                  as "rel"
             ,l_atom_url             as "href"
-            ,'application/atom+xml' as "type"
+            ,blog_util.g_mime_atom  as "type"
           )
         )
         ,xmlforest(
@@ -382,8 +386,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_atom
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control',  'Content-Disposition',        'Last-Modified' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control,  'inline; filename="atom.xml"', l_last_modified  )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="atom.xml"', l_last_modified  )
       ,p_charset        => c_char_set
     );
 
@@ -480,8 +484,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_xsl
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xsl"' )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xsl"', null )
       ,p_charset        => c_char_set
     );
 
@@ -552,8 +556,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-index.xml"' )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-index.xml"', null )
       ,p_charset        => c_char_set
     );
 
@@ -576,7 +580,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure sitemap_main(
-    p_app_id in varchar2
+    p_app_id      in varchar2,
+    p_page_group  in varchar2
   )
   as
     l_xml   blob;
@@ -606,7 +611,7 @@ as
     from apex_application_pages v1
     where 1 = 1
       and v1.application_id = p_app_id
-      and v1.page_alias in ( 'HOME', 'LINKS', 'REPOSITORY', 'ABOUT' )
+      and v1.page_group = p_page_group
       and case
         when v1.build_option is null
         then apex_application_admin.c_build_option_status_include
@@ -628,8 +633,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-main.xml"' )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-main.xml"', null )
       ,p_charset        => c_char_set
     );
 
@@ -698,8 +703,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-posts.xml"' )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-posts.xml"', null )
       ,p_charset        => c_char_set
     );
 
@@ -766,8 +771,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-categories.xml"' )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-categories.xml"', null )
       ,p_charset        => c_char_set
     );
 
@@ -834,8 +839,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-archives.xml"' )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-archives.xml"', null )
       ,p_charset        => c_char_set
     );
 
@@ -902,8 +907,8 @@ as
     blog_util.download_file(
        p_blob_content   => l_xml
       ,p_mime_type      => c_mime_xml
-      ,p_header_names   => apex_t_varchar2( 'Cache-Control', 'Content-Disposition' )
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-tags.xml"' )
+      ,p_header_names   => c_headers
+      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="sitemap-tags.xml"', null )
       ,p_charset        => c_char_set
     );
 

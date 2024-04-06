@@ -55,12 +55,19 @@ as
 --    Jari Laine 08.04.2023 - Parameter p_page_id to procedure redirect_search
 --                          - Removed ORA errors between -20999 and 20901 display position handlimg from function apex_error_handler
 --    Jari Laine 05.09.2023 - Removed use of type blog_t_post from procedure get_post_details
+--    Jari Laine 01.04.2024 - New package global constants and variables
+--                          - Small changes to procedures download_file
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  g_nls_date_lang constant varchar2(30) := 'NLS_DATE_LANGUAGE = ENGLISH';
-  g_iso_8601_date constant varchar2(39) := 'YYYY-MM-DD"T"HH24:MI:SS"Z"';
-  g_rfc_2822_date constant varchar2(39) := 'Dy, DD Mon YYYY HH24:MI:SS "GMT"';
+  g_nls_date_lang constant varchar2(40) := 'NLS_DATE_LANGUAGE = ENGLISH';
+  g_iso_8601_date constant varchar2(40) := 'YYYY-MM-DD"T"HH24:MI:SS"Z"';
+  g_rfc_2822_date constant varchar2(40) := 'Dy, DD Mon YYYY HH24:MI:SS "GMT"';
+
+  g_mime_rss      constant varchar2(40) := 'application/rss+xml';
+  g_mime_atom     constant varchar2(40) := 'application/atom+xml';
+
+  g_link_canonical  varchar2(1024);
 --------------------------------------------------------------------------------
   procedure raise_http_error(
     p_error_code  in number
@@ -154,7 +161,7 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- none
+  c_mime_default  constant varchar2(40) := 'application/octet';
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -557,11 +564,11 @@ as
   then
 
     apex_debug.error(
-       p_message => 'Error: %s %s( %s => %s )'
-      ,p0 => sqlerrm
-      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p2 => 'p_tag_id'
-      ,p3 => coalesce( p_tag_id, '(null)' )
+      p_message => 'Error: %s %s( %s => %s )'
+    , p0 => sqlerrm
+    , p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+    , p2 => 'p_tag_id'
+    , p3 => coalesce( p_tag_id, '(null)' )
     );
 
     -- show http error
@@ -587,9 +594,9 @@ as
 
     -- open HTTP header
     sys.owa_util.mime_header(
-      ccontent_type   => coalesce ( p_mime_type, 'application/octet' )
-      ,bclose_header  => false
-      ,ccharset       => p_charset
+      ccontent_type => coalesce ( p_mime_type, c_mime_default )
+    , bclose_header => false
+    , ccharset      => p_charset
     );
 
     apex_debug.info(
@@ -602,17 +609,26 @@ as
 
       apex_debug.info(
          p_message => 'Header name: %s , header value: %s'
-        ,p0 => p_header_names(i)
-        ,p1 => p_header_values(i)
+      , p0 => p_header_names(i)
+      , p1 => p_header_values(i)
       );
-      -- output HTTP header
-      sys.htp.p(
-        apex_string.format(
-           p_message => '%s: %s'
-          ,p0 => p_header_names(i)
-          ,p1 => p_header_values(i)
-        )
-      );
+
+      if p_header_values(i) is not null
+      then
+        -- output HTTP header
+        sys.htp.p(
+          apex_string.format(
+            p_message => '%s: %s'
+          , p0 => p_header_names(i)
+          , p1 => p_header_values(i)
+          )
+        );
+      else
+        apex_debug.info(
+          p_message => 'Header %s value is null. Header not set'
+        , p0 => p_header_names(i)
+        );
+      end if;
 
     end loop;
 
@@ -628,9 +644,9 @@ as
   then
 
     apex_debug.error(
-       p_message => '%s Error: %s'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => sqlerrm
+      p_message => '%s Error: %s'
+    , p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+    , p1 => sqlerrm
     );
 
     -- show http error
@@ -644,6 +660,7 @@ as
     p_file_name in varchar2
   )
   as
+    l_last_modified varchar2(256);
     l_file_t        blog_v_files%rowtype;
     l_header_names  apex_t_varchar2;
     l_header_values apex_t_varchar2;
@@ -658,53 +675,57 @@ as
     and t1.file_name = p_file_name
     ;
 
-    apex_debug.info(
-      p_message => 'File name: %s, file size: %s, mime type: %s'
-      ,p0 => l_file_t.file_name
-      ,p1 => l_file_t.file_size
-      ,p2 => l_file_t.mime_type
-      ,p3 => l_file_t.file_charset
-    );
+    l_last_modified :=
+      to_char(
+        sys_extract_utc( l_file_t.changed_on )
+      , g_rfc_2822_date
+      , g_nls_date_lang
+      )
+    ;
 
-    -- Add Last-Modified header
-    apex_string.push(
-        p_table => l_header_names
-       ,p_value => 'Last-Modified'
-    );
-    apex_string.push(
-       p_table => l_header_values
-      ,p_value =>
-        to_char(
-          sys_extract_utc( l_file_t.changed_on )
-          ,g_rfc_2822_date
-          ,g_nls_date_lang
-        )
+    apex_debug.info(
+      p_message => 'File name: %s, file size: %s, mime type: %s, charset: %s, last modified: %s'
+    , p0 => l_file_t.file_name
+    , p1 => l_file_t.file_size
+    , p2 => l_file_t.mime_type
+    , p3 => l_file_t.file_charset
+    , p4 => l_last_modified
     );
 
     -- Compare request If-Modified-Since header to Last-Modified
     -- If values are equal then set status header and exit from procedure
-    if sys.owa_util.get_cgi_env('HTTP_IF_MODIFIED_SINCE') = l_header_values(1)
+    if sys.owa_util.get_cgi_env( 'HTTP_IF_MODIFIED_SINCE' ) = l_last_modified
     then
       sys.owa_util.status_line( 304 );
       apex_debug.info(
-         p_message => 'File not sent. If-Modified-Since: %s'
-        ,p0 => l_header_values(1)
+        p_message => 'File not sent. If-Modified-Since: %s'
+      , p0 => l_last_modified
       );
       return;
     end if;
 
+    -- Add Last-Modified header
+    apex_string.push(
+      p_table => l_header_names
+    , p_value => 'Last-Modified'
+    );
+    apex_string.push(
+      p_table => l_header_values
+    , p_value => l_last_modified
+    );
+
     -- Add Cache-Control header
     apex_string.push(
-        p_table => l_header_names
-       ,p_value => 'Cache-Control'
+      p_table => l_header_names
+    , p_value => 'Cache-Control'
     );
 
     apex_string.push(
-       p_table => l_header_values
-      ,p_value =>
+      p_table => l_header_values
+    , p_value =>
         apex_string.format(
-           p_message => 'max-age=%s'
-          ,p0 =>
+          p_message => 'max-age=%s'
+        , p0 =>
             case l_file_t.is_download
               when 1
               then get_attribute_value( 'G_MAX_AGE_DOWNLOAD' )
@@ -716,30 +737,29 @@ as
     -- add Content-Disposition header
     apex_string.push(
       p_table => l_header_names
-     ,p_value => 'Content-Disposition'
+    , p_value => 'Content-Disposition'
     );
-
     apex_string.push(
       p_table => l_header_values
-     ,p_value =>
+    , p_value =>
         apex_string.format(
-           p_message => '%s; filename="%s"'
-          ,p0 =>
-            case l_file_t.is_download
-              when 1
-              then 'attachment'
-              else 'inline'
-            end
-          ,p1 => l_file_t.file_name
+            p_message => '%s; filename="%s"'
+          , p0 =>
+              case l_file_t.is_download
+                when 1
+                then 'attachment'
+                else 'inline'
+              end
+          , p1 => l_file_t.file_name
         )
     );
 
     -- download file
     download_file(
-      p_blob_content    => l_file_t.blob_content
-      ,p_mime_type      => l_file_t.mime_type
-      ,p_header_names   => l_header_names
-      ,p_header_values  => l_header_values
+      p_blob_content  => l_file_t.blob_content
+    , p_mime_type     => l_file_t.mime_type
+    , p_header_names  => l_header_names
+    , p_header_values => l_header_values
     );
 
   -- handle errors
@@ -747,11 +767,11 @@ as
   then
 
     apex_debug.error(
-       p_message => 'Error: %s %s( %s => %s )'
-      ,p0 => sqlerrm
-      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p2 => 'p_file_name'
-      ,p3 => coalesce( p_file_name, '(null)' )
+      p_message => 'Error: %s %s( %s => %s )'
+    , p0 => sqlerrm
+    , p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+    , p2 => 'p_file_name'
+    , p3 => coalesce( p_file_name, '(null)' )
     );
 
     raise_http_error( 400 );
@@ -771,12 +791,12 @@ as
     -- Get search page URL and redirect
     apex_util.redirect_url (
       apex_page.get_url(
-         p_application => p_app_id
-        ,p_page        => p_page_id
-        ,p_session     => p_session
-        ,p_items       => 'P4_SEARCH'
-        ,p_values      => p_value
-        ,p_plain_url   => true
+        p_application => p_app_id
+      , p_page        => p_page_id
+      , p_session     => p_session
+      , p_items       => 'P4_SEARCH'
+      , p_values      => p_value
+      , p_plain_url   => true
       )
     );
   end redirect_search;

@@ -34,7 +34,7 @@ wwv_flow_imp_shared.create_row_template(
 '  </div>',
 '  <footer class="blog-post--footer"></footer>',
 '</article>'))
-,p_row_template_condition1=>':READ_MORE_LINK is not null'
+,p_row_template_condition1=>':READ_MORE_LINK = ''Y'''
 ,p_row_template2=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<article class="blog-post">',
 '  <header class="blog-post--header">',

@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231119153349'
+,p_last_upd_yyyymmddhh24miss=>'20240401120105'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6915627356677149)
@@ -814,6 +814,16 @@ wwv_flow_imp_page.create_page_meta_tag(
  p_id=>wwv_flow_imp.id(22524014205146435)
 ,p_meta_tag_name=>'article:modified_time'
 ,p_meta_tag_value=>'&P2_POST_MODIFIED.'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(40686776640261725)
+,p_meta_tag_name=>'og:image'
+,p_meta_tag_value=>'&APP_FILES.icons/app-icon-512.png'
+);
+wwv_flow_imp_page.create_page_meta_tag(
+ p_id=>wwv_flow_imp.id(40687812952261736)
+,p_meta_tag_name=>'og:url'
+,p_meta_tag_value=>'&G_PAGE_URL.'
 );
 wwv_flow_imp.component_end;
 end;

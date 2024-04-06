@@ -19,6 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_warn_on_unsaved_changes=>'N'
 ,p_first_item=>'AUTO_FIRST_ITEM'
 ,p_autocomplete_on_off=>'OFF'
+,p_group_id=>wwv_flow_imp.id(8697986188142973)
 ,p_html_page_header=>'"BLOG_META_ROBOTS_NOINDEX"'
 ,p_page_template_options=>'#DEFAULT#'
 ,p_required_patch=>wwv_flow_imp.id(39030203881986717)
@@ -26,7 +27,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'26'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231225071750'
+,p_last_upd_yyyymmddhh24miss=>'20240401044218'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(38694166324057112)
@@ -37,11 +38,10 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_source_type=>'NATIVE_SEARCH_REGION'
 ,p_ajax_items_to_submit=>'P4_SEARCH,P4_SEARCH_FROM'
 ,p_attribute_02=>'N'
-,p_attribute_04=>'Y'
+,p_attribute_04=>'N'
 ,p_attribute_05=>'P4_SEARCH'
 ,p_attribute_06=>'N'
 ,p_attribute_11=>'N'
-,p_attribute_12=>'0'
 ,p_attribute_13=>'<span class="nodatafound">&APP_TEXT$BLOG_MSG_ENTER_SEARCH_TERM.</span>'
 ,p_attribute_15=>'Y'
 ,p_attribute_16=>'<span class="nodatafound">&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.</span>'
@@ -167,7 +167,7 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_triggering_element=>'button.a-SearchResults-pageNav'
 ,p_bind_type=>'live'
 ,p_execution_type=>'DEBOUNCE'
-,p_execution_time=>400
+,p_execution_time=>300
 ,p_execution_immediate=>false
 ,p_bind_event_type=>'click'
 );

@@ -25,6 +25,7 @@ as
 --                          - Removed not used parammeters from functions
 --                          - New function get_dynamic_page
 --    Jari Laine 18.11.2023 - New function get_atom
+--    Jari Laine 01.04.2024 - Changed package private constants to json object
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -157,21 +158,19 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  type t_page_item is record(
-    page_alias  varchar2(256),
-    item_name   varchar2(256)
-  );
--- constants for pages and id items
-  c_post_page     constant t_page_item := t_page_item( 'POST',      'P2_POST_ID' );
-  c_category_page constant t_page_item := t_page_item( 'CATEGORY',  'P14_CATEGORY_ID' );
-  c_archive_page  constant t_page_item := t_page_item( 'ARCHIVES',  'P15_ARCHIVE_ID' );
-  c_tags_page     constant t_page_item := t_page_item( 'TAG',       'P6_TAG_ID' );
+-- json for pages and items
+  c_page_and_item constant json_object_t := json_object_t( '{
+    "post": {"page_alias": "POST", "item_name": "P2_POST_ID"},
+    "category": {"page_alias": "CATEGORY", "item_name": "P14_CATEGORY_ID"},
+    "archive": {"page_alias": "ARCHIVES", "item_name": "P15_ARCHIVE_ID"},
+    "tag": {"page_alias": "TAG", "item_name": "P6_TAG_ID"}
+  }' );
 
 -- cache rss and atom url
-  g_rss_url       varchar2(1024);
-  g_atom_url      varchar2(1024);
--- cache canonical host
-  g_canonical_url varchar2(1024);
+  g_rss_url             varchar2(1024);
+  g_atom_url            varchar2(1024);
+-- cache canonical host url
+  g_canonical_host_url  varchar2(1024);
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -191,21 +190,21 @@ as
 
     -- get canonical host from blog settings or use APEX provided value
     -- cache value to package private variable
-    if g_canonical_url is null
+    if g_canonical_host_url is null
     then
 
-      g_canonical_url := blog_util.get_attribute_value( 'G_CANONICAL_HOST' );
+      g_canonical_host_url := blog_util.get_attribute_value( 'G_CANONICAL_HOST' );
       -- if host not found from settings, use APEX provided value
-      if g_canonical_url is null
+      if g_canonical_host_url is null
       then
-        g_canonical_url := apex_util.host_url();
+        g_canonical_host_url := apex_util.host_url();
       end if;
       -- remove trailing slash
-      g_canonical_url := rtrim( g_canonical_url, '/' );
+      g_canonical_host_url := rtrim( g_canonical_host_url, '/' );
 
     end if;
 
-    return g_canonical_url;
+    return g_canonical_host_url;
 
   end get_canonical_host;
 --------------------------------------------------------------------------------
@@ -224,11 +223,12 @@ as
         when 'YES' then get_canonical_host
       end ||
       apex_page.get_url(
-         p_application  => p_application
-        ,p_page         => p_page
-        ,p_session      => ''
-        ,p_plain_url    => true
-      );
+        p_application => p_application
+      , p_page        => p_page
+      , p_session     => ''
+      , p_plain_url   => true
+      )
+    ;
 
   end get_tab;
 --------------------------------------------------------------------------------
@@ -246,10 +246,11 @@ as
 
     return
       get_post(
-         p_post_id      => l_post_id
-        ,p_application  => p_application
-        ,p_canonical    => p_canonical
-      );
+        p_post_id     => l_post_id
+      , p_application => p_application
+      , p_canonical   => p_canonical
+      )
+    ;
 
   end get_post;
 --------------------------------------------------------------------------------
@@ -260,8 +261,10 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
-    l_url varchar2(4000);
+    l_json  json_object_t;
   begin
+
+  l_json := c_page_and_item.get_object( 'post' );
 
   return
     case p_canonical
@@ -269,12 +272,13 @@ as
     end ||
     apex_page.get_url(
       p_application => p_application
-     ,p_page        => c_post_page.page_alias
-     ,p_session     => ''
-     ,p_items       => c_post_page.item_name
-     ,p_values      => p_post_id
-     ,p_plain_url   => true
-   );
+    , p_page        => l_json.get_string( 'page_alias' )
+    , p_session     => ''
+    , p_items       => l_json.get_string( 'item_name' )
+    , p_values      => p_post_id
+    , p_plain_url   => true
+    )
+  ;
 
   end get_post;
 --------------------------------------------------------------------------------
@@ -291,9 +295,10 @@ as
 
     return
       get_category(
-         p_category_id  => l_category_id
-        ,p_canonical    => p_canonical
-      );
+        p_category_id => l_category_id
+      , p_canonical   => p_canonical
+      )
+    ;
 
   end get_category;
 --------------------------------------------------------------------------------
@@ -303,19 +308,23 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
+    l_json  json_object_t;
   begin
+
+  l_json := c_page_and_item.get_object( 'category' );
 
     return
       case p_canonical
         when 'YES' then get_canonical_host
       end ||
       apex_page.get_url(
-         p_page       => c_category_page.page_alias
-        ,p_session    => ''
-        ,p_items      => c_category_page.item_name
-        ,p_values     => p_category_id
-        ,p_plain_url  => true
-      );
+        p_page      => l_json.get_string( 'page_alias' )
+      , p_session   => ''
+      , p_items     => l_json.get_string( 'item_name' )
+      , p_values    => p_category_id
+      , p_plain_url => true
+      )
+    ;
 
   end get_category;
 --------------------------------------------------------------------------------
@@ -332,9 +341,10 @@ as
 
     return
       get_archive(
-         p_archive_id => l_archive_id
-        ,p_canonical  => p_canonical
-      );
+        p_archive_id  => l_archive_id
+      , p_canonical   => p_canonical
+      )
+    ;
 
   end get_archive;
 --------------------------------------------------------------------------------
@@ -344,18 +354,21 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
+    l_json  json_object_t;
   begin
+
+    l_json := c_page_and_item.get_object( 'archive' );
 
     return
       case p_canonical
         when 'YES' then get_canonical_host
       end  ||
       apex_page.get_url(
-         p_page       => c_archive_page.page_alias
-        ,p_session    => ''
-        ,p_items      => c_archive_page.item_name
-        ,p_values     => p_archive_id
-        ,p_plain_url  => true
+        p_page      => l_json.get_string( 'page_alias' )
+      , p_session   => ''
+      , p_items     => l_json.get_string( 'item_name' )
+      , p_values    => p_archive_id
+      , p_plain_url => true
       )
     ;
 
@@ -374,8 +387,8 @@ as
 
     return
       get_tag(
-         p_tag_id     => l_tag_id
-        ,p_canonical  => p_canonical
+        p_tag_id    => l_tag_id
+      , p_canonical => p_canonical
       )
     ;
 
@@ -387,18 +400,21 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
+    l_json  json_object_t;
   begin
+
+    l_json := c_page_and_item.get_object( 'tag' );
 
     return
       case p_canonical
         when 'YES' then get_canonical_host
       end ||
       apex_page.get_url(
-         p_page       => c_tags_page.page_alias
-        ,p_session    => ''
-        ,p_items      => c_tags_page.item_name
-        ,p_values     => p_tag_id
-        ,p_plain_url  => true
+        p_page      => l_json.get_string( 'page_alias' )
+      , p_session   => ''
+      , p_items     => l_json.get_string( 'item_name' )
+      , p_values    => p_tag_id
+      , p_plain_url => true
       )
     ;
 
@@ -416,8 +432,8 @@ as
 
     return
       apex_page.get_url(
-         p_page     => 'information'
-        ,p_request  => l_content_id
+        p_page    => 'information'
+      , p_request => l_content_id
       )
     ;
 
@@ -433,12 +449,13 @@ as
 
     return get_canonical_host ||
       apex_page.get_url(
-         p_application  => p_application
-        ,p_page         => 'pgm'
-        ,p_session      => ''
-        ,p_request      => 'application_process=' || p_process
-        ,p_plain_url    => true
-      );
+        p_application => p_application
+      , p_page        => 'pgm'
+      , p_session     => ''
+      , p_request     => 'application_process=' || p_process
+      , p_plain_url   => true
+      )
+    ;
 
   end get_process;
 --------------------------------------------------------------------------------
@@ -470,10 +487,11 @@ as
 
     l_url :=
       apex_util.prepare_url(
-         p_url            => l_url
-        ,p_checksum_type  => 'PUBLIC_BOOKMARK'
-        ,p_plain_url      => true
-      );
+        p_url           => l_url
+      , p_checksum_type => 'PUBLIC_BOOKMARK'
+      , p_plain_url     => true
+      )
+    ;
 
     return get_canonical_host || l_url;
 
@@ -497,8 +515,9 @@ as
         g_rss_url :=
           get_process(
             p_application => p_application
-            ,p_process    => 'rss.xml'
-          );
+          , p_process     => 'rss.xml'
+          )
+        ;
       end if;
     end if;
 
@@ -519,8 +538,9 @@ as
       g_atom_url :=
         get_process(
           p_application => p_application
-          ,p_process    => 'atom.xml'
-        );
+        , p_process     => 'atom.xml'
+        )
+      ;
     end if;
 
     return g_atom_url;
@@ -542,9 +562,10 @@ as
     then
       l_xsl_url :=
         get_process(
-           p_application  => p_application
-          ,p_process      => 'rss.xsl'
-        );
+          p_application => p_application
+        , p_process     => 'rss.xsl'
+        )
+      ;
     end if;
 
     return l_xsl_url;
@@ -561,9 +582,10 @@ as
 
     l_sitemap_url :=
       get_process(
-         p_application  => p_application
-        ,p_process      => 'sitemap-index.xml'
-      );
+        p_application => p_application
+      , p_process     => 'sitemap-index.xml'
+      )
+    ;
 
     return l_sitemap_url;
 

@@ -32,6 +32,7 @@ prompt --install
 @@application/shared_components/logic/application_items/g_app_name.sql
 @@application/shared_components/logic/application_items/g_app_version.sql
 @@application/shared_components/logic/application_items/g_latest_post_rows.sql
+@@application/shared_components/logic/application_items/g_page_url.sql
 @@application/shared_components/logic/application_items/g_post_title_date_format.sql
 @@application/shared_components/logic/application_items/g_search_rows.sql
 @@application/shared_components/logic/application_settings.sql

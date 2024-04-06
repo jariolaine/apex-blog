@@ -17,9 +17,10 @@ wwv_flow_imp_page.create_page(
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8700188054171688)
 ,p_protection_level=>'D'
+,p_page_comment=>'Global page'
 ,p_page_component_map=>'14'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231120142904'
+,p_last_upd_yyyymmddhh24miss=>'20240401190340'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6433141607894071)

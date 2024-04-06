@@ -18,9 +18,12 @@ wwv_flow_imp_shared.create_shortcut(
 ,p_shortcut_language=>'PLSQL'
 ,p_comments=>'Get canonical link for tag. Used in page 6 page html header.'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return blog_html.get_tag_canonical_link(',
-'  p_tag_id => :P6_TAG_ID',
-');'))
+'blog_html.get_tag_canonical_link(',
+'  p_tag_id  => :P6_TAG_ID',
+', p_html    => blog_util.g_link_canonical',
+', p_url     => :G_PAGE_URL',
+');',
+'return blog_util.g_link_canonical;'))
 );
 wwv_flow_imp.component_end;
 end;
