@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231118082751'
+,p_last_upd_yyyymmddhh24miss=>'20240411063047'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(80284348441189607)
@@ -46,7 +46,6 @@ wwv_flow_imp_page.create_page_plug(
 '  ,v1.is_active             as is_active',
 '  ,v1.show_changed_on       as show_changed_on',
 '  ,v1.content_desc          as content_desc',
-'  ,:APP_TEXT$BLOG_TXT_EDIT  as btn_label',
 'from blog_v_all_dynamic_content v1'))
 ,p_plug_source_type=>'NATIVE_IR'
 ,p_prn_content_disposition=>'ATTACHMENT'
@@ -93,8 +92,8 @@ wwv_flow_imp_page.create_worksheet(
 ,p_download_formats=>'CSV:HTML:XLSX:PDF'
 ,p_enable_mail_download=>'Y'
 ,p_detail_link=>'f?p=&APP_ID.:81:&SESSION.::&DEBUG.:RP,:P81_ID:\#ID#\'
-,p_detail_link_text=>'<span class="t-Icon fa fa-pencil" aria-hidden="true"></span>'
-,p_detail_link_attr=>'title="#BTN_LABEL#" aria-label="BTN_LABEL" class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
+,p_detail_link_text=>'<span aria-hidden="true" class="t-Icon fa fa-pencil"></span>'
+,p_detail_link_attr=>'title="&APP_TEXT$BLOG_TXT_EDIT." class="t-Button t-Button--noLabel t-Button--icon t-Button--small"'
 ,p_owner=>'LAINFJAR'
 ,p_internal_uid=>80284742734189608
 );
@@ -223,16 +222,6 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_heading_alignment=>'LEFT'
 ,p_use_as_row_header=>'Y'
 );
-wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(38346625470073304)
-,p_db_column_name=>'BTN_LABEL'
-,p_display_order=>151
-,p_column_identifier=>'V'
-,p_column_label=>'Btn Label'
-,p_column_type=>'STRING'
-,p_display_text_as=>'HIDDEN_ESCAPE_SC'
-,p_use_as_row_header=>'N'
-);
 wwv_flow_imp_page.create_worksheet_rpt(
  p_id=>wwv_flow_imp.id(80290492160189969)
 ,p_application_user=>'APXWS_DEFAULT'
@@ -284,8 +273,23 @@ wwv_flow_imp_page.create_page_button(
 ,p_icon_css_classes=>'fa-plus'
 );
 wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(54687721509403456)
+,p_button_sequence=>10
+,p_button_plug_id=>wwv_flow_imp.id(80284348441189607)
+,p_button_name=>'RESEQUENCE_LINKS'
+,p_button_action=>'DEFINED_BY_DA'
+,p_button_template_options=>'#DEFAULT#'
+,p_button_template_id=>wwv_flow_imp.id(8549081018518243)
+,p_button_image_alt=>'Resequence'
+,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
+,p_warn_on_unsaved_changes=>null
+,p_confirm_message=>'&APP_TEXT$BLOG_CONFIRM_RESEQUENCE_DYNAMIC_CONTENT.'
+,p_confirm_style=>'warning'
+,p_icon_css_classes=>'fa-sequence'
+);
+wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(38350547480073307)
-,p_button_sequence=>40
+,p_button_sequence=>20
 ,p_button_plug_id=>wwv_flow_imp.id(80284348441189607)
 ,p_button_name=>'RESET_REPORT'
 ,p_button_action=>'REDIRECT_PAGE'
@@ -333,6 +337,52 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_action_sequence=>10
 ,p_execute_on_page_init=>'N'
 ,p_action=>'NATIVE_DIALOG_CANCEL'
+);
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(54688878593422325)
+,p_name=>'Resequence Modal Popup Pages'
+,p_event_sequence=>30
+,p_triggering_element_type=>'BUTTON'
+,p_triggering_button_id=>wwv_flow_imp.id(54687721509403456)
+,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
+,p_bind_event_type=>'click'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(54690238516422329)
+,p_event_id=>wwv_flow_imp.id(54688878593422325)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_name=>'Resequence'
+,p_action=>'NATIVE_EXECUTE_PLSQL_CODE'
+,p_attribute_01=>'blog_cm.resequence_dynamic_content;'
+,p_attribute_05=>'PLSQL'
+,p_wait_for_result=>'Y'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(54689700349422329)
+,p_event_id=>wwv_flow_imp.id(54688878593422325)
+,p_event_result=>'TRUE'
+,p_action_sequence=>20
+,p_execute_on_page_init=>'N'
+,p_name=>'Refresh Report'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_imp.id(80284348441189607)
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(54689222408422328)
+,p_event_id=>wwv_flow_imp.id(54688878593422325)
+,p_event_result=>'TRUE'
+,p_action_sequence=>40
+,p_execute_on_page_init=>'N'
+,p_name=>'Show message'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'blog.admin.showSuccessMessage({',
+'  "text": "BLOG_MSG_DYNAMIC_CONTENT_RESEQUENCED"',
+'});'))
 );
 wwv_flow_imp.component_end;
 end;

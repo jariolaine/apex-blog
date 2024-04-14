@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240310073452'
+,p_last_upd_yyyymmddhh24miss=>'20240408085539'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(57734071633644900)
@@ -136,12 +136,12 @@ wwv_flow_imp_page.create_page_button(
 ,p_icon_css_classes=>'fa-chevron-left'
 );
 wwv_flow_imp_page.create_page_branch(
- p_id=>wwv_flow_imp.id(39236061844002735)
-,p_branch_name=>'Goto Page 50'
-,p_branch_action=>'f?p=&APP_ID.:50:&SESSION.::&DEBUG.:RP,50::&success_msg=#SUCCESS_MSG#'
+ p_id=>wwv_flow_imp.id(39994156606374336)
+,p_branch_name=>'Go To Page 50'
+,p_branch_action=>'f?p=&APP_ID.:50:&SESSION.::&DEBUG.:50::&success_msg=#SUCCESS_MSG#'
 ,p_branch_point=>'AFTER_PROCESSING'
 ,p_branch_type=>'REDIRECT_URL'
-,p_branch_sequence=>30
+,p_branch_sequence=>10
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(38432396442315407)

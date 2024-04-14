@@ -26,7 +26,7 @@ wwv_flow_imp_page.create_page(
 ,p_help_text=>'High level view of application logging information.'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231118082902'
+,p_last_upd_yyyymmddhh24miss=>'20240411122613'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(87874963598811882)
@@ -364,8 +364,6 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_default=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_item_default_type=>'ITEM'
 ,p_prompt=>'Timeframe'
-,p_source=>'BLOG_DEFAULT_TIMEFRAME'
-,p_source_type=>'PREFERENCE'
 ,p_display_as=>'NATIVE_SELECT_LIST'
 ,p_named_lov=>'TIMEFRAME (4 WEEKS)'
 ,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -376,6 +374,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_cHeight=>1
 ,p_field_template=>wwv_flow_imp.id(8548464988518243)
 ,p_item_template_options=>'#DEFAULT#'
+,p_is_persistent=>'U'
 ,p_lov_display_extra=>'NO'
 ,p_restricted_characters=>'US_ONLY'
 ,p_attribute_01=>'NONE'

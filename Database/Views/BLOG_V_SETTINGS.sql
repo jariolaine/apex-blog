@@ -9,6 +9,7 @@ select
   ,lower(t1.changed_by)       as changed_by
   ,t1.is_nullable             as is_nullable
   ,t1.display_seq             as display_seq
+  ,t1.attribute_name          as attribute_name
   ,apex_lang.message(
     p_name => t1.attribute_message
   )                           as attribute_desc

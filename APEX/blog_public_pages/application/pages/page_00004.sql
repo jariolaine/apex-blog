@@ -15,7 +15,7 @@ wwv_flow_imp_page.create_page(
  p_id=>4
 ,p_name=>'Search Result'
 ,p_alias=>'SEARCH'
-,p_step_title=>'Search | &G_APP_NAME.'
+,p_step_title=>'Search | &APP_TEXT$BLOG_APP_NAME.'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_first_item=>'AUTO_FIRST_ITEM'
 ,p_autocomplete_on_off=>'OFF'
@@ -27,7 +27,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'26'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240401044218'
+,p_last_upd_yyyymmddhh24miss=>'20240412060440'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(38694166324057112)
@@ -46,7 +46,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_attribute_15=>'Y'
 ,p_attribute_16=>'<span class="nodatafound">&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.</span>'
 ,p_attribute_17=>'ITEM'
-,p_attribute_18=>'G_SEARCH_ROWS'
+,p_attribute_18=>'P0_BLOG_SEARCH_ROWS'
 );
 wwv_flow_imp_page.create_search_region_source(
  p_id=>wwv_flow_imp.id(38694658146057114)
@@ -137,6 +137,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_lov=>'.'||wwv_flow_imp.id(24721310666439263)||'.'
 ,p_field_template=>wwv_flow_imp.id(6854610443267413)
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--large'
+,p_is_persistent=>'N'
 ,p_lov_display_extra=>'NO'
 ,p_attribute_01=>'4'
 );
@@ -153,6 +154,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_field_template=>wwv_flow_imp.id(6854643778267413)
 ,p_item_icon_css_classes=>'fa-search'
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--stretchInputs:t-Form-fieldContainer--large'
+,p_is_persistent=>'N'
 ,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'

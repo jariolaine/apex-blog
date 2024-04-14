@@ -26,14 +26,13 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240401075129'
+,p_last_upd_yyyymmddhh24miss=>'20240410193041'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(19452283963363502)
 ,p_name=>'Dynamic content'
 ,p_template=>wwv_flow_imp.id(6781372168267375)
 ,p_display_sequence=>10
-,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_item_display_point=>'BELOW'
@@ -55,6 +54,13 @@ wwv_flow_imp_page.create_report_region(
 'and v1.content_id = :REQUEST',
 'order by v1.content_id'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_plug_caching=>'CACHE'
+,p_plug_caching_max_age_in_sec=>31536000
+,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
+,p_plug_cache_when_condition_e1=>'DEBUG'
+,p_plug_cache_when_condition_e2=>'NO'
+,p_plug_cache_depends_on_items=>'REQUEST'
+,p_translate_title=>'N'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(30641878306098019)
@@ -127,7 +133,7 @@ wwv_flow_imp_page.create_page_button(
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(41879333719408334)
 ,p_name=>'P1002_PAGE_TITLE'
-,p_item_sequence=>10
+,p_item_sequence=>90
 ,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'

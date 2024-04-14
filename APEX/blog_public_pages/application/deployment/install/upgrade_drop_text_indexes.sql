@@ -1,7 +1,7 @@
-prompt --application/deployment/install/upgrade_drop_index_blog_posts_ctx
+prompt --application/deployment/install/upgrade_drop_text_indexes
 begin
 --   Manifest
---     INSTALL: UPGRADE-Drop index blog_posts_ctx
+--     INSTALL: UPGRADE-Drop text indexes
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2023.10.31'
@@ -14,8 +14,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(32048697558624826)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
-,p_name=>'Drop index blog_posts_ctx'
-,p_sequence=>120
+,p_name=>'Drop text indexes'
+,p_sequence=>70
 ,p_script_type=>'UPGRADE'
 ,p_condition_type=>'EXISTS'
 ,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -24,28 +24,32 @@ wwv_flow_imp_shared.create_install_script(
 'where 1 = 1',
 'and application_date < 20231222'))
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'--------------------------------------------------------',
-'--  Drop index BLOG_POSTS_CTX',
+'-- Drop text indexes',
 '--------------------------------------------------------',
 'declare',
 '  index_not_exists exception;',
 '  pragma exception_init ( index_not_exists, -01418 );',
-'begin',
-'  execute immediate ''drop index blog_posts_ctx force'';',
-'exception when index_not_exists then',
-'  null;',
-'end;',
-'/',
-'--------------------------------------------------------',
-'--  Drop text index BLOG_POSTS_CTX preferences',
-'--------------------------------------------------------',
-'declare',
 '  ctx_ddl_error exception;',
 '  pragma exception_init ( ctx_ddl_error, -20000 );',
 'begin',
-'  ctx_ddl.drop_preference( ''BLOG_POSTS_UDS'' );',
-'exception when ctx_ddl_error then',
-'  null;',
+'  -- Drop text indexes',
+'  begin',
+'    execute immediate ''drop index blog_posts_ctx force'';',
+'  exception when index_not_exists then null;',
+'  end;',
+'  begin',
+'    execute immediate ''drop index blog_comments_ctx force'';',
+'  exception when index_not_exists then null;',
+'  end;',
+'  -- Drop text index preferences',
+'  begin',
+'    ctx_ddl.drop_preference( ''BLOG_POSTS_UDS'' );',
+'  exception when ctx_ddl_error then null;',
+'  end;',
+'  begin',
+'    ctx_ddl.drop_preference( ''BLOG_COMMENTS_UDS'' );',
+'  exception when ctx_ddl_error then null;',
+'  end;',
 'end;',
 '/',
 ''))

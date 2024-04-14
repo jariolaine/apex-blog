@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240406094850'
+,p_last_upd_yyyymmddhh24miss=>'20240410082404'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(48358046251075855)
@@ -388,7 +388,6 @@ wwv_flow_imp_page.create_interactive_grid(
 ,p_fixed_row_height=>true
 ,p_pagination_type=>'SCROLL'
 ,p_show_total_row_count=>true
-,p_no_data_found_message=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
 ,p_show_toolbar=>true
 ,p_enable_save_public_report=>false
 ,p_enable_subscriptions=>true
@@ -687,8 +686,8 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_action=>'NATIVE_EXECUTE_PLSQL_CODE'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'apex_util.cache_purge_by_page(',
-'   p_application => :G_PUB_APP_ID',
-'  ,p_page => 0',
+'  p_application => :G_PUB_APP_ID',
+', p_page => 0',
 ');'))
 ,p_attribute_05=>'PLSQL'
 ,p_wait_for_result=>'N'

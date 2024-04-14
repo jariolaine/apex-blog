@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230404064055'
+,p_last_upd_yyyymmddhh24miss=>'20240411122624'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(43823229274615012)
@@ -306,7 +306,6 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_headings_type=>'NO_HEADINGS'
 ,p_query_num_rows=>10
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
 ,p_query_row_count_max=>500
 ,p_csv_output=>'N'
 ,p_prn_output=>'N'
@@ -381,8 +380,6 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_default=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_item_default_type=>'ITEM'
 ,p_prompt=>'Timeframe'
-,p_source=>'BLOG_DEFAULT_TIMEFRAME'
-,p_source_type=>'PREFERENCE'
 ,p_display_as=>'NATIVE_SELECT_LIST'
 ,p_named_lov=>'TIMEFRAME (4 WEEKS)'
 ,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -393,6 +390,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_cHeight=>1
 ,p_field_template=>wwv_flow_imp.id(8548464988518243)
 ,p_item_template_options=>'#DEFAULT#'
+,p_is_persistent=>'U'
 ,p_lov_display_extra=>'NO'
 ,p_restricted_characters=>'US_ONLY'
 ,p_attribute_01=>'NONE'

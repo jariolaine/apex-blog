@@ -15,7 +15,7 @@ wwv_flow_imp_page.create_page(
  p_id=>10
 ,p_name=>'Links'
 ,p_alias=>'LINKS'
-,p_step_title=>'Links | &G_APP_NAME.'
+,p_step_title=>'Links | &APP_TEXT$BLOG_APP_NAME.'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(20718112665951240)
@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240401142308'
+,p_last_upd_yyyymmddhh24miss=>'20240412050000'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6899425042645290)
@@ -38,22 +38,22 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   null           as icon_class -- see column HTML expression',
-'  ,null           as icon_color_class',
-'  ,v1.link_title  as list_title',
-'  ,v1.link_desc   as list_text',
-'  ,v1.group_title as list_badge',
-'  ,null           as list_class',
-'  ,v1.link_url    as link',
-'  ,v1.link_attr   as link_attr',
-'  ,null           as link_class',
+'  null              as icon_class -- see column HTML expression',
+', null              as icon_color_class',
+', v1.link_title     as list_title',
+', v1.link_desc      as list_text',
+', v1.group_title    as list_badge',
+', null              as list_class',
+', v1.link_url       as link',
+', v1.link_attr      as link_attr',
+', null              as link_class',
 'from blog_v_links v1',
 'where 1 = 1',
 'order by v1.group_display_seq',
 '  ,v1.display_seq'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_plug_caching=>'CACHE'
-,p_plug_caching_max_age_in_sec=>1209600
+,p_plug_caching_max_age_in_sec=>31536000
 ,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
 ,p_plug_cache_when_condition_e1=>'DEBUG'
 ,p_plug_cache_when_condition_e2=>'NO'
@@ -182,7 +182,7 @@ wwv_flow_imp_page.create_page_meta_tag(
 wwv_flow_imp_page.create_page_meta_tag(
  p_id=>wwv_flow_imp.id(40685911097261717)
 ,p_meta_tag_name=>'og:title'
-,p_meta_tag_value=>'Links | &G_APP_NAME.'
+,p_meta_tag_value=>'Links | &APP_TEXT$BLOG_APP_NAME.'
 );
 wwv_flow_imp_page.create_page_meta_tag(
  p_id=>wwv_flow_imp.id(40686062055261718)
@@ -192,7 +192,7 @@ wwv_flow_imp_page.create_page_meta_tag(
 wwv_flow_imp_page.create_page_meta_tag(
  p_id=>wwv_flow_imp.id(40687675448261734)
 ,p_meta_tag_name=>'og:url'
-,p_meta_tag_value=>'&G_PAGE_URL.'
+,p_meta_tag_value=>'&P0_PAGE_URL.'
 );
 wwv_flow_imp.component_end;
 end;

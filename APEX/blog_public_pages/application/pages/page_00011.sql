@@ -15,7 +15,7 @@ wwv_flow_imp_page.create_page(
  p_id=>11
 ,p_name=>'Files'
 ,p_alias=>'REPOSITORY'
-,p_step_title=>'Files | &G_APP_NAME.'
+,p_step_title=>'Files | &APP_TEXT$BLOG_APP_NAME.'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(20718112665951240)
@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240401142345'
+,p_last_upd_yyyymmddhh24miss=>'20240413064437'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(65301007014080913)
@@ -55,7 +55,7 @@ wwv_flow_imp_page.create_report_region(
 'order by v1.file_name'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_plug_caching=>'CACHE'
-,p_plug_caching_max_age_in_sec=>1209600
+,p_plug_caching_max_age_in_sec=>31536000
 ,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
 ,p_plug_cache_when_condition_e1=>'DEBUG'
 ,p_plug_cache_when_condition_e2=>'NO'
@@ -194,7 +194,7 @@ wwv_flow_imp_page.create_page_meta_tag(
 wwv_flow_imp_page.create_page_meta_tag(
  p_id=>wwv_flow_imp.id(40686441590261722)
 ,p_meta_tag_name=>'og:title'
-,p_meta_tag_value=>'Files | &G_APP_NAME.'
+,p_meta_tag_value=>'Files | &APP_TEXT$BLOG_APP_NAME.'
 );
 wwv_flow_imp_page.create_page_meta_tag(
  p_id=>wwv_flow_imp.id(40686583316261723)
@@ -204,7 +204,7 @@ wwv_flow_imp_page.create_page_meta_tag(
 wwv_flow_imp_page.create_page_meta_tag(
  p_id=>wwv_flow_imp.id(40687536374261733)
 ,p_meta_tag_name=>'og:url'
-,p_meta_tag_value=>'&G_PAGE_URL.'
+,p_meta_tag_value=>'&P0_PAGE_URL.'
 );
 wwv_flow_imp.component_end;
 end;

@@ -92,6 +92,7 @@ as
 --    Jari Laine 05.09.2023 - Removed use of type blog_t_post from procedure get_post_details
 --    Jari Laine 01.04.2024 - New package global constants and variables
 --                          - Small changes to procedures download_file
+--    Jari Laine 10.04.2024 - Changes to procedure initialize_items
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -101,8 +102,6 @@ as
 
   g_mime_rss      constant varchar2(40) := 'application/rss+xml';
   g_mime_atom     constant varchar2(40) := 'application/atom+xml';
-
-  g_link_canonical  varchar2(1024);
 --------------------------------------------------------------------------------
   procedure raise_http_error(
     p_error_code  in number
@@ -249,6 +248,10 @@ as
 --    Jari Laine 30.07.2023 - Added check is workspace user locked to procedure post_authentication
 --                          - Replaced apex_util.set_build_option_status with apex_application_admin.set_build_option_status
 --    Jari Laine 10.03.2024 - Bug fix post_authentication procedure to check only current workspace
+--    Jari Laine 08.04.2024 - Removed functions:
+--                              request_to_post_success_message
+--                              request_to_link_success_message
+--    Jari Laine 11.04.2024 - New procedure resequence_dynamic_content
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -261,7 +264,7 @@ as
   procedure get_blogger_details(
     p_app_id          in varchar2,
     p_username        in varchar2,
-    p_id              out nocopy number,
+    p_user_id         out nocopy number,
     p_name            out nocopy varchar2
   );
 --------------------------------------------------------------------------------
@@ -286,18 +289,6 @@ as
 -- Called from:
 --  admin app page 12
   function request_to_post_status(
-    p_request         in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  admin app page 12
-  function request_to_post_success_message(
-    p_request         in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  admin app page 51
-  function request_to_link_success_message(
     p_request         in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -398,6 +389,12 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
+--  admin app page 20014
+  procedure update_text_messages(
+    p_attribute_name  in varchar2 default null
+  );
+--------------------------------------------------------------------------------
+-- Called from:
 --  admin app page 50
   procedure resequence_link_groups;
 --------------------------------------------------------------------------------
@@ -406,6 +403,10 @@ as
   procedure resequence_links(
     p_link_group_id in varchar2
   );
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 80
+  procedure resequence_dynamic_content;
 --------------------------------------------------------------------------------
 end "BLOG_CM";
 /
@@ -727,48 +728,52 @@ as
 --                              get_category_canonical_link
 --                              get_archive_canonical_link
 --                              get_tag_canonical_link
+--    Jari Laine 10.04.2024 - New function get_page_canonical_link to return generated html
+--                          - Renamed procedures
+--                              get_tab_canonical_link -> set_tab_canonical_link
+--                              get_post_canonical_link -> set_post_canonical_link
+--                              get_category_canonical_link -> set_category_canonical_link
+--                              get_archive_canonical_link -> set_archive_canonical_link
+--                              get_tag_canonical_link -> set_tag_canonical_link
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_robots_noindex_meta return varchar2;
 --------------------------------------------------------------------------------
+  function get_page_canonical_link return varchar2;
+--------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAB
-  procedure get_tab_canonical_link(
+  procedure set_tab_canonical_link(
     p_page          in varchar2,
-    p_html          out nocopy varchar2,
     p_url           out nocopy varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_POST
-  procedure get_post_canonical_link(
+  procedure set_post_canonical_link(
     p_post_id       in varchar2,
-    p_html          out nocopy varchar2,
     p_url           out nocopy varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
-  procedure get_category_canonical_link(
+  procedure set_category_canonical_link(
     p_category_id   in varchar2,
-    p_html          out nocopy varchar2,
     p_url           out nocopy varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
-  procedure get_archive_canonical_link(
+  procedure set_archive_canonical_link(
     p_archive_id    in varchar2,
-    p_html          out nocopy varchar2,
     p_url           out nocopy varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAG
-  procedure get_tag_canonical_link(
+  procedure set_tag_canonical_link(
     p_tag_id        in varchar2,
-    p_html          out nocopy varchar2,
     p_url           out nocopy varchar2
   );
 --------------------------------------------------------------------------------
@@ -904,66 +909,6 @@ as
 end "BLOG_XML";
 /
 --------------------------------------------------------
---  DDL for View BLOG_V_ALL_COMMENTS_FORM
---------------------------------------------------------
-create or replace force view blog_v_all_comments_form as
-select
-  t1.id
-  ,t1.row_version
-  ,t1.created_on
-  ,t1.created_by
-  ,t1.changed_on
-  ,t1.changed_by
-  ,t1.is_active
-  ,t1.post_id
-  ,t1.parent_id
-  ,(
-    select lkp.title
-    from blog_posts lkp
-    where 1 = 1
-      and lkp.id = t1.post_id
-  )as post_title
-  ,t1.body_html
-  ,t1.comment_by
-  ,t1.ctx_search
-  ,t1.rowid as ctx_rid
-  ,apex_escape.striphtml(
-    p_string => t1.body_html
-  ) as ctx_search_text
-  ,case
-    when (
-      select count(1)
-      from blog_comment_flags f11
-      where f11.flag = 'MODERATE'
-        and f11.comment_id = t1.id
-    ) > 0
-      then 'MODERATE'
-    when t1.is_active = 1
-      then 'ENABLED'
-      else 'DISABLED'
-  end as comment_status_code
-  ,case
-    when (
-      select count(1)
-      from blog_comment_flags f12
-      where f12.flag = 'NEW'
-        and f12.comment_id = t1.id
-    ) > 0
-      then 'NEW'
-    when (
-      select count(1)
-      from blog_comment_flags f13
-      where f13.flag = 'UNREAD'
-        and f13.comment_id = t1.id
-    ) > 0
-      then 'UNREAD'
-    when t1.parent_id is not null
-      then 'REPLY'
-      else 'READ'
-  end as comment_flag_code
-from blog_comments t1
-/
---------------------------------------------------------
 --  DDL for View BLOG_V_ALL_DYNAMIC_CONTENT
 --------------------------------------------------------
 create or replace force view blog_v_all_dynamic_content as
@@ -1006,16 +951,6 @@ select
   ,apex_string_util.to_display_filesize(
     p_size_in_bytes => t1.file_size
   )                     as file_size_display
-  ,case t1.is_active
-    when 1
-    then 'fa-check-circle u-success-text'
-    else 'fa-minus-circle u-danger-text'
-   end                  as file_status_icon
-  ,case t1.is_download
-    when 1
-    then 'fa-check'
-    else 'fa-minus'
-   end                  as file_type_icon
 from blog_files t1
 where 1 = 1
 /
@@ -1024,23 +959,23 @@ where 1 = 1
 --------------------------------------------------------
 create or replace force view blog_v_all_links as
 select
-   t1.id                as id
-  ,t1.row_version       as row_version
-  ,t1.created_on        as created_on
-  ,lower(t1.created_by) as created_by
-  ,t1.changed_on        as changed_on
-  ,lower(t1.changed_by) as changed_by
-  ,t2.id                as link_group_id
-  ,t1.is_active         as is_active
-  ,t2.is_active         as link_group_is_active
-  ,t1.display_seq       as display_seq
-  ,t2.display_seq       as link_group_display_seq
-  ,t1.title             as title
-  ,t2.title             as link_group_title
-  ,t1.link_desc         as link_desc
-  ,t1.notes             as notes
-  ,t1.link_url          as link_url
-  ,case t2.is_active
+  t1.id                   as id
+, t1.row_version          as row_version
+, t1.created_on           as created_on
+, lower( t1.created_by )  as created_by
+, t1.changed_on           as changed_on
+, lower( t1.changed_by )  as changed_by
+, t2.id                   as link_group_id
+, t1.is_active            as is_active
+, t2.is_active            as link_group_is_active
+, t1.display_seq          as display_seq
+, t2.display_seq          as link_group_display_seq
+, t1.title                as title
+, t2.title                as link_group_title
+, t1.link_desc            as link_desc
+, t1.notes                as notes
+, t1.link_url             as link_url
+, case t2.is_active
     when 1 then
       case t1.is_active
         when 1
@@ -1048,12 +983,9 @@ select
         else 'DISABLED'
         end
     else 'GROUP_DISABLED'
-  end                   as link_status_code
-  ,case t1.is_active * t2.is_active
-    when 1
-    then 'fa-check-circle u-success-text'
-    else 'fa-minus-circle u-danger-text'
-  end                   as link_status_icon
+  end                     as link_status_code
+, t1.is_active
+  * t2.is_active          as link_is_active
 from blog_links t1
 join blog_link_groups t2
   on t1.link_group_id = t2.id
@@ -1075,11 +1007,6 @@ select
   ,t1.title               as title
   ,t1.title_unique        as title_unique
   ,t1.notes               as notes
-  ,case t1.is_active
-    when 1
-    then c.txt_enabled
-    else c.txt_disabled
-  end                     as status_text
   ,(
     select
       count(1) as cnt
@@ -1087,12 +1014,6 @@ select
     where lkp.link_group_id = t1.id
   )                       as link_count
 from blog_link_groups t1
-cross join (
-  select
-     apex_lang.message( 'BLOG_TXT_ENABLED' )  as txt_enabled
-    ,apex_lang.message( 'BLOG_TXT_DISABLED' ) as txt_disabled
-  from dual
-) c
 where 1 = 1
 /
 --------------------------------------------------------
@@ -1270,7 +1191,7 @@ select
      p_page     => '1003'
     ,p_session  => null
     ,p_request  => 'application_process=download'
-    ,p_items    => 'P1003_FILE_NAME'
+    ,p_items    => 'x01'
     ,p_values   => t1.file_name
   )                 as file_url
 from blog_files t1
@@ -1279,13 +1200,46 @@ and t1.is_active = 1
 with read only
 /
 --------------------------------------------------------
+--  DDL for View BLOG_V_FORM_COMMENTS
+--------------------------------------------------------
+create or replace force view blog_v_form_comments as
+select
+  t1.id
+  ,t1.row_version
+  ,t1.is_active
+  ,t1.post_id
+  ,t1.parent_id
+  ,(
+    select lkp.title
+    from blog_posts lkp
+    where 1 = 1
+      and lkp.id = t1.post_id
+  )as post_title
+  ,t1.body_html
+  ,t1.comment_by
+  ,case
+    when (
+      select count(1)
+      from blog_comment_flags f11
+      where f11.flag = 'MODERATE'
+        and f11.comment_id = t1.id
+    ) > 0
+      then 'MODERATE'
+    when t1.is_active = 1
+      then 'ENABLED'
+      else 'DISABLED'
+  end as comment_status_code
+from blog_comments t1
+/
+--------------------------------------------------------
 --  DDL for View BLOG_V_INIT_ITEMS
 --------------------------------------------------------
 create or replace force view blog_v_init_items as
 select
-   i.application_id   as application_id
-  ,i.item_name        as item_name
-  ,s.attribute_value  as item_value
+  i.application_id  as application_id
+, i.item_name       as item_name
+, s.attribute_value as attribute_value
+, v( i.item_name )  as session_value
 from blog_init_items i
 join blog_settings s
   on i.item_name = s.attribute_name
@@ -1298,20 +1252,22 @@ with read only
 --------------------------------------------------------
 create or replace force view blog_v_links as
 select
-   t1.id          as link_id
-  ,t2.id          as group_id
-  ,t2.title       as group_title
-  ,t2.display_seq as group_display_seq
-  ,t1.display_seq as display_seq
-  ,t1.title       as link_title
-  ,t1.link_desc   as link_desc
-  ,t1.link_url    as link_url
-  ,case external_link + target_blank
+  t1.id             as link_id
+, t2.id             as group_id
+, t2.title          as group_title
+, t2.display_seq    as group_display_seq
+, t1.display_seq    as display_seq
+, t1.title          as link_title
+, t1.link_desc      as link_desc
+, t1.link_url       as link_url
+, t1.external_link
+  + t1.target_blank as link_attr_code
+, case t1.external_link + t1.target_blank
     when 2
     then 'target="_blank" rel="external"'
     when 1
     then
-      case external_link
+      case t1.external_link
       when 1
       then 'rel="external"'
       else 'target="_blank"'
@@ -1468,25 +1424,82 @@ where 1 = 1
 --  DDL for View BLOG_V_ALL_COMMENTS
 --------------------------------------------------------
 create or replace force view blog_v_all_comments as
+with q1 as(
+  select
+    t1.id
+    ,t1.row_version
+    ,t1.created_on
+    ,t1.created_by
+    ,t1.changed_on
+    ,t1.changed_by
+    ,t1.is_active
+    ,t1.post_id
+    ,t1.parent_id
+    ,(
+      select lkp.title
+      from blog_posts lkp
+      where 1 = 1
+        and lkp.id = t1.post_id
+    )as post_title
+    ,t1.body_html
+    ,t1.comment_by
+    ,t1.ctx_search
+    ,t1.rowid as ctx_rid
+    ,apex_escape.striphtml(
+      p_string => t1.body_html
+    ) as ctx_search_text
+    ,case
+      when (
+        select count(1)
+        from blog_comment_flags f11
+        where f11.flag = 'MODERATE'
+          and f11.comment_id = t1.id
+      ) > 0
+        then 'MODERATE'
+      when t1.is_active = 1
+        then 'ENABLED'
+        else 'DISABLED'
+    end as comment_status_code
+    ,case
+      when (
+        select count(1)
+        from blog_comment_flags f12
+        where f12.flag = 'NEW'
+          and f12.comment_id = t1.id
+      ) > 0
+        then 'NEW'
+      when (
+        select count(1)
+        from blog_comment_flags f13
+        where f13.flag = 'UNREAD'
+          and f13.comment_id = t1.id
+      ) > 0
+        then 'UNREAD'
+      when t1.parent_id is not null
+        then 'REPLY'
+        else 'READ'
+    end as comment_flag_code
+  from blog_comments t1
+)
 select
-   v1.id                  as id
-  ,v1.row_version         as row_version
-  ,v1.created_on          as created_on
-  ,lower( v1.created_by ) as created_by
-  ,v1.changed_on          as changed_on
-  ,lower( v1.changed_by ) as changed_by
-  ,v1.is_active           as is_active
-  ,v1.post_id             as post_id
-  ,v1.parent_id           as parent_id
-  ,v1.post_title          as post_title
-  ,v1.body_html           as body_html
-  ,v1.comment_by          as comment_by
-  ,v1.ctx_search          as ctx_search
-  ,v1.ctx_rid             as ctx_rid
-  ,v1.comment_status_code as comment_status_code
-  ,v1.comment_flag_code   as comment_flag_code
+   q1.id                  as id
+  ,q1.row_version         as row_version
+  ,q1.created_on          as created_on
+  ,lower( q1.created_by ) as created_by
+  ,q1.changed_on          as changed_on
+  ,lower( q1.changed_by ) as changed_by
+  ,q1.is_active           as is_active
+  ,q1.post_id             as post_id
+  ,q1.parent_id           as parent_id
+  ,q1.post_title          as post_title
+  ,q1.body_html           as body_html
+  ,q1.comment_by          as comment_by
+  ,q1.ctx_search          as ctx_search
+  ,q1.ctx_rid             as ctx_rid
+  ,q1.comment_status_code as comment_status_code
+  ,q1.comment_flag_code   as comment_flag_code
   ,case
-    when v1.comment_flag_code in( 'NEW', 'UNREAD' )
+    when q1.comment_flag_code in( 'NEW', 'UNREAD' )
       then 'true'
       else 'false'
   end                     as data_unread
@@ -1495,23 +1508,23 @@ select
       lov1.display_value
     from blog_v_lov lov1
     where lov1.lov_name = 'COMMENT_STATUS'
-      and lov1.return_value = v1.comment_status_code
+      and lov1.return_value = q1.comment_status_code
   )                       as comment_status_text
   ,(
     select
       lov2.display_value
     from blog_v_lov lov2
     where lov2.lov_name = 'COMMENT_FLAG'
-      and lov2.return_value = v1.comment_flag_code
+      and lov2.return_value = q1.comment_flag_code
   )                       as comment_flag_text
-  ,case v1.comment_status_code
+  ,case q1.comment_status_code
     when 'MODERATE'
       then 'fa-exclamation-circle u-warning-text'
     when 'ENABLED'
       then 'fa-check-circle u-success-text'
       else 'fa-minus-circle u-danger-text'
   end                     as comment_status_icon
-  ,case v1.comment_flag_code
+  ,case q1.comment_flag_code
     when 'REPLY'
       then 'fa-send-o'
     when 'NEW'
@@ -1520,17 +1533,17 @@ select
       then 'fa-envelope-o'
       else 'fa-envelope-open-o'
   end                     as comment_flag_icon
-  ,substr( v1.ctx_search_text, 1 , 128 )
-  || case when length( v1.ctx_search_text ) > 128
+  ,substr( q1.ctx_search_text, 1 , 128 )
+  || case when length( q1.ctx_search_text ) > 128
     then ' ...'
   end                     as search_desc
   ,xmlserialize( content
     xmlforest(
-      v1.comment_by       as "commented_by"
-      ,v1.ctx_search_text as "comment"
+      q1.comment_by       as "commented_by"
+      ,q1.ctx_search_text as "comment"
     )
   )                       as ctx_datastore
-from blog_v_all_comments_form v1
+from q1
 where 1 = 1
 /
 --------------------------------------------------------
@@ -1611,7 +1624,16 @@ select
     when 'SCHEDULED'        then 'fa-clock-o u-info-text'
     when 'PUBLISHED'        then 'fa-check-circle u-success-text'
                             else 'fa-question-circle'
-   end                    as post_status_icon
+  end                     as post_status_icon
+-- Workaround for IR detail view
+  ,to_char(
+     q1.published_on
+    ,(
+      select
+        blog_util.get_attribute_value( 'P0_BLOG_POST_DATE_FORMAT' )
+       from dual
+    )
+  )                       as detail_view_published
   ,(
      select
       listagg( tags.tag_id, ':' )  within group( order by tags.display_seq ) as tag_ids
@@ -1739,9 +1761,9 @@ from q1
 where 1 = 1
 /
 --------------------------------------------------------
---  DDL for View BLOG_V_ALL_POSTS_FORM
+--  DDL for View BLOG_V_FORM_POSTS
 --------------------------------------------------------
-create or replace force view blog_v_all_posts_form as
+create or replace force view blog_v_form_posts as
 select
   t1.id               as id
   ,t1.row_version     as row_version
@@ -1888,6 +1910,7 @@ select
   ,lower(t1.changed_by)       as changed_by
   ,t1.is_nullable             as is_nullable
   ,t1.display_seq             as display_seq
+  ,t1.attribute_name          as attribute_name
   ,apex_lang.message(
     p_name => t1.attribute_message
   )                           as attribute_desc
@@ -3172,7 +3195,18 @@ as
     p_app_id in varchar2
   )
   as
-    l_app_id number;
+    l_app_id blog_v_init_items.application_id%type;
+
+    type item_value_r is record
+    (
+      item_name   blog_v_init_items.item_name%type,
+      item_value  blog_v_init_items.attribute_value%type
+    );
+
+    type items_t is table of item_value_r;
+
+    l_init_items items_t;
+
   begin
 
     -- raise no data found error if parameter p_app_id_name is null
@@ -3183,23 +3217,34 @@ as
     -- conver application id string to number
     l_app_id := to_number( p_app_id );
 
-    -- set items session state
     -- fetch items and values that session state need to be set
-    for c1 in (
-      select
-        i.item_name,
-        i.item_value
-      from blog_v_init_items i
-      where i.application_id = l_app_id
-    ) loop
+    select
+      v1.item_name
+    , v1.attribute_value
+    bulk collect into l_init_items
+    from blog_v_init_items v1
+    where 1 = 1
+      and v1.application_id = l_app_id
+      and (
+        v1.attribute_value != v1.session_value
+        or( v1.attribute_value is null and v1.session_value is not null )
+        or( v1.attribute_value is not null and v1.session_value is null )
+      )
+    ;
 
-      -- set item session state and no commit
-      apex_util.set_session_state(
-        p_name    => c1.item_name
-        ,p_value  => c1.item_value
-        ,p_commit => false
+    for i in 1 .. l_init_items.count
+    loop
+      apex_debug.info(
+        p_message => 'Setting session state. Item: %s, value: %s'
+      , p0 => l_init_items(i).item_name
+      , p1 => l_init_items(i).item_value
       );
-
+      -- set item session state. do not commit.
+      apex_util.set_session_state(
+        p_name    => l_init_items(i).item_name
+      , p_value   => l_init_items(i).item_value
+      , p_commit  => false
+      );
     end loop;
 
   exception
@@ -3233,7 +3278,7 @@ as
     p_prev_post_title out nocopy varchar2
   )
   as
-    l_post_id       number;
+    l_post_id       blog_v_posts.post_id%type;
     l_published_on  blog_v_posts.published_on%type;
     l_changed_on    blog_v_posts.changed_on%type;
   begin
@@ -3307,7 +3352,7 @@ as
     p_category_id in varchar2
   ) return varchar2
   as
-    l_category_id   number;
+    l_category_id   blog_v_categories.category_id%type;
     l_category_name blog_v_categories.category_title%type;
   begin
 
@@ -3352,7 +3397,7 @@ as
     p_tag_id in varchar2
   ) return varchar2
   as
-    l_tag_id    number;
+    l_tag_id    blog_v_tags.tag_id%type;
     l_tag_name  blog_v_tags.tag%type;
   begin
 
@@ -3697,12 +3742,12 @@ as
 --------------------------------------------------------------------------------
   procedure add_blogger(
     p_username  in varchar2,
-    p_id        out nocopy number,
+    p_user_id   out nocopy number,
     p_name      out nocopy varchar2
   )
   as
     l_max   blog_bloggers.display_seq%type;
-    l_email varchar2(256);
+    l_email blog_bloggers.email%type;
   begin
 
     -- fetch next display_seq
@@ -3728,7 +3773,7 @@ as
       ( is_active, publish_desc, display_seq, apex_username, blogger_name, email )
     values
       ( 1, 0, l_max, p_username, p_name, l_email )
-    returning id into p_id
+    returning id into p_user_id
     ;
 
   end add_blogger;
@@ -3782,20 +3827,20 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure get_blogger_details(
-    p_app_id    in varchar2,
-    p_username  in varchar2,
-    p_id        out nocopy number,
-    p_name      out nocopy varchar2
+    p_app_id      in varchar2,
+    p_username    in varchar2,
+    p_user_id     out nocopy number,
+    p_name        out nocopy varchar2
   )
   as
-    l_app_id    number;
+    l_app_id    apex_applications.application_id%type;
     l_authz_grp apex_applications.authorization_scheme%type;
   begin
 
     -- fetch user id and name
     select id
       ,blogger_name
-    into p_id, p_name
+    into p_user_id, p_name
     from blog_bloggers
     where apex_username = p_username
     ;
@@ -3822,8 +3867,8 @@ as
       -- if user is authorized add user to blog_bloggers table
       add_blogger(
          p_username => p_username
-        ,p_id => p_id
-        ,p_name => p_name
+        ,p_user_id  => p_user_id
+        ,p_name     => p_name
       );
 
     end if;
@@ -3936,41 +3981,6 @@ as
     end;
 
   end request_to_post_status;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function request_to_post_success_message(
-    p_request         in varchar2
-  ) return varchar2
-  as
-  begin
-
-    return
-      case p_request
-        when 'CREATE_DRAFT' then apex_lang.message( 'BLOG_MSG_POST_CREATED' )
-        when 'CREATE'       then apex_lang.message( 'BLOG_MSG_POST_CREATED' )
-        when 'DELETE'       then apex_lang.message( 'BLOG_MSG_POST_DELETED' )
-                            else apex_lang.message( 'BLOG_MSG_POST_UPDATED' )
-      end
-    ;
-
-  end request_to_post_success_message;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function request_to_link_success_message(
-    p_request         in varchar2
-  ) return varchar2
-  as
-  begin
-
-    return
-      case p_request
-        when 'CREATE' then apex_lang.message( 'BLOG_MSG_LINK_CREATED' )
-        when 'DELETE' then apex_lang.message( 'BLOG_MSG_LINK_DELETED' )
-                      else apex_lang.message( 'BLOG_MSG_LINK_UPDATED' )
-      end
-    ;
-
-  end request_to_link_success_message;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function remove_whitespace(
@@ -4395,19 +4405,16 @@ as
 
     if p_value is not null
     then
-      -- prepare validation error message
+
+      -- prepare validation error message for exception handler
       l_err_mesg := apex_lang.message(
         p_name => p_err_mesg
         ,p0 => p_min
         ,p1 => p_max
       );
 
-      if l_err_mesg = apex_escape.html( upper( p_err_mesg ) )
-      then
-        l_err_mesg := p_err_mesg;
-      end if;
-
       l_value := to_number( p_value );
+
       -- check value is integer and between range
       if round( l_value ) = l_value
       and l_value between p_min and p_max
@@ -4415,6 +4422,7 @@ as
         -- if validation passes, clear error meassage
         l_err_mesg := null;
       end if;
+
     end if;
 
     return l_err_mesg;
@@ -4496,6 +4504,43 @@ as
   end update_feature;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  procedure update_text_messages(
+    p_attribute_name  in varchar2 default null
+  )
+  as
+  begin
+
+    for c1 in(
+      select
+        t1.translation_entry_id
+      , t2.attribute_value
+      from apex_application_translations t1
+      join blog_settings t2 on t1.translatable_message = t2.attribute_name
+      where 1 = 1
+        and exists(
+          select 1
+          from blog_settings x1
+          where 1 = 1
+            and x1.attribute_name in( 'G_PUB_APP_ID', 'G_ADMIN_APP_ID' )
+            and to_number( x1.attribute_value ) = t1.application_id
+        )
+        and(
+          p_attribute_name is null or
+          t2.attribute_name = p_attribute_name
+        )
+      order by 1
+    ) loop
+
+      apex_lang.update_message (
+        p_id => c1.translation_entry_id
+      , p_message_text => c1.attribute_value
+      );
+
+    end loop;
+
+  end update_text_messages;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure resequence_link_groups
   as
   begin
@@ -4547,6 +4592,27 @@ as
     ;
 
   end resequence_links;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure resequence_dynamic_content
+  as
+  begin
+    -- update dynamic content seq if it different than new
+    merge into blog_dynamic_content t1
+    using (
+      select id
+        ,row_number() over(
+          order by display_seq, created_on
+        ) * 10 as new_display_seq
+      from blog_dynamic_content
+      where 1 = 1
+    ) v1
+    on ( t1.id = v1.id )
+    when matched then
+      update set t1.display_seq = v1.new_display_seq
+        where t1.display_seq != v1.new_display_seq
+    ;
+  end resequence_dynamic_content;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_CM";
@@ -4771,11 +4837,12 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- json for pages and items
-  c_page_and_item constant json_object_t := json_object_t( '{
-    "post": {"page_alias": "POST", "item_name": "P2_POST_ID"},
-    "category": {"page_alias": "CATEGORY", "item_name": "P14_CATEGORY_ID"},
-    "archive": {"page_alias": "ARCHIVES", "item_name": "P15_ARCHIVE_ID"},
-    "tag": {"page_alias": "TAG", "item_name": "P6_TAG_ID"}
+  c_page_and_items constant json_object_t := json_object_t( '{
+    "post": {"page": "POST", "items": "P2_POST_ID"},
+    "category": {"page": "CATEGORY", "items": "P14_CATEGORY_ID"},
+    "archive": {"page": "ARCHIVES", "items": "P15_ARCHIVE_ID"},
+    "tag": {"page": "TAG", "items": "P6_TAG_ID"},
+    "unsubscribe": {"page": "POST", "items": "P2_POST_ID,P2_SUBSCRIPTION_ID"}
   }' );
 
 -- cache rss and atom url
@@ -4873,10 +4940,10 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
-    l_json  json_object_t;
+    l_json json_object_t;
   begin
 
-  l_json := c_page_and_item.get_object( 'post' );
+  l_json := c_page_and_items.get_object( 'post' );
 
   return
     case p_canonical
@@ -4884,9 +4951,9 @@ as
     end ||
     apex_page.get_url(
       p_application => p_application
-    , p_page        => l_json.get_string( 'page_alias' )
+    , p_page        => l_json.get_string( 'page' )
     , p_session     => ''
-    , p_items       => l_json.get_string( 'item_name' )
+    , p_items       => l_json.get_string( 'items' )
     , p_values      => p_post_id
     , p_plain_url   => true
     )
@@ -4920,19 +4987,19 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
-    l_json  json_object_t;
+    l_json json_object_t;
   begin
 
-  l_json := c_page_and_item.get_object( 'category' );
+  l_json := c_page_and_items.get_object( 'category' );
 
     return
       case p_canonical
         when 'YES' then get_canonical_host
       end ||
       apex_page.get_url(
-        p_page      => l_json.get_string( 'page_alias' )
+        p_page      => l_json.get_string( 'page' )
       , p_session   => ''
-      , p_items     => l_json.get_string( 'item_name' )
+      , p_items     => l_json.get_string( 'items' )
       , p_values    => p_category_id
       , p_plain_url => true
       )
@@ -4966,19 +5033,19 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
-    l_json  json_object_t;
+    l_json json_object_t;
   begin
 
-    l_json := c_page_and_item.get_object( 'archive' );
+    l_json := c_page_and_items.get_object( 'archive' );
 
     return
       case p_canonical
         when 'YES' then get_canonical_host
       end  ||
       apex_page.get_url(
-        p_page      => l_json.get_string( 'page_alias' )
+        p_page      => l_json.get_string( 'page' )
       , p_session   => ''
-      , p_items     => l_json.get_string( 'item_name' )
+      , p_items     => l_json.get_string( 'items' )
       , p_values    => p_archive_id
       , p_plain_url => true
       )
@@ -5012,19 +5079,19 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
-    l_json  json_object_t;
+    l_json json_object_t;
   begin
 
-    l_json := c_page_and_item.get_object( 'tag' );
+    l_json := c_page_and_items.get_object( 'tag' );
 
     return
       case p_canonical
         when 'YES' then get_canonical_host
       end ||
       apex_page.get_url(
-        p_page      => l_json.get_string( 'page_alias' )
+        p_page      => l_json.get_string( 'page' )
       , p_session   => ''
-      , p_items     => l_json.get_string( 'item_name' )
+      , p_items     => l_json.get_string( 'items' )
       , p_values    => p_tag_id
       , p_plain_url => true
       )
@@ -5057,14 +5124,21 @@ as
     p_process     in varchar2 default null
   ) return varchar2
   as
+    l_request varchar2(256);
   begin
 
+    l_request :=
+      apex_string.format(
+        p_message => 'application_process=%s'
+      , p0 => p_process
+      )
+    ;
     return get_canonical_host ||
       apex_page.get_url(
         p_application => p_application
       , p_page        => 'pgm'
       , p_session     => ''
-      , p_request     => 'application_process=' || p_process
+      , p_request     => l_request
       , p_plain_url   => true
       )
     ;
@@ -5080,28 +5154,21 @@ as
   as
     l_url     varchar2(4000);
     l_subs_id varchar2(256);
+    l_json    json_object_t;
   begin
 
+    l_json := c_page_and_items.get_object( 'unsubscribe' );
+
     l_subs_id := blog_util.int_to_vc2( p_subscription_id );
-    -- workaround because APEX 19.2
-    -- apex_page.get_url don't have parameter p_plain_url
-    l_url := 'f?p='
-      || p_application
-      || ':POST:::NO::'
-      || 'P2_POST_ID'
-      || ','
-      || 'P2_SUBSCRIPTION_ID'
-      || ':'
-      || p_post_id
-      || ','
-      || l_subs_id
-    ;
 
     l_url :=
-      apex_util.prepare_url(
-        p_url           => l_url
-      , p_checksum_type => 'PUBLIC_BOOKMARK'
-      , p_plain_url     => true
+      apex_page.get_url(
+        p_application => p_application
+      , p_page        => l_json.get_string( 'page' )
+      , p_session     => ''
+      , p_items       => l_json.get_string( 'items' )
+      , p_values      => p_post_id || ',' || l_subs_id
+      , p_plain_url   => true
       )
     ;
 
@@ -5802,6 +5869,8 @@ as
   c_link_canonical_template constant varchar2(64) := '<link rel="canonical" href="%s">';
   c_link_alternate_template constant varchar2(64) := '<link rel="alternate" href="%s" title="%s" type="%s">';
 
+  g_link_canonical varchar2(1024);
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -5821,9 +5890,16 @@ as
   end get_robots_noindex_meta;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure get_tab_canonical_link(
+  function get_page_canonical_link
+  return varchar2
+  as
+  begin
+    return g_link_canonical;
+  end get_page_canonical_link;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure set_tab_canonical_link(
     p_page  in varchar2,
-    p_html  out nocopy varchar2,
     p_url   out nocopy varchar2
   )
   as
@@ -5837,7 +5913,7 @@ as
         , p_canonical  => 'YES'
         )
       ;
-      p_html :=
+      g_link_canonical :=
         apex_string.format(
           p_message => c_link_canonical_template
         , p0 => p_url
@@ -5846,15 +5922,14 @@ as
     else
       -- if p_page is not defined
       apex_debug.warn( 'Canonical link tag not generated for tab.' );
-      p_html := get_robots_noindex_meta;
+      g_link_canonical := get_robots_noindex_meta;
     end if;
 
-  end get_tab_canonical_link;
+  end set_tab_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure get_post_canonical_link(
+  procedure set_post_canonical_link(
     p_post_id in varchar2,
-    p_html    out nocopy varchar2,
     p_url     out nocopy varchar2
   )
   as
@@ -5868,7 +5943,7 @@ as
         , p_canonical    => 'YES'
         )
       ;
-      p_html :=
+      g_link_canonical :=
         apex_string.format(
           p_message => c_link_canonical_template
         , p0 => p_url
@@ -5876,15 +5951,14 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for post.' );
-      p_html := get_robots_noindex_meta;
+      g_link_canonical := get_robots_noindex_meta;
     end if;
 
-  end get_post_canonical_link;
+  end set_post_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure get_category_canonical_link(
+  procedure set_category_canonical_link(
     p_category_id in varchar2,
-    p_html        out nocopy varchar2,
     p_url         out nocopy varchar2
   )
   as
@@ -5898,7 +5972,7 @@ as
         , p_canonical    => 'YES'
         )
       ;
-      p_html :=
+      g_link_canonical :=
         apex_string.format(
           p_message => c_link_canonical_template
         , p0 => p_url
@@ -5906,15 +5980,14 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for category.' );
-      p_html := get_robots_noindex_meta;
+      g_link_canonical := get_robots_noindex_meta;
     end if;
 
-  end get_category_canonical_link;
+  end set_category_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure get_archive_canonical_link(
+  procedure set_archive_canonical_link(
     p_archive_id in varchar2,
-    p_html       out nocopy varchar2,
     p_url        out nocopy varchar2
   )
   as
@@ -5928,7 +6001,7 @@ as
         , p_canonical  => 'YES'
         )
       ;
-      p_html :=
+      g_link_canonical :=
         apex_string.format(
           p_message => c_link_canonical_template
         , p0 => p_url
@@ -5936,15 +6009,14 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for archive.' );
-      p_html := get_robots_noindex_meta;
+      g_link_canonical := get_robots_noindex_meta;
     end if;
 
-  end get_archive_canonical_link;
+  end set_archive_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure get_tag_canonical_link(
+  procedure set_tag_canonical_link(
     p_tag_id in varchar2,
-    p_html   out nocopy varchar2,
     p_url    out nocopy varchar2
   )
   as
@@ -5958,7 +6030,7 @@ as
         , p_canonical  => 'YES'
         )
       ;
-      p_html :=
+      g_link_canonical :=
         apex_string.format(
           p_message => c_link_canonical_template
         , p0 => p_url
@@ -5966,10 +6038,10 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for tag.' );
-      p_html := get_robots_noindex_meta;
+      g_link_canonical := get_robots_noindex_meta;
     end if;
 
-  end get_tag_canonical_link;
+  end set_tag_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss_anchor(
@@ -6163,12 +6235,12 @@ as
     -- blog name
     l_app_name := coalesce(
        p_app_name
-      ,blog_util.get_attribute_value( 'G_APP_NAME' )
+      ,blog_util.get_attribute_value( 'BLOG_APP_NAME' )
     );
     -- rss feed description
     l_app_desc  := coalesce(
        p_app_desc
-      ,blog_util.get_attribute_value( 'G_APP_DESC' )
+      ,blog_util.get_attribute_value( 'BLOG_APP_DESC' )
     );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
@@ -6304,12 +6376,12 @@ as
     -- blog name
     l_app_name := coalesce(
        p_app_name
-      ,blog_util.get_attribute_value( 'G_APP_NAME' )
+      ,blog_util.get_attribute_value( 'BLOG_APP_NAME' )
     );
     -- atom feed description
     l_app_desc  := coalesce(
        p_app_desc
-      ,blog_util.get_attribute_value( 'G_APP_DESC' )
+      ,blog_util.get_attribute_value( 'BLOG_APP_DESC' )
     );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(

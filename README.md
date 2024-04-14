@@ -35,7 +35,7 @@ Download [latest version](https://github.com/jariolaine/apex-blog/releases/lates
 Create a "Bloggers" workspace user group. Add APEX users to the group who are authorized to use the blog admin application. See [Using Groups to Manage Application Express Users](https://docs.oracle.com/en/database/oracle/apex/23.2/aeadm/managing-users-in-a-workspace.html#GUID-0FD7B406-8A83-40C0-A3E7-EF19BBDEA5A4)
 
 ## Upgrade
-Existing application version must be Release v4.4.20220326 or later.
+Existing application version must be Release v22.2.1.20230117 or later.
 
 Before starting the upgrade, backup the application parsing schema data and objects.
 

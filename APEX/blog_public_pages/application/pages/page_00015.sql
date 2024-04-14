@@ -15,7 +15,7 @@ wwv_flow_imp_page.create_page(
  p_id=>15
 ,p_name=>'Archives'
 ,p_alias=>'ARCHIVES'
-,p_step_title=>'Archives &P15_ARCHIVE_ID. | &G_APP_NAME.'
+,p_step_title=>'Archives &P15_ARCHIVE_ID. | &APP_TEXT$BLOG_APP_NAME.'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8697986188142973)
@@ -26,7 +26,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_comment=>'Page to show list of post from selected year.'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240401181651'
+,p_last_upd_yyyymmddhh24miss=>'20240412060506'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(58686289966142463)
@@ -66,7 +66,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_headings_type=>'NO_HEADINGS'
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
-,p_query_num_rows_item=>'G_SEARCH_ROWS'
+,p_query_num_rows_item=>'P0_BLOG_SEARCH_ROWS'
 ,p_query_num_rows_type=>'NEXT_PREVIOUS_LINKS'
 ,p_query_row_count_max=>1000
 ,p_pagination_display_position=>'BOTTOM_RIGHT'
@@ -221,6 +221,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
 ,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 );
 wwv_flow_imp_page.create_page_da_event(
@@ -254,11 +255,10 @@ wwv_flow_imp_page.create_page_da_action(
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(26065829198107836)
 ,p_process_sequence=>20
-,p_process_point=>'BEFORE_HEADER'
+,p_process_point=>'BEFORE_BOX_BODY'
 ,p_process_type=>'NATIVE_RESET_PAGINATION'
 ,p_process_name=>'Reset Archives Pagination'
 ,p_attribute_01=>'THIS_PAGE'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_internal_uid=>26065829198107836
 );
 wwv_flow_imp_page.create_page_meta_tag(
@@ -279,7 +279,7 @@ wwv_flow_imp_page.create_page_meta_tag(
 wwv_flow_imp_page.create_page_meta_tag(
  p_id=>wwv_flow_imp.id(40689235094261750)
 ,p_meta_tag_name=>'og:title'
-,p_meta_tag_value=>'Archives &P15_ARCHIVE_ID. | &G_APP_NAME.'
+,p_meta_tag_value=>'Archives &P15_ARCHIVE_ID. | &APP_TEXT$BLOG_APP_NAME.'
 );
 wwv_flow_imp_page.create_page_meta_tag(
  p_id=>wwv_flow_imp.id(45509262356550103)
@@ -289,7 +289,7 @@ wwv_flow_imp_page.create_page_meta_tag(
 wwv_flow_imp_page.create_page_meta_tag(
  p_id=>wwv_flow_imp.id(45509343070550104)
 ,p_meta_tag_name=>'og:url'
-,p_meta_tag_value=>'&G_PAGE_URL.'
+,p_meta_tag_value=>'&P0_PAGE_URL.'
 );
 wwv_flow_imp.component_end;
 end;

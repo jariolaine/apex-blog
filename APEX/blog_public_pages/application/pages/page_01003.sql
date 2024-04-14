@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_comment=>'Page to hold Ajax callback processes e.g. for generate RSS feed and download files.'
 ,p_page_component_map=>'11'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240401075027'
+,p_last_upd_yyyymmddhh24miss=>'20240413064419'
 );
 wwv_flow_imp_page.create_page_branch(
  p_id=>wwv_flow_imp.id(62674058371144805)
@@ -35,17 +35,6 @@ wwv_flow_imp_page.create_page_branch(
 ,p_branch_type=>'REDIRECT_URL'
 ,p_branch_sequence=>10
 );
-wwv_flow_imp_page.create_page_item(
- p_id=>wwv_flow_imp.id(40138625295167258)
-,p_name=>'P1003_FILE_NAME'
-,p_item_sequence=>10
-,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
-,p_display_as=>'NATIVE_HIDDEN'
-,p_item_template_options=>'#DEFAULT#'
-,p_is_persistent=>'N'
-,p_restricted_characters=>'NO_SPECIAL_CHAR_NL'
-,p_attribute_01=>'Y'
-);
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(63036620652126597)
 ,p_process_sequence=>10
@@ -54,8 +43,8 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'rss.xml'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog_xml.rss(',
-'   p_app_name => :G_APP_NAME',
-'  ,p_app_desc => :G_APP_DESC',
+'  p_app_name  => :APP_TEXT$BLOG_APP_NAME',
+', p_app_desc  => :APP_TEXT$BLOG_APP_DESC',
 ');',
 '',
 ''))
@@ -71,8 +60,8 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'atom.xml'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog_xml.atom(',
-'   p_app_name => :G_APP_NAME',
-'  ,p_app_desc => :G_APP_DESC',
+'  p_app_name  => :APP_TEXT$BLOG_APP_NAME',
+', p_app_desc  => :APP_TEXT$BLOG_APP_DESC',
 ');',
 '',
 ''))
@@ -177,7 +166,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'download'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog_util.download_file (',
-'   p_file_name => :P1003_FILE_NAME',
+'   p_file_name => apex_application.g_x01',
 ');'))
 ,p_process_clob_language=>'PLSQL'
 ,p_internal_uid=>63039875243126599

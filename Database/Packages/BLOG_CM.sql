@@ -60,6 +60,10 @@ as
 --    Jari Laine 30.07.2023 - Added check is workspace user locked to procedure post_authentication
 --                          - Replaced apex_util.set_build_option_status with apex_application_admin.set_build_option_status
 --    Jari Laine 10.03.2024 - Bug fix post_authentication procedure to check only current workspace
+--    Jari Laine 08.04.2024 - Removed functions:
+--                              request_to_post_success_message
+--                              request_to_link_success_message
+--    Jari Laine 11.04.2024 - New procedure resequence_dynamic_content
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -72,7 +76,7 @@ as
   procedure get_blogger_details(
     p_app_id          in varchar2,
     p_username        in varchar2,
-    p_id              out nocopy number,
+    p_user_id         out nocopy number,
     p_name            out nocopy varchar2
   );
 --------------------------------------------------------------------------------
@@ -97,18 +101,6 @@ as
 -- Called from:
 --  admin app page 12
   function request_to_post_status(
-    p_request         in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  admin app page 12
-  function request_to_post_success_message(
-    p_request         in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  admin app page 51
-  function request_to_link_success_message(
     p_request         in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -209,6 +201,12 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
+--  admin app page 20014
+  procedure update_text_messages(
+    p_attribute_name  in varchar2 default null
+  );
+--------------------------------------------------------------------------------
+-- Called from:
 --  admin app page 50
   procedure resequence_link_groups;
 --------------------------------------------------------------------------------
@@ -217,6 +215,10 @@ as
   procedure resequence_links(
     p_link_group_id in varchar2
   );
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 80
+  procedure resequence_dynamic_content;
 --------------------------------------------------------------------------------
 end "BLOG_CM";
 /
@@ -298,12 +300,12 @@ as
 --------------------------------------------------------------------------------
   procedure add_blogger(
     p_username  in varchar2,
-    p_id        out nocopy number,
+    p_user_id   out nocopy number,
     p_name      out nocopy varchar2
   )
   as
     l_max   blog_bloggers.display_seq%type;
-    l_email varchar2(256);
+    l_email blog_bloggers.email%type;
   begin
 
     -- fetch next display_seq
@@ -329,7 +331,7 @@ as
       ( is_active, publish_desc, display_seq, apex_username, blogger_name, email )
     values
       ( 1, 0, l_max, p_username, p_name, l_email )
-    returning id into p_id
+    returning id into p_user_id
     ;
 
   end add_blogger;
@@ -383,20 +385,20 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure get_blogger_details(
-    p_app_id    in varchar2,
-    p_username  in varchar2,
-    p_id        out nocopy number,
-    p_name      out nocopy varchar2
+    p_app_id      in varchar2,
+    p_username    in varchar2,
+    p_user_id     out nocopy number,
+    p_name        out nocopy varchar2
   )
   as
-    l_app_id    number;
+    l_app_id    apex_applications.application_id%type;
     l_authz_grp apex_applications.authorization_scheme%type;
   begin
 
     -- fetch user id and name
     select id
       ,blogger_name
-    into p_id, p_name
+    into p_user_id, p_name
     from blog_bloggers
     where apex_username = p_username
     ;
@@ -423,8 +425,8 @@ as
       -- if user is authorized add user to blog_bloggers table
       add_blogger(
          p_username => p_username
-        ,p_id => p_id
-        ,p_name => p_name
+        ,p_user_id  => p_user_id
+        ,p_name     => p_name
       );
 
     end if;
@@ -537,41 +539,6 @@ as
     end;
 
   end request_to_post_status;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function request_to_post_success_message(
-    p_request         in varchar2
-  ) return varchar2
-  as
-  begin
-
-    return
-      case p_request
-        when 'CREATE_DRAFT' then apex_lang.message( 'BLOG_MSG_POST_CREATED' )
-        when 'CREATE'       then apex_lang.message( 'BLOG_MSG_POST_CREATED' )
-        when 'DELETE'       then apex_lang.message( 'BLOG_MSG_POST_DELETED' )
-                            else apex_lang.message( 'BLOG_MSG_POST_UPDATED' )
-      end
-    ;
-
-  end request_to_post_success_message;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function request_to_link_success_message(
-    p_request         in varchar2
-  ) return varchar2
-  as
-  begin
-
-    return
-      case p_request
-        when 'CREATE' then apex_lang.message( 'BLOG_MSG_LINK_CREATED' )
-        when 'DELETE' then apex_lang.message( 'BLOG_MSG_LINK_DELETED' )
-                      else apex_lang.message( 'BLOG_MSG_LINK_UPDATED' )
-      end
-    ;
-
-  end request_to_link_success_message;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function remove_whitespace(
@@ -996,19 +963,16 @@ as
 
     if p_value is not null
     then
-      -- prepare validation error message
+
+      -- prepare validation error message for exception handler
       l_err_mesg := apex_lang.message(
         p_name => p_err_mesg
         ,p0 => p_min
         ,p1 => p_max
       );
 
-      if l_err_mesg = apex_escape.html( upper( p_err_mesg ) )
-      then
-        l_err_mesg := p_err_mesg;
-      end if;
-
       l_value := to_number( p_value );
+
       -- check value is integer and between range
       if round( l_value ) = l_value
       and l_value between p_min and p_max
@@ -1016,6 +980,7 @@ as
         -- if validation passes, clear error meassage
         l_err_mesg := null;
       end if;
+
     end if;
 
     return l_err_mesg;
@@ -1097,6 +1062,43 @@ as
   end update_feature;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  procedure update_text_messages(
+    p_attribute_name  in varchar2 default null
+  )
+  as
+  begin
+
+    for c1 in(
+      select
+        t1.translation_entry_id
+      , t2.attribute_value
+      from apex_application_translations t1
+      join blog_settings t2 on t1.translatable_message = t2.attribute_name
+      where 1 = 1
+        and exists(
+          select 1
+          from blog_settings x1
+          where 1 = 1
+            and x1.attribute_name in( 'G_PUB_APP_ID', 'G_ADMIN_APP_ID' )
+            and to_number( x1.attribute_value ) = t1.application_id
+        )
+        and(
+          p_attribute_name is null or
+          t2.attribute_name = p_attribute_name
+        )
+      order by 1
+    ) loop
+
+      apex_lang.update_message (
+        p_id => c1.translation_entry_id
+      , p_message_text => c1.attribute_value
+      );
+
+    end loop;
+
+  end update_text_messages;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure resequence_link_groups
   as
   begin
@@ -1148,6 +1150,27 @@ as
     ;
 
   end resequence_links;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure resequence_dynamic_content
+  as
+  begin
+    -- update dynamic content seq if it different than new
+    merge into blog_dynamic_content t1
+    using (
+      select id
+        ,row_number() over(
+          order by display_seq, created_on
+        ) * 10 as new_display_seq
+      from blog_dynamic_content
+      where 1 = 1
+    ) v1
+    on ( t1.id = v1.id )
+    when matched then
+      update set t1.display_seq = v1.new_display_seq
+        where t1.display_seq != v1.new_display_seq
+    ;
+  end resequence_dynamic_content;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_CM";

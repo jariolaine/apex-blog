@@ -17,17 +17,17 @@ wwv_flow_imp_page.create_page(
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8700188054171688)
 ,p_protection_level=>'D'
-,p_page_comment=>'Global page'
+,p_page_comment=>'The global page'
 ,p_page_component_map=>'14'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240401190340'
+,p_last_upd_yyyymmddhh24miss=>'20240413062626'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6433141607894071)
 ,p_plug_name=>'Not Rendered Items'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(6781539027267375)
-,p_plug_display_sequence=>130
+,p_plug_display_sequence=>90
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_translate_title=>'N'
 ,p_plug_display_condition_type=>'NEVER'
@@ -48,7 +48,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
 ,p_plug_display_when_condition=>'1001,1002,1003,9999'
 ,p_plug_caching=>'CACHE'
-,p_plug_caching_max_age_in_sec=>1209600
+,p_plug_caching_max_age_in_sec=>31536000
 ,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
 ,p_plug_cache_when_condition_e1=>'DEBUG'
 ,p_plug_cache_when_condition_e2=>'NO'
@@ -101,8 +101,8 @@ wwv_flow_imp_page.create_page_plug(
 ,p_function_body_language=>'PLSQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return blog_html.get_rss_anchor(',
-'   p_app_name => :G_APP_NAME',
-'  ,p_message  => ''BLOG_RSS_TITLE''',
+'  p_app_name  => :APP_TEXT$BLOG_APP_NAME',
+', p_message   => ''BLOG_RSS_TITLE''',
 ');'))
 ,p_lazy_loading=>false
 ,p_plug_source_type=>'NATIVE_DYNAMIC_CONTENT'
@@ -147,15 +147,13 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_name=>'Powered by APEX Blog'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(6781539027267375)
-,p_plug_display_sequence=>120
+,p_plug_display_sequence=>20
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="blog-copyright">',
 '  <a href="https://github.com/jariolaine/apex-blog" class="blog-copyright-link" target="_blank" rel="external" title="Blog application built with Oracle Application Express (APEX)">Powered By APEX Blog</a>',
 '</div>'))
 ,p_translate_title=>'N'
-,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
-,p_plug_display_when_condition=>'1001,1002,1003,9999'
 ,p_plug_caching=>'CACHE'
 ,p_plug_caching_max_age_in_sec=>31536000
 ,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
@@ -165,7 +163,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_landmark_type=>'exclude_landmark'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
-,p_plug_comment=>'Displays link to blog application source code in GitHub'
+,p_plug_comment=>'Displays link to blog application source code in GitHub. Do not change!'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(39335143698650411)
@@ -176,12 +174,18 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'REGION_POSITION_07'
 ,p_plug_item_display_point=>'BELOW'
-,p_plug_source=>'&G_APP_NAME.'
+,p_plug_source=>'&APP_TEXT$BLOG_APP_NAME.'
 ,p_translate_title=>'N'
+,p_plug_caching=>'CACHE'
+,p_plug_caching_max_age_in_sec=>31536000
+,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
+,p_plug_cache_when_condition_e1=>'DEBUG'
+,p_plug_cache_when_condition_e2=>'NO'
+,p_plug_cache_depends_on_items=>'APP_ID'
 ,p_landmark_type=>'exclude_landmark'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
-,p_plug_comment=>'Displays blog name'
+,p_plug_comment=>'Region to displays blog name.'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(40726951471800848)
@@ -189,14 +193,12 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(6781539027267375)
-,p_plug_display_sequence=>110
+,p_plug_display_sequence=>10
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_list_id=>wwv_flow_imp.id(41857893903151708)
 ,p_plug_source_type=>'NATIVE_LIST'
 ,p_list_template_id=>wwv_flow_imp.id(61358318182072659)
 ,p_translate_title=>'N'
-,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
-,p_plug_display_when_condition=>'1001,1002,1003,9999'
 ,p_required_patch=>wwv_flow_imp.id(42618909236023987)
 ,p_plug_comment=>'Footer links to modal dialog pages'
 );
@@ -226,6 +228,55 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_04=>'SEARCH'
 ,p_attribute_05=>'BOTH'
 ,p_item_comment=>'When user press enter on field, page is submitted. Application process "Redirect to search page" handles redirect to search result page.'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(39994380321374338)
+,p_name=>'P0_PAGE_URL'
+,p_item_sequence=>60
+,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'N'
+,p_protection_level=>'I'
+,p_encrypt_session_state_yn=>'N'
+,p_attribute_01=>'Y'
+,p_item_comment=>'Page URL. Used in page meta tags. The value is set in the schortcuts.'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(39994434923374339)
+,p_name=>'P0_BLOG_SEARCH_ROWS'
+,p_item_sequence=>80
+,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'U'
+,p_protection_level=>'I'
+,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
+,p_attribute_01=>'Y'
+,p_item_comment=>'Search report rows to display per report page. The value is set in the application process "Initialize Items"'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(47286750134121338)
+,p_name=>'P0_BLOG_APP_DATE_FORMAT'
+,p_item_sequence=>10
+,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'U'
+,p_protection_level=>'I'
+,p_encrypt_session_state_yn=>'N'
+,p_attribute_01=>'Y'
+,p_item_comment=>'Date format used e.g. on reports. The value is set in the application process "Initialize Items"'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(47287179638121342)
+,p_name=>'P0_BLOG_POST_DATE_FORMAT'
+,p_item_sequence=>70
+,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'U'
+,p_protection_level=>'I'
+,p_encrypt_session_state_yn=>'N'
+,p_attribute_01=>'Y'
+,p_item_comment=>'Post title date format. Used e.g. in posts reports. The value is set in the application process "Initialize Items"'
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(7052827756664737)

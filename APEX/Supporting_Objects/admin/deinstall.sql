@@ -44,13 +44,11 @@ drop table blog_subscribers_email;
 drop table blog_tags;
 drop view blog_v_all_categories;
 drop view blog_v_all_comments;
-drop view blog_v_all_comments_form;
 drop view blog_v_all_dynamic_content;
 drop view blog_v_all_files;
 drop view blog_v_all_links;
 drop view blog_v_all_link_groups;
 drop view blog_v_all_posts;
-drop view blog_v_all_posts_form;
 drop view blog_v_all_post_tags;
 drop view blog_v_all_tags;
 drop view blog_v_archive_year;
@@ -60,6 +58,8 @@ drop view blog_v_comments;
 drop view blog_v_dynamic_content;
 drop view blog_v_features;
 drop view blog_v_files;
+drop view blog_v_form_comments;
+drop view blog_v_form_posts;
 drop view blog_v_init_items;
 drop view blog_v_links;
 drop view blog_v_lov;
@@ -72,11 +72,17 @@ drop view blog_v_version;
 --------------------------------------------------------
 --  Drop text index preferences
 --------------------------------------------------------
+declare
+  ctx_ddl_error exception;
+  pragma exception_init ( ctx_ddl_error, -20000 );
 begin
-  ctx_ddl.drop_preference( 'BLOG_COMMENTS_UDS' );
-end;
-/
-begin
-  ctx_ddl.drop_preference( 'BLOG_POSTS_UDS' );
+  begin
+    ctx_ddl.drop_preference( 'BLOG_COMMENTS_UDS' );
+    exception when ctx_ddl_error then null;
+  end;
+  begin
+    ctx_ddl.drop_preference( 'BLOG_POSTS_UDS' );
+    exception when ctx_ddl_error then null;
+  end;
 end;
 /

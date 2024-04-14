@@ -15,7 +15,7 @@ wwv_flow_imp_page.create_page(
  p_id=>9999
 ,p_name=>'Login Page'
 ,p_alias=>'LOGIN'
-,p_step_title=>'&G_APP_NAME. - Sign In'
+,p_step_title=>'&APP_TEXT$BLOG_APP_NAME. - Sign In'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_first_item=>'AUTO_FIRST_ITEM'
 ,p_autocomplete_on_off=>'OFF'
@@ -25,11 +25,11 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'12'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231208052123'
+,p_last_upd_yyyymmddhh24miss=>'20240413070518'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8575301514518303)
-,p_plug_name=>'&G_APP_NAME.'
+,p_plug_name=>'&APP_TEXT$BLOG_APP_NAME.'
 ,p_icon_css_classes=>'fa-sign-in fa-lg u-color-31'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(8496352815518209)
@@ -130,6 +130,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_field_template=>wwv_flow_imp.id(8548365426518242)
 ,p_item_icon_css_classes=>'fa-user'
 ,p_item_template_options=>'#DEFAULT#'
+,p_is_persistent=>'N'
 ,p_required_patch=>wwv_flow_imp.id(35674953070739317)
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
@@ -159,12 +160,13 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_sequence=>30
 ,p_item_plug_id=>wwv_flow_imp.id(8575301514518303)
 ,p_prompt=>'Remember username'
-,p_display_as=>'NATIVE_CHECKBOX'
-,p_named_lov=>'LOGIN_REMEMBER_USERNAME'
-,p_lov=>'.'||wwv_flow_imp.id(8576357010518305)||'.'
+,p_display_as=>'NATIVE_SINGLE_CHECKBOX'
+,p_display_when=>'apex_authentication.persistent_cookies_enabled'
+,p_display_when2=>'PLSQL'
+,p_display_when_type=>'EXPRESSION'
 ,p_field_template=>wwv_flow_imp.id(8548365426518242)
 ,p_item_template_options=>'#DEFAULT#'
-,p_lov_display_extra=>'NO'
+,p_is_persistent=>'N'
 ,p_required_patch=>wwv_flow_imp.id(35674953070739317)
 ,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<p>',
@@ -177,7 +179,7 @@ wwv_flow_imp_page.create_page_item(
 'the application will overwrite it with an empty value.',
 'You can also use your browser''s developer tools to completely remove the cookie.',
 '</p>'))
-,p_attribute_01=>'1'
+,p_attribute_01=>'Y'
 );
 wwv_flow_imp_page.create_page_computation(
  p_id=>wwv_flow_imp.id(38477391642283544)

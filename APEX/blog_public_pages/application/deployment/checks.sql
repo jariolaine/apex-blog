@@ -12,10 +12,28 @@ wwv_flow_imp.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_install_check(
+ p_id=>wwv_flow_imp.id(54148370270020985)
+,p_install_id=>wwv_flow_imp.id(20741295540297154)
+,p_name=>'Application parsing schema has role CTXAPP'
+,p_sequence=>10
+,p_check_type=>'EXISTS'
+,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from user_role_privs',
+'where 1 = 1',
+'and granted_role = ''CTXAPP''',
+'union all',
+'select 1',
+'from all_objects',
+'where owner = ''CTXSYS''',
+'and object_name = ''CTX_DDL'''))
+,p_failure_message=>'Application parsing schema must have role CTXAPP or execute privilege to package CTX_DDL.'
+);
+wwv_flow_imp_shared.create_install_check(
  p_id=>wwv_flow_imp.id(38823841481522299)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
 ,p_name=>'Supporting objects installed'
-,p_sequence=>10
+,p_sequence=>20
 ,p_check_type=>'EXISTS'
 ,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select 1',
@@ -28,7 +46,7 @@ wwv_flow_imp_shared.create_install_check(
  p_id=>wwv_flow_imp.id(11013705994514070)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
 ,p_name=>'Pre-check is upgrade supported'
-,p_sequence=>20
+,p_sequence=>30
 ,p_check_type=>'EXISTS'
 ,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select 1',
@@ -48,13 +66,13 @@ wwv_flow_imp_shared.create_install_check(
  p_id=>wwv_flow_imp.id(11014025569539865)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
 ,p_name=>'Application upgrade is supported'
-,p_sequence=>30
+,p_sequence=>40
 ,p_check_type=>'EXISTS'
 ,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select 1',
 'from blog_v_version',
 'where 1 = 1',
-'and application_date >= 20220326'))
+'and application_date >= 20230117'))
 ,p_condition_type=>'EXISTS'
 ,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select 1',

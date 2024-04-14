@@ -21,7 +21,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'D'
 ,p_page_component_map=>'14'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240121084039'
+,p_last_upd_yyyymmddhh24miss=>'20240414044303'
 );
 wwv_flow_imp.component_end;
 end;

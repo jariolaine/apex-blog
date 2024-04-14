@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240121144347'
+,p_last_upd_yyyymmddhh24miss=>'20240411121917'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8857181938695778)
@@ -241,33 +241,6 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_05=>'No'
 );
 wwv_flow_imp_page.create_page_item(
- p_id=>wwv_flow_imp.id(43469181299898223)
-,p_name=>'P501_DEFAULT_TIMEFRAME'
-,p_item_sequence=>30
-,p_item_plug_id=>wwv_flow_imp.id(64991614836107692)
-,p_use_cache_before_default=>'NO'
-,p_item_default=>'BLOG_DEFAULT_TIMEFRAME'
-,p_item_default_type=>'ITEM'
-,p_prompt=>'Default Timeframe'
-,p_source=>'BLOG_DEFAULT_TIMEFRAME'
-,p_source_type=>'PREFERENCE'
-,p_display_as=>'NATIVE_SELECT_LIST'
-,p_named_lov=>'TIMEFRAME (4 WEEKS)'
-,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select disp,',
-'      val as seconds',
-' from table( apex_util.get_timeframe_lov_data )',
-'order by insert_order'))
-,p_cHeight=>1
-,p_field_template=>wwv_flow_imp.id(8548656595518243)
-,p_item_template_options=>'#DEFAULT#'
-,p_lov_display_extra=>'NO'
-,p_protection_level=>'S'
-,p_help_text=>'Activity reports default timeframe.'
-,p_attribute_01=>'NONE'
-,p_attribute_02=>'N'
-);
-wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(45750979813491570)
 ,p_name=>'P501_DISPLAY_DATE_FORMAT'
 ,p_item_sequence=>10
@@ -392,31 +365,6 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_03=>'P501_INPUT_DATE_FORMAT'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_internal_uid=>45789130633656044
-);
-wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(43469257085898224)
-,p_process_sequence=>30
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_USER_PREFERENCES'
-,p_process_name=>'Update Default Timeframe'
-,p_attribute_01=>'SET_PREFERENCE_TO_ITEM_VALUE'
-,p_attribute_02=>'BLOG_DEFAULT_TIMEFRAME'
-,p_attribute_03=>'P501_DEFAULT_TIMEFRAME'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_internal_uid=>43469257085898224
-);
-wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(45789440480656875)
-,p_process_sequence=>40
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_PLSQL'
-,p_process_name=>'Set Application Items'
-,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex_util.set_session_state(''G_USER_DATE_TIME_FORMAT'', :P501_DISPLAY_DATE_FORMAT, false);',
-'apex_util.set_session_state(''G_USER_INPUT_DATE_TIME_FORMAT'', :P501_INPUT_DATE_FORMAT, false);'))
-,p_process_clob_language=>'PLSQL'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_internal_uid=>45789440480656875
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(8871718756695793)

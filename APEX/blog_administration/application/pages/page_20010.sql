@@ -27,7 +27,7 @@ wwv_flow_imp_page.create_page(
 '<p>This page also has links to various reports on the activity of this application.</p>'))
 ,p_page_component_map=>'06'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20230409171236'
+,p_last_upd_yyyymmddhh24miss=>'20240411201512'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(51691560566605050)

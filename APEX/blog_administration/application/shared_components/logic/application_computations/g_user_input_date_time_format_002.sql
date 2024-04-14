@@ -13,7 +13,7 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_shared.create_flow_computation(
  p_id=>wwv_flow_imp.id(28465412265925289)
-,p_computation_sequence=>40
+,p_computation_sequence=>50
 ,p_computation_item=>'G_USER_INPUT_DATE_TIME_FORMAT'
 ,p_computation_point=>'AFTER_LOGIN'
 ,p_computation_type=>'STATIC_ASSIGNMENT'
@@ -21,7 +21,7 @@ wwv_flow_imp_shared.create_flow_computation(
 ,p_computation=>'DD.MM.YYYY HH24:MI'
 ,p_compute_when=>'G_USER_INPUT_DATE_TIME_FORMAT'
 ,p_compute_when_type=>'ITEM_IS_NULL'
-,p_version_scn=>1
+,p_version_scn=>41109498918124
 );
 wwv_flow_imp.component_end;
 end;

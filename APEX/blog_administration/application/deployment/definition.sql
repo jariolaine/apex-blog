@@ -33,9 +33,9 @@ wwv_flow_imp_shared.create_install(
 ,p_upgrade_failure_message=>'Installation of database objects and seed data has failed.'
 ,p_get_version_sql_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select 1',
-'from user_tables',
+'from user_views',
 'where 1 = 1',
-'and table_name = ''BLOG_SETTINGS'''))
+'and view_name = ''BLOG_V_VERSION'''))
 ,p_deinstall_success_message=>'Deinstallation complete.'
 ,p_deinstall_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',
@@ -84,13 +84,11 @@ wwv_flow_imp_shared.create_install(
 'drop table blog_tags;',
 'drop view blog_v_all_categories;',
 'drop view blog_v_all_comments;',
-'drop view blog_v_all_comments_form;',
 'drop view blog_v_all_dynamic_content;',
 'drop view blog_v_all_files;',
 'drop view blog_v_all_links;',
 'drop view blog_v_all_link_groups;',
 'drop view blog_v_all_posts;',
-'drop view blog_v_all_posts_form;',
 'drop view blog_v_all_post_tags;',
 'drop view blog_v_all_tags;',
 'drop view blog_v_archive_year;',
@@ -100,6 +98,8 @@ wwv_flow_imp_shared.create_install(
 'drop view blog_v_dynamic_content;',
 'drop view blog_v_features;',
 'drop view blog_v_files;',
+'drop view blog_v_form_comments;',
+'drop view blog_v_form_posts;',
 'drop view blog_v_init_items;',
 'drop view blog_v_links;',
 'drop view blog_v_lov;',
@@ -112,15 +112,20 @@ wwv_flow_imp_shared.create_install(
 '--------------------------------------------------------',
 '--  Drop text index preferences',
 '--------------------------------------------------------',
+'declare',
+'  ctx_ddl_error exception;',
+'  pragma exception_init ( ctx_ddl_error, -20000 );',
 'begin',
-'  ctx_ddl.drop_preference( ''BLOG_COMMENTS_UDS'' );',
+'  begin',
+'    ctx_ddl.drop_preference( ''BLOG_COMMENTS_UDS'' );',
+'    exception when ctx_ddl_error then null;',
+'  end;',
+'  begin',
+'    ctx_ddl.drop_preference( ''BLOG_POSTS_UDS'' );',
+'    exception when ctx_ddl_error then null;',
+'  end;',
 'end;',
-'/',
-'begin',
-'  ctx_ddl.drop_preference( ''BLOG_POSTS_UDS'' );',
-'end;',
-'/',
-''))
+'/'))
 ,p_required_free_kb=>200
 ,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
 );

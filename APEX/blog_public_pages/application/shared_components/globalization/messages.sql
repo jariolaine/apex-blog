@@ -25,6 +25,18 @@ wwv_flow_imp.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(55636351016374001)
+,p_name=>'BLOG_APP_DESC'
+,p_message_text=>'About Almost Everything'
+,p_version_scn=>41110081076467
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(55636136510372843)
+,p_name=>'BLOG_APP_NAME'
+,p_message_text=>'My Blog'
+,p_version_scn=>41110081076461
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(39147943567749366)
 ,p_name=>'BLOG_ATOM_TITLE'
 ,p_message_text=>'%0 &raquo; Atom Feed'

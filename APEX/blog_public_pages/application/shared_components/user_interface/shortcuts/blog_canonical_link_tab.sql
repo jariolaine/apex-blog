@@ -18,12 +18,11 @@ wwv_flow_imp_shared.create_shortcut(
 ,p_shortcut_language=>'PLSQL'
 ,p_comments=>'Get canonical link for page that is accessed form tabs. Used in pages 1, 10, 11 and 12 page html header.'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_html.get_tab_canonical_link(',
+'blog_html.set_tab_canonical_link(',
 '  p_page  => :APP_PAGE_ID',
-', p_html  => blog_util.g_link_canonical',
-', p_url   => :G_PAGE_URL',
+', p_url   => :P0_PAGE_URL',
 ');',
-'return blog_util.g_link_canonical;'))
+'return blog_html.get_page_canonical_link;'))
 );
 wwv_flow_imp.component_end;
 end;

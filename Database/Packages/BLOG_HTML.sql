@@ -33,48 +33,52 @@ as
 --                              get_category_canonical_link
 --                              get_archive_canonical_link
 --                              get_tag_canonical_link
+--    Jari Laine 10.04.2024 - New function get_page_canonical_link to return generated html
+--                          - Renamed procedures
+--                              get_tab_canonical_link -> set_tab_canonical_link
+--                              get_post_canonical_link -> set_post_canonical_link
+--                              get_category_canonical_link -> set_category_canonical_link
+--                              get_archive_canonical_link -> set_archive_canonical_link
+--                              get_tag_canonical_link -> set_tag_canonical_link
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_robots_noindex_meta return varchar2;
 --------------------------------------------------------------------------------
+  function get_page_canonical_link return varchar2;
+--------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAB
-  procedure get_tab_canonical_link(
+  procedure set_tab_canonical_link(
     p_page          in varchar2,
-    p_html          out nocopy varchar2,
     p_url           out nocopy varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_POST
-  procedure get_post_canonical_link(
+  procedure set_post_canonical_link(
     p_post_id       in varchar2,
-    p_html          out nocopy varchar2,
     p_url           out nocopy varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
-  procedure get_category_canonical_link(
+  procedure set_category_canonical_link(
     p_category_id   in varchar2,
-    p_html          out nocopy varchar2,
     p_url           out nocopy varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
-  procedure get_archive_canonical_link(
+  procedure set_archive_canonical_link(
     p_archive_id    in varchar2,
-    p_html          out nocopy varchar2,
     p_url           out nocopy varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAG
-  procedure get_tag_canonical_link(
+  procedure set_tag_canonical_link(
     p_tag_id        in varchar2,
-    p_html          out nocopy varchar2,
     p_url           out nocopy varchar2
   );
 --------------------------------------------------------------------------------
@@ -118,6 +122,8 @@ as
   c_link_canonical_template constant varchar2(64) := '<link rel="canonical" href="%s">';
   c_link_alternate_template constant varchar2(64) := '<link rel="alternate" href="%s" title="%s" type="%s">';
 
+  g_link_canonical varchar2(1024);
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -137,9 +143,16 @@ as
   end get_robots_noindex_meta;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure get_tab_canonical_link(
+  function get_page_canonical_link
+  return varchar2
+  as
+  begin
+    return g_link_canonical;
+  end get_page_canonical_link;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure set_tab_canonical_link(
     p_page  in varchar2,
-    p_html  out nocopy varchar2,
     p_url   out nocopy varchar2
   )
   as
@@ -153,7 +166,7 @@ as
         , p_canonical  => 'YES'
         )
       ;
-      p_html :=
+      g_link_canonical :=
         apex_string.format(
           p_message => c_link_canonical_template
         , p0 => p_url
@@ -162,15 +175,14 @@ as
     else
       -- if p_page is not defined
       apex_debug.warn( 'Canonical link tag not generated for tab.' );
-      p_html := get_robots_noindex_meta;
+      g_link_canonical := get_robots_noindex_meta;
     end if;
 
-  end get_tab_canonical_link;
+  end set_tab_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure get_post_canonical_link(
+  procedure set_post_canonical_link(
     p_post_id in varchar2,
-    p_html    out nocopy varchar2,
     p_url     out nocopy varchar2
   )
   as
@@ -184,7 +196,7 @@ as
         , p_canonical    => 'YES'
         )
       ;
-      p_html :=
+      g_link_canonical :=
         apex_string.format(
           p_message => c_link_canonical_template
         , p0 => p_url
@@ -192,15 +204,14 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for post.' );
-      p_html := get_robots_noindex_meta;
+      g_link_canonical := get_robots_noindex_meta;
     end if;
 
-  end get_post_canonical_link;
+  end set_post_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure get_category_canonical_link(
+  procedure set_category_canonical_link(
     p_category_id in varchar2,
-    p_html        out nocopy varchar2,
     p_url         out nocopy varchar2
   )
   as
@@ -214,7 +225,7 @@ as
         , p_canonical    => 'YES'
         )
       ;
-      p_html :=
+      g_link_canonical :=
         apex_string.format(
           p_message => c_link_canonical_template
         , p0 => p_url
@@ -222,15 +233,14 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for category.' );
-      p_html := get_robots_noindex_meta;
+      g_link_canonical := get_robots_noindex_meta;
     end if;
 
-  end get_category_canonical_link;
+  end set_category_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure get_archive_canonical_link(
+  procedure set_archive_canonical_link(
     p_archive_id in varchar2,
-    p_html       out nocopy varchar2,
     p_url        out nocopy varchar2
   )
   as
@@ -244,7 +254,7 @@ as
         , p_canonical  => 'YES'
         )
       ;
-      p_html :=
+      g_link_canonical :=
         apex_string.format(
           p_message => c_link_canonical_template
         , p0 => p_url
@@ -252,15 +262,14 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for archive.' );
-      p_html := get_robots_noindex_meta;
+      g_link_canonical := get_robots_noindex_meta;
     end if;
 
-  end get_archive_canonical_link;
+  end set_archive_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure get_tag_canonical_link(
+  procedure set_tag_canonical_link(
     p_tag_id in varchar2,
-    p_html   out nocopy varchar2,
     p_url    out nocopy varchar2
   )
   as
@@ -274,7 +283,7 @@ as
         , p_canonical  => 'YES'
         )
       ;
-      p_html :=
+      g_link_canonical :=
         apex_string.format(
           p_message => c_link_canonical_template
         , p0 => p_url
@@ -282,10 +291,10 @@ as
       ;
     else
       apex_debug.warn( 'Canonical link tag not generated for tag.' );
-      p_html := get_robots_noindex_meta;
+      g_link_canonical := get_robots_noindex_meta;
     end if;
 
-  end get_tag_canonical_link;
+  end set_tag_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_rss_anchor(

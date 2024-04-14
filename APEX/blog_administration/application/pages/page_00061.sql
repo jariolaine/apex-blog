@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240121105958'
+,p_last_upd_yyyymmddhh24miss=>'20240413185518'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(75821212046018894)
@@ -38,12 +38,12 @@ wwv_flow_imp_page.create_page_plug(
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(83898371708056982)
-,p_plug_name=>'Items'
+,p_plug_name=>'Comment'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(8475523710518195)
 ,p_plug_display_sequence=>20
 ,p_query_type=>'TABLE'
-,p_query_table=>'BLOG_V_ALL_COMMENTS_FORM'
+,p_query_table=>'BLOG_V_FORM_COMMENTS'
 ,p_include_rowid_column=>false
 ,p_is_editable=>true
 ,p_edit_operations=>'u:d'
@@ -326,14 +326,6 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_condition_type=>'EXISTS'
 ,p_icon_css_classes=>'fa-reply'
 );
-wwv_flow_imp_page.create_page_branch(
- p_id=>wwv_flow_imp.id(38196086585731811)
-,p_branch_name=>'Go To Page 61'
-,p_branch_action=>'f?p=&APP_ID.:61:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
-,p_branch_point=>'AFTER_PROCESSING'
-,p_branch_type=>'REDIRECT_URL'
-,p_branch_sequence=>20
-);
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(38179865610731782)
 ,p_name=>'P61_ID'
@@ -530,7 +522,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_region_id=>wwv_flow_imp.id(83898371708056982)
 ,p_process_type=>'NATIVE_FORM_DML'
-,p_process_name=>'Process form Items'
+,p_process_name=>'Process form Comment'
 ,p_attribute_01=>'REGION_SOURCE'
 ,p_attribute_05=>'Y'
 ,p_attribute_06=>'Y'
@@ -588,6 +580,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_04=>'FLAG_COMMENT'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_imp.id(38177963674731780)
+,p_process_success_message=>'Comment marked as unread.'
 ,p_internal_uid=>38193234448731805
 ,p_process_comment=>'Set unread flag to comment.'
 );
@@ -620,11 +613,9 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_sequence=>50
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'Close Dialog Flag Unread'
+,p_process_name=>'Close Dialog'
 ,p_attribute_02=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when_button_id=>wwv_flow_imp.id(38177963674731780)
-,p_process_success_message=>'Comment marked as unread.'
 ,p_internal_uid=>38590181651274302
 );
 wwv_flow_imp_page.create_page_process(
@@ -633,8 +624,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_point=>'BEFORE_HEADER'
 ,p_region_id=>wwv_flow_imp.id(83898371708056982)
 ,p_process_type=>'NATIVE_FORM_INIT'
-,p_process_name=>'Initialize form Items'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_process_name=>'Initialize form Comment'
 ,p_internal_uid=>38184705007731789
 );
 wwv_flow_imp.component_end;

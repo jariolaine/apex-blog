@@ -14,11 +14,6 @@ select
   ,t1.title               as title
   ,t1.title_unique        as title_unique
   ,t1.notes               as notes
-  ,case t1.is_active
-    when 1
-    then c.txt_enabled
-    else c.txt_disabled
-  end                     as status_text
   ,(
     select
       count(1) as cnt
@@ -26,11 +21,5 @@ select
     where lkp.link_group_id = t1.id
   )                       as link_count
 from blog_link_groups t1
-cross join (
-  select
-     apex_lang.message( 'BLOG_TXT_ENABLED' )  as txt_enabled
-    ,apex_lang.message( 'BLOG_TXT_DISABLED' ) as txt_disabled
-  from dual
-) c
 where 1 = 1
 /

@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240121143754'
+,p_last_upd_yyyymmddhh24miss=>'20240408092633'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(64188706532858299)
@@ -132,17 +132,17 @@ wwv_flow_imp_page.create_page_button(
 ,p_database_action=>'INSERT'
 );
 wwv_flow_imp_page.create_page_branch(
- p_id=>wwv_flow_imp.id(39212835774831924)
-,p_branch_name=>'Goto Page 50 after delete'
-,p_branch_action=>'f?p=&APP_ID.:50:&SESSION.::&DEBUG.:RP,50::&success_msg=#SUCCESS_MSG#'
+ p_id=>wwv_flow_imp.id(39994203487374337)
+,p_branch_name=>'Go To Page 50 and clear items on delete'
+,p_branch_action=>'f?p=&APP_ID.:50:&SESSION.::&DEBUG.:50::&success_msg=#SUCCESS_MSG#'
 ,p_branch_point=>'AFTER_PROCESSING'
 ,p_branch_type=>'REDIRECT_URL'
 ,p_branch_when_button_id=>wwv_flow_imp.id(38415845033285164)
 ,p_branch_sequence=>10
 );
 wwv_flow_imp_page.create_page_branch(
- p_id=>wwv_flow_imp.id(39212950871831925)
-,p_branch_name=>'Goto Page 50'
+ p_id=>wwv_flow_imp.id(39994078466374335)
+,p_branch_name=>'Go To Page 50 on insert or update'
 ,p_branch_action=>'f?p=&APP_ID.:50:&SESSION.::&DEBUG.::P50_LINK_GROUP_ID:&P52_ID.&success_msg=#SUCCESS_MSG#'
 ,p_branch_point=>'AFTER_PROCESSING'
 ,p_branch_type=>'REDIRECT_URL'

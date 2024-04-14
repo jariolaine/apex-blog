@@ -32,7 +32,10 @@ wwv_flow_imp_shared.create_list(
 '  ,''blog-linkList''    as attribute3',
 'from blog_v_posts_last20 v1',
 'where 1 = 1',
-'  and v1.display_seq <= :G_LATEST_POST_ROWS',
+'  and v1.display_seq <= (',
+'    select to_number( blog_util.get_attribute_value( ''G_LATEST_POST_ROWS'' ) )',
+'    from dual',
+'  )',
 'order by v1.published_on desc'))
 ,p_list_status=>'PUBLIC'
 ,p_required_patch=>wwv_flow_imp.id(8677319562925389)

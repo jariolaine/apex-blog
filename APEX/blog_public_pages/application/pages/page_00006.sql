@@ -15,7 +15,7 @@ wwv_flow_imp_page.create_page(
  p_id=>6
 ,p_name=>'Tags'
 ,p_alias=>'TAG'
-,p_step_title=>'Tag &P6_TAG_NAME. | &G_APP_NAME.'
+,p_step_title=>'Tag &P6_TAG_NAME. | &APP_TEXT$BLOG_APP_NAME.'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8697986188142973)
@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240401142424'
+,p_last_upd_yyyymmddhh24miss=>'20240412060455'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(13706719753736206)
@@ -69,7 +69,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_headings_type=>'NO_HEADINGS'
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
-,p_query_num_rows_item=>'G_SEARCH_ROWS'
+,p_query_num_rows_item=>'P0_BLOG_SEARCH_ROWS'
 ,p_query_num_rows_type=>'NEXT_PREVIOUS_LINKS'
 ,p_query_row_count_max=>500
 ,p_pagination_display_position=>'BOTTOM_RIGHT'
@@ -220,12 +220,13 @@ wwv_flow_imp_page.create_report_columns(
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(7082507483178439)
 ,p_name=>'P6_TAG_NAME'
-,p_item_sequence=>10
+,p_item_sequence=>90
 ,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
 ,p_use_cache_before_default=>'NO'
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 );
 wwv_flow_imp_page.create_page_item(
@@ -236,7 +237,17 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
 ,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
+);
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(26065633574107834)
+,p_process_sequence=>20
+,p_process_point=>'BEFORE_BOX_BODY'
+,p_process_type=>'NATIVE_RESET_PAGINATION'
+,p_process_name=>'Reset Tag Pagination'
+,p_attribute_01=>'THIS_PAGE'
+,p_internal_uid=>26065633574107834
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(17117374097199935)
@@ -272,15 +283,6 @@ wwv_flow_imp_shared.create_invokeapi_comp_param(
 ,p_value_type=>'ITEM'
 ,p_value=>'P6_TAG_ID'
 );
-wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(26065633574107834)
-,p_process_sequence=>20
-,p_process_point=>'BEFORE_HEADER'
-,p_process_type=>'NATIVE_RESET_PAGINATION'
-,p_process_name=>'Reset Tag Pagination'
-,p_attribute_01=>'THIS_PAGE'
-,p_internal_uid=>26065633574107834
-);
 wwv_flow_imp_page.create_page_meta_tag(
  p_id=>wwv_flow_imp.id(40687977443261737)
 ,p_meta_tag_name=>'description'
@@ -299,7 +301,7 @@ wwv_flow_imp_page.create_page_meta_tag(
 wwv_flow_imp_page.create_page_meta_tag(
  p_id=>wwv_flow_imp.id(40688209096261740)
 ,p_meta_tag_name=>'og:url'
-,p_meta_tag_value=>'&G_PAGE_URL.'
+,p_meta_tag_value=>'&P0_PAGE_URL.'
 );
 wwv_flow_imp_page.create_page_meta_tag(
  p_id=>wwv_flow_imp.id(40688357230261741)
@@ -309,7 +311,7 @@ wwv_flow_imp_page.create_page_meta_tag(
 wwv_flow_imp_page.create_page_meta_tag(
  p_id=>wwv_flow_imp.id(40688407239261742)
 ,p_meta_tag_name=>'og:title'
-,p_meta_tag_value=>'Tag &P6_TAG_NAME. | &G_APP_NAME.'
+,p_meta_tag_value=>'Tag &P6_TAG_NAME. | &APP_TEXT$BLOG_APP_NAME.'
 );
 wwv_flow_imp.component_end;
 end;

@@ -66,7 +66,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231206084104'
+,p_last_upd_yyyymmddhh24miss=>'20240413074620'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8596898648797585)
@@ -102,17 +102,14 @@ wwv_flow_imp_page.create_page_plug(
 '  ,v1.post_status_txt       as post_status',
 '  ,:APP_TEXT$BLOG_TXT_EDIT  as btn_edit_tags',
 '  ,v1.post_status_icon      as post_status_icon',
-' -- For get edit URL also for detail view',
+'-- Workaround for detail view',
 '  ,apex_page.get_url(',
 '     p_page   => 12',
 '    ,p_items  => ''P12_ID''',
 '    ,p_values => v1.id',
 '  )                         as edit_url',
 '-- Post date for detail view',
-'  ,to_char(',
-'     v1.published_on',
-'    ,:G_POST_TITLE_DATE_FORMAT',
-'  )                         as detail_view_published',
+'  ,detail_view_published    as detail_view_published',
 '-- Post HTML for detail view',
 '  ,v1.body_html             as body_html',
 '-- Tags HTML for detail view',
@@ -128,7 +125,7 @@ wwv_flow_imp_page.create_worksheet(
  p_id=>wwv_flow_imp.id(8597041868797585)
 ,p_name=>'Articles'
 ,p_max_row_count_message=>'The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.'
-,p_no_data_found_message=>'&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.'
+,p_no_data_found_message=>'No data found.'
 ,p_oracle_text_index_column=>'CTX_SEARCH'
 ,p_pagination_type=>'ROWS_X_TO_Y'
 ,p_pagination_display_pos=>'BOTTOM_RIGHT'
@@ -170,7 +167,6 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'AD'
 ,p_column_label=>'Post ID'
 ,p_column_type=>'NUMBER'
-,p_display_text_as=>'WITHOUT_MODIFICATION'
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
@@ -180,8 +176,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'AS'
 ,p_column_label=>'Category ID'
 ,p_column_type=>'NUMBER'
-,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
+,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(37645634614287122)
@@ -190,8 +185,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'BN'
 ,p_column_label=>'Tag ID'
 ,p_column_type=>'STRING'
-,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
+,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(27275478849075433)
@@ -453,8 +447,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'BD'
 ,p_column_label=>'Edit Url'
 ,p_column_type=>'STRING'
-,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
+,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(33134369371313206)

@@ -23,8 +23,7 @@ var blog = blog || {};
   blog.admin = {
     /**
     * @function blog.admin.showSuccessMessage
-    * @summary Show APEX success message
-    * @desc
+    * @desc Show APEX success message
     **/
     showSuccessMessage: function( message ){
 
@@ -48,8 +47,7 @@ var blog = blog || {};
 
       /**
       * @function blog.admin.ir.filesAfterRefresh
-      * @summary Handle page 15 "Files" interactive report after refresh actions
-      * @desc
+      * @desc Handle page 15 "Files" interactive report after refresh actions
       **/
       filesAfterRefresh: function( options ){
 
@@ -81,8 +79,7 @@ var blog = blog || {};
 
       /**
       * @function blog.admin.ir.commentsAfterRefresh
-      * @summary Handle page 30 "Comments" interactive report after refresh actions
-      * @desc
+      * @desc Handle page 30 "Comments" interactive report after refresh actions
       **/
       commentsAfterRefresh: function( options ){
 
@@ -91,18 +88,15 @@ var blog = blog || {};
           openLink: "a[data-unread=\"true\"]"
           ,newClass: "fa-envelope-open-o"
           ,oldClass: ["fa-envelope-o", "fa-envelope-arrow-down"]
-          ,messageKey: "BLOG_LOV_COMMENT_FLAG_READ"
+          ,title: apex.lang.getMessage( "BLOG_LOV_COMMENT_FLAG_READ" )
         }, options );
-
-        // Get title and aria label
-        var newLabel = apex.lang.getMessage( options.messageKey );
 
         // change link column css class
         options.region$.find( options.openLink ).one( "click", function(){
           $( $x( $( this ).data( "id" ) ) )
             .removeClass( options.oldClass )
             .addClass( options.newClass )
-            .attr( "title", newLabel )
+            .attr( "title", options.title )
           ;
           return true;
         });
@@ -118,7 +112,7 @@ var blog = blog || {};
 
       /**
       * @function blog.admin.ig.processChildFeatures
-      * @summary hide / show child features depending pElement type
+      * @desc hide / show child features depending pElement type
       **/
       processChildFeatures: function( pElement ){
 
@@ -142,8 +136,7 @@ var blog = blog || {};
 
       /**
       * @function blog.admin.ig.region
-      * @summary IG region initialization code
-      * @desc place blog.admin.ig.region in region Advanced: JavaScript Initialization Code
+      * @desc IG region initialization code
       **/
       region: function( options ){
 
@@ -174,7 +167,7 @@ var blog = blog || {};
             }
           }, options );
 
-
+          // disable column header menu for all columns
           options.columns.forEach( column => {
             $.extend( true, column, { defaultGridColumnOptions: { noHeaderActivate: true } } );
           });
@@ -198,7 +191,7 @@ var blog = blog || {};
 
         }
 
-        // run coode when page is ready
+        // run code when page is ready
         $(function(){
 
           // Set IG save action to custom button
@@ -222,6 +215,7 @@ var blog = blog || {};
 
           }
 
+          // Handle hide / show child features
           blog.admin.ig.processChildFeatures( igId );
 
         });
@@ -243,8 +237,7 @@ var blog = blog || {};
     editor: {
       /**
       * @function blog.admin.editor.init
-      * @summary Editor item initialization code
-      * @desc place blog.admin.editor.init in item Advanced: JavaScript Initialization Code
+      * @desc Editor item initialization code
       **/
       init: function( options ){
 

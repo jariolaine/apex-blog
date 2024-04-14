@@ -21,8 +21,8 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_display_sequence=>10
 ,p_list_item_link_text=>'Settings'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20012:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-layout-header-sidebar-right'
-,p_list_text_01=>'Set the application name, description, email and other settings.'
+,p_list_item_icon=>'fa-gears'
+,p_list_text_01=>'Set the application name, description, email, date formats and other settings.'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
@@ -30,13 +30,13 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_display_sequence=>20
 ,p_list_item_link_text=>'Features'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20011:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-gears'
+,p_list_item_icon=>'fa-layout-header-sidebar-right'
 ,p_list_text_01=>'Enable or disable application features.'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(25756063318250538)
-,p_list_item_display_sequence=>40
+,p_list_item_display_sequence=>30
 ,p_list_item_link_text=>'Popup Pages'
 ,p_list_item_link_target=>'f?p=&APP_ID.:80:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-list'

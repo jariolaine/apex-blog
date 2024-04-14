@@ -20,7 +20,7 @@ select
      p_page     => '1003'
     ,p_session  => null
     ,p_request  => 'application_process=download'
-    ,p_items    => 'P1003_FILE_NAME'
+    ,p_items    => 'x01'
     ,p_values   => t1.file_name
   )                 as file_url
 from blog_files t1

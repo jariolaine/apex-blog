@@ -21,16 +21,6 @@ select
   ,apex_string_util.to_display_filesize(
     p_size_in_bytes => t1.file_size
   )                     as file_size_display
-  ,case t1.is_active
-    when 1
-    then 'fa-check-circle u-success-text'
-    else 'fa-minus-circle u-danger-text'
-   end                  as file_status_icon
-  ,case t1.is_download
-    when 1
-    then 'fa-check'
-    else 'fa-minus'
-   end                  as file_type_icon
 from blog_files t1
 where 1 = 1
 /

@@ -29,6 +29,46 @@ wwv_flow_imp_shared.create_install_check(
 'and object_name = ''CTX_DDL'''))
 ,p_failure_message=>'Application parsing schema must have role CTXAPP or execute privilege to package CTX_DDL.'
 );
+wwv_flow_imp_shared.create_install_check(
+ p_id=>wwv_flow_imp.id(54148126425002968)
+,p_install_id=>wwv_flow_imp.id(31706870664802069)
+,p_name=>'Pre-check is upgrade supported'
+,p_sequence=>20
+,p_check_type=>'EXISTS'
+,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from user_objects',
+'where 1 = 1',
+'and object_name = ''BLOG_V_VERSION''',
+'and status = ''VALID'''))
+,p_condition_type=>'EXISTS'
+,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from user_views',
+'where 1 = 1',
+'and view_name = ''BLOG_V_VERSION'''))
+,p_failure_message=>'Unable to determine application version. Check that the application parsing schema view BLOG_V_VERSION is valid.'
+);
+wwv_flow_imp_shared.create_install_check(
+ p_id=>wwv_flow_imp.id(54148211605007577)
+,p_install_id=>wwv_flow_imp.id(31706870664802069)
+,p_name=>'Application upgrade is supported'
+,p_sequence=>30
+,p_check_type=>'EXISTS'
+,p_check_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from blog_v_version',
+'where 1 = 1',
+'and application_date >= 20230117'))
+,p_condition_type=>'EXISTS'
+,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from user_objects',
+'where 1 = 1',
+'and object_name = ''BLOG_V_VERSION''',
+'and status = ''VALID'''))
+,p_failure_message=>'A previously installed version of the application does not support upgrading of supporting objects.'
+);
 wwv_flow_imp.component_end;
 end;
 /

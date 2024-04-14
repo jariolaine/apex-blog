@@ -25,6 +25,18 @@ wwv_flow_imp.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(55636898271377244)
+,p_name=>'BLOG_APP_DESC'
+,p_message_text=>'About Almost Everything'
+,p_version_scn=>41110081076479
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(55636638660376194)
+,p_name=>'BLOG_APP_NAME'
+,p_message_text=>'My Blog'
+,p_version_scn=>41110081076478
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(10038616769932485)
 ,p_name=>'BLOG_CATEGORIES_UK1'
 ,p_message_text=>'Category with same name already exists.'
@@ -63,14 +75,20 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(19324753900501668)
 ,p_name=>'BLOG_CONFIRM_LINK_GROUP_DELETE'
-,p_message_text=>'You have requested the permanent deletion of links label. Following link(s) will be also deleted.'
-,p_version_scn=>1
+,p_message_text=>'You have requested the permanent deletion of links collection. Following link(s) will be also deleted.'
+,p_version_scn=>41109091843403
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(36077116368425357)
 ,p_name=>'BLOG_CONFIRM_RESEQUENCE_CATEGORIES'
 ,p_message_text=>'Resequence categories, incrementing sequence numbers by 10?'
 ,p_version_scn=>41102141851437
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(54693555116494509)
+,p_name=>'BLOG_CONFIRM_RESEQUENCE_DYNAMIC_CONTENT'
+,p_message_text=>'Resequence popup pages entries, incrementing sequence numbers by 10?'
+,p_version_scn=>41109631736639
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(36077759827431234)
@@ -94,7 +112,7 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(30112367443952323)
 ,p_name=>'BLOG_FEATURE_ABOUT'
 ,p_message_text=>'About'
-,p_version_scn=>1
+,p_version_scn=>41109163194294
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(7073242512629817)
@@ -142,7 +160,7 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(28287948386327902)
 ,p_name=>'BLOG_FEATURE_GROUP_COMMENTS'
 ,p_message_text=>'Comments'
-,p_version_scn=>1
+,p_version_scn=>41109165078645
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(42619895282058203)
@@ -269,6 +287,18 @@ wwv_flow_imp_shared.create_message(
 ,p_name=>'BLOG_GENERIC_ERROR'
 ,p_message_text=>'Ooops... We are sorry! Unexpected internal error have occurred.'
 ,p_version_scn=>1
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(19894083253206015)
+,p_name=>'BLOG_HELP_BLOG_APP_DESC'
+,p_message_text=>'Description of this blog.'
+,p_version_scn=>41109923289318
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(19893743625198161)
+,p_name=>'BLOG_HELP_BLOG_APP_NAME'
+,p_message_text=>'Name of this blog.'
+,p_version_scn=>41109923241128
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(21952495135451489)
@@ -409,29 +439,11 @@ wwv_flow_imp_shared.create_message(
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(19897213779441945)
-,p_name=>'BLOG_HELP_G_APP_DATE_FORMAT'
-,p_message_text=>'Public pages date format. Changes to this settings only take effect in new sessions of the public application.'
-,p_version_scn=>1
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(19894083253206015)
-,p_name=>'BLOG_HELP_G_APP_DESC'
-,p_message_text=>'Description of this blog. Changes to this settings only take effect in new sessions of the public application.'
-,p_version_scn=>1
-);
-wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(65335091944381875)
 ,p_name=>'BLOG_HELP_G_APP_EMAIL'
 ,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'Email address from which notifications will be sent, for example',
 'notification of new comments. If blank, no notifications will be sent.'))
-,p_version_scn=>1
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(19893743625198161)
-,p_name=>'BLOG_HELP_G_APP_NAME'
-,p_message_text=>'Name of this blog. Changes to this settings only take effect in new sessions of the public application.'
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_message(
@@ -485,12 +497,6 @@ wwv_flow_imp_shared.create_message(
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(19897443841446602)
-,p_name=>'BLOG_HELP_G_POST_TITLE_DATE_FORMAT'
-,p_message_text=>'Date format for blog posts header. Changes to this settings only take effect in new sessions of the public application.'
-,p_version_scn=>1
-);
-wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(65369256313682348)
 ,p_name=>'BLOG_HELP_G_RSS_URL'
 ,p_message_text=>'Specify custom RSS feed URL. If empty, default public application RSS feed is used.'
@@ -503,22 +509,34 @@ wwv_flow_imp_shared.create_message(
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(19897213779441945)
+,p_name=>'BLOG_HELP_P0_BLOG_APP_DATE_FORMAT'
+,p_message_text=>'Public pages date format. Changes to this settings only take effect in new sessions of the public application.'
+,p_version_scn=>41109922856403
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(19897443841446602)
+,p_name=>'BLOG_HELP_P0_BLOG_POST_DATE_FORMAT'
+,p_message_text=>'Date format for blog posts header. Changes to this settings only take effect in new sessions of the public application.'
+,p_version_scn=>41109922877085
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(19896387769414873)
-,p_name=>'BLOG_HELP_G_SEARCH_ROWS'
+,p_name=>'BLOG_HELP_P0_BLOG_SEARCH_ROWS'
 ,p_message_text=>'The number of Search results per report page. The value must be an integer between %0 and %1. Changes to this settings only take effect in new sessions of the public application.'
-,p_version_scn=>1
+,p_version_scn=>41109923047097
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(19894253687211234)
-,p_name=>'BLOG_HELP_P1_REPORT_ROWS'
+,p_name=>'BLOG_HELP_P1_BLOG_POST_ROWS'
 ,p_message_text=>'The number of posts per report page displayed on the home page. The value must be an integer between %0 and %1. Changes to this settings only take effect in new sessions of the public application.'
-,p_version_scn=>1
+,p_version_scn=>41109923078771
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(19895088592241687)
-,p_name=>'BLOG_HELP_P2_REPORT_ROWS'
+,p_name=>'BLOG_HELP_P2_BLOG_COMMENT_ROWS'
 ,p_message_text=>'The number of comments per report page displayed on the post page. The value must be an integer between %0 and %1. Changes to this settings only take effect in new sessions of the public application.'
-,p_version_scn=>1
+,p_version_scn=>41109923207454
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(23116114610465857)
@@ -626,51 +644,36 @@ wwv_flow_imp_shared.create_message(
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(54693974405502152)
+,p_name=>'BLOG_MSG_DYNAMIC_CONTENT_RESEQUENCED'
+,p_message_text=>'Popup pages resequenced.'
+,p_is_js_message=>true
+,p_version_scn=>41109631952573
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(38635396322275585)
 ,p_name=>'BLOG_MSG_ENTER_SEARCH_TERM'
 ,p_message_text=>'Please enter a search term in the search box.'
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(46145424535009976)
-,p_name=>'BLOG_MSG_LINK_CREATED'
-,p_message_text=>'Link created.'
-,p_version_scn=>1
+ p_id=>wwv_flow_imp.id(53082461104354836)
+,p_name=>'BLOG_MSG_LINKS_RESEQUENCED'
+,p_message_text=>'Links resequenced.'
+,p_is_js_message=>true
+,p_version_scn=>41109174558245
 );
 wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(46145891002014372)
-,p_name=>'BLOG_MSG_LINK_DELETED'
-,p_message_text=>'Link deleted.'
-,p_version_scn=>1
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(46145685785012179)
-,p_name=>'BLOG_MSG_LINK_UPDATED'
-,p_message_text=>'Link updated.'
-,p_version_scn=>1
+ p_id=>wwv_flow_imp.id(53082743703359956)
+,p_name=>'BLOG_MSG_LINK_GROUPS_RESEQUENCED'
+,p_message_text=>'Link groups resequenced.'
+,p_is_js_message=>true
+,p_version_scn=>41109174668736
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(25114336930810124)
 ,p_name=>'BLOG_MSG_NO_DATA_FOUND'
 ,p_message_text=>'No records found.'
-,p_version_scn=>1
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(46139123933789353)
-,p_name=>'BLOG_MSG_POST_CREATED'
-,p_message_text=>'Post created.'
-,p_version_scn=>1
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(46138932551786633)
-,p_name=>'BLOG_MSG_POST_DELETED'
-,p_message_text=>'Post deleted.'
-,p_version_scn=>1
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(46139522381794178)
-,p_name=>'BLOG_MSG_POST_UPDATED'
-,p_message_text=>'Post updated.'
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_message(
@@ -730,6 +733,18 @@ wwv_flow_imp_shared.create_message(
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(19033676653882936)
+,p_name=>'BLOG_SETTING_BLOG_APP_DESC'
+,p_message_text=>'Blog description'
+,p_version_scn=>41109715128001
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(19034220207891682)
+,p_name=>'BLOG_SETTING_BLOG_APP_NAME'
+,p_message_text=>'Blog name'
+,p_version_scn=>41109715155716
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(12004799006885141)
 ,p_name=>'BLOG_SETTING_GROUP_COMMENTS'
 ,p_message_text=>'Comments'
@@ -766,27 +781,9 @@ wwv_flow_imp_shared.create_message(
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(19034721792903276)
-,p_name=>'BLOG_SETTING_G_APP_DATE_FORMAT'
-,p_message_text=>'Date format'
-,p_version_scn=>1
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(19033676653882936)
-,p_name=>'BLOG_SETTING_G_APP_DESC'
-,p_message_text=>'Blog description'
-,p_version_scn=>1
-);
-wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(31491518632426334)
 ,p_name=>'BLOG_SETTING_G_APP_EMAIL'
 ,p_message_text=>'Blog email address'
-,p_version_scn=>1
-);
-wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(19034220207891682)
-,p_name=>'BLOG_SETTING_G_APP_NAME'
-,p_message_text=>'Blog name'
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_message(
@@ -838,12 +835,6 @@ wwv_flow_imp_shared.create_message(
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(19032802687865238)
-,p_name=>'BLOG_SETTING_G_POST_TITLE_DATE_FORMAT'
-,p_message_text=>'Posts header date format'
-,p_version_scn=>1
-);
-wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(19059158261254628)
 ,p_name=>'BLOG_SETTING_G_RSS_URL'
 ,p_message_text=>'Custom RSS feed URL'
@@ -856,22 +847,34 @@ wwv_flow_imp_shared.create_message(
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(19034721792903276)
+,p_name=>'BLOG_SETTING_P0_BLOG_APP_DATE_FORMAT'
+,p_message_text=>'Date format'
+,p_version_scn=>41109922925114
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(19032802687865238)
+,p_name=>'BLOG_SETTING_P0_BLOG_POST_DATE_FORMAT'
+,p_message_text=>'Posts header date format'
+,p_version_scn=>41109922890008
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(19033812989887423)
-,p_name=>'BLOG_SETTING_G_SEARCH_ROWS'
+,p_name=>'BLOG_SETTING_P0_BLOG_SEARCH_ROWS'
 ,p_message_text=>'Number of search results'
-,p_version_scn=>1
+,p_version_scn=>41109923035836
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(19034096614890228)
-,p_name=>'BLOG_SETTING_P1_REPORT_ROWS'
+,p_name=>'BLOG_SETTING_P1_BLOG_POST_ROWS'
 ,p_message_text=>'Number of post on home page'
-,p_version_scn=>1
+,p_version_scn=>41109923089414
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(19034454873898260)
-,p_name=>'BLOG_SETTING_P2_REPORT_ROWS'
+,p_name=>'BLOG_SETTING_P2_BLOG_COMMENT_ROWS'
 ,p_message_text=>'Number of comments'
-,p_version_scn=>1
+,p_version_scn=>41109923199313
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(10038391422712576)
@@ -958,12 +961,25 @@ wwv_flow_imp_shared.create_message(
 ,p_message_text=>'The value must be an integer between %0 and %1.'
 ,p_version_scn=>1
 );
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.10.31'
+,p_release=>'23.2.3'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(27348379677347133)
 ,p_name=>'BLOG_VALIDATION_ERR_URL'
 ,p_message_text=>'URL must begin with http(s)://.'
 ,p_version_scn=>1
 );
+null;
 wwv_flow_imp.component_end;
 end;
 /

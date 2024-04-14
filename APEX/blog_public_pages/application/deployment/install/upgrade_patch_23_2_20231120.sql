@@ -15,7 +15,7 @@ wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(9207795190834538)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
 ,p_name=>'Patch 23.2.20231120'
-,p_sequence=>110
+,p_sequence=>50
 ,p_script_type=>'UPGRADE'
 ,p_condition_type=>'EXISTS'
 ,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(

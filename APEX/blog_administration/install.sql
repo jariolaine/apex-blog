@@ -22,16 +22,11 @@ prompt --install
 @@application/plugin_settings.sql
 @@application/shared_components/security/authorizations/bloggers.sql
 @@application/shared_components/navigation/navigation_bar.sql
+@@application/shared_components/logic/application_processes/initialize_session.sql
 @@application/shared_components/logic/application_processes/get_blogger_details.sql
-@@application/shared_components/logic/application_processes/initialize_items.sql
-@@application/shared_components/logic/application_items/g_app_desc.sql
-@@application/shared_components/logic/application_items/g_app_name.sql
-@@application/shared_components/logic/application_items/g_app_version.sql
 @@application/shared_components/logic/application_items/g_blogger_id.sql
 @@application/shared_components/logic/application_items/g_blogger_name.sql
-@@application/shared_components/logic/application_items/g_post_title_date_format.sql
 @@application/shared_components/logic/application_items/g_pub_app_id.sql
-@@application/shared_components/logic/application_items/g_success_message.sql
 @@application/shared_components/logic/application_items/g_user_date_time_format.sql
 @@application/shared_components/logic/application_items/g_user_input_date_time_format.sql
 @@application/shared_components/logic/application_computations/g_user_date_time_format.sql
@@ -44,7 +39,6 @@ prompt --install
 @@application/shared_components/user_interface/lovs/categories.sql
 @@application/shared_components/user_interface/lovs/is_active.sql
 @@application/shared_components/user_interface/lovs/link_status.sql
-@@application/shared_components/user_interface/lovs/login_remember_username.sql
 @@application/shared_components/user_interface/lovs/post_status.sql
 @@application/shared_components/user_interface/lovs/post_tags.sql
 @@application/shared_components/user_interface/lovs/post_tags_hidden.sql
@@ -188,7 +182,6 @@ prompt --install
 @@application/pages/page_30025.sql
 @@application/pages/page_30026.sql
 @@application/deployment/definition.sql
-@@application/deployment/install/upgrade_create_view_blog_v_version.sql
 @@application/deployment/install/install_database_objects.sql
 @@application/deployment/install/install_metadata.sql
 @@application/deployment/checks.sql

@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240121144326'
+,p_last_upd_yyyymmddhh24miss=>'20240408090334'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45038543970364723)
@@ -323,24 +323,10 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_sequence=>50
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'File Deleted'
+,p_process_name=>'Close Dialog'
 ,p_attribute_02=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when_button_id=>wwv_flow_imp.id(38259310496819248)
-,p_process_success_message=>'File deleted.'
 ,p_internal_uid=>38260177976819249
-);
-wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(38260432647819249)
-,p_process_sequence=>60
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_CLOSE_WINDOW'
-,p_process_name=>'File Updated'
-,p_attribute_02=>'Y'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when_button_id=>wwv_flow_imp.id(38259700268819249)
-,p_process_success_message=>'File attributes updated.'
-,p_internal_uid=>38260432647819249
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(38257848125819247)

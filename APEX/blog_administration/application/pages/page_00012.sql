@@ -70,7 +70,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240121144907'
+,p_last_upd_yyyymmddhh24miss=>'20240413185449'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8640589331194982)
@@ -81,7 +81,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_new_grid_row=>false
 ,p_plug_display_column=>10
 ,p_query_type=>'TABLE'
-,p_query_table=>'BLOG_V_ALL_POSTS_FORM'
+,p_query_table=>'BLOG_V_FORM_POSTS'
 ,p_include_rowid_column=>false
 ,p_is_editable=>true
 ,p_edit_operations=>'i:u:d'
@@ -901,11 +901,11 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'Clear Published on'
 ,p_attribute_01=>'CLEAR_CACHE_FOR_ITEMS'
 ,p_attribute_03=>'P12_PUBLISHED_ON'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'P12_IS_ACTIVE'
 ,p_process_when_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
 ,p_process_when2=>'0'
 ,p_internal_uid=>27060510671689106
+,p_process_comment=>'Clear published on item if post was draft. Then new published on will be set automatically on after submit computation e.g. in case post is published.'
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(6929777493150993)
@@ -1060,41 +1060,6 @@ wwv_flow_imp_shared.create_invokeapi_comp_param(
 ,p_value=>'0'
 );
 wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(46740818170045610)
-,p_process_sequence=>60
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_INVOKE_API'
-,p_process_name=>'Get Success Message'
-,p_attribute_01=>'PLSQL_PACKAGE'
-,p_attribute_03=>'BLOG_CM'
-,p_attribute_04=>'REQUEST_TO_POST_SUCCESS_MESSAGE'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_internal_uid=>46740818170045610
-);
-wwv_flow_imp_shared.create_invokeapi_comp_param(
- p_id=>wwv_flow_imp.id(46740966744045611)
-,p_page_process_id=>wwv_flow_imp.id(46740818170045610)
-,p_page_id=>12
-,p_direction=>'OUT'
-,p_data_type=>'VARCHAR2'
-,p_ignore_output=>false
-,p_display_sequence=>30
-,p_value_type=>'ITEM'
-,p_value=>'G_SUCCESS_MESSAGE'
-);
-wwv_flow_imp_shared.create_invokeapi_comp_param(
- p_id=>wwv_flow_imp.id(46741042890045612)
-,p_page_process_id=>wwv_flow_imp.id(46740818170045610)
-,p_page_id=>12
-,p_name=>'p_request'
-,p_direction=>'IN'
-,p_data_type=>'VARCHAR2'
-,p_has_default=>false
-,p_display_sequence=>20
-,p_value_type=>'ITEM'
-,p_value=>'REQUEST'
-);
-wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(38476711128283538)
 ,p_process_sequence=>80
 ,p_process_point=>'AFTER_SUBMIT'
@@ -1102,7 +1067,6 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'Close Dialog'
 ,p_attribute_02=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_success_message=>'&G_SUCCESS_MESSAGE.'
 ,p_internal_uid=>38476711128283538
 );
 wwv_flow_imp.component_end;

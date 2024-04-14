@@ -76,7 +76,16 @@ select
     when 'SCHEDULED'        then 'fa-clock-o u-info-text'
     when 'PUBLISHED'        then 'fa-check-circle u-success-text'
                             else 'fa-question-circle'
-   end                    as post_status_icon
+  end                     as post_status_icon
+-- Workaround for IR detail view
+  ,to_char(
+     q1.published_on
+    ,(
+      select
+        blog_util.get_attribute_value( 'P0_BLOG_POST_DATE_FORMAT' )
+       from dual
+    )
+  )                       as detail_view_published
   ,(
      select
       listagg( tags.tag_id, ':' )  within group( order by tags.display_seq ) as tag_ids

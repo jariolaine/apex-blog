@@ -15,7 +15,7 @@ wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(23864182944606208)
 ,p_install_id=>wwv_flow_imp.id(20741295540297154)
 ,p_name=>'Patch 22.2.20230205'
-,p_sequence=>70
+,p_sequence=>10
 ,p_script_type=>'UPGRADE'
 ,p_condition_type=>'EXISTS'
 ,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(

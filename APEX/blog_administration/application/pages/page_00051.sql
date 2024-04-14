@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240121143251'
+,p_last_upd_yyyymmddhh24miss=>'20240408061209'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45211569698046322)
@@ -427,41 +427,6 @@ wwv_flow_imp_shared.create_invokeapi_comp_param(
 ,p_value=>'10'
 );
 wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(46741104422045613)
-,p_process_sequence=>40
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_INVOKE_API'
-,p_process_name=>'Get Success Message'
-,p_attribute_01=>'PLSQL_PACKAGE'
-,p_attribute_03=>'BLOG_CM'
-,p_attribute_04=>'REQUEST_TO_LINK_SUCCESS_MESSAGE'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_internal_uid=>46741104422045613
-);
-wwv_flow_imp_shared.create_invokeapi_comp_param(
- p_id=>wwv_flow_imp.id(46741269685045614)
-,p_page_process_id=>wwv_flow_imp.id(46741104422045613)
-,p_page_id=>51
-,p_direction=>'OUT'
-,p_data_type=>'VARCHAR2'
-,p_ignore_output=>false
-,p_display_sequence=>20
-,p_value_type=>'ITEM'
-,p_value=>'G_SUCCESS_MESSAGE'
-);
-wwv_flow_imp_shared.create_invokeapi_comp_param(
- p_id=>wwv_flow_imp.id(46741397971045615)
-,p_page_process_id=>wwv_flow_imp.id(46741104422045613)
-,p_page_id=>51
-,p_name=>'p_request'
-,p_direction=>'IN'
-,p_data_type=>'VARCHAR2'
-,p_has_default=>false
-,p_display_sequence=>10
-,p_value_type=>'ITEM'
-,p_value=>'REQUEST'
-);
-wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(38408763511151561)
 ,p_process_sequence=>50
 ,p_process_point=>'AFTER_SUBMIT'
@@ -469,7 +434,6 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'Close Dialog'
 ,p_attribute_02=>'Y'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_success_message=>'&G_SUCCESS_MESSAGE.'
 ,p_internal_uid=>38408763511151561
 );
 wwv_flow_imp_page.create_page_process(

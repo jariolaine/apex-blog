@@ -15,7 +15,7 @@ wwv_flow_imp_page.create_page(
  p_id=>1
 ,p_name=>'Home'
 ,p_alias=>'HOME'
-,p_step_title=>'&G_APP_NAME.'
+,p_step_title=>'&APP_TEXT$BLOG_APP_NAME.'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(8930100593603171)
 ,p_page_template_options=>'#DEFAULT#'
@@ -23,11 +23,11 @@ wwv_flow_imp_page.create_page(
 ,p_help_text=>'No help available for this page.'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231005190420'
+,p_last_upd_yyyymmddhh24miss=>'20240411201757'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8582113239518316)
-,p_plug_name=>'&G_APP_DESC.'
+,p_plug_name=>'&APP_TEXT$BLOG_APP_DESC.'
 ,p_region_template_options=>'#DEFAULT#:t-HeroRegion--featured t-HeroRegion--centered:t-HeroRegion--hideIcon:t-HeroRegion--iconsCircle'
 ,p_plug_template=>wwv_flow_imp.id(8492139706518207)
 ,p_plug_display_sequence=>10

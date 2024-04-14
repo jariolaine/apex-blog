@@ -57,6 +57,7 @@ as
 --    Jari Laine 05.09.2023 - Removed use of type blog_t_post from procedure get_post_details
 --    Jari Laine 01.04.2024 - New package global constants and variables
 --                          - Small changes to procedures download_file
+--    Jari Laine 10.04.2024 - Changes to procedure initialize_items
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -66,8 +67,6 @@ as
 
   g_mime_rss      constant varchar2(40) := 'application/rss+xml';
   g_mime_atom     constant varchar2(40) := 'application/atom+xml';
-
-  g_link_canonical  varchar2(1024);
 --------------------------------------------------------------------------------
   procedure raise_http_error(
     p_error_code  in number
@@ -355,7 +354,18 @@ as
     p_app_id in varchar2
   )
   as
-    l_app_id number;
+    l_app_id blog_v_init_items.application_id%type;
+
+    type item_value_r is record
+    (
+      item_name   blog_v_init_items.item_name%type,
+      item_value  blog_v_init_items.attribute_value%type
+    );
+
+    type items_t is table of item_value_r;
+
+    l_init_items items_t;
+
   begin
 
     -- raise no data found error if parameter p_app_id_name is null
@@ -366,23 +376,34 @@ as
     -- conver application id string to number
     l_app_id := to_number( p_app_id );
 
-    -- set items session state
     -- fetch items and values that session state need to be set
-    for c1 in (
-      select
-        i.item_name,
-        i.item_value
-      from blog_v_init_items i
-      where i.application_id = l_app_id
-    ) loop
+    select
+      v1.item_name
+    , v1.attribute_value
+    bulk collect into l_init_items
+    from blog_v_init_items v1
+    where 1 = 1
+      and v1.application_id = l_app_id
+      and (
+        v1.attribute_value != v1.session_value
+        or( v1.attribute_value is null and v1.session_value is not null )
+        or( v1.attribute_value is not null and v1.session_value is null )
+      )
+    ;
 
-      -- set item session state and no commit
-      apex_util.set_session_state(
-        p_name    => c1.item_name
-        ,p_value  => c1.item_value
-        ,p_commit => false
+    for i in 1 .. l_init_items.count
+    loop
+      apex_debug.info(
+        p_message => 'Setting session state. Item: %s, value: %s'
+      , p0 => l_init_items(i).item_name
+      , p1 => l_init_items(i).item_value
       );
-
+      -- set item session state. do not commit.
+      apex_util.set_session_state(
+        p_name    => l_init_items(i).item_name
+      , p_value   => l_init_items(i).item_value
+      , p_commit  => false
+      );
     end loop;
 
   exception
@@ -416,7 +437,7 @@ as
     p_prev_post_title out nocopy varchar2
   )
   as
-    l_post_id       number;
+    l_post_id       blog_v_posts.post_id%type;
     l_published_on  blog_v_posts.published_on%type;
     l_changed_on    blog_v_posts.changed_on%type;
   begin
@@ -490,7 +511,7 @@ as
     p_category_id in varchar2
   ) return varchar2
   as
-    l_category_id   number;
+    l_category_id   blog_v_categories.category_id%type;
     l_category_name blog_v_categories.category_title%type;
   begin
 
@@ -535,7 +556,7 @@ as
     p_tag_id in varchar2
   ) return varchar2
   as
-    l_tag_id    number;
+    l_tag_id    blog_v_tags.tag_id%type;
     l_tag_name  blog_v_tags.tag%type;
   begin
 

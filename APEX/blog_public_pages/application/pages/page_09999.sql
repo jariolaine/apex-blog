@@ -27,11 +27,11 @@ wwv_flow_imp_page.create_page(
 ,p_page_comment=>'Login page. Not used as application is public.'
 ,p_page_component_map=>'12'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240401075054'
+,p_last_upd_yyyymmddhh24miss=>'20240412050128'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(35972740955622136)
-,p_plug_name=>'&G_APP_NAME.'
+,p_plug_name=>'&APP_TEXT$BLOG_APP_NAME.'
 ,p_icon_css_classes=>'fa-sign-in fa-lg u-color-31'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(6802357267267386)
@@ -69,6 +69,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_field_template=>wwv_flow_imp.id(6854381477267413)
 ,p_item_icon_css_classes=>'fa-user'
 ,p_item_template_options=>'#DEFAULT#'
+,p_is_persistent=>'N'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'TEXT'

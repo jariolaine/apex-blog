@@ -153,12 +153,12 @@ as
     -- blog name
     l_app_name := coalesce(
        p_app_name
-      ,blog_util.get_attribute_value( 'G_APP_NAME' )
+      ,blog_util.get_attribute_value( 'BLOG_APP_NAME' )
     );
     -- rss feed description
     l_app_desc  := coalesce(
        p_app_desc
-      ,blog_util.get_attribute_value( 'G_APP_DESC' )
+      ,blog_util.get_attribute_value( 'BLOG_APP_DESC' )
     );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
@@ -294,12 +294,12 @@ as
     -- blog name
     l_app_name := coalesce(
        p_app_name
-      ,blog_util.get_attribute_value( 'G_APP_NAME' )
+      ,blog_util.get_attribute_value( 'BLOG_APP_NAME' )
     );
     -- atom feed description
     l_app_desc  := coalesce(
        p_app_desc
-      ,blog_util.get_attribute_value( 'G_APP_DESC' )
+      ,blog_util.get_attribute_value( 'BLOG_APP_DESC' )
     );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(

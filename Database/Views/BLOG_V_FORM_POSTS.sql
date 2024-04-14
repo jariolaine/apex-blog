@@ -1,7 +1,7 @@
 --------------------------------------------------------
---  DDL for View BLOG_V_ALL_POSTS_FORM
+--  DDL for View BLOG_V_FORM_POSTS
 --------------------------------------------------------
-create or replace force view blog_v_all_posts_form as
+create or replace force view blog_v_form_posts as
 select
   t1.id               as id
   ,t1.row_version     as row_version

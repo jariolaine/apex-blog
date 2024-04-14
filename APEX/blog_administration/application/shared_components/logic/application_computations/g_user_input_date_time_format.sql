@@ -13,13 +13,13 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_shared.create_flow_computation(
  p_id=>wwv_flow_imp.id(19068228071884603)
-,p_computation_sequence=>30
+,p_computation_sequence=>40
 ,p_computation_item=>'G_USER_INPUT_DATE_TIME_FORMAT'
 ,p_computation_point=>'AFTER_LOGIN'
 ,p_computation_type=>'SET_ITEM_EQUAL_THIS_PREFERENCE'
 ,p_computation_processed=>'REPLACE_EXISTING'
 ,p_computation=>'BLOG_INPUT_DATE_FORMAT'
-,p_version_scn=>1
+,p_version_scn=>41109498932100
 );
 wwv_flow_imp.component_end;
 end;

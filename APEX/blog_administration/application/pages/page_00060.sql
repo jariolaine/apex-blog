@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_help_text=>'No help available for this page.'
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20231206090126'
+,p_last_upd_yyyymmddhh24miss=>'20240413074511'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(65609751049299759)
@@ -54,6 +54,7 @@ wwv_flow_imp_page.create_page_plug(
 '  ,v1.data_unread                   as btn_data_unread',
 '  ,v1.body_html                     as comment_body',
 '  ,v1.ctx_search                    as ctx_search',
+'-- Workaround for detail view',
 '  ,apex_page.get_url(',
 '     p_page         => 61',
 '    ,p_clear_cache  => 61',
@@ -89,7 +90,7 @@ wwv_flow_imp_page.create_worksheet(
 ,p_detail_view_for_each_row=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="blog-comment-IR">',
 '  <div class="blog-commentIcon">',
-'    <span title="#COMMENT_FLAG#" arial-label="#COMMENT_FLAG#" class="t-Icon fa fa-lg #FLAG_ICON#" id="CF#COMMENT_ID#"></span>',
+'    <span title="#COMMENT_FLAG#" arial-label="#COMMENT_FLAG#" class="fa fa-lg #FLAG_ICON#" id="CF#COMMENT_ID#"></span>',
 '  </div>',
 '  <div class="blog-commentContainer">',
 '    <div class="blog-commentTitle u-flex">',
@@ -105,7 +106,7 @@ wwv_flow_imp_page.create_worksheet(
 '    </div>',
 '  </div>',
 '  <div class="blog-commentStatus">',
-'    <span title="#COMMENT_STATUS#" arial-label="#COMMENT_STATUS#" class="t-Icon fa fa-lg #STATUS_ICON#"></span>',
+'    <span title="#COMMENT_STATUS#" arial-label="#COMMENT_STATUS#" class="fa fa-lg #STATUS_ICON#"></span>',
 '  </div>',
 '</div>'))
 ,p_owner=>'LAINFJAR'
@@ -119,8 +120,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'A'
 ,p_column_label=>'Comment Id'
 ,p_column_type=>'NUMBER'
-,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
+,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(38201920038747553)
@@ -129,8 +129,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'C'
 ,p_column_label=>'Post Id'
 ,p_column_type=>'NUMBER'
-,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
+,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(38202391418747554)
@@ -139,8 +138,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_identifier=>'D'
 ,p_column_label=>'Parent Id'
 ,p_column_type=>'NUMBER'
-,p_display_text_as=>'HIDDEN'
-,p_use_as_row_header=>'N'
+,p_display_text_as=>'HIDDEN_ESCAPE_SC'
 );
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(38202796536747554)

@@ -3,20 +3,22 @@
 --------------------------------------------------------
 create or replace force view blog_v_links as
 select
-   t1.id          as link_id
-  ,t2.id          as group_id
-  ,t2.title       as group_title
-  ,t2.display_seq as group_display_seq
-  ,t1.display_seq as display_seq
-  ,t1.title       as link_title
-  ,t1.link_desc   as link_desc
-  ,t1.link_url    as link_url
-  ,case external_link + target_blank
+  t1.id             as link_id
+, t2.id             as group_id
+, t2.title          as group_title
+, t2.display_seq    as group_display_seq
+, t1.display_seq    as display_seq
+, t1.title          as link_title
+, t1.link_desc      as link_desc
+, t1.link_url       as link_url
+, t1.external_link
+  + t1.target_blank as link_attr_code
+, case t1.external_link + t1.target_blank
     when 2
     then 'target="_blank" rel="external"'
     when 1
     then
-      case external_link
+      case t1.external_link
       when 1
       then 'rel="external"'
       else 'target="_blank"'

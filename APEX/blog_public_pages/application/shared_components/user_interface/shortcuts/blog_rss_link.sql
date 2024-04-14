@@ -20,7 +20,7 @@ wwv_flow_imp_shared.create_shortcut(
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return blog_html.get_rss_link(',
 '  p_app_id        => :APP_ID',
-', p_app_name      => :G_APP_NAME',
+', p_app_name      => :APP_TEXT$BLOG_APP_NAME',
 ', p_message       => ''BLOG_RSS_TITLE''',
 ', p_build_option  => ''BLOG_FEATURE_RSS''',
 ');'))

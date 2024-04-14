@@ -159,11 +159,12 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- json for pages and items
-  c_page_and_item constant json_object_t := json_object_t( '{
-    "post": {"page_alias": "POST", "item_name": "P2_POST_ID"},
-    "category": {"page_alias": "CATEGORY", "item_name": "P14_CATEGORY_ID"},
-    "archive": {"page_alias": "ARCHIVES", "item_name": "P15_ARCHIVE_ID"},
-    "tag": {"page_alias": "TAG", "item_name": "P6_TAG_ID"}
+  c_page_and_items constant json_object_t := json_object_t( '{
+    "post": {"page": "POST", "items": "P2_POST_ID"},
+    "category": {"page": "CATEGORY", "items": "P14_CATEGORY_ID"},
+    "archive": {"page": "ARCHIVES", "items": "P15_ARCHIVE_ID"},
+    "tag": {"page": "TAG", "items": "P6_TAG_ID"},
+    "unsubscribe": {"page": "POST", "items": "P2_POST_ID,P2_SUBSCRIPTION_ID"}
   }' );
 
 -- cache rss and atom url
@@ -261,10 +262,10 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
-    l_json  json_object_t;
+    l_json json_object_t;
   begin
 
-  l_json := c_page_and_item.get_object( 'post' );
+  l_json := c_page_and_items.get_object( 'post' );
 
   return
     case p_canonical
@@ -272,9 +273,9 @@ as
     end ||
     apex_page.get_url(
       p_application => p_application
-    , p_page        => l_json.get_string( 'page_alias' )
+    , p_page        => l_json.get_string( 'page' )
     , p_session     => ''
-    , p_items       => l_json.get_string( 'item_name' )
+    , p_items       => l_json.get_string( 'items' )
     , p_values      => p_post_id
     , p_plain_url   => true
     )
@@ -308,19 +309,19 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
-    l_json  json_object_t;
+    l_json json_object_t;
   begin
 
-  l_json := c_page_and_item.get_object( 'category' );
+  l_json := c_page_and_items.get_object( 'category' );
 
     return
       case p_canonical
         when 'YES' then get_canonical_host
       end ||
       apex_page.get_url(
-        p_page      => l_json.get_string( 'page_alias' )
+        p_page      => l_json.get_string( 'page' )
       , p_session   => ''
-      , p_items     => l_json.get_string( 'item_name' )
+      , p_items     => l_json.get_string( 'items' )
       , p_values    => p_category_id
       , p_plain_url => true
       )
@@ -354,19 +355,19 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
-    l_json  json_object_t;
+    l_json json_object_t;
   begin
 
-    l_json := c_page_and_item.get_object( 'archive' );
+    l_json := c_page_and_items.get_object( 'archive' );
 
     return
       case p_canonical
         when 'YES' then get_canonical_host
       end  ||
       apex_page.get_url(
-        p_page      => l_json.get_string( 'page_alias' )
+        p_page      => l_json.get_string( 'page' )
       , p_session   => ''
-      , p_items     => l_json.get_string( 'item_name' )
+      , p_items     => l_json.get_string( 'items' )
       , p_values    => p_archive_id
       , p_plain_url => true
       )
@@ -400,19 +401,19 @@ as
     p_canonical   in varchar2 default 'NO'
   ) return varchar2
   as
-    l_json  json_object_t;
+    l_json json_object_t;
   begin
 
-    l_json := c_page_and_item.get_object( 'tag' );
+    l_json := c_page_and_items.get_object( 'tag' );
 
     return
       case p_canonical
         when 'YES' then get_canonical_host
       end ||
       apex_page.get_url(
-        p_page      => l_json.get_string( 'page_alias' )
+        p_page      => l_json.get_string( 'page' )
       , p_session   => ''
-      , p_items     => l_json.get_string( 'item_name' )
+      , p_items     => l_json.get_string( 'items' )
       , p_values    => p_tag_id
       , p_plain_url => true
       )
@@ -445,14 +446,21 @@ as
     p_process     in varchar2 default null
   ) return varchar2
   as
+    l_request varchar2(256);
   begin
 
+    l_request :=
+      apex_string.format(
+        p_message => 'application_process=%s'
+      , p0 => p_process
+      )
+    ;
     return get_canonical_host ||
       apex_page.get_url(
         p_application => p_application
       , p_page        => 'pgm'
       , p_session     => ''
-      , p_request     => 'application_process=' || p_process
+      , p_request     => l_request
       , p_plain_url   => true
       )
     ;
@@ -468,28 +476,21 @@ as
   as
     l_url     varchar2(4000);
     l_subs_id varchar2(256);
+    l_json    json_object_t;
   begin
 
+    l_json := c_page_and_items.get_object( 'unsubscribe' );
+
     l_subs_id := blog_util.int_to_vc2( p_subscription_id );
-    -- workaround because APEX 19.2
-    -- apex_page.get_url don't have parameter p_plain_url
-    l_url := 'f?p='
-      || p_application
-      || ':POST:::NO::'
-      || 'P2_POST_ID'
-      || ','
-      || 'P2_SUBSCRIPTION_ID'
-      || ':'
-      || p_post_id
-      || ','
-      || l_subs_id
-    ;
 
     l_url :=
-      apex_util.prepare_url(
-        p_url           => l_url
-      , p_checksum_type => 'PUBLIC_BOOKMARK'
-      , p_plain_url     => true
+      apex_page.get_url(
+        p_application => p_application
+      , p_page        => l_json.get_string( 'page' )
+      , p_session     => ''
+      , p_items       => l_json.get_string( 'items' )
+      , p_values      => p_post_id || ',' || l_subs_id
+      , p_plain_url   => true
       )
     ;
 
