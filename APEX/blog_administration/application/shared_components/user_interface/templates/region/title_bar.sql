@@ -4,8 +4,8 @@ begin
 --     REGION TEMPLATE: TITLE_BAR
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -42,7 +42,7 @@ wwv_flow_imp_shared.create_plug_template(
 ,p_translate_this_template=>'N'
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(8887749436718033)
+ p_id=>wwv_flow_imp.id(9931858415254924)
 ,p_plug_template_id=>wwv_flow_imp.id(8506230469518215)
 ,p_name=>'Region Body'
 ,p_placeholder=>'BODY'
@@ -53,7 +53,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(8888234055718034)
+ p_id=>wwv_flow_imp.id(9932387653254924)
 ,p_plug_template_id=>wwv_flow_imp.id(8506230469518215)
 ,p_name=>'Change'
 ,p_placeholder=>'CHANGE'
@@ -64,7 +64,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(8888792761718034)
+ p_id=>wwv_flow_imp.id(9932810535254924)
 ,p_plug_template_id=>wwv_flow_imp.id(8506230469518215)
 ,p_name=>'Close'
 ,p_placeholder=>'CLOSE'
@@ -75,7 +75,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(8889299416718034)
+ p_id=>wwv_flow_imp.id(9933368823254924)
 ,p_plug_template_id=>wwv_flow_imp.id(8506230469518215)
 ,p_name=>'Copy'
 ,p_placeholder=>'COPY'
@@ -86,7 +86,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(8889705296718035)
+ p_id=>wwv_flow_imp.id(9933818897254923)
 ,p_plug_template_id=>wwv_flow_imp.id(8506230469518215)
 ,p_name=>'Create'
 ,p_placeholder=>'CREATE'
@@ -97,7 +97,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(8890222039718035)
+ p_id=>wwv_flow_imp.id(9934329311254923)
 ,p_plug_template_id=>wwv_flow_imp.id(8506230469518215)
 ,p_name=>'Delete'
 ,p_placeholder=>'DELETE'
@@ -108,7 +108,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(8890778848718035)
+ p_id=>wwv_flow_imp.id(9934859401254923)
 ,p_plug_template_id=>wwv_flow_imp.id(8506230469518215)
 ,p_name=>'Edit'
 ,p_placeholder=>'EDIT'
@@ -119,7 +119,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(8891286795718035)
+ p_id=>wwv_flow_imp.id(9935367354254922)
 ,p_plug_template_id=>wwv_flow_imp.id(8506230469518215)
 ,p_name=>'Help'
 ,p_placeholder=>'HELP'
@@ -130,7 +130,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(8891766696718036)
+ p_id=>wwv_flow_imp.id(9935845119254922)
 ,p_plug_template_id=>wwv_flow_imp.id(8506230469518215)
 ,p_name=>'Next'
 ,p_placeholder=>'NEXT'
@@ -141,7 +141,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(8892269393718036)
+ p_id=>wwv_flow_imp.id(9936334088254922)
 ,p_plug_template_id=>wwv_flow_imp.id(8506230469518215)
 ,p_name=>'Previous'
 ,p_placeholder=>'PREVIOUS'
@@ -152,7 +152,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(8892712223718036)
+ p_id=>wwv_flow_imp.id(9936822238254922)
 ,p_plug_template_id=>wwv_flow_imp.id(8506230469518215)
 ,p_name=>'Search Field and Smart Filters'
 ,p_placeholder=>'SMART_FILTERS'
@@ -163,7 +163,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(8893254182718037)
+ p_id=>wwv_flow_imp.id(9937355070254921)
 ,p_plug_template_id=>wwv_flow_imp.id(8506230469518215)
 ,p_name=>'Sub Regions'
 ,p_placeholder=>'SUB_REGIONS'
@@ -174,7 +174,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(8893770208718037)
+ p_id=>wwv_flow_imp.id(9937843097254921)
 ,p_plug_template_id=>wwv_flow_imp.id(8506230469518215)
 ,p_name=>'Up'
 ,p_placeholder=>'UP'

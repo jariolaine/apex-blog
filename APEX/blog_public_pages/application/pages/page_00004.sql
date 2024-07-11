@@ -4,8 +4,8 @@ begin
 --     PAGE: 00004
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -26,8 +26,6 @@ wwv_flow_imp_page.create_page(
 ,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'26'
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240421070111'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(38694166324057112)
@@ -35,18 +33,20 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-ResultsRegion--boxed:margin-bottom-md'
 ,p_plug_template=>wwv_flow_imp.id(9260227573556082)
 ,p_plug_display_sequence=>20
+,p_location=>null
 ,p_plug_source_type=>'NATIVE_SEARCH_REGION'
 ,p_ajax_items_to_submit=>'P4_SEARCH,P4_SEARCH_FROM'
-,p_attribute_02=>'N'
-,p_attribute_04=>'N'
-,p_attribute_05=>'P4_SEARCH'
-,p_attribute_06=>'N'
-,p_attribute_11=>'N'
-,p_attribute_13=>'<span class="nodatafound">&APP_TEXT$BLOG_MSG_ENTER_SEARCH_TERM.</span>'
-,p_attribute_15=>'Y'
-,p_attribute_16=>'<span class="nodatafound">&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.</span>'
-,p_attribute_17=>'ITEM'
-,p_attribute_18=>'P0_BLOG_SEARCH_ROWS'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'custom_layout', 'N',
+  'lazy_loading', 'N',
+  'no_query_entered_message', '<span class="nodatafound">&APP_TEXT$BLOG_MSG_ENTER_SEARCH_TERM.</span>',
+  'no_results_found_message', '<span class="nodatafound">&APP_TEXT$BLOG_MSG_NO_DATA_FOUND.</span>',
+  'results_per_page_type', 'ITEM',
+  'search_as_you_type', 'N',
+  'search_item', 'P0_BLOG_SEARCH_ROWS',
+  'search_page_item', 'P4_SEARCH',
+  'show_result_count', 'N',
+  'use_pagination', 'Y')).to_clob
 );
 wwv_flow_imp_page.create_search_region_source(
  p_id=>wwv_flow_imp.id(38694658146057114)
@@ -140,6 +140,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_lov_display_extra=>'NO'
 ,p_attribute_01=>'4'
+,p_multi_value_type=>'SEPARATED'
+,p_multi_value_separator=>':'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(24669360219850543)

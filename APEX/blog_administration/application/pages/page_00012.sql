@@ -4,8 +4,8 @@ begin
 --     PAGE: 00012
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -70,8 +70,6 @@ wwv_flow_imp_page.create_page(
 '</ol>',
 ''))
 ,p_page_component_map=>'02'
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240428092538'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(8640589331194982)
@@ -98,8 +96,10 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_plug_grid_column_span=>9
 ,p_plug_grid_column_css_classes=>'padding-right-none'
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
+,p_location=>null
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(9832800462215220)
@@ -110,8 +110,9 @@ wwv_flow_imp_page.create_page_plug(
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_03'
 ,p_translate_title=>'N'
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(18441525921293012)
@@ -122,8 +123,9 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_condition_type=>'ITEM_IS_NOT_NULL'
 ,p_plug_display_when_condition=>'P12_ID'
 ,p_required_patch=>wwv_flow_imp.id(8935943081653812)
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(63284518204435501)
@@ -148,6 +150,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Cancel'
 ,p_button_position=>'CLOSE'
+,p_button_alignment=>'RIGHT'
 ,p_button_execute_validations=>'N'
 ,p_warn_on_unsaved_changes=>null
 ,p_icon_css_classes=>'fa-chevron-left'
@@ -162,6 +165,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Save Draft'
 ,p_button_position=>'CREATE'
+,p_button_alignment=>'RIGHT'
 ,p_button_condition=>'P12_ID'
 ,p_button_condition_type=>'ITEM_IS_NULL'
 ,p_icon_css_classes=>'fa-save'
@@ -178,6 +182,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Publish'
 ,p_button_position=>'CREATE'
+,p_button_alignment=>'RIGHT'
 ,p_button_condition=>'P12_ID'
 ,p_button_condition_type=>'ITEM_IS_NULL'
 ,p_icon_css_classes=>'fa-save'
@@ -193,6 +198,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Delete'
 ,p_button_position=>'DELETE'
+,p_button_alignment=>'RIGHT'
 ,p_button_execute_validations=>'N'
 ,p_confirm_message=>'&APP_TEXT$DELETE_MSG!RAW.'
 ,p_confirm_style=>'danger'
@@ -211,6 +217,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Save Draft'
 ,p_button_position=>'EDIT'
+,p_button_alignment=>'RIGHT'
 ,p_button_condition=>'P12_IS_ACTIVE'
 ,p_button_condition2=>'0'
 ,p_button_condition_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
@@ -228,6 +235,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Publish'
 ,p_button_position=>'EDIT'
+,p_button_alignment=>'RIGHT'
 ,p_button_condition=>'P12_IS_ACTIVE'
 ,p_button_condition2=>'0'
 ,p_button_condition_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
@@ -244,6 +252,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_template_id=>wwv_flow_imp.id(8549262062518244)
 ,p_button_image_alt=>'Revert to Draft'
 ,p_button_position=>'EDIT'
+,p_button_alignment=>'RIGHT'
 ,p_button_condition=>'P12_IS_ACTIVE'
 ,p_button_condition2=>'1'
 ,p_button_condition_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
@@ -261,6 +270,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Save'
 ,p_button_position=>'EDIT'
+,p_button_alignment=>'RIGHT'
 ,p_button_condition=>'P12_IS_ACTIVE'
 ,p_button_condition2=>'1'
 ,p_button_condition_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
@@ -300,7 +310,6 @@ wwv_flow_imp_page.create_page_item(
 ||'Categories tab at Posts page.'
 ,p_attribute_01=>'POPUP'
 ,p_attribute_02=>'FIRST_ROWSET'
-,p_attribute_03=>'N'
 ,p_attribute_04=>'Y'
 ,p_attribute_05=>'N'
 );
@@ -502,11 +511,11 @@ wwv_flow_imp_page.create_page_item(
 'You can maintain  all tags information by clicking All Tags tab at Posts page. To edit e.g. display sequence tags linked to post, click Edit Tags button on Posts page report.'))
 ,p_attribute_01=>'POPUP'
 ,p_attribute_02=>'FIRST_ROWSET'
-,p_attribute_03=>'Y'
 ,p_attribute_04=>'Y'
 ,p_attribute_05=>'Y'
 ,p_attribute_06=>'0'
-,p_attribute_11=>','
+,p_multi_value_type=>'SEPARATED'
+,p_multi_value_separator=>','
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(18441663346293013)
@@ -954,18 +963,6 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_when2=>'0'
 ,p_internal_uid=>27060510671689106
 ,p_process_comment=>'Clear published on item if post was draft. Then new published on will be set automatically on after submit computation e.g. in case post is published.'
-);
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(6929777493150993)

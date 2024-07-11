@@ -4,8 +4,8 @@ begin
 --     REGION TEMPLATE: COLLAPSIBLE
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -41,7 +41,7 @@ wwv_flow_imp_shared.create_plug_template(
 '   </div>',
 ' </div>',
 '</div>',
-'<script>',
+'<script #APEX_CSP_NONCE_ATTRIBUTE#>',
 '    (() => {',
 '        const region = document.getElementById(''#REGION_STATIC_ID#'').classList;',
 '        const pref = sessionStorage.getItem(''ORA_WWV_apex.toggleCore.a_Collapsible_#REGION_ID#.&APP_ID..&APP_PAGE_ID..preferenceForExpanded'');',
@@ -64,7 +64,7 @@ wwv_flow_imp_shared.create_plug_template(
 ,p_translate_this_template=>'N'
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(7806551899709738)
+ p_id=>wwv_flow_imp.id(8849269333263892)
 ,p_plug_template_id=>wwv_flow_imp.id(6791752177267380)
 ,p_name=>'Region Body'
 ,p_placeholder=>'BODY'
@@ -76,7 +76,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_max_fixed_grid_columns=>12
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(7807062218709738)
+ p_id=>wwv_flow_imp.id(8849766007263892)
 ,p_plug_template_id=>wwv_flow_imp.id(6791752177267380)
 ,p_name=>'Change'
 ,p_placeholder=>'CHANGE'
@@ -87,7 +87,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(7807533438709738)
+ p_id=>wwv_flow_imp.id(8850222206263892)
 ,p_plug_template_id=>wwv_flow_imp.id(6791752177267380)
 ,p_name=>'Close'
 ,p_placeholder=>'CLOSE'
@@ -98,7 +98,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(7808012407709739)
+ p_id=>wwv_flow_imp.id(8850728315263892)
 ,p_plug_template_id=>wwv_flow_imp.id(6791752177267380)
 ,p_name=>'Copy'
 ,p_placeholder=>'COPY'
@@ -109,7 +109,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(7808500771709739)
+ p_id=>wwv_flow_imp.id(8851257961263891)
 ,p_plug_template_id=>wwv_flow_imp.id(6791752177267380)
 ,p_name=>'Create'
 ,p_placeholder=>'CREATE'
@@ -120,7 +120,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(7809065739709739)
+ p_id=>wwv_flow_imp.id(8851727752263891)
 ,p_plug_template_id=>wwv_flow_imp.id(6791752177267380)
 ,p_name=>'Edit'
 ,p_placeholder=>'EDIT'
@@ -131,7 +131,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(7809547107709740)
+ p_id=>wwv_flow_imp.id(8852236977263891)
 ,p_plug_template_id=>wwv_flow_imp.id(6791752177267380)
 ,p_name=>'Next'
 ,p_placeholder=>'NEXT'
@@ -142,7 +142,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(7810016219709740)
+ p_id=>wwv_flow_imp.id(8852780185263891)
 ,p_plug_template_id=>wwv_flow_imp.id(6791752177267380)
 ,p_name=>'Sort Order'
 ,p_placeholder=>'ORDER_BY_ITEM'
@@ -153,7 +153,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(7810548424709740)
+ p_id=>wwv_flow_imp.id(8853253017263891)
 ,p_plug_template_id=>wwv_flow_imp.id(6791752177267380)
 ,p_name=>'Previous'
 ,p_placeholder=>'PREVIOUS'
@@ -164,7 +164,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(7811097357709741)
+ p_id=>wwv_flow_imp.id(8853758669263890)
 ,p_plug_template_id=>wwv_flow_imp.id(6791752177267380)
 ,p_name=>'Sub Regions'
 ,p_placeholder=>'SUB_REGIONS'

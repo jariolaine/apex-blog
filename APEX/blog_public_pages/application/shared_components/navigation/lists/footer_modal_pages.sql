@@ -4,8 +4,8 @@ begin
 --     LIST: Footer Modal Pages
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -27,6 +27,7 @@ wwv_flow_imp_shared.create_list(
 'order by v1.display_seq'))
 ,p_list_status=>'PUBLIC'
 ,p_required_patch=>wwv_flow_imp.id(42618909236023987)
+,p_version_scn=>1
 );
 wwv_flow_imp.component_end;
 end;

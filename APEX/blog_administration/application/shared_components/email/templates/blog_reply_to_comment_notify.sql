@@ -1,11 +1,11 @@
 prompt --application/shared_components/email/templates/blog_reply_to_comment_notify
 begin
 --   Manifest
---     REPORT LAYOUT: Blog reply to comment notification
+--     EMAIL TEMPLATE: Blog reply to comment notification
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0

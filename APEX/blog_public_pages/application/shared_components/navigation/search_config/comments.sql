@@ -4,8 +4,8 @@ begin
 --     SEARCH CONFIG: Comments
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -32,6 +32,7 @@ wwv_flow_imp_shared.create_search_config(
 ', v1.ctx_search     as ctx_search',
 'from blog_v_comments v1'))
 ,p_oratext_index_column_name=>'CTX_SEARCH'
+,p_oratext_function_type=>'CUSTOM'
 ,p_oratext_function=>'blog_ctx.get_post_search'
 ,p_query_order_by=>':APEX$ORATEXT_SCORE desc, created_on desc'
 ,p_pk_column_name=>'COMMENT_ID'
@@ -60,6 +61,7 @@ wwv_flow_imp_shared.create_search_config(
 '    <div class="a-ResultsItem-description">&COMMENT_BODY!RAW.</div>',
 '  </div>',
 '</div>'))
+,p_version_scn=>1
 ,p_build_option_id=>wwv_flow_imp.id(8667733481689180)
 );
 wwv_flow_imp.component_end;

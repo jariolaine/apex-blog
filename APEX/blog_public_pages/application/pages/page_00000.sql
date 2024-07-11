@@ -4,8 +4,8 @@ begin
 --     PAGE: 00000
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -19,8 +19,6 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'D'
 ,p_page_comment=>'The global page'
 ,p_page_component_map=>'14'
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240415182808'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(6433141607894071)
@@ -31,8 +29,9 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_translate_title=>'N'
 ,p_plug_display_condition_type=>'NEVER'
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
 ,p_plug_comment=>'Region to hold items that shouldn''t rendered on page'
 );
 wwv_flow_imp_page.create_page_plug(
@@ -47,15 +46,10 @@ wwv_flow_imp_page.create_page_plug(
 ,p_translate_title=>'N'
 ,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
 ,p_plug_display_when_condition=>'1001,1002,1003,9999'
-,p_plug_caching=>'CACHE'
-,p_plug_caching_max_age_in_sec=>31536000
-,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
-,p_plug_cache_when_condition_e1=>'DEBUG'
-,p_plug_cache_when_condition_e2=>'NO'
-,p_plug_cache_depends_on_items=>'APP_ID'
 ,p_landmark_type=>'exclude_landmark'
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
 ,p_plug_comment=>'Application global column holding e.g. search, archives, categories list and latest posts list'
 );
 wwv_flow_imp_page.create_page_plug(
@@ -154,15 +148,10 @@ wwv_flow_imp_page.create_page_plug(
 '  <a href="https://github.com/jariolaine/apex-blog" class="blog-copyright-link" target="_blank" rel="external" title="Blog application built with Oracle Application Express (APEX)">Powered By APEX Blog</a>',
 '</div>'))
 ,p_translate_title=>'N'
-,p_plug_caching=>'CACHE'
-,p_plug_caching_max_age_in_sec=>31536000
-,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
-,p_plug_cache_when_condition_e1=>'DEBUG'
-,p_plug_cache_when_condition_e2=>'NO'
-,p_plug_cache_depends_on_items=>'APP_ID'
 ,p_landmark_type=>'exclude_landmark'
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
 ,p_plug_comment=>'Displays link to blog application source code in GitHub. Do not change!'
 );
 wwv_flow_imp_page.create_page_plug(
@@ -176,15 +165,10 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_item_display_point=>'BELOW'
 ,p_plug_source=>'&APP_TEXT$BLOG_APP_NAME.'
 ,p_translate_title=>'N'
-,p_plug_caching=>'CACHE'
-,p_plug_caching_max_age_in_sec=>31536000
-,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
-,p_plug_cache_when_condition_e1=>'DEBUG'
-,p_plug_cache_when_condition_e2=>'NO'
-,p_plug_cache_depends_on_items=>'APP_TEXT$BLOG_APP_NAME'
 ,p_landmark_type=>'exclude_landmark'
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
 ,p_plug_comment=>'Region to displays blog name.'
 );
 wwv_flow_imp_page.create_page_plug(

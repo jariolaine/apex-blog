@@ -4,8 +4,8 @@ begin
 --     PAGE: 01001
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -35,8 +35,6 @@ wwv_flow_imp_page.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_page_comment=>'Dialog page to allow users comment blog posts.'
 ,p_page_component_map=>'02'
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240416144450'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27990916738607115)
@@ -46,8 +44,9 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>30
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_03'
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(31617719508094013)
@@ -57,6 +56,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_01'
+,p_location=>null
 ,p_plug_source=>'&APP_TEXT$BLOG_MSG_MODERATE_ENABLED.'
 ,p_plug_display_condition_type=>'EXPRESSION'
 ,p_plug_display_when_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -68,8 +68,9 @@ wwv_flow_imp_page.create_page_plug(
 ') = ''INCLUDE'''))
 ,p_plug_display_when_cond2=>'PLSQL'
 ,p_required_patch=>wwv_flow_imp.id(28281277020489892)
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(147769743184406827)
@@ -97,6 +98,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_template_id=>wwv_flow_imp.id(6855239813267414)
 ,p_button_image_alt=>'Cancel'
 ,p_button_position=>'CLOSE'
+,p_button_alignment=>'RIGHT'
 ,p_button_execute_validations=>'N'
 ,p_warn_on_unsaved_changes=>null
 ,p_icon_css_classes=>'fa-chevron-left'
@@ -112,6 +114,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Submit'
 ,p_button_position=>'NEXT'
+,p_button_alignment=>'RIGHT'
 ,p_icon_css_classes=>'fa-send-o'
 ,p_database_action=>'INSERT'
 );

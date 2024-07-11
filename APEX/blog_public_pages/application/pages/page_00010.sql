@@ -4,8 +4,8 @@ begin
 --     PAGE: 00010
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -24,8 +24,6 @@ wwv_flow_imp_page.create_page(
 ,p_required_patch=>wwv_flow_imp.id(6905258727754156)
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240412050000'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(6899425042645290)

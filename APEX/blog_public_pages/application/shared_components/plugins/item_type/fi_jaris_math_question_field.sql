@@ -4,8 +4,8 @@ begin
 --     PLUGIN: FI.JARIS.MATH_QUESTION_FIELD
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -24,6 +24,7 @@ wwv_flow_imp_shared.create_plugin(
 ,p_validation_function=>'blog_plugin.validate_math_question_field'
 ,p_standard_attributes=>'VISIBLE:FORM_ELEMENT:SESSION_STATE:ELEMENT:WIDTH:PLACEHOLDER:ICON'
 ,p_substitute_attributes=>true
+,p_version_scn=>1
 ,p_subscribe_plugin_settings=>true
 ,p_version_identifier=>'1.0'
 );
@@ -123,6 +124,9 @@ wwv_flow_imp_shared.create_plugin_attribute(
 ,p_supported_component_types=>'APEX_APPLICATION_PAGE_ITEMS'
 ,p_is_translatable=>false
 );
+end;
+/
+begin
 wwv_flow_imp.component_end;
 end;
 /

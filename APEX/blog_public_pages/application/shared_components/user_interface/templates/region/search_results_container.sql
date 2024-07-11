@@ -4,8 +4,8 @@ begin
 --     REGION TEMPLATE: SEARCH_RESULTS_CONTAINER
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>0
@@ -33,7 +33,7 @@ wwv_flow_imp_shared.create_plug_template(
 ,p_translate_this_template=>'N'
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(7919140976709833)
+ p_id=>wwv_flow_imp.id(8961871502263828)
 ,p_plug_template_id=>wwv_flow_imp.id(9260227573556082)
 ,p_name=>'Search Results'
 ,p_placeholder=>'BODY'
@@ -44,7 +44,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(7919671270709834)
+ p_id=>wwv_flow_imp.id(8962305753263827)
 ,p_plug_template_id=>wwv_flow_imp.id(9260227573556082)
 ,p_name=>'Search Field'
 ,p_placeholder=>'SEARCH_FIELD'
@@ -55,7 +55,7 @@ wwv_flow_imp_shared.create_plug_tmpl_display_point(
 ,p_glv_new_row=>true
 );
 wwv_flow_imp_shared.create_plug_tmpl_display_point(
- p_id=>wwv_flow_imp.id(7920177130709834)
+ p_id=>wwv_flow_imp.id(8962894749263827)
 ,p_plug_template_id=>wwv_flow_imp.id(9260227573556082)
 ,p_name=>'Sub Regions'
 ,p_placeholder=>'SUB_REGIONS'

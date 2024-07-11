@@ -4,8 +4,8 @@ begin
 --     PAGE: 20010
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -26,8 +26,6 @@ wwv_flow_imp_page.create_page(
 'By selecting one of the available settings, blogger can potentially change how the application is displayed and/or features available to the end users.</p>',
 '<p>This page also has links to various reports on the activity of this application.</p>'))
 ,p_page_component_map=>'06'
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240411201512'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(51691560566605050)
@@ -37,6 +35,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_template=>wwv_flow_imp.id(8490381578518205)
 ,p_plug_display_sequence=>20
 ,p_plug_new_grid_row=>false
+,p_location=>null
 ,p_list_id=>wwv_flow_imp.id(24798726331419823)
 ,p_plug_source_type=>'NATIVE_LIST'
 ,p_list_template_id=>wwv_flow_imp.id(8538547318518236)
@@ -61,6 +60,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_component_template_options=>'#DEFAULT#:u-colors'
 ,p_plug_template=>wwv_flow_imp.id(8490381578518205)
 ,p_plug_display_sequence=>10
+,p_location=>null
 ,p_list_id=>wwv_flow_imp.id(43889817309617069)
 ,p_plug_source_type=>'NATIVE_LIST'
 ,p_list_template_id=>wwv_flow_imp.id(8538547318518236)

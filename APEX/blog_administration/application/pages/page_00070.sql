@@ -4,8 +4,8 @@ begin
 --     PAGE: 00070
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -22,8 +22,6 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_help_text=>'No help available for this page.'
 ,p_page_component_map=>'18'
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240413073908'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(45054908267895533)
@@ -327,15 +325,14 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'TMPL_THEME_42$BUTTON_CUSTOM_2'
 ,p_column_alignment=>'CENTER'
-,p_attributes=>wwv_flow_string.join_clob(wwv_flow_t_varchar2('{',
-  '"IS_HOT": "N",',
-  '"IS_ICON_ONLY": "Y",',
-  '"ICON_CLASSES": "fa-clone",',
-  '"IS_DISABLED": "N",',
-  '"LABEL": "\u0026APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD.",',
-  '"CSS_CLASSES": "t-Button--small w60",',
-  '"BUTTON_ATTR": "data-clipboard-source=\"#RELATIVE_PATH#\""',
-'}'))
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'BUTTON_ATTR', 'data-clipboard-source="#RELATIVE_PATH#"',
+  'CSS_CLASSES', 't-Button--small w60',
+  'ICON_CLASSES', 'fa-clone',
+  'IS_DISABLED', 'N',
+  'IS_HOT', 'N',
+  'IS_ICON_ONLY', 'Y',
+  'LABEL', '&APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD.')).to_clob
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
@@ -405,6 +402,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Upload File(s)'
 ,p_button_position=>'NEXT'
+,p_button_alignment=>'RIGHT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:72:&SESSION.::&DEBUG.:RP,72::'
 ,p_icon_css_classes=>'fa-upload'
 );
@@ -418,6 +416,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_template_id=>wwv_flow_imp.id(8549081018518243)
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
+,p_button_alignment=>'RIGHT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:RP,&APP_PAGE_ID.,RIR::'
 ,p_icon_css_classes=>'fa-undo-alt'
 );

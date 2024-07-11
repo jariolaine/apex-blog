@@ -4,8 +4,8 @@ begin
 --     PAGE: 00000
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -20,8 +20,6 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'D'
 ,p_page_component_map=>'14'
-,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240420042807'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(55301750034386026)
@@ -30,12 +28,14 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_template=>wwv_flow_imp.id(8475523710518195)
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'REGION_POSITION_05'
+,p_location=>null
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="blog-copyright">',
 '  <a href="https://github.com/jariolaine/apex-blog" class="blog-copyright-link" target="_blank" rel="external" title="Blog application built with Oracle Application Express (APEX)">Powered By APEX Blog</a>',
 '</div>'))
-,p_attribute_01=>'N'
-,p_attribute_02=>'HTML'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
 ,p_plug_comment=>'Displays link to blog application source code in GitHub. Do not change!'
 );
 wwv_flow_imp.component_end;

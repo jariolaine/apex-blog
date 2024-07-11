@@ -4,21 +4,8 @@ begin
 --     MESSAGES: 402
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>0
@@ -28,13 +15,13 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(55636898271377244)
 ,p_name=>'BLOG_APP_DESC'
 ,p_message_text=>'About Almost Everything'
-,p_version_scn=>41373765286292
+,p_version_scn=>41373793344475
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(55636638660376194)
 ,p_name=>'BLOG_APP_NAME'
 ,p_message_text=>'My Blog'
-,p_version_scn=>41373765286292
+,p_version_scn=>41373793344470
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(10038616769932485)
@@ -961,25 +948,12 @@ wwv_flow_imp_shared.create_message(
 ,p_message_text=>'The value must be an integer between %0 and %1.'
 ,p_version_scn=>1
 );
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>402
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(27348379677347133)
 ,p_name=>'BLOG_VALIDATION_ERR_URL'
 ,p_message_text=>'URL must begin with http(s)://.'
 ,p_version_scn=>1
 );
-null;
 wwv_flow_imp.component_end;
 end;
 /
