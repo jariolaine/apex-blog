@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240414045117'
+,p_last_upd_yyyymmddhh24miss=>'20240416144316'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(114467420590895797)
@@ -414,7 +414,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_imp.id(38173431995729063)
 ,p_process_when=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'apex_util.get_build_option_status(',
+'apex_application_admin.get_build_option_status(',
 '   p_application_id    => :G_PUB_APP_ID',
 '  ,p_build_option_name => ''BLOG_FEATURE_SUBSCRIBE_COMMENTS''',
 ') = ''INCLUDE''',

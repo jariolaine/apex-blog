@@ -299,40 +299,68 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure add_blogger(
+    p_app_id    in varchar2,
     p_username  in varchar2,
     p_user_id   out nocopy number,
     p_name      out nocopy varchar2
   )
   as
-    l_max   blog_bloggers.display_seq%type;
-    l_email blog_bloggers.email%type;
+    l_max     blog_bloggers.display_seq%type;
+    l_email   blog_bloggers.email%type;
+    l_app_id  apex_applications.application_id%type;
+    l_authz   apex_applications.authorization_scheme%type;
   begin
 
-    -- fetch next display_seq
-    select max( t1.display_seq ) as display_seq
-    into l_max
-    from blog_bloggers t1
+    -- convert application id string to number
+    l_app_id := to_number( p_app_id );
+
+    -- fetch application authorization scheme name.
+    select authorization_scheme
+    into l_authz
+    from apex_applications
+    where 1 = 1
+    and application_id = l_app_id
     ;
 
-    l_max := next_seq( l_max );
+    apex_debug.info( 'Check is user in group: %s.', l_authz );
 
-    -- get APEX user email
-    l_email := apex_util.get_email( p_username => p_username );
+    -- verify user is authorized
+    if apex_authorization.is_authorized( l_authz )
+    then
 
-    -- get APEX user first and last name for blogger name
-    p_name := apex_string.format(
-       p_message  => '%s %s'
-      ,p0 => apex_util.get_first_name( p_username => p_username )
-      ,p1 => apex_util.get_last_name( p_username => p_username )
-    );
+      -- if user is authorized add user to blog_bloggers table
+      apex_debug.info( 'User %s is authorized and added to bloggers.', p_username );
 
-    -- add new blogger
-    insert into blog_bloggers
-      ( is_active, publish_desc, display_seq, apex_username, blogger_name, email )
-    values
-      ( 1, 0, l_max, p_username, p_name, l_email )
-    returning id into p_user_id
-    ;
+      -- fetch next display_seq
+      select
+        max( t1.display_seq ) as display_seq
+      into l_max
+      from blog_bloggers t1
+      ;
+
+      l_max := next_seq( l_max );
+
+      -- get APEX user email
+      l_email := apex_util.get_email( p_username => p_username );
+
+      -- get APEX user first and last name for blogger name
+      p_name := apex_string.format(
+        p_message  => '%s %s'
+      , p0 => apex_util.get_first_name( p_username => p_username )
+      , p1 => apex_util.get_last_name( p_username => p_username )
+      );
+
+      -- add new blogger
+      insert into blog_bloggers
+        ( is_active, publish_desc, display_seq, apex_username, blogger_name, email )
+      values
+        ( 1, 0, l_max, p_username, p_name, l_email )
+      returning id into p_user_id
+      ;
+
+    else
+      apex_debug.info( 'User %s is not authorized.', p_username );
+    end if;
 
   end add_blogger;
 --------------------------------------------------------------------------------
@@ -342,33 +370,27 @@ as
 --------------------------------------------------------------------------------
   procedure post_authentication
   as
-    l_group_names   apex_t_varchar2;
-    l_user_name     apex_workspace_apex_users.user_name%type;
-    l_workspace_id  apex_workspace_apex_users.workspace_id%type;
+    l_group_names apex_t_varchar2;
+    l_user_name   apex_workspace_apex_users.user_name%type;
   begin
 
-    l_user_name     := sys_context( 'APEX$SESSION', 'APP_USER' );
-    l_workspace_id  := sys_context( 'APEX$SESSION', 'WORKSPACE_ID' );
+    l_user_name := sys_context( 'APEX$SESSION', 'APP_USER' );
 
     -- collect user groups to PL/SQL table
     for c1 in(
-      select g.group_name
-      from apex_workspace_group_users g
-      where 1 = 1
-        and exists(
-          select 1
-          from apex_workspace_apex_users u
-          where 1 = 1
-            and u.user_name = g.user_name
-            and u.workspace_id = l_workspace_id
-            and u.account_locked = 'No'
-            and u.workspace_id = g.workspace_id
-            and u.user_name = l_user_name
-        )
+      select distinct
+        g.group_name
+      from apex_workspace_groups g
+      left join apex_workspace_group_groups gg on g.group_name = gg.grantee_name
+      left join apex_workspace_group_users gu on g.group_name = gu.group_name
+        and gu.user_name = l_user_name
+      left join apex_workspace_apex_users u on gu.user_name = u.user_name
+        and u.account_locked  = 'No'
+        and u.user_name = l_user_name
+        start with u.user_name = l_user_name
+      connect by nocycle prior gg.group_name = g.group_name
     ) loop
-
       apex_string.push( l_group_names, c1.group_name );
-
     end loop;
 
     -- Enable user groups
@@ -391,9 +413,9 @@ as
     p_name        out nocopy varchar2
   )
   as
-    l_app_id    apex_applications.application_id%type;
-    l_authz_grp apex_applications.authorization_scheme%type;
   begin
+
+    apex_debug.info( 'Fetch user id and name for username: %s', p_username );
 
     -- fetch user id and name
     select id
@@ -403,33 +425,19 @@ as
     where apex_username = p_username
     ;
 
-  -- if user not found, check is user authorized use blog
+  -- if user not found, try add user
   exception
   when no_data_found
   then
 
-    -- conver application id string to number
-    l_app_id := to_number( p_app_id );
+    apex_debug.info( 'User %s not found from bloggers.', p_username );
 
-    -- fetch application authorization scheme name
-    select authorization_scheme
-    into l_authz_grp
-    from apex_applications
-    where 1 = 1
-    and application_id = l_app_id
-    ;
-
-    -- verify user is authorized
-    if apex_util.current_user_in_group( l_authz_grp )
-    then
-      -- if user is authorized add user to blog_bloggers table
-      add_blogger(
-         p_username => p_username
-        ,p_user_id  => p_user_id
-        ,p_name     => p_name
-      );
-
-    end if;
+    add_blogger(
+      p_app_id    => p_app_id
+    , p_username  => p_username
+    , p_user_id   => p_user_id
+    , p_name      => p_name
+    );
 
   end get_blogger_details;
 --------------------------------------------------------------------------------

@@ -243,7 +243,6 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_affected_elements_type=>'REGION'
-,p_affected_region_id=>wwv_flow_imp.id(28587492454643033)
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog.ui.setListCurrentItem({',
 '   affectedElements: this.affectedElements',

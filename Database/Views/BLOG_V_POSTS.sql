@@ -48,13 +48,10 @@ select
   ,blog_url.get_post(
     p_post_id => q1.post_id
   )                   as post_url
-  ,(
-    select
-      listagg( lkp.tag, ', ' )  within group( order by lkp.display_seq ) as tags
-    from blog_v_post_tags lkp
-    where 1 = 1
-    and lkp.post_id = q1.post_id
-  )                   as tags
+-- Generate category URL
+  ,blog_url.get_category(
+    p_category_id => q1.category_id
+  )                   as category_url
 -- Aggregate tag HTML for post
   ,(
     select

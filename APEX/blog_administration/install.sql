@@ -139,11 +139,6 @@ prompt --install
 @@application/shared_components/plugins/template_component/theme_42_media_list.sql
 @@application/shared_components/plugins/template_component/theme_42_icon_custom_1.sql
 @@application/shared_components/plugins/template_component/theme_42_button_custom_2.sql
-@@application/shared_components/navigation/search_config/posts.sql
-@@application/shared_components/navigation/search_config/files.sql
-@@application/shared_components/navigation/search_config/links.sql
-@@application/shared_components/navigation/search_config/comments.sql
-@@application/shared_components/navigation/search_config/link_groups.sql
 @@application/user_interfaces/combined_files.sql
 @@application/pages/page_00000.sql
 @@application/pages/page_00001.sql
@@ -165,7 +160,6 @@ prompt --install
 @@application/pages/page_00073.sql
 @@application/pages/page_00080.sql
 @@application/pages/page_00081.sql
-@@application/pages/page_00090.sql
 @@application/pages/page_00201.sql
 @@application/pages/page_00202.sql
 @@application/pages/page_00501.sql

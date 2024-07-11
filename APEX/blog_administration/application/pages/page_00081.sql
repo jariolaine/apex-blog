@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240411060209'
+,p_last_upd_yyyymmddhh24miss=>'20240416173529'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(80283863617193467)
@@ -284,7 +284,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_sequence=>40
 ,p_item_plug_id=>wwv_flow_imp.id(80230956392485490)
 ,p_item_source_plug_id=>wwv_flow_imp.id(80283863617193467)
-,p_prompt=>'Content Html'
+,p_prompt=>'Content'
 ,p_source=>'CONTENT_HTML'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_RICH_TEXT_EDITOR'
@@ -296,7 +296,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_01=>'HTML'
 ,p_attribute_02=>'INTERMEDIATE'
 ,p_attribute_03=>'MULTILINE'
-,p_attribute_04=>'280'
+,p_attribute_04=>'320'
 ,p_attribute_07=>'Y'
 ,p_attribute_25=>'CKEDITOR'
 );

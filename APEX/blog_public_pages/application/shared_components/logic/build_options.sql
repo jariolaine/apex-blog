@@ -51,7 +51,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(8667733481689180)
 ,p_build_option_name=>'BLOG_FEATURE_SEARCH_POSTS'
 ,p_build_option_status=>'INCLUDE'
-,p_version_scn=>41108667364271
+,p_version_scn=>41110915195112
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable search from posts'
@@ -183,7 +183,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(39030203881986717)
 ,p_build_option_name=>'BLOG_FEATURE_SEARCH'
 ,p_build_option_status=>'INCLUDE'
-,p_version_scn=>41108683116623
+,p_version_scn=>41110915195103
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable search page'

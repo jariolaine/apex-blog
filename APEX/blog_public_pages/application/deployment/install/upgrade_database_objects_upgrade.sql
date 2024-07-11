@@ -1898,13 +1898,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,blog_url.get_post(',
 '    p_post_id => q1.post_id',
 '  )                   as post_url',
-'  ,(',
-'    select',
-'      listagg( lkp.tag, '', '' )  within group( order by lkp.display_seq ) as tags',
-'    from blog_v_post_tags lkp',
-'    where 1 = 1',
-'    and lkp.post_id = q1.post_id',
-'  )                   as tags',
+'-- Generate category URL',
+'  ,blog_url.get_category(',
+'    p_category_id => q1.category_id',
+'  )                   as category_url',
 '-- Aggregate tag HTML for post',
 '  ,(',
 '    select',
@@ -2083,6 +2080,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '    where 1 = 1',
 '    and lkp.post_id = t1.post_id',
 '  )               as post_title',
+'-- Generate post URL',
+'  ,blog_url.get_post(',
+'    p_post_id => t1.post_id',
+'  )               as post_url',
 '  ,t1.body_html   as comment_body',
 '  ,t1.ctx_search  as ctx_search',
 '  ,apex_string.get_initials(',
@@ -2534,8 +2535,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
 '      :new.created_by',
-'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
-'    '))
+'      ,sys_context( ''APEX$SESSION'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -2553,7 +2553,8 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'  ,sys_context( ''USERENV'', ''PROXY_USER'' )',
+''', ''APP_USER'' )',
+'      ,sys_context( ''USERENV'', ''PROXY_USER'' )',
 '      ,sys_context( ''USERENV'', ''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
@@ -3270,8 +3271,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '  as',
 '    l_app_id blog_v_init_items.application_id%type;',
 '',
-'    type item_value_r is record',
-'    (',
+'    type item_value_r is record(',
 '      item_name   blog_v_init_items.item_name%type,',
 '      item_value  blog_v_init_items.attribute_value%type',
 '    );',
@@ -3281,6 +3281,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_init_items items_t;',
 '',
 '  begin',
+'',
+'    apex_debug.enter(',
+'      p_routine_name  => ''blog_util.initialize_items''',
+'    , p_name01        => ''p_app_id''',
+'    , p_value01       => p_app_id',
+'    );',
 '',
 '    -- raise no data found error if parameter p_app_id_name is null',
 '    if p_app_id is null then',
@@ -3307,11 +3313,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    for i in 1 .. l_init_items.count',
 '    loop',
-'      apex_debug.info(',
-'        p_message => ''Setting session state. Item: %s, value: %s''',
-'      , p0 => l_init_items(i).item_name',
-'      , p1 => l_init_items(i).item_value',
-'      );',
 '      -- set item session state. do not commit.',
 '      apex_util.set_session_state(',
 '        p_name    => l_init_items(i).item_name',
@@ -3351,10 +3352,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_prev_post_title out nocopy varchar2',
 '  )',
 '  as',
+'    l_next_post_id  number;',
+'    l_prev_post_id  number;',
 '    l_post_id       blog_v_posts.post_id%type;',
 '    l_published_on  blog_v_posts.published_on%type;',
 '    l_changed_on    blog_v_posts.changed_on%type;',
 '  begin',
+'',
 '    -- raise no data found error if parameter p_post_id is null',
 '    if p_post_id is null then',
 '      raise no_data_found;',
@@ -3365,41 +3369,48 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- also fetch prev and next post id and title',
 '    select',
 '      v1.post_title',
-'      ,v1.post_desc',
-'      ,v1.category_title',
-'      ,v1.blogger_name',
-'      ,v1.published_on',
-'      ,v1.changed_on',
-'      ,int_to_vc2( v1.next_post.post_id )',
-'      ,v1.next_post.post_title',
-'      ,int_to_vc2( v1.prev_post.post_id )',
-'      ,v1.prev_post.post_title',
+'    , v1.post_desc',
+'    , v1.category_title',
+'    , v1.blogger_name',
+'    , v1.published_on',
+'    , v1.changed_on',
+'    , v1.next_post.post_id',
+'    , v1.next_post.post_title',
+'    , v1.prev_post.post_id',
+'    , v1.prev_post.post_title',
 '    into p_post_title',
-'      ,p_post_desc',
-'      ,p_post_category',
-'      ,p_post_author',
-'      ,l_published_on',
-'      ,l_changed_on',
-'      ,p_next_post_id',
-'      ,p_next_post_title',
-'      ,p_prev_post_id',
-'      ,p_prev_post_title',
+'    , p_post_desc',
+'    , p_post_category',
+'    , p_post_author',
+'    , l_published_on',
+'    , l_changed_on',
+'    , l_next_post_id',
+'    , p_next_post_title',
+'    , l_prev_post_id',
+'    , p_prev_post_title',
 '    from blog_v_posts v1',
 '    where 1 = 1',
 '      and post_id = l_post_id',
 '    ;',
 '',
+'    p_next_post_id := int_to_vc2( l_next_post_id );',
+'    p_prev_post_id := int_to_vc2( l_prev_post_id );',
+'',
 '    -- Get post published and modified UTC time',
-'    p_post_published := to_char(',
-'       sys_extract_utc( l_published_on )',
-'      ,g_iso_8601_date',
-'      ,g_nls_date_lang',
-'    );',
-'    p_post_modified := to_char(',
-'       sys_extract_utc( l_changed_on )',
-'      ,g_iso_8601_date',
-'      ,g_nls_date_lang',
-'    );',
+'    p_post_published :=',
+'      to_char(',
+'        sys_extract_utc( l_published_on )',
+'      , g_iso_8601_date',
+'      , g_nls_date_lang',
+'      )',
+'    ;',
+'    p_post_modified :=',
+'      to_char(',
+'        sys_extract_utc( l_changed_on )',
+'      , g_iso_8601_date',
+'      , g_nls_date_lang',
+'      )',
+'    ;',
 '',
 '  -- handle errors',
 '  exception',
@@ -3407,11 +3418,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '  then',
 '',
 '    apex_debug.error(',
-'       p_message => ''Error: %s %s( %s => %s )''',
-'      ,p0 => sqlerrm',
-'      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p2 => ''p_post_id''',
-'      ,p3 => coalesce( p_post_id, ''(null)'' )',
+'      p_message => ''Error: %s %s( %s => %s )''',
+'    , p0 => sqlerrm',
+'    , p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'    , p2 => ''p_post_id''',
+'    , p3 => coalesce( p_post_id, ''(null)'' )',
 '    );',
 '',
 '    -- show http error',
@@ -3452,11 +3463,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '  when others then',
 '',
 '    apex_debug.error(',
-'       p_message => ''Error: %s %s( %s => %s, %s => %s )''',
-'      ,p0 => sqlerrm',
-'      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'      ,p2 => ''p_category_id''',
-'      ,p3 => coalesce( p_category_id, ''(null)'' )',
+'      p_message => ''Error: %s %s( %s => %s, %s => %s )''',
+'    , p0 => sqlerrm',
+'    , p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'    , p2 => ''p_category_id''',
+'    , p3 => coalesce( p_category_id, ''(null)'' )',
 '    );',
 '',
 '    -- show http error',
@@ -3590,10 +3601,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end download_file;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure download_file (',
-'    p_file_name in varchar2',
-''))
+'---------'))
 );
 null;
 wwv_flow_imp.component_end;
@@ -3611,6 +3619,9 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'-----------------------------------------------------------------------',
+'  procedure download_file (',
+'    p_file_name in varchar2',
 '  )',
 '  as',
 '    l_last_modified varchar2(256);',
@@ -3716,7 +3727,20 @@ wwv_flow_imp_shared.append_to_install_script(
 '    );',
 '',
 '  -- handle errors',
-'  exception when others',
+'  exception when no_data_found',
+'  then',
+'',
+'    apex_debug.error(',
+'      p_message => ''Error: %s %s( %s => %s )''',
+'    , p0 => sqlerrm',
+'    , p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
+'    , p2 => ''p_file_name''',
+'    , p3 => coalesce( p_file_name, ''(null)'' )',
+'    );',
+'',
+'    raise_http_error( 404 );',
+'',
+'  when others',
 '  then',
 '',
 '    apex_debug.error(',
@@ -3832,40 +3856,68 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  procedure add_blogger(',
+'    p_app_id    in varchar2,',
 '    p_username  in varchar2,',
 '    p_user_id   out nocopy number,',
 '    p_name      out nocopy varchar2',
 '  )',
 '  as',
-'    l_max   blog_bloggers.display_seq%type;',
-'    l_email blog_bloggers.email%type;',
+'    l_max     blog_bloggers.display_seq%type;',
+'    l_email   blog_bloggers.email%type;',
+'    l_app_id  apex_applications.application_id%type;',
+'    l_authz   apex_applications.authorization_scheme%type;',
 '  begin',
 '',
-'    -- fetch next display_seq',
-'    select max( t1.display_seq ) as display_seq',
-'    into l_max',
-'    from blog_bloggers t1',
+'    -- convert application id string to number',
+'    l_app_id := to_number( p_app_id );',
+'',
+'    -- fetch application authorization scheme name.',
+'    select authorization_scheme',
+'    into l_authz',
+'    from apex_applications',
+'    where 1 = 1',
+'    and application_id = l_app_id',
 '    ;',
 '',
-'    l_max := next_seq( l_max );',
+'    apex_debug.info( ''Check is user in group: %s.'', l_authz );',
 '',
-'    -- get APEX user email',
-'    l_email := apex_util.get_email( p_username => p_username );',
+'    -- verify user is authorized',
+'    if apex_authorization.is_authorized( l_authz )',
+'    then',
 '',
-'    -- get APEX user first and last name for blogger name',
-'    p_name := apex_string.format(',
-'       p_message  => ''%s %s''',
-'      ,p0 => apex_util.get_first_name( p_username => p_username )',
-'      ,p1 => apex_util.get_last_name( p_username => p_username )',
-'    );',
+'      -- if user is authorized add user to blog_bloggers table',
+'      apex_debug.info( ''User %s is authorized and added to bloggers.'', p_username );',
 '',
-'    -- add new blogger',
-'    insert into blog_bloggers',
-'      ( is_active, publish_desc, display_seq, apex_username, blogger_name, email )',
-'    values',
-'      ( 1, 0, l_max, p_username, p_name, l_email )',
-'    returning id into p_user_id',
-'    ;',
+'      -- fetch next display_seq',
+'      select',
+'        max( t1.display_seq ) as display_seq',
+'      into l_max',
+'      from blog_bloggers t1',
+'      ;',
+'',
+'      l_max := next_seq( l_max );',
+'',
+'      -- get APEX user email',
+'      l_email := apex_util.get_email( p_username => p_username );',
+'',
+'      -- get APEX user first and last name for blogger name',
+'      p_name := apex_string.format(',
+'        p_message  => ''%s %s''',
+'      , p0 => apex_util.get_first_name( p_username => p_username )',
+'      , p1 => apex_util.get_last_name( p_username => p_username )',
+'      );',
+'',
+'      -- add new blogger',
+'      insert into blog_bloggers',
+'        ( is_active, publish_desc, display_seq, apex_username, blogger_name, email )',
+'      values',
+'        ( 1, 0, l_max, p_username, p_name, l_email )',
+'      returning id into p_user_id',
+'      ;',
+'',
+'    else',
+'      apex_debug.info( ''User %s is not authorized.'', p_username );',
+'    end if;',
 '',
 '  end add_blogger;',
 '--------------------------------------------------------------------------------',
@@ -3875,33 +3927,27 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  procedure post_authentication',
 '  as',
-'    l_group_names   apex_t_varchar2;',
-'    l_user_name     apex_workspace_apex_users.user_name%type;',
-'    l_workspace_id  apex_workspace_apex_users.workspace_id%type;',
+'    l_group_names apex_t_varchar2;',
+'    l_user_name   apex_workspace_apex_users.user_name%type;',
 '  begin',
 '',
-'    l_user_name     := sys_context( ''APEX$SESSION'', ''APP_USER'' );',
-'    l_workspace_id  := sys_context( ''APEX$SESSION'', ''WORKSPACE_ID'' );',
+'    l_user_name := sys_context( ''APEX$SESSION'', ''APP_USER'' );',
 '',
 '    -- collect user groups to PL/SQL table',
 '    for c1 in(',
-'      select g.group_name',
-'      from apex_workspace_group_users g',
-'      where 1 = 1',
-'        and exists(',
-'          select 1',
-'          from apex_workspace_apex_users u',
-'          where 1 = 1',
-'            and u.user_name = g.user_name',
-'            and u.workspace_id = l_workspace_id',
-'            and u.account_locked = ''No''',
-'            and u.workspace_id = g.workspace_id',
-'            and u.user_name = l_user_name',
-'        )',
+'      select distinct',
+'        g.group_name',
+'      from apex_workspace_groups g',
+'      left join apex_workspace_group_groups gg on g.group_name = gg.grantee_name',
+'      left join apex_workspace_group_users gu on g.group_name = gu.group_name',
+'        and gu.user_name = l_user_name',
+'      left join apex_workspace_apex_users u on gu.user_name = u.user_name',
+'        and u.account_locked  = ''No''',
+'        and u.user_name = l_user_name',
+'        start with u.user_name = l_user_name',
+'      connect by nocycle prior gg.group_name = g.group_name',
 '    ) loop',
-'',
 '      apex_string.push( l_group_names, c1.group_name );',
-'',
 '    end loop;',
 '',
 '    -- Enable user groups',
@@ -3924,9 +3970,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_name        out nocopy varchar2',
 '  )',
 '  as',
-'    l_app_id    apex_applications.application_id%type;',
-'    l_authz_grp apex_applications.authorization_scheme%type;',
 '  begin',
+'',
+'    apex_debug.info( ''Fetch user id and name for username: %s'', p_username );',
 '',
 '    -- fetch user id and name',
 '    select id',
@@ -3936,33 +3982,19 @@ wwv_flow_imp_shared.append_to_install_script(
 '    where apex_username = p_username',
 '    ;',
 '',
-'  -- if user not found, check is user authorized use blog',
+'  -- if user not found, try add user',
 '  exception',
 '  when no_data_found',
 '  then',
 '',
-'    -- conver application id string to number',
-'    l_app_id := to_number( p_app_id );',
+'    apex_debug.info( ''User %s not found from bloggers.'', p_username );',
 '',
-'    -- fetch application authorization scheme name',
-'    select authorization_scheme',
-'    into l_authz_grp',
-'    from apex_applications',
-'    where 1 = 1',
-'    and application_id = l_app_id',
-'    ;',
-'',
-'    -- verify user is authorized',
-'    if apex_util.current_user_in_group( l_authz_grp )',
-'    then',
-'      -- if user is authorized add user to blog_bloggers table',
-'      add_blogger(',
-'         p_username => p_username',
-'        ,p_user_id  => p_user_id',
-'        ,p_name     => p_name',
-'      );',
-'',
-'    end if;',
+'    add_blogger(',
+'      p_app_id    => p_app_id',
+'    , p_username  => p_username',
+'    , p_user_id   => p_user_id',
+'    , p_name      => p_name',
+'    );',
 '',
 '  end get_blogger_details;',
 '--------------------------------------------------------------------------------',
@@ -4646,7 +4678,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '      from blog_link_groups',
 '      where 1 = 1',
 '    ) v1',
-'    on ( t1.id = v1.id )',
+'   '))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.10.31'
+,p_release=>'23.2.3'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+' on ( t1.id = v1.id )',
 '    when matched then',
 '      update set t1.display_seq = v1.new_display_seq',
 '        where t1.display_seq != v1.new_display_seq',
@@ -4675,25 +4725,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      from blog_links',
 '      where 1 = 1',
 '      and link_group_id = l_link_group_id',
-' '))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'   ) v1',
+'    ) v1',
 '    on ( t1.id = v1.id )',
 '    when matched then',
 '      update set t1.display_seq = v1.new_display_seq',
@@ -5647,7 +5679,25 @@ wwv_flow_imp_shared.append_to_install_script(
 '    else',
 '      -- check HTML is valid',
 '      -- TO DO see item 1 from package specs',
-'      begin',
+'      b'))
+);
+null;
+wwv_flow_imp.component_end;
+end;
+/
+begin
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2023.10.31'
+,p_release=>'23.2.3'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>0
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(11011362486329675)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'egin',
 '        l_xml := xmltype.createxml(',
 '          apex_string.format(',
 '             p_message => ''<comment>%s</comment>''',
@@ -5676,25 +5726,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function is_email(',
-'    p_email   '))
-);
-null;
-wwv_flow_imp.component_end;
-end;
-/
-begin
-wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2023.10.31'
-,p_release=>'23.2.3'
-,p_default_workspace_id=>18303204396897713
-,p_default_application_id=>401
-,p_default_id_offset=>0
-,p_default_owner=>'BLOG_040000'
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(11011362486329675)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'  in varchar2,',
+'    p_email     in varchar2,',
 '    p_err_mesg  in varchar2',
 '  ) return varchar2',
 '  as',
@@ -6648,22 +6680,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '              <xsl:template match="/rss/channel">',
 '                <html lang="%s">',
 '                <head>',
-'                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />',
-'                  <title>',
-'                    <xsl:value-of select="title" />',
-'                  </title>',
-'                  <link rel="stylesheet" type="text/css" href="%s" />',
-'                </head>',
-'                <body>',
-'                  <h1><a class="blog-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>',
-'                  <h2 class="blog-rss--description"><xsl:value-of select="description" /></h2>',
-'                  <xsl:for-each select="./item">',
-'                    <article class="blog-rss--post">',
-'                      <header>',
-'                        <h3 class="blog-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h3>',
-'                      </header>',
-'                      <p class="blog-rss--postBody"><xsl:value-of select="description" /></p>',
-'        '))
+'                  <meta name="viewport" content='))
 );
 null;
 wwv_flow_imp.component_end;
@@ -6681,7 +6698,22 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'            </article>',
+'"width=device-width, initial-scale=1.0" />',
+'                  <title>',
+'                    <xsl:value-of select="title" />',
+'                  </title>',
+'                  <link rel="stylesheet" type="text/css" href="%s" />',
+'                </head>',
+'                <body>',
+'                  <h1><a class="blog-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>',
+'                  <h2 class="blog-rss--description"><xsl:value-of select="description" /></h2>',
+'                  <xsl:for-each select="./item">',
+'                    <article class="blog-rss--post">',
+'                      <header>',
+'                        <h3 class="blog-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h3>',
+'                      </header>',
+'                      <p class="blog-rss--postBody"><xsl:value-of select="description" /></p>',
+'                    </article>',
 '                  </xsl:for-each>',
 '                </body>',
 '                </html>',

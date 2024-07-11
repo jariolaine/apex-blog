@@ -356,8 +356,7 @@ as
   as
     l_app_id blog_v_init_items.application_id%type;
 
-    type item_value_r is record
-    (
+    type item_value_r is record(
       item_name   blog_v_init_items.item_name%type,
       item_value  blog_v_init_items.attribute_value%type
     );
@@ -367,6 +366,12 @@ as
     l_init_items items_t;
 
   begin
+
+    apex_debug.enter(
+      p_routine_name  => 'blog_util.initialize_items'
+    , p_name01        => 'p_app_id'
+    , p_value01       => p_app_id
+    );
 
     -- raise no data found error if parameter p_app_id_name is null
     if p_app_id is null then
@@ -393,11 +398,6 @@ as
 
     for i in 1 .. l_init_items.count
     loop
-      apex_debug.info(
-        p_message => 'Setting session state. Item: %s, value: %s'
-      , p0 => l_init_items(i).item_name
-      , p1 => l_init_items(i).item_value
-      );
       -- set item session state. do not commit.
       apex_util.set_session_state(
         p_name    => l_init_items(i).item_name
@@ -437,10 +437,13 @@ as
     p_prev_post_title out nocopy varchar2
   )
   as
+    l_next_post_id  number;
+    l_prev_post_id  number;
     l_post_id       blog_v_posts.post_id%type;
     l_published_on  blog_v_posts.published_on%type;
     l_changed_on    blog_v_posts.changed_on%type;
   begin
+
     -- raise no data found error if parameter p_post_id is null
     if p_post_id is null then
       raise no_data_found;
@@ -451,41 +454,48 @@ as
     -- also fetch prev and next post id and title
     select
       v1.post_title
-      ,v1.post_desc
-      ,v1.category_title
-      ,v1.blogger_name
-      ,v1.published_on
-      ,v1.changed_on
-      ,int_to_vc2( v1.next_post.post_id )
-      ,v1.next_post.post_title
-      ,int_to_vc2( v1.prev_post.post_id )
-      ,v1.prev_post.post_title
+    , v1.post_desc
+    , v1.category_title
+    , v1.blogger_name
+    , v1.published_on
+    , v1.changed_on
+    , v1.next_post.post_id
+    , v1.next_post.post_title
+    , v1.prev_post.post_id
+    , v1.prev_post.post_title
     into p_post_title
-      ,p_post_desc
-      ,p_post_category
-      ,p_post_author
-      ,l_published_on
-      ,l_changed_on
-      ,p_next_post_id
-      ,p_next_post_title
-      ,p_prev_post_id
-      ,p_prev_post_title
+    , p_post_desc
+    , p_post_category
+    , p_post_author
+    , l_published_on
+    , l_changed_on
+    , l_next_post_id
+    , p_next_post_title
+    , l_prev_post_id
+    , p_prev_post_title
     from blog_v_posts v1
     where 1 = 1
       and post_id = l_post_id
     ;
 
+    p_next_post_id := int_to_vc2( l_next_post_id );
+    p_prev_post_id := int_to_vc2( l_prev_post_id );
+
     -- Get post published and modified UTC time
-    p_post_published := to_char(
-       sys_extract_utc( l_published_on )
-      ,g_iso_8601_date
-      ,g_nls_date_lang
-    );
-    p_post_modified := to_char(
-       sys_extract_utc( l_changed_on )
-      ,g_iso_8601_date
-      ,g_nls_date_lang
-    );
+    p_post_published :=
+      to_char(
+        sys_extract_utc( l_published_on )
+      , g_iso_8601_date
+      , g_nls_date_lang
+      )
+    ;
+    p_post_modified :=
+      to_char(
+        sys_extract_utc( l_changed_on )
+      , g_iso_8601_date
+      , g_nls_date_lang
+      )
+    ;
 
   -- handle errors
   exception
@@ -493,11 +503,11 @@ as
   then
 
     apex_debug.error(
-       p_message => 'Error: %s %s( %s => %s )'
-      ,p0 => sqlerrm
-      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p2 => 'p_post_id'
-      ,p3 => coalesce( p_post_id, '(null)' )
+      p_message => 'Error: %s %s( %s => %s )'
+    , p0 => sqlerrm
+    , p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+    , p2 => 'p_post_id'
+    , p3 => coalesce( p_post_id, '(null)' )
     );
 
     -- show http error
@@ -538,11 +548,11 @@ as
   when others then
 
     apex_debug.error(
-       p_message => 'Error: %s %s( %s => %s, %s => %s )'
-      ,p0 => sqlerrm
-      ,p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p2 => 'p_category_id'
-      ,p3 => coalesce( p_category_id, '(null)' )
+      p_message => 'Error: %s %s( %s => %s, %s => %s )'
+    , p0 => sqlerrm
+    , p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+    , p2 => 'p_category_id'
+    , p3 => coalesce( p_category_id, '(null)' )
     );
 
     -- show http error
@@ -784,7 +794,20 @@ as
     );
 
   -- handle errors
-  exception when others
+  exception when no_data_found
+  then
+
+    apex_debug.error(
+      p_message => 'Error: %s %s( %s => %s )'
+    , p0 => sqlerrm
+    , p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+    , p2 => 'p_file_name'
+    , p3 => coalesce( p_file_name, '(null)' )
+    );
+
+    raise_http_error( 404 );
+
+  when others
   then
 
     apex_debug.error(

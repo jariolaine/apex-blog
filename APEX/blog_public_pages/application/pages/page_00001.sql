@@ -175,7 +175,6 @@ wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(24468458324361504)
 ,p_name=>'P1_BLOG_POST_ROWS'
 ,p_item_sequence=>90
-,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'U'
 ,p_protection_level=>'I'

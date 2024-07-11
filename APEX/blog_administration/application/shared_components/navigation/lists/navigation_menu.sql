@@ -58,16 +58,6 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(38534431679746113)
-,p_list_item_display_sequence=>60
-,p_list_item_link_text=>'Search'
-,p_list_item_link_target=>'f?p=&APP_ID.:90:&APP_SESSION.::&DEBUG.:::'
-,p_list_item_icon=>'fa-search'
-,p_required_patch=>wwv_flow_imp.id(8935943081653812)
-,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
-,p_list_item_current_for_pages=>'90'
-);
-wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(24902524516683500)
 ,p_list_item_display_sequence=>70
 ,p_list_item_link_text=>'Administration'

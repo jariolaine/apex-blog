@@ -36,15 +36,15 @@ wwv_flow_imp_shared.create_search_config(
 ,p_description_column_name=>'FILE_DESC'
 ,p_badge_column_name=>'FILE_SIZE'
 ,p_icon_source_type=>'STATIC_CLASS'
-,p_icon_css_classes=>'fa-download'
+,p_icon_css_classes=>'fa-download fa-lg'
 ,p_default_row_html_expr=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="a-ResultsItem &RESULT_CSS_CLASSES!ATTR.">',
 '  {if ?ICON_VALUE/}',
 '    {case ICON_TYPE/}',
 '      {when INITIALS/}',
-'        <div class="a-ResultItem-initials u-color-var">&ICON_VALUE.</div>',
+'        <div class="a-ResultsItem-initials u-color-var">&ICON_VALUE.</div>',
 '      {when URL/}',
-'        <div class="a-ResultItem-image"><img src="&ICON_VALUE!ATTR." alt="&ENAME!ATTR." role="presentation" /></div>',
+'        <div class="a-ResultsItem-image"><img src="&ICON_VALUE!ATTR." alt="&ENAME!ATTR." role="presentation" /></div>',
 '      {when CLASS/}',
 '        <div class="a-ResultItem-icon u-color-var"><span class="fa &ICON_VALUE!ATTR." aria-hidden="true"></span></div>',
 '    {endcase/}',

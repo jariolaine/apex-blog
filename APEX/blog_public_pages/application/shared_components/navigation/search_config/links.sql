@@ -27,7 +27,7 @@ wwv_flow_imp_shared.create_search_config(
 ,p_description_column_name=>'LINK_TITLE'
 ,p_badge_column_name=>'GROUP_TITLE'
 ,p_icon_source_type=>'STATIC_CLASS'
-,p_icon_css_classes=>'fa-external-link'
+,p_icon_css_classes=>'fa-external-link fa-lg'
 ,p_default_row_html_expr=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="a-ResultsItem &RESULT_CSS_CLASSES!ATTR.">',
 '  {if ?ICON_VALUE/}',

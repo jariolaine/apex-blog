@@ -81,8 +81,8 @@
   overflow: auto;
 }
 .blog-search-results-items {
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: var(--ut-component-border-width) solid var(--ut-component-border-color);
+  border-bottom: var(--ut-component-border-width) solid var(--ut-component-border-color);
 }
 /**************************************
 * Admin application comments IR detail view
@@ -332,4 +332,19 @@ pre.blog-program-code code,
 }
 .blog-hr-section::after {
   margin-left: 0.5rem;
+}
+/**************************************
+* Footer link to GitHub
+**************************************/
+.blog-copyright {
+  text-align: center;
+  padding: 1rem 0;
+}
+.blog-copyright .blog-copyright-link {
+  color: inherit;
+  font-size: 0.875rem;
+  opacity: 0.6;
+}
+.blog-copyright .blog-copyright-link:hover {
+  opacity: 1;
 }

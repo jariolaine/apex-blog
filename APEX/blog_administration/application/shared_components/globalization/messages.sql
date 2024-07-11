@@ -28,13 +28,13 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(55636898271377244)
 ,p_name=>'BLOG_APP_DESC'
 ,p_message_text=>'About Almost Everything'
-,p_version_scn=>41110081076479
+,p_version_scn=>41373765286292
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(55636638660376194)
 ,p_name=>'BLOG_APP_NAME'
 ,p_message_text=>'My Blog'
-,p_version_scn=>41110081076478
+,p_version_scn=>41373765286292
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(10038616769932485)

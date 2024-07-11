@@ -23,12 +23,6 @@ wwv_flow_imp_shared.create_menu_option(
 ,p_page_id=>11
 );
 wwv_flow_imp_shared.create_menu_option(
- p_id=>wwv_flow_imp.id(38535375938746116)
-,p_short_name=>'Search'
-,p_link=>'f?p=&APP_ID.:90:&APP_SESSION.::&DEBUG.:::'
-,p_page_id=>90
-);
-wwv_flow_imp_shared.create_menu_option(
  p_id=>wwv_flow_imp.id(38342309035995162)
 ,p_option_sequence=>20
 ,p_short_name=>'Comments'

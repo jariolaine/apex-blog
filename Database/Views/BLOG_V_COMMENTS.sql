@@ -15,6 +15,10 @@ select
     where 1 = 1
     and lkp.post_id = t1.post_id
   )               as post_title
+-- Generate post URL
+  ,blog_url.get_post(
+    p_post_id => t1.post_id
+  )               as post_url
   ,t1.body_html   as comment_body
   ,t1.ctx_search  as ctx_search
   ,apex_string.get_initials(

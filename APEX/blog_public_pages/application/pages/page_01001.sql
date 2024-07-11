@@ -36,7 +36,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_comment=>'Dialog page to allow users comment blog posts.'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'LAINFJAR'
-,p_last_upd_yyyymmddhh24miss=>'20240414045155'
+,p_last_upd_yyyymmddhh24miss=>'20240416144450'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(27990916738607115)
@@ -62,7 +62,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_display_when_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog_util.get_attribute_value( ''G_APP_EMAIL'' ) is not null',
 'and',
-'apex_util.get_build_option_status(',
+'apex_application_admin.get_build_option_status(',
 '  p_application_id    => :APP_ID',
 ', p_build_option_name => ''BLOG_FEATURE_SUBSCRIBE_COMMENTS''',
 ') = ''INCLUDE'''))
@@ -244,7 +244,6 @@ wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(26381104883542604)
 ,p_name=>'P1001_ANSWER'
 ,p_item_sequence=>90
-,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
 ,p_use_cache_before_default=>'NO'
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_protection_level=>'I'

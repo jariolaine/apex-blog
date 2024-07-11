@@ -58,6 +58,17 @@ blockquote::after {
 .blog-footerList .blog-footerList-link:hover {
   opacity: 1;
 }
+@media only screen and (max-width: 640px) {
+  .blog-footerList {
+    flex-direction: column;
+  }
+  .blog-footerList .blog-footerList-item {
+    padding: 0.75rem 0;
+  }
+}
+/**************************************
+* Footer link to GitHub
+**************************************/
 .blog-copyright {
   text-align: center;
   padding: 1rem 0;
@@ -69,14 +80,6 @@ blockquote::after {
 }
 .blog-copyright .blog-copyright-link:hover {
   opacity: 1;
-}
-@media only screen and (max-width: 640px) {
-  .blog-footerList {
-    flex-direction: column;
-  }
-  .blog-footerList .blog-footerList-item {
-    padding: 0.75rem 0;
-  }
 }
 /**************************************
 * Classic reports
@@ -394,7 +397,7 @@ pre.blog-program-code code,
   margin-left: 0.25rem;
 }
 /**************************************
-* Public app tabs
+* Public app tabs universal theme
 **************************************/
 .t-NavTabs-item {
   border-bottom: var(--ut-navtabs-item-border-width, 1px) solid var(--ut-navtabs-item-border-color);

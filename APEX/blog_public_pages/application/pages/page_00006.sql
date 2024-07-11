@@ -221,7 +221,6 @@ wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(7082507483178439)
 ,p_name=>'P6_TAG_NAME'
 ,p_item_sequence=>90
-,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
 ,p_use_cache_before_default=>'NO'
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'

@@ -212,7 +212,6 @@ wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(31250398896982943)
 ,p_name=>'P14_CATEGORY_TITLE'
 ,p_item_sequence=>90
-,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
@@ -238,7 +237,6 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_affected_elements_type=>'REGION'
-,p_affected_region_id=>wwv_flow_imp.id(6913532952677128)
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog.ui.setListCurrentItem({',
 '   affectedElements: this.affectedElements',
