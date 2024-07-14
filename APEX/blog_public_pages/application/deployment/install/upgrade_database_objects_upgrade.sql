@@ -1900,26 +1900,26 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,(',
 '    select',
 '      json_object(',
-'         ''post_id''    : lkp_post.post_id',
-'        ,''post_title'' : lkp_post.post_title',
+'         ''post_id''    : lkp_next.post_id',
+'        ,''post_title'' : lkp_next.post_title',
 '      ) as post',
-'    from q1 lkp_post',
+'    from q1 lkp_next',
 '    where 1 = 1',
-'      and lkp_post.published_on > q1.published_on',
-'    order by lkp_post.published_on asc',
+'      and lkp_next.published_on > q1.published_on',
+'    order by lkp_next.published_on asc',
 '    fetch first 1 rows only',
 '  )                   as next_post',
 '-- Fetch previous post id and title',
 '  ,(',
 '    select',
 '      json_object(',
-'         ''post_id''    : lkp_post.post_id',
-'        ,''post_title'' : lkp_post.post_title',
+'         ''post_id''    : lkp_prev.post_id',
+'        ,''post_title'' : lkp_prev.post_title',
 '      ) as post',
-'    from q1 lkp_post',
+'    from q1 lkp_prev',
 '    where 1 = 1',
-'      and lkp_post.published_on < q1.published_on',
-'    order by lkp_post.published_on desc',
+'      and lkp_prev.published_on < q1.published_on',
+'    order by lkp_prev.published_on desc',
 '    fetch first 1 rows only',
 '  )                   as prev_post',
 'from q1',
@@ -2085,33 +2085,33 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 'create or replace force view blog_v_posts_last20 as',
 'select',
-'   rownum             as display_seq',
-'  ,q1.post_id         as post_id',
-'  ,q1.published_on    as published_on',
-'  ,q1.blogger_name    as blogger_name',
-'  ,q1.post_title      as post_title',
-'  ,q1.post_desc       as post_desc',
-'  ,q1.category_title  as category_title',
-'  ,q1.post_url        as post_url',
-'  ,q1.body_html       as body_html',
-'  ,q1.absolute_url    as absolute_url',
-'  ,apex_string.format(',
+'  rownum             as display_seq',
+', q1.post_id         as post_id',
+', q1.published_on    as published_on',
+', q1.blogger_name    as blogger_name',
+', q1.post_title      as post_title',
+', q1.post_desc       as post_desc',
+', q1.category_title  as category_title',
+', q1.post_url        as post_url',
+', q1.body_html       as body_html',
+', q1.absolute_url    as absolute_url',
+', apex_string.format(',
 '    p_message => ''data-item-id="%s"''',
 '    ,p0 => q1.post_id',
 '  )                   as list_attr',
 'from (',
 '  select --+ first_rows(20)',
-'     v1.post_id',
-'    ,v1.published_on',
-'    ,v1.blogger_name',
-'    ,v1.post_title',
-'    ,v1.post_desc',
-'    ,v1.category_title',
-'    ,v1.post_url',
-'    ,v1.body_html',
-'    ,blog_url.get_post(',
+'    v1.post_id',
+'  , v1.published_on',
+'  , v1.blogger_name',
+'  , v1.post_title',
+'  , v1.post_desc',
+'  , v1.category_title',
+'  , v1.post_url',
+'  , v1.body_html',
+'  , blog_url.get_post(',
 '      p_post_id     => v1.post_id',
-'      ,p_canonical  => ''YES''',
+'    , p_canonical  => ''YES''',
 '    ) as absolute_url',
 '  from blog_v_posts v1',
 '  order by v1.published_on desc',
@@ -2510,13 +2510,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
 '      :new.created_by',
-'      ,sys_context( ''APEX$SESSION'))
+'      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
+'     '))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-''', ''APP_USER'' )',
-'      ,sys_context( ''USERENV'', ''PROXY_USER'' )',
+' ,sys_context( ''USERENV'', ''PROXY_USER'' )',
 '      ,sys_context( ''USERENV'', ''SESSION_USER'' )',
 '    );',
 '  elsif updating then',
@@ -3563,12 +3563,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end download_file;',
 '--------------------------------------------------------------------------------',
-'---------'))
+'------------------------------'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------------------------------------------------------------------',
+'--------------------------------------------------',
 '  procedure download_file (',
 '    p_file_name in varchar2',
 '  )',
@@ -4627,12 +4627,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '      from blog_link_groups',
 '      where 1 = 1',
 '    ) v1',
-'   '))
+'    on ( t1.id = v1.id )'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' on ( t1.id = v1.id )',
+'',
 '    when matched then',
 '      update set t1.display_seq = v1.new_display_seq',
 '        where t1.display_seq != v1.new_display_seq',
@@ -5615,13 +5615,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '    else',
 '      -- check HTML is valid',
 '      -- TO DO see item 1 from package specs',
-'      b'))
+'      begin',
+'        l_xml :='))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'egin',
-'        l_xml := xmltype.createxml(',
+' xmltype.createxml(',
 '          apex_string.format(',
 '             p_message => ''<comment>%s</comment>''',
 '            ,p0 => p_comment',
@@ -6603,12 +6603,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '              <xsl:template match="/rss/channel">',
 '                <html lang="%s">',
 '                <head>',
-'                  <meta name="viewport" content='))
+'                  <meta name="viewport" content="width=device-width, '))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(11011362486329675)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'"width=device-width, initial-scale=1.0" />',
+'initial-scale=1.0" />',
 '                  <title>',
 '                    <xsl:value-of select="title" />',
 '                  </title>',

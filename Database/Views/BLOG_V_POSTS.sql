@@ -75,26 +75,26 @@ select
   ,(
     select
       json_object(
-         'post_id'    : lkp_post.post_id
-        ,'post_title' : lkp_post.post_title
+         'post_id'    : lkp_next.post_id
+        ,'post_title' : lkp_next.post_title
       ) as post
-    from q1 lkp_post
+    from q1 lkp_next
     where 1 = 1
-      and lkp_post.published_on > q1.published_on
-    order by lkp_post.published_on asc
+      and lkp_next.published_on > q1.published_on
+    order by lkp_next.published_on asc
     fetch first 1 rows only
   )                   as next_post
 -- Fetch previous post id and title
   ,(
     select
       json_object(
-         'post_id'    : lkp_post.post_id
-        ,'post_title' : lkp_post.post_title
+         'post_id'    : lkp_prev.post_id
+        ,'post_title' : lkp_prev.post_title
       ) as post
-    from q1 lkp_post
+    from q1 lkp_prev
     where 1 = 1
-      and lkp_post.published_on < q1.published_on
-    order by lkp_post.published_on desc
+      and lkp_prev.published_on < q1.published_on
+    order by lkp_prev.published_on desc
     fetch first 1 rows only
   )                   as prev_post
 from q1

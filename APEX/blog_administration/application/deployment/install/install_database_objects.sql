@@ -2309,31 +2309,31 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,(',
 '    select',
 '      json_object(',
-'         ''post_id''    : lkp_post.post_id',
-'        ,''post_title'' : lkp_post.post_title',
+'         ''post_id''    : lkp_next.post_id',
+'        ,''post_title'' : lkp_next.post_title',
 '      ) as post',
-'    from q1 lkp_post',
+'    from q1 lkp_next',
 '    where 1 = 1',
-'      and lkp_post.published_on > q1.published_on',
-'    order by lkp_post.published_on asc',
+'      and lkp_next.published_on > q1.published_on',
+'    order by lkp_next.published_on asc',
 '    fetch first 1 rows only',
 '  )                   as next_post',
 '-- Fetch previous post id and title',
 '  ,(',
 '    select',
 '      json_object(',
-'         ''post_id''    : lkp_post.post_id',
-'        ,''post_title'' : lkp_post.post_title',
+'         ''post_id''    : lkp_prev.post_id',
+'        ,''post_title'' : lkp_prev.post_title',
 '      ) as post',
-'    from q1 lkp_post',
+'    from q1 lkp_prev',
 '    where 1 = 1',
-'      and lkp_post.published'))
+'      and lkp_prev.published'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '_on < q1.published_on',
-'    order by lkp_post.published_on desc',
+'    order by lkp_prev.published_on desc',
 '    fetch first 1 rows only',
 '  )                   as prev_post',
 'from q1',
@@ -2499,33 +2499,33 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 'create or replace force view blog_v_posts_last20 as',
 'select',
-'   rownum             as display_seq',
-'  ,q1.post_id         as post_id',
-'  ,q1.published_on    as published_on',
-'  ,q1.blogger_name    as blogger_name',
-'  ,q1.post_title      as post_title',
-'  ,q1.post_desc       as post_desc',
-'  ,q1.category_title  as category_title',
-'  ,q1.post_url        as post_url',
-'  ,q1.body_html       as body_html',
-'  ,q1.absolute_url    as absolute_url',
-'  ,apex_string.format(',
+'  rownum             as display_seq',
+', q1.post_id         as post_id',
+', q1.published_on    as published_on',
+', q1.blogger_name    as blogger_name',
+', q1.post_title      as post_title',
+', q1.post_desc       as post_desc',
+', q1.category_title  as category_title',
+', q1.post_url        as post_url',
+', q1.body_html       as body_html',
+', q1.absolute_url    as absolute_url',
+', apex_string.format(',
 '    p_message => ''data-item-id="%s"''',
 '    ,p0 => q1.post_id',
 '  )                   as list_attr',
 'from (',
 '  select --+ first_rows(20)',
-'     v1.post_id',
-'    ,v1.published_on',
-'    ,v1.blogger_name',
-'    ,v1.post_title',
-'    ,v1.post_desc',
-'    ,v1.category_title',
-'    ,v1.post_url',
-'    ,v1.body_html',
-'    ,blog_url.get_post(',
+'    v1.post_id',
+'  , v1.published_on',
+'  , v1.blogger_name',
+'  , v1.post_title',
+'  , v1.post_desc',
+'  , v1.category_title',
+'  , v1.post_url',
+'  , v1.body_html',
+'  , blog_url.get_post(',
 '      p_post_id     => v1.post_id',
-'      ,p_canonical  => ''YES''',
+'    , p_canonical  => ''YES''',
 '    ) as absolute_url',
 '  from blog_v_posts v1',
 '  order by v1.published_on desc',
@@ -3338,12 +3338,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- Private procedures and functions',
-'---------------------------------------------------------'))
+'------------------------------------------------------------------------------'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-----------------------',
+'--',
 '--------------------------------------------------------------------------------',
 '-- none',
 '--------------------------------------------------------------------------------',
@@ -4377,12 +4377,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '        g.group_name',
 '      from apex_workspace_groups g',
 '      left join apex_workspace_group_groups gg on g.group_name = gg.grantee_name',
-'      left join apex_workspace_group_users gu on g.'))
+'      left join apex_workspace_group_users gu on g.group_name = gu.group'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'group_name = gu.group_name',
+'_name',
 '        and gu.user_name = l_user_name',
 '      left join apex_workspace_apex_users u on gu.user_name = u.user_name',
 '        and u.account_locked  = ''No''',
@@ -5408,12 +5408,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '    "category": {"page": "CATEGORY", "items": "P14_CATEGORY_ID"},',
 '    "archive": {"page": "ARCHIVES", "items": "P15_ARCHIVE_ID"},',
 '    "tag": {"page": "TAG", "items": "P6_TAG_ID"},',
-'    "unsubscribe": {"page": "POST",'))
+'    "unsubscribe": {"page": "POST", "items": "P2_POST_ID'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' "items": "P2_POST_ID,P2_SUBSCRIPTION_ID"}',
+',P2_SUBSCRIPTION_ID"}',
 '  }'' );',
 '',
 '-- cache rss and atom url',
@@ -6435,12 +6435,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '-- Private constants and variables',
 '--------------------------------------------------------------------------------',
-''))
+'---------------------'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'--------------------------------------------------------------------------------',
+'-----------------------------------------------------------',
 '',
 '  c_link_canonical_template constant varchar2(64) := ''<link rel="canonical" href="%s">'';',
 '  c_link_alternate_template constant varchar2(64) := ''<link rel="alternate" href="%s" title="%s" type="%s">'';',
@@ -7430,12 +7430,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '       p_blob_content   => l_xml',
 '      ,p_mime_type      => c_mime_xml',
 '      ,p_header_names   => c_headers',
-'      ,p_header_values  => apex_t_varchar2( l_cache_control, ''inline; filen'))
+'      ,p_header_values  => apex_t_varchar2( l_cache_control, ''inline; filename="sitemap-categori'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(32897013199918411)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ame="sitemap-categories.xml"'', null )',
+'es.xml"'', null )',
 '      ,p_charset        => c_char_set',
 '    );',
 '',

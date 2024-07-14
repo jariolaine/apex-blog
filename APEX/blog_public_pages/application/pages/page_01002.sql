@@ -52,12 +52,6 @@ wwv_flow_imp_page.create_report_region(
 'and v1.content_id = :REQUEST',
 'order by v1.content_id'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
-,p_plug_caching=>'CACHE'
-,p_plug_caching_max_age_in_sec=>31536000
-,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
-,p_plug_cache_when_condition_e1=>'DEBUG'
-,p_plug_cache_when_condition_e2=>'NO'
-,p_plug_cache_depends_on_items=>'REQUEST'
 ,p_translate_title=>'N'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
@@ -133,6 +127,7 @@ wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(41879333719408334)
 ,p_name=>'P1002_PAGE_TITLE'
 ,p_item_sequence=>90
+,p_item_plug_id=>wwv_flow_imp.id(6433141607894071)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
