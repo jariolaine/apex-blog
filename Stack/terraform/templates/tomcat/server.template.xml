@@ -25,9 +25,9 @@
 
   <Service name="Catalina">
 
-    <Connector protocol="AJP/1.3"
+    <Connector protocol="HTTP/1.1"
       address="127.0.0.1"
-      port="8009"
+      port="8181"
       secretRequired="false"
       secure="true"
       scheme="https"

@@ -172,12 +172,6 @@ data "cloudinit_config" "nodes" {
       database_setup_file           = "/tmp/database_setup.sql"
       database_setup_content        = base64gzip( local.database_setup_template )
 
-      jk_workers_properties_file    = "/etc/libapache2-mod-jk/workers.properties"
-      jk_workers_properties_content = base64gzip( local.jk_workers_properties )
-
-      httpd_jk_conf_file            = "/etc/apache2/mods-available/jk.conf"
-      httpd_jk_conf_content         = base64gzip( local.httpd_jk_conf )
-
       httpd_apache2_conf_file       = "/etc/apache2/apache2.conf"
       httpd_apache2_conf_content    = base64gzip( local.httpd_apache2_conf )
 
@@ -200,7 +194,7 @@ data "cloudinit_config" "nodes" {
       ords_install_dir              = "/opt/oracle/ords"
       ords_conf_dir                 = "/var/lib/ords"
 
-      jdk_download_url              = "https://download.oracle.com/java/17/latest/jdk-17_linux-aarch64_bin.tar.gz"
+      jdk_download_url              = "https://download.oracle.com/java/21/latest/jdk-21_linux-aarch64_bin.tar.gz"
       jdk_install_dir               = "/opt/oracle/jdk"
 
       sqlcl_download_url            = "https://download.oracle.com/otn_software/java/sqldeveloper/sqlcl-latest.zip"

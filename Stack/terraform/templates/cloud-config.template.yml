@@ -7,7 +7,6 @@ packages:
   - jq
   - tomcat9
   - apache2
-  - libapache2-mod-jk
   - libc-icap-mod-virus-scan
   - libclamunrar
 
@@ -38,26 +37,12 @@ write_files:
     defer: true
     content: ${tomcat_server_xml_content}
 
-  - path: ${jk_workers_properties_file}
-    encoding: "gzip+base64"
-    permissions: "0640"
-    owner: "root:root"
-    defer: true
-    content: ${jk_workers_properties_content}
-
   - path: ${httpd_apache2_conf_file}
     encoding: "gzip+base64"
     permissions: "0644"
     owner: "root:root"
     defer: true
     content: ${httpd_apache2_conf_content}
-
-  - path: ${httpd_jk_conf_file}
-    encoding: "gzip+base64"
-    permissions: "0644"
-    owner: "root:root"
-    defer: true
-    content: ${httpd_jk_conf_content}
 
   - path: ${httpd_site_conf_file}
     encoding: "gzip+base64"
@@ -174,12 +159,18 @@ runcmd:
   - sed -i "s|#SERVERNAME#|$(hostname)|g" ${httpd_apache2_conf_file}
   - sed -i "s|#ADB_BASE_URL#|${adb_base_url}|g" ${httpd_site_conf_file}
 
-  ## Disable default site
+  ## Disable HTTPD default site
   - a2dissite 000-default.conf
+  ## Disable HTTPD modules
+  - a2dismod -f autoindex dir status
+  ## Disable HTTPD config
+  - a2disconf charset localized-error-pages other-vhosts-access-log security serve-cgi-bin
 
-  ## Enable config, modules and sites
+  ## Enable HTTPD config
   - a2enconf cache_disk deflate headers remoteip
+  ## Enable HTTPD modules
   - a2enmod cache_disk headers remoteip rewrite proxy_http ssl
+  ## Enable HTTPD site
   - a2ensite $(basename "${httpd_site_conf_file}")
 
 # Set enviromenment variables and aliases for root
@@ -200,6 +191,11 @@ runcmd:
 
   - ords config set icap.server 127.0.0.1
   - ords config set icap.port 1344
+  - ords config set db.invalidPoolTimeout 5s
+  - ords config set database.api.enabled true
+  - ords config set feature.sdw true
+  - ords config set restEnabledSql.active true
+  - ords config set debug.printDebugToScreen true
 
 # Restart Tomcat and Apache2
   - systemctl restart tomcat9.service
