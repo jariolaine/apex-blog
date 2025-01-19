@@ -5,10 +5,10 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
-,p_default_id_offset=>0
+,p_default_id_offset=>44906910937164790
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp.g_varchar2_table := wwv_flow_imp.empty_varchar2_table;
@@ -88,7 +88,7 @@ wwv_flow_imp.g_varchar2_table(73) := '8458ABD6AE757EADDDB071E39BA4C26F5ECEF281A4
 wwv_flow_imp.g_varchar2_table(74) := 'A89DB217CEE9B048ABD41D5E66A38039C3660D3BA54F8DF9AF15F5E623ECC567B26F92009808883A0E2BE5DF58CFD86A1587E581CDC1F6608345306702B659516B3E025B359C92DE13E8A48AFA63A723A960E1D15B4C17A28B0C7011FBC1F2FACDD1EAB0';
 wwv_flow_imp.g_varchar2_table(75) := 'F1E7616B059B63B6C76C10B6089B846D76D59EFF1FAE6412C7C9D69D7B0000000049454E44AE426082';
 wwv_flow_imp_shared.create_app_static_file(
- p_id=>wwv_flow_imp.id(10401509007062977)
+ p_id=>wwv_flow_imp.id(137795498335959111)
 ,p_file_name=>'icons/app-icon-192.png'
 ,p_mime_type=>'image/png'
 ,p_file_charset=>'utf-8'

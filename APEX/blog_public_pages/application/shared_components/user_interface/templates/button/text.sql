@@ -5,14 +5,14 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
-,p_default_id_offset=>0
+,p_default_id_offset=>44906910937164790
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_button_templates(
- p_id=>wwv_flow_imp.id(6855169478267414)
+ p_id=>wwv_flow_imp.id(134249158807163548)
 ,p_template_name=>'Text'
 ,p_internal_name=>'TEXT'
 ,p_template=>'<button class="t-Button #BUTTON_CSS_CLASSES#" type="button" #BUTTON_ATTRIBUTES# #ONCLICK# id="#BUTTON_ID#"><span class="t-Button-label">#LABEL#</span></button>'

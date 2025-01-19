@@ -5,14 +5,14 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
-,p_default_id_offset=>0
+,p_default_id_offset=>44877464361218557
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_email_template(
- p_id=>wwv_flow_imp.id(31515408461580789)
+ p_id=>wwv_flow_imp.id(113961531103412880)
 ,p_name=>'Blog reply to comment notification'
 ,p_static_id=>'BLOG_REPLY_TO_COMMENT_NOTIFY'
 ,p_version_number=>2

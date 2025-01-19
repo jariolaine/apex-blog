@@ -5,14 +5,14 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
-,p_default_id_offset=>0
+,p_default_id_offset=>44906910937164790
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_search_config(
- p_id=>wwv_flow_imp.id(9179327552270533)
+ p_id=>wwv_flow_imp.id(136573316881166667)
 ,p_label=>'Comments'
 ,p_static_id=>'comments'
 ,p_search_prefix=>'comments'
@@ -32,9 +32,7 @@ wwv_flow_imp_shared.create_search_config(
 ', v1.ctx_search     as ctx_search',
 'from blog_v_comments v1'))
 ,p_oratext_index_column_name=>'CTX_SEARCH'
-,p_oratext_function_type=>'CUSTOM'
-,p_oratext_function=>'blog_ctx.get_post_search'
-,p_query_order_by=>':APEX$ORATEXT_SCORE desc, created_on desc'
+,p_oratext_function_type=>'SEARCH_ENGINE'
 ,p_pk_column_name=>'COMMENT_ID'
 ,p_title_column_name=>'POST_TITLE'
 ,p_icon_source_type=>'STATIC_CLASS'
@@ -45,24 +43,24 @@ wwv_flow_imp_shared.create_search_config(
 '  {if ?ICON_VALUE/}',
 '    {case ICON_TYPE/}',
 '      {when INITIALS/}',
-'        <div class="a-ResultItem-initials u-color-var">&ICON_VALUE.</div>',
+'        <div class="a-ResultItem-initials u-color-var">&ICON_VALUE!HTML.</div>',
 '      {when URL/}',
-'        <div class="a-ResultItem-image"><img src="&ICON_VALUE!ATTR." alt="&ENAME!ATTR." role="presentation" /></div>',
+'        <div class="a-ResultItem-image"><img src="&ICON_VALUE!ATTR." alt="&COMMENT_BY!ATTR." role="presentation" /></div>',
 '      {when CLASS/}',
 '        <div class="a-ResultItem-icon u-color-var"><span class="fa &ICON_VALUE!ATTR." aria-hidden="true"></span></div>',
 '    {endcase/}',
 '  {endif/}',
 '  <div class="a-ResultsItem-content">',
 '    <div class="a-ResultsItem-header">',
-'      <span class="a-ResultsItem-title u-flex-grow-1"><a href="&POST_URL!ATTR.">&POST_TITLE.</a></span>',
-'      <span class="a-ResultsItem-badge">&APP_TEXT$BLOG_TXT_COMMENT.</span>',
+'      <span class="a-ResultsItem-title u-flex-grow-1"><a href="&POST_URL!ATTR.">&POST_TITLE!HTML.</a></span>',
+'      <span class="a-ResultsItem-badge">&APP_TEXT$BLOG_TXT_COMMENT!HTML.</span>',
 '    </div>',
-'    <div class="t-Comments-info">&COMMENT_BY. <span class="t-Comments-date">&CREATED_ON.</span></div>',
+'    <div class="t-Comments-info">&COMMENT_BY!HTML. <span class="t-Comments-date">&CREATED_ON!HTML.</span></div>',
 '    <div class="a-ResultsItem-description">&COMMENT_BODY!RAW.</div>',
 '  </div>',
 '</div>'))
-,p_version_scn=>1
-,p_build_option_id=>wwv_flow_imp.id(8667733481689180)
+,p_version_scn=>41375566869302
+,p_build_option_id=>wwv_flow_imp.id(136061722810585314)
 );
 wwv_flow_imp.component_end;
 end;

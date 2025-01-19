@@ -5,10 +5,10 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
-,p_default_id_offset=>0
+,p_default_id_offset=>44877464361218557
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp.g_varchar2_table := wwv_flow_imp.empty_varchar2_table;
@@ -70,7 +70,7 @@ wwv_flow_imp.g_varchar2_table(55) := 'ABE2971004094523A57080C041281C633454DFF4E2
 wwv_flow_imp.g_varchar2_table(56) := '61A5E00025ACE9B4213807481B764858293840096B3A6D08CE01D2861D12560A0E50C29A4E1B827380B461878495820394B0A6D386E01C206DD82161A5E00025ACE9B4213807481B764858293840096B3A6D08CE01D2861D12568AFF07FC9C981829EE66';
 wwv_flow_imp.g_varchar2_table(57) := '100000000049454E44AE426082';
 wwv_flow_imp_shared.create_app_static_file(
- p_id=>wwv_flow_imp.id(39222223649985543)
+ p_id=>wwv_flow_imp.id(121668346291817634)
 ,p_file_name=>'icons/app-icon-144-rounded.png'
 ,p_mime_type=>'image/png'
 ,p_file_charset=>'utf-8'

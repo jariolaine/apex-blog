@@ -3,30 +3,28 @@
 --------------------------------------------------------
 create or replace force view blog_v_all_comments as
 with q1 as(
-  select
+  select --+ inline
     t1.id
-    ,t1.row_version
-    ,t1.created_on
-    ,t1.created_by
-    ,t1.changed_on
-    ,t1.changed_by
-    ,t1.is_active
-    ,t1.post_id
-    ,t1.parent_id
-    ,(
-      select lkp.title
-      from blog_posts lkp
-      where 1 = 1
-        and lkp.id = t1.post_id
-    )as post_title
-    ,t1.body_html
-    ,t1.comment_by
-    ,t1.ctx_search
-    ,t1.rowid as ctx_rid
-    ,apex_escape.striphtml(
-      p_string => t1.body_html
-    ) as ctx_search_text
-    ,case
+  , t1.row_version
+  , t1.created_on
+  , t1.created_by
+  , t1.changed_on
+  , t1.changed_by
+  , t1.is_active
+  , t1.post_id
+  , t1.parent_id
+  , t1.body_html
+  , t1.comment_preview
+  , t1.comment_by
+  , t1.ctx_search
+  , t1.rowid as ctx_rid
+  , t2.sentiment_json
+  , t2.sentiment_json.documentSentiment as sentiment
+  , t2.sentiment_json.documentScores.Positive.number()  * 100 as positive_pct
+  , t2.sentiment_json.documentScores.Neutral.number()   * 100 as neutral_pct
+  , t2.sentiment_json.documentScores.Negative.number()  * 100 as negative_pct
+  , t2.sentiment_json.documentScores.Mixed.number()     * 100 as mixed_pct
+  , case
       when (
         select count(1)
         from blog_comment_flags f11
@@ -38,7 +36,7 @@ with q1 as(
         then 'ENABLED'
         else 'DISABLED'
     end as comment_status_code
-    ,case
+  , case
       when (
         select count(1)
         from blog_comment_flags f12
@@ -58,51 +56,66 @@ with q1 as(
         else 'READ'
     end as comment_flag_code
   from blog_comments t1
+  left join blog_comment_sentiments t2 on t1.id = t2.comment_id
 )
 select
-   q1.id                  as id
-  ,q1.row_version         as row_version
-  ,q1.created_on          as created_on
-  ,lower( q1.created_by ) as created_by
-  ,q1.changed_on          as changed_on
-  ,lower( q1.changed_by ) as changed_by
-  ,q1.is_active           as is_active
-  ,q1.post_id             as post_id
-  ,q1.parent_id           as parent_id
-  ,q1.post_title          as post_title
-  ,q1.body_html           as body_html
-  ,q1.comment_by          as comment_by
-  ,q1.ctx_search          as ctx_search
-  ,q1.ctx_rid             as ctx_rid
-  ,q1.comment_status_code as comment_status_code
-  ,q1.comment_flag_code   as comment_flag_code
-  ,case
+  q1.id                   as id
+, q1.row_version          as row_version
+, q1.created_on           as created_on
+, lower( q1.created_by )  as created_by
+, q1.changed_on           as changed_on
+, lower( q1.changed_by )  as changed_by
+, q1.is_active            as is_active
+, q1.post_id              as post_id
+, q1.parent_id            as parent_id
+, q1.body_html            as body_html
+, q1.comment_preview      as comment_preview
+, q1.comment_by           as comment_by
+, q1.ctx_search           as ctx_search
+, q1.ctx_rid              as ctx_rid
+, q1.comment_status_code  as comment_status_code
+, q1.comment_flag_code    as comment_flag_code
+, q1.sentiment_json       as sentiment_json
+, q1.sentiment            as sentiment
+, q1.positive_pct         as sentiment_positive_pct
+, q1.neutral_pct          as sentiment_neutral_pct
+, q1.negative_pct         as sentiment_negative_pct
+, q1.mixed_pct            as sentiment_mixed_pct
+, (
+    select lkp.title
+    from blog_posts lkp
+    where 1 = 1
+      and lkp.id = q1.post_id
+  )                       as post_title
+, case
     when q1.comment_flag_code in( 'NEW', 'UNREAD' )
       then 'true'
       else 'false'
   end                     as data_unread
-  ,(
+-- lov return value fetch in view query because IR detail view
+, (
     select
       lov1.display_value
     from blog_v_lov lov1
     where lov1.lov_name = 'COMMENT_STATUS'
       and lov1.return_value = q1.comment_status_code
   )                       as comment_status_text
-  ,(
+, (
     select
       lov2.display_value
     from blog_v_lov lov2
     where lov2.lov_name = 'COMMENT_FLAG'
       and lov2.return_value = q1.comment_flag_code
   )                       as comment_flag_text
-  ,case q1.comment_status_code
+-- class names in view query for reusability
+, case q1.comment_status_code
     when 'MODERATE'
       then 'fa-exclamation-circle u-warning-text'
     when 'ENABLED'
       then 'fa-check-circle u-success-text'
       else 'fa-minus-circle u-danger-text'
   end                     as comment_status_icon
-  ,case q1.comment_flag_code
+, case q1.comment_flag_code
     when 'REPLY'
       then 'fa-send-o'
     when 'NEW'
@@ -111,14 +124,23 @@ select
       then 'fa-envelope-o'
       else 'fa-envelope-open-o'
   end                     as comment_flag_icon
-  ,substr( q1.ctx_search_text, 1 , 128 )
-  || case when length( q1.ctx_search_text ) > 128
-    then ' ...'
-  end                     as search_desc
-  ,xmlserialize( content
+, case q1.sentiment
+    when 'Mixed'
+      then 'fa-emoji-astonished u-info-text'
+    when 'Negative'
+      then 'fa-emoji-angry u-danger-text'
+    when 'Neutral'
+      then 'fa-emoji-neutral u-normal-text'
+    when 'Positive'
+      then 'fa-emoji-pleased u-success-text'
+      else 'fa-no-icon'
+  end                     as sentiment_icon
+, xmlserialize( content
     xmlforest(
-      q1.comment_by       as "commented_by"
-      ,q1.ctx_search_text as "comment"
+      q1.comment_by as "commented_by"
+    , apex_escape.striphtml(
+        p_string => q1.body_html
+      )             as "comment"
     )
   )                       as ctx_datastore
 from q1

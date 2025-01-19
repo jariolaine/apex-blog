@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  DDL for Table BLOG_LINK_ROUPS
+--  DDL for Table BLOG_LINK_GROUPS
 --------------------------------------------------------
 create table blog_link_groups(
   id number( 38, 0 ) not null,

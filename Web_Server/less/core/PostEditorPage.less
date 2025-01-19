@@ -1,0 +1,16 @@
+@import url('_variables.less');
+/**************************************
+* Post editor page
+**************************************/
+.blog-assistant {
+  .blog-assistant-buttons {
+    border-top: var(--ut-component-border-width) solid var(--ut-component-border-color);
+  }
+  border-top: none;
+}
+.blog-item{
+  .t-Form-itemText--post:has(span.blog-hidden) {
+    display: none;
+    visibility: none;
+  }
+}

@@ -3,67 +3,98 @@ authid definer
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
---
 --  DESCRIPTION
---    Procedures and functions for admin application
+--    This package contains procedures and functions for the Admin application,
+--    including operations content handling, and utility functions.
 --
---  MODIFIED (DD.MM.YYYY)
---    Jari Laine 26.04.2019 - Created
---    Jari Laine 10.01.2020 - Added procedure merge_files and file_upload
---    Jari Laine 12.01.2020 - Added function prepare_file_path
---    Jari Laine 09.04.2020 - Handling tags case insensitive
---    Jari Laine 09.05.2020 - Procedures and functions number input parameters changed to varchar2
---                          - New functions get_comment_post_id and is_email
---    Jari Laine 10.05.2020 - Procedure send_reply_notify to send notify on reply to comment
---    Jari Laine 12.05.2020 - Removed function prepare_file_path
---    Jari Laine 17.05.2020 - Removed parameter p_err_mesg from function get_first_paragraph
---    Jari Laine 19.05.2020 - Removed obsolete function get_post_title
---    Jari Laine 24.05.2020 - Added procedures:
---                              run_settings_post_expression
---                              run_feature_post_expression
---                              update_feature
---    Jari Laine 22.06.2020 - Bug fix to function is_integer
---                          - Added parameters p_min and p_max to function is_integer
---    Jari Laine 30.09.2020 - Added procedure google_post_authentication
---    Jari Laine 28.11.2020 - Removed obsolete function get_comment_post_id
---                          - Renamed function google_post_authentication to post_authentication
---    Jari Laine 28.02.2020 - New function get_footer_link_seq
---    Jari Laine 23.05.2020 - Modifications to remove ORDS depency
---    Jari Laine 21.03.2021 - Changed procedure get_blogger_details fetch authorization group name stored to BLOG_SETTINGS table
---                          - Added trim to function remove_whitespace
---                          - Changed procedures add_category and add_tag use function remove_whitespace
---    Jari Laine 11.04.2021 - Procedure send_reply_notify moved to package BLOG_COMM
---    Jari Laine 13.04.2021 - Changes to procedure post_authentication
---                          - Function get_footer_link_seq renamed to get_modal_page_seq
---                          - Removed procedure run_feature_post_expression
---    Jari Laine 18.04.2021 - Function is_email moved to package BLOG_COMM
---    Jari Laine 05.01.2022 - Removed unused parameters and variables from procedures: post_authentication, update_feature, get_blogger_details and add_blogger
---    Jari Laine 27.03.2022 - Fixed bug on function get_first_paragraph when search nested elements
---                          - Removed obsolete procedures remove_unused_tags, purge_post_preview, purge_post_preview_job and save_post_preview
---    Jari Laine 13.04.2022 - Bug fix to functions is_integer, is_url and is_date_format error message handling
---    Jari Laine 01.05.2022 - Simple logic to function request_to_post_status
---    Jari Laine 07.05.2022 - Added procedure remove_unused_tags and remove_unused_categories
---                          - Chenged private procedure add_tag to public
---                          - Removed obsolete functions get_post_tags and get_category_title
---                          - New procedures:
---                              resequence_link_groups
---                              resequence_links
---                              resequence_categories
---                              resequence_tags
---    Jari Laine 09.05.2022 - Removed obsolete procedure run_settings_post_expression
---    Jari Laine 08.03.2023 - Changed function is_date_format validate as date instead of timestamp
---    Jari Laine 03.04.2023 - Changed function file_upload to procedure with out parameter
---    Jari Laine 28.05.2023 - New function request_to_post_success_message
---    Jari Laine 01.06.2023 - Removed procedure file_upload
---                          - New function file_exists
---                          - Changed procedure merge_files
---    Jari Laine 30.07.2023 - Added check is workspace user locked to procedure post_authentication
---                          - Replaced apex_util.set_build_option_status with apex_application_admin.set_build_option_status
---    Jari Laine 10.03.2024 - Bug fix post_authentication procedure to check only current workspace
---    Jari Laine 08.04.2024 - Removed functions:
---                              request_to_post_success_message
---                              request_to_link_success_message
---    Jari Laine 11.04.2024 - New procedure resequence_dynamic_content
+--  CHANGE LOG
+--  ============================================================================
+--  DATE         MODIFIED BY    DESCRIPTION
+--  -----------  -------------  ------------------------------------------------
+--  26.04.2019   Jari Laine     Created package.
+--  10.01.2020   Jari Laine     Added procedures:
+--                                - merge_files
+--                                - file_upload
+--  12.01.2020   Jari Laine     Added function prepare_file_path.
+--  09.04.2020   Jari Laine     Updated procedures for case-insensitive tag handling.
+--  09.05.2020   Jari Laine     Changed input parameters from NUMBER to VARCHAR2.
+--                              Added functions:
+--                                - get_comment_post_id
+--                                - is_email
+--  10.05.2020   Jari Laine     Added procedure send_reply_notify to notify replies.
+--  12.05.2020   Jari Laine     Removed function prepare_file_path.
+--  17.05.2020   Jari Laine     Removed parameter `p_err_mesg` from function get_first_paragraph.
+--  19.05.2020   Jari Laine     Removed obsolete function get_post_title.
+--  24.05.2020   Jari Laine     Added procedures:
+--                                - run_settings_post_expression
+--                                - run_feature_post_expression
+--                                - update_feature
+--  22.06.2020   Jari Laine     Fixed bug in function is_integer.
+--                              Added parameters `p_min` and `p_max` to function is_integer.
+--  30.09.2020   Jari Laine     Added procedure google_post_authentication.
+--  28.11.2020   Jari Laine     Renamed google_post_authentication to post_authentication.
+--                              Removed obsolete function get_comment_post_id.
+--  28.02.2021   Jari Laine     Added function get_footer_link_seq.
+--  23.05.2021   Jari Laine     Updated package to remove ORDS dependency.
+--  21.03.2021   Jari Laine     Updated procedure get_blogger_details:
+--                                - Fetch authorization group name from BLOG_SETTINGS table.
+--                              Enhanced function remove_whitespace by adding TRIM.
+--                              Updated add_category and add_tag to use remove_whitespace.
+--  11.04.2021   Jari Laine     Moved send_reply_notify to package BLOG_COMM.
+--  13.04.2021   Jari Laine     Renamed function get_footer_link_seq to get_modal_page_seq.
+--                              Removed procedure run_feature_post_expression.
+--                              Updated procedure post_authentication.
+--  18.04.2021   Jari Laine     Moved function is_email to package BLOG_COMM.
+--  05.01.2022   Jari Laine     Removed unused parameters/variables from:
+--                                - post_authentication
+--                                - update_feature
+--                                - get_blogger_details
+--                                - add_blogger
+--  27.03.2022   Jari Laine     Fixed bug in get_first_paragraph for nested elements.
+--                              Removed obsolete procedures:
+--                                - remove_unused_tags
+--                                - purge_post_preview
+--                                - purge_post_preview_job
+--                                - save_post_preview
+--  13.04.2022   Jari Laine     Fixed error message handling in functions:
+--                                - is_integer
+--                                - is_url
+--                                - is_date_format
+--  01.05.2022   Jari Laine     Simplified logic in function request_to_post_status.
+--  07.05.2022   Jari Laine     Added procedures:
+--                                - remove_unused_tags
+--                                - remove_unused_categories
+--                              Changed add_tag from private to public.
+--                              Removed obsolete functions:
+--                                - get_post_tags
+--                                - get_category_title
+--                              Added procedures:
+--                                - resequence_link_groups
+--                                - resequence_links
+--                                - resequence_categories
+--                                - resequence_tags
+--  09.05.2022   Jari Laine     Removed obsolete procedure run_settings_post_expression.
+--  08.03.2023   Jari Laine     Updated function is_date_format to validate as DATE instead of TIMESTAMP.
+--  03.04.2023   Jari Laine     Converted function file_upload to procedure with OUT parameter.
+--  28.05.2023   Jari Laine     Added function request_to_post_success_message.
+--  01.06.2023   Jari Laine     Removed procedure file_upload.
+--                              Added function file_exists.
+--                              Updated procedure merge_files.
+--  30.07.2023   Jari Laine     Updated procedure post_authentication:
+--                                - Check if workspace user is locked.
+--                                - Replaced apex_util.set_build_option_status with
+--                                  apex_application_admin.set_build_option_status.
+--  10.03.2024   Jari Laine     Bug fix in post_authentication to check only the current workspace.
+--  08.04.2024   Jari Laine     Removed functions:
+--                                - request_to_post_success_message
+--                                - request_to_link_success_message
+--  11.04.2024   Jari Laine     Added procedure resequence_dynamic_content.
+--  21.07.2024   Jari Laine     Added procedures:
+--                                - update_feature (accepts build option name as parameter)
+--                                - set_attribute_value
+--                              Moved file repository-related procedures/functions to BLOG_FILE package.
+--                              Removed procedure update_text_messages.
+--  25.08.2024   Jari Laine     Moved function remove_whitespace to package BLOG_UTIL.
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -74,10 +105,10 @@ as
 -- Called from:
 --  admin app application processes
   procedure get_blogger_details(
-    p_app_id          in varchar2,
-    p_username        in varchar2,
-    p_user_id         out nocopy number,
-    p_name            out nocopy varchar2
+    p_app_id            in varchar2,
+    p_username          in varchar2,
+    p_user_id           out nocopy number,
+    p_name              out nocopy varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -95,45 +126,26 @@ as
 -- Called from:
 --  admin app page 51
   function get_link_seq(
-    p_link_group_id   in varchar2
+    p_link_group_id     in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  admin app page 12
   function request_to_post_status(
-    p_request         in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  admin app page 12
---  inside procedudre blog_cm.get_first_paragraph
-  function remove_whitespace(
-    p_string          in varchar2
+    p_request           in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  admin app page 12
   function get_first_paragraph(
-    p_body_html       in clob
+    p_body_html         in clob
   ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  admin app page 72 processing
-  function file_exists(
-    p_file_name       in varchar2
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
---  admin app page 72 and 73
-  procedure merge_files(
-    p_file_name       in varchar2
-  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  admin app page 12 Processing process "Process Category"
   procedure add_category(
-    p_category_title  in varchar2,
-    p_category_id     out nocopy number
+    p_category_title    in varchar2,
+    p_category_id       out nocopy number
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -147,16 +159,16 @@ as
 -- Called from:
 --  admin app page 16 and inside this package
   procedure add_tag(
-    p_tag             in varchar2,
-    p_tag_id          out nocopy number
+    p_tag               in varchar2,
+    p_tag_id            out nocopy number
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  admin app page 12
   procedure add_post_tags(
-    p_post_id         in varchar2,
-    p_tags            in varchar2,
-    p_sep             in varchar2 default ','
+    p_post_id           in varchar2,
+    p_tags              in varchar2,
+    p_sep               in varchar2 default ','
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -166,44 +178,45 @@ as
 -- Called from:
 --  admin app page 16
   procedure resequence_tags(
-    p_post_id         in varchar2
+    p_post_id           in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  admin app page 20012 validation "Is Integer"
   function is_integer(
-    p_value           in varchar2,
-    p_min             in number,
-    p_max             in number,
-    p_err_mesg        in varchar2
+    p_value             in varchar2,
+    p_min               in number,
+    p_max               in number,
+    p_err_mesg          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  admin app page 20012 validation "Is URL"
   function is_url(
-    p_value           in varchar2,
-    p_err_mesg        in varchar2
+    p_value             in varchar2,
+    p_err_mesg          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  admin app page 20012 validation "Is date format"
   function is_date_format(
-    p_value           in varchar2,
-    p_err_mesg        in varchar2
+    p_value             in varchar2,
+    p_err_mesg          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  admin app page 20011 Processing process "Features - Save Interactive Grid Data"
   procedure update_feature(
-    p_app_id          in number,
-    p_build_option_id in number,
-    p_build_status    in varchar2
+    p_app_id            in number,
+    p_build_option_id   in number,
+    p_build_status      in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 20014
-  procedure update_text_messages(
-    p_attribute_name  in varchar2 default null
+--  admin app page 20013
+  procedure update_feature(
+    p_build_option_name in varchar2,
+    p_build_status      in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -213,12 +226,18 @@ as
 -- Called from:
 --  admin app page 50
   procedure resequence_links(
-    p_link_group_id in varchar2
+    p_link_group_id     in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  admin app page 80
   procedure resequence_dynamic_content;
+--------------------------------------------------------------------------------
+-- Called from:
+--
+  procedure set_attribute_value(
+    p_attribute_list    in apex_t_varchar2
+  );
 --------------------------------------------------------------------------------
 end "BLOG_CM";
 /
@@ -363,6 +382,29 @@ as
     end if;
 
   end add_blogger;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure set_attribute_value(
+    p_attribute_name  in varchar2,
+    p_attribute_value in varchar2
+  )
+  as
+  begin
+
+    apex_debug.info( 'Set parameter %s: %s', p_attribute_name, p_attribute_value );
+
+    update blog_settings
+      set attribute_value = p_attribute_value
+    where 1 = 1
+      and attribute_name = p_attribute_name
+      and (
+        attribute_value != p_attribute_value
+        or( attribute_value is null and p_attribute_value is not null )
+        or( attribute_value is not null and p_attribute_value is null )
+      )
+    ;
+
+  end set_attribute_value;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -549,16 +591,6 @@ as
   end request_to_post_status;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function remove_whitespace(
-    p_string  in varchar2
-  ) return varchar2
-  as
-  begin
-    -- remove whitespace characters from string
-    return trim( regexp_replace( p_string, '\s+', ' ' ) );
-  end remove_whitespace;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   function get_first_paragraph(
     p_body_html in clob
   ) return varchar2
@@ -611,120 +643,13 @@ as
       l_first_p := substr( p_body_html, l_first_p_start, l_length );
 
       -- remove whitespace
-      l_first_p := remove_whitespace( l_first_p );
+      l_first_p := blog_util.remove_whitespace( l_first_p );
 
     end if;
 
     return l_first_p;
 
   end get_first_paragraph;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  function file_exists(
-    p_file_name in varchar2
-  ) return varchar2
-  as
-    l_file_exists varchar2(6);
-    l_file_names  apex_t_varchar2;
-  begin
-
-    -- Get file names
-    l_file_names := apex_string.split (
-      p_str => p_file_name
-      ,p_sep => ':'
-    );
-
-    -- check if any of files already exists
-    select
-      case
-        when count(1) = 0
-        then 'NO'
-        else 'YES'
-      end as file_exists
-    into l_file_exists
-    from blog_v_all_files t1
-    where 1 = 1
-      and exists(
-        select 1
-        from apex_application_temp_files x1
-        join table( l_file_names ) x2
-          on x1.name = x2.column_value
-        where 1 = 1
-          and x1.filename = t1.file_name
-      )
-    ;
-
-    return l_file_exists;
-
-  end file_exists;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure merge_files(
-    p_file_name in varchar2
-  )
-  as
-    l_file_names apex_t_varchar2;
-  begin
-
-    -- Get file names
-    l_file_names := apex_string.split (
-      p_str => p_file_name
-      ,p_sep => ':'
-    );
-
-    -- insert new files and overwrite existing
-    merge into blog_files t1 using (
-      select
-        t2.id             as id
-        ,t2.is_active     as is_active
-        ,t2.is_download   as is_download
-        ,t1.filename      as file_name
-        ,t2.file_desc     as file_desc
-        ,t1.mime_type     as mime_type
-        ,t1.blob_content  as blob_content
-      from apex_application_temp_files t1
-      left join blog_v_all_files t2 on t1.filename = t2.file_name
-      where 1 = 1
-        and exists(
-          select 1
-          from table( l_file_names ) x1
-          where 1 = 1
-            and x1.column_value = t1.name
-        )
-    ) new_files
-    on ( t1.id = new_files.id )
-    when matched then
-      update
-        set t1.blob_content = new_files.blob_content
-    when not matched then
-      insert (
-        is_active
-        ,is_download
-        ,file_name
-        ,mime_type
-        ,blob_content
-        ,file_desc
-      )
-      values (
-        coalesce( new_files.is_active, 1)
-        ,coalesce( new_files.is_download, 0 )
-        ,new_files.file_name
-        ,new_files.mime_type
-        ,new_files.blob_content
-        ,new_files.file_desc
-      );
-
-    -- cleanup. delete files from temp table.
-    delete from apex_application_temp_files t1
-    where 1 = 1
-    and exists(
-      select 1
-      from table( l_file_names ) x1
-      where 1 = 1
-        and x1.column_value = t1.name
-    );
-
-  end merge_files;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure add_category(
@@ -738,7 +663,7 @@ as
   begin
 
     -- remove whitespace from category title
-    l_title := remove_whitespace( p_category_title );
+    l_title := blog_util.remove_whitespace( p_category_title );
     l_title_unique := upper( l_title );
 
     -- check if category already exists and fetch id
@@ -824,7 +749,7 @@ as
   begin
 
     p_tag_id  := null;
-    l_value   := remove_whitespace( p_tag );
+    l_value   := blog_util.remove_whitespace( p_tag );
 
     -- if tag is not null then fetch id
     if l_value is not null then
@@ -1070,19 +995,20 @@ as
   end update_feature;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure update_text_messages(
-    p_attribute_name  in varchar2 default null
+  procedure update_feature(
+    p_build_option_name in varchar2,
+    p_build_status      in varchar2
   )
   as
   begin
-
+    -- get build option id by build option name for both applications
     for c1 in(
       select
-        t1.translation_entry_id
-      , t2.attribute_value
-      from apex_application_translations t1
-      join blog_settings t2 on t1.translatable_message = t2.attribute_name
+        t1.application_id
+      , t1.build_option_id
+      from apex_application_build_options t1
       where 1 = 1
+        and t1.build_option_name  = p_build_option_name
         and exists(
           select 1
           from blog_settings x1
@@ -1090,21 +1016,18 @@ as
             and x1.attribute_name in( 'G_PUB_APP_ID', 'G_ADMIN_APP_ID' )
             and to_number( x1.attribute_value ) = t1.application_id
         )
-        and(
-          p_attribute_name is null or
-          t2.attribute_name = p_attribute_name
-        )
-      order by 1
     ) loop
 
-      apex_lang.update_message (
-        p_id => c1.translation_entry_id
-      , p_message_text => c1.attribute_value
+      -- update build option value
+      update_feature(
+        p_app_id          => c1.application_id
+      , p_build_option_id => c1.build_option_id
+      , p_build_status    => p_build_status
       );
 
     end loop;
 
-  end update_text_messages;
+  end update_feature;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure resequence_link_groups
@@ -1163,7 +1086,7 @@ as
   procedure resequence_dynamic_content
   as
   begin
-    -- update dynamic content seq if it different than new
+    -- Update dynamic content seq if it different than new
     merge into blog_dynamic_content t1
     using (
       select id
@@ -1179,6 +1102,35 @@ as
         where t1.display_seq != v1.new_display_seq
     ;
   end resequence_dynamic_content;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure set_attribute_value(
+    p_attribute_list in apex_t_varchar2
+  )
+  as
+    l_values  json_object_t;
+    l_keys    json_key_list;
+  begin
+
+    l_values :=
+      json_object_t.parse(
+        apex_string.plist_to_json_clob( p_attribute_list )
+      )
+    ;
+
+    l_keys := l_values.get_keys;
+
+    for i in 1 .. l_keys.count
+    loop
+
+      set_attribute_value(
+        p_attribute_name  => l_keys(i)
+      , p_attribute_value => l_values.get_string( l_keys(i) )
+      );
+
+    end loop;
+
+  end set_attribute_value;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_CM";

@@ -5,14 +5,14 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
-,p_default_id_offset=>0
+,p_default_id_offset=>44906910937164790
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_search_config(
- p_id=>wwv_flow_imp.id(38744651530749493)
+ p_id=>wwv_flow_imp.id(166138640859645627)
 ,p_label=>'Links'
 ,p_static_id=>'links'
 ,p_search_prefix=>'link'
@@ -33,23 +33,23 @@ wwv_flow_imp_shared.create_search_config(
 '  {if ?ICON_VALUE/}',
 '    {case ICON_TYPE/}',
 '      {when INITIALS/}',
-'        <div class="a-ResultItem-initials u-color-var">&ICON_VALUE.</div>',
+'        <div class="a-ResultItem-initials u-color-var">&ICON_VALUE!HTML.</div>',
 '      {when URL/}',
-'        <div class="a-ResultItem-image"><img src="&ICON_VALUE!ATTR." alt="&ENAME!ATTR." role="presentation" /></div>',
+'        <div class="a-ResultItem-image"><img src="&ICON_VALUE!ATTR." alt="&LINK_TITLE!ATTR." role="presentation" /></div>',
 '      {when CLASS/}',
 '        <div class="a-ResultItem-icon u-color-var"><span class="fa &ICON_VALUE!ATTR." aria-hidden="true"></span></div>',
 '    {endcase/}',
 '  {endif/}',
 '  <div class="a-ResultsItem-content">',
 '    <div class="a-ResultsItem-header">',
-'      <span class="a-ResultsItem-title u-flex-grow-1"><a &LINK_ATTR!RAW. href="&LINK_URL!ATTR.">&LINK_TITLE.</a></span>',
-'      <span class="a-ResultsItem-badge">&GROUP_TITLE.</span>',
+'      <span class="a-ResultsItem-title u-flex-grow-1"><a &LINK_ATTR!RAW. href="&LINK_URL!ATTR.">&LINK_TITLE!HTML.</a></span>',
+'      <span class="a-ResultsItem-badge">&GROUP_TITLE!HTML.</span>',
 '    </div>',
-'    <div class="a-ResultsItem-description">&LINK_DESC.</div>',
+'    <div class="a-ResultsItem-description">&LINK_DESC!HTML.</div>',
 '  </div>',
 '</div>'))
-,p_version_scn=>1
-,p_build_option_id=>wwv_flow_imp.id(6905258727754156)
+,p_version_scn=>41375567298287
+,p_build_option_id=>wwv_flow_imp.id(134299248056650290)
 );
 wwv_flow_imp.component_end;
 end;

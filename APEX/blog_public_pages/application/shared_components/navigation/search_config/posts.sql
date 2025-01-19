@@ -5,14 +5,14 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
-,p_default_id_offset=>0
+,p_default_id_offset=>44906910937164790
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_search_config(
- p_id=>wwv_flow_imp.id(38693503352046221)
+ p_id=>wwv_flow_imp.id(166087492680942355)
 ,p_label=>'Posts'
 ,p_static_id=>'posts'
 ,p_search_prefix=>'post'
@@ -33,9 +33,8 @@ wwv_flow_imp_shared.create_search_config(
 '  ,v1.tags_html1      as tags_html',
 ' from blog_v_posts v1'))
 ,p_oratext_index_column_name=>'CTX_SEARCH'
-,p_oratext_function_type=>'CUSTOM'
-,p_oratext_function=>'blog_ctx.get_post_search'
-,p_query_order_by=>':APEX$ORATEXT_SCORE desc, published_on desc'
+,p_oratext_function_type=>'SEARCH_ENGINE'
+,p_query_order_by=>'APEX$ORATEXT_SCORE desc'
 ,p_pk_column_name=>'POST_ID'
 ,p_title_column_name=>'POST_TITLE'
 ,p_subtitle_column_name=>'POST_DESC'
@@ -49,37 +48,37 @@ wwv_flow_imp_shared.create_search_config(
 '  {if ?ICON_VALUE/}',
 '    {case ICON_TYPE/}',
 '      {when INITIALS/}',
-'        <div class="a-ResultsItem-initials u-color-var">&ICON_VALUE.</div>',
+'        <div class="a-ResultsItem-initials u-color-var">&ICON_VALUE!HTML.</div>',
 '      {when URL/}',
-'        <div class="a-ResultsItem-image"><img src="&ICON_VALUE!ATTR." alt="&ENAME!ATTR." role="presentation" /></div>',
+'        <div class="a-ResultsItem-image"><img src="&ICON_VALUE!ATTR." alt="&POST_TITLE!ATTR." role="presentation" /></div>',
 '      {when CLASS/}',
 '        <div class="a-ResultItem-icon u-color-var"><span class="fa &ICON_VALUE!ATTR." aria-hidden="true"></span></div>',
 '    {endcase/}',
 '  {endif/}',
 '  <div class="a-ResultsItem-content">',
 '    <div class="a-ResultsItem-header">',
-'      <span class="a-ResultsItem-title u-flex-grow-1"><a href="&POST_URL!ATTR.">&POST_TITLE.</a></span>',
-'      <span class="a-ResultsItem-badge">&APP_TEXT$BLOG_TXT_POST.</span>',
+'      <span class="a-ResultsItem-title u-flex-grow-1"><a href="&POST_URL!ATTR.">&POST_TITLE!HTML.</a></span>',
+'      <span class="a-ResultsItem-badge">&APP_TEXT$BLOG_TXT_POST!HTML.</span>',
 '    </div>',
-'    <div class="a-ResultsItem-description">&POST_DESC!RAW.</div>',
+'    <div class="a-ResultsItem-description">&POST_DESC!HTML.</div>',
 '    <div class="a-ResultsItem-attributes">',
-'      <span class="a-ResultsItem-attribute">&APP_TEXT$BLOG_TXT_CATEGORY.: <a href="&CATEGORY_URL!ATTR.">&CATEGORY_TITLE.</a></span>',
-'    </div>',
-'    <div class="a-ResultsItem-attributes">',
-'      <span class="a-ResultsItem-attribute">&APP_TEXT$BLOG_TXT_POSTED_BY.: &BLOGGER_NAME.</span>',
+'      <span class="a-ResultsItem-attribute">&APP_TEXT$BLOG_TXT_CATEGORY!HTML.: <a href="&CATEGORY_URL!ATTR.">&CATEGORY_TITLE!HTML.</a></span>',
 '    </div>',
 '    <div class="a-ResultsItem-attributes">',
-'      <span class="a-ResultsItem-attribute">&APP_TEXT$BLOG_TXT_POSTED_ON.: &PUBLISHED_ON.</span>',
+'      <span class="a-ResultsItem-attribute">&APP_TEXT$BLOG_TXT_POSTED_BY!HTML.: &BLOGGER_NAME!HTML.</span>',
+'    </div>',
+'    <div class="a-ResultsItem-attributes">',
+'      <span class="a-ResultsItem-attribute">&APP_TEXT$BLOG_TXT_POSTED_ON!HTML.: &PUBLISHED_ON!HTML.</span>',
 '    </div>',
 '    {if TAGS_HTML/}',
 '    <div class="a-ResultsItem-attributes">',
-'      <span class="a-ResultsItem-attribute">&APP_TEXT$BLOG_TXT_TAGS.: &TAGS_HTML!RAW.</span>',
+'      <span class="a-ResultsItem-attribute">&APP_TEXT$BLOG_TXT_TAGS!HTML.: &TAGS_HTML!RAW.</span>',
 '    </div>',
 '    {endif/}',
 '  </div>',
 '</div>'))
-,p_version_scn=>1
-,p_build_option_id=>wwv_flow_imp.id(8667733481689180)
+,p_version_scn=>41486949300226
+,p_build_option_id=>wwv_flow_imp.id(136061722810585314)
 );
 wwv_flow_imp.component_end;
 end;

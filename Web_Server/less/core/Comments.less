@@ -3,9 +3,20 @@
 * Comments classic report
 **************************************/
 .blog-comment {
+  --ut-comment-info-font-size: 1rem;
   .a-ResultsItem-content,
   .t-Comments-body {
     min-width: 0;
+  }
+  .t-Comments-body {
+    .t-Comments-info {
+      margin-block-end: 0.5rem;
+    }
+    .t-Comments-comment {
+      p {
+        margin-block-end: 0.5rem;
+      }
+    }
   }
   // long URL e.g.
   .a-ResultsItem-description,

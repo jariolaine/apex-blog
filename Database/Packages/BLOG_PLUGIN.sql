@@ -3,15 +3,20 @@ authid definer
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+--  DESCRIPTION:
+--    This package contains procedures for rendering, validating, and handling AJAX requests for APEX plugins.
 --
---  DESCRIPTION
---    Procedures and functions for APEX plugins
---
---  MODIFIED (DD.MM.YYYY)
---    Jari Laine 22.04.2019 - Created
---    Jari Laine 03.01.2020 - Comments to package specs
---    Jari Laine 13.04.2022 - Bug fix to procedure validate_math_question_field error message handling
---    Jari Laine 07.05.2023 - Minor changes
+--  CHANGE LOG
+--  ============================================================================
+--  DATE         MODIFIED BY    DESCRIPTION
+--  -----------  -------------  ------------------------------------------------
+--  22.04.2019   Jari Laine     Created package.
+--  03.01.2020   Jari Laine     Added comments to package specification.
+--  13.04.2022   Jari Laine     Bug fix in validate_math_question_field.
+--                              Improved error message handling.
+--  07.05.2023   Jari Laine     Minor changes to enhance code readability.
+--  17.07.2024   Jari Laine     Removed deprecated apex_plugin.get_input_name_for_page_item usage.
+--                              Modified render procedure to pass label ID to JavaScript during load.
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -62,16 +67,18 @@ as
   begin
 
     l_string := blog_util.int_to_vc2( p_number );
+
     for i in 1 .. length( l_string )
     loop
       l_result :=
         apex_string.format(
           p_message => '%s&#%s'
-          ,p0 => l_result
-          ,p1 => ascii( substr( l_string, i, 1 ) )
+        , p0 => l_result
+        , p1 => ascii( substr( l_string, i, 1 ) )
         )
       ;
     end loop;
+
     return l_result;
 
   end to_html_entities;
@@ -87,33 +94,32 @@ as
     p_result  in out nocopy apex_plugin.t_item_render_result
   )
   as
-    l_name varchar2(256);
   begin
 
     if apex_application.g_debug
     then
-      apex_plugin_util.debug_page_item (
+      apex_plugin_util.debug_page_item(
         p_plugin      => p_plugin
-        ,p_page_item  => p_item
+      , p_page_item  => p_item
       );
     end if;
 
-    l_name := apex_plugin.get_input_name_for_page_item(false);
-
-    if not ( p_param.is_readonly or p_param.is_printer_friendly ) then
+    if not ( p_param.is_readonly or p_param.is_printer_friendly )
+    then
 
       sys.htp.p( '<input type="text" '
         || case when p_item.element_width is not null
-            then'size="' || p_item.element_width ||'" '
+            then 'size="' || p_item.element_width ||'" '
            end
         || case when p_item.element_max_length  is not null
             then 'maxlength="' || p_item.element_max_length || '" '
            end
         ||
           apex_plugin_util.get_element_attributes(
-             p_item           => p_item
-            ,p_name           => l_name
-            ,p_default_class  => 'text_field apex-item-text'
+            p_item            => p_item
+          , p_name            => p_item.name
+          , p_default_class   => 'text_field apex-item-text'
+          , p_add_labelledby  => false
           )
         || 'value="">'
       );
@@ -128,21 +134,23 @@ as
 
       apex_json.initialize_clob_output;
       apex_json.open_object;
-      apex_json.write( 'itemId', p_item.name );
+      apex_json.write( 'labelId', p_item.name || '_LABEL' );
       apex_json.write( 'ajaxIdentifier', apex_plugin.get_ajax_identifier );
       apex_json.close_object;
 
-      apex_javascript.add_onload_code (
+      apex_javascript.add_onload_code(
         p_code =>
           apex_string.format(
             p_message => 'blog.plugin.mathQuestionField.getQuestion(%s)'
-            ,p0 => apex_json.get_clob_output
+          , p0 => apex_json.get_clob_output
           )
       );
 
-      -- Tell APEX that this textarea is navigable
+      -- Tell APEX that this input is navigable
       p_result.is_navigable := true;
 
+    else
+      p_result.item_rendered := false;
     end if;
 
   end render_math_question_field;
@@ -160,7 +168,6 @@ as
     l_max   number;
     l_num_1 number;
     l_num_2 number;
-    l_tab   apex_t_varchar2;
   begin
 
     l_min   := to_number( p_item.attribute_01 );
@@ -173,9 +180,9 @@ as
 
     -- set correct answer to item session state
     apex_util.set_session_state(
-       p_name   => p_item.attribute_05
-      ,p_value  => blog_util.int_to_vc2( l_num_1 + l_num_2 )
-      ,p_commit => false
+      p_name   => p_item.attribute_05
+    , p_value  => blog_util.int_to_vc2( l_num_1 + l_num_2 )
+    , p_commit => false
     );
 
     -- Write header for the output
@@ -185,12 +192,13 @@ as
     apex_json.write(
       'label'
       ,apex_string.format(
-        p_message => '%s %s&nbsp;&#%s&nbsp;%s&#%s'
-        ,p0 => p_item.plain_label
-        ,p1 => to_html_entities( l_num_1 )
-        ,p2 => ascii('+')
-        ,p3 => to_html_entities( l_num_2 )
-        ,p4 => ascii('?')
+        p_message => '%s&nbsp;%s&nbsp;&#%s&nbsp;%s&nbsp;&#%s&nbsp;&#%s'
+      , p0 => p_item.plain_label
+      , p1 => to_html_entities( l_num_1 )
+      , p2 => ascii('+')
+      , p3 => to_html_entities( l_num_2 )
+      , p4 => ascii('=')
+      , p5 => ascii('?')
       )
     );
     apex_json.close_all;
@@ -201,8 +209,8 @@ as
     apex_debug.error( 'ajax_math_question_field error: %s', sqlerrm );
 
     l_err := apex_lang.message(
-       p_name => p_plugin.attribute_02
-      ,p0 => p_item.plain_label
+      p_name => p_plugin.attribute_02
+    , p0 => p_item.plain_label
     );
     raise_application_error( -20002 ,  l_err );
     raise;
@@ -222,7 +230,8 @@ as
     l_result  boolean;
   begin
 
-    if p_param.value is not null then
+    if p_param.value is not null
+    then
 
       l_value   := v(p_item.attribute_05);
       l_answer  := p_param.value;
@@ -234,14 +243,16 @@ as
       l_result := false;
     end if;
 
-    if not l_result then
+    if not l_result
+    then
 
       p_result.message := apex_lang.message(
         p_name => p_plugin.attribute_01
-        ,p0 => p_item.plain_label
+      , p0 => p_item.plain_label
       );
 
-      if p_result.message = apex_escape.html( upper( p_plugin.attribute_01 ) ) then
+      if p_result.message = apex_escape.html( upper( p_plugin.attribute_01 ) )
+      then
         p_result.message := p_plugin.attribute_01;
       end if;
 

@@ -3,49 +3,54 @@ authid definer
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+--  DESCRIPTION:
+--    Provides procedures and functions to generate and output RSS feeds, Atom feeds,
+--    and various sitemap components (index, main, posts, categories, archives, and tags).
 --
---  DESCRIPTION
---    Procedure and functions to generate and output RSS feed and sitemap
---
---  MODIFIED (DD.MM.YYYY)
---    Jari Laine 07.05.2019 - Created
---    Jari Laine 08.01.2020 - Removed categories sitemap
---    Jari Laine 08.01.2020 - Modified use ORDS and blog version 4
---    Jari Laine 09.04.2020 - Utilize blog_url functions parameter p_canonical
---    Jari Laine 17.05.2020 - Removed private function get_app_alias and constant c_pub_app_id
---                          - Moved private function get_ords_service to blog_ords package
---    Jari Laine 23.05.2020 - Changed procedure sitemap_main to use table blog_pages
---                          - Modifications to remove ORDS depency
---                          - New procedures:
---                              sitemap_categories
---                              sitemap_archives
---                              sitemap_tags
---    Jari Laine 30.10.2021 - Changed procedure sitemap_main to use view apex_application_pages
---    Jari Laine 13.11.2021 - Changed procedure rss
---    Jari Laine 30.12.2021 - Changed procedure rss_xsl. CSS file name moved to application settings
---    Jari Laine 05.01.2021 - Added parameter p_css_file to procedure rss_xsl
---    Jari Laine 13.03.2022 - Added parameter p_process_nae to procedure sitemap_index
---                          - Removed build option check from query producing XML in procedure sitemap_index
---    Jari Laine 19.04.2022 - Changes relating procedure blog_util.download_file
---    Jari Laine 26.04.2022 - Added element lastmod to XML to functions:
---                              sitemap_categories
---                              sitemap_archives
---                              sitemap_tags
---    Jari Laine 28.04.2020 - Changed rss_xsl
---    Jari Laine 29.11.2022 - Removed parameter p_lang from procedure rss
---                          - Added exception handler that raise also HTTP error to procedures
---                          - Other minor changes
---    Jari Laine 19.01.2023 - Repved parameter p_ws_images from procedure rss_xsl
---                          - Removed parameter p_page_group from procedure sitemap_main
---                          - Replaced private constant c_pubdate_lang with blog.util.g_nls_date_lang
---                          - Replaced private constant c_lastmod_format with blog_util.g_iso_8601_date
---                          - Replaced private constant c_pubdate_format with blog_util.g_rfc_2822_date
---    Jari Laine 30.07.2023 - Replaced apex_util.get_build_option_status with apex_application_admin.get_build_option_status
---    Jari Laine 12.11.2023 - Changes to procedures rss and rss_xsl
---    Jari Laine 13.11.2023 - New procedure atom
---    Jari Laine 10.03.2024 - Changed procedure rss_xsl handle application files absolute URL
---    Jari Laine 01.04.2024 - Parameter p_page_group to procedure sitemap_main
---                          - Changes to package constants and new constant c_headers
+--  CHANGE LOG
+--  ============================================================================
+--    DATE        AUTHOR        DESCRIPTION
+--    ----------  ------------  ------------------------------------------------
+--    07.05.2019  Jari Laine    Created package.
+--    08.01.2020  Jari Laine    Removed categories sitemap.
+--                              Modified to use ORDS and blog version 4.
+--    09.04.2020  Jari Laine    Updated to utilize blog_url function parameter p_canonical.
+--    17.05.2020  Jari Laine    Removed private function get_app_alias and constant c_pub_app_id.
+--                              Moved private function get_ords_service to the blog_ords package.
+--    23.05.2020  Jari Laine    Changed sitemap_main to use the blog_pages table.
+--                              Removed ORDS dependency.
+--                              Added procedures:
+--                                sitemap_categories
+--                                sitemap_archives
+--                                sitemap_tags
+--    30.10.2021  Jari Laine    Modified sitemap_main to use the apex_application_pages view.
+--    13.11.2021  Jari Laine    Changes to the rss procedure.
+--    30.12.2021  Jari Laine    Modified rss_xsl; CSS file name moved to application settings.
+--    05.01.2021  Jari Laine    Added parameter p_css_file to rss_xsl.
+--    13.03.2022  Jari Laine    Added parameter p_process_name to sitemap_index.
+--                              Removed build option check from XML query in sitemap_index.
+--    19.04.2022  Jari Laine    Updates related to blog_util.download_file.
+--    26.04.2022  Jari Laine    Added <lastmod> element to XML output for:
+--                                sitemap_categories
+--                                sitemap_archives
+--                                sitemap_tags
+--    28.04.2020  Jari Laine    Changes to rss_xsl.
+--    29.11.2022  Jari Laine    Removed parameter p_lang from rss.
+--                              Added exception handler to raise HTTP errors in relevant procedures.
+--                              Minor refinements.
+--    19.01.2023  Jari Laine    Removed parameter p_ws_images from rss_xsl.
+--                              Removed parameter p_page_group from sitemap_main.
+--                              Replaced private constants with global ones from blog_util:
+--                                g_nls_date_lang
+--                                g_iso_8601_date
+--                                g_rfc_2822_date
+--    30.07.2023  Jari Laine    Replaced apex_util.get_build_option_status with apex_application_admin.get_build_option_status.
+--    12.11.2023  Jari Laine    Updates to rss and rss_xsl.
+--    13.11.2023  Jari Laine    Added a new procedure: atom.
+--    10.03.2024  Jari Laine    Enhanced rss_xsl to handle application file absolute URLs.
+--    01.04.2024  Jari Laine    Added parameter p_page_group to sitemap_main.
+--                              Updated package constants.
+--                              Introduced new constant: c_headers
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -103,6 +108,7 @@ as
 end "BLOG_XML";
 /
 
+
 create or replace package body "BLOG_XML"
 as
 --------------------------------------------------------------------------------
@@ -153,12 +159,12 @@ as
     -- blog name
     l_app_name := coalesce(
        p_app_name
-      ,blog_util.get_attribute_value( 'BLOG_APP_NAME' )
+      ,blog_util.get_attribute_value( 'P0_BLOG_APP_NAME' )
     );
     -- rss feed description
     l_app_desc  := coalesce(
        p_app_desc
-      ,blog_util.get_attribute_value( 'BLOG_APP_DESC' )
+      ,blog_util.get_attribute_value( 'P0_BLOG_APP_DESC' )
     );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
@@ -266,7 +272,7 @@ as
     );
 
     -- show http error
-    blog_util.raise_http_error( 500 );
+    blog_util.raise_http_error( 400 );
     raise;
 
   end rss;
@@ -294,12 +300,12 @@ as
     -- blog name
     l_app_name := coalesce(
        p_app_name
-      ,blog_util.get_attribute_value( 'BLOG_APP_NAME' )
+      ,blog_util.get_attribute_value( 'P0_BLOG_APP_NAME' )
     );
     -- atom feed description
     l_app_desc  := coalesce(
        p_app_desc
-      ,blog_util.get_attribute_value( 'BLOG_APP_DESC' )
+      ,blog_util.get_attribute_value( 'P0_BLOG_APP_DESC' )
     );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
@@ -403,7 +409,7 @@ as
     );
 
     -- show http error
-    blog_util.raise_http_error( 500 );
+    blog_util.raise_http_error( 400 );
     raise;
 
   end atom;
@@ -501,7 +507,7 @@ as
     );
 
     -- show http error
-    blog_util.raise_http_error( 500 );
+    blog_util.raise_http_error( 400 );
     raise;
 
   end rss_xsl;
@@ -573,7 +579,7 @@ as
     );
 
     -- show http error
-    blog_util.raise_http_error( 500 );
+    blog_util.raise_http_error( 400 );
     raise;
 
   end sitemap_index;
@@ -650,7 +656,7 @@ as
     );
 
     -- show http error
-    blog_util.raise_http_error( 500 );
+    blog_util.raise_http_error( 400 );
     raise;
 
   end sitemap_main;
@@ -720,7 +726,7 @@ as
     );
 
     -- show http error
-    blog_util.raise_http_error( 500 );
+    blog_util.raise_http_error( 400 );
     raise;
 
   end sitemap_posts;
@@ -788,7 +794,7 @@ as
     );
 
     -- show http error
-    blog_util.raise_http_error( 500 );
+    blog_util.raise_http_error( 400 );
     raise;
 
   end sitemap_categories;
@@ -856,7 +862,7 @@ as
     );
 
     -- show http error
-    blog_util.raise_http_error( 500 );
+    blog_util.raise_http_error( 400 );
     raise;
 
   end sitemap_archives;
@@ -924,7 +930,7 @@ as
     );
 
     -- show http error
-    blog_util.raise_http_error( 500 );
+    blog_util.raise_http_error( 400 );
     raise;
 
   end sitemap_tags;

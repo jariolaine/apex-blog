@@ -5,10 +5,10 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
-,p_default_id_offset=>0
+,p_default_id_offset=>44906910937164790
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_imp_workspace.create_flow(
@@ -16,9 +16,11 @@ wwv_imp_workspace.create_flow(
 ,p_owner=>nvl(wwv_flow_application_install.get_schema,'BLOG_040000')
 ,p_name=>nvl(wwv_flow_application_install.get_application_name,'Blog Public Pages')
 ,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'BLOG')
-,p_application_group=>wwv_flow_imp.id(7755621288593240)
+,p_application_group=>wwv_flow_imp.id(90201743930425331)
 ,p_application_group_name=>'APEX Blog'
-,p_application_group_comment=>'APEX Blog applications'
+,p_application_group_comment=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'APEX Blog applications.',
+'Source code: https://github.com/jariolaine/apex-blog'))
 ,p_page_view_logging=>'YES'
 ,p_page_protection_enabled_y_n=>'Y'
 ,p_checksum_salt=>'79ABAEFD7AD8D73AC0DC0A616F42577F97F051356BED99D8EBB45C92C0F77585'
@@ -32,23 +34,24 @@ wwv_imp_workspace.create_flow(
 ,p_session_timeout_warning_sec=>0
 ,p_compatibility_mode=>'21.2'
 ,p_accessible_read_only=>'N'
-,p_session_state_commits=>'IMMEDIATE'
 ,p_flow_language=>'en'
 ,p_flow_language_derived_from=>'FLOW_PRIMARY_LANGUAGE'
 ,p_date_format=>'&P0_BLOG_APP_DATE_FORMAT.'
 ,p_timestamp_format=>'&P0_BLOG_APP_DATE_FORMAT.'
 ,p_direction_right_to_left=>'N'
 ,p_flow_image_prefix => nvl(wwv_flow_application_install.get_image_prefix,'')
-,p_documentation_banner=>'Source code: https://github.com/jariolaine/apex-blog'
-,p_authentication_id=>wwv_flow_imp.id(25278990329788475)
+,p_documentation_banner=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'APEX Blog public application.',
+'Source code: https://github.com/jariolaine/apex-blog'))
+,p_authentication_id=>wwv_flow_imp.id(152672979658684609)
 ,p_populate_roles=>'A'
 ,p_application_tab_set=>0
 ,p_logo_type=>'T'
-,p_logo_text=>'&APP_TEXT$BLOG_APP_DESC.'
+,p_logo_text=>'&P0_BLOG_APP_DESC.'
 ,p_public_user=>'APEX_PUBLIC_USER'
 ,p_proxy_server=>nvl(wwv_flow_application_install.get_proxy,'')
 ,p_no_proxy_domains=>nvl(wwv_flow_application_install.get_no_proxy_domains,'')
-,p_flow_version=>'Release 24.1.0.20240714'
+,p_flow_version=>'Release 24.1.7.20250119'
 ,p_flow_status=>'AVAILABLE_W_EDIT_LINK'
 ,p_flow_unavailable_text=>'This application is currently unavailable at this time.'
 ,p_exact_substitutions_only=>'Y'
@@ -59,9 +62,9 @@ wwv_imp_workspace.create_flow(
 ,p_csv_encoding=>'Y'
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'blog_util.apex_error_handler'
-,p_tokenize_row_search=>'N'
+,p_oracle_text_function_type=>'SEARCH_ENGINE'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>782
+,p_files_version=>892
 ,p_print_server_type=>'INSTANCE'
 ,p_file_storage=>'DB'
 ,p_is_pwa=>'N'

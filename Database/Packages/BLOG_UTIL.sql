@@ -3,61 +3,57 @@ authid definer
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+--  DESCRIPTION:
+--    Provides utility procedures and functions for the public and administrative
+--    blog applications. This includes error handling, string manipulation,
+--    file operations, and support for application processes.
 --
---  DESCRIPTION
---    Procedure and functions for public application
---
---  MODIFIED (DD.MM.YYYY)
---    Jari Laine 22.04.2019 - Created
---    Jari Laine 28.03.2020 - Signature 2 of get_year_month function
---    Jari Laine 15.04.2020 - function validate_comment
---    Jari Laine 26.04.2020 - Changed validate_comment us apex_util.savekey_vc2
---                          - Removed custom functions that was doing same thing
---    Jari Laine 08.05.2020 - Functions get_year_month are obsolete
---                          - Application changed to group archives by year
---    Jari Laine 10.05.2020 - Procedure new_comment_notify to notify blogger about new comments
---                          - Procedure subscribe to subscribe comment reply
---                          - Procedure unsubscribe for unsubscribe comment reply
---    Jari Laine 11.05.2020 - Procedures and functions relating comments moved to package blog_comm
---    Jari Laine 17.05.2020 - Added out parameters p_older_title and p_newer_title to procedure get_post_pagination
---                          - Materialized view blog_items_init changed to view
---                          - Removed function get_item_init_value
---    Jari Laine 18.05.2020 - Moved ORDS specific global constants
---    Jari Laine 19.05.2020 - Changed apex_debug to warn in no_data_found exception handlers
---                          - Changed apex_error_handler honor error display position when ORA error is between -20999 and 20901
---                          - Changed procedure get_post_pagination to raises ORA -20901 when no data found
---    Jari Laine 19.05.2020 - Removed global constants
---    Jari Laine 23.05.2020 - Modifications to remove ORDS depency
---    Jari Laine 05.11.2020 - Procedure render_dynamic_content
---    Jari Laine 18.12.2021 - Procedure redirect_search
---    Jari Laine 24.03.2022 - Parameter names to apex_debug procedure calls
---                          - Changes to procedure get_post_pagination and render_dynamic_content
---    Jari Laine 25.03.2022 - Added more comments
---                          - Changed variable names to more descriptive
---                          - Removed obsolete procedure check_archive_exists
---    Jari Laine 19.04.2022 - Changes to procedures download_file
---    Jari Laine 26.04.2022 - Parameter p_escape to function get_tag
---    Jari Laine 03.08.2022 - Changed procedure render_dynamic_content to use apex_util.prn
---    Jari Laine 16.11.2022 - Removed obsolete function get_post_title
---    Jari Laine 21.11.2022 - Added DETERMINISTIC caluse to function int_to_vc2
---    Jari Laine 23.11.2022 - Changed procedures exception handling and removed some unnecessary calls to apex_debug
---                          - Renamed procedure get_post_pagination to get_post_details and added more out parameters
---    Jari Laine 24.11.2022 . Removed obsolete parameter p_escape from functions get_category_title and get_tag
---    Jari Laine 29.11.2022 - Published procedure raise_http_error to
---                          - Exception handler to procedures download_file
---                          - Moved logic to fetch next and previous post to view blog_v_posts from procedure get_post_details
---    Jari Laine 15.01.2023 - Removed obsolete procedure render_dynamic_content
---    Jari Laine 19.01.2023 - Changed procedure get_post_details parameter names
---                          - Added global constants
---                              g_nls_date_lang
---                              g_iso_8601_date
---                              g_rfc_2822_date
---    Jari Laine 08.04.2023 - Parameter p_page_id to procedure redirect_search
---                          - Removed ORA errors between -20999 and 20901 display position handlimg from function apex_error_handler
---    Jari Laine 05.09.2023 - Removed use of type blog_t_post from procedure get_post_details
---    Jari Laine 01.04.2024 - New package global constants and variables
---                          - Small changes to procedures download_file
---    Jari Laine 10.04.2024 - Changes to procedure initialize_items
+--  CHANGE LOG
+--  ============================================================================
+--  DATE         MODIFIED BY    DESCRIPTION
+--  -----------  -------------  ------------------------------------------------
+--  22.04.2019   Jari Laine     Created package.
+--  28.03.2020   Jari Laine     Added alternate signature for get_year_month.
+--  15.04.2020   Jari Laine     Added function validate_comment.
+--  26.04.2020   Jari Laine     Replaced validate_comment with APEX_UTIL.SAVEKEY_VC2.
+--                              Removed redundant custom functions.
+--  08.05.2020   Jari Laine     Marked get_year_month functions as obsolete.
+--  10.05.2020   Jari Laine     Added procedures new_comment_notify, subscribe,
+--                              and unsubscribe for comment replies.
+--  11.05.2020   Jari Laine     Moved comment-related logic to BLOG_COMM package.
+--  17.05.2020   Jari Laine     Added out parameters p_older_title and p_newer_title to get_post_pagination.
+--                              Replaced materialized view BLOG_ITEMS_INIT with a view.
+--                              Removed obsolete function get_item_init_value.
+--  18.05.2020   Jari Laine     Moved ORDS-specific global constants.
+--  19.05.2020   Jari Laine     Enhanced APEX debug logging and exception handling.
+--                              Modified get_post_pagination to raise ORA-20901.
+--                              Removed global constants.
+--  23.05.2020   Jari Laine     Removed dependency on ORDS.
+--  05.11.2020   Jari Laine     Added procedure render_dynamic_content.
+--  18.12.2021   Jari Laine     Added procedure redirect_search.
+--  24.03.2022   Jari Laine     Added parameter names to APEX_DEBUG calls.
+--  25.03.2022   Jari Laine     Improved comments and renamed variables for clarity.
+--                              Removed obsolete procedure check_archive_exists.
+--  19.04.2022   Jari Laine     Enhanced download_file procedures.
+--  26.04.2022   Jari Laine     Added parameter p_escape to function get_tag.
+--  03.08.2022   Jari Laine     Updated render_dynamic_content to use APEX_UTIL.PRN.
+--  16.11.2022   Jari Laine     Removed obsolete function get_post_title.
+--  21.11.2022   Jari Laine     Added DETERMINISTIC clause to function int_to_vc2.
+--  23.11.2022   Jari Laine     Improved exception handling in procedures.
+--                              Renamed get_post_pagination to get_post_details.
+--  24.11.2022   Jari Laine     Removed obsolete parameter p_escape.
+--  29.11.2022   Jari Laine     Added procedure raise_http_error.
+--                              Moved next/previous post logic to BLOG_V_POSTS view.
+--  15.01.2023   Jari Laine     Removed procedure render_dynamic_content.
+--  19.01.2023   Jari Laine     Renamed get_post_details parameters.
+--                              Added global constants: g_nls_date_lang, g_iso_8601_date and g_rfc_2822_date.
+--  08.04.2023   Jari Laine     Modified redirect_search to accept p_page_id.
+--  05.09.2023   Jari Laine     Removed use of BLOG_T_POST type in get_post_details.
+--  01.04.2024   Jari Laine     Added new global constants and variables.
+--                              Minor changes to download_file.
+--  10.04.2024   Jari Laine     Updated initialize_items procedure.
+--  20.07.2024   Jari Laine     Added RESULT_CACHE for function get_attribute_value.
+--  25.08.2024   Jari Laine     Added new function remove_whitespace.
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -68,13 +64,20 @@ as
   g_mime_rss      constant varchar2(40) := 'application/rss+xml';
   g_mime_atom     constant varchar2(40) := 'application/atom+xml';
 --------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 12
+--  inside package blog_cm and blog_comm
+  function remove_whitespace(
+    p_string            in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
   procedure raise_http_error(
-    p_error_code  in number
+    p_error_code      in number
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public and admin application definition Error Handling Function
-  function apex_error_handler (
+  function apex_error_handler(
     p_error           in apex_error.t_error
   ) return apex_error.t_error_result;
 --------------------------------------------------------------------------------
@@ -88,7 +91,7 @@ as
 --  other packages, public and admin application
   function get_attribute_value(
     p_attribute_name  in varchar2
-  ) return varchar2;
+  ) return varchar2 result_cache;
 --------------------------------------------------------------------------------
 -- Called from:
 --  public and admin application process Initialize Items
@@ -126,7 +129,7 @@ as
 --------------------------------------------------------------------------------
 -- Called from:
 --  inside package and package BLOG_XML
-  procedure download_file (
+  procedure download_file(
     p_blob_content    in out nocopy blob,
     p_mime_type       in varchar2,
     p_header_names    in apex_t_varchar2,
@@ -136,8 +139,8 @@ as
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1003 Ajax Callback process "download"
-  procedure download_file (
-    p_file_name       in varchar2
+  procedure download_file(
+    p_file_path       in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -170,6 +173,16 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function remove_whitespace(
+    p_string  in varchar2
+  ) return varchar2
+  as
+  begin
+    -- remove whitespace characters from string
+    return trim( regexp_replace( p_string, '\s+', ' ' ) );
+  end remove_whitespace;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure raise_http_error(
@@ -269,7 +282,7 @@ as
       and l_result.message = p_error.message
       then
         l_result.message :=
-          apex_error.get_first_ora_error_text (
+          apex_error.get_first_ora_error_text(
             p_error => p_error
           )
         ;
@@ -282,9 +295,9 @@ as
       if l_result.page_item_name is null
       and l_result.column_alias is null
       then
-        apex_error.auto_set_associated_item (
-           p_error => p_error
-          ,p_error_result => l_result
+        apex_error.auto_set_associated_item(
+          p_error => p_error
+        , p_error_result => l_result
         );
       end if;
 
@@ -307,7 +320,7 @@ as
 --------------------------------------------------------------------------------
   function get_attribute_value(
     p_attribute_name in varchar2
-  ) return varchar2
+  ) return varchar2 result_cache
   as
     l_value blog_settings.attribute_value%type;
   begin
@@ -326,8 +339,8 @@ as
 
     apex_debug.info(
       p_message => 'Fetch attribute %s return: %s'
-      ,p0 => p_attribute_name
-      ,p1 => l_value
+    , p0 => p_attribute_name
+    , p1 => l_value
     );
 
     -- return attribute value
@@ -609,7 +622,7 @@ as
   end get_tag;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure download_file (
+  procedure download_file(
     p_blob_content    in out nocopy blob,
     p_mime_type       in varchar2,
     p_header_names    in apex_t_varchar2,
@@ -620,12 +633,12 @@ as
   begin
 
     -- init HTTP buffer
-    --sys.htp.flush;
+    sys.htp.flush;
     --sys.htp.init;
 
     -- open HTTP header
     sys.owa_util.mime_header(
-      ccontent_type => coalesce ( p_mime_type, c_mime_default )
+      ccontent_type => coalesce( p_mime_type, c_mime_default )
     , bclose_header => false
     , ccharset      => p_charset
     );
@@ -639,7 +652,7 @@ as
     loop
 
       apex_debug.info(
-         p_message => 'Header name: %s , header value: %s'
+        p_message => 'Header name: %s , header value: %s'
       , p0 => p_header_names(i)
       , p1 => p_header_values(i)
       );
@@ -650,8 +663,8 @@ as
         sys.htp.p(
           apex_string.format(
             p_message => '%s: %s'
-          , p0 => p_header_names(i)
-          , p1 => p_header_values(i)
+          , p0 => trim( p_header_names(i) )
+          , p1 => trim( p_header_values(i) )
           )
         );
       else
@@ -667,7 +680,15 @@ as
     sys.owa_util.http_header_close;
 
     -- output file
-    sys.wpg_docload.download_file ( p_blob_content );
+    sys.wpg_docload.download_file( p_blob_content );
+
+    begin
+      apex_application.stop_apex_engine;
+    exception
+    when apex_application.e_stop_apex_engine
+    then
+      null;
+    end;
 
   -- handle errors
   exception
@@ -687,8 +708,8 @@ as
   end download_file;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure download_file (
-    p_file_name in varchar2
+  procedure download_file(
+    p_file_path in varchar2
   )
   as
     l_last_modified varchar2(256);
@@ -702,8 +723,7 @@ as
     into l_file_t
     from blog_v_files t1
     where 1 = 1
-    --and t1.is_download = 0
-    and t1.file_name = p_file_name
+      and t1.file_path = p_file_path
     ;
 
     l_last_modified :=
@@ -774,12 +794,11 @@ as
       p_table => l_header_values
     , p_value =>
         apex_string.format(
-            p_message => '%s; filename="%s"'
+            p_message => '%s filename="%s"'
           , p0 =>
               case l_file_t.is_download
                 when 1
-                then 'attachment'
-                else 'inline'
+                then 'attachment;'
               end
           , p1 => l_file_t.file_name
         )
@@ -801,8 +820,8 @@ as
       p_message => 'Error: %s %s( %s => %s )'
     , p0 => sqlerrm
     , p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-    , p2 => 'p_file_name'
-    , p3 => coalesce( p_file_name, '(null)' )
+    , p2 => 'p_file_path'
+    , p3 => coalesce( p_file_path, '(null)' )
     );
 
     raise_http_error( 404 );
@@ -814,8 +833,8 @@ as
       p_message => 'Error: %s %s( %s => %s )'
     , p0 => sqlerrm
     , p1 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-    , p2 => 'p_file_name'
-    , p3 => coalesce( p_file_name, '(null)' )
+    , p2 => 'p_file_path'
+    , p3 => coalesce( p_file_path, '(null)' )
     );
 
     raise_http_error( 400 );
@@ -833,7 +852,7 @@ as
   as
   begin
     -- Get search page URL and redirect
-    apex_util.redirect_url (
+    apex_util.redirect_url(
       apex_page.get_url(
         p_application => p_app_id
       , p_page        => p_page_id

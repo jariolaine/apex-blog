@@ -3,7 +3,7 @@
 --------------------------------------------------------
 create or replace force view blog_v_all_posts as
 with q1 as(
-  select
+  select --+ inline
      t1.id              as id
     ,t1.category_id     as category_id
     ,t1.blogger_id      as blogger_id

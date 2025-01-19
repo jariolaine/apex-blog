@@ -32,7 +32,8 @@ Download [latest version](https://github.com/jariolaine/apex-blog/releases/lates
 4. Import and install *blog-public-pages-latest.sql* and select install supporting objects.
 
 ### Post Install
-Create a "Bloggers" workspace user group. Add APEX users to the group who are authorized to use the blog admin application. See [Using Groups to Manage Application Express Users](https://docs.oracle.com/en/database/oracle/apex/24.1/aeadm/managing-users-in-a-workspace.html#GUID-0FD7B406-8A83-40C0-A3E7-EF19BBDEA5A4)
+Create a workspace user group and it name "Bloggers". Add APEX users to the group who are authorized to use the blog admin application.
+See how to create a workspace group in the APEX documentation [*Using Groups to Manage Application Express Users*](https://docs.oracle.com/en/database/oracle/apex/24.1/aeadm/managing-users-in-a-workspace.html#GUID-0FD7B406-8A83-40C0-A3E7-EF19BBDEA5A4).
 
 ## Upgrade
 Existing application version must be Release v22.2.1.20230117 or later.
@@ -45,5 +46,12 @@ Before starting the upgrade, backup the application parsing schema data and obje
 3. Import and install *blog-administration-latest.sql* and select upgrade supporting objects.
 4. Import and install *blog-public-pages-latest.sql* and select upgrade supporting objects.
 
-# License
+## License
 This code is released under [MIT license](https://raw.githubusercontent.com/jariolaine/apex-blog/master/LICENSE.txt) by Jari Laine.
+
+## Third-Party Libraries
+
+This project includes the following third-party libraries that are licensed under the MIT License:
+
+- [ShowdownJS](https://github.com/showdownjs/showdown) -
+A bidirectional Markdown to HTML to Markdown converter written in Javascript

@@ -1,0 +1,115 @@
+prompt --application/shared_components/data_profiles/list_bucket_objects
+begin
+--   Manifest
+--     DATA PROFILE: List Bucket Objects
+--   Manifest End
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2024.05.31'
+,p_release=>'24.1.7'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>402
+,p_default_id_offset=>44877464361218557
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.create_data_profile(
+ p_id=>wwv_flow_imp.id(99275595876892941)
+,p_name=>'List Bucket Objects'
+,p_format=>'JSON'
+,p_has_header_row=>false
+,p_row_selector=>'objects'
+,p_use_raw_json_selectors=>false
+);
+wwv_flow_imp_shared.create_data_profile_col(
+ p_id=>wwv_flow_imp.id(99276047851892937)
+,p_data_profile_id=>wwv_flow_imp.id(99275595876892941)
+,p_name=>'FILE_PATH'
+,p_sequence=>10
+,p_is_primary_key=>true
+,p_column_type=>'DATA'
+,p_data_type=>'VARCHAR2'
+,p_max_length=>4000
+,p_has_time_zone=>false
+,p_selector=>'name'
+);
+wwv_flow_imp_shared.create_data_profile_col(
+ p_id=>wwv_flow_imp.id(99276345299892937)
+,p_data_profile_id=>wwv_flow_imp.id(99275595876892941)
+,p_name=>'FILE_SIZE'
+,p_sequence=>40
+,p_column_type=>'DATA'
+,p_data_type=>'NUMBER'
+,p_has_time_zone=>false
+,p_selector=>'size'
+);
+wwv_flow_imp_shared.create_data_profile_col(
+ p_id=>wwv_flow_imp.id(99276715335892937)
+,p_data_profile_id=>wwv_flow_imp.id(99275595876892941)
+,p_name=>'CREATED_ON'
+,p_sequence=>50
+,p_column_type=>'DATA'
+,p_data_type=>'TIMESTAMP WITH TIME ZONE'
+,p_format_mask=>'YYYY"-"MM"-"DD"T"HH24":"MI:SS"."FF9TZR'
+,p_has_time_zone=>true
+,p_selector=>'timeCreated'
+);
+wwv_flow_imp_shared.create_data_profile_col(
+ p_id=>wwv_flow_imp.id(99277014598892936)
+,p_data_profile_id=>wwv_flow_imp.id(99275595876892941)
+,p_name=>'CHANGED_ON'
+,p_sequence=>60
+,p_column_type=>'DATA'
+,p_data_type=>'TIMESTAMP WITH TIME ZONE'
+,p_format_mask=>'YYYY"-"MM"-"DD"T"HH24":"MI:SS"."FF9TZR'
+,p_has_time_zone=>true
+,p_selector=>'timeModified'
+);
+wwv_flow_imp_shared.create_data_profile_col(
+ p_id=>wwv_flow_imp.id(99275750188892938)
+,p_data_profile_id=>wwv_flow_imp.id(99275595876892941)
+,p_name=>'MD5'
+,p_sequence=>70
+,p_column_type=>'DATA'
+,p_data_type=>'VARCHAR2'
+,p_max_length=>4000
+,p_has_time_zone=>false
+,p_selector=>'md5'
+);
+wwv_flow_imp_shared.create_data_profile_col(
+ p_id=>wwv_flow_imp.id(99277224033892936)
+,p_data_profile_id=>wwv_flow_imp.id(99275595876892941)
+,p_name=>'ETAG'
+,p_sequence=>80
+,p_column_type=>'DATA'
+,p_data_type=>'VARCHAR2'
+,p_max_length=>4000
+,p_has_time_zone=>true
+,p_selector=>'etag'
+);
+wwv_flow_imp_shared.create_data_profile_col(
+ p_id=>wwv_flow_imp.id(99277563354892936)
+,p_data_profile_id=>wwv_flow_imp.id(99275595876892941)
+,p_name=>'STORAGETIER'
+,p_sequence=>90
+,p_column_type=>'DATA'
+,p_data_type=>'VARCHAR2'
+,p_max_length=>4000
+,p_has_time_zone=>false
+,p_is_hidden=>true
+,p_selector=>'storageTier'
+);
+wwv_flow_imp_shared.create_data_profile_col(
+ p_id=>wwv_flow_imp.id(99277889619892936)
+,p_data_profile_id=>wwv_flow_imp.id(99275595876892941)
+,p_name=>'ARCHIVALSTATE'
+,p_sequence=>100
+,p_column_type=>'DATA'
+,p_data_type=>'VARCHAR2'
+,p_max_length=>4000
+,p_has_time_zone=>true
+,p_is_hidden=>true
+,p_is_filterable=>false
+,p_selector=>'archivalState'
+);
+wwv_flow_imp.component_end;
+end;
+/

@@ -5,21 +5,21 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
-,p_default_id_offset=>0
+,p_default_id_offset=>44877464361218557
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_install_build_option(
- p_id=>wwv_flow_imp.id(36751135385168137)
-,p_install_id=>wwv_flow_imp.id(31706870664802069)
-,p_build_opt_id=>wwv_flow_imp.id(35674953070739317)
+ p_id=>wwv_flow_imp.id(119197258027000228)
+,p_install_id=>wwv_flow_imp.id(114152993306634160)
+,p_build_opt_id=>wwv_flow_imp.id(118121075712571408)
 );
 wwv_flow_imp_shared.create_install_build_option(
- p_id=>wwv_flow_imp.id(36751394881168138)
-,p_install_id=>wwv_flow_imp.id(31706870664802069)
-,p_build_opt_id=>wwv_flow_imp.id(35675193135740905)
+ p_id=>wwv_flow_imp.id(119197517523000229)
+,p_install_id=>wwv_flow_imp.id(114152993306634160)
+,p_build_opt_id=>wwv_flow_imp.id(118121315777572996)
 );
 wwv_flow_imp.component_end;
 end;

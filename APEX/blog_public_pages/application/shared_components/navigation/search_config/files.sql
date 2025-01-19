@@ -5,14 +5,14 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
-,p_default_id_offset=>0
+,p_default_id_offset=>44906910937164790
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_search_config(
- p_id=>wwv_flow_imp.id(38726917014540459)
+ p_id=>wwv_flow_imp.id(166120906343436593)
 ,p_label=>'Files'
 ,p_static_id=>'files'
 ,p_search_prefix=>'file'
@@ -21,11 +21,11 @@ wwv_flow_imp_shared.create_search_config(
 ,p_query_type=>'SQL'
 ,p_query_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'   v1.file_id   as file_id',
-'  ,v1.file_name as file_name',
-'  ,v1.file_desc as file_desc',
-'  ,v1.file_size as file_size',
-'  ,v1.file_url  as file_url',
+'  v1.file_id   as file_id',
+', v1.file_name as file_name',
+', v1.file_desc as file_desc',
+', v1.file_size as file_size',
+', v1.file_url  as file_url',
 'from blog_v_files v1',
 'where 1 = 1',
 '  and v1.is_download = 1',
@@ -42,24 +42,26 @@ wwv_flow_imp_shared.create_search_config(
 '  {if ?ICON_VALUE/}',
 '    {case ICON_TYPE/}',
 '      {when INITIALS/}',
-'        <div class="a-ResultsItem-initials u-color-var">&ICON_VALUE.</div>',
+'        <div class="a-ResultsItem-initials u-color-var">&ICON_VALUE!HTML.</div>',
 '      {when URL/}',
-'        <div class="a-ResultsItem-image"><img src="&ICON_VALUE!ATTR." alt="&ENAME!ATTR." role="presentation" /></div>',
+'        <div class="a-ResultsItem-image"><img src="&ICON_VALUE!ATTR." alt="&FILE_NAME!ATTR." role="presentation" /></div>',
 '      {when CLASS/}',
 '        <div class="a-ResultItem-icon u-color-var"><span class="fa &ICON_VALUE!ATTR." aria-hidden="true"></span></div>',
 '    {endcase/}',
 '  {endif/}',
 '  <div class="a-ResultsItem-content">',
 '    <div class="a-ResultsItem-header">',
-'      <span class="a-ResultsItem-title u-flex-grow-1"><a href="&FILE_URL!ATTR.">&FILE_NAME.</a></span>',
-'      <span class="a-ResultsItem-badge">&APP_TEXT$BLOG_TXT_FILE.</span>',
+'      <span class="a-ResultsItem-title u-flex-grow-1">',
+'        <a href="&FILE_URL!RAW.">&FILE_NAME!HTML.</a>',
+'      </span>',
+'      <span class="a-ResultsItem-badge">&APP_TEXT$BLOG_TXT_FILE!HTML.</span>',
 '    </div>',
-'    <div class="a-ResultsItem-description">&FILE_DESC.</div>',
-'    <div class="a-ResultsItem-misc">&FILE_SIZE.</div>',
+'    <div class="a-ResultsItem-description">&FILE_DESC!HTML.</div>',
+'    <div class="a-ResultsItem-misc">&FILE_SIZE!HTML.</div>',
 '  </div>',
 '</div>'))
-,p_version_scn=>1
-,p_build_option_id=>wwv_flow_imp.id(24626889314854172)
+,p_version_scn=>41471114513559
+,p_build_option_id=>wwv_flow_imp.id(152020878643750306)
 );
 wwv_flow_imp.component_end;
 end;

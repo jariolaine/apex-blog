@@ -3,29 +3,33 @@ authid definer
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+--  DESCRIPTION:
+--    This package contains functions to generate various types of URLs
+--    for the blog application. The URLs support different content types,
+--    such as posts, categories, archives, tags, and dynamic pages,
+--    while offering flexibility with canonical options and APEX integrations.
 --
---  DESCRIPTION
---    Generate URL
---
---  MODIFIED (DD.MM.YYYY)
---    Jari Laine 22.04.2019 - Created
---    Jari Laine 09.05.2020 - Functions that are called only from APEX
---                          - Number return value and number input parameters changed to varchar2.
---                          - Functions that are also used in query
---                          - Another signature with varchar2 input and return values created for APEX
---                          - Added parameter p_canonical to functions returning URL
---    Jari Laine 10.05.2020 - New function get_unsubscribe
---    Jari Laine 19.05.2020 - Changed page and items name to "hard coded" values
---                          - Removed global constants from blog_util package
---    Jari Laine 23.05.2020 - Removed default from function get_tab parameter p_app_page_id
---    Jari Laine 13.11.2021 - New funtions get_sitemap_index, get_rss and get get_rss_xsl
---    Jari Laine 18.12.2021 - Moved procedure redirect_search to package blog_util.
---    Jari Laine 14.03.2022 - New function get_canonical_host
---    Jari Laine 24.11.2022 - Hard coded values to package private constants
---                          - Removed not used parammeters from functions
---                          - New function get_dynamic_page
---    Jari Laine 18.11.2023 - New function get_atom
---    Jari Laine 01.04.2024 - Changed package private constants to json object
+--  CHANGE LOG
+--  ============================================================================
+--  DATE         MODIFIED BY    DESCRIPTION
+--  -----------  -------------  ------------------------------------------------
+--  22.04.2019   Jari Laine     Created package.
+--  09.05.2020   Jari Laine     Changed number input/output parameters to VARCHAR2 for APEX usage.
+--                              Added canonical URL parameter to functions.
+--                              Created additional signatures for APEX usage.
+--  10.05.2020   Jari Laine     Added new function get_unsubscribe.
+--  19.05.2020   Jari Laine     Hardcoded page and item names.
+--                              Removed global constants from BLOG_UTIL package.
+--  23.05.2020   Jari Laine     Removed default value for get_tab parameter p_app_page_id.
+--  13.11.2021   Jari Laine     Added functions get_sitemap_index, get_rss, and get_rss_xsl.
+--  18.12.2021   Jari Laine     Moved procedure redirect_search to BLOG_UTIL.
+--  14.03.2022   Jari Laine     Added new function get_canonical_host.
+--  24.11.2022   Jari Laine     Added new function get_dynamic_page.
+--                              Removed unused parameters from functions.
+--                              Hardcoded values moved to package private constants.
+--  18.11.2023   Jari Laine     Added new function get_atom.
+--  01.04.2024   Jari Laine     Changed private constants to a JSON object.
+--  23.07.2024   Jari Laine     Added new function get_file.
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -110,7 +114,10 @@ as
 -- packages blog_url, blog_xml
   function get_process(
     p_application     in varchar2 default null,
-    p_process         in varchar2 default null
+    p_process         in varchar2 default null,
+    p_items           in varchar2 default null,
+    p_values          in varchar2 default null,
+    p_canonical       in varchar2 default 'YES'
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
@@ -147,6 +154,15 @@ as
     p_application     in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
+-- Called from:
+--  Blog Administration abd Public Application
+  function get_file(
+    p_file_path       in varchar2,
+    p_application     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO'
+  ) return varchar2;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 end "BLOG_URL";
 /
 
@@ -159,12 +175,13 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- json for pages and items
-  c_page_and_items constant json_object_t := json_object_t( '{
+  c_page_and_items constant json_object_t := json_object_t.parse( '{
     "post": {"page": "POST", "items": "P2_POST_ID"},
     "category": {"page": "CATEGORY", "items": "P14_CATEGORY_ID"},
     "archive": {"page": "ARCHIVES", "items": "P15_ARCHIVE_ID"},
     "tag": {"page": "TAG", "items": "P6_TAG_ID"},
-    "unsubscribe": {"page": "POST", "items": "P2_POST_ID,P2_SUBSCRIPTION_ID"}
+    "unsubscribe": {"page": "POST", "items": "P2_POST_ID,P2_SUBSCRIPTION_ID"},
+    "download": {"page": "PGM", "items": "P1003_FILE_NAME", "process": "download"}
   }' );
 
 -- cache rss and atom url
@@ -443,7 +460,10 @@ as
 --------------------------------------------------------------------------------
   function get_process(
     p_application in varchar2 default null,
-    p_process     in varchar2 default null
+    p_process     in varchar2 default null,
+    p_items       in varchar2 default null,
+    p_values      in varchar2 default null,
+    p_canonical   in varchar2 default 'YES'
   ) return varchar2
   as
     l_request varchar2(256);
@@ -455,12 +475,17 @@ as
       , p0 => p_process
       )
     ;
-    return get_canonical_host ||
+    return
+      case p_canonical
+      when 'YES'
+      then get_canonical_host end ||
       apex_page.get_url(
         p_application => p_application
       , p_page        => 'pgm'
       , p_session     => ''
       , p_request     => l_request
+      , p_items       => p_items
+      , p_values      => p_values
       , p_plain_url   => true
       )
     ;
@@ -591,6 +616,30 @@ as
     return l_sitemap_url;
 
   end get_sitemap_index;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_file(
+    p_file_path       in varchar2,
+    p_application     in varchar2 default null,
+    p_canonical       in varchar2 default 'NO'
+  ) return varchar2
+  as
+    l_json json_object_t;
+  begin
+
+    l_json := c_page_and_items.get_object( 'download' );
+
+    return
+      get_process(
+        p_application => p_application
+      , p_process     => l_json.get_string( 'process' )
+      , p_items       => l_json.get_string( 'items' )
+      , p_values      => p_file_path
+      , p_canonical   => p_canonical
+      )
+    ;
+
+  end get_file;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_URL";

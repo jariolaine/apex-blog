@@ -3,7 +3,7 @@
 --------------------------------------------------------
 create or replace force view blog_v_post_tags as
 with q1 as(
-  select
+  select --+ inline
      t2.post_id     as post_id
     ,t2.tag_id      as tag_id
     ,t2.display_seq as display_seq

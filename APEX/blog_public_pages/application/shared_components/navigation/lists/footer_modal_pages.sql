@@ -5,14 +5,14 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
-,p_default_id_offset=>0
+,p_default_id_offset=>44906910937164790
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_list(
- p_id=>wwv_flow_imp.id(41857893903151708)
+ p_id=>wwv_flow_imp.id(169251883232047842)
 ,p_name=>'Footer Modal Pages'
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -26,7 +26,7 @@ wwv_flow_imp_shared.create_list(
 '  and v1.content_type = ''FOOTER_LINK''',
 'order by v1.display_seq'))
 ,p_list_status=>'PUBLIC'
-,p_required_patch=>wwv_flow_imp.id(42618909236023987)
+,p_required_patch=>wwv_flow_imp.id(170012898564920121)
 ,p_version_scn=>1
 );
 wwv_flow_imp.component_end;

@@ -3,89 +3,124 @@ authid definer
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
---
 --  DESCRIPTION
---    Procedure and functions for post comments
+--    This package provides procedures and functions for managing post comments,
+--    including functionality for replying, flagging, email validation, and HTML content processing.
 --
---  MODIFIED (DD.MM.YYYY)
---    Jari Laine 11.05.2020 - Created
---    Jari Laine 11.04.2021 - New procedure reply_notify
---                          - New functions validate_email and is_email_verified
---    Jari Laine 18.04.2021 - New functions is_email
---    Jari Laine 30.10.2021 - Removed functions validate_email and is_email_verified
---    Jari Laine 13.04.2022 - Posibility add multiple flags using procedure flag_comment
---                          - Posibility remove multiple flags using procedure unflag_comment
---    Jari Laine 27.11.2022 - Changed procedure build_code_tab remove leading and trailing line breaks from posted code
+--  CHANGE LOG
+--  ============================================================================
+--  DATE         MODIFIED BY    DESCRIPTION
+--  -----------  -------------  ------------------------------------------------
+--  11.05.2020   Jari Laine     Created package.
+--  11.04.2021   Jari Laine     Added new procedure:
+--                                - reply_notify
+--                              Added new functions:
+--                                - validate_email
+--                                - is_email_verified
+--  18.04.2021   Jari Laine     Added new function is_email.
+--  30.10.2021   Jari Laine     Removed obsolete functions:
+--                                - validate_email
+--                                - is_email_verified
+--  13.04.2022   Jari Laine     Enhanced flagging functionality:
+--                                - Procedure flag_comment: Supports adding multiple flags.
+--                                - Procedure unflag_comment: Supports removing multiple flags.
+--  27.11.2022   Jari Laine     Updated procedure build_code_tab:
+--                                - Removed leading and trailing line breaks from posted code.
+--  15.08.2024   Jari Laine     Modified and renamed procedure:
+--                                - remove_anchor to remove_html_tags
+--                              Added new functions:
+--                                - plain_text
+--                                - short_text
+--                              Updated procedure:
+--                                - build_comment_html
 --
+--  ============================================================================
 --  TO DO:
---    #1  comment HTML validation should be improved
---    #2  email validation should be improved
+--  ============================================================================
+--  #1 Improve HTML validation for comment content.
+--  #2 Enhance email validation logic to handle edge cases.
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   -- Called from:
   --  public app page 1001
+  --  admin app pages 62
+  function plain_text(
+    p_string          in varchar2
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  -- Called from:
+  --
+  function short_text(
+    p_string          in varchar2,
+    p_plain_text      in boolean default true,
+    p_str_length      in number default 100
+  ) return varchar2;
+--------------------------------------------------------------------------------
+  -- Called from:
+  --  public app page 1001
   function format_comment(
-    p_comment           in varchar2,
-    p_remove_anchors    in boolean default false
+    p_comment         in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from:
   --  public app page 1001
   function validate_comment(
-    p_comment           in varchar2,
-    p_max_length        in number default 4000
+    p_comment         in varchar2,
+    p_max_length      in number default 4000
   ) return varchar2;
 --------------------------------------------------------------------------------
   -- Called from:
-  --  public app page 1001 and admin app page 20012 validation
+  --  public app page 1001
+  --  admin app page 20012
   function is_email(
-    p_email             in varchar2,
-    p_err_mesg          in varchar2
+    p_email           in varchar2,
+    p_err_mesg        in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1001
+--  admin app pages 61
   procedure flag_comment(
-    p_comment_id        in varchar2,
-    p_flags             in varchar2
+    p_comment_id      in varchar2,
+    p_flags           in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
---
+--  admin app pages 61
   procedure unflag_comment(
-    p_comment_id        in varchar2,
-    p_flags             in varchar2
+    p_comment_id      in varchar2,
+    p_flags           in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1001
   procedure new_comment_notify(
-    p_post_id           in varchar2,
-    p_app_name          in varchar2,
-    p_email_template    in varchar2
+    p_post_id         in varchar2,
+    p_app_name        in varchar2,
+    p_email_template  in varchar2
   );
 --------------------------------------------------------------------------------
   -- Called from:
   --  admin app pages 62
   procedure reply_notify(
-    p_app_id            in varchar2,
-    p_app_name          in varchar2,
-    p_post_id           in varchar2,
-    p_email_template    in varchar2
+    p_app_id          in varchar2,
+    p_app_name        in varchar2,
+    p_post_id         in varchar2,
+    p_email_template  in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 1001
   procedure subscribe(
-    p_post_id           in varchar2,
-    p_email             in varchar2
+    p_post_id         in varchar2,
+    p_email           in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
 --  public app page 2
   procedure unsubscribe(
-    p_subscription_id   in varchar2
+    p_subscription_id in varchar2
   );
 --------------------------------------------------------------------------------
 end "BLOG_COMM";
@@ -106,12 +141,40 @@ as
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  procedure remove_html_tags(
+    p_string    in out nocopy varchar2,
+    p_html_tags in varchar2
+  )
+  as
+    l_html_tags apex_t_varchar2;
+  begin
+    -- create table of html tags
+    l_html_tags := apex_string.split( p_html_tags, ':' );
+    -- loop table
+    for i in 1 .. l_html_tags.count
+    loop
+      -- remove html tag
+      p_string :=
+        regexp_replace(
+          p_string
+        , apex_string.format(
+            p_message => '<%0[^>]*>(.*?)<\/%0>'
+          , p0 => l_html_tags(i)
+          )
+        , '', 1, 0, 'in'
+        )
+      ;
+    end loop;
+
+  end remove_html_tags;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure remove_ascii(
     p_string in out nocopy varchar2
   )
   as
   begin
-    -- remove unwanted ascii codes
+    -- remove unwanted ascii codes except new line chr 10
     for i in 0 .. 31
     loop
       if i != 10 then
@@ -119,16 +182,6 @@ as
       end if;
     end loop;
   end remove_ascii;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure remove_anchor(
-    p_string in out nocopy varchar2
-  )
-  as
-  begin
-    -- remove anchor tags
-    p_string := regexp_replace( p_string, '<a[^>]*>(.*?)<\/a>', '', 1, 0, 'i' );
-  end remove_anchor;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure escape_html(
@@ -148,7 +201,7 @@ as
       ,p_whitelist_tags  => c_whitelist_tags
     );
     -- escape hash marks
-    p_string := replace( p_string, l_hasmark, '&#x23;' );
+    p_string := replace( p_string, l_hasmark, '	&#35;' );
 
   end escape_html;
 --------------------------------------------------------------------------------
@@ -167,10 +220,10 @@ as
   begin
 
     -- check code open tag count
-    l_code_cnt := regexp_count( p_comment, '\<code\>', 1, 'i' );
+    l_code_cnt := regexp_count( p_comment, '<code>', 1, 'i' );
 
     -- process code tags if open and close count match ( pre check is for valid HTML )
-    if l_code_cnt = regexp_count( p_comment, '\<\/code\>', 1, 'i' )
+    if l_code_cnt = regexp_count( p_comment, '<\/code>', 1, 'i' )
     then
 
       -- collect content inside code tags to collection
@@ -220,15 +273,15 @@ as
   )
   as
     l_temp        varchar2(32700);
-    l_code_row    number;
+    l_code_row    pls_integer;
     l_code_tab    apex_t_varchar2;
     l_comment_tab apex_t_varchar2;
   begin
 
     -- process code tags
     build_code_tab(
-       p_comment => p_comment
-      ,p_code_tab => l_code_tab
+      p_comment => p_comment
+    , p_code_tab => l_code_tab
     );
 
     -- split comment to collection by new line character
@@ -253,45 +306,27 @@ as
         -- and open p tag again for text
         p_comment :=
           apex_string.format(
-             p_message => '%s</p>%s<p>'
-            ,p0 => p_comment
-            ,p1 => l_code_tab( l_code_row )
+            p_message => '%s%s'
+          , p0 => p_comment
+          , p1 => l_code_tab( l_code_row )
           )
         ;
-
       else
         -- append text if row is not empty
         if l_temp is not null
         then
-          -- if we are in first row
-          if p_comment is null
-          then
-            p_comment := l_temp;
-          else
-            -- check if p tag is opened, then insert br for new line
-            p_comment :=
-              apex_string.format(
-                 p_message => '%s%s%s'
-                ,p0 => p_comment
-                ,p1 =>
-                  case
-                  when not substr( p_comment, length( p_comment ) - 2 ) = '<p>'
-                  then '<br/>' -- br element backlash needed because comment is validated as XML
-                  end
-                ,p2 => l_temp
-              )
-            ;
-          end if;
+          p_comment :=
+            apex_string.format(
+              p_message => '%s<p>%s</p>'
+            , p0 => p_comment
+            , p1 => l_temp
+            )
+          ;
         end if;
 
       end if;
 
     end loop;
-
-    -- wrap comment to p tag.
-    p_comment := apex_string.format( '<p>%s</p>', p_comment );
-    -- there might be empty p, if comment e.g. ends code tag, remove that
-    p_comment := replace( p_comment, '<p></p>' );
 
   end build_comment_html;
 --------------------------------------------------------------------------------
@@ -299,27 +334,85 @@ as
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function plain_text(
+    p_string in varchar2
+  ) return varchar2
+  as
+    l_string varchar2(32700);
+  begin
+
+    l_string := p_string;
+
+    -- remove unwanted ascii
+    remove_ascii(
+      p_string => l_string
+    );
+    -- Unescape HTML entities
+    l_string := utl_i18n.unescape_reference( l_string );
+    -- remove code and anchor HTML tags
+    remove_html_tags(
+      p_string    => l_string
+    , p_html_tags => 'code:a'
+    );
+    -- add space before html tag
+    -- needed for language AI sentence recognition
+    l_string := replace( l_string, '<', ' <' );
+    -- remove HTML
+    l_string := apex_escape.striphtml( l_string );
+    -- remove extra whitespaces
+    l_string := blog_util.remove_whitespace( l_string );
+
+    return l_string;
+
+  end plain_text;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function short_text(
+    p_string      in varchar2,
+    p_plain_text  in boolean default true,
+    p_str_length  in number default 100
+  ) return varchar2
+  as
+    l_length  pls_integer;
+    l_string  varchar2(32700);
+  begin
+
+    l_string := p_string;
+
+    if p_plain_text
+    then
+      l_string := plain_text( l_string );
+    end if;
+
+    l_length := instr( l_string, ' ', p_str_length );
+
+    return
+      case when l_length > 0
+        then substr( l_string, 1, l_length ) || ' ...'
+        else l_string
+      end
+    ;
+
+  end short_text;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   function format_comment(
-    p_comment         in varchar2,
-    p_remove_anchors  in boolean default false
+    p_comment in varchar2
   ) return varchar2
   as
     l_comment varchar2(32700);
   begin
 
     l_comment := p_comment;
-
-    -- remove unwanted ascii codes
+    -- remove unwanted ascii
     remove_ascii(
       p_string => l_comment
     );
-    -- remove all anchors
-    if p_remove_anchors
-    then
-      remove_anchor(
-        p_string => l_comment
-      );
-    end if;
+    -- remove anchors tags
+    remove_html_tags(
+      p_string    => l_comment
+    , p_html_tags => 'a'
+    );
     -- escape HTML
     escape_html(
       p_string => l_comment
@@ -337,8 +430,8 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function validate_comment(
-    p_comment         in varchar2,
-    p_max_length      in number default 4000
+    p_comment     in varchar2,
+    p_max_length  in number default 4000
   ) return varchar2
   as
     l_xml       xmltype;
@@ -350,7 +443,7 @@ as
   begin
 
     -- check formatted comment length
-    if lengthb( p_comment ) > p_max_length
+    if length( p_comment ) > p_max_length
     then
       -- set error message
       l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_LENGTH';
@@ -368,6 +461,12 @@ as
         -- set error message
         l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_HTML';
       end;
+
+      if blog_comm.short_text( p_comment ) is null
+      then
+        -- set error message
+        l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_PREVIEW';
+      end if;
 
     end if;
 
@@ -473,7 +572,7 @@ as
     -- if application email address is not set, exit from procedure
     if l_app_email is null
     then
-      apex_debug.info( 'application email address is not set' );
+      apex_debug.warn( 'application email address is not set' );
       return;
     end if;
 
@@ -482,7 +581,7 @@ as
     -- and blogger has set email
     for c1 in(
       select v1.blogger_email
-        ,json_object (
+        ,json_object(
            'APP_NAME'     value p_app_name
           ,'BLOGGER_NAME' value v1.blogger_name
           ,'POST_TITLE'   value v1.title
@@ -506,7 +605,7 @@ as
         ,c1.placeholders
       );
       -- send notify email
-      apex_mail.send (
+      apex_mail.send(
          p_to                 => c1.blogger_email
         ,p_from               => l_app_email
         ,p_template_static_id => p_email_template
@@ -538,7 +637,7 @@ as
     -- if application email address is not set, exit from procedure
     if l_app_email is null
     then
-      apex_debug.info( 'application email address is not set' );
+      apex_debug.warn( 'application email address is not set' );
       return;
     end if;
 
@@ -552,7 +651,7 @@ as
     -- send notify users that have subscribed to replies to comment
     for c1 in(
       select t2.email
-      ,json_object (
+      ,json_object(
          'APP_NAME'         value p_app_name
         ,'POST_TITLE'       value v1.title
         ,'POST_LINK'        value
@@ -591,7 +690,7 @@ as
         ,c1.placeholders
       );
       -- send notify email
-      apex_mail.send (
+      apex_mail.send(
          p_from => l_app_email
         ,p_to   => c1.email
         ,p_template_static_id => p_email_template

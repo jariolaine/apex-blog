@@ -35,7 +35,7 @@ select
     else 'UD'
   end                   as allowed_row_operation
 from blog_tags t1
-cross join (
+cross join(
   select
      apex_lang.message( 'BLOG_TXT_ENABLED' )    as txt_enabled
     ,apex_lang.message( 'BLOG_TXT_DISABLED' )   as txt_disabled

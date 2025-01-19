@@ -5,20 +5,20 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
-,p_default_id_offset=>0
+,p_default_id_offset=>44877464361218557
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_list(
- p_id=>wwv_flow_imp.id(43889817309617069)
+ p_id=>wwv_flow_imp.id(126335939951449160)
 ,p_name=>'Activity Reports'
 ,p_list_status=>'PUBLIC'
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(43890291190617072)
+ p_id=>wwv_flow_imp.id(126336413832449163)
 ,p_list_item_display_sequence=>10
 ,p_list_item_link_text=>'Dashboard'
 ,p_list_item_link_target=>'f?p=&APP_ID.:30020:&SESSION.::&DEBUG.::::'
@@ -27,7 +27,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(44038050204294296)
+ p_id=>wwv_flow_imp.id(126484172846126387)
 ,p_list_item_display_sequence=>20
 ,p_list_item_link_text=>'Page Views Metric'
 ,p_list_item_link_target=>'f?p=&APP_ID.:30021:&SESSION.::&DEBUG.:RR:::'
@@ -36,7 +36,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(43891823892617079)
+ p_id=>wwv_flow_imp.id(126337946534449170)
 ,p_list_item_display_sequence=>30
 ,p_list_item_link_text=>'Page Views'
 ,p_list_item_link_target=>'f?p=&APP_ID.:30024:&SESSION.::&DEBUG.:RR:::'
@@ -45,7 +45,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(43891458178617079)
+ p_id=>wwv_flow_imp.id(126337580820449170)
 ,p_list_item_display_sequence=>40
 ,p_list_item_link_text=>'Page Performance'
 ,p_list_item_link_target=>'f?p=&APP_ID.:30023:&SESSION.::&DEBUG.::::'
@@ -54,7 +54,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(43891053833617079)
+ p_id=>wwv_flow_imp.id(126337176475449170)
 ,p_list_item_display_sequence=>50
 ,p_list_item_link_text=>'Application Error Log'
 ,p_list_item_link_target=>'f?p=&APP_ID.:30022:&SESSION.::&DEBUG.::::'

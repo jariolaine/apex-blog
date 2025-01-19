@@ -5,14 +5,14 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
-,p_default_id_offset=>0
+,p_default_id_offset=>44877464361218557
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_list_of_values(
- p_id=>wwv_flow_imp.id(7140542412077627)
+ p_id=>wwv_flow_imp.id(89586665053909718)
 ,p_lov_name=>'POST_TAGS'
 ,p_lov_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
@@ -33,7 +33,7 @@ wwv_flow_imp_shared.create_list_of_values(
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_list_of_values_cols(
- p_id=>wwv_flow_imp.id(24770130757807179)
+ p_id=>wwv_flow_imp.id(107216253399639270)
 ,p_query_column_name=>'RETURN_VALUE'
 ,p_display_sequence=>10
 ,p_data_type=>'VARCHAR2'
@@ -41,7 +41,7 @@ wwv_flow_imp_shared.create_list_of_values_cols(
 ,p_is_searchable=>'N'
 );
 wwv_flow_imp_shared.create_list_of_values_cols(
- p_id=>wwv_flow_imp.id(37786734754344299)
+ p_id=>wwv_flow_imp.id(120232857396176390)
 ,p_query_column_name=>'DISPLAY_SEQ'
 ,p_heading=>'Sequence'
 ,p_display_sequence=>10
@@ -50,14 +50,14 @@ wwv_flow_imp_shared.create_list_of_values_cols(
 ,p_is_searchable=>'N'
 );
 wwv_flow_imp_shared.create_list_of_values_cols(
- p_id=>wwv_flow_imp.id(24770589496807179)
+ p_id=>wwv_flow_imp.id(107216712138639270)
 ,p_query_column_name=>'DISPLAY_VALUE'
 ,p_heading=>'Tag'
 ,p_display_sequence=>20
 ,p_data_type=>'VARCHAR2'
 );
 wwv_flow_imp_shared.create_list_of_values_cols(
- p_id=>wwv_flow_imp.id(24770901431807179)
+ p_id=>wwv_flow_imp.id(107217024073639270)
 ,p_query_column_name=>'STATUS'
 ,p_heading=>'Status'
 ,p_display_sequence=>30

@@ -5,14 +5,14 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
-,p_default_id_offset=>0
+,p_default_id_offset=>44877464361218557
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_install(
- p_id=>wwv_flow_imp.id(31706870664802069)
+ p_id=>wwv_flow_imp.id(114152993306634160)
 ,p_welcome_message=>'This application installer will guide you through the process of creating database objects and metadata necessary to run the application.'
 ,p_license_message=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'Please read license from',
@@ -39,27 +39,34 @@ wwv_flow_imp_shared.create_install(
 ,p_deinstall_success_message=>'Deinstallation complete.'
 ,p_deinstall_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '--------------------------------------------------------',
-'--  Drop Foreign Keys',
+'-- Drop Foreign Keys',
 '--------------------------------------------------------',
 'alter table blog_comments drop constraint blog_comments_fk1;',
 'alter table blog_comments drop constraint blog_comments_fk2;',
 'alter table blog_comment_flags drop constraint blog_comment_flags_fk1;',
+'alter table blog_comment_sentiments drop constraint blog_comment_sentiments_fk1;',
 'alter table blog_comment_subscribers drop constraint blog_comment_subscribers_fk1;',
 'alter table blog_comment_subscribers drop constraint blog_comment_subscribers_fk2;',
-'alter table blog_features drop constraint blog_features_fk1;',
+'alter table blog_feature_parents drop constraint blog_feature_parents_fk1;',
+'alter table blog_feature_parents drop constraint blog_feature_parents_fk2;',
 'alter table blog_init_items drop constraint blog_init_items_fk1;',
 'alter table blog_links drop constraint blog_links_fk1;',
 'alter table blog_posts drop constraint blog_posts_fk1;',
 'alter table blog_posts drop constraint blog_posts_fk2;',
 'alter table blog_post_tags drop constraint blog_post_tags_fk1;',
 'alter table blog_post_tags drop constraint blog_post_tags_fk2;',
+'alter table blog_setting_features drop constraint blog_setting_features_fk1;',
 '--------------------------------------------------------',
-'--  Drop objects',
+'-- Drop objects',
 '--------------------------------------------------------',
+'drop package blog_ai;',
 'drop package blog_cm;',
 'drop package blog_comm;',
 'drop package blog_ctx;',
+'drop package blog_file;',
 'drop package blog_html;',
+'drop package blog_mime;',
+'drop package blog_oci_os;',
 'drop package blog_plugin;',
 'drop package blog_url;',
 'drop package blog_util;',
@@ -69,9 +76,11 @@ wwv_flow_imp_shared.create_install(
 'drop table blog_categories;',
 'drop table blog_comments;',
 'drop table blog_comment_flags;',
+'drop table blog_comment_sentiments;',
 'drop table blog_comment_subscribers;',
 'drop table blog_dynamic_content;',
 'drop table blog_features;',
+'drop table blog_feature_parents;',
 'drop table blog_files;',
 'drop table blog_init_items;',
 'drop table blog_links;',
@@ -80,6 +89,7 @@ wwv_flow_imp_shared.create_install(
 'drop table blog_posts;',
 'drop table blog_post_tags;',
 'drop table blog_settings;',
+'drop table blog_setting_features;',
 'drop table blog_subscribers_email;',
 'drop table blog_tags;',
 'drop view blog_v_all_categories;',
@@ -110,7 +120,7 @@ wwv_flow_imp_shared.create_install(
 'drop view blog_v_tags;',
 'drop view blog_v_version;',
 '--------------------------------------------------------',
-'--  Drop text index preferences',
+'-- Drop text index preferences',
 '--------------------------------------------------------',
 'declare',
 '  ctx_ddl_error exception;',

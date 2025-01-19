@@ -5,17 +5,17 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
-,p_default_id_offset=>0
+,p_default_id_offset=>44906910937164790
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_install_script(
- p_id=>wwv_flow_imp.id(9207795190834538)
-,p_install_id=>wwv_flow_imp.id(20741295540297154)
+ p_id=>wwv_flow_imp.id(136601784519730672)
+,p_install_id=>wwv_flow_imp.id(148135284869193288)
 ,p_name=>'Patch 23.2.20231120'
-,p_sequence=>50
+,p_sequence=>20
 ,p_script_type=>'UPGRADE'
 ,p_condition_type=>'EXISTS'
 ,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -31,7 +31,7 @@ wwv_flow_imp_shared.create_install_script(
 'update blog_features set display_seq = ''180'' where build_option_name = ''BLOG_FEATURE_SEARCH_FILES'';',
 'update blog_features set display_seq = ''170'' where build_option_name = ''BLOG_FEATURE_SEARCH_LINKS'';',
 'insert into blog_features (is_active, display_seq, build_option_name, build_option_group, build_option_parent)',
-'  VALUES (''1'', ''160'', ''BLOG_FEATURE_SEARCH_COMMENTS'', ''BLOG_FEATURE_GROUP_PAGE'', ''BLOG_FEATURE_SEARCH'');',
+'  values (''1'', ''160'', ''BLOG_FEATURE_SEARCH_COMMENTS'', ''BLOG_FEATURE_GROUP_PAGE'', ''BLOG_FEATURE_SEARCH'');',
 '--------------------------------------------------------',
 '--  Insert patch version info to BLOG_SETTINGS',
 '--------------------------------------------------------',

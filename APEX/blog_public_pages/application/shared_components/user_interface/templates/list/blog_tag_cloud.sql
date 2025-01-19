@@ -5,24 +5,24 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.0'
+,p_release=>'24.1.7'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
-,p_default_id_offset=>0
+,p_default_id_offset=>44906910937164790
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_list_template(
- p_id=>wwv_flow_imp.id(13219456187408808)
+ p_id=>wwv_flow_imp.id(140613445516304942)
 ,p_list_template_current=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<li class="blog-tagCloud-item">',
-'  <a class="blog-tagCloud-link" href="#LINK#" data-weight="#A02#">',
+'<li class="blog-tagCloud-item #A03# is-current" aria-current="page">',
+'  <a class="blog-tagCloud-link" href="#LINK#" data-weight="#A02#" data-item-id="#A04#">',
 '    <span class="blog-tagCloud-text">#TEXT#</span>',
 '    <span class="blog-tagCloud-badge">#A01#</span>',
 '  </a>',
 '</li>'))
 ,p_list_template_noncurrent=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<li class="blog-tagCloud-item">',
-'  <a class="blog-tagCloud-link" href="#LINK#" data-weight="#A02#">',
+'<li class="blog-tagCloud-item #A03#">',
+'  <a class="blog-tagCloud-link" href="#LINK#" data-weight="#A02#" data-item-id="#A04#">',
 '    <span class="blog-tagCloud-text">#TEXT#</span>',
 '    <span class="blog-tagCloud-badge">#A01#</span>',
 '  </a>',
