@@ -310,19 +310,21 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_plug_id=>wwv_flow_imp.id(149522797330336765)
 ,p_item_source_plug_id=>wwv_flow_imp.id(149522797330336765)
 ,p_prompt=>'Description'
+,p_post_element_text=>'"BLOG_BTN_AI_ASSISTANT"'
 ,p_source=>'FILE_DESC'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_TEXTAREA'
-,p_cSize=>60
+,p_cSize=>30
 ,p_cMaxlength=>4000
-,p_cHeight=>5
+,p_cHeight=>4
 ,p_field_template=>wwv_flow_imp.id(90994779237350334)
-,p_item_template_options=>'#DEFAULT#'
+,p_item_css_classes=>'blog-item blog-postText'
+,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--postTextBlock'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
 ,p_help_text=>'File description displayed in public application "Files" page.'
 ,p_attribute_01=>'Y'
-,p_attribute_02=>'N'
+,p_attribute_02=>'Y'
 ,p_attribute_03=>'N'
 ,p_attribute_04=>'BOTH'
 );
@@ -443,6 +445,53 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_action=>'NATIVE_SHOW'
 ,p_affected_elements_type=>'ITEM'
 ,p_affected_elements=>'P301_IS_ACTIVE'
+);
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(96832451820013458)
+,p_name=>'Initialize assistant button action'
+,p_event_sequence=>30
+,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
+,p_bind_event_type=>'ready'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(96832810180013463)
+,p_event_id=>wwv_flow_imp.id(96832451820013458)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_affected_elements_type=>'ITEM'
+,p_affected_elements=>'P301_FILE_DESC'
+,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex.actions.add({',
+'  name: "gen-ai-assistant"',
+', action: ( event, element, args ) => { ',
+'    apex.event.trigger( this.affectedElements, "action-open-assistant", args );',
+'  }',
+'});'))
+);
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(96833266677015104)
+,p_name=>'Open AI assistant'
+,p_event_sequence=>40
+,p_triggering_element_type=>'ITEM'
+,p_triggering_element=>'P301_FILE_DESC'
+,p_bind_type=>'bind'
+,p_execution_type=>'IMMEDIATE'
+,p_bind_event_type=>'custom'
+,p_bind_event_type_custom=>'action-open-assistant'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(96833681321015104)
+,p_event_id=>wwv_flow_imp.id(96833266677015104)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_OPEN_AI_ASSISTANT'
+,p_attribute_01=>'DIALOG'
+,p_attribute_09=>'ITEM'
+,p_attribute_10=>'P301_FILE_DESC'
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(104493817237972004)

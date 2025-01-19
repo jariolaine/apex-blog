@@ -320,7 +320,8 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_db_column_name=>'POST_DESC'
 ,p_display_order=>200
 ,p_column_identifier=>'AJ'
-,p_column_label=>'Description'
+,p_column_label=>'Summary'
+,p_alternative_label=>'Post Summary'
 ,p_column_type=>'STRING'
 ,p_heading_alignment=>'LEFT'
 ,p_use_as_row_header=>'N'

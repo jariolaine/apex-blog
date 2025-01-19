@@ -16,9 +16,6 @@ wwv_imp_workspace.create_credential(
 ,p_name=>'Blog Open AI API Key'
 ,p_static_id=>'BLOG_OPEN_AI_API_KEY'
 ,p_authentication_type=>'HTTP_HEADER'
-,p_valid_for_urls=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'https://api.openai.com/v1',
-''))
 ,p_prompt_on_install=>true
 );
 wwv_flow_imp.component_end;

@@ -70,7 +70,7 @@ wwv_flow_imp_page.create_page_plug(
 'where 1 = 1',
 '  and application_id = :APP_ID',
 '  and build_option_status = ''Include''',
-'  and lower( build_option_name ) like ''% authentication''',
+'  and build_option_name like ''BLOG\_AUTHENTICATION\_%'' escape ''\''',
 'having count(1) > 1'))
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'expand_shortcuts', 'N',

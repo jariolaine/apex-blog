@@ -144,7 +144,7 @@ prompt --install
 @@application/shared_components/logic/build_options.sql
 @@application/shared_components/globalization/messages.sql
 @@application/shared_components/globalization/dyntranslations.sql
-@@application/shared_components/user_interface/shortcuts/blog_btn_post_feature_image.sql
+@@application/shared_components/user_interface/shortcuts/blog_btn_ai_assistant.sql
 @@application/shared_components/user_interface/shortcuts/blog_btn_post_description.sql
 @@application/shared_components/user_interface/shortcuts/blog_btn_post_title.sql
 @@application/shared_components/user_interface/shortcuts/blog_btn_post_category.sql

@@ -6382,7 +6382,6 @@ as
   as
     l_zip_name        varchar2(256);
     l_content_type    varchar2(256);
-    l_blob_content    blob;
     l_zip_file        blob;
   begin
     -- fetch selected files
@@ -7209,7 +7208,7 @@ as
     -- Generate AI response using OpenAI service
     l_response :=
       apex_ai.chat(
-        p_service_static_id => 'BLOG_OPEN_AI',
+        p_service_static_id => 'BLOG_OPEN_AI_API',
         p_messages          => l_messages,
         p_prompt            => apex_lang.message( 'BLOG_AI_GENERATE_PROMPT' ),
         p_system_prompt     =>

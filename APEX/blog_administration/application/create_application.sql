@@ -70,7 +70,7 @@ wwv_imp_workspace.create_flow(
 ,p_substitution_string_04=>'BLOG_REPLACE_FILES_COLLECTION'
 ,p_substitution_value_04=>'EXISTING_FILES'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>1644
+,p_files_version=>1650
 ,p_print_server_type=>'INSTANCE'
 ,p_file_storage=>'DB'
 ,p_is_pwa=>'N'

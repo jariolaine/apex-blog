@@ -184,7 +184,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '{with/}',
 'TEXT:=#LINK_STATUS#',
-'ICON_CLASSES:={if LINK_IS_ACTIVE/}fa-check-circle u-success-text{else/}fa-minus-circle u-danger-text{endif/} w60',
+'ICON_CLASSES:={if LINK_IS_ACTIVE/}fa-check-circle u-success-text{else/}fa-minus-circle u-danger-text{endif/} w40',
 '{apply THEME$ICON_CUSTOM/}'))
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'LOV_ESCAPE_SC'

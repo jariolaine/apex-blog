@@ -27,12 +27,6 @@ wwv_flow_imp_shared.create_message(
 ,p_version_scn=>41472737989694
 );
 wwv_flow_imp_shared.create_message(
- p_id=>wwv_flow_imp.id(116082546348300193)
-,p_name=>'BLOG_AI_MSG_ASSISTANT_WELCOME'
-,p_message_text=>'Hello. How can I help you?'
-,p_version_scn=>41472961813415
-);
-wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(114759969887623339)
 ,p_name=>'BLOG_AI_SYSTEM_PROMPT_POST_ASSISTANT'
 ,p_message_text=>'You are an advanced AI assistant specializing in writing engaging, informative, and well-structured blog posts tailored to a specific audience. Your goal is to produce content that is easy to read, factually accurate, and optimized for search engines'
@@ -45,30 +39,38 @@ wwv_flow_imp_shared.create_message(
 ,p_name=>'BLOG_AI_SYSTEM_PROMPT_POST_CATEGORY'
 ,p_message_text=>'Generate a blog post category that is appropriate for SEO, ensuring it aligns with commonly searched phrases and terms relevant to the provided topic. The category should be concise, descriptive, and structured to improve content discoverability. It '
 ||'should capture the main theme or purpose of the blog while resonating with user search behavior and keyword trends. Please keep it down 2 words. Use only same language as blog post. Category should be plain text. Do not use any other kind formatting.'
-,p_version_scn=>41487405980814
+||' Do not respond anything other than the generated category.'
+,p_version_scn=>41492169726229
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(114737699878309742)
 ,p_name=>'BLOG_AI_SYSTEM_PROMPT_POST_DESCRIPTION'
-,p_message_text=>'Generate a compelling and concise blog post description based on the provided content topic or details. The description should be 1-2 sentences long, summarize the main points of the blog, and engage readers by highlighting the value or benefits of r'
-||'eading the post. Use clear and engaging language, incorporating relevant keywords to optimize for SEO and attract the target audience. Use only same language as blog post. Description should be plain text. Do not use any other kind formatting.'
-,p_version_scn=>41487542099786
+,p_message_text=>'Generate a compelling and concise blog post summary based on the provided content topic or details. The summary should be 1-2 sentences long, summarize the main points of the blog post, and engage readers by highlighting the value or benefits of read'
+||'ing the post. Use clear and engaging language, incorporating relevant keywords to optimize for SEO and attract the target audience. Use only same language as blog post. The response must be plain text only, without any enclosures such as quotation ma'
+||'rks, brackets, or other symbols. Do not use any other kind formatting. Do not respond anything other than the generated summary.'
+,p_version_scn=>41492171445566
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(114713268320200448)
 ,p_name=>'BLOG_AI_SYSTEM_PROMPT_POST_TAGS'
 ,p_message_text=>'Generate a list of relevant, SEO-friendly tags for a blog post based on the provided content details or keywords. Tags should be short (1-2 words), directly related to the topic, and optimized for discoverability. Include a mix of specific and genera'
 ||'l terms to help categorize the post effectively and improve its visibility on search engines and within the website''s taxonomy. Please keep it down to 6 tags. Use only same language as blog post.Tags should be plain text and separated by comma charac'
-||'ter. Do not use any other kind formatting. Make the tags lowercase and sorted alphabetically.'
-,p_version_scn=>41487406467486
+||'ter. Do not use any other kind formatting. Make the tags lowercase and sorted alphabetically. Do not respond anything other than the generated tags.'
+,p_version_scn=>41492169759678
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(115273145443553656)
 ,p_name=>'BLOG_AI_SYSTEM_PROMPT_POST_TITLE'
 ,p_message_text=>'Generate a creative, engaging, and SEO-friendly blog post title based on the provided description, topic, or keywords. The title should be concise (preferably under 60 characters), appealing to the target audience, and accurately reflect the content'''
-||'s tone and purpose. Ensure the title is attention-grabbing and optimized for search engines, while avoiding clickbait. If specific keywords or themes are mentioned, incorporate them naturally into the title. Use only same language as blog post. Title'
-||' should be plain text. Do not use any other kind formatting.'
-,p_version_scn=>41487405707553
+||'s tone and purpose. Ensure the title is attention-grabbing and optimized for search engines, while avoiding clickbait. If specific keywords or themes are mentioned, incorporate them naturally into the title. Use only same language as blog post. The r'
+||'esponse must be plain text only, without any enclosures such as quotation marks, brackets, or other symbols. Do not use any other kind formatting. Do not respond anything other than the generated title.'
+,p_version_scn=>41492171423204
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(96828359556875329)
+,p_name=>'BLOG_BTN_TITLE_AI_ASSISTANT'
+,p_message_text=>'Chat with AI assistant'
+,p_version_scn=>41492187023739
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(115281400076268370)
@@ -707,6 +709,19 @@ wwv_flow_imp_shared.create_message(
 ,p_version_scn=>1
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(116082546348300193)
+,p_name=>'BLOG_MSG_AI_ASSISTANT_WELCOME'
+,p_message_text=>'Hello. How can I help you?'
+,p_version_scn=>41492175695932
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(96779563275994327)
+,p_name=>'BLOG_MSG_AI_NO_POST_FOR_CONTEXT'
+,p_message_text=>'AI cannot generate text without context. Please create and provide a blog post as context before proceeding.'
+,p_is_js_message=>true
+,p_version_scn=>41492175676132
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(123083450099389011)
 ,p_name=>'BLOG_MSG_BASIC_SETTINGS_INFO'
 ,p_message_text=>'Changes to some settings only take effect in new sessions of the public application. See settings help for details.'
@@ -749,19 +764,19 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(117547023012538519)
 ,p_name=>'BLOG_MSG_GENERATIVE_AI_INFO'
 ,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<p>To activate generative AI, the system administrator must first set <strong>Generative AI Service</strong>.</p>',
-'<p>When Generative AI is enabled, it enables generate for post e.g. title, description, category and tags.</p>'))
-,p_version_scn=>41473061520242
+'<p>To use generative AI, the system administrator must configure <i>Blog Open AI</i> <strong>Generative AI Service</strong> base URL.</p>',
+'<p>When Generative AI is enabled, it enables generate for post e.g. title, description, category and tags.</p>',
+'<p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for API key.</p>'))
+,p_version_scn=>41492197190090
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(114671136958398625)
 ,p_name=>'BLOG_MSG_LANGUAGE_AI_INFO'
 ,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<p>To activate language AI, the system administrator must first set <strong>remote server</strong> and <strong>credential</strong>.</p> ',
-'<p>Enter compartment OCID that the credentials have access to.</p>',
+'<p>To use language AI, the system administrator must configure <i>Blog Language AI</i> <strong>remote server</strong> endpoint URL.</p>',
 '<p>When language AI is enabled, the sentiment of all new comments is analyzed. You can see the analysis result when opening a comment.</p>',
-''))
-,p_version_scn=>41473843326668
+'<p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for all fields.</p>'))
+,p_version_scn=>41492197147174
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(135528583746186927)
@@ -787,10 +802,11 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(111293808854717846)
 ,p_name=>'BLOG_MSG_OBJECT_STORAGE_INFO'
 ,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<p>To activate object storage, the system administrator must first set <strong>remote server</strong> and <strong>credential</strong>.</p>',
+'<p>To use object storage, the system administrator must configure <i>Blog Object Storage</i> <strong>remote server</strong> endpoint URL.</p>',
 '<p>Once object storage is enabled, go to <strong>Synchronize Files</strong> and sync files between local file repository and object storage.</p>',
-'<p>When object storage is enabled, new files are no longer saved to the local file repository. You can use synchronization to retrieve files from object storage to the local file repository.</p> '))
-,p_version_scn=>41472052113902
+'<p>When object storage is enabled, new files are no longer saved to the local file repository. You can use synchronization to retrieve files from object storage to the local file repository.</p>',
+'<p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for all fields.</p>'))
+,p_version_scn=>41492197167053
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(101201752243216937)

@@ -6999,7 +6999,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '  as',
 '    l_zip_name        varchar2(256);',
 '    l_content_type    varchar2(256);',
-'    l_blob_content    blob;',
 '    l_zip_file        blob;',
 '  begin',
 '    -- fetch selected files',
@@ -7636,13 +7635,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '    if g_rss_url is null',
 '    then',
 '      -- Fetch RSS URL override from settings',
-'      g_rss_url := blog_util.get_attribute_value( ''G_RSS_'))
+'      g_rss_url := blog_util.get_attribute_value( ''G_RSS_URL'' );',
+'      -- If there is'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'URL'' );',
-'      -- If there isn''t override custruct URL',
+'n''t override custruct URL',
 '      if g_rss_url is null',
 '      then',
 '        g_rss_url :=',
@@ -7831,7 +7830,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- Generate AI response using OpenAI service',
 '    l_response :=',
 '      apex_ai.chat(',
-'        p_service_static_id => ''BLOG_OPEN_AI'',',
+'        p_service_static_id => ''BLOG_OPEN_AI_API'',',
 '        p_messages          => l_messages,',
 '        p_prompt            => apex_lang.message( ''BLOG_AI_GENERATE_PROMPT'' ),',
 '        p_system_prompt     =>',
@@ -8616,12 +8615,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '          ( p_post_id, l_email_id, trunc( sysdate ), 1 )',
 '        ;',
 '      -- if subscription already exists update subscription',
-' '))
+'      exception when dup_'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'     exception when dup_val_on_index',
+'val_on_index',
 '      then',
 '        update blog_comment_subscribers',
 '          set subscription_date = trunc( sysdate )',
@@ -9543,13 +9542,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_collection_name   in varchar2,',
 '    p_client_request_id in varchar2 default null',
 '  )',
-'  as'))
+'  as',
+'    l_row_timestamp tim'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
-'    l_row_timestamp timestamp with time zone;',
+'estamp with time zone;',
 '    l_mime_type     varchar2(2000);',
 '    l_blob_content  blob;',
 '    l_file_exists   boolean := false;',
@@ -10529,7 +10528,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '      ,p_header_names   => c_headers',
 '      ,p_header_values  => apex_t_varchar2( l_cache_control, ''inline; filename="rss.xsl"'', null )',
 '      ,p_charset        => c_char_set',
-'  '))
+'    );',
+'',
+'  -- handle errors'))
 );
 end;
 /
@@ -10537,9 +10538,7 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'  );',
 '',
-'  -- handle errors',
 '  exception',
 '  when others',
 '  then',

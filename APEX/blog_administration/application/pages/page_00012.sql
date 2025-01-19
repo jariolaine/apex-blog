@@ -496,7 +496,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
 ,p_help_text=>'Short description of post. Description is used in search results and RSS feed. Whitespaces other than spaces are removed when you save post.'
-,p_attribute_01=>'N'
+,p_attribute_01=>'Y'
 ,p_attribute_02=>'Y'
 ,p_attribute_03=>'N'
 ,p_attribute_04=>'BOTH'
@@ -611,7 +611,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_inline_help_text=>'Enter any comments or notes here. These notes not displayed for public.'
-,p_attribute_01=>'N'
+,p_attribute_01=>'Y'
 ,p_attribute_02=>'Y'
 ,p_attribute_03=>'N'
 ,p_attribute_04=>'BOTH'
@@ -811,7 +811,7 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_attribute_11=>'blog.admin.ai.post.assistant.useResponse({ text: this });'
 ,p_ai_remote_server_id=>wwv_flow_imp.id(114707404165421999)
 ,p_ai_system_prompt=>'&APP_TEXT$BLOG_AI_SYSTEM_PROMPT_POST_ASSISTANT.'
-,p_ai_welcome_message=>'&APP_TEXT$BLOG_AI_MSG_ASSISTANT_WELCOME.'
+,p_ai_welcome_message=>'&APP_TEXT$BLOG_MSG_AI_ASSISTANT_WELCOME.'
 );
 wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(115295543533141403)

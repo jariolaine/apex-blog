@@ -46,30 +46,10 @@ var blog = blog || {};
 
         // set defaults
         options = $.extend({
-          downloadLink: "a[download]"
-        , downloadMsg: "BLOG_TXT_DOWNLOAD"
-        , downloadLinkClass: [
-            "t-Button"
-          , "t-Button--noLabel"
-          , "t-Button--icon"
-          , "t-Button--small"
-          , "w60"
-          ]
-        , clipboardSourceAttr: "data-clipboard-source"
+          clipboardSourceAttr: "data-clipboard-source"
         , loadingIconClass: [ "fa-refresh", "fa-anim-spin" ]
         , onOffIconClass: [ "fa-check-square-o", "fa-square-o" ]
         }, options );
-
-        // Loop all download links
-        options.region$.find( options.downloadLink ).each(function(){
-
-          let this$ = $(this);
-          // Set link title
-          this$.attr( "title", get_message( options.downloadMsg ) );
-
-        // Remove alt attribute from download link. APEX bug??
-        // And style like button
-        }).removeAttr( "alt" ).addClass( options.downloadLinkClass );
 
         // on page load add action to select file switch
         if( options.browserEvent === "load" ){
@@ -452,6 +432,17 @@ var blog = blog || {};
 
           apex.debug.info( "AI generate options", options )
 
+          // Remove HTML from editor text
+          let text = $( "<div/>" ).html( $v( options.postItem ) )
+            .find( "code" ).remove().end()
+            .text().trim().substring( 0, 32000 )
+          ;
+          // exit if there isn't text
+          if( text.length === 0 ){
+            apex.message.alert( apex.lang.getMessage( 'BLOG_MSG_AI_NO_POST_FOR_CONTEXT' ) )
+            return;
+          }
+
           let element$ = $( options.triggeringElement )
             , button$ = element$.is( ":button" ) ? element$ : element$.parent()
             , icon$ = button$.children( "span.t-Icon" )
@@ -461,12 +452,6 @@ var blog = blog || {};
           button$.prop( "disabled", true ).addClass( options.buttonProcessingClass );
           icon$.addClass( options.iconProcessingClass );
           apex.item( options.targetItem ).disable();
-
-          // Remove HTML from editor text
-          let text = $( "<div/>" ).html( $v( options.postItem ) )
-            .find( "code" ).remove().end()
-            .text().trim().substring( 0, 32000 )
-          ;
 
           apex.server.process( options.process, {
             x01: text

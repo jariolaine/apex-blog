@@ -438,7 +438,6 @@ as
   as
     l_zip_name        varchar2(256);
     l_content_type    varchar2(256);
-    l_blob_content    blob;
     l_zip_file        blob;
   begin
     -- fetch selected files

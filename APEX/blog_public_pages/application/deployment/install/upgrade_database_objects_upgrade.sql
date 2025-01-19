@@ -6437,7 +6437,6 @@ wwv_flow_imp_shared.append_to_install_script(
 '  as',
 '    l_zip_name        varchar2(256);',
 '    l_content_type    varchar2(256);',
-'    l_blob_content    blob;',
 '    l_zip_file        blob;',
 '  begin',
 '    -- fetch selected files',
@@ -6844,14 +6843,14 @@ wwv_flow_imp_shared.append_to_install_script(
 '  function get_category(',
 '    p_category_id in number,',
 '    p_canonical   in varchar2 default ''NO''',
-'  ) return varchar2'))
+'  ) return varchar2',
+'  as',
+'    l_category_id varc'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
-'  as',
-'    l_category_id varchar2(256);',
+'har2(256);',
 '  begin',
 '',
 '    l_category_id := blog_util.int_to_vc2( p_category_id );',
@@ -7269,7 +7268,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- Generate AI response using OpenAI service',
 '    l_response :=',
 '      apex_ai.chat(',
-'        p_service_static_id => ''BLOG_OPEN_AI'',',
+'        p_service_static_id => ''BLOG_OPEN_AI_API'',',
 '        p_messages          => l_messages,',
 '        p_prompt            => apex_lang.message( ''BLOG_AI_GENERATE_PROMPT'' ),',
 '        p_system_prompt     =>',
@@ -7841,12 +7840,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end flag_comment;',
 '--------------------------------------------------------------------------------',
-'-----'))
+'-----------------------------'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'---------------------------------------------------------------------------',
+'---------------------------------------------------',
 '  procedure unflag_comment(',
 '    p_comment_id  in varchar2,',
 '    p_flags       in varchar2',
@@ -8786,12 +8785,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '      apex_error.add_error(',
 '        p_message           => coalesce( l_error_mesg, apex_web_service.g_reason_phrase )',
-''))
+'      , p_display_locati'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'      , p_display_location  => apex_error.c_inline_in_notification',
+'on  => apex_error.c_inline_in_notification',
 '      );',
 '',
 '    end case;',
@@ -9771,13 +9770,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- atom feed URL',
 '    l_atom_url   := blog_url.get_atom;',
-'    '))
+'    -- blog name',
+'    l_app_n'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-- blog name',
-'    l_app_name := coalesce(',
+'ame := coalesce(',
 '       p_app_name',
 '      ,blog_util.get_attribute_value( ''P0_BLOG_APP_NAME'' )',
 '    );',

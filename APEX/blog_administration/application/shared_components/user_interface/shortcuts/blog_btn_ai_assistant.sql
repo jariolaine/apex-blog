@@ -1,7 +1,7 @@
-prompt --application/shared_components/user_interface/shortcuts/blog_btn_post_feature_image
+prompt --application/shared_components/user_interface/shortcuts/blog_btn_ai_assistant
 begin
 --   Manifest
---     SHORTCUT: BLOG_BTN_POST_FEATURE_IMAGE
+--     SHORTCUT: BLOG_BTN_AI_ASSISTANT
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
@@ -13,17 +13,17 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_shared.create_shortcut(
  p_id=>wwv_flow_imp.id(45490182669152695)
-,p_shortcut_name=>'BLOG_BTN_POST_FEATURE_IMAGE'
+,p_shortcut_name=>'BLOG_BTN_AI_ASSISTANT'
 ,p_shortcut_type=>'FUNCTION_BODY'
 ,p_shortcut_language=>'PLSQL'
-,p_version_scn=>41475179760156
+,p_version_scn=>41492187296261
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return',
 '  blog_html.get_button(',
 '    p_app_id        => :APP_ID',
-'  , p_title         => :APP_TEXT$BLOG_BTN_TITLE_GEN_AI_FEATURE_IMAGE',
-'  , p_action        => ''gen-ai-post-feature-image''',
-'  , p_icon_classes  => ''fa-lg fa-ai-generative''',
+'  , p_title         => :APP_TEXT$BLOG_BTN_TITLE_AI_ASSISTANT',
+'  , p_action        => ''gen-ai-assistant''',
+'  , p_icon_classes  => ''fa-lg fa-chatbot''',
 '  , p_build_option  => ''BLOG_FEATURE_GENERATIVE_AI''',
 '  )',
 ';'))

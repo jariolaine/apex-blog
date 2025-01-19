@@ -261,7 +261,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '{with/}',
 'TEXT:=#COMMENT_STATUS#',
-'ICON_CLASSES:=#STATUS_ICON# w60',
+'ICON_CLASSES:=#STATUS_ICON# w40',
 '{apply THEME$ICON_CUSTOM/}'))
 ,p_column_type=>'STRING'
 ,p_column_alignment=>'CENTER'
@@ -277,7 +277,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '{with/}',
 'TEXT:=#COMMENT_FLAG#',
-'ICON_CLASSES:=#FLAG_ICON# w60',
+'ICON_CLASSES:=#FLAG_ICON# w40',
 'ICON_ID:=CF#COMMENT_ID#',
 '{apply THEME$ICON_CUSTOM/}'))
 ,p_column_type=>'STRING'
@@ -294,7 +294,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '{with/}',
 'TEXT:=#SENTIMENT#',
-'ICON_CLASSES:=#SENTIMENT_ICON# w60',
+'ICON_CLASSES:=#SENTIMENT_ICON# w40',
 '{apply THEME$ICON_CUSTOM/}'))
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'LOV_ESCAPE_SC'

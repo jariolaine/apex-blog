@@ -29,7 +29,7 @@ wwv_flow_imp_page.create_page(
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(113265661118639106)
-,p_plug_name=>'AI'
+,p_plug_name=>'Artificial Intelligence'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG:margin-bottom-md'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--iconsRounded'
 ,p_plug_template=>wwv_flow_imp.id(90936504220350296)

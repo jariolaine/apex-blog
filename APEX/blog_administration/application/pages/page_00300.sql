@@ -80,8 +80,6 @@ wwv_flow_imp_page.create_page_plug(
 ', v1.etag           as etag',
 ', v1.md5            as md5',
 ', v1.sync_timestamp as sync_timestamp',
-', null              as btn_download_object',
-', v1.file_size      as btn_download_file',
 'from blog_v_all_files v1',
 'left join apex_collections c1 on v1.id = c1.n001',
 '  and c1.collection_name = :BLOG_SELECTED_FILES_COLLECTION'))
@@ -331,7 +329,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '{with/}',
 'TEXT:=#SHOW_IN_PUB_APP#',
-'ICON_CLASSES:=w60{if IS_DOWNLOAD/} fa-check{endif/}',
+'ICON_CLASSES:=w40{if IS_DOWNLOAD/} fa-check{endif/}',
 '{apply THEME$ICON_CUSTOM/}',
 ''))
 ,p_column_type=>'NUMBER'
@@ -361,7 +359,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '{with/}',
 'TEXT:=#FILE_STATUS#',
-'ICON_CLASSES:={if IS_ACTIVE/}fa-check-circle u-success-text{else/}fa-minus-circle u-danger-text{endif/} w60',
+'ICON_CLASSES:={if IS_ACTIVE/}fa-check-circle u-success-text{else/}fa-minus-circle u-danger-text{endif/} w40',
 '{apply THEME$ICON_CUSTOM/}'))
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'LOV_ESCAPE_SC'
@@ -418,7 +416,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_alignment=>'CENTER'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'BUTTON_ATTR', 'data-clipboard-source="#FILE_URL#"',
-  'CSS_CLASSES', 'w60',
+  'CSS_CLASSES', 'w40',
   'ICON_CLASSES', 'fa-clipboard',
   'IS_DISABLED', 'N',
   'IS_HOT', 'N',
@@ -477,54 +475,6 @@ wwv_flow_imp_page.create_worksheet_column(
 'When was the file last synced from the object storage.',
 ''))
 );
-wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(102896207148185633)
-,p_db_column_name=>'BTN_DOWNLOAD_OBJECT'
-,p_display_order=>270
-,p_column_identifier=>'AP'
-,p_column_label=>'Download'
-,p_alternative_label=>'Download Object'
-,p_column_link=>'#FILE_URL#'
-,p_column_linktext=>'<span class="t-Icon fa fa-download" aria-hidden="true"></span>'
-,p_column_link_attr=>'target="_blank" title="&APP_TEXT$BLOG_TXT_DOWNLOAD. #FILE_NAME#" class="t-Button t-Button--noLabel t-Button--icon t-Button--small w60"'
-,p_allow_sorting=>'N'
-,p_allow_filtering=>'N'
-,p_allow_highlighting=>'N'
-,p_allow_ctrl_breaks=>'N'
-,p_allow_aggregations=>'N'
-,p_allow_computations=>'N'
-,p_allow_charting=>'N'
-,p_allow_group_by=>'N'
-,p_allow_pivot=>'N'
-,p_column_type=>'STRING'
-,p_column_alignment=>'CENTER'
-,p_rpt_show_filter_lov=>'N'
-,p_use_as_row_header=>'N'
-,p_required_patch=>wwv_flow_imp.id(102874015592702141)
-);
-wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(102896363268185635)
-,p_db_column_name=>'BTN_DOWNLOAD_FILE'
-,p_display_order=>280
-,p_column_identifier=>'AR'
-,p_column_label=>'Download'
-,p_alternative_label=>'Download File'
-,p_allow_sorting=>'N'
-,p_allow_filtering=>'N'
-,p_allow_highlighting=>'N'
-,p_allow_ctrl_breaks=>'N'
-,p_allow_aggregations=>'N'
-,p_allow_computations=>'N'
-,p_allow_charting=>'N'
-,p_allow_group_by=>'N'
-,p_allow_pivot=>'N'
-,p_column_type=>'NUMBER'
-,p_column_alignment=>'CENTER'
-,p_format_mask=>'DOWNLOAD:BLOG_V_ALL_FILES:BLOB_CONTENT:ID::MIME_TYPE:FILE_NAME:CHANGED_ON:FILE_CHARSET:attachment:<span class="t-Icon fa fa-download" aria-hidden="true"></span>:'
-,p_rpt_show_filter_lov=>'N'
-,p_use_as_row_header=>'N'
-,p_required_patch=>-wwv_flow_imp.id(102874015592702141)
-);
 wwv_flow_imp_page.create_worksheet_rpt(
  p_id=>wwv_flow_imp.id(140421397447193125)
 ,p_application_user=>'APXWS_DEFAULT'
@@ -532,7 +482,7 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_report_alias=>'170084'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'SELECT_FILE:FILE_PATH:FILE_DIR:FILE_SIZE:CHANGED_SINCE:SHOW_IN_PUB_APP:BTN_COPY_FILE_URL:BTN_DOWNLOAD_OBJECT:BTN_DOWNLOAD_FILE:FILE_STATUS:'
+,p_report_columns=>'SELECT_FILE:FILE_PATH:FILE_DIR:FILE_SIZE:CHANGED_SINCE:SHOW_IN_PUB_APP:BTN_COPY_FILE_URL:FILE_STATUS'
 ,p_sort_column_1=>'FILE_PATH'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'0'
@@ -555,7 +505,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_imp.id(90995384704350335)
 ,p_button_is_hot=>'Y'
-,p_button_image_alt=>'Upload File(s)'
+,p_button_image_alt=>'Upload'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_button_redirect_url=>'f?p=&APP_ID.:302:&SESSION.::&DEBUG.:::'
 ,p_icon_css_classes=>'fa-upload'
