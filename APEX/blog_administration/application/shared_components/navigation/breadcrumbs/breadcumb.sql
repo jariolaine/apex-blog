@@ -16,6 +16,12 @@ wwv_flow_imp_shared.create_menu(
 ,p_name=>'Breadcumb'
 );
 wwv_flow_imp_shared.create_menu_option(
+ p_id=>wwv_flow_imp.id(96911872229614862)
+,p_short_name=>'Reports'
+,p_link=>'f?p=&APP_ID.:30000:&APP_SESSION.::&DEBUG.:::'
+,p_page_id=>30000
+);
+wwv_flow_imp_shared.create_menu_option(
  p_id=>wwv_flow_imp.id(102695065088619250)
 ,p_short_name=>'Posts'
 ,p_long_name=>'Blog Posts'

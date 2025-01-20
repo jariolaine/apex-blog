@@ -8704,9 +8704,9 @@ wwv_flow_imp_shared.append_to_install_script(
 '    , p_name_03   => case when p_overwrite_file = ''N'' then ''if-none-match'' end',
 '    , p_value_03  => case when p_overwrite_file = ''N'' then ''*'' end',
 '    , p_name_04   => case when p_cache_control is not null then ''Cache-Control'' end',
-'    , p_value_04  => p_cache_control',
+'    , p_value_04  => case when p_cache_control is not null then p_cache_control end',
 '    , p_name_05   => case when p_client_request_id is not null then ''opc-client-request-id'' end',
-'    , p_value_05  => p_client_request_id',
+'    , p_value_05  => case when p_client_request_id is not null then p_client_request_id end',
 '    );',
 '    -- append default request headers',
 '    append_default_request_headers;',
@@ -8764,6 +8764,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '      -- fetch file description from database',
 '      l_file_desc := blog_file.get_file_desc( l_file_path );',
 '',
+'      apex_debug.info(',
+'        p_message => ''File exists: %s, desc: %s, mime: %s, size: %s''',
+'      , p0 => l_file_path',
+'      , p1 => l_file_desc',
+'      , p2 => p_mime_type',
+'      , p3 => p_file_size',
+'      );',
 '      -- store file lob and other info to collection',
 '      apex_collection.add_member(',
 '        p_collection_name => p_collection_name',
@@ -8779,18 +8786,18 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- treat other HTTP status codes as error',
 '    -- logic need to improved e.g. cases when two files are uploaded and only second file goes error',
 '',
-'      apex_debug.error( ''Error uploading file: %s'', l_url_endpoint );',
+'      apex_debug.error( ''Error'))
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(138405351815225809)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+' uploading file: %s'', l_url_endpoint );',
 '      -- get error information from response body',
 '      parse_error_json( l_response_body, l_error_code, l_error_mesg);',
 '',
 '      apex_error.add_error(',
 '        p_message           => coalesce( l_error_mesg, apex_web_service.g_reason_phrase )',
-'      , p_display_locati'))
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(138405351815225809)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'on  => apex_error.c_inline_in_notification',
+'      , p_display_location  => apex_error.c_inline_in_notification',
 '      );',
 '',
 '    end case;',
@@ -8819,10 +8826,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- set request headers',
 '    apex_web_service.set_request_headers(',
-'      p_name_01  => case when p_client_request_id is not null then ''opc-client-request-id'' end',
-'    , p_value_01 => p_client_request_id',
-'    , p_name_02  => ''Accept''',
-'    , p_value_02 => ''*/*''',
+'      p_reset     => true',
+'    , p_name_01   => ''Accept''',
+'    , p_value_01  => ''*/*''',
+'    , p_name_02   => case when p_client_request_id is not null then ''opc-client-request-id'' end',
+'    , p_value_02  => case when p_client_request_id is not null then p_client_request_id end',
 '    );',
 '    -- append default request headers',
 '    append_default_request_headers;',
@@ -9012,7 +9020,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- loop files',
 '    for c1 in(',
 '      select',
-'        v1.file_path',
+'        v1.id',
+'      , v1.file_path',
 '      , v1.file_desc',
 '      , v1.file_size',
 '      , v1.local_size',
@@ -9053,6 +9062,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '        -- if file not already exists in database update blob',
 '        update blog_files',
 '          set blob_content = l_blob_content',
+'        where 1 = 1',
+'          and id = c1.id',
 '        ;',
 '',
 '      end if;',
@@ -9753,7 +9764,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  procedure atom(',
 '    p_app_name  in varchar2,',
-'    p_app_desc  in varchar2',
+'    p_app_desc  in varchar'))
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(138405351815225809)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'2',
 '  )',
 '  as',
 '    l_xml           xmltype;',
@@ -9771,12 +9787,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- atom feed URL',
 '    l_atom_url   := blog_url.get_atom;',
 '    -- blog name',
-'    l_app_n'))
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(138405351815225809)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ame := coalesce(',
+'    l_app_name := coalesce(',
 '       p_app_name',
 '      ,blog_util.get_attribute_value( ''P0_BLOG_APP_NAME'' )',
 '    );',

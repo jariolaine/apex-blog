@@ -23,8 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<p>The administration page allows blogger to configure the application and maintain common data used across the application.',
-'By selecting one of the available settings, blogger can potentially change how the application is displayed and/or features available to the end users.</p>',
-'<p>This page also has links to various reports on the activity of this application.</p>'))
+'By selecting one of the available settings, blogger can potentially change how the application is displayed and/or features available to the end users.</p>'))
 ,p_page_component_map=>'17'
 );
 wwv_flow_imp_page.create_page_plug(
@@ -33,7 +32,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG:margin-bottom-md'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--iconsRounded'
 ,p_plug_template=>wwv_flow_imp.id(90936504220350296)
-,p_plug_display_sequence=>50
+,p_plug_display_sequence=>30
 ,p_plug_new_grid_row=>false
 ,p_plug_new_grid_column=>false
 ,p_location=>null
@@ -49,9 +48,8 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG:margin-bottom-md'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--iconsRounded'
 ,p_plug_template=>wwv_flow_imp.id(90936504220350296)
-,p_plug_display_sequence=>40
+,p_plug_display_sequence=>20
 ,p_plug_new_grid_row=>false
-,p_plug_new_grid_column=>false
 ,p_location=>null
 ,p_list_id=>wwv_flow_imp.id(117524284844700814)
 ,p_plug_source_type=>'NATIVE_LIST'
@@ -65,8 +63,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG:margin-bottom-md'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--iconsRounded'
 ,p_plug_template=>wwv_flow_imp.id(90936504220350296)
-,p_plug_display_sequence=>30
-,p_plug_new_grid_row=>false
+,p_plug_display_sequence=>10
 ,p_location=>null
 ,p_list_id=>wwv_flow_imp.id(107244848973251914)
 ,p_plug_source_type=>'NATIVE_LIST'
@@ -85,20 +82,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_menu_id=>wwv_flow_imp.id(102694851877614068)
 ,p_plug_source_type=>'NATIVE_BREADCRUMB'
 ,p_menu_template_id=>wwv_flow_imp.id(90996108016350335)
-);
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(190492259631950142)
-,p_plug_name=>'Activity Reports'
-,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:u-colors'
-,p_plug_template=>wwv_flow_imp.id(90936504220350296)
-,p_plug_display_sequence=>10
-,p_location=>null
-,p_list_id=>wwv_flow_imp.id(126335939951449160)
-,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>wwv_flow_imp.id(90984669960350327)
-,p_plug_query_num_rows=>15
-,p_plug_comment=>'Public application activity reports'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(100872796773005392)

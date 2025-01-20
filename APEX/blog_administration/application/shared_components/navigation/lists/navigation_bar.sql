@@ -15,7 +15,7 @@ wwv_flow_imp_shared.create_list(
  p_id=>wwv_flow_imp.id(91016837626350353)
 ,p_name=>'Navigation Bar'
 ,p_list_status=>'PUBLIC'
-,p_version_scn=>41487042848152
+,p_version_scn=>41492209166849
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(121123354592520081)
@@ -24,7 +24,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_link_target=>'f?p=&APP_ID.:201:&SESSION.:&APP_PAGE_ID.:&DEBUG.::::'
 ,p_list_item_icon=>'fa-question-circle-o'
 ,p_list_item_disp_cond_type=>'CURRENT_PAGE_IN_CONDITION'
-,p_list_item_disp_condition=>'11,20010'
+,p_list_item_disp_condition=>'11,20010,30000'
 ,p_list_item_current_type=>'NEVER'
 );
 wwv_flow_imp_shared.create_list_item(

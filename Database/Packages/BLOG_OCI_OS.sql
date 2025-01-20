@@ -328,9 +328,9 @@ as
     , p_name_03   => case when p_overwrite_file = 'N' then 'if-none-match' end
     , p_value_03  => case when p_overwrite_file = 'N' then '*' end
     , p_name_04   => case when p_cache_control is not null then 'Cache-Control' end
-    , p_value_04  => p_cache_control
+    , p_value_04  => case when p_cache_control is not null then p_cache_control end
     , p_name_05   => case when p_client_request_id is not null then 'opc-client-request-id' end
-    , p_value_05  => p_client_request_id
+    , p_value_05  => case when p_client_request_id is not null then p_client_request_id end
     );
     -- append default request headers
     append_default_request_headers;
@@ -388,6 +388,13 @@ as
       -- fetch file description from database
       l_file_desc := blog_file.get_file_desc( l_file_path );
 
+      apex_debug.info(
+        p_message => 'File exists: %s, desc: %s, mime: %s, size: %s'
+      , p0 => l_file_path
+      , p1 => l_file_desc
+      , p2 => p_mime_type
+      , p3 => p_file_size
+      );
       -- store file lob and other info to collection
       apex_collection.add_member(
         p_collection_name => p_collection_name
@@ -438,10 +445,11 @@ as
 
     -- set request headers
     apex_web_service.set_request_headers(
-      p_name_01  => case when p_client_request_id is not null then 'opc-client-request-id' end
-    , p_value_01 => p_client_request_id
-    , p_name_02  => 'Accept'
-    , p_value_02 => '*/*'
+      p_reset     => true
+    , p_name_01   => 'Accept'
+    , p_value_01  => '*/*'
+    , p_name_02   => case when p_client_request_id is not null then 'opc-client-request-id' end
+    , p_value_02  => case when p_client_request_id is not null then p_client_request_id end
     );
     -- append default request headers
     append_default_request_headers;
@@ -631,7 +639,8 @@ as
     -- loop files
     for c1 in(
       select
-        v1.file_path
+        v1.id
+      , v1.file_path
       , v1.file_desc
       , v1.file_size
       , v1.local_size
@@ -672,6 +681,8 @@ as
         -- if file not already exists in database update blob
         update blog_files
           set blob_content = l_blob_content
+        where 1 = 1
+          and id = c1.id
         ;
 
       end if;

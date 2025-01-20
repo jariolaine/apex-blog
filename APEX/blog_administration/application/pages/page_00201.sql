@@ -36,10 +36,24 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_item_display_point=>'BELOW'
 ,p_plug_source_type=>'NATIVE_HELP_TEXT'
 );
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(216936243321018863)
+,p_plug_name=>'Buttons'
+,p_region_css_classes=>'u-textCenter'
+,p_region_template_options=>'#DEFAULT#:t-ButtonRegion--slimPadding:t-ButtonRegion--noBorder'
+,p_plug_template=>wwv_flow_imp.id(90922506604350286)
+,p_plug_display_sequence=>20
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_plug_display_point=>'REGION_POSITION_03'
+,p_ai_enabled=>false
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
+);
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(101556151559393876)
 ,p_button_sequence=>10
-,p_button_plug_id=>wwv_flow_imp.id(121039246153106423)
+,p_button_plug_id=>wwv_flow_imp.id(216936243321018863)
 ,p_button_name=>'CLOSE'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#'
@@ -49,8 +63,6 @@ wwv_flow_imp_page.create_page_button(
 ,p_warn_on_unsaved_changes=>null
 ,p_button_css_classes=>'w40p mxw240'
 ,p_icon_css_classes=>'fa-close'
-,p_grid_column_css_classes=>'u-textCenter padding-top-md'
-,p_grid_new_row=>'Y'
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(101556913374393889)

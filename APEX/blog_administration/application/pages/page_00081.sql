@@ -162,7 +162,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_default=>'blog_cm.get_modal_page_seq'
 ,p_item_default_type=>'EXPRESSION'
 ,p_item_default_language=>'PLSQL'
-,p_prompt=>'Display Seq'
+,p_prompt=>'Sequence'
 ,p_source=>'DISPLAY_SEQ'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_NUMBER_FIELD'
