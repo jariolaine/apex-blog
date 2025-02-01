@@ -16,6 +16,8 @@ as
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function get_zip_name return varchar2;
+--------------------------------------------------------------------------------
   function format_file_path(
     p_file_name         in varchar2,
     p_dir               in varchar2
@@ -72,7 +74,7 @@ as
     p_file_name             in varchar2,
     p_dir                   in varchar2,
     p_mime_type             in varchar2,
-    p_file_size             in pls_integer,
+    p_file_size             in integer,
     p_overwrite_file        in varchar2,
     p_collection_name       in varchar2,
     p_blob_content          in blob
@@ -145,6 +147,22 @@ as
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function get_zip_name return varchar2
+  as
+  begin
+    return
+      apex_string.format(
+        p_message => '%s.zip'
+      , p0 =>
+          apex_string_util.get_slug(
+            p_string => lower( 'blog_files' )
+          , p_hash_length => 6
+          )
+      )
+    ;
+  end get_zip_name;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   function format_file_path(
     p_file_name in varchar2,
     p_dir       in varchar2
@@ -210,7 +228,7 @@ as
     l_file_names    apex_t_varchar2;
     l_file_name     varchar2(500);
     l_mime_type     varchar2(500);
-    l_file_size     pls_integer;
+    l_file_size     integer;
     l_zip_dir       apex_zip.t_dir_entries;
     l_zip_file_path varchar2(32767);
     l_unzipped      blob := empty_blob();
@@ -436,15 +454,19 @@ as
     p_collection_name in varchar2
   )
   as
-    l_zip_name        varchar2(256);
-    l_content_type    varchar2(256);
-    l_zip_file        blob;
+    l_file_cnt      pls_integer := 0;
+    l_file_name     varchar2(256);
+    l_content_type  varchar2(256);
+    l_blob_content  blob;
   begin
     -- fetch selected files
     for c1 in(
       select
         t1.file_path
+      , t1.file_name
+      , t1.mime_type
       , t1.blob_content
+      , count(1) over() as num_rows
       from blog_v_all_files t1
       where 1 = 1
         and exists(
@@ -455,33 +477,48 @@ as
             and x1.n001 = t1.id
         )
     )loop
-      -- add file to zip
-      apex_zip.add_file(
-        p_zipped_blob => l_zip_file
-      , p_file_name   => c1.file_path
-      , p_content     => c1.blob_content
-      );
+
+      l_file_cnt := c1.num_rows;
+
+      if l_file_cnt = 1
+      then
+        l_file_name     := c1.file_name;
+        l_content_type  := c1.mime_type;
+        l_blob_content  := c1.blob_content;
+      else
+        -- add file to zip
+        apex_zip.add_file(
+          p_zipped_blob => l_blob_content
+        , p_file_name   => c1.file_path
+        , p_content     => c1.blob_content
+        );
+      end if;
+
     end loop;
-    -- close zip
-    apex_zip.finish(
-      p_zipped_blob => l_zip_file
-    );
-    -- define zip name
-    l_zip_name :=
-      apex_string.format(
-        p_message => '%s.zip'
-      , p0 =>
-          apex_string_util.get_slug(
-            p_string => lower( 'blog files' )
-          , p_hash_length => 6
-          )
-      )
-    ;
-    -- download zip
+
+    if l_file_cnt = 0
+    then
+      -- TO DO: raise error here
+      null;
+    elsif l_file_cnt > 1
+    then
+
+      -- get zip name
+      l_file_name := get_zip_name;
+      -- set content type
+      l_content_type := 'application/zip';
+      -- close zip
+      apex_zip.finish(
+        p_zipped_blob => l_blob_content
+      );
+
+    end if;
+
+    -- download file/zip
     apex_http.download(
-      p_blob          => l_zip_file
-    , p_content_type  => 'application/zip'
-    , p_filename      => l_zip_name
+      p_blob          => l_blob_content
+    , p_content_type  => l_content_type
+    , p_filename      => l_file_name
     );
 
   end download_selected_files;

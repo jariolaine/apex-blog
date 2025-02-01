@@ -169,7 +169,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_name=>'P302_FILE_NAMES'
 ,p_item_sequence=>40
 ,p_item_plug_id=>wwv_flow_imp.id(172053312893799528)
-,p_prompt=>'File Names'
+,p_prompt=>'File Name(s)'
 ,p_display_as=>'NATIVE_FILE'
 ,p_cSize=>30
 ,p_field_template=>wwv_flow_imp.id(90995092856350334)

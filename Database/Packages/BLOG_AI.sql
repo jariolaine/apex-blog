@@ -58,13 +58,38 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- None
+
+  type str_t is table of varchar2( 2000 ) index by varchar2( 60 );
+  param_t str_t;
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- None
+  procedure init_params
+  as
+  begin
+
+    -- set valus for session
+    param_t( 'lang_ai_build_option' ) := 'BLOG_FEATURE_LANGUAGE_AI';
+    param_t( 'lang_ai_compartment_attribute_id') := 'G_OCI_LANG_AI_COMPARTMENT_OCID';
+    param_t( 'lang_ai_compartment_ocid' ) := blog_util.get_attribute_value( param_t( 'lang_ai_compartment_attribute_id' ) );
+    param_t( 'gen_ai_static_id' ) := 'BLOG_OPEN_AI_API';
+    param_t( 'gen_ai_build_option' ) := 'BLOG_FEATURE_GENERATIVE_AI';
+    param_t( 'gen_ai_generate_prompt' ) := 'BLOG_AI_GENERATE_PROMPT';
+    param_t( 'gen_ai_generate_msg' ) := apex_lang.message( 'BLOG_AI_GENERATE_MESSAGE' );
+
+    -- Debug parameters
+    apex_debug.info( 'Language AI build option name: %s', param_t( 'lang_ai_build_option' ) );
+    apex_debug.info( 'Language AI comparment static id : %s', param_t( 'lang_ai_compartment_attribute_id' ) );
+    apex_debug.info( 'Language AI comparment OCID : %s', param_t( 'lang_ai_compartment_ocid') );
+    apex_debug.info( 'Generative AI service static id: %s', param_t( 'gen_ai_static_id' ) );
+    apex_debug.info( 'Generative AI build option name: %s', param_t( 'gen_ai_build_option' ) );
+    apex_debug.info( 'Generative AI generate prompt: %s', param_t( 'gen_ai_generate_prompt' ) );
+    apex_debug.info( 'Generative AI generate message: %s', param_t( 'gen_ai_generate_msg' ) );
+
+  end init_params;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -80,14 +105,14 @@ as
 
     -- Set build option status for the language AI feature
     blog_cm.update_feature(
-      p_build_option_name => 'BLOG_FEATURE_LANGUAGE_AI',
-      p_build_status      => p_build_status
+      p_build_option_name => param_t( 'lang_ai_build_option' )
+    , p_build_status      => p_build_status
     );
 
     if p_build_status = apex_application_admin.c_build_option_status_include then
       apex_debug.info( 'Set compartment OCID: %s', p_compartment_id );
       -- Set attribute name and value
-      apex_string.plist_push( l_attributes, 'G_OCI_LANG_AI_COMPARTMENT_OCID', p_compartment_id );
+      apex_string.plist_push( l_attributes, param_t( 'lang_ai_compartment_attribute_id' ), p_compartment_id );
       -- Update attribute
       blog_cm.set_attribute_value(
         p_attribute_list => l_attributes
@@ -105,8 +130,8 @@ as
   begin
     -- Set build option status for the generative AI feature
     blog_cm.update_feature(
-      p_build_option_name => 'BLOG_FEATURE_GENERATIVE_AI',
-      p_build_status      => p_build_status
+      p_build_option_name => param_t( 'gen_ai_build_option' )
+    , p_build_status      => p_build_status
     );
   end set_gen_ai;
 --------------------------------------------------------------------------------
@@ -124,17 +149,17 @@ as
     l_messages(1).chat_role := 'user';
     l_messages(1).message :=
       apex_lang.message(
-        p_name => 'BLOG_AI_GENERATE_MESSAGE',
-        p0 => substr( apex_escape.striphtml( p_post ), 1, 32000 )
+        p_name => param_t( 'gen_ai_generate_msg' )
+      , p0 => substr( apex_escape.striphtml( p_post ), 1, 32000 )
       );
 
     -- Generate AI response using OpenAI service
     l_response :=
       apex_ai.chat(
-        p_service_static_id => 'BLOG_OPEN_AI_API',
-        p_messages          => l_messages,
-        p_prompt            => apex_lang.message( 'BLOG_AI_GENERATE_PROMPT' ),
-        p_system_prompt     =>
+        p_service_static_id => param_t( 'gen_ai_static_id' )
+      , p_messages          => l_messages
+      , p_prompt            => param_t( 'gen_ai_generate_prompt' )
+      , p_system_prompt     =>
           apex_lang.message(
             p_name => p_system_prompt
           )
@@ -158,9 +183,6 @@ as
     l_params        apex_exec.t_parameters;
   begin
 
-    -- Retrieve the compartment OCID for language AI
-    l_compartnet_id := blog_util.get_attribute_value( 'G_OCI_LANG_AI_COMPARTMENT_OCID' );
-
     -- Loop through comments that have not yet been analyzed
     for c1 in (
       select
@@ -175,7 +197,7 @@ as
     ) loop
 
       -- Set attributes for the language AI request
-      apex_exec.add_parameter( l_params, 'compartmentId', l_compartnet_id );
+      apex_exec.add_parameter( l_params, 'compartmentId', param_t( 'lang_ai_compartment_ocid') );
       apex_exec.add_parameter( l_params, 'documents', c1.document );
       apex_exec.add_parameter( l_params, 'level', 'SENTENCE' );
       apex_exec.add_parameter( l_params, 'batchDocumentService', 'batchDetectLanguageSentiments' );
@@ -294,6 +316,15 @@ as
     p_translation := l_json_document.get_string( 'translatedText' );
 
   end get_translation;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Package initialization
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+begin
+  -- initialize parameters
+  apex_debug.info( '----- Initialize package BLOG_AI -----' );
+  init_params;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_AI";

@@ -3,7 +3,7 @@ prompt --install
 @@application/delete_application.sql
 @@application/create_application.sql
 @@application/user_interfaces.sql
-@@workspace/credentials/blog_oci_language_ai_api_key.sql
+@@workspace/credentials/blog_oracle_cloud_api_key.sql
 @@workspace/remote_servers/blog_language_ai.sql
 @@application/shared_components/data_profiles/blog_language_ai_2.sql
 @@application/shared_components/web_sources/blog_language_ai.sql

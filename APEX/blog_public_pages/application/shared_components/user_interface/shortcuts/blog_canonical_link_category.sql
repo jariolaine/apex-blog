@@ -16,14 +16,13 @@ wwv_flow_imp_shared.create_shortcut(
 ,p_shortcut_name=>'BLOG_CANONICAL_LINK_CATEGORY'
 ,p_shortcut_type=>'FUNCTION_BODY'
 ,p_shortcut_language=>'PLSQL'
-,p_version_scn=>1
+,p_version_scn=>41493626065518
 ,p_comments=>'Get canonical link for category. Used in page 14 page html header.'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_html.set_category_canonical_link(',
+'return blog_html.set_category_canonical_link(',
 '  p_category_id => :P14_CATEGORY_ID',
 ', p_url         => :P0_PAGE_URL',
-');',
-'return blog_html.get_page_canonical_link;'))
+');'))
 );
 wwv_flow_imp.component_end;
 end;

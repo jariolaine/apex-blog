@@ -134,8 +134,9 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  c_whitelist_tags  constant varchar2(256)  := '<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>';
-  c_code_block_html constant varchar2(256)  := '<pre class="blog-program-code"><code>%s</code></pre>';
+  c_whitelist_tags  constant varchar2(256) := '<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>';
+  c_code_block_html constant varchar2(256) := '<pre class="blog-program-code"><code>%s</code></pre>';
+  c_app_email       constant varchar2(256) := blog_util.get_attribute_value( 'G_APP_EMAIL' );
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -567,8 +568,6 @@ as
 
     l_post_id   := to_number( p_post_id );
 
-    -- fetch application email address
-    l_app_email := blog_util.get_attribute_value( 'G_APP_EMAIL' );
     -- if application email address is not set, exit from procedure
     if l_app_email is null
     then
@@ -607,7 +606,7 @@ as
       -- send notify email
       apex_mail.send(
          p_to                 => c1.blogger_email
-        ,p_from               => l_app_email
+        ,p_from               => c_app_email
         ,p_template_static_id => p_email_template
         ,p_placeholders       => c1.placeholders
       );
@@ -632,8 +631,6 @@ as
 
     l_post_id := to_number( p_post_id );
 
-    -- fetch application email address
-    l_app_email := blog_util.get_attribute_value( 'G_APP_EMAIL' );
     -- if application email address is not set, exit from procedure
     if l_app_email is null
     then
@@ -691,7 +688,7 @@ as
       );
       -- send notify email
       apex_mail.send(
-         p_from => l_app_email
+         p_from => c_app_email
         ,p_to   => c1.email
         ,p_template_static_id => p_email_template
         ,p_placeholders => c1.placeholders

@@ -28,7 +28,8 @@ wwv_flow_imp_shared.create_flow_process(
 ,p_process_when=>'G_BLOGGER_ID'
 ,p_process_when_type=>'ITEM_IS_NULL'
 ,p_security_scheme=>wwv_flow_imp.id(110805652816947583)
-,p_version_scn=>41110415845681
+,p_process_comment=>'Get user details after authentication and authorization. Insert user to BLOG_BLOGGERS table if not exists. Currently in APEX 24.1 process point can''t be "After Authentication" due maybe bug in APEX. Verify after APEX 24.2 upgrade.'
+,p_version_scn=>41492291275600
 );
 wwv_flow_imp.component_end;
 end;

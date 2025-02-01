@@ -16,14 +16,13 @@ wwv_flow_imp_shared.create_shortcut(
 ,p_shortcut_name=>'BLOG_CANONICAL_LINK_POST'
 ,p_shortcut_type=>'FUNCTION_BODY'
 ,p_shortcut_language=>'PLSQL'
-,p_version_scn=>1
+,p_version_scn=>41493626078878
 ,p_comments=>'Get canonical link for post. Used in page 2 page html header.'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_html.set_post_canonical_link(',
+'return blog_html.set_post_canonical_link(',
 '  p_post_id => :P2_POST_ID',
 ', p_url     => :P0_PAGE_URL',
-');',
-'return blog_html.get_page_canonical_link;'))
+');'))
 );
 wwv_flow_imp.component_end;
 end;

@@ -477,6 +477,8 @@ as
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function get_zip_name return varchar2;
+--------------------------------------------------------------------------------
   function format_file_path(
     p_file_name         in varchar2,
     p_dir               in varchar2
@@ -591,6 +593,7 @@ as
 --  18.11.2023   Jari Laine     Added new function get_atom.
 --  01.04.2024   Jari Laine     Changed private constants to a JSON object.
 --  23.07.2024   Jari Laine     Added new function get_file.
+--  01.02.2025   Jari Laine     Added new procedure set_canonical_host and package initialization code.
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -946,47 +949,46 @@ as
 --                              Renamed procedures for canonical links as listed above.
 --                              Updated get_rss_link and get_atom_link.
 --  18.04.2024   Jari Laine     Added new function get_button.
+--  01.02.2025   Jari Laine     Removed function get_page_canonical_link.
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_robots_noindex_meta return varchar2;
 --------------------------------------------------------------------------------
-  function get_page_canonical_link return varchar2;
---------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAB
-  procedure set_tab_canonical_link(
+  function set_tab_canonical_link(
     p_page          in varchar2,
     p_url           out nocopy varchar2
-  );
+  ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_POST
-  procedure set_post_canonical_link(
+  function set_post_canonical_link(
     p_post_id       in varchar2,
     p_url           out nocopy varchar2
-  );
+  ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
-  procedure set_category_canonical_link(
+  function set_category_canonical_link(
     p_category_id   in varchar2,
     p_url           out nocopy varchar2
-  );
+  ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
-  procedure set_archive_canonical_link(
+  function set_archive_canonical_link(
     p_archive_id    in varchar2,
     p_url           out nocopy varchar2
-  );
+  ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAG
-  procedure set_tag_canonical_link(
+  function set_tag_canonical_link(
     p_tag_id        in varchar2,
     p_url           out nocopy varchar2
-  );
+  ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_RSS_ANCHOR
@@ -1228,49 +1230,48 @@ where 1 = 1
 --------------------------------------------------------
 create or replace force view blog_v_all_files as
 select
-  t1.id                 as id
-, t1.row_version        as row_version
-, t1.created_on         as created_on
-, lower(t1.created_by)  as created_by
-, t1.changed_on         as changed_on
-, lower(t1.changed_by)  as changed_by
-, t1.is_active          as is_active
-, t1.is_download        as is_download
-, t1.file_path          as file_path
-, t1.file_dir           as file_dir
-, t1.file_name          as file_name
-, t1.mime_type          as mime_type
-, t1.blob_content       as blob_content
-, t1.file_size          as file_size
-, t1.file_charset       as file_charset
-, t1.file_desc          as file_desc
-, t1.notes              as notes
-, t1.etag               as etag
-, t1.md5                as md5
+  t1.id                         as id
+, t1.row_version                as row_version
+, t1.created_on                 as created_on
+, lower(t1.created_by)          as created_by
+, t1.changed_on                 as changed_on
+, lower(t1.changed_by)          as changed_by
+, t1.is_active                  as is_active
+, t1.is_download                as is_download
+, t1.file_path                  as file_path
+, t1.file_dir                   as file_dir
+, t1.file_name                  as file_name
+, t1.mime_type                  as mime_type
+, t1.blob_content               as blob_content
+, t1.file_size                  as file_size
+, t1.file_charset               as file_charset
+, t1.file_desc                  as file_desc
+, t1.notes                      as notes
+, t1.etag                       as etag
+, t1.md5                        as md5
 , t1.apex$row_sync_timestamp
 , cast(
-    t1.apex$row_sync_timestamp as timestamp with local time zone
-  )                     as sync_timestamp
-, lkp.object_storage
+    t1.apex$row_sync_timestamp  as timestamp with local time zone
+  )                             as sync_timestamp
 , apex_string_util.to_display_filesize(
     p_size_in_bytes => t1.file_size
-  )                     as file_size_display
+  )                             as file_size_display
 , dbms_lob.getlength(
     lob_loc => coalesce( blob_content, empty_blob() )
-  )                     as local_size
+  )                             as local_size
 , case lkp.object_storage
     when 'INCLUDE'
     then
       case when lkp.proxy_url is null
-        then lkp.bucket_url || t1.file_path
-        else lkp.proxy_url  || t1.file_path
-      end
+        then lkp.bucket_url
+        else lkp.proxy_url
+      end || t1.file_path
     else
       blog_url.get_file(
         p_application => lkp.pub_app_id
       , p_file_path   => t1.file_path
       )
-  end                   as file_url
+  end                           as file_url
 from blog_files t1
 cross join(
   select
@@ -1279,13 +1280,13 @@ cross join(
       , p_build_option_name => 'BLOG_FEATURE_OCI_OBJECT_STORAGE'
       ) as object_storage
     , blog_util.get_attribute_value(
-        p_attribute_name => 'G_OCI_OS_BUCKET_URL'
+        p_attribute_name    => 'G_OCI_OS_BUCKET_URL'
       ) as bucket_url
     , blog_util.get_attribute_value(
-        p_attribute_name => 'G_OCI_OS_PROXY_URL'
+        p_attribute_name    => 'G_OCI_OS_PROXY_URL'
       ) as proxy_url
     , blog_util.get_attribute_value(
-        p_attribute_name => 'PUB_APP_ID'
+        p_attribute_name    => 'G_PUB_APP_ID'
       ) as pub_app_id
   from dual
 ) lkp
@@ -6016,7 +6017,7 @@ as
     p_file_name             in varchar2,
     p_dir                   in varchar2,
     p_mime_type             in varchar2,
-    p_file_size             in pls_integer,
+    p_file_size             in integer,
     p_overwrite_file        in varchar2,
     p_collection_name       in varchar2,
     p_blob_content          in blob
@@ -6089,6 +6090,22 @@ as
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function get_zip_name return varchar2
+  as
+  begin
+    return
+      apex_string.format(
+        p_message => '%s.zip'
+      , p0 =>
+          apex_string_util.get_slug(
+            p_string => lower( 'blog_files' )
+          , p_hash_length => 6
+          )
+      )
+    ;
+  end get_zip_name;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   function format_file_path(
     p_file_name in varchar2,
     p_dir       in varchar2
@@ -6154,7 +6171,7 @@ as
     l_file_names    apex_t_varchar2;
     l_file_name     varchar2(500);
     l_mime_type     varchar2(500);
-    l_file_size     pls_integer;
+    l_file_size     integer;
     l_zip_dir       apex_zip.t_dir_entries;
     l_zip_file_path varchar2(32767);
     l_unzipped      blob := empty_blob();
@@ -6380,15 +6397,19 @@ as
     p_collection_name in varchar2
   )
   as
-    l_zip_name        varchar2(256);
-    l_content_type    varchar2(256);
-    l_zip_file        blob;
+    l_file_cnt      pls_integer := 0;
+    l_file_name     varchar2(256);
+    l_content_type  varchar2(256);
+    l_blob_content  blob;
   begin
     -- fetch selected files
     for c1 in(
       select
         t1.file_path
+      , t1.file_name
+      , t1.mime_type
       , t1.blob_content
+      , count(1) over() as num_rows
       from blog_v_all_files t1
       where 1 = 1
         and exists(
@@ -6399,33 +6420,48 @@ as
             and x1.n001 = t1.id
         )
     )loop
-      -- add file to zip
-      apex_zip.add_file(
-        p_zipped_blob => l_zip_file
-      , p_file_name   => c1.file_path
-      , p_content     => c1.blob_content
-      );
+
+      l_file_cnt := c1.num_rows;
+
+      if l_file_cnt = 1
+      then
+        l_file_name     := c1.file_name;
+        l_content_type  := c1.mime_type;
+        l_blob_content  := c1.blob_content;
+      else
+        -- add file to zip
+        apex_zip.add_file(
+          p_zipped_blob => l_blob_content
+        , p_file_name   => c1.file_path
+        , p_content     => c1.blob_content
+        );
+      end if;
+
     end loop;
-    -- close zip
-    apex_zip.finish(
-      p_zipped_blob => l_zip_file
-    );
-    -- define zip name
-    l_zip_name :=
-      apex_string.format(
-        p_message => '%s.zip'
-      , p0 =>
-          apex_string_util.get_slug(
-            p_string => lower( 'blog files' )
-          , p_hash_length => 6
-          )
-      )
-    ;
-    -- download zip
+
+    if l_file_cnt = 0
+    then
+      -- TO DO: raise error here
+      null;
+    elsif l_file_cnt > 1
+    then
+
+      -- get zip name
+      l_file_name := get_zip_name;
+      -- set content type
+      l_content_type := 'application/zip';
+      -- close zip
+      apex_zip.finish(
+        p_zipped_blob => l_blob_content
+      );
+
+    end if;
+
+    -- download file/zip
     apex_http.download(
-      p_blob          => l_zip_file
-    , p_content_type  => 'application/zip'
-    , p_filename      => l_zip_name
+      p_blob          => l_blob_content
+    , p_content_type  => l_content_type
+    , p_filename      => l_file_name
     );
 
   end download_selected_files;
@@ -6685,8 +6721,7 @@ as
 -- Global procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_canonical_host
-  return varchar2
+  procedure set_canonical_host
   as
   begin
 
@@ -6706,6 +6741,14 @@ as
 
     end if;
 
+  end set_canonical_host;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_canonical_host
+  return varchar2
+  as
+  begin
+
     return g_canonical_host_url;
 
   end get_canonical_host;
@@ -6722,7 +6765,7 @@ as
 
     return
       case p_canonical
-        when 'YES' then get_canonical_host
+        when 'YES' then g_canonical_host_url
       end ||
       apex_page.get_url(
         p_application => p_application
@@ -6770,7 +6813,7 @@ as
 
   return
     case p_canonical
-      when 'YES' then get_canonical_host
+      when 'YES' then g_canonical_host_url
     end ||
     apex_page.get_url(
       p_application => p_application
@@ -6817,7 +6860,7 @@ as
 
     return
       case p_canonical
-        when 'YES' then get_canonical_host
+        when 'YES' then g_canonical_host_url
       end ||
       apex_page.get_url(
         p_page      => l_json.get_string( 'page' )
@@ -6863,7 +6906,7 @@ as
 
     return
       case p_canonical
-        when 'YES' then get_canonical_host
+        when 'YES' then g_canonical_host_url
       end  ||
       apex_page.get_url(
         p_page      => l_json.get_string( 'page' )
@@ -6909,7 +6952,7 @@ as
 
     return
       case p_canonical
-        when 'YES' then get_canonical_host
+        when 'YES' then g_canonical_host_url
       end ||
       apex_page.get_url(
         p_page      => l_json.get_string( 'page' )
@@ -6962,7 +7005,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then get_canonical_host end ||
+      then g_canonical_host_url end ||
       apex_page.get_url(
         p_application => p_application
       , p_page        => 'pgm'
@@ -7003,7 +7046,7 @@ as
       )
     ;
 
-    return get_canonical_host || l_url;
+    return g_canonical_host_url || l_url;
 
   end get_unsubscribe;
 --------------------------------------------------------------------------------
@@ -7126,6 +7169,15 @@ as
   end get_file;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+-- Package initialization
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+begin
+  -- initialize parameters
+  apex_debug.info( '----- Initialize package BLOG_URL -----' );
+  set_canonical_host;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 end "BLOG_URL";
 /
 create or replace package body "BLOG_AI"
@@ -7135,13 +7187,38 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- None
+
+  type str_t is table of varchar2( 2000 ) index by varchar2( 60 );
+  param_t str_t;
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- None
+  procedure init_params
+  as
+  begin
+
+    -- set valus for session
+    param_t( 'lang_ai_build_option' ) := 'BLOG_FEATURE_LANGUAGE_AI';
+    param_t( 'lang_ai_compartment_attribute_id') := 'G_OCI_LANG_AI_COMPARTMENT_OCID';
+    param_t( 'lang_ai_compartment_ocid' ) := blog_util.get_attribute_value( param_t( 'lang_ai_compartment_attribute_id' ) );
+    param_t( 'gen_ai_static_id' ) := 'BLOG_OPEN_AI_API';
+    param_t( 'gen_ai_build_option' ) := 'BLOG_FEATURE_GENERATIVE_AI';
+    param_t( 'gen_ai_generate_prompt' ) := 'BLOG_AI_GENERATE_PROMPT';
+    param_t( 'gen_ai_generate_msg' ) := apex_lang.message( 'BLOG_AI_GENERATE_MESSAGE' );
+
+    -- Debug parameters
+    apex_debug.info( 'Language AI build option name: %s', param_t( 'lang_ai_build_option' ) );
+    apex_debug.info( 'Language AI comparment static id : %s', param_t( 'lang_ai_compartment_attribute_id' ) );
+    apex_debug.info( 'Language AI comparment OCID : %s', param_t( 'lang_ai_compartment_ocid') );
+    apex_debug.info( 'Generative AI service static id: %s', param_t( 'gen_ai_static_id' ) );
+    apex_debug.info( 'Generative AI build option name: %s', param_t( 'gen_ai_build_option' ) );
+    apex_debug.info( 'Generative AI generate prompt: %s', param_t( 'gen_ai_generate_prompt' ) );
+    apex_debug.info( 'Generative AI generate message: %s', param_t( 'gen_ai_generate_msg' ) );
+
+  end init_params;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -7157,14 +7234,14 @@ as
 
     -- Set build option status for the language AI feature
     blog_cm.update_feature(
-      p_build_option_name => 'BLOG_FEATURE_LANGUAGE_AI',
-      p_build_status      => p_build_status
+      p_build_option_name => param_t( 'lang_ai_build_option' )
+    , p_build_status      => p_build_status
     );
 
     if p_build_status = apex_application_admin.c_build_option_status_include then
       apex_debug.info( 'Set compartment OCID: %s', p_compartment_id );
       -- Set attribute name and value
-      apex_string.plist_push( l_attributes, 'G_OCI_LANG_AI_COMPARTMENT_OCID', p_compartment_id );
+      apex_string.plist_push( l_attributes, param_t( 'lang_ai_compartment_attribute_id' ), p_compartment_id );
       -- Update attribute
       blog_cm.set_attribute_value(
         p_attribute_list => l_attributes
@@ -7182,8 +7259,8 @@ as
   begin
     -- Set build option status for the generative AI feature
     blog_cm.update_feature(
-      p_build_option_name => 'BLOG_FEATURE_GENERATIVE_AI',
-      p_build_status      => p_build_status
+      p_build_option_name => param_t( 'gen_ai_build_option' )
+    , p_build_status      => p_build_status
     );
   end set_gen_ai;
 --------------------------------------------------------------------------------
@@ -7201,17 +7278,17 @@ as
     l_messages(1).chat_role := 'user';
     l_messages(1).message :=
       apex_lang.message(
-        p_name => 'BLOG_AI_GENERATE_MESSAGE',
-        p0 => substr( apex_escape.striphtml( p_post ), 1, 32000 )
+        p_name => param_t( 'gen_ai_generate_msg' )
+      , p0 => substr( apex_escape.striphtml( p_post ), 1, 32000 )
       );
 
     -- Generate AI response using OpenAI service
     l_response :=
       apex_ai.chat(
-        p_service_static_id => 'BLOG_OPEN_AI_API',
-        p_messages          => l_messages,
-        p_prompt            => apex_lang.message( 'BLOG_AI_GENERATE_PROMPT' ),
-        p_system_prompt     =>
+        p_service_static_id => param_t( 'gen_ai_static_id' )
+      , p_messages          => l_messages
+      , p_prompt            => param_t( 'gen_ai_generate_prompt' )
+      , p_system_prompt     =>
           apex_lang.message(
             p_name => p_system_prompt
           )
@@ -7235,9 +7312,6 @@ as
     l_params        apex_exec.t_parameters;
   begin
 
-    -- Retrieve the compartment OCID for language AI
-    l_compartnet_id := blog_util.get_attribute_value( 'G_OCI_LANG_AI_COMPARTMENT_OCID' );
-
     -- Loop through comments that have not yet been analyzed
     for c1 in (
       select
@@ -7252,7 +7326,7 @@ as
     ) loop
 
       -- Set attributes for the language AI request
-      apex_exec.add_parameter( l_params, 'compartmentId', l_compartnet_id );
+      apex_exec.add_parameter( l_params, 'compartmentId', param_t( 'lang_ai_compartment_ocid') );
       apex_exec.add_parameter( l_params, 'documents', c1.document );
       apex_exec.add_parameter( l_params, 'level', 'SENTENCE' );
       apex_exec.add_parameter( l_params, 'batchDocumentService', 'batchDetectLanguageSentiments' );
@@ -7373,6 +7447,15 @@ as
   end get_translation;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+-- Package initialization
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+begin
+  -- initialize parameters
+  apex_debug.info( '----- Initialize package BLOG_AI -----' );
+  init_params;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 end "BLOG_AI";
 /
 create or replace package body "BLOG_COMM"
@@ -7382,8 +7465,9 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  c_whitelist_tags  constant varchar2(256)  := '<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>';
-  c_code_block_html constant varchar2(256)  := '<pre class="blog-program-code"><code>%s</code></pre>';
+  c_whitelist_tags  constant varchar2(256) := '<b>,</b>,<i>,</i>,<u>,</u>,<code>,</code>';
+  c_code_block_html constant varchar2(256) := '<pre class="blog-program-code"><code>%s</code></pre>';
+  c_app_email       constant varchar2(256) := blog_util.get_attribute_value( 'G_APP_EMAIL' );
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -7815,8 +7899,6 @@ as
 
     l_post_id   := to_number( p_post_id );
 
-    -- fetch application email address
-    l_app_email := blog_util.get_attribute_value( 'G_APP_EMAIL' );
     -- if application email address is not set, exit from procedure
     if l_app_email is null
     then
@@ -7855,7 +7937,7 @@ as
       -- send notify email
       apex_mail.send(
          p_to                 => c1.blogger_email
-        ,p_from               => l_app_email
+        ,p_from               => c_app_email
         ,p_template_static_id => p_email_template
         ,p_placeholders       => c1.placeholders
       );
@@ -7880,8 +7962,6 @@ as
 
     l_post_id := to_number( p_post_id );
 
-    -- fetch application email address
-    l_app_email := blog_util.get_attribute_value( 'G_APP_EMAIL' );
     -- if application email address is not set, exit from procedure
     if l_app_email is null
     then
@@ -7939,7 +8019,7 @@ as
       );
       -- send notify email
       apex_mail.send(
-         p_from => l_app_email
+         p_from => c_app_email
         ,p_to   => c1.email
         ,p_template_static_id => p_email_template
         ,p_placeholders => c1.placeholders
@@ -8056,18 +8136,10 @@ as
   end get_robots_noindex_meta;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_page_canonical_link
-  return varchar2
-  as
-  begin
-    return g_link_canonical;
-  end get_page_canonical_link;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure set_tab_canonical_link(
+  function set_tab_canonical_link(
     p_page  in varchar2,
     p_url   out nocopy varchar2
-  )
+  ) return varchar2
   as
   begin
     -- generate canonical link for tab
@@ -8091,13 +8163,15 @@ as
       g_link_canonical := get_robots_noindex_meta;
     end if;
 
+    return g_link_canonical;
+
   end set_tab_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure set_post_canonical_link(
+  function set_post_canonical_link(
     p_post_id in varchar2,
     p_url     out nocopy varchar2
-  )
+  ) return varchar2
   as
   begin
     -- generate canonical link for post
@@ -8120,13 +8194,15 @@ as
       g_link_canonical := get_robots_noindex_meta;
     end if;
 
+    return g_link_canonical;
+
   end set_post_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure set_category_canonical_link(
+  function set_category_canonical_link(
     p_category_id in varchar2,
     p_url         out nocopy varchar2
-  )
+  ) return varchar2
   as
   begin
     -- generate canonical link for category
@@ -8149,13 +8225,15 @@ as
       g_link_canonical := get_robots_noindex_meta;
     end if;
 
+    return g_link_canonical;
+
   end set_category_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure set_archive_canonical_link(
+  function set_archive_canonical_link(
     p_archive_id in varchar2,
     p_url        out nocopy varchar2
-  )
+  ) return varchar2
   as
   begin
       -- generate canonical link for archives
@@ -8178,13 +8256,15 @@ as
       g_link_canonical := get_robots_noindex_meta;
     end if;
 
+    return g_link_canonical;
+
   end set_archive_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure set_tag_canonical_link(
+  function set_tag_canonical_link(
     p_tag_id in varchar2,
     p_url    out nocopy varchar2
-  )
+  ) return varchar2
   as
   begin
     -- generate canonical link for tags
@@ -8206,6 +8286,8 @@ as
       apex_debug.warn( 'Canonical link tag not generated for tag.' );
       g_link_canonical := get_robots_noindex_meta;
     end if;
+
+    return g_link_canonical;
 
   end set_tag_canonical_link;
 --------------------------------------------------------------------------------
@@ -8389,7 +8471,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
-  type str_t is table of varchar2( 2000 ) index by varchar2( 256 );
+  type str_t is table of varchar2( 2000 ) index by varchar2( 60 );
 
 -- variables
   param_t           str_t;
@@ -8422,7 +8504,7 @@ as
       and t1.application_id = apex_application.g_flow_id
       and t1.module_static_id = param_t( 'module_static_id' )
     ;
-
+    -- Debug parameters
     apex_debug.info( 'Build option: %s', param_t( 'build_option_name' ) );
     apex_debug.info( 'Bucket: %s', param_t( 'bucket' ) );
     apex_debug.info( 'Namespace: %s', param_t( 'namespace' ) );
@@ -8639,9 +8721,9 @@ as
     , p_name_03   => case when p_overwrite_file = 'N' then 'if-none-match' end
     , p_value_03  => case when p_overwrite_file = 'N' then '*' end
     , p_name_04   => case when p_cache_control is not null then 'Cache-Control' end
-    , p_value_04  => case when p_cache_control is not null then p_cache_control end
+    , p_value_04  => p_cache_control
     , p_name_05   => case when p_client_request_id is not null then 'opc-client-request-id' end
-    , p_value_05  => case when p_client_request_id is not null then p_client_request_id end
+    , p_value_05  => p_client_request_id
     );
     -- append default request headers
     append_default_request_headers;
@@ -9335,7 +9417,7 @@ as
     p_client_request_id in varchar2 default null
   )
   as
-    l_zip_name      varchar2(256);
+    l_file_name     varchar2(256);
     l_content_type  varchar2(256);
     l_blob_content  blob;
     l_zip_file      blob;
@@ -9343,8 +9425,10 @@ as
 
     for c1 in(
       select
-        file_path
-      , etag
+        t1.file_path
+      , t1.file_name
+      , t1.etag
+      , count(1) over() as num_rows
       from blog_v_all_files t1
       where 1 = 1
         and exists(
@@ -9355,7 +9439,7 @@ as
             and x1.n001 = t1.id
         )
     ) loop
-
+      -- get file from object storage
       get_object(
         p_file_path         => c1.file_path
       , p_client_request_id => p_client_request_id
@@ -9365,15 +9449,26 @@ as
 
       if not apex_error.have_errors_occurred
       then
-        apex_zip.add_file(
-          p_zipped_blob => l_zip_file
-        , p_file_name   => c1.file_path
-        , p_content     => l_blob_content
-        );
+        -- add files to zip if more than 1 is selected
+        if c1.num_rows = 1
+        then
+          l_file_name := c1.file_name;
+        else
+          apex_zip.add_file(
+            p_zipped_blob => l_zip_file
+          , p_file_name   => c1.file_path
+          , p_content     => l_blob_content
+          );
+        end if;
+
+      else
+        -- exit from loop if error have occured
+        exit;
       end if;
 
     end loop;
 
+    -- if we have zip
     if l_zip_file is not null
     then
 
@@ -9381,25 +9476,23 @@ as
         p_zipped_blob => l_zip_file
       );
 
-      l_zip_name :=
-        apex_string.format(
-          p_message => 'blog-%s.zip'
-        , p0 =>
-            apex_string_util.get_slug(
-              p_string => lower( param_t( 'bucket' ) )
-            , p_hash_length => 6
-            )
-        )
-      ;
+      if not apex_error.have_errors_occurred
+      then
+
+        l_blob_content := l_zip_file;
+        l_content_type := 'application/zip';
+        l_file_name := blog_file.get_zip_name;
+
+      end if;
 
     end if;
-
+    -- if no error download file/zip
     if not apex_error.have_errors_occurred
     then
       apex_http.download(
-        p_blob          => l_zip_file
-      , p_content_type  => 'application/zip'
-      , p_filename      => l_zip_name
+        p_blob          => l_blob_content
+      , p_content_type  => l_content_type
+      , p_filename      => l_file_name
       );
     end if;
 
@@ -9518,6 +9611,7 @@ as
 --------------------------------------------------------------------------------
 begin
   -- initialize parameters
+  apex_debug.info( '----- Initialize package BLOG_OCI_OS -----' );
   init_params;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

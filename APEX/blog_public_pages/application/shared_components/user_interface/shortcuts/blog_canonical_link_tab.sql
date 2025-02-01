@@ -16,14 +16,13 @@ wwv_flow_imp_shared.create_shortcut(
 ,p_shortcut_name=>'BLOG_CANONICAL_LINK_TAB'
 ,p_shortcut_type=>'FUNCTION_BODY'
 ,p_shortcut_language=>'PLSQL'
-,p_version_scn=>1
+,p_version_scn=>41493626091061
 ,p_comments=>'Get canonical link for page that is accessed form tabs. Used in pages 1, 10, 11 and 12 page html header.'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_html.set_tab_canonical_link(',
+'return blog_html.set_tab_canonical_link(',
 '  p_page  => :APP_PAGE_ID',
 ', p_url   => :P0_PAGE_URL',
-');',
-'return blog_html.get_page_canonical_link;'))
+');'))
 );
 wwv_flow_imp.component_end;
 end;

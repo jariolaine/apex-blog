@@ -18,7 +18,7 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'Reports'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
-,p_group_id=>wwv_flow_imp.id(102692173815582943)
+,p_group_id=>wwv_flow_imp.id(111116381830742743)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_help_text=>'<p>This page has links to various reports on e.g. the activity of this application.</p>'
@@ -41,7 +41,7 @@ wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(287400452252565000)
 ,p_plug_name=>'Activity'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:u-colors'
+,p_component_template_options=>'#DEFAULT#:u-colors:t-MediaList--cols t-MediaList--2cols'
 ,p_plug_template=>wwv_flow_imp.id(90936504220350296)
 ,p_plug_display_sequence=>10
 ,p_location=>null

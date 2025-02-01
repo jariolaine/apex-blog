@@ -22,7 +22,8 @@ wwv_flow_imp_shared.create_flow_process(
 '  p_app_id => :APP_ID',
 ');'))
 ,p_process_clob_language=>'PLSQL'
-,p_version_scn=>41484672840896
+,p_process_comment=>'Set application and page item values for new session from parameter table.'
+,p_version_scn=>41492291312659
 );
 wwv_flow_imp.component_end;
 end;

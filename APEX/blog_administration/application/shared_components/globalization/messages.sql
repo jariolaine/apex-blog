@@ -722,6 +722,14 @@ wwv_flow_imp_shared.create_message(
 ,p_version_scn=>41492175676132
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(97836253034375514)
+,p_name=>'BLOG_MSG_APEX_AUTH_INFO'
+,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<p>You can enable or disable APEX authentication for this administrative service.</p>',
+''))
+,p_version_scn=>41492324432992
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(123083450099389011)
 ,p_name=>'BLOG_MSG_BASIC_SETTINGS_INFO'
 ,p_message_text=>'Changes to some settings only take effect in new sessions of the public application. See settings help for details.'
@@ -764,19 +772,26 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(117547023012538519)
 ,p_name=>'BLOG_MSG_GENERATIVE_AI_INFO'
 ,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<p>To use generative AI, the system administrator must configure <i>Blog Open AI</i> <strong>Generative AI Service</strong> base URL.</p>',
+'<p>To use generative AI, the system administrator must configure <i>Blog Open AI</i> <strong>Generative AI Service</strong>.</p>',
 '<p>When Generative AI is enabled, it enables generate for post e.g. title, description, category and tags.</p>',
 '<p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for API key.</p>'))
-,p_version_scn=>41492197190090
+,p_version_scn=>41492472284501
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(97799466120992477)
+,p_name=>'BLOG_MSG_GOOGLE_AUTH_INFO'
+,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<p>You can enable or disable Google authentication for this administrative service.</p>',
+'<p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for both Client ID and Client Secret.</p>'))
+,p_version_scn=>41492324701198
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(114671136958398625)
 ,p_name=>'BLOG_MSG_LANGUAGE_AI_INFO'
 ,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<p>To use language AI, the system administrator must configure <i>Blog Language AI</i> <strong>remote server</strong> endpoint URL.</p>',
-'<p>When language AI is enabled, the sentiment of all new comments is analyzed. You can see the analysis result when opening a comment.</p>',
-'<p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for all fields.</p>'))
-,p_version_scn=>41492197147174
+'<p>When language AI is enabled, the sentiment of all new comments is analyzed. You can see the analysis result when opening a comment.</p>'))
+,p_version_scn=>41492475102959
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(135528583746186927)
@@ -804,9 +819,14 @@ wwv_flow_imp_shared.create_message(
 ,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<p>To use object storage, the system administrator must configure <i>Blog Object Storage</i> <strong>remote server</strong> endpoint URL.</p>',
 '<p>Once object storage is enabled, go to <strong>Synchronize Files</strong> and sync files between local file repository and object storage.</p>',
-'<p>When object storage is enabled, new files are no longer saved to the local file repository. You can use synchronization to retrieve files from object storage to the local file repository.</p>',
-'<p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for all fields.</p>'))
-,p_version_scn=>41492197167053
+'<p>When object storage is enabled, new files are no longer saved to the local file repository. You can use synchronization to retrieve files from object storage to the local file repository.</p>'))
+,p_version_scn=>41492475116731
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(98654830965007071)
+,p_name=>'BLOG_MSG_OCI_API_KEY_INFO'
+,p_message_text=>'<p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for all fields.</p>'
+,p_version_scn=>41492475122142
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(101201752243216937)

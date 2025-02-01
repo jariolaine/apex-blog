@@ -40,7 +40,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(102874015592702141)
 ,p_build_option_name=>'BLOG_FEATURE_OCI_OBJECT_STORAGE'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>41492217331931
+,p_version_scn=>41493616811297
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable Oracle cloud object storage'
@@ -75,7 +75,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(118121075712571408)
 ,p_build_option_name=>'BLOG_AUTHENTICATION_APEX'
 ,p_build_option_status=>'INCLUDE'
-,p_version_scn=>41492184988689
+,p_version_scn=>41493621973899
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable or disable APEX authentication from login screen'
@@ -84,7 +84,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(118121315777572996)
 ,p_build_option_name=>'BLOG_AUTHENTICATION_GOOGLE'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>41492185003260
+,p_version_scn=>41493622012408
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable or disable Google authentication from login screen. Google authentication requires client id and client secret is set to credential Blog Google OAuth2. For authorization, users need to be created to workspace and assigned to Bloggers group.'

@@ -30,6 +30,7 @@ as
 --  18.11.2023   Jari Laine     Added new function get_atom.
 --  01.04.2024   Jari Laine     Changed private constants to a JSON object.
 --  23.07.2024   Jari Laine     Added new function get_file.
+--  01.02.2025   Jari Laine     Added new procedure set_canonical_host and package initialization code.
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -201,8 +202,7 @@ as
 -- Global procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_canonical_host
-  return varchar2
+  procedure set_canonical_host
   as
   begin
 
@@ -222,6 +222,14 @@ as
 
     end if;
 
+  end set_canonical_host;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_canonical_host
+  return varchar2
+  as
+  begin
+
     return g_canonical_host_url;
 
   end get_canonical_host;
@@ -238,7 +246,7 @@ as
 
     return
       case p_canonical
-        when 'YES' then get_canonical_host
+        when 'YES' then g_canonical_host_url
       end ||
       apex_page.get_url(
         p_application => p_application
@@ -286,7 +294,7 @@ as
 
   return
     case p_canonical
-      when 'YES' then get_canonical_host
+      when 'YES' then g_canonical_host_url
     end ||
     apex_page.get_url(
       p_application => p_application
@@ -333,7 +341,7 @@ as
 
     return
       case p_canonical
-        when 'YES' then get_canonical_host
+        when 'YES' then g_canonical_host_url
       end ||
       apex_page.get_url(
         p_page      => l_json.get_string( 'page' )
@@ -379,7 +387,7 @@ as
 
     return
       case p_canonical
-        when 'YES' then get_canonical_host
+        when 'YES' then g_canonical_host_url
       end  ||
       apex_page.get_url(
         p_page      => l_json.get_string( 'page' )
@@ -425,7 +433,7 @@ as
 
     return
       case p_canonical
-        when 'YES' then get_canonical_host
+        when 'YES' then g_canonical_host_url
       end ||
       apex_page.get_url(
         p_page      => l_json.get_string( 'page' )
@@ -478,7 +486,7 @@ as
     return
       case p_canonical
       when 'YES'
-      then get_canonical_host end ||
+      then g_canonical_host_url end ||
       apex_page.get_url(
         p_application => p_application
       , p_page        => 'pgm'
@@ -519,7 +527,7 @@ as
       )
     ;
 
-    return get_canonical_host || l_url;
+    return g_canonical_host_url || l_url;
 
   end get_unsubscribe;
 --------------------------------------------------------------------------------
@@ -640,6 +648,15 @@ as
     ;
 
   end get_file;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Package initialization
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+begin
+  -- initialize parameters
+  apex_debug.info( '----- Initialize package BLOG_URL -----' );
+  set_canonical_host;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_URL";

@@ -40,47 +40,46 @@ as
 --                              Renamed procedures for canonical links as listed above.
 --                              Updated get_rss_link and get_atom_link.
 --  18.04.2024   Jari Laine     Added new function get_button.
+--  01.02.2025   Jari Laine     Removed function get_page_canonical_link.
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_robots_noindex_meta return varchar2;
 --------------------------------------------------------------------------------
-  function get_page_canonical_link return varchar2;
---------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAB
-  procedure set_tab_canonical_link(
+  function set_tab_canonical_link(
     p_page          in varchar2,
     p_url           out nocopy varchar2
-  );
+  ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_POST
-  procedure set_post_canonical_link(
+  function set_post_canonical_link(
     p_post_id       in varchar2,
     p_url           out nocopy varchar2
-  );
+  ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
-  procedure set_category_canonical_link(
+  function set_category_canonical_link(
     p_category_id   in varchar2,
     p_url           out nocopy varchar2
-  );
+  ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
-  procedure set_archive_canonical_link(
+  function set_archive_canonical_link(
     p_archive_id    in varchar2,
     p_url           out nocopy varchar2
-  );
+  ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAG
-  procedure set_tag_canonical_link(
+  function set_tag_canonical_link(
     p_tag_id        in varchar2,
     p_url           out nocopy varchar2
-  );
+  ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_RSS_ANCHOR
@@ -152,18 +151,10 @@ as
   end get_robots_noindex_meta;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_page_canonical_link
-  return varchar2
-  as
-  begin
-    return g_link_canonical;
-  end get_page_canonical_link;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure set_tab_canonical_link(
+  function set_tab_canonical_link(
     p_page  in varchar2,
     p_url   out nocopy varchar2
-  )
+  ) return varchar2
   as
   begin
     -- generate canonical link for tab
@@ -187,13 +178,15 @@ as
       g_link_canonical := get_robots_noindex_meta;
     end if;
 
+    return g_link_canonical;
+
   end set_tab_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure set_post_canonical_link(
+  function set_post_canonical_link(
     p_post_id in varchar2,
     p_url     out nocopy varchar2
-  )
+  ) return varchar2
   as
   begin
     -- generate canonical link for post
@@ -216,13 +209,15 @@ as
       g_link_canonical := get_robots_noindex_meta;
     end if;
 
+    return g_link_canonical;
+
   end set_post_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure set_category_canonical_link(
+  function set_category_canonical_link(
     p_category_id in varchar2,
     p_url         out nocopy varchar2
-  )
+  ) return varchar2
   as
   begin
     -- generate canonical link for category
@@ -245,13 +240,15 @@ as
       g_link_canonical := get_robots_noindex_meta;
     end if;
 
+    return g_link_canonical;
+
   end set_category_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure set_archive_canonical_link(
+  function set_archive_canonical_link(
     p_archive_id in varchar2,
     p_url        out nocopy varchar2
-  )
+  ) return varchar2
   as
   begin
       -- generate canonical link for archives
@@ -274,13 +271,15 @@ as
       g_link_canonical := get_robots_noindex_meta;
     end if;
 
+    return g_link_canonical;
+
   end set_archive_canonical_link;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure set_tag_canonical_link(
+  function set_tag_canonical_link(
     p_tag_id in varchar2,
     p_url    out nocopy varchar2
-  )
+  ) return varchar2
   as
   begin
     -- generate canonical link for tags
@@ -302,6 +301,8 @@ as
       apex_debug.warn( 'Canonical link tag not generated for tag.' );
       g_link_canonical := get_robots_noindex_meta;
     end if;
+
+    return g_link_canonical;
 
   end set_tag_canonical_link;
 --------------------------------------------------------------------------------

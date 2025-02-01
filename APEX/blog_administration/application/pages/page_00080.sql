@@ -42,6 +42,7 @@ wwv_flow_imp_page.create_page_plug(
 '  ,v1.changed_on            as changed_since',
 '  ,v1.changed_by            as changed_by',
 '  ,v1.display_seq           as display_seq',
+'  ,v1.is_active             as status',
 '  ,v1.is_active             as is_active',
 '  ,v1.show_changed_on       as show_changed_on',
 '  ,v1.content_desc          as content_desc',
@@ -186,10 +187,10 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
- p_id=>wwv_flow_imp.id(120795139152905397)
-,p_db_column_name=>'IS_ACTIVE'
+ p_id=>wwv_flow_imp.id(96789880392172247)
+,p_db_column_name=>'STATUS'
 ,p_display_order=>121
-,p_column_identifier=>'F'
+,p_column_identifier=>'R'
 ,p_column_label=>'Status'
 ,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '{with/}',
@@ -204,9 +205,18 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_use_as_row_header=>'N'
 );
 wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(120795139152905397)
+,p_db_column_name=>'IS_ACTIVE'
+,p_display_order=>131
+,p_column_identifier=>'F'
+,p_column_label=>'Status'
+,p_column_type=>'NUMBER'
+,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+);
+wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(120791594644905394)
 ,p_db_column_name=>'SHOW_CHANGED_ON'
-,p_display_order=>131
+,p_display_order=>141
 ,p_column_identifier=>'O'
 ,p_column_label=>'Show Changed On'
 ,p_column_type=>'NUMBER'
@@ -219,7 +229,7 @@ wwv_flow_imp_page.create_worksheet_column(
 wwv_flow_imp_page.create_worksheet_column(
  p_id=>wwv_flow_imp.id(120795926942905398)
 ,p_db_column_name=>'CONTENT_DESC'
-,p_display_order=>141
+,p_display_order=>151
 ,p_column_identifier=>'I'
 ,p_column_label=>'Description'
 ,p_column_type=>'STRING'
@@ -233,7 +243,7 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_report_alias=>'419457'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'DISPLAY_SEQ:CONTENT_DESC:SHOW_CHANGED_ON:CHANGED_SINCE:IS_ACTIVE:'
+,p_report_columns=>'DISPLAY_SEQ:CONTENT_DESC:SHOW_CHANGED_ON:CHANGED_SINCE:STATUS:'
 ,p_sort_column_1=>'DISPLAY_SEQ'
 ,p_sort_direction_1=>'ASC'
 );

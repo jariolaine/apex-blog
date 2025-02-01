@@ -78,7 +78,7 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
-  type str_t is table of varchar2( 2000 ) index by varchar2( 256 );
+  type str_t is table of varchar2( 2000 ) index by varchar2( 60 );
 
 -- variables
   param_t           str_t;
@@ -111,7 +111,7 @@ as
       and t1.application_id = apex_application.g_flow_id
       and t1.module_static_id = param_t( 'module_static_id' )
     ;
-
+    -- Debug parameters
     apex_debug.info( 'Build option: %s', param_t( 'build_option_name' ) );
     apex_debug.info( 'Bucket: %s', param_t( 'bucket' ) );
     apex_debug.info( 'Namespace: %s', param_t( 'namespace' ) );
@@ -328,9 +328,9 @@ as
     , p_name_03   => case when p_overwrite_file = 'N' then 'if-none-match' end
     , p_value_03  => case when p_overwrite_file = 'N' then '*' end
     , p_name_04   => case when p_cache_control is not null then 'Cache-Control' end
-    , p_value_04  => case when p_cache_control is not null then p_cache_control end
+    , p_value_04  => p_cache_control
     , p_name_05   => case when p_client_request_id is not null then 'opc-client-request-id' end
-    , p_value_05  => case when p_client_request_id is not null then p_client_request_id end
+    , p_value_05  => p_client_request_id
     );
     -- append default request headers
     append_default_request_headers;
@@ -1024,7 +1024,7 @@ as
     p_client_request_id in varchar2 default null
   )
   as
-    l_zip_name      varchar2(256);
+    l_file_name     varchar2(256);
     l_content_type  varchar2(256);
     l_blob_content  blob;
     l_zip_file      blob;
@@ -1032,8 +1032,10 @@ as
 
     for c1 in(
       select
-        file_path
-      , etag
+        t1.file_path
+      , t1.file_name
+      , t1.etag
+      , count(1) over() as num_rows
       from blog_v_all_files t1
       where 1 = 1
         and exists(
@@ -1044,7 +1046,7 @@ as
             and x1.n001 = t1.id
         )
     ) loop
-
+      -- get file from object storage
       get_object(
         p_file_path         => c1.file_path
       , p_client_request_id => p_client_request_id
@@ -1054,15 +1056,26 @@ as
 
       if not apex_error.have_errors_occurred
       then
-        apex_zip.add_file(
-          p_zipped_blob => l_zip_file
-        , p_file_name   => c1.file_path
-        , p_content     => l_blob_content
-        );
+        -- add files to zip if more than 1 is selected
+        if c1.num_rows = 1
+        then
+          l_file_name := c1.file_name;
+        else
+          apex_zip.add_file(
+            p_zipped_blob => l_zip_file
+          , p_file_name   => c1.file_path
+          , p_content     => l_blob_content
+          );
+        end if;
+
+      else
+        -- exit from loop if error have occured
+        exit;
       end if;
 
     end loop;
 
+    -- if we have zip
     if l_zip_file is not null
     then
 
@@ -1070,25 +1083,23 @@ as
         p_zipped_blob => l_zip_file
       );
 
-      l_zip_name :=
-        apex_string.format(
-          p_message => 'blog-%s.zip'
-        , p0 =>
-            apex_string_util.get_slug(
-              p_string => lower( param_t( 'bucket' ) )
-            , p_hash_length => 6
-            )
-        )
-      ;
+      if not apex_error.have_errors_occurred
+      then
+
+        l_blob_content := l_zip_file;
+        l_content_type := 'application/zip';
+        l_file_name := blog_file.get_zip_name;
+
+      end if;
 
     end if;
-
+    -- if no error download file/zip
     if not apex_error.have_errors_occurred
     then
       apex_http.download(
-        p_blob          => l_zip_file
-      , p_content_type  => 'application/zip'
-      , p_filename      => l_zip_name
+        p_blob          => l_blob_content
+      , p_content_type  => l_content_type
+      , p_filename      => l_file_name
       );
     end if;
 
@@ -1207,6 +1218,7 @@ as
 --------------------------------------------------------------------------------
 begin
   -- initialize parameters
+  apex_debug.info( '----- Initialize package BLOG_OCI_OS -----' );
   init_params;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

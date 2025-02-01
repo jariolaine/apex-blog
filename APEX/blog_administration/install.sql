@@ -3,8 +3,7 @@ prompt --install
 @@application/delete_application.sql
 @@application/create_application.sql
 @@application/user_interfaces.sql
-@@workspace/credentials/blog_oci_object_storage_api_key.sql
-@@workspace/credentials/blog_oci_language_ai_api_key.sql
+@@workspace/credentials/blog_oracle_cloud_api_key.sql
 @@workspace/credentials/blog_open_ai_api_key.sql
 @@workspace/credentials/blog_google_oauth2.sql
 @@workspace/remote_servers/blog_language_ai.sql
@@ -16,9 +15,11 @@ prompt --install
 @@application/shared_components/web_sources/blog_language_ai.sql
 @@application/shared_components/navigation/lists/navigation_menu.sql
 @@application/shared_components/navigation/lists/navigation_bar.sql
+@@application/shared_components/navigation/lists/admin_authentication.sql
+@@application/shared_components/navigation/lists/oracle_cloud.sql
 @@application/shared_components/navigation/lists/configuration.sql
 @@application/shared_components/navigation/lists/ai_configuration.sql
-@@application/shared_components/navigation/lists/storage_configuration.sql
+@@application/shared_components/navigation/lists/object_storage_configuration.sql
 @@application/shared_components/navigation/lists/public_application_links.sql
 @@application/shared_components/navigation/lists/activity_reports.sql
 @@application/shared_components/navigation/listentry.sql
@@ -195,6 +196,9 @@ prompt --install
 @@application/pages/page_20014.sql
 @@application/pages/page_20015.sql
 @@application/pages/page_20016.sql
+@@application/pages/page_20017.sql
+@@application/pages/page_20018.sql
+@@application/pages/page_20019.sql
 @@application/pages/page_20100.sql
 @@application/pages/page_30000.sql
 @@application/pages/page_30020.sql

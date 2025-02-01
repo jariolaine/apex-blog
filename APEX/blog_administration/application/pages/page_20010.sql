@@ -27,12 +27,41 @@ wwv_flow_imp_page.create_page(
 ,p_page_component_map=>'17'
 );
 wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(96789109317172240)
+,p_plug_name=>'Authentication'
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
+,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--iconsRounded'
+,p_plug_template=>wwv_flow_imp.id(90936504220350296)
+,p_plug_display_sequence=>20
+,p_plug_new_grid_row=>false
+,p_plug_new_grid_column=>false
+,p_location=>null
+,p_list_id=>wwv_flow_imp.id(97782102761261998)
+,p_plug_source_type=>'NATIVE_LIST'
+,p_list_template_id=>wwv_flow_imp.id(90984669960350327)
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(96789981500172248)
+,p_plug_name=>'Oracle Cloud'
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG:margin-bottom-md'
+,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--iconsRounded'
+,p_plug_template=>wwv_flow_imp.id(90936504220350296)
+,p_plug_display_sequence=>30
+,p_plug_new_grid_row=>false
+,p_location=>null
+,p_list_id=>wwv_flow_imp.id(98626541698938637)
+,p_plug_source_type=>'NATIVE_LIST'
+,p_list_template_id=>wwv_flow_imp.id(90984669960350327)
+,p_translate_title=>'N'
+,p_plug_comment=>'List of cloud services'
+);
+wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(113265661118639106)
 ,p_plug_name=>'Artificial Intelligence'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG:margin-bottom-md'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--iconsRounded'
 ,p_plug_template=>wwv_flow_imp.id(90936504220350296)
-,p_plug_display_sequence=>30
+,p_plug_display_sequence=>60
 ,p_plug_new_grid_row=>false
 ,p_plug_new_grid_column=>false
 ,p_location=>null
@@ -48,8 +77,9 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG:margin-bottom-md'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--iconsRounded'
 ,p_plug_template=>wwv_flow_imp.id(90936504220350296)
-,p_plug_display_sequence=>20
+,p_plug_display_sequence=>40
 ,p_plug_new_grid_row=>false
+,p_plug_new_grid_column=>false
 ,p_location=>null
 ,p_list_id=>wwv_flow_imp.id(117524284844700814)
 ,p_plug_source_type=>'NATIVE_LIST'
@@ -84,6 +114,36 @@ wwv_flow_imp_page.create_page_plug(
 ,p_menu_template_id=>wwv_flow_imp.id(90996108016350335)
 );
 wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(96789203450172241)
+,p_name=>'P20010_GOOGLE_AUTH_STATUS'
+,p_item_sequence=>30
+,p_item_plug_id=>wwv_flow_imp.id(96789109317172240)
+,p_source=>'APP_TEXT$BLOG_TXT_DISABLED'
+,p_source_type=>'ITEM'
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'N'
+,p_protection_level=>'I'
+,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
+,p_attribute_01=>'Y'
+,p_item_comment=>'Holding badge value for list'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(96789359446172242)
+,p_name=>'P20010_APEX_AUTH_STATUS'
+,p_item_sequence=>40
+,p_item_plug_id=>wwv_flow_imp.id(96789109317172240)
+,p_source=>'APP_TEXT$BLOG_TXT_DISABLED'
+,p_source_type=>'ITEM'
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'N'
+,p_protection_level=>'I'
+,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
+,p_attribute_01=>'Y'
+,p_item_comment=>'Holding badge value for list'
+);
+wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(100872796773005392)
 ,p_name=>'P20010_OCI_OS_STATUS'
 ,p_item_sequence=>10
@@ -94,6 +154,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 ,p_item_comment=>'Holding badge value for list'
 );
@@ -108,6 +169,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 ,p_item_comment=>'Holding badge value for list'
 );
@@ -122,6 +184,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
 ,p_attribute_01=>'Y'
 ,p_item_comment=>'Holding badge value for list'
 );
@@ -153,6 +216,26 @@ wwv_flow_imp_page.create_page_computation(
 ,p_computation=>'APP_TEXT$BLOG_TXT_ENABLED'
 ,p_required_patch=>wwv_flow_imp.id(113146485644291563)
 ,p_computation_comment=>'If OCI language AI is enabled'
+);
+wwv_flow_imp_page.create_page_computation(
+ p_id=>wwv_flow_imp.id(96789446659172243)
+,p_computation_sequence=>40
+,p_computation_item=>'P20010_GOOGLE_AUTH_STATUS'
+,p_computation_point=>'BEFORE_BOX_BODY'
+,p_computation_type=>'ITEM_VALUE'
+,p_computation=>'APP_TEXT$BLOG_TXT_ENABLED'
+,p_required_patch=>wwv_flow_imp.id(118121315777572996)
+,p_computation_comment=>'If Google authentication is enabled'
+);
+wwv_flow_imp_page.create_page_computation(
+ p_id=>wwv_flow_imp.id(96789507307172244)
+,p_computation_sequence=>50
+,p_computation_item=>'P20010_APEX_AUTH_STATUS'
+,p_computation_point=>'BEFORE_BOX_BODY'
+,p_computation_type=>'ITEM_VALUE'
+,p_computation=>'APP_TEXT$BLOG_TXT_ENABLED'
+,p_required_patch=>wwv_flow_imp.id(118121075712571408)
+,p_computation_comment=>'If APEX authentication is enabled'
 );
 wwv_flow_imp.component_end;
 end;

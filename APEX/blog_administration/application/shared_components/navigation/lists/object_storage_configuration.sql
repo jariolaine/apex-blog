@@ -1,7 +1,7 @@
-prompt --application/shared_components/navigation/lists/storage_configuration
+prompt --application/shared_components/navigation/lists/object_storage_configuration
 begin
 --   Manifest
---     LIST: Storage Configuration
+--     LIST: Object Storage Configuration
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
@@ -13,9 +13,9 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_shared.create_list(
  p_id=>wwv_flow_imp.id(117524284844700814)
-,p_name=>'Storage Configuration'
+,p_name=>'Object Storage Configuration'
 ,p_list_status=>'PUBLIC'
-,p_version_scn=>41492154948242
+,p_version_scn=>41492311699481
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(117525307922700798)

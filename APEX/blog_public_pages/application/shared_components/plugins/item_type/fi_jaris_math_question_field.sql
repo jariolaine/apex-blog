@@ -22,9 +22,9 @@ wwv_flow_imp_shared.create_plugin(
 ,p_render_function=>'blog_plugin.render_math_question_field'
 ,p_ajax_function=>'blog_plugin.ajax_math_question_field'
 ,p_validation_function=>'blog_plugin.validate_math_question_field'
-,p_standard_attributes=>'VISIBLE:FORM_ELEMENT:SESSION_STATE:ELEMENT:WIDTH:PLACEHOLDER:ICON'
+,p_standard_attributes=>'VISIBLE:FORM_ELEMENT:SESSION_STATE:ELEMENT:WIDTH:PLACEHOLDER:ICON:ENCRYPT'
 ,p_substitute_attributes=>true
-,p_version_scn=>41374862375301
+,p_version_scn=>41493619609060
 ,p_subscribe_plugin_settings=>true
 ,p_version_identifier=>'1.0'
 );

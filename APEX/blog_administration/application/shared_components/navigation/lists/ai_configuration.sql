@@ -15,7 +15,7 @@ wwv_flow_imp_shared.create_list(
  p_id=>wwv_flow_imp.id(114469191785084578)
 ,p_name=>'AI Configuration'
 ,p_list_status=>'PUBLIC'
-,p_version_scn=>41492154931343
+,p_version_scn=>41492312034352
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(117322057090104070)
@@ -23,7 +23,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_link_text=>'Generative AI'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20016:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-ai'
-,p_list_text_01=>'Configure generative AI to help write blog posts'
+,p_list_text_01=>'Configure generative AI to help write blog posts.'
 ,p_list_text_02=>'&P20010_GENERATIVE_AI_STATUS.'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
