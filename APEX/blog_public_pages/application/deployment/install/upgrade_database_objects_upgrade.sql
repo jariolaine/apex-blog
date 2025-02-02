@@ -983,71 +983,75 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Called from:',
 '--  pub app shortcut BLOG_CANONICAL_LINK_TAB',
 '  function set_tab_canonical_link(',
-'    p_page          in varchar2,',
-'    p_url           out nocopy varchar2',
+'    p_page            in varchar2,',
+'    p_url             out nocopy varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  pub app shortcut BLOG_CANONICAL_LINK_POST',
 '  function set_post_canonical_link(',
-'    p_post_id       in varchar2,',
-'    p_url           out nocopy varchar2',
+'    p_post_id         in varchar2,',
+'    p_url             out nocopy varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY',
 '  function set_category_canonical_link(',
-'    p_category_id   in varchar2,',
-'    p_url           out nocopy varchar2',
+'    p_category_id     in varchar2,',
+'    p_url             out nocopy varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE',
 '  function set_archive_canonical_link(',
-'    p_archive_id    in varchar2,',
-'    p_url           out nocopy varchar2',
+'    p_archive_id      in varchar2,',
+'    p_url             out nocopy varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  pub app shortcut BLOG_CANONICAL_LINK_TAG',
 '  function set_tag_canonical_link(',
-'    p_tag_id        in varchar2,',
-'    p_url           out nocopy varchar2',
+'    p_tag_id          in varchar2,',
+'    p_url             out nocopy varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  pub app shortcut BLOG_RSS_ANCHOR',
 '  function get_rss_anchor(',
-'    p_app_name      in varchar2,',
-'    p_message       in varchar2',
+'    p_app_name        in varchar2,',
+'    p_message         in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  pub app shortcut BLOG_RSS_LINK',
 '  function get_rss_link(',
-'    p_app_id        in varchar2,',
-'    p_app_name      in varchar2,',
-'    p_message       in varchar2,',
-'    p_build_option  in varchar2',
+'    p_app_id          in varchar2,',
+'    p_app_name        in varchar2,',
+'    p_message         in varchar2,',
+'    p_build_option    in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  pub app shortcut BLOG_ATOM_LINK',
 '  function get_atom_link(',
-'    p_app_id        in varchar2,',
-'    p_app_name      in varchar2,',
-'    p_message       in varchar2,',
-'    p_build_option  in varchar2',
+'    p_app_id          in varchar2,',
+'    p_app_name        in varchar2,',
+'    p_message         in varchar2,',
+'    p_build_option    in varchar2',
 '  ) return varchar2;',
 '--------------------------------------------------------------------------------',
 '  function get_button(',
-'    p_app_id        in varchar2,',
-'    p_title         in varchar2,',
-'    p_action        in varchar2,',
-'    p_icon_classes  in varchar2,',
-'    p_build_option  in varchar2 default null,',
-'    p_css_classes   in varchar2 default null',
+'    p_app_id          in varchar2,',
+'    p_title           in varchar2,',
+'    p_action          in varchar2,',
+'    p_icon_classes    in varchar2,',
+'    p_button_classes  in varchar2 default null,',
+'    p_build_option    in varchar2 default null',
 '  ) return varchar2;',
+'--------------------------------------------------------------------------------',
+'  procedure prn_html(',
+'    p_markdown      in apex_application_global.vc_arr2',
+'  );',
 '--------------------------------------------------------------------------------',
 'end "BLOG_HTML";',
 '/',
@@ -1334,7 +1338,12 @@ wwv_flow_imp_shared.append_to_install_script(
 ', t1.display_seq          as display_seq',
 ', t2.display_seq          as link_group_display_seq',
 ', t1.title                as title',
-', t2.title                as link_group_title',
+', t2.title                as link_group_titl'))
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(138405351815225809)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'e',
 ', t1.link_desc            as link_desc',
 ', t1.notes                as notes',
 ', t1.link_url             as link_url',
@@ -1343,12 +1352,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      case t1.is_active',
 '        when 1',
 '        then ''ENABLED''',
-'   '))
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(138405351815225809)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'     else ''DISABLED''',
+'        else ''DISABLED''',
 '        end',
 '    else ''GROUP_DISABLED''',
 '  end                     as link_status_code',
@@ -2309,16 +2313,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- HTML in query because IG removes HTML from column HTM expression in control break column',
 '-- Control break is sorted and attribute data-sort-order gives correct order',
 ', apex_string.format(',
-'    p_message => ''<span data-sort-order="%s" class="u-bold">%s</span>''',
-'  , p0 => lpad( min( t1.display_seq ) over( partition by t1.attribute_group_message ), 5, ''0'' )',
-'  , p1 =>',
-'      apex_lang.message(',
-'        p_name => t1.attribute'))
+'    p_message => '))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_group_message',
+'''<span data-sort-order="%s" class="u-bold">%s</span>''',
+'  , p0 => lpad( min( t1.display_seq ) over( partition by t1.attribute_group_message ), 5, ''0'' )',
+'  , p1 =>',
+'      apex_lang.message(',
+'        p_name => t1.attribute_group_message',
 '      )',
 '  )                           as attribute_group_html',
 ', t1.attribute_group_message  as attribute_group',
@@ -3345,15 +3349,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '/',
 'create or replace package body "BLOG_CTX"',
 'as',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'-- Private constants and variables',
-'-----------------------------------------------------------'))
+'-----------------------------------------'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'---------------------',
+'---------------------------------------',
+'--------------------------------------------------------------------------------',
+'-- Private constants and variables',
+'--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '-- none',
 '--------------------------------------------------------------------------------',
@@ -4023,18 +4027,18 @@ wwv_flow_imp_shared.append_to_install_script(
 '  mime_t(''uvvu'') := ''video/vnd.uvvu.mp4'';',
 '  mime_t(''viv'') := ''video/vnd.vivo'';',
 '  mime_t(''webm'') := ''video/webm'';',
-'  mime_t(''f4v'') := ''video/x-f4v'';',
-'  mime_t(''fli'') := ''video/x-fli'';',
-'  mime_t(''flv'') := ''video/x-flv'';',
-'  mime_t(''m4v'') := ''video/x-m4v'';',
-'  mime_t(''mkv'') := ''video/x-matroska'';',
-'  mime_t(''mk3d'') := ''video/x-matroska'';',
 ' '))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' mime_t(''mks'') := ''video/x-matroska'';',
+' mime_t(''f4v'') := ''video/x-f4v'';',
+'  mime_t(''fli'') := ''video/x-fli'';',
+'  mime_t(''flv'') := ''video/x-flv'';',
+'  mime_t(''m4v'') := ''video/x-m4v'';',
+'  mime_t(''mkv'') := ''video/x-matroska'';',
+'  mime_t(''mk3d'') := ''video/x-matroska'';',
+'  mime_t(''mks'') := ''video/x-matroska'';',
 '  mime_t(''mng'') := ''video/x-mng'';',
 '  mime_t(''asf'') := ''video/x-ms-asf'';',
 '  mime_t(''asx'') := ''video/x-ms-asf'';',
@@ -4737,18 +4741,18 @@ wwv_flow_imp_shared.append_to_install_script(
 '  )',
 '  as',
 '    l_next_post_id  number;',
-'    l_prev_post_id  number;',
+'    l_prev_post_id '))
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(138405351815225809)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+' number;',
 '    l_post_id       blog_v_posts.post_id%type;',
 '    l_published_on  blog_v_posts.published_on%type;',
 '    l_changed_on    blog_v_posts.changed_on%type;',
 '  begin',
 '',
-'    -- raise no data found error if parameter p_'))
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(138405351815225809)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'post_id is null',
+'    -- raise no data found error if parameter p_post_id is null',
 '    if p_post_id is null then',
 '      raise no_data_found;',
 '    end if;',
@@ -5819,18 +5823,18 @@ wwv_flow_imp_shared.append_to_install_script(
 '        ,p1 => p_max',
 '      );',
 '',
-'      l_value := to_number( p_value );',
+'      l_value :='))
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(138405351815225809)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+' to_number( p_value );',
 '',
 '      -- check value is integer and between range',
 '      if round( l_value ) = l_value',
 '      and l_value between p_min and p_max',
 '      then',
-'        -- if validation passes, clear error meassag'))
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(138405351815225809)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'e',
+'        -- if validation passes, clear error meassage',
 '        l_err_mesg := null;',
 '      end if;',
 '',
@@ -6830,16 +6834,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '      )',
 '    ;',
 '',
-'  end get_tab;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function get_post(',
-'    p_post_id     in number,'))
+'  end get_t'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'ab;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  function get_post(',
+'    p_post_id     in number,',
 '    p_application in varchar2 default null,',
 '    p_canonical   in varchar2 default ''NO''',
 '  ) return varchar2',
@@ -7766,6 +7770,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ) return varchar2',
 '  as',
 '    l_length  pls_integer;',
+''))
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(138405351815225809)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '    l_string  varchar2(32700);',
 '  begin',
 '',
@@ -7778,12 +7787,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    l_length := instr( l_string, '' '', p_str_length );',
 '',
-'    retur'))
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(138405351815225809)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'n',
+'    return',
 '      case when l_length > 0',
 '        then substr( l_string, 1, l_length ) || '' ...''',
 '        else l_string',
@@ -8484,12 +8488,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 '  function get_button(',
-'    p_app_id        in varchar2,',
-'    p_title         in varchar2,',
-'    p_action        in varchar2,',
-'    p_icon_classes  in varchar2,',
-'    p_build_option  in varchar2 default null,',
-'    p_css_classes   in varchar2 default null',
+'    p_app_id          in varchar2,',
+'    p_title           in varchar2,',
+'    p_action          in varchar2,',
+'    p_icon_classes    in varchar2,',
+'    p_button_classes  in varchar2 default null,',
+'    p_build_option    in varchar2 default null',
 '  ) return varchar2',
 '  as',
 '    l_app_id  number;',
@@ -8514,8 +8518,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '            ''</button>''',
 '        , p0 => p_action',
 '        , p1 => p_title',
-'        , p2 => ''t-Button t-Button--noLabel t-Button--icon t-Button--link''',
-'            || case when p_css_classes is not null then '' '' || p_css_classes end',
+'        , p2 => coalesce( p_button_classes, ''t-Button t-Button--noLabel t-Button--icon t-Button--link'' )',
 '        , p3 => p_icon_classes',
 '        )',
 '      ;',
@@ -8524,6 +8527,33 @@ wwv_flow_imp_shared.append_to_install_script(
 '    return l_button;',
 '',
 '  end get_button;',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  procedure prn_html(',
+'    p_markdown in apex_application_global.vc_arr2',
+'  )',
+'  as',
+'    l_response clob;',
+'  begin',
+'',
+'    l_response := apex_string.table_to_clob(',
+'      p_table => p_markdown',
+'    , p_sep   => null',
+'    );',
+'',
+'    l_response := apex_markdown.to_html(',
+'      p_markdown              => l_response',
+'    , p_softbreak             => apex_application.lf',
+'    , p_embedded_html_mode    => apex_markdown.c_embedded_html_escape',
+'    , p_extra_link_attributes => apex_t_varchar2( ''target'', ''_blank'' )',
+'    );',
+'',
+'    apex_util.prn(',
+'      p_clob    => l_response',
+'    , p_escape  => false',
+'    );',
+'',
+'  end prn_html;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
 'end "BLOG_HTML";',
@@ -8744,7 +8774,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '  end prepare_object_url;',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
-'  procedure upload_to_bucket(',
+'  p'))
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(138405351815225809)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'rocedure upload_to_bucket(',
 '    p_file_name         in varchar2,',
 '    p_dir               in varchar2,',
 '    p_mime_type         in varchar2,',
@@ -8774,12 +8809,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- prepare request URL',
 '    l_url_endpoint := prepare_object_url( l_file_path );',
 '',
-'    apex_debug.info( ''Request URL: %s'','))
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(138405351815225809)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' l_url_endpoint );',
+'    apex_debug.info( ''Request URL: %s'', l_url_endpoint );',
 '',
 '    -- set request headers for request',
 '    apex_web_service.set_request_headers(',
@@ -9704,7 +9734,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '-- none',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
+'--------------------------------------------'))
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(138405351815225809)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'------------------------------------',
 '-- Global functions and procedures',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -9735,12 +9770,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- RSS feed URL',
 '    l_rss_url   := blog_url.get_rss;',
 '    -- blog name',
-'    l_app_name := coalesc'))
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(138405351815225809)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'e(',
+'    l_app_name := coalesce(',
 '       p_app_name',
 '      ,blog_util.get_attribute_value( ''P0_BLOG_APP_NAME'' )',
 '    );',

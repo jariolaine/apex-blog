@@ -958,71 +958,75 @@ as
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAB
   function set_tab_canonical_link(
-    p_page          in varchar2,
-    p_url           out nocopy varchar2
+    p_page            in varchar2,
+    p_url             out nocopy varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_POST
   function set_post_canonical_link(
-    p_post_id       in varchar2,
-    p_url           out nocopy varchar2
+    p_post_id         in varchar2,
+    p_url             out nocopy varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
   function set_category_canonical_link(
-    p_category_id   in varchar2,
-    p_url           out nocopy varchar2
+    p_category_id     in varchar2,
+    p_url             out nocopy varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
   function set_archive_canonical_link(
-    p_archive_id    in varchar2,
-    p_url           out nocopy varchar2
+    p_archive_id      in varchar2,
+    p_url             out nocopy varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_CANONICAL_LINK_TAG
   function set_tag_canonical_link(
-    p_tag_id        in varchar2,
-    p_url           out nocopy varchar2
+    p_tag_id          in varchar2,
+    p_url             out nocopy varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_RSS_ANCHOR
   function get_rss_anchor(
-    p_app_name      in varchar2,
-    p_message       in varchar2
+    p_app_name        in varchar2,
+    p_message         in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_RSS_LINK
   function get_rss_link(
-    p_app_id        in varchar2,
-    p_app_name      in varchar2,
-    p_message       in varchar2,
-    p_build_option  in varchar2
+    p_app_id          in varchar2,
+    p_app_name        in varchar2,
+    p_message         in varchar2,
+    p_build_option    in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 -- Called from:
 --  pub app shortcut BLOG_ATOM_LINK
   function get_atom_link(
-    p_app_id        in varchar2,
-    p_app_name      in varchar2,
-    p_message       in varchar2,
-    p_build_option  in varchar2
+    p_app_id          in varchar2,
+    p_app_name        in varchar2,
+    p_message         in varchar2,
+    p_build_option    in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
   function get_button(
-    p_app_id        in varchar2,
-    p_title         in varchar2,
-    p_action        in varchar2,
-    p_icon_classes  in varchar2,
-    p_build_option  in varchar2 default null,
-    p_css_classes   in varchar2 default null
+    p_app_id          in varchar2,
+    p_title           in varchar2,
+    p_action          in varchar2,
+    p_icon_classes    in varchar2,
+    p_button_classes  in varchar2 default null,
+    p_build_option    in varchar2 default null
   ) return varchar2;
+--------------------------------------------------------------------------------
+  procedure prn_html(
+    p_markdown      in apex_application_global.vc_arr2
+  );
 --------------------------------------------------------------------------------
 end "BLOG_HTML";
 /
@@ -8419,12 +8423,12 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_button(
-    p_app_id        in varchar2,
-    p_title         in varchar2,
-    p_action        in varchar2,
-    p_icon_classes  in varchar2,
-    p_build_option  in varchar2 default null,
-    p_css_classes   in varchar2 default null
+    p_app_id          in varchar2,
+    p_title           in varchar2,
+    p_action          in varchar2,
+    p_icon_classes    in varchar2,
+    p_button_classes  in varchar2 default null,
+    p_build_option    in varchar2 default null
   ) return varchar2
   as
     l_app_id  number;
@@ -8449,8 +8453,7 @@ as
             '</button>'
         , p0 => p_action
         , p1 => p_title
-        , p2 => 't-Button t-Button--noLabel t-Button--icon t-Button--link'
-            || case when p_css_classes is not null then ' ' || p_css_classes end
+        , p2 => coalesce( p_button_classes, 't-Button t-Button--noLabel t-Button--icon t-Button--link' )
         , p3 => p_icon_classes
         )
       ;
@@ -8459,6 +8462,33 @@ as
     return l_button;
 
   end get_button;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure prn_html(
+    p_markdown in apex_application_global.vc_arr2
+  )
+  as
+    l_response clob;
+  begin
+
+    l_response := apex_string.table_to_clob(
+      p_table => p_markdown
+    , p_sep   => null
+    );
+
+    l_response := apex_markdown.to_html(
+      p_markdown              => l_response
+    , p_softbreak             => apex_application.lf
+    , p_embedded_html_mode    => apex_markdown.c_embedded_html_escape
+    , p_extra_link_attributes => apex_t_varchar2( 'target', '_blank' )
+    );
+
+    apex_util.prn(
+      p_clob    => l_response
+    , p_escape  => false
+    );
+
+  end prn_html;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 end "BLOG_HTML";

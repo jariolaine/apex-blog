@@ -15,7 +15,7 @@ wwv_flow_imp_shared.create_list(
  p_id=>wwv_flow_imp.id(97782102761261998)
 ,p_name=>'Admin Authentication'
 ,p_list_status=>'PUBLIC'
-,p_version_scn=>41493623785364
+,p_version_scn=>41493739247875
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(97782782129262008)
@@ -25,6 +25,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_icon=>'fa-apex'
 ,p_list_text_01=>'Enable or disable APEX authentication for this admin application.'
 ,p_list_text_02=>'&P20010_APEX_AUTH_STATUS.'
+,p_required_patch=>wwv_flow_imp.id(91382065723485903)
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(

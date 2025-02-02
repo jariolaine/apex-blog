@@ -16,7 +16,7 @@ wwv_flow_imp_shared.create_shortcut(
 ,p_shortcut_name=>'BLOG_BTN_AI_ASSISTANT'
 ,p_shortcut_type=>'FUNCTION_BODY'
 ,p_shortcut_language=>'PLSQL'
-,p_version_scn=>41492187296261
+,p_version_scn=>41493778740634
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return',
 '  blog_html.get_button(',

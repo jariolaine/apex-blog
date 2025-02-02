@@ -23,14 +23,11 @@ prompt --install
 @@application/shared_components/navigation/lists/public_application_links.sql
 @@application/shared_components/navigation/lists/activity_reports.sql
 @@application/shared_components/navigation/listentry.sql
-@@application/shared_components/files/js_admin_min_js.sql
 @@application/shared_components/files/css_admin_min_css.sql
-@@application/shared_components/files/js_showdown_showdown_min_js.sql
-@@application/shared_components/files/js_showdown_license_txt.sql
 @@application/shared_components/files/icons_app_icon_32_png.sql
 @@application/shared_components/files/icons_app_icon_192_png.sql
 @@application/shared_components/files/icons_app_icon_512_png.sql
-@@application/shared_components/files/js_showdown_showdown_js.sql
+@@application/shared_components/files/js_admin_min_js.sql
 @@application/shared_components/files/css_admin_css.sql
 @@application/shared_components/files/icons_app_icon_144_rounded_png.sql
 @@application/shared_components/files/icons_app_icon_256_rounded_png.sql

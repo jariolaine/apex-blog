@@ -48,10 +48,3 @@ Before starting the upgrade, backup the application parsing schema data and obje
 
 ## License
 This code is released under [MIT license](https://raw.githubusercontent.com/jariolaine/apex-blog/master/LICENSE.txt) by Jari Laine.
-
-## Third-Party Libraries
-
-This project includes the following third-party libraries that are licensed under the MIT License:
-
-- [ShowdownJS](https://github.com/showdownjs/showdown) -
-A bidirectional Markdown to HTML to Markdown converter written in Javascript

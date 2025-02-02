@@ -341,6 +341,7 @@ var blog = blog || {};
       , assistant: {
 
           button: "TALK_TO_ASSISTANT"
+
           /**
           * @function blog.admin.ai.post.assistant.useResponse
           * @desc Use assistant generated text
@@ -349,19 +350,22 @@ var blog = blog || {};
 
             options = $.extend({
               postItem: blog.admin.ai.post.item
-            , converter: {
-                headerLevelStart: 2
-              , noHeaderId: true
-              }
+            , talkButton: this.button
+            , process: "MARKDOWN_TO_HTML"
             }, options);
 
-            let converter = new showdown.Converter( options.converter )
-            , html = converter.makeHtml( options.text )
-            ;
+            apex.debug.info( "AI response markdown to html options", options )
 
-            $s( options.postItem, html );
-
-            $( $x( this.button ) ).hide();
+            // Call Ajax callback process to convert markdown to HTML
+            apex.server.process( options.process, {
+              f01: apex.server.chunk( options.text )
+            },{
+              dataType: "html"
+            , success: function( html ){
+                $s( options.postItem, html );
+                $( $x( options.talkButton ) ).hide();
+              }
+            });
 
           }
 
@@ -437,6 +441,7 @@ var blog = blog || {};
             .find( "code" ).remove().end()
             .text().trim().substring( 0, 32000 )
           ;
+
           // exit if there isn't text
           if( text.length === 0 ){
             apex.message.alert( apex.lang.getMessage( 'BLOG_MSG_AI_NO_POST_FOR_CONTEXT' ) )

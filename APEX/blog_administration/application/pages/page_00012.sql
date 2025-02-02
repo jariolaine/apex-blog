@@ -20,7 +20,6 @@ wwv_flow_imp_page.create_page(
 ,p_first_item=>'AUTO_FIRST_ITEM'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(91375656692427949)
-,p_javascript_file_urls=>'#APP_FILES#js/showdown/showdown#MIN#.js'
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_dialog_chained=>'N'
 ,p_overwrite_navigation_list=>'Y'
@@ -1331,6 +1330,20 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_clob_language=>'PLSQL'
 ,p_required_patch=>wwv_flow_imp.id(114745945789071814)
 ,p_internal_uid=>31504800464325831
+);
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(103688660304906906)
+,p_process_sequence=>20
+,p_process_point=>'ON_DEMAND'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'MARKDOWN_TO_HTML'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'blog_html.prn_html(',
+'  p_markdown => apex_application.g_f01',
+');'))
+,p_process_clob_language=>'PLSQL'
+,p_required_patch=>wwv_flow_imp.id(114745945789071814)
+,p_internal_uid=>103688660304906906
 );
 wwv_flow_imp.component_end;
 end;

@@ -16,17 +16,17 @@ wwv_flow_imp_shared.create_shortcut(
 ,p_shortcut_name=>'BLOG_BTN_POST_BODY'
 ,p_shortcut_type=>'FUNCTION_BODY'
 ,p_shortcut_language=>'PLSQL'
-,p_version_scn=>41475186702093
+,p_version_scn=>41493778759980
 ,p_comments=>'Post editor item post text button'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return',
 '  blog_html.get_button(',
-'    p_app_id        => :APP_ID',
-'  , p_title         => :APP_TEXT$BLOG_BTN_TITLE_RECORD',
-'  , p_action        => ''record-post''',
-'  , p_icon_classes  => ''fa-lg fa-microphone''',
-'  , p_css_classes   => ''margin-top-lg u-align-self-flex-start''',
-'  , p_build_option  => ''BLOG_FEATURE_POST_SPEECH''',
+'    p_app_id          => :APP_ID',
+'  , p_title           => :APP_TEXT$BLOG_BTN_TITLE_RECORD',
+'  , p_action          => ''record-post''',
+'  , p_icon_classes    => ''fa-lg fa-microphone''',
+'  , p_button_classes  => ''t-Button t-Button--noLabel t-Button--icon t-Button--link margin-top-lg u-align-self-flex-start''',
+'  , p_build_option    => ''BLOG_FEATURE_POST_SPEECH''',
 '  )',
 ';'))
 );
