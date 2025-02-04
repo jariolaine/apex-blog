@@ -29,8 +29,9 @@ wwv_flow_imp_page.create_page(
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(96789109317172240)
 ,p_plug_name=>'Authentication'
+,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--iconsRounded'
+,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:t-MediaList--large force-fa-lg:t-MediaList--iconsRounded'
 ,p_plug_template=>wwv_flow_imp.id(90936504220350296)
 ,p_plug_display_sequence=>20
 ,p_plug_new_grid_row=>false
@@ -43,8 +44,9 @@ wwv_flow_imp_page.create_page_plug(
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(96789981500172248)
 ,p_plug_name=>'Oracle Cloud'
+,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG:margin-bottom-md'
-,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--iconsRounded'
+,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:t-MediaList--large force-fa-lg:t-MediaList--iconsRounded'
 ,p_plug_template=>wwv_flow_imp.id(90936504220350296)
 ,p_plug_display_sequence=>30
 ,p_plug_new_grid_row=>false
@@ -58,8 +60,9 @@ wwv_flow_imp_page.create_page_plug(
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(113265661118639106)
 ,p_plug_name=>'Artificial Intelligence'
+,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG:margin-bottom-md'
-,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--iconsRounded'
+,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:t-MediaList--large force-fa-lg:t-MediaList--iconsRounded'
 ,p_plug_template=>wwv_flow_imp.id(90936504220350296)
 ,p_plug_display_sequence=>60
 ,p_plug_new_grid_row=>false
@@ -74,8 +77,9 @@ wwv_flow_imp_page.create_page_plug(
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(115297437283141422)
 ,p_plug_name=>'Storage'
+,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG:margin-bottom-md'
-,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--iconsRounded'
+,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:t-MediaList--large force-fa-lg:t-MediaList--iconsRounded'
 ,p_plug_template=>wwv_flow_imp.id(90936504220350296)
 ,p_plug_display_sequence=>40
 ,p_plug_new_grid_row=>false
@@ -90,8 +94,9 @@ wwv_flow_imp_page.create_page_plug(
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(134137683208437141)
 ,p_plug_name=>'Configuration'
+,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG:margin-bottom-md'
-,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--iconsRounded'
+,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--large force-fa-lg:t-MediaList--iconsRounded'
 ,p_plug_template=>wwv_flow_imp.id(90936504220350296)
 ,p_plug_display_sequence=>10
 ,p_location=>null

@@ -1,4 +1,23 @@
 /**************************************
+* Utility classes
+**************************************/
+.blog-hidden {
+  display: none;
+  visibility: none;
+}
+.blog-item.blog-noItemHelp {
+  width: calc(100% - 0.5rem);
+}
+.blog-region-noItemHelp {
+  width: calc(100% - 1.5rem);
+}
+.blog-shadow-sm {
+  box-shadow: var(--ut-shadow-sm);
+}
+.blog-shadow-md {
+  box-shadow: 0 8px 16px -8px rgba(0, 0, 0, 0.2);
+}
+/**************************************
 * Elements
 **************************************/
 blockquote::before {
@@ -102,7 +121,7 @@ blockquote::after {
   margin-bottom: 1rem;
   border: var(--ut-component-border-width) solid var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
-  box-shadow: var(--ut-shadow-sm);
+  box-shadow: 0 8px 16px -8px rgba(0, 0, 0, 0.2);
   background-color: var(--ut-component-background-color);
 }
 .blog-posts .blog-post .blog-post--header {

@@ -59,6 +59,7 @@ wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(134307522281573262)
 ,p_plug_name=>'Categories'
 ,p_parent_plug_id=>wwv_flow_imp.id(133827372928790207)
+,p_region_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-LinksList--showBadge'
 ,p_plug_template=>wwv_flow_imp.id(134196859691163520)
@@ -82,6 +83,7 @@ wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(134307608258573263)
 ,p_plug_name=>'Latest Posts'
 ,p_parent_plug_id=>wwv_flow_imp.id(133827372928790207)
+,p_region_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(134196859691163520)
@@ -105,6 +107,7 @@ wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(134309484590573282)
 ,p_plug_name=>'Subscribe in a Reader'
 ,p_parent_plug_id=>wwv_flow_imp.id(133827372928790207)
+,p_region_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_plug_template=>wwv_flow_imp.id(134196859691163520)
 ,p_plug_display_sequence=>90
@@ -132,6 +135,7 @@ wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(153128470491372972)
 ,p_plug_name=>'Tags'
 ,p_parent_plug_id=>wwv_flow_imp.id(133827372928790207)
+,p_region_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(134196859691163520)
@@ -155,6 +159,7 @@ wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(155981481783539167)
 ,p_plug_name=>'Archives'
 ,p_parent_plug_id=>wwv_flow_imp.id(133827372928790207)
+,p_region_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-LinksList--showBadge'
 ,p_plug_template=>wwv_flow_imp.id(134196859691163520)

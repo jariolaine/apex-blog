@@ -15,7 +15,7 @@ wwv_flow_imp_shared.create_list(
  p_id=>wwv_flow_imp.id(114469191785084578)
 ,p_name=>'AI Configuration'
 ,p_list_status=>'PUBLIC'
-,p_version_scn=>41492312034352
+,p_version_scn=>41493967392454
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(117322057090104070)
@@ -25,6 +25,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_icon=>'fa-ai'
 ,p_list_text_01=>'Configure generative AI to help write blog posts.'
 ,p_list_text_02=>'&P20010_GENERATIVE_AI_STATUS.'
+,p_list_text_06=>'u-color-8'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
@@ -35,6 +36,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_icon=>'fa-language'
 ,p_list_text_01=>'Configure Oracle cloud language service to analyze comment sentiment.'
 ,p_list_text_02=>'&P20010_OCI_LANG_AI_STATUS.'
+,p_list_text_06=>'u-color-9'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp.component_end;

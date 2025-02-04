@@ -23,7 +23,7 @@ wwv_flow_imp_shared.create_install_script(
 '-- Update version info',
 '--------------------------------------------------------',
 'update blog_settings',
-'  set attribute_value = ''Release 24.1.7.20250202''',
+'  set attribute_value = ''Release 24.1.7.20250204''',
 'where 1 = 1',
 '  and attribute_name = ''G_APP_VERSION''',
 ';',

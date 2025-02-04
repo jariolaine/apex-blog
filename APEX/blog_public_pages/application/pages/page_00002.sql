@@ -30,6 +30,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_region_name=>'comments'
 ,p_template=>wwv_flow_imp.id(134196859691163520)
 ,p_display_sequence=>40
+,p_region_css_classes=>'blog-shadow-sm'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Comments--basic:t-Comments--iconsRounded:t-Report--hideNoPagination'
 ,p_new_grid_row=>false

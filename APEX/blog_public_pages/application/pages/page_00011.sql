@@ -30,7 +30,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_name=>'File Repository'
 ,p_template=>wwv_flow_imp.id(136654216902452216)
 ,p_display_sequence=>10
-,p_region_css_classes=>'blog-MediaList--files'
+,p_region_css_classes=>'blog-MediaList--files blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ResultsRegion--boxed'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--stack:t-MediaList--iconsRounded'
 ,p_source_type=>'NATIVE_SQL_REPORT'

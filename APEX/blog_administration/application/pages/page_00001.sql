@@ -41,6 +41,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_name=>'Posts'
 ,p_template=>wwv_flow_imp.id(90936504220350296)
 ,p_display_sequence=>10
+,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
 ,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols'
 ,p_source_type=>'NATIVE_SQL_REPORT'
@@ -129,6 +130,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_name=>'Comments'
 ,p_template=>wwv_flow_imp.id(90936504220350296)
 ,p_display_sequence=>20
+,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
 ,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols'
 ,p_new_grid_row=>false
@@ -200,6 +202,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_name=>'Activity Last &P1_PERIOD_IN_DAYS. Days'
 ,p_template=>wwv_flow_imp.id(90936504220350296)
 ,p_display_sequence=>30
+,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
 ,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols t-BadgeList--4cols:t-Report--hideNoPagination'
 ,p_source_type=>'NATIVE_SQL_REPORT'
@@ -283,6 +286,7 @@ wwv_flow_imp_page.create_report_columns(
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(228320967824124468)
 ,p_plug_name=>'Blog Public URLs'
+,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
 ,p_component_template_options=>'#DEFAULT#:u-colors:t-MediaList--iconsRounded'
 ,p_plug_template=>wwv_flow_imp.id(90936504220350296)

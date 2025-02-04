@@ -40,16 +40,15 @@ wwv_flow_imp_page.create_page_plug(
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(287400452252565000)
 ,p_plug_name=>'Activity'
+,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:u-colors:t-MediaList--cols t-MediaList--2cols'
+,p_component_template_options=>'#DEFAULT#:u-colors:t-MediaList--large force-fa-lg:t-MediaList--cols t-MediaList--2cols'
 ,p_plug_template=>wwv_flow_imp.id(90936504220350296)
 ,p_plug_display_sequence=>10
 ,p_location=>null
 ,p_list_id=>wwv_flow_imp.id(126335939951449160)
 ,p_plug_source_type=>'NATIVE_LIST'
 ,p_list_template_id=>wwv_flow_imp.id(90984669960350327)
-,p_plug_query_num_rows=>15
-,p_ai_enabled=>false
 ,p_plug_comment=>'Public application activity reports'
 );
 wwv_flow_imp.component_end;

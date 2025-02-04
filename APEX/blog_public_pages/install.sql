@@ -15,6 +15,7 @@ prompt --install
 @@application/shared_components/navigation/lists/footer_modal_pages.sql
 @@application/shared_components/navigation/lists/navigation_menu.sql
 @@application/shared_components/navigation/listentry.sql
+@@application/shared_components/files/css_style_min_css.sql
 @@application/shared_components/files/icons_app_icon_32_png.sql
 @@application/shared_components/files/icons_app_icon_192_png.sql
 @@application/shared_components/files/icons_app_icon_512_png.sql
@@ -25,7 +26,6 @@ prompt --install
 @@application/shared_components/files/icons_about_txt.sql
 @@application/shared_components/files/css_rss_xsl_css.sql
 @@application/shared_components/files/js_blog_js.sql
-@@application/shared_components/files/css_style_min_css.sql
 @@application/shared_components/files/css_style_css.sql
 @@application/plugin_settings.sql
 @@application/shared_components/navigation/navigation_bar.sql
