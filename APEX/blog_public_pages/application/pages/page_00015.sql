@@ -32,6 +32,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_region_name=>'page-content-container'
 ,p_template=>wwv_flow_imp.id(134196859691163520)
 ,p_display_sequence=>10
+,p_region_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Report--hideNoPagination'
 ,p_source_type=>'NATIVE_SQL_REPORT'

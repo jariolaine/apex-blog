@@ -1,4 +1,13 @@
 /**************************************
+* Elements
+**************************************/
+blockquote::before {
+  content: open-quote;
+}
+blockquote::after {
+  content: close-quote;
+}
+/**************************************
 * Utility classes
 **************************************/
 .blog-hidden {
@@ -15,7 +24,7 @@
   box-shadow: var(--ut-shadow-sm);
 }
 .blog-shadow-md {
-  box-shadow: 0 8px 16px -8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0.25rem 0.5rem -0.25rem rgba(0, 0, 0, 0.2);
 }
 /**************************************
 * Post editor page
@@ -156,22 +165,13 @@
   border-radius: 50%;
 }
 /**************************************
-* Elements
-**************************************/
-blockquote::before {
-  content: open-quote;
-}
-blockquote::after {
-  content: close-quote;
-}
-/**************************************
 * Post report
 **************************************/
 .blog-posts .blog-post {
   margin-bottom: 1rem;
   border: var(--ut-component-border-width) solid var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
-  box-shadow: 0 8px 16px -8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0.25rem 0.5rem -0.25rem rgba(0, 0, 0, 0.2);
   background-color: var(--ut-component-background-color);
 }
 .blog-posts .blog-post .blog-post--header {
@@ -218,7 +218,7 @@ blockquote::after {
   padding: 0.25rem;
   border: var(--ut-component-border-width) solid var(--ut-component-border-color);
   border-radius: var(--ut-component-border-radius);
-  box-shadow: var(--ut-shadow-sm);
+  box-shadow: 0 0.25rem 0.5rem -0.25rem rgba(0, 0, 0, 0.2);
   background-color: var(--ut-component-background-color);
 }
 .blog-posts.blog-posts--paginationHidden .blog-posts--pagination {

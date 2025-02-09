@@ -30,7 +30,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_region_name=>'comments'
 ,p_template=>wwv_flow_imp.id(134196859691163520)
 ,p_display_sequence=>40
-,p_region_css_classes=>'blog-shadow-sm'
+,p_region_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Comments--basic:t-Comments--iconsRounded:t-Report--hideNoPagination'
 ,p_new_grid_row=>false
@@ -565,8 +565,8 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_affected_region_id=>wwv_flow_imp.id(134307608258573263)
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog.ui.setListCurrentItem({',
-'   affectedElements: this.affectedElements',
-'  ,pageItem: "P2_POST_ID"',
+'  affectedElements: this.affectedElements',
+', pageItem: "P2_POST_ID"',
 '});',
 ''))
 ,p_da_action_comment=>'List anchors have data attribute where is post id. If that match item P2_POST_ID value set is-current class to list'

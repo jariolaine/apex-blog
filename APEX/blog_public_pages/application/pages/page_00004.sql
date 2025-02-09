@@ -29,6 +29,7 @@ wwv_flow_imp_page.create_page(
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(166088155652953246)
 ,p_plug_name=>'Search from Blog'
+,p_region_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ResultsRegion--boxed:margin-bottom-md'
 ,p_plug_template=>wwv_flow_imp.id(136654216902452216)
 ,p_plug_display_sequence=>20

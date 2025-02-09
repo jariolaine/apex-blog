@@ -30,7 +30,6 @@ wwv_flow_imp_page.create_report_region(
 ,p_name=>'About Bloggers'
 ,p_template=>wwv_flow_imp.id(134175361497163509)
 ,p_display_sequence=>10
-,p_region_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'#DEFAULT#:t-Report--hideNoPagination'
 ,p_source_type=>'NATIVE_SQL_REPORT'
