@@ -43,7 +43,7 @@ wwv_imp_workspace.create_flow(
 ,p_documentation_banner=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'APEX Blog public application.',
 'Source code: https://github.com/jariolaine/apex-blog'))
-,p_authentication_id=>wwv_flow_imp.id(152672979658684609)
+,p_authentication_id=>wwv_flow_imp.id(106415579002501009)
 ,p_populate_roles=>'A'
 ,p_application_tab_set=>0
 ,p_logo_type=>'T'
@@ -51,7 +51,7 @@ wwv_imp_workspace.create_flow(
 ,p_public_user=>'APEX_PUBLIC_USER'
 ,p_proxy_server=>nvl(wwv_flow_application_install.get_proxy,'')
 ,p_no_proxy_domains=>nvl(wwv_flow_application_install.get_no_proxy_domains,'')
-,p_flow_version=>'Release 24.1.7.20250209'
+,p_flow_version=>'Release 24.1.7.20250405'
 ,p_flow_status=>'AVAILABLE_W_EDIT_LINK'
 ,p_flow_unavailable_text=>'This application is currently unavailable at this time.'
 ,p_exact_substitutions_only=>'Y'

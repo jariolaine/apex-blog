@@ -20,7 +20,7 @@ wwv_flow_imp_shared.create_web_source_module(
 ,p_remote_server_id=>wwv_flow_imp.id(113070079731662032)
 ,p_url_path_prefix=>'20221001/actions/'
 ,p_credential_id=>wwv_flow_imp.id(99274558332927618)
-,p_version_scn=>41492473292717
+,p_version_scn=>42196654623414
 );
 wwv_flow_imp_shared.create_web_source_param(
  p_id=>wwv_flow_imp.id(80037699137464597)

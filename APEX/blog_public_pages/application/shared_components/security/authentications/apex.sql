@@ -1,7 +1,7 @@
-prompt --application/shared_components/security/authentications/application_express_authentication
+prompt --application/shared_components/security/authentications/apex
 begin
 --   Manifest
---     AUTHENTICATION: Application Express Authentication
+--     AUTHENTICATION: APEX
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
@@ -12,13 +12,13 @@ wwv_flow_imp.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_authentication(
- p_id=>wwv_flow_imp.id(152672979658684609)
-,p_name=>'Application Express Authentication'
+ p_id=>wwv_flow_imp.id(106415579002501009)
+,p_name=>'APEX'
 ,p_scheme_type=>'NATIVE_APEX_ACCOUNTS'
 ,p_invalid_session_type=>'LOGIN'
 ,p_use_secure_cookie_yn=>'N'
 ,p_ras_mode=>0
-,p_version_scn=>1
+,p_version_scn=>42196663454874
 );
 wwv_flow_imp.component_end;
 end;

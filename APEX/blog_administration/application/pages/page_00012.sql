@@ -495,7 +495,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_TEXTAREA'
 ,p_cMaxlength=>1024
-,p_cHeight=>4
+,p_cHeight=>6
 ,p_field_template=>wwv_flow_imp.id(90995092856350334)
 ,p_item_css_classes=>'blog-item blog-postText'
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--postTextBlock'

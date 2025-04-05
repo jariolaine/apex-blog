@@ -13,8 +13,8 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_page.create_page(
  p_id=>20013
-,p_name=>'Object Storage Settings'
-,p_alias=>'OBJECT-STORAGE-SETTINGS'
+,p_name=>'Object Storage Configuration'
+,p_alias=>'OBJECT-STORAGE-CONFIGURATION'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Object Storage'
 ,p_autocomplete_on_off=>'OFF'

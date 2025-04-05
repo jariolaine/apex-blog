@@ -210,17 +210,6 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_imp.id(166088155652953246)
 );
-wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(165715110986623540)
-,p_process_sequence=>10
-,p_process_point=>'BEFORE_BOX_BODY'
-,p_process_type=>'NATIVE_SESSION_STATE'
-,p_process_name=>'Clear P4_SEARCH_FROM'
-,p_attribute_01=>'CLEAR_CACHE_FOR_ITEMS'
-,p_attribute_03=>'P4_SEARCH_FROM'
-,p_required_patch=>wwv_flow_imp.id(155314808107986067)
-,p_internal_uid=>38321121657727406
-);
 wwv_flow_imp.component_end;
 end;
 /

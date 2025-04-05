@@ -13,8 +13,8 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_page.create_page(
  p_id=>20015
-,p_name=>'Language AI Settings'
-,p_alias=>'LANGUAGE-AI-SETTINGS'
+,p_name=>'Language AI Configuration'
+,p_alias=>'LANGUAGE-AI-CONFIGURATION'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Language AI'
 ,p_autocomplete_on_off=>'OFF'

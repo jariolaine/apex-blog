@@ -28,12 +28,11 @@ as
     p_system_prompt   in varchar2
   );
 --------------------------------------------------------------------------------
-  procedure get_sentiments;
---------------------------------------------------------------------------------
 -- Called from:
 --  Public app page 1001
 --  Admin app 62
   procedure merge_sentiment(
+    p_language        in varchar2,
     p_documents       in clob
   );
 --------------------------------------------------------------------------------
@@ -77,8 +76,8 @@ as
     param_t( 'lang_ai_compartment_ocid' ) := blog_util.get_attribute_value( param_t( 'lang_ai_compartment_attribute_id' ) );
     param_t( 'gen_ai_static_id' ) := 'BLOG_OPEN_AI_API';
     param_t( 'gen_ai_build_option' ) := 'BLOG_FEATURE_GENERATIVE_AI';
-    param_t( 'gen_ai_generate_prompt' ) := 'BLOG_AI_GENERATE_PROMPT';
-    param_t( 'gen_ai_generate_msg' ) := apex_lang.message( 'BLOG_AI_GENERATE_MESSAGE' );
+    param_t( 'gen_ai_generate_prompt' ) := apex_lang.message( 'BLOG_AI_GENERATE_PROMPT' );
+    param_t( 'gen_ai_generate_msg' ) := 'BLOG_AI_GENERATE_MESSAGE';
 
     -- Debug parameters
     apex_debug.info( 'Language AI build option name: %s', param_t( 'lang_ai_build_option' ) );
@@ -90,6 +89,66 @@ as
     apex_debug.info( 'Generative AI generate message: %s', param_t( 'gen_ai_generate_msg' ) );
 
   end init_params;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure get_sentiments
+  as
+    l_compartnet_id varchar2(256);
+    l_document      clob;
+    l_params        apex_exec.t_parameters;
+  begin
+
+    -- Loop through comments that have not yet been analyzed
+    for c1 in (
+      with q1 as(
+        select
+          id
+        , v1.body_html
+        , mod( rownum, floor( count(1) over() / 5 ) ) as batch_group
+        from blog_v_all_comments v1
+        where 1 = 1
+          and sentiment is null
+      )
+      select
+        json_arrayagg(
+          json_object(
+            'key'   is blog_util.int_to_vc2( q1.id ),
+            'text'  is blog_comm.plain_text( q1.body_html )
+          ) returning clob
+        ) as document
+      from q1
+      group by
+        q1.batch_group
+    ) loop
+
+      -- Set attributes for the language AI request
+      apex_exec.add_parameter( l_params, 'compartmentId', param_t( 'lang_ai_compartment_ocid') );
+      apex_exec.add_parameter( l_params, 'documents', c1.document );
+      apex_exec.add_parameter( l_params, 'level', 'SENTENCE' );
+      apex_exec.add_parameter( l_params, 'languageCode', 'en' );
+      apex_exec.add_parameter( l_params, 'batchDocumentService', 'batchDetectLanguageSentiments' );
+
+      -- Call language AI to analyze sentiment
+      apex_exec.execute_rest_source(
+        p_static_id           => 'BLOG_LANGUAGE_AI',
+        p_operation_static_id => 'batch_document',
+        p_parameters          => l_params
+      );
+
+      -- Retrieve response body
+      l_document := apex_exec.get_parameter_clob( l_params, 'response_body' );
+
+      -- Insert response JSON into the database
+      merge_sentiment(
+        p_language  => 'en'
+      , p_documents => l_document
+      );
+
+      dbms_session.sleep( 1 );
+
+    end loop;
+
+  end get_sentiments;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -153,7 +212,7 @@ as
       , p0 => substr( apex_escape.striphtml( p_post ), 1, 32000 )
       );
 
-    -- Generate AI response using OpenAI service
+    -- Generate AI response using AI service
     l_response :=
       apex_ai.chat(
         p_service_static_id => param_t( 'gen_ai_static_id' )
@@ -176,53 +235,8 @@ as
   end gen_ai_chat;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure get_sentiments
-  as
-    l_compartnet_id varchar2(256);
-    l_document      clob;
-    l_params        apex_exec.t_parameters;
-  begin
-
-    -- Loop through comments that have not yet been analyzed
-    for c1 in (
-      select
-        json_array(
-          json_object(
-            'key' is blog_util.int_to_vc2( id ),
-            'text' is apex_escape.striphtml( body_html )
-          ) returning clob
-        ) as document
-      from blog_v_all_comments
-      where sentiment is null
-    ) loop
-
-      -- Set attributes for the language AI request
-      apex_exec.add_parameter( l_params, 'compartmentId', param_t( 'lang_ai_compartment_ocid') );
-      apex_exec.add_parameter( l_params, 'documents', c1.document );
-      apex_exec.add_parameter( l_params, 'level', 'SENTENCE' );
-      apex_exec.add_parameter( l_params, 'batchDocumentService', 'batchDetectLanguageSentiments' );
-
-      -- Call language AI to analyze sentiment
-      apex_exec.execute_rest_source(
-        p_static_id           => 'BLOG_LANGUAGE_AI',
-        p_operation_static_id => 'batch_document',
-        p_parameters          => l_params
-      );
-
-      -- Retrieve response body
-      l_document := apex_exec.get_parameter_clob( l_params, 'response_body' );
-
-      -- Insert response JSON into the database
-      merge_sentiment(
-        p_documents => l_document
-      );
-
-    end loop;
-
-  end get_sentiments;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   procedure merge_sentiment(
+    p_language  in varchar2,
     p_documents in clob
   )
   as
@@ -250,8 +264,8 @@ as
       merge into blog_comment_sentiments t1
       using dual on ( t1.comment_id = l_comment_id )
       when not matched then
-        insert( comment_id, sentiment_json )
-        values( l_comment_id, l_sentiment_json )
+        insert( comment_id, dominant_language, sentiment_json )
+        values( l_comment_id, p_language, l_sentiment_json )
       when matched then
         update set sentiment_json = l_sentiment_json;
     end loop;

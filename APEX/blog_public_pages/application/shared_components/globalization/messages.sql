@@ -12,6 +12,12 @@ wwv_flow_imp.component_begin (
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(109040401693616363)
+,p_name=>'BLOG_ERR_MSG_COMMENT_REQUEST'
+,p_message_text=>'Error occured. It''s not possible submit comment at this time.'
+,p_version_scn=>41501184133291
+);
+wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(134430745977194793)
 ,p_name=>'BLOG_GENERIC_ERROR'
 ,p_message_text=>'Ooops... We are sorry! Unexpected internal error have occurred. Please try again later.'

@@ -48,28 +48,28 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'  count( v1.id )        as num_posts',
+'  count( v1.id )  as num_posts',
 '  ,sum(',
 '    case v1.post_status_code',
 '    when ''PUBLISHED''',
 '      then 1',
 '      else 0',
 '    end',
-'   )                    as num_published_posts',
+'   )              as num_published_posts',
 '  ,sum(',
 '    case v1.post_status_code',
 '    when ''DRAFT''',
 '      then 1',
 '      else 0',
 '    end',
-'   )                    as num_draft_posts',
+'   )              as num_draft_posts',
 '  ,sum(',
 '    case v1.post_status_code',
 '    when ''SCHEDULED''',
 '      then 1',
 '      else 0',
 '    end',
-'   )                    as num_scheduled_posts',
+'   )              as num_scheduled_posts',
 'from blog_v_all_posts v1',
 'where 1 = 1',
 'order by 1'))
@@ -209,11 +209,10 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select ',
-'  ls.page_views         as page_views',
-', ls.total_rows_queried as rows_queried',
-', ls.apex_sessions      as apex_sessions',
-', ls.ip_addresses       as ip_addresses',
-', ls.agents             as user_agents',
+'  ls.page_views     as page_views',
+', ls.apex_sessions  as apex_sessions',
+', ls.ip_addresses   as ip_addresses',
+', ls.agents         as user_agents',
 'from apex_workspace_log_summary ls',
 'where 1 = 1',
 '  and ls.application_id = :G_PUB_APP_ID',
@@ -241,19 +240,8 @@ wwv_flow_imp_page.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(102687921155497179)
-,p_query_column_id=>2
-,p_column_alias=>'ROWS_QUERIED'
-,p_column_display_sequence=>30
-,p_column_heading=>'Rows Queried'
-,p_use_as_row_header=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-,p_required_patch=>wwv_flow_imp.id(107133402742902918)
-);
-wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(102688231989497179)
-,p_query_column_id=>3
+,p_query_column_id=>2
 ,p_column_alias=>'APEX_SESSIONS'
 ,p_column_display_sequence=>40
 ,p_column_heading=>'Sessions'
@@ -263,7 +251,7 @@ wwv_flow_imp_page.create_report_columns(
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(99562391385032015)
-,p_query_column_id=>4
+,p_query_column_id=>3
 ,p_column_alias=>'IP_ADDRESSES'
 ,p_column_display_sequence=>50
 ,p_column_heading=>'IP Addresses'
@@ -273,7 +261,7 @@ wwv_flow_imp_page.create_report_columns(
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(102480507178597501)
-,p_query_column_id=>5
+,p_query_column_id=>4
 ,p_column_alias=>'USER_AGENTS'
 ,p_column_display_sequence=>60
 ,p_column_heading=>'User Agents'

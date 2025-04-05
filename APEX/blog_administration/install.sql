@@ -176,6 +176,7 @@ prompt --install
 @@application/pages/page_00060.sql
 @@application/pages/page_00061.sql
 @@application/pages/page_00062.sql
+@@application/pages/page_00063.sql
 @@application/pages/page_00080.sql
 @@application/pages/page_00081.sql
 @@application/pages/page_00201.sql
@@ -196,6 +197,7 @@ prompt --install
 @@application/pages/page_20017.sql
 @@application/pages/page_20018.sql
 @@application/pages/page_20019.sql
+@@application/pages/page_20020.sql
 @@application/pages/page_20100.sql
 @@application/pages/page_30000.sql
 @@application/pages/page_30020.sql

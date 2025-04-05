@@ -184,6 +184,10 @@ insert into blog_settings(display_seq, is_nullable, attribute_group_message, att
   values('1160', '1', 'INTERNAL', 'G_OCI_LANG_AI_COMPARTMENT_OCID', 'STRING')
 ;
 --------------------------------------------------------
+--  Alter table BLOG_POSTS
+--------------------------------------------------------
+alter table blog_posts modify post_desc varchar2(4000 byte);
+--------------------------------------------------------
 --  Alter table BLOG_FILES
 --------------------------------------------------------
 alter table blog_files rename column file_name to file_path
@@ -234,6 +238,7 @@ create table blog_comment_sentiments(
   changed_on timestamp( 6 ) with local time zone not null,
   changed_by varchar2( 256 char ) not null,
   comment_id number( 38, 0 ) not null,
+  dominant_language varchar2( 2 char ) not null,
   sentiment_json varchar2(4000 byte) not null,
   constraint blog_comment_sentiments_pk primary key( id ),
   constraint blog_comment_sentiments_uk1 unique( comment_id ),

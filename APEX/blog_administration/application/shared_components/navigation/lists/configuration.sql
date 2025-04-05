@@ -15,7 +15,7 @@ wwv_flow_imp_shared.create_list(
  p_id=>wwv_flow_imp.id(107244848973251914)
 ,p_name=>'Configuration'
 ,p_list_status=>'PUBLIC'
-,p_version_scn=>41492313190428
+,p_version_scn=>41501173168858
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(107245062081251915)

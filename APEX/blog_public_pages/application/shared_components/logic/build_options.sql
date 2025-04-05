@@ -114,7 +114,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(145826259194060489)
 ,p_build_option_name=>'BLOG_FEATURE_OCI_OBJECT_STORAGE'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>41493616811297
+,p_version_scn=>41501171207825
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable Oracle cloud object storage'

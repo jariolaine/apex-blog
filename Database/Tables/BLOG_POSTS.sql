@@ -12,7 +12,7 @@ create table blog_posts(
   blogger_id number( 38, 0 ) not null,
   category_id number( 38, 0 ) not null,
   title varchar2( 256 char ) not null,
-  post_desc varchar2( 1024 char ) not null,
+  post_desc varchar2( 4000 byte) not null,
   body_html clob not null,
   first_paragraph varchar2( 4000 byte ) not null,
   published_on timestamp( 6 ) with local time zone not null,

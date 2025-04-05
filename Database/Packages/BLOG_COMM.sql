@@ -198,8 +198,8 @@ as
     p_string := replace( p_string, '#', l_hasmark );
     -- escape comment html
     p_string := apex_escape.html_whitelist(
-       p_html            => p_string
-      ,p_whitelist_tags  => c_whitelist_tags
+      p_html            => p_string
+    , p_whitelist_tags  => c_whitelist_tags
     );
     -- escape hash marks
     p_string := replace( p_string, l_hasmark, '	&#35;' );
@@ -242,23 +242,23 @@ as
 
         -- store code tag content to collection and wrap it to pre tag having class
         apex_string.push(
-           p_table => p_code_tab
-          ,p_value =>
+          p_table => p_code_tab
+        , p_value =>
             apex_string.format(
-               p_message => c_code_block_html
-              ,p0 => l_code
-            )
+              p_message => c_code_block_html
+            , p0 => l_code
+           )
         );
 
         -- substitude handled code tag
         p_comment :=
           apex_string.format(
-             p_message => '%s%s#BLOG_COMMENT_CODE%s#%s%s'
-            ,p0 => rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )
-            ,p1 => chr(10)
-            ,p2 => i
-            ,p3 => chr(10)
-            ,p4 => ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )
+            p_message => '%s%s#BLOG_COMMENT_CODE%s#%s%s'
+          , p0 => rtrim( substr( p_comment, 1, l_start_pos - 1 ), chr(10) )
+          , p1 => chr(10)
+          , p2 => i
+          , p3 => chr(10)
+          , p4 => ltrim( substr( p_comment, l_end_pos + 7 ), chr(10) )
           )
         ;
 
@@ -454,8 +454,8 @@ as
       begin
         l_xml := xmltype.createxml(
           apex_string.format(
-             p_message => '<comment>%s</comment>'
-            ,p0 => p_comment
+            p_message => '<comment>%s</comment>'
+          , p0 => p_comment
           )
         );
       exception when xml_parsing_failed then
@@ -562,14 +562,13 @@ as
     p_email_template  in varchar2
   )
   as
-    l_post_id   number;
-    l_app_email varchar2(4000);
+    l_post_id number;
   begin
 
     l_post_id   := to_number( p_post_id );
 
     -- if application email address is not set, exit from procedure
-    if l_app_email is null
+    if c_app_email is null
     then
       apex_debug.warn( 'application email address is not set' );
       return;
@@ -579,16 +578,17 @@ as
     -- send notify email if blog email address is set
     -- and blogger has set email
     for c1 in(
-      select v1.blogger_email
-        ,json_object(
-           'APP_NAME'     value p_app_name
-          ,'BLOGGER_NAME' value v1.blogger_name
-          ,'POST_TITLE'   value v1.title
-          ,'POST_LINK'    value
-              blog_url.get_post(
-                 p_post_id => v1.id
-                ,p_canonical => 'YES'
-              )
+      select
+        v1.blogger_email
+      , json_object(
+          'APP_NAME'      value p_app_name
+        , 'BLOGGER_NAME'  value v1.blogger_name
+        , 'POST_TITLE'    value v1.title
+        , 'POST_LINK'     value
+            blog_url.get_post(
+              p_post_id   => v1.id
+            , p_canonical => 'YES'
+            )
         ) as placeholders
       from blog_v_all_posts v1
       where 1 = 1
@@ -598,17 +598,17 @@ as
 
       apex_debug.info(
         'Send email to: %s from: %s template: %s placeholders: %s'
-        ,c1.blogger_email
-        ,l_app_email
-        ,p_email_template
-        ,c1.placeholders
+      , c1.blogger_email
+      , c_app_email
+      , p_email_template
+      , c1.placeholders
       );
       -- send notify email
       apex_mail.send(
-         p_to                 => c1.blogger_email
-        ,p_from               => c_app_email
-        ,p_template_static_id => p_email_template
-        ,p_placeholders       => c1.placeholders
+        p_to                  => c1.blogger_email
+      , p_from                => c_app_email
+      , p_template_static_id  => p_email_template
+      , p_placeholders        => c1.placeholders
       );
 
     end loop;
@@ -626,13 +626,12 @@ as
     l_watch_end     date;
     l_post_id       number;
     l_watch_months  number;
-    l_app_email     varchar2(4000);
   begin
 
     l_post_id := to_number( p_post_id );
 
     -- if application email address is not set, exit from procedure
-    if l_app_email is null
+    if c_app_email is null
     then
       apex_debug.warn( 'application email address is not set' );
       return;
@@ -653,15 +652,15 @@ as
         ,'POST_TITLE'       value v1.title
         ,'POST_LINK'        value
             blog_url.get_post(
-               p_application  => p_app_id
-              ,p_post_id      => p_post_id
-              ,p_canonical    => 'YES'
+              p_application => p_app_id
+            , p_post_id     => p_post_id
+            , p_canonical   => 'YES'
             )
         ,'UNSUBSCRIBE_LINK' value
             blog_url.get_unsubscribe(
-               p_application     => p_app_id
-              ,p_post_id         => p_post_id
-              ,p_subscription_id => t1.id
+              p_application     => p_app_id
+            , p_post_id         => p_post_id
+            , p_subscription_id => t1.id
             )
        ) as placeholders
       from blog_comment_subscribers t1
@@ -682,16 +681,16 @@ as
       apex_debug.info(
         'Send email to: %s from: %s template: %s placeholders: %s'
         ,c1.email
-        ,l_app_email
-        ,p_email_template
-        ,c1.placeholders
+      , c_app_email
+      , p_email_template
+      , c1.placeholders
       );
       -- send notify email
       apex_mail.send(
-         p_from => c_app_email
-        ,p_to   => c1.email
-        ,p_template_static_id => p_email_template
-        ,p_placeholders => c1.placeholders
+        p_from => c_app_email
+      , p_to => c1.email
+      , p_template_static_id => p_email_template
+      , p_placeholders => c1.placeholders
       );
 
     end loop;
@@ -722,7 +721,7 @@ as
         into l_email_id
         from blog_subscribers_email
         where 1 = 1
-        and email = l_email
+          and email = l_email
         ;
       -- if email address not exists, insert and return id
       exception when no_data_found
@@ -747,9 +746,9 @@ as
         update blog_comment_subscribers
           set subscription_date = trunc( sysdate )
         where 1 = 1
-        and is_active = 1
-        and post_id = p_post_id
-        and email_id = l_email_id
+          and is_active = 1
+          and post_id = p_post_id
+          and email_id = l_email_id
         ;
       end;
     end if;

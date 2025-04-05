@@ -21,7 +21,7 @@ wwv_flow_imp_shared.create_web_source_module(
 ,p_url_path_prefix=>'20221001/actions/'
 ,p_credential_id=>wwv_flow_imp.id(99274558332927618)
 ,p_reference_id=>113071873241632414
-,p_version_scn=>41492473292717
+,p_version_scn=>42196654623414
 );
 wwv_flow_imp_shared.create_web_source_param(
  p_id=>wwv_flow_imp.id(80076674782374122)

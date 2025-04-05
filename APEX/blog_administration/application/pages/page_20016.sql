@@ -13,8 +13,8 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_page.create_page(
  p_id=>20016
-,p_name=>'Generative AI Settings'
-,p_alias=>'GENERATIVE-AI-SETTINGS'
+,p_name=>'Generative AI Configuration'
+,p_alias=>'GENERATIVE-AI-CONFIGURATION'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Generative AI'
 ,p_autocomplete_on_off=>'OFF'

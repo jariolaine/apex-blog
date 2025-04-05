@@ -15,7 +15,7 @@ wwv_flow_imp_shared.create_list(
  p_id=>wwv_flow_imp.id(117524284844700814)
 ,p_name=>'Object Storage'
 ,p_list_status=>'PUBLIC'
-,p_version_scn=>41493967761107
+,p_version_scn=>41501173288636
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(117525307922700798)
