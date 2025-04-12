@@ -129,12 +129,6 @@ insert into blog_features(is_active, display_seq, build_option_name, build_optio
   values('1', '450', 'BLOG_FEATURE_MODERATE_COMMENTS_AI', 'BLOG_FEATURE_GROUP_COMMENTS')
 ;
 --------------------------------------------------------
---  Insert BLOG_FEATURES_PARENTS
---------------------------------------------------------
-insert into blog_feature_parents(is_active, build_option_name, build_option_parent)
-  values('1', 'BLOG_FEATURE_MODERATE_COMMENTS_AI', 'BLOG_FEATURE_MODERATE_COMMENTS')
-;
---------------------------------------------------------
 --  Update BLOG_FEATURES
 --------------------------------------------------------
 update blog_features
