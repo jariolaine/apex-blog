@@ -10,7 +10,7 @@ create table blog_feature_parents(
   changed_by varchar2( 256 char ) not null,
   is_active number( 1, 0 ) not null,
   build_option_name varchar2( 256 char ) not null,
-  build_option_parent varchar2( 256 char ),
+  build_option_parent varchar2( 256 char ) not null,
   constraint blog_feature_parents_pk primary key( id ),
   constraint blog_feature_parents_uk1 unique( build_option_name ),
   constraint blog_feature_parents_ck1 check( row_version > 0 ),

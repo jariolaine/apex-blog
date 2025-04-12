@@ -194,7 +194,7 @@ create table blog_feature_parents(
   changed_by varchar2( 256 char ) not null,
   is_active number( 1, 0 ) not null,
   build_option_name varchar2( 256 char ) not null,
-  build_option_parent varchar2( 256 char ),
+  build_option_parent varchar2( 256 char ) not null,
   constraint blog_feature_parents_pk primary key( id ),
   constraint blog_feature_parents_uk1 unique( build_option_name ),
   constraint blog_feature_parents_ck1 check( row_version > 0 ),
@@ -1969,7 +1969,8 @@ select
 , t1.build_option_name        as build_option_name
 , v1.build_option_status      as build_option_status
 , t2.build_option_parent      as build_option_parent
-, case when v2.build_option_name is null
+, level                       as build_option_level
+, case when connect_by_isleaf = 0
     then 'Y'
     else 'N'
   end                         as is_parent
@@ -1985,7 +1986,7 @@ select
 -- Contrel break is soretd and attribute data-sort-order gives correct sort order
 , apex_string.format(
     p_message => '<span data-sort-order="%s" class="u-bold">%s</span>'
-  , p0 => lpad( min( t1.display_seq ) over( partition by t1.build_option_group ), 5, '0' )
+  , p0 => lpad( min( t1.display_seq ) over( partition by t1.build_option_group ), 6, '0' )
   , p1 =>
       apex_lang.message(
         p_name => t1.build_option_group
@@ -1997,12 +1998,11 @@ join apex_application_build_options v1
   on t1.build_option_name = v1.build_option_name
 left join blog_feature_parents t2
   on t1.build_option_name = t2.build_option_name
-left join apex_application_build_options v2
-  on t2.build_option_parent = v2.build_option_name
-  and v1.application_id = v2.application_id
+  and t2.is_active = 1
 where 1 = 1
-and t1.is_active = 1
-and t1.is_active = 1
+  and t1.is_active = 1
+start with t2.build_option_parent is null
+connect by prior t1.build_option_name = t2.build_option_parent
 with read only
 /
 --------------------------------------------------------
@@ -7976,7 +7976,7 @@ as
     -- remove code and anchor HTML tags
     remove_html_tags(
       p_string    => l_string
-    , p_html_tags => 'code:a'
+    , p_html_tags => 'code'
     );
     -- add space before html tag
     -- needed for language AI sentence recognition

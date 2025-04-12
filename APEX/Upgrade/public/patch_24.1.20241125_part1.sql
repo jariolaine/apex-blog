@@ -125,11 +125,15 @@ order by 2, 3
 insert into blog_features(is_active, display_seq, build_option_name, build_option_group)
   values('1', '430', 'BLOG_FEATURE_COMMENT_VERIFY', 'BLOG_FEATURE_GROUP_COMMENTS')
 ;
-/*
 insert into blog_features(is_active, display_seq, build_option_name, build_option_group)
   values('1', '450', 'BLOG_FEATURE_MODERATE_COMMENTS_AI', 'BLOG_FEATURE_GROUP_COMMENTS')
 ;
-*/
+--------------------------------------------------------
+--  Insert BLOG_FEATURES_PARENTS
+--------------------------------------------------------
+insert into blog_feature_parents(is_active, build_option_name, build_option_parent)
+  values('1', 'BLOG_FEATURE_MODERATE_COMMENTS_AI', 'BLOG_FEATURE_MODERATE_COMMENTS')
+;
 --------------------------------------------------------
 --  Update BLOG_FEATURES
 --------------------------------------------------------
@@ -277,7 +281,7 @@ create table blog_feature_parents(
   changed_by varchar2( 256 char ) not null,
   is_active number( 1, 0 ) not null,
   build_option_name varchar2( 256 char ) not null,
-  build_option_parent varchar2( 256 char ),
+  build_option_parent varchar2( 256 char ) not null,
   constraint blog_feature_parents_pk primary key( id ),
   constraint blog_feature_parents_uk1 unique( build_option_name ),
   constraint blog_feature_parents_ck1 check( row_version > 0 ),

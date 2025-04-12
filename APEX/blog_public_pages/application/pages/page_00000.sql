@@ -21,6 +21,19 @@ wwv_flow_imp_page.create_page(
 ,p_page_component_map=>'14'
 );
 wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(103691842287906938)
+,p_plug_name=>'Search Container'
+,p_region_template_options=>'#DEFAULT#:t-Form--noPadding'
+,p_plug_template=>wwv_flow_imp.id(136658552932452222)
+,p_plug_display_sequence=>20
+,p_plug_display_point=>'BEFORE_NAVIGATION_BAR'
+,p_location=>null
+,p_translate_title=>'N'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
+);
+wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(133827130936790205)
 ,p_plug_name=>'Not Rendered Items'
 ,p_region_template_options=>'#DEFAULT#'
@@ -254,7 +267,7 @@ wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(166609179840728081)
 ,p_name=>'P0_SEARCH'
 ,p_item_sequence=>10
-,p_item_display_point=>'BEFORE_NAVIGATION_BAR'
+,p_item_plug_id=>wwv_flow_imp.id(103691842287906938)
 ,p_prompt=>'Search'
 ,p_placeholder=>'Search ...'
 ,p_display_as=>'NATIVE_TEXT_FIELD'

@@ -57,7 +57,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(113146485644291563)
 ,p_build_option_name=>'BLOG_FEATURE_LANGUAGE_AI'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>41492181438818
+,p_version_scn=>42196757589132
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable comments sentiment analyze using OCI language AI'
@@ -66,7 +66,7 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(114745945789071814)
 ,p_build_option_name=>'BLOG_FEATURE_GENERATIVE_AI'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>41492196450613
+,p_version_scn=>42196881007332
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable generative AI.'

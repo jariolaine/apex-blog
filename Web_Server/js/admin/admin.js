@@ -161,34 +161,50 @@ var blog = blog || {};
       processChildFeatures: function( pElement ){
 
         let element$ = $( $x( pElement ) )
-          , nextRows = ":has(td:first-child>span.blog-feature-parent),:has(th)"
-
-        // Check if function called by checkbox in page load
+          , nextRowsToHide = "tr:has(span.blog-feature-level1),:has(th)"
+          , readOnlyClass = "is-readonly blog-text-line-through"
+          , lineThroughClass = "blog-text-line-through"
+        ;
+        // Check if function called by checkbox or page load
         if( element$.is( "input" ) ){
-          element$.parents( "tr:has(td:first-child>span.blog-feature-parent)" )
-            .nextUntil( nextRows ).toggle()
-          ;
-        } else {
-          element$.find( "tr:has(td:first-child>span.blog-feature-parent[data-status=\"Exclude\"])" )
-            .nextUntil( nextRows ).hide()
-          ;
-        }
 
-        // if( element$.is( "input" ) ){
-        //   let level     = element$.parents("tr").children().children().data( "level" )
-        //     , nextRows  = ":has(td:first-child>span[data-level=\"" + level + "\"]),:has(th)"
-        //     , rows$     = element$.parents( "tr:has(td:first-child>span[data-level=\"" + level + "\"])" )
-        //   ;
-        //   $v(pElement) === "Include" ? rows$.nextUntil( nextRows ).show() : rows$.nextUntil( nextRows ).hide();
-        // } else {
-        //   element$.find( "span[data-status=\"Exclude\"]" ).each(function(){
-        //     let this$     = $(this)
-        //       , level     = this$.data( "level" )
-        //       , nextRows  = ":has(td:first-child>span[data-level=\"" + level + "\"]),:has(th)"
-        //     ;
-        //     this$.parents( "tr ").nextUntil( nextRows ).hide()
-        //   });
-        // }
+          let thisRow$ = element$.parents( "tr:has(span[data-status])" )
+            , label$ = thisRow$.find( "td:first-child>span[data-status]" )
+          ;
+
+          if( element$.is( ":checked" ) ){
+
+            let affectedRows$ = thisRow$.nextUntil( "tr:has(span[data-status=\"Exclude\"]),tr:has(th)" )
+              , nextRow$      = affectedRows$.next( "tr:has(td)" )
+            ;
+
+            affectedRows$.children( "td:first-child" ).removeClass( lineThroughClass );
+            affectedRows$.children( "td:nth-child(2)" ).removeClass( readOnlyClass );
+
+            nextRow$.children( "td:first-child" ).removeClass( lineThroughClass );
+            nextRow$.children( "td:nth-child(2)" ).removeClass( readOnlyClass );
+
+            label$.attr( "data-status", "Include" );
+
+          } else {
+
+            let affectedRows$ = thisRow$.nextUntil( nextRowsToHide );
+
+            affectedRows$.children( "td:first-child" ).addClass( lineThroughClass );
+            affectedRows$.children( "td:nth-child(2)" ).addClass( readOnlyClass );
+
+            label$.attr( "data-status", "Exclude" );
+
+          }
+
+        } else {
+
+          let affectedRows$ = element$.find( "tr:has(span[data-status=\"Exclude\"])" ).nextUntil( nextRowsToHide );
+
+          affectedRows$.children( "td:first-child" ).addClass( lineThroughClass );
+          affectedRows$.children( "td:nth-child(2)" ).addClass( readOnlyClass );
+
+        }
 
       }
 

@@ -1,7 +1,7 @@
 --------------------------------------------------------
 -- Inserting into BLOG_SETTINGS
 --------------------------------------------------------
-insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values('10','0','G_APP_VERSION','STRING','INTERNAL',null,null,'Release 24.1.7.20250405');
+insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values('10','0','G_APP_VERSION','STRING','INTERNAL',null,null,'Release 24.1.7.20250412');
 insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values('20','0','G_PUB_APP_ID','STRING','INTERNAL',null,null,blog_util.int_to_vc2(apex_application_install.get_application_id));
 insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values('110','0','P0_BLOG_APP_NAME','STRING','BLOG_SETTING_GROUP_GENERAL',null,null,'My Blog');
 insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values('120','0','P0_BLOG_APP_DESC','STRING','BLOG_SETTING_GROUP_GENERAL',null,null,'About Almost Everything');
@@ -67,7 +67,7 @@ insert into blog_feature_parents(is_active,build_option_name,build_option_parent
 insert into blog_feature_parents(is_active,build_option_name,build_option_parent) values('1','BLOG_FEATURE_CATEGORY_POST_COUNT','BLOG_FEATURE_CATEGORY');
 insert into blog_feature_parents(is_active,build_option_name,build_option_parent) values('1','BLOG_FEATURE_COMMENT_VERIFY','BLOG_FEATURE_ALLOW_COMMENTS');
 insert into blog_feature_parents(is_active,build_option_name,build_option_parent) values('1','BLOG_FEATURE_MODERATE_COMMENTS','BLOG_FEATURE_ALLOW_COMMENTS');
-insert into blog_feature_parents(is_active,build_option_name,build_option_parent) values('1','BLOG_FEATURE_MODERATE_COMMENTS_AI','BLOG_FEATURE_ALLOW_COMMENTS');
+insert into blog_feature_parents(is_active,build_option_name,build_option_parent) values('1','BLOG_FEATURE_MODERATE_COMMENTS_AI','BLOG_FEATURE_MODERATE_COMMENTS');
 insert into blog_feature_parents(is_active,build_option_name,build_option_parent) values('1','BLOG_FEATURE_SEARCH_COMMENTS','BLOG_FEATURE_SEARCH');
 insert into blog_feature_parents(is_active,build_option_name,build_option_parent) values('1','BLOG_FEATURE_SEARCH_FILES','BLOG_FEATURE_SEARCH');
 insert into blog_feature_parents(is_active,build_option_name,build_option_parent) values('1','BLOG_FEATURE_SEARCH_LINKS','BLOG_FEATURE_SEARCH');

@@ -279,8 +279,14 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(110729288318259981)
 ,p_name=>'BLOG_FEATURE_MODERATE_COMMENTS'
-,p_message_text=>'Comment must be manually approved'
-,p_version_scn=>41473028004701
+,p_message_text=>'Comment must be approved'
+,p_version_scn=>42197090890002
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(123417219226626152)
+,p_name=>'BLOG_FEATURE_MODERATE_COMMENTS_AI'
+,p_message_text=>'AI approve comments'
+,p_version_scn=>42197091039764
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(110369347594885860)
@@ -442,8 +448,14 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(103927047235167990)
 ,p_name=>'BLOG_HELP_FEATURE_MODERATE_COMMENTS'
-,p_message_text=>'Enable or disable comments manual approval before they are published.'
-,p_version_scn=>1
+,p_message_text=>'Enable or disable comments approval before they are published.'
+,p_version_scn=>42197090906029
+);
+wwv_flow_imp_shared.create_message(
+ p_id=>wwv_flow_imp.id(123419821720744097)
+,p_name=>'BLOG_HELP_FEATURE_MODERATE_COMMENTS_AI'
+,p_message_text=>'Enable or disable AI-powered moderation to automatically approve comments.'
+,p_version_scn=>42197092462622
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(103927546079201471)

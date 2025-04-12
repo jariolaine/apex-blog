@@ -1,7 +1,7 @@
-prompt --application/shared_components/security/authentications/apex
+prompt --application/shared_components/security/authentications/no_authentication
 begin
 --   Manifest
---     AUTHENTICATION: APEX
+--     AUTHENTICATION: No Authentication
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.05.31'
@@ -13,12 +13,12 @@ wwv_flow_imp.component_begin (
 );
 wwv_flow_imp_shared.create_authentication(
  p_id=>wwv_flow_imp.id(106415579002501009)
-,p_name=>'APEX'
-,p_scheme_type=>'NATIVE_APEX_ACCOUNTS'
-,p_invalid_session_type=>'LOGIN'
+,p_name=>'No Authentication'
+,p_scheme_type=>'NATIVE_DAD'
+,p_attribute_01=>'BLOG_PUBLIC_USER'
 ,p_use_secure_cookie_yn=>'N'
 ,p_ras_mode=>0
-,p_version_scn=>42196663454874
+,p_version_scn=>42197097853715
 );
 wwv_flow_imp.component_end;
 end;

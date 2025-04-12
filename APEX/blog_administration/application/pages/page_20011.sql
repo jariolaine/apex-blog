@@ -55,6 +55,22 @@ wwv_flow_imp_page.create_region_column(
 ,p_escape_on_http_output=>true
 );
 wwv_flow_imp_page.create_region_column(
+ p_id=>wwv_flow_imp.id(103692032368906940)
+,p_name=>'BUILD_OPTION_LEVEL'
+,p_source_type=>'DB_COLUMN'
+,p_source_expression=>'BUILD_OPTION_LEVEL'
+,p_data_type=>'NUMBER'
+,p_session_state_data_type=>'VARCHAR2'
+,p_is_query_only=>true
+,p_item_type=>'NATIVE_HIDDEN'
+,p_display_sequence=>160
+,p_attribute_01=>'Y'
+,p_use_as_row_header=>false
+,p_enable_sort_group=>false
+,p_is_primary_key=>false
+,p_include_in_export=>false
+);
+wwv_flow_imp_page.create_region_column(
  p_id=>wwv_flow_imp.id(109510077400521231)
 ,p_name=>'FEATURE_DESC'
 ,p_source_type=>'DB_COLUMN'
@@ -69,11 +85,8 @@ wwv_flow_imp_page.create_region_column(
 ,p_value_css_classes=>'padding-left-md'
 ,p_stretch=>'A'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'{if IS_PARENT/}',
-'<span class="blog-feature-parent" data-status="&BUILD_OPTION_STATUS.">&FEATURE_DESC.</span>',
-'{else/}',
-'<span class="margin-left-md" >&FEATURE_DESC.</span>',
-'{endif/}'))
+'<span class="blog-feature-level&BUILD_OPTION_LEVEL."{if IS_PARENT/} data-status="&BUILD_OPTION_STATUS."{endif/}>&FEATURE_DESC.</span>',
+''))
 ,p_filter_is_required=>false
 ,p_use_as_row_header=>true
 ,p_enable_sort_group=>false
@@ -438,6 +451,14 @@ wwv_flow_imp_page.create_ig_report_column(
 ,p_width=>100
 );
 wwv_flow_imp_page.create_ig_report_column(
+ p_id=>wwv_flow_imp.id(121659109312745753)
+,p_view_id=>wwv_flow_imp.id(109680229615218775)
+,p_display_seq=>13
+,p_column_id=>wwv_flow_imp.id(103692032368906940)
+,p_is_visible=>true
+,p_is_frozen=>false
+);
+wwv_flow_imp_page.create_ig_report_column(
  p_id=>wwv_flow_imp.id(129741613216272964)
 ,p_view_id=>wwv_flow_imp.id(109680229615218775)
 ,p_display_seq=>12
@@ -565,6 +586,18 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_name=>'Hide Child Features'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
 ,p_attribute_01=>'blog.admin.ig.processChildFeatures( this.triggeringElement );'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(103692331398906943)
+,p_event_id=>wwv_flow_imp.id(129729146537953392)
+,p_event_result=>'TRUE'
+,p_action_sequence=>20
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_imp.id(109509197057521222)
+,p_attribute_01=>'apex.region( this.affectedElements[0].id ).call( "getActions" ).invoke( "save" );'
+,p_build_option_id=>wwv_flow_imp.id(107133402742902918)
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(109510843993521239)

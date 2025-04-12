@@ -26,6 +26,9 @@ blockquote::after {
 .blog-shadow-md {
   box-shadow: 0 0.25rem 0.5rem -0.25rem rgba(0, 0, 0, 0.2);
 }
+.blog-text-line-through {
+  text-decoration: line-through !important;
+}
 /**************************************
 * Public application header
 **************************************/
@@ -129,19 +132,20 @@ blockquote::after {
   padding: 1rem;
 }
 .blog-posts .blog-post .blog-post--header .blog-post--date {
-  font-size: 1.125em;
+  font-size: 1.25rem;
   margin: 0 0 0.25rem;
 }
 .blog-posts .blog-post .blog-post--header .blog-post--title {
-  font-size: 1.625em;
+  font-size: 1.625rem;
   margin: 0 0 0.5rem;
 }
 .blog-posts .blog-post .blog-post--header .blog-post--category {
-  font-size: 1em;
+  font-size: 1.25rem;
 }
 .blog-posts .blog-post .blog-post--body {
   padding: 0 1rem 1rem;
   margin-bottom: 1rem;
+  font-size: 1.125rem;
 }
 .blog-posts .blog-post .blog-post--body img {
   max-width: 100%;
@@ -149,6 +153,9 @@ blockquote::after {
 }
 .blog-posts .blog-post .blog-post--body br {
   clear: none!important;
+}
+.blog-posts .blog-post .blog-post--body li {
+  font-size: inherit;
 }
 .blog-posts .blog-post .blog-post--footer {
   width: 100%;
@@ -180,7 +187,7 @@ blockquote::after {
     padding: 0.5rem 0.5rem 1rem;
   }
   .blog-posts .blog-post .blog-post--header .blog-post--title {
-    font-size: 1.375em;
+    font-size: 1.375rem;
   }
   .blog-posts .blog-post .blog-post--body {
     padding: 0 0.5rem 1rem;

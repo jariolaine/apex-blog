@@ -353,7 +353,7 @@ as
     -- remove code and anchor HTML tags
     remove_html_tags(
       p_string    => l_string
-    , p_html_tags => 'code:a'
+    , p_html_tags => 'code'
     );
     -- add space before html tag
     -- needed for language AI sentence recognition

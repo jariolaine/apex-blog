@@ -86,7 +86,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P30021_TIMEFRAME'
-,p_lazy_loading=>false
+,p_lazy_loading=>true
 ,p_query_row_template=>wwv_flow_imp.id(90965500862350315)
 ,p_query_num_rows=>50
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'

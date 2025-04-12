@@ -1509,7 +1509,8 @@ wwv_flow_imp_shared.append_to_install_script(
 ', t1.build_option_name        as build_option_name',
 ', v1.build_option_status      as build_option_status',
 ', t2.build_option_parent      as build_option_parent',
-', case when v2.build_option_name is null',
+', level                       as build_option_level',
+', case when connect_by_isleaf = 0',
 '    then ''Y''',
 '    else ''N''',
 '  end                         as is_parent',
@@ -1525,7 +1526,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Contrel break is soretd and attribute data-sort-order gives correct sort order',
 ', apex_string.format(',
 '    p_message => ''<span data-sort-order="%s" class="u-bold">%s</span>''',
-'  , p0 => lpad( min( t1.display_seq ) over( partition by t1.build_option_group ), 5, ''0'' )',
+'  , p0 => lpad( min( t1.display_seq ) over( partition by t1.build_option_group ), 6, ''0'' )',
 '  , p1 =>',
 '      apex_lang.message(',
 '        p_name => t1.build_option_group',
@@ -1537,12 +1538,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '  on t1.build_option_name = v1.build_option_name',
 'left join blog_feature_parents t2',
 '  on t1.build_option_name = t2.build_option_name',
-'left join apex_application_build_options v2',
-'  on t2.build_option_parent = v2.build_option_name',
-'  and v1.application_id = v2.application_id',
+'  and t2.is_active = 1',
 'where 1 = 1',
-'and t1.is_active = 1',
-'and t1.is_active = 1',
+'  and t1.is_active = 1',
+'start with t2.build_option_parent is null',
+'connect by prior t1.build_option_name = t2.build_option_parent',
 'with read only',
 '/',
 '--------------------------------------------------------',
@@ -2313,12 +2313,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- Control break is sorted and attribute data-sort-order gives correct order',
 ', apex_string.format(',
 '    p_message => ''<span data-sort-order="%s" class="u-bold">%s</span>''',
-'  , p0 => lpad( min('))
+'  , p'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' t1.display_seq ) over( partition by t1.attribute_group_message ), 5, ''0'' )',
+'0 => lpad( min( t1.display_seq ) over( partition by t1.attribute_group_message ), 5, ''0'' )',
 '  , p1 =>',
 '      apex_lang.message(',
 '        p_name => t1.attribute_group_message',
@@ -3355,12 +3355,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 'end;',
 '/',
-'create or replace pa'))
+'creat'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ckage body "BLOG_CTX"',
+'e or replace package body "BLOG_CTX"',
 'as',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -4032,13 +4032,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '  mime_t(''m4u'') := ''video/vnd.mpegurl'';',
 '  mime_t(''pyv'') := ''video/vnd.ms-playready.media.pyv'';',
 '  mime_t(''uvu'') := ''video/vnd.uvvu.mp4'';',
-'  mime_t(''uvvu'') := ''video/vnd.uvvu.mp4'';',
-'  mime'))
+'  mime_t(''uvvu'') := ''video/vnd.uv'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_t(''viv'') := ''video/vnd.vivo'';',
+'vu.mp4'';',
+'  mime_t(''viv'') := ''video/vnd.vivo'';',
 '  mime_t(''webm'') := ''video/webm'';',
 '  mime_t(''f4v'') := ''video/x-f4v'';',
 '  mime_t(''fli'') := ''video/x-fli'';',
@@ -4745,12 +4745,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_next_post_id    out nocopy varchar2,',
 '    p_next_post_title out nocopy varchar2,',
 '    p_prev_post_id    out nocopy varchar2,',
-'    p_prev_post_title out nocopy'))
+'    p_prev_post_t'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' varchar2',
+'itle out nocopy varchar2',
 '  )',
 '  as',
 '    l_next_post_id  number;',
@@ -5826,13 +5826,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '      -- prepare validation error message for exception handler',
 '      l_err_mesg := apex_lang.message(',
-'        p_name => p_err_mesg',
-'  '))
+'        p_name ='))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'      ,p0 => p_min',
+'> p_err_mesg',
+'        ,p0 => p_min',
 '        ,p1 => p_max',
 '      );',
 '',
@@ -6837,12 +6837,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '      apex_page.get_url(',
 '        p_application => p_application',
 '      , p_page        => p_page',
-'      , p_session '))
+'   '))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'    => ''''',
+'   , p_session     => ''''',
 '      , p_plain_url   => true',
 '      )',
 '    ;',
@@ -7478,7 +7478,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- remove code and anchor HTML tags',
 '    remove_html_tags(',
 '      p_string    => l_string',
-'    , p_html_tags => ''code:a''',
+'    , p_html_tags => ''code''',
 '    );',
 '    -- add space before html tag',
 '    -- needed for language AI sentence recognition',
@@ -7893,12 +7893,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '      and id = p_subscription_id',
 '    ;',
 '  end unsubscribe;',
-'-----------------------------------------'))
+'----------------------------'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'---------------------------------------',
+'----------------------------------------------------',
 '--------------------------------------------------------------------------------',
 'end "BLOG_COMM";',
 '/',
@@ -8823,13 +8823,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '    end loop;',
 '',
 '  end sync_from_database;',
-'--------------------------------------------------------------------------------',
-'-------'))
+'---------------------------------------------------------------------------'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-------------------------------------------------------------------------',
+'-----',
+'--------------------------------------------------------------------------------',
 '  procedure sync_from_object_storage(',
 '    p_collection_name   in varchar2,',
 '    p_client_request_id in varchar2 default null',
@@ -9802,13 +9802,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '                </body>',
 '                </html>',
 '              </xsl:template>',
-'            </xsl:stylesheet>''',
-'          ,'))
+'            </xsl:stylesheet>'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'p0 => apex_application.g_browser_language',
+'''',
+'          ,p0 => apex_application.g_browser_language',
 '          ,p1 => l_css_url',
 '        )',
 '      )',
