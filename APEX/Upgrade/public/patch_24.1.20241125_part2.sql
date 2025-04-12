@@ -33,16 +33,16 @@ insert into blog_feature_parents(is_active, build_option_name, build_option_pare
   values('1', 'BLOG_FEATURE_TAG_CLOUD_POST_COUNT', 'BLOG_FEATURE_TAG_CLOUD')
 ;
 insert into blog_feature_parents(is_active, build_option_name, build_option_parent)
-  values('1', 'BLOG_FEATURE_MODERATE_COMMENTS', 'BLOG_FEATURE_ALLOW_COMMENTS')
-;
-insert into blog_feature_parents(is_active, build_option_name, build_option_parent)
   values('1', 'BLOG_FEATURE_SUBSCRIBE_COMMENTS', 'BLOG_FEATURE_ALLOW_COMMENTS')
 ;
 insert into blog_feature_parents(is_active, build_option_name, build_option_parent)
   values('1', 'BLOG_FEATURE_COMMENT_VERIFY', 'BLOG_FEATURE_ALLOW_COMMENTS')
 ;
 insert into blog_feature_parents(is_active, build_option_name, build_option_parent)
-  values('1', 'BLOG_FEATURE_MODERATE_COMMENTS_AI', 'BLOG_FEATURE_ALLOW_COMMENTS')
+  values('1', 'BLOG_FEATURE_MODERATE_COMMENTS', 'BLOG_FEATURE_ALLOW_COMMENTS')
+;
+insert into blog_feature_parents(is_active, build_option_name, build_option_parent)
+  values('1', 'BLOG_FEATURE_MODERATE_COMMENTS_AI', 'BLOG_FEATURE_MODERATE_COMMENTS')
 ;
 --------------------------------------------------------
 --  Update BLOG_COMMENTS comment preview
