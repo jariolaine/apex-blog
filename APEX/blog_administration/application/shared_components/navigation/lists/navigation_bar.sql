@@ -4,8 +4,8 @@ begin
 --     LIST: Navigation Bar
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -16,6 +16,7 @@ wwv_flow_imp_shared.create_list(
 ,p_name=>'Navigation Bar'
 ,p_list_status=>'PUBLIC'
 ,p_version_scn=>41492209166849
+,p_updated_on=>wwv_flow_imp.dz('20250119125849Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(121123354592520081)
@@ -26,6 +27,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_disp_cond_type=>'CURRENT_PAGE_IN_CONDITION'
 ,p_list_item_disp_condition=>'11,20010,30000'
 ,p_list_item_current_type=>'NEVER'
+,p_updated_on=>wwv_flow_imp.dz('20250119125849Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(94392372420104500)
@@ -51,6 +53,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_icon=>'fa-id-card-o'
 ,p_parent_list_item_id=>wwv_flow_imp.id(91028884329350415)
 ,p_list_item_current_type=>'NEVER'
+,p_updated_on=>wwv_flow_imp.dz('20241124170643Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(91406956057384802)

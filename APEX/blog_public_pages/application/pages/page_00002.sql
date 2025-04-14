@@ -4,8 +4,8 @@ begin
 --     PAGE: 00002
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -23,12 +23,13 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
+,p_last_updated_on=>wwv_flow_imp.dz('20250414014936Z')
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(134309616685573283)
 ,p_name=>'Comments'
 ,p_region_name=>'comments'
-,p_template=>wwv_flow_imp.id(134196859691163520)
+,p_template=>4072358936313175081
 ,p_display_sequence=>40
 ,p_region_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
@@ -57,7 +58,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P2_POST_ID'
 ,p_lazy_loading=>false
-,p_query_row_template=>wwv_flow_imp.id(134222020494163533)
+,p_query_row_template=>2613168815517880001
 ,p_query_headings_type=>'NO_HEADINGS'
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_no_data_found=>'&APP_TEXT$BLOG_MSG_NO_COMMENTS.'
@@ -70,6 +71,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_plug_query_strip_html=>'N'
 ,p_required_patch=>wwv_flow_imp.id(134467697952354512)
 ,p_comment=>'Report to display comments relating current post'
+,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(134309841384573286)
@@ -87,7 +89,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'USER_ICON'
 ,p_column_display_sequence=>12
 ,p_column_heading=>'User Icon'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -97,7 +98,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'ICON_MODIFIER'
 ,p_column_display_sequence=>22
 ,p_column_heading=>'Icon Modifier'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -107,7 +107,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'COMMENT_TEXT'
 ,p_column_display_sequence=>32
 ,p_column_heading=>'Comment Text'
-,p_use_as_row_header=>'N'
 ,p_display_as=>'WITHOUT_MODIFICATION'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -118,7 +117,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'COMMENT_DATE'
 ,p_column_display_sequence=>42
 ,p_column_heading=>'Comment Date'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -128,7 +126,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'COMMENT_MODIFIERS'
 ,p_column_display_sequence=>62
 ,p_column_heading=>'Comment Modifiers'
-,p_use_as_row_header=>'N'
 ,p_column_html_expression=>'blog-comment padding-md'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -139,7 +136,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'ACTIONS'
 ,p_column_display_sequence=>72
 ,p_column_heading=>'Actions'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -149,7 +145,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'ATTRIBUTE_1'
 ,p_column_display_sequence=>82
 ,p_column_heading=>'Attribute 1'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -159,7 +154,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'ATTRIBUTE_2'
 ,p_column_display_sequence=>92
 ,p_column_heading=>'Attribute 2'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -169,7 +163,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'ATTRIBUTE_3'
 ,p_column_display_sequence=>102
 ,p_column_heading=>'Attribute 3'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -179,14 +172,13 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'ATTRIBUTE_4'
 ,p_column_display_sequence=>112
 ,p_column_heading=>'Attribute 4'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(137047977945233971)
 ,p_name=>'Post'
-,p_template=>wwv_flow_imp.id(134175361497163509)
+,p_template=>4501440665235496320
 ,p_display_sequence=>20
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'#DEFAULT#:blog-posts--paginationHidden:t-Report--hideNoPagination'
@@ -222,6 +214,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_sort_null=>'L'
 ,p_plug_query_strip_html=>'N'
 ,p_comment=>'Report to display only one post'
+,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(131156511653542263)
@@ -229,7 +222,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'POST_ID'
 ,p_column_display_sequence=>1
 ,p_column_heading=>'Post Id'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -239,7 +231,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'CATEGORY_ID'
 ,p_column_display_sequence=>2
 ,p_column_heading=>'Category Id'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -249,7 +240,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'PUBLISHED_ON'
 ,p_column_display_sequence=>12
 ,p_column_heading=>'Published On'
-,p_use_as_row_header=>'N'
 ,p_column_format=>'&P0_BLOG_POST_DATE_FORMAT.'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -260,7 +250,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'PUBDATE'
 ,p_column_display_sequence=>22
 ,p_column_heading=>'Pubdate'
-,p_use_as_row_header=>'N'
 ,p_column_format=>'YYYY-MM-DD'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -281,7 +270,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'CATEGORY_TITLE'
 ,p_column_display_sequence=>42
 ,p_column_heading=>'Category Title'
-,p_use_as_row_header=>'N'
 ,p_column_link=>'f?p=&APP_ID.:CATEGORY:&SESSION.::&DEBUG.::P14_CATEGORY_ID:#CATEGORY_ID#'
 ,p_column_linktext=>'#CATEGORY_TITLE#'
 ,p_derived_column=>'N'
@@ -293,7 +281,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'BODY_HTML'
 ,p_column_display_sequence=>62
 ,p_column_heading=>'Body Html'
-,p_use_as_row_header=>'N'
 ,p_display_as=>'WITHOUT_MODIFICATION'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -304,7 +291,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'TAGS_HTML'
 ,p_column_display_sequence=>72
 ,p_column_heading=>'Tags Html'
-,p_use_as_row_header=>'N'
 ,p_display_as=>'WITHOUT_MODIFICATION'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -315,15 +301,14 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'READ_MORE_LINK'
 ,p_column_display_sequence=>82
 ,p_column_heading=>'Read More Link'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(155254628324152939)
 ,p_plug_name=>'Move to Another Post'
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--hideHeader:t-Region--scrollBody'
-,p_plug_template=>wwv_flow_imp.id(134196859691163520)
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--hideHeader js-addHiddenHeadingRoleDesc:t-Region--scrollBody'
+,p_plug_template=>4072358936313175081
 ,p_plug_display_sequence=>30
 ,p_plug_new_grid_row=>false
 ,p_plug_new_grid_column=>false
@@ -337,6 +322,7 @@ wwv_flow_imp_page.create_page_plug(
   'expand_shortcuts', 'N',
   'output_as', 'HTML')).to_clob
 ,p_plug_comment=>'Region to hold buttons to paginate next and previous post'
+,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(155256477241152957)
@@ -345,7 +331,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_name=>'NEXT_POST'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--link:t-Button--iconLeft'
-,p_button_template_id=>wwv_flow_imp.id(134249229142163548)
+,p_button_template_id=>2082829544945815391
 ,p_button_image_alt=>'&P2_NEXT_POST_TITLE.'
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_NEXT_POST_ID.'
 ,p_button_condition=>'P2_NEXT_POST_ID'
@@ -355,6 +341,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_grid_new_row=>'Y'
 ,p_grid_row_css_classes=>'u-flex-wrap-nowrap padding-sm'
 ,p_button_comment=>'Go to next post if there is any'
+,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(155256526650152958)
@@ -363,7 +350,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_name=>'PREV_POST'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--link:t-Button--iconRight'
-,p_button_template_id=>wwv_flow_imp.id(134249229142163548)
+,p_button_template_id=>2082829544945815391
 ,p_button_image_alt=>'&P2_PREV_POST_TITLE.'
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.::P2_POST_ID:&P2_PREV_POST_ID.'
 ,p_button_condition=>'P2_PREV_POST_ID'
@@ -373,6 +360,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_grid_new_row=>'N'
 ,p_grid_new_column=>'Y'
 ,p_button_comment=>'Go to previous post if there is any'
+,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(131158412422542282)
@@ -381,7 +369,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_name=>'NEW_COMMENT'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
-,p_button_template_id=>wwv_flow_imp.id(134249229142163548)
+,p_button_template_id=>2082829544945815391
 ,p_button_image_alt=>'Post a Comment'
 ,p_button_position=>'EDIT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:1001:&SESSION.::&DEBUG.:1001:P1001_POST_ID:&P2_POST_ID.'
@@ -389,6 +377,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_icon_css_classes=>'fa fa-comment-o'
 ,p_button_comment=>'Open comment modal dialog'
 ,p_required_patch=>wwv_flow_imp.id(134467697952354512)
+,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(134307762592573265)
@@ -399,7 +388,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_restricted_characters=>'US_ONLY'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
 ,p_item_comment=>'Post ID to filter report'
 );
 wwv_flow_imp_page.create_page_item(
@@ -411,7 +401,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
 ,p_item_comment=>'Post title'
 );
 wwv_flow_imp_page.create_page_item(
@@ -423,7 +414,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
 ,p_item_comment=>'Post description'
 );
 wwv_flow_imp_page.create_page_item(
@@ -435,7 +427,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
 ,p_item_comment=>'Post category'
 );
 wwv_flow_imp_page.create_page_item(
@@ -447,7 +440,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
 ,p_item_comment=>'Post author'
 );
 wwv_flow_imp_page.create_page_item(
@@ -459,7 +453,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
 ,p_item_comment=>'Post published on'
 );
 wwv_flow_imp_page.create_page_item(
@@ -471,7 +466,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
 ,p_item_comment=>'Post modified on'
 );
 wwv_flow_imp_page.create_page_item(
@@ -484,7 +480,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'US_ONLY'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
 ,p_item_comment=>'Comment report rows to display per report page. Value computed on new session using application process "Initialize Items"'
 );
 wwv_flow_imp_page.create_page_item(
@@ -497,7 +494,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'US_ONLY'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(155256240446152955)
@@ -509,7 +507,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'US_ONLY'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(158643998475879074)
@@ -521,7 +520,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_protection_level=>'B'
 ,p_restricted_characters=>'US_ONLY'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(159011861917990148)
@@ -532,7 +532,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(159011980370990149)
@@ -543,7 +544,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(157515687812572194)
@@ -553,6 +555,7 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'ready'
 ,p_da_event_comment=>'Because latest post list in global page is cached, we set is-current class here'
+,p_updated_on=>wwv_flow_imp.dz('20250206162212Z')
 );
 wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(157516027257572193)
@@ -570,6 +573,7 @@ wwv_flow_imp_page.create_page_da_action(
 '});',
 ''))
 ,p_da_action_comment=>'List anchors have data attribute where is post id. If that match item P2_POST_ID value set is-current class to list'
+,p_updated_on=>wwv_flow_imp.dz('20250206162212Z')
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(153779303386438780)
@@ -591,6 +595,7 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_action=>'NATIVE_REFRESH'
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_imp.id(134309616685573283)
+,p_attribute_01=>'N'
 ,p_build_option_id=>-wwv_flow_imp.id(155675266349386026)
 );
 wwv_flow_imp_page.create_page_process(

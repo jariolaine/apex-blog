@@ -4,8 +4,8 @@ begin
 --     PAGE: 01003
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -24,6 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_browser_cache=>'Y'
 ,p_page_comment=>'Page to hold Ajax callback processes e.g. for generate RSS feed and download files.'
 ,p_page_component_map=>'11'
+,p_last_updated_on=>wwv_flow_imp.dz('20250414014936Z')
 );
 wwv_flow_imp_page.create_page_branch(
  p_id=>wwv_flow_imp.id(190068047700040939)
@@ -41,7 +42,9 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250201041313Z')
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(190430609981022731)

@@ -4,8 +4,8 @@ begin
 --     PAGE: 09999
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -20,17 +20,18 @@ wwv_flow_imp_page.create_page(
 ,p_first_item=>'AUTO_FIRST_ITEM'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(91376223235435262)
-,p_step_template=>wwv_flow_imp.id(90901724729350270)
+,p_step_template=>2101157952850466385
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'12'
+,p_last_updated_on=>wwv_flow_imp.dz('20250414014902Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(91021424156350394)
 ,p_plug_name=>'&P0_BLOG_APP_NAME.'
 ,p_icon_css_classes=>'fa-sign-in fa-lg u-color-31'
 ,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_imp.id(90942475457350300)
+,p_plug_template=>2674157997338192145
 ,p_plug_display_sequence=>10
 ,p_location=>null
 ,p_translate_title=>'N'
@@ -38,6 +39,7 @@ wwv_flow_imp_page.create_page_plug(
   'expand_shortcuts', 'N',
   'output_as', 'TEXT',
   'show_line_breaks', 'Y')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250414014901Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(91026080176350401)
@@ -45,20 +47,21 @@ wwv_flow_imp_page.create_page_plug(
 ,p_parent_plug_id=>wwv_flow_imp.id(91021424156350394)
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_imp.id(90921497390350286)
+,p_plug_template=>4501440665235496320
 ,p_plug_display_sequence=>40
 ,p_plug_display_point=>'SUB_REGIONS'
 ,p_plug_source=>'apex_lang.emit_language_selector_list;'
 ,p_plug_source_type=>'NATIVE_PLSQL'
 ,p_translate_title=>'N'
 ,p_plug_query_num_rows=>15
+,p_updated_on=>wwv_flow_imp.dz('20250414014901Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(103446099172246817)
 ,p_plug_name=>'Another Identity Provider'
 ,p_parent_plug_id=>wwv_flow_imp.id(91021424156350394)
 ,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_imp.id(90921497390350286)
+,p_plug_template=>4501440665235496320
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'SUB_REGIONS'
 ,p_location=>null
@@ -76,6 +79,7 @@ wwv_flow_imp_page.create_page_plug(
   'expand_shortcuts', 'N',
   'output_as', 'HTML')).to_clob
 ,p_plug_comment=>'Region is displayed if both authentication methods are enabled by build options'
+,p_updated_on=>wwv_flow_imp.dz('20250414014901Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(141730523909188511)
@@ -83,7 +87,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_parent_plug_id=>wwv_flow_imp.id(91021424156350394)
 ,p_region_css_classes=>'t-Login-buttons'
 ,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_imp.id(90921497390350286)
+,p_plug_template=>4501440665235496320
 ,p_plug_display_sequence=>20
 ,p_plug_display_point=>'SUB_REGIONS'
 ,p_location=>null
@@ -91,6 +95,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'expand_shortcuts', 'Y',
   'output_as', 'HTML')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250414014901Z')
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(113033679139289139)
@@ -99,7 +104,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_name=>'LOGIN_GOOGLE'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
-,p_button_template_id=>wwv_flow_imp.id(90995384704350335)
+,p_button_template_id=>2082829544945815391
 ,p_button_image_alt=>'Sign in with Google'
 ,p_button_position=>'NEXT'
 ,p_button_alignment=>'RIGHT'
@@ -107,6 +112,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_css_classes=>'u-bold u-color-39'
 ,p_icon_css_classes=>'fa-google'
 ,p_required_patch=>wwv_flow_imp.id(118121315777572996)
+,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(91024194915350399)
@@ -115,13 +121,14 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_name=>'LOGIN'
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
-,p_button_template_id=>wwv_flow_imp.id(90995384704350335)
+,p_button_template_id=>2082829544945815391
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Sign in'
 ,p_button_position=>'NEXT'
 ,p_button_alignment=>'RIGHT'
 ,p_icon_css_classes=>'fa-apex'
 ,p_required_patch=>wwv_flow_imp.id(118121075712571408)
+,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(91021887486350395)
@@ -133,15 +140,17 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_TEXT_FIELD'
 ,p_cSize=>40
 ,p_cMaxlength=>100
-,p_field_template=>wwv_flow_imp.id(90994488068350333)
+,p_field_template=>2040785906935475274
 ,p_item_icon_css_classes=>'fa-user'
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_required_patch=>wwv_flow_imp.id(118121075712571408)
-,p_attribute_01=>'N'
-,p_attribute_02=>'N'
-,p_attribute_04=>'TEXT'
-,p_attribute_05=>'NONE'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'disabled', 'N',
+  'submit_when_enter_pressed', 'N',
+  'subtype', 'TEXT',
+  'trim_spaces', 'NONE')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(91022228099350396)
@@ -153,12 +162,14 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_PASSWORD'
 ,p_cSize=>40
 ,p_cMaxlength=>100
-,p_field_template=>wwv_flow_imp.id(90994488068350333)
+,p_field_template=>2040785906935475274
 ,p_item_icon_css_classes=>'fa-key'
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_required_patch=>wwv_flow_imp.id(118121075712571408)
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'submit_when_enter_pressed', 'Y')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(91023271470350398)
@@ -170,7 +181,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_when=>'apex_authentication.persistent_cookies_enabled'
 ,p_display_when2=>'PLSQL'
 ,p_display_when_type=>'EXPRESSION'
-,p_field_template=>wwv_flow_imp.id(90994488068350333)
+,p_field_template=>2040785906935475274
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_required_patch=>wwv_flow_imp.id(118121075712571408)
@@ -185,7 +196,9 @@ wwv_flow_imp_page.create_page_item(
 'the application will overwrite it with an empty value.',
 'You can also use your browser''s developer tools to completely remove the cookie.',
 '</p>'))
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'use_defaults', 'Y')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
 );
 wwv_flow_imp_page.create_page_computation(
  p_id=>wwv_flow_imp.id(120923514284115635)

@@ -4,8 +4,8 @@ begin
 --     APPLICATION PROCESS: Redirect to search page
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -27,6 +27,7 @@ wwv_flow_imp_shared.create_flow_process(
 ,p_required_patch=>wwv_flow_imp.id(166424193210882851)
 ,p_process_comment=>'Redirect to search result when request is SEARCH'
 ,p_version_scn=>41492470807823
+,p_updated_on=>wwv_flow_imp.dz('20250122015057Z')
 );
 wwv_flow_imp.component_end;
 end;

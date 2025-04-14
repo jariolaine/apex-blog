@@ -3,7 +3,7 @@
 -- Update version info
 --------------------------------------------------------
 update blog_settings
-  set attribute_value = 'Release 24.1.7.20250412'
+  set attribute_value = 'Release 24.2.0.20250414'
 where 1 = 1
   and attribute_name = 'G_APP_VERSION'
 ;

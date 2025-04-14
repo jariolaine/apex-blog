@@ -1,7 +1,7 @@
-prompt --application/shared_components/user_interface/theme_style
+prompt --application/comments
 begin
 --   Manifest
---     THEME STYLE: 401
+--     APPLICATION COMMENTS: 401
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'

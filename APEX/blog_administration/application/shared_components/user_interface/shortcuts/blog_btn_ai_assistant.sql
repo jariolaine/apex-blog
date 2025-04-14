@@ -4,8 +4,8 @@ begin
 --     SHORTCUT: BLOG_BTN_AI_ASSISTANT
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -27,6 +27,8 @@ wwv_flow_imp_shared.create_shortcut(
 '  , p_build_option  => ''BLOG_FEATURE_GENERATIVE_AI''',
 '  )',
 ';'))
+,p_created_on=>wwv_flow_imp.dz('20240908124237Z')
+,p_updated_on=>wwv_flow_imp.dz('20250202122822Z')
 );
 wwv_flow_imp.component_end;
 end;

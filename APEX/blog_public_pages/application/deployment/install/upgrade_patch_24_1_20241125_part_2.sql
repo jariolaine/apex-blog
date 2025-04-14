@@ -4,8 +4,8 @@ begin
 --     INSTALL: UPGRADE-Patch 24.1.20241125 part 2
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -89,6 +89,7 @@ wwv_flow_imp_shared.create_install_script(
 '  values(10,0,''PATCH_20241125'',''STRING'',''INTERNAL'',''Patch 24.1.20241125'')',
 ';',
 ''))
+,p_updated_on=>wwv_flow_imp.dz('20250412035429Z')
 );
 wwv_flow_imp.component_end;
 end;

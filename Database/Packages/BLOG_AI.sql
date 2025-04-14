@@ -16,6 +16,7 @@ as
 --------------------------------------------------------------------------------
   procedure set_lang_ai(
     p_compartment_id  in varchar2,
+    p_base_url        in varchar2,
     p_build_status    in varchar2
   );
 --------------------------------------------------------------------------------
@@ -72,6 +73,8 @@ as
 
     -- set valus for session
     param_t( 'lang_ai_build_option' ) := 'BLOG_FEATURE_LANGUAGE_AI';
+    param_t( 'lang_ai_remote_server_static_id' ) := 'BLOG_LANGUAGE_AI';
+    param_t( 'lang_ai_module_static_id' ) := 'BLOG_LANGUAGE_AI';
     param_t( 'lang_ai_compartment_attribute_id') := 'G_OCI_LANG_AI_COMPARTMENT_OCID';
     param_t( 'lang_ai_compartment_ocid' ) := blog_util.get_attribute_value( param_t( 'lang_ai_compartment_attribute_id' ) );
     param_t( 'gen_ai_static_id' ) := 'BLOG_OPEN_AI_API';
@@ -81,6 +84,8 @@ as
 
     -- Debug parameters
     apex_debug.info( 'Language AI build option name: %s', param_t( 'lang_ai_build_option' ) );
+    apex_debug.info( 'Language AI remote server static id: %s', param_t( 'lang_ai_remote_server_static_id' ) );
+    apex_debug.info( 'Language AI REST source static id: %s', param_t( 'lang_ai_module_static_id' ) );
     apex_debug.info( 'Language AI comparment static id : %s', param_t( 'lang_ai_compartment_attribute_id' ) );
     apex_debug.info( 'Language AI comparment OCID : %s', param_t( 'lang_ai_compartment_ocid') );
     apex_debug.info( 'Generative AI service static id: %s', param_t( 'gen_ai_static_id' ) );
@@ -130,7 +135,7 @@ as
 
       -- Call language AI to analyze sentiment
       apex_exec.execute_rest_source(
-        p_static_id           => 'BLOG_LANGUAGE_AI',
+        p_static_id           => param_t( 'lang_ai_module_static_id' ),
         p_operation_static_id => 'batch_document',
         p_parameters          => l_params
       );
@@ -156,6 +161,7 @@ as
 --------------------------------------------------------------------------------
   procedure set_lang_ai(
     p_compartment_id  in varchar2,
+    p_base_url        in varchar2,
     p_build_status    in varchar2
   )
   as
@@ -166,6 +172,12 @@ as
     blog_cm.update_feature(
       p_build_option_name => param_t( 'lang_ai_build_option' )
     , p_build_status      => p_build_status
+    );
+
+    -- Set remote server URL
+    apex_application_admin.set_remote_server(
+      p_static_id => param_t( 'lang_ai_static_id' )
+    , p_base_url  => rtrim( p_base_url, '/' )
     );
 
     if p_build_status = apex_application_admin.c_build_option_status_include then

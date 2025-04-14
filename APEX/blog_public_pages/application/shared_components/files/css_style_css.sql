@@ -4,8 +4,8 @@ begin
 --     APP STATIC FILES: 401
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -142,6 +142,8 @@ wwv_flow_imp_shared.create_app_static_file(
 ,p_mime_type=>'text/css'
 ,p_file_charset=>'utf-8'
 ,p_file_content => wwv_flow_imp.varchar2_to_blob(wwv_flow_imp.g_varchar2_table)
+,p_created_on=>wwv_flow_imp.dz('20250204103957Z')
+,p_updated_on=>wwv_flow_imp.dz('20250412022938Z')
 );
 wwv_flow_imp.component_end;
 end;

@@ -4,8 +4,8 @@ begin
 --     MESSAGES: 401
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -16,6 +16,8 @@ wwv_flow_imp_shared.create_message(
 ,p_name=>'BLOG_ERR_MSG_COMMENT_REQUEST'
 ,p_message_text=>'Error occured. It''s not possible submit comment at this time.'
 ,p_version_scn=>41501184133291
+,p_created_on=>wwv_flow_imp.dz('20250224181045Z')
+,p_updated_on=>wwv_flow_imp.dz('20250224181045Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(134430745977194793)

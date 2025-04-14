@@ -4,8 +4,8 @@ begin
 --     SECURITY SCHEME: Bloggers
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -21,6 +21,7 @@ wwv_flow_imp_shared.create_security_scheme(
 ,p_version_scn=>41493644223961
 ,p_caching=>'BY_USER_BY_SESSION'
 ,p_comments=>'Users who belong to the workspace user group "Bloggers" are authorized.'
+,p_updated_on=>wwv_flow_imp.dz('20250201091132Z')
 );
 wwv_flow_imp.component_end;
 end;

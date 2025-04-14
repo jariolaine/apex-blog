@@ -4,8 +4,8 @@ begin
 --     PAGE: 00011
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -24,11 +24,12 @@ wwv_flow_imp_page.create_page(
 ,p_required_patch=>wwv_flow_imp.id(152020878643750306)
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
+,p_last_updated_on=>wwv_flow_imp.dz('20250414014936Z')
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(149868961803452376)
 ,p_name=>'File Repository'
-,p_template=>wwv_flow_imp.id(136654216902452216)
+,p_template=>1555738898046108210
 ,p_display_sequence=>10
 ,p_region_css_classes=>'blog-MediaList--files blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ResultsRegion--boxed'
@@ -59,7 +60,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_plug_cache_depends_on_items=>'APP_ID'
 ,p_ajax_enabled=>'Y'
 ,p_lazy_loading=>false
-,p_query_row_template=>wwv_flow_imp.id(134209208590163527)
+,p_query_row_template=>2093604263195414824
 ,p_query_headings_type=>'NO_HEADINGS'
 ,p_query_num_rows=>100
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -72,6 +73,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_comment=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'See column HTML expression for icon class, link and link_attr columns.',
 'Report shows files from object storage.'))
+,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(149869073620452377)
@@ -79,7 +81,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'ICON_CLASS'
 ,p_column_display_sequence=>50
 ,p_column_heading=>'Icon Class'
-,p_use_as_row_header=>'N'
 ,p_column_html_expression=>'fa fa-download'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'N'
@@ -90,7 +91,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'ICON_COLOR_CLASS'
 ,p_column_display_sequence=>60
 ,p_column_heading=>'Icon Color Class'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'N'
 );
@@ -110,7 +110,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'LIST_TEXT'
 ,p_column_display_sequence=>80
 ,p_column_heading=>'List Text'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -120,7 +119,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'LIST_BADGE'
 ,p_column_display_sequence=>90
 ,p_column_heading=>'List Badge'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'N'
 );
@@ -130,7 +128,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'LIST_CLASS'
 ,p_column_display_sequence=>100
 ,p_column_heading=>'List Class'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'N'
 );
@@ -140,7 +137,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'LINK'
 ,p_column_display_sequence=>110
 ,p_column_heading=>'Link'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -150,7 +146,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'LINK_ATTR'
 ,p_column_display_sequence=>120
 ,p_column_heading=>'Link Attr'
-,p_use_as_row_header=>'N'
 ,p_column_html_expression=>'download target="_blank"'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'N'
@@ -161,7 +156,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_alias=>'LINK_CLASS'
 ,p_column_display_sequence=>130
 ,p_column_heading=>'Link Class'
-,p_use_as_row_header=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'N'
 );

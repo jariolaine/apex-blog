@@ -4,8 +4,8 @@ begin
 --     PAGE: 00302
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -22,24 +22,26 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'17'
+,p_last_updated_on=>wwv_flow_imp.dz('20250414014902Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(172053312893799528)
 ,p_plug_name=>'Content'
 ,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_imp.id(90921497390350286)
+,p_plug_template=>4501440665235496320
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_ai_enabled=>false
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'expand_shortcuts', 'N',
   'output_as', 'HTML')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250414014901Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(177426977262743184)
 ,p_plug_name=>'Buttons'
 ,p_region_template_options=>'#DEFAULT#:t-ButtonRegion--slimPadding'
-,p_plug_template=>wwv_flow_imp.id(90922506604350286)
+,p_plug_template=>2126429139436695430
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_03'
@@ -48,6 +50,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'expand_shortcuts', 'N',
   'output_as', 'HTML')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250414014901Z')
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(103928720726786989)
@@ -56,12 +59,13 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_name=>'CANCEL'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>wwv_flow_imp.id(90995237966350335)
+,p_button_template_id=>4072362960822175091
 ,p_button_image_alt=>'Cancel'
 ,p_button_position=>'CLOSE'
 ,p_button_execute_validations=>'N'
 ,p_warn_on_unsaved_changes=>null
 ,p_icon_css_classes=>'fa-chevron-left'
+,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(103929092850786988)
@@ -70,11 +74,12 @@ wwv_flow_imp_page.create_page_button(
 ,p_button_name=>'UPLOAD'
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
-,p_button_template_id=>wwv_flow_imp.id(90995384704350335)
+,p_button_template_id=>2082829544945815391
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Upload'
 ,p_button_position=>'NEXT'
 ,p_icon_css_classes=>'fa-upload'
+,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
 );
 wwv_flow_imp_page.create_page_branch(
  p_id=>wwv_flow_imp.id(103951739503537933)
@@ -107,7 +112,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_TEXT_FIELD'
 ,p_cSize=>30
 ,p_tag_css_classes=>'margin-bottom-sm'
-,p_field_template=>wwv_flow_imp.id(90994779237350334)
+,p_field_template=>1609121967514267634
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
@@ -116,10 +121,11 @@ wwv_flow_imp_page.create_page_item(
 ,p_inline_help_text=>'The optional Cache-Control header that defines the caching behavior value to be returned in GetObject and HeadObject responses. Specifying values for this header has no effect on Object Storage behavior. Programs that read the object determine what t'
 ||'o do based on the value provided. For example, you could use this header to identify objects that require caching restrictions.'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'N'
-,p_attribute_02=>'N'
-,p_attribute_04=>'TEXT'
-,p_attribute_05=>'BOTH'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'disabled', 'N',
+  'submit_when_enter_pressed', 'N',
+  'subtype', 'TEXT',
+  'trim_spaces', 'BOTH')).to_clob
 ,p_show_quick_picks=>'Y'
 ,p_quick_pick_label_01=>'1 hour'
 ,p_quick_pick_value_01=>'max-age-3600'
@@ -136,6 +142,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_quick_pick_label_07=>'No cache'
 ,p_quick_pick_value_07=>'no-cache'
 ,p_quick_pick_link_attr=>'class="u-bold x-quickPick"'
+,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(170712928681880771)
@@ -153,16 +160,21 @@ wwv_flow_imp_page.create_page_item(
 ,p_lov_display_null=>'YES'
 ,p_lov_null_text=>'( Root )'
 ,p_cSize=>30
-,p_field_template=>wwv_flow_imp.id(90994779237350334)
+,p_field_template=>1609121967514267634
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_lov_display_extra=>'NO'
 ,p_protection_level=>'I'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'DIALOG'
-,p_attribute_02=>'FIRST_ROWSET'
-,p_attribute_04=>'Y'
-,p_attribute_05=>'N'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'case_sensitive', 'N',
+  'display_as', 'DIALOG',
+  'fetch_on_search', 'N',
+  'initial_fetch', 'FIRST_ROWSET',
+  'manual_entry', 'Y',
+  'match_type', 'CONTAINS',
+  'min_chars', '0')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(172054736391799507)
@@ -172,14 +184,16 @@ wwv_flow_imp_page.create_page_item(
 ,p_prompt=>'File Name(s)'
 ,p_display_as=>'NATIVE_FILE'
 ,p_cSize=>30
-,p_field_template=>wwv_flow_imp.id(90995092856350334)
+,p_field_template=>1609122147107268652
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--xlarge'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
-,p_attribute_01=>'APEX_APPLICATION_TEMP_FILES'
-,p_attribute_09=>'REQUEST'
-,p_attribute_10=>'Y'
-,p_attribute_12=>'DROPZONE_BLOCK'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'allow_multiple_files', 'Y',
+  'display_as', 'DROPZONE_BLOCK',
+  'purge_file_at', 'REQUEST',
+  'storage_type', 'APEX_APPLICATION_TEMP_FILES')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(182310994348113775)
@@ -189,14 +203,16 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_plug_id=>wwv_flow_imp.id(172053312893799528)
 ,p_prompt=>'Unzip File(s)'
 ,p_display_as=>'NATIVE_YES_NO'
-,p_field_template=>wwv_flow_imp.id(90995092856350334)
+,p_field_template=>1609122147107268652
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'US_ONLY'
 ,p_inline_help_text=>'If the file is a zip archive, upload the extracted files.'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'Y'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'use_defaults', 'Y')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(103933445832786986)

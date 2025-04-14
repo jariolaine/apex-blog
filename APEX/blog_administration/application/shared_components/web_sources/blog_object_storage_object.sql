@@ -4,8 +4,8 @@ begin
 --     WEB SOURCE: Blog Object Storage Object
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -27,6 +27,7 @@ wwv_flow_imp_shared.create_web_source_module(
 ,p_catalog_service_name=>'OCI Object Storage Object'
 ,p_catalog_service_version=>20240711
 ,p_version_scn=>41475245987029
+,p_updated_on=>wwv_flow_imp.dz('20240909021850Z')
 );
 wwv_flow_imp_shared.create_web_source_param(
  p_id=>wwv_flow_imp.id(99284123155892930)

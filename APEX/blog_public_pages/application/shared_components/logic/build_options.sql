@@ -4,8 +4,8 @@ begin
 --     BUILD OPTIONS: 401
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -19,6 +19,8 @@ wwv_flow_imp_shared.create_build_option(
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable comments moderation automatically using AI'
+,p_created_on=>wwv_flow_imp.dz('20241208134037Z')
+,p_updated_on=>wwv_flow_imp.dz('20250409145919Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(134299248056650290)
@@ -37,6 +39,7 @@ wwv_flow_imp_shared.create_build_option(
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable commenting to posts'
+,p_updated_on=>wwv_flow_imp.dz('20250412015526Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(136029188290987072)
@@ -55,6 +58,7 @@ wwv_flow_imp_shared.create_build_option(
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable categories list'
+,p_updated_on=>wwv_flow_imp.dz('20250409141014Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(136061722810585314)
@@ -114,10 +118,11 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(145826259194060489)
 ,p_build_option_name=>'BLOG_FEATURE_OCI_OBJECT_STORAGE'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>41501171207825
+,p_version_scn=>42197503242155
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable Oracle cloud object storage'
+,p_updated_on=>wwv_flow_imp.dz('20250414021528Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(152020878643750306)
@@ -171,6 +176,7 @@ wwv_flow_imp_shared.create_build_option(
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable comments moderation'
+,p_updated_on=>wwv_flow_imp.dz('20250412020326Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(157505626766866589)
@@ -185,10 +191,11 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(158089734281512799)
 ,p_build_option_name=>'BLOG_FEATURE_LANGUAGE_AI'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>42196757589132
+,p_version_scn=>42197504528204
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable comments sentiment analyze using OCI language AI'
+,p_updated_on=>wwv_flow_imp.dz('20250414023422Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(158909835543127564)
@@ -198,6 +205,7 @@ wwv_flow_imp_shared.create_build_option(
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable comment verify question'
+,p_updated_on=>wwv_flow_imp.dz('20250410013823Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(161097532534222537)
@@ -207,6 +215,7 @@ wwv_flow_imp_shared.create_build_option(
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable the ability to subscribe to email notification of new comments'
+,p_updated_on=>wwv_flow_imp.dz('20250410013823Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(166127744543519433)
@@ -224,6 +233,7 @@ wwv_flow_imp_shared.create_build_option(
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable search page'
+,p_updated_on=>wwv_flow_imp.dz('20250409141014Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(166522583683199558)

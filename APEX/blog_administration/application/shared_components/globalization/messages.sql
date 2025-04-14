@@ -4,8 +4,8 @@ begin
 --     MESSAGES: 402
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -19,6 +19,7 @@ wwv_flow_imp_shared.create_message(
 '%0',
 '"""'))
 ,p_version_scn=>41488269480870
+,p_updated_on=>wwv_flow_imp.dz('20241208084326Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(114714175154071839)
@@ -33,6 +34,7 @@ wwv_flow_imp_shared.create_message(
 ||' (SEO). Use a tone that aligns with the intended audience, whether professional, casual, or conversational. Typically aim for 800-1500 words unless a specific length is requested. Generate only blog post content. Do not include title or description f'
 ||'or post as those are generated separately.'
 ,p_version_scn=>41487403313950
+,p_updated_on=>wwv_flow_imp.dz('20241128172206Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(114729050811462675)
@@ -41,6 +43,7 @@ wwv_flow_imp_shared.create_message(
 ||'should capture the main theme or purpose of the blog while resonating with user search behavior and keyword trends. Please keep it down 2 words. Use only same language as blog post. Category should be plain text. Do not use any other kind formatting.'
 ||' Do not respond anything other than the generated category.'
 ,p_version_scn=>41492169726229
+,p_updated_on=>wwv_flow_imp.dz('20250119040219Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(114737699878309742)
@@ -49,6 +52,7 @@ wwv_flow_imp_shared.create_message(
 ||'ing the post. Use clear and engaging language, incorporating relevant keywords to optimize for SEO and attract the target audience. Use only same language as blog post. The response must be plain text only, without any enclosures such as quotation ma'
 ||'rks, brackets, or other symbols. Do not use any other kind formatting. Do not respond anything other than the generated summary.'
 ,p_version_scn=>41492171445566
+,p_updated_on=>wwv_flow_imp.dz('20250119042443Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(114713268320200448)
@@ -57,6 +61,7 @@ wwv_flow_imp_shared.create_message(
 ||'l terms to help categorize the post effectively and improve its visibility on search engines and within the website''s taxonomy. Please keep it down to 6 tags. Use only same language as blog post.Tags should be plain text and separated by comma charac'
 ||'ter. Do not use any other kind formatting. Make the tags lowercase and sorted alphabetically. Do not respond anything other than the generated tags.'
 ,p_version_scn=>41492169759678
+,p_updated_on=>wwv_flow_imp.dz('20250119040251Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(115273145443553656)
@@ -65,12 +70,15 @@ wwv_flow_imp_shared.create_message(
 ||'s tone and purpose. Ensure the title is attention-grabbing and optimized for search engines, while avoiding clickbait. If specific keywords or themes are mentioned, incorporate them naturally into the title. Use only same language as blog post. The r'
 ||'esponse must be plain text only, without any enclosures such as quotation marks, brackets, or other symbols. Do not use any other kind formatting. Do not respond anything other than the generated title.'
 ,p_version_scn=>41492171423204
+,p_updated_on=>wwv_flow_imp.dz('20250119042418Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(96828359556875329)
 ,p_name=>'BLOG_BTN_TITLE_AI_ASSISTANT'
 ,p_message_text=>'Chat with AI assistant'
 ,p_version_scn=>41492187023739
+,p_created_on=>wwv_flow_imp.dz('20250119075357Z')
+,p_updated_on=>wwv_flow_imp.dz('20250119075503Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(115281400076268370)
@@ -83,6 +91,7 @@ wwv_flow_imp_shared.create_message(
 ,p_name=>'BLOG_BTN_TITLE_GEN_AI_POST_DESCRIPTION'
 ,p_message_text=>'Generate Summary Using AI'
 ,p_version_scn=>41487541679930
+,p_updated_on=>wwv_flow_imp.dz('20241130065753Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(115281560485265815)
@@ -281,12 +290,15 @@ wwv_flow_imp_shared.create_message(
 ,p_name=>'BLOG_FEATURE_MODERATE_COMMENTS'
 ,p_message_text=>'Comment must be approved'
 ,p_version_scn=>42197090890002
+,p_updated_on=>wwv_flow_imp.dz('20250409135642Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(123417219226626152)
 ,p_name=>'BLOG_FEATURE_MODERATE_COMMENTS_AI'
 ,p_message_text=>'AI approve comments'
 ,p_version_scn=>42197091039764
+,p_created_on=>wwv_flow_imp.dz('20250409135903Z')
+,p_updated_on=>wwv_flow_imp.dz('20250409135931Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(110369347594885860)
@@ -450,12 +462,15 @@ wwv_flow_imp_shared.create_message(
 ,p_name=>'BLOG_HELP_FEATURE_MODERATE_COMMENTS'
 ,p_message_text=>'Enable or disable comments approval before they are published.'
 ,p_version_scn=>42197090906029
+,p_updated_on=>wwv_flow_imp.dz('20250409135700Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(123419821720744097)
 ,p_name=>'BLOG_HELP_FEATURE_MODERATE_COMMENTS_AI'
 ,p_message_text=>'Enable or disable AI-powered moderation to automatically approve comments.'
 ,p_version_scn=>42197092462622
+,p_created_on=>wwv_flow_imp.dz('20250409141842Z')
+,p_updated_on=>wwv_flow_imp.dz('20250409141842Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(103927546079201471)
@@ -725,6 +740,7 @@ wwv_flow_imp_shared.create_message(
 ,p_name=>'BLOG_MSG_AI_ASSISTANT_WELCOME'
 ,p_message_text=>'Hello. How can I help you?'
 ,p_version_scn=>41492175695932
+,p_updated_on=>wwv_flow_imp.dz('20250119052726Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(96779563275994327)
@@ -732,6 +748,8 @@ wwv_flow_imp_shared.create_message(
 ,p_message_text=>'AI cannot generate text without context. Please create and provide a blog post as context before proceeding.'
 ,p_is_js_message=>true
 ,p_version_scn=>41492175676132
+,p_created_on=>wwv_flow_imp.dz('20250119052707Z')
+,p_updated_on=>wwv_flow_imp.dz('20250119052707Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(97836253034375514)
@@ -740,6 +758,8 @@ wwv_flow_imp_shared.create_message(
 '<p>You can enable or disable APEX authentication for this administrative service.</p>',
 ''))
 ,p_version_scn=>41492324432992
+,p_created_on=>wwv_flow_imp.dz('20250120155039Z')
+,p_updated_on=>wwv_flow_imp.dz('20250120155039Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(123083450099389011)
@@ -788,6 +808,7 @@ wwv_flow_imp_shared.create_message(
 '<p>When Generative AI is enabled, it enables generate for post e.g. title, description, category and tags.</p>',
 '<p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for API key.</p>'))
 ,p_version_scn=>41492472284501
+,p_updated_on=>wwv_flow_imp.dz('20250122021329Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(97799466120992477)
@@ -796,6 +817,8 @@ wwv_flow_imp_shared.create_message(
 '<p>You can enable or disable Google authentication for this administrative service.</p>',
 '<p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for both Client ID and Client Secret.</p>'))
 ,p_version_scn=>41492324701198
+,p_created_on=>wwv_flow_imp.dz('20250120144648Z')
+,p_updated_on=>wwv_flow_imp.dz('20250120155432Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(114671136958398625)
@@ -804,6 +827,7 @@ wwv_flow_imp_shared.create_message(
 '<p>To use language AI, the system administrator must configure <i>Blog Language AI</i> <strong>remote server</strong> endpoint URL.</p>',
 '<p>When language AI is enabled, the sentiment of all new comments is analyzed. You can see the analysis result when opening a comment.</p>'))
 ,p_version_scn=>41492475102959
+,p_updated_on=>wwv_flow_imp.dz('20250122025658Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(135528583746186927)
@@ -833,12 +857,15 @@ wwv_flow_imp_shared.create_message(
 '<p>Once object storage is enabled, go to <strong>Synchronize Files</strong> and sync files between local file repository and object storage.</p>',
 '<p>When object storage is enabled, new files are no longer saved to the local file repository. You can use synchronization to retrieve files from object storage to the local file repository.</p>'))
 ,p_version_scn=>41492475116731
+,p_updated_on=>wwv_flow_imp.dz('20250122025710Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(98654830965007071)
 ,p_name=>'BLOG_MSG_OCI_API_KEY_INFO'
 ,p_message_text=>'<p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for all fields.</p>'
 ,p_version_scn=>41492475122142
+,p_created_on=>wwv_flow_imp.dz('20250122025554Z')
+,p_updated_on=>wwv_flow_imp.dz('20250122025716Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(101201752243216937)

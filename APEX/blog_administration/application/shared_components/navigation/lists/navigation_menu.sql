@@ -4,8 +4,8 @@ begin
 --     LIST: Navigation Menu
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -16,6 +16,7 @@ wwv_flow_imp_shared.create_list(
 ,p_name=>'Navigation Menu'
 ,p_list_status=>'PUBLIC'
 ,p_version_scn=>41492208450262
+,p_updated_on=>wwv_flow_imp.dz('20250119124553Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(91027257899350405)
@@ -25,6 +26,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_icon=>'fa-home'
 ,p_list_text_04=>'Home'
 ,p_list_item_current_type=>'TARGET_PAGE'
+,p_updated_on=>wwv_flow_imp.dz('20250119124432Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(107540241127313166)
@@ -33,6 +35,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-file-text-o'
 ,p_list_item_current_type=>'TARGET_PAGE'
+,p_updated_on=>wwv_flow_imp.dz('20250119124432Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(109858083846384308)
@@ -41,6 +44,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_link_target=>'f?p=&APP_ID.:60:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-comments-o'
 ,p_list_item_current_type=>'TARGET_PAGE'
+,p_updated_on=>wwv_flow_imp.dz('20250119124432Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(89277414089849546)
@@ -49,6 +53,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_link_target=>'f?p=&APP_ID.:50:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-link'
 ,p_list_item_current_type=>'TARGET_PAGE'
+,p_updated_on=>wwv_flow_imp.dz('20250119124432Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(89277696297853045)
@@ -58,6 +63,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_icon=>'fa-database-file'
 ,p_required_patch=>-wwv_flow_imp.id(102874015592702141)
 ,p_list_item_current_type=>'TARGET_PAGE'
+,p_updated_on=>wwv_flow_imp.dz('20250119124432Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(105706089601793432)
@@ -67,6 +73,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_icon=>'fa-cloud-file'
 ,p_required_patch=>wwv_flow_imp.id(102874015592702141)
 ,p_list_item_current_type=>'TARGET_PAGE'
+,p_updated_on=>wwv_flow_imp.dz('20250119124432Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(96908467820614859)
@@ -76,6 +83,8 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_icon=>'fa-dashboard'
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'30000'
+,p_created_on=>wwv_flow_imp.dz('20250119124352Z')
+,p_updated_on=>wwv_flow_imp.dz('20250119124553Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(107348647158515591)
@@ -84,6 +93,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_link_target=>'f?p=&APP_ID.:20010:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-gear'
 ,p_list_item_current_type=>'TARGET_PAGE'
+,p_updated_on=>wwv_flow_imp.dz('20250119124432Z')
 );
 wwv_flow_imp.component_end;
 end;

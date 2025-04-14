@@ -4,8 +4,8 @@ begin
 --     PLUGIN: FI.JARIS.MATH_QUESTION_FIELD
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -27,6 +27,7 @@ wwv_flow_imp_shared.create_plugin(
 ,p_version_scn=>41493619609060
 ,p_subscribe_plugin_settings=>true
 ,p_version_identifier=>'1.0'
+,p_updated_on=>wwv_flow_imp.dz('20250201041556Z')
 );
 wwv_flow_imp_shared.create_plugin_attribute(
  p_id=>wwv_flow_imp.id(189243455145960963)
@@ -34,6 +35,7 @@ wwv_flow_imp_shared.create_plugin_attribute(
 ,p_attribute_scope=>'APPLICATION'
 ,p_attribute_sequence=>1
 ,p_display_sequence=>10
+,p_static_id=>'attribute_01'
 ,p_prompt=>'Validation Error Message'
 ,p_attribute_type=>'TEXT'
 ,p_is_required=>true
@@ -48,6 +50,7 @@ wwv_flow_imp_shared.create_plugin_attribute(
 ,p_attribute_scope=>'APPLICATION'
 ,p_attribute_sequence=>2
 ,p_display_sequence=>20
+,p_static_id=>'attribute_02'
 ,p_prompt=>'AJAX Call Error Message'
 ,p_attribute_type=>'TEXT'
 ,p_is_required=>true
@@ -62,6 +65,7 @@ wwv_flow_imp_shared.create_plugin_attribute(
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>1
 ,p_display_sequence=>20
+,p_static_id=>'attribute_01'
 ,p_prompt=>'First Number min Value'
 ,p_attribute_type=>'INTEGER'
 ,p_is_required=>true
@@ -76,6 +80,7 @@ wwv_flow_imp_shared.create_plugin_attribute(
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>2
 ,p_display_sequence=>30
+,p_static_id=>'attribute_02'
 ,p_prompt=>'First Number max Value'
 ,p_attribute_type=>'INTEGER'
 ,p_is_required=>true
@@ -90,6 +95,7 @@ wwv_flow_imp_shared.create_plugin_attribute(
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>3
 ,p_display_sequence=>40
+,p_static_id=>'attribute_03'
 ,p_prompt=>'Second Number min Value'
 ,p_attribute_type=>'INTEGER'
 ,p_is_required=>true
@@ -104,6 +110,7 @@ wwv_flow_imp_shared.create_plugin_attribute(
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>4
 ,p_display_sequence=>50
+,p_static_id=>'attribute_04'
 ,p_prompt=>'Second Number max Value'
 ,p_attribute_type=>'INTEGER'
 ,p_is_required=>true
@@ -118,6 +125,7 @@ wwv_flow_imp_shared.create_plugin_attribute(
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>5
 ,p_display_sequence=>60
+,p_static_id=>'attribute_05'
 ,p_prompt=>'Item Hold Correct Answer'
 ,p_attribute_type=>'PAGE ITEM'
 ,p_is_required=>true

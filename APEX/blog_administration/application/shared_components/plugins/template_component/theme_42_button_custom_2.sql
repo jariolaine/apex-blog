@@ -4,8 +4,8 @@ begin
 --     PLUGIN: THEME_42$BUTTON_CUSTOM_2
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -33,6 +33,7 @@ wwv_flow_imp_shared.create_plugin(
 ,p_version_scn=>41484859039232
 ,p_subscribe_plugin_settings=>true
 ,p_version_identifier=>'1.2'
+,p_updated_on=>wwv_flow_imp.dz('20241031181349Z')
 );
 wwv_flow_imp_shared.create_plugin_attribute(
  p_id=>wwv_flow_imp.id(112986403295758541)
@@ -46,6 +47,7 @@ wwv_flow_imp_shared.create_plugin_attribute(
 ,p_is_required=>false
 ,p_escape_mode=>'RAW'
 ,p_is_translatable=>false
+,p_updated_on=>wwv_flow_imp.dz('20241027031534Z')
 );
 wwv_flow_imp_shared.create_plugin_attribute(
  p_id=>wwv_flow_imp.id(112991995252816955)
@@ -59,6 +61,7 @@ wwv_flow_imp_shared.create_plugin_attribute(
 ,p_is_required=>false
 ,p_escape_mode=>'RAW'
 ,p_is_translatable=>false
+,p_updated_on=>wwv_flow_imp.dz('20241027031551Z')
 );
 wwv_flow_imp_shared.create_plugin_attribute(
  p_id=>wwv_flow_imp.id(112984885655742608)
@@ -72,6 +75,7 @@ wwv_flow_imp_shared.create_plugin_attribute(
 ,p_is_required=>false
 ,p_escape_mode=>'ATTR'
 ,p_is_translatable=>false
+,p_updated_on=>wwv_flow_imp.dz('20241027031606Z')
 );
 wwv_flow_imp_shared.create_plugin_attribute(
  p_id=>wwv_flow_imp.id(112987040246762850)
@@ -85,6 +89,7 @@ wwv_flow_imp_shared.create_plugin_attribute(
 ,p_is_required=>false
 ,p_escape_mode=>'ATTR'
 ,p_is_translatable=>false
+,p_updated_on=>wwv_flow_imp.dz('20241027031620Z')
 );
 wwv_flow_imp_shared.create_plugin_attribute(
  p_id=>wwv_flow_imp.id(112985390453750660)

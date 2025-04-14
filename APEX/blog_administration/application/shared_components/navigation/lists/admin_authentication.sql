@@ -4,8 +4,8 @@ begin
 --     LIST: Admin Authentication
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -16,6 +16,8 @@ wwv_flow_imp_shared.create_list(
 ,p_name=>'Admin Authentication'
 ,p_list_status=>'PUBLIC'
 ,p_version_scn=>41493967465123
+,p_created_on=>wwv_flow_imp.dz('20250120124504Z')
+,p_updated_on=>wwv_flow_imp.dz('20250204033636Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(97782782129262008)
@@ -28,6 +30,8 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_text_06=>'u-color-4'
 ,p_required_patch=>wwv_flow_imp.id(91382065723485903)
 ,p_list_item_current_type=>'TARGET_PAGE'
+,p_created_on=>wwv_flow_imp.dz('20250120124504Z')
+,p_updated_on=>wwv_flow_imp.dz('20250204033636Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(97782327936262007)
@@ -39,6 +43,8 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_text_02=>'&P20010_GOOGLE_AUTH_STATUS.'
 ,p_list_text_06=>'u-color-39'
 ,p_list_item_current_type=>'TARGET_PAGE'
+,p_created_on=>wwv_flow_imp.dz('20250120124504Z')
+,p_updated_on=>wwv_flow_imp.dz('20250204033246Z')
 );
 wwv_flow_imp.component_end;
 end;

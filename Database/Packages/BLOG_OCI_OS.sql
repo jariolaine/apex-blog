@@ -19,6 +19,7 @@ as
 --------------------------------------------------------------------------------
   procedure set_object_storage(
     p_bucket_name       in varchar2,
+    p_base_url          in varchar2,
     p_build_status      in varchar2
   );
 --------------------------------------------------------------------------------
@@ -96,8 +97,13 @@ as
     -- set valus for session
     param_t( 'build_option_name' ) := 'BLOG_FEATURE_OCI_OBJECT_STORAGE';
     param_t( 'module_static_id' ) := 'BLOG_OBJECT_STORAGE_OBJECT';
-    param_t( 'bucket' ) := blog_util.get_attribute_value( 'G_OCI_OS_BUCKET' );
-    param_t( 'namespace' ) := blog_util.get_attribute_value( 'G_OCI_OS_NAMESPACE' );
+    param_t( 'remote_server_static_id' ) := 'BLOG_OBJECT_STORAGE';
+    param_t( 'bucket_param_name' ) := 'G_OCI_OS_BUCKET';
+    param_t( 'namespace_param_name' ) := 'G_OCI_OS_NAMESPACE';
+    param_t( 'region_param_name' ) := 'G_OCI_OS_REGION';
+    param_t( 'bucket_url_param_name' ) := 'G_OCI_OS_BUCKET_URL';
+    param_t( 'bucket' ) := blog_util.get_attribute_value( param_t( 'bucket_param_name' ) );
+    param_t( 'namespace' ) := blog_util.get_attribute_value( param_t( 'namespace_param_name' ) );
 
     -- query REST source module credential id and base url for session
     select
@@ -112,12 +118,17 @@ as
       and t1.module_static_id = param_t( 'module_static_id' )
     ;
     -- Debug parameters
-    apex_debug.info( 'Build option: %s', param_t( 'build_option_name' ) );
-    apex_debug.info( 'Bucket: %s', param_t( 'bucket' ) );
-    apex_debug.info( 'Namespace: %s', param_t( 'namespace' ) );
-    apex_debug.info( 'Base URL: %s', param_t( 'base_url' ) );
-    apex_debug.info( 'Credential: %s', param_t( 'credential' ) );
-    apex_debug.info( 'Module: %s', param_t( 'module_static_id' ) );
+    apex_debug.info( 'Object storage bucket parameter name: %s', param_t( 'bucket_param_name' ) );
+    apex_debug.info( 'Object storage namespace parameter name: %s', param_t( 'namespace_param_name' ) );
+    apex_debug.info( 'Object storage region parameter name: %s', param_t( 'region_param_name' ) );
+    apex_debug.info( 'Object storage region parameter name: %s', param_t( 'region_param_name' ) );
+    apex_debug.info( 'Object storage bucket url parameter name: %s', param_t( 'build_option_bucket_url_param_namename' ) );
+    apex_debug.info( 'Object storage bucket: %s', param_t( 'bucket' ) );
+    apex_debug.info( 'Object storage namespace: %s', param_t( 'namespace' ) );
+    apex_debug.info( 'Object storage base URL: %s', param_t( 'base_url' ) );
+    apex_debug.info( 'Object storage credential: %s', param_t( 'credential' ) );
+    apex_debug.info( 'Object storage module static id: %s', param_t( 'module_static_id' ) );
+    apex_debug.info( 'Object storage remote server static id: %s', param_t( 'remote_server_static_id' ) );
 
   end init_params;
 --------------------------------------------------------------------------------
@@ -754,6 +765,7 @@ as
 --------------------------------------------------------------------------------
   procedure set_object_storage(
     p_bucket_name   in varchar2,
+    p_base_url      in varchar2,
     p_build_status  in varchar2
   )
   as
@@ -766,9 +778,16 @@ as
     l_namespace   varchar2(256);
   begin
 
+    -- Set build option status for the storage feature
     blog_cm.update_feature(
       p_build_option_name => param_t( 'build_option_name' )
     , p_build_status      => p_build_status
+    );
+
+    -- Set remote server URL
+    apex_application_admin.set_remote_server(
+      p_static_id => param_t( 'remote_server_static_id' )
+    , p_base_url  => rtrim( p_base_url, '/' )
     );
 
     if p_build_status = apex_application_admin.c_build_option_status_include
@@ -776,7 +795,7 @@ as
 
       apex_debug.info( 'Set object storage bucket: %s', p_bucket_name );
 
-      apex_string.plist_push( l_attributes, 'G_OCI_OS_BUCKET', p_bucket_name );
+      apex_string.plist_push( l_attributes, param_t( 'bucket_param_name' ), p_bucket_name );
 
       l_region :=
         substr(
@@ -788,13 +807,13 @@ as
 
       apex_debug.info( 'Set object storage region: %s', l_region );
 
-      apex_string.plist_push( l_attributes, 'G_OCI_OS_REGION', l_region );
+      apex_string.plist_push( l_attributes, param_t( 'region_param_name' ), l_region );
 
       l_namespace := get_namespace;
 
       apex_debug.info( 'Set object storage  namespace: %s', l_namespace );
 
-      apex_string.plist_push( l_attributes, 'G_OCI_OS_NAMESPACE', l_namespace );
+      apex_string.plist_push( l_attributes, param_t( 'namespace_param_name' ), l_namespace );
 
       l_bucket_url :=
         apex_string.format(
@@ -807,7 +826,7 @@ as
 
       apex_debug.info( 'Set object storage bucket URL: %s', l_bucket_url );
 
-      apex_string.plist_push( l_attributes, 'G_OCI_OS_BUCKET_URL', l_bucket_url );
+      apex_string.plist_push( l_attributes, param_t( 'bucket_url_param_name' ), l_bucket_url );
 
       blog_cm.set_attribute_value(
         p_attribute_list  => l_attributes

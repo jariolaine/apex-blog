@@ -4,8 +4,8 @@ begin
 --     USER INTERFACES: 402
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -21,13 +21,13 @@ wwv_flow_imp_shared.create_user_interface(
 ,p_global_page_id=>0
 ,p_navigation_list_id=>wwv_flow_imp.id(90896897889350262)
 ,p_navigation_list_position=>'SIDE'
-,p_navigation_list_template_id=>wwv_flow_imp.id(90988703939350329)
+,p_navigation_list_template_id=>2467739217141810545
 ,p_nav_list_template_options=>'#DEFAULT#:js-defaultCollapsed:js-navCollapsed--default:t-TreeNav--styleA'
 ,p_css_file_urls=>'#APP_FILES#css/admin#MIN#.css'
 ,p_javascript_file_urls=>'#APP_FILES#js/admin#MIN#.js'
 ,p_nav_bar_type=>'LIST'
 ,p_nav_bar_list_id=>wwv_flow_imp.id(91016837626350353)
-,p_nav_bar_list_template_id=>wwv_flow_imp.id(90988502600350329)
+,p_nav_bar_list_template_id=>2847543055748234966
 ,p_nav_bar_template_options=>'#DEFAULT#'
 );
 wwv_flow_imp.component_end;

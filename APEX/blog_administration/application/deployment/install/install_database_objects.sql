@@ -4,8 +4,8 @@ begin
 --     INSTALL: INSTALL-Database objects
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -661,6 +661,7 @@ wwv_flow_imp_shared.create_install_script(
 '--------------------------------------------------------------------------------',
 '-- Called from:',
 '--  other packages, public and admin applica'))
+,p_updated_on=>wwv_flow_imp.dz('20250414044931Z')
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
@@ -1520,6 +1521,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  procedure set_object_storage(',
 '    p_bucket_name       in varchar2,',
+'    p_base_url          in varchar2,',
 '    p_build_status      in varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
@@ -1696,6 +1698,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  procedure set_lang_ai(',
 '    p_compartment_id  in varchar2,',
+'    p_base_url        in varchar2,',
 '    p_build_status    in varchar2',
 '  );',
 '--------------------------------------------------------------------------------',
@@ -2092,14 +2095,14 @@ wwv_flow_imp_shared.append_to_install_script(
 'create or replace force view blog_v_init_items as',
 'select',
 '  i.application_id  as application_id',
-', i.item_name       as item_name',
-', s.attribute_value as attribute_value',
-', v( i.item_name '))
+', i.item_name    '))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-')  as session_value',
+'   as item_name',
+', s.attribute_value as attribute_value',
+', v( i.item_name )  as session_value',
 'from blog_init_items i',
 'join blog_settings s',
 '  on i.item_name = s.attribute_name',
@@ -3095,13 +3098,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  if inserting then',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
-'    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := coalesce( :new.created_on, localtimes'))
+'    :new.row_version  := coalesce( :new.row_vers'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'tamp );',
+'ion, 1 );',
+'    :new.created_on   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
 '      :new.created_by',
 '      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -4067,14 +4070,14 @@ wwv_flow_imp_shared.append_to_install_script(
 '  mime_t(''mbox'') := ''application/mbox'';',
 '  mime_t(''mscml'') := ''application/mediaservercontrol+xml'';',
 '  mime_t(''metalink'') := ''application/metalink+xml'';',
-'  mime_t(''meta4'') := ''application/metalink4+xml'';',
-'  mime_t(''mets'') := ''application/mets+xml'';',
-'  mime'))
+'  mime_t(''meta4'') := ''applic'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'_t(''mods'') := ''application/mods+xml'';',
+'ation/metalink4+xml'';',
+'  mime_t(''mets'') := ''application/mets+xml'';',
+'  mime_t(''mods'') := ''application/mods+xml'';',
 '  mime_t(''m21'') := ''application/mp21'';',
 '  mime_t(''mp21'') := ''application/mp21'';',
 '  mime_t(''mp4s'') := ''application/mp4'';',
@@ -4707,13 +4710,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '  mime_t(''st'') := ''application/vnd.sailingtracker.track'';',
 '  mime_t(''see'') := ''application/vnd.seemail'';',
 '  mime_t(''sema'') := ''application/vnd.sema'';',
-'  mime_t(''semd'') := ''application/vnd.semd'';',
-'  mime_t(''semf'') := ''applicati'))
+'  '))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'on/vnd.semf'';',
+'mime_t(''semd'') := ''application/vnd.semd'';',
+'  mime_t(''semf'') := ''application/vnd.semf'';',
 '  mime_t(''ifm'') := ''application/vnd.shana.informed.formdata'';',
 '  mime_t(''itp'') := ''application/vnd.shana.informed.formtemplate'';',
 '  mime_t(''iif'') := ''application/vnd.shana.informed.interchange'';',
@@ -5559,17 +5562,17 @@ wwv_flow_imp_shared.append_to_install_script(
 '    apex_debug.error(',
 '      p_message => ''%s Error: %s''',
 '    , p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))',
-'    , p1 => sqlerrm',
+'    , p1 => sqlerrm'))
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(115343135841750502)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'',
 '    );',
 '',
 '    -- show http error',
 '    raise_http_error( 400 );',
 '    raise;',
-''))
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(115343135841750502)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '',
 '  end download_file;',
 '--------------------------------------------------------------------------------',
@@ -6611,15 +6614,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_keys := l_values.get_keys;',
 '',
 '    for i in 1 .. l_keys.count',
-'    loop',
-'',
-'      set_attribute_value(',
-'        p_attribute_name  => l_keys(i)'))
+'   '))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+' loop',
 '',
+'      set_attribute_value(',
+'        p_attribute_name  => l_keys(i)',
 '      , p_attribute_value => l_values.get_string( l_keys(i) )',
 '      );',
 '',
@@ -7628,16 +7631,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    l_request :=',
 '      apex_string.format(',
-'        p_message => ''application_process=%s''',
-'      , p0 => p_process',
-'      )',
-'    ;',
-'    re'))
+'        p_message '))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'turn',
+'=> ''application_process=%s''',
+'      , p0 => p_process',
+'      )',
+'    ;',
+'    return',
 '      case p_canonical',
 '      when ''YES''',
 '      then g_canonical_host_url end ||',
@@ -8647,15 +8650,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  end set_tag_canonical_link;',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  function get_rss_anchor(',
-'    p_app_name  in varchar2,',
-'    p_me'))
+'-------------------------------------------------------------------------'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ssage   in varchar2',
+'-------',
+'  function get_rss_anchor(',
+'    p_app_name  in varchar2,',
+'    p_message   in varchar2',
 '  ) return varchar2',
 '  as',
 '    l_rss_url     varchar2(4000);',
@@ -8876,8 +8879,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- set valus for session',
 '    param_t( ''build_option_name'' ) := ''BLOG_FEATURE_OCI_OBJECT_STORAGE'';',
 '    param_t( ''module_static_id'' ) := ''BLOG_OBJECT_STORAGE_OBJECT'';',
-'    param_t( ''bucket'' ) := blog_util.get_attribute_value( ''G_OCI_OS_BUCKET'' );',
-'    param_t( ''namespace'' ) := blog_util.get_attribute_value( ''G_OCI_OS_NAMESPACE'' );',
+'    param_t( ''remote_server_static_id'' ) := ''BLOG_OBJECT_STORAGE'';',
+'    param_t( ''bucket_param_name'' ) := ''G_OCI_OS_BUCKET'';',
+'    param_t( ''namespace_param_name'' ) := ''G_OCI_OS_NAMESPACE'';',
+'    param_t( ''region_param_name'' ) := ''G_OCI_OS_REGION'';',
+'    param_t( ''bucket_url_param_name'' ) := ''G_OCI_OS_BUCKET_URL'';',
+'    param_t( ''bucket'' ) := blog_util.get_attribute_value( param_t( ''bucket_param_name'' ) );',
+'    param_t( ''namespace'' ) := blog_util.get_attribute_value( param_t( ''namespace_param_name'' ) );',
 '',
 '    -- query REST source module credential id and base url for session',
 '    select',
@@ -8892,12 +8900,17 @@ wwv_flow_imp_shared.append_to_install_script(
 '      and t1.module_static_id = param_t( ''module_static_id'' )',
 '    ;',
 '    -- Debug parameters',
-'    apex_debug.info( ''Build option: %s'', param_t( ''build_option_name'' ) );',
-'    apex_debug.info( ''Bucket: %s'', param_t( ''bucket'' ) );',
-'    apex_debug.info( ''Namespace: %s'', param_t( ''namespace'' ) );',
-'    apex_debug.info( ''Base URL: %s'', param_t( ''base_url'' ) );',
-'    apex_debug.info( ''Credential: %s'', param_t( ''credential'' ) );',
-'    apex_debug.info( ''Module: %s'', param_t( ''module_static_id'' ) );',
+'    apex_debug.info( ''Object storage bucket parameter name: %s'', param_t( ''bucket_param_name'' ) );',
+'    apex_debug.info( ''Object storage namespace parameter name: %s'', param_t( ''namespace_param_name'' ) );',
+'    apex_debug.info( ''Object storage region parameter name: %s'', param_t( ''region_param_name'' ) );',
+'    apex_debug.info( ''Object storage region parameter name: %s'', param_t( ''region_param_name'' ) );',
+'    apex_debug.info( ''Object storage bucket url parameter name: %s'', param_t( ''build_option_bucket_url_param_namename'' ) );',
+'    apex_debug.info( ''Object storage bucket: %s'', param_t( ''bucket'' ) );',
+'    apex_debug.info( ''Object storage namespace: %s'', param_t( ''namespace'' ) );',
+'    apex_debug.info( ''Object storage base URL: %s'', param_t( ''base_url'' ) );',
+'    apex_debug.info( ''Object storage credential: %s'', param_t( ''credential'' ) );',
+'    apex_debug.info( ''Object storage module static id: %s'', param_t( ''module_static_id'' ) );',
+'    apex_debug.info( ''Object storage remote server static id: %s'', param_t( ''remote_server_static_id'' ) );',
 '',
 '  end init_params;',
 '--------------------------------------------------------------------------------',
@@ -9534,6 +9547,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  procedure set_object_storage(',
 '    p_bucket_name   in varchar2,',
+'    p_base_url      in varchar2,',
 '    p_build_status  in varchar2',
 '  )',
 '  as',
@@ -9546,9 +9560,21 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_namespace   varchar2(256);',
 '  begin',
 '',
+'    -- Set build option status for the storage feature',
 '    blog_cm.update_feature(',
 '      p_build_option_name => param_t( ''build_option_name'' )',
 '    , p_build_status      => p_build_status',
+'    );',
+'',
+'    -- Set remote server URL',
+'    apex_application_admin.set_remote_server(',
+'     '))
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(115343135841750502)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+' p_static_id => param_t( ''remote_server_static_id'' )',
+'    , p_base_url  => rtrim( p_base_url, ''/'' )',
 '    );',
 '',
 '    if p_build_status = apex_application_admin.c_build_option_status_include',
@@ -9556,7 +9582,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '      apex_debug.info( ''Set object storage bucket: %s'', p_bucket_name );',
 '',
-'      apex_string.plist_push( l_attributes, ''G_OCI_OS_BUCKET'', p_bucket_name );',
+'      apex_string.plist_push( l_attributes, param_t( ''bucket_param_name'' ), p_bucket_name );',
 '',
 '      l_region :=',
 '        substr(',
@@ -9568,13 +9594,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '      apex_debug.info( ''Set object storage region: %s'', l_region );',
 '',
-'      apex_string.plist_push( l_attributes, ''G_OCI_OS_REGION'', l_region );',
+'      apex_string.plist_push( l_attributes, param_t( ''region_param_name'' ), l_region );',
 '',
 '      l_namespace := get_namespace;',
 '',
 '      apex_debug.info( ''Set object storage  namespace: %s'', l_namespace );',
 '',
-'      apex_string.plist_push( l_attributes, ''G_OCI_OS_NAMESPACE'', l_namespace );',
+'      apex_string.plist_push( l_attributes, param_t( ''namespace_param_name'' ), l_namespace );',
 '',
 '      l_bucket_url :=',
 '        apex_string.format(',
@@ -9587,15 +9613,10 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '      apex_debug.info( ''Set object storage bucket URL: %s'', l_bucket_url );',
 '',
-'      apex_string.plist_push( l_attributes, ''G_OCI_OS_BUCKET_URL'', l_bucket_url );',
+'      apex_string.plist_push( l_attributes, param_t( ''bucket_url_param_name'' ), l_bucket_url );',
 '',
 '      blog_cm.set_attribute_value(',
-'  '))
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(115343135841750502)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'      p_attribute_list  => l_attributes',
+'        p_attribute_list  => l_attributes',
 '      );',
 '',
 '    end if;',
@@ -10546,7 +10567,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '  -- handle errors',
 '  exception',
-'  when others',
+'  w'))
+);
+end;
+/
+begin
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(115343135841750502)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'hen others',
 '  then',
 '',
 '    apex_debug.error(',
@@ -10596,15 +10625,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      as blob encoding c_char_set indent size = 2',
 '    )',
 '    into l_xml',
-'    from blog_v_po'))
-);
-end;
-/
-begin
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(115343135841750502)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'sts posts',
+'    from blog_v_posts posts',
 '    ;',
 '',
 '    l_cache_control :=',
@@ -10868,6 +10889,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- set valus for session',
 '    param_t( ''lang_ai_build_option'' ) := ''BLOG_FEATURE_LANGUAGE_AI'';',
+'    param_t( ''lang_ai_remote_server_static_id'' ) := ''BLOG_LANGUAGE_AI'';',
+'    param_t( ''lang_ai_module_static_id'' ) := ''BLOG_LANGUAGE_AI'';',
 '    param_t( ''lang_ai_compartment_attribute_id'') := ''G_OCI_LANG_AI_COMPARTMENT_OCID'';',
 '    param_t( ''lang_ai_compartment_ocid'' ) := blog_util.get_attribute_value( param_t( ''lang_ai_compartment_attribute_id'' ) );',
 '    param_t( ''gen_ai_static_id'' ) := ''BLOG_OPEN_AI_API'';',
@@ -10877,6 +10900,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    -- Debug parameters',
 '    apex_debug.info( ''Language AI build option name: %s'', param_t( ''lang_ai_build_option'' ) );',
+'    apex_debug.info( ''Language AI remote server static id: %s'', param_t( ''lang_ai_remote_server_static_id'' ) );',
+'    apex_debug.info( ''Language AI REST source static id: %s'', param_t( ''lang_ai_module_static_id'' ) );',
 '    apex_debug.info( ''Language AI comparment static id : %s'', param_t( ''lang_ai_compartment_attribute_id'' ) );',
 '    apex_debug.info( ''Language AI comparment OCID : %s'', param_t( ''lang_ai_compartment_ocid'') );',
 '    apex_debug.info( ''Generative AI service static id: %s'', param_t( ''gen_ai_static_id'' ) );',
@@ -10926,7 +10951,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '      -- Call language AI to analyze sentiment',
 '      apex_exec.execute_rest_source(',
-'        p_static_id           => ''BLOG_LANGUAGE_AI'',',
+'        p_static_id           => param_t( ''lang_ai_module_static_id'' ),',
 '        p_operation_static_id => ''batch_document'',',
 '        p_parameters          => l_params',
 '      );',
@@ -10952,6 +10977,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------------------------------',
 '  procedure set_lang_ai(',
 '    p_compartment_id  in varchar2,',
+'    p_base_url        in varchar2,',
 '    p_build_status    in varchar2',
 '  )',
 '  as',
@@ -10962,6 +10988,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '    blog_cm.update_feature(',
 '      p_build_option_name => param_t( ''lang_ai_build_option'' )',
 '    , p_build_status      => p_build_status',
+'    );',
+'',
+'    -- Set remote server URL',
+'    apex_application_admin.set_remote_server(',
+'      p_static_id => param_t( ''lang_ai_static_id'' )',
+'    , p_base_url  => rtrim( p_base_url, ''/'' )',
 '    );',
 '',
 '    if p_build_status = apex_application_admin.c_build_option_status_include then',

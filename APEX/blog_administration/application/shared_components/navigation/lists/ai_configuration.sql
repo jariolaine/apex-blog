@@ -4,8 +4,8 @@ begin
 --     LIST: AI Configuration
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.05.31'
-,p_release=>'24.1.7'
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.0'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -16,6 +16,7 @@ wwv_flow_imp_shared.create_list(
 ,p_name=>'AI Configuration'
 ,p_list_status=>'PUBLIC'
 ,p_version_scn=>41502365202158
+,p_updated_on=>wwv_flow_imp.dz('20250309112840Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(117322057090104070)
@@ -27,6 +28,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_text_02=>'&P20010_GENERATIVE_AI_STATUS.'
 ,p_list_text_06=>'u-color-8'
 ,p_list_item_current_type=>'TARGET_PAGE'
+,p_updated_on=>wwv_flow_imp.dz('20250224145914Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(109019807553394370)
@@ -38,6 +40,8 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_text_06=>'u-color-9'
 ,p_required_patch=>wwv_flow_imp.id(91382065723485903)
 ,p_list_item_current_type=>'TARGET_PAGE'
+,p_created_on=>wwv_flow_imp.dz('20250224144705Z')
+,p_updated_on=>wwv_flow_imp.dz('20250309112840Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(114469723841084562)
@@ -49,6 +53,7 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_text_02=>'&P20010_OCI_LANG_AI_STATUS.'
 ,p_list_text_06=>'u-color-10'
 ,p_list_item_current_type=>'TARGET_PAGE'
+,p_updated_on=>wwv_flow_imp.dz('20250224145923Z')
 );
 wwv_flow_imp.component_end;
 end;
