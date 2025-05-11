@@ -39,7 +39,7 @@ wwv_flow_imp_shared.create_install(
 ,p_deinstall_success_message=>'Deinstallation complete.'
 ,p_required_free_kb=>200
 ,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414045036Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250511051105Z')
 );
 wwv_flow_imp.component_end;
 end;

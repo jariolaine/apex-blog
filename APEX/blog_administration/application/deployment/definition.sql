@@ -38,9 +38,7 @@ wwv_flow_imp_shared.create_install(
 'and view_name = ''BLOG_V_VERSION'''))
 ,p_deinstall_success_message=>'Deinstallation complete.'
 ,p_deinstall_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'--------------------------------------------------------',
 '-- Drop Foreign Keys',
-'--------------------------------------------------------',
 'alter table blog_comments drop constraint blog_comments_fk1;',
 'alter table blog_comments drop constraint blog_comments_fk2;',
 'alter table blog_comment_flags drop constraint blog_comment_flags_fk1;',
@@ -56,15 +54,14 @@ wwv_flow_imp_shared.create_install(
 'alter table blog_post_tags drop constraint blog_post_tags_fk1;',
 'alter table blog_post_tags drop constraint blog_post_tags_fk2;',
 'alter table blog_setting_features drop constraint blog_setting_features_fk1;',
-'--------------------------------------------------------',
 '-- Drop objects',
-'--------------------------------------------------------',
 'drop package blog_ai;',
 'drop package blog_cm;',
 'drop package blog_comm;',
 'drop package blog_ctx;',
 'drop package blog_file;',
 'drop package blog_html;',
+'drop package blog_install;',
 'drop package blog_mime;',
 'drop package blog_oci_os;',
 'drop package blog_plugin;',
@@ -119,9 +116,7 @@ wwv_flow_imp_shared.create_install(
 'drop view blog_v_settings;',
 'drop view blog_v_tags;',
 'drop view blog_v_version;',
-'--------------------------------------------------------',
 '-- Drop text index preferences',
-'--------------------------------------------------------',
 'declare',
 '  ctx_ddl_error exception;',
 '  pragma exception_init ( ctx_ddl_error, -20000 );',
@@ -138,7 +133,7 @@ wwv_flow_imp_shared.create_install(
 '/'))
 ,p_required_free_kb=>200
 ,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414044931Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250511051134Z')
 );
 wwv_flow_imp.component_end;
 end;

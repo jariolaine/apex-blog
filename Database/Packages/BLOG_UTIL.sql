@@ -163,7 +163,7 @@ as
 -- Private constants and variables
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  c_mime_default  constant varchar2(40) := 'application/octet';
+-- none
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Private procedures and functions
@@ -638,7 +638,7 @@ as
 
     -- open HTTP header
     sys.owa_util.mime_header(
-      ccontent_type => coalesce( p_mime_type, c_mime_default )
+      ccontent_type => coalesce( p_mime_type, blog_mime.g_default_mime )
     , bclose_header => false
     , ccharset      => p_charset
     );

@@ -19,16 +19,14 @@ wwv_flow_imp_shared.create_install_script(
 ,p_script_type=>'UPGRADE'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '-- Postupgrade',
-'--------------------------------------------------------',
 '-- Update version info',
-'--------------------------------------------------------',
 'update blog_settings',
-'  set attribute_value = ''Release 24.2.0.20250414''',
+'  set attribute_value = ''Release 24.2.0.20250511''',
 'where 1 = 1',
 '  and attribute_name = ''G_APP_VERSION''',
 ';',
 ''))
-,p_updated_on=>wwv_flow_imp.dz('20250414045036Z')
+,p_updated_on=>wwv_flow_imp.dz('20250511050145Z')
 );
 wwv_flow_imp.component_end;
 end;

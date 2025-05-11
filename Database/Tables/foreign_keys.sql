@@ -1,6 +1,4 @@
---------------------------------------------------------
 -- DDL for Foreign Keys
---------------------------------------------------------
 ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK1" FOREIGN KEY ("POST_ID")
   REFERENCES "BLOG_POSTS" ("ID") ENABLE;
 ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK2" FOREIGN KEY ("PARENT_ID")

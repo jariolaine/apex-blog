@@ -60,7 +60,7 @@ wwv_flow_imp_shared.create_theme(
 '#APEX_FILES#libraries/apex/#MIN_DIRECTORY#widget.stickyWidget#MIN#.js?v=#APEX_VERSION#',
 '#THEME_FILES#js/theme42#MIN#.js?v=#APEX_VERSION#'))
 ,p_css_file_urls=>'#THEME_FILES#css/Core#MIN#.css?v=#APEX_VERSION#'
-,p_updated_on=>wwv_flow_imp.dz('20250414014938Z')
+,p_updated_on=>wwv_flow_imp.dz('20250414144432Z')
 );
 wwv_flow_imp.component_end;
 end;

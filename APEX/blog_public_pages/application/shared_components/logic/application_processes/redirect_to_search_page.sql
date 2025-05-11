@@ -19,15 +19,13 @@ wwv_flow_imp_shared.create_flow_process(
 ,p_process_name=>'Redirect to search page'
 ,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog_util.redirect_search(',
-'  p_value    => :P0_SEARCH',
+'  p_value => :P0_SEARCH',
 ');'))
 ,p_process_clob_language=>'PLSQL'
-,p_process_when=>'SEARCH'
-,p_process_when_type=>'REQUEST_EQUALS_CONDITION'
 ,p_required_patch=>wwv_flow_imp.id(166424193210882851)
 ,p_process_comment=>'Redirect to search result when request is SEARCH'
-,p_version_scn=>41492470807823
-,p_updated_on=>wwv_flow_imp.dz('20250122015057Z')
+,p_version_scn=>42200848939610
+,p_updated_on=>wwv_flow_imp.dz('20250429071856Z')
 );
 wwv_flow_imp.component_end;
 end;

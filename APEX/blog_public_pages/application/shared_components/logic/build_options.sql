@@ -118,11 +118,11 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(145826259194060489)
 ,p_build_option_name=>'BLOG_FEATURE_OCI_OBJECT_STORAGE'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>42197503242155
+,p_version_scn=>42197561138252
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable Oracle cloud object storage'
-,p_updated_on=>wwv_flow_imp.dz('20250414021528Z')
+,p_updated_on=>wwv_flow_imp.dz('20250414163203Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(152020878643750306)
@@ -191,11 +191,11 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(158089734281512799)
 ,p_build_option_name=>'BLOG_FEATURE_LANGUAGE_AI'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>42197504528204
+,p_version_scn=>42197559842306
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable comments sentiment analyze using OCI language AI'
-,p_updated_on=>wwv_flow_imp.dz('20250414023422Z')
+,p_updated_on=>wwv_flow_imp.dz('20250414161322Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(158909835543127564)

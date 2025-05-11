@@ -30,8 +30,7 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
---  Public app page 1001
---  Admin app 62
+--  Public app page 1001 and admin app 62
   procedure merge_sentiment(
     p_language        in varchar2,
     p_documents       in clob
@@ -73,10 +72,9 @@ as
 
     -- set valus for session
     param_t( 'lang_ai_build_option' ) := 'BLOG_FEATURE_LANGUAGE_AI';
-    param_t( 'lang_ai_remote_server_static_id' ) := 'BLOG_LANGUAGE_AI';
-    param_t( 'lang_ai_module_static_id' ) := 'BLOG_LANGUAGE_AI';
-    param_t( 'lang_ai_compartment_attribute_id') := 'G_OCI_LANG_AI_COMPARTMENT_OCID';
-    param_t( 'lang_ai_compartment_ocid' ) := blog_util.get_attribute_value( param_t( 'lang_ai_compartment_attribute_id' ) );
+    param_t( 'lang_ai_static_id' ) := 'BLOG_LANGUAGE_AI';
+    param_t( 'lang_ai_compartment_param_name') := 'G_OCI_LANG_AI_COMPARTMENT_OCID';
+    param_t( 'lang_ai_compartment_ocid' ) := blog_util.get_attribute_value( param_t( 'lang_ai_compartment_param_name' ) );
     param_t( 'gen_ai_static_id' ) := 'BLOG_OPEN_AI_API';
     param_t( 'gen_ai_build_option' ) := 'BLOG_FEATURE_GENERATIVE_AI';
     param_t( 'gen_ai_generate_prompt' ) := apex_lang.message( 'BLOG_AI_GENERATE_PROMPT' );
@@ -84,9 +82,8 @@ as
 
     -- Debug parameters
     apex_debug.info( 'Language AI build option name: %s', param_t( 'lang_ai_build_option' ) );
-    apex_debug.info( 'Language AI remote server static id: %s', param_t( 'lang_ai_remote_server_static_id' ) );
-    apex_debug.info( 'Language AI REST source static id: %s', param_t( 'lang_ai_module_static_id' ) );
-    apex_debug.info( 'Language AI comparment static id : %s', param_t( 'lang_ai_compartment_attribute_id' ) );
+    apex_debug.info( 'Language AI remote server static id: %s', param_t( 'lang_ai_static_id' ) );
+    apex_debug.info( 'Language AI comparment parameter name : %s', param_t( 'lang_ai_compartment_param_name' ) );
     apex_debug.info( 'Language AI comparment OCID : %s', param_t( 'lang_ai_compartment_ocid') );
     apex_debug.info( 'Generative AI service static id: %s', param_t( 'gen_ai_static_id' ) );
     apex_debug.info( 'Generative AI build option name: %s', param_t( 'gen_ai_build_option' ) );
@@ -168,22 +165,24 @@ as
     l_attributes apex_t_varchar2;
   begin
 
+    apex_debug.info( 'Set buid option %s status: %s', param_t( 'lang_ai_build_option' ), p_build_status );
     -- Set build option status for the language AI feature
     blog_cm.update_feature(
       p_build_option_name => param_t( 'lang_ai_build_option' )
     , p_build_status      => p_build_status
     );
 
+    apex_debug.info( 'Set remote server %s: %s', param_t( 'lang_ai_static_id' ), rtrim( p_base_url, '/' ) || '/' );
     -- Set remote server URL
     apex_application_admin.set_remote_server(
       p_static_id => param_t( 'lang_ai_static_id' )
-    , p_base_url  => rtrim( p_base_url, '/' )
+    , p_base_url  => rtrim( p_base_url, '/' ) || '/'
     );
 
     if p_build_status = apex_application_admin.c_build_option_status_include then
       apex_debug.info( 'Set compartment OCID: %s', p_compartment_id );
       -- Set attribute name and value
-      apex_string.plist_push( l_attributes, param_t( 'lang_ai_compartment_attribute_id' ), p_compartment_id );
+      apex_string.plist_push( l_attributes, param_t( 'lang_ai_compartment_param_name' ), p_compartment_id );
       -- Update attribute
       blog_cm.set_attribute_value(
         p_attribute_list => l_attributes
@@ -199,6 +198,7 @@ as
   as
     l_attributes apex_t_varchar2;
   begin
+    apex_debug.info( 'Set buid option %s status: %s', param_t( 'gen_ai_build_option' ), p_build_status );
     -- Set build option status for the generative AI feature
     blog_cm.update_feature(
       p_build_option_name => param_t( 'gen_ai_build_option' )
@@ -222,7 +222,8 @@ as
       apex_lang.message(
         p_name => param_t( 'gen_ai_generate_msg' )
       , p0 => substr( apex_escape.striphtml( p_post ), 1, 32000 )
-      );
+      )
+    ;
 
     -- Generate AI response using AI service
     l_response :=
@@ -276,7 +277,7 @@ as
       merge into blog_comment_sentiments t1
       using dual on ( t1.comment_id = l_comment_id )
       when not matched then
-        insert( comment_id, dominant_language, sentiment_json )
+        insert( comment_id, original_language, sentiment_json )
         values( l_comment_id, p_language, l_sentiment_json )
       when matched then
         update set sentiment_json = l_sentiment_json;

@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_help_text=>'High level view of application logging information.'
 ,p_page_component_map=>'03'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250421011823Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(170321086240643973)
@@ -88,7 +88,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P30021_TIMEFRAME'
-,p_lazy_loading=>true
+,p_lazy_loading=>false
 ,p_query_row_template=>2538654340625403440
 ,p_query_num_rows=>50
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -102,7 +102,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_desc_image=>'apex/builder/ddown.gif'
 ,p_query_desc_image_attr=>'width="16" height="16" alt="" '
 ,p_plug_query_strip_html=>'Y'
-,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_updated_on=>wwv_flow_imp.dz('20250421011823Z')
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(126387816130796003)

@@ -117,18 +117,19 @@ as
       and t1.application_id = apex_application.g_flow_id
       and t1.module_static_id = param_t( 'module_static_id' )
     ;
+
     -- Debug parameters
+    apex_debug.info( 'Object storage build option name: %s', param_t( 'build_option_name' ) );
+    apex_debug.info( 'Object storage module static id: %s', param_t( 'module_static_id' ) );
+    apex_debug.info( 'Object storage remote server static id: %s', param_t( 'remote_server_static_id' ) );
     apex_debug.info( 'Object storage bucket parameter name: %s', param_t( 'bucket_param_name' ) );
     apex_debug.info( 'Object storage namespace parameter name: %s', param_t( 'namespace_param_name' ) );
     apex_debug.info( 'Object storage region parameter name: %s', param_t( 'region_param_name' ) );
-    apex_debug.info( 'Object storage region parameter name: %s', param_t( 'region_param_name' ) );
-    apex_debug.info( 'Object storage bucket url parameter name: %s', param_t( 'build_option_bucket_url_param_namename' ) );
+    apex_debug.info( 'Object storage bucket url parameter name: %s', param_t( 'bucket_url_param_name' ) );
     apex_debug.info( 'Object storage bucket: %s', param_t( 'bucket' ) );
     apex_debug.info( 'Object storage namespace: %s', param_t( 'namespace' ) );
     apex_debug.info( 'Object storage base URL: %s', param_t( 'base_url' ) );
     apex_debug.info( 'Object storage credential: %s', param_t( 'credential' ) );
-    apex_debug.info( 'Object storage module static id: %s', param_t( 'module_static_id' ) );
-    apex_debug.info( 'Object storage remote server static id: %s', param_t( 'remote_server_static_id' ) );
 
   end init_params;
 --------------------------------------------------------------------------------
@@ -142,6 +143,7 @@ as
     l_req_header_msg constant varchar2(256) := 'Request header %s: %s';
   begin
 
+    -- debug request status
     apex_debug.info( l_resp_status_msg, apex_web_service.g_status_code, apex_web_service.g_reason_phrase );
 
     -- if error debug request headers
@@ -169,6 +171,7 @@ as
         apex_debug.info( l_resp_header_msg, apex_web_service.g_headers(i).name , apex_web_service.g_headers(i).value );
       end if;
 
+      -- save response header to array for getting value by header name
       response_heade_t( lower( trim( apex_web_service.g_headers(i).name ) ) ) :=
         trim( apex_web_service.g_headers(i).value )
       ;
@@ -188,7 +191,8 @@ as
 
     l_header := trim( lower( p_header ) );
 
-    if response_heade_t .exists( l_header )
+    -- get header by name if it exists in array
+    if response_heade_t.exists( l_header )
     then
       l_result := response_heade_t( l_header );
     end if;
@@ -778,16 +782,18 @@ as
     l_namespace   varchar2(256);
   begin
 
+    apex_debug.info( 'Set object storage buid option %s status: %s', param_t( 'build_option_name' ), p_build_status );
     -- Set build option status for the storage feature
     blog_cm.update_feature(
       p_build_option_name => param_t( 'build_option_name' )
     , p_build_status      => p_build_status
     );
 
+    apex_debug.info( 'Set object storage remote server %s: %s', param_t( 'remote_server_static_id' ), rtrim( p_base_url, '/' ) || '/' );
     -- Set remote server URL
     apex_application_admin.set_remote_server(
       p_static_id => param_t( 'remote_server_static_id' )
-    , p_base_url  => rtrim( p_base_url, '/' )
+    , p_base_url  => rtrim( p_base_url, '/' ) || '/'
     );
 
     if p_build_status = apex_application_admin.c_build_option_status_include

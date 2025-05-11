@@ -15,7 +15,7 @@ wwv_imp_workspace.create_remote_server(
  p_id=>wwv_flow_imp.id(113070079731662032)
 ,p_name=>'Blog Language AI'
 ,p_static_id=>'BLOG_LANGUAGE_AI'
-,p_base_url=>nvl(wwv_flow_application_install.get_remote_server_base_url('BLOG_LANGUAGE_AI'),'https://language.aiservice.eu-frankfurt-1.oci.oraclecloud.com')
+,p_base_url=>nvl(wwv_flow_application_install.get_remote_server_base_url('BLOG_LANGUAGE_AI'),'https://language.aiservice.eu-frankfurt-1.oci.oraclecloud.com/')
 ,p_https_host=>nvl(wwv_flow_application_install.get_remote_server_https_host('BLOG_LANGUAGE_AI'),'')
 ,p_server_type=>'WEB_SERVICE'
 ,p_ords_timezone=>nvl(wwv_flow_application_install.get_remote_server_ords_tz('BLOG_LANGUAGE_AI'),'')
@@ -27,7 +27,7 @@ wwv_imp_workspace.create_remote_server(
 ,p_ai_http_headers=>nvl(wwv_flow_application_install.get_remote_server_ai_headers('BLOG_LANGUAGE_AI'),'')
 ,p_ai_attributes=>nvl(wwv_flow_application_install.get_remote_server_ai_attrs('BLOG_LANGUAGE_AI'),'')
 ,p_server_comment=>'Remote server for Oracle cloud language AI'
-,p_updated_on=>wwv_flow_imp.dz('20250414024011Z')
+,p_updated_on=>wwv_flow_imp.dz('20250422075705Z')
 );
 wwv_flow_imp.component_end;
 end;

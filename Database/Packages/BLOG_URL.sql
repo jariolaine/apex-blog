@@ -176,14 +176,16 @@ as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- json for pages and items
-  c_page_and_items constant json_object_t := json_object_t.parse( '{
-    "post": {"page": "POST", "items": "P2_POST_ID"},
-    "category": {"page": "CATEGORY", "items": "P14_CATEGORY_ID"},
-    "archive": {"page": "ARCHIVES", "items": "P15_ARCHIVE_ID"},
-    "tag": {"page": "TAG", "items": "P6_TAG_ID"},
-    "unsubscribe": {"page": "POST", "items": "P2_POST_ID,P2_SUBSCRIPTION_ID"},
-    "download": {"page": "PGM", "items": "P1003_FILE_NAME", "process": "download"}
-  }' );
+  c_page_and_items constant json_object_t := json_object_t.parse(
+    '{
+      "post": {"page": "POST", "items": "P2_POST_ID"},
+      "category": {"page": "CATEGORY", "items": "P14_CATEGORY_ID"},
+      "archive": {"page": "ARCHIVES", "items": "P15_ARCHIVE_ID"},
+      "tag": {"page": "TAG", "items": "P6_TAG_ID"},
+      "unsubscribe": {"page": "POST", "items": "P2_POST_ID,P2_SUBSCRIPTION_ID"},
+      "download": {"page": "PGM", "items": "P1003_FILE_NAME", "process": "download"}
+    }'
+  );
 
 -- cache rss and atom url
   g_rss_url             varchar2(1024);

@@ -18,13 +18,13 @@ wwv_flow_imp_shared.create_install_script(
 ,p_sequence=>20
 ,p_script_type=>'INSTALL'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'--------------------------------------------------------',
+'begin',
 '-- Inserting into BLOG_SETTINGS',
-'--------------------------------------------------------',
-'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,int_min,int_max,attribute_value) values(''30'',''0'',''G_ADMIN_APP_ID'',''STRING'',''INTERNAL'',null,null,blog_util.int_to_vc2(apex_application_install.get_appli'
-||'cation_id));',
+'blog_install.settings_ins(30,0,''G_ADMIN_APP_ID'',''STRING'',''INTERNAL'',blog_util.int_to_vc2(apex_application_install.get_application_id),null,null);',
+'end;',
+'/',
 ''))
-,p_updated_on=>wwv_flow_imp.dz('20250119004850Z')
+,p_updated_on=>wwv_flow_imp.dz('20250511050001Z')
 );
 wwv_flow_imp.component_end;
 end;

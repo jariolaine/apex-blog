@@ -1,6 +1,4 @@
---------------------------------------------------------
 -- DDL for foreign key indexes
---------------------------------------------------------
 CREATE INDEX "BLOG_COMMENTS_IX1" ON "BLOG_COMMENTS" ("POST_ID")
 ;
 CREATE INDEX "BLOG_COMMENTS_IX2" ON "BLOG_COMMENTS" ("PARENT_ID")

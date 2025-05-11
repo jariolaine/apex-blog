@@ -35,7 +35,7 @@ wwv_flow_imp_page.create_page(
 ,p_read_only_when=>'P1001_POST_ID'
 ,p_page_comment=>'Dialog page to allow users comment blog posts.'
 ,p_page_component_map=>'02'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414014936Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250422124712Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(155384906067503249)
@@ -572,23 +572,8 @@ wwv_flow_imp_shared.create_invokeapi_comp_param(
 ,p_value=>'P1001_EMAIL'
 );
 wwv_flow_imp_page.create_page_process(
- p_id=>wwv_flow_imp.id(158066854896793941)
-,p_process_sequence=>80
-,p_process_point=>'AFTER_SUBMIT'
-,p_process_type=>'NATIVE_EXECUTION_CHAIN'
-,p_process_name=>'Comment Sentiment Analyze'
-,p_attribute_01=>'Y'
-,p_attribute_02=>'N'
-,p_attribute_04=>'IGNORE'
-,p_attribute_09=>'N'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_required_patch=>wwv_flow_imp.id(158089734281512799)
-,p_internal_uid=>30672865567897807
-,p_updated_on=>wwv_flow_imp.dz('20241208130238Z')
-);
-wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(154364851409153470)
-,p_process_sequence=>90
+,p_process_sequence=>70
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Notify blogger'
@@ -598,7 +583,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_internal_uid=>26970862080257336
 ,p_process_comment=>'Notify blogger about new comment for post'
-,p_updated_on=>wwv_flow_imp.dz('20241208130238Z')
+,p_updated_on=>wwv_flow_imp.dz('20250422124712Z')
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(147864313789768952)
@@ -635,6 +620,21 @@ wwv_flow_imp_shared.create_invokeapi_comp_param(
 ,p_display_sequence=>20
 ,p_value_type=>'ITEM'
 ,p_value=>'P0_BLOG_APP_NAME'
+);
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(158066854896793941)
+,p_process_sequence=>80
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_EXECUTION_CHAIN'
+,p_process_name=>'Comment Sentiment Analyze'
+,p_attribute_01=>'Y'
+,p_attribute_02=>'N'
+,p_attribute_04=>'IGNORE'
+,p_attribute_09=>'N'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+,p_required_patch=>wwv_flow_imp.id(158089734281512799)
+,p_internal_uid=>30672865567897807
+,p_updated_on=>wwv_flow_imp.dz('20241208130238Z')
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(158641920527879053)
@@ -748,7 +748,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_01=>'WEB_SOURCE'
 ,p_required_patch=>wwv_flow_imp.id(158089734281512799)
 ,p_internal_uid=>29836666832333219
-,p_updated_on=>wwv_flow_imp.dz('20241208123811Z')
+,p_updated_on=>wwv_flow_imp.dz('20250422124624Z')
 );
 wwv_flow_imp_shared.create_web_source_comp_param(
  p_id=>wwv_flow_imp.id(79525866240677207)
@@ -831,10 +831,10 @@ wwv_flow_imp_shared.create_web_source_comp_param(
 ,p_value_language=>'PLSQL'
 ,p_value=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog_comm.plain_text(',
-'  :P1001_COMMENT_TEXT',
+'  p_string => :P1001_COMMENT_TEXT',
 ')'))
 ,p_created_on=>wwv_flow_imp.dz('20241208123811Z')
-,p_updated_on=>wwv_flow_imp.dz('20241208123811Z')
+,p_updated_on=>wwv_flow_imp.dz('20250422124624Z')
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(119652956444662824)
@@ -887,7 +887,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_when2=>'en'
 ,p_required_patch=>wwv_flow_imp.id(158089734281512799)
 ,p_internal_uid=>29839484271333247
-,p_updated_on=>wwv_flow_imp.dz('20250405035616Z')
+,p_updated_on=>wwv_flow_imp.dz('20250422124518Z')
 );
 wwv_flow_imp_shared.create_web_source_comp_param(
  p_id=>wwv_flow_imp.id(79526614441677215)
@@ -897,11 +897,11 @@ wwv_flow_imp_shared.create_web_source_comp_param(
 ,p_value_type=>'EXPRESSION'
 ,p_value_language=>'PLSQL'
 ,p_value=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_comm.plain_text(',
-'  p_string => :P1001_COMMENT_TEXT',
+'blog_util.get_attribute_value(',
+'  p_attribute_name => ''G_OCI_LANG_AI_COMPARTMENT_OCID''',
 ')'))
 ,p_created_on=>wwv_flow_imp.dz('20241208123811Z')
-,p_updated_on=>wwv_flow_imp.dz('20250405035616Z')
+,p_updated_on=>wwv_flow_imp.dz('20250422124518Z')
 );
 wwv_flow_imp_shared.create_web_source_comp_param(
  p_id=>wwv_flow_imp.id(79526788408677216)

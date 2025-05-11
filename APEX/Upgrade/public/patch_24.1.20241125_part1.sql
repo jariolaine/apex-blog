@@ -1,12 +1,8 @@
 --  Patch 24.1.20241125 part 1
---------------------------------------------------------
---  Truncate table BLOG_INIT_ITEMS
---------------------------------------------------------
+-- Truncate table BLOG_INIT_ITEMS
 truncate table blog_init_items
 ;
---------------------------------------------------------
---  Update BLOG_SETTINGS
---------------------------------------------------------
+-- Update BLOG_SETTINGS
 update blog_settings
   set attribute_name = 'P0_BLOG_APP_NAME'
 where attribute_name = 'BLOG_APP_NAME'
@@ -82,55 +78,7 @@ update blog_settings
   set display_seq = 810
 where attribute_name = 'G_CANONICAL_HOST'
 ;
---------------------------------------------------------
---  Insert BLOG_INIT_ITEMS
---------------------------------------------------------
-insert into blog_init_items(is_active, application_id, item_name)
-select
-  1                 as is_active
-, ai.application_id as application_id
-, ai.item_name      as item_name
-from apex_application_items ai
-join blog_settings s
-  on ai.item_name = s.attribute_name
-where 1 = 1
-  and exists(
-    select 1
-    from blog_settings x1
-    where 1 = 1
-      and x1.attribute_name in( 'G_ADMIN_APP_ID', 'G_PUB_APP_ID' )
-      and to_number( x1.attribute_value ) = ai.application_id
-  )
-union all
-select
-  1                 as is_active
-, pi.application_id as application_id
-, pi.item_name      as item_name
-from apex_application_page_items pi
-join blog_settings s
-  on pi.item_name = s.attribute_name
-where 1 = 1
-  and exists(
-    select 1
-    from blog_settings x1
-    where 1 = 1
-      and x1.attribute_name in( 'G_ADMIN_APP_ID', 'G_PUB_APP_ID' )
-      and to_number( x1.attribute_value ) = pi.application_id
-  )
-order by 2, 3
-;
---------------------------------------------------------
---  Insert BLOG_FEATURES
---------------------------------------------------------
-insert into blog_features(is_active, display_seq, build_option_name, build_option_group)
-  values('1', '430', 'BLOG_FEATURE_COMMENT_VERIFY', 'BLOG_FEATURE_GROUP_COMMENTS')
-;
-insert into blog_features(is_active, display_seq, build_option_name, build_option_group)
-  values('1', '450', 'BLOG_FEATURE_MODERATE_COMMENTS_AI', 'BLOG_FEATURE_GROUP_COMMENTS')
-;
---------------------------------------------------------
---  Update BLOG_FEATURES
---------------------------------------------------------
+-- Update BLOG_FEATURES
 update blog_features
   set display_seq = '310'
   , build_option_group = 'BLOG_FEATURE_GROUP_POST'
@@ -160,38 +108,11 @@ update blog_features
   set display_seq = '530'
 where build_option_name = 'BLOG_FEATURE_ATOM'
 ;
---------------------------------------------------------
---  Insert BLOG_SETTINGS
---------------------------------------------------------
-insert into blog_settings(display_seq, is_nullable, attribute_group_message, attribute_name, data_type)
-  values('1110', '1', 'INTERNAL', 'G_OCI_OS_PROXY_URL', 'URL')
-;
-insert into blog_settings(display_seq, is_nullable, attribute_group_message, attribute_name, data_type)
-  values('1120', '1', 'INTERNAL', 'G_OCI_OS_BUCKET_URL', 'URL')
-;
-insert into blog_settings(display_seq, is_nullable, attribute_group_message, attribute_name, data_type)
-  values('1130', '1', 'INTERNAL', 'G_OCI_OS_NAMESPACE', 'STRING')
-;
-insert into blog_settings(display_seq, is_nullable, attribute_group_message, attribute_name, data_type)
-  values('1150', '1', 'INTERNAL', 'G_OCI_OS_REGION', 'STRING')
-;
-insert into blog_settings(display_seq, is_nullable, attribute_group_message, attribute_name, data_type)
-  values('1150', '1', 'INTERNAL', 'G_OCI_OS_BUCKET', 'STRING')
-;
-insert into blog_settings(display_seq, is_nullable, attribute_group_message, attribute_name, data_type)
-  values('1160', '1', 'INTERNAL', 'G_OCI_LANG_AI_COMPARTMENT_OCID', 'STRING')
-;
---------------------------------------------------------
---  Alter table BLOG_POSTS
---------------------------------------------------------
+-- Alter table BLOG_POSTS
 alter table blog_posts modify post_desc varchar2(4000 byte);
---------------------------------------------------------
---  Alter table BLOG_FILES
---------------------------------------------------------
-alter table blog_files rename column file_name to file_path
-;
-alter table blog_files modify blob_content null
-;
+-- Alter table BLOG_FILES
+alter table blog_files rename column file_name to file_path;
+alter table blog_files modify blob_content null;
 alter table blog_files add(
   md5 varchar2( 256 char )
 , etag varchar2( 256 char )
@@ -199,35 +120,18 @@ alter table blog_files add(
 , apex$row_sync_timestamp timestamp with time zone
 , file_dir  varchar2(260 char) generated always as ( '/' || substr( file_path, 1, instr( file_path, '/', - 1 ) ) ) virtual not null
 , file_name varchar2(260 char) generated always as ( substr( file_path, instr( file_path, '/', - 1 ) + 1 ) ) virtual not null
-)
-;
-alter table blog_files move
-;
-alter index blog_files_uk1 rebuild
-;
-alter index blog_files_pk rebuild
-;
---------------------------------------------------------
---  Alter table BLOG_FEATURES
---------------------------------------------------------
-alter table blog_features drop column build_option_parent
-;
---------------------------------------------------------
---  Rename table BLOG_COMMENTS constraints
---------------------------------------------------------
-alter table blog_comments rename constraint blog_comment_ck1 to blog_comments_ck1
-;
-alter table blog_comments rename constraint blog_comment_ck2 to blog_comments_ck2
-;
---------------------------------------------------------
---  Alter table BLOG_COMMENTS
---------------------------------------------------------
-alter table blog_comments add(
-  comment_preview varchar2(4000 byte)
 );
---------------------------------------------------------
---  Create table BLOG_COMMENT_SENTIMENTS
---------------------------------------------------------
+alter table blog_files move;
+alter index blog_files_uk1 rebuild;
+alter index blog_files_pk rebuild;
+-- Alter table BLOG_FEATURES
+alter table blog_features drop column build_option_parent;
+-- Rename table BLOG_COMMENTS constraints
+alter table blog_comments rename constraint blog_comment_ck1 to blog_comments_ck1;
+alter table blog_comments rename constraint blog_comment_ck2 to blog_comments_ck2;
+-- Alter table BLOG_COMMENTS
+alter table blog_comments add( comment_preview varchar2(4000 byte) );
+-- Create table BLOG_COMMENT_SENTIMENTS
 create table blog_comment_sentiments(
   id number( 38, 0 ) not null,
   row_version number( 38, 0 ) not null,
@@ -236,7 +140,7 @@ create table blog_comment_sentiments(
   changed_on timestamp( 6 ) with local time zone not null,
   changed_by varchar2( 256 char ) not null,
   comment_id number( 38, 0 ) not null,
-  dominant_language varchar2( 2 char ) not null,
+  original_language varchar2( 6 char ) not null,
   sentiment_json varchar2(4000 byte) not null,
   constraint blog_comment_sentiments_pk primary key( id ),
   constraint blog_comment_sentiments_uk1 unique( comment_id ),
@@ -244,9 +148,7 @@ create table blog_comment_sentiments(
   constraint blog_comment_sentiments_ck2 check( sentiment_json is json ),
   constraint blog_comment_sentiments_fk1 foreign key( comment_id ) references blog_comments (id) on delete cascade
 );
---------------------------------------------------------
---  Create table BLOG_SETTING_FEATURES
---------------------------------------------------------
+-- Create table BLOG_SETTING_FEATURES
 create table blog_setting_features(
   id number( 38, 0 ) not null,
   row_version number( 38, 0 ) not null,
@@ -263,9 +165,7 @@ create table blog_setting_features(
   constraint blog_setting_features_ck2 check( build_option_status in( 'EXCLUDE', 'INCLUDE' ) ),
   constraint blog_setting_features_fk1 foreign key( attribute_name ) references blog_settings( attribute_name )
 );
---------------------------------------------------------
---  Create Table BLOG_FEATURE_PARENTS
---------------------------------------------------------
+-- Create Table BLOG_FEATURE_PARENTS
 create table blog_feature_parents(
   id number( 38, 0 ) not null,
   row_version number( 38, 0 ) not null,
@@ -284,28 +184,16 @@ create table blog_feature_parents(
   constraint blog_feature_parents_fk1 foreign key( build_option_name ) references blog_features( build_option_name ),
   constraint blog_feature_parents_fk2 foreign key( build_option_parent ) references blog_features( build_option_name )
 );
---------------------------------------------------------
---  Create indexes for foreign key columns
---------------------------------------------------------
-create index blog_comments_ix1 on blog_comments( post_id )
-;
-create index blog_comments_ix2 on blog_comments( parent_id )
-;
-create index blog_posts_ix1 on blog_posts( blogger_id )
-;
-create index blog_posts_ix2 on blog_posts( category_id )
-;
-create index blog_feature_parents_ix1 on blog_feature_parents( build_option_parent )
-;
-create index blog_comment_subscribers_ix1 on blog_comment_subscribers( email_id )
-;
-create index blog_init_items_ix1 on blog_init_items( item_name )
-;
-create index blog_post_tags_ix1 on blog_post_tags( tag_id )
-;
---------------------------------------------------------
---  Set user date format preferences
---------------------------------------------------------
+-- Create indexes for foreign key columns
+create index blog_comments_ix1 on blog_comments( post_id );
+create index blog_comments_ix2 on blog_comments( parent_id );
+create index blog_posts_ix1 on blog_posts( blogger_id );
+create index blog_posts_ix2 on blog_posts( category_id );
+create index blog_feature_parents_ix1 on blog_feature_parents( build_option_parent );
+create index blog_comment_subscribers_ix1 on blog_comment_subscribers( email_id );
+create index blog_init_items_ix1 on blog_init_items( item_name );
+create index blog_post_tags_ix1 on blog_post_tags( tag_id );
+-- Set user date format preferences
 begin
   for c1 in(
     select
