@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.0'
+,p_release=>'24.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -18,15 +18,15 @@ wwv_flow_imp_shared.create_install_script(
 ,p_sequence=>90
 ,p_script_type=>'UPGRADE'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'-- Postupgrade',
+'--  Postupgrade',
 '-- Update version info',
 'update blog_settings',
-'  set attribute_value = ''Release 24.2.0.20250511''',
+'  set attribute_value = ''Release 24.2.5.20250629''',
 'where 1 = 1',
 '  and attribute_name = ''G_APP_VERSION''',
 ';',
 ''))
-,p_updated_on=>wwv_flow_imp.dz('20250511050145Z')
+,p_updated_on=>wwv_flow_imp.dz('20250629054132Z')
 );
 wwv_flow_imp.component_end;
 end;

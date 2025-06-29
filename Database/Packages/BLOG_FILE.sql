@@ -419,7 +419,7 @@ as
     apex_json.open_object;
     apex_json.write(
       p_name  => 'status'
-    , p_value => apex_lang.message( 'BLOG_GENERIC_ERROR' )
+    , p_value => apex_lang.get_message( 'BLOG_GENERIC_ERROR' )
     );
     apex_json.close_all;
 

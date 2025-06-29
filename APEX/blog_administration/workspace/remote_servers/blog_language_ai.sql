@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.0'
+,p_release=>'24.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -27,7 +27,7 @@ wwv_imp_workspace.create_remote_server(
 ,p_ai_http_headers=>nvl(wwv_flow_application_install.get_remote_server_ai_headers('BLOG_LANGUAGE_AI'),'')
 ,p_ai_attributes=>nvl(wwv_flow_application_install.get_remote_server_ai_attrs('BLOG_LANGUAGE_AI'),'')
 ,p_server_comment=>'Remote server for Oracle cloud language AI'
-,p_updated_on=>wwv_flow_imp.dz('20250422075705Z')
+,p_updated_on=>wwv_flow_imp.dz('20250511052854Z')
 );
 wwv_flow_imp.component_end;
 end;

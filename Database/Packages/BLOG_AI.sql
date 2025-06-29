@@ -77,7 +77,7 @@ as
     param_t( 'lang_ai_compartment_ocid' ) := blog_util.get_attribute_value( param_t( 'lang_ai_compartment_param_name' ) );
     param_t( 'gen_ai_static_id' ) := 'BLOG_OPEN_AI_API';
     param_t( 'gen_ai_build_option' ) := 'BLOG_FEATURE_GENERATIVE_AI';
-    param_t( 'gen_ai_generate_prompt' ) := apex_lang.message( 'BLOG_AI_GENERATE_PROMPT' );
+    param_t( 'gen_ai_generate_prompt' ) := apex_lang.get_message( 'BLOG_AI_GENERATE_PROMPT' );
     param_t( 'gen_ai_generate_msg' ) := 'BLOG_AI_GENERATE_MESSAGE';
 
     -- Debug parameters
@@ -219,9 +219,13 @@ as
     -- Prepare user message for AI chat
     l_messages(1).chat_role := 'user';
     l_messages(1).message :=
-      apex_lang.message(
-        p_name => param_t( 'gen_ai_generate_msg' )
-      , p0 => substr( apex_escape.striphtml( p_post ), 1, 32000 )
+      apex_lang.get_message(
+        p_name    => param_t( 'gen_ai_generate_msg' )
+      , p_params  =>
+          apex_t_varchar2 (
+            'post'
+          , substr( apex_escape.striphtml( p_post ), 1, 32000 )
+          )
       )
     ;
 
@@ -232,7 +236,7 @@ as
       , p_messages          => l_messages
       , p_prompt            => param_t( 'gen_ai_generate_prompt' )
       , p_system_prompt     =>
-          apex_lang.message(
+          apex_lang.get_message(
             p_name => p_system_prompt
           )
       );

@@ -32,7 +32,7 @@ Download [latest version](https://github.com/jariolaine/apex-blog/releases/lates
 4. Import and install *blog-public-pages-latest.sql* and select install supporting objects.
 
 ### Post Install
-Create a workspace user group and it name "Bloggers". Add APEX users to the group who are authorized to use the blog admin application.
+Create a workspace user group named "Bloggers". Add APEX users to the group who are authorized to use the blog admin application.
 See how to create a workspace group in the APEX documentation [*Using Groups to Manage Application Express Users*](https://docs.oracle.com/en/database/oracle/apex/24.2/aeadm/managing-users-in-a-workspace.html#GUID-0FD7B406-8A83-40C0-A3E7-EF19BBDEA5A4).
 
 ## Upgrade

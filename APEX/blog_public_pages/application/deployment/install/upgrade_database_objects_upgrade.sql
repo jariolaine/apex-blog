@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.0'
+,p_release=>'24.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -647,7 +647,7 @@ wwv_flow_imp_shared.create_install_script(
 '--  DESCRIPTION:',
 '--    This package contains functions to generate various types of URLs',
 '--    for the blog application. The URLs support different conten'))
-,p_updated_on=>wwv_flow_imp.dz('20250511051105Z')
+,p_updated_on=>wwv_flow_imp.dz('20250629054124Z')
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
@@ -1482,28 +1482,28 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 'create or replace force view blog_v_all_tags as',
 'select',
-'   t1.id                as id',
-'  ,t1.row_version       as row_version',
-'  ,t1.created_on        as created_on',
-'  ,lower(t1.created_by) as created_by',
-'  ,t1.changed_on        as changed_on',
-'  ,lower(t1.changed_by) as changed_by',
-'  ,t1.is_active         as is_active',
-'  ,t1.tag               as tag',
-'  ,t1.tag_unique        as tag_unique',
-'  ,t1.notes             as notes',
-'  ,case t1.is_active',
+'  t1.id                 as id',
+', t1.row_version        as row_version',
+', t1.created_on         as created_on',
+', lower(t1.created_by)  as created_by',
+', t1.changed_on         as changed_on',
+', lower(t1.changed_by)  as changed_by',
+', t1.is_active          as is_active',
+', t1.tag                as tag',
+', t1.tag_unique         as tag_unique',
+', t1.notes              as notes',
+', case t1.is_active',
 '    when 1',
 '      then c.txt_enabled',
 '      else c.txt_disabled',
 '  end                   as tag_status_text',
-'  ,(',
+', (',
 '    select count(1)',
 '    from blog_post_tags lkp',
 '    where 1 = 1',
 '    and lkp.tag_id = t1.id',
 '   )                    as posts_count',
-'  ,case',
+', case',
 '    when exists(',
 '      select 1',
 '      from blog_post_tags lkp',
@@ -1516,8 +1516,8 @@ wwv_flow_imp_shared.append_to_install_script(
 'from blog_tags t1',
 'cross join(',
 '  select',
-'     apex_lang.message( ''BLOG_TXT_ENABLED'' )    as txt_enabled',
-'    ,apex_lang.message( ''BLOG_TXT_DISABLED'' )   as txt_disabled',
+'    apex_lang.get_message( ''BLOG_TXT_ENABLED'' )   as txt_enabled',
+'  , apex_lang.get_message( ''BLOG_TXT_DISABLED'' )  as txt_disabled',
 '  from dual',
 ') c',
 'where 1 = 1',
@@ -1574,7 +1574,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    then ''Y''',
 '    else ''N''',
 '  end                         as is_parent',
-', apex_lang.message(',
+', apex_lang.get_message(',
 '    p_name => t1.build_option_name',
 '  )                           as feature_desc',
 '  ,regexp_replace(',
@@ -1588,7 +1588,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_message => ''<span data-sort-order="%s" class="u-bold">%s</span>''',
 '  , p0 => lpad( min( t1.display_seq ) over( partition by t1.build_option_group ), 6, ''0'' )',
 '  , p1 =>',
-'      apex_lang.message(',
+'      apex_lang.get_message(',
 '        p_name => t1.build_option_group',
 '      )',
 '  )                           as feature_group_html',
@@ -1711,11 +1711,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 'create or replace force view blog_v_lov as',
 'select',
-'   t1.lov_name                              as lov_name',
-'  ,t1.display_seq                           as display_seq',
-'  ,t1.return_value                          as return_value',
-'  ,t1.display_message                       as display_message',
-'  ,apex_lang.message( t1.display_message )  as display_value',
+'  t1.lov_name                                 as lov_name',
+', t1.display_seq                              as display_seq',
+', t1.return_value                             as return_value',
+', t1.display_message                          as display_message',
+', apex_lang.get_message( t1.display_message ) as display_value',
 'from blog_list_of_values t1',
 'where 1 = 1',
 'and t1.is_active = 1',
@@ -2298,12 +2298,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ,(',
 '    select',
 '      xmlserialize(',
-'        content xmlagg( lkp_tag.'))
+'        conte'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'tag_html1 order by lkp_tag.display_seq ) as varchar2(4000)',
+'nt xmlagg( lkp_tag.tag_html1 order by lkp_tag.display_seq ) as varchar2(4000)',
 '      ) as tags_html',
 '    from blog_v_post_tags lkp_tag',
 '    where 1 = 1',
@@ -2360,7 +2360,7 @@ wwv_flow_imp_shared.append_to_install_script(
 ', t1.is_nullable              as is_nullable',
 ', t1.display_seq              as display_seq',
 ', t1.attribute_name           as attribute_name',
-', apex_lang.message(',
+', apex_lang.get_message(',
 '    p_name => t1.attribute_message',
 '  )                           as attribute_desc',
 ', t1.attribute_value          as attribute_value',
@@ -2380,7 +2380,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_message => ''<span data-sort-order="%s" class="u-bold">%s</span>''',
 '  , p0 => lpad( min( t1.display_seq ) over( partition by t1.attribute_group_message ), 5, ''0'' )',
 '  , p1 =>',
-'      apex_lang.message(',
+'      apex_lang.get_message(',
 '        p_name => t1.attribute_group_message',
 '      )',
 '  )                           as attribute_group_html',
@@ -3329,12 +3329,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '  if inserting then',
 '    :new.id           := coalesce( :new.id, blog_seq.nextval );',
 '    :new.row_version  := coalesce( :new.row_version, 1 );',
-'    :new.created_on   := coalesce( :new.creat'))
+'    :new.created_o'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ed_on, localtimestamp );',
+'n   := coalesce( :new.created_on, localtimestamp );',
 '    :new.created_by   := coalesce(',
 '      :new.created_by',
 '      ,sys_context( ''APEX$SESSION'', ''APP_USER'' )',
@@ -4025,12 +4025,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '  mime_t(''chm'') := ''application/vnd.ms-htmlhelp'';',
 '  mime_t(''ims'') := ''application/vnd.ms-ims'';',
 '  mime_t(''lrm'') := ''application/vnd.ms-lrm'';',
-'  mime_t(''thmx'') := ''application'))
+'  mim'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'/vnd.ms-officetheme'';',
+'e_t(''thmx'') := ''application/vnd.ms-officetheme'';',
 '  mime_t(''cat'') := ''application/vnd.ms-pki.seccat'';',
 '  mime_t(''stl'') := ''application/vnd.ms-pki.stl'';',
 '  mime_t(''ppt'') := ''application/vnd.ms-powerpoint'';',
@@ -4704,13 +4704,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '      -- if file exists handle exception',
 '      exception when dup_val_on_index',
 '      then',
-'        -- create collection for storing file temporaly',
-' '))
+'        -- create collection f'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'       -- we prompt user to confirm file overwrite',
+'or storing file temporaly',
+'        -- we prompt user to confirm file overwrite',
 '        -- and show file information e.g. name and possible description from collection',
 '        -- then if user confirms, we can overwrite file using data stored in collection',
 '        if not apex_collection.collection_exists( p_collection_name )',
@@ -5027,7 +5027,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    apex_json.open_object;',
 '    apex_json.write(',
 '      p_name  => ''status''',
-'    , p_value => apex_lang.message( ''BLOG_GENERIC_ERROR'' )',
+'    , p_value => apex_lang.get_message( ''BLOG_GENERIC_ERROR'' )',
 '    );',
 '    apex_json.close_all;',
 '',
@@ -5212,7 +5212,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        -- Change the message to the generic error message which doesn''t expose',
 '        -- any sensitive information.',
 '        l_result.message :=',
-'          apex_lang.message(',
+'          apex_lang.get_message(',
 '            p_name => l_genereric_error',
 '          )',
 '        ;',
@@ -5240,7 +5240,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '          )',
 '        ;',
 '        l_err_mesg :=',
-'          apex_lang.message(',
+'          apex_lang.get_message(',
 '            p_name => l_constraint_name',
 '          )',
 '        ;',
@@ -5769,13 +5769,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '    , p_value => ''Content-Disposition''',
 '    );',
 '    apex_string.push(',
-'      p_table => l_header_values',
-'    , p_value =>'))
+'      p_ta'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'ble => l_header_values',
+'    , p_value =>',
 '        apex_string.format(',
 '            p_message => ''%s filename="%s"''',
 '          , p0 =>',
@@ -6505,10 +6505,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '    then',
 '',
 '      -- prepare validation error message for exception handler',
-'      l_err_mesg := apex_lang.message(',
-'        p_name => p_err_mesg',
-'        ,p0 => p_min',
-'        ,p1 => p_max',
+'      l_err_mesg := apex_lang.get_message(',
+'        p_name    => p_err_mesg',
+'      , p_params  =>',
+'          apex_t_varchar2(',
+'            ''min''',
+'          , p_min',
+'          , ''max''',
+'          , p_max',
+'        )',
 '      );',
 '',
 '      l_value := to_number( p_value );',
@@ -6791,18 +6796,18 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_result  in out nocopy apex_plugin.t_item_render_result',
 '  )',
 '  as',
-'  begin',
+'  begi'))
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(138405351815225809)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'n',
 '',
 '    if apex_application.g_debug',
 '    then',
 '      apex_plugin_util.debug_page_item(',
 '        p_plugin      => p_plugin',
-'      , p_page_i'))
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(138405351815225809)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'tem  => p_item',
+'      , p_page_item  => p_item',
 '      );',
 '    end if;',
 '',
@@ -6910,10 +6915,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    apex_debug.error( ''ajax_math_question_field error: %s'', sqlerrm );',
 '',
-'    l_err := apex_lang.message(',
+'    l_err := apex_lang.get_message(',
 '      p_name => p_plugin.attribute_02',
-'    , p0 => p_item.plain_label',
 '    );',
+'',
+'    if l_err = apex_escape.html( upper( p_plugin.attribute_02 ) )',
+'    then',
+'      l_err := p_plugin.attribute_02;',
+'    end if;',
+'',
 '    raise_application_error( -20002 ,  l_err );',
 '    raise;',
 '',
@@ -6948,9 +6958,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '    if not l_result',
 '    then',
 '',
-'      p_result.message := apex_lang.message(',
+'      p_result.message := apex_lang.get_message(',
 '        p_name => p_plugin.attribute_01',
-'      , p0 => p_item.plain_label',
 '      );',
 '',
 '      if p_result.message = apex_escape.html( upper( p_plugin.attribute_01 ) )',
@@ -7806,18 +7815,18 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    if l_err_mesg is not null',
 '    then',
-'      -- prepare return validation error message',
-'      l_result := apex_lang.message(',
+'      -- prepare return validatio'))
+);
+wwv_flow_imp_shared.append_to_install_script(
+ p_id=>wwv_flow_imp.id(138405351815225809)
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'n error message',
+'      l_result := apex_lang.get_message(',
 '        p_name => l_err_mesg',
 '      );',
 '    end if;',
 '    -- return validation result',
 '    -- if validation fails we return error message stored to variable',
-''))
-);
-wwv_flow_imp_shared.append_to_install_script(
- p_id=>wwv_flow_imp.id(138405351815225809)
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '    return l_result;',
 '',
 '  end validate_comment;',
@@ -8304,17 +8313,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ) return varchar2',
 '  as',
 '    l_rss_url     varchar2(4000);',
-'    l_rss_title   varchar2(4000);',
 '    l_rss_anchor  varchar2(4000);',
 '  begin',
-'',
-'    -- get rss title',
-'    l_rss_title :=',
-'      apex_lang.message(',
-'        p_name  => p_message',
-'      , p0      => p_app_name',
-'      )',
-'    ;',
 '',
 '    -- get rss url',
 '    l_rss_url :=  blog_url.get_rss;',
@@ -8768,12 +8768,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '    , p_value_03  => case when p_overwrite_file = ''N'' then ''*'' end',
 '    , p_name_04   => case when p_cache_control is not null then ''Cache-Control'' end',
 '    , p_value_04  => p_cache_control',
-'    , p_name_05   => case when p_client_request_id is n'))
+'    , p_name_05   ='))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'ot null then ''opc-client-request-id'' end',
+'> case when p_client_request_id is not null then ''opc-client-request-id'' end',
 '    , p_value_05  => p_client_request_id',
 '    );',
 '    -- append default request headers',
@@ -9728,14 +9728,14 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- blog name',
 '    l_app_name := coalesce(',
 '       p_app_name',
-'      ,blog_util.get_attribute_value( ''P0_BLOG_APP_NAME'' )',
-'    );',
-'    -- rss feed description',
-''))
+'      ,blog_util.get_attribute_value( ''P0_BLOG_APP_NAME'' )'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'',
+'    );',
+'    -- rss feed description',
 '    l_app_desc  := coalesce(',
 '       p_app_desc',
 '      ,blog_util.get_attribute_value( ''P0_BLOG_APP_DESC'' )',
@@ -10539,7 +10539,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    param_t( ''lang_ai_compartment_ocid'' ) := blog_util.get_attribute_value( param_t( ''lang_ai_compartment_param_name'' ) );',
 '    param_t( ''gen_ai_static_id'' ) := ''BLOG_OPEN_AI_API'';',
 '    param_t( ''gen_ai_build_option'' ) := ''BLOG_FEATURE_GENERATIVE_AI'';',
-'    param_t( ''gen_ai_generate_prompt'' ) := apex_lang.message( ''BLOG_AI_GENERATE_PROMPT'' );',
+'    param_t( ''gen_ai_generate_prompt'' ) := apex_lang.get_message( ''BLOG_AI_GENERATE_PROMPT'' );',
 '    param_t( ''gen_ai_generate_msg'' ) := ''BLOG_AI_GENERATE_MESSAGE'';',
 '',
 '    -- Debug parameters',
@@ -10681,9 +10681,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- Prepare user message for AI chat',
 '    l_messages(1).chat_role := ''user'';',
 '    l_messages(1).message :=',
-'      apex_lang.message(',
-'        p_name => param_t( ''gen_ai_generate_msg'' )',
-'      , p0 => substr( apex_escape.striphtml( p_post ), 1, 32000 )',
+'      apex_lang.get_message(',
+'        p_name    => param_t( ''gen_ai_generate_msg'' )',
+'      , p_params  =>',
+'          apex_t_varchar2 (',
+'            ''post''',
+'          , substr( apex_escape.striphtml( p_post ), 1, 32000 )',
+'          )',
 '      )',
 '    ;',
 '',
@@ -10694,14 +10698,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '      , p_messages          => l_messages',
 '      , p_prompt            => param_t( ''gen_ai_generate_prompt'' )',
 '      , p_system_prompt     =>',
-'          apex_lang.message(',
-'            p_name => p_system_prompt',
-'          )',
-'      );',
-'',
-'    apex_debug.info( ''AI generated content: %s'', l_response );',
-'',
-'    -- W'))
+'          apex_lang.get_message(',
+'   '))
 );
 end;
 /
@@ -10709,7 +10707,13 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(138405351815225809)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'rite HTTP JSON header and response',
+'         p_name => p_system_prompt',
+'          )',
+'      );',
+'',
+'    apex_debug.info( ''AI generated content: %s'', l_response );',
+'',
+'    -- Write HTTP JSON header and response',
 '    apex_plugin_util.print_json_http_header;',
 '    apex_json.open_object;',
 '    apex_json.write( ''response'', l_response );',

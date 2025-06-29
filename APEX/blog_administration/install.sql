@@ -23,13 +23,13 @@ prompt --install
 @@application/shared_components/navigation/lists/public_application_links.sql
 @@application/shared_components/navigation/lists/activity_reports.sql
 @@application/shared_components/navigation/listentry.sql
+@@application/shared_components/files/css_admin_min_css.sql
 @@application/shared_components/files/icons_app_icon_32_png.sql
 @@application/shared_components/files/icons_app_icon_192_png.sql
 @@application/shared_components/files/icons_app_icon_512_png.sql
 @@application/shared_components/files/css_admin_css.sql
 @@application/shared_components/files/icons_app_icon_144_rounded_png.sql
 @@application/shared_components/files/icons_app_icon_256_rounded_png.sql
-@@application/shared_components/files/css_admin_min_css.sql
 @@application/shared_components/files/js_admin_min_js.sql
 @@application/shared_components/files/js_admin_js.sql
 @@application/plugin_settings.sql
@@ -85,9 +85,9 @@ prompt --install
 @@application/shared_components/email/templates/blog_reply_to_comment_notify.sql
 @@application/shared_components/security/authentications/apex.sql
 @@application/shared_components/security/authentications/google.sql
+@@application/shared_components/plugins/template_component/theme_42_button_custom_1.sql
 @@application/shared_components/plugins/template_component/theme_42_footer_link_custom.sql
 @@application/shared_components/plugins/template_component/theme_42_icon_custom.sql
-@@application/shared_components/plugins/template_component/theme_42_button_custom_2.sql
 @@application/user_interfaces/combined_files.sql
 @@application/pages/page_00000.sql
 @@application/pages/page_00001.sql

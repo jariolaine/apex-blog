@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.0'
+,p_release=>'24.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -20,7 +20,7 @@ wwv_flow_imp_shared.create_install_script(
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'begin',
 '-- Inserting into BLOG_SETTINGS',
-'blog_install.settings_ins(10,0,''G_APP_VERSION'',''STRING'',''INTERNAL'',''Release 24.2.0.20250511'',null,null);',
+'blog_install.settings_ins(10,0,''G_APP_VERSION'',''STRING'',''INTERNAL'',''Release 24.2.5.20250629'',null,null);',
 'blog_install.settings_ins(20,0,''G_PUB_APP_ID'',''STRING'',''INTERNAL'',blog_util.int_to_vc2(apex_application_install.get_application_id),null,null);',
 'blog_install.settings_ins(110,0,''P0_BLOG_APP_NAME'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',''My Blog'',null,null);',
 'blog_install.settings_ins(120,0,''P0_BLOG_APP_DESC'',''STRING'',''BLOG_SETTING_GROUP_GENERAL'',''About Almost Everything'',null,null);',
@@ -112,7 +112,7 @@ wwv_flow_imp_shared.create_install_script(
 'end;',
 '/',
 ''))
-,p_updated_on=>wwv_flow_imp.dz('20250511050055Z')
+,p_updated_on=>wwv_flow_imp.dz('20250629054104Z')
 );
 wwv_flow_imp.component_end;
 end;

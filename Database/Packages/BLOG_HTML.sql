@@ -317,17 +317,8 @@ as
   ) return varchar2
   as
     l_rss_url     varchar2(4000);
-    l_rss_title   varchar2(4000);
     l_rss_anchor  varchar2(4000);
   begin
-
-    -- get rss title
-    l_rss_title :=
-      apex_lang.message(
-        p_name  => p_message
-      , p0      => p_app_name
-      )
-    ;
 
     -- get rss url
     l_rss_url :=  blog_url.get_rss;

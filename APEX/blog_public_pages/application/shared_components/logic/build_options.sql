@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.0'
+,p_release=>'24.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -15,12 +15,12 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(80109302137924712)
 ,p_build_option_name=>'BLOG_FEATURE_MODERATE_COMMENTS_AI'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>42197094979664
+,p_version_scn=>42244267336649
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable comments moderation automatically using AI'
 ,p_created_on=>wwv_flow_imp.dz('20241208134037Z')
-,p_updated_on=>wwv_flow_imp.dz('20250409145919Z')
+,p_updated_on=>wwv_flow_imp.dz('20250629041513Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(134299248056650290)
@@ -172,11 +172,11 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(155675266349386026)
 ,p_build_option_name=>'BLOG_FEATURE_MODERATE_COMMENTS'
 ,p_build_option_status=>'INCLUDE'
-,p_version_scn=>42197332810306
+,p_version_scn=>42244267343738
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable comments moderation'
-,p_updated_on=>wwv_flow_imp.dz('20250412020326Z')
+,p_updated_on=>wwv_flow_imp.dz('20250629041517Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(157505626766866589)
@@ -191,21 +191,21 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(158089734281512799)
 ,p_build_option_name=>'BLOG_FEATURE_LANGUAGE_AI'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>42197559842306
+,p_version_scn=>42201936895369
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable comments sentiment analyze using OCI language AI'
-,p_updated_on=>wwv_flow_imp.dz('20250414161322Z')
+,p_updated_on=>wwv_flow_imp.dz('20250511052854Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(158909835543127564)
 ,p_build_option_name=>'BLOG_FEATURE_COMMENT_VERIFY'
 ,p_build_option_status=>'INCLUDE'
-,p_version_scn=>42197137513023
+,p_version_scn=>42244267276479
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable comment verify question'
-,p_updated_on=>wwv_flow_imp.dz('20250410013823Z')
+,p_updated_on=>wwv_flow_imp.dz('20250629041435Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(161097532534222537)

@@ -1,6 +1,6 @@
 begin
 -- Inserting into BLOG_SETTINGS
-blog_install.settings_ins(10,0,'G_APP_VERSION','STRING','INTERNAL','Release 24.2.0.20250511',null,null);
+blog_install.settings_ins(10,0,'G_APP_VERSION','STRING','INTERNAL','Release 24.2.5.20250629',null,null);
 blog_install.settings_ins(20,0,'G_PUB_APP_ID','STRING','INTERNAL',blog_util.int_to_vc2(apex_application_install.get_application_id),null,null);
 blog_install.settings_ins(110,0,'P0_BLOG_APP_NAME','STRING','BLOG_SETTING_GROUP_GENERAL','My Blog',null,null);
 blog_install.settings_ins(120,0,'P0_BLOG_APP_DESC','STRING','BLOG_SETTING_GROUP_GENERAL','About Almost Everything',null,null);

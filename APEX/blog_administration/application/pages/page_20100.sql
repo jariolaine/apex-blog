@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.0'
+,p_release=>'24.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_dialog_chained=>'N'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250629052959Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(147746447900912997)
@@ -50,22 +50,27 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
-'  v1.attribute_desc   as label',
-'  ,apex_lang.message(',
-'    p_name => v1.help_message',
-'    ,p0 => v1.int_min',
-'    ,p1 => v1.int_max',
-'  )                   as help',
+'  v1.attribute_desc as label',
+', apex_lang.get_message(',
+'    p_name    => v1.help_message',
+'  , p_params  => ',
+'      apex_t_varchar2(',
+'        ''min''',
+'      , v1.int_min',
+'      , ''max''',
+'      , v1.int_max',
+'      )',
+'  )                 as help',
 'from blog_v_settings v1',
 'where 1 = 1',
 '  and :REQUEST = ''SETTINGS''',
 '  and v1.id = :P20100_ID',
 'union all',
 'select',
-'  v1.feature_desc     as label',
-'  ,apex_lang.message(',
+'  v1.feature_desc   as label',
+', apex_lang.get_message(',
 '    p_name => v1.help_message',
-'  )                   as help',
+'  )                 as help',
 'from blog_v_features v1',
 'where 1 = 1',
 '  and :REQUEST = ''FEATURES''',
@@ -79,7 +84,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_prn_output=>'N'
 ,p_sort_null=>'L'
 ,p_plug_query_strip_html=>'N'
-,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_updated_on=>wwv_flow_imp.dz('20250629052959Z')
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(147749852134913031)

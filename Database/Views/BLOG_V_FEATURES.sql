@@ -17,7 +17,7 @@ select
     then 'Y'
     else 'N'
   end                         as is_parent
-, apex_lang.message(
+, apex_lang.get_message(
     p_name => t1.build_option_name
   )                           as feature_desc
   ,regexp_replace(
@@ -31,7 +31,7 @@ select
     p_message => '<span data-sort-order="%s" class="u-bold">%s</span>'
   , p0 => lpad( min( t1.display_seq ) over( partition by t1.build_option_group ), 6, '0' )
   , p1 =>
-      apex_lang.message(
+      apex_lang.get_message(
         p_name => t1.build_option_group
       )
   )                           as feature_group_html

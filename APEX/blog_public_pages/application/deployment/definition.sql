@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.0'
+,p_release=>'24.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -39,7 +39,7 @@ wwv_flow_imp_shared.create_install(
 ,p_deinstall_success_message=>'Deinstallation complete.'
 ,p_required_free_kb=>200
 ,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
-,p_last_updated_on=>wwv_flow_imp.dz('20250511051105Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250629054132Z')
 );
 wwv_flow_imp.component_end;
 end;

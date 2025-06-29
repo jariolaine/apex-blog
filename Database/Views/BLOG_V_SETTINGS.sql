@@ -10,7 +10,7 @@ select
 , t1.is_nullable              as is_nullable
 , t1.display_seq              as display_seq
 , t1.attribute_name           as attribute_name
-, apex_lang.message(
+, apex_lang.get_message(
     p_name => t1.attribute_message
   )                           as attribute_desc
 , t1.attribute_value          as attribute_value
@@ -30,7 +30,7 @@ select
     p_message => '<span data-sort-order="%s" class="u-bold">%s</span>'
   , p0 => lpad( min( t1.display_seq ) over( partition by t1.attribute_group_message ), 5, '0' )
   , p1 =>
-      apex_lang.message(
+      apex_lang.get_message(
         p_name => t1.attribute_group_message
       )
   )                           as attribute_group_html

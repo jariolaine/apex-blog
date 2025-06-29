@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.0'
+,p_release=>'24.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414022033Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250629041631Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(133113396802091326)
@@ -291,7 +291,7 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_bind_type=>'bind'
 ,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'change'
-,p_updated_on=>wwv_flow_imp.dz('20250122024902Z')
+,p_updated_on=>wwv_flow_imp.dz('20250629041631Z')
 );
 wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(114485792751989994)
@@ -301,8 +301,8 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_ENABLE'
 ,p_affected_elements_type=>'ITEM'
-,p_affected_elements=>'P20015_COMPARTMENT_OCID'
-,p_updated_on=>wwv_flow_imp.dz('20250122024902Z')
+,p_affected_elements=>'P20015_COMPARTMENT_OCID,P20015_BASE_URL'
+,p_updated_on=>wwv_flow_imp.dz('20250629041631Z')
 );
 wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(114486250407989993)
@@ -312,8 +312,8 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_execute_on_page_init=>'Y'
 ,p_action=>'NATIVE_DISABLE'
 ,p_affected_elements_type=>'ITEM'
-,p_affected_elements=>'P20015_COMPARTMENT_OCID'
-,p_updated_on=>wwv_flow_imp.dz('20250122024902Z')
+,p_affected_elements=>'P20015_COMPARTMENT_OCID,P20015_BASE_URL'
+,p_updated_on=>wwv_flow_imp.dz('20250629041631Z')
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(115296514647141412)

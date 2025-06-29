@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.0'
+,p_release=>'24.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -16,10 +16,10 @@ wwv_flow_imp_shared.create_message(
 ,p_name=>'BLOG_AI_GENERATE_MESSAGE'
 ,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'Consider the following blog post: """',
-'%0',
+'%post',
 '"""'))
-,p_version_scn=>41488269480870
-,p_updated_on=>wwv_flow_imp.dz('20241208084326Z')
+,p_version_scn=>42244270059628
+,p_updated_on=>wwv_flow_imp.dz('20250629044101Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(114714175154071839)
@@ -555,46 +555,53 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(94479526054975974)
 ,p_name=>'BLOG_HELP_G_COMMENT_WATCH_MONTHS'
-,p_message_text=>'How many months will a user receive an email notification of new replies after they last comment on a post. The value must be an integer between %0 and %1.'
-,p_version_scn=>1
+,p_message_text=>'How many months will a user receive an email notification of new replies after they last comment on a post. The value must be an integer between %min and %max.'
+,p_version_scn=>42244274805029
+,p_updated_on=>wwv_flow_imp.dz('20250629052425Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(102342054003091853)
 ,p_name=>'BLOG_HELP_G_LATEST_POST_ROWS'
-,p_message_text=>'The number of post displayed on the latest post list. The value must be an integer between %0 and %1. Changes to this settings only take effect in new sessions of the public application.'
-,p_version_scn=>1
+,p_message_text=>'The number of post displayed on the latest post list. The value must be an integer between %min and %max. Changes to this settings only take effect in new sessions of the public application.'
+,p_version_scn=>42244274822432
+,p_updated_on=>wwv_flow_imp.dz('20250629052436Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(94784405261491259)
 ,p_name=>'BLOG_HELP_G_MAX_AGE_DOWNLOAD'
 ,p_message_text=>'Cache-Control HTTP response header max-age for files that are available for download on the "Files" page of the public application. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must b'
-||'e an integer between %0 and %1.'
-,p_version_scn=>1
+||'e an integer between %min and %max.'
+,p_version_scn=>42244274843605
+,p_updated_on=>wwv_flow_imp.dz('20250629052449Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(94786083802569361)
 ,p_name=>'BLOG_HELP_G_MAX_AGE_FILE'
 ,p_message_text=>'Cache-Control HTTP response header max-age for files that are not downloadable on the "Files" page of the public application. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an i'
-||'nteger between %0 and %1.'
-,p_version_scn=>1
+||'nteger between %min and %max.'
+,p_version_scn=>42244274861968
+,p_updated_on=>wwv_flow_imp.dz('20250629052500Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(94785665225561813)
 ,p_name=>'BLOG_HELP_G_MAX_AGE_RSS'
-,p_message_text=>'RSS feed Cache-Control HTTP response header max-age. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an integer between %0 and %1.'
-,p_version_scn=>1
+,p_message_text=>'RSS feed Cache-Control HTTP response header max-age. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an integer between %min and %max.'
+,p_version_scn=>42244274879144
+,p_updated_on=>wwv_flow_imp.dz('20250629052511Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(94785857309568470)
 ,p_name=>'BLOG_HELP_G_MAX_AGE_RSS_XSL'
-,p_message_text=>'RSS feed XSL Cache-Control HTTP response header max-age. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an integer between %0 and %1.'
-,p_version_scn=>1
+,p_message_text=>'RSS feed XSL Cache-Control HTTP response header max-age. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an integer between %min and %max.'
+,p_version_scn=>42244274893010
+,p_updated_on=>wwv_flow_imp.dz('20250629052519Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(94786400228582137)
 ,p_name=>'BLOG_HELP_G_MAX_AGE_SITEMAP'
-,p_message_text=>'Sitemap Cache-Control HTTP response header max-age. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an integer between %0 and %1.'
-,p_version_scn=>1
+,p_message_text=>'Sitemap Cache-Control HTTP response header max-age. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an integer between %min and %max.'
+,p_version_scn=>42244274912417
+,p_updated_on=>wwv_flow_imp.dz('20250629052528Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(147815378955514439)
@@ -635,20 +642,23 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(102342510411246964)
 ,p_name=>'BLOG_HELP_P0_BLOG_SEARCH_ROWS'
-,p_message_text=>'The number of Search results per report page. The value must be an integer between %0 and %1. Changes to this settings only take effect in new sessions of the public application.'
-,p_version_scn=>41109923047097
+,p_message_text=>'The number of Search results per report page. The value must be an integer between %min and %max. Changes to this settings only take effect in new sessions of the public application.'
+,p_version_scn=>42244274928979
+,p_updated_on=>wwv_flow_imp.dz('20250629052539Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(102340376329043325)
 ,p_name=>'BLOG_HELP_P1_BLOG_POST_ROWS'
-,p_message_text=>'The number of posts per report page displayed on the home page. The value must be an integer between %0 and %1. Changes to this settings only take effect in new sessions of the public application.'
-,p_version_scn=>41109923078771
+,p_message_text=>'The number of posts per report page displayed on the home page. The value must be an integer between %min and %max. Changes to this settings only take effect in new sessions of the public application.'
+,p_version_scn=>42244274945995
+,p_updated_on=>wwv_flow_imp.dz('20250629052550Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(102341211234073778)
 ,p_name=>'BLOG_HELP_P2_BLOG_COMMENT_ROWS'
-,p_message_text=>'The number of comments per report page displayed on the post page. The value must be an integer between %0 and %1. Changes to this settings only take effect in new sessions of the public application.'
-,p_version_scn=>41109923207454
+,p_message_text=>'The number of comments per report page displayed on the post page. The value must be an integer between %min and %max. Changes to this settings only take effect in new sessions of the public application.'
+,p_version_scn=>42244274959503
+,p_updated_on=>wwv_flow_imp.dz('20250629052559Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(105562237252297948)
@@ -824,10 +834,10 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(114671136958398625)
 ,p_name=>'BLOG_MSG_LANGUAGE_AI_INFO'
 ,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<p>To use language AI, the system administrator must configure <i>Blog Language AI</i> <strong>remote server</strong> endpoint URL.</p>',
+'<p>To use language AI, you must first configure an Oracle <i>Cloud API Key</i>.</p>',
 '<p>When language AI is enabled, the sentiment of all new comments is analyzed. You can see the analysis result when opening a comment.</p>'))
-,p_version_scn=>41492475102959
-,p_updated_on=>wwv_flow_imp.dz('20250122025658Z')
+,p_version_scn=>42244264829866
+,p_updated_on=>wwv_flow_imp.dz('20250629035310Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(135528583746186927)
@@ -853,19 +863,27 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(111293808854717846)
 ,p_name=>'BLOG_MSG_OBJECT_STORAGE_INFO'
 ,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<p>To use object storage, the system administrator must configure <i>Blog Object Storage</i> <strong>remote server</strong> endpoint URL.</p>',
+'<p>To use object storage, you must first configure an <i>Oracle Cloud API Key</i>.</p>',
 '<p>Once object storage is enabled, go to <strong>Synchronize Files</strong> and sync files between local file repository and object storage.</p>',
 '<p>When object storage is enabled, new files are no longer saved to the local file repository. You can use synchronization to retrieve files from object storage to the local file repository.</p>'))
-,p_version_scn=>41492475116731
-,p_updated_on=>wwv_flow_imp.dz('20250122025710Z')
+,p_version_scn=>42244264944783
+,p_updated_on=>wwv_flow_imp.dz('20250629035412Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(98654830965007071)
 ,p_name=>'BLOG_MSG_OCI_API_KEY_INFO'
-,p_message_text=>'<p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for all fields.</p>'
-,p_version_scn=>41492475122142
+,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<p>To enable Oracle Cloud services, please provide your API Key in the fields below.</p>',
+'<p>This key is used for the following features:</p>',
+'<ul>',
+'  <li><strong>Object Storage</strong>: Required to upload and manage files in your Oracle Cloud Object Storage bucket.</li>',
+'  <li><strong>Language AI</strong>: Required to analyze the sentiment of comments using Oracle''s Language AI service.</li>',
+'</ul>',
+'<p>You can generate an API Key in your Oracle Cloud Console.</p>',
+'<p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for all fields.</p>'))
+,p_version_scn=>42244265468740
 ,p_created_on=>wwv_flow_imp.dz('20250122025554Z')
-,p_updated_on=>wwv_flow_imp.dz('20250122025716Z')
+,p_updated_on=>wwv_flow_imp.dz('20250629035911Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(101201752243216937)
@@ -1041,8 +1059,9 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(123634868014601371)
 ,p_name=>'BLOG_SETTING_G_RSS_XSL_URL'
-,p_message_text=>'RSS feed custom XSL'
-,p_version_scn=>1
+,p_message_text=>'RSS feed custom XSL URL'
+,p_version_scn=>42201936693137
+,p_updated_on=>wwv_flow_imp.dz('20250511052645Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(101480844434735367)
@@ -1193,8 +1212,9 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(109794290965177281)
 ,p_name=>'BLOG_VALIDATION_ERR_INTEGER'
-,p_message_text=>'The value must be an integer between %0 and %1.'
-,p_version_scn=>1
+,p_message_text=>'The value must be an integer between %min and %max.'
+,p_version_scn=>42244272187889
+,p_updated_on=>wwv_flow_imp.dz('20250629050052Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(109794502319179224)

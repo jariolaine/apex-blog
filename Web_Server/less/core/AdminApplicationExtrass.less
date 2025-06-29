@@ -71,9 +71,13 @@
 * Interactive Reports link and icon column
 **************************************/
 .blog-IR--iconLinks {
-  td:has( .t-Button ), td:has( .t-Icon ) {
-    width: .1%;
-    padding: 0.25rem 0.25rem;
+  td:has( .t-Icon ),
+  td:has( .t-Button ) {
+    padding: 0.25rem;
+  }
+  td:has( .t-Icon ),
+  td:has( .t-Button:not( .t-Button--stretch ) ) {
+  width: 0.1%;
   }
   .t-Button--noUI {
     outline: none;

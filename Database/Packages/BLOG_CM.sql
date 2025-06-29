@@ -898,10 +898,15 @@ as
     then
 
       -- prepare validation error message for exception handler
-      l_err_mesg := apex_lang.message(
-        p_name => p_err_mesg
-        ,p0 => p_min
-        ,p1 => p_max
+      l_err_mesg := apex_lang.get_message(
+        p_name    => p_err_mesg
+      , p_params  =>
+          apex_t_varchar2(
+            'min'
+          , p_min
+          , 'max'
+          , p_max
+        )
       );
 
       l_value := to_number( p_value );

@@ -234,7 +234,7 @@ as
         -- Change the message to the generic error message which doesn't expose
         -- any sensitive information.
         l_result.message :=
-          apex_lang.message(
+          apex_lang.get_message(
             p_name => l_genereric_error
           )
         ;
@@ -262,7 +262,7 @@ as
           )
         ;
         l_err_mesg :=
-          apex_lang.message(
+          apex_lang.get_message(
             p_name => l_constraint_name
           )
         ;

@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.0'
+,p_release=>'24.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -48,7 +48,7 @@ wwv_imp_workspace.create_flow(
 ,p_public_user=>'APEX_PUBLIC_USER'
 ,p_proxy_server=>nvl(wwv_flow_application_install.get_proxy,'')
 ,p_no_proxy_domains=>nvl(wwv_flow_application_install.get_no_proxy_domains,'')
-,p_flow_version=>'Release 24.2.0.20250511'
+,p_flow_version=>'Release 24.2.5.20250629'
 ,p_flow_status=>'AVAILABLE_W_EDIT_LINK'
 ,p_flow_unavailable_text=>'This application is currently unavailable at this time.'
 ,p_exact_substitutions_only=>'Y'
@@ -69,10 +69,10 @@ wwv_imp_workspace.create_flow(
 ,p_substitution_value_03=>'EXISTING_FILES'
 ,p_substitution_string_04=>'BLOG_DEFAULT_TIMEFRAME'
 ,p_substitution_value_04=>'86400'
-,p_last_updated_on=>wwv_flow_imp.dz('20250511051134Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250629054046Z')
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>1810
-,p_version_scn=>42201935620325
+,p_files_version=>1814
+,p_version_scn=>42244276541206
 ,p_print_server_type=>'INSTANCE'
 ,p_file_storage=>'DB'
 ,p_is_pwa=>'N'

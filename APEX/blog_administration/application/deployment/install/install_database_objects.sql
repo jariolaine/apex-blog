@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.0'
+,p_release=>'24.2.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -698,7 +698,7 @@ wwv_flow_imp_shared.create_install_script(
 '--  CHANGE LOG',
 '--  ============================================================================',
 '--  DATE'))
-,p_updated_on=>wwv_flow_imp.dz('20250511051134Z')
+,p_updated_on=>wwv_flow_imp.dz('20250629054046Z')
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
@@ -1972,28 +1972,28 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 'create or replace force view blog_v_all_tags as',
 'select',
-'   t1.id                as id',
-'  ,t1.row_version       as row_version',
-'  ,t1.created_on        as created_on',
-'  ,lower(t1.created_by) as created_by',
-'  ,t1.changed_on        as changed_on',
-'  ,lower(t1.changed_by) as changed_by',
-'  ,t1.is_active         as is_active',
-'  ,t1.tag               as tag',
-'  ,t1.tag_unique        as tag_unique',
-'  ,t1.notes             as notes',
-'  ,case t1.is_active',
+'  t1.id                 as id',
+', t1.row_version        as row_version',
+', t1.created_on         as created_on',
+', lower(t1.created_by)  as created_by',
+', t1.changed_on         as changed_on',
+', lower(t1.changed_by)  as changed_by',
+', t1.is_active          as is_active',
+', t1.tag                as tag',
+', t1.tag_unique         as tag_unique',
+', t1.notes              as notes',
+', case t1.is_active',
 '    when 1',
 '      then c.txt_enabled',
 '      else c.txt_disabled',
 '  end                   as tag_status_text',
-'  ,(',
+', (',
 '    select count(1)',
 '    from blog_post_tags lkp',
 '    where 1 = 1',
 '    and lkp.tag_id = t1.id',
 '   )                    as posts_count',
-'  ,case',
+', case',
 '    when exists(',
 '      select 1',
 '      from blog_post_tags lkp',
@@ -2006,8 +2006,8 @@ wwv_flow_imp_shared.append_to_install_script(
 'from blog_tags t1',
 'cross join(',
 '  select',
-'     apex_lang.message( ''BLOG_TXT_ENABLED'' )    as txt_enabled',
-'    ,apex_lang.message( ''BLOG_TXT_DISABLED'' )   as txt_disabled',
+'    apex_lang.get_message( ''BLOG_TXT_ENABLED'' )   as txt_enabled',
+'  , apex_lang.get_message( ''BLOG_TXT_DISABLED'' )  as txt_disabled',
 '  from dual',
 ') c',
 'where 1 = 1',
@@ -2064,7 +2064,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    then ''Y''',
 '    else ''N''',
 '  end                         as is_parent',
-', apex_lang.message(',
+', apex_lang.get_message(',
 '    p_name => t1.build_option_name',
 '  )                           as feature_desc',
 '  ,regexp_replace(',
@@ -2075,15 +2075,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '-- HTML in query because IG removes HTML from column HTM expression in control break column',
 '-- Contrel break is soretd and attribute data-sort-order gives correct sort order',
 ', apex_string.format(',
-'    p_message => ''<span data-sort-order="%s" class="u-bold">%s'))
+'    p_message => ''<span data-sort-order="%s" class="u-bol'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'</span>''',
+'d">%s</span>''',
 '  , p0 => lpad( min( t1.display_seq ) over( partition by t1.build_option_group ), 6, ''0'' )',
 '  , p1 =>',
-'      apex_lang.message(',
+'      apex_lang.get_message(',
 '        p_name => t1.build_option_group',
 '      )',
 '  )                           as feature_group_html',
@@ -2206,11 +2206,11 @@ wwv_flow_imp_shared.append_to_install_script(
 '--------------------------------------------------------',
 'create or replace force view blog_v_lov as',
 'select',
-'   t1.lov_name                              as lov_name',
-'  ,t1.display_seq                           as display_seq',
-'  ,t1.return_value                          as return_value',
-'  ,t1.display_message                       as display_message',
-'  ,apex_lang.message( t1.display_message )  as display_value',
+'  t1.lov_name                                 as lov_name',
+', t1.display_seq                              as display_seq',
+', t1.return_value                             as return_value',
+', t1.display_message                          as display_message',
+', apex_lang.get_message( t1.display_message ) as display_value',
 'from blog_list_of_values t1',
 'where 1 = 1',
 'and t1.is_active = 1',
@@ -2838,7 +2838,7 @@ wwv_flow_imp_shared.append_to_install_script(
 ', t1.is_nullable              as is_nullable',
 ', t1.display_seq              as display_seq',
 ', t1.attribute_name           as attribute_name',
-', apex_lang.message(',
+', apex_lang.get_message(',
 '    p_name => t1.attribute_message',
 '  )                           as attribute_desc',
 ', t1.attribute_value          as attribute_value',
@@ -2858,7 +2858,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    p_message => ''<span data-sort-order="%s" class="u-bold">%s</span>''',
 '  , p0 => lpad( min( t1.display_seq ) over( partition by t1.attribute_group_message ), 5, ''0'' )',
 '  , p1 =>',
-'      apex_lang.message(',
+'      apex_lang.get_message(',
 '        p_name => t1.attribute_group_message',
 '      )',
 '  )                           as attribute_group_html',
@@ -3070,13 +3070,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '  select',
 '    v1.tag_id',
 '  , v1.tag',
-'  , v1.tag_url',
-'  -- if tag is c'))
+'  , '))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'hanged, trigger tickles text index and post changes',
+'v1.tag_url',
+'  -- if tag is changed, trigger tickles text index and post changes',
 '  , max( v2.changed_on ) as changed_on',
 '  , count( 1 ) as posts_count',
 '  from blog_v_post_tags v1',
@@ -4067,12 +4067,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '  as',
 '  begin',
 '',
-'    insert into blog_settings( display_seq, is_nullable, attribute_name, data_type, attribute_group_message, attribute_value, int_m'))
+'    insert into blog_settings( display_seq, is_nullable, attribute_name, data_type, attribute_group_mess'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'in, int_max )',
+'age, attribute_value, int_min, int_max )',
 '      values( p_display_seq, p_is_nullable, p_attribute_name, p_data_type, p_attribute_group_message, p_attribute_value, p_int_min, p_int_max )',
 '    ;',
 '',
@@ -4749,13 +4749,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '  mime_t(''f'') := ''text/x-fortran'';',
 '  mime_t(''for'') := ''text/x-fortran'';',
 '  mime_t(''f77'') := ''text/x-fortran'';',
-'  mime_t(''f90'') := ''text/x-fortran'';',
-'  mime_t(''java'') := '))
+'  mime_t(''f90'') := ''text/x-for'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'''text/x-java-source'';',
+'tran'';',
+'  mime_t(''java'') := ''text/x-java-source'';',
 '  mime_t(''nfo'') := ''text/x-nfo'';',
 '  mime_t(''opml'') := ''text/x-opml'';',
 '  mime_t(''p'') := ''text/x-pascal'';',
@@ -5482,13 +5482,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '          p_file_name         => c1.filename',
 '        , p_dir               => p_dir',
 '        , p_mime_type         => c1.mime_type',
-'        , p_file_size         => l_file_size',
-'  '))
+'        , p_file_siz'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'      , p_overwrite_file    => p_overwrite_file',
+'e         => l_file_size',
+'        , p_overwrite_file    => p_overwrite_file',
 '        , p_collection_name   => p_collection_name',
 '        , p_blob_content      => c1.blob_content',
 '        );',
@@ -5590,7 +5590,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    apex_json.open_object;',
 '    apex_json.write(',
 '      p_name  => ''status''',
-'    , p_value => apex_lang.message( ''BLOG_GENERIC_ERROR'' )',
+'    , p_value => apex_lang.get_message( ''BLOG_GENERIC_ERROR'' )',
 '    );',
 '    apex_json.close_all;',
 '',
@@ -5775,7 +5775,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '        -- Change the message to the generic error message which doesn''t expose',
 '        -- any sensitive information.',
 '        l_result.message :=',
-'          apex_lang.message(',
+'          apex_lang.get_message(',
 '            p_name => l_genereric_error',
 '          )',
 '        ;',
@@ -5803,7 +5803,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '          )',
 '        ;',
 '        l_err_mesg :=',
-'          apex_lang.message(',
+'          apex_lang.get_message(',
 '            p_name => l_constraint_name',
 '          )',
 '        ;',
@@ -6538,12 +6538,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '      insert into blog_bloggers',
 '        ( is_active, publish_desc, display_seq, apex_username, blogger_name, email )',
 '      values',
-'        ( 1, 0, l_max, p_username, p_name, l_email )'))
+'        ( 1, '))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'',
+'0, l_max, p_username, p_name, l_email )',
 '      returning id into p_user_id',
 '      ;',
 '',
@@ -7068,10 +7068,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '    then',
 '',
 '      -- prepare validation error message for exception handler',
-'      l_err_mesg := apex_lang.message(',
-'        p_name => p_err_mesg',
-'        ,p0 => p_min',
-'        ,p1 => p_max',
+'      l_err_mesg := apex_lang.get_message(',
+'        p_name    => p_err_mesg',
+'      , p_params  =>',
+'          apex_t_varchar2(',
+'            ''min''',
+'          , p_min',
+'          , ''max''',
+'          , p_max',
+'        )',
 '      );',
 '',
 '      l_value := to_number( p_value );',
@@ -7468,10 +7473,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '',
 '    apex_debug.error( ''ajax_math_question_field error: %s'', sqlerrm );',
 '',
-'    l_err := apex_lang.message(',
+'    l_err := apex_lang.get_message(',
 '      p_name => p_plugin.attribute_02',
-'    , p0 => p_item.plain_label',
 '    );',
+'',
+'    if l_err = apex_escape.html( upper( p_plugin.attribute_02 ) )',
+'    then',
+'      l_err := p_plugin.attribute_02;',
+'    end if;',
+'',
 '    raise_application_error( -20002 ,  l_err );',
 '    raise;',
 '',
@@ -7506,9 +7516,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '    if not l_result',
 '    then',
 '',
-'      p_result.message := apex_lang.message(',
+'      p_result.message := apex_lang.get_message(',
 '        p_name => p_plugin.attribute_01',
-'      , p0 => p_item.plain_label',
 '      );',
 '',
 '      if p_result.message = apex_escape.html( upper( p_plugin.attribute_01 ) )',
@@ -7549,15 +7558,15 @@ wwv_flow_imp_shared.append_to_install_script(
 '  g_canonical_host_url  varchar2(1024);',
 '',
 '--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'-- Private procedures and functions',
-'--------------------------------------------------------------------------------',
-'-----------------------------------------'))
+'----------------------------------'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'---------------------------------------',
+'----------------------------------------------',
+'-- Private procedures and functions',
+'--------------------------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
 '-- none',
 '--------------------------------------------------------------------------------',
 '--------------------------------------------------------------------------------',
@@ -8370,7 +8379,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    if l_err_mesg is not null',
 '    then',
 '      -- prepare return validation error message',
-'      l_result := apex_lang.message(',
+'      l_result := apex_lang.get_message(',
 '        p_name => l_err_mesg',
 '      );',
 '    end if;',
@@ -8592,16 +8601,16 @@ wwv_flow_imp_shared.append_to_install_script(
 '    end loop;',
 '',
 '  end reply_notify;',
-'--------------------------------------------------------------------------------',
-'--------------------------------------------------------------------------------',
-'  procedure subscribe(',
-'    p_post_id in varchar2,',
-'    p_email   in '))
+'--------------------'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'varchar2',
+'------------------------------------------------------------',
+'--------------------------------------------------------------------------------',
+'  procedure subscribe(',
+'    p_post_id in varchar2,',
+'    p_email   in varchar2',
 '  )',
 '  as',
 '    l_email     varchar2(256);',
@@ -8867,17 +8876,8 @@ wwv_flow_imp_shared.append_to_install_script(
 '  ) return varchar2',
 '  as',
 '    l_rss_url     varchar2(4000);',
-'    l_rss_title   varchar2(4000);',
 '    l_rss_anchor  varchar2(4000);',
 '  begin',
-'',
-'    -- get rss title',
-'    l_rss_title :=',
-'      apex_lang.message(',
-'        p_name  => p_message',
-'      , p0      => p_app_name',
-'      )',
-'    ;',
 '',
 '    -- get rss url',
 '    l_rss_url :=  blog_url.get_rss;',
@@ -9515,12 +9515,12 @@ wwv_flow_imp_shared.append_to_install_script(
 '    l_del_params    apex_exec.t_parameters;',
 '  begin',
 '',
-'    apex_debug.info( ''Object name for deletion: %s, etag: %s'', p_file_path, p_if_matc'))
+'    apex_debug.info( ''Object name for deletion: %'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'h );',
+'s, etag: %s'', p_file_path, p_if_match );',
 '',
 '    apex_exec.add_parameter( l_del_params, ''bucketName'', param_t( ''bucket'' ) );',
 '    apex_exec.add_parameter( l_del_params, ''namespace'', param_t( ''namespace'' ) );',
@@ -10492,10 +10492,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '              to_char(',
 '                sys_extract_utc( posts.published_on )',
 '                ,blog_util.g_iso_8601_date',
-'                ,blog_util.g_nls_date_lang',
-'              )',
-'            )',
-''))
+'                ,blog_util.g_nls_date'))
 );
 end;
 /
@@ -10503,6 +10500,9 @@ begin
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'_lang',
+'              )',
+'            )',
 '            ,xmlelement( "id",  posts.absolute_url )',
 '          ) order by posts.published_on desc',
 '        )',
@@ -11105,7 +11105,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '    param_t( ''lang_ai_compartment_ocid'' ) := blog_util.get_attribute_value( param_t( ''lang_ai_compartment_param_name'' ) );',
 '    param_t( ''gen_ai_static_id'' ) := ''BLOG_OPEN_AI_API'';',
 '    param_t( ''gen_ai_build_option'' ) := ''BLOG_FEATURE_GENERATIVE_AI'';',
-'    param_t( ''gen_ai_generate_prompt'' ) := apex_lang.message( ''BLOG_AI_GENERATE_PROMPT'' );',
+'    param_t( ''gen_ai_generate_prompt'' ) := apex_lang.get_message( ''BLOG_AI_GENERATE_PROMPT'' );',
 '    param_t( ''gen_ai_generate_msg'' ) := ''BLOG_AI_GENERATE_MESSAGE'';',
 '',
 '    -- Debug parameters',
@@ -11247,9 +11247,13 @@ wwv_flow_imp_shared.append_to_install_script(
 '    -- Prepare user message for AI chat',
 '    l_messages(1).chat_role := ''user'';',
 '    l_messages(1).message :=',
-'      apex_lang.message(',
-'        p_name => param_t( ''gen_ai_generate_msg'' )',
-'      , p0 => substr( apex_escape.striphtml( p_post ), 1, 32000 )',
+'      apex_lang.get_message(',
+'        p_name    => param_t( ''gen_ai_generate_msg'' )',
+'      , p_params  =>',
+'          apex_t_varchar2 (',
+'            ''post''',
+'          , substr( apex_escape.striphtml( p_post ), 1, 32000 )',
+'          )',
 '      )',
 '    ;',
 '',
@@ -11260,7 +11264,7 @@ wwv_flow_imp_shared.append_to_install_script(
 '      , p_messages          => l_messages',
 '      , p_prompt            => param_t( ''gen_ai_generate_prompt'' )',
 '      , p_system_prompt     =>',
-'          apex_lang.message(',
+'          apex_lang.get_message(',
 '            p_name => p_system_prompt',
 '          )',
 '      );',
@@ -11406,14 +11410,14 @@ wwv_flow_imp_shared.append_to_install_script(
 'ALTER TABLE "BLOG_LINKS" ADD CONSTRAINT "BLOG_LINKS_FK1" FOREIGN KEY ("LINK_GROUP_ID")',
 '  REFERENCES "BLOG_LINK_GROUPS" ("ID") ON DELETE CASCADE ENABLE;',
 'ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK1" FOREIGN KEY ("BLOGGER_ID")',
-'  REFERENCES "BLOG_BLOGGERS" ("ID") ENABLE;',
-'ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK2" FOREIGN KEY ("CATEGORY_ID")',
 '  REFERENCES'))
 );
 wwv_flow_imp_shared.append_to_install_script(
  p_id=>wwv_flow_imp.id(115343135841750502)
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-' "BLOG_CATEGORIES" ("ID") ENABLE;',
+' "BLOG_BLOGGERS" ("ID") ENABLE;',
+'ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK2" FOREIGN KEY ("CATEGORY_ID")',
+'  REFERENCES "BLOG_CATEGORIES" ("ID") ENABLE;',
 'ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK1" FOREIGN KEY ("POST_ID")',
 '  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;',
 'ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK2" FOREIGN KEY ("TAG_ID")',

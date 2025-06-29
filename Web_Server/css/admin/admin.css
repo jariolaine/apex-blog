@@ -297,10 +297,13 @@ pre.blog-program-code code,
 /**************************************
 * Interactive Reports link and icon column
 **************************************/
-.blog-IR--iconLinks td:has( .t-Button ),
-.blog-IR--iconLinks td:has( .t-Icon ) {
+.blog-IR--iconLinks td:has( .t-Icon ),
+.blog-IR--iconLinks td:has( .t-Button ) {
+  padding: 0.25rem;
+}
+.blog-IR--iconLinks td:has( .t-Icon ),
+.blog-IR--iconLinks td:has( .t-Button:not( .t-Button--stretch )) {
   width: 0.1%;
-  padding: 0.25rem 0.25rem;
 }
 .blog-IR--iconLinks .t-Button--noUI {
   outline: none;

@@ -1451,28 +1451,28 @@ where 1 = 1
 --------------------------------------------------------
 create or replace force view blog_v_all_tags as
 select
-   t1.id                as id
-  ,t1.row_version       as row_version
-  ,t1.created_on        as created_on
-  ,lower(t1.created_by) as created_by
-  ,t1.changed_on        as changed_on
-  ,lower(t1.changed_by) as changed_by
-  ,t1.is_active         as is_active
-  ,t1.tag               as tag
-  ,t1.tag_unique        as tag_unique
-  ,t1.notes             as notes
-  ,case t1.is_active
+  t1.id                 as id
+, t1.row_version        as row_version
+, t1.created_on         as created_on
+, lower(t1.created_by)  as created_by
+, t1.changed_on         as changed_on
+, lower(t1.changed_by)  as changed_by
+, t1.is_active          as is_active
+, t1.tag                as tag
+, t1.tag_unique         as tag_unique
+, t1.notes              as notes
+, case t1.is_active
     when 1
       then c.txt_enabled
       else c.txt_disabled
   end                   as tag_status_text
-  ,(
+, (
     select count(1)
     from blog_post_tags lkp
     where 1 = 1
     and lkp.tag_id = t1.id
    )                    as posts_count
-  ,case
+, case
     when exists(
       select 1
       from blog_post_tags lkp
@@ -1485,8 +1485,8 @@ select
 from blog_tags t1
 cross join(
   select
-     apex_lang.message( 'BLOG_TXT_ENABLED' )    as txt_enabled
-    ,apex_lang.message( 'BLOG_TXT_DISABLED' )   as txt_disabled
+    apex_lang.get_message( 'BLOG_TXT_ENABLED' )   as txt_enabled
+  , apex_lang.get_message( 'BLOG_TXT_DISABLED' )  as txt_disabled
   from dual
 ) c
 where 1 = 1
@@ -1543,7 +1543,7 @@ select
     then 'Y'
     else 'N'
   end                         as is_parent
-, apex_lang.message(
+, apex_lang.get_message(
     p_name => t1.build_option_name
   )                           as feature_desc
   ,regexp_replace(
@@ -1557,7 +1557,7 @@ select
     p_message => '<span data-sort-order="%s" class="u-bold">%s</span>'
   , p0 => lpad( min( t1.display_seq ) over( partition by t1.build_option_group ), 6, '0' )
   , p1 =>
-      apex_lang.message(
+      apex_lang.get_message(
         p_name => t1.build_option_group
       )
   )                           as feature_group_html
@@ -1680,11 +1680,11 @@ with read only
 --------------------------------------------------------
 create or replace force view blog_v_lov as
 select
-   t1.lov_name                              as lov_name
-  ,t1.display_seq                           as display_seq
-  ,t1.return_value                          as return_value
-  ,t1.display_message                       as display_message
-  ,apex_lang.message( t1.display_message )  as display_value
+  t1.lov_name                                 as lov_name
+, t1.display_seq                              as display_seq
+, t1.return_value                             as return_value
+, t1.display_message                          as display_message
+, apex_lang.get_message( t1.display_message ) as display_value
 from blog_list_of_values t1
 where 1 = 1
 and t1.is_active = 1
@@ -2324,7 +2324,7 @@ select
 , t1.is_nullable              as is_nullable
 , t1.display_seq              as display_seq
 , t1.attribute_name           as attribute_name
-, apex_lang.message(
+, apex_lang.get_message(
     p_name => t1.attribute_message
   )                           as attribute_desc
 , t1.attribute_value          as attribute_value
@@ -2344,7 +2344,7 @@ select
     p_message => '<span data-sort-order="%s" class="u-bold">%s</span>'
   , p0 => lpad( min( t1.display_seq ) over( partition by t1.attribute_group_message ), 5, '0' )
   , p1 =>
-      apex_lang.message(
+      apex_lang.get_message(
         p_name => t1.attribute_group_message
       )
   )                           as attribute_group_html
@@ -4976,7 +4976,7 @@ as
     apex_json.open_object;
     apex_json.write(
       p_name  => 'status'
-    , p_value => apex_lang.message( 'BLOG_GENERIC_ERROR' )
+    , p_value => apex_lang.get_message( 'BLOG_GENERIC_ERROR' )
     );
     apex_json.close_all;
 
@@ -5161,7 +5161,7 @@ as
         -- Change the message to the generic error message which doesn't expose
         -- any sensitive information.
         l_result.message :=
-          apex_lang.message(
+          apex_lang.get_message(
             p_name => l_genereric_error
           )
         ;
@@ -5189,7 +5189,7 @@ as
           )
         ;
         l_err_mesg :=
-          apex_lang.message(
+          apex_lang.get_message(
             p_name => l_constraint_name
           )
         ;
@@ -6449,10 +6449,15 @@ as
     then
 
       -- prepare validation error message for exception handler
-      l_err_mesg := apex_lang.message(
-        p_name => p_err_mesg
-        ,p0 => p_min
-        ,p1 => p_max
+      l_err_mesg := apex_lang.get_message(
+        p_name    => p_err_mesg
+      , p_params  =>
+          apex_t_varchar2(
+            'min'
+          , p_min
+          , 'max'
+          , p_max
+        )
       );
 
       l_value := to_number( p_value );
@@ -6849,10 +6854,15 @@ as
 
     apex_debug.error( 'ajax_math_question_field error: %s', sqlerrm );
 
-    l_err := apex_lang.message(
+    l_err := apex_lang.get_message(
       p_name => p_plugin.attribute_02
-    , p0 => p_item.plain_label
     );
+
+    if l_err = apex_escape.html( upper( p_plugin.attribute_02 ) )
+    then
+      l_err := p_plugin.attribute_02;
+    end if;
+
     raise_application_error( -20002 ,  l_err );
     raise;
 
@@ -6887,9 +6897,8 @@ as
     if not l_result
     then
 
-      p_result.message := apex_lang.message(
+      p_result.message := apex_lang.get_message(
         p_name => p_plugin.attribute_01
-      , p0 => p_item.plain_label
       );
 
       if p_result.message = apex_escape.html( upper( p_plugin.attribute_01 ) )
@@ -7746,7 +7755,7 @@ as
     if l_err_mesg is not null
     then
       -- prepare return validation error message
-      l_result := apex_lang.message(
+      l_result := apex_lang.get_message(
         p_name => l_err_mesg
       );
     end if;
@@ -8238,17 +8247,8 @@ as
   ) return varchar2
   as
     l_rss_url     varchar2(4000);
-    l_rss_title   varchar2(4000);
     l_rss_anchor  varchar2(4000);
   begin
-
-    -- get rss title
-    l_rss_title :=
-      apex_lang.message(
-        p_name  => p_message
-      , p0      => p_app_name
-      )
-    ;
 
     -- get rss url
     l_rss_url :=  blog_url.get_rss;
@@ -10463,7 +10463,7 @@ as
     param_t( 'lang_ai_compartment_ocid' ) := blog_util.get_attribute_value( param_t( 'lang_ai_compartment_param_name' ) );
     param_t( 'gen_ai_static_id' ) := 'BLOG_OPEN_AI_API';
     param_t( 'gen_ai_build_option' ) := 'BLOG_FEATURE_GENERATIVE_AI';
-    param_t( 'gen_ai_generate_prompt' ) := apex_lang.message( 'BLOG_AI_GENERATE_PROMPT' );
+    param_t( 'gen_ai_generate_prompt' ) := apex_lang.get_message( 'BLOG_AI_GENERATE_PROMPT' );
     param_t( 'gen_ai_generate_msg' ) := 'BLOG_AI_GENERATE_MESSAGE';
 
     -- Debug parameters
@@ -10605,9 +10605,13 @@ as
     -- Prepare user message for AI chat
     l_messages(1).chat_role := 'user';
     l_messages(1).message :=
-      apex_lang.message(
-        p_name => param_t( 'gen_ai_generate_msg' )
-      , p0 => substr( apex_escape.striphtml( p_post ), 1, 32000 )
+      apex_lang.get_message(
+        p_name    => param_t( 'gen_ai_generate_msg' )
+      , p_params  =>
+          apex_t_varchar2 (
+            'post'
+          , substr( apex_escape.striphtml( p_post ), 1, 32000 )
+          )
       )
     ;
 
@@ -10618,7 +10622,7 @@ as
       , p_messages          => l_messages
       , p_prompt            => param_t( 'gen_ai_generate_prompt' )
       , p_system_prompt     =>
-          apex_lang.message(
+          apex_lang.get_message(
             p_name => p_system_prompt
           )
       );

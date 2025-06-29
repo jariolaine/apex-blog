@@ -208,10 +208,15 @@ as
 
     apex_debug.error( 'ajax_math_question_field error: %s', sqlerrm );
 
-    l_err := apex_lang.message(
+    l_err := apex_lang.get_message(
       p_name => p_plugin.attribute_02
-    , p0 => p_item.plain_label
     );
+
+    if l_err = apex_escape.html( upper( p_plugin.attribute_02 ) )
+    then
+      l_err := p_plugin.attribute_02;
+    end if;
+
     raise_application_error( -20002 ,  l_err );
     raise;
 
@@ -246,9 +251,8 @@ as
     if not l_result
     then
 
-      p_result.message := apex_lang.message(
+      p_result.message := apex_lang.get_message(
         p_name => p_plugin.attribute_01
-      , p0 => p_item.plain_label
       );
 
       if p_result.message = apex_escape.html( upper( p_plugin.attribute_01 ) )

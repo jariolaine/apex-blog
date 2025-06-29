@@ -474,7 +474,7 @@ as
     if l_err_mesg is not null
     then
       -- prepare return validation error message
-      l_result := apex_lang.message(
+      l_result := apex_lang.get_message(
         p_name => l_err_mesg
       );
     end if;
