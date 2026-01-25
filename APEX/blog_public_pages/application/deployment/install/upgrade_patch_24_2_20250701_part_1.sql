@@ -1,0 +1,119 @@
+prompt --application/deployment/install/upgrade_patch_24_2_20250701_part_1
+begin
+--   Manifest
+--     INSTALL: UPGRADE-Patch 24.2.20250701 part 1
+--   Manifest End
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2024.11.30'
+,p_release=>'24.2.11'
+,p_default_workspace_id=>18303204396897713
+,p_default_application_id=>401
+,p_default_id_offset=>44906910937164790
+,p_default_owner=>'BLOG_040000'
+);
+wwv_flow_imp_shared.create_install_script(
+ p_id=>wwv_flow_imp.id(149055008806170771)
+,p_install_id=>wwv_flow_imp.id(148135284869193288)
+,p_name=>'Patch 24.2.20250701 part 1'
+,p_sequence=>40
+,p_script_type=>'UPGRADE'
+,p_condition_type=>'EXISTS'
+,p_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from blog_v_version',
+'where 1 = 1',
+'and application_date < 20250701'))
+,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'--  Patch 24.2.20250701 part 1',
+'-- Rename table BLOG_COMMENTS constraints',
+'alter table blog_comments rename constraint blog_comment_ck1 to blog_comments_ck1',
+'/',
+'alter table blog_comments rename constraint blog_comment_ck2 to blog_comments_ck2',
+'/',
+'-- Alter table BLOG_FILES',
+'alter table blog_files rename column file_name to file_path',
+'/',
+'alter table blog_files modify blob_content null',
+'/',
+'alter table blog_files add(',
+'  md5 varchar2( 256 char )',
+', etag varchar2( 256 char )',
+', apex$sync_step_static_id varchar2( 255 byte )',
+', apex$row_sync_timestamp timestamp with time zone',
+', file_dir  varchar2(260 char) generated always as ( ''/'' || substr( file_path, 1, instr( file_path, ''/'', - 1 ) ) ) virtual not null',
+', file_name varchar2(260 char) generated always as ( substr( file_path, instr( file_path, ''/'', - 1 ) + 1 ) ) virtual not null',
+')',
+'/',
+'-- Alter table BLOG_FEATURES',
+'alter table blog_features add(',
+'  ref_build_option_name varchar2( 256 char )',
+', ref_build_option_status varchar2( 10 char )',
+')',
+'/',
+'alter table blog_features add constraint blog_features_fk2 foreign key( ref_build_option_name )',
+'references blog_features( build_option_name ) enable',
+'/',
+'-- Alter table BLOG_SETTINGS',
+'alter table blog_settings add(',
+'  build_option_name varchar2( 256 char )',
+', build_option_status varchar2( 10 char )',
+')',
+'/',
+'alter table blog_settings add constraint blog_settings_fk1 foreign key( build_option_name )',
+'references blog_features( build_option_name ) enable',
+'/',
+'-- Alter table BLOG_POSTS',
+'alter table blog_posts modify post_desc varchar2(4000 byte)',
+'/',
+'-- Alter table BLOG_COMMENTS',
+'alter table blog_comments add( comment_preview varchar2(4000 byte) )',
+'/',
+'-- Create table BLOG_COMMENT_SENTIMENTS',
+'create table blog_comment_sentiments(',
+'  id number( 38, 0 ) not null,',
+'  row_version number( 38, 0 ) not null,',
+'  created_on timestamp( 6 ) with local time zone not null,',
+'  created_by varchar2( 256 char ) not null,',
+'  changed_on timestamp( 6 ) with local time zone not null,',
+'  changed_by varchar2( 256 char ) not null,',
+'  comment_id number( 38, 0 ) not null,',
+'  original_language varchar2( 6 char ) not null,',
+'  sentiment_json varchar2(4000 byte) not null,',
+'  constraint blog_comment_sentiments_pk primary key( id ),',
+'  constraint blog_comment_sentiments_uk1 unique( comment_id ),',
+'  constraint blog_comment_sentiments_ck1 check( row_version > 0 ),',
+'  constraint blog_comment_sentiments_ck2 check( sentiment_json is json ),',
+'  constraint blog_comment_sentiments_fk1 foreign key( comment_id ) references blog_comments(id) on delete cascade',
+')',
+'/',
+'-- Create indexes for foreign key columns',
+'create index blog_comments_ix1 on blog_comments( post_id )',
+'/',
+'create index blog_comments_ix2 on blog_comments( parent_id )',
+'/',
+'create index blog_comment_subscribers_ix1 on blog_comment_subscribers( email_id )',
+'/',
+'create index blog_features_ix1 on blog_features( build_option_parent )',
+'/',
+'create index blog_features_ix2 on blog_features( ref_build_option_name )',
+'/',
+'create index blog_init_items_ix1 on blog_init_items( item_name )',
+'/',
+'create index blog_posts_ix1 on blog_posts( blogger_id )',
+'/',
+'create index blog_posts_ix2 on blog_posts( category_id )',
+'/',
+'create index blog_post_tags_ix1 on blog_post_tags( tag_id )',
+'/',
+'create index blog_settings_ix1 on blog_settings( build_option_name )',
+'/',
+'-- Drop renamed packages',
+'drop package blog_cm',
+'/',
+'drop package blog_comm',
+'/'))
+,p_updated_on=>wwv_flow_imp.dz('20260125213144Z')
+);
+wwv_flow_imp.component_end;
+end;
+/

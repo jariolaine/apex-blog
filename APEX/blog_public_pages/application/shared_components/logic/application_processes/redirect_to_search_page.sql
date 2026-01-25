@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -22,10 +22,12 @@ wwv_flow_imp_shared.create_flow_process(
 '  p_value => :P0_SEARCH',
 ');'))
 ,p_process_clob_language=>'PLSQL'
+,p_process_when=>'P0_SEARCH'
+,p_process_when_type=>'REQUEST_EQUALS_CONDITION'
 ,p_required_patch=>wwv_flow_imp.id(166424193210882851)
-,p_process_comment=>'Redirect to search result when request is SEARCH'
-,p_version_scn=>42200848939610
-,p_updated_on=>wwv_flow_imp.dz('20250429071856Z')
+,p_process_comment=>'Redirect to search result when request is P0_SEARCH'
+,p_version_scn=>44984609833328
+,p_updated_on=>wwv_flow_imp.dz('20250701071300Z')
 );
 wwv_flow_imp.component_end;
 end;

@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -25,7 +25,7 @@ wwv_flow_imp_page.create_page(
 '<p>The administration page allows blogger to configure the application and maintain common data used across the application.',
 'By selecting one of the available settings, blogger can potentially change how the application is displayed and/or features available to the end users.</p>'))
 ,p_page_component_map=>'17'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250630060126Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(96789109317172240)
@@ -60,7 +60,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_translate_title=>'N'
 ,p_plug_comment=>'List of cloud services'
 ,p_created_on=>wwv_flow_imp.dz('20250122024500Z')
-,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_updated_on=>wwv_flow_imp.dz('20250630060107Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(113265661118639106)
@@ -96,7 +96,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_list_template_id=>2067994871570597190
 ,p_translate_title=>'N'
 ,p_plug_comment=>'List of cloud services'
-,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_updated_on=>wwv_flow_imp.dz('20250630060126Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(134137683208437141)
@@ -178,7 +178,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'Y')).to_clob
 ,p_item_comment=>'Holding badge value for list'
-,p_updated_on=>wwv_flow_imp.dz('20250201041120Z')
+,p_updated_on=>wwv_flow_imp.dz('20250630060126Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(113950256968157915)

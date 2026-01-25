@@ -1,4 +1,4 @@
-create or replace package "BLOG_COMM"
+create or replace package "BLOG_COMMENT"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -33,6 +33,7 @@ as
 --                                - short_text
 --                              Updated procedure:
 --                                - build_comment_html
+--  02.07.2025   Jari Laine     Package renamed BLOG_COMM -> BLOG_COMMENTS
 --
 --  ============================================================================
 --  TO DO:
@@ -123,11 +124,17 @@ as
     p_subscription_id in varchar2
   );
 --------------------------------------------------------------------------------
-end "BLOG_COMM";
+-- Called from:
+--  public app page 1001
+  procedure auto_approve(
+    p_comment_id      in varchar2
+  );
+--------------------------------------------------------------------------------
+end "BLOG_COMMENT";
 /
 
 
-create or replace package body "BLOG_COMM"
+create or replace package body "BLOG_COMMENT"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -463,7 +470,7 @@ as
         l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_HTML';
       end;
 
-      if blog_comm.short_text( p_comment ) is null
+      if short_text( p_comment ) is null
       then
         -- set error message
         l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_PREVIEW';
@@ -526,7 +533,7 @@ as
         ;
       exception when dup_val_on_index
       then
-        null;
+        apex_debug.warn( 'Duplicate flag %s for comment id: %s', l_flags(i), p_comment_id );
       end;
 
     end loop;
@@ -546,11 +553,18 @@ as
 
     for i in 1 .. l_flags.count
     loop
+
       delete from blog_comment_flags
       where 1 = 1
         and comment_id = p_comment_id
         and flag = l_flags(i)
       ;
+
+      if sql%rowcount != 1
+      then
+        apex_debug.warn( 'Removed %s %s flags from comment id: %s', sql%rowcount, l_flags(i), p_comment_id );
+      end if;
+
     end loop;
 
   end unflag_comment;
@@ -680,7 +694,7 @@ as
 
       apex_debug.info(
         'Send email to: %s from: %s template: %s placeholders: %s'
-        ,c1.email
+      , c1.email
       , c_app_email
       , p_email_template
       , c1.placeholders
@@ -770,5 +784,42 @@ as
   end unsubscribe;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-end "BLOG_COMM";
+  procedure auto_approve(
+    p_comment_id in varchar2
+  )
+  as
+    l_cnt number;
+  begin
+
+    apex_debug.info( 'Automaticallu approve comment id %s if sentiment is Positive', p_comment_id );
+
+    -- check that comment exists
+    select 1
+    into l_cnt
+    from blog_comment_sentiments t1
+    where 1 = 1
+      and t1.comment_id = p_comment_id
+      and t1.sentiment_json.documentSentiment = 'Positive'
+    ;
+
+    -- remove MODERATE flag
+    unflag_comment(
+      p_comment_id  => p_comment_id
+    , p_flags       => 'MODERATE'
+    );
+
+    -- set comment active
+    update blog_comments
+      set is_active = 1
+    where 1 = 1
+      and id = p_comment_id
+    ;
+
+  exception when no_data_found
+  then
+    apex_debug.warn( 'Comment id %s not found for automatic approve', p_comment_id );
+  end auto_approve;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+end "BLOG_COMMENT";
 /

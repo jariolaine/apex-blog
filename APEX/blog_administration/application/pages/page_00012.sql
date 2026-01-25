@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -69,7 +69,7 @@ wwv_flow_imp_page.create_page(
 '</ol>',
 ''))
 ,p_page_component_map=>'02'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250702010917Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(91086711973027073)
@@ -792,10 +792,11 @@ wwv_flow_imp_page.create_page_computation(
 ,p_computation_type=>'EXPRESSION'
 ,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_cm.request_to_post_status(',
+'blog_admin.request_to_post_status(',
 '  p_request => :REQUEST',
 ')'))
 ,p_computation_comment=>'Compute IS_ACTIVE from button request.'
+,p_updated_on=>wwv_flow_imp.dz('20250702010750Z')
 );
 wwv_flow_imp_page.create_page_computation(
  p_id=>wwv_flow_imp.id(114064376631926109)
@@ -804,10 +805,11 @@ wwv_flow_imp_page.create_page_computation(
 ,p_computation_type=>'EXPRESSION'
 ,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_cm.get_first_paragraph(',
+'blog_admin.get_first_paragraph(',
 '  p_body_html => :P12_BODY_HTML',
 ')'))
 ,p_computation_comment=>'Get first paragraph fro post as preview. Must be run after computation of P12_HTML_BODY.'
+,p_updated_on=>wwv_flow_imp.dz('20250702010802Z')
 );
 wwv_flow_imp_page.create_page_validation(
  p_id=>wwv_flow_imp.id(91239628180442872)
@@ -1229,13 +1231,14 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Process Category'
 ,p_attribute_01=>'PLSQL_PACKAGE'
-,p_attribute_03=>'BLOG_CM'
+,p_attribute_03=>'BLOG_ADMIN'
 ,p_attribute_04=>'ADD_CATEGORY'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'DELETE'
 ,p_process_when_type=>'REQUEST_NOT_EQUAL_CONDITION'
 ,p_internal_uid=>6929777493150993
 ,p_process_comment=>'Add new category if not exists and get category id. If category exists return category id. Run only when post is inserted or updated.'
+,p_updated_on=>wwv_flow_imp.dz('20250702010837Z')
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(115580730636145300)
@@ -1282,13 +1285,14 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Process Tags'
 ,p_attribute_01=>'PLSQL_PACKAGE'
-,p_attribute_03=>'BLOG_CM'
+,p_attribute_03=>'BLOG_ADMIN'
 ,p_attribute_04=>'ADD_POST_TAGS'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'DELETE'
 ,p_process_when_type=>'REQUEST_NOT_EQUAL_CONDITION'
 ,p_internal_uid=>7077714087172775
 ,p_process_comment=>'Add and or remove tags from post. Run only when post is inserted or updated.'
+,p_updated_on=>wwv_flow_imp.dz('20250702010917Z')
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(115580946878145302)

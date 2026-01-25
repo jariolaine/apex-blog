@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -34,7 +34,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_comment=>'Dialog page to allow users comment blog posts.'
 ,p_page_component_map=>'02'
 ,p_created_on=>wwv_flow_imp.dz('20250318183954Z')
-,p_last_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250702014101Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(272266936087374526)
@@ -421,7 +421,7 @@ wwv_flow_imp_page.create_page_validation(
 ,p_validation_name=>'Validate comment'
 ,p_validation_sequence=>20
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return blog_comm.validate_comment(',
+'return blog_comment.validate_comment(',
 '  p_comment => :P63_BODY_HTML',
 ');'))
 ,p_validation2=>'PLSQL'
@@ -430,14 +430,14 @@ wwv_flow_imp_page.create_page_validation(
 ,p_error_display_location=>'INLINE_WITH_FIELD'
 ,p_validation_comment=>'Validate formatted comment length and HTML. Return error text if validation fails'
 ,p_created_on=>wwv_flow_imp.dz('20250318183954Z')
-,p_updated_on=>wwv_flow_imp.dz('20250318183954Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702013837Z')
 );
 wwv_flow_imp_page.create_page_validation(
  p_id=>wwv_flow_imp.id(116892161993871286)
 ,p_validation_name=>'Validate email'
 ,p_validation_sequence=>40
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return blog_comm.is_email(',
+'return blog_comment.is_email(',
 '  p_email     => :P63_EMAIL',
 '  ,p_err_mesg => ''BLOG_VALIDATION_ERR_EMAIL''',
 ');'))
@@ -448,7 +448,7 @@ wwv_flow_imp_page.create_page_validation(
 ,p_associated_item=>wwv_flow_imp.id(250563450025319072)
 ,p_error_display_location=>'INLINE_WITH_FIELD'
 ,p_created_on=>wwv_flow_imp.dz('20250318183954Z')
-,p_updated_on=>wwv_flow_imp.dz('20250318183954Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702013849Z')
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(116920612893871303)
@@ -497,13 +497,13 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Set new flag'
 ,p_attribute_01=>'PLSQL_PACKAGE'
-,p_attribute_03=>'BLOG_COMM'
+,p_attribute_03=>'BLOG_COMMENT'
 ,p_attribute_04=>'FLAG_COMMENT'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_internal_uid=>116916048627871300
 ,p_process_comment=>'Mark new comment as unread'
 ,p_created_on=>wwv_flow_imp.dz('20250318183954Z')
-,p_updated_on=>wwv_flow_imp.dz('20250318183954Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702013859Z')
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(116916550901871301)
@@ -540,13 +540,13 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Set moderate flag'
 ,p_attribute_01=>'PLSQL_PACKAGE'
-,p_attribute_03=>'BLOG_COMM'
+,p_attribute_03=>'BLOG_COMMENT'
 ,p_attribute_04=>'FLAG_COMMENT'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_internal_uid=>116917442886871301
 ,p_process_comment=>'Mark new comment to be moderated if feature "Comments need to moderated" ia enabled'
 ,p_created_on=>wwv_flow_imp.dz('20250318183954Z')
-,p_updated_on=>wwv_flow_imp.dz('20250318183954Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702013923Z')
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(116917937046871301)
@@ -583,7 +583,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Subscribe user'
 ,p_attribute_01=>'PLSQL_PACKAGE'
-,p_attribute_03=>'BLOG_COMM'
+,p_attribute_03=>'BLOG_COMMENT'
 ,p_attribute_04=>'SUBSCRIBE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'P63_EMAIL'
@@ -591,7 +591,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_internal_uid=>116914290865871299
 ,p_process_comment=>'Save user email for notification for new replies to comment if user provides email address and feature "Sent email notification of new comments" is enabled'
 ,p_created_on=>wwv_flow_imp.dz('20250318183954Z')
-,p_updated_on=>wwv_flow_imp.dz('20250318183954Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702013935Z')
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(116914796459871300)
@@ -643,13 +643,13 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Notify blogger'
 ,p_attribute_01=>'PLSQL_PACKAGE'
-,p_attribute_03=>'BLOG_COMM'
+,p_attribute_03=>'BLOG_COMMENT'
 ,p_attribute_04=>'NEW_COMMENT_NOTIFY'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_internal_uid=>116906246915871294
 ,p_process_comment=>'Notify blogger about new comment for post'
 ,p_created_on=>wwv_flow_imp.dz('20250318183954Z')
-,p_updated_on=>wwv_flow_imp.dz('20250318183954Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702013945Z')
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(116906736121871295)
@@ -768,14 +768,14 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Format and cleanup comment'
 ,p_attribute_01=>'PLSQL_PACKAGE'
-,p_attribute_03=>'BLOG_COMM'
+,p_attribute_03=>'BLOG_COMMENT'
 ,p_attribute_04=>'FORMAT_COMMENT'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>'P63_COMMENT_TEXT'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
 ,p_internal_uid=>116904096323871293
 ,p_created_on=>wwv_flow_imp.dz('20250318183954Z')
-,p_updated_on=>wwv_flow_imp.dz('20250318183954Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702013912Z')
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(116904572299871293)
@@ -816,7 +816,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_01=>'WEB_SOURCE'
 ,p_internal_uid=>116892402895871287
 ,p_created_on=>wwv_flow_imp.dz('20250318183954Z')
-,p_updated_on=>wwv_flow_imp.dz('20250318183954Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702014101Z')
 );
 wwv_flow_imp_shared.create_web_source_comp_param(
  p_id=>wwv_flow_imp.id(116892907515871287)
@@ -898,11 +898,11 @@ wwv_flow_imp_shared.create_web_source_comp_param(
 ,p_value_type=>'EXPRESSION'
 ,p_value_language=>'PLSQL'
 ,p_value=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_comm.plain_text(',
+'blog_comment.plain_text(',
 '  :P63_COMMENT_TEXT',
 ')'))
 ,p_created_on=>wwv_flow_imp.dz('20250318183954Z')
-,p_updated_on=>wwv_flow_imp.dz('20250318183954Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702014101Z')
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(116896815432871290)
@@ -960,7 +960,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_when2=>'en'
 ,p_internal_uid=>116898208505871290
 ,p_created_on=>wwv_flow_imp.dz('20250318183954Z')
-,p_updated_on=>wwv_flow_imp.dz('20250318183954Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702014101Z')
 );
 wwv_flow_imp_shared.create_web_source_comp_param(
  p_id=>wwv_flow_imp.id(116898710463871291)
@@ -1044,11 +1044,11 @@ wwv_flow_imp_shared.create_web_source_comp_param(
 ,p_value_type=>'EXPRESSION'
 ,p_value_language=>'PLSQL'
 ,p_value=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_comm.plain_text(',
+'blog_comment.plain_text(',
 '  :P63_COMMENT_TEXT',
 ')'))
 ,p_created_on=>wwv_flow_imp.dz('20250318183954Z')
-,p_updated_on=>wwv_flow_imp.dz('20250318183954Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702014101Z')
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(116902678499871293)
@@ -1106,7 +1106,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_attribute_01=>'WEB_SOURCE'
 ,p_internal_uid=>116909488182871296
 ,p_created_on=>wwv_flow_imp.dz('20250318183954Z')
-,p_updated_on=>wwv_flow_imp.dz('20250318183954Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702014101Z')
 );
 wwv_flow_imp_shared.create_web_source_comp_param(
  p_id=>wwv_flow_imp.id(116909917248871297)
@@ -1190,11 +1190,11 @@ wwv_flow_imp_shared.create_web_source_comp_param(
 ,p_value_type=>'EXPRESSION'
 ,p_value_language=>'PLSQL'
 ,p_value=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_comm.plain_text(',
+'blog_comment.plain_text(',
 '  :P63_COMMENT_TEXT',
 ')'))
 ,p_created_on=>wwv_flow_imp.dz('20250318183954Z')
-,p_updated_on=>wwv_flow_imp.dz('20250318183954Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702014101Z')
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(116908511215871296)

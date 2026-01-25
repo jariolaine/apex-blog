@@ -49,34 +49,27 @@ as
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure settings_ins(
+  procedure settings_merge(
+    p_attribute_name          in varchar2,
     p_display_seq             in number,
     p_is_nullable             in number,
-    p_attribute_name          in varchar2,
     p_data_type               in varchar2,
     p_attribute_group_message in varchar2,
-    p_attribute_value         in varchar2 default null,
     p_int_min                 in number   default null,
-    p_int_max                 in number   default null
+    p_int_max                 in number   default null,
+    p_build_option_name       in varchar2 default null,
+    p_build_option_status     in varchar2 default null,
+    p_attribute_value         in varchar2 default null
   );
 --------------------------------------------------------------------------------
-  procedure setting_features_ins(
-    P_attribute_name          in varchar2,
+  procedure features_merge(
     p_build_option_name       in varchar2,
-    p_build_option_status     in varchar2
-  );
---------------------------------------------------------------------------------
-  procedure features_ins(
     p_is_active               in number,
     p_display_seq             in number,
-    p_build_option_name       in varchar2,
-    p_build_option_group      in varchar2
-  );
---------------------------------------------------------------------------------
-  procedure feature_parents_ins(
-    p_is_active               in number,
-    p_build_option_name       in varchar2,
-    p_build_option_parent     in varchar2
+    p_build_option_group      in varchar2,
+    p_build_option_parent     in varchar2 default null,
+    p_ref_build_option_name   in varchar2 default null,
+    p_ref_build_option_status in varchar2 default null
   );
 --------------------------------------------------------------------------------
   procedure list_of_values_ins(
@@ -331,7 +324,7 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
-create or replace package "BLOG_CM"
+create or replace package "BLOG_ADMIN"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -428,6 +421,8 @@ as
 --                              Moved file repository-related procedures/functions to BLOG_FILE package.
 --                              Removed procedure update_text_messages.
 --  25.08.2024   Jari Laine     Moved function remove_whitespace to package BLOG_UTIL.
+--  30.06.2025   Jari Laine     Changes to procedure update_feature
+--  02.07.2025   Jari Laine     Package renamed BLOG_CM -> BLOG_ADMIN
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -486,10 +481,6 @@ as
   procedure remove_unused_categories;
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 14
-  procedure resequence_categories;
---------------------------------------------------------------------------------
--- Called from:
 --  admin app page 16 and inside this package
   procedure add_tag(
     p_tag               in varchar2,
@@ -507,12 +498,6 @@ as
 -- Called from:
 --  admin app page 15
   procedure remove_unused_tags;
---------------------------------------------------------------------------------
--- Called from:
---  admin app page 16
-  procedure resequence_tags(
-    p_post_id           in varchar2
-  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  admin app page 20012 validation "Is Integer"
@@ -546,10 +531,21 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 20013
+--  admin app page 20017 and 20018
+--  package blog_ai and blog_oci_os
   procedure update_feature(
     p_build_option_name in varchar2,
     p_build_status      in varchar2
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 14
+  procedure resequence_categories;
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 16
+  procedure resequence_tags(
+    p_post_id           in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -572,7 +568,7 @@ as
     p_attribute_list    in apex_t_varchar2
   );
 --------------------------------------------------------------------------------
-end "BLOG_CM";
+end "BLOG_ADMIN";
 /
 create or replace package "BLOG_PLUGIN"
 authid definer
@@ -787,7 +783,7 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_URL";
 /
-create or replace package "BLOG_COMM"
+create or replace package "BLOG_COMMENT"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -822,6 +818,7 @@ as
 --                                - short_text
 --                              Updated procedure:
 --                                - build_comment_html
+--  02.07.2025   Jari Laine     Package renamed BLOG_COMM -> BLOG_COMMENTS
 --
 --  ============================================================================
 --  TO DO:
@@ -912,7 +909,13 @@ as
     p_subscription_id in varchar2
   );
 --------------------------------------------------------------------------------
-end "BLOG_COMM";
+-- Called from:
+--  public app page 1001
+  procedure auto_approve(
+    p_comment_id      in varchar2
+  );
+--------------------------------------------------------------------------------
+end "BLOG_COMMENT";
 /
 create or replace package "BLOG_HTML"
 authid definer
@@ -1053,8 +1056,14 @@ as
 --  DATE         MODIFIED BY    DESCRIPTION
 --  -----------  -------------  ------------------------------------------------
 --  21.07.2025   Jari Laine     Created package.
+--  30.06.2025   Jari Laine     New function get_param_value
+--                              Changes to procedure set_object_storage
 --
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_param_value(
+    p_param_name        in varchar2
+  ) return varchar2;
 --------------------------------------------------------------------------------
   procedure set_object_storage(
     p_bucket_name       in varchar2,
@@ -1230,8 +1239,16 @@ as
 --  DATE         MODIFIED BY    DESCRIPTION
 --  -----------  -------------  ------------------------------------------------
 --  15.08.2025   Jari Laine     Created package.
+--  30.06.2025   Jari Laine     New function get_param_value
+--                              Changes to procedures:
+--                                - set_gen_ai
+--                                - init_params
 --
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_param_value(
+    p_param_name      in varchar2
+  ) return varchar2;
 --------------------------------------------------------------------------------
   procedure set_lang_ai(
     p_compartment_id  in varchar2,
@@ -1240,7 +1257,12 @@ as
   );
 --------------------------------------------------------------------------------
   procedure set_gen_ai(
-    p_build_status    in varchar2
+    p_build_status    in varchar2,
+    p_api_key         in varchar2,
+    p_base_url        in varchar2,
+    p_ai_model_name   in varchar2,
+    p_ai_http_headers in varchar2,
+    p_ai_attributes   in varchar2
   );
 --------------------------------------------------------------------------------
   procedure gen_ai_chat(
@@ -1537,7 +1559,7 @@ select
 , t1.display_seq              as display_seq
 , t1.build_option_name        as build_option_name
 , v1.build_option_status      as build_option_status
-, t2.build_option_parent      as build_option_parent
+, t1.build_option_parent      as build_option_parent
 , level                       as build_option_level
 , case when connect_by_isleaf = 0
     then 'Y'
@@ -1546,7 +1568,7 @@ select
 , apex_lang.get_message(
     p_name => t1.build_option_name
   )                           as feature_desc
-  ,regexp_replace(
+, regexp_replace(
     t1.build_option_name
   , '^(BLOG)'
   , '\1_HELP'
@@ -1565,13 +1587,21 @@ select
 from blog_features t1
 join apex_application_build_options v1
   on t1.build_option_name = v1.build_option_name
-left join blog_feature_parents t2
-  on t1.build_option_name = t2.build_option_name
-  and t2.is_active = 1
 where 1 = 1
+  and t1.build_option_group != 'INTERNAL'
   and t1.is_active = 1
-start with t2.build_option_parent is null
-connect by prior t1.build_option_name = t2.build_option_parent
+  and case
+    when t1.ref_build_option_name is null
+    then 1
+    when apex_application_admin.get_build_option_status(
+      p_application_id    => sys_context( 'APEX$SESSION', 'APP_ID' )
+    , p_build_option_name => t1.ref_build_option_name
+    ) = t1.ref_build_option_status
+    then 1
+    else 0
+  end = 1
+start with t1.build_option_parent is null
+connect by prior t1.build_option_name = t1.build_option_parent
 with read only
 /
 --------------------------------------------------------
@@ -2350,15 +2380,17 @@ select
   )                           as attribute_group_html
 , t1.attribute_group_message  as attribute_group
 from blog_settings t1
-left join blog_setting_features t2 on t1.attribute_name = t2.attribute_name
 where 1 = 1
-  and (
-    apex_application_admin.get_build_option_status(
+  and case
+    when t1.build_option_name is null
+    then 1
+    when apex_application_admin.get_build_option_status(
       p_application_id    => sys_context( 'APEX$SESSION', 'APP_ID' )
-    , p_build_option_name => t2.build_option_name
-    ) = t2.build_option_status
-    or t2.build_option_name is null
-  )
+    , p_build_option_name => t1.build_option_name
+    ) = t1.build_option_status
+    then 1
+    else 0
+  end = 1
 with read only
 /
 --------------------------------------------------------
@@ -2694,7 +2726,7 @@ begin
   );
 
   -- Generate comment preview
-  :new.comment_preview := blog_comm.short_text( :new.body_html );
+  :new.comment_preview := blog_comment.short_text( :new.body_html );
 
   -- tickle text index
   :new.ctx_search := 'X';
@@ -2840,39 +2872,6 @@ CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_FEATURES_TRG"
 before
 insert or
 update on blog_features
-for each row
-begin
-
-  if inserting then
-    :new.id           := coalesce( :new.id, blog_seq.nextval );
-    :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := coalesce( :new.created_on, localtimestamp );
-    :new.created_by   := coalesce(
-      :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV', 'PROXY_USER' )
-      ,sys_context( 'USERENV', 'SESSION_USER' )
-    );
-  elsif updating then
-    :new.row_version := :old.row_version + 1;
-  end if;
-
-  :new.changed_on := localtimestamp;
-  :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV', 'PROXY_USER' )
-    ,sys_context( 'USERENV', 'SESSION_USER' )
-  );
-
-end;
-/
---------------------------------------------------------
---  DDL for Trigger BLOG_FEATURE_PARENTS_TRG
---------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_FEATURE_PARENTS_TRG"
-before
-insert or
-update on blog_feature_parents
 for each row
 begin
 
@@ -3281,39 +3280,6 @@ begin
 end;
 /
 --------------------------------------------------------
---  DDL for Trigger BLOG_SETTING_FEATURES_TRG
---------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_SETTING_FEATURES_TRG"
-before
-insert or
-update on blog_setting_features
-for each row
-begin
-
-  if inserting then
-    :new.id           := coalesce( :new.id, blog_seq.nextval );
-    :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := coalesce( :new.created_on, localtimestamp );
-    :new.created_by   := coalesce(
-      :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV', 'PROXY_USER' )
-      ,sys_context( 'USERENV', 'SESSION_USER' )
-    );
-  elsif updating then
-    :new.row_version := :old.row_version + 1;
-  end if;
-
-  :new.changed_on := localtimestamp;
-  :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV', 'PROXY_USER' )
-    ,sys_context( 'USERENV', 'SESSION_USER' )
-  );
-
-end;
-/
---------------------------------------------------------
 --  DDL for Trigger BLOG_SUBSCRIBERS_EMAIL_TRG
 --------------------------------------------------------
 CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_SUBSCRIBERS_EMAIL_TRG"
@@ -3455,70 +3421,71 @@ as
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure settings_ins(
+  procedure settings_merge(
+    p_attribute_name          in varchar2,
     p_display_seq             in number,
     p_is_nullable             in number,
-    p_attribute_name          in varchar2,
     p_data_type               in varchar2,
     p_attribute_group_message in varchar2,
-    p_attribute_value         in varchar2 default null,
     p_int_min                 in number   default null,
-    p_int_max                 in number   default null
+    p_int_max                 in number   default null,
+    p_build_option_name       in varchar2 default null,
+    p_build_option_status     in varchar2 default null,
+    p_attribute_value         in varchar2 default null
   )
   as
   begin
 
-    insert into blog_settings( display_seq, is_nullable, attribute_name, data_type, attribute_group_message, attribute_value, int_min, int_max )
-      values( p_display_seq, p_is_nullable, p_attribute_name, p_data_type, p_attribute_group_message, p_attribute_value, p_int_min, p_int_max )
+    merge into blog_settings
+    using dual
+    on( attribute_name = p_attribute_name )
+    when not matched then
+      insert ( attribute_name, display_seq, is_nullable, data_type, attribute_group_message, int_min, int_max, build_option_name, build_option_status, attribute_value )
+        values( p_attribute_name, p_display_seq, p_is_nullable, p_data_type, p_attribute_group_message, p_int_min, p_int_max, p_build_option_name, p_build_option_status, p_attribute_value )
+    when matched then
+      update set
+        display_seq = p_display_seq
+      , is_nullable = p_is_nullable
+      , data_type = p_data_type
+      , attribute_group_message = p_attribute_group_message
+      , int_min = p_int_min
+      , int_max = p_int_max
+      , build_option_name = p_build_option_name
+      , build_option_status = p_build_option_status
     ;
 
-  end settings_ins;
+  end settings_merge;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure setting_features_ins(
-    P_attribute_name      in varchar2,
-    p_build_option_name   in varchar2,
-    p_build_option_status in varchar2
+  procedure features_merge(
+    p_build_option_name       in varchar2,
+    p_is_active               in number,
+    p_display_seq             in number,
+    p_build_option_group      in varchar2,
+    p_build_option_parent     in varchar2 default null,
+    p_ref_build_option_name   in varchar2 default null,
+    p_ref_build_option_status in varchar2 default null
   )
   as
   begin
 
-    insert into blog_setting_features( attribute_name, build_option_name, build_option_status )
-    values( p_attribute_name, p_build_option_name, p_build_option_status )
-  ;
-
-  end setting_features_ins;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure features_ins(
-    p_is_active           in number,
-    p_display_seq         in number,
-    p_build_option_name   in varchar2,
-    p_build_option_group  in varchar2
-  )
-  as
-  begin
-
-    insert into blog_features( is_active, display_seq, build_option_name, build_option_group)
-      values( p_is_active, p_display_seq, p_build_option_name, p_build_option_group)
+    merge into blog_features
+    using dual
+    on( build_option_name = p_build_option_name )
+    when not matched then
+      insert ( build_option_name, is_active, display_seq, build_option_group, build_option_parent, ref_build_option_name, ref_build_option_status )
+        values( p_build_option_name, p_is_active, p_display_seq, p_build_option_group, p_build_option_parent, p_ref_build_option_name, p_ref_build_option_status )
+    when matched then
+      update set
+        is_active = p_is_active
+      , display_seq = p_display_seq
+      , build_option_group = p_build_option_group
+      , build_option_parent = p_build_option_parent
+      , ref_build_option_name = p_ref_build_option_name
+      , ref_build_option_status = p_ref_build_option_status
     ;
 
-  end features_ins;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure feature_parents_ins(
-    p_is_active           in number,
-    p_build_option_name   in varchar2,
-    p_build_option_parent in varchar2
-  )
-  as
-  begin
-
-    insert into blog_feature_parents( is_active, build_option_name, build_option_parent )
-      values( p_is_active, p_build_option_name, p_build_option_parent )
-    ;
-
-  end feature_parents_ins;
+  end features_merge;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure list_of_values_ins(
@@ -5794,7 +5761,7 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
-create or replace package body "BLOG_CM"
+create or replace package body "BLOG_ADMIN"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -6011,8 +5978,9 @@ as
     apex_debug.info( 'Fetch user id and name for username: %s', p_username );
 
     -- fetch user id and name
-    select id
-      ,blogger_name
+    select
+      id
+    , blogger_name
     into p_user_id, p_name
     from blog_bloggers
     where apex_username = p_username
@@ -6268,29 +6236,6 @@ as
   end remove_unused_categories;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure resequence_categories
-  as
-  begin
-
-    -- update categories display_seq if it different than new
-    merge into blog_categories t1
-    using (
-      select id
-        ,row_number() over(
-          order by display_seq, created_on
-        ) * 10 as new_display_seq
-      from blog_categories
-      where 1 = 1
-    ) v1
-    on ( t1.id = v1.id )
-    when matched then
-      update set t1.display_seq = v1.new_display_seq
-        where t1.display_seq != v1.new_display_seq
-    ;
-
-  end resequence_categories;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   procedure add_tag(
     p_tag     in varchar2,
     p_tag_id  out nocopy number
@@ -6344,8 +6289,8 @@ as
 
     -- split tags string to table and loop all values
     l_tag_tab := apex_string.split(
-       p_str => p_tags
-      ,p_sep => p_sep
+      p_str => p_tags
+    , p_sep => p_sep
     );
 
     for i in 1 .. l_tag_tab.count
@@ -6353,8 +6298,8 @@ as
 
       -- add tag to repository and return id
       add_tag(
-         p_tag    => l_tag_tab(i)
-        ,p_tag_id => l_tag_id
+        p_tag     => l_tag_tab(i)
+      , p_tag_id  => l_tag_id
       );
 
       -- if the tag has been added or is already in the repository
@@ -6372,9 +6317,9 @@ as
 
         -- add tag relationships to post
         add_tag_to_post(
-           p_post_id     => l_post_id
-          ,p_tag_id      => l_tag_id
-          ,p_display_seq => l_display_seq
+          p_post_id     => l_post_id
+        , p_tag_id      => l_tag_id
+        , p_display_seq => l_display_seq
         );
 
       end if;
@@ -6383,8 +6328,8 @@ as
 
     -- delete removed tags relationships
     cleanup_post_tags(
-       p_post_id => l_post_id
-      ,p_tag_tab => l_tag_id_tab
+      p_post_id => l_post_id
+    , p_tag_tab => l_tag_id_tab
     );
 
   end add_post_tags;
@@ -6403,35 +6348,6 @@ as
       and x1.tag_id = t1.id
     );
   end remove_unused_tags;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure resequence_tags(
-    p_post_id in varchar2
-  )
-  as
-    l_post_id number;
-  begin
-
-    l_post_id := to_number( p_post_id );
-
-    -- update post tags display_seq if it different than new
-    merge into blog_post_tags t1
-    using (
-      select id
-        ,row_number() over(
-          order by display_seq, created_on
-        ) * 10 as new_display_seq
-      from blog_post_tags
-      where 1 = 1
-      and post_id = l_post_id
-    ) v1
-    on ( t1.id = v1.id )
-    when matched then
-      update set t1.display_seq = v1.new_display_seq
-        where t1.display_seq != v1.new_display_seq
-    ;
-
-  end resequence_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function is_integer(
@@ -6539,14 +6455,26 @@ as
     p_build_status    in varchar2
   )
   as
+    l_build_status apex_application_admin.t_build_option_status;
   begin
 
+    l_build_status := upper( p_build_status );
+
     -- update build option value
-    apex_application_admin.set_build_option_status(
-       p_application_id => p_app_id
-      ,p_id => p_build_option_id
-      ,p_build_status => upper( p_build_status )
-    );
+    if
+      apex_application_admin.get_build_option_status(
+        p_application_id  => p_app_id
+      , p_id              => p_build_option_id
+      ) != l_build_status
+    then
+
+      apex_application_admin.set_build_option_status(
+        p_application_id  => p_app_id
+      , p_id              => p_build_option_id
+      , p_build_status    => l_build_status
+      );
+
+    end if;
 
   end update_feature;
 --------------------------------------------------------------------------------
@@ -6586,6 +6514,60 @@ as
   end update_feature;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  procedure resequence_categories
+  as
+  begin
+
+    -- update categories display_seq if it different than new
+    merge into blog_categories t1
+    using (
+      select
+        id
+      , row_number() over(
+          order by display_seq, created_on
+        ) * 10 as new_display_seq
+      from blog_categories
+      where 1 = 1
+    ) v1
+    on ( t1.id = v1.id )
+    when matched then
+      update set t1.display_seq = v1.new_display_seq
+        where t1.display_seq != v1.new_display_seq
+    ;
+
+  end resequence_categories;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure resequence_tags(
+    p_post_id in varchar2
+  )
+  as
+    l_post_id number;
+  begin
+
+    l_post_id := to_number( p_post_id );
+
+    -- update post tags display_seq if it different than new
+    merge into blog_post_tags t1
+    using (
+      select
+        id
+      , row_number() over(
+          order by display_seq, created_on
+        ) * 10 as new_display_seq
+      from blog_post_tags
+      where 1 = 1
+      and post_id = l_post_id
+    ) v1
+    on ( t1.id = v1.id )
+    when matched then
+      update set t1.display_seq = v1.new_display_seq
+        where t1.display_seq != v1.new_display_seq
+    ;
+
+  end resequence_tags;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure resequence_link_groups
   as
   begin
@@ -6593,8 +6575,9 @@ as
     -- update link groups display_seq if it different than new
     merge into blog_link_groups t1
     using (
-      select id
-        ,row_number() over(
+      select
+        id
+      , row_number() over(
           order by display_seq, created_on
         ) * 10 as new_display_seq
       from blog_link_groups
@@ -6622,8 +6605,9 @@ as
     -- update links display_seq if it different than new
     merge into blog_links t1
     using (
-      select id
-        ,row_number() over(
+      select
+        id
+      , row_number() over(
           order by display_seq, created_on
         ) * 10 as new_display_seq
       from blog_links
@@ -6645,8 +6629,9 @@ as
     -- Update dynamic content seq if it different than new
     merge into blog_dynamic_content t1
     using (
-      select id
-        ,row_number() over(
+      select
+        id
+      , row_number() over(
           order by display_seq, created_on
         ) * 10 as new_display_seq
       from blog_dynamic_content
@@ -6689,7 +6674,7 @@ as
   end set_attribute_value;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-end "BLOG_CM";
+end "BLOG_ADMIN";
 /
 create or replace package body "BLOG_PLUGIN"
 as
@@ -7408,7 +7393,7 @@ begin
 --------------------------------------------------------------------------------
 end "BLOG_URL";
 /
-create or replace package body "BLOG_COMM"
+create or replace package body "BLOG_COMMENT"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -7744,7 +7729,7 @@ as
         l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_HTML';
       end;
 
-      if blog_comm.short_text( p_comment ) is null
+      if short_text( p_comment ) is null
       then
         -- set error message
         l_err_mesg := 'BLOG_VALIDATION_ERR_COMMENT_PREVIEW';
@@ -7807,7 +7792,7 @@ as
         ;
       exception when dup_val_on_index
       then
-        null;
+        apex_debug.warn( 'Duplicate flag %s for comment id: %s', l_flags(i), p_comment_id );
       end;
 
     end loop;
@@ -7827,11 +7812,18 @@ as
 
     for i in 1 .. l_flags.count
     loop
+
       delete from blog_comment_flags
       where 1 = 1
         and comment_id = p_comment_id
         and flag = l_flags(i)
       ;
+
+      if sql%rowcount != 1
+      then
+        apex_debug.warn( 'Removed %s %s flags from comment id: %s', sql%rowcount, l_flags(i), p_comment_id );
+      end if;
+
     end loop;
 
   end unflag_comment;
@@ -7961,7 +7953,7 @@ as
 
       apex_debug.info(
         'Send email to: %s from: %s template: %s placeholders: %s'
-        ,c1.email
+      , c1.email
       , c_app_email
       , p_email_template
       , c1.placeholders
@@ -8051,7 +8043,44 @@ as
   end unsubscribe;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-end "BLOG_COMM";
+  procedure auto_approve(
+    p_comment_id in varchar2
+  )
+  as
+    l_cnt number;
+  begin
+
+    apex_debug.info( 'Automaticallu approve comment id %s if sentiment is Positive', p_comment_id );
+
+    -- check that comment exists
+    select 1
+    into l_cnt
+    from blog_comment_sentiments t1
+    where 1 = 1
+      and t1.comment_id = p_comment_id
+      and t1.sentiment_json.documentSentiment = 'Positive'
+    ;
+
+    -- remove MODERATE flag
+    unflag_comment(
+      p_comment_id  => p_comment_id
+    , p_flags       => 'MODERATE'
+    );
+
+    -- set comment active
+    update blog_comments
+      set is_active = 1
+    where 1 = 1
+      and id = p_comment_id
+    ;
+
+  exception when no_data_found
+  then
+    apex_debug.warn( 'Comment id %s not found for automatic approve', p_comment_id );
+  end auto_approve;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+end "BLOG_COMMENT";
 /
 create or replace package body "BLOG_HTML"
 as
@@ -8536,7 +8565,7 @@ as
 
     end loop;
 
-  end;
+  end process_headers;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_response_header(
@@ -8597,17 +8626,17 @@ as
     p_message   out nocopy varchar2
   )
   as
-    l_top_obj json_object_t;
+    l_top_obj json_element_t;
     l_err_obj json_object_t;
   begin
 
     apex_debug.error( 'Error response body: %s', p_response );
 
     -- parse response to json
-    if p_response is not null
+    if p_response is not null and p_response is json
     then
 
-      l_top_obj := json_object_t.parse( p_response );
+      l_top_obj := json_element_t.parse( p_response );
 
       -- if top level is object try get error code and error message
       if ( l_top_obj.is_object )
@@ -8622,7 +8651,7 @@ as
 
     end if;
 
-    apex_debug.info( 'Error code: %s, error message', p_code, p_message );
+    apex_debug.info( 'Error code: %s, error message: %s', p_code, p_message );
 
   end parse_error_json;
 --------------------------------------------------------------------------------
@@ -9125,6 +9154,15 @@ as
 -- Global procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function get_param_value(
+    p_param_name in varchar2
+  ) return varchar2
+  as
+  begin
+    return param_t( p_param_name );
+  end get_param_value;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure set_object_storage(
     p_bucket_name   in varchar2,
     p_base_url      in varchar2,
@@ -9135,6 +9173,7 @@ as
 
     l_attributes   apex_t_varchar2;
 
+    l_base_url    varchar2(2000);
     l_bucket_url  varchar2(2000);
     l_region      varchar2(256);
     l_namespace   varchar2(256);
@@ -9142,16 +9181,9 @@ as
 
     apex_debug.info( 'Set object storage buid option %s status: %s', param_t( 'build_option_name' ), p_build_status );
     -- Set build option status for the storage feature
-    blog_cm.update_feature(
+    blog_admin.update_feature(
       p_build_option_name => param_t( 'build_option_name' )
     , p_build_status      => p_build_status
-    );
-
-    apex_debug.info( 'Set object storage remote server %s: %s', param_t( 'remote_server_static_id' ), rtrim( p_base_url, '/' ) || '/' );
-    -- Set remote server URL
-    apex_application_admin.set_remote_server(
-      p_static_id => param_t( 'remote_server_static_id' )
-    , p_base_url  => rtrim( p_base_url, '/' ) || '/'
     );
 
     if p_build_status = apex_application_admin.c_build_option_status_include
@@ -9192,8 +9224,17 @@ as
 
       apex_string.plist_push( l_attributes, param_t( 'bucket_url_param_name' ), l_bucket_url );
 
-      blog_cm.set_attribute_value(
+      blog_admin.set_attribute_value(
         p_attribute_list  => l_attributes
+      );
+
+      l_base_url := rtrim( p_base_url, '/' ) || '/';
+
+      apex_debug.info( 'Set object storage remote server %s: %s', param_t( 'remote_server_static_id' ), l_base_url );
+      -- Set remote server URL
+      apex_application_admin.set_remote_server(
+        p_static_id => param_t( 'remote_server_static_id' )
+      , p_base_url  => l_base_url
       );
 
     end if;
@@ -10457,24 +10498,26 @@ as
   begin
 
     -- set valus for session
-    param_t( 'lang_ai_build_option' ) := 'BLOG_FEATURE_LANGUAGE_AI';
     param_t( 'lang_ai_static_id' ) := 'BLOG_LANGUAGE_AI';
+    param_t( 'gen_ai_static_id' ) := 'BLOG_OPEN_AI_API';
+    param_t( 'gen_ai_credential_static_id' ) := 'BLOG_OPEN_AI_API_KEY';
+    param_t( 'lang_ai_build_option' ) := 'BLOG_FEATURE_LANGUAGE_AI';
+    param_t( 'gen_ai_build_option' ) := 'BLOG_FEATURE_GENERATIVE_AI';
+    param_t( 'gen_ai_generate_msg' ) := 'BLOG_AI_GENERATE_MESSAGE';
+    param_t( 'gen_ai_generate_prompt_msg' ) := 'BLOG_AI_GENERATE_PROMPT';
     param_t( 'lang_ai_compartment_param_name') := 'G_OCI_LANG_AI_COMPARTMENT_OCID';
     param_t( 'lang_ai_compartment_ocid' ) := blog_util.get_attribute_value( param_t( 'lang_ai_compartment_param_name' ) );
-    param_t( 'gen_ai_static_id' ) := 'BLOG_OPEN_AI_API';
-    param_t( 'gen_ai_build_option' ) := 'BLOG_FEATURE_GENERATIVE_AI';
-    param_t( 'gen_ai_generate_prompt' ) := apex_lang.get_message( 'BLOG_AI_GENERATE_PROMPT' );
-    param_t( 'gen_ai_generate_msg' ) := 'BLOG_AI_GENERATE_MESSAGE';
 
     -- Debug parameters
-    apex_debug.info( 'Language AI build option name: %s', param_t( 'lang_ai_build_option' ) );
     apex_debug.info( 'Language AI remote server static id: %s', param_t( 'lang_ai_static_id' ) );
+    apex_debug.info( 'Generative AI service static id: %s', param_t( 'gen_ai_static_id' ) );
+    apex_debug.info( 'Generative AI credential static id: %s', param_t( 'gen_ai_credential_static_id' ) );
+    apex_debug.info( 'Language AI build option name: %s', param_t( 'lang_ai_build_option' ) );
+    apex_debug.info( 'Generative AI build option name: %s', param_t( 'gen_ai_build_option' ) );
+    apex_debug.info( 'Generative AI generate message: %s', param_t( 'gen_ai_generate_msg' ) );
+    apex_debug.info( 'Generative AI generate prompt message: %s', param_t( 'gen_ai_generate_prompt_msg' ) );
     apex_debug.info( 'Language AI comparment parameter name : %s', param_t( 'lang_ai_compartment_param_name' ) );
     apex_debug.info( 'Language AI comparment OCID : %s', param_t( 'lang_ai_compartment_ocid') );
-    apex_debug.info( 'Generative AI service static id: %s', param_t( 'gen_ai_static_id' ) );
-    apex_debug.info( 'Generative AI build option name: %s', param_t( 'gen_ai_build_option' ) );
-    apex_debug.info( 'Generative AI generate prompt: %s', param_t( 'gen_ai_generate_prompt' ) );
-    apex_debug.info( 'Generative AI generate message: %s', param_t( 'gen_ai_generate_msg' ) );
 
   end init_params;
 --------------------------------------------------------------------------------
@@ -10501,7 +10544,7 @@ as
         json_arrayagg(
           json_object(
             'key'   is blog_util.int_to_vc2( q1.id ),
-            'text'  is blog_comm.plain_text( q1.body_html )
+            'text'  is blog_comment.plain_text( q1.body_html )
           ) returning clob
         ) as document
       from q1
@@ -10542,54 +10585,106 @@ as
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function get_param_value(
+    p_param_name in varchar2
+  ) return varchar2
+  as
+  begin
+    return param_t( p_param_name );
+  end get_param_value;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure set_lang_ai(
     p_compartment_id  in varchar2,
     p_base_url        in varchar2,
     p_build_status    in varchar2
   )
   as
-    l_attributes apex_t_varchar2;
+    l_attributes  apex_t_varchar2;
+    l_base_url    varchar2(2000);
   begin
 
     apex_debug.info( 'Set buid option %s status: %s', param_t( 'lang_ai_build_option' ), p_build_status );
     -- Set build option status for the language AI feature
-    blog_cm.update_feature(
+    blog_admin.update_feature(
       p_build_option_name => param_t( 'lang_ai_build_option' )
     , p_build_status      => p_build_status
     );
 
-    apex_debug.info( 'Set remote server %s: %s', param_t( 'lang_ai_static_id' ), rtrim( p_base_url, '/' ) || '/' );
-    -- Set remote server URL
-    apex_application_admin.set_remote_server(
-      p_static_id => param_t( 'lang_ai_static_id' )
-    , p_base_url  => rtrim( p_base_url, '/' ) || '/'
-    );
+    -- If build option status is INCLUDE
+    if p_build_status = apex_application_admin.c_build_option_status_include
+    then
 
-    if p_build_status = apex_application_admin.c_build_option_status_include then
       apex_debug.info( 'Set compartment OCID: %s', p_compartment_id );
       -- Set attribute name and value
       apex_string.plist_push( l_attributes, param_t( 'lang_ai_compartment_param_name' ), p_compartment_id );
+
       -- Update attribute
-      blog_cm.set_attribute_value(
+      blog_admin.set_attribute_value(
         p_attribute_list => l_attributes
       );
+
+      l_base_url := rtrim( p_base_url, '/' ) || '/';
+
+      apex_debug.info( 'Set remote server %s: %s', param_t( 'lang_ai_static_id' ), l_base_url );
+      -- Set remote server URL
+      apex_application_admin.set_remote_server(
+        p_static_id => param_t( 'lang_ai_static_id' )
+      , p_base_url  => l_base_url
+      );
+
     end if;
 
   end set_lang_ai;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure set_gen_ai(
-    p_build_status in varchar2
+    p_build_status    in varchar2,
+    p_api_key         in varchar2,
+    p_base_url        in varchar2,
+    p_ai_model_name   in varchar2,
+    p_ai_http_headers in varchar2,
+    p_ai_attributes   in varchar2
   )
   as
-    l_attributes apex_t_varchar2;
+    l_base_url    varchar2(2000);
   begin
+
     apex_debug.info( 'Set buid option %s status: %s', param_t( 'gen_ai_build_option' ), p_build_status );
     -- Set build option status for the generative AI feature
-    blog_cm.update_feature(
+    blog_admin.update_feature(
       p_build_option_name => param_t( 'gen_ai_build_option' )
     , p_build_status      => p_build_status
     );
+
+    if p_build_status = apex_application_admin.c_build_option_status_include
+    then
+      -- Update credential if new API key is provided
+      if p_api_key is not null
+      then
+        apex_credential.set_persistent_credentials(
+          p_credential_static_id  => param_t( 'gen_ai_credential_static_id' )
+        , p_key   => 'Authorization'
+        , p_value =>
+            apex_string.format(
+              p_message => 'Bearer %s'
+            , p0 => p_api_key
+            )
+        );
+      end if;
+
+      l_base_url := rtrim( p_base_url, '/' ) || '/';
+      -- Update remote server
+      apex_application_admin.set_remote_server(
+        p_static_id       => param_t( 'gen_ai_static_id' )
+      , p_base_url        => p_base_url
+      , p_ai_model_name   => p_ai_model_name
+      , p_ai_http_headers => p_ai_http_headers
+      , p_ai_attributes   => p_ai_attributes
+      );
+
+    end if;
+
   end set_gen_ai;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -10620,7 +10715,10 @@ as
       apex_ai.chat(
         p_service_static_id => param_t( 'gen_ai_static_id' )
       , p_messages          => l_messages
-      , p_prompt            => param_t( 'gen_ai_generate_prompt' )
+      , p_prompt            =>
+          apex_lang.get_message(
+            p_name => param_t( 'gen_ai_generate_prompt_msg' )
+          )
       , p_system_prompt     =>
           apex_lang.get_message(
             p_name => p_system_prompt
@@ -10658,6 +10756,7 @@ as
 
     -- Loop through each document in the array
     for i in 0 .. l_json_documents.get_size() - 1 loop
+
       -- Extract document details
       l_json_document := json_object_t( l_json_documents.get(i) );
       l_comment_id := to_number( l_json_document.get_string( 'key' ) );
@@ -10671,6 +10770,7 @@ as
         values( l_comment_id, p_language, l_sentiment_json )
       when matched then
         update set sentiment_json = l_sentiment_json;
+
     end loop;
 
   end merge_sentiment;

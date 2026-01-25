@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_page_component_map=>'03'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414014936Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250707003435Z')
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(134309616685573283)
@@ -395,7 +395,7 @@ wwv_flow_imp_page.create_page_item(
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(134308088897573268)
 ,p_name=>'P2_POST_TITLE'
-,p_item_sequence=>110
+,p_item_sequence=>140
 ,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
@@ -404,11 +404,12 @@ wwv_flow_imp_page.create_page_item(
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'Y')).to_clob
 ,p_item_comment=>'Post title'
+,p_updated_on=>wwv_flow_imp.dz('20250707003435Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(149917046368042559)
 ,p_name=>'P2_POST_DESC'
-,p_item_sequence=>80
+,p_item_sequence=>110
 ,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
@@ -417,49 +418,11 @@ wwv_flow_imp_page.create_page_item(
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'Y')).to_clob
 ,p_item_comment=>'Post description'
+,p_updated_on=>wwv_flow_imp.dz('20250707003435Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(149917320386042562)
 ,p_name=>'P2_POST_CATEGORY'
-,p_item_sequence=>70
-,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
-,p_display_as=>'NATIVE_HIDDEN'
-,p_is_persistent=>'N'
-,p_protection_level=>'I'
-,p_encrypt_session_state_yn=>'N'
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'value_protected', 'Y')).to_clob
-,p_item_comment=>'Post category'
-);
-wwv_flow_imp_page.create_page_item(
- p_id=>wwv_flow_imp.id(149917445935042563)
-,p_name=>'P2_POST_AUTHOR'
-,p_item_sequence=>60
-,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
-,p_display_as=>'NATIVE_HIDDEN'
-,p_is_persistent=>'N'
-,p_protection_level=>'I'
-,p_encrypt_session_state_yn=>'N'
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'value_protected', 'Y')).to_clob
-,p_item_comment=>'Post author'
-);
-wwv_flow_imp_page.create_page_item(
- p_id=>wwv_flow_imp.id(149917505438042564)
-,p_name=>'P2_POST_PUBLISHED'
-,p_item_sequence=>100
-,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
-,p_display_as=>'NATIVE_HIDDEN'
-,p_is_persistent=>'N'
-,p_protection_level=>'I'
-,p_encrypt_session_state_yn=>'N'
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'value_protected', 'Y')).to_clob
-,p_item_comment=>'Post published on'
-);
-wwv_flow_imp_page.create_page_item(
- p_id=>wwv_flow_imp.id(149917597561042565)
-,p_name=>'P2_POST_MODIFIED'
 ,p_item_sequence=>90
 ,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
 ,p_display_as=>'NATIVE_HIDDEN'
@@ -468,7 +431,50 @@ wwv_flow_imp_page.create_page_item(
 ,p_encrypt_session_state_yn=>'N'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'Y')).to_clob
+,p_item_comment=>'Post category'
+,p_updated_on=>wwv_flow_imp.dz('20250707003435Z')
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(149917445935042563)
+,p_name=>'P2_POST_AUTHOR'
+,p_item_sequence=>80
+,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'N'
+,p_protection_level=>'I'
+,p_encrypt_session_state_yn=>'N'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
+,p_item_comment=>'Post author'
+,p_updated_on=>wwv_flow_imp.dz('20250707003435Z')
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(149917505438042564)
+,p_name=>'P2_POST_PUBLISHED'
+,p_item_sequence=>130
+,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'N'
+,p_protection_level=>'I'
+,p_encrypt_session_state_yn=>'N'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
+,p_item_comment=>'Post published on'
+,p_updated_on=>wwv_flow_imp.dz('20250707003435Z')
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(149917597561042565)
+,p_name=>'P2_POST_MODIFIED'
+,p_item_sequence=>120
+,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'N'
+,p_protection_level=>'I'
+,p_encrypt_session_state_yn=>'N'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
 ,p_item_comment=>'Post modified on'
+,p_updated_on=>wwv_flow_imp.dz('20250707003435Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(151862551968257639)
@@ -487,7 +493,7 @@ wwv_flow_imp_page.create_page_item(
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(155256167429152954)
 ,p_name=>'P2_NEXT_POST_ID'
-,p_item_sequence=>120
+,p_item_sequence=>150
 ,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
@@ -496,11 +502,12 @@ wwv_flow_imp_page.create_page_item(
 ,p_encrypt_session_state_yn=>'N'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'Y')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250707003435Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(155256240446152955)
 ,p_name=>'P2_PREV_POST_ID'
-,p_item_sequence=>140
+,p_item_sequence=>170
 ,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
@@ -509,11 +516,12 @@ wwv_flow_imp_page.create_page_item(
 ,p_encrypt_session_state_yn=>'N'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'Y')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250707003435Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(158643998475879074)
 ,p_name=>'P2_SUBSCRIPTION_ID'
-,p_item_sequence=>160
+,p_item_sequence=>190
 ,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
@@ -522,11 +530,12 @@ wwv_flow_imp_page.create_page_item(
 ,p_encrypt_session_state_yn=>'N'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'Y')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250707003435Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(159011861917990148)
 ,p_name=>'P2_NEXT_POST_TITLE'
-,p_item_sequence=>130
+,p_item_sequence=>160
 ,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
@@ -534,11 +543,12 @@ wwv_flow_imp_page.create_page_item(
 ,p_encrypt_session_state_yn=>'N'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'Y')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250707003435Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(159011980370990149)
 ,p_name=>'P2_PREV_POST_TITLE'
-,p_item_sequence=>150
+,p_item_sequence=>180
 ,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'N'
@@ -546,6 +556,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_encrypt_session_state_yn=>'N'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'Y')).to_clob
+,p_updated_on=>wwv_flow_imp.dz('20250707003435Z')
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(157515687812572194)
@@ -760,13 +771,14 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Remove subscription'
 ,p_attribute_01=>'PLSQL_PACKAGE'
-,p_attribute_03=>'BLOG_COMM'
+,p_attribute_03=>'BLOG_COMMENT'
 ,p_attribute_04=>'UNSUBSCRIBE'
 ,p_process_when=>'P2_SUBSCRIPTION_ID'
 ,p_process_when_type=>'ITEM_IS_NOT_NULL'
 ,p_process_success_message=>'You have now unsubscribed from notifications for this post comments.'
 ,p_internal_uid=>31249019378982930
 ,p_process_comment=>'Remove user subscription from getting notifications of new comments'
+,p_updated_on=>wwv_flow_imp.dz('20250702013222Z')
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(147862639173768935)

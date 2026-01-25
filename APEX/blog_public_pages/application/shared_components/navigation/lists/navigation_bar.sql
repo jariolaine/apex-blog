@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -16,7 +16,8 @@ wwv_flow_imp_shared.create_list(
 ,p_name=>'Navigation Bar'
 ,p_list_status=>'PUBLIC'
 ,p_required_patch=>wwv_flow_imp.id(155314808107986067)
-,p_version_scn=>1
+,p_version_scn=>45651697466887
+,p_updated_on=>wwv_flow_imp.dz('20251221015249Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(134286776115163582)

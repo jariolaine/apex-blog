@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -15,12 +15,12 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(80109302137924712)
 ,p_build_option_name=>'BLOG_FEATURE_MODERATE_COMMENTS_AI'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>42244267336649
+,p_version_scn=>44984740254549
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable comments moderation automatically using AI'
 ,p_created_on=>wwv_flow_imp.dz('20241208134037Z')
-,p_updated_on=>wwv_flow_imp.dz('20250629041513Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702024512Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(134299248056650290)
@@ -118,11 +118,11 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(145826259194060489)
 ,p_build_option_name=>'BLOG_FEATURE_OCI_OBJECT_STORAGE'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>42197561138252
+,p_version_scn=>44984609914606
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable Oracle cloud object storage'
-,p_updated_on=>wwv_flow_imp.dz('20250414163203Z')
+,p_updated_on=>wwv_flow_imp.dz('20250701071345Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(152020878643750306)
@@ -172,11 +172,11 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(155675266349386026)
 ,p_build_option_name=>'BLOG_FEATURE_MODERATE_COMMENTS'
 ,p_build_option_status=>'INCLUDE'
-,p_version_scn=>42244267343738
+,p_version_scn=>44984740254548
 ,p_default_on_export=>'INCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable comments moderation'
-,p_updated_on=>wwv_flow_imp.dz('20250629041517Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702024512Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(157505626766866589)
@@ -191,11 +191,11 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(158089734281512799)
 ,p_build_option_name=>'BLOG_FEATURE_LANGUAGE_AI'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>42201936895369
+,p_version_scn=>44984609927939
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable comments sentiment analyze using OCI language AI'
-,p_updated_on=>wwv_flow_imp.dz('20250511052854Z')
+,p_updated_on=>wwv_flow_imp.dz('20250701071351Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(158909835543127564)

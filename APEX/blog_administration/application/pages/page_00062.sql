@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
-,p_last_updated_on=>wwv_flow_imp.dz('20250422053025Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250702013826Z')
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(196913543232727888)
@@ -443,11 +443,11 @@ wwv_flow_imp_page.create_page_computation(
 ,p_computation_type=>'EXPRESSION'
 ,p_computation_language=>'PLSQL'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_comm.plain_text(',
+'blog_comment.plain_text(',
 '  p_string => :P62_BODY_HTML',
 ')'))
 ,p_created_on=>wwv_flow_imp.dz('20250405035654Z')
-,p_updated_on=>wwv_flow_imp.dz('20250405035654Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702013812Z')
 );
 wwv_flow_imp_page.create_page_validation(
  p_id=>wwv_flow_imp.id(113265400039639103)
@@ -481,7 +481,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Sent reply notification'
 ,p_attribute_01=>'PLSQL_PACKAGE'
-,p_attribute_03=>'BLOG_COMM'
+,p_attribute_03=>'BLOG_COMMENT'
 ,p_attribute_04=>'REPLY_NOTIFY'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_imp.id(120619554637561154)
@@ -494,6 +494,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_when_type=>'EXPRESSION'
 ,p_process_when2=>'PLSQL'
 ,p_internal_uid=>38174693289729064
+,p_updated_on=>wwv_flow_imp.dz('20250702013826Z')
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(120919499535115595)

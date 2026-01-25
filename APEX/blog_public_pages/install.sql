@@ -90,11 +90,11 @@ prompt --install
 @@application/deployment/install/install_metadata.sql
 @@application/deployment/install/upgrade_patch_23_2_20231120.sql
 @@application/deployment/install/upgrade_patch_23_2_20240414.sql
-@@application/deployment/install/upgrade_patch_24_1_20241125_part_1.sql
+@@application/deployment/install/upgrade_patch_24_2_20250701_part_1.sql
 @@application/deployment/install/upgrade_drop_text_indexes.sql
 @@application/deployment/install/upgrade_database_objects_upgrade.sql
 @@application/deployment/install/upgrade_create_text_indexes.sql
-@@application/deployment/install/upgrade_patch_24_1_20241125_part_2.sql
+@@application/deployment/install/upgrade_patch_24_2_20250701_part_2.sql
 @@application/deployment/install/upgrade_postupgrade.sql
 @@application/deployment/checks.sql
 @@application/deployment/buildoptions.sql

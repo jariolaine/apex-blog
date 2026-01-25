@@ -13,6 +13,8 @@ create table blog_features(
   build_option_name varchar2( 256 char ) not null,
   build_option_group varchar2( 256 char ) not null,
   build_option_parent varchar2( 256 char ),
+  ref_build_option_name varchar2( 256 char ),
+  ref_build_option_status varchar2( 10 char ),
   constraint blog_features_pk primary key( id ),
   constraint blog_features_uk1 unique( build_option_name ),
   constraint blog_features_ck1 check( row_version > 0 ),

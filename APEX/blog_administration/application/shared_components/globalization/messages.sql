@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -467,10 +467,10 @@ wwv_flow_imp_shared.create_message(
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(123419821720744097)
 ,p_name=>'BLOG_HELP_FEATURE_MODERATE_COMMENTS_AI'
-,p_message_text=>'Enable or disable AI-powered moderation to automatically approve comments.'
-,p_version_scn=>42197092462622
+,p_message_text=>'Enable or disable AI-powered moderation to automatically approve comments. If comment moderation is enabled and the AI analyzes the comment sentiment as positive, the comment is automatically approved.'
+,p_version_scn=>44984740598215
 ,p_created_on=>wwv_flow_imp.dz('20250409141842Z')
-,p_updated_on=>wwv_flow_imp.dz('20250409141842Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702024837Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(103927546079201471)
@@ -814,11 +814,10 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(117547023012538519)
 ,p_name=>'BLOG_MSG_GENERATIVE_AI_INFO'
 ,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<p>To use generative AI, the system administrator must configure <i>Blog Open AI</i> <strong>Generative AI Service</strong>.</p>',
 '<p>When Generative AI is enabled, it enables generate for post e.g. title, description, category and tags.</p>',
 '<p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for API key.</p>'))
-,p_version_scn=>41492472284501
-,p_updated_on=>wwv_flow_imp.dz('20250122021329Z')
+,p_version_scn=>42244384616695
+,p_updated_on=>wwv_flow_imp.dz('20250630043954Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(97799466120992477)
@@ -834,10 +833,10 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(114671136958398625)
 ,p_name=>'BLOG_MSG_LANGUAGE_AI_INFO'
 ,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<p>To use language AI, you must first configure an Oracle <i>Cloud API Key</i>.</p>',
+'<p>To use language AI, you must configure an Oracle <i>Cloud API Key</i>.</p>',
 '<p>When language AI is enabled, the sentiment of all new comments is analyzed. You can see the analysis result when opening a comment.</p>'))
-,p_version_scn=>42244264829866
-,p_updated_on=>wwv_flow_imp.dz('20250629035310Z')
+,p_version_scn=>42244384527823
+,p_updated_on=>wwv_flow_imp.dz('20250630043820Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(135528583746186927)
@@ -863,11 +862,11 @@ wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(111293808854717846)
 ,p_name=>'BLOG_MSG_OBJECT_STORAGE_INFO'
 ,p_message_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<p>To use object storage, you must first configure an <i>Oracle Cloud API Key</i>.</p>',
+'<p>To use object storage, you must configure an <i>Oracle Cloud API Key</i>.</p>',
 '<p>Once object storage is enabled, go to <strong>Synchronize Files</strong> and sync files between local file repository and object storage.</p>',
 '<p>When object storage is enabled, new files are no longer saved to the local file repository. You can use synchronization to retrieve files from object storage to the local file repository.</p>'))
-,p_version_scn=>42244264944783
-,p_updated_on=>wwv_flow_imp.dz('20250629035412Z')
+,p_version_scn=>42244384534632
+,p_updated_on=>wwv_flow_imp.dz('20250630043827Z')
 );
 wwv_flow_imp_shared.create_message(
  p_id=>wwv_flow_imp.id(98654830965007071)

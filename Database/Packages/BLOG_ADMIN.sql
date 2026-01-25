@@ -1,4 +1,4 @@
-create or replace package "BLOG_CM"
+create or replace package "BLOG_ADMIN"
 authid definer
 as
 --------------------------------------------------------------------------------
@@ -95,6 +95,8 @@ as
 --                              Moved file repository-related procedures/functions to BLOG_FILE package.
 --                              Removed procedure update_text_messages.
 --  25.08.2024   Jari Laine     Moved function remove_whitespace to package BLOG_UTIL.
+--  30.06.2025   Jari Laine     Changes to procedure update_feature
+--  02.07.2025   Jari Laine     Package renamed BLOG_CM -> BLOG_ADMIN
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -153,10 +155,6 @@ as
   procedure remove_unused_categories;
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 14
-  procedure resequence_categories;
---------------------------------------------------------------------------------
--- Called from:
 --  admin app page 16 and inside this package
   procedure add_tag(
     p_tag               in varchar2,
@@ -174,12 +172,6 @@ as
 -- Called from:
 --  admin app page 15
   procedure remove_unused_tags;
---------------------------------------------------------------------------------
--- Called from:
---  admin app page 16
-  procedure resequence_tags(
-    p_post_id           in varchar2
-  );
 --------------------------------------------------------------------------------
 -- Called from:
 --  admin app page 20012 validation "Is Integer"
@@ -213,10 +205,21 @@ as
   );
 --------------------------------------------------------------------------------
 -- Called from:
---  admin app page 20013
+--  admin app page 20017 and 20018
+--  package blog_ai and blog_oci_os
   procedure update_feature(
     p_build_option_name in varchar2,
     p_build_status      in varchar2
+  );
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 14
+  procedure resequence_categories;
+--------------------------------------------------------------------------------
+-- Called from:
+--  admin app page 16
+  procedure resequence_tags(
+    p_post_id           in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -239,11 +242,11 @@ as
     p_attribute_list    in apex_t_varchar2
   );
 --------------------------------------------------------------------------------
-end "BLOG_CM";
+end "BLOG_ADMIN";
 /
 
 
-create or replace package body "BLOG_CM"
+create or replace package body "BLOG_ADMIN"
 as
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -460,8 +463,9 @@ as
     apex_debug.info( 'Fetch user id and name for username: %s', p_username );
 
     -- fetch user id and name
-    select id
-      ,blogger_name
+    select
+      id
+    , blogger_name
     into p_user_id, p_name
     from blog_bloggers
     where apex_username = p_username
@@ -717,29 +721,6 @@ as
   end remove_unused_categories;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure resequence_categories
-  as
-  begin
-
-    -- update categories display_seq if it different than new
-    merge into blog_categories t1
-    using (
-      select id
-        ,row_number() over(
-          order by display_seq, created_on
-        ) * 10 as new_display_seq
-      from blog_categories
-      where 1 = 1
-    ) v1
-    on ( t1.id = v1.id )
-    when matched then
-      update set t1.display_seq = v1.new_display_seq
-        where t1.display_seq != v1.new_display_seq
-    ;
-
-  end resequence_categories;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   procedure add_tag(
     p_tag     in varchar2,
     p_tag_id  out nocopy number
@@ -793,8 +774,8 @@ as
 
     -- split tags string to table and loop all values
     l_tag_tab := apex_string.split(
-       p_str => p_tags
-      ,p_sep => p_sep
+      p_str => p_tags
+    , p_sep => p_sep
     );
 
     for i in 1 .. l_tag_tab.count
@@ -802,8 +783,8 @@ as
 
       -- add tag to repository and return id
       add_tag(
-         p_tag    => l_tag_tab(i)
-        ,p_tag_id => l_tag_id
+        p_tag     => l_tag_tab(i)
+      , p_tag_id  => l_tag_id
       );
 
       -- if the tag has been added or is already in the repository
@@ -821,9 +802,9 @@ as
 
         -- add tag relationships to post
         add_tag_to_post(
-           p_post_id     => l_post_id
-          ,p_tag_id      => l_tag_id
-          ,p_display_seq => l_display_seq
+          p_post_id     => l_post_id
+        , p_tag_id      => l_tag_id
+        , p_display_seq => l_display_seq
         );
 
       end if;
@@ -832,8 +813,8 @@ as
 
     -- delete removed tags relationships
     cleanup_post_tags(
-       p_post_id => l_post_id
-      ,p_tag_tab => l_tag_id_tab
+      p_post_id => l_post_id
+    , p_tag_tab => l_tag_id_tab
     );
 
   end add_post_tags;
@@ -852,35 +833,6 @@ as
       and x1.tag_id = t1.id
     );
   end remove_unused_tags;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure resequence_tags(
-    p_post_id in varchar2
-  )
-  as
-    l_post_id number;
-  begin
-
-    l_post_id := to_number( p_post_id );
-
-    -- update post tags display_seq if it different than new
-    merge into blog_post_tags t1
-    using (
-      select id
-        ,row_number() over(
-          order by display_seq, created_on
-        ) * 10 as new_display_seq
-      from blog_post_tags
-      where 1 = 1
-      and post_id = l_post_id
-    ) v1
-    on ( t1.id = v1.id )
-    when matched then
-      update set t1.display_seq = v1.new_display_seq
-        where t1.display_seq != v1.new_display_seq
-    ;
-
-  end resequence_tags;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function is_integer(
@@ -988,14 +940,26 @@ as
     p_build_status    in varchar2
   )
   as
+    l_build_status apex_application_admin.t_build_option_status;
   begin
 
+    l_build_status := upper( p_build_status );
+
     -- update build option value
-    apex_application_admin.set_build_option_status(
-       p_application_id => p_app_id
-      ,p_id => p_build_option_id
-      ,p_build_status => upper( p_build_status )
-    );
+    if
+      apex_application_admin.get_build_option_status(
+        p_application_id  => p_app_id
+      , p_id              => p_build_option_id
+      ) != l_build_status
+    then
+
+      apex_application_admin.set_build_option_status(
+        p_application_id  => p_app_id
+      , p_id              => p_build_option_id
+      , p_build_status    => l_build_status
+      );
+
+    end if;
 
   end update_feature;
 --------------------------------------------------------------------------------
@@ -1035,6 +999,60 @@ as
   end update_feature;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  procedure resequence_categories
+  as
+  begin
+
+    -- update categories display_seq if it different than new
+    merge into blog_categories t1
+    using (
+      select
+        id
+      , row_number() over(
+          order by display_seq, created_on
+        ) * 10 as new_display_seq
+      from blog_categories
+      where 1 = 1
+    ) v1
+    on ( t1.id = v1.id )
+    when matched then
+      update set t1.display_seq = v1.new_display_seq
+        where t1.display_seq != v1.new_display_seq
+    ;
+
+  end resequence_categories;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  procedure resequence_tags(
+    p_post_id in varchar2
+  )
+  as
+    l_post_id number;
+  begin
+
+    l_post_id := to_number( p_post_id );
+
+    -- update post tags display_seq if it different than new
+    merge into blog_post_tags t1
+    using (
+      select
+        id
+      , row_number() over(
+          order by display_seq, created_on
+        ) * 10 as new_display_seq
+      from blog_post_tags
+      where 1 = 1
+      and post_id = l_post_id
+    ) v1
+    on ( t1.id = v1.id )
+    when matched then
+      update set t1.display_seq = v1.new_display_seq
+        where t1.display_seq != v1.new_display_seq
+    ;
+
+  end resequence_tags;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure resequence_link_groups
   as
   begin
@@ -1042,8 +1060,9 @@ as
     -- update link groups display_seq if it different than new
     merge into blog_link_groups t1
     using (
-      select id
-        ,row_number() over(
+      select
+        id
+      , row_number() over(
           order by display_seq, created_on
         ) * 10 as new_display_seq
       from blog_link_groups
@@ -1071,8 +1090,9 @@ as
     -- update links display_seq if it different than new
     merge into blog_links t1
     using (
-      select id
-        ,row_number() over(
+      select
+        id
+      , row_number() over(
           order by display_seq, created_on
         ) * 10 as new_display_seq
       from blog_links
@@ -1094,8 +1114,9 @@ as
     -- Update dynamic content seq if it different than new
     merge into blog_dynamic_content t1
     using (
-      select id
-        ,row_number() over(
+      select
+        id
+      , row_number() over(
           order by display_seq, created_on
         ) * 10 as new_display_seq
       from blog_dynamic_content
@@ -1138,5 +1159,5 @@ as
   end set_attribute_value;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-end "BLOG_CM";
+end "BLOG_ADMIN";
 /

@@ -11,8 +11,16 @@ as
 --  DATE         MODIFIED BY    DESCRIPTION
 --  -----------  -------------  ------------------------------------------------
 --  15.08.2025   Jari Laine     Created package.
+--  30.06.2025   Jari Laine     New function get_param_value
+--                              Changes to procedures:
+--                                - set_gen_ai
+--                                - init_params
 --
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_param_value(
+    p_param_name      in varchar2
+  ) return varchar2;
 --------------------------------------------------------------------------------
   procedure set_lang_ai(
     p_compartment_id  in varchar2,
@@ -21,7 +29,12 @@ as
   );
 --------------------------------------------------------------------------------
   procedure set_gen_ai(
-    p_build_status    in varchar2
+    p_build_status    in varchar2,
+    p_api_key         in varchar2,
+    p_base_url        in varchar2,
+    p_ai_model_name   in varchar2,
+    p_ai_http_headers in varchar2,
+    p_ai_attributes   in varchar2
   );
 --------------------------------------------------------------------------------
   procedure gen_ai_chat(
@@ -71,24 +84,26 @@ as
   begin
 
     -- set valus for session
-    param_t( 'lang_ai_build_option' ) := 'BLOG_FEATURE_LANGUAGE_AI';
     param_t( 'lang_ai_static_id' ) := 'BLOG_LANGUAGE_AI';
+    param_t( 'gen_ai_static_id' ) := 'BLOG_OPEN_AI_API';
+    param_t( 'gen_ai_credential_static_id' ) := 'BLOG_OPEN_AI_API_KEY';
+    param_t( 'lang_ai_build_option' ) := 'BLOG_FEATURE_LANGUAGE_AI';
+    param_t( 'gen_ai_build_option' ) := 'BLOG_FEATURE_GENERATIVE_AI';
+    param_t( 'gen_ai_generate_msg' ) := 'BLOG_AI_GENERATE_MESSAGE';
+    param_t( 'gen_ai_generate_prompt_msg' ) := 'BLOG_AI_GENERATE_PROMPT';
     param_t( 'lang_ai_compartment_param_name') := 'G_OCI_LANG_AI_COMPARTMENT_OCID';
     param_t( 'lang_ai_compartment_ocid' ) := blog_util.get_attribute_value( param_t( 'lang_ai_compartment_param_name' ) );
-    param_t( 'gen_ai_static_id' ) := 'BLOG_OPEN_AI_API';
-    param_t( 'gen_ai_build_option' ) := 'BLOG_FEATURE_GENERATIVE_AI';
-    param_t( 'gen_ai_generate_prompt' ) := apex_lang.get_message( 'BLOG_AI_GENERATE_PROMPT' );
-    param_t( 'gen_ai_generate_msg' ) := 'BLOG_AI_GENERATE_MESSAGE';
 
     -- Debug parameters
-    apex_debug.info( 'Language AI build option name: %s', param_t( 'lang_ai_build_option' ) );
     apex_debug.info( 'Language AI remote server static id: %s', param_t( 'lang_ai_static_id' ) );
+    apex_debug.info( 'Generative AI service static id: %s', param_t( 'gen_ai_static_id' ) );
+    apex_debug.info( 'Generative AI credential static id: %s', param_t( 'gen_ai_credential_static_id' ) );
+    apex_debug.info( 'Language AI build option name: %s', param_t( 'lang_ai_build_option' ) );
+    apex_debug.info( 'Generative AI build option name: %s', param_t( 'gen_ai_build_option' ) );
+    apex_debug.info( 'Generative AI generate message: %s', param_t( 'gen_ai_generate_msg' ) );
+    apex_debug.info( 'Generative AI generate prompt message: %s', param_t( 'gen_ai_generate_prompt_msg' ) );
     apex_debug.info( 'Language AI comparment parameter name : %s', param_t( 'lang_ai_compartment_param_name' ) );
     apex_debug.info( 'Language AI comparment OCID : %s', param_t( 'lang_ai_compartment_ocid') );
-    apex_debug.info( 'Generative AI service static id: %s', param_t( 'gen_ai_static_id' ) );
-    apex_debug.info( 'Generative AI build option name: %s', param_t( 'gen_ai_build_option' ) );
-    apex_debug.info( 'Generative AI generate prompt: %s', param_t( 'gen_ai_generate_prompt' ) );
-    apex_debug.info( 'Generative AI generate message: %s', param_t( 'gen_ai_generate_msg' ) );
 
   end init_params;
 --------------------------------------------------------------------------------
@@ -115,7 +130,7 @@ as
         json_arrayagg(
           json_object(
             'key'   is blog_util.int_to_vc2( q1.id ),
-            'text'  is blog_comm.plain_text( q1.body_html )
+            'text'  is blog_comment.plain_text( q1.body_html )
           ) returning clob
         ) as document
       from q1
@@ -156,54 +171,106 @@ as
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function get_param_value(
+    p_param_name in varchar2
+  ) return varchar2
+  as
+  begin
+    return param_t( p_param_name );
+  end get_param_value;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure set_lang_ai(
     p_compartment_id  in varchar2,
     p_base_url        in varchar2,
     p_build_status    in varchar2
   )
   as
-    l_attributes apex_t_varchar2;
+    l_attributes  apex_t_varchar2;
+    l_base_url    varchar2(2000);
   begin
 
     apex_debug.info( 'Set buid option %s status: %s', param_t( 'lang_ai_build_option' ), p_build_status );
     -- Set build option status for the language AI feature
-    blog_cm.update_feature(
+    blog_admin.update_feature(
       p_build_option_name => param_t( 'lang_ai_build_option' )
     , p_build_status      => p_build_status
     );
 
-    apex_debug.info( 'Set remote server %s: %s', param_t( 'lang_ai_static_id' ), rtrim( p_base_url, '/' ) || '/' );
-    -- Set remote server URL
-    apex_application_admin.set_remote_server(
-      p_static_id => param_t( 'lang_ai_static_id' )
-    , p_base_url  => rtrim( p_base_url, '/' ) || '/'
-    );
+    -- If build option status is INCLUDE
+    if p_build_status = apex_application_admin.c_build_option_status_include
+    then
 
-    if p_build_status = apex_application_admin.c_build_option_status_include then
       apex_debug.info( 'Set compartment OCID: %s', p_compartment_id );
       -- Set attribute name and value
       apex_string.plist_push( l_attributes, param_t( 'lang_ai_compartment_param_name' ), p_compartment_id );
+
       -- Update attribute
-      blog_cm.set_attribute_value(
+      blog_admin.set_attribute_value(
         p_attribute_list => l_attributes
       );
+
+      l_base_url := rtrim( p_base_url, '/' ) || '/';
+
+      apex_debug.info( 'Set remote server %s: %s', param_t( 'lang_ai_static_id' ), l_base_url );
+      -- Set remote server URL
+      apex_application_admin.set_remote_server(
+        p_static_id => param_t( 'lang_ai_static_id' )
+      , p_base_url  => l_base_url
+      );
+
     end if;
 
   end set_lang_ai;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure set_gen_ai(
-    p_build_status in varchar2
+    p_build_status    in varchar2,
+    p_api_key         in varchar2,
+    p_base_url        in varchar2,
+    p_ai_model_name   in varchar2,
+    p_ai_http_headers in varchar2,
+    p_ai_attributes   in varchar2
   )
   as
-    l_attributes apex_t_varchar2;
+    l_base_url    varchar2(2000);
   begin
+
     apex_debug.info( 'Set buid option %s status: %s', param_t( 'gen_ai_build_option' ), p_build_status );
     -- Set build option status for the generative AI feature
-    blog_cm.update_feature(
+    blog_admin.update_feature(
       p_build_option_name => param_t( 'gen_ai_build_option' )
     , p_build_status      => p_build_status
     );
+
+    if p_build_status = apex_application_admin.c_build_option_status_include
+    then
+      -- Update credential if new API key is provided
+      if p_api_key is not null
+      then
+        apex_credential.set_persistent_credentials(
+          p_credential_static_id  => param_t( 'gen_ai_credential_static_id' )
+        , p_key   => 'Authorization'
+        , p_value =>
+            apex_string.format(
+              p_message => 'Bearer %s'
+            , p0 => p_api_key
+            )
+        );
+      end if;
+
+      l_base_url := rtrim( p_base_url, '/' ) || '/';
+      -- Update remote server
+      apex_application_admin.set_remote_server(
+        p_static_id       => param_t( 'gen_ai_static_id' )
+      , p_base_url        => p_base_url
+      , p_ai_model_name   => p_ai_model_name
+      , p_ai_http_headers => p_ai_http_headers
+      , p_ai_attributes   => p_ai_attributes
+      );
+
+    end if;
+
   end set_gen_ai;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -234,7 +301,10 @@ as
       apex_ai.chat(
         p_service_static_id => param_t( 'gen_ai_static_id' )
       , p_messages          => l_messages
-      , p_prompt            => param_t( 'gen_ai_generate_prompt' )
+      , p_prompt            =>
+          apex_lang.get_message(
+            p_name => param_t( 'gen_ai_generate_prompt_msg' )
+          )
       , p_system_prompt     =>
           apex_lang.get_message(
             p_name => p_system_prompt
@@ -272,6 +342,7 @@ as
 
     -- Loop through each document in the array
     for i in 0 .. l_json_documents.get_size() - 1 loop
+
       -- Extract document details
       l_json_document := json_object_t( l_json_documents.get(i) );
       l_comment_id := to_number( l_json_document.get_string( 'key' ) );
@@ -285,6 +356,7 @@ as
         values( l_comment_id, p_language, l_sentiment_json )
       when matched then
         update set sentiment_json = l_sentiment_json;
+
     end loop;
 
   end merge_sentiment;

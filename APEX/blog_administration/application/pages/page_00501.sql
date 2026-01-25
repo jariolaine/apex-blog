@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_dialog_chained=>'N'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250702011328Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(91303304580527869)
@@ -328,30 +328,30 @@ wwv_flow_imp_page.create_page_validation(
 ,p_validation_name=>'Valid Display Date Format'
 ,p_validation_sequence=>10
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return blog_cm.is_date_format(',
-'   p_value => :P501_DISPLAY_DATE_FORMAT',
-'  ,p_err_mesg => :APP_TEXT$BLOG_VALIDATION_ERR_DATE_FORMAT',
+'return blog_admin.is_date_format(',
+'  p_value     => :P501_DISPLAY_DATE_FORMAT',
+', p_err_mesg  => :APP_TEXT$BLOG_VALIDATION_ERR_DATE_FORMAT',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
 ,p_associated_item=>wwv_flow_imp.id(128197102455323661)
 ,p_error_display_location=>'INLINE_WITH_FIELD'
-,p_updated_on=>wwv_flow_imp.dz('20241125111110Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702011304Z')
 );
 wwv_flow_imp_page.create_page_validation(
  p_id=>wwv_flow_imp.id(128234740576484708)
 ,p_validation_name=>'Valid Input Date Format'
 ,p_validation_sequence=>20
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return blog_cm.is_date_format(',
-'   p_value => :P501_INPUT_DATE_FORMAT',
-'  ,p_err_mesg => :APP_TEXT$BLOG_VALIDATION_ERR_DATE_FORMAT',
+'return blog_admin.is_date_format(',
+'  p_value     => :P501_INPUT_DATE_FORMAT',
+', p_err_mesg  => :APP_TEXT$BLOG_VALIDATION_ERR_DATE_FORMAT',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
 ,p_associated_item=>wwv_flow_imp.id(128197442156323663)
 ,p_error_display_location=>'INLINE_WITH_FIELD'
-,p_updated_on=>wwv_flow_imp.dz('20241125111132Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702011328Z')
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(91304430673527870)

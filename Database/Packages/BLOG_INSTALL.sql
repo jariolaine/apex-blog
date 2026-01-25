@@ -14,34 +14,27 @@ as
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure settings_ins(
+  procedure settings_merge(
+    p_attribute_name          in varchar2,
     p_display_seq             in number,
     p_is_nullable             in number,
-    p_attribute_name          in varchar2,
     p_data_type               in varchar2,
     p_attribute_group_message in varchar2,
-    p_attribute_value         in varchar2 default null,
     p_int_min                 in number   default null,
-    p_int_max                 in number   default null
+    p_int_max                 in number   default null,
+    p_build_option_name       in varchar2 default null,
+    p_build_option_status     in varchar2 default null,
+    p_attribute_value         in varchar2 default null
   );
 --------------------------------------------------------------------------------
-  procedure setting_features_ins(
-    P_attribute_name          in varchar2,
+  procedure features_merge(
     p_build_option_name       in varchar2,
-    p_build_option_status     in varchar2
-  );
---------------------------------------------------------------------------------
-  procedure features_ins(
     p_is_active               in number,
     p_display_seq             in number,
-    p_build_option_name       in varchar2,
-    p_build_option_group      in varchar2
-  );
---------------------------------------------------------------------------------
-  procedure feature_parents_ins(
-    p_is_active               in number,
-    p_build_option_name       in varchar2,
-    p_build_option_parent     in varchar2
+    p_build_option_group      in varchar2,
+    p_build_option_parent     in varchar2 default null,
+    p_ref_build_option_name   in varchar2 default null,
+    p_ref_build_option_status in varchar2 default null
   );
 --------------------------------------------------------------------------------
   procedure list_of_values_ins(
@@ -77,70 +70,71 @@ as
 -- Global functions and procedures
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure settings_ins(
+  procedure settings_merge(
+    p_attribute_name          in varchar2,
     p_display_seq             in number,
     p_is_nullable             in number,
-    p_attribute_name          in varchar2,
     p_data_type               in varchar2,
     p_attribute_group_message in varchar2,
-    p_attribute_value         in varchar2 default null,
     p_int_min                 in number   default null,
-    p_int_max                 in number   default null
+    p_int_max                 in number   default null,
+    p_build_option_name       in varchar2 default null,
+    p_build_option_status     in varchar2 default null,
+    p_attribute_value         in varchar2 default null
   )
   as
   begin
 
-    insert into blog_settings( display_seq, is_nullable, attribute_name, data_type, attribute_group_message, attribute_value, int_min, int_max )
-      values( p_display_seq, p_is_nullable, p_attribute_name, p_data_type, p_attribute_group_message, p_attribute_value, p_int_min, p_int_max )
+    merge into blog_settings
+    using dual
+    on( attribute_name = p_attribute_name )
+    when not matched then
+      insert ( attribute_name, display_seq, is_nullable, data_type, attribute_group_message, int_min, int_max, build_option_name, build_option_status, attribute_value )
+        values( p_attribute_name, p_display_seq, p_is_nullable, p_data_type, p_attribute_group_message, p_int_min, p_int_max, p_build_option_name, p_build_option_status, p_attribute_value )
+    when matched then
+      update set
+        display_seq = p_display_seq
+      , is_nullable = p_is_nullable
+      , data_type = p_data_type
+      , attribute_group_message = p_attribute_group_message
+      , int_min = p_int_min
+      , int_max = p_int_max
+      , build_option_name = p_build_option_name
+      , build_option_status = p_build_option_status
     ;
 
-  end settings_ins;
+  end settings_merge;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure setting_features_ins(
-    P_attribute_name      in varchar2,
-    p_build_option_name   in varchar2,
-    p_build_option_status in varchar2
+  procedure features_merge(
+    p_build_option_name       in varchar2,
+    p_is_active               in number,
+    p_display_seq             in number,
+    p_build_option_group      in varchar2,
+    p_build_option_parent     in varchar2 default null,
+    p_ref_build_option_name   in varchar2 default null,
+    p_ref_build_option_status in varchar2 default null
   )
   as
   begin
 
-    insert into blog_setting_features( attribute_name, build_option_name, build_option_status )
-    values( p_attribute_name, p_build_option_name, p_build_option_status )
-  ;
-
-  end setting_features_ins;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure features_ins(
-    p_is_active           in number,
-    p_display_seq         in number,
-    p_build_option_name   in varchar2,
-    p_build_option_group  in varchar2
-  )
-  as
-  begin
-
-    insert into blog_features( is_active, display_seq, build_option_name, build_option_group)
-      values( p_is_active, p_display_seq, p_build_option_name, p_build_option_group)
+    merge into blog_features
+    using dual
+    on( build_option_name = p_build_option_name )
+    when not matched then
+      insert ( build_option_name, is_active, display_seq, build_option_group, build_option_parent, ref_build_option_name, ref_build_option_status )
+        values( p_build_option_name, p_is_active, p_display_seq, p_build_option_group, p_build_option_parent, p_ref_build_option_name, p_ref_build_option_status )
+    when matched then
+      update set
+        is_active = p_is_active
+      , display_seq = p_display_seq
+      , build_option_group = p_build_option_group
+      , build_option_parent = p_build_option_parent
+      , ref_build_option_name = p_ref_build_option_name
+      , ref_build_option_status = p_ref_build_option_status
     ;
 
-  end features_ins;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure feature_parents_ins(
-    p_is_active           in number,
-    p_build_option_name   in varchar2,
-    p_build_option_parent in varchar2
-  )
-  as
-  begin
-
-    insert into blog_feature_parents( is_active, build_option_name, build_option_parent )
-      values( p_is_active, p_build_option_name, p_build_option_parent )
-    ;
-
-  end feature_parents_ins;
+  end features_merge;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure list_of_values_ins(

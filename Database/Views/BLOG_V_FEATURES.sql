@@ -11,7 +11,7 @@ select
 , t1.display_seq              as display_seq
 , t1.build_option_name        as build_option_name
 , v1.build_option_status      as build_option_status
-, t2.build_option_parent      as build_option_parent
+, t1.build_option_parent      as build_option_parent
 , level                       as build_option_level
 , case when connect_by_isleaf = 0
     then 'Y'
@@ -20,7 +20,7 @@ select
 , apex_lang.get_message(
     p_name => t1.build_option_name
   )                           as feature_desc
-  ,regexp_replace(
+, regexp_replace(
     t1.build_option_name
   , '^(BLOG)'
   , '\1_HELP'
@@ -39,12 +39,20 @@ select
 from blog_features t1
 join apex_application_build_options v1
   on t1.build_option_name = v1.build_option_name
-left join blog_feature_parents t2
-  on t1.build_option_name = t2.build_option_name
-  and t2.is_active = 1
 where 1 = 1
+  and t1.build_option_group != 'INTERNAL'
   and t1.is_active = 1
-start with t2.build_option_parent is null
-connect by prior t1.build_option_name = t2.build_option_parent
+  and case
+    when t1.ref_build_option_name is null
+    then 1
+    when apex_application_admin.get_build_option_status(
+      p_application_id    => sys_context( 'APEX$SESSION', 'APP_ID' )
+    , p_build_option_name => t1.ref_build_option_name
+    ) = t1.ref_build_option_status
+    then 1
+    else 0
+  end = 1
+start with t1.build_option_parent is null
+connect by prior t1.build_option_name = t1.build_option_parent
 with read only
 /

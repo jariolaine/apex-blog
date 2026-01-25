@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -22,7 +22,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250702013801Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(113267549779639125)
@@ -790,10 +790,11 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Unflag unread and new'
 ,p_attribute_01=>'PLSQL_PACKAGE'
-,p_attribute_03=>'BLOG_COMM'
+,p_attribute_03=>'BLOG_COMMENT'
 ,p_attribute_04=>'UNFLAG_COMMENT'
 ,p_internal_uid=>38191460475731801
 ,p_process_comment=>'When view comment remove new and unread flags.'
+,p_updated_on=>wwv_flow_imp.dz('20250702013739Z')
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(120919241140115593)
@@ -840,13 +841,14 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Unflag moderate'
 ,p_attribute_01=>'PLSQL_PACKAGE'
-,p_attribute_03=>'BLOG_COMM'
+,p_attribute_03=>'BLOG_COMMENT'
 ,p_attribute_04=>'UNFLAG_COMMENT'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_imp.id(120622477485563868)
 ,p_process_success_message=>'Comment approved.'
 ,p_internal_uid=>38191811002731801
 ,p_process_comment=>'Remove moderate flag from comment.'
+,p_updated_on=>wwv_flow_imp.dz('20250702013750Z')
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(120638450429563894)
@@ -879,13 +881,14 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Flag unread'
 ,p_attribute_01=>'PLSQL_PACKAGE'
-,p_attribute_03=>'BLOG_COMM'
+,p_attribute_03=>'BLOG_COMMENT'
 ,p_attribute_04=>'FLAG_COMMENT'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when_button_id=>wwv_flow_imp.id(120624086316563871)
 ,p_process_success_message=>'Comment marked as unread.'
 ,p_internal_uid=>38193234448731805
 ,p_process_comment=>'Set unread flag to comment.'
+,p_updated_on=>wwv_flow_imp.dz('20250702013801Z')
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(120639912692563896)

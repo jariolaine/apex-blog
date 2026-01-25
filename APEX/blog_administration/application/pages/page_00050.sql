@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_help_text=>'No help available for this page.'
 ,p_page_component_map=>'24'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250702011057Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(127665534173057544)
@@ -762,6 +762,7 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_bind_type=>'bind'
 ,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'click'
+,p_updated_on=>wwv_flow_imp.dz('20250702011047Z')
 );
 wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(122439169710206416)
@@ -771,9 +772,10 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_execute_on_page_init=>'N'
 ,p_name=>'Resequence Link Groups'
 ,p_action=>'NATIVE_EXECUTE_PLSQL_CODE'
-,p_attribute_01=>'blog_cm.resequence_link_groups;'
+,p_attribute_01=>'blog_admin.resequence_link_groups;'
 ,p_attribute_05=>'PLSQL'
 ,p_wait_for_result=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20250702011047Z')
 );
 wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(122438878005206413)
@@ -821,6 +823,7 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_bind_type=>'bind'
 ,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'click'
+,p_updated_on=>wwv_flow_imp.dz('20250702011057Z')
 );
 wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(122439494892206419)
@@ -831,12 +834,13 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_name=>'Resequence Links'
 ,p_action=>'NATIVE_EXECUTE_PLSQL_CODE'
 ,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_cm.resequence_links(',
+'blog_admin.resequence_links(',
 '  p_link_group_id => :P50_LINK_GROUP_ID',
 ');'))
 ,p_attribute_02=>'P50_LINK_GROUP_ID'
 ,p_attribute_05=>'PLSQL'
 ,p_wait_for_result=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20250702011057Z')
 );
 wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(122439596718206420)

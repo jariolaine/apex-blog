@@ -14,8 +14,14 @@ as
 --  DATE         MODIFIED BY    DESCRIPTION
 --  -----------  -------------  ------------------------------------------------
 --  21.07.2025   Jari Laine     Created package.
+--  30.06.2025   Jari Laine     New function get_param_value
+--                              Changes to procedure set_object_storage
 --
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  function get_param_value(
+    p_param_name        in varchar2
+  ) return varchar2;
 --------------------------------------------------------------------------------
   procedure set_object_storage(
     p_bucket_name       in varchar2,
@@ -178,7 +184,7 @@ as
 
     end loop;
 
-  end;
+  end process_headers;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_response_header(
@@ -239,17 +245,17 @@ as
     p_message   out nocopy varchar2
   )
   as
-    l_top_obj json_object_t;
+    l_top_obj json_element_t;
     l_err_obj json_object_t;
   begin
 
     apex_debug.error( 'Error response body: %s', p_response );
 
     -- parse response to json
-    if p_response is not null
+    if p_response is not null and p_response is json
     then
 
-      l_top_obj := json_object_t.parse( p_response );
+      l_top_obj := json_element_t.parse( p_response );
 
       -- if top level is object try get error code and error message
       if ( l_top_obj.is_object )
@@ -264,7 +270,7 @@ as
 
     end if;
 
-    apex_debug.info( 'Error code: %s, error message', p_code, p_message );
+    apex_debug.info( 'Error code: %s, error message: %s', p_code, p_message );
 
   end parse_error_json;
 --------------------------------------------------------------------------------
@@ -767,6 +773,15 @@ as
 -- Global procedures and functions
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+  function get_param_value(
+    p_param_name in varchar2
+  ) return varchar2
+  as
+  begin
+    return param_t( p_param_name );
+  end get_param_value;
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
   procedure set_object_storage(
     p_bucket_name   in varchar2,
     p_base_url      in varchar2,
@@ -777,6 +792,7 @@ as
 
     l_attributes   apex_t_varchar2;
 
+    l_base_url    varchar2(2000);
     l_bucket_url  varchar2(2000);
     l_region      varchar2(256);
     l_namespace   varchar2(256);
@@ -784,16 +800,9 @@ as
 
     apex_debug.info( 'Set object storage buid option %s status: %s', param_t( 'build_option_name' ), p_build_status );
     -- Set build option status for the storage feature
-    blog_cm.update_feature(
+    blog_admin.update_feature(
       p_build_option_name => param_t( 'build_option_name' )
     , p_build_status      => p_build_status
-    );
-
-    apex_debug.info( 'Set object storage remote server %s: %s', param_t( 'remote_server_static_id' ), rtrim( p_base_url, '/' ) || '/' );
-    -- Set remote server URL
-    apex_application_admin.set_remote_server(
-      p_static_id => param_t( 'remote_server_static_id' )
-    , p_base_url  => rtrim( p_base_url, '/' ) || '/'
     );
 
     if p_build_status = apex_application_admin.c_build_option_status_include
@@ -834,8 +843,17 @@ as
 
       apex_string.plist_push( l_attributes, param_t( 'bucket_url_param_name' ), l_bucket_url );
 
-      blog_cm.set_attribute_value(
+      blog_admin.set_attribute_value(
         p_attribute_list  => l_attributes
+      );
+
+      l_base_url := rtrim( p_base_url, '/' ) || '/';
+
+      apex_debug.info( 'Set object storage remote server %s: %s', param_t( 'remote_server_static_id' ), l_base_url );
+      -- Set remote server URL
+      apex_application_admin.set_remote_server(
+        p_static_id => param_t( 'remote_server_static_id' )
+      , p_base_url  => l_base_url
       );
 
     end if;

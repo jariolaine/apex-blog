@@ -36,14 +36,16 @@ select
   )                           as attribute_group_html
 , t1.attribute_group_message  as attribute_group
 from blog_settings t1
-left join blog_setting_features t2 on t1.attribute_name = t2.attribute_name
 where 1 = 1
-  and (
-    apex_application_admin.get_build_option_status(
+  and case
+    when t1.build_option_name is null
+    then 1
+    when apex_application_admin.get_build_option_status(
       p_application_id    => sys_context( 'APEX$SESSION', 'APP_ID' )
-    , p_build_option_name => t2.build_option_name
-    ) = t2.build_option_status
-    or t2.build_option_name is null
-  )
+    , p_build_option_name => t1.build_option_name
+    ) = t1.build_option_status
+    then 1
+    else 0
+  end = 1
 with read only
 /

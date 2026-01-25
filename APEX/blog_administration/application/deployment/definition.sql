@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -45,19 +45,19 @@ wwv_flow_imp_shared.create_install(
 'alter table blog_comment_sentiments drop constraint blog_comment_sentiments_fk1;',
 'alter table blog_comment_subscribers drop constraint blog_comment_subscribers_fk1;',
 'alter table blog_comment_subscribers drop constraint blog_comment_subscribers_fk2;',
-'alter table blog_feature_parents drop constraint blog_feature_parents_fk1;',
-'alter table blog_feature_parents drop constraint blog_feature_parents_fk2;',
+'alter table blog_features drop constraint blog_features_fk1;',
+'alter table blog_features drop constraint blog_features_fk2;',
 'alter table blog_init_items drop constraint blog_init_items_fk1;',
 'alter table blog_links drop constraint blog_links_fk1;',
 'alter table blog_posts drop constraint blog_posts_fk1;',
 'alter table blog_posts drop constraint blog_posts_fk2;',
 'alter table blog_post_tags drop constraint blog_post_tags_fk1;',
 'alter table blog_post_tags drop constraint blog_post_tags_fk2;',
-'alter table blog_setting_features drop constraint blog_setting_features_fk1;',
+'alter table blog_settings drop constraint blog_settings_fk1;',
 '-- Drop objects',
+'drop package blog_admin;',
 'drop package blog_ai;',
-'drop package blog_cm;',
-'drop package blog_comm;',
+'drop package blog_comment;',
 'drop package blog_ctx;',
 'drop package blog_file;',
 'drop package blog_html;',
@@ -77,7 +77,6 @@ wwv_flow_imp_shared.create_install(
 'drop table blog_comment_subscribers;',
 'drop table blog_dynamic_content;',
 'drop table blog_features;',
-'drop table blog_feature_parents;',
 'drop table blog_files;',
 'drop table blog_init_items;',
 'drop table blog_links;',
@@ -86,7 +85,6 @@ wwv_flow_imp_shared.create_install(
 'drop table blog_posts;',
 'drop table blog_post_tags;',
 'drop table blog_settings;',
-'drop table blog_setting_features;',
 'drop table blog_subscribers_email;',
 'drop table blog_tags;',
 'drop view blog_v_all_categories;',
@@ -133,7 +131,7 @@ wwv_flow_imp_shared.create_install(
 '/'))
 ,p_required_free_kb=>200
 ,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
-,p_last_updated_on=>wwv_flow_imp.dz('20250629054046Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20260125212735Z')
 );
 wwv_flow_imp.component_end;
 end;

@@ -16,6 +16,8 @@ create table blog_settings(
   attribute_value varchar2( 4000 byte ),
   int_min number( 10,0 ),
   int_max number( 10,0 ),
+  build_option_name varchar2( 256 char ),
+  build_option_status varchar2( 10 char ),
   attribute_message varchar2( 256 char ) generated always as ( 'BLOG_SETTING_' || attribute_name ) virtual not null,
   help_message varchar2( 256 char ) generated always as ( 'BLOG_HELP_' || attribute_name ) virtual not null,
   constraint blog_settings_pk primary key( id ),

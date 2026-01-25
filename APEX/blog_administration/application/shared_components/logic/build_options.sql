@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -41,11 +41,11 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(102874015592702141)
 ,p_build_option_name=>'BLOG_FEATURE_OCI_OBJECT_STORAGE'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>42197561138254
+,p_version_scn=>44984609914609
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable Oracle cloud object storage'
-,p_updated_on=>wwv_flow_imp.dz('20250414163203Z')
+,p_updated_on=>wwv_flow_imp.dz('20250701071345Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(107133402742902918)
@@ -59,21 +59,21 @@ wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(113146485644291563)
 ,p_build_option_name=>'BLOG_FEATURE_LANGUAGE_AI'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>42201936895372
+,p_version_scn=>44984609927950
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable comments sentiment analyze using OCI language AI'
-,p_updated_on=>wwv_flow_imp.dz('20250511052854Z')
+,p_updated_on=>wwv_flow_imp.dz('20250701071351Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(114745945789071814)
 ,p_build_option_name=>'BLOG_FEATURE_GENERATIVE_AI'
 ,p_build_option_status=>'EXCLUDE'
-,p_version_scn=>42196881007332
+,p_version_scn=>42244405312727
 ,p_default_on_export=>'EXCLUDE'
 ,p_on_upgrade_keep_status=>true
 ,p_build_option_comment=>'Enable/disable generative AI.'
-,p_updated_on=>wwv_flow_imp.dz('20250407102125Z')
+,p_updated_on=>wwv_flow_imp.dz('20250630084133Z')
 );
 wwv_flow_imp_shared.create_build_option(
  p_id=>wwv_flow_imp.id(118121075712571408)

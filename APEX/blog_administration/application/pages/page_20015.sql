@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
-,p_last_updated_on=>wwv_flow_imp.dz('20250629041631Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250630054936Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(133113396802091326)
@@ -39,14 +39,14 @@ wwv_flow_imp_page.create_page_plug(
 ', t1.attribute_value  as compartment_id',
 ', apex_application_admin.get_build_option_status(',
 '    p_application_id     => :APP_ID',
-'  , p_build_option_name  => ''BLOG_FEATURE_LANGUAGE_AI''',
+'  , p_build_option_name  => blog_ai.get_param_value( ''lang_ai_build_option'' )',
 '  )                   as build_status',
 ', (',
 '    select',
 '      lkp.base_url',
 '    from apex_workspace_remote_servers lkp',
 '    where 1 = 1',
-'      and lkp.remote_server_static_id = ''BLOG_LANGUAGE_AI''  ',
+'      and lkp.remote_server_static_id = blog_ai.get_param_value( ''lang_ai_static_id'' )',
 '  )                   as base_url',
 'from blog_settings t1'))
 ,p_is_editable=>true
@@ -54,7 +54,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_lost_update_check_type=>'COLUMN'
 ,p_row_version_column=>'ROW_VERSION'
 ,p_plug_source_type=>'NATIVE_FORM'
-,p_updated_on=>wwv_flow_imp.dz('20250414021825Z')
+,p_updated_on=>wwv_flow_imp.dz('20250630031225Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(165799487795429968)
@@ -138,7 +138,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_TEXT_FIELD'
 ,p_cSize=>30
 ,p_cMaxlength=>4000
-,p_field_template=>1609121967514267634
+,p_field_template=>1609122147107268652
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
@@ -148,7 +148,7 @@ wwv_flow_imp_page.create_page_item(
   'subtype', 'URL',
   'trim_spaces', 'BOTH')).to_clob
 ,p_created_on=>wwv_flow_imp.dz('20250414021705Z')
-,p_updated_on=>wwv_flow_imp.dz('20250414021811Z')
+,p_updated_on=>wwv_flow_imp.dz('20250630022119Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(115296168584141409)
@@ -244,8 +244,10 @@ wwv_flow_imp_page.create_page_computation(
 ,p_computation_sequence=>10
 ,p_computation_item=>'P20015_ATTRIBUTE_NAME'
 ,p_computation_point=>'BEFORE_HEADER'
-,p_computation_type=>'STATIC_ASSIGNMENT'
-,p_computation=>'G_OCI_LANG_AI_COMPARTMENT_OCID'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
+,p_computation=>'blog_ai.get_param_value( ''lang_ai_compartment_param_name'' )'
+,p_updated_on=>wwv_flow_imp.dz('20250630031225Z')
 );
 wwv_flow_imp_page.create_page_validation(
  p_id=>wwv_flow_imp.id(114481332454990011)
@@ -260,6 +262,21 @@ wwv_flow_imp_page.create_page_validation(
 ,p_associated_item=>wwv_flow_imp.id(137790706497336964)
 ,p_error_display_location=>'INLINE_WITH_FIELD'
 ,p_updated_on=>wwv_flow_imp.dz('20250119065230Z')
+);
+wwv_flow_imp_page.create_page_validation(
+ p_id=>wwv_flow_imp.id(15961845586299925)
+,p_validation_name=>'P20015_BASE_URL is not null'
+,p_validation_sequence=>40
+,p_validation=>'P20015_BASE_URL'
+,p_validation_type=>'ITEM_NOT_NULL'
+,p_error_message=>'#LABEL# must have a value if language AI is enabled.'
+,p_validation_condition=>'P20015_BUILD_STATUS'
+,p_validation_condition2=>'INCLUDE'
+,p_validation_condition_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
+,p_associated_item=>wwv_flow_imp.id(100708515115637212)
+,p_error_display_location=>'INLINE_WITH_FIELD'
+,p_created_on=>wwv_flow_imp.dz('20250630022204Z')
+,p_updated_on=>wwv_flow_imp.dz('20250630022204Z')
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(114484327590989997)
@@ -321,7 +338,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_region_id=>wwv_flow_imp.id(133113396802091326)
 ,p_process_type=>'NATIVE_FORM_DML'
-,p_process_name=>'Process form Language AI'
+,p_process_name=>'Process form - Language AI'
 ,p_attribute_01=>'PLSQL_CODE'
 ,p_attribute_04=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog_ai.set_lang_ai(',
@@ -334,7 +351,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_success_message=>'Language AI settings updated.'
 ,p_internal_uid=>32850392005309321
-,p_updated_on=>wwv_flow_imp.dz('20250414022033Z')
+,p_updated_on=>wwv_flow_imp.dz('20250630054936Z')
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(115296105978141408)
@@ -342,8 +359,9 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_point=>'BEFORE_HEADER'
 ,p_region_id=>wwv_flow_imp.id(133113396802091326)
 ,p_process_type=>'NATIVE_FORM_INIT'
-,p_process_name=>'Initialize form Language AI Settings'
+,p_process_name=>'Initialize form - Language AI Settings'
 ,p_internal_uid=>32849983336309317
+,p_updated_on=>wwv_flow_imp.dz('20250630054936Z')
 );
 wwv_flow_imp.component_end;
 end;

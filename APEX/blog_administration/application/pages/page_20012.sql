@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding:js-dialog-class-t-Drawer--pullOutEnd:js-dialog-class-t-Drawer--xl:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250702014004Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(109718505720907493)
@@ -630,11 +630,11 @@ wwv_flow_imp_page.create_page_validation(
 ,p_validation_name=>'Is Integer'
 ,p_validation_sequence=>30
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return blog_cm.is_integer(',
-'   p_value    => :ATTRIBUTE_VALUE',
-'  ,p_min      => :INT_MIN',
-'  ,p_max      => :INT_MAX',
-'  ,p_err_mesg => ''BLOG_VALIDATION_ERR_INTEGER''',
+'return blog_admin.is_integer(',
+'  p_value     => :ATTRIBUTE_VALUE',
+', p_min       => :INT_MIN',
+', p_max       => :INT_MAX',
+', p_err_mesg  => ''BLOG_VALIDATION_ERR_INTEGER''',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -644,6 +644,7 @@ wwv_flow_imp_page.create_page_validation(
 ,p_exec_cond_for_each_row=>'Y'
 ,p_associated_column=>'ATTRIBUTE_VALUE'
 ,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
+,p_updated_on=>wwv_flow_imp.dz('20250702011434Z')
 );
 wwv_flow_imp_page.create_page_validation(
  p_id=>wwv_flow_imp.id(109721089192907519)
@@ -651,9 +652,9 @@ wwv_flow_imp_page.create_page_validation(
 ,p_validation_name=>'Is date format'
 ,p_validation_sequence=>40
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return blog_cm.is_date_format(',
+'return blog_admin.is_date_format(',
 '  p_value     => :ATTRIBUTE_VALUE',
-'  ,p_err_mesg => :APP_TEXT$BLOG_VALIDATION_ERR_DATE_FORMAT',
+', p_err_mesg  => :APP_TEXT$BLOG_VALIDATION_ERR_DATE_FORMAT',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -663,6 +664,7 @@ wwv_flow_imp_page.create_page_validation(
 ,p_exec_cond_for_each_row=>'Y'
 ,p_associated_column=>'ATTRIBUTE_VALUE'
 ,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
+,p_updated_on=>wwv_flow_imp.dz('20250702011455Z')
 );
 wwv_flow_imp_page.create_page_validation(
  p_id=>wwv_flow_imp.id(109721407002907522)
@@ -670,9 +672,9 @@ wwv_flow_imp_page.create_page_validation(
 ,p_validation_name=>'Is URL'
 ,p_validation_sequence=>50
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return blog_cm.is_url(',
+'return blog_admin.is_url(',
 '  p_value     => :ATTRIBUTE_VALUE',
-'  ,p_err_mesg => :APP_TEXT$BLOG_VALIDATION_ERR_URL',
+', p_err_mesg  => :APP_TEXT$BLOG_VALIDATION_ERR_URL',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -682,6 +684,7 @@ wwv_flow_imp_page.create_page_validation(
 ,p_exec_cond_for_each_row=>'Y'
 ,p_associated_column=>'ATTRIBUTE_VALUE'
 ,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
+,p_updated_on=>wwv_flow_imp.dz('20250702011516Z')
 );
 wwv_flow_imp_page.create_page_validation(
  p_id=>wwv_flow_imp.id(113694291919815012)
@@ -689,9 +692,9 @@ wwv_flow_imp_page.create_page_validation(
 ,p_validation_name=>'Is email'
 ,p_validation_sequence=>60
 ,p_validation=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'return blog_comm.is_email(',
+'return blog_comment.is_email(',
 '  p_email     => :ATTRIBUTE_VALUE',
-'  ,p_err_mesg => :APP_TEXT$BLOG_VALIDATION_ERR_EMAIL',
+', p_err_mesg  => :APP_TEXT$BLOG_VALIDATION_ERR_EMAIL',
 ');'))
 ,p_validation2=>'PLSQL'
 ,p_validation_type=>'FUNC_BODY_RETURNING_ERR_TEXT'
@@ -701,6 +704,7 @@ wwv_flow_imp_page.create_page_validation(
 ,p_exec_cond_for_each_row=>'Y'
 ,p_associated_column=>'ATTRIBUTE_VALUE'
 ,p_error_display_location=>'INLINE_WITH_FIELD_AND_NOTIFICATION'
+,p_updated_on=>wwv_flow_imp.dz('20250702014004Z')
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(109671260027115324)

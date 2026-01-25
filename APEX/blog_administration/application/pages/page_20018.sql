@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -24,7 +24,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'17'
 ,p_created_on=>wwv_flow_imp.dz('20250120154733Z')
-,p_last_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250702012247Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(329388742250626152)
@@ -212,7 +212,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_INVOKE_API'
 ,p_process_name=>'Update Feature'
 ,p_attribute_01=>'PLSQL_PACKAGE'
-,p_attribute_03=>'BLOG_CM'
+,p_attribute_03=>'BLOG_ADMIN'
 ,p_attribute_04=>'UPDATE_FEATURE'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_when=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -225,21 +225,21 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_success_message=>'APEX authentication status updated.'
 ,p_internal_uid=>97826150616357010
 ,p_created_on=>wwv_flow_imp.dz('20250120154734Z')
-,p_updated_on=>wwv_flow_imp.dz('20250120154819Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702012247Z')
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
- p_id=>wwv_flow_imp.id(97826641659357013)
+ p_id=>wwv_flow_imp.id(29562778355765202)
 ,p_page_process_id=>wwv_flow_imp.id(97826150616357010)
 ,p_page_id=>20018
 ,p_name=>'p_build_option_name'
 ,p_direction=>'IN'
 ,p_data_type=>'VARCHAR2'
 ,p_has_default=>false
-,p_display_sequence=>20
+,p_display_sequence=>10
 ,p_value_type=>'ITEM'
 ,p_value=>'P20018_BUILD_OPTION_NAME'
-,p_created_on=>wwv_flow_imp.dz('20250120154734Z')
-,p_updated_on=>wwv_flow_imp.dz('20250120154734Z')
+,p_created_on=>wwv_flow_imp.dz('20250702012229Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702012246Z')
 );
 wwv_flow_imp_shared.create_invokeapi_comp_param(
  p_id=>wwv_flow_imp.id(97827171168357013)
@@ -249,11 +249,11 @@ wwv_flow_imp_shared.create_invokeapi_comp_param(
 ,p_direction=>'IN'
 ,p_data_type=>'VARCHAR2'
 ,p_has_default=>false
-,p_display_sequence=>30
+,p_display_sequence=>20
 ,p_value_type=>'ITEM'
 ,p_value=>'P20018_BUILD_STATUS'
 ,p_created_on=>wwv_flow_imp.dz('20250120154734Z')
-,p_updated_on=>wwv_flow_imp.dz('20250120154734Z')
+,p_updated_on=>wwv_flow_imp.dz('20250702012246Z')
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(105272091258048374)

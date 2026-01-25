@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -20,7 +20,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'D'
 ,p_page_comment=>'The global page'
 ,p_page_component_map=>'14'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414014936Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250701055719Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(103691842287906938)
@@ -288,11 +288,10 @@ wwv_flow_imp_page.create_page_item(
 ,p_placeholder=>'Search ...'
 ,p_display_as=>'NATIVE_TEXT_FIELD'
 ,p_cMaxlength=>256
-,p_tag_attributes=>'onkeypress="return blog.search({element:this,currentPage:''&APP_PAGE_ID.'',submitIfEnter:event});"'
 ,p_display_when=>'4'
 ,p_display_when_type=>'CURRENT_PAGE_NOT_EQUAL_CONDITION'
 ,p_field_template=>2040785906935475274
-,p_item_css_classes=>'mxw340'
+,p_item_css_classes=>'mxw360'
 ,p_item_icon_css_classes=>'fa-search'
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--stretchInputs:t-Form-fieldContainer--xlarge:margin-bottom-sm'
 ,p_warn_on_unsaved_changes=>'I'
@@ -306,7 +305,7 @@ wwv_flow_imp_page.create_page_item(
   'subtype', 'SEARCH',
   'trim_spaces', 'BOTH')).to_clob
 ,p_item_comment=>'When user press enter on field, page is submitted. Application process "Redirect to search page" handles redirect to search result page.'
-,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
+,p_updated_on=>wwv_flow_imp.dz('20250701055719Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(167388369650270472)

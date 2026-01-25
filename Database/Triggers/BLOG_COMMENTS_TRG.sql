@@ -30,7 +30,7 @@ begin
   );
 
   -- Generate comment preview
-  :new.comment_preview := blog_comm.short_text( :new.body_html );
+  :new.comment_preview := blog_comment.short_text( :new.body_html );
 
   -- tickle text index
   :new.ctx_search := 'X';

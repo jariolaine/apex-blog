@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding:js-dialog-class-t-Drawer--pullOutEnd:js-dialog-class-t-Drawer--lg:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'21'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250702011406Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(109509197057521222)
@@ -635,10 +635,10 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'Features - Save Interactive Grid Data'
 ,p_attribute_01=>'PLSQL_CODE'
 ,p_attribute_04=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'blog_cm.update_feature(',
-'   p_app_id           => :APPLICATION_ID',
-'  ,p_build_option_id  => :BUILD_OPTION_ID',
-'  ,p_build_status     => :BUILD_OPTION_STATUS',
+'blog_admin.update_feature(',
+'  p_app_id          => :APPLICATION_ID',
+', p_build_option_id => :BUILD_OPTION_ID',
+', p_build_status    => :BUILD_OPTION_STATUS',
 ');'))
 ,p_attribute_05=>'Y'
 ,p_attribute_06=>'N'
@@ -646,6 +646,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_success_message=>'Changes saved'
 ,p_internal_uid=>27064721351689148
 ,p_process_comment=>'Update build option value and run post expression'
+,p_updated_on=>wwv_flow_imp.dz('20250702011406Z')
 );
 wwv_flow_imp.component_end;
 end;

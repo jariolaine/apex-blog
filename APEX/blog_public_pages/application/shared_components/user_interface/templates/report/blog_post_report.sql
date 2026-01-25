@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -98,16 +98,17 @@ wwv_flow_imp_shared.create_row_template(
 '  <span class="a-Icon icon-left-arrow"></span><span class="t-Button-label">#PAGINATION_PREVIOUS#</span>',
 '</a>'))
 ,p_next_set_template=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<button onclick="#LINK#" type="button" title="#PAGINATION_NEXT_SET#" aria-label="#PAGINATION_NEXT_SET#" class="t-Button t-Button--noLabel t-Button--icon t-Button--hot t-Button--small t-Button--simple">',
+'<a href="#LINK#" title="#PAGINATION_NEXT_SET#" class="t-Button t-Button--noLabel t-Button--icon t-Button--hot t-Button--small t-Button--simple">',
 '  <span aria-hidden="true" class="t-Icon fa fa-chevron-right"></span>',
-'</button>'))
+'</a>'))
 ,p_previous_set_template=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'<button onclick="#LINK#" type="button" title="#PAGINATION_PREVIOUS_SET#" aria-label="#PAGINATION_PREVIOUS_SET#" class="t-Button t-Button--noLabel t-Button--icon t-Button--hot t-Button--small t-Button--simple">',
+'<a href="#LINK#" title="#PAGINATION_PREVIOUS_SET#" class="t-Button t-Button--noLabel t-Button--icon t-Button--hot t-Button--small t-Button--simple">',
 '  <span aria-hidden="true" class="t-Icon fa fa-chevron-left"></span>',
-'</button>'))
+'</a>'))
 ,p_theme_id=>42
 ,p_theme_class_id=>7
 ,p_translate_this_template=>'N'
+,p_updated_on=>wwv_flow_imp.dz('20250705015715Z')
 );
 wwv_flow_imp.component_end;
 end;

@@ -5,7 +5,7 @@ begin
 --   Manifest End
 wwv_flow_imp.component_begin (
  p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.5'
+,p_release=>'24.2.11'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -23,7 +23,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
-,p_last_updated_on=>wwv_flow_imp.dz('20250629041603Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250630055035Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(101081211692933338)
@@ -38,7 +38,7 @@ wwv_flow_imp_page.create_page_plug(
 ', t1.attribute_name   as attribute_name',
 ', apex_application_admin.get_build_option_status(',
 '    p_application_id     => :APP_ID',
-'  , p_build_option_name  => ''BLOG_FEATURE_OCI_OBJECT_STORAGE''',
+'  , p_build_option_name  => blog_oci_os.get_param_value( ''build_option_name'' )',
 '  )                   as build_status',
 ', t1.attribute_value  as bucket_name',
 ', (',
@@ -46,7 +46,7 @@ wwv_flow_imp_page.create_page_plug(
 '      lkp.base_url',
 '    from apex_workspace_remote_servers lkp',
 '    where 1 = 1',
-'      and lkp.remote_server_static_id = ''BLOG_OBJECT_STORAGE''  ',
+'      and lkp.remote_server_static_id = blog_oci_os.get_param_value( ''remote_server_static_id'' )',
 '  )                   as base_url',
 'from blog_settings t1',
 ''))
@@ -55,7 +55,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_lost_update_check_type=>'COLUMN'
 ,p_row_version_column=>'ROW_VERSION'
 ,p_plug_source_type=>'NATIVE_FORM'
-,p_updated_on=>wwv_flow_imp.dz('20250414021740Z')
+,p_updated_on=>wwv_flow_imp.dz('20250630030719Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(133767302686271980)
@@ -138,7 +138,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_TEXT_FIELD'
 ,p_cSize=>30
 ,p_cMaxlength=>4000
-,p_field_template=>1609121967514267634
+,p_field_template=>1609122147107268652
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
@@ -148,7 +148,7 @@ wwv_flow_imp_page.create_page_item(
   'subtype', 'URL',
   'trim_spaces', 'BOTH')).to_clob
 ,p_created_on=>wwv_flow_imp.dz('20250414015941Z')
-,p_updated_on=>wwv_flow_imp.dz('20250414020055Z')
+,p_updated_on=>wwv_flow_imp.dz('20250630025641Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(100873062231005395)
@@ -199,7 +199,7 @@ wwv_flow_imp_page.create_page_item(
   'submit_when_enter_pressed', 'N',
   'subtype', 'TEXT',
   'trim_spaces', 'BOTH')).to_clob
-,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_updated_on=>wwv_flow_imp.dz('20250630025640Z')
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(115296811434141415)
@@ -243,8 +243,10 @@ wwv_flow_imp_page.create_page_computation(
 ,p_computation_sequence=>10
 ,p_computation_item=>'P20013_ATTRIBUTE_NAME'
 ,p_computation_point=>'BEFORE_HEADER'
-,p_computation_type=>'STATIC_ASSIGNMENT'
-,p_computation=>'G_OCI_OS_BUCKET'
+,p_computation_type=>'EXPRESSION'
+,p_computation_language=>'PLSQL'
+,p_computation=>'blog_oci_os.get_param_value( ''bucket_param_name'' )'
+,p_updated_on=>wwv_flow_imp.dz('20250630030719Z')
 );
 wwv_flow_imp_page.create_page_validation(
  p_id=>wwv_flow_imp.id(104918615574388308)
@@ -258,6 +260,21 @@ wwv_flow_imp_page.create_page_validation(
 ,p_validation_condition_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
 ,p_associated_item=>wwv_flow_imp.id(105757951049179015)
 ,p_error_display_location=>'INLINE_WITH_FIELD'
+);
+wwv_flow_imp_page.create_page_validation(
+ p_id=>wwv_flow_imp.id(15961907732299926)
+,p_validation_name=>'P20013_BASE_URL is not null'
+,p_validation_sequence=>40
+,p_validation=>'P20013_BASE_URL'
+,p_validation_type=>'ITEM_NOT_NULL'
+,p_error_message=>'#LABEL# must have a value if object storage is enabled.'
+,p_validation_condition=>'P20013_BUILD_STATUS'
+,p_validation_condition2=>'INCLUDE'
+,p_validation_condition_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
+,p_associated_item=>wwv_flow_imp.id(100708487996637211)
+,p_error_display_location=>'INLINE_WITH_FIELD'
+,p_created_on=>wwv_flow_imp.dz('20250630024532Z')
+,p_updated_on=>wwv_flow_imp.dz('20250630024532Z')
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(101101761398573004)
@@ -321,7 +338,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_point=>'AFTER_SUBMIT'
 ,p_region_id=>wwv_flow_imp.id(101081211692933338)
 ,p_process_type=>'NATIVE_FORM_DML'
-,p_process_name=>'Process form Object Storage'
+,p_process_name=>'Process form - Object Storage'
 ,p_attribute_01=>'PLSQL_CODE'
 ,p_attribute_04=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'blog_oci_os.set_object_storage(',
@@ -334,7 +351,7 @@ wwv_flow_imp_page.create_page_process(
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_process_success_message=>'Object storage settings updated.'
 ,p_internal_uid=>32850918119309327
-,p_updated_on=>wwv_flow_imp.dz('20250414163157Z')
+,p_updated_on=>wwv_flow_imp.dz('20250630055035Z')
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(105749916372210973)
@@ -379,8 +396,9 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_point=>'BEFORE_HEADER'
 ,p_region_id=>wwv_flow_imp.id(101081211692933338)
 ,p_process_type=>'NATIVE_FORM_INIT'
-,p_process_name=>'Initialize form Object Storage Settings'
+,p_process_name=>'Initialize form - Object Storage'
 ,p_internal_uid=>32850580306309323
+,p_updated_on=>wwv_flow_imp.dz('20250630055035Z')
 );
 wwv_flow_imp.component_end;
 end;
