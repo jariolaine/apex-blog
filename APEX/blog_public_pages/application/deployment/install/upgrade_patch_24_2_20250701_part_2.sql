@@ -4,13 +4,211 @@ begin
 --     INSTALL: UPGRADE-Patch 24.2.20250701 part 2
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
 ,p_default_owner=>'BLOG_040000'
 );
+wwv_flow_imp.g_varchar2_table := wwv_flow_imp.empty_varchar2_table;
+wwv_flow_imp.g_varchar2_table(1) := '--  Patch 24.2.20250701 part 2'||wwv_flow.LF||
+'-- Update BLOG_COMMENTS comment preview'||wwv_flow.LF||
+'alter trigger blog_comments_t';
+wwv_flow_imp.g_varchar2_table(2) := 'rg disable'||wwv_flow.LF||
+'/'||wwv_flow.LF||
+'update blog_comments'||wwv_flow.LF||
+'  set comment_preview = blog_comment.short_text( body_html )'||wwv_flow.LF||
+'/'||wwv_flow.LF||
+'alt';
+wwv_flow_imp.g_varchar2_table(3) := 'er table blog_comments modify comment_preview not null'||wwv_flow.LF||
+'/'||wwv_flow.LF||
+'alter trigger blog_comments_trg enable'||wwv_flow.LF||
+'/'||wwv_flow.LF||
+'--';
+wwv_flow_imp.g_varchar2_table(4) := ' Truncate table BLOG_INIT_ITEMS'||wwv_flow.LF||
+'truncate table blog_init_items;'||wwv_flow.LF||
+'-- Update BLOG_SETTINGS'||wwv_flow.LF||
+'update blog_';
+wwv_flow_imp.g_varchar2_table(5) := 'settings'||wwv_flow.LF||
+'  set attribute_name = ''P0_BLOG_APP_NAME'''||wwv_flow.LF||
+'where attribute_name = ''BLOG_APP_NAME'''||wwv_flow.LF||
+'/'||wwv_flow.LF||
+'update b';
+wwv_flow_imp.g_varchar2_table(6) := 'log_settings'||wwv_flow.LF||
+'  set attribute_name = ''P0_BLOG_APP_DESC'''||wwv_flow.LF||
+'where attribute_name = ''BLOG_APP_DESC'''||wwv_flow.LF||
+'/'||wwv_flow.LF||
+'-- S';
+wwv_flow_imp.g_varchar2_table(7) := 'et user date format preferences'||wwv_flow.LF||
+'begin'||wwv_flow.LF||
+'  for c1 in('||wwv_flow.LF||
+'    select'||wwv_flow.LF||
+'      user_name'||wwv_flow.LF||
+'    , preference_name'||wwv_flow.LF||
+'';
+wwv_flow_imp.g_varchar2_table(8) := '    , preference_value'||wwv_flow.LF||
+'    from apex_workspace_preferences'||wwv_flow.LF||
+'    where 1 = 1'||wwv_flow.LF||
+'      and preference_name';
+wwv_flow_imp.g_varchar2_table(9) := ' in( ''BLOG_DISPLAY_DATE_FORMAT'', ''BLOG_INPUT_DATE_FORMAT'' )'||wwv_flow.LF||
+'  ) loop'||wwv_flow.LF||
+'    apex_util.set_preference('||wwv_flow.LF||
+' ';
+wwv_flow_imp.g_varchar2_table(10) := '     p_preference =>'||wwv_flow.LF||
+'        case c1.preference_name'||wwv_flow.LF||
+'          when ''BLOG_DISPLAY_DATE_FORMAT'''||wwv_flow.LF||
+'     ';
+wwv_flow_imp.g_varchar2_table(11) := '       then ''PERSISTENT_ITEM_P501_DISPLAY_DATE_FORMAT'''||wwv_flow.LF||
+'          else ''PERSISTENT_ITEM_P501_INPUT_DA';
+wwv_flow_imp.g_varchar2_table(12) := 'TE_FORMAT'''||wwv_flow.LF||
+'        end'||wwv_flow.LF||
+'    , p_value      => c1.preference_value'||wwv_flow.LF||
+'    , p_user       => c1.user_name'||wwv_flow.LF||
+'';
+wwv_flow_imp.g_varchar2_table(13) := '    );'||wwv_flow.LF||
+'    apex_util.remove_preference('||wwv_flow.LF||
+'      p_preference => c1.preference_name'||wwv_flow.LF||
+'    , p_user       ';
+wwv_flow_imp.g_varchar2_table(14) := '=> c1.user_name'||wwv_flow.LF||
+'    );'||wwv_flow.LF||
+'  end loop;'||wwv_flow.LF||
+'end;'||wwv_flow.LF||
+'/'||wwv_flow.LF||
+'-- Update and insert metadata'||wwv_flow.LF||
+'begin'||wwv_flow.LF||
+'-- BLOG_FEATURES'||wwv_flow.LF||
+'  blo';
+wwv_flow_imp.g_varchar2_table(15) := 'g_install.features_merge(''BLOG_FEATURE_OCI_OBJECT_STORAGE'',1,10,''INTERNAL'',null,null,null);'||wwv_flow.LF||
+'  blog_i';
+wwv_flow_imp.g_varchar2_table(16) := 'nstall.features_merge(''BLOG_FEATURE_POST_SPEECH'',1,20,''INTERNAL'',null,null,null);'||wwv_flow.LF||
+'  blog_install.fea';
+wwv_flow_imp.g_varchar2_table(17) := 'tures_merge(''BLOG_FEATURE_GENERATIVE_AI'',1,30,''INTERNAL'',null,null,null);'||wwv_flow.LF||
+'  blog_install.features_me';
+wwv_flow_imp.g_varchar2_table(18) := 'rge(''BLOG_FEATURE_LANGUAGE_AI'',1,40,''INTERNAL'',null,null,null);'||wwv_flow.LF||
+'  blog_install.features_merge(''BLOG_';
+wwv_flow_imp.g_varchar2_table(19) := 'FEATURE_LINKS'',1,1110,''BLOG_FEATURE_GROUP_PAGE'',null,null,null);'||wwv_flow.LF||
+'  blog_install.features_merge(''BLOG';
+wwv_flow_imp.g_varchar2_table(20) := '_FEATURE_FILES'',1,1120,''BLOG_FEATURE_GROUP_PAGE'',null,null,null);'||wwv_flow.LF||
+'  blog_install.features_merge(''BLO';
+wwv_flow_imp.g_varchar2_table(21) := 'G_FEATURE_ABOUT'',1,1130,''BLOG_FEATURE_GROUP_PAGE'',null,null,null);'||wwv_flow.LF||
+'  blog_install.features_merge(''BL';
+wwv_flow_imp.g_varchar2_table(22) := 'OG_FEATURE_SEARCH'',1,1140,''BLOG_FEATURE_GROUP_PAGE'',null,null,null);'||wwv_flow.LF||
+'  blog_install.features_merge(''';
+wwv_flow_imp.g_varchar2_table(23) := 'BLOG_FEATURE_SEARCH_POSTS'',1,1150,''BLOG_FEATURE_GROUP_PAGE'',''BLOG_FEATURE_SEARCH'',null,null);'||wwv_flow.LF||
+'  blog';
+wwv_flow_imp.g_varchar2_table(24) := '_install.features_merge(''BLOG_FEATURE_SEARCH_COMMENTS'',1,1160,''BLOG_FEATURE_GROUP_PAGE'',''BLOG_FEATUR';
+wwv_flow_imp.g_varchar2_table(25) := 'E_SEARCH'',null,null);'||wwv_flow.LF||
+'  blog_install.features_merge(''BLOG_FEATURE_SEARCH_LINKS'',1,1170,''BLOG_FEATURE';
+wwv_flow_imp.g_varchar2_table(26) := '_GROUP_PAGE'',''BLOG_FEATURE_SEARCH'',null,null);'||wwv_flow.LF||
+'  blog_install.features_merge(''BLOG_FEATURE_SEARCH_FI';
+wwv_flow_imp.g_varchar2_table(27) := 'LES'',1,1180,''BLOG_FEATURE_GROUP_PAGE'',''BLOG_FEATURE_SEARCH'',null,null);'||wwv_flow.LF||
+'  blog_install.features_merg';
+wwv_flow_imp.g_varchar2_table(28) := 'e(''BLOG_FEATURE_LATEST_POSTS'',1,1220,''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null,null);'||wwv_flow.LF||
+'  blog_insta';
+wwv_flow_imp.g_varchar2_table(29) := 'll.features_merge(''BLOG_FEATURE_CATEGORY'',1,1230,''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null,null);'||wwv_flow.LF||
+'';
+wwv_flow_imp.g_varchar2_table(30) := '  blog_install.features_merge(''BLOG_FEATURE_CATEGORY_POST_COUNT'',1,1240,''BLOG_FEATURE_GROUP_RIGHT_CO';
+wwv_flow_imp.g_varchar2_table(31) := 'LUMN'',''BLOG_FEATURE_CATEGORY'',null,null);'||wwv_flow.LF||
+'  blog_install.features_merge(''BLOG_FEATURE_ARCHIVE'',1,125';
+wwv_flow_imp.g_varchar2_table(32) := '0,''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null,null);'||wwv_flow.LF||
+'  blog_install.features_merge(''BLOG_FEATURE_ARC';
+wwv_flow_imp.g_varchar2_table(33) := 'HIVE_POST_COUNT'',1,1260,''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''BLOG_FEATURE_ARCHIVE'',null,null);'||wwv_flow.LF||
+'  blog_';
+wwv_flow_imp.g_varchar2_table(34) := 'install.features_merge(''BLOG_FEATURE_TAG_CLOUD'',1,1270,''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null,n';
+wwv_flow_imp.g_varchar2_table(35) := 'ull);'||wwv_flow.LF||
+'  blog_install.features_merge(''BLOG_FEATURE_TAG_CLOUD_POST_COUNT'',1,1280,''BLOG_FEATURE_GROUP_R';
+wwv_flow_imp.g_varchar2_table(36) := 'IGHT_COLUMN'',''BLOG_FEATURE_TAG_CLOUD'',null,null);'||wwv_flow.LF||
+'  blog_install.features_merge(''BLOG_FEATURE_RSS'',1';
+wwv_flow_imp.g_varchar2_table(37) := ',1290,''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null,null);'||wwv_flow.LF||
+'  blog_install.features_merge(''BLOG_FEATURE';
+wwv_flow_imp.g_varchar2_table(38) := '_POST_PAGINATION'',1,1310,''BLOG_FEATURE_GROUP_POST'',null,null,null);'||wwv_flow.LF||
+'  blog_install.features_merge(''B';
+wwv_flow_imp.g_varchar2_table(39) := 'LOG_FEATURE_ALLOW_COMMENTS'',1,1410,''BLOG_FEATURE_GROUP_COMMENTS'',null,null,null);'||wwv_flow.LF||
+'  blog_install.fea';
+wwv_flow_imp.g_varchar2_table(40) := 'tures_merge(''BLOG_FEATURE_SUBSCRIBE_COMMENTS'',1,1420,''BLOG_FEATURE_GROUP_COMMENTS'',''BLOG_FEATURE_ALL';
+wwv_flow_imp.g_varchar2_table(41) := 'OW_COMMENTS'',null,null);'||wwv_flow.LF||
+'  blog_install.features_merge(''BLOG_FEATURE_COMMENT_VERIFY'',1,1430,''BLOG_FE';
+wwv_flow_imp.g_varchar2_table(42) := 'ATURE_GROUP_COMMENTS'',''BLOG_FEATURE_ALLOW_COMMENTS'',null,null);'||wwv_flow.LF||
+'  blog_install.features_merge(''BLOG_';
+wwv_flow_imp.g_varchar2_table(43) := 'FEATURE_MODERATE_COMMENTS'',1,1440,''BLOG_FEATURE_GROUP_COMMENTS'',''BLOG_FEATURE_ALLOW_COMMENTS'',null,n';
+wwv_flow_imp.g_varchar2_table(44) := 'ull);'||wwv_flow.LF||
+'  blog_install.features_merge(''BLOG_FEATURE_MODERATE_COMMENTS_AI'',1,1450,''BLOG_FEATURE_GROUP_C';
+wwv_flow_imp.g_varchar2_table(45) := 'OMMENTS'',''BLOG_FEATURE_MODERATE_COMMENTS'',''BLOG_FEATURE_LANGUAGE_AI'',''INCLUDE'');'||wwv_flow.LF||
+'  blog_install.feat';
+wwv_flow_imp.g_varchar2_table(46) := 'ures_merge(''BLOG_FEATURE_MODAL_PAGES'',1,1510,''BLOG_FEATURE_GROUP_MISC'',null,null,null);'||wwv_flow.LF||
+'  blog_insta';
+wwv_flow_imp.g_varchar2_table(47) := 'll.features_merge(''BLOG_FEATURE_SITEMAP'',1,1520,''BLOG_FEATURE_GROUP_MISC'',null,null,null);'||wwv_flow.LF||
+'  blog_in';
+wwv_flow_imp.g_varchar2_table(48) := 'stall.features_merge(''BLOG_FEATURE_ATOM'',1,1530,''BLOG_FEATURE_GROUP_MISC'',null,null,null);'||wwv_flow.LF||
+'-- BLOG_S';
+wwv_flow_imp.g_varchar2_table(49) := 'ETTIGS'||wwv_flow.LF||
+'  blog_install.settings_merge(''G_APP_VERSION'',10,0,''STRING'',''INTERNAL'',null,null,null,null);'||wwv_flow.LF||
+'';
+wwv_flow_imp.g_varchar2_table(50) := '  blog_install.settings_merge(''G_PUB_APP_ID'',20,0,''STRING'',''INTERNAL'',null,null,null,null);'||wwv_flow.LF||
+'  blog_i';
+wwv_flow_imp.g_varchar2_table(51) := 'nstall.settings_merge(''G_ADMIN_APP_ID'',30,0,''STRING'',''INTERNAL'',null,null,null,null);'||wwv_flow.LF||
+'  blog_install';
+wwv_flow_imp.g_varchar2_table(52) := '.settings_merge(''G_OCI_OS_PROXY_URL'',40,1,''URL'',''INTERNAL'',null,null,null,null);'||wwv_flow.LF||
+'  blog_install.sett';
+wwv_flow_imp.g_varchar2_table(53) := 'ings_merge(''G_OCI_OS_NAMESPACE'',50,1,''STRING'',''INTERNAL'',null,null,null,null);'||wwv_flow.LF||
+'  blog_install.settin';
+wwv_flow_imp.g_varchar2_table(54) := 'gs_merge(''G_OCI_OS_REGION'',60,1,''STRING'',''INTERNAL'',null,null,null,null);'||wwv_flow.LF||
+'  blog_install.settings_me';
+wwv_flow_imp.g_varchar2_table(55) := 'rge(''G_OCI_OS_BUCKET'',70,1,''STRING'',''INTERNAL'',null,null,null,null);'||wwv_flow.LF||
+'  blog_install.settings_merge(''';
+wwv_flow_imp.g_varchar2_table(56) := 'G_OCI_OS_BUCKET_URL'',80,1,''URL'',''INTERNAL'',null,null,null,null);'||wwv_flow.LF||
+'  blog_install.settings_merge(''G_OC';
+wwv_flow_imp.g_varchar2_table(57) := 'I_LANG_AI_COMPARTMENT_OCID'',90,1,''STRING'',''INTERNAL'',null,null,null,null);'||wwv_flow.LF||
+'  blog_install.settings_m';
+wwv_flow_imp.g_varchar2_table(58) := 'erge(''P0_BLOG_APP_NAME'',1110,0,''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,null);'||wwv_flow.LF||
+'  blog_in';
+wwv_flow_imp.g_varchar2_table(59) := 'stall.settings_merge(''P0_BLOG_APP_DESC'',1120,0,''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,';
+wwv_flow_imp.g_varchar2_table(60) := 'null);'||wwv_flow.LF||
+'  blog_install.settings_merge(''G_APP_EMAIL'',1130,1,''EMAIL'',''BLOG_SETTING_GROUP_GENERAL'',null,';
+wwv_flow_imp.g_varchar2_table(61) := 'null,null,null);'||wwv_flow.LF||
+'  blog_install.settings_merge(''P0_BLOG_APP_DATE_FORMAT'',1210,0,''DATE_FORMAT'',''BLOG_';
+wwv_flow_imp.g_varchar2_table(62) := 'SETTING_GROUP_UI'',null,null,null,null);'||wwv_flow.LF||
+'  blog_install.settings_merge(''P0_BLOG_POST_DATE_FORMAT'',122';
+wwv_flow_imp.g_varchar2_table(63) := '0,0,''DATE_FORMAT'',''BLOG_SETTING_GROUP_UI'',null,null,null,null);'||wwv_flow.LF||
+'  blog_install.settings_merge(''P1_BL';
+wwv_flow_imp.g_varchar2_table(64) := 'OG_POST_ROWS'',1310,0,''INTEGER'',''BLOG_SETTING_GROUP_REPORTS'',1,50,null,null);'||wwv_flow.LF||
+'  blog_install.settings';
+wwv_flow_imp.g_varchar2_table(65) := '_merge(''P2_BLOG_COMMENT_ROWS'',1320,0,''INTEGER'',''BLOG_SETTING_GROUP_REPORTS'',1,50,null,null);'||wwv_flow.LF||
+'  blog_';
+wwv_flow_imp.g_varchar2_table(66) := 'install.settings_merge(''G_LATEST_POST_ROWS'',1330,0,''INTEGER'',''BLOG_SETTING_GROUP_REPORTS'',1,20,null,';
+wwv_flow_imp.g_varchar2_table(67) := 'null);'||wwv_flow.LF||
+'  blog_install.settings_merge(''P0_BLOG_SEARCH_ROWS'',1340,0,''INTEGER'',''BLOG_SETTING_GROUP_REPO';
+wwv_flow_imp.g_varchar2_table(68) := 'RTS'',1,50,null,null);'||wwv_flow.LF||
+'  blog_install.settings_merge(''G_COMMENT_WATCH_MONTHS'',1410,0,''INTEGER'',''BLOG_';
+wwv_flow_imp.g_varchar2_table(69) := 'SETTING_GROUP_COMMENTS'',1,6,null,null);'||wwv_flow.LF||
+'  blog_install.settings_merge(''G_MAX_AGE_DOWNLOAD'',1510,0,''I';
+wwv_flow_imp.g_varchar2_table(70) := 'NTEGER'',''BLOG_SETTING_GROUP_FILE_REPO'',0,31536000,''BLOG_FEATURE_OCI_OBJECT_STORAGE'',''EXCLUDE'');'||wwv_flow.LF||
+'  bl';
+wwv_flow_imp.g_varchar2_table(71) := 'og_install.settings_merge(''G_MAX_AGE_FILE'',1520,0,''INTEGER'',''BLOG_SETTING_GROUP_FILE_REPO'',0,3153600';
+wwv_flow_imp.g_varchar2_table(72) := '0,''BLOG_FEATURE_OCI_OBJECT_STORAGE'',''EXCLUDE'');'||wwv_flow.LF||
+'  blog_install.settings_merge(''G_MAX_AGE_SITEMAP'',16';
+wwv_flow_imp.g_varchar2_table(73) := '10,0,''INTEGER'',''BLOG_SETTING_GROUP_SITEMAP'',0,31536000,null,null);'||wwv_flow.LF||
+'  blog_install.settings_merge(''G_';
+wwv_flow_imp.g_varchar2_table(74) := 'MAX_AGE_RSS'',1710,0,''INTEGER'',''BLOG_SETTING_GROUP_RSS'',0,31536000,null,null);'||wwv_flow.LF||
+'  blog_install.setting';
+wwv_flow_imp.g_varchar2_table(75) := 's_merge(''G_MAX_AGE_RSS_XSL'',1720,0,''INTEGER'',''BLOG_SETTING_GROUP_RSS'',0,31536000,null,null);'||wwv_flow.LF||
+'  blog_';
+wwv_flow_imp.g_varchar2_table(76) := 'install.settings_merge(''G_RSS_URL'',1730,1,''URL'',''BLOG_SETTING_GROUP_RSS'',null,null,null,null);'||wwv_flow.LF||
+'  blo';
+wwv_flow_imp.g_varchar2_table(77) := 'g_install.settings_merge(''G_RSS_XSL_URL'',1740,1,''URL'',''BLOG_SETTING_GROUP_RSS'',null,null,null,null);';
+wwv_flow_imp.g_varchar2_table(78) := ''||wwv_flow.LF||
+'  blog_install.settings_merge(''G_CANONICAL_HOST'',1810,1,''URL'',''BLOG_SETTING_GROUP_SEO'',null,null,nu';
+wwv_flow_imp.g_varchar2_table(79) := 'll,null);'||wwv_flow.LF||
+'-- BLOG_INIT_ITEMS'||wwv_flow.LF||
+'  blog_install.init_items_ins;'||wwv_flow.LF||
+'-- Insert patch version info to BLOG_SET';
+wwv_flow_imp.g_varchar2_table(80) := 'TINGS'||wwv_flow.LF||
+'  blog_install.settings_merge(''PATCH_20250701'',10,0,''STRING'',''INTERNAL'',null,null,null,null,''P';
+wwv_flow_imp.g_varchar2_table(81) := 'atch 24.2.20250701'');'||wwv_flow.LF||
+'end;'||wwv_flow.LF||
+'/'||wwv_flow.LF||
+'';
 wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(90182232938660798)
 ,p_install_id=>wwv_flow_imp.id(148135284869193288)
@@ -23,125 +221,8 @@ wwv_flow_imp_shared.create_install_script(
 'from blog_v_version',
 'where 1 = 1',
 'and application_date < 20250701'))
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'--  Patch 24.2.20250701 part 2',
-'-- Update BLOG_COMMENTS comment preview',
-'alter trigger blog_comments_trg disable',
-'/',
-'update blog_comments',
-'  set comment_preview = blog_comment.short_text( body_html )',
-'/',
-'alter table blog_comments modify comment_preview not null',
-'/',
-'alter trigger blog_comments_trg enable',
-'/',
-'-- Truncate table BLOG_INIT_ITEMS',
-'truncate table blog_init_items;',
-'-- Update BLOG_SETTINGS',
-'update blog_settings',
-'  set attribute_name = ''P0_BLOG_APP_NAME''',
-'where attribute_name = ''BLOG_APP_NAME''',
-'/',
-'update blog_settings',
-'  set attribute_name = ''P0_BLOG_APP_DESC''',
-'where attribute_name = ''BLOG_APP_DESC''',
-'/',
-'-- Set user date format preferences',
-'begin',
-'  for c1 in(',
-'    select',
-'      user_name',
-'    , preference_name',
-'    , preference_value',
-'    from apex_workspace_preferences',
-'    where 1 = 1',
-'      and preference_name in( ''BLOG_DISPLAY_DATE_FORMAT'', ''BLOG_INPUT_DATE_FORMAT'' )',
-'  ) loop',
-'    apex_util.set_preference(',
-'      p_preference =>',
-'        case c1.preference_name',
-'          when ''BLOG_DISPLAY_DATE_FORMAT''',
-'            then ''PERSISTENT_ITEM_P501_DISPLAY_DATE_FORMAT''',
-'          else ''PERSISTENT_ITEM_P501_INPUT_DATE_FORMAT''',
-'        end',
-'    , p_value      => c1.preference_value',
-'    , p_user       => c1.user_name',
-'    );',
-'    apex_util.remove_preference(',
-'      p_preference => c1.preference_name',
-'    , p_user       => c1.user_name',
-'    );',
-'  end loop;',
-'end;',
-'/',
-'-- Update and insert metadata',
-'begin',
-'-- BLOG_FEATURES',
-'  blog_install.features_merge(''BLOG_FEATURE_OCI_OBJECT_STORAGE'',1,10,''INTERNAL'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_POST_SPEECH'',1,20,''INTERNAL'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_GENERATIVE_AI'',1,30,''INTERNAL'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_LANGUAGE_AI'',1,40,''INTERNAL'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_LINKS'',1,1110,''BLOG_FEATURE_GROUP_PAGE'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_FILES'',1,1120,''BLOG_FEATURE_GROUP_PAGE'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_ABOUT'',1,1130,''BLOG_FEATURE_GROUP_PAGE'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_SEARCH'',1,1140,''BLOG_FEATURE_GROUP_PAGE'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_SEARCH_POSTS'',1,1150,''BLOG_FEATURE_GROUP_PAGE'',''BLOG_FEATURE_SEARCH'',null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_SEARCH_COMMENTS'',1,1160,''BLOG_FEATURE_GROUP_PAGE'',''BLOG_FEATURE_SEARCH'',null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_SEARCH_LINKS'',1,1170,''BLOG_FEATURE_GROUP_PAGE'',''BLOG_FEATURE_SEARCH'',null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_SEARCH_FILES'',1,1180,''BLOG_FEATURE_GROUP_PAGE'',''BLOG_FEATURE_SEARCH'',null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_LATEST_POSTS'',1,1220,''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_CATEGORY'',1,1230,''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_CATEGORY_POST_COUNT'',1,1240,''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''BLOG_FEATURE_CATEGORY'',null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_ARCHIVE'',1,1250,''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_ARCHIVE_POST_COUNT'',1,1260,''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''BLOG_FEATURE_ARCHIVE'',null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_TAG_CLOUD'',1,1270,''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_TAG_CLOUD_POST_COUNT'',1,1280,''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',''BLOG_FEATURE_TAG_CLOUD'',null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_RSS'',1,1290,''BLOG_FEATURE_GROUP_RIGHT_COLUMN'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_POST_PAGINATION'',1,1310,''BLOG_FEATURE_GROUP_POST'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_ALLOW_COMMENTS'',1,1410,''BLOG_FEATURE_GROUP_COMMENTS'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_SUBSCRIBE_COMMENTS'',1,1420,''BLOG_FEATURE_GROUP_COMMENTS'',''BLOG_FEATURE_ALLOW_COMMENTS'',null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_COMMENT_VERIFY'',1,1430,''BLOG_FEATURE_GROUP_COMMENTS'',''BLOG_FEATURE_ALLOW_COMMENTS'',null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_MODERATE_COMMENTS'',1,1440,''BLOG_FEATURE_GROUP_COMMENTS'',''BLOG_FEATURE_ALLOW_COMMENTS'',null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_MODERATE_COMMENTS_AI'',1,1450,''BLOG_FEATURE_GROUP_COMMENTS'',''BLOG_FEATURE_MODERATE_COMMENTS'',''BLOG_FEATURE_LANGUAGE_AI'',''INCLUDE'');',
-'  blog_install.features_merge(''BLOG_FEATURE_MODAL_PAGES'',1,1510,''BLOG_FEATURE_GROUP_MISC'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_SITEMAP'',1,1520,''BLOG_FEATURE_GROUP_MISC'',null,null,null);',
-'  blog_install.features_merge(''BLOG_FEATURE_ATOM'',1,1530,''BLOG_FEATURE_GROUP_MISC'',null,null,null);',
-'-- BLOG_SETTIGS',
-'  blog_install.settings_merge(''G_APP_VERSION'',10,0,''STRING'',''INTERNAL'',null,null,null,null);',
-'  blog_install.settings_merge(''G_PUB_APP_ID'',20,0,''STRING'',''INTERNAL'',null,null,null,null);',
-'  blog_install.settings_merge(''G_ADMIN_APP_ID'',30,0,''STRING'',''INTERNAL'',null,null,null,null);',
-'  blog_install.settings_merge(''G_OCI_OS_PROXY_URL'',40,1,''URL'',''INTERNAL'',null,null,null,null);',
-'  blog_install.settings_merge(''G_OCI_OS_NAMESPACE'',50,1,''STRING'',''INTERNAL'',null,null,null,null);',
-'  blog_install.settings_merge(''G_OCI_OS_REGION'',60,1,''STRING'',''INTERNAL'',null,null,null,null);',
-'  blog_install.settings_merge(''G_OCI_OS_BUCKET'',70,1,''STRING'',''INTERNAL'',null,null,null,null);',
-'  blog_install.settings_merge(''G_OCI_OS_BUCKET_URL'',80,1,''URL'',''INTERNAL'',null,null,null,null);',
-'  blog_install.settings_merge(''G_OCI_LANG_AI_COMPARTMENT_OCID'',90,1,''STRING'',''INTERNAL'',null,null,null,null);',
-'  blog_install.settings_merge(''P0_BLOG_APP_NAME'',1110,0,''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,null);',
-'  blog_install.settings_merge(''P0_BLOG_APP_DESC'',1120,0,''STRING'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,null);',
-'  blog_install.settings_merge(''G_APP_EMAIL'',1130,1,''EMAIL'',''BLOG_SETTING_GROUP_GENERAL'',null,null,null,null);',
-'  blog_install.settings_merge(''P0_BLOG_APP_DATE_FORMAT'',1210,0,''DATE_FORMAT'',''BLOG_SETTING_GROUP_UI'',null,null,null,null);',
-'  blog_install.settings_merge(''P0_BLOG_POST_DATE_FORMAT'',1220,0,''DATE_FORMAT'',''BLOG_SETTING_GROUP_UI'',null,null,null,null);',
-'  blog_install.settings_merge(''P1_BLOG_POST_ROWS'',1310,0,''INTEGER'',''BLOG_SETTING_GROUP_REPORTS'',1,50,null,null);',
-'  blog_install.settings_merge(''P2_BLOG_COMMENT_ROWS'',1320,0,''INTEGER'',''BLOG_SETTING_GROUP_REPORTS'',1,50,null,null);',
-'  blog_install.settings_merge(''G_LATEST_POST_ROWS'',1330,0,''INTEGER'',''BLOG_SETTING_GROUP_REPORTS'',1,20,null,null);',
-'  blog_install.settings_merge(''P0_BLOG_SEARCH_ROWS'',1340,0,''INTEGER'',''BLOG_SETTING_GROUP_REPORTS'',1,50,null,null);',
-'  blog_install.settings_merge(''G_COMMENT_WATCH_MONTHS'',1410,0,''INTEGER'',''BLOG_SETTING_GROUP_COMMENTS'',1,6,null,null);',
-'  blog_install.settings_merge(''G_MAX_AGE_DOWNLOAD'',1510,0,''INTEGER'',''BLOG_SETTING_GROUP_FILE_REPO'',0,31536000,''BLOG_FEATURE_OCI_OBJECT_STORAGE'',''EXCLUDE'');',
-'  blog_install.settings_merge(''G_MAX_AGE_FILE'',1520,0,''INTEGER'',''BLOG_SETTING_GROUP_FILE_REPO'',0,31536000,''BLOG_FEATURE_OCI_OBJECT_STORAGE'',''EXCLUDE'');',
-'  blog_install.settings_merge(''G_MAX_AGE_SITEMAP'',1610,0,''INTEGER'',''BLOG_SETTING_GROUP_SITEMAP'',0,31536000,null,null);',
-'  blog_install.settings_merge(''G_MAX_AGE_RSS'',1710,0,''INTEGER'',''BLOG_SETTING_GROUP_RSS'',0,31536000,null,null);',
-'  blog_install.settings_merge(''G_MAX_AGE_RSS_XSL'',1720,0,''INTEGER'',''BLOG_SETTING_GROUP_RSS'',0,31536000,null,null);',
-'  blog_install.settings_merge(''G_RSS_URL'',1730,1,''URL'',''BLOG_SETTING_GROUP_RSS'',null,null,null,null);',
-'  blog_install.settings_merge(''G_RSS_XSL_URL'',1740,1,''URL'',''BLOG_SETTING_GROUP_RSS'',null,null,null,null);',
-'  blog_install.settings_merge(''G_CANONICAL_HOST'',1810,1,''URL'',''BLOG_SETTING_GROUP_SEO'',null,null,null,null);',
-'-- BLOG_INIT_ITEMS',
-'  blog_install.init_items_ins;',
-'-- Insert patch version info to BLOG_SETTINGS',
-'  blog_install.settings_merge(''PATCH_20250701'',10,0,''STRING'',''INTERNAL'',null,null,null,null,''Patch 24.2.20250701'');',
-'end;',
-'/',
-''))
-,p_updated_on=>wwv_flow_imp.dz('20260125213159Z')
+,p_script_clob=>wwv_flow_imp.varchar2_to_clob(wwv_flow_imp.g_varchar2_table)
+,p_updated_on=>wwv_flow_imp.dz('20260125233159Z')
 );
 wwv_flow_imp.component_end;
 end;

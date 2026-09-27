@@ -4,8 +4,8 @@ begin
 --     PAGE: 00000
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -20,74 +20,71 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'D'
 ,p_page_comment=>'The global page'
 ,p_page_component_map=>'14'
-,p_last_updated_on=>wwv_flow_imp.dz('20250701055719Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20260827073258Z')
 );
 wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(103691842287906938)
-,p_plug_name=>'Search Container'
-,p_region_template_options=>'#DEFAULT#:t-Form--noPadding'
-,p_plug_template=>1569994581593435632
-,p_plug_display_sequence=>20
-,p_plug_display_point=>'BEFORE_NAVIGATION_BAR'
-,p_location=>null
-,p_translate_title=>'N'
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'expand_shortcuts', 'N',
-  'output_as', 'HTML')).to_clob
-,p_created_on=>wwv_flow_imp.dz('20250405075019Z')
-,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
-);
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(133827130936790205)
-,p_plug_name=>'Not Rendered Items'
+ p_id=>wwv_flow_imp.id(166729133027546545)
+,p_plug_name=>'Application Banner'
+,p_static_id=>'application-banner'
+,p_region_css_classes=>'blog-app-banner'
 ,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>3371237801798025892
-,p_plug_display_sequence=>90
-,p_plug_display_point=>'REGION_POSITION_05'
+,p_plug_template=>3372714138756020509
+,p_plug_display_sequence=>10
+,p_plug_display_point=>'REGION_POSITION_07'
+,p_plug_item_display_point=>'ABOVE'
 ,p_location=>null
+,p_plug_source=>'&P0_BLOG_APP_NAME.'
 ,p_translate_title=>'N'
-,p_plug_display_condition_type=>'NEVER'
 ,p_landmark_type=>'exclude_landmark'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'expand_shortcuts', 'N',
   'output_as', 'HTML')).to_clob
-,p_plug_comment=>'Region to hold items that shouldn''t rendered on page.'
-,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
+,p_plug_comment=>'Region to displays blog description.'
+,p_updated_on=>wwv_flow_imp.dz('20260827071701Z')
 );
 wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(133827372928790207)
-,p_plug_name=>'Global Column'
-,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>4501440665235496320
-,p_plug_display_sequence=>200
-,p_plug_new_grid_row=>false
-,p_plug_grid_column_css_classes=>'blog-global-column'
-,p_plug_display_column=>10
-,p_location=>null
-,p_translate_title=>'N'
-,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
-,p_plug_display_when_condition=>'1001,1002,1003,9999'
-,p_landmark_type=>'exclude_landmark'
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'expand_shortcuts', 'N',
-  'output_as', 'HTML')).to_clob
-,p_plug_comment=>'Application global column holding e.g. search, archives, categories list and latest posts list'
-,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
-);
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(134307522281573262)
-,p_plug_name=>'Categories'
+ p_id=>wwv_flow_imp.id(155981481783539167)
+,p_plug_name=>'Archives'
+,p_static_id=>'archives'
 ,p_parent_plug_id=>wwv_flow_imp.id(133827372928790207)
 ,p_region_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-LinksList--showBadge'
-,p_plug_template=>4072358936313175081
+,p_plug_template=>4073835273271169698
+,p_plug_display_sequence=>80
+,p_plug_display_point=>'SUB_REGIONS'
+,p_plug_item_display_point=>'ABOVE'
+,p_location=>null
+,p_list_id=>wwv_flow_imp.id(157470915285315014)
+,p_plug_source_type=>'NATIVE_LIST'
+,p_list_template_id=>4073837480889169704
+,p_plug_caching=>'CACHE'
+,p_plug_caching_max_age_in_sec=>31536000
+,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
+,p_plug_cache_when_condition_e1=>'DEBUG'
+,p_plug_cache_when_condition_e2=>'NO'
+,p_plug_cache_depends_on_items=>'APP_ID'
+,p_required_patch=>wwv_flow_imp.id(136064880177635397)
+,p_landmark_type=>'navigation'
+,p_plug_comment=>'Post archives link list'
+,p_updated_on=>wwv_flow_imp.dz('20250414044936Z')
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(134307522281573262)
+,p_plug_name=>'Categories'
+,p_static_id=>'categories'
+,p_parent_plug_id=>wwv_flow_imp.id(133827372928790207)
+,p_region_css_classes=>'blog-shadow-md'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
+,p_component_template_options=>'#DEFAULT#:t-LinksList--showBadge'
+,p_plug_template=>4073835273271169698
 ,p_plug_display_sequence=>60
 ,p_plug_display_point=>'SUB_REGIONS'
+,p_plug_item_display_point=>'ABOVE'
 ,p_location=>null
 ,p_list_id=>wwv_flow_imp.id(134335486140715751)
 ,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>4072361143931175087
+,p_list_template_id=>4073837480889169704
 ,p_plug_caching=>'CACHE'
 ,p_plug_caching_max_age_in_sec=>31536000
 ,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
@@ -97,22 +94,69 @@ wwv_flow_imp_page.create_page_plug(
 ,p_required_patch=>wwv_flow_imp.id(136029345148995774)
 ,p_landmark_type=>'navigation'
 ,p_plug_comment=>'Post categories link list'
-,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
+,p_updated_on=>wwv_flow_imp.dz('20250414044936Z')
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(168120940800696982)
+,p_plug_name=>'Footer Links'
+,p_static_id=>'footer-links'
+,p_region_template_options=>'#DEFAULT#'
+,p_component_template_options=>'#DEFAULT#'
+,p_plug_template=>3372714138756020509
+,p_plug_display_sequence=>10
+,p_plug_display_point=>'REGION_POSITION_05'
+,p_plug_item_display_point=>'ABOVE'
+,p_location=>null
+,p_list_id=>wwv_flow_imp.id(169251883232047842)
+,p_plug_source_type=>'NATIVE_LIST'
+,p_list_template_id=>wwv_flow_imp.id(188752307510968793)
+,p_translate_title=>'N'
+,p_plug_query_headings_type=>'COLON_DELMITED_LIST'
+,p_required_patch=>wwv_flow_imp.id(170012898564920121)
+,p_landmark_type=>'exclude_landmark'
+,p_plug_comment=>'Footer links to modal dialog pages.'
+,p_updated_on=>wwv_flow_imp.dz('20260827072216Z')
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(133827372928790207)
+,p_plug_name=>'Global Column'
+,p_static_id=>'global-column'
+,p_region_template_options=>'#DEFAULT#'
+,p_escape_on_http_output=>'N'
+,p_plug_template=>4502917002193490937
+,p_plug_display_sequence=>200
+,p_plug_new_grid_row=>false
+,p_plug_grid_column_css_classes=>'blog-global-column'
+,p_plug_display_column=>10
+,p_plug_item_display_point=>'ABOVE'
+,p_location=>null
+,p_translate_title=>'N'
+,p_plug_query_headings_type=>'COLON_DELMITED_LIST'
+,p_plug_display_condition_type=>'CURRENT_PAGE_NOT_IN_CONDITION'
+,p_plug_display_when_condition=>'1001,1002,1003,9999'
+,p_landmark_type=>'exclude_landmark'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
+,p_plug_comment=>'Application global column holding e.g. search, archives, categories list and latest posts list'
+,p_updated_on=>wwv_flow_imp.dz('20250414044936Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(134307608258573263)
 ,p_plug_name=>'Latest Posts'
+,p_static_id=>'latest-posts'
 ,p_parent_plug_id=>wwv_flow_imp.id(133827372928790207)
 ,p_region_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#'
-,p_plug_template=>4072358936313175081
+,p_plug_template=>4073835273271169698
 ,p_plug_display_sequence=>50
 ,p_plug_display_point=>'SUB_REGIONS'
+,p_plug_item_display_point=>'ABOVE'
 ,p_location=>null
 ,p_list_id=>wwv_flow_imp.id(134339193211835118)
 ,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>4072361143931175087
+,p_list_template_id=>4073837480889169704
 ,p_plug_caching=>'CACHE'
 ,p_plug_caching_max_age_in_sec=>31536000
 ,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
@@ -122,17 +166,87 @@ wwv_flow_imp_page.create_page_plug(
 ,p_required_patch=>wwv_flow_imp.id(136071308891821523)
 ,p_landmark_type=>'navigation'
 ,p_plug_comment=>'Latest post link list'
-,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
+,p_updated_on=>wwv_flow_imp.dz('20250414044936Z')
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(133827130936790205)
+,p_plug_name=>'Not Rendered Items'
+,p_static_id=>'not-rendered-items'
+,p_region_template_options=>'#DEFAULT#'
+,p_escape_on_http_output=>'N'
+,p_plug_template=>3372714138756020509
+,p_plug_display_sequence=>90
+,p_plug_display_point=>'REGION_POSITION_05'
+,p_plug_item_display_point=>'ABOVE'
+,p_location=>null
+,p_translate_title=>'N'
+,p_plug_query_headings_type=>'COLON_DELMITED_LIST'
+,p_plug_display_condition_type=>'NEVER'
+,p_landmark_type=>'exclude_landmark'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
+,p_plug_comment=>'Region to hold items that shouldn''t rendered on page.'
+,p_updated_on=>wwv_flow_imp.dz('20250414044936Z')
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(166728590321546540)
+,p_plug_name=>'Powered by APEX Blog'
+,p_static_id=>'powered-by-apex-blog'
+,p_region_template_options=>'#DEFAULT#'
+,p_plug_template=>3372714138756020509
+,p_plug_display_sequence=>20
+,p_plug_display_point=>'REGION_POSITION_05'
+,p_plug_item_display_point=>'ABOVE'
+,p_location=>null
+,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<div class="blog-copyright">',
+'  <a  href="https://github.com/jariolaine/apex-blog"',
+'      title="Blog application built with Oracle Application Express (APEX)" ',
+'      target="_blank" ',
+'      rel="external" ',
+'      class="blog-copyright-link t-Button t-Button--link t-Button--icon t-Button--iconRight"',
+'  >',
+'    <span class="t-Button-label">Powered By APEX Blog</span><span class="t-Icon fa fa-github" aria-hidden="true"></span>',
+'  </a>',
+'</div>'))
+,p_translate_title=>'N'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
+,p_plug_comment=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Displays link to blog application source code in GitHub.',
+'Do not change!'))
+,p_updated_on=>wwv_flow_imp.dz('20260827073258Z')
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(103691842287906938)
+,p_plug_name=>'Search Container'
+,p_static_id=>'search-container'
+,p_region_template_options=>'#DEFAULT#:t-Form--noPadding'
+,p_plug_template=>1571470918551430249
+,p_plug_display_sequence=>20
+,p_plug_display_point=>'BEFORE_NAVIGATION_BAR'
+,p_plug_item_display_point=>'ABOVE'
+,p_location=>null
+,p_translate_title=>'N'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
+,p_created_on=>wwv_flow_imp.dz('20250405105019Z')
+,p_updated_on=>wwv_flow_imp.dz('20250414044936Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(134309484590573282)
 ,p_plug_name=>'Subscribe in a Reader'
+,p_static_id=>'subscribe-in-a-reader'
 ,p_parent_plug_id=>wwv_flow_imp.id(133827372928790207)
 ,p_region_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
-,p_plug_template=>4072358936313175081
+,p_plug_template=>4073835273271169698
 ,p_plug_display_sequence=>90
 ,p_plug_display_point=>'SUB_REGIONS'
+,p_plug_item_display_point=>'ABOVE'
 ,p_location=>null
 ,p_function_body_language=>'PLSQL'
 ,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -142,6 +256,7 @@ wwv_flow_imp_page.create_page_plug(
 ');'))
 ,p_lazy_loading=>false
 ,p_plug_source_type=>'NATIVE_DYNAMIC_CONTENT'
+,p_plug_query_headings_type=>'COLON_DELMITED_LIST'
 ,p_plug_caching=>'CACHE'
 ,p_plug_caching_max_age_in_sec=>31536000
 ,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
@@ -151,18 +266,20 @@ wwv_flow_imp_page.create_page_plug(
 ,p_required_patch=>wwv_flow_imp.id(136029188290987072)
 ,p_landmark_type=>'navigation'
 ,p_plug_comment=>'Displays link to RSS feed'
-,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
+,p_updated_on=>wwv_flow_imp.dz('20250414044936Z')
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(153128470491372972)
 ,p_plug_name=>'Tags'
+,p_static_id=>'tags'
 ,p_parent_plug_id=>wwv_flow_imp.id(133827372928790207)
 ,p_region_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#'
-,p_plug_template=>4072358936313175081
+,p_plug_template=>4073835273271169698
 ,p_plug_display_sequence=>70
 ,p_plug_display_point=>'SUB_REGIONS'
+,p_plug_item_display_point=>'ABOVE'
 ,p_location=>null
 ,p_list_id=>wwv_flow_imp.id(140614226987321729)
 ,p_plug_source_type=>'NATIVE_LIST'
@@ -176,108 +293,90 @@ wwv_flow_imp_page.create_page_plug(
 ,p_required_patch=>wwv_flow_imp.id(140623131262815136)
 ,p_landmark_type=>'navigation'
 ,p_plug_comment=>'Post tags link list'
-,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
-);
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(155981481783539167)
-,p_plug_name=>'Archives'
-,p_parent_plug_id=>wwv_flow_imp.id(133827372928790207)
-,p_region_css_classes=>'blog-shadow-md'
-,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
-,p_component_template_options=>'#DEFAULT#:t-LinksList--showBadge'
-,p_plug_template=>4072358936313175081
-,p_plug_display_sequence=>80
-,p_plug_display_point=>'SUB_REGIONS'
-,p_location=>null
-,p_list_id=>wwv_flow_imp.id(157470915285315014)
-,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>4072361143931175087
-,p_plug_caching=>'CACHE'
-,p_plug_caching_max_age_in_sec=>31536000
-,p_plug_cache_when_cond_type=>'VAL_OF_ITEM_IN_COND_EQ_COND2'
-,p_plug_cache_when_condition_e1=>'DEBUG'
-,p_plug_cache_when_condition_e2=>'NO'
-,p_plug_cache_depends_on_items=>'APP_ID'
-,p_required_patch=>wwv_flow_imp.id(136064880177635397)
-,p_landmark_type=>'navigation'
-,p_plug_comment=>'Post archives link list'
-,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
-);
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(166728590321546540)
-,p_plug_name=>'Powered by APEX Blog'
-,p_plug_display_sequence=>20
-,p_plug_display_point=>'REGION_POSITION_05'
-,p_location=>null
-,p_template_component_type=>'REGION_ONLY'
-,p_plug_source_type=>'TMPL_THEME_42$FOOTER_LINK__CUSTOM'
-,p_translate_title=>'N'
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'HAS_ICON', 'Y',
-  'ICON_CLASS', 'fa-github',
-  'LINK', 'https://github.com/jariolaine/apex-blog',
-  'LINK_ATTR', 'target="_blank" rel="external"',
-  'TEXT', 'Powered By APEX Blog',
-  'TITLE', 'Blog application built with Oracle Application Express (APEX)')).to_clob
-,p_plug_comment=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'Displays link to blog application source code in GitHub.',
-'Do not change!'))
-,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
-);
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(166729133027546545)
-,p_plug_name=>'Application Banner'
-,p_plug_display_sequence=>10
-,p_plug_display_point=>'REGION_POSITION_07'
-,p_location=>null
-,p_template_component_type=>'REGION_ONLY'
-,p_plug_source_type=>'TMPL_THEME_42$APP_BANNER__CUSTOM'
-,p_translate_title=>'N'
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'TITLE', '&P0_BLOG_APP_NAME.')).to_clob
-,p_plug_comment=>'Region to displays blog description.'
-,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
-);
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(168120940800696982)
-,p_plug_name=>'Footer Links'
-,p_region_template_options=>'#DEFAULT#'
-,p_component_template_options=>'#DEFAULT#'
-,p_plug_template=>3371237801798025892
-,p_plug_display_sequence=>10
-,p_plug_display_point=>'REGION_POSITION_05'
-,p_location=>null
-,p_list_id=>wwv_flow_imp.id(169251883232047842)
-,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>wwv_flow_imp.id(188752307510968793)
-,p_translate_title=>'N'
-,p_required_patch=>wwv_flow_imp.id(170012898564920121)
-,p_plug_comment=>'Footer links to modal dialog pages.'
-,p_updated_on=>wwv_flow_imp.dz('20250414014936Z')
+,p_updated_on=>wwv_flow_imp.dz('20250414044936Z')
 );
 wwv_flow_imp_page.create_page_item(
- p_id=>wwv_flow_imp.id(150704532478243045)
-,p_name=>'P0_BLOG_APP_NAME'
-,p_item_sequence=>10
+ p_id=>wwv_flow_imp.id(174680739463017472)
+,p_name=>'P0_BLOG_APP_DATE_FORMAT'
+,p_item_sequence=>30
 ,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
+,p_source_type=>'ALWAYS_NULL'
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'U'
 ,p_protection_level=>'I'
 ,p_encrypt_session_state_yn=>'N'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'Y')).to_clob
+,p_item_comment=>'Date format used e.g. on reports. The value is set in the application process "Initialize Items"'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(150704678535243046)
 ,p_name=>'P0_BLOG_APP_DESC'
 ,p_item_sequence=>20
 ,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
+,p_source_type=>'ALWAYS_NULL'
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_is_persistent=>'U'
 ,p_protection_level=>'I'
 ,p_encrypt_session_state_yn=>'N'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'Y')).to_clob
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(150704532478243045)
+,p_name=>'P0_BLOG_APP_NAME'
+,p_item_sequence=>10
+,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
+,p_source_type=>'ALWAYS_NULL'
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'U'
+,p_protection_level=>'I'
+,p_encrypt_session_state_yn=>'N'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(174681168967017476)
+,p_name=>'P0_BLOG_POST_DATE_FORMAT'
+,p_item_sequence=>40
+,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
+,p_source_type=>'ALWAYS_NULL'
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'U'
+,p_protection_level=>'I'
+,p_encrypt_session_state_yn=>'N'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
+,p_item_comment=>'Post title date format. Used e.g. in posts reports. The value is set in the application process "Initialize Items"'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(167388424252270473)
+,p_name=>'P0_BLOG_SEARCH_ROWS'
+,p_item_sequence=>50
+,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
+,p_source_type=>'ALWAYS_NULL'
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'U'
+,p_protection_level=>'I'
+,p_restricted_characters=>'US_ONLY'
+,p_encrypt_session_state_yn=>'N'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
+,p_item_comment=>'Search report rows to display per report page. The value is set in the application process "Initialize Items"'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(167388369650270472)
+,p_name=>'P0_PAGE_URL'
+,p_item_sequence=>60
+,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
+,p_source_type=>'ALWAYS_NULL'
+,p_display_as=>'NATIVE_HIDDEN'
+,p_is_persistent=>'N'
+,p_protection_level=>'I'
+,p_encrypt_session_state_yn=>'N'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
+,p_item_comment=>'Page URL. Used in page meta tags. The value is set in the schortcuts.'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(166609179840728081)
@@ -286,11 +385,12 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_plug_id=>wwv_flow_imp.id(103691842287906938)
 ,p_prompt=>'Search'
 ,p_placeholder=>'Search ...'
+,p_source_type=>'ALWAYS_NULL'
 ,p_display_as=>'NATIVE_TEXT_FIELD'
 ,p_cMaxlength=>256
 ,p_display_when=>'4'
 ,p_display_when_type=>'CURRENT_PAGE_NOT_EQUAL_CONDITION'
-,p_field_template=>2040785906935475274
+,p_field_template=>2042262243893469891
 ,p_item_css_classes=>'mxw360'
 ,p_item_icon_css_classes=>'fa-search'
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--stretchInputs:t-Form-fieldContainer--xlarge:margin-bottom-sm'
@@ -305,70 +405,19 @@ wwv_flow_imp_page.create_page_item(
   'subtype', 'SEARCH',
   'trim_spaces', 'BOTH')).to_clob
 ,p_item_comment=>'When user press enter on field, page is submitted. Application process "Redirect to search page" handles redirect to search result page.'
-,p_updated_on=>wwv_flow_imp.dz('20250701055719Z')
-);
-wwv_flow_imp_page.create_page_item(
- p_id=>wwv_flow_imp.id(167388369650270472)
-,p_name=>'P0_PAGE_URL'
-,p_item_sequence=>60
-,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
-,p_display_as=>'NATIVE_HIDDEN'
-,p_is_persistent=>'N'
-,p_protection_level=>'I'
-,p_encrypt_session_state_yn=>'N'
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'value_protected', 'Y')).to_clob
-,p_item_comment=>'Page URL. Used in page meta tags. The value is set in the schortcuts.'
-);
-wwv_flow_imp_page.create_page_item(
- p_id=>wwv_flow_imp.id(167388424252270473)
-,p_name=>'P0_BLOG_SEARCH_ROWS'
-,p_item_sequence=>50
-,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
-,p_display_as=>'NATIVE_HIDDEN'
-,p_is_persistent=>'U'
-,p_protection_level=>'I'
-,p_restricted_characters=>'US_ONLY'
-,p_encrypt_session_state_yn=>'N'
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'value_protected', 'Y')).to_clob
-,p_item_comment=>'Search report rows to display per report page. The value is set in the application process "Initialize Items"'
-);
-wwv_flow_imp_page.create_page_item(
- p_id=>wwv_flow_imp.id(174680739463017472)
-,p_name=>'P0_BLOG_APP_DATE_FORMAT'
-,p_item_sequence=>30
-,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
-,p_display_as=>'NATIVE_HIDDEN'
-,p_is_persistent=>'U'
-,p_protection_level=>'I'
-,p_encrypt_session_state_yn=>'N'
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'value_protected', 'Y')).to_clob
-,p_item_comment=>'Date format used e.g. on reports. The value is set in the application process "Initialize Items"'
-);
-wwv_flow_imp_page.create_page_item(
- p_id=>wwv_flow_imp.id(174681168967017476)
-,p_name=>'P0_BLOG_POST_DATE_FORMAT'
-,p_item_sequence=>40
-,p_item_plug_id=>wwv_flow_imp.id(133827130936790205)
-,p_display_as=>'NATIVE_HIDDEN'
-,p_is_persistent=>'U'
-,p_protection_level=>'I'
-,p_encrypt_session_state_yn=>'N'
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'value_protected', 'Y')).to_clob
-,p_item_comment=>'Post title date format. Used e.g. in posts reports. The value is set in the application process "Initialize Items"'
+,p_updated_on=>wwv_flow_imp.dz('20250701085719Z')
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(134446817085560871)
 ,p_name=>'Scroll Top'
+,p_static_id=>'scroll-top'
 ,p_event_sequence=>10
 ,p_triggering_element_type=>'JQUERY_SELECTOR'
 ,p_triggering_element=>'#page-content-container,#comments'
 ,p_bind_type=>'bind'
 ,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'apexafterrefresh'
+,p_updated_on=>wwv_flow_imp.dz('20260827070647Z')
 );
 wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(134447183610560872)
@@ -376,8 +425,10 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_event_result=>'TRUE'
 ,p_action_sequence=>10
 ,p_execute_on_page_init=>'N'
+,p_static_id=>'native-javascript-code'
 ,p_action=>'NATIVE_JAVASCRIPT_CODE'
-,p_attribute_01=>'apex.theme42.util.scrollTo( this.triggeringElement.id == "comments" ? this.triggeringElement.id : "wwvFlowForm" );'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'js_code', 'apex.theme42.util.scrollTo( this.triggeringElement.id == "comments" ? this.triggeringElement.id : "wwvFlowForm" );')).to_clob
 );
 wwv_flow_imp.component_end;
 end;

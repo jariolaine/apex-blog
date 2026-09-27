@@ -4,8 +4,8 @@ begin
 --     LIST: AI Configuration
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -14,46 +14,49 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_list(
  p_id=>wwv_flow_imp.id(114469191785084578)
 ,p_name=>'AI Configuration'
-,p_list_status=>'PUBLIC'
-,p_version_scn=>41502365202158
-,p_updated_on=>wwv_flow_imp.dz('20250309112840Z')
+,p_static_id=>'ai-configuration'
+,p_version_scn=>'41502365202158'
+,p_updated_on=>wwv_flow_imp.dz('20250309132840Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(117322057090104070)
 ,p_list_item_display_sequence=>10
 ,p_list_item_link_text=>'Generative AI'
+,p_static_id=>'generative-ai'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20016:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-ai'
 ,p_list_text_01=>'Configure generative AI to assist with writing blog posts.'
 ,p_list_text_02=>'&P20010_GENERATIVE_AI_STATUS.'
 ,p_list_text_06=>'u-color-8'
 ,p_list_item_current_type=>'TARGET_PAGE'
-,p_updated_on=>wwv_flow_imp.dz('20250224145914Z')
-);
-wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(109019807553394370)
-,p_list_item_display_sequence=>20
-,p_list_item_link_text=>'Prompts'
-,p_list_item_link_target=>'f?p=&APP_ID.:20020:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-ai-prompt'
-,p_list_text_01=>'Manage generative AI prompts.'
-,p_list_text_06=>'u-color-9'
-,p_required_patch=>wwv_flow_imp.id(91382065723485903)
-,p_list_item_current_type=>'TARGET_PAGE'
-,p_created_on=>wwv_flow_imp.dz('20250224144705Z')
-,p_updated_on=>wwv_flow_imp.dz('20250309112840Z')
+,p_updated_on=>wwv_flow_imp.dz('20250224165914Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(114469723841084562)
 ,p_list_item_display_sequence=>30
 ,p_list_item_link_text=>'Language AI'
+,p_static_id=>'language-ai'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20015:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-language'
 ,p_list_text_01=>'Configure Oracle cloud language service to analyze comment sentiment.'
 ,p_list_text_02=>'&P20010_OCI_LANG_AI_STATUS.'
 ,p_list_text_06=>'u-color-10'
 ,p_list_item_current_type=>'TARGET_PAGE'
-,p_updated_on=>wwv_flow_imp.dz('20250224145923Z')
+,p_updated_on=>wwv_flow_imp.dz('20250224165923Z')
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(109019807553394370)
+,p_list_item_display_sequence=>20
+,p_list_item_link_text=>'Prompts'
+,p_static_id=>'prompts'
+,p_list_item_link_target=>'f?p=&APP_ID.:20020:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-ai-prompt'
+,p_list_text_01=>'Manage generative AI prompts.'
+,p_list_text_06=>'u-color-9'
+,p_required_patch=>wwv_flow_imp.id(91382065723485903)
+,p_list_item_current_type=>'TARGET_PAGE'
+,p_created_on=>wwv_flow_imp.dz('20250224164705Z')
+,p_updated_on=>wwv_flow_imp.dz('20250309132840Z')
 );
 wwv_flow_imp.component_end;
 end;

@@ -4,8 +4,8 @@ begin
 --     LIST: Post Archives
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -14,6 +14,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_list(
  p_id=>wwv_flow_imp.id(157470915285315014)
 ,p_name=>'Post Archives'
+,p_static_id=>'post-archives'
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
@@ -32,9 +33,8 @@ wwv_flow_imp_shared.create_list(
 ', ''blog-linkList''     as attribute3',
 'from blog_v_archive_year v1',
 'order by v1.archive_year desc'))
-,p_list_status=>'PUBLIC'
 ,p_required_patch=>wwv_flow_imp.id(136064880177635397)
-,p_version_scn=>41473178110419
+,p_version_scn=>'41473178110419'
 );
 wwv_flow_imp.component_end;
 end;

@@ -4,8 +4,8 @@ begin
 --     SHORTCUT: BLOG_CANONICAL_LINK_POST
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -16,14 +16,14 @@ wwv_flow_imp_shared.create_shortcut(
 ,p_shortcut_name=>'BLOG_CANONICAL_LINK_POST'
 ,p_shortcut_type=>'FUNCTION_BODY'
 ,p_shortcut_language=>'PLSQL'
-,p_version_scn=>41493626078878
+,p_version_scn=>'41493626078878'
 ,p_comments=>'Get canonical link for post. Used in page 2 page html header.'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return blog_html.set_post_canonical_link(',
 '  p_post_id => :P2_POST_ID',
 ', p_url     => :P0_PAGE_URL',
 ');'))
-,p_updated_on=>wwv_flow_imp.dz('20250201053809Z')
+,p_updated_on=>wwv_flow_imp.dz('20250201073809Z')
 );
 wwv_flow_imp.component_end;
 end;

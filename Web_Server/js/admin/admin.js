@@ -214,7 +214,7 @@ var blog = blog || {};
       **/
     , region: function( options ){
 
-        let igId        = options.regionStaticId
+        let igId        = options.regionDomId
           , isConfigIg  = region( igId ).element.hasClass( "blog-config-ig" )
           , toolbarData = $.apex.interactiveGrid.copyDefaultToolbar()
         ;

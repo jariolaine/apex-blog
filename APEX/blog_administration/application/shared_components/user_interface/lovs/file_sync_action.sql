@@ -4,8 +4,8 @@ begin
 --     FILE_SYNC_ACTION
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -14,27 +14,31 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_list_of_values(
  p_id=>wwv_flow_imp.id(105676962488365852)
 ,p_lov_name=>'FILE_SYNC_ACTION'
+,p_static_id=>'file-sync-action'
 ,p_lov_query=>'.'||wwv_flow_imp.id(105676962488365852)||'.'
 ,p_location=>'STATIC'
-,p_version_scn=>41471983136040
-);
-wwv_flow_imp_shared.create_static_lov_data(
- p_id=>wwv_flow_imp.id(105677316676365844)
-,p_lov_disp_sequence=>10
-,p_lov_disp_value=>'Only File Names From Object Storage to File Repository'
-,p_lov_return_value=>'META'
+,p_version_scn=>'41471983136040'
 );
 wwv_flow_imp_shared.create_static_lov_data(
  p_id=>wwv_flow_imp.id(110688702244045356)
 ,p_lov_disp_sequence=>20
 ,p_lov_disp_value=>'From Object Storage to File Repository'
 ,p_lov_return_value=>'DB'
+,p_static_id=>'db'
+);
+wwv_flow_imp_shared.create_static_lov_data(
+ p_id=>wwv_flow_imp.id(105677316676365844)
+,p_lov_disp_sequence=>10
+,p_lov_disp_value=>'Only File Names From Object Storage to File Repository'
+,p_lov_return_value=>'META'
+,p_static_id=>'meta'
 );
 wwv_flow_imp_shared.create_static_lov_data(
  p_id=>wwv_flow_imp.id(105677672243365841)
 ,p_lov_disp_sequence=>30
 ,p_lov_disp_value=>'From File Repository to Object Storage'
 ,p_lov_return_value=>'OCI'
+,p_static_id=>'oci'
 );
 wwv_flow_imp.component_end;
 end;

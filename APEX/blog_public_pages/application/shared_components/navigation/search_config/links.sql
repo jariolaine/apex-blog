@@ -4,8 +4,8 @@ begin
 --     SEARCH CONFIG: Links
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -48,7 +48,7 @@ wwv_flow_imp_shared.create_search_config(
 '    <div class="a-ResultsItem-description">&LINK_DESC!HTML.</div>',
 '  </div>',
 '</div>'))
-,p_version_scn=>41375567298287
+,p_version_scn=>'41375567298287'
 ,p_build_option_id=>wwv_flow_imp.id(134299248056650290)
 );
 wwv_flow_imp.component_end;

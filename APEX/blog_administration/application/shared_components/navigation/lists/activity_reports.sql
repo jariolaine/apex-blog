@@ -4,8 +4,8 @@ begin
 --     LIST: Activity Reports
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -14,52 +14,57 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_list(
  p_id=>wwv_flow_imp.id(126335939951449160)
 ,p_name=>'Activity Reports'
-,p_list_status=>'PUBLIC'
-,p_version_scn=>1
+,p_static_id=>'activity-reports'
+,p_version_scn=>'1'
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(126337176475449170)
+,p_list_item_display_sequence=>50
+,p_list_item_link_text=>'Application Error Log'
+,p_static_id=>'application-error-log'
+,p_list_item_link_target=>'f?p=&APP_ID.:30022:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-exclamation-triangle-o'
+,p_list_text_01=>'Report of errors logged by this application'
+,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(126336413832449163)
 ,p_list_item_display_sequence=>10
 ,p_list_item_link_text=>'Dashboard'
+,p_static_id=>'dashboard'
 ,p_list_item_link_target=>'f?p=&APP_ID.:30020:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-area-chart'
 ,p_list_text_01=>'View application activity metrics'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(126484172846126387)
-,p_list_item_display_sequence=>20
-,p_list_item_link_text=>'Page Views Metric'
-,p_list_item_link_target=>'f?p=&APP_ID.:30021:&SESSION.::&DEBUG.:RR:::'
-,p_list_item_icon=>'fa-file-clock'
-,p_list_text_01=>'Summary and breakdown by page report of page view counts and elapsed time'
-,p_list_item_current_type=>'TARGET_PAGE'
-);
-wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(126337946534449170)
-,p_list_item_display_sequence=>30
-,p_list_item_link_text=>'Page Views'
-,p_list_item_link_target=>'f?p=&APP_ID.:30024:&SESSION.::&DEBUG.:RR:::'
-,p_list_item_icon=>'fa-file-search'
-,p_list_text_01=>'Report of each page view including date of access and elapsed time'
-,p_list_item_current_type=>'TARGET_PAGE'
-);
-wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(126337580820449170)
 ,p_list_item_display_sequence=>40
 ,p_list_item_link_text=>'Page Performance'
+,p_static_id=>'page-performance'
 ,p_list_item_link_target=>'f?p=&APP_ID.:30023:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-file-chart'
 ,p_list_text_01=>'Report of activity and performance by application page'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(126337176475449170)
-,p_list_item_display_sequence=>50
-,p_list_item_link_text=>'Application Error Log'
-,p_list_item_link_target=>'f?p=&APP_ID.:30022:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-exclamation-triangle-o'
-,p_list_text_01=>'Report of errors logged by this application'
+ p_id=>wwv_flow_imp.id(126337946534449170)
+,p_list_item_display_sequence=>30
+,p_list_item_link_text=>'Page Views'
+,p_static_id=>'page-views'
+,p_list_item_link_target=>'f?p=&APP_ID.:30024:&SESSION.::&DEBUG.:RR:::'
+,p_list_item_icon=>'fa-file-search'
+,p_list_text_01=>'Report of each page view including date of access and elapsed time'
+,p_list_item_current_type=>'TARGET_PAGE'
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(126484172846126387)
+,p_list_item_display_sequence=>20
+,p_list_item_link_text=>'Page Views Metric'
+,p_static_id=>'page-views-metric'
+,p_list_item_link_target=>'f?p=&APP_ID.:30021:&SESSION.::&DEBUG.:RR:::'
+,p_list_item_icon=>'fa-file-clock'
+,p_list_text_01=>'Summary and breakdown by page report of page view counts and elapsed time'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp.component_end;

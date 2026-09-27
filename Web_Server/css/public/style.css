@@ -29,6 +29,9 @@ blockquote::after {
 .blog-text-line-through {
   text-decoration: line-through !important;
 }
+.blog-clear-both {
+  clear: both;
+}
 /**************************************
 * Public application header
 **************************************/
@@ -146,6 +149,12 @@ blockquote::after {
   padding: 0 1rem 1rem;
   margin-bottom: 1rem;
   font-size: 1.125rem;
+}
+.blog-posts .blog-post .blog-post--body .blog-post--banner {
+  border-radius: 0.25rem;
+  box-shadow: 0 0.25rem 0.5rem -0.25rem rgba(0, 0, 0, 0.2);
+  margin-block-end: 2rem;
+  inline-size: 100%;
 }
 .blog-posts .blog-post .blog-post--body img {
   max-width: 100%;

@@ -4,8 +4,8 @@ begin
 --     PAGE: 00001
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -18,29 +18,200 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'&P0_BLOG_APP_NAME.'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(91376223235435262)
+,p_step_template=>4072355960268175073
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_help_text=>'No help available for this page.'
 ,p_page_component_map=>'03'
-,p_last_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20250414044902Z')
+);
+wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(190681678635507246)
+,p_name=>'Activity Last &P1_PERIOD_IN_DAYS. Days'
+,p_static_id=>'activity-last-p1-period-in-days-days'
+,p_template=>2322115667525957943
+,p_display_sequence=>30
+,p_region_sub_css_classes=>'blog-shadow-md'
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
+,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols t-BadgeList--4cols:t-Report--hideNoPagination'
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select ',
+'  ls.page_views     as page_views',
+', ls.apex_sessions  as apex_sessions',
+', ls.ip_addresses   as ip_addresses',
+', ls.agents         as user_agents',
+'from apex_workspace_log_summary ls',
+'where 1 = 1',
+'  and ls.application_id = :G_PUB_APP_ID',
+'order by 1'))
+,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_ajax_enabled=>'Y'
+,p_fixed_header=>'PAGE'
+,p_lazy_loading=>false
+,p_query_row_template=>2104643962563030528
+,p_query_num_rows=>15
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_query_show_nulls_as=>'0'
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+,p_updated_on=>wwv_flow_imp.dz('20250414044902Z')
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(102688231989497179)
+,p_query_column_id=>2
+,p_column_alias=>'APEX_SESSIONS'
+,p_column_display_sequence=>40
+,p_column_heading=>'Sessions'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20250225063330Z')
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(99562391385032015)
+,p_query_column_id=>3
+,p_column_alias=>'IP_ADDRESSES'
+,p_column_display_sequence=>50
+,p_column_heading=>'IP Addresses'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20250225063330Z')
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(102687047487497177)
+,p_query_column_id=>1
+,p_column_alias=>'PAGE_VIEWS'
+,p_column_display_sequence=>10
+,p_column_heading=>'Page Views'
+,p_use_as_row_header=>'Y'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(102480507178597501)
+,p_query_column_id=>4
+,p_column_alias=>'USER_AGENTS'
+,p_column_display_sequence=>60
+,p_column_heading=>'User Agents'
+,p_column_alignment=>'RIGHT'
+,p_heading_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20250225063330Z')
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(228320967824124468)
+,p_plug_name=>'Blog Public URLs'
+,p_static_id=>'blog-public-urls'
+,p_region_sub_css_classes=>'blog-shadow-md'
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
+,p_component_template_options=>'#DEFAULT#:u-colors:t-MediaList--iconsRounded'
+,p_escape_on_http_output=>'N'
+,p_plug_template=>2322115667525957943
+,p_plug_display_sequence=>50
+,p_plug_item_display_point=>'ABOVE'
+,p_list_id=>wwv_flow_imp.id(125627335714824802)
+,p_plug_source_type=>'NATIVE_LIST'
+,p_list_template_id=>2067994871570597190
+,p_updated_on=>wwv_flow_imp.dz('20250414044902Z')
+);
+wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(120093619186119231)
+,p_name=>'Comments'
+,p_static_id=>'comments'
+,p_template=>2322115667525957943
+,p_display_sequence=>20
+,p_region_sub_css_classes=>'blog-shadow-md'
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
+,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols'
+,p_new_grid_row=>false
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select',
+'   sum( v1.comments_cnt )           as num_comments',
+'  ,sum( v1.unread_comments_cnt )    as num_unread_comments',
+'  ,sum( v1.moderate_comments_cnt )  as num_moderate_comments',
+'  ,sum( v1.published_comments_cnt ) as num_published_comments',
+'from blog_v_all_posts v1',
+'where 1 = 1',
+'order by 1'))
+,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
+,p_ajax_enabled=>'Y'
+,p_fixed_header=>'PAGE'
+,p_lazy_loading=>false
+,p_query_row_template=>2104643962563030528
+,p_query_num_rows=>15
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_query_show_nulls_as=>'0'
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+,p_updated_on=>wwv_flow_imp.dz('20250414044902Z')
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(120093655252119232)
+,p_query_column_id=>1
+,p_column_alias=>'NUM_COMMENTS'
+,p_column_display_sequence=>10
+,p_column_heading=>'Total'
+,p_use_as_row_header=>'Y'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(120094495058119240)
+,p_query_column_id=>3
+,p_column_alias=>'NUM_MODERATE_COMMENTS'
+,p_column_display_sequence=>40
+,p_column_heading=>'Not Approved'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(120094039494119236)
+,p_query_column_id=>4
+,p_column_alias=>'NUM_PUBLISHED_COMMENTS'
+,p_column_display_sequence=>20
+,p_column_heading=>'Published'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(103445862504246815)
+,p_query_column_id=>2
+,p_column_alias=>'NUM_UNREAD_COMMENTS'
+,p_column_display_sequence=>30
+,p_column_heading=>'Unread'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(91028235881350407)
 ,p_plug_name=>'&P0_BLOG_APP_DESC.'
+,p_static_id=>'p0-blog-app-desc'
 ,p_region_template_options=>'#DEFAULT#:t-HeroRegion--featured t-HeroRegion--centered:t-HeroRegion--hideIcon:t-HeroRegion--iconsCircle'
+,p_escape_on_http_output=>'N'
 ,p_plug_template=>2674017834225413037
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'REGION_POSITION_01'
+,p_plug_item_display_point=>'ABOVE'
 ,p_location=>null
 ,p_translate_title=>'N'
+,p_plug_query_headings_type=>'COLON_DELMITED_LIST'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'expand_shortcuts', 'N',
   'output_as', 'HTML')).to_clob
-,p_updated_on=>wwv_flow_imp.dz('20250414014901Z')
+,p_updated_on=>wwv_flow_imp.dz('20250414044901Z')
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(120092622406119221)
 ,p_name=>'Posts'
+,p_static_id=>'posts'
 ,p_template=>2322115667525957943
 ,p_display_sequence=>10
 ,p_region_sub_css_classes=>'blog-shadow-md'
@@ -77,6 +248,7 @@ wwv_flow_imp_page.create_report_region(
 'order by 1'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
+,p_fixed_header=>'PAGE'
 ,p_lazy_loading=>false
 ,p_query_row_template=>2104643962563030528
 ,p_query_num_rows=>15
@@ -86,7 +258,16 @@ wwv_flow_imp_page.create_report_region(
 ,p_prn_output=>'N'
 ,p_sort_null=>'L'
 ,p_plug_query_strip_html=>'N'
-,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
+,p_updated_on=>wwv_flow_imp.dz('20250414044902Z')
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(120093185940119227)
+,p_query_column_id=>3
+,p_column_alias=>'NUM_DRAFT_POSTS'
+,p_column_display_sequence=>30
+,p_column_heading=>'Draft'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(120092942514119225)
@@ -108,15 +289,6 @@ wwv_flow_imp_page.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(120093185940119227)
-,p_query_column_id=>3
-,p_column_alias=>'NUM_DRAFT_POSTS'
-,p_column_display_sequence=>30
-,p_column_heading=>'Draft'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(120093366670119229)
 ,p_query_column_id=>4
 ,p_column_alias=>'NUM_SCHEDULED_POSTS'
@@ -125,181 +297,25 @@ wwv_flow_imp_page.create_report_columns(
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
-wwv_flow_imp_page.create_report_region(
- p_id=>wwv_flow_imp.id(120093619186119231)
-,p_name=>'Comments'
-,p_template=>2322115667525957943
-,p_display_sequence=>20
-,p_region_sub_css_classes=>'blog-shadow-md'
-,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols'
-,p_new_grid_row=>false
-,p_source_type=>'NATIVE_SQL_REPORT'
-,p_query_type=>'SQL'
-,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select',
-'   sum( v1.comments_cnt )           as num_comments',
-'  ,sum( v1.unread_comments_cnt )    as num_unread_comments',
-'  ,sum( v1.moderate_comments_cnt )  as num_moderate_comments',
-'  ,sum( v1.published_comments_cnt ) as num_published_comments',
-'from blog_v_all_posts v1',
-'where 1 = 1',
-'order by 1'))
-,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
-,p_ajax_enabled=>'Y'
-,p_lazy_loading=>false
-,p_query_row_template=>2104643962563030528
-,p_query_num_rows=>15
-,p_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_query_show_nulls_as=>'0'
-,p_csv_output=>'N'
-,p_prn_output=>'N'
-,p_sort_null=>'L'
-,p_plug_query_strip_html=>'N'
-,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(120093655252119232)
-,p_query_column_id=>1
-,p_column_alias=>'NUM_COMMENTS'
-,p_column_display_sequence=>10
-,p_column_heading=>'Total'
-,p_use_as_row_header=>'Y'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(103445862504246815)
-,p_query_column_id=>2
-,p_column_alias=>'NUM_UNREAD_COMMENTS'
-,p_column_display_sequence=>30
-,p_column_heading=>'Unread'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(120094495058119240)
-,p_query_column_id=>3
-,p_column_alias=>'NUM_MODERATE_COMMENTS'
-,p_column_display_sequence=>40
-,p_column_heading=>'Not Approved'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(120094039494119236)
-,p_query_column_id=>4
-,p_column_alias=>'NUM_PUBLISHED_COMMENTS'
-,p_column_display_sequence=>20
-,p_column_heading=>'Published'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_region(
- p_id=>wwv_flow_imp.id(190681678635507246)
-,p_name=>'Activity Last &P1_PERIOD_IN_DAYS. Days'
-,p_template=>2322115667525957943
-,p_display_sequence=>30
-,p_region_sub_css_classes=>'blog-shadow-md'
-,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:t-BadgeList--large:t-BadgeList--dash:t-BadgeList--cols t-BadgeList--4cols:t-Report--hideNoPagination'
-,p_source_type=>'NATIVE_SQL_REPORT'
-,p_query_type=>'SQL'
-,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'select ',
-'  ls.page_views     as page_views',
-', ls.apex_sessions  as apex_sessions',
-', ls.ip_addresses   as ip_addresses',
-', ls.agents         as user_agents',
-'from apex_workspace_log_summary ls',
-'where 1 = 1',
-'  and ls.application_id = :G_PUB_APP_ID',
-'order by 1'))
-,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
-,p_ajax_enabled=>'Y'
-,p_lazy_loading=>false
-,p_query_row_template=>2104643962563030528
-,p_query_num_rows=>15
-,p_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_query_show_nulls_as=>'0'
-,p_csv_output=>'N'
-,p_prn_output=>'N'
-,p_sort_null=>'L'
-,p_plug_query_strip_html=>'N'
-,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(102687047487497177)
-,p_query_column_id=>1
-,p_column_alias=>'PAGE_VIEWS'
-,p_column_display_sequence=>10
-,p_column_heading=>'Page Views'
-,p_use_as_row_header=>'Y'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(102688231989497179)
-,p_query_column_id=>2
-,p_column_alias=>'APEX_SESSIONS'
-,p_column_display_sequence=>40
-,p_column_heading=>'Sessions'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-,p_updated_on=>wwv_flow_imp.dz('20250225043330Z')
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(99562391385032015)
-,p_query_column_id=>3
-,p_column_alias=>'IP_ADDRESSES'
-,p_column_display_sequence=>50
-,p_column_heading=>'IP Addresses'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-,p_updated_on=>wwv_flow_imp.dz('20250225043330Z')
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(102480507178597501)
-,p_query_column_id=>4
-,p_column_alias=>'USER_AGENTS'
-,p_column_display_sequence=>60
-,p_column_heading=>'User Agents'
-,p_column_alignment=>'RIGHT'
-,p_heading_alignment=>'RIGHT'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-,p_updated_on=>wwv_flow_imp.dz('20250225043330Z')
-);
-wwv_flow_imp_page.create_page_plug(
- p_id=>wwv_flow_imp.id(228320967824124468)
-,p_plug_name=>'Blog Public URLs'
-,p_region_sub_css_classes=>'blog-shadow-md'
-,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
-,p_component_template_options=>'#DEFAULT#:u-colors:t-MediaList--iconsRounded'
-,p_plug_template=>2322115667525957943
-,p_plug_display_sequence=>50
-,p_list_id=>wwv_flow_imp.id(125627335714824802)
-,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>2067994871570597190
-,p_updated_on=>wwv_flow_imp.dz('20250414014902Z')
-);
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(99561072256032002)
 ,p_name=>'P1_PERIOD_IN_DAYS'
 ,p_item_sequence=>10
 ,p_item_plug_id=>wwv_flow_imp.id(190681678635507246)
+,p_source_type=>'ALWAYS_NULL'
 ,p_display_as=>'NATIVE_HIDDEN'
 ,p_protection_level=>'I'
 ,p_restricted_characters=>'US_ONLY'
 ,p_encrypt_session_state_yn=>'N'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'value_protected', 'Y')).to_clob
-,p_updated_on=>wwv_flow_imp.dz('20250201041952Z')
+,p_updated_on=>wwv_flow_imp.dz('20250201061952Z')
 );
 wwv_flow_imp_page.create_page_computation(
  p_id=>wwv_flow_imp.id(99561188373032003)
 ,p_computation_sequence=>10
 ,p_computation_item=>'P1_PERIOD_IN_DAYS'
+,p_static_id=>'p1-period-in-days'
 ,p_computation_point=>'BEFORE_BOX_BODY'
 ,p_computation_type=>'QUERY'
 ,p_computation=>wwv_flow_string.join(wwv_flow_t_varchar2(

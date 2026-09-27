@@ -4,8 +4,8 @@ begin
 --     LIST: Navigation Menu
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -14,86 +14,94 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_list(
  p_id=>wwv_flow_imp.id(90896897889350262)
 ,p_name=>'Navigation Menu'
-,p_list_status=>'PUBLIC'
-,p_version_scn=>41492208450262
-,p_updated_on=>wwv_flow_imp.dz('20250119124553Z')
-);
-wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(91027257899350405)
-,p_list_item_display_sequence=>10
-,p_list_item_link_text=>'Home'
-,p_list_item_link_target=>'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-home'
-,p_list_text_04=>'Home'
-,p_list_item_current_type=>'TARGET_PAGE'
-,p_updated_on=>wwv_flow_imp.dz('20250119124432Z')
-);
-wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(107540241127313166)
-,p_list_item_display_sequence=>20
-,p_list_item_link_text=>'Posts'
-,p_list_item_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-file-text-o'
-,p_list_item_current_type=>'TARGET_PAGE'
-,p_updated_on=>wwv_flow_imp.dz('20250119124432Z')
-);
-wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(109858083846384308)
-,p_list_item_display_sequence=>30
-,p_list_item_link_text=>'Comments'
-,p_list_item_link_target=>'f?p=&APP_ID.:60:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-comments-o'
-,p_list_item_current_type=>'TARGET_PAGE'
-,p_updated_on=>wwv_flow_imp.dz('20250119124432Z')
-);
-wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(89277414089849546)
-,p_list_item_display_sequence=>40
-,p_list_item_link_text=>'Links'
-,p_list_item_link_target=>'f?p=&APP_ID.:50:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-link'
-,p_list_item_current_type=>'TARGET_PAGE'
-,p_updated_on=>wwv_flow_imp.dz('20250119124432Z')
-);
-wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(89277696297853045)
-,p_list_item_display_sequence=>50
-,p_list_item_link_text=>'File Repository'
-,p_list_item_link_target=>'f?p=&APP_ID.:300:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-database-file'
-,p_required_patch=>-wwv_flow_imp.id(102874015592702141)
-,p_list_item_current_type=>'TARGET_PAGE'
-,p_updated_on=>wwv_flow_imp.dz('20250119124432Z')
-);
-wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(105706089601793432)
-,p_list_item_display_sequence=>60
-,p_list_item_link_text=>'Object Storage'
-,p_list_item_link_target=>'f?p=&APP_ID.:300:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-cloud-file'
-,p_required_patch=>wwv_flow_imp.id(102874015592702141)
-,p_list_item_current_type=>'TARGET_PAGE'
-,p_updated_on=>wwv_flow_imp.dz('20250119124432Z')
-);
-wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(96908467820614859)
-,p_list_item_display_sequence=>70
-,p_list_item_link_text=>'Reports'
-,p_list_item_link_target=>'f?p=&APP_ID.:30000:&APP_SESSION.::&DEBUG.:::'
-,p_list_item_icon=>'fa-dashboard'
-,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
-,p_list_item_current_for_pages=>'30000'
-,p_created_on=>wwv_flow_imp.dz('20250119124352Z')
-,p_updated_on=>wwv_flow_imp.dz('20250119124553Z')
+,p_static_id=>'navigation-menu'
+,p_version_scn=>'41492208450262'
+,p_updated_on=>wwv_flow_imp.dz('20250119144553Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(107348647158515591)
 ,p_list_item_display_sequence=>80
 ,p_list_item_link_text=>'Administration'
+,p_static_id=>'administration'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20010:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-gear'
 ,p_list_item_current_type=>'TARGET_PAGE'
-,p_updated_on=>wwv_flow_imp.dz('20250119124432Z')
+,p_updated_on=>wwv_flow_imp.dz('20250119144432Z')
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(109858083846384308)
+,p_list_item_display_sequence=>30
+,p_list_item_link_text=>'Comments'
+,p_static_id=>'comments'
+,p_list_item_link_target=>'f?p=&APP_ID.:60:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-comments-o'
+,p_list_item_current_type=>'TARGET_PAGE'
+,p_updated_on=>wwv_flow_imp.dz('20250119144432Z')
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(89277696297853045)
+,p_list_item_display_sequence=>50
+,p_list_item_link_text=>'File Repository'
+,p_static_id=>'file-repository'
+,p_list_item_link_target=>'f?p=&APP_ID.:300:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-database-file'
+,p_required_patch=>-wwv_flow_imp.id(102874015592702141)
+,p_list_item_current_type=>'TARGET_PAGE'
+,p_updated_on=>wwv_flow_imp.dz('20250119144432Z')
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(91027257899350405)
+,p_list_item_display_sequence=>10
+,p_list_item_link_text=>'Home'
+,p_static_id=>'home'
+,p_list_item_link_target=>'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-home'
+,p_list_text_04=>'Home'
+,p_list_item_current_type=>'TARGET_PAGE'
+,p_updated_on=>wwv_flow_imp.dz('20250119144432Z')
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(89277414089849546)
+,p_list_item_display_sequence=>40
+,p_list_item_link_text=>'Links'
+,p_static_id=>'links'
+,p_list_item_link_target=>'f?p=&APP_ID.:50:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-link'
+,p_list_item_current_type=>'TARGET_PAGE'
+,p_updated_on=>wwv_flow_imp.dz('20250119144432Z')
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(105706089601793432)
+,p_list_item_display_sequence=>60
+,p_list_item_link_text=>'Object Storage'
+,p_static_id=>'object-storage'
+,p_list_item_link_target=>'f?p=&APP_ID.:300:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-cloud-file'
+,p_required_patch=>wwv_flow_imp.id(102874015592702141)
+,p_list_item_current_type=>'TARGET_PAGE'
+,p_updated_on=>wwv_flow_imp.dz('20250119144432Z')
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(107540241127313166)
+,p_list_item_display_sequence=>20
+,p_list_item_link_text=>'Posts'
+,p_static_id=>'posts'
+,p_list_item_link_target=>'f?p=&APP_ID.:11:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-file-text-o'
+,p_list_item_current_type=>'TARGET_PAGE'
+,p_updated_on=>wwv_flow_imp.dz('20250119144432Z')
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(96908467820614859)
+,p_list_item_display_sequence=>70
+,p_list_item_link_text=>'Reports'
+,p_static_id=>'reports'
+,p_list_item_link_target=>'f?p=&APP_ID.:30000:&APP_SESSION.::&DEBUG.:::'
+,p_list_item_icon=>'fa-dashboard'
+,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
+,p_list_item_current_for_pages=>'30000'
+,p_created_on=>wwv_flow_imp.dz('20250119144352Z')
+,p_updated_on=>wwv_flow_imp.dz('20250119144553Z')
 );
 wwv_flow_imp.component_end;
 end;

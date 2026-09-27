@@ -4,8 +4,8 @@ begin
 --     SHORTCUT: BLOG_BTN_AI_ASSISTANT
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -16,7 +16,7 @@ wwv_flow_imp_shared.create_shortcut(
 ,p_shortcut_name=>'BLOG_BTN_AI_ASSISTANT'
 ,p_shortcut_type=>'FUNCTION_BODY'
 ,p_shortcut_language=>'PLSQL'
-,p_version_scn=>44984667013970
+,p_version_scn=>'44984667013970'
 ,p_shortcut=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'return',
 '  blog_html.get_button(',
@@ -27,8 +27,8 @@ wwv_flow_imp_shared.create_shortcut(
 '  , p_build_option  => ''BLOG_FEATURE_GENERATIVE_AI''',
 '  )',
 ';'))
-,p_created_on=>wwv_flow_imp.dz('20240908124237Z')
-,p_updated_on=>wwv_flow_imp.dz('20250701153639Z')
+,p_created_on=>wwv_flow_imp.dz('20240908154237Z')
+,p_updated_on=>wwv_flow_imp.dz('20250701183639Z')
 );
 wwv_flow_imp.component_end;
 end;

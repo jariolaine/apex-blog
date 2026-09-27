@@ -1,11 +1,11 @@
 prompt --application/shared_components/user_interface/template_opt_groups
 begin
 --   Manifest
---     THEME OPTION GROUPS: 401
+--     THEME OPTION GROUPS: 42
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -15,6 +15,7 @@ wwv_flow_imp_shared.create_template_opt_group(
  p_id=>wwv_flow_imp.id(135974722642160203)
 ,p_theme_id=>42
 ,p_name=>'PRESERVE_LABEL_SPACING'
+,p_static_id=>'preserve-label-spacing'
 ,p_display_name=>'Preserve Label Spacing'
 ,p_display_sequence=>1
 ,p_template_types=>'FIELD'
@@ -26,6 +27,7 @@ wwv_flow_imp_shared.create_template_opt_group(
  p_id=>wwv_flow_imp.id(135978745713160201)
 ,p_theme_id=>42
 ,p_name=>'COLOR_ACCENTS'
+,p_static_id=>'color-accents'
 ,p_display_name=>'Color Accents'
 ,p_display_sequence=>50
 ,p_template_types=>'LIST'
@@ -36,6 +38,7 @@ wwv_flow_imp_shared.create_template_opt_group(
  p_id=>wwv_flow_imp.id(135980705092160200)
 ,p_theme_id=>42
 ,p_name=>'ICON_STYLE'
+,p_static_id=>'icon-style'
 ,p_display_name=>'Icon Style'
 ,p_display_sequence=>35
 ,p_template_types=>'LIST'
@@ -45,6 +48,7 @@ wwv_flow_imp_shared.create_template_opt_group(
  p_id=>wwv_flow_imp.id(135983912657160198)
 ,p_theme_id=>42
 ,p_name=>'DISPLAY_MODE'
+,p_static_id=>'display-mode'
 ,p_display_name=>'Display Mode'
 ,p_display_sequence=>30
 ,p_template_types=>'PAGE'
@@ -56,6 +60,7 @@ wwv_flow_imp_shared.create_template_opt_group(
  p_id=>wwv_flow_imp.id(135992369437160195)
 ,p_theme_id=>42
 ,p_name=>'DISPLAY_MODE'
+,p_static_id=>'display-mode'
 ,p_display_name=>'Display Mode'
 ,p_display_sequence=>1
 ,p_template_types=>'REGION'
@@ -67,6 +72,7 @@ wwv_flow_imp_shared.create_template_opt_group(
  p_id=>wwv_flow_imp.id(136002325411160190)
 ,p_theme_id=>42
 ,p_name=>'RESULT_SEPARATOR'
+,p_static_id=>'result-separator'
 ,p_display_name=>'Result Separator'
 ,p_display_sequence=>2
 ,p_template_types=>'REGION'
@@ -77,6 +83,7 @@ wwv_flow_imp_shared.create_template_opt_group(
  p_id=>wwv_flow_imp.id(136006300109160188)
 ,p_theme_id=>42
 ,p_name=>'COLOR_ACCENTS'
+,p_static_id=>'color-accents'
 ,p_display_name=>'Color Accents'
 ,p_display_sequence=>50
 ,p_template_types=>'REPORT'

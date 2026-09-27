@@ -4,13 +4,14 @@ begin
 --     INSTALL: 401
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
 ,p_default_owner=>'BLOG_040000'
 );
+wwv_flow_imp.g_varchar2_table := wwv_flow_imp.empty_varchar2_table;
 wwv_flow_imp_shared.create_install(
  p_id=>wwv_flow_imp.id(148135284869193288)
 ,p_welcome_message=>'This application installer will guide you through the process of creating database objects and metadata necessary to run the application.'
@@ -37,9 +38,10 @@ wwv_flow_imp_shared.create_install(
 'where 1 = 1',
 'and view_name = ''BLOG_V_VERSION'''))
 ,p_deinstall_success_message=>'Deinstallation complete.'
+,p_deinstall_script_clob=>wwv_flow_imp.varchar2_to_clob(wwv_flow_imp.g_varchar2_table)
 ,p_required_free_kb=>200
 ,p_required_sys_privs=>'CREATE PROCEDURE:CREATE SEQUENCE:CREATE TABLE:CREATE TRIGGER:CREATE VIEW'
-,p_last_updated_on=>wwv_flow_imp.dz('20260125213211Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20260128060917Z')
 );
 wwv_flow_imp.component_end;
 end;

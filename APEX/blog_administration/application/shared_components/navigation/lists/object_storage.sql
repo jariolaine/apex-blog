@@ -4,8 +4,8 @@ begin
 --     LIST: Object Storage
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -14,33 +14,35 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_list(
  p_id=>wwv_flow_imp.id(117524284844700814)
 ,p_name=>'Object Storage'
-,p_list_status=>'PUBLIC'
-,p_version_scn=>41501173288636
-,p_updated_on=>wwv_flow_imp.dz('20250224145856Z')
+,p_static_id=>'object-storage'
+,p_version_scn=>'41501173288636'
+,p_updated_on=>wwv_flow_imp.dz('20250224165856Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(117525307922700798)
 ,p_list_item_display_sequence=>10
 ,p_list_item_link_text=>'Object Storage'
+,p_static_id=>'object-storage'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20013:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-cloud-file'
 ,p_list_text_01=>'Configure Oracle cloud object storage for file storage.'
 ,p_list_text_02=>'&P20010_OCI_OS_STATUS.'
 ,p_list_text_06=>'u-color-6'
 ,p_list_item_current_type=>'TARGET_PAGE'
-,p_updated_on=>wwv_flow_imp.dz('20250224145852Z')
+,p_updated_on=>wwv_flow_imp.dz('20250224165852Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(117525623756700798)
 ,p_list_item_display_sequence=>20
 ,p_list_item_link_text=>'Synchronize Files'
+,p_static_id=>'synchronize-files'
 ,p_list_item_link_target=>'f?p=&APP_ID.:20014:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-refresh'
 ,p_list_text_01=>'Synchronize file between Oracle cloud object storage and local file repository. '
 ,p_list_text_06=>'u-color-7'
 ,p_required_patch=>wwv_flow_imp.id(102874015592702141)
 ,p_list_item_current_type=>'TARGET_PAGE'
-,p_updated_on=>wwv_flow_imp.dz('20250224145856Z')
+,p_updated_on=>wwv_flow_imp.dz('20250224165856Z')
 );
 wwv_flow_imp.component_end;
 end;

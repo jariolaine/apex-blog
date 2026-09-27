@@ -4,13 +4,37 @@ begin
 --     INSTALL: UPGRADE-Patch 23.2.20231120
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
 ,p_default_owner=>'BLOG_040000'
 );
+wwv_flow_imp.g_varchar2_table := wwv_flow_imp.empty_varchar2_table;
+wwv_flow_imp.g_varchar2_table(1) := '--  Patch 23.2.20231120'||wwv_flow.LF||
+'--------------------------------------------------------'||wwv_flow.LF||
+'--  Insert and upda';
+wwv_flow_imp.g_varchar2_table(2) := 'te metadata'||wwv_flow.LF||
+'--------------------------------------------------------'||wwv_flow.LF||
+'update blog_features set displa';
+wwv_flow_imp.g_varchar2_table(3) := 'y_seq = ''180'' where build_option_name = ''BLOG_FEATURE_SEARCH_FILES'';'||wwv_flow.LF||
+'update blog_features set displa';
+wwv_flow_imp.g_varchar2_table(4) := 'y_seq = ''170'' where build_option_name = ''BLOG_FEATURE_SEARCH_LINKS'';'||wwv_flow.LF||
+'insert into blog_features (is_a';
+wwv_flow_imp.g_varchar2_table(5) := 'ctive, display_seq, build_option_name, build_option_group, build_option_parent)'||wwv_flow.LF||
+'  values (''1'', ''160''';
+wwv_flow_imp.g_varchar2_table(6) := ', ''BLOG_FEATURE_SEARCH_COMMENTS'', ''BLOG_FEATURE_GROUP_PAGE'', ''BLOG_FEATURE_SEARCH'');'||wwv_flow.LF||
+'---------------';
+wwv_flow_imp.g_varchar2_table(7) := '-----------------------------------------'||wwv_flow.LF||
+'--  Insert patch version info to BLOG_SETTINGS'||wwv_flow.LF||
+'-----------';
+wwv_flow_imp.g_varchar2_table(8) := '---------------------------------------------'||wwv_flow.LF||
+'insert into blog_settings(display_seq,is_nullable,attr';
+wwv_flow_imp.g_varchar2_table(9) := 'ibute_name,data_type,attribute_group_message,attribute_value)'||wwv_flow.LF||
+'  values(10,0,''PATCH_20231120'',''STRING';
+wwv_flow_imp.g_varchar2_table(10) := ''',''INTERNAL'',''Patch 23.2.20231120'')'||wwv_flow.LF||
+';';
 wwv_flow_imp_shared.create_install_script(
  p_id=>wwv_flow_imp.id(136601784519730672)
 ,p_install_id=>wwv_flow_imp.id(148135284869193288)
@@ -23,22 +47,8 @@ wwv_flow_imp_shared.create_install_script(
 'from blog_v_version',
 'where 1 = 1',
 'and application_date < 20231120'))
-,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'--  Patch 23.2.20231120',
-'--------------------------------------------------------',
-'--  Insert and update metadata',
-'--------------------------------------------------------',
-'update blog_features set display_seq = ''180'' where build_option_name = ''BLOG_FEATURE_SEARCH_FILES'';',
-'update blog_features set display_seq = ''170'' where build_option_name = ''BLOG_FEATURE_SEARCH_LINKS'';',
-'insert into blog_features (is_active, display_seq, build_option_name, build_option_group, build_option_parent)',
-'  values (''1'', ''160'', ''BLOG_FEATURE_SEARCH_COMMENTS'', ''BLOG_FEATURE_GROUP_PAGE'', ''BLOG_FEATURE_SEARCH'');',
-'--------------------------------------------------------',
-'--  Insert patch version info to BLOG_SETTINGS',
-'--------------------------------------------------------',
-'insert into blog_settings(display_seq,is_nullable,attribute_name,data_type,attribute_group_message,attribute_value)',
-'  values(10,0,''PATCH_20231120'',''STRING'',''INTERNAL'',''Patch 23.2.20231120'')',
-';'))
-,p_updated_on=>wwv_flow_imp.dz('20250119004323Z')
+,p_script_clob=>wwv_flow_imp.varchar2_to_clob(wwv_flow_imp.g_varchar2_table)
+,p_updated_on=>wwv_flow_imp.dz('20250119024323Z')
 );
 wwv_flow_imp.component_end;
 end;

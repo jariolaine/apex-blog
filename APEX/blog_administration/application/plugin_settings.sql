@@ -1,41 +1,27 @@
 prompt --application/plugin_settings
 begin
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
 ,p_default_owner=>'BLOG_040000'
 );
 wwv_flow_imp_shared.create_plugin_setting(
- p_id=>wwv_flow_imp.id(1458122964198724)
-,p_plugin_type=>'WEB SOURCE TYPE'
-,p_plugin=>'NATIVE_BOSS'
-,p_version_scn=>42197465569390
+ p_id=>wwv_flow_imp.id(83863280914322210)
+,p_plugin_type=>'DYNAMIC ACTION'
+,p_plugin=>'NATIVE_OPEN_AI_ASSISTANT'
+,p_version_scn=>'41373766896432'
 );
 wwv_flow_imp_shared.create_plugin_setting(
- p_id=>wwv_flow_imp.id(83162555161727608)
-,p_plugin_type=>'REGION TYPE'
-,p_plugin=>'NATIVE_MAP_REGION'
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'use_vector_tile_layers', 'Y')).to_clob
-,p_version_scn=>1
-);
-wwv_flow_imp_shared.create_plugin_setting(
- p_id=>wwv_flow_imp.id(83629425385977829)
+ p_id=>wwv_flow_imp.id(90894250682350256)
 ,p_plugin_type=>'ITEM TYPE'
-,p_plugin=>'NATIVE_SINGLE_CHECKBOX'
+,p_plugin=>'NATIVE_COLOR_PICKER'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'checked_value', 'Y',
-  'unchecked_value', 'N')).to_clob
-,p_version_scn=>1
-);
-wwv_flow_imp_shared.create_plugin_setting(
- p_id=>wwv_flow_imp.id(83834390788346728)
-,p_plugin_type=>'WEB SOURCE TYPE'
-,p_plugin=>'NATIVE_ADFBC'
-,p_version_scn=>39901445361608
+  'display_as', 'POPUP',
+  'mode', 'FULL')).to_clob
+,p_version_scn=>'1'
 );
 wwv_flow_imp_shared.create_plugin_setting(
  p_id=>wwv_flow_imp.id(83847438600748180)
@@ -46,28 +32,7 @@ wwv_flow_imp_shared.create_plugin_setting(
   'days_outside_month', 'VISIBLE',
   'show_on', 'FOCUS',
   'time_increment', '15')).to_clob
-,p_version_scn=>1
-);
-wwv_flow_imp_shared.create_plugin_setting(
- p_id=>wwv_flow_imp.id(83863097645322210)
-,p_plugin_type=>'ITEM TYPE'
-,p_plugin=>'NATIVE_SELECT_MANY'
-,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'display_values_as', 'separated')).to_clob
-,p_version_scn=>41373766896432
-);
-wwv_flow_imp_shared.create_plugin_setting(
- p_id=>wwv_flow_imp.id(83863148702322210)
-,p_plugin_type=>'PROCESS TYPE'
-,p_plugin=>'NATIVE_GEOCODING'
-,p_attribute_01=>'RELAX_HOUSE_NUMBER'
-,p_version_scn=>41373766896432
-);
-wwv_flow_imp_shared.create_plugin_setting(
- p_id=>wwv_flow_imp.id(83863280914322210)
-,p_plugin_type=>'DYNAMIC ACTION'
-,p_plugin=>'NATIVE_OPEN_AI_ASSISTANT'
-,p_version_scn=>41373766896432
+,p_version_scn=>'1'
 );
 wwv_flow_imp_shared.create_plugin_setting(
  p_id=>wwv_flow_imp.id(84091632202092602)
@@ -79,24 +44,33 @@ wwv_flow_imp_shared.create_plugin_setting(
   'map_preview', 'POPUP:ITEM',
   'match_mode', 'RELAX_HOUSE_NUMBER',
   'show_coordinates', 'N')).to_clob
-,p_version_scn=>1
+,p_version_scn=>'1'
 );
 wwv_flow_imp_shared.create_plugin_setting(
- p_id=>wwv_flow_imp.id(90894250682350256)
+ p_id=>wwv_flow_imp.id(83863097645322210)
 ,p_plugin_type=>'ITEM TYPE'
-,p_plugin=>'NATIVE_COLOR_PICKER'
+,p_plugin=>'NATIVE_SELECT_MANY'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'display_as', 'POPUP',
-  'mode', 'FULL')).to_clob
-,p_version_scn=>1
+  'display_values_as', 'separated')).to_clob
+,p_version_scn=>'41373766896432'
 );
 wwv_flow_imp_shared.create_plugin_setting(
- p_id=>wwv_flow_imp.id(90894519955350256)
-,p_plugin_type=>'REGION TYPE'
-,p_plugin=>'NATIVE_DISPLAY_SELECTOR'
+ p_id=>wwv_flow_imp.id(83629425385977829)
+,p_plugin_type=>'ITEM TYPE'
+,p_plugin=>'NATIVE_SINGLE_CHECKBOX'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'include_slider', 'Y')).to_clob
-,p_version_scn=>1
+  'checked_value', 'Y',
+  'unchecked_value', 'N')).to_clob
+,p_version_scn=>'1'
+);
+wwv_flow_imp_shared.create_plugin_setting(
+ p_id=>wwv_flow_imp.id(113657610392321458)
+,p_plugin_type=>'ITEM TYPE'
+,p_plugin=>'NATIVE_STAR_RATING'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'default_icon', 'fa-star',
+  'tooltip', '#VALUE#')).to_clob
+,p_version_scn=>'1'
 );
 wwv_flow_imp_shared.create_plugin_setting(
  p_id=>wwv_flow_imp.id(90895195055350256)
@@ -106,7 +80,23 @@ wwv_flow_imp_shared.create_plugin_setting(
   'display_style', 'SWITCH_CB',
   'off_value', 'N',
   'on_value', 'Y')).to_clob
-,p_version_scn=>1
+,p_version_scn=>'1'
+);
+wwv_flow_imp_shared.create_plugin_setting(
+ p_id=>wwv_flow_imp.id(83863148702322210)
+,p_plugin_type=>'PROCESS TYPE'
+,p_plugin=>'NATIVE_GEOCODING'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'match_mode', 'RELAX_HOUSE_NUMBER')).to_clob
+,p_version_scn=>'41373766896432'
+);
+wwv_flow_imp_shared.create_plugin_setting(
+ p_id=>wwv_flow_imp.id(90894519955350256)
+,p_plugin_type=>'REGION TYPE'
+,p_plugin=>'NATIVE_DISPLAY_SELECTOR'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'include_slider', 'Y')).to_clob
+,p_version_scn=>'1'
 );
 wwv_flow_imp_shared.create_plugin_setting(
  p_id=>wwv_flow_imp.id(90895743592350257)
@@ -114,16 +104,27 @@ wwv_flow_imp_shared.create_plugin_setting(
 ,p_plugin=>'NATIVE_IR'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'actions_menu_structure', 'IG')).to_clob
-,p_version_scn=>1
+,p_version_scn=>'1'
 );
 wwv_flow_imp_shared.create_plugin_setting(
- p_id=>wwv_flow_imp.id(113657610392321458)
-,p_plugin_type=>'ITEM TYPE'
-,p_plugin=>'NATIVE_STAR_RATING'
+ p_id=>wwv_flow_imp.id(83162555161727608)
+,p_plugin_type=>'REGION TYPE'
+,p_plugin=>'NATIVE_MAP_REGION'
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
-  'default_icon', 'fa-star',
-  'tooltip', '#VALUE#')).to_clob
-,p_version_scn=>1
+  'use_vector_tile_layers', 'Y')).to_clob
+,p_version_scn=>'1'
+);
+wwv_flow_imp_shared.create_plugin_setting(
+ p_id=>wwv_flow_imp.id(83834390788346728)
+,p_plugin_type=>'WEB SOURCE TYPE'
+,p_plugin=>'NATIVE_ADFBC'
+,p_version_scn=>'39901445361608'
+);
+wwv_flow_imp_shared.create_plugin_setting(
+ p_id=>wwv_flow_imp.id(1458122964198724)
+,p_plugin_type=>'WEB SOURCE TYPE'
+,p_plugin=>'NATIVE_BOSS'
+,p_version_scn=>'42197465569390'
 );
 wwv_flow_imp.component_end;
 end;

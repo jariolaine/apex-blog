@@ -4,8 +4,8 @@ begin
 --     LIST: Footer Modal Pages
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -14,6 +14,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_list(
  p_id=>wwv_flow_imp.id(169251883232047842)
 ,p_name=>'Footer Modal Pages'
+,p_static_id=>'footer-modal-pages'
 ,p_list_type=>'SQL_QUERY'
 ,p_list_query=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select',
@@ -25,9 +26,8 @@ wwv_flow_imp_shared.create_list(
 'where 1 = 1',
 '  and v1.content_type = ''FOOTER_LINK''',
 'order by v1.display_seq'))
-,p_list_status=>'PUBLIC'
 ,p_required_patch=>wwv_flow_imp.id(170012898564920121)
-,p_version_scn=>1
+,p_version_scn=>'1'
 );
 wwv_flow_imp.component_end;
 end;

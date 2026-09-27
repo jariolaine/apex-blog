@@ -1,11 +1,11 @@
-prompt --application/shared_components/user_interface/templates/report/blog_post_report
+prompt --application/shared_components/user_interface/templates/report/blog_posts_custom
 begin
 --   Manifest
---     ROW TEMPLATE: BLOG_POST_REPORT
+--     ROW TEMPLATE: blog-posts-custom
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -14,6 +14,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_row_template(
  p_id=>wwv_flow_imp.id(134288965682197782)
 ,p_row_template_name=>'Blog Posts (Custom 1)'
+,p_static_id=>'blog-posts-custom'
 ,p_internal_name=>'BLOG_POST_REPORT'
 ,p_row_template1=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<article class="blog-post">',
@@ -84,8 +85,6 @@ wwv_flow_imp_shared.create_row_template(
 ,p_row_template_type=>'NAMED_COLUMNS'
 ,p_row_template_display_cond1=>'NOT_CONDITIONAL'
 ,p_row_template_display_cond2=>'NOT_CONDITIONAL'
-,p_row_template_display_cond3=>'0'
-,p_row_template_display_cond4=>'NOT_CONDITIONAL'
 ,p_pagination_template=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<span class="t-Report-paginationText">#TEXT#</span>',
 ''))
@@ -108,7 +107,18 @@ wwv_flow_imp_shared.create_row_template(
 ,p_theme_id=>42
 ,p_theme_class_id=>7
 ,p_translate_this_template=>'N'
-,p_updated_on=>wwv_flow_imp.dz('20250705015715Z')
+,p_updated_on=>wwv_flow_imp.dz('20250705045715Z')
+);
+wwv_flow_imp_shared.create_template_option(
+ p_id=>wwv_flow_imp.id(163526625416465734)
+,p_theme_id=>42
+,p_name=>'HIDE_PAGINATION'
+,p_static_id=>'hide-pagination'
+,p_display_name=>'Hide Pagination'
+,p_display_sequence=>10
+,p_report_template_id=>wwv_flow_imp.id(134288965682197782)
+,p_css_classes=>'blog-posts--paginationHidden'
+,p_template_types=>'REPORT'
 );
 wwv_flow_imp.component_end;
 end;

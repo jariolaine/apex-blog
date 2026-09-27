@@ -4,8 +4,8 @@ begin
 --     LIST: Navigation Bar
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -14,51 +14,56 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_list(
  p_id=>wwv_flow_imp.id(91016837626350353)
 ,p_name=>'Navigation Bar'
-,p_list_status=>'PUBLIC'
-,p_version_scn=>41492209166849
-,p_updated_on=>wwv_flow_imp.dz('20250119125849Z')
-);
-wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(121123354592520081)
-,p_list_item_display_sequence=>20
-,p_list_item_link_text=>'Help'
-,p_list_item_link_target=>'f?p=&APP_ID.:201:&SESSION.:&APP_PAGE_ID.:&DEBUG.::::'
-,p_list_item_icon=>'fa-question-circle-o'
-,p_list_item_disp_cond_type=>'CURRENT_PAGE_IN_CONDITION'
-,p_list_item_disp_condition=>'11,20010,30000'
-,p_list_item_current_type=>'NEVER'
-,p_updated_on=>wwv_flow_imp.dz('20250119125849Z')
+,p_static_id=>'navigation-bar'
+,p_version_scn=>'41492209166849'
+,p_updated_on=>wwv_flow_imp.dz('20250119145849Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(94392372420104500)
 ,p_list_item_display_sequence=>30
 ,p_list_item_link_text=>'About'
+,p_static_id=>'about'
 ,p_list_item_link_target=>'f?p=&APP_ID.:202:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-question-circle-o '
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(91319328452536360)
+,p_list_item_display_sequence=>50
+,p_list_item_link_text=>'Edit Profile'
+,p_static_id=>'edit-profile'
+,p_list_item_link_target=>'f?p=&APP_ID.:501:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-id-card-o'
+,p_parent_list_item_id=>wwv_flow_imp.id(91028884329350415)
+,p_list_item_current_type=>'NEVER'
+,p_updated_on=>wwv_flow_imp.dz('20241124190643Z')
+);
+wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(91028884329350415)
 ,p_list_item_display_sequence=>40
 ,p_list_item_link_text=>'&G_BLOGGER_NAME.'
+,p_static_id=>'g-blogger-name'
 ,p_list_item_link_target=>'#'
 ,p_list_item_icon=>'fa-user'
 ,p_list_item_current_type=>'NEVER'
 );
 wwv_flow_imp_shared.create_list_item(
- p_id=>wwv_flow_imp.id(91319328452536360)
-,p_list_item_display_sequence=>50
-,p_list_item_link_text=>'Edit Profile'
-,p_list_item_link_target=>'f?p=&APP_ID.:501:&SESSION.::&DEBUG.::::'
-,p_list_item_icon=>'fa-id-card-o'
-,p_parent_list_item_id=>wwv_flow_imp.id(91028884329350415)
+ p_id=>wwv_flow_imp.id(121123354592520081)
+,p_list_item_display_sequence=>20
+,p_list_item_link_text=>'Help'
+,p_static_id=>'help'
+,p_list_item_link_target=>'f?p=&APP_ID.:201:&SESSION.:&APP_PAGE_ID.:&DEBUG.::::'
+,p_list_item_icon=>'fa-question-circle-o'
+,p_list_item_disp_cond_type=>'CURRENT_PAGE_IN_CONDITION'
+,p_list_item_disp_condition=>'11,20010,30000'
 ,p_list_item_current_type=>'NEVER'
-,p_updated_on=>wwv_flow_imp.dz('20241124170643Z')
+,p_updated_on=>wwv_flow_imp.dz('20250119145849Z')
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(91406956057384802)
 ,p_list_item_display_sequence=>60
 ,p_list_item_link_text=>'----'
+,p_static_id=>'list_item'
 ,p_list_item_link_target=>'separator'
 ,p_parent_list_item_id=>wwv_flow_imp.id(91028884329350415)
 ,p_list_item_current_type=>'NEVER'
@@ -67,6 +72,7 @@ wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(91029721837350416)
 ,p_list_item_display_sequence=>70
 ,p_list_item_link_text=>'Sign Out'
+,p_static_id=>'sign-out'
 ,p_list_item_link_target=>'&LOGOUT_URL.'
 ,p_list_item_icon=>'fa-sign-out'
 ,p_parent_list_item_id=>wwv_flow_imp.id(91028884329350415)

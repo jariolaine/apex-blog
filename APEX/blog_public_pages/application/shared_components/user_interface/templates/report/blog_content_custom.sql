@@ -1,11 +1,11 @@
-prompt --application/shared_components/user_interface/templates/report/blog_content
+prompt --application/shared_components/user_interface/templates/report/blog_content_custom
 begin
 --   Manifest
---     ROW TEMPLATE: BLOG_CONTENT
+--     ROW TEMPLATE: blog-content-custom
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -14,6 +14,7 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_shared.create_row_template(
  p_id=>wwv_flow_imp.id(158035867634994153)
 ,p_row_template_name=>'Blog Content (Custom 2)'
+,p_static_id=>'blog-content-custom'
 ,p_internal_name=>'BLOG_CONTENT'
 ,p_row_template1=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div class="blog-Content--Row">',
@@ -32,9 +33,6 @@ wwv_flow_imp_shared.create_row_template(
 ,p_row_template_after_rows=>'</div>'
 ,p_row_template_type=>'NAMED_COLUMNS'
 ,p_row_template_display_cond1=>'NOT_CONDITIONAL'
-,p_row_template_display_cond2=>'0'
-,p_row_template_display_cond3=>'0'
-,p_row_template_display_cond4=>'NOT_CONDITIONAL'
 ,p_theme_id=>42
 ,p_theme_class_id=>8
 ,p_translate_this_template=>'N'

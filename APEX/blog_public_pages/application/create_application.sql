@@ -4,8 +4,8 @@ begin
 --     FLOW: 401
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>401
 ,p_default_id_offset=>44906910937164790
@@ -18,13 +18,14 @@ wwv_imp_workspace.create_flow(
 ,p_alias=>nvl(wwv_flow_application_install.get_application_alias,'BLOG')
 ,p_application_group=>wwv_flow_imp.id(90201743930425331)
 ,p_application_group_name=>'APEX Blog'
+,p_application_group_static_id=>'apex-blog'
 ,p_application_group_comment=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'APEX Blog applications.',
 'Source code: https://github.com/jariolaine/apex-blog'))
 ,p_page_view_logging=>'YES'
 ,p_page_protection_enabled_y_n=>'Y'
 ,p_checksum_salt=>'79ABAEFD7AD8D73AC0DC0A616F42577F97F051356BED99D8EBB45C92C0F77585'
-,p_checksum_salt_last_reset=>'20211127075325'
+,p_checksum_salt_last_reset_dt=>to_date('20211127075325','YYYYMMDDHH24MISS')
 ,p_bookmark_checksum_function=>'SH512'
 ,p_accept_old_checksums=>false
 ,p_max_session_length_sec=>86400
@@ -32,14 +33,14 @@ wwv_imp_workspace.create_flow(
 ,p_max_session_idle_sec=>43200
 ,p_on_max_idle_timeout_url=>'#LOGOUT_URL#'
 ,p_session_timeout_warning_sec=>0
-,p_compatibility_mode=>'24.2'
+,p_compatibility_mode=>'26.1'
 ,p_accessible_read_only=>'N'
 ,p_flow_language=>'en'
 ,p_flow_language_derived_from=>'FLOW_PRIMARY_LANGUAGE'
 ,p_date_format=>'&P0_BLOG_APP_DATE_FORMAT.'
 ,p_timestamp_format=>'&P0_BLOG_APP_DATE_FORMAT.'
 ,p_direction_right_to_left=>'N'
-,p_flow_image_prefix => nvl(wwv_flow_application_install.get_image_prefix,'')
+,p_flow_image_prefix=>nvl(wwv_flow_application_install.get_image_prefix,'')
 ,p_documentation_banner=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'APEX Blog public application.',
 'Source code: https://github.com/jariolaine/apex-blog'))
@@ -53,24 +54,39 @@ wwv_imp_workspace.create_flow(
 ,p_no_proxy_domains=>nvl(wwv_flow_application_install.get_no_proxy_domains,'')
 ,p_flow_version=>'Release 24.2.11.20260126'
 ,p_flow_status=>'AVAILABLE_W_EDIT_LINK'
-,p_flow_unavailable_text=>'This application is currently unavailable at this time.'
 ,p_exact_substitutions_only=>'Y'
 ,p_browser_cache=>'N'
 ,p_browser_frame=>'D'
 ,p_deep_linking=>'Y'
 ,p_rejoin_existing_sessions=>'P'
 ,p_csv_encoding=>'Y'
-,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'blog_util.apex_error_handler'
 ,p_oracle_text_function_type=>'SEARCH_ENGINE'
-,p_last_updated_on=>wwv_flow_imp.dz('20260125213211Z')
-,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
-,p_files_version=>918
-,p_version_scn=>45658251409652
+,p_modernization_available=>'Y'
+,p_last_updated_on=>wwv_flow_imp.dz('20260927073743Z')
+,p_file_prefix=>nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
+,p_files_version=>2461311073743
+,p_version_scn=>'50674877876878'
 ,p_print_server_type=>'INSTANCE'
 ,p_file_storage=>'DB'
 ,p_is_pwa=>'N'
 ,p_copyright_banner=>'License: https://raw.githubusercontent.com/jariolaine/apex-blog/master/LICENSE.txt'
+,p_theme_id=>42
+,p_home_url=>'f?p=&APP_ID.:HOME:&SESSION.'
+,p_login_url=>'f?p=&APP_ID.:LOGIN:&SESSION.'
+,p_theme_style_by_user_pref=>false
+,p_auto_dismiss_success_msg=>true
+,p_global_page_id=>0
+,p_navigation_list_id=>wwv_flow_imp.id(188950669657188734)
+,p_navigation_list_position=>'TOP'
+,p_navigation_list_template_id=>1455934700917995964
+,p_nav_list_template_options=>'#DEFAULT#:t-NavTabs--inlineLabels-lg:t-NavTabs--displayLabels-sm'
+,p_css_file_urls=>'#APP_FILES#css/style#MIN#.css'
+,p_javascript_file_urls=>'#APP_FILES#js/blog#MIN#.js'
+,p_nav_bar_type=>'LIST'
+,p_nav_bar_list_id=>wwv_flow_imp.id(134270768564163560)
+,p_nav_bar_list_template_id=>2849019392706229583
+,p_nav_bar_template_options=>'#DEFAULT#'
 );
 wwv_flow_imp.component_end;
 end;

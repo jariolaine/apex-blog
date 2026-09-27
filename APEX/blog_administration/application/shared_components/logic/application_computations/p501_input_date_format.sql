@@ -4,8 +4,8 @@ begin
 --     APPLICATION COMPUTATION: P501_INPUT_DATE_FORMAT
 --   Manifest End
 wwv_flow_imp.component_begin (
- p_version_yyyy_mm_dd=>'2024.11.30'
-,p_release=>'24.2.11'
+ p_version_yyyy_mm_dd=>'2026.03.30'
+,p_release=>'26.1.5'
 ,p_default_workspace_id=>18303204396897713
 ,p_default_application_id=>402
 ,p_default_id_offset=>44877464361218557
@@ -15,15 +15,16 @@ wwv_flow_imp_shared.create_flow_computation(
  p_id=>wwv_flow_imp.id(72680992823700503)
 ,p_computation_sequence=>20
 ,p_computation_item=>'P501_INPUT_DATE_FORMAT'
+,p_static_id=>'p501-input-date-format'
 ,p_computation_point=>'AFTER_LOGIN'
 ,p_computation_type=>'STATIC_ASSIGNMENT'
 ,p_computation_processed=>'REPLACE_EXISTING'
 ,p_computation=>'DD.MM.YYYY HH24:MI'
 ,p_compute_when=>'P501_INPUT_DATE_FORMAT'
 ,p_compute_when_type=>'ITEM_IS_NULL'
-,p_version_scn=>41487112460549
-,p_created_on=>wwv_flow_imp.dz('20241124165759Z')
-,p_updated_on=>wwv_flow_imp.dz('20241125111217Z')
+,p_version_scn=>'41487112460549'
+,p_created_on=>wwv_flow_imp.dz('20241124185759Z')
+,p_updated_on=>wwv_flow_imp.dz('20241125131217Z')
 );
 wwv_flow_imp.component_end;
 end;
