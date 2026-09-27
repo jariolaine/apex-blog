@@ -63,10 +63,10 @@ wwv_imp_workspace.create_flow(
 ,p_error_handling_function=>'blog_util.apex_error_handler'
 ,p_oracle_text_function_type=>'SEARCH_ENGINE'
 ,p_modernization_available=>'Y'
-,p_last_updated_on=>wwv_flow_imp.dz('20260927073743Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20260927082318Z')
 ,p_file_prefix=>nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>2461311073743
-,p_version_scn=>'50674877876878'
+,p_version_scn=>'50674882330792'
 ,p_print_server_type=>'INSTANCE'
 ,p_file_storage=>'DB'
 ,p_is_pwa=>'N'

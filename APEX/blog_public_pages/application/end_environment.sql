@@ -1,8 +1,6 @@
 prompt --application/end_environment
 begin
 wwv_flow_imp.import_end(p_auto_install_sup_obj => nvl(wwv_flow_application_install.get_auto_install_sup_obj, true)
-,p_master_app_ids=>'402'
-,p_has_subscriptions=>true
 );
 commit;
 end;
