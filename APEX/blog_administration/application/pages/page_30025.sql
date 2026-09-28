@@ -19,7 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'Error Debug Log'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(111116381830742743)
-,p_step_template=>2100407606326202693
+,p_step_template=>2101883943284197310
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_dialog_chained=>'N'
 ,p_protection_level=>'C'
@@ -32,7 +32,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_static_id=>'error-debug-log'
 ,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>2100526641005906379
+,p_plug_template=>2102002977963900996
 ,p_plug_display_sequence=>10
 ,p_plug_item_display_point=>'ABOVE'
 ,p_query_type=>'SQL'
@@ -223,19 +223,13 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_report_alias=>'438648'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'PAGE_NAME:MESSAGE_SINCE:ELAPSED_TIME:EXECUTION_TIME:MESSAGE:CALL_STACK:'
+,p_report_columns=>'PAGE_NAME:MESSAGE_SINCE:ELAPSED_TIME:EXECUTION_TIME:MESSAGE:CALL_STACK'
 ,p_sort_column_1=>'MESSAGE_TIMESTAMP'
 ,p_sort_direction_1=>'ASC'
 ,p_sort_column_2=>'ERROR_TIME'
 ,p_sort_direction_2=>'DESC'
 ,p_sort_column_3=>'ERR_TIME'
 ,p_sort_direction_3=>'DESC'
-,p_sort_column_4=>'0'
-,p_sort_direction_4=>'DESC'
-,p_sort_column_5=>'0'
-,p_sort_direction_5=>'ASC'
-,p_sort_column_6=>'0'
-,p_sort_direction_6=>'ASC'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(95271538608597723)
@@ -245,7 +239,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'reset-report'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>2349107722467437027
+,p_button_template_id=>2350584059425431644
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:&APP_PAGE_ID.,RR::'

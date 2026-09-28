@@ -14,10 +14,10 @@ wwv_flow_imp.component_begin (
 wwv_flow_imp_page.create_page(
  p_id=>0
 ,p_name=>'Global Page - Desktop'
-,p_step_title=>'Global Page - Desktop'
+,p_reload_on_submit=>null
+,p_warn_on_unsaved_changes=>null
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(91376223235435262)
-,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'D'
 ,p_page_component_map=>'14'
 ,p_last_updated_on=>wwv_flow_imp.dz('20260927061338Z')
@@ -27,7 +27,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_name=>'Not Rendered Items'
 ,p_static_id=>'not-rendered-items'
 ,p_region_template_options=>'#DEFAULT#'
-,p_plug_template=>3371237801798025892
+,p_plug_template=>3372714138756020509
 ,p_plug_display_sequence=>20
 ,p_plug_display_point=>'REGION_POSITION_05'
 ,p_plug_item_display_point=>'ABOVE'

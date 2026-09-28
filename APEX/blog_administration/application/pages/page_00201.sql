@@ -19,7 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'Help'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(91376223235435262)
-,p_step_template=>2121795032473542284
+,p_step_template=>2123271369431536901
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_help_text=>'No help available for this page.'
@@ -33,7 +33,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_css_classes=>'u-textCenter'
 ,p_region_template_options=>'#DEFAULT#:t-ButtonRegion--slimPadding:t-ButtonRegion--noBorder'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>2126429139436695430
+,p_plug_template=>2127905476394690047
 ,p_plug_display_sequence=>20
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_03'
@@ -52,7 +52,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_static_id=>'help-text'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>4501440665235496320
+,p_plug_template=>4502917002193490937
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_item_display_point=>'BELOW'
@@ -68,7 +68,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'close'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>4072362960822175091
+,p_button_template_id=>4073839297780169708
 ,p_button_image_alt=>'Close'
 ,p_button_execute_validations=>'N'
 ,p_warn_on_unsaved_changes=>null

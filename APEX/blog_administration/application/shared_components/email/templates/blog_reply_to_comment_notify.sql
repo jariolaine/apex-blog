@@ -41,7 +41,7 @@ wwv_flow_imp_shared.create_email_template(
 '',
 'Best Regards,',
 '#APP_NAME!RAW#'))
-,p_version_scn=>'1'
+,p_version_scn=>'SH256:pqZ5LAX252CRVV6EW19db3U5ytM3sAM69kVex-E5GbQ'
 );
 wwv_flow_imp.component_end;
 end;

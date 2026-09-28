@@ -33,7 +33,6 @@ wwv_flow_imp_shared.create_plugin(
 ,p_standard_attributes=>'REGION_TEMPLATE'
 ,p_substitute_attributes=>true
 ,p_version_scn=>'41484452504505'
-,p_subscribe_plugin_settings=>true
 ,p_version_identifier=>'1.0'
 ,p_files_version=>1
 ,p_updated_on=>wwv_flow_imp.dz('20241027054147Z')

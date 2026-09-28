@@ -20,7 +20,7 @@ wwv_flow_imp_page.create_page(
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(111116381830742743)
-,p_step_template=>2100407606326202693
+,p_step_template=>2101883943284197310
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -35,7 +35,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_name=>'Application Error Log'
 ,p_static_id=>'application-error-log'
 ,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
-,p_plug_template=>2100526641005906379
+,p_plug_template=>2102002977963900996
 ,p_plug_display_sequence=>10
 ,p_plug_item_display_point=>'ABOVE'
 ,p_query_type=>'SQL'
@@ -266,14 +266,6 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_sort_direction_1=>'DESC'
 ,p_sort_column_2=>'ERR_TIME'
 ,p_sort_direction_2=>'DESC'
-,p_sort_column_3=>'0'
-,p_sort_direction_3=>'DESC'
-,p_sort_column_4=>'0'
-,p_sort_direction_4=>'ASC'
-,p_sort_column_5=>'0'
-,p_sort_direction_5=>'ASC'
-,p_sort_column_6=>'0'
-,p_sort_direction_6=>'ASC'
 ,p_updated_on=>wwv_flow_imp.dz('20240921075150Z')
 );
 wwv_flow_imp_page.create_page_plug(
@@ -282,7 +274,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_static_id=>'button-bar'
 ,p_region_template_options=>'#DEFAULT#:t-ButtonRegion--noBorder:t-Form--large'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>2126429139436695430
+,p_plug_template=>2127905476394690047
 ,p_plug_display_sequence=>20
 ,p_plug_display_point=>'REGION_POSITION_01'
 ,p_plug_item_display_point=>'ABOVE'
@@ -303,7 +295,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'reset-report'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>2349107722467437027
+,p_button_template_id=>2350584059425431644
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:&APP_PAGE_ID.,RR::'
@@ -322,7 +314,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_SELECT_LIST'
 ,p_named_lov=>'TIMEFRAME (4 WEEKS)'
 ,p_cHeight=>1
-,p_field_template=>2318601014859922299
+,p_field_template=>2320077351817916916
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'U'
 ,p_lov_display_extra=>'NO'

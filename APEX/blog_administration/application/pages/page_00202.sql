@@ -19,7 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'About This Application'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(91376223235435262)
-,p_step_template=>2100407606326202693
+,p_step_template=>2101883943284197310
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
@@ -32,7 +32,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_css_classes=>'u-textCenter'
 ,p_region_template_options=>'#DEFAULT#:t-ButtonRegion--slimPadding:t-ButtonRegion--noBorder'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>2126429139436695430
+,p_plug_template=>2127905476394690047
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_03'
@@ -47,7 +47,7 @@ wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(94960040960816136)
 ,p_name=>'Patches'
 ,p_static_id=>'patches'
-,p_template=>4072358936313175081
+,p_template=>4073835273271169698
 ,p_display_sequence=>20
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--removeHeader js-removeLandmark:t-Region--stacked:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Report--stretch:t-Report--staticRowColors:t-Report--rowHighlightOff:t-Report--horizontalBorders'
@@ -63,9 +63,7 @@ wwv_flow_imp_page.create_report_region(
 '  and t1.attribute_name like ''PATCH%''',
 'order by t1.created_on desc'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
-,p_fixed_header=>'PAGE'
-,p_lazy_loading=>false
-,p_query_row_template=>2538654340625403440
+,p_query_row_template=>2540130677583398057
 ,p_query_num_rows=>500
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_show_nulls_as=>'-'
@@ -101,7 +99,7 @@ wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(93862231572161210)
 ,p_name=>'Version'
 ,p_static_id=>'version'
-,p_template=>4072358936313175081
+,p_template=>4073835273271169698
 ,p_display_sequence=>10
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--removeHeader js-removeLandmark:t-Region--stacked:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Report--stretch:t-Report--staticRowColors:t-Report--rowHighlightOff:t-Report--horizontalBorders'
@@ -116,9 +114,7 @@ wwv_flow_imp_page.create_report_region(
 '  and t1.attribute_name = ''G_APP_VERSION''',
 'order by 1'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
-,p_fixed_header=>'PAGE'
-,p_lazy_loading=>false
-,p_query_row_template=>2538654340625403440
+,p_query_row_template=>2540130677583398057
 ,p_query_num_rows=>1
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_show_nulls_as=>'-'
@@ -159,7 +155,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'close'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>4072362960822175091
+,p_button_template_id=>4073839297780169708
 ,p_button_image_alt=>'Close'
 ,p_button_execute_validations=>'N'
 ,p_warn_on_unsaved_changes=>null

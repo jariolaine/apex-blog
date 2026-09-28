@@ -19,7 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'Properties'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(101422147890568597)
-,p_step_template=>2100407606326202693
+,p_step_template=>2101883943284197310
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
@@ -31,7 +31,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_static_id=>'buttons'
 ,p_region_template_options=>'#DEFAULT#:t-ButtonRegion--slimPadding'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>2126429139436695430
+,p_plug_template=>2127905476394690047
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_03'
@@ -50,7 +50,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_static_id=>'file-properties'
 ,p_region_template_options=>'#DEFAULT#:t-Form--stretchInputs'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>4501440665235496320
+,p_plug_template=>4502917002193490937
 ,p_plug_display_sequence=>10
 ,p_plug_item_display_point=>'ABOVE'
 ,p_query_type=>'TABLE'
@@ -74,7 +74,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'cancel'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>4072362960822175091
+,p_button_template_id=>4073839297780169708
 ,p_button_image_alt=>'Cancel'
 ,p_button_position=>'CLOSE'
 ,p_button_execute_validations=>'N'
@@ -90,7 +90,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'delete'
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#:t-Button--danger:t-Button--simple'
-,p_button_template_id=>2349107722467437027
+,p_button_template_id=>2350584059425431644
 ,p_button_image_alt=>'Delete'
 ,p_button_position=>'DELETE'
 ,p_button_execute_validations=>'N'
@@ -108,7 +108,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'save'
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconRight'
-,p_button_template_id=>2082829544945815391
+,p_button_template_id=>2084305881903810008
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Save'
 ,p_button_position=>'NEXT'
@@ -146,7 +146,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_cSize=>30
 ,p_cMaxlength=>4000
 ,p_cHeight=>4
-,p_field_template=>1609121967514267634
+,p_field_template=>1610598304472262251
 ,p_item_css_classes=>'blog-item blog-postText'
 ,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--postTextBlock'
 ,p_is_persistent=>'N'
@@ -176,7 +176,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_lov_null_text=>'Root'
 ,p_cSize=>30
 ,p_cMaxlength=>256
-,p_field_template=>1609121967514267634
+,p_field_template=>1610598304472262251
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_lov_display_extra=>'NO'
@@ -207,7 +207,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_display_as=>'NATIVE_TEXT_FIELD'
 ,p_cSize=>30
 ,p_cMaxlength=>256
-,p_field_template=>1609122147107268652
+,p_field_template=>1610598484065263269
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
@@ -267,7 +267,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_source=>'IS_ACTIVE'
 ,p_display_as=>'NATIVE_YES_NO'
 ,p_grid_label_column_span=>1
-,p_field_template=>2526760615038828570
+,p_field_template=>2528236951996823187
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
@@ -310,7 +310,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_source=>'IS_DOWNLOAD'
 ,p_display_as=>'NATIVE_YES_NO'
 ,p_grid_label_column_span=>1
-,p_field_template=>2526760615038828570
+,p_field_template=>2528236951996823187
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'I'
@@ -338,7 +338,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_cSize=>30
 ,p_cMaxlength=>4000
 ,p_cHeight=>5
-,p_field_template=>1609121967514267634
+,p_field_template=>1610598304472262251
 ,p_item_css_classes=>'blog-item blog-noItemHelp'
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
@@ -620,7 +620,6 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_type=>'NATIVE_FORM_INIT'
 ,p_process_name=>'Initialize form File Properties'
 ,p_static_id=>'initialize-form-file-properties'
-,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 ,p_internal_uid=>22047385078139914
 );
 wwv_flow_imp_page.create_page_process(

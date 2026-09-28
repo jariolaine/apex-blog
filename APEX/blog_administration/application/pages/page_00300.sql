@@ -19,7 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_reload_on_submit=>'A'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(101422147890568597)
-,p_step_template=>4072355960268175073
+,p_step_template=>4073832297226169690
 ,p_page_template_options=>'#DEFAULT#:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
@@ -33,14 +33,14 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-BreadcrumbRegion--useBreadcrumbTitle'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>2531463326621247859
+,p_plug_template=>2532939663579242476
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'REGION_POSITION_01'
 ,p_plug_item_display_point=>'ABOVE'
 ,p_location=>null
 ,p_menu_id=>wwv_flow_imp.id(102694851877614068)
 ,p_plug_source_type=>'NATIVE_BREADCRUMB'
-,p_menu_template_id=>4072363345357175094
+,p_menu_template_id=>4073839682315169711
 ,p_plug_query_headings_type=>'COLON_DELMITED_LIST'
 ,p_ai_enabled=>false
 ,p_updated_on=>wwv_flow_imp.dz('20250414044902Z')
@@ -51,7 +51,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_static_id=>'file-repository'
 ,p_region_css_classes=>'blog-IR--iconLinks'
 ,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
-,p_plug_template=>2100526641005906379
+,p_plug_template=>2102002977963900996
 ,p_plug_display_sequence=>20
 ,p_plug_display_point=>'REGION_POSITION_08'
 ,p_plug_item_display_point=>'ABOVE'
@@ -527,16 +527,6 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_report_columns=>'SELECT_FILE:FILE_PATH:FILE_DIR:FILE_SIZE:CHANGED_SINCE:SHOW_IN_PUB_APP:BTN_COPY_FILE_URL:FILE_STATUS'
 ,p_sort_column_1=>'FILE_PATH'
 ,p_sort_direction_1=>'ASC'
-,p_sort_column_2=>'0'
-,p_sort_direction_2=>'ASC'
-,p_sort_column_3=>'0'
-,p_sort_direction_3=>'ASC'
-,p_sort_column_4=>'0'
-,p_sort_direction_4=>'ASC'
-,p_sort_column_5=>'0'
-,p_sort_direction_5=>'ASC'
-,p_sort_column_6=>'0'
-,p_sort_direction_6=>'ASC'
 ,p_updated_on=>wwv_flow_imp.dz('20250119124430Z')
 );
 wwv_flow_imp_page.create_page_button(
@@ -547,7 +537,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'delete-selected'
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#:t-Button--danger:t-Button--simple'
-,p_button_template_id=>2349107722467437027
+,p_button_template_id=>2350584059425431644
 ,p_button_image_alt=>'Delete Selected'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_show_processing=>'Y'
@@ -564,7 +554,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'deselect-all'
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>2349107722467437027
+,p_button_template_id=>2350584059425431644
 ,p_button_image_alt=>'Deselect All'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_icon_css_classes=>'fa-square-o'
@@ -580,7 +570,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'download-selected'
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>2349107722467437027
+,p_button_template_id=>2350584059425431644
 ,p_button_image_alt=>'Download Selected'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_icon_css_classes=>'fa-download'
@@ -594,7 +584,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'reset-report'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>2349107722467437027
+,p_button_template_id=>2350584059425431644
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:RP,&APP_PAGE_ID.,RIR::'
@@ -609,7 +599,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'select-all'
 ,p_button_action=>'SUBMIT'
 ,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>2349107722467437027
+,p_button_template_id=>2350584059425431644
 ,p_button_image_alt=>'Select All'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_icon_css_classes=>'fa-check-square-o'
@@ -625,7 +615,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'upload-file'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconLeft'
-,p_button_template_id=>2082829544945815391
+,p_button_template_id=>2084305881903810008
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Upload'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'

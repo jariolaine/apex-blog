@@ -87,7 +87,6 @@ app BLOG-ADMIN (
         errorHandlingFunctionName: blog_util.apex_error_handler
     }
     runtime {
-        compatibilityMode: 24.2
         accessibleReadOnlyItems: false
     }
     advanced {

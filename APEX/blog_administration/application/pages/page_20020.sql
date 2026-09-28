@@ -18,7 +18,7 @@ wwv_flow_imp_page.create_page(
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'AI Prompts'
 ,p_autocomplete_on_off=>'OFF'
-,p_step_template=>1661186590416509825
+,p_step_template=>1662662927374504442
 ,p_page_template_options=>'#DEFAULT#:t-Dialog--noPadding:js-dialog-class-t-Drawer--pullOutEnd:js-dialog-class-t-Drawer--xl:t-PageBody--noContentPadding'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'18'
@@ -30,7 +30,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_plug_name=>'AI System Prompts'
 ,p_static_id=>'ai-system-prompts'
 ,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
-,p_plug_template=>2100526641005906379
+,p_plug_template=>2102002977963900996
 ,p_plug_display_sequence=>10
 ,p_plug_item_display_point=>'ABOVE'
 ,p_query_type=>'SQL'
@@ -147,6 +147,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Id'
 ,p_column_type=>'NUMBER'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 ,p_available_clientside=>'N'
 ,p_created_on=>wwv_flow_imp.dz('20250309131221Z')
 ,p_updated_on=>wwv_flow_imp.dz('20250309131558Z')
@@ -159,6 +160,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Language Code'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 ,p_available_clientside=>'N'
 ,p_created_on=>wwv_flow_imp.dz('20250224183527Z')
 ,p_updated_on=>wwv_flow_imp.dz('20250309131221Z')
@@ -197,7 +199,7 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_report_alias=>'1090321'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'PROMPT:PROMPT_TEXT:CHANGED_SINCE:'
+,p_report_columns=>'PROMPT:PROMPT_TEXT:CHANGED_SINCE'
 ,p_created_on=>wwv_flow_imp.dz('20250224183531Z')
 ,p_updated_on=>wwv_flow_imp.dz('20250309132736Z')
 );

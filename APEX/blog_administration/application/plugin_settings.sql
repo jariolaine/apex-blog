@@ -42,8 +42,7 @@ wwv_flow_imp_shared.create_plugin_setting(
   'background', 'default',
   'display_as', 'LIST',
   'map_preview', 'POPUP:ITEM',
-  'match_mode', 'RELAX_HOUSE_NUMBER',
-  'show_coordinates', 'N')).to_clob
+  'match_mode', 'RELAX_HOUSE_NUMBER')).to_clob
 ,p_version_scn=>'1'
 );
 wwv_flow_imp_shared.create_plugin_setting(

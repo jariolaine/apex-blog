@@ -19,7 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(102692173815582943)
-,p_step_template=>4072355960268175073
+,p_step_template=>4073832297226169690
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -35,7 +35,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG:margin-bottom-md'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:t-MediaList--large force-fa-lg:t-MediaList--iconsRounded'
-,p_plug_template=>2322115667525957943
+,p_plug_template=>2323592004483952560
 ,p_plug_display_sequence=>60
 ,p_plug_new_grid_row=>false
 ,p_plug_new_grid_column=>false
@@ -43,7 +43,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_location=>null
 ,p_list_id=>wwv_flow_imp.id(114469191785084578)
 ,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>2067994871570597190
+,p_list_template_id=>2069471208528591807
 ,p_translate_title=>'N'
 ,p_plug_comment=>'List of cloud services'
 ,p_updated_on=>wwv_flow_imp.dz('20250414044902Z')
@@ -55,7 +55,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:t-MediaList--large force-fa-lg:t-MediaList--iconsRounded'
-,p_plug_template=>2322115667525957943
+,p_plug_template=>2323592004483952560
 ,p_plug_display_sequence=>20
 ,p_plug_new_grid_row=>false
 ,p_plug_new_grid_column=>false
@@ -63,7 +63,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_location=>null
 ,p_list_id=>wwv_flow_imp.id(97782102761261998)
 ,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>2067994871570597190
+,p_list_template_id=>2069471208528591807
 ,p_created_on=>wwv_flow_imp.dz('20250120144649Z')
 ,p_updated_on=>wwv_flow_imp.dz('20250414044902Z')
 );
@@ -74,13 +74,13 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-BreadcrumbRegion--useBreadcrumbTitle'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>2531463326621247859
+,p_plug_template=>2532939663579242476
 ,p_plug_display_sequence=>20
 ,p_plug_display_point=>'REGION_POSITION_01'
 ,p_plug_item_display_point=>'ABOVE'
 ,p_menu_id=>wwv_flow_imp.id(102694851877614068)
 ,p_plug_source_type=>'NATIVE_BREADCRUMB'
-,p_menu_template_id=>4072363345357175094
+,p_menu_template_id=>4073839682315169711
 ,p_plug_query_headings_type=>'COLON_DELMITED_LIST'
 ,p_updated_on=>wwv_flow_imp.dz('20250414044902Z')
 );
@@ -91,13 +91,13 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG:margin-bottom-md'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:u-colors:t-MediaList--large force-fa-lg:t-MediaList--iconsRounded'
-,p_plug_template=>2322115667525957943
+,p_plug_template=>2323592004483952560
 ,p_plug_display_sequence=>10
 ,p_plug_item_display_point=>'ABOVE'
 ,p_location=>null
 ,p_list_id=>wwv_flow_imp.id(107244848973251914)
 ,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>2067994871570597190
+,p_list_template_id=>2069471208528591807
 ,p_translate_title=>'N'
 ,p_plug_comment=>'Public application configuration'
 ,p_updated_on=>wwv_flow_imp.dz('20250414044902Z')
@@ -109,14 +109,14 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG:margin-bottom-md'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:t-MediaList--large force-fa-lg:t-MediaList--iconsRounded'
-,p_plug_template=>2322115667525957943
+,p_plug_template=>2323592004483952560
 ,p_plug_display_sequence=>30
 ,p_plug_new_grid_row=>false
 ,p_plug_item_display_point=>'ABOVE'
 ,p_location=>null
 ,p_list_id=>wwv_flow_imp.id(98626541698938637)
 ,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>2067994871570597190
+,p_list_template_id=>2069471208528591807
 ,p_translate_title=>'N'
 ,p_plug_comment=>'List of cloud services'
 ,p_created_on=>wwv_flow_imp.dz('20250122044500Z')
@@ -129,7 +129,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG:margin-bottom-md'
 ,p_component_template_options=>'#DEFAULT#:t-MediaList--showBadges:t-MediaList--large force-fa-lg:t-MediaList--iconsRounded'
-,p_plug_template=>2322115667525957943
+,p_plug_template=>2323592004483952560
 ,p_plug_display_sequence=>40
 ,p_plug_new_grid_row=>false
 ,p_plug_new_grid_column=>false
@@ -137,7 +137,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_location=>null
 ,p_list_id=>wwv_flow_imp.id(117524284844700814)
 ,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>2067994871570597190
+,p_list_template_id=>2069471208528591807
 ,p_translate_title=>'N'
 ,p_plug_comment=>'List of cloud services'
 ,p_updated_on=>wwv_flow_imp.dz('20250630090126Z')

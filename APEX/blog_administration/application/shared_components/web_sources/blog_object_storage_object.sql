@@ -170,7 +170,6 @@ wwv_flow_imp_shared.create_web_source_operation(
 ,p_operation=>'DELETE'
 ,p_database_operation=>'DELETE'
 ,p_url_pattern=>':namespace/b/:bucketName/o/:objectName'
-,p_force_error_for_http_404=>false
 );
 wwv_flow_imp_shared.create_web_source_param(
  p_id=>wwv_flow_imp.id(105878936143070690)
@@ -240,7 +239,6 @@ wwv_flow_imp_shared.create_web_source_operation(
 ,p_static_id=>'get_namespace'
 ,p_operation=>'GET'
 ,p_url_pattern=>'.'
-,p_force_error_for_http_404=>false
 );
 wwv_flow_imp_shared.create_web_source_param(
  p_id=>wwv_flow_imp.id(111107304591358460)
@@ -400,7 +398,6 @@ wwv_flow_imp_shared.create_web_source_operation(
 '  ,"sourceName": "#sourceName#"',
 '  ,"srcObjIfMatchETag": "#srcObjIfMatchETag#"',
 '}'))
-,p_force_error_for_http_404=>false
 );
 wwv_flow_imp_shared.create_web_source_param(
  p_id=>wwv_flow_imp.id(105879348294067147)

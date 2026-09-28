@@ -18,7 +18,7 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'&P0_BLOG_APP_NAME.'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(91376223235435262)
-,p_step_template=>4072355960268175073
+,p_step_template=>4073832297226169690
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_help_text=>'No help available for this page.'
@@ -29,7 +29,7 @@ wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(190681678635507246)
 ,p_name=>'Activity Last &P1_PERIOD_IN_DAYS. Days'
 ,p_static_id=>'activity-last-p1-period-in-days-days'
-,p_template=>2322115667525957943
+,p_template=>2323592004483952560
 ,p_display_sequence=>30
 ,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
@@ -48,9 +48,8 @@ wwv_flow_imp_page.create_report_region(
 'order by 1'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
-,p_fixed_header=>'PAGE'
 ,p_lazy_loading=>false
-,p_query_row_template=>2104643962563030528
+,p_query_row_template=>2106120299521025145
 ,p_query_num_rows=>15
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_show_nulls_as=>'0'
@@ -110,19 +109,19 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
 ,p_component_template_options=>'#DEFAULT#:u-colors:t-MediaList--iconsRounded'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>2322115667525957943
+,p_plug_template=>2323592004483952560
 ,p_plug_display_sequence=>50
 ,p_plug_item_display_point=>'ABOVE'
 ,p_list_id=>wwv_flow_imp.id(125627335714824802)
 ,p_plug_source_type=>'NATIVE_LIST'
-,p_list_template_id=>2067994871570597190
+,p_list_template_id=>2069471208528591807
 ,p_updated_on=>wwv_flow_imp.dz('20250414044902Z')
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(120093619186119231)
 ,p_name=>'Comments'
 ,p_static_id=>'comments'
-,p_template=>2322115667525957943
+,p_template=>2323592004483952560
 ,p_display_sequence=>20
 ,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
@@ -141,9 +140,8 @@ wwv_flow_imp_page.create_report_region(
 'order by 1'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
-,p_fixed_header=>'PAGE'
 ,p_lazy_loading=>false
-,p_query_row_template=>2104643962563030528
+,p_query_row_template=>2106120299521025145
 ,p_query_num_rows=>15
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_show_nulls_as=>'0'
@@ -196,7 +194,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_static_id=>'p0-blog-app-desc'
 ,p_region_template_options=>'#DEFAULT#:t-HeroRegion--featured t-HeroRegion--centered:t-HeroRegion--hideIcon:t-HeroRegion--iconsCircle'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>2674017834225413037
+,p_plug_template=>2675494171183407654
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'REGION_POSITION_01'
 ,p_plug_item_display_point=>'ABOVE'
@@ -212,7 +210,7 @@ wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(120092622406119221)
 ,p_name=>'Posts'
 ,p_static_id=>'posts'
-,p_template=>2322115667525957943
+,p_template=>2323592004483952560
 ,p_display_sequence=>10
 ,p_region_sub_css_classes=>'blog-shadow-md'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--h3:t-ContentBlock--lightBG'
@@ -248,9 +246,8 @@ wwv_flow_imp_page.create_report_region(
 'order by 1'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
 ,p_ajax_enabled=>'Y'
-,p_fixed_header=>'PAGE'
 ,p_lazy_loading=>false
-,p_query_row_template=>2104643962563030528
+,p_query_row_template=>2106120299521025145
 ,p_query_num_rows=>15
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_show_nulls_as=>'0'

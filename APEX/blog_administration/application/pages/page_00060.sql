@@ -18,7 +18,7 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'Comments'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(111116238069743467)
-,p_step_template=>4072355960268175073
+,p_step_template=>4073832297226169690
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_help_text=>'No help available for this page.'
@@ -32,13 +32,13 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-BreadcrumbRegion--useBreadcrumbTitle'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>2531463326621247859
+,p_plug_template=>2532939663579242476
 ,p_plug_display_sequence=>20
 ,p_plug_display_point=>'REGION_POSITION_01'
 ,p_plug_item_display_point=>'ABOVE'
 ,p_menu_id=>wwv_flow_imp.id(102694851877614068)
 ,p_plug_source_type=>'NATIVE_BREADCRUMB'
-,p_menu_template_id=>4072363345357175094
+,p_menu_template_id=>4073839682315169711
 ,p_plug_query_headings_type=>'COLON_DELMITED_LIST'
 ,p_updated_on=>wwv_flow_imp.dz('20250414044902Z')
 );
@@ -48,7 +48,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_static_id=>'comments-report'
 ,p_region_css_classes=>'blog-IR--iconLinks'
 ,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
-,p_plug_template=>2100526641005906379
+,p_plug_template=>2102002977963900996
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'REGION_POSITION_08'
 ,p_plug_item_display_point=>'ABOVE'
@@ -149,6 +149,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Btn Data Unread'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 ,p_available_clientside=>'N'
 ,p_updated_on=>wwv_flow_imp.dz('20241029162829Z')
 );
@@ -199,6 +200,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Comment Body'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN'
+,p_use_as_row_header=>'N'
 ,p_available_clientside=>'N'
 ,p_updated_on=>wwv_flow_imp.dz('20241029162829Z')
 );
@@ -318,6 +320,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Ctx Search'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 ,p_available_clientside=>'N'
 ,p_updated_on=>wwv_flow_imp.dz('20241029162829Z')
 );
@@ -329,6 +332,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Edit URL Link'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 ,p_available_clientside=>'N'
 ,p_updated_on=>wwv_flow_imp.dz('20241029162830Z')
 );
@@ -340,6 +344,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Flag Icon'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 ,p_available_clientside=>'N'
 ,p_updated_on=>wwv_flow_imp.dz('20241029162830Z')
 );
@@ -406,6 +411,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Sentiment Icon'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 ,p_available_clientside=>'N'
 ,p_updated_on=>wwv_flow_imp.dz('20241029162829Z')
 );
@@ -417,6 +423,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_column_label=>'Status Icon'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'HIDDEN_ESCAPE_SC'
+,p_use_as_row_header=>'N'
 ,p_available_clientside=>'N'
 ,p_updated_on=>wwv_flow_imp.dz('20241029162829Z')
 );
@@ -430,16 +437,6 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_report_columns=>'COMMENT_PREVIEW:POST_TITLE:COMMENT_BY:CREATED_SINCE:SENTIMENT:COMMENT_FLAG:COMMENT_STATUS'
 ,p_sort_column_1=>'CREATED_SINCE'
 ,p_sort_direction_1=>'DESC'
-,p_sort_column_2=>'0'
-,p_sort_direction_2=>'ASC'
-,p_sort_column_3=>'0'
-,p_sort_direction_3=>'ASC'
-,p_sort_column_4=>'0'
-,p_sort_direction_4=>'ASC'
-,p_sort_column_5=>'0'
-,p_sort_direction_5=>'ASC'
-,p_sort_column_6=>'0'
-,p_sort_direction_6=>'ASC'
 ,p_updated_on=>wwv_flow_imp.dz('20241029163728Z')
 );
 wwv_flow_imp_page.create_page_button(
@@ -450,7 +447,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'reset-report'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>2349107722467437027
+,p_button_template_id=>2350584059425431644
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:RP,&APP_PAGE_ID.,RIR::'

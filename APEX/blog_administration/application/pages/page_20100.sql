@@ -19,7 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'Help'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(91020498123350380)
-,p_step_template=>2100407606326202693
+,p_step_template=>2101883943284197310
 ,p_page_template_options=>'#DEFAULT#'
 ,p_dialog_chained=>'N'
 ,p_protection_level=>'C'
@@ -32,7 +32,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_static_id=>'buttons'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>2126429139436695430
+,p_plug_template=>2127905476394690047
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_03'
@@ -47,7 +47,7 @@ wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(147749375791913026)
 ,p_name=>'Help text'
 ,p_static_id=>'help-text'
-,p_template=>3371237801798025892
+,p_template=>3372714138756020509
 ,p_display_sequence=>20
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_region_template_options=>'#DEFAULT#'
@@ -82,9 +82,7 @@ wwv_flow_imp_page.create_report_region(
 '  and :REQUEST = ''FEATURES''',
 '  and v1.id = :P20100_ID'))
 ,p_optimizer_hint=>'APEX$USE_NO_PAGINATION'
-,p_fixed_header=>'PAGE'
-,p_lazy_loading=>false
-,p_query_row_template=>2115772683903439354
+,p_query_row_template=>2117249020861433971
 ,p_query_num_rows=>1
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_csv_output=>'N'
@@ -123,7 +121,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'close'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>4072362960822175091
+,p_button_template_id=>4073839297780169708
 ,p_button_image_alt=>'Close'
 ,p_button_position=>'BELOW_BOX'
 ,p_button_alignment=>'RIGHT'

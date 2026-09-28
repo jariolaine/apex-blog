@@ -19,7 +19,7 @@ wwv_flow_imp_page.create_page(
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(86519487883537377)
-,p_step_template=>2526643373347724467
+,p_step_template=>2528119710305719084
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_help_text=>'No help available for this page.'
@@ -33,13 +33,13 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-BreadcrumbRegion--useBreadcrumbTitle'
 ,p_component_template_options=>'#DEFAULT#'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>2531463326621247859
+,p_plug_template=>2532939663579242476
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'REGION_POSITION_01'
 ,p_plug_item_display_point=>'ABOVE'
 ,p_menu_id=>wwv_flow_imp.id(102694851877614068)
 ,p_plug_source_type=>'NATIVE_BREADCRUMB'
-,p_menu_template_id=>4072363345357175094
+,p_menu_template_id=>4073839682315169711
 ,p_plug_query_headings_type=>'COLON_DELMITED_LIST'
 ,p_updated_on=>wwv_flow_imp.dz('20250414044902Z')
 );
@@ -47,7 +47,7 @@ wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(148680067742213528)
 ,p_name=>'Link Group'
 ,p_static_id=>'link-group'
-,p_template=>4072358936313175081
+,p_template=>4073835273271169698
 ,p_display_sequence=>20
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--hideHeader js-addHiddenHeadingRoleDesc:t-Region--stacked:t-Region--scrollBody'
@@ -77,9 +77,8 @@ wwv_flow_imp_page.create_report_region(
 'and v1.id = :P50_LINK_GROUP_ID'))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P50_LINK_GROUP_ID'
-,p_fixed_header=>'PAGE'
 ,p_lazy_loading=>false
-,p_query_row_template=>2093604263195414824
+,p_query_row_template=>2095080600153409441
 ,p_query_num_rows=>1
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_no_data_found=>'No data found.'
@@ -233,7 +232,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_css_classes=>'blog-IR--iconLinks'
 ,p_region_template_options=>'#DEFAULT#:t-IRR-region--noBorders'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>2100526641005906379
+,p_plug_template=>2102002977963900996
 ,p_plug_display_sequence=>30
 ,p_plug_display_point=>'REGION_POSITION_08'
 ,p_plug_item_display_point=>'ABOVE'
@@ -477,16 +476,6 @@ wwv_flow_imp_page.create_worksheet_rpt(
 ,p_report_columns=>'DISPLAY_SEQ:TITLE:LINK_DESC:CHANGED_SINCE:LINK_STATUS'
 ,p_sort_column_1=>'DISPLAY_SEQ'
 ,p_sort_direction_1=>'ASC'
-,p_sort_column_2=>'0'
-,p_sort_direction_2=>'ASC'
-,p_sort_column_3=>'0'
-,p_sort_direction_3=>'ASC'
-,p_sort_column_4=>'0'
-,p_sort_direction_4=>'ASC'
-,p_sort_column_5=>'0'
-,p_sort_direction_5=>'ASC'
-,p_sort_column_6=>'0'
-,p_sort_direction_6=>'ASC'
 ,p_break_on=>'0:0:0:0:0'
 ,p_break_enabled_on=>'0:0:0:0:0'
 );
@@ -497,7 +486,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_css_classes=>'blog-search-region padding-sm'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_escape_on_http_output=>'N'
-,p_plug_template=>4501440665235496320
+,p_plug_template=>4502917002193490937
 ,p_plug_display_sequence=>10
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_plug_display_point=>'REGION_POSITION_02'
@@ -533,7 +522,7 @@ wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(170835544786983541)
 ,p_name=>'Select Link Group'
 ,p_static_id=>'select-link-group'
-,p_template=>3371237801798025892
+,p_template=>3372714138756020509
 ,p_display_sequence=>30
 ,p_region_css_classes=>'blog-search-results'
 ,p_region_sub_css_classes=>'blog-search-results-items'
@@ -563,9 +552,8 @@ wwv_flow_imp_page.create_report_region(
 'where 1 = 1',
 'order by v1.display_seq'))
 ,p_ajax_enabled=>'Y'
-,p_fixed_header=>'PAGE'
 ,p_lazy_loading=>false
-,p_query_row_template=>2093604263195414824
+,p_query_row_template=>2095080600153409441
 ,p_query_num_rows=>1000
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_query_row_count_max=>500
@@ -678,7 +666,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'create-group'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft:t-Button--stretch'
-,p_button_template_id=>2082829544945815391
+,p_button_template_id=>2084305881903810008
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'New Group'
 ,p_button_redirect_url=>'f?p=&APP_ID.:52:&SESSION.::&DEBUG.:52::'
@@ -693,7 +681,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'create-link'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#:t-Button--mobileHideLabel:t-Button--iconLeft'
-,p_button_template_id=>2082829544945815391
+,p_button_template_id=>2084305881903810008
 ,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'New Link'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
@@ -709,7 +697,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'resequence-groups'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft:t-Button--stretch'
-,p_button_template_id=>2082829544945815391
+,p_button_template_id=>2084305881903810008
 ,p_button_image_alt=>'Resequence Groups'
 ,p_button_execute_validations=>'N'
 ,p_warn_on_unsaved_changes=>null
@@ -726,7 +714,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'resequence-links'
 ,p_button_action=>'DEFINED_BY_DA'
 ,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>2349107722467437027
+,p_button_template_id=>2350584059425431644
 ,p_button_image_alt=>'Resequence Links'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_button_execute_validations=>'N'
@@ -744,7 +732,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_static_id=>'reset-report'
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#'
-,p_button_template_id=>2349107722467437027
+,p_button_template_id=>2350584059425431644
 ,p_button_image_alt=>'Reset Report'
 ,p_button_position=>'RIGHT_OF_IR_SEARCH_BAR'
 ,p_button_redirect_url=>'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:RP,RIR::'

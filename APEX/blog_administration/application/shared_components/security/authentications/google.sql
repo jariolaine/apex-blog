@@ -19,6 +19,7 @@ wwv_flow_imp_shared.create_authentication(
 ,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
   'authentication_provider', 'GOOGLE',
   'credential_store', 139376978108159122,
+  'discovery_url', '',
   'scope', 'email',
   'uppercase_username', 'Y',
   'username', '#email#',

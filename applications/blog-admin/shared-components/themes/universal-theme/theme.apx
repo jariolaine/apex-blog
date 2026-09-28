@@ -1,7 +1,7 @@
 theme universal-theme (
     name: Universal Theme
     themeNumber: 42
-    baseTheme: ut-24.2
+    baseTheme: ut-26.1
     style {
         currentThemeStyle: @/Vita
     }
@@ -50,7 +50,7 @@ theme universal-theme (
         library: fontApex
     }
     advanced {
-        filePrefix: #APEX_FILES#themes/theme_42/24.2/
+        filePrefix: #APEX_FILES#themes/theme_42/26.1/
         identifier: UNIVERSAL_THEME
     }
 )

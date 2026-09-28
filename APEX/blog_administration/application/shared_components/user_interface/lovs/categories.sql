@@ -24,7 +24,6 @@ wwv_flow_imp_shared.create_list_of_values(
 'from blog_v_all_categories v1'))
 ,p_source_type=>'SQL'
 ,p_location=>'LOCAL'
-,p_use_local_sync_table=>false
 ,p_return_column_name=>'RETURN_VALUE'
 ,p_display_column_name=>'DISPLAY_VALUE'
 ,p_group_column_name=>'STATUS'
