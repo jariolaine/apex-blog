@@ -1,0 +1,18 @@
+appItem G_BLOGGER_ID (
+    comments {
+        comments: User ID
+    }
+)
+
+appItem G_BLOGGER_NAME (
+    comments {
+        comments: User full name
+    }
+)
+
+appItem G_PUB_APP_ID (
+    comments {
+        comments: Public application id
+    }
+)
+

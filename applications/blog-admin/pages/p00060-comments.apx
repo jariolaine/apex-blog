@@ -1,0 +1,728 @@
+page 60 (
+    name: Comments
+    alias: COMMENTS
+    title: Comments
+    pageGroup: @comments
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText: No help available for this page.
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcumb
+        }
+        layout {
+            sequence: 20
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region comments-report (
+        name: Comments Report
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select 
+                  v1.id                   as comment_id
+                , v1.post_id              as post_id
+                , v1.parent_id            as parent_id
+                , v1.created_on           as created_on
+                , v1.created_on           as created_since
+                , v1.created_by           as created_by
+                , v1.changed_on           as changed_on
+                , v1.changed_on           as changed_since
+                , v1.changed_by           as changed_by
+                , v1.comment_by           as comment_by
+                , v1.comment_preview      as comment_preview
+                , v1.post_title           as post_title
+                , v1.comment_status_text  as comment_status
+                , v1.comment_flag_text    as comment_flag
+                , v1.sentiment            as sentiment
+                , v1.comment_status_icon  as status_icon
+                , v1.comment_flag_icon    as flag_icon
+                , v1.sentiment_icon       as sentiment_icon
+                , v1.data_unread          as btn_data_unread
+                , v1.body_html            as comment_body
+                , v1.ctx_search           as ctx_search
+                -- Workaround for detail view
+                , apex_page.get_url(
+                    p_page         => 61
+                  , p_clear_cache  => 61
+                  , p_items        => 'P61_ID,P61_POST_ID'
+                  , p_values       => v1.id || ',' || v1.post_id
+                  )                       as edit_url
+                from blog_v_all_comments v1
+                where 1 = 1
+                
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: fullWidthContent
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+            cssClasses: blog-IR--iconLinks
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        link {
+            linkColumn: customTarget
+            target: {
+                type: url
+                url: #EDIT_URL#
+            }
+            linkIcon: <span aria-hidden="true" class="t-Icon fa fa-pencil"></span>
+            linkAttributes: data-unread="#BTN_DATA_UNREAD#" data-id="CF#COMMENT_ID#" title="&APP_TEXT$BLOG_TXT_OPEN_COMMENT." class="t-Button t-Button--noLabel t-Button--icon t-Button--small"
+        }
+        componentAppearance {
+            showNullValuesAs: -
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: No data found.
+            whenMoreDataFound: The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.
+        }
+        download {
+            filename: blog-comments
+            supplementalText: &P0_BLOG_APP_NAME!RAW. comments.
+        }
+        detailView {
+            show: true
+            forEachRow:
+                ```html
+                <div class="blog-comment-IR">
+                  <div class="blog-commentIcon">
+                    <span title="&APP_TEXT$BLOG_TXT_COMMENT_FLAG.: #COMMENT_FLAG#" arial-label="&APP_TEXT$BLOG_TXT_COMMENT_FLAG.: #COMMENT_FLAG#" class="fa fa-lg fa-2x #FLAG_ICON#" id="CF#COMMENT_ID#"></span>
+                  </div>
+                  <div class="blog-commentIcon">
+                    <span title="&APP_TEXT$BLOG_TXT_SENTIMENT.: #SENTIMENT#" arial-label="&APP_TEXT$BLOG_TXT_SENTIMENT.: #SENTIMENT#" class="blog-comment-SentimentIcon fa fa-lg fa-2x #SENTIMENT_ICON#"></span>
+                  </div>
+                  <div class="blog-commentContainer">
+                    <div class="blog-commentTitle u-flex">
+                      <a class="blog-commentPostTitle w100p" href="#EDIT_URL#" data-unread="#BTN_DATA_UNREAD#" data-id="CF#COMMENT_ID#">
+                        #POST_TITLE#
+                        <div class="blog-commentSubtitle">
+                          #COMMENT_BY# &middot; #CREATED_SINCE#
+                        </div>
+                      </a>
+                    </div>
+                    <div class="blog-commentBody">
+                      #COMMENT_BODY#
+                    </div>
+                  </div>
+                  <div class="blog-commentStatus">
+                    <span title="&APP_TEXT$BLOG_TXT_STATUS.: #COMMENT_STATUS#" arial-label="&APP_TEXT$BLOG_TXT_STATUS.: #COMMENT_STATUS#" class="fa fa-lg #STATUS_ICON#"></span>
+                  </div>
+                </div>
+                ```
+        }
+        componentAdvanced {
+            oracleTextIndexColumn: CTX_SEARCH
+        }
+        advanced {
+            savedReportMappingIdentifier: 65609890641299759
+        }
+
+        column BTN_DATA_UNREAD (
+            type: hidden
+            heading {
+                heading: Btn Data Unread
+            }
+            layout {
+                sequence: 210
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AJ
+            }
+        )
+
+        column CHANGED_BY (
+            type: plainText
+            heading {
+                heading: Changed by
+            }
+            layout {
+                sequence: 100
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: K
+            }
+        )
+
+        column CHANGED_ON (
+            type: plainText
+            heading {
+                heading: Changed
+                alternativeLabel: Changed Time
+                alignment: end
+            }
+            layout {
+                sequence: 80
+                columnAlignment: end
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: J
+            }
+        )
+
+        column CHANGED_SINCE (
+            type: plainText
+            heading {
+                heading: Changed
+                alternativeLabel: Changed Since
+                alignment: center
+            }
+            layout {
+                sequence: 90
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: AE
+            }
+        )
+
+        column COMMENT_BODY (
+            type: hidden
+            heading {
+                heading: Comment Body
+            }
+            layout {
+                sequence: 220
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: S
+            }
+            security {
+                escapeSpecialChars: false
+            }
+        )
+
+        column COMMENT_BY (
+            type: plainText
+            heading {
+                heading: Comment by
+            }
+            layout {
+                sequence: 110
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column COMMENT_FLAG (
+            type: plainText
+            heading {
+                heading: Type
+                alignment: center
+            }
+            layout {
+                sequence: 160
+                columnAlignment: center
+            }
+            columnFormatting {
+                htmlExpression:
+                    ```html
+                    {with/}
+                    TEXT:=#COMMENT_FLAG#
+                    ICON_CLASSES:=#FLAG_ICON# w40
+                    ICON_ID:=CF#COMMENT_ID#
+                    {apply THEME$ICON_CUSTOM/}
+                    ```
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AL
+            }
+            comments {
+                comments: Using HTML Expression because need column filter
+            }
+        )
+
+        column COMMENT_ID (
+            type: plainText
+            heading {
+                heading: Comment ID
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                primaryKey: true
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column COMMENT_PREVIEW (
+            type: plainText
+            heading {
+                heading: Comment
+            }
+            layout {
+                sequence: 120
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AV
+            }
+        )
+
+        column COMMENT_STATUS (
+            type: plainText
+            heading {
+                heading: Status
+                alignment: center
+            }
+            layout {
+                sequence: 150
+                columnAlignment: center
+            }
+            columnFormatting {
+                htmlExpression:
+                    ```html
+                    {with/}
+                    TEXT:=#COMMENT_STATUS#
+                    ICON_CLASSES:=#STATUS_ICON# w40
+                    {apply THEME$ICON_CUSTOM/}
+                    ```
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AK
+            }
+            comments {
+                comments: Using HTML Expression because need column filter
+            }
+        )
+
+        column CREATED_BY (
+            type: plainText
+            heading {
+                heading: Created by
+                alignment: center
+            }
+            layout {
+                sequence: 60
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AD
+            }
+        )
+
+        column CREATED_ON (
+            type: plainText
+            heading {
+                heading: Created
+                alternativeLabel: Created Time
+                alignment: end
+            }
+            layout {
+                sequence: 40
+                columnAlignment: end
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column CREATED_SINCE (
+            type: plainText
+            heading {
+                heading: Created
+                alternativeLabel: Created Since
+                alignment: center
+            }
+            layout {
+                sequence: 50
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: AC
+            }
+        )
+
+        column CTX_SEARCH (
+            type: hidden
+            heading {
+                heading: Ctx Search
+            }
+            layout {
+                sequence: 230
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AQ
+            }
+        )
+
+        column EDIT_URL (
+            type: hidden
+            heading {
+                heading: Edit URL Link
+            }
+            layout {
+                sequence: 240
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: Z
+            }
+        )
+
+        column FLAG_ICON (
+            type: hidden
+            heading {
+                heading: Flag Icon
+            }
+            layout {
+                sequence: 190
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: U
+            }
+        )
+
+        column PARENT_ID (
+            type: hidden
+            heading {
+                heading: Parent Id
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column POST_ID (
+            type: hidden
+            heading {
+                heading: Post Id
+            }
+            layout {
+                sequence: 20
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column POST_TITLE (
+            type: link
+            heading {
+                heading: Post
+            }
+            layout {
+                sequence: 130
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            link {
+                target: {
+                    page: 12
+                    items: {
+                        P12_ID: #POST_ID#
+                    }
+                }
+                linkText: #POST_TITLE#
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: L
+            }
+        )
+
+        column SENTIMENT (
+            type: plainTextBasedOnLov
+            heading {
+                heading: Sentiment
+                alignment: center
+            }
+            lov {
+                lov: @sentiment
+            }
+            layout {
+                sequence: 170
+                columnAlignment: center
+            }
+            columnFormatting {
+                htmlExpression:
+                    ```html
+                    {with/}
+                    TEXT:=#SENTIMENT#
+                    ICON_CLASSES:=#SENTIMENT_ICON# w40
+                    {apply THEME$ICON_CUSTOM/}
+                    ```
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AR
+            }
+        )
+
+        column SENTIMENT_ICON (
+            type: hidden
+            heading {
+                heading: Sentiment Icon
+            }
+            layout {
+                sequence: 200
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AS
+            }
+        )
+
+        column STATUS_ICON (
+            type: hidden
+            heading {
+                heading: Status Icon
+            }
+            layout {
+                sequence: 180
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AO
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport 274170 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn COMMENT_BY (
+                sequence: 3
+            )
+
+            displayColumn COMMENT_FLAG (
+                sequence: 6
+            )
+
+            displayColumn COMMENT_PREVIEW (
+                sequence: 1
+            )
+
+            displayColumn COMMENT_STATUS (
+                sequence: 7
+            )
+
+            displayColumn CREATED_SINCE (
+                sequence: 4
+            )
+
+            displayColumn POST_TITLE (
+                sequence: 2
+            )
+
+            displayColumn SENTIMENT (
+                sequence: 5
+            )
+
+            sort (
+                column: CREATED_SINCE
+                sort {
+                    direction: desc
+                    sequence: 1
+                }
+            )
+
+        )
+
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Reset Report
+        layout {
+            sequence: 20
+            region: @comments-report
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: [
+                    &APP_PAGE_ID.
+                    RIR
+                ]
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction process-comment (
+        name: Process Comment
+        execution {
+            sequence: 20
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @comments-report
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @comments-report
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction process-comments-report (
+        name: Process Comments Report
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterrefresh
+            selectionType: region
+            region: @comments-report
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode: "blog.admin.ir.commentsAfterRefresh({ \"region$\": this.affectedElements });"
+            }
+            affectedElements {
+                selectionType: triggeringElement
+            }
+            execution {
+                sequence: 10
+            }
+            comments {
+                comments: Attach one time click event listener to report links having data attribute. When report link is clicked change link icon class.
+            }
+        )
+
+    )
+
+)
+

@@ -1,0 +1,18 @@
+installScript "Create view blog_v_version" (
+    execution {
+        sequence: 10
+    }
+    script {
+        contentFile: create-view-blog-v-version.sql
+    }
+)
+
+installScript Metadata (
+    execution {
+        sequence: 20
+    }
+    script {
+        contentFile: metadata.sql
+    }
+)
+

@@ -1,0 +1,548 @@
+page 52 (
+    name: Add/Edit Link Group
+    alias: LINK-GROUP-PROPERTIES
+    title: Link Group Properties
+    pageGroup: @links
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region links-group-properties (
+        name: Links Group Properties
+        type: form
+        source {
+            location: localDatabase
+            tableName: BLOG_V_ALL_LINK_GROUPS
+        }
+        layout {
+            sequence: 20
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Form--stretchInputs
+            ]
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+            lostUpdateType: rowVersionColumn
+            rowVersionColumn: ROW_VERSION
+        }
+    )
+
+    pageItem P52_DISPLAY_SEQ (
+        type: numberField
+        label {
+            label: Sequency
+            alignment: left
+        }
+        settings {
+            virtualKeyboard: numeric
+        }
+        layout {
+            sequence: 60
+            region: @links-group-properties
+            slot: regionBody
+            alignment: left
+            columnSpan: 2
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @links-group-properties
+            column: DISPLAY_SEQ
+            dataType: number
+        }
+        default {
+            type: expression
+            plsqlExpression: blog_admin.get_link_grp_seq
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P52_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @links-group-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @links-group-properties
+            column: ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P52_IS_ACTIVE (
+        type: switch
+        label {
+            label: Status
+            alignment: left
+        }
+        settings {
+            useDefaults: false
+            onValue: 1
+            onLabel: Enabled
+            offValue: 0
+            offLabel: Disabled
+        }
+        layout {
+            sequence: 90
+            region: @links-group-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @links-group-properties
+            column: IS_ACTIVE
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: 1
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P52_LINK_COUNT (
+        type: hidden
+        layout {
+            sequence: 30
+            region: @links-group-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @links-group-properties
+            column: LINK_COUNT
+            dataType: number
+            queryOnly: true
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P52_NOTES (
+        type: textarea
+        label {
+            label: Notes
+            alignment: left
+        }
+        layout {
+            sequence: 100
+            region: @links-group-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+            height: 5
+        }
+        validation {
+            maxLength: 16000
+        }
+        source {
+            formRegion: @links-group-properties
+            column: NOTES
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+        help {
+            inlineHelpText: Enter any comments or notes here. These notes not displayed for public.
+        }
+    )
+
+    pageItem P52_ROW_VERSION (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @links-group-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @links-group-properties
+            column: ROW_VERSION
+            dataType: number
+            queryOnly: true
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P52_TITLE (
+        type: textField
+        label {
+            label: Name
+            alignment: left
+        }
+        layout {
+            sequence: 80
+            region: @links-group-properties
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            valueRequired: true
+            maxLength: 1024
+        }
+        source {
+            formRegion: @links-group-properties
+            column: TITLE
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 50
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-chevron-left
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Save
+        layout {
+            sequence: 40
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--mobileHideLabel
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P52_ID
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: Delete
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+            ]
+            icon: fa-trash-o
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: itemIsZero
+            item: P52_LINK_COUNT
+        }
+    )
+
+    button delete-links-exists (
+        buttonName: DELETE_LINKS_EXISTS
+        label: Delete
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+            ]
+            icon: fa-trash-o
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 53
+                items: {
+                    P53_ID: \&P52_ID.\
+                }
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+        serverSideCondition {
+            type: itemIsNotNullAndNotZero
+            item: P52_LINK_COUNT
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--mobileHideLabel
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P52_ID
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process initialize-form-link-group-properties (
+        name: Initialize form Link Group Properties
+        type: formInitialization
+        formRegion: @links-group-properties
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 38422327535285169
+        }
+    )
+
+    process process-form-link-group-properties (
+        name: Process form Link Group Properties
+        type: formAutoRowProcessing
+        formRegion: @links-group-properties
+        target {
+            targetType: tableView
+            tableName: BLOG_LINK_GROUPS
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 38421967161285169
+        }
+    )
+
+    process purge-public-application-links-page-cache (
+        name: Purge Public Application Links Page Cache
+        type: invokeApi
+        invoke {
+            package: APEX_UTIL
+            procedureOrFunction: CACHE_PURGE_BY_PAGE
+        }
+        execution {
+            sequence: 40
+        }
+        advanced {
+            executionMappingIdentifier: 38593405677274335
+        }
+
+        parameter p_application (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: item
+                item: G_PUB_APP_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_page (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: staticValue
+                staticValue: 10
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+    )
+
+    branch (
+        name: Go To Page 50 on insert or update
+        execution {
+            sequence: 20
+        }
+        behavior {
+            target: {
+                page: 50
+                items: {
+                    P50_LINK_GROUP_ID: &P52_ID.
+                }
+            }
+        }
+    )
+
+    branch (
+        name: Go To Page 50 and clear items on delete
+        execution {
+            sequence: 10
+        }
+        behavior {
+            target: {
+                page: 50
+                clearCache: 50
+            }
+        }
+        serverSideCondition {
+            whenButtonPressed: @delete
+        }
+    )
+
+)
+

@@ -1,0 +1,103 @@
+validation "Application parsing schema has role CTXAPP" (
+    execution {
+        sequence: 10
+    }
+    validation {
+        type: rowsReturned
+        sqlQuery:
+            ```sql
+            select 1
+            from user_role_privs
+            where 1 = 1
+            and granted_role = 'CTXAPP'
+            union all
+            select 1
+            from all_objects
+            where owner = 'CTXSYS'
+            and object_name = 'CTX_DDL'
+            ```
+    }
+    error {
+        errorMessage: Application parsing schema must have role CTXAPP or execute privilege to package CTX_DDL.
+    }
+)
+
+validation "Application upgrade is supported" (
+    execution {
+        sequence: 40
+    }
+    validation {
+        type: rowsReturned
+        sqlQuery:
+            ```sql
+            select 1
+            from blog_v_version
+            where 1 = 1
+            and application_date >= 20230117
+            ```
+    }
+    error {
+        errorMessage: A previously installed version of the application does not support upgrading of supporting objects.
+    }
+    serverSideCondition {
+        type: rowsReturned
+        sqlQuery:
+            ```sql
+            select 1
+            from user_objects
+            where 1 = 1
+            and object_name = 'BLOG_V_VERSION'
+            and status = 'VALID'
+            ```
+    }
+)
+
+validation "Pre-check is upgrade supported" (
+    execution {
+        sequence: 30
+    }
+    validation {
+        type: rowsReturned
+        sqlQuery:
+            ```sql
+            select 1
+            from user_objects
+            where 1 = 1
+            and object_name = 'BLOG_V_VERSION'
+            and status = 'VALID'
+            ```
+    }
+    error {
+        errorMessage: Unable to determine application version. Check that the application parsing schema view BLOG_V_VERSION is valid.
+    }
+    serverSideCondition {
+        type: rowsReturned
+        sqlQuery:
+            ```sql
+            select 1
+            from user_views
+            where 1 = 1
+            and view_name = 'BLOG_V_VERSION'
+            ```
+    }
+)
+
+validation "Supporting objects installed" (
+    execution {
+        sequence: 20
+    }
+    validation {
+        type: rowsReturned
+        sqlQuery:
+            ```sql
+            select 1
+            from user_tables
+            where 1 = 1
+            and table_name = 'BLOG_SETTINGS'
+            ```
+    }
+    error {
+        errorMessage: The required supporting objects are not installed. Please install administration application and supporting objects using file blog_administration.sql.
+    }
+)
+

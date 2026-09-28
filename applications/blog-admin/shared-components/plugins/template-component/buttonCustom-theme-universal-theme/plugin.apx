@@ -1,0 +1,21 @@
+plugin buttonCustom (
+    name: Button (Custom)
+    staticId: THEME_42$BUTTON_CUSTOM_1
+    theme: @universal-theme
+    templateComponent {
+        availableAs: partial
+        partial:
+            ```html
+            <button type="button" id="#APEX$DOM_ID#" title="#LABEL!ATTR#"{if ?BUTTON_ACTION/}{if !NO_UPDATE/} data-no-update="true"{endif/}data-action="#BUTTON_ACTION!ATTR#"{endif/}{if ?BUTTON_ATTR/} #BUTTON_ATTR!RAW#{endif/} class="t-Button{if IS_HOT/} t-Button--hot{endif/}{if IS_ICON_ONLY/} t-Button--noLabel t-Button--icon{else/}{if ?ICON_CLASS/} {if ?ICON_POSITION/}t-Button--iconRight{else/}t-Button--iconLeft{endif/}{endif/}{endif/}{if ?BUTTON_SIZE/} #BUTTON_SIZE!ATTR#{endif/}{if ?BUTTON_STYLE/} #BUTTON_STYLE!ATTR#{endif/}{if ?BUTTON_TYPE/} #BUTTON_TYPE!ATTR#{endif/}{if ?BUTTON_WIDTH/} #BUTTON_WIDTH!ATTR#{endif/}{if ?CSS_CLASSES/} #CSS_CLASSES!ATTR#{endif/}"{if IS_DISABLED/} disabled{endif/}>
+              {if ?ICON_POSITION/}<span class="t-Button-label">#LABEL!RAW#</span>{if ?ICON_CLASS/}<span class="t-Icon t-Icon--right fa #ICON_CLASS!ATTR#" aria-hidden="true"></span>{endif/}{else/}{if ?ICON_CLASS/}<span class="t-Icon t-Icon--left fa #ICON_CLASS!ATTR#" aria-hidden="true"></span>{endif/}<span class="t-Button-label">#LABEL!RAW#</span>{endif/}
+            </button>
+            ```
+    }
+    component {
+        standardAttributes: regionTemplateAttr
+    }
+    information {
+        version: 1.4
+    }
+)
+

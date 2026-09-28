@@ -1,0 +1,305 @@
+customAttribute BUTTON_ACTION (
+    apexlangName: action
+    attribute: 2
+    name: Action
+    security {
+        escapeMode: htmlAttribute
+    }
+    appearance {
+        sequence: 20
+    }
+    help {
+        helpText: Button action.
+    }
+    examples {
+        examples: my-action?param1=test
+    }
+)
+
+customAttribute BUTTON_ATTR (
+    apexlangName: customAttributes
+    attribute: 5
+    name: Custom Attributes
+    security {
+        escapeMode: raw
+    }
+    appearance {
+        sequence: 50
+    }
+    help {
+        helpText: Button custom HTML attributes.
+    }
+)
+
+customAttribute BUTTON_SIZE (
+    apexlangName: size
+    attribute: 10
+    name: Size
+    type: selectList
+    componentLov {
+        nullText: Default
+    }
+    security {
+        escapeMode: htmlAttribute
+    }
+    appearance {
+        attributeGroup: @appearance
+        sequence: 100
+    }
+
+    entry large (
+        sequence: 30
+        display: Large
+        return: t-Button--large
+    )
+
+    entry small (
+        sequence: 20
+        display: Small
+        return: t-Button--small
+    )
+
+    entry tiny (
+        sequence: 10
+        display: Tiny
+        return: t-Button--tiny
+    )
+
+)
+
+customAttribute BUTTON_STYLE (
+    apexlangName: style
+    attribute: 11
+    name: Style
+    type: selectList
+    componentLov {
+        nullText: Default
+    }
+    security {
+        escapeMode: htmlAttribute
+    }
+    appearance {
+        attributeGroup: @appearance
+        sequence: 110
+    }
+
+    entry displayAsLink (
+        sequence: 30
+        display: Display as Link
+        return: t-Button--link
+    )
+
+    entry removeUiDecorations (
+        sequence: 20
+        display: Remove UI Decorations
+        return: t-Button--noUI
+    )
+
+    entry simple (
+        sequence: 10
+        display: Simple
+        return: t-Button--simple
+    )
+
+)
+
+customAttribute BUTTON_TYPE (
+    apexlangName: type
+    attribute: 12
+    name: Type
+    type: selectList
+    componentLov {
+        nullText: Normal
+    }
+    security {
+        escapeMode: htmlAttribute
+    }
+    appearance {
+        attributeGroup: @appearance
+        sequence: 120
+    }
+
+    entry danger (
+        sequence: 30
+        display: Danger
+        return: t-Button--danger
+    )
+
+    entry primary (
+        sequence: 10
+        display: Primary
+        return: t-Button--primary
+    )
+
+    entry success (
+        sequence: 40
+        display: Success
+        return: t-Button--success
+    )
+
+    entry warning (
+        sequence: 20
+        display: Warning
+        return: t-Button--warning
+    )
+
+)
+
+customAttribute BUTTON_WIDTH (
+    apexlangName: width
+    attribute: 13
+    name: Width
+    type: selectList
+    componentLov {
+        nullText: Auto - Default
+    }
+    security {
+        escapeMode: htmlAttribute
+    }
+    appearance {
+        attributeGroup: @appearance
+        sequence: 130
+    }
+
+    entry stretch (
+        sequence: 10
+        display: Stretch
+        return: t-Button--stretch
+    )
+
+)
+
+customAttribute CSS_CLASSES (
+    apexlangName: cssClasses
+    attribute: 7
+    name: CSS Classes
+    security {
+        escapeMode: htmlAttribute
+    }
+    appearance {
+        attributeGroup: @appearance
+        sequence: 70
+    }
+    help {
+        helpText: Enter classes to add to this button. You may add multiple classes by separating them with spaces.
+    }
+)
+
+customAttribute ICON_CLASS (
+    apexlangName: iconClass
+    attribute: 6
+    name: Icon Class
+    security {
+        escapeMode: htmlAttribute
+    }
+    appearance {
+        attributeGroup: @appearance
+        sequence: 60
+    }
+    help {
+        helpText: Button icon class.
+    }
+)
+
+customAttribute ICON_POSITION (
+    apexlangName: iconPosition
+    attribute: 14
+    name: Icon Position
+    type: selectList
+    componentLov {
+        nullText: Left
+    }
+    appearance {
+        attributeGroup: @appearance
+        sequence: 140
+    }
+    dependingOn {
+        attribute: @IS_ICON_ONLY/component
+        conditionType: =
+        value: N
+    }
+
+    entry right (
+        sequence: 10
+        display: Right
+        return: RIGHT
+    )
+
+)
+
+customAttribute IS_DISABLED (
+    apexlangName: isDisabled
+    attribute: 4
+    name: Is Disabled
+    type: yesNo
+    appearance {
+        sequence: 40
+    }
+    help {
+        helpText: Is button enabled or disabled.
+    }
+)
+
+customAttribute IS_HOT (
+    apexlangName: isHot
+    attribute: 8
+    name: Is Hot
+    type: yesNo
+    appearance {
+        attributeGroup: @appearance
+        sequence: 80
+    }
+    help {
+        helpText: Specify whether to use the <strong>Normal</strong> or <strong>Hot</strong> button template when rendering this button.
+    }
+)
+
+customAttribute IS_ICON_ONLY (
+    apexlangName: iconOnly
+    attribute: 9
+    name: Icon Only
+    type: yesNo
+    appearance {
+        attributeGroup: @appearance
+        sequence: 90
+    }
+    help {
+        helpText: Hide button label and show only button icon.
+    }
+)
+
+customAttribute LABEL (
+    apexlangName: label
+    attribute: 1
+    name: Label
+    security {
+        escapeMode: raw
+    }
+    appearance {
+        sequence: 10
+    }
+    builder {
+        translatable: true
+    }
+    help {
+        helpText: Button label.
+    }
+)
+
+customAttribute NO_UPDATE (
+    apexlangName: updateTitleAndLabel
+    attribute: 3
+    name: Update Title and Label
+    type: yesNo
+    appearance {
+        sequence: 30
+    }
+    dependingOn {
+        attribute: @BUTTON_ACTION/component
+        conditionType: isNotNull
+    }
+    help {
+        helpText: If the action label or title are null they will be initialized with the text and title attribute value respectively from the first button (in document order) associated with the action. This is useful if the server has already rendered a localized button for the action. The title comes from the button title attribute. The label comes from the first found of; aria-label attribute, title attribute if button has class t-Button--noLabel, content of the descendant element with class t-Button-label, and finally the button element content. If disabled is null it will be taken from the button disabled property.
+    }
+)
+

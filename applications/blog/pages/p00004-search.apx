@@ -1,0 +1,296 @@
+page 4 (
+    name: Search Result
+    alias: SEARCH
+    title: Search | &P0_BLOG_APP_NAME.
+    pageGroup: @post-report
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        warnOnUnsavedChanges: false
+    }
+    htmlHeader {
+        htmlHeader: "\"BLOG_META_ROBOTS_NOINDEX\""
+    }
+    security {
+        authentication: public
+        formAutoComplete: false
+    }
+    config {
+        buildOption: @blog-feature-search
+    }
+
+    region search-from-blog (
+        name: Search from Blog
+        type: search
+        source {
+            pageItemsToSubmit: [
+                P4_SEARCH
+                P4_SEARCH_FROM
+            ]
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/search-results-container
+            templateOptions: [
+                #DEFAULT#
+                t-ResultsRegion--boxed
+                margin-bottom-md
+            ]
+            cssClasses: blog-shadow-md
+        }
+        settings {
+            searchPageItem: P4_SEARCH
+            searchAsYouType: false
+        }
+        pagination {
+            resultsPerPageType: basedOnItemValue
+            item: P0_BLOG_SEARCH_ROWS
+        }
+        messages {
+            noQueryEnteredMessage:
+                ```html
+                <span class="nodatafound">
+                  &APP_TEXT$BLOG_MSG_ENTER_SEARCH_TERM.
+                </span>
+                ```
+            noResultsFoundMessage:
+                ```html
+                <span class="nodatafound">
+                  &APP_TEXT$BLOG_MSG_NO_DATA_FOUND.
+                </span>
+                ```
+        }
+
+        searchSource comments (
+            name: Comments
+            searchConfig: @comments
+            layout {
+                sequence: 20
+            }
+            serverSideCondition {
+                type: rowsReturned
+                sqlQuery:
+                    ```sql
+                    select 1
+                    from table(
+                      apex_string.split (
+                        p_str => :P4_SEARCH_FROM
+                        ,p_sep => ':'
+                      )
+                    )
+                    where column_value = 'COMMENTS'
+                    ```
+            }
+            config {
+                buildOption: @blog-feature-search-comments
+            }
+        )
+
+        searchSource files (
+            name: Files
+            searchConfig: @files
+            layout {
+                sequence: 40
+            }
+            serverSideCondition {
+                type: rowsReturned
+                sqlQuery:
+                    ```sql
+                    select 1
+                    from table(
+                      apex_string.split (
+                        p_str => :P4_SEARCH_FROM
+                        ,p_sep => ':'
+                      )
+                    )
+                    where column_value = 'FILES'
+                    ```
+            }
+            config {
+                buildOption: @blog-feature-search-files
+            }
+        )
+
+        searchSource links (
+            name: Links
+            searchConfig: @links
+            layout {
+                sequence: 30
+            }
+            serverSideCondition {
+                type: rowsReturned
+                sqlQuery:
+                    ```sql
+                    select 1
+                    from table(
+                      apex_string.split (
+                        p_str => :P4_SEARCH_FROM
+                        ,p_sep => ':'
+                      )
+                    )
+                    where column_value = 'LINKS'
+                    ```
+            }
+            config {
+                buildOption: @blog-feature-search-links
+            }
+        )
+
+        searchSource posts (
+            name: Posts
+            searchConfig: @posts
+            layout {
+                sequence: 10
+            }
+            serverSideCondition {
+                type: rowsReturned
+                sqlQuery:
+                    ```sql
+                    select 1
+                    from table(
+                      apex_string.split (
+                        p_str => :P4_SEARCH_FROM
+                        ,p_sep => ':'
+                      )
+                    )
+                    where column_value = 'POSTS'
+                    ```
+            }
+            config {
+                buildOption: @blog-feature-search-posts
+            }
+        )
+
+    )
+
+    pageItem P4_SEARCH (
+        type: textField
+        label {
+            label: Search
+            alignment: left
+        }
+        settings {
+            subtype: search
+        }
+        layout {
+            sequence: 10
+            region: @search-from-blog
+            slot: searchField
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--stretchInputs
+                t-Form-fieldContainer--large
+            ]
+            icon: fa-search
+            width: 30
+        }
+        validation {
+            maxLength: 256
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P4_SEARCH_FROM (
+        type: checkboxGroup
+        label {
+            label: Search From
+            alignment: left
+        }
+        settings {
+            noOfCols: 4
+        }
+        lov {
+            type: sharedComponent
+            lov: @search-source
+            displayExtraValues: false
+        }
+        layout {
+            sequence: 20
+            region: @search-from-blog
+            slot: searchField
+            alignment: left
+        }
+        appearance {
+            template: @/optional-above
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--large
+            ]
+        }
+        default {
+            type: static
+            staticValue: POSTS:COMMENTS:LINKS:FILES
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            encryptSessionState: false
+        }
+    )
+
+    dynamicAction process-pagination (
+        name: Process Pagination
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterrefresh
+            selectionType: region
+            region: @search-from-blog
+        }
+
+        action scroll-top (
+            name: Scroll Top
+            action: executeJsCode
+            settings {
+                jsCode: apex.theme42.util.scrollTo("wwvFlowForm");
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction search (
+        name: Search
+        execution {
+            sequence: 20
+        }
+        when {
+            selectionType: items
+            items: P4_SEARCH_FROM
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @search-from-blog
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

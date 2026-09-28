@@ -1,0 +1,1238 @@
+page 50 (
+    name: Links
+    alias: LINKS
+    title: Links
+    pageGroup: @links
+    appearance {
+        pageTemplate: @/left-side-column
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText: No help available for this page.
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcumb
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region link-group (
+        name: Link Group
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                  v1.is_active    as icon_class       -- see column HTML Expression
+                , v1.is_active    as icon_color_class -- see column HTML Expression
+                , apex_page.get_url(
+                    p_page    => 52
+                  , p_items  => 'P52_ID'
+                  , p_values => v1.id
+                  )               as link
+                , null            as link_attr
+                , null            as link_class
+                , v1.title        as list_title
+                , v1.notes        as list_text
+                , null            as list_class
+                , null            as list_badge       -- see column HTML Expression
+                , v1.display_seq  as display_seq
+                , v1.is_active    as is_active
+                from blog_v_all_link_groups v1
+                where 1 = 1
+                and v1.id = :P50_LINK_GROUP_ID
+                ```
+            pageItemsToSubmit: P50_LINK_GROUP_ID
+        }
+        layout {
+            sequence: 20
+            slot: fullWidthContent
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--hideHeader js-addHiddenHeadingRoleDesc
+                t-Region--stacked
+                t-Region--scrollBody
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+        reportLayout {
+            numberOfRows: 1
+        }
+        componentAppearance {
+            template: @/media-list
+            templateOptions: [
+                #DEFAULT#
+                t-MediaList--showBadges
+                t-MediaList--stack
+                t-Report--hideNoPagination
+            ]
+        }
+        performance {
+            maxRowsToProcess: 1
+        }
+        messages {
+            whenNoDataFound: No data found.
+        }
+        componentAdvanced {
+            stripHtml: true
+        }
+
+        column DISPLAY_SEQ (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            heading {
+                heading: Display Seq
+                alignment: center
+            }
+            layout {
+                sequence: 190
+            }
+        )
+
+        column ICON_CLASS (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Icon Class
+                alignment: center
+            }
+            layout {
+                sequence: 20
+            }
+            columnFormatting {
+                htmlExpression:
+                    ```html
+                    {case ICON_CLASS/}
+                    {when 1/}
+                    fa fa-check
+                    {otherwise/}
+                    fa fa-minus
+                    {endcase/}
+                    ```
+            }
+        )
+
+        column ICON_COLOR_CLASS (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Icon Color Class
+                alignment: center
+            }
+            layout {
+                sequence: 30
+            }
+            columnFormatting {
+                htmlExpression:
+                    ```html
+                    {case ICON_COLOR_CLASS/}
+                    {when 1/}
+                    u-success
+                    {otherwise/}
+                    u-danger
+                    {endcase/}
+                    ```
+            }
+        )
+
+        column IS_ACTIVE (
+            reportColumnQueryId: 11
+            derivedColumn: N
+            heading {
+                heading: Is Active
+                alignment: end
+            }
+            layout {
+                sequence: 200
+                columnAlignment: end
+            }
+        )
+
+        column LINK (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Link
+                alignment: center
+            }
+            layout {
+                sequence: 110
+            }
+        )
+
+        column LINK_ATTR (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Link Attr
+                alignment: center
+            }
+            layout {
+                sequence: 120
+            }
+        )
+
+        column LINK_CLASS (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Link Class
+                alignment: center
+            }
+            layout {
+                sequence: 130
+            }
+        )
+
+        column LIST_BADGE (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            heading {
+                heading: List Badge
+                alignment: center
+            }
+            layout {
+                sequence: 170
+            }
+            columnFormatting {
+                htmlExpression: &APP_TEXT$BLOG_TXT_SEQUENCE.: #DISPLAY_SEQ#
+            }
+        )
+
+        column LIST_CLASS (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: List Class
+                alignment: center
+            }
+            layout {
+                sequence: 160
+            }
+        )
+
+        column LIST_TEXT (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: List Text
+                alignment: center
+            }
+            layout {
+                sequence: 150
+            }
+        )
+
+        column LIST_TITLE (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: List Title
+                alignment: center
+            }
+            layout {
+                sequence: 140
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            columnFormatting {
+                htmlExpression:
+                    ```html
+                    #LIST_TITLE# 
+                    <span class="u-VisuallyHidden">(&APP_TEXT$BLOG_TXT_STATUS.: {if IS_ACTIVE/}
+                    &APP_TEXT$BLOG_TXT_ENABLED.
+                    {else/}
+                    &APP_TEXT$BLOG_TXT_DISABLED.
+                    {endif/})</span>
+                    
+                    ```
+            }
+        )
+
+    )
+
+    region links (
+        name: Links
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                  v1.id               as id
+                , v1.changed_on       as created_on
+                , v1.changed_on       as created_since
+                , v1.changed_by       as created_by
+                , v1.changed_on       as changed_on
+                , v1.changed_on       as changed_since
+                , v1.changed_by       as changed_by
+                , v1.display_seq      as display_seq
+                , v1.link_status_code as link_status
+                , v1.title            as title
+                , v1.link_desc        as link_desc
+                , v1.link_url         as link_url
+                , v1.notes            as notes
+                , v1.link_is_active   as link_is_active
+                from blog_v_all_links v1
+                where 1 = 1
+                and v1.link_group_id = :P50_LINK_GROUP_ID
+                ```
+            pageItemsToSubmit: P50_LINK_GROUP_ID
+        }
+        layout {
+            sequence: 30
+            slot: fullWidthContent
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+            cssClasses: blog-IR--iconLinks
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P50_LINK_GROUP_ID
+        }
+        link {
+            linkColumn: customTarget
+            target: {
+                page: 51
+                items: {
+                    P51_ID: #ID#
+                }
+                action: resetPagination
+            }
+            linkIcon: <span aria-hidden="true" class="t-Icon fa fa-pencil"></span>
+            linkAttributes: title="&APP_TEXT$BLOG_TXT_EDIT." class="t-Button t-Button--noLabel t-Button--icon t-Button--small"
+        }
+        componentAppearance {
+            showNullValuesAs: -
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: No data found.
+            whenMoreDataFound: The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.
+        }
+        download {
+            filename: blog-links
+            supplementalText: &P0_BLOG_APP_NAME!RAW. links.
+        }
+        advanced {
+            savedReportMappingIdentifier: 45219761514225454
+        }
+
+        column CHANGED_BY (
+            type: plainText
+            heading {
+                heading: Changed by
+            }
+            layout {
+                sequence: 80
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AJ
+            }
+        )
+
+        column CHANGED_ON (
+            type: plainText
+            heading {
+                heading: Changed
+                alternativeLabel: Changed Time
+                alignment: end
+            }
+            layout {
+                sequence: 60
+                columnAlignment: end
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: AI
+            }
+        )
+
+        column CHANGED_SINCE (
+            type: plainText
+            heading {
+                heading: Changed
+                alternativeLabel: Changed Since
+                alignment: center
+            }
+            layout {
+                sequence: 70
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: BD
+            }
+        )
+
+        column CREATED_BY (
+            type: plainText
+            heading {
+                heading: Created by
+            }
+            layout {
+                sequence: 50
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AZ
+            }
+        )
+
+        column CREATED_ON (
+            type: plainText
+            heading {
+                heading: Created
+                alternativeLabel: Created Time
+                alignment: end
+            }
+            layout {
+                sequence: 20
+                columnAlignment: end
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: AY
+            }
+        )
+
+        column CREATED_SINCE (
+            type: plainText
+            heading {
+                heading: Created
+                alternativeLabel: Created Since
+                alignment: center
+            }
+            layout {
+                sequence: 30
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: BC
+            }
+        )
+
+        column DISPLAY_SEQ (
+            type: plainText
+            heading {
+                heading: Sequence
+                alignment: end
+            }
+            layout {
+                sequence: 90
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: O
+            }
+        )
+
+        column ID (
+            type: hidden
+            heading {
+                heading: Link ID
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                primaryKey: true
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AK
+            }
+        )
+
+        column LINK_DESC (
+            type: plainText
+            heading {
+                heading: Description
+            }
+            layout {
+                sequence: 120
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: Q
+            }
+        )
+
+        column LINK_IS_ACTIVE (
+            type: hidden
+            heading {
+                heading: Link Is Active
+            }
+            layout {
+                sequence: 150
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: BE
+            }
+        )
+
+        column LINK_STATUS (
+            type: plainTextBasedOnLov
+            heading {
+                heading: Status
+                alignment: center
+            }
+            lov {
+                lov: @link-status
+            }
+            layout {
+                sequence: 100
+                columnAlignment: center
+            }
+            columnFormatting {
+                htmlExpression:
+                    ```html
+                    {with/}
+                    TEXT:=#LINK_STATUS#
+                    ICON_CLASSES:={if LINK_IS_ACTIVE/}fa-check-circle u-success-text{else/}fa-minus-circle u-danger-text{endif/} w40
+                    {apply THEME$ICON_CUSTOM/}
+                    ```
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: BA
+            }
+            comments {
+                comments: Using HTML Expression because need column filter
+            }
+        )
+
+        column LINK_URL (
+            type: link
+            heading {
+                heading: URL
+            }
+            layout {
+                sequence: 130
+            }
+            link {
+                target: {
+                    type: url
+                    url: #LINK_URL#
+                }
+                linkText: #LINK_URL#
+                linkAttributes: target="_blank"
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: R
+            }
+        )
+
+        column NOTES (
+            type: plainText
+            heading {
+                heading: Notes
+            }
+            layout {
+                sequence: 140
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AQ
+            }
+        )
+
+        column TITLE (
+            type: plainText
+            heading {
+                heading: Title
+            }
+            layout {
+                sequence: 110
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AN
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport 31109 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn CHANGED_SINCE (
+                sequence: 4
+            )
+
+            displayColumn DISPLAY_SEQ (
+                sequence: 1
+            )
+
+            displayColumn LINK_DESC (
+                sequence: 3
+            )
+
+            displayColumn LINK_STATUS (
+                sequence: 5
+            )
+
+            displayColumn TITLE (
+                sequence: 2
+            )
+
+            sort (
+                column: DISPLAY_SEQ
+                sort {
+                    sequence: 1
+                }
+            )
+
+        )
+
+    )
+
+    region search-link-groups (
+        name: Search Link Groups
+        type: smartFilters
+        source {
+            filteredRegion: @select-link-group
+        }
+        layout {
+            sequence: 10
+            slot: leftColumn
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+            cssClasses: [
+                blog-search-region
+                padding-sm
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+        settings {
+            compactNosThreshold: 10000
+        }
+
+        filter P50_SEARCH (
+            type: search
+            label {
+                label: Search
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                dbColumns: LIST_TITLE
+            }
+            security {
+                encryptSessionState: false
+            }
+        )
+
+    )
+
+    region select-link-group (
+        name: Select Link Group
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                  v1.id
+                , apex_page.get_url(
+                     p_items => 'P50_LINK_GROUP_ID'
+                    ,p_values => v1.id
+                  )               as link
+                , null            as link_class -- See column HTML expression
+                , null            as link_attr
+                , null            as icon_class
+                , null            as icon_color_class
+                , case when v1.id = coalesce( to_number( :P50_LINK_GROUP_ID ), 0 )
+                    then 'is-active' 
+                  end             as list_class
+                , substr( v1.title, 1, 50 ) || ( case when length( v1.title ) > 50 then '...' end ) as list_title
+                , null            as list_text
+                , v1.display_seq  as list_badge
+                from blog_v_all_link_groups v1
+                where 1 = 1
+                order by v1.display_seq
+                ```
+        }
+        layout {
+            sequence: 30
+            slot: leftColumn
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+            cssClasses: blog-search-results
+        }
+        reportLayout {
+            numberOfRows: 1000
+        }
+        componentAppearance {
+            template: @/media-list
+            templateOptions: [
+                t-MediaList--stack
+                t-MediaList--iconsRounded
+                t-Report--hideNoPagination
+            ]
+            cssClasses: blog-search-results-items
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+
+        column ICON_CLASS (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Icon Class
+                alignment: center
+            }
+            layout {
+                sequence: 23
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ICON_COLOR_CLASS (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: Icon Color Class
+                alignment: center
+            }
+            layout {
+                sequence: 43
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Id
+                alignment: center
+            }
+            layout {
+                sequence: 1
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LINK (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Link
+                alignment: center
+            }
+            layout {
+                sequence: 3
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LINK_ATTR (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Link Attr
+                alignment: center
+            }
+            layout {
+                sequence: 33
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LINK_CLASS (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Link Class
+                alignment: center
+            }
+            layout {
+                sequence: 13
+            }
+            columnFormatting {
+                htmlExpression: padding-sm
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_BADGE (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            heading {
+                heading: List Badge
+            }
+            layout {
+                sequence: 83
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_CLASS (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: List Class
+                alignment: center
+            }
+            layout {
+                sequence: 53
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_TEXT (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            heading {
+                heading: List Text
+            }
+            layout {
+                sequence: 73
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column LIST_TITLE (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: List Title
+            }
+            layout {
+                sequence: 63
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    pageItem P50_LINK_GROUP_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @links
+            slot: regionBody
+        }
+        security {
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    button create-group (
+        buttonName: CREATE_GROUP
+        label: New Group
+        layout {
+            sequence: 10
+            region: @search-link-groups
+            slot: regionBody
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+                t-Button--stretch
+            ]
+            icon: fa-plus
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 52
+                clearCache: 52
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button create-link (
+        buttonName: CREATE_LINK
+        label: New Link
+        layout {
+            sequence: 10
+            region: @links
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--mobileHideLabel
+                t-Button--iconLeft
+            ]
+            icon: fa-plus
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 51
+                items: {
+                    P51_LINK_GROUP_ID: &P50_LINK_GROUP_ID.
+                }
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button resequence-groups (
+        buttonName: RESEQUENCE_GROUPS
+        label: Resequence Groups
+        layout {
+            sequence: 20
+            region: @search-link-groups
+            slot: regionBody
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+                t-Button--stretch
+            ]
+            icon: fa-sequence
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$BLOG_CONFIRM_RESEQUENCE_LINK_GROUPS.
+            style: warning
+        }
+    )
+
+    button resequence-links (
+        buttonName: RESEQUENCE_LINKS
+        label: Resequence Links
+        layout {
+            sequence: 20
+            region: @links
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-sequence
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$BLOG_CONFIRM_RESEQUENCE_LINKS.
+            style: warning
+        }
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Reset Report
+        layout {
+            sequence: 30
+            region: @links
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: RIR
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction link-groups-resequence (
+        name: Link Groups Resequence
+        execution {
+            sequence: 60
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @resequence-groups
+        }
+
+        action refresh-link-group-details (
+            name: Refresh Link Group Details
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @link-group
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+        )
+
+        action refresh-link-group-list (
+            name: Refresh Link Group List
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @select-link-group
+            }
+            execution {
+                sequence: 30
+                fireOnInit: false
+            }
+        )
+
+        action resequence-link-groups (
+            name: Resequence Link Groups
+            action: executeServerSideCode
+            settings {
+                plsqlCode: blog_admin.resequence_link_groups;
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+        action show-message (
+            name: Show message
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    blog.admin.showSuccessMessage({
+                      "text": "BLOG_MSG_LINK_GROUPS_RESEQUENCED"
+                    });
+                    ```
+            }
+            execution {
+                sequence: 40
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction links-resequence (
+        name: Links Resequence
+        execution {
+            sequence: 80
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @resequence-links
+        }
+
+        action refresh-links-report (
+            name: Refresh Links Report
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @links
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+        )
+
+        action resequence-links (
+            name: Resequence Links
+            action: executeServerSideCode
+            settings {
+                plsqlCode:
+                    ```plsql
+                    blog_admin.resequence_links(
+                      p_link_group_id => :P50_LINK_GROUP_ID
+                    );
+                    ```
+                itemsToSubmit: P50_LINK_GROUP_ID
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+        action show-message (
+            name: Show message
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    blog.admin.showSuccessMessage({
+                      "text": "BLOG_MSG_LINKS_RESEQUENCED"
+                    });
+                    ```
+            }
+            execution {
+                sequence: 30
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction process-link (
+        name: Process Link
+        execution {
+            sequence: 40
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @links
+        }
+
+        action refresh-links-report (
+            name: Refresh Links Report
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @links
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

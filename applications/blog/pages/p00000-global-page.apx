@@ -1,0 +1,595 @@
+page 0 (
+    name: Global Page - Desktop
+    pageGroup: @general
+    appearance {
+        templateOptions: #DEFAULT#
+    }
+    comments {
+        comments: The global page
+    }
+
+    region application-banner (
+        name: Application Banner
+        type: staticContent
+        source {
+            htmlCode: &P0_BLOG_APP_NAME.
+        }
+        layout {
+            sequence: 10
+            slot: banner
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+            cssClasses: blog-app-banner
+        }
+        accessibility {
+            useLandmark: false
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        comments {
+            comments: Region to displays blog description.
+        }
+    )
+
+    region archives (
+        name: Archives
+        type: list
+        source {
+            list: @post-archives
+        }
+        layout {
+            sequence: 80
+            parentRegion: @global-column
+            slot: subRegions
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+            cssClasses: blog-shadow-md
+        }
+        accessibility {
+            landmarkType: navigation
+        }
+        serverCache {
+            caching: true
+            cacheTimeout: 1Year
+            dependsOnItems: APP_ID
+            type: item=value
+            item: DEBUG
+            value: NO
+        }
+        config {
+            buildOption: @blog-feature-archive
+        }
+        comments {
+            comments: Post archives link list
+        }
+        componentAppearance {
+            listTemplate: @/links-list
+            templateOptions: [
+                #DEFAULT#
+                t-LinksList--showBadge
+            ]
+        }
+    )
+
+    region categories (
+        name: Categories
+        type: list
+        source {
+            list: @post-categories
+        }
+        layout {
+            sequence: 60
+            parentRegion: @global-column
+            slot: subRegions
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+            cssClasses: blog-shadow-md
+        }
+        accessibility {
+            landmarkType: navigation
+        }
+        serverCache {
+            caching: true
+            cacheTimeout: 1Year
+            dependsOnItems: APP_ID
+            type: item=value
+            item: DEBUG
+            value: NO
+        }
+        config {
+            buildOption: @blog-feature-category
+        }
+        comments {
+            comments: Post categories link list
+        }
+        componentAppearance {
+            listTemplate: @/links-list
+            templateOptions: [
+                #DEFAULT#
+                t-LinksList--showBadge
+            ]
+        }
+    )
+
+    region footer-links (
+        name: Footer Links
+        type: list
+        source {
+            list: @footer-modal-pages
+        }
+        layout {
+            sequence: 10
+            slot: footer
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+        }
+        accessibility {
+            useLandmark: false
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        config {
+            buildOption: @blog-feature-modal-pages
+        }
+        comments {
+            comments: Footer links to modal dialog pages.
+        }
+        componentAppearance {
+            listTemplate: @blog-footer-link-list-custom
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region global-column (
+        name: Global Column
+        type: staticContent
+        layout {
+            sequence: 200
+            slot: body
+            startNewRow: false
+            column: 10
+            columnCssClasses: blog-global-column
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        accessibility {
+            useLandmark: false
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        serverSideCondition {
+            type: currentPageNotInList
+            pages: [
+                1001
+                1002
+                1003
+                9999
+            ]
+        }
+        comments {
+            comments: Application global column holding e.g. search, archives, categories list and latest posts list
+        }
+    )
+
+    region latest-posts (
+        name: Latest Posts
+        type: list
+        source {
+            list: @latest-posts
+        }
+        layout {
+            sequence: 50
+            parentRegion: @global-column
+            slot: subRegions
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+            cssClasses: blog-shadow-md
+        }
+        accessibility {
+            landmarkType: navigation
+        }
+        serverCache {
+            caching: true
+            cacheTimeout: 1Year
+            dependsOnItems: APP_ID
+            type: item=value
+            item: DEBUG
+            value: NO
+        }
+        config {
+            buildOption: @blog-feature-latest-posts
+        }
+        comments {
+            comments: Latest post link list
+        }
+        componentAppearance {
+            listTemplate: @/links-list
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region not-rendered-items (
+        name: Not Rendered Items
+        type: staticContent
+        layout {
+            sequence: 90
+            slot: footer
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+        }
+        accessibility {
+            useLandmark: false
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        serverSideCondition {
+            type: never
+        }
+        comments {
+            comments: Region to hold items that shouldn't rendered on page.
+        }
+    )
+
+    region powered-by-apex-blog (
+        name: Powered by APEX Blog
+        type: staticContent
+        source {
+            htmlCode:
+                ```html
+                <div class="blog-copyright">
+                  <a  href="https://github.com/jariolaine/apex-blog"
+                      title="Blog application built with Oracle Application Express (APEX)" 
+                      target="_blank" 
+                      rel="external" 
+                      class="blog-copyright-link t-Button t-Button--link t-Button--icon t-Button--iconRight"
+                  >
+                    <span class="t-Button-label">Powered By APEX Blog</span><span class="t-Icon fa fa-github" aria-hidden="true"></span>
+                  </a>
+                </div>
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: footer
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        comments {
+            comments:
+                ```
+                Displays link to blog application source code in GitHub.
+                Do not change!
+                ```
+        }
+    )
+
+    region search-container (
+        name: Search Container
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: beforeNavigationBar
+        }
+        appearance {
+            template: @/item-container
+            templateOptions: [
+                #DEFAULT#
+                t-Form--noPadding
+            ]
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region subscribe-in-a-reader (
+        name: Subscribe in a Reader
+        type: dynamicContent
+        source {
+            plsqlFunctionBody:
+                ```plsql
+                return blog_html.get_rss_anchor(
+                  p_app_name  => :P0_BLOG_APP_NAME
+                , p_message   => :APP_TEXT$BLOG_RSS_TITLE
+                );
+                ```
+        }
+        layout {
+            sequence: 90
+            parentRegion: @global-column
+            slot: subRegions
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+            cssClasses: blog-shadow-md
+        }
+        accessibility {
+            landmarkType: navigation
+        }
+        serverCache {
+            caching: true
+            cacheTimeout: 1Year
+            dependsOnItems: APP_ID
+            type: item=value
+            item: DEBUG
+            value: NO
+        }
+        config {
+            buildOption: @blog-feature-rss
+        }
+        comments {
+            comments: Displays link to RSS feed
+        }
+    )
+
+    region tags (
+        name: Tags
+        type: list
+        source {
+            list: @post-tags
+        }
+        layout {
+            sequence: 70
+            parentRegion: @global-column
+            slot: subRegions
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+            cssClasses: blog-shadow-md
+        }
+        accessibility {
+            landmarkType: navigation
+        }
+        serverCache {
+            caching: true
+            cacheTimeout: 1Year
+            dependsOnItems: APP_ID
+            type: item=value
+            item: DEBUG
+            value: NO
+        }
+        config {
+            buildOption: @blog-feature-tag-cloud
+        }
+        comments {
+            comments: Post tags link list
+        }
+        componentAppearance {
+            listTemplate: @blog-tag-cloud-custom
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P0_BLOG_APP_DATE_FORMAT (
+        type: hidden
+        layout {
+            sequence: 30
+            region: @not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: user
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        comments {
+            comments: Date format used e.g. on reports. The value is set in the application process "Initialize Items"
+        }
+    )
+
+    pageItem P0_BLOG_APP_DESC (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: user
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P0_BLOG_APP_NAME (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: user
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P0_BLOG_POST_DATE_FORMAT (
+        type: hidden
+        layout {
+            sequence: 40
+            region: @not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: user
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        comments {
+            comments: Post title date format. Used e.g. in posts reports. The value is set in the application process "Initialize Items"
+        }
+    )
+
+    pageItem P0_BLOG_SEARCH_ROWS (
+        type: hidden
+        layout {
+            sequence: 50
+            region: @not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: user
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        comments {
+            comments: Search report rows to display per report page. The value is set in the application process "Initialize Items"
+        }
+    )
+
+    pageItem P0_PAGE_URL (
+        type: hidden
+        layout {
+            sequence: 60
+            region: @not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        comments {
+            comments: Page URL. Used in page meta tags. The value is set in the schortcuts.
+        }
+    )
+
+    pageItem P0_SEARCH (
+        type: textField
+        label {
+            label: Search
+            alignment: left
+        }
+        settings {
+            subtype: search
+            submitWhenEnterPressed: true
+        }
+        layout {
+            sequence: 10
+            region: @search-container
+            slot: item
+            alignment: left
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--stretchInputs
+                t-Form-fieldContainer--xlarge
+                margin-bottom-sm
+            ]
+            cssClasses: mxw360
+            icon: fa-search
+            valuePlaceholder: Search ...
+        }
+        validation {
+            maxLength: 256
+        }
+        advanced {
+            warnOnUnsavedChanges: ignore
+        }
+        sessionState {
+            storage: request
+        }
+        serverSideCondition {
+            type: currentPage!=page
+            page: 4
+        }
+        security {
+            encryptSessionState: false
+            restrictedChars: noSpecialCharNoNewline
+        }
+        config {
+            buildOption: @blog-feature-search
+        }
+        comments {
+            comments: When user press enter on field, page is submitted. Application process "Redirect to search page" handles redirect to search result page.
+        }
+    )
+
+    dynamicAction scroll-top (
+        name: Scroll Top
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterrefresh
+            selectionType: jQuerySelector
+            jquerySelector: #page-content-container,#comments
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode: apex.theme42.util.scrollTo( this.triggeringElement.id == "comments" ? this.triggeringElement.id : "wwvFlowForm" );
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

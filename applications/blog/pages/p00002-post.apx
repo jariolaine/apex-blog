@@ -1,0 +1,1229 @@
+page 2 (
+    name: Single Post
+    alias: POST
+    title: &P2_POST_TITLE. | &P0_BLOG_APP_NAME.
+    pageGroup: @post-report
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    htmlHeader {
+        htmlHeader: "\"BLOG_CANONICAL_LINK_POST\""
+    }
+    security {
+        authentication: public
+        formAutoComplete: false
+    }
+    advanced {
+        enableMetaTags: true
+    }
+
+    region comments (
+        name: Comments
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                   v1.comment_by    as user_name
+                  ,v1.user_icon     as user_icon
+                  ,v1.icon_modifier as icon_modifier
+                  ,v1.comment_body  as comment_text
+                  ,v1.created_on    as comment_date
+                  ,null             as comment_modifiers -- see column HTML Expression
+                  ,null             as actions
+                  ,null             as attribute_1
+                  ,null             as attribute_2
+                  ,null             as attribute_3
+                  ,null             as attribute_4
+                from blog_v_comments v1
+                where 1 = 1
+                  and v1.post_id = :P2_POST_ID
+                order by v1.created_on desc
+                ```
+            pageItemsToSubmit: P2_POST_ID
+        }
+        layout {
+            sequence: 40
+            slot: body
+            startNewRow: false
+            newColumn: false
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+            cssClasses: blog-shadow-md
+        }
+        advanced {
+            htmlDomId: comments
+        }
+        config {
+            buildOption: @blog-feature-allow-comments
+        }
+        comments {
+            comments: Report to display comments relating current post
+        }
+        reportLayout {
+            numberOfRowsType: itemValue
+            item: P2_BLOG_COMMENT_ROWS
+        }
+        componentAppearance {
+            template: @/comments
+            templateOptions: [
+                #DEFAULT#
+                t-Comments--basic
+                t-Comments--iconsRounded
+                t-Report--hideNoPagination
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+        messages {
+            whenNoDataFound: &APP_TEXT$BLOG_MSG_NO_COMMENTS.
+        }
+        heading {
+            type: none
+        }
+
+        column ACTIONS (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Actions
+                alignment: center
+            }
+            layout {
+                sequence: 72
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ATTRIBUTE_1 (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: Attribute 1
+                alignment: center
+            }
+            layout {
+                sequence: 82
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ATTRIBUTE_2 (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            heading {
+                heading: Attribute 2
+                alignment: center
+            }
+            layout {
+                sequence: 92
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ATTRIBUTE_3 (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            heading {
+                heading: Attribute 3
+                alignment: center
+            }
+            layout {
+                sequence: 102
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ATTRIBUTE_4 (
+            reportColumnQueryId: 11
+            derivedColumn: N
+            heading {
+                heading: Attribute 4
+                alignment: center
+            }
+            layout {
+                sequence: 112
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column COMMENT_DATE (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Comment Date
+                alignment: center
+            }
+            layout {
+                sequence: 42
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column COMMENT_MODIFIERS (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: Comment Modifiers
+                alignment: center
+            }
+            layout {
+                sequence: 62
+            }
+            columnFormatting {
+                htmlExpression: blog-comment padding-md
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column COMMENT_TEXT (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Comment Text
+                alignment: center
+            }
+            layout {
+                sequence: 32
+            }
+            sorting {
+                sortable: false
+            }
+            security {
+                escapeSpecialChars: false
+            }
+        )
+
+        column ICON_MODIFIER (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Icon Modifier
+                alignment: center
+            }
+            layout {
+                sequence: 22
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column USER_ICON (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: User Icon
+                alignment: center
+            }
+            layout {
+                sequence: 12
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column USER_NAME (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: User Name
+                alignment: center
+            }
+            layout {
+                sequence: 2
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    region move-to-another-post (
+        name: Move to Another Post
+        type: staticContent
+        layout {
+            sequence: 30
+            slot: body
+            startNewRow: false
+            newColumn: false
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--hideHeader js-addHiddenHeadingRoleDesc
+                t-Region--scrollBody
+            ]
+        }
+        accessibility {
+            landmarkType: navigation
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: not( :P2_NEXT_POST_ID is null and :P2_PREV_POST_ID is null )
+        }
+        config {
+            buildOption: @blog-feature-post-pagination
+        }
+        comments {
+            comments: Region to hold buttons to paginate next and previous post
+        }
+    )
+
+    region post (
+        name: Post
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                  v1.post_id         as post_id
+                , v1.category_id     as category_id
+                , v1.published_on    as published_on
+                , v1.published_on    as pubdate
+                , v1.post_title      as post_title
+                , v1.category_title  as category_title
+                , v1.body_html       as body_html
+                , v1.tags_html2      as tags_html
+                , null               as read_more_link
+                from blog_v_posts v1
+                where 1 = 1
+                  and v1.post_id = :P2_POST_ID
+                order by 1
+                ```
+            optimizerHint: APEX$USE_NO_PAGINATION
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+            renderComponents: belowContent
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        comments {
+            comments: Report to display only one post
+        }
+        reportLayout {
+            numberOfRows: 1
+        }
+        componentAppearance {
+            template: @blog-posts-custom
+            templateOptions: [
+                #DEFAULT#
+                blog-posts--paginationHidden
+                t-Report--hideNoPagination
+            ]
+        }
+        pagination {
+            partialPageRefresh: false
+        }
+        performance {
+            maxRowsToProcess: 1
+        }
+        messages {
+            whenNoDataFound: &APP_TEXT$BLOG_MSG_NO_DATA_FOUND.
+        }
+        heading {
+            type: none
+        }
+
+        column BODY_HTML (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Body Html
+                alignment: center
+            }
+            layout {
+                sequence: 62
+            }
+            sorting {
+                sortable: false
+            }
+            security {
+                escapeSpecialChars: false
+            }
+        )
+
+        column CATEGORY_ID (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Category Id
+                alignment: center
+            }
+            layout {
+                sequence: 2
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column CATEGORY_TITLE (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            type: link
+            heading {
+                heading: Category Title
+                alignment: center
+            }
+            layout {
+                sequence: 42
+            }
+            link {
+                target: {
+                    page: CATEGORY
+                    items: {
+                        P14_CATEGORY_ID: #CATEGORY_ID#
+                    }
+                }
+                linkText: #CATEGORY_TITLE#
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column POST_ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Post Id
+                alignment: center
+            }
+            layout {
+                sequence: 1
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column POST_TITLE (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Post Title
+                alignment: center
+            }
+            layout {
+                sequence: 32
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column PUBDATE (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Pubdate
+                alignment: center
+            }
+            layout {
+                sequence: 22
+            }
+            appearance {
+                formatMask: YYYY-MM-DD
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column PUBLISHED_ON (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Published On
+                alignment: center
+            }
+            layout {
+                sequence: 12
+            }
+            appearance {
+                formatMask: &P0_BLOG_POST_DATE_FORMAT.
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column READ_MORE_LINK (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            heading {
+                heading: Read More Link
+                alignment: center
+            }
+            layout {
+                sequence: 82
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column TAGS_HTML (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: Tags Html
+                alignment: center
+            }
+            layout {
+                sequence: 72
+            }
+            sorting {
+                sortable: false
+            }
+            security {
+                escapeSpecialChars: false
+            }
+        )
+
+    )
+
+    pageItem P2_BLOG_COMMENT_ROWS (
+        type: hidden
+        layout {
+            sequence: 70
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: user
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        comments {
+            comments: Comment report rows to display per report page. Value computed on new session using application process "Initialize Items"
+        }
+    )
+
+    pageItem P2_NEXT_POST_ID (
+        type: hidden
+        layout {
+            sequence: 150
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P2_NEXT_POST_TITLE (
+        type: hidden
+        layout {
+            sequence: 160
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P2_POST_AUTHOR (
+        type: hidden
+        layout {
+            sequence: 80
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        comments {
+            comments: Post author
+        }
+    )
+
+    pageItem P2_POST_CATEGORY (
+        type: hidden
+        layout {
+            sequence: 90
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        comments {
+            comments: Post category
+        }
+    )
+
+    pageItem P2_POST_DESC (
+        type: hidden
+        layout {
+            sequence: 110
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        comments {
+            comments: Post description
+        }
+    )
+
+    pageItem P2_POST_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @post
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        comments {
+            comments: Post ID to filter report
+        }
+    )
+
+    pageItem P2_POST_MODIFIED (
+        type: hidden
+        layout {
+            sequence: 120
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        comments {
+            comments: Post modified on
+        }
+    )
+
+    pageItem P2_POST_PUBLISHED (
+        type: hidden
+        layout {
+            sequence: 130
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        comments {
+            comments: Post published on
+        }
+    )
+
+    pageItem P2_POST_TITLE (
+        type: hidden
+        layout {
+            sequence: 140
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        comments {
+            comments: Post title
+        }
+    )
+
+    pageItem P2_PREV_POST_ID (
+        type: hidden
+        layout {
+            sequence: 170
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P2_PREV_POST_TITLE (
+        type: hidden
+        layout {
+            sequence: 180
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P2_SUBSCRIPTION_ID (
+        type: hidden
+        layout {
+            sequence: 190
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: checksumRequiredAppLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    button new-comment (
+        buttonName: NEW_COMMENT
+        label: Post a Comment
+        layout {
+            sequence: 20
+            region: @comments
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            cssClasses: u-bold
+            icon: fa fa-comment-o
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 1001
+                items: {
+                    P1001_POST_ID: &P2_POST_ID.
+                }
+                clearCache: 1001
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+        config {
+            buildOption: @blog-feature-allow-comments
+        }
+        comments {
+            comments: Open comment modal dialog
+        }
+    )
+
+    button next-post (
+        buttonName: NEXT_POST
+        label: &P2_NEXT_POST_TITLE.
+        layout {
+            sequence: 10
+            region: @move-to-another-post
+            slot: regionBody
+            rowCssClasses: [
+                u-flex-wrap-nowrap
+                padding-sm
+            ]
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--large
+                t-Button--link
+                t-Button--iconLeft
+            ]
+            cssClasses: [
+                blog-text-wrap
+                u-pullLeft
+                padding-left-none
+                padding-right-sm
+            ]
+            icon: fa-angle-left
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                items: {
+                    P2_POST_ID: &P2_NEXT_POST_ID.
+                }
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P2_NEXT_POST_ID
+        }
+        comments {
+            comments: Go to next post if there is any
+        }
+    )
+
+    button prev-post (
+        buttonName: PREV_POST
+        label: &P2_PREV_POST_TITLE.
+        layout {
+            sequence: 20
+            region: @move-to-another-post
+            slot: regionBody
+            startNewRow: false
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--large
+                t-Button--link
+                t-Button--iconRight
+            ]
+            cssClasses: [
+                blog-text-wrap
+                u-pullRight
+                padding-left-sm
+                padding-right-none
+            ]
+            icon: fa-angle-right
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                items: {
+                    P2_POST_ID: &P2_PREV_POST_ID.
+                }
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P2_PREV_POST_ID
+        }
+        comments {
+            comments: Go to previous post if there is any
+        }
+    )
+
+    dynamicAction new-comment (
+        name: New Comment
+        execution {
+            sequence: 20
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @comments
+        }
+        config {
+            buildOption: @blog-feature-allow-comments
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @comments
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+            config {
+                buildOption: !@blog-feature-moderate-comments
+            }
+        )
+
+    )
+
+    dynamicAction set-is-current (
+        name: Set is Current
+        execution {
+            sequence: 10
+        }
+        when {
+            event: ready
+        }
+        comments {
+            comments: Because latest post list in global page is cached, we set is-current class here
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    blog.ui.setListCurrentItem({
+                      affectedElements: this.affectedElements
+                    , pageItem: "P2_POST_ID"
+                    });
+                    
+                    ```
+            }
+            affectedElements {
+                selectionType: region
+                region: @/latest-posts
+            }
+            execution {
+                sequence: 10
+            }
+            comments {
+                comments: List anchors have data attribute where is post id. If that match item P2_POST_ID value set is-current class to list
+            }
+        )
+
+    )
+
+    metaTag article-author (
+        name: article:author
+        value: &P2_POST_AUTHOR.
+    )
+
+    metaTag article-modified-time (
+        name: article:modified_time
+        value: &P2_POST_MODIFIED.
+    )
+
+    metaTag article-published-time (
+        name: article:published_time
+        value: &P2_POST_PUBLISHED.
+    )
+
+    metaTag article-section (
+        name: article:section
+        value: &P2_POST_CATEGORY.
+    )
+
+    metaTag description (
+        value: &P2_POST_DESC.
+    )
+
+    metaTag og-description (
+        name: og:description
+        value: &P2_POST_DESC.
+    )
+
+    metaTag og-image (
+        name: og:image
+        value: &APP_FILES.icons/app-icon-512.png
+    )
+
+    metaTag og-site-name (
+        name: og:site_name
+        value: &P0_BLOG_APP_NAME.
+    )
+
+    metaTag og-title (
+        name: og:title
+        value: &P2_POST_TITLE.
+    )
+
+    metaTag og-type (
+        name: og:type
+        value: article
+    )
+
+    metaTag og-url (
+        name: og:url
+        value: &P0_PAGE_URL.
+    )
+
+    process get-post-details (
+        name: Get post details
+        type: invokeApi
+        invoke {
+            package: BLOG_UTIL
+            procedureOrFunction: GET_POST_DETAILS
+        }
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        error {
+            errorMessage: Post not found.
+        }
+        advanced {
+            executionMappingIdentifier: 27862651784256825
+        }
+        comments {
+            comments: Fetch post details for meta tags and pagination
+        }
+
+        parameter p_next_post_id (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P2_NEXT_POST_ID
+            }
+            advanced {
+                displaySequence: 80
+            }
+        )
+
+        parameter p_next_post_title (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P2_NEXT_POST_TITLE
+            }
+            advanced {
+                displaySequence: 90
+            }
+        )
+
+        parameter p_post_author (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P2_POST_AUTHOR
+            }
+            advanced {
+                displaySequence: 50
+            }
+        )
+
+        parameter p_post_category (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P2_POST_CATEGORY
+            }
+            advanced {
+                displaySequence: 40
+            }
+        )
+
+        parameter p_post_desc (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P2_POST_DESC
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+        parameter p_post_id (
+            value {
+                type: item
+                item: P2_POST_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_post_modified (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P2_POST_MODIFIED
+            }
+            advanced {
+                displaySequence: 70
+            }
+        )
+
+        parameter p_post_published (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P2_POST_PUBLISHED
+            }
+            advanced {
+                displaySequence: 60
+            }
+        )
+
+        parameter p_post_title (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P2_POST_TITLE
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_prev_post_id (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P2_PREV_POST_ID
+            }
+            advanced {
+                displaySequence: 100
+            }
+        )
+
+        parameter p_prev_post_title (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P2_PREV_POST_TITLE
+            }
+            advanced {
+                displaySequence: 110
+            }
+        )
+
+    )
+
+    process remove-subscription (
+        name: Remove subscription
+        type: invokeApi
+        invoke {
+            package: BLOG_COMMENT
+            procedureOrFunction: UNSUBSCRIBE
+        }
+        execution {
+            sequence: 30
+            point: beforeHeader
+        }
+        successMessage {
+            successMessage: You have now unsubscribed from notifications for this post comments.
+        }
+        advanced {
+            executionMappingIdentifier: 31249019378982930
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P2_SUBSCRIPTION_ID
+        }
+        comments {
+            comments: Remove user subscription from getting notifications of new comments
+        }
+
+        parameter p_subscription_id (
+            value {
+                type: item
+                item: P2_SUBSCRIPTION_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process reset-comments-pagination (
+        name: Reset comments pagination
+        type: resetPagination
+        execution {
+            sequence: 20
+            point: beforeRegions
+        }
+        advanced {
+            executionMappingIdentifier: 26063395480107811
+        }
+        comments {
+            comments: Reset comments report pagination
+        }
+    )
+
+)
+

@@ -1,0 +1,100 @@
+app BLOG (
+    name: Blog Public Pages
+    version: Release 24.2.11.20260126
+    group: @apex-blog
+    logo {
+        type: text
+        text: &P0_BLOG_APP_DESC.
+    }
+    navigation {
+        homeUrl: {
+            page: HOME
+        }
+        loginUrl: {
+            page: LOGIN
+        }
+    }
+    navigationMenu {
+        listTemplate: @/top-navigation-tabs
+        templateOptions: [
+            #DEFAULT#
+            t-NavTabs--inlineLabels-lg
+            t-NavTabs--displayLabels-sm
+        ]
+        listPosition: top
+        list: @navigation-menu
+    }
+    navigationBar {
+        list: @navigation-bar
+        listTemplate: @/navigation-bar
+        templateOptions: #DEFAULT#
+    }
+    userInterface {
+        currentTheme: @universal-theme
+        globalPage: 0
+        autoDismissSuccessMessages: true
+    }
+    appFormatMasks {
+        date: &P0_BLOG_APP_DATE_FORMAT.
+        timestamp: &P0_BLOG_APP_DATE_FORMAT.
+    }
+    javaScript {
+        fileUrls: #APP_FILES#js/blog#MIN#.js
+    }
+    css {
+        fileUrls: #APP_FILES#css/style#MIN#.css
+    }
+    authentication {
+        scheme: @apex-authentication
+        publicUser: APEX_PUBLIC_USER
+    }
+    authorization {
+        sourceForRoleOrGroupSchemes: authenticationScheme
+    }
+    security {
+        deepLinking: true
+    }
+    sessionStateProtection {
+        allowUrlsCreatedAfter: 2021-11-27T07:53:25
+        checksumSalt: 79ABAEFD7AD8D73AC0DC0A616F42577F97F051356BED99D8EBB45C92C0F77585
+        acceptPre202UrlChecksums: false
+    }
+    sessionManagement {
+        rejoinSessions: publicSessions
+        maxSessionLength: 86400
+        sessionTimeoutUrl: #LOGOUT_URL#
+        maxSessionIdleTime: 43200
+        sessionIdleTimeoutUrl: #LOGOUT_URL#
+        sessionTimeoutWarning: 0
+    }
+    globalization {
+        documentDirection: leftToRight
+    }
+    progressiveWebApp {
+        enable: false
+    }
+    rowSearch {
+        textQueryFunction: searchEngine
+    }
+    reportPrinting {
+        type: useInstanceSettings
+    }
+    errorHandling {
+        errorHandlingFunctionName: blog_util.apex_error_handler
+    }
+    runtime {
+        accessibleReadOnlyItems: false
+    }
+    advanced {
+        modernizeApp: true
+        copyrightBanner: License: https://raw.githubusercontent.com/jariolaine/apex-blog/master/LICENSE.txt
+    }
+    comments {
+        comments:
+            ```
+            APEX Blog public application.
+            Source code: https://github.com/jariolaine/apex-blog
+            ```
+    }
+)
+

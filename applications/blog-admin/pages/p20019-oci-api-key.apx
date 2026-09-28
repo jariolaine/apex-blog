@@ -1,0 +1,346 @@
+page 20019 (
+    name: Oracle Cloud API Key
+    alias: OCI-API-KEY
+    title: Oracle Cloud API Key
+    pageGroup: @configuration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/wizard-modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 50
+            slot: wizardButtons
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region credential (
+        name: Credential
+        type: staticContent
+        layout {
+            sequence: 60
+            slot: wizardBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--noUI
+                t-Region--scrollBody
+            ]
+        }
+    )
+
+    region information (
+        name: Information
+        type: staticContent
+        source {
+            htmlCode: &APP_TEXT$BLOG_MSG_OCI_API_KEY_INFO!RAW.
+        }
+        layout {
+            sequence: 10
+            slot: wizardBody
+        }
+        appearance {
+            template: @/alert
+            templateOptions: [
+                #DEFAULT#
+                t-Alert--wizard
+                t-Alert--defaultIcons
+                t-Alert--info
+                t-Alert--removeHeading js-removeLandmark
+                margin-bottom-none
+            ]
+        }
+    )
+
+    pageItem P20019_OCI_KEY_FINGERPRINT (
+        type: textField
+        label {
+            label: OCI Public Key Fingerprint
+            alignment: left
+        }
+        layout {
+            sequence: 80
+            region: @credential
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    pageItem P20019_OCI_PRIVATE_KEY (
+        type: textarea
+        label {
+            label: OCI Private Key
+            alignment: left
+        }
+        layout {
+            sequence: 90
+            region: @credential
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+            height: 4
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    pageItem P20019_OCI_TENANCY_OCID (
+        type: textField
+        label {
+            label: OCI Tenancy ID
+            alignment: left
+        }
+        layout {
+            sequence: 70
+            region: @credential
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    pageItem P20019_OCI_USER_OCID (
+        type: textField
+        label {
+            label: OCI User ID
+            alignment: left
+        }
+        layout {
+            sequence: 50
+            region: @credential
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-close
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            showProcessing: true
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process update-credential (
+        name: Update Credential
+        type: invokeApi
+        invoke {
+            package: APEX_CREDENTIAL
+            procedureOrFunction: SET_PERSISTENT_CREDENTIALS
+        }
+        execution {
+            sequence: 30
+        }
+        successMessage {
+            successMessage: Credential updated.
+        }
+        advanced {
+            executionMappingIdentifier: 98637259084957512
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression:
+                ```plsql
+                :P20019_OCI_USER_OCID is not null and
+                :P20019_OCI_PRIVATE_KEY is not null and
+                :P20019_OCI_TENANCY_OCID is not null and
+                :P20019_OCI_KEY_FINGERPRINT is not null
+                ```
+        }
+
+        parameter p_client_id (
+            value {
+                type: item
+                item: P20019_OCI_USER_OCID
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_client_secret (
+            value {
+                type: item
+                item: P20019_OCI_PRIVATE_KEY
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+        parameter p_credential_static_id (
+            value {
+                type: staticValue
+                staticValue: BLOG_OCI_API_KEY
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_fingerprint (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P20019_OCI_KEY_FINGERPRINT
+            }
+            advanced {
+                displaySequence: 50
+            }
+        )
+
+        parameter p_namespace (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P20019_OCI_TENANCY_OCID
+            }
+            advanced {
+                displaySequence: 40
+            }
+        )
+
+    )
+
+    branch (
+        name: Go to Page 20010
+        execution {
+            sequence: 20
+        }
+        behavior {
+            target: {
+                page: 20010
+            }
+        }
+    )
+
+)
+

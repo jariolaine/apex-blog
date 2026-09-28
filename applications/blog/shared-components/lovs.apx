@@ -1,0 +1,68 @@
+lov search-source (
+    name: SEARCH_SOURCE
+    source {
+        location: staticValues
+    }
+
+    entry comments (
+        sequence: 20
+        display: Comments
+        return: COMMENTS
+        config {
+            buildOption: @blog-feature-search-comments
+        }
+    )
+
+    entry files (
+        sequence: 40
+        display: Files
+        return: FILES
+        serverSideCondition {
+            type: rowsReturned
+            sqlQuery:
+                ```sql
+                select 1
+                from apex_application_build_options
+                where 1 = 1
+                and application_id = :APP_ID
+                and build_option_name = 'BLOG_FEATURE_FILES'
+                and build_option_status = 'Include'
+                ```
+        }
+        config {
+            buildOption: @blog-feature-search-files
+        }
+    )
+
+    entry links (
+        sequence: 30
+        display: Links
+        return: LINKS
+        serverSideCondition {
+            type: rowsReturned
+            sqlQuery:
+                ```sql
+                select 1
+                from apex_application_build_options
+                where 1 = 1
+                and application_id = :APP_ID
+                and build_option_name = 'BLOG_FEATURE_LINKS'
+                and build_option_status = 'Include'
+                ```
+        }
+        config {
+            buildOption: @blog-feature-search-links
+        }
+    )
+
+    entry posts (
+        sequence: 10
+        display: Posts
+        return: POSTS
+        config {
+            buildOption: @blog-feature-search-posts
+        }
+    )
+
+)
+

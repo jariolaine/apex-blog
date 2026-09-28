@@ -1,0 +1,541 @@
+page 20016 (
+    name: Generative AI Configuration
+    alias: GENERATIVE-AI-CONFIGURATION
+    title: Generative AI
+    pageGroup: @configuration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/wizard-modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 50
+            slot: wizardButtons
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region generative-ai (
+        name: Generative AI
+        type: form
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                  v1.remote_server_static_id
+                , apex_application_admin.get_build_option_status(
+                    p_application_id     => :APP_ID
+                  , p_build_option_name  => blog_ai.get_param_value( 'gen_ai_build_option' )
+                  )               as build_status
+                , v1.base_url     as base_url
+                , v1.model_name   as ai_model_name
+                , v1.http_headers as ai_http_headers
+                , v1.attributes   as ai_attributes
+                from apex_workspace_ai_services v1
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: wizardBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Region-orderBy--center
+            ]
+        }
+        edit {
+            enabled: true
+            allowedOperations: update
+        }
+    )
+
+    region information (
+        name: Information
+        type: staticContent
+        source {
+            htmlCode: &APP_TEXT$BLOG_MSG_GENERATIVE_AI_INFO!RAW.
+        }
+        layout {
+            sequence: 10
+            slot: wizardBody
+        }
+        appearance {
+            template: @/alert
+            templateOptions: [
+                #DEFAULT#
+                t-Alert--wizard
+                t-Alert--defaultIcons
+                t-Alert--info
+                t-Alert--removeHeading js-removeLandmark
+                margin-bottom-none
+            ]
+        }
+    )
+
+    pageItem P20016_AI_ATTRIBUTES (
+        type: textarea
+        label {
+            label: Attributes
+            alignment: left
+        }
+        settings {
+            autoHeight: true
+        }
+        layout {
+            sequence: 120
+            region: @generative-ai
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+            height: 3
+        }
+        validation {
+            maxLength: 32767
+        }
+        source {
+            formRegion: @generative-ai
+            column: AI_ATTRIBUTES
+            dataType: clob
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    pageItem P20016_AI_HTTP_HEADERS (
+        type: textarea
+        label {
+            label: HTTP Headers
+            alignment: left
+        }
+        settings {
+            autoHeight: true
+        }
+        layout {
+            sequence: 110
+            region: @generative-ai
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+            height: 3
+        }
+        validation {
+            maxLength: 32767
+        }
+        source {
+            formRegion: @generative-ai
+            column: AI_HTTP_HEADERS
+            dataType: clob
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    pageItem P20016_AI_MODEL_NAME (
+        type: textField
+        label {
+            label: Model
+            alignment: left
+        }
+        layout {
+            sequence: 100
+            region: @generative-ai
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            maxLength: 1000
+        }
+        source {
+            formRegion: @generative-ai
+            column: AI_MODEL_NAME
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    pageItem P20016_API_KEY (
+        type: password
+        label {
+            label: API Key
+            alignment: left
+        }
+        settings {
+            submitWhenEnterPressed: false
+        }
+        layout {
+            sequence: 80
+            region: @generative-ai
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    pageItem P20016_BASE_URL (
+        type: textField
+        label {
+            label: Base URL
+            alignment: left
+        }
+        layout {
+            sequence: 90
+            region: @generative-ai
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @generative-ai
+            column: BASE_URL
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    pageItem P20016_BUILD_STATUS (
+        type: switch
+        label {
+            label: Status
+            alignment: left
+        }
+        settings {
+            useDefaults: false
+            onValue: INCLUDE
+            onLabel: Enabled
+            offValue: EXCLUDE
+            offLabel: Disabled
+        }
+        layout {
+            sequence: 70
+            region: @generative-ai
+            slot: regionBody
+            alignment: left
+            labelColumnSpan: 1
+        }
+        appearance {
+            template: @/required
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @generative-ai
+            column: BUILD_STATUS
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P20016_REMOTE_SERVER_STATIC_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @generative-ai
+            slot: regionBody
+        }
+        source {
+            formRegion: @generative-ai
+            column: REMOTE_SERVER_STATIC_ID
+            dataType: varchar2
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-close
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            showProcessing: true
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction process-feature-status (
+        name: Process Feature Status
+        execution {
+            sequence: 20
+        }
+        when {
+            selectionType: items
+            items: P20016_BUILD_STATUS
+        }
+        clientSideCondition {
+            type: item=value
+            item: P20016_BUILD_STATUS
+            value: INCLUDE
+        }
+
+        action native-disable (
+            action: disable
+            affectedElements {
+                selectionType: items
+                items: [
+                    P20016_API_KEY
+                    P20016_BASE_URL
+                    P20016_AI_MODEL_NAME
+                    P20016_AI_HTTP_HEADERS
+                    P20016_AI_ATTRIBUTES
+                ]
+            }
+            execution {
+                sequence: 30
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-enable (
+            action: enable
+            affectedElements {
+                selectionType: items
+                items: [
+                    P20016_API_KEY
+                    P20016_BASE_URL
+                    P20016_AI_MODEL_NAME
+                    P20016_AI_HTTP_HEADERS
+                    P20016_AI_ATTRIBUTES
+                ]
+            }
+            execution {
+                sequence: 30
+            }
+        )
+
+    )
+
+    validation p20016-ai-model-name-is-not-null (
+        name: P20016_AI_MODEL_NAME is not null
+        execution {
+            sequence: 20
+        }
+        validation {
+            type: itemIsNotNull
+            item: P20016_AI_MODEL_NAME
+        }
+        error {
+            errorMessage: #LABEL# must have a value if generative AI is enabled.
+            displayLocation: inlineWithField
+            associatedItem: @P20016_AI_MODEL_NAME
+        }
+        serverSideCondition {
+            type: item=value
+            item: P20016_BUILD_STATUS
+            value: INCLUDE
+        }
+    )
+
+    validation p20016-base-url-is-not-null (
+        name: P20016_BASE_URL is not null
+        execution {
+            sequence: 10
+        }
+        validation {
+            type: itemIsNotNull
+            item: P20016_BASE_URL
+        }
+        error {
+            errorMessage: #LABEL# must have a value if generative AI is enabled.
+            displayLocation: inlineWithField
+            associatedItem: @P20016_BASE_URL
+        }
+        serverSideCondition {
+            type: item=value
+            item: P20016_BUILD_STATUS
+            value: INCLUDE
+        }
+    )
+
+    computation p20016-remote-server-static-id (
+        itemName: P20016_REMOTE_SERVER_STATIC_ID
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        computation {
+            type: expression
+            plsqlExpression: blog_ai.get_param_value( 'gen_ai_static_id' )
+        }
+    )
+
+    process initialize-form-generative-ai (
+        name: Initialize form - Generative AI
+        type: formInitialization
+        formRegion: @generative-ai
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 15962027798299927
+        }
+    )
+
+    process process-form-generative-ai (
+        name: Process form - Generative AI
+        type: formAutoRowProcessing
+        formRegion: @generative-ai
+        target {
+            targetType: plsqlCode
+            plsqlCode:
+                ```plsql
+                blog_ai.set_gen_ai(
+                  p_build_status    => :P20016_BUILD_STATUS
+                , p_api_key         => :P20016_API_KEY
+                , p_base_url        => :P20016_BASE_URL
+                , p_ai_model_name   => :P20016_AI_MODEL_NAME
+                , p_ai_http_headers => :P20016_AI_HTTP_HEADERS
+                , p_ai_attributes   => :P20016_AI_ATTRIBUTES
+                );
+                ```
+        }
+        lockRow {
+            lockRow: false
+        }
+        execution {
+            sequence: 30
+        }
+        successMessage {
+            successMessage: Generative AI settings updated.
+        }
+        advanced {
+            executionMappingIdentifier: 15963088327299937
+        }
+    )
+
+    branch (
+        name: Go to Page 20010
+        execution {
+            sequence: 20
+        }
+        behavior {
+            target: {
+                page: 20010
+            }
+        }
+    )
+
+)
+

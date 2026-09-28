@@ -1,0 +1,549 @@
+restDataSource BLOG_OBJECT_STORAGE_OBJECT (
+    name: Blog Object Storage Object
+    source {
+        type: oci
+        remoteServer: @BLOG_OBJECT_STORAGE
+        urlPathPrefix: n/
+    }
+    authentication {
+        credentials: @BLOG_OCI_API_KEY
+    }
+    synchronization {
+        localTableName: BLOG_FILES
+        type: merge
+        httpRequestLimit: 1000
+    }
+    restSourceCatalog {
+        name: OCI_OBJECT_STORAGE
+        service: OCI Object Storage Object
+        version: 20240711
+    }
+
+    operation delete_object (
+        name: DeleteObject
+        label: DeleteObject
+        operation {
+            urlPattern: :namespace/b/:bucketName/o/:objectName
+            httpMethod: delete
+            databaseOperation: delete
+        }
+        requestBody {
+            versionNumber: 1
+        }
+    )
+
+    operation get_namespace (
+        name: GetNamespace
+        label: GetNamespace
+        operation {
+            urlPattern: .
+            httpMethod: get
+        }
+    )
+
+    operation list_objects (
+        name: ListObjects
+        label: ListObjects
+        operation {
+            urlPattern: :namespace/b/:bucketName/o/
+            httpMethod: get
+            databaseOperation: fetchRows
+        }
+    )
+
+    operation rename_object (
+        name: RenameObject
+        label: RenameObject
+        operation {
+            urlPattern: :namespace/b/:bucketName/actions/renameObject
+            httpMethod: post
+            databaseOperation: update
+        }
+        requestBody {
+            template:
+                ```
+                {
+                  "newName": "#newName#"
+                  ,"newObjIfNoneMatchETag": "*"
+                  ,"sourceName": "#sourceName#"
+                  ,"srcObjIfMatchETag": "#srcObjIfMatchETag#"
+                }
+                ```
+            versionNumber: 1
+        }
+    )
+
+    parameter accept (
+        name: Accept
+        operation: @list_objects
+        parameter {
+            type: httpHeader
+        }
+        value {
+            static: true
+            defaultValueType: staticValue
+            staticValue: application/json
+        }
+    )
+
+    parameter accept-2 (
+        name: Accept
+        operation: @delete_object
+        parameter {
+            type: httpHeader
+        }
+        value {
+            static: true
+            defaultValueType: staticValue
+            staticValue: */*
+        }
+    )
+
+    parameter accept-3 (
+        name: Accept
+        operation: @rename_object
+        value {
+            static: true
+            defaultValueType: staticValue
+            staticValue: */*
+        }
+    )
+
+    parameter accept-4 (
+        name: Accept
+        operation: @get_namespace
+        parameter {
+            type: httpHeader
+        }
+        value {
+            static: true
+            defaultValueType: staticValue
+            staticValue: application/json
+        }
+    )
+
+    parameter accept-encoding (
+        name: Accept-Encoding
+        parameter {
+            type: httpHeader
+        }
+        value {
+            static: true
+            defaultValueType: staticValue
+            staticValue: gzip, deflate
+        }
+    )
+
+    parameter bucketname (
+        name: bucketName
+        operation: @delete_object
+        validation {
+            required: true
+        }
+    )
+
+    parameter bucketname-2 (
+        name: bucketName
+        operation: @list_objects
+        validation {
+            required: true
+        }
+    )
+
+    parameter bucketname-3 (
+        name: bucketName
+        operation: @rename_object
+        validation {
+            required: true
+        }
+    )
+
+    parameter content-type (
+        name: Content-Type
+        operation: @rename_object
+        parameter {
+            type: httpHeader
+        }
+        value {
+            static: true
+            defaultValueType: staticValue
+            staticValue: application/json
+        }
+    )
+
+    parameter delimiter (
+        name: delimiter
+        operation: @list_objects
+        parameter {
+            type: urlQueryString
+            omitWhenValueIsEmpty: true
+        }
+    )
+
+    parameter end (
+        name: end
+        operation: @list_objects
+        parameter {
+            type: urlQueryString
+            omitWhenValueIsEmpty: true
+        }
+    )
+
+    parameter fields (
+        name: fields
+        operation: @list_objects
+        parameter {
+            type: urlQueryString
+            omitWhenValueIsEmpty: true
+        }
+        value {
+            defaultValueType: staticValue
+            staticValue: name,size,etag,md5,timeCreated,timeModified
+        }
+    )
+
+    parameter if-match (
+        name: if-match
+        operation: @delete_object
+        parameter {
+            type: httpHeader
+        }
+        validation {
+            required: true
+        }
+    )
+
+    parameter limit (
+        name: limit
+        operation: @list_objects
+        parameter {
+            type: urlQueryString
+            omitWhenValueIsEmpty: true
+        }
+    )
+
+    parameter namespace (
+        name: namespace
+        operation: @rename_object
+        validation {
+            required: true
+        }
+    )
+
+    parameter namespace-2 (
+        name: namespace
+        operation: @delete_object
+        validation {
+            required: true
+        }
+    )
+
+    parameter namespace-3 (
+        name: namespace
+        operation: @list_objects
+        validation {
+            required: true
+        }
+    )
+
+    parameter newname (
+        name: newName
+        operation: @rename_object
+        parameter {
+            type: requestOrResponseBody
+        }
+        validation {
+            required: true
+        }
+    )
+
+    parameter objectname (
+        name: objectName
+        operation: @delete_object
+        validation {
+            required: true
+        }
+    )
+
+    parameter opc-client-request-id (
+        name: opc-client-request-id
+        parameter {
+            type: httpHeader
+            omitWhenValueIsEmpty: true
+        }
+    )
+
+    parameter prefix (
+        name: prefix
+        operation: @list_objects
+        parameter {
+            type: urlQueryString
+            omitWhenValueIsEmpty: true
+        }
+    )
+
+    parameter response-body (
+        name: response_body
+        operation: @delete_object
+        parameter {
+            type: requestOrResponseBody
+            direction: out
+        }
+    )
+
+    parameter response-body-2 (
+        name: response_body
+        operation: @rename_object
+        parameter {
+            type: requestOrResponseBody
+            direction: out
+        }
+    )
+
+    parameter response-body-3 (
+        name: response_body
+        operation: @get_namespace
+        parameter {
+            type: requestOrResponseBody
+            direction: out
+        }
+    )
+
+    parameter sourcename (
+        name: sourceName
+        operation: @rename_object
+        parameter {
+            type: requestOrResponseBody
+        }
+        validation {
+            required: true
+        }
+    )
+
+    parameter srcobjifmatchetag (
+        name: srcObjIfMatchETag
+        operation: @rename_object
+        parameter {
+            type: requestOrResponseBody
+        }
+        validation {
+            required: true
+        }
+    )
+
+    parameter start (
+        name: start
+        operation: @list_objects
+        parameter {
+            type: urlQueryString
+            omitWhenValueIsEmpty: true
+        }
+    )
+
+    parameter startafter (
+        name: startAfter
+        operation: @list_objects
+        parameter {
+            type: urlQueryString
+            omitWhenValueIsEmpty: true
+        }
+    )
+
+    parameter user-agent (
+        name: User-Agent
+        parameter {
+            type: httpHeader
+        }
+        value {
+            static: true
+            defaultValueType: staticValue
+            staticValue: Application Express (gzip)
+        }
+    )
+
+    dataProfile {
+        name: List Bucket Objects
+        rowSelector: objects
+    }
+
+    dataProfileColumn archivalstate (
+        columnName: ARCHIVALSTATE
+        source {
+            sequence: 100
+            dataType: varchar2
+        }
+        settings {
+            filterable: false
+        }
+        parsing {
+            pathExpression: archivalState
+        }
+        advanced {
+            hidden: true
+        }
+    )
+
+    dataProfileColumn changed-on (
+        columnName: CHANGED_ON
+        source {
+            sequence: 60
+            dataType: timestampWithTimeZone
+        }
+        parsing {
+            pathExpression: timeModified
+            formatMask: YYYY"-"MM"-"DD"T"HH24":"MI:SS"."FF9TZR
+        }
+    )
+
+    dataProfileColumn created-on (
+        columnName: CREATED_ON
+        source {
+            sequence: 50
+            dataType: timestampWithTimeZone
+        }
+        parsing {
+            pathExpression: timeCreated
+            formatMask: YYYY"-"MM"-"DD"T"HH24":"MI:SS"."FF9TZR
+        }
+    )
+
+    dataProfileColumn etag (
+        columnName: ETAG
+        source {
+            sequence: 80
+            dataType: varchar2
+        }
+        parsing {
+            pathExpression: etag
+        }
+    )
+
+    dataProfileColumn file-path (
+        columnName: FILE_PATH
+        source {
+            sequence: 10
+            dataType: varchar2
+            primaryKey: true
+        }
+        parsing {
+            pathExpression: name
+        }
+    )
+
+    dataProfileColumn file-size (
+        columnName: FILE_SIZE
+        source {
+            sequence: 40
+            dataType: number
+        }
+        parsing {
+            pathExpression: size
+        }
+    )
+
+    dataProfileColumn md (
+        columnName: MD5
+        source {
+            sequence: 70
+            dataType: varchar2
+        }
+        parsing {
+            pathExpression: md5
+        }
+    )
+
+    dataProfileColumn storagetier (
+        columnName: STORAGETIER
+        source {
+            sequence: 90
+            dataType: varchar2
+        }
+        parsing {
+            pathExpression: storageTier
+        }
+        advanced {
+            hidden: true
+        }
+    )
+
+    synchronizationStep "Synchronization Step 1" (
+        execution {
+            sequence: 10
+        }
+
+        parameter (
+            name: @namespace-3
+            value {
+                type: expression
+                plsqlExpression: blog_util.get_attribute_value( 'G_OCI_OS_NAMESPACE' )
+            }
+        )
+
+        parameter (
+            name: @bucketname-2
+            value {
+                type: expression
+                plsqlExpression: blog_util.get_attribute_value( 'G_OCI_OS_BUCKET' )
+            }
+        )
+
+        parameter (
+            name: @fields
+            value {
+                type: restSourceDefault
+            }
+        )
+
+        parameter (
+            name: @prefix
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @start
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @end
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @limit
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @startafter
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @delimiter
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @opc-client-request-id
+            value {
+                type: null
+            }
+        )
+
+    )
+
+)
+

@@ -1,0 +1,17 @@
+plugin footerLinkCustom (
+    name: Footer Link (Custom)
+    staticId: THEME_42$FOOTER_LINK__CUSTOM
+    theme: @universal-theme
+    templateComponent {
+        availableAs: regionOnly
+        partial:
+            ```html
+            <div i="APEX$DOM_ID" class="blog-copyright">
+              <a href="#LINK#" class="blog-copyright-link t-Button t-Button--link{if HAS_ICON/} t-Button--icon t-Button--iconRight{endif/}"{if ?LINK_ATTR/}#LINK_ATTR#{endif/}{if ?TITLE/} title="#TITLE#"{endif/}>
+                <span class="t-Button-label">#TEXT#</span>{if HAS_ICON/}<span class="t-Icon fa #ICON_CLASS#" aria-hidden="true"></span>{endif/}
+              </a>
+            </div>
+            ```
+    }
+)
+

@@ -1,0 +1,438 @@
+page 20010 (
+    name: Administration
+    alias: ADMINISTRATION
+    title: Administration
+    pageGroup: @administration
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>The administration page allows blogger to configure the application and maintain common data used across the application.
+            By selecting one of the available settings, blogger can potentially change how the application is displayed and/or features available to the end users.</p>
+            ```
+    }
+
+    region artificial-intelligence (
+        name: Artificial Intelligence
+        type: list
+        source {
+            list: @ai-configuration
+        }
+        layout {
+            sequence: 60
+            slot: body
+            startNewRow: false
+            newColumn: false
+        }
+        appearance {
+            template: @/content-block
+            templateOptions: [
+                #DEFAULT#
+                t-ContentBlock--h3
+                t-ContentBlock--lightBG
+                margin-bottom-md
+            ]
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        comments {
+            comments: List of cloud services
+        }
+        componentAppearance {
+            listTemplate: @/media-list
+            templateOptions: [
+                #DEFAULT#
+                t-MediaList--showBadges
+                t-MediaList--large force-fa-lg
+                t-MediaList--iconsRounded
+            ]
+            cssClasses: blog-shadow-md
+        }
+    )
+
+    region authentication (
+        name: Authentication
+        type: list
+        source {
+            list: @admin-authentication
+        }
+        layout {
+            sequence: 20
+            slot: body
+            startNewRow: false
+            newColumn: false
+        }
+        appearance {
+            template: @/content-block
+            templateOptions: [
+                #DEFAULT#
+                t-ContentBlock--h3
+                t-ContentBlock--lightBG
+            ]
+        }
+        componentAppearance {
+            listTemplate: @/media-list
+            templateOptions: [
+                #DEFAULT#
+                t-MediaList--showBadges
+                t-MediaList--large force-fa-lg
+                t-MediaList--iconsRounded
+            ]
+            cssClasses: blog-shadow-md
+        }
+    )
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcumb
+        }
+        layout {
+            sequence: 20
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region configuration (
+        name: Configuration
+        type: list
+        source {
+            list: @configuration
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/content-block
+            templateOptions: [
+                #DEFAULT#
+                t-ContentBlock--h3
+                t-ContentBlock--lightBG
+                margin-bottom-md
+            ]
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        comments {
+            comments: Public application configuration
+        }
+        componentAppearance {
+            listTemplate: @/media-list
+            templateOptions: [
+                #DEFAULT#
+                t-MediaList--showBadges
+                u-colors
+                t-MediaList--large force-fa-lg
+                t-MediaList--iconsRounded
+            ]
+            cssClasses: blog-shadow-md
+        }
+    )
+
+    region oracle-cloud (
+        name: Oracle Cloud
+        type: list
+        source {
+            list: @oracle-cloud-api-key
+        }
+        layout {
+            sequence: 30
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            template: @/content-block
+            templateOptions: [
+                #DEFAULT#
+                t-ContentBlock--h3
+                t-ContentBlock--lightBG
+                margin-bottom-md
+            ]
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        comments {
+            comments: List of cloud services
+        }
+        componentAppearance {
+            listTemplate: @/media-list
+            templateOptions: [
+                #DEFAULT#
+                t-MediaList--showBadges
+                t-MediaList--large force-fa-lg
+                t-MediaList--iconsRounded
+            ]
+            cssClasses: blog-shadow-md
+        }
+    )
+
+    region storage (
+        name: Storage
+        type: list
+        source {
+            list: @object-storage
+        }
+        layout {
+            sequence: 40
+            slot: body
+            startNewRow: false
+            newColumn: false
+        }
+        appearance {
+            template: @/content-block
+            templateOptions: [
+                #DEFAULT#
+                t-ContentBlock--h3
+                t-ContentBlock--lightBG
+                margin-bottom-md
+            ]
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        comments {
+            comments: List of cloud services
+        }
+        componentAppearance {
+            listTemplate: @/media-list
+            templateOptions: [
+                #DEFAULT#
+                t-MediaList--showBadges
+                t-MediaList--large force-fa-lg
+                t-MediaList--iconsRounded
+            ]
+            cssClasses: blog-shadow-md
+        }
+    )
+
+    pageItem P20010_APEX_AUTH_STATUS (
+        type: hidden
+        layout {
+            sequence: 40
+            region: @authentication
+            slot: regionBody
+        }
+        source {
+            type: item
+            item: APP_TEXT$BLOG_TXT_DISABLED
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        comments {
+            comments: Holding badge value for list
+        }
+    )
+
+    pageItem P20010_GENERATIVE_AI_STATUS (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @artificial-intelligence
+            slot: regionBody
+        }
+        source {
+            type: item
+            item: APP_TEXT$BLOG_TXT_DISABLED
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        comments {
+            comments: Holding badge value for list
+        }
+    )
+
+    pageItem P20010_GOOGLE_AUTH_STATUS (
+        type: hidden
+        layout {
+            sequence: 30
+            region: @authentication
+            slot: regionBody
+        }
+        source {
+            type: item
+            item: APP_TEXT$BLOG_TXT_DISABLED
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        comments {
+            comments: Holding badge value for list
+        }
+    )
+
+    pageItem P20010_OCI_LANG_AI_STATUS (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @artificial-intelligence
+            slot: regionBody
+        }
+        source {
+            type: item
+            item: APP_TEXT$BLOG_TXT_DISABLED
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        comments {
+            comments: Holding badge value for list
+        }
+    )
+
+    pageItem P20010_OCI_OS_STATUS (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @storage
+            slot: regionBody
+        }
+        source {
+            type: item
+            item: APP_TEXT$BLOG_TXT_DISABLED
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        comments {
+            comments: Holding badge value for list
+        }
+    )
+
+    computation p20010-apex-auth-status (
+        itemName: P20010_APEX_AUTH_STATUS
+        execution {
+            sequence: 50
+        }
+        computation {
+            type: item
+            itemName: APP_TEXT$BLOG_TXT_ENABLED
+        }
+        config {
+            buildOption: @blog-authentication-apex
+        }
+        comments {
+            comments: If APEX authentication is enabled
+        }
+    )
+
+    computation p20010-generative-ai-status (
+        itemName: P20010_GENERATIVE_AI_STATUS
+        execution {
+            sequence: 20
+        }
+        computation {
+            type: item
+            itemName: APP_TEXT$BLOG_TXT_ENABLED
+        }
+        config {
+            buildOption: @blog-feature-generative-ai
+        }
+    )
+
+    computation p20010-google-auth-status (
+        itemName: P20010_GOOGLE_AUTH_STATUS
+        execution {
+            sequence: 40
+        }
+        computation {
+            type: item
+            itemName: APP_TEXT$BLOG_TXT_ENABLED
+        }
+        config {
+            buildOption: @blog-authentication-google
+        }
+        comments {
+            comments: If Google authentication is enabled
+        }
+    )
+
+    computation p20010-oci-lang-ai-status (
+        itemName: P20010_OCI_LANG_AI_STATUS
+        execution {
+            sequence: 30
+        }
+        computation {
+            type: item
+            itemName: APP_TEXT$BLOG_TXT_ENABLED
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+        comments {
+            comments: If OCI language AI is enabled
+        }
+    )
+
+    computation p20010-oci-os-status (
+        itemName: P20010_OCI_OS_STATUS
+        execution {
+            sequence: 10
+        }
+        computation {
+            type: item
+            itemName: APP_TEXT$BLOG_TXT_ENABLED
+        }
+        config {
+            buildOption: @blog-feature-oci-object-storage
+        }
+        comments {
+            comments: If object storage is enabled
+        }
+    )
+
+)
+

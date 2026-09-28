@@ -1,0 +1,262 @@
+page 20014 (
+    name: File Synchronization
+    alias: FILE-SYNCHRONIZATION
+    title: File Synchronization
+    pageGroup: @configuration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/wizard-modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: wizardButtons
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+    )
+
+    region information (
+        name: Information
+        type: staticContent
+        source {
+            htmlCode: &APP_TEXT$BLOG_MSG_FILE_SYNC_INFO!RAW.
+        }
+        layout {
+            sequence: 10
+            slot: wizardBody
+        }
+        appearance {
+            template: @/alert
+            templateOptions: [
+                #DEFAULT#
+                t-Alert--wizard
+                t-Alert--defaultIcons
+                t-Alert--info
+                t-Alert--removeHeading js-removeLandmark
+                margin-bottom-none
+            ]
+        }
+    )
+
+    region synchronize (
+        name: Synchronize
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: wizardBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P20014_ACTION (
+        type: radioGroup
+        label {
+            label: Action
+            alignment: left
+        }
+        lov {
+            type: sharedComponent
+            lov: @file-sync-action
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 10
+            region: @synchronize
+            slot: regionBody
+            alignment: left
+            column: 2
+        }
+        appearance {
+            template: @/required
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            valueRequired: true
+        }
+        default {
+            type: static
+            staticValue: OCI
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            encryptSessionState: false
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-chevron-left
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button synchronize-files (
+        buttonName: SYNCHRONIZE_FILES
+        label: Synchronize Files
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-refresh
+        }
+        behavior {
+            showProcessing: true
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction cancel-dialog (
+        name: Cancel Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        execution {
+            sequence: 30
+        }
+        successMessage {
+            successMessage: Files Synchronized.
+        }
+        advanced {
+            executionMappingIdentifier: 22642314370058720
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: not apex_collection.collection_exists( :BLOG_REPLACE_FILES_COLLECTION )
+        }
+    )
+
+    process synchronize-files (
+        name: Synchronize Files
+        type: invokeApi
+        invoke {
+            package: BLOG_OCI_OS
+            procedureOrFunction: FILE_SYNC
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 22472544390556218
+        }
+
+        parameter p_action (
+            value {
+                type: item
+                item: P20014_ACTION
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_client_request_id (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+        parameter p_collection_name (
+            value {
+                type: item
+                item: BLOG_REPLACE_FILES_COLLECTION
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    branch (
+        name: Go To Confirm File Overwrite
+        execution {
+            sequence: 40
+        }
+        behavior {
+            target: {
+                page: 303
+                items: {
+                    P303_ACTION: &P20014_ACTION.
+                }
+                action: resetPagination
+                successMessage: false
+            }
+        }
+        comments {
+            comments: Branch to confirm overwrite file(s)
+        }
+    )
+
+)
+

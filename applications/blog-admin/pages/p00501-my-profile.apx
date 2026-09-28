@@ -1,0 +1,614 @@
+page 501 (
+    name: My Profile
+    alias: MY-PROFILE
+    title: My Profile
+    pageGroup: @user-details-preferences
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+        ]
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region left (
+        name: Left
+        type: staticContent
+        layout {
+            sequence: 50
+            parentRegion: @my-profile
+            slot: subRegions
+            startNewRow: false
+            column: 10
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region my-profile (
+        name: My Profile
+        type: form
+        source {
+            location: localDatabase
+            tableName: BLOG_BLOGGERS
+            whereClause: id = :G_BLOGGER_ID
+        }
+        layout {
+            sequence: 30
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Form--stretchInputs
+            ]
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region name-email (
+        name: Name & Email
+        type: staticContent
+        layout {
+            sequence: 10
+            parentRegion: @left
+            slot: subRegions
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--hideHeader js-addHiddenHeadingRoleDesc
+                t-Region--textContent
+                t-Region--scrollBody
+            ]
+        }
+    )
+
+    region preferences (
+        name: Preferences
+        type: staticContent
+        layout {
+            sequence: 20
+            parentRegion: @left
+            slot: subRegions
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--noUI
+                t-Region--scrollBody
+                t-Form--stretchInputs
+            ]
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region right (
+        name: Right
+        type: staticContent
+        layout {
+            sequence: 40
+            parentRegion: @my-profile
+            slot: subRegions
+            columnCssClasses: padding-right-none
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P501_BLOGGER_DESC (
+        type: richTextEditor
+        label {
+            label: Description
+            alignment: left
+        }
+        settings {
+            format: html
+            toolbar: full
+            minHeight: 380
+            allowCustomHtml: true
+        }
+        layout {
+            sequence: 10
+            region: @right
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @my-profile
+            column: BLOGGER_DESC
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P501_BLOGGER_NAME (
+        type: textField
+        label {
+            label: Name
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @name-email
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            valueRequired: true
+            maxLength: 1024
+        }
+        source {
+            formRegion: @my-profile
+            column: BLOGGER_NAME
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+        help {
+            helpText: Your name.
+        }
+    )
+
+    pageItem P501_DISPLAY_DATE_FORMAT (
+        type: textField
+        label {
+            label: Display Date Format
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            region: @preferences
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        default {
+            type: static
+            staticValue: DD.MM.YYYY HH24:MI
+        }
+        sessionState {
+            storage: user
+        }
+        quickPicks {
+            type: static
+            label1: DD.MM.YYYY HH24:MI:SS
+            value1: DD.MM.YYYY HH24:MI:SS
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+        help {
+            helpText: Date format used in reports.
+        }
+    )
+
+    pageItem P501_EMAIL (
+        type: textField
+        label {
+            label: Email
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @name-email
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            maxLength: 1024
+        }
+        source {
+            formRegion: @my-profile
+            column: EMAIL
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+        help {
+            helpText: Email address for notification emails. Leave blank if you wish not receive notification emails.
+        }
+    )
+
+    pageItem P501_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @my-profile
+            slot: regionBody
+        }
+        source {
+            formRegion: @my-profile
+            column: ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P501_INPUT_DATE_FORMAT (
+        type: textField
+        label {
+            label: Input Date Format
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @preferences
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        default {
+            type: static
+            staticValue: DD.MM.YYYY HH24:MI
+        }
+        sessionState {
+            storage: user
+        }
+        quickPicks {
+            type: static
+            label1: DD.MM.YYYY HH24:MI:SS
+            value1: DD.MM.YYYY HH24:MI:SS
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+        help {
+            helpText: Date format used in input fields.
+        }
+    )
+
+    pageItem P501_PUBLISH_DESC (
+        type: switch
+        label {
+            label: Publish Description
+            alignment: left
+        }
+        settings {
+            useDefaults: false
+            onValue: 1
+            onLabel: Yes
+            offValue: 0
+            offLabel: No
+        }
+        layout {
+            sequence: 40
+            region: @name-email
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @my-profile
+            column: PUBLISH_DESC
+            dataType: number
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        help {
+            helpText: Publish description in blog About page.
+        }
+    )
+
+    button apply-changes (
+        buttonName: APPLY_CHANGES
+        label: Save
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: create
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-chevron-left
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    dynamicAction cancel-dialog (
+        name: Cancel Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    validation valid-display-date-format (
+        name: Valid Display Date Format
+        execution {
+            sequence: 10
+        }
+        validation {
+            type: functionBody
+            plsqlFunctionBody:
+                ```plsql
+                return blog_admin.is_date_format(
+                  p_value     => :P501_DISPLAY_DATE_FORMAT
+                , p_err_mesg  => :APP_TEXT$BLOG_VALIDATION_ERR_DATE_FORMAT
+                );
+                ```
+        }
+        error {
+            displayLocation: inlineWithField
+            associatedItem: @P501_DISPLAY_DATE_FORMAT
+        }
+    )
+
+    validation valid-input-date-format (
+        name: Valid Input Date Format
+        execution {
+            sequence: 20
+        }
+        validation {
+            type: functionBody
+            plsqlFunctionBody:
+                ```plsql
+                return blog_admin.is_date_format(
+                  p_value     => :P501_INPUT_DATE_FORMAT
+                , p_err_mesg  => :APP_TEXT$BLOG_VALIDATION_ERR_DATE_FORMAT
+                );
+                ```
+        }
+        error {
+            displayLocation: inlineWithField
+            associatedItem: @P501_INPUT_DATE_FORMAT
+        }
+    )
+
+    computation p501-id (
+        itemName: P501_ID
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        computation {
+            type: item
+            itemName: G_BLOGGER_ID
+        }
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        execution {
+            sequence: 40
+        }
+        successMessage {
+            successMessage: Profile Updated.
+        }
+        advanced {
+            executionMappingIdentifier: 33489668168471576
+        }
+        serverSideCondition {
+            whenButtonPressed: @apply-changes
+        }
+    )
+
+    process initialize-form-my-profile (
+        name: Initialize form My Profile
+        type: formInitialization
+        formRegion: @my-profile
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 27061285324689113
+        }
+    )
+
+    process process-form-my-profile (
+        name: Process form My Profile
+        type: formAutoRowProcessing
+        formRegion: @my-profile
+        execution {
+            sequence: 20
+        }
+        error {
+            errorMessage: Profile Update Failed.
+        }
+        advanced {
+            executionMappingIdentifier: 8871718756695793
+        }
+        serverSideCondition {
+            whenButtonPressed: @apply-changes
+        }
+    )
+
+    process purge-public-application-about-page-cache (
+        name: Purge Public Application About Page Cache
+        type: invokeApi
+        invoke {
+            package: APEX_UTIL
+            procedureOrFunction: CACHE_PURGE_BY_PAGE
+        }
+        execution {
+            sequence: 30
+        }
+        advanced {
+            executionMappingIdentifier: 26381038521542603
+        }
+        serverSideCondition {
+            whenButtonPressed: @apply-changes
+        }
+        comments {
+            comments: Purge public application about page cached region.
+        }
+
+        parameter p_application (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: item
+                item: G_PUB_APP_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_page (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: staticValue
+                staticValue: 12
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+        parameter p_user_name (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 50
+            }
+        )
+
+    )
+
+)
+

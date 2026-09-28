@@ -1,0 +1,14 @@
+genAIService BLOG_OPEN_AI_API (
+    name: Blog Open AI
+    provider: openai
+    endpointUrl {
+        url: https://api.openai.com/v1/
+    }
+    authentication {
+        credentials: @BLOG_OPEN_AI_API_KEY
+    }
+    advanced {
+        modelName: gpt-4o-mini
+    }
+)
+

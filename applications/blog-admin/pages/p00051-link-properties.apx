@@ -1,0 +1,728 @@
+page 51 (
+    name: Add/Edit Link
+    alias: LINK-PROPERTIES
+    title: Link Properties
+    pageGroup: @links
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region link-properties (
+        name: Link Properties
+        type: form
+        source {
+            location: localDatabase
+            tableName: BLOG_LINKS
+        }
+        layout {
+            sequence: 0
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Form--stretchInputs
+            ]
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+            lostUpdateType: rowVersionColumn
+            rowVersionColumn: ROW_VERSION
+        }
+    )
+
+    pageItem P51_DISPLAY_SEQ (
+        type: numberField
+        label {
+            label: Sequency
+            alignment: left
+        }
+        settings {
+            virtualKeyboard: numeric
+        }
+        layout {
+            sequence: 50
+            region: @link-properties
+            slot: regionBody
+            alignment: left
+            columnSpan: 2
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @link-properties
+            column: DISPLAY_SEQ
+            dataType: number
+        }
+        default {
+            type: expression
+            plsqlExpression:
+                ```plsql
+                blog_admin.get_link_seq(
+                  p_link_group_id => :P51_LINK_GROUP_ID
+                )
+                ```
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P51_EXTERNAL_LINK (
+        type: switch
+        label {
+            label: External Link
+            alignment: left
+        }
+        settings {
+            useDefaults: false
+            onValue: 1
+            onLabel: Yes
+            offValue: 0
+            offLabel: No
+        }
+        layout {
+            sequence: 80
+            region: @link-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @link-properties
+            column: EXTERNAL_LINK
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 1
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        help {
+            helpText: Indicates that the link is to an external site.
+        }
+    )
+
+    pageItem P51_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @link-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @link-properties
+            column: ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P51_IS_ACTIVE (
+        type: switch
+        label {
+            label: Status
+            alignment: left
+        }
+        settings {
+            useDefaults: false
+            onValue: 1
+            onLabel: Enabled
+            offValue: 0
+            offLabel: Disabled
+        }
+        layout {
+            sequence: 120
+            region: @link-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @link-properties
+            column: IS_ACTIVE
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 1
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P51_LINK_DESC (
+        type: textarea
+        label {
+            label: Description
+            alignment: left
+        }
+        settings {
+            autoHeight: true
+        }
+        layout {
+            sequence: 100
+            region: @link-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--postTextBlock
+            ]
+            cssClasses: [
+                blog-item
+                blog-postText
+            ]
+            width: 30
+            height: 4
+        }
+        validation {
+            valueRequired: true
+            maxLength: 4000
+        }
+        advanced {
+            postText: "\"BLOG_BTN_AI_ASSISTANT\""
+        }
+        source {
+            formRegion: @link-properties
+            column: LINK_DESC
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P51_LINK_GROUP_ID (
+        type: hidden
+        layout {
+            sequence: 30
+            region: @link-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @link-properties
+            column: LINK_GROUP_ID
+            dataType: number
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P51_LINK_URL (
+        type: textField
+        label {
+            label: URL
+            alignment: left
+        }
+        settings {
+            subtype: url
+        }
+        layout {
+            sequence: 70
+            region: @link-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            valueRequired: true
+            maxLength: 256
+        }
+        source {
+            formRegion: @link-properties
+            column: LINK_URL
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P51_NOTES (
+        type: textarea
+        label {
+            label: Notes
+            alignment: left
+        }
+        layout {
+            sequence: 130
+            region: @link-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @link-properties
+            column: NOTES
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+        help {
+            inlineHelpText: Enter any comments or notes here. These notes not displayed for public.
+        }
+    )
+
+    pageItem P51_ROW_VERSION (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @link-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @link-properties
+            column: ROW_VERSION
+            dataType: number
+            queryOnly: true
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P51_TARGET_BLANK (
+        type: switch
+        label {
+            label: Open in new tab/window
+            alignment: left
+        }
+        settings {
+            useDefaults: false
+            onValue: 1
+            onLabel: Yes
+            offValue: 0
+            offLabel: No
+        }
+        layout {
+            sequence: 90
+            region: @link-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @link-properties
+            column: TARGET_BLANK
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 1
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        help {
+            helpText: Clicking the link will open the link in a new tab/window.
+        }
+    )
+
+    pageItem P51_TITLE (
+        type: textField
+        label {
+            label: Title
+            alignment: left
+        }
+        layout {
+            sequence: 60
+            region: @link-properties
+            slot: regionBody
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            valueRequired: true
+            maxLength: 256
+        }
+        source {
+            formRegion: @link-properties
+            column: TITLE
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 40
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-chevron-left
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Save
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--mobileHideLabel
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P51_ID
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: Delete
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+            ]
+            icon: fa-trash-o
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P51_ID
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--mobileHideLabel
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P51_ID
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction initialize-assistant-button-action (
+        name: Initialize assistant button action
+        execution {
+            sequence: 20
+        }
+        when {
+            event: ready
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    apex.actions.add({
+                      name: "gen-ai-assistant"
+                    , action: ( event, element, args ) => { 
+                        apex.event.trigger( this.affectedElements, "action-open-assistant", args );
+                      }
+                    });
+                    ```
+            }
+            affectedElements {
+                selectionType: items
+                items: P51_LINK_DESC
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction open-ai-assistant (
+        name: Open AI assistant
+        execution {
+            sequence: 30
+        }
+        when {
+            event: custom
+            customEvent: action-open-assistant
+            selectionType: items
+            items: P51_LINK_DESC
+        }
+
+        action native-open-ai-assistant (
+            action: showAiAssistant
+            genAI {
+                welcomeMessage: &APP_TEXT$BLOG_MSG_AI_ASSISTANT_WELCOME.
+            }
+            useResponse {
+                type: item
+                item: P51_LINK_DESC
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 38408763511151561
+        }
+    )
+
+    process initialize-form-link-properties (
+        name: Initialize form Link Properties
+        type: formInitialization
+        formRegion: @link-properties
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 38407907020151560
+        }
+    )
+
+    process process-form-link-properties (
+        name: Process form Link Properties
+        type: formAutoRowProcessing
+        formRegion: @link-properties
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 38407599199151560
+        }
+    )
+
+    process purge-public-application-links-page-cache (
+        name: Purge Public Application Links Page Cache
+        type: invokeApi
+        invoke {
+            package: APEX_UTIL
+            procedureOrFunction: CACHE_PURGE_BY_PAGE
+        }
+        execution {
+            sequence: 30
+        }
+        advanced {
+            executionMappingIdentifier: 39208375469806974
+        }
+
+        parameter p_application (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: item
+                item: G_PUB_APP_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_page (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: staticValue
+                staticValue: 10
+            }
+            advanced {
+                displaySequence: 80
+            }
+        )
+
+    )
+
+)
+

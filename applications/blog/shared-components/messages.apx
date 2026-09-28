@@ -1,0 +1,147 @@
+textMessage BLOG_ERR_MSG_COMMENT_REQUEST (
+    message {
+        text: Error occured. It's not possible submit comment at this time.
+        language: en
+    }
+)
+
+textMessage BLOG_GENERIC_ERROR (
+    message {
+        text: Ooops... We are sorry! Unexpected internal error have occurred. Please try again later.
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_ENTER_SEARCH_TERM (
+    message {
+        text: Please enter a search term in the search box.
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_LAST_UPDATED (
+    message {
+        text: Document was last updated on
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_MODERATE_ENABLED (
+    message {
+        text: Comment moderation has been enabled. All comments must be approved by the blog author.
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_NO_COMMENTS (
+    message {
+        text: No comments yet on this post
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_NO_DATA_FOUND (
+    message {
+        text: No Records Found
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_ATOM (
+    message {
+        text: Atom Feed
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_CATEGORY (
+    message {
+        text: Category
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_COMMENT (
+    message {
+        text: Comment
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_FILE (
+    message {
+        text: File
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_POST (
+    message {
+        text: Post
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_POSTED_BY (
+    message {
+        text: Posted by
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_POSTED_ON (
+    message {
+        text: Posted on
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_READ_MORE (
+    message {
+        text: Continue Reading
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_RSS (
+    message {
+        text: RSS Feed
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_TAGS (
+    message {
+        text: Tags
+        language: en
+    }
+)
+
+textMessage BLOG_VALIDATION_ERR_COMMENT_HTML (
+    message {
+        text: Please check that allowed HTML tags are entered properly.
+        language: en
+    }
+)
+
+textMessage BLOG_VALIDATION_ERR_COMMENT_LENGTH (
+    message {
+        text: Comment is too long. Please summarize the comment.
+        language: en
+    }
+)
+
+textMessage BLOG_VALIDATION_ERR_COMMENT_PREVIEW (
+    message {
+        text: Please check your that your comment has meaningful content.
+        language: en
+    }
+)
+
+textMessage BLOG_VALIDATION_ERR_EMAIL (
+    message {
+        text: Please check that the email address is entered correctly.
+        language: en
+    }
+)
+

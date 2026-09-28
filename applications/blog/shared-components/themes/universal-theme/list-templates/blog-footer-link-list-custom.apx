@@ -1,0 +1,26 @@
+listTemplate blog-footer-link-list-custom (
+    name: Blog Footer Link List (Custom 1)
+    templateClass: custom1
+    list {
+        beforeEntries: <ul class="blog-footerList #COMPONENT_CSS_CLASSES#" id="#LIST_ID#">
+        afterEntries: " </ul>"
+    }
+    entry {
+        current:
+            ```html
+            <li class="blog-footerList-item">
+              <a href="#LINK#" class="blog-footerList-link">#TEXT#</a>
+            </li>
+            ```
+        noncurrent:
+            ```html
+            <li class="blog-footerList-item">
+              <a href="#LINK#" class="blog-footerList-link">#TEXT#</a>
+            </li>
+            ```
+    }
+    advanced {
+        identifier: BLOG_FOOTER_LINK_LIST
+    }
+)
+

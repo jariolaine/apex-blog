@@ -1,0 +1,449 @@
+page 1 (
+    name: Home
+    alias: HOME
+    title: &P0_BLOG_APP_NAME.
+    pageGroup: @general
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText: No help available for this page.
+    }
+
+    region activity-last-p1-period-in-days-days (
+        name: Activity Last &P1_PERIOD_IN_DAYS. Days
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select 
+                  ls.page_views     as page_views
+                , ls.apex_sessions  as apex_sessions
+                , ls.ip_addresses   as ip_addresses
+                , ls.agents         as user_agents
+                from apex_workspace_log_summary ls
+                where 1 = 1
+                  and ls.application_id = :G_PUB_APP_ID
+                order by 1
+                ```
+            optimizerHint: APEX$USE_NO_PAGINATION
+        }
+        layout {
+            sequence: 30
+            slot: body
+        }
+        appearance {
+            template: @/content-block
+            templateOptions: [
+                #DEFAULT#
+                t-ContentBlock--h3
+                t-ContentBlock--lightBG
+            ]
+        }
+        componentAppearance {
+            template: @/badge-list
+            templateOptions: [
+                #DEFAULT#
+                t-BadgeList--large
+                t-BadgeList--dash
+                t-BadgeList--cols t-BadgeList--4cols
+                t-Report--hideNoPagination
+            ]
+            cssClasses: blog-shadow-md
+            showNullValuesAs: 0
+        }
+
+        column APEX_SESSIONS (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Sessions
+                alignment: center
+            }
+            layout {
+                sequence: 40
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column IP_ADDRESSES (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: IP Addresses
+                alignment: center
+            }
+            layout {
+                sequence: 50
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column PAGE_VIEWS (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Page Views
+                alignment: center
+            }
+            layout {
+                sequence: 10
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column USER_AGENTS (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: User Agents
+                alignment: end
+            }
+            layout {
+                sequence: 60
+                columnAlignment: end
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    region blog-public-urls (
+        name: Blog Public URLs
+        type: list
+        source {
+            list: @public-application-links
+        }
+        layout {
+            sequence: 50
+            slot: body
+        }
+        appearance {
+            template: @/content-block
+            templateOptions: [
+                #DEFAULT#
+                t-ContentBlock--h3
+                t-ContentBlock--lightBG
+            ]
+        }
+        componentAppearance {
+            listTemplate: @/media-list
+            templateOptions: [
+                #DEFAULT#
+                u-colors
+                t-MediaList--iconsRounded
+            ]
+            cssClasses: blog-shadow-md
+        }
+    )
+
+    region comments (
+        name: Comments
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                   sum( v1.comments_cnt )           as num_comments
+                  ,sum( v1.unread_comments_cnt )    as num_unread_comments
+                  ,sum( v1.moderate_comments_cnt )  as num_moderate_comments
+                  ,sum( v1.published_comments_cnt ) as num_published_comments
+                from blog_v_all_posts v1
+                where 1 = 1
+                order by 1
+                ```
+            optimizerHint: APEX$USE_NO_PAGINATION
+        }
+        layout {
+            sequence: 20
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            template: @/content-block
+            templateOptions: [
+                #DEFAULT#
+                t-ContentBlock--h3
+                t-ContentBlock--lightBG
+            ]
+        }
+        componentAppearance {
+            template: @/badge-list
+            templateOptions: [
+                #DEFAULT#
+                t-BadgeList--large
+                t-BadgeList--dash
+                t-BadgeList--cols
+            ]
+            cssClasses: blog-shadow-md
+            showNullValuesAs: 0
+        }
+
+        column NUM_COMMENTS (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Total
+                alignment: center
+            }
+            layout {
+                sequence: 10
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column NUM_MODERATE_COMMENTS (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Not Approved
+                alignment: center
+            }
+            layout {
+                sequence: 40
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column NUM_PUBLISHED_COMMENTS (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Published
+                alignment: center
+            }
+            layout {
+                sequence: 20
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column NUM_UNREAD_COMMENTS (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Unread
+                alignment: center
+            }
+            layout {
+                sequence: 30
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    region p0-blog-app-desc (
+        name: &P0_BLOG_APP_DESC.
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/hero
+            templateOptions: [
+                #DEFAULT#
+                t-HeroRegion--featured t-HeroRegion--centered
+                t-HeroRegion--hideIcon
+                t-HeroRegion--iconsCircle
+            ]
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region posts (
+        name: Posts
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                  count( v1.id )  as num_posts
+                  ,sum(
+                    case v1.post_status_code
+                    when 'PUBLISHED'
+                      then 1
+                      else 0
+                    end
+                   )              as num_published_posts
+                  ,sum(
+                    case v1.post_status_code
+                    when 'DRAFT'
+                      then 1
+                      else 0
+                    end
+                   )              as num_draft_posts
+                  ,sum(
+                    case v1.post_status_code
+                    when 'SCHEDULED'
+                      then 1
+                      else 0
+                    end
+                   )              as num_scheduled_posts
+                from blog_v_all_posts v1
+                where 1 = 1
+                order by 1
+                ```
+            optimizerHint: APEX$USE_NO_PAGINATION
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/content-block
+            templateOptions: [
+                #DEFAULT#
+                t-ContentBlock--h3
+                t-ContentBlock--lightBG
+            ]
+        }
+        componentAppearance {
+            template: @/badge-list
+            templateOptions: [
+                #DEFAULT#
+                t-BadgeList--large
+                t-BadgeList--dash
+                t-BadgeList--cols
+            ]
+            cssClasses: blog-shadow-md
+            showNullValuesAs: 0
+        }
+
+        column NUM_DRAFT_POSTS (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Draft
+                alignment: center
+            }
+            layout {
+                sequence: 30
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column NUM_POSTS (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Total
+                alignment: center
+            }
+            layout {
+                sequence: 10
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column NUM_PUBLISHED_POSTS (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Published
+                alignment: center
+            }
+            layout {
+                sequence: 20
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column NUM_SCHEDULED_POSTS (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Scheduled
+                alignment: center
+            }
+            layout {
+                sequence: 60
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    pageItem P1_PERIOD_IN_DAYS (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @activity-last-p1-period-in-days-days
+            slot: regionBody
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    computation p1-period-in-days (
+        itemName: P1_PERIOD_IN_DAYS
+        execution {
+            sequence: 10
+        }
+        computation {
+            sqlQuery:
+                ```sql
+                select
+                  round( ls.period_in_days ) as period_in_days
+                from apex_workspace_log_summary ls
+                where 1 = 1
+                  and ls.application_id = :G_PUB_APP_ID
+                ```
+        }
+    )
+
+)
+

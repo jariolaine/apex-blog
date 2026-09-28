@@ -1,0 +1,539 @@
+page 81 (
+    name: Add/Edit Modal Page
+    alias: POPUP-PAGE-PROPERTIES
+    title: Page Properties
+    pageGroup: @modal-pages
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/drawer
+        templateOptions: [
+            #DEFAULT#
+            js-dialog-class-t-Drawer--pullOutEnd
+            js-dialog-class-t-Drawer--lg
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region add-edit-modal-popup-page (
+        name: Add/Edit Modal Popup Page
+        type: form
+        source {
+            location: localDatabase
+            tableName: BLOG_V_ALL_DYNAMIC_CONTENT
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region left-side (
+        name: Left Side
+        type: staticContent
+        layout {
+            sequence: 10
+            parentRegion: @add-edit-modal-popup-page
+            slot: subRegions
+            columnCssClasses: padding-right-none
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: [
+                #DEFAULT#
+                margin-right-none
+            ]
+        }
+    )
+
+    region right-side (
+        name: Right Side
+        type: staticContent
+        layout {
+            sequence: 20
+            parentRegion: @add-edit-modal-popup-page
+            slot: subRegions
+            startNewRow: false
+            column: 11
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P81_CONTENT_DESC (
+        type: textField
+        label {
+            label: Description
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @left-side
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            valueRequired: true
+            maxLength: 256
+        }
+        source {
+            formRegion: @add-edit-modal-popup-page
+            column: CONTENT_DESC
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P81_CONTENT_HTML (
+        type: richTextEditor
+        label {
+            label: Content
+            alignment: left
+        }
+        settings {
+            format: html
+            minHeight: 320
+            allowCustomHtml: true
+        }
+        layout {
+            sequence: 40
+            region: @left-side
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            valueRequired: true
+        }
+        advanced {
+            initJavaScriptFunction: blog.admin.editor.init
+        }
+        source {
+            formRegion: @add-edit-modal-popup-page
+            column: CONTENT_HTML
+            dataType: clob
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P81_CONTENT_TYPE (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @left-side
+            slot: regionBody
+        }
+        source {
+            formRegion: @add-edit-modal-popup-page
+            column: CONTENT_TYPE
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: noSpecialCharNoNewline
+        }
+    )
+
+    pageItem P81_DISPLAY_SEQ (
+        type: numberField
+        label {
+            label: Sequence
+            alignment: left
+        }
+        settings {
+            virtualKeyboard: numeric
+        }
+        layout {
+            sequence: 10
+            region: @right-side
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 255
+        }
+        source {
+            formRegion: @add-edit-modal-popup-page
+            column: DISPLAY_SEQ
+            dataType: number
+        }
+        default {
+            type: expression
+            plsqlExpression: blog_admin.get_modal_page_seq
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        help {
+            helpText: Link display sequence.
+        }
+    )
+
+    pageItem P81_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @left-side
+            slot: regionBody
+        }
+        source {
+            formRegion: @add-edit-modal-popup-page
+            column: ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P81_IS_ACTIVE (
+        type: switch
+        label {
+            label: Status
+            alignment: left
+        }
+        settings {
+            useDefaults: false
+            onValue: 1
+            onLabel: Enabled
+            offValue: 0
+            offLabel: Disabled
+        }
+        layout {
+            sequence: 30
+            region: @right-side
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @add-edit-modal-popup-page
+            column: IS_ACTIVE
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 1
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        help {
+            helpText: Enable or disable link.
+        }
+    )
+
+    pageItem P81_SHOW_CHANGED_ON (
+        type: switch
+        label {
+            label: Show Last Modified Date
+            alignment: left
+        }
+        settings {
+            useDefaults: false
+            onValue: 1
+            onLabel: Enabled
+            offValue: 0
+            offLabel: Disabled
+        }
+        layout {
+            sequence: 40
+            region: @right-side
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @add-edit-modal-popup-page
+            column: SHOW_CHANGED_ON
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 1
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        help {
+            helpText: "Include last modified date after content. "
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-chevron-left
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 80
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Save
+        layout {
+            sequence: 40
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P81_ID
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: Delete
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+            ]
+            icon: fa-trash-o
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P81_ID
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P81_ID
+        }
+    )
+
+    process initialize-form-add-edit-modal-popup-page (
+        name: Initialize form Add/Edit Modal Popup Page
+        type: formInitialization
+        formRegion: @add-edit-modal-popup-page
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 38354897863077183
+        }
+    )
+
+    process process-form-add-edit-modal-popup-page (
+        name: Process form Add/Edit Modal Popup Page
+        type: formAutoRowProcessing
+        formRegion: @add-edit-modal-popup-page
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 38355271198077183
+        }
+    )
+
+    process purge-public-application-global-page-cache (
+        name: Purge Public Application Global Page Cache
+        type: invokeApi
+        invoke {
+            package: APEX_UTIL
+            procedureOrFunction: CACHE_PURGE_BY_PAGE
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 54684564021189886
+        }
+        comments {
+            comments: Purge public application cached regions.
+        }
+
+        parameter p_application (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: item
+                item: G_PUB_APP_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_page (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: staticValue
+                staticValue: 1002
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+    )
+
+    branch (
+        name: Go to Page 80
+        execution {
+            sequence: 10
+        }
+        behavior {
+            target: {
+                page: 80
+                clearCache: 80
+            }
+        }
+    )
+
+)
+

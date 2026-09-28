@@ -1,0 +1,8 @@
+attributeGroup appearance (
+    name: Appearance
+    sequence: 10
+    advanced {
+        staticId: appearance
+    }
+)
+

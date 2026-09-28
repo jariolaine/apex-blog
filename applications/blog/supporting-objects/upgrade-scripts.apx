@@ -1,0 +1,151 @@
+upgradeScript "Create text indexes" (
+    execution {
+        sequence: 70
+    }
+    script {
+        contentFile: create-text-indexes.sql
+    }
+    serverSideCondition {
+        type: rowsReturned
+        sqlQuery:
+            ```sql
+            select 1
+            from blog_v_version
+            where 1 = 1
+            and application_date < 20231222
+            ```
+    }
+)
+
+upgradeScript "Database objects upgrade" (
+    execution {
+        sequence: 60
+    }
+    script {
+        contentFile: database-objects-upgrade.sql
+    }
+)
+
+upgradeScript "Drop text indexes" (
+    execution {
+        sequence: 50
+    }
+    script {
+        contentFile: drop-text-indexes.sql
+    }
+    serverSideCondition {
+        type: rowsReturned
+        sqlQuery:
+            ```sql
+            select 1
+            from blog_v_version
+            where 1 = 1
+            and application_date < 20231222
+            ```
+    }
+)
+
+upgradeScript "Patch 23.1.20231118" (
+    execution {
+        sequence: 10
+    }
+    script {
+        contentFile: patch-23-1-20231118.sql
+    }
+    serverSideCondition {
+        type: rowsReturned
+        sqlQuery:
+            ```sql
+            select 1
+            from blog_v_version
+            where 1 = 1
+            and application_date < 20231118
+            ```
+    }
+)
+
+upgradeScript "Patch 23.2.20231120" (
+    execution {
+        sequence: 20
+    }
+    script {
+        contentFile: patch-23-2-20231120.sql
+    }
+    serverSideCondition {
+        type: rowsReturned
+        sqlQuery:
+            ```sql
+            select 1
+            from blog_v_version
+            where 1 = 1
+            and application_date < 20231120
+            ```
+    }
+)
+
+upgradeScript "Patch 23.2.20240414" (
+    execution {
+        sequence: 30
+    }
+    script {
+        contentFile: patch-23-2-20240414.sql
+    }
+    serverSideCondition {
+        type: rowsReturned
+        sqlQuery:
+            ```sql
+            select 1
+            from blog_v_version
+            where 1 = 1
+            and application_date < 20240414
+            ```
+    }
+)
+
+upgradeScript "Patch 24.2.20250701 part 1" (
+    execution {
+        sequence: 40
+    }
+    script {
+        contentFile: patch-24-2-20250701-part-1.sql
+    }
+    serverSideCondition {
+        type: rowsReturned
+        sqlQuery:
+            ```sql
+            select 1
+            from blog_v_version
+            where 1 = 1
+            and application_date < 20250701
+            ```
+    }
+)
+
+upgradeScript "Patch 24.2.20250701 part 2" (
+    execution {
+        sequence: 80
+    }
+    script {
+        contentFile: patch-24-2-20250701-part-2.sql
+    }
+    serverSideCondition {
+        type: rowsReturned
+        sqlQuery:
+            ```sql
+            select 1
+            from blog_v_version
+            where 1 = 1
+            and application_date < 20250701
+            ```
+    }
+)
+
+upgradeScript Postupgrade (
+    execution {
+        sequence: 90
+    }
+    script {
+        contentFile: postupgrade.sql
+    }
+)
+

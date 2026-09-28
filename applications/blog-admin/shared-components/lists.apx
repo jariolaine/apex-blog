@@ -1,0 +1,681 @@
+list activity-reports (
+    name: Activity Reports
+
+    entry application-error-log (
+        label: Application Error Log
+        icon {
+            imageIconCssClasses: fa-exclamation-triangle-o
+        }
+        layout {
+            sequence: 50
+        }
+        link {
+            target: {
+                page: 30022
+            }
+        }
+        userDefinedAttributes {
+            1: Report of errors logged by this application
+        }
+    )
+
+    entry dashboard (
+        label: Dashboard
+        icon {
+            imageIconCssClasses: fa-area-chart
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 30020
+            }
+        }
+        userDefinedAttributes {
+            1: View application activity metrics
+        }
+    )
+
+    entry page-performance (
+        label: Page Performance
+        icon {
+            imageIconCssClasses: fa-file-chart
+        }
+        layout {
+            sequence: 40
+        }
+        link {
+            target: {
+                page: 30023
+            }
+        }
+        userDefinedAttributes {
+            1: Report of activity and performance by application page
+        }
+    )
+
+    entry page-views (
+        label: Page Views
+        icon {
+            imageIconCssClasses: fa-file-search
+        }
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 30024
+                action: resetRegions
+            }
+        }
+        userDefinedAttributes {
+            1: Report of each page view including date of access and elapsed time
+        }
+    )
+
+    entry page-views-metric (
+        label: Page Views Metric
+        icon {
+            imageIconCssClasses: fa-file-clock
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 30021
+                action: resetRegions
+            }
+        }
+        userDefinedAttributes {
+            1: Summary and breakdown by page report of page view counts and elapsed time
+        }
+    )
+
+)
+
+list admin-authentication (
+    name: Admin Authentication
+
+    entry apex (
+        label: APEX
+        icon {
+            imageIconCssClasses: fa-apex
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 20018
+            }
+        }
+        userDefinedAttributes {
+            1: Enable or disable APEX authentication for this admin application.
+            2: &P20010_APEX_AUTH_STATUS.
+            6: u-color-4
+        }
+        config {
+            buildOption: @under-development
+        }
+    )
+
+    entry google (
+        label: Google
+        icon {
+            imageIconCssClasses: fa-google
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 20017
+            }
+        }
+        userDefinedAttributes {
+            1: Set up Google authentication for this admin application.
+            2: &P20010_GOOGLE_AUTH_STATUS.
+            6: u-color-39
+        }
+    )
+
+)
+
+list ai-configuration (
+    name: AI Configuration
+
+    entry generative-ai (
+        label: Generative AI
+        icon {
+            imageIconCssClasses: fa-ai
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 20016
+            }
+        }
+        userDefinedAttributes {
+            1: Configure generative AI to assist with writing blog posts.
+            2: &P20010_GENERATIVE_AI_STATUS.
+            6: u-color-8
+        }
+    )
+
+    entry language-ai (
+        label: Language AI
+        icon {
+            imageIconCssClasses: fa-language
+        }
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 20015
+            }
+        }
+        userDefinedAttributes {
+            1: Configure Oracle cloud language service to analyze comment sentiment.
+            2: &P20010_OCI_LANG_AI_STATUS.
+            6: u-color-10
+        }
+    )
+
+    entry prompts (
+        label: Prompts
+        icon {
+            imageIconCssClasses: fa-ai-prompt
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 20020
+            }
+        }
+        userDefinedAttributes {
+            1: Manage generative AI prompts.
+            6: u-color-9
+        }
+        config {
+            buildOption: @under-development
+        }
+    )
+
+)
+
+list configuration (
+    name: Configuration
+
+    entry features (
+        label: Features
+        icon {
+            imageIconCssClasses: fa-layout-header-sidebar-right
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 20011
+            }
+        }
+        userDefinedAttributes {
+            1: Enable or disable public application features.
+        }
+    )
+
+    entry popup-pages (
+        label: Popup Pages
+        icon {
+            imageIconCssClasses: fa-list
+        }
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 80
+            }
+        }
+        userDefinedAttributes {
+            1: Create and maintain popup pages. A link to the page will appear in the blog footer. For example, create a page for a disclaimer or cookie policy.
+        }
+    )
+
+    entry settings (
+        label: Settings
+        icon {
+            imageIconCssClasses: fa-gears
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 20012
+            }
+        }
+        userDefinedAttributes {
+            1: Set the application name, description, email, date formats and other settings.
+        }
+    )
+
+)
+
+list navigation-bar (
+    name: Navigation Bar
+
+    entry about (
+        label: About
+        icon {
+            imageIconCssClasses: "fa-question-circle-o "
+        }
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 202
+            }
+        }
+    )
+
+    entry edit-profile (
+        label: Edit Profile
+        icon {
+            imageIconCssClasses: fa-id-card-o
+        }
+        layout {
+            sequence: 50
+            parentEntry: @g-blogger-name
+        }
+        isCurrent {
+            type: never
+        }
+        link {
+            target: {
+                page: 501
+            }
+        }
+    )
+
+    entry g-blogger-name (
+        label: &G_BLOGGER_NAME.
+        icon {
+            imageIconCssClasses: fa-user
+        }
+        layout {
+            sequence: 40
+        }
+        isCurrent {
+            type: never
+        }
+        link {
+            target: {
+                type: url
+                url: #
+            }
+        }
+    )
+
+    entry help (
+        label: Help
+        icon {
+            imageIconCssClasses: fa-question-circle-o
+        }
+        layout {
+            sequence: 20
+        }
+        isCurrent {
+            type: never
+        }
+        link {
+            target: {
+                page: 201
+                request: &APP_PAGE_ID.
+            }
+        }
+        serverSideCondition {
+            type: currentPageInList
+            pages: [
+                11
+                20010
+                30000
+            ]
+        }
+    )
+
+    entry list_item (
+        label: ----
+        layout {
+            sequence: 60
+            parentEntry: @g-blogger-name
+        }
+        isCurrent {
+            type: never
+        }
+        link {
+            target: {
+                type: url
+                url: separator
+            }
+        }
+    )
+
+    entry sign-out (
+        label: Sign Out
+        icon {
+            imageIconCssClasses: fa-sign-out
+        }
+        layout {
+            sequence: 70
+            parentEntry: @g-blogger-name
+        }
+        isCurrent {
+            type: never
+        }
+        link {
+            target: {
+                type: url
+                url: &LOGOUT_URL.
+            }
+        }
+    )
+
+)
+
+list navigation-menu (
+    name: Navigation Menu
+
+    entry administration (
+        label: Administration
+        icon {
+            imageIconCssClasses: fa-gear
+        }
+        layout {
+            sequence: 80
+        }
+        link {
+            target: {
+                page: 20010
+            }
+        }
+    )
+
+    entry comments (
+        label: Comments
+        icon {
+            imageIconCssClasses: fa-comments-o
+        }
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 60
+            }
+        }
+    )
+
+    entry file-repository (
+        label: File Repository
+        icon {
+            imageIconCssClasses: fa-database-file
+        }
+        layout {
+            sequence: 50
+        }
+        link {
+            target: {
+                page: 300
+            }
+        }
+        config {
+            buildOption: !@blog-feature-oci-object-storage
+        }
+    )
+
+    entry home (
+        label: Home
+        icon {
+            imageIconCssClasses: fa-home
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+        userDefinedAttributes {
+            4: Home
+        }
+    )
+
+    entry links (
+        label: Links
+        icon {
+            imageIconCssClasses: fa-link
+        }
+        layout {
+            sequence: 40
+        }
+        link {
+            target: {
+                page: 50
+            }
+        }
+    )
+
+    entry object-storage (
+        label: Object Storage
+        icon {
+            imageIconCssClasses: fa-cloud-file
+        }
+        layout {
+            sequence: 60
+        }
+        link {
+            target: {
+                page: 300
+            }
+        }
+        config {
+            buildOption: @blog-feature-oci-object-storage
+        }
+    )
+
+    entry posts (
+        label: Posts
+        icon {
+            imageIconCssClasses: fa-file-text-o
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 11
+            }
+        }
+    )
+
+    entry reports (
+        label: Reports
+        icon {
+            imageIconCssClasses: fa-dashboard
+        }
+        layout {
+            sequence: 70
+        }
+        isCurrent {
+            type: pages
+            pages: 30000
+        }
+        link {
+            target: {
+                page: 30000
+            }
+        }
+    )
+
+)
+
+list object-storage (
+    name: Object Storage
+
+    entry object-storage (
+        label: Object Storage
+        icon {
+            imageIconCssClasses: fa-cloud-file
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 20013
+            }
+        }
+        userDefinedAttributes {
+            1: Configure Oracle cloud object storage for file storage.
+            2: &P20010_OCI_OS_STATUS.
+            6: u-color-6
+        }
+    )
+
+    entry synchronize-files (
+        label: Synchronize Files
+        icon {
+            imageIconCssClasses: fa-refresh
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 20014
+            }
+        }
+        userDefinedAttributes {
+            1: "Synchronize file between Oracle cloud object storage and local file repository. "
+            6: u-color-7
+        }
+        config {
+            buildOption: @blog-feature-oci-object-storage
+        }
+    )
+
+)
+
+list oracle-cloud-api-key (
+    name: Oracle Cloud API Key
+
+    entry api-key (
+        label: API Key
+        icon {
+            imageIconCssClasses: fa-lock-password
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 20019
+            }
+        }
+        userDefinedAttributes {
+            1: Set the Oracle Cloud API key for Object Storage and Language AI services.
+            6: u-color-5
+        }
+    )
+
+)
+
+list public-application-links (
+    name: Public Application Links
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            with q1 as(
+              select 
+                1 as display_seq
+                ,:APP_TEXT$BLOG_PUB_APP_LINK_HOME as list_label
+                ,blog_url.get_tab(
+                  p_application  => t1.attribute_value
+                  ,p_page         => 'home'
+                  ,p_canonical    => 'YES'
+                ) as list_link
+                ,'fa-home' as list_icon
+              from blog_settings t1
+              where 1 = 1
+              and t1.attribute_name = 'G_PUB_APP_ID'
+              union all
+              select 
+                2 as display_seq
+                ,:APP_TEXT$BLOG_PUB_APP_LINK_SITEMAP as list_label
+                ,blog_url.get_sitemap_index(
+                  p_application => :G_PUB_APP_ID
+                ) as list_link
+                ,'fa-sitemap' as list_icon
+              from dual
+              where 1 = 1
+              and apex_application_admin.get_build_option_status(
+                  p_application_id     => :G_PUB_APP_ID
+                  ,p_build_option_name  => 'BLOG_FEATURE_SITEMAP'
+                ) = 'INCLUDE'
+              union all
+              select 3 as display_seq
+                ,:APP_TEXT$BLOG_PUB_APP_LINK_RSS as list_label
+                ,blog_url.get_rss(
+                  p_application  => :G_PUB_APP_ID
+                ) as list_link
+                ,'fa-rss' as list_icon
+              from blog_settings
+              where 1 = 1
+              and attribute_name = 'G_RSS_URL'
+              and apex_application_admin.get_build_option_status(
+                  p_application_id     => :G_PUB_APP_ID
+                  ,p_build_option_name  => 'BLOG_FEATURE_RSS'
+                ) = 'INCLUDE'
+                union all
+              select 4 as display_seq
+                ,:APP_TEXT$BLOG_PUB_APP_LINK_ATOM as list_label
+                ,blog_url.get_atom(
+                  p_application  => :G_PUB_APP_ID
+                ) as list_link
+                ,'fa-rss' as list_icon
+              from dual
+              where 1 = 1
+              and apex_application_admin.get_build_option_status(
+                  p_application_id     => :G_PUB_APP_ID
+                  ,p_build_option_name  => 'BLOG_FEATURE_ATOM'
+                ) = 'INCLUDE'
+            )
+            select
+               null               as list_level
+              ,q1.list_label      as list_label
+              ,q1.list_link       as list_link
+              ,'NO'               as is_current
+              ,q1.list_icon       as list_image
+              ,null               as image_attribute
+              ,null               as image_alt_attribute
+              ,q1.list_link       as attribute1
+              ,null               as attribute2
+              ,'target="_blank"'  as attribute3
+            from q1
+            order by q1.display_seq
+            
+            ```
+    }
+)
+

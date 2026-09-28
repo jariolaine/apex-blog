@@ -1,0 +1,24 @@
+authentication apex (
+    name: APEX
+    type: oracleApexAccounts
+    loginProcessing {
+        switchInSession: true
+    }
+)
+
+authentication google (
+    name: Google
+    type: socialSignIn
+    settings {
+        credentialStore: @BLOG_GOOGLE_OAUTH2
+        authProvider: google
+        scope: email
+        username: #email#
+        convertUsernameToUpperCase: true
+    }
+    loginProcessing {
+        postAuthenticationProcedureName: blog_admin.post_authentication
+        switchInSession: true
+    }
+)
+

@@ -1,0 +1,102 @@
+buildOption blog-authentication-apex (
+    name: BLOG_AUTHENTICATION_APEX
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable or disable APEX authentication from login screen
+    }
+)
+
+buildOption blog-authentication-google (
+    name: BLOG_AUTHENTICATION_GOOGLE
+    status {
+        status: include
+        defaultOnExport: exclude
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable or disable Google authentication from login screen. Google authentication requires client id and client secret is set to credential Blog Google OAuth2. For authorization, users need to be created to workspace and assigned to Bloggers group.
+    }
+)
+
+buildOption blog-feature-generative-ai (
+    name: BLOG_FEATURE_GENERATIVE_AI
+    status {
+        status: include
+        defaultOnExport: exclude
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable generative AI.
+    }
+)
+
+buildOption blog-feature-language-ai (
+    name: BLOG_FEATURE_LANGUAGE_AI
+    status {
+        status: include
+        defaultOnExport: exclude
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable comments sentiment analyze using OCI language AI
+    }
+)
+
+buildOption blog-feature-oci-object-storage (
+    name: BLOG_FEATURE_OCI_OBJECT_STORAGE
+    status {
+        status: include
+        defaultOnExport: exclude
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable Oracle cloud object storage
+    }
+)
+
+buildOption blog-feature-post-speech (
+    name: BLOG_FEATURE_POST_SPEECH
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable speech recognition in post page
+    }
+)
+
+buildOption commented-out (
+    name: Commented Out
+    status {
+        defaultOnExport: exclude
+    }
+    comments {
+        comments: Features that have been commented out
+    }
+)
+
+buildOption obsolete (
+    name: Obsolete
+    status {
+        defaultOnExport: exclude
+    }
+    comments {
+        comments: Obsolete objects that are considered to be removed
+    }
+)
+
+buildOption under-development (
+    name: Under development
+    status {
+        defaultOnExport: exclude
+    }
+    comments {
+        comments: Objects whose development is ongoing
+    }
+)
+

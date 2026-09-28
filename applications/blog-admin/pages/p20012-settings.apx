@@ -1,0 +1,862 @@
+page 20012 (
+    name: Settings
+    alias: SETTINGS
+    title: Settings
+    pageGroup: @configuration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/drawer
+        templateOptions: [
+            #DEFAULT#
+            t-Dialog--noPadding
+            js-dialog-class-t-Drawer--pullOutEnd
+            js-dialog-class-t-Drawer--xl
+            t-PageBody--noContentPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 30
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region information (
+        name: Information
+        type: staticContent
+        source {
+            htmlCode: &APP_TEXT$BLOG_MSG_BASIC_SETTINGS_INFO.
+        }
+        layout {
+            sequence: 10
+            slot: dialogHeader
+        }
+        appearance {
+            template: @/alert
+            templateOptions: [
+                #DEFAULT#
+                t-Alert--colorBG
+                t-Alert--horizontal
+                t-Alert--defaultIcons
+                t-Alert--warning
+                t-Alert--accessibleHeading
+                margin-bottom-none
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+    )
+
+    region settings (
+        name: Settings
+        type: interactiveGrid
+        source {
+            location: localDatabase
+            tableName: BLOG_V_SETTINGS
+            whereClause: attribute_group != 'INTERNAL'
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+                margin-bottom-none
+            ]
+            cssClasses: blog-config-ig
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+        edit {
+            enabled: true
+            allowedOperations: update
+            lostUpdateType: rowVersionColumn
+            rowVersionColumn: ROW_VERSION
+        }
+        componentAppearance {
+            selectFirstRow: false
+        }
+        pagination {
+            type: page
+            showTotalCount: false
+        }
+        toolbar {
+            show: false
+        }
+        enableUsersTo {
+            flashback: false
+            defineChartView: false
+            download: false
+        }
+        heading {
+            fixedTo: none
+        }
+        componentAdvanced {
+            initJavaScriptFunction: blog.admin.ig.region
+        }
+        advanced {
+            savedReportMappingIdentifier: 27273553203075414
+        }
+
+        savedReport 249341 (
+            visibility: primary
+            view {
+                default: grid
+                rowsPerPage: 1000
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @HELP_LINK
+                layout {
+                    width: 72
+                    sequence: 7
+                }
+            )
+
+            displayColumn (
+                column: @ID
+                layout {
+                    frozen: true
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @ROW_VERSION
+                layout {
+                    frozen: true
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @CHANGED_ON
+                layout {
+                    width: 120
+                    sequence: 8
+                }
+            )
+
+            displayColumn (
+                column: @CHANGED_BY
+                layout {
+                    width: 200
+                    sequence: 11
+                }
+            )
+
+            displayColumn (
+                column: @DISPLAY_SEQ
+                layout {
+                    show: false
+                    frozen: true
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @ATTRIBUTE_DESC
+                layout {
+                    width: 348
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @ATTRIBUTE_VALUE
+                layout {
+                    width: 698
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @DATA_TYPE
+                layout {
+                    sequence: 9
+                }
+            )
+
+            displayColumn (
+                column: @IS_NULLABLE
+                layout {
+                    sequence: 10
+                }
+            )
+
+            displayColumn (
+                column: @VALUE_REQUIRED
+                layout {
+                    width: 72
+                    sequence: 6
+                }
+            )
+
+            displayColumn (
+                column: @ATTRIBUTE_GROUP_HTML
+                layout {
+                    show: false
+                    sequence: 12
+                }
+            )
+
+            displayColumn (
+                column: @INT_MIN
+                layout {
+                    sequence: 13
+                }
+            )
+
+            displayColumn (
+                column: @INT_MAX
+                layout {
+                    sequence: 14
+                }
+            )
+
+            displayColumn (
+                column: @ATTRIBUTE_NAME
+                layout {
+                    sequence: 15
+                }
+            )
+
+            sort (
+                column: @DISPLAY_SEQ
+                sort {
+                    nulls: last
+                    sequence: 1
+                }
+            )
+
+            controlBreak (
+                column: @ATTRIBUTE_GROUP_HTML
+                sort {
+                    nulls: last
+                }
+                layout {
+                    sequence: 5
+                }
+            )
+
+        )
+
+        column ATTRIBUTE_DESC (
+            type: displayOnly
+            heading {
+                heading: Name
+            }
+            layout {
+                sequence: 90
+                stretch: always
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            appearance {
+                cssClasses: padding-left-md
+            }
+            source {
+                databaseColumn: ATTRIBUTE_DESC
+                dataType: varchar2
+                queryOnly: true
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+            enableUsersTo {
+                sort: false
+                hide: false
+            }
+        )
+
+        column ATTRIBUTE_GROUP_HTML (
+            type: displayOnly
+            heading {
+                heading: Group
+            }
+            settings {
+                format: html
+            }
+            layout {
+                sequence: 80
+                stretch: always
+            }
+            source {
+                databaseColumn: ATTRIBUTE_GROUP_HTML
+                dataType: varchar2
+                queryOnly: true
+            }
+            columnFilter {
+                enabled: false
+            }
+            enableUsersTo {
+                hide: false
+            }
+        )
+
+        column ATTRIBUTE_NAME (
+            type: hidden
+            layout {
+                sequence: 200
+            }
+            source {
+                databaseColumn: ATTRIBUTE_NAME
+                dataType: varchar2
+                queryOnly: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column ATTRIBUTE_VALUE (
+            type: textField
+            heading {
+                heading: Value
+            }
+            layout {
+                sequence: 100
+                stretch: always
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: ATTRIBUTE_VALUE
+                dataType: varchar2
+            }
+            default {
+                duplicateCopiesExistingValue: false
+            }
+            columnFilter {
+                enabled: false
+            }
+            enableUsersTo {
+                sort: false
+                hide: false
+            }
+        )
+
+        column CHANGED_BY (
+            type: displayOnly
+            heading {
+                heading: Changed by
+            }
+            layout {
+                sequence: 150
+                stretch: always
+            }
+            source {
+                databaseColumn: CHANGED_BY
+                dataType: varchar2
+                queryOnly: true
+            }
+            columnFilter {
+                enabled: false
+            }
+            enableUsersTo {
+                sort: false
+                hide: false
+            }
+        )
+
+        column CHANGED_ON (
+            type: displayOnly
+            heading {
+                heading: Changed
+                alignment: center
+            }
+            layout {
+                sequence: 140
+                columnAlignment: center
+                stretch: always
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                databaseColumn: CHANGED_ON
+                dataType: timestampWithLocalTimeZone
+                queryOnly: true
+            }
+            columnFilter {
+                enabled: false
+            }
+            enableUsersTo {
+                sort: false
+                hide: false
+            }
+        )
+
+        column DATA_TYPE (
+            type: hidden
+            layout {
+                sequence: 170
+            }
+            source {
+                databaseColumn: DATA_TYPE
+                dataType: varchar2
+                queryOnly: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column DISPLAY_SEQ (
+            type: displayOnly
+            heading {
+                heading: Sequence
+                alignment: end
+            }
+            layout {
+                sequence: 60
+                columnAlignment: end
+                stretch: always
+            }
+            source {
+                databaseColumn: DISPLAY_SEQ
+                dataType: number
+                queryOnly: true
+            }
+            columnFilter {
+                enabled: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+            enableUsersTo {
+                hide: false
+            }
+        )
+
+        column HELP_LINK (
+            type: link
+            heading {
+                heading: Help
+                alignment: center
+            }
+            layout {
+                sequence: 130
+                columnAlignment: center
+                stretch: never
+            }
+            link {
+                target: {
+                    page: 20100
+                    items: {
+                        P20100_ID: &ID.
+                    }
+                    request: SETTINGS
+                }
+                linkText: <span aria-hidden="true" class="t-Icon fa fa-question-circle-o"></span>
+                linkAttributes: title="&APP_TEXT$BLOG_TXT_HELP." aria-label="&APP_TEXT$BLOG_TXT_HELP." class="t-Button t-Button--noLabel t-Button--icon t-Button--link t-Button--stretch padding-none"
+            }
+            source {
+                type: none
+            }
+            enableUsersTo {
+                hide: false
+            }
+        )
+
+        column ID (
+            type: hidden
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: ID
+                dataType: number
+                queryOnly: true
+                primaryKey: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column INT_MAX (
+            type: hidden
+            layout {
+                sequence: 190
+            }
+            source {
+                databaseColumn: INT_MAX
+                dataType: number
+                queryOnly: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column INT_MIN (
+            type: hidden
+            layout {
+                sequence: 180
+            }
+            source {
+                databaseColumn: INT_MIN
+                dataType: number
+                queryOnly: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column IS_NULLABLE (
+            type: hidden
+            layout {
+                sequence: 160
+            }
+            source {
+                databaseColumn: IS_NULLABLE
+                dataType: number
+                queryOnly: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column ROW_VERSION (
+            type: hidden
+            layout {
+                sequence: 40
+            }
+            source {
+                databaseColumn: ROW_VERSION
+                dataType: number
+                queryOnly: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column VALUE_REQUIRED (
+            type: htmlExpression
+            heading {
+                heading: Required
+                alignment: center
+            }
+            settings {
+                htmlExpression:
+                    ```html
+                    <div class="blog-status-marker blog-status-marker--left{if !IS_NULLABLE/} blog-required{endif/}">
+                      &VALUE_REQUIRED.
+                    </div>
+                    
+                    ```
+            }
+            layout {
+                sequence: 120
+                columnAlignment: center
+                stretch: never
+            }
+            source {
+                databaseColumn: VALUE_REQUIRED
+                dataType: varchar2
+                queryOnly: true
+            }
+            enableUsersTo {
+                sort: false
+                hide: false
+            }
+        )
+
+    )
+
+    button close (
+        buttonName: CLOSE
+        label: Close
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-close
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            action: redirectUrl
+            targetUrl: #action$save
+            warnOnUnsavedChanges: doNotCheck
+        }
+        advanced {
+            customAttributes: data-action="save" data-no-update="true"
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @close
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction process-after-changes (
+        name: Process After Changes
+        execution {
+            sequence: 20
+        }
+        when {
+            event: region/interactiveGrid/interactivegridsave
+            selectionType: region
+            region: @settings
+        }
+
+        action clear-public-application-global-page-cached-regions (
+            name: Clear public application global page cached regions
+            action: executeServerSideCode
+            settings {
+                plsqlCode:
+                    ```plsql
+                    apex_util.cache_purge_by_page(
+                       p_application => :G_PUB_APP_ID
+                      ,p_page => 0
+                    );
+                    
+                    ```
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+                waitForResult: false
+            }
+            clientSideCondition {
+                type: jsExpression
+                javaScriptExpression: this.data.status === "success"
+            }
+        )
+
+    )
+
+    validation is-date-format (
+        name: Is date format
+        execution {
+            sequence: 40
+        }
+        validation {
+            editableRegion: @settings
+            type: functionBody
+            plsqlFunctionBody:
+                ```plsql
+                return blog_admin.is_date_format(
+                  p_value     => :ATTRIBUTE_VALUE
+                , p_err_mesg  => :APP_TEXT$BLOG_VALIDATION_ERR_DATE_FORMAT
+                );
+                ```
+        }
+        error {
+            associatedColumn: ATTRIBUTE_VALUE
+        }
+        serverSideCondition {
+            type: item=value
+            item: DATA_TYPE
+            value: DATE_FORMAT
+        }
+    )
+
+    validation is-email (
+        name: Is email
+        execution {
+            sequence: 60
+        }
+        validation {
+            editableRegion: @settings
+            type: functionBody
+            plsqlFunctionBody:
+                ```plsql
+                return blog_comment.is_email(
+                  p_email     => :ATTRIBUTE_VALUE
+                , p_err_mesg  => :APP_TEXT$BLOG_VALIDATION_ERR_EMAIL
+                );
+                ```
+        }
+        error {
+            associatedColumn: ATTRIBUTE_VALUE
+        }
+        serverSideCondition {
+            type: item=value
+            item: DATA_TYPE
+            value: EMAIL
+        }
+    )
+
+    validation is-integer (
+        name: Is Integer
+        execution {
+            sequence: 30
+        }
+        validation {
+            editableRegion: @settings
+            type: functionBody
+            plsqlFunctionBody:
+                ```plsql
+                return blog_admin.is_integer(
+                  p_value     => :ATTRIBUTE_VALUE
+                , p_min       => :INT_MIN
+                , p_max       => :INT_MAX
+                , p_err_mesg  => 'BLOG_VALIDATION_ERR_INTEGER'
+                );
+                ```
+        }
+        error {
+            associatedColumn: ATTRIBUTE_VALUE
+        }
+        serverSideCondition {
+            type: item=value
+            item: DATA_TYPE
+            value: INTEGER
+        }
+    )
+
+    validation is-not-null (
+        name: Is not null
+        execution {
+            sequence: 10
+        }
+        validation {
+            editableRegion: @settings
+            type: columnIsNotNull
+            column: ATTRIBUTE_VALUE
+        }
+        error {
+            errorMessage: Please fill out this field.
+            associatedColumn: ATTRIBUTE_VALUE
+        }
+        serverSideCondition {
+            type: item=value
+            item: IS_NULLABLE
+            value: 0
+        }
+    )
+
+    validation is-url (
+        name: Is URL
+        execution {
+            sequence: 50
+        }
+        validation {
+            editableRegion: @settings
+            type: functionBody
+            plsqlFunctionBody:
+                ```plsql
+                return blog_admin.is_url(
+                  p_value     => :ATTRIBUTE_VALUE
+                , p_err_mesg  => :APP_TEXT$BLOG_VALIDATION_ERR_URL
+                );
+                ```
+        }
+        error {
+            associatedColumn: ATTRIBUTE_VALUE
+        }
+        serverSideCondition {
+            type: item=value
+            item: DATA_TYPE
+            value: URL
+        }
+    )
+
+    process settings-save-interactive-grid-data (
+        name: Settings - Save Interactive Grid Data
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @settings
+        target {
+            targetType: tableView
+            tableName: BLOG_SETTINGS
+            returnPksAfterInsert: false
+        }
+        lockRow {
+            lockRow: false
+        }
+        execution {
+            sequence: 40
+        }
+        advanced {
+            executionMappingIdentifier: 27274503365075424
+        }
+    )
+
+)
+

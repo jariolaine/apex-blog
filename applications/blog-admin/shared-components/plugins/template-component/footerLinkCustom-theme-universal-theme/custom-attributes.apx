@@ -1,0 +1,69 @@
+customAttribute HAS_ICON (
+    apexlangName: hasIcon
+    attribute: 5
+    name: Has Icon
+    type: yesNo
+    appearance {
+        sequence: 50
+    }
+)
+
+customAttribute ICON_CLASS (
+    apexlangName: iconClass
+    attribute: 6
+    name: Icon Class
+    appearance {
+        sequence: 60
+    }
+    dependingOn {
+        attribute: @HAS_ICON/component
+        conditionType: =
+        value: Y
+    }
+)
+
+customAttribute LINK (
+    apexlangName: link
+    attribute: 1
+    name: Link
+    security {
+        escapeMode: raw
+    }
+    appearance {
+        sequence: 10
+    }
+)
+
+customAttribute LINK_ATTR (
+    apexlangName: linkAttributes
+    attribute: 2
+    name: Link Attributes
+    security {
+        escapeMode: raw
+    }
+    appearance {
+        sequence: 20
+    }
+)
+
+customAttribute TEXT (
+    apexlangName: text
+    attribute: 4
+    name: Text
+    appearance {
+        sequence: 40
+    }
+)
+
+customAttribute TITLE (
+    apexlangName: title
+    attribute: 3
+    name: Title
+    security {
+        escapeMode: htmlAttribute
+    }
+    appearance {
+        sequence: 30
+    }
+)
+

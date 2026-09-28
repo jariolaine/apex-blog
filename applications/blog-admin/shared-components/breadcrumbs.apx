@@ -1,0 +1,114 @@
+breadcrumb breadcumb (
+    name: Breadcumb
+
+    entry administration (
+        name: Administration
+        pageNumber: 20010
+        execution {
+            sequence: 60
+        }
+        appearance {
+            longName: Administration and Configuration
+        }
+        link {
+            target: {
+                page: 20010
+            }
+        }
+    )
+
+    entry comments (
+        name: Comments
+        pageNumber: 60
+        execution {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 60
+            }
+        }
+    )
+
+    entry file-repository (
+        name: File Repository
+        pageNumber: 300
+        execution {
+            sequence: 40
+        }
+        appearance {
+            longName: Blog File Repository
+        }
+        link {
+            target: {
+                page: 300
+            }
+        }
+        config {
+            buildOption: !@blog-feature-oci-object-storage
+        }
+    )
+
+    entry links (
+        name: Links
+        pageNumber: 50
+        execution {
+            sequence: 30
+        }
+        appearance {
+            longName: Blog Link Collections
+        }
+        link {
+            target: {
+                page: 50
+            }
+        }
+    )
+
+    entry object-storage (
+        name: Object Storage
+        pageNumber: 300
+        execution {
+            sequence: 50
+        }
+        link {
+            target: {
+                page: 300
+            }
+        }
+        config {
+            buildOption: @blog-feature-oci-object-storage
+        }
+    )
+
+    entry posts (
+        name: Posts
+        pageNumber: 11
+        execution {
+            sequence: 10
+        }
+        appearance {
+            longName: Blog Posts
+        }
+        link {
+            target: {
+                page: 11
+            }
+        }
+    )
+
+    entry reports (
+        name: Reports
+        pageNumber: 30000
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 30000
+            }
+        }
+    )
+
+)
+

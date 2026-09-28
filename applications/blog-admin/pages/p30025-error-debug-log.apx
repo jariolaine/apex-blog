@@ -1,0 +1,414 @@
+page 30025 (
+    name: Error Debug Log
+    alias: ERROR-DEBUG-LOG
+    title: Error Debug Log
+    pageGroup: @activity-reporting
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region error-debug-log (
+        name: Error Debug Log
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select page_id        as page
+                  ,(
+                    select p.page_name
+                    from apex_application_pages p
+                    where 1 = 1
+                      and p.application_id  = d.application_id
+                      and p.page_id         = d.page_id
+                  )                   as page_name
+                  ,session_id         as session_id
+                  ,apex_user          as user_id
+                  ,page_view_id       as page_view_id
+                  ,message_level      as message_level
+                  ,cast(
+                    message_timestamp as timestamp with local time zone
+                  )                   as message_timestamp
+                  ,cast(
+                    message_timestamp as timestamp with local time zone
+                  )                   as message_since
+                  ,elapsed_time       as elapsed_time
+                  ,execution_time     as execution_time
+                  ,message            as message
+                  ,call_stack         as call_stack
+                from apex_debug_messages d
+                where 1 = 1
+                and page_view_id = :P30025_DEBUG_ID
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        performance {
+            maxRowsToProcess: 1000000
+        }
+        messages {
+            whenNoDataFound: No data found.
+            whenMoreDataFound: The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.
+        }
+        advanced {
+            savedReportMappingIdentifier: 56683755401382562
+        }
+
+        column CALL_STACK (
+            type: plainText
+            heading {
+                heading: Call Stack
+                alignment: center
+            }
+            layout {
+                sequence: 120
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: U
+            }
+        )
+
+        column ELAPSED_TIME (
+            type: plainText
+            heading {
+                heading: Elapsed Time
+                alignment: center
+            }
+            layout {
+                sequence: 90
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: R
+            }
+        )
+
+        column EXECUTION_TIME (
+            type: plainText
+            heading {
+                heading: Execution Time
+                alignment: center
+            }
+            layout {
+                sequence: 100
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: S
+            }
+        )
+
+        column MESSAGE (
+            type: plainText
+            heading {
+                heading: Message
+                alignment: center
+            }
+            layout {
+                sequence: 110
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: T
+            }
+        )
+
+        column MESSAGE_LEVEL (
+            type: plainText
+            heading {
+                heading: Message Level
+                alignment: center
+            }
+            layout {
+                sequence: 60
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: P
+            }
+        )
+
+        column MESSAGE_SINCE (
+            type: plainText
+            heading {
+                heading: Occurred
+                alignment: center
+            }
+            layout {
+                sequence: 80
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: V
+            }
+        )
+
+        column MESSAGE_TIMESTAMP (
+            type: plainText
+            heading {
+                heading: Timestamp
+                alignment: center
+            }
+            layout {
+                sequence: 70
+                columnAlignment: center
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: Q
+            }
+        )
+
+        column PAGE (
+            type: plainText
+            heading {
+                heading: Page
+                alignment: center
+            }
+            layout {
+                sequence: 10
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: X
+            }
+        )
+
+        column PAGE_NAME (
+            type: plainText
+            heading {
+                heading: Page Name
+                alignment: center
+            }
+            layout {
+                sequence: 20
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            columnFormatting {
+                htmlExpression: #PAGE#. #PAGE_NAME#
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: W
+            }
+        )
+
+        column PAGE_VIEW_ID (
+            type: plainText
+            heading {
+                heading: Debug
+                alignment: center
+            }
+            layout {
+                sequence: 50
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: O
+            }
+        )
+
+        column SESSION_ID (
+            type: plainText
+            heading {
+                heading: Session
+                alignment: center
+            }
+            layout {
+                sequence: 40
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column USER_ID (
+            type: plainText
+            heading {
+                heading: User Name
+                alignment: center
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Application Error Log
+        }
+
+        savedReport 438648 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn CALL_STACK (
+                sequence: 6
+            )
+
+            displayColumn ELAPSED_TIME (
+                sequence: 3
+            )
+
+            displayColumn EXECUTION_TIME (
+                sequence: 4
+            )
+
+            displayColumn MESSAGE (
+                sequence: 5
+            )
+
+            displayColumn MESSAGE_SINCE (
+                sequence: 2
+            )
+
+            displayColumn PAGE_NAME (
+                sequence: 1
+            )
+
+            sort (
+                column: MESSAGE_TIMESTAMP
+                sort {
+                    sequence: 1
+                }
+            )
+
+            sort (
+                column: ERROR_TIME
+                sort {
+                    direction: desc
+                    sequence: 2
+                }
+            )
+
+            sort (
+                column: ERR_TIME
+                sort {
+                    direction: desc
+                    sequence: 3
+                }
+            )
+
+        )
+
+    )
+
+    pageItem P30025_DEBUG_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @error-debug-log
+            slot: regionBody
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Reset Report
+        layout {
+            sequence: 20
+            region: @error-debug-log
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: &APP_PAGE_ID.
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+)
+

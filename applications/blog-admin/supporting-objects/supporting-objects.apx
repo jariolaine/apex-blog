@@ -1,0 +1,59 @@
+supportingObject (
+    prerequisites {
+        freeSpace: 200
+        systemPrivileges: [
+            createProcedure
+            createSequence
+            createTable
+            createTrigger
+            createView
+        ]
+    }
+    installationMessages {
+        welcome: This application installer will guide you through the process of creating database objects and metadata necessary to run the application.
+        confirmation: Please confirm that you would like to install this application's supporting objects.
+        installSuccess:
+            ```
+            Supporting objects have been installed successfully.
+            
+            For login to blog administration application, you must create APEX workspace user group called "Bloggers" and assign APEX user to this group.
+            ```
+        installFailure: Installation of database objects and meta data has failed.
+    }
+    upgrade {
+        upgradeWhenSqlQuery:
+            ```sql
+            select 1
+            from user_views
+            where 1 = 1
+            and view_name = 'BLOG_V_VERSION'
+            ```
+    }
+    upgradeMessages {
+        welcome: The application installer has detected that this application's supporting objects were previously installed.  This wizard will guide you through the process of upgrading these supporting objects.
+        confirmation: Please confirm that you would like to install this application's supporting objects.
+        success: Your application's supporting objects have been installed.
+        failure: Installation of database objects and seed data has failed.
+    }
+    deinstall {
+        scriptFile: deinstall-script.sql
+    }
+    deinstallationMessages {
+        postDeinstall: Deinstallation complete.
+    }
+    messages {
+        license:
+            ```
+            Please read license from
+            
+            https://raw.githubusercontent.com/jariolaine/apex-blog/master/LICENSE.txt
+            ```
+        validations: The following validations will be performed to ensure your system is compatible with this application.
+        appSubstitutions: You can configure the following attributes of your application.
+        buildOptions: You can choose to include the following build options.
+    }
+    advanced {
+        includeInAppExport: true
+    }
+)
+

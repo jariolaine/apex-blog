@@ -1,0 +1,455 @@
+lov categories (
+    name: CATEGORIES
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select 
+              v1.title                  as return_value
+              ,v1.title                 as display_value
+              ,v1.category_status_text  as status
+              ,v1.display_seq           as display_seq
+            from blog_v_all_categories v1
+            ```
+    }
+    columnMapping {
+        return: RETURN_VALUE
+        display: DISPLAY_VALUE
+        defaultSort: DISPLAY_SEQ
+        group: STATUS
+        groupSortDirection: descNullsLast
+    }
+
+    column DISPLAY_SEQ (
+        show: false
+        heading {
+            heading: Sequence
+        }
+        layout {
+            sequence: 10
+        }
+        source {
+            dataType: number
+        }
+        advanced {
+            searchable: false
+        }
+    )
+
+    column DISPLAY_VALUE (
+        heading {
+            heading: Category
+        }
+        layout {
+            sequence: 20
+        }
+        source {
+            dataType: varchar2
+        }
+    )
+
+    column RETURN_VALUE (
+        show: false
+        layout {
+            sequence: 10
+        }
+        source {
+            dataType: varchar2
+        }
+        advanced {
+            searchable: false
+        }
+    )
+
+    column STATUS (
+        heading {
+            heading: Status
+        }
+        layout {
+            sequence: 30
+        }
+        source {
+            dataType: varchar2
+        }
+    )
+
+)
+
+lov comment-flag-code (
+    name: COMMENT_FLAG_CODE
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+              lov.display_value
+            , lov.return_value
+            from blog_v_lov lov
+            where lov.lov_name = 'COMMENT_FLAG'
+            ```
+    }
+    columnMapping {
+        return: RETURN_VALUE
+        display: DISPLAY_VALUE
+        defaultSort: DISPLAY_VALUE
+    }
+)
+
+lov comment-flag-text (
+    name: COMMENT_FLAG_TEXT
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+              lov.display_value
+            from blog_v_lov lov
+            where lov.lov_name = 'COMMENT_FLAG'
+            ```
+    }
+    columnMapping {
+        return: DISPLAY_VALUE
+        display: DISPLAY_VALUE
+        defaultSort: DISPLAY_VALUE
+    }
+)
+
+lov comment-status-code (
+    name: COMMENT_STATUS_CODE
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+              lov.display_value
+            , lov.return_value
+            from blog_v_lov lov
+            where lov.lov_name = 'COMMENT_STATUS'
+            
+            ```
+    }
+    columnMapping {
+        return: RETURN_VALUE
+        display: DISPLAY_VALUE
+        defaultSort: DISPLAY_VALUE
+    }
+)
+
+lov comment-staus-text (
+    name: COMMENT_STAUS_TEXT
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+              lov.display_value
+            from blog_v_lov lov
+            where lov.lov_name = 'COMMENT_STATUS'
+            
+            ```
+    }
+    columnMapping {
+        return: DISPLAY_VALUE
+        display: DISPLAY_VALUE
+        defaultSort: DISPLAY_VALUE
+    }
+)
+
+lov file-directories (
+    name: FILE_DIRECTORIES
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select distinct
+              trim( both '/' from file_dir ) as return_value
+            from blog_files
+            order by 1
+            ```
+    }
+    columnMapping {
+        return: RETURN_VALUE
+        display: RETURN_VALUE
+    }
+)
+
+lov file-sync-action (
+    name: FILE_SYNC_ACTION
+    source {
+        location: staticValues
+    }
+
+    entry db (
+        sequence: 20
+        display: From Object Storage to File Repository
+        return: DB
+    )
+
+    entry meta (
+        sequence: 10
+        display: Only File Names From Object Storage to File Repository
+        return: META
+    )
+
+    entry oci (
+        sequence: 30
+        display: From File Repository to Object Storage
+        return: OCI
+    )
+
+)
+
+lov is-active (
+    name: IS_ACTIVE
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+              to_number( v1.return_value ) as return_value
+            , v1.display_value             as display_value
+            from blog_v_lov v1
+            where 1 = 1
+            and v1.lov_name = 'IS_ACTIVE'
+            order by v1.display_seq
+            ```
+    }
+    columnMapping {
+        return: RETURN_VALUE
+        display: DISPLAY_VALUE
+    }
+)
+
+lov link-status (
+    name: LINK_STATUS
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+              v1.return_value  as return_value
+            , v1.display_value as display_value
+            from blog_v_lov v1
+            where 1 = 1
+            and v1.lov_name = 'LINK_STATUS'
+            order by v1.display_seq
+            ```
+    }
+    columnMapping {
+        return: RETURN_VALUE
+        display: DISPLAY_VALUE
+    }
+)
+
+lov post-status (
+    name: POST_STATUS
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+              v1.display_value as return_value
+            , v1.display_value as display_value
+            from blog_v_lov v1
+            where 1 = 1
+            and v1.lov_name = 'POST_STATUS'
+            order by v1.display_seq
+            ```
+    }
+    columnMapping {
+        return: RETURN_VALUE
+        display: DISPLAY_VALUE
+    }
+)
+
+lov post-tags (
+    name: POST_TAGS
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+               v1.tag             as return_value
+              ,v1.tag             as display_value
+              ,v1.tag_unique      as display_seq
+              ,v1.tag_status_text as status
+            from blog_v_all_tags v1
+            ```
+    }
+    columnMapping {
+        return: RETURN_VALUE
+        display: DISPLAY_VALUE
+        defaultSort: DISPLAY_SEQ
+        group: STATUS
+        groupSortDirection: descNullsLast
+    }
+
+    column DISPLAY_SEQ (
+        show: false
+        heading {
+            heading: Sequence
+        }
+        layout {
+            sequence: 10
+        }
+        source {
+            dataType: varchar2
+        }
+        advanced {
+            searchable: false
+        }
+    )
+
+    column DISPLAY_VALUE (
+        heading {
+            heading: Tag
+        }
+        layout {
+            sequence: 20
+        }
+        source {
+            dataType: varchar2
+        }
+    )
+
+    column RETURN_VALUE (
+        show: false
+        layout {
+            sequence: 10
+        }
+        source {
+            dataType: varchar2
+        }
+        advanced {
+            searchable: false
+        }
+    )
+
+    column STATUS (
+        heading {
+            heading: Status
+        }
+        layout {
+            sequence: 30
+        }
+        source {
+            dataType: varchar2
+        }
+    )
+
+)
+
+lov post-tags-hidden (
+    name: POST_TAGS_HIDDEN
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+              v1.tag as return_value
+            , v1.tag as display_value
+            from blog_v_all_tags v1
+            where 1 = 1
+            and v1.is_active = 0
+            order by v1.tag_unique
+            ```
+    }
+    columnMapping {
+        return: RETURN_VALUE
+        display: DISPLAY_VALUE
+    }
+)
+
+lov post-tags-visible (
+    name: POST_TAGS_VISIBLE
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+              v1.tag as return_value
+            , v1.tag as display_value
+            from blog_v_all_tags v1
+            where 1 = 1
+            and v1.is_active = 1
+            order by v1.tag_unique
+            ```
+    }
+    columnMapping {
+        return: RETURN_VALUE
+        display: DISPLAY_VALUE
+    }
+)
+
+lov sentiment (
+    name: SENTIMENT
+    source {
+        location: staticValues
+    }
+
+    entry mixed (
+        sequence: 1
+        display: Mixed
+        return: Mixed
+    )
+
+    entry negative (
+        sequence: 2
+        display: Negative
+        return: Negative
+    )
+
+    entry neutral (
+        sequence: 3
+        display: Neutral
+        return: Neutral
+    )
+
+    entry positive (
+        sequence: 4
+        display: Positive
+        return: Positive
+    )
+
+)
+
+lov timeframe-4-weeks (
+    name: TIMEFRAME (4 WEEKS)
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select 
+              disp
+            , val as seconds
+            from table( apex_util.get_timeframe_lov_data )
+            order by insert_order
+            ```
+    }
+    columnMapping {
+        return: SECONDS
+        display: DISP
+    }
+)
+
+lov yes-no (
+    name: YES_NO
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+              to_number( v1.return_value )  as return_value
+            , v1.display_value              as display_value
+            from blog_v_lov v1
+            where 1 = 1
+            and v1.lov_name = 'YES_NO'
+            order by v1.display_seq
+            ```
+    }
+    columnMapping {
+        return: RETURN_VALUE
+        display: DISPLAY_VALUE
+    }
+)
+

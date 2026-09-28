@@ -1,0 +1,1237 @@
+page 300 (
+    name: File Repository
+    alias: FILE-REPOSITORY
+    title: Files
+    pageGroup: @files
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: [
+            #DEFAULT#
+            t-PageBody--noContentPadding
+        ]
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    advanced {
+        reloadOnSubmit: always
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        title: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcumb
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region file-repository (
+        name: File Repository
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select                        
+                  v1.id             as id
+                , c1.seq_id         as seq_id
+                , v1.row_version    as row_version
+                -- for filtering selected rows
+                , case when c1.seq_id is not null
+                    then 1
+                    else 0
+                  end               as select_file
+                , v1.file_path      as file_path
+                , v1.created_by     as created_by
+                , v1.created_on     as created_on
+                , v1.created_on     as created_since
+                , v1.changed_by     as changed_by
+                , v1.changed_on     as changed_on
+                , v1.changed_on     as changed_since
+                , v1.file_dir       as file_dir
+                , v1.file_name      as file_name
+                , v1.file_desc      as file_desc
+                , v1.file_size      as file_size
+                , v1.mime_type      as mime_type
+                , v1.is_download    as show_in_pub_app
+                , v1.is_download    as is_download
+                , v1.is_active      as file_status
+                , v1.is_active      as is_active
+                , v1.file_url       as file_url
+                , null              as btn_copy_file_url
+                , v1.local_size     as local_size
+                , v1.etag           as etag
+                , v1.md5            as md5
+                , v1.sync_timestamp as sync_timestamp
+                from blog_v_all_files v1
+                left join apex_collections c1 on v1.id = c1.n001
+                  and c1.collection_name = :BLOG_SELECTED_FILES_COLLECTION
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: fullWidthContent
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+            cssClasses: blog-IR--iconLinks
+        }
+        link {
+            linkColumn: customTarget
+            target: {
+                page: 301
+                items: {
+                    P301_ID: #ID#
+                }
+            }
+            linkIcon: <span aria-hidden="true" class="t-Icon fa fa-pencil"></span>
+            linkAttributes: title="&APP_TEXT$BLOG_TXT_EDIT." class="t-Button t-Button--noLabel t-Button--icon t-Button--small"
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        performance {
+            maxRowsToProcess: 1000000
+        }
+        download {
+            supplementalText: &P0_BLOG_APP_NAME!RAW. files.
+        }
+        advanced {
+            savedReportMappingIdentifier: 104255797384495596
+        }
+
+        column BTN_COPY_FILE_URL (
+            type: themeTemplateComponent/buttonCustom
+            heading {
+                heading: Copy URL
+                alternativeLabel: Copy File URL
+                alignment: center
+            }
+            settings {
+                label: &APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD.
+                customAttributes: data-clipboard-source="#FILE_URL#"
+            }
+            plugin-appearance {
+                iconClass: fa-clipboard
+                iconOnly: true
+                size: small
+            }
+            layout {
+                sequence: 220
+                columnAlignment: center
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AU
+            }
+            enableUsersTo {
+                sort: false
+                filter: false
+            }
+        )
+
+        column CHANGED_BY (
+            type: plainText
+            heading {
+                heading: Changed by
+            }
+            layout {
+                sequence: 90
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AF
+            }
+        )
+
+        column CHANGED_ON (
+            type: plainText
+            heading {
+                heading: Changed
+                alternativeLabel: Changed Time
+                alignment: end
+            }
+            layout {
+                sequence: 100
+                columnAlignment: end
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: V
+            }
+        )
+
+        column CHANGED_SINCE (
+            type: plainText
+            heading {
+                heading: Changed
+                alternativeLabel: Changed Since
+                alignment: center
+            }
+            layout {
+                sequence: 110
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: AC
+            }
+        )
+
+        column CREATED_BY (
+            type: plainText
+            heading {
+                heading: Created by
+            }
+            layout {
+                sequence: 60
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AE
+            }
+        )
+
+        column CREATED_ON (
+            type: plainText
+            heading {
+                heading: Created
+                alternativeLabel: Created Time
+                alignment: end
+            }
+            layout {
+                sequence: 70
+                columnAlignment: end
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: U
+            }
+        )
+
+        column CREATED_SINCE (
+            type: plainText
+            heading {
+                heading: Created
+                alternativeLabel: Created Since
+                alignment: center
+            }
+            layout {
+                sequence: 80
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: AA
+            }
+        )
+
+        column ETAG (
+            type: plainText
+            heading {
+                heading: Etag
+            }
+            layout {
+                sequence: 240
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: F
+            }
+            config {
+                buildOption: @blog-feature-oci-object-storage
+            }
+        )
+
+        column FILE_DESC (
+            type: plainText
+            heading {
+                heading: Description
+            }
+            layout {
+                sequence: 140
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AL
+            }
+        )
+
+        column FILE_DIR (
+            type: plainText
+            heading {
+                heading: Directory
+            }
+            layout {
+                sequence: 120
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: S
+            }
+        )
+
+        column FILE_NAME (
+            type: plainText
+            heading {
+                heading: File Name
+            }
+            layout {
+                sequence: 130
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: K
+            }
+        )
+
+        column FILE_PATH (
+            type: plainText
+            heading {
+                heading: Name
+            }
+            layout {
+                sequence: 50
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: R
+            }
+        )
+
+        column FILE_SIZE (
+            type: plainText
+            heading {
+                heading: Size
+                alignment: end
+            }
+            layout {
+                sequence: 150
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: FILESIZE
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: T
+            }
+        )
+
+        column FILE_STATUS (
+            type: plainTextBasedOnLov
+            heading {
+                heading: Status
+                alignment: center
+            }
+            lov {
+                lov: @is-active
+            }
+            layout {
+                sequence: 190
+                columnAlignment: center
+            }
+            columnFormatting {
+                htmlExpression:
+                    ```html
+                    {with/}
+                    TEXT:=#FILE_STATUS#
+                    ICON_CLASSES:={if IS_ACTIVE/}fa-check-circle u-success-text{else/}fa-minus-circle u-danger-text{endif/} w40
+                    {apply THEME$ICON_CUSTOM/}
+                    ```
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AN
+            }
+            help {
+                helpText:
+                    ```html
+                    <p>Public access to the file is enabled/disabled.</p>
+                    <strong>When object storage is used as file storage:</strong>
+                    <p>
+                    If the attribute value is <strong>disabled</strong>, access to the file is not blocked.
+                    The file is <strong>only hidden</strong> from the public application <strong>Files page</strong> if the file's <strong>Shared</strong> attribute is <strong>Yes</strong>.
+                    </p>
+                    ```
+            }
+        )
+
+        column FILE_URL (
+            type: plainText
+            heading {
+                heading: File URL
+            }
+            layout {
+                sequence: 210
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AX
+            }
+        )
+
+        column ID (
+            type: hidden
+            heading {
+                heading: File ID
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                primaryKey: true
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AH
+            }
+        )
+
+        column IS_ACTIVE (
+            type: hidden
+            heading {
+                heading: Is Active
+            }
+            layout {
+                sequence: 200
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AO
+            }
+        )
+
+        column IS_DOWNLOAD (
+            type: hidden
+            heading {
+                heading: Is Download
+            }
+            layout {
+                sequence: 180
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AK
+            }
+        )
+
+        column LOCAL_SIZE (
+            type: plainText
+            heading {
+                heading: Local Size
+                alignment: end
+            }
+            layout {
+                sequence: 230
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: FILESIZE
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AW
+            }
+        )
+
+        column MD5 (
+            type: plainText
+            heading {
+                heading: MD5
+            }
+            layout {
+                sequence: 250
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: A
+            }
+            config {
+                buildOption: @blog-feature-oci-object-storage
+            }
+        )
+
+        column MIME_TYPE (
+            type: plainText
+            heading {
+                heading: Mime Type
+            }
+            layout {
+                sequence: 160
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AG
+            }
+        )
+
+        column ROW_VERSION (
+            type: hidden
+            heading {
+                heading: Row Version
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AD
+            }
+        )
+
+        column SELECT_FILE (
+            type: plainTextBasedOnLov
+            heading {
+                heading: &nbsp;
+                alternativeLabel: Selected
+                alignment: center
+            }
+            lov {
+                lov: @yes-no
+            }
+            layout {
+                sequence: 40
+                columnAlignment: center
+            }
+            columnFormatting {
+                htmlExpression:
+                    ```html
+                    {with/}
+                    LABEL:=&APP_TEXT$BLOG_TXT_SELECT_ROW.
+                    BUTTON_ACTION:=select-file?process=SELECT_FILE&id=#ID#
+                    BUTTON_ATTR:=role="switch" aria-checked="{if ?SEQ_ID/}true{else/}false{endif/}" data-seq="#SEQ_ID#"
+                    NO_UPDATE:=Y
+                    BUTTON_STYLE:=t-Button--noUI
+                    CSS_CLASSES:=padding-none
+                    ICON_CLASS:={if ?SEQ_ID/}fa-check-square-o{else/}fa-square-o{endif/}
+                    IS_ICON_ONLY:=Y
+                    {apply THEME$BUTTON_CUSTOM_1/}
+                    ```
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AV
+            }
+        )
+
+        column SEQ_ID (
+            type: hidden
+            heading {
+                heading: Seq Id
+            }
+            layout {
+                sequence: 20
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: W
+            }
+        )
+
+        column SHOW_IN_PUB_APP (
+            type: plainTextBasedOnLov
+            heading {
+                heading: Shared
+                alignment: center
+            }
+            lov {
+                lov: @yes-no
+            }
+            layout {
+                sequence: 170
+                columnAlignment: center
+            }
+            columnFormatting {
+                htmlExpression:
+                    ```html
+                    {with/}
+                    TEXT:=#SHOW_IN_PUB_APP#
+                    ICON_CLASSES:=w40{if IS_DOWNLOAD/} fa-check{endif/}
+                    {apply THEME$ICON_CUSTOM/}
+                    
+                    ```
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AM
+            }
+            help {
+                helpText: Is file available for download in public application "Files" page.
+            }
+        )
+
+        column SYNC_TIMESTAMP (
+            type: plainText
+            heading {
+                heading: Synchronized
+                alignment: end
+            }
+            layout {
+                sequence: 260
+                columnAlignment: end
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: AJ
+            }
+            config {
+                buildOption: @blog-feature-oci-object-storage
+            }
+            comments {
+                comments:
+                    ```
+                    When was the file last synced from the object storage.
+                    
+                    ```
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport 170084 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn BTN_COPY_FILE_URL (
+                sequence: 7
+            )
+
+            displayColumn CHANGED_SINCE (
+                sequence: 5
+            )
+
+            displayColumn FILE_DIR (
+                sequence: 3
+            )
+
+            displayColumn FILE_PATH (
+                sequence: 2
+            )
+
+            displayColumn FILE_SIZE (
+                sequence: 4
+            )
+
+            displayColumn FILE_STATUS (
+                sequence: 8
+            )
+
+            displayColumn SELECT_FILE (
+                sequence: 1
+            )
+
+            displayColumn SHOW_IN_PUB_APP (
+                sequence: 6
+            )
+
+            sort (
+                column: FILE_PATH
+                sort {
+                    sequence: 1
+                }
+            )
+
+        )
+
+    )
+
+    button delete-selected (
+        buttonName: DELETE_SELECTED
+        label: Delete Selected
+        layout {
+            sequence: 20
+            region: @file-repository
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+            ]
+            icon: fa-trash-o
+        }
+        behavior {
+            showProcessing: true
+            warnOnUnsavedChanges: doNotCheck
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+    )
+
+    button deselect-all (
+        buttonName: DESELECT_ALL
+        label: Deselect All
+        layout {
+            sequence: 40
+            region: @file-repository
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-square-o
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+        config {
+            buildOption: @under-development
+        }
+    )
+
+    button download-selected (
+        buttonName: DOWNLOAD_SELECTED
+        label: Download Selected
+        layout {
+            sequence: 50
+            region: @file-repository
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-download
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Reset Report
+        layout {
+            sequence: 70
+            region: @file-repository
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: [
+                    &APP_PAGE_ID.
+                    RIR
+                ]
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button select-all (
+        buttonName: SELECT_ALL
+        label: Select All
+        layout {
+            sequence: 30
+            region: @file-repository
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-check-square-o
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+        config {
+            buildOption: @under-development
+        }
+    )
+
+    button upload-file (
+        buttonName: UPLOAD_FILE
+        label: Upload
+        layout {
+            sequence: 60
+            region: @file-repository
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--mobileHideLabel
+                t-Button--iconLeft
+            ]
+            icon: fa-upload
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 302
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction after-ir-refresh (
+        name: After IR refresh
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterrefresh
+            selectionType: region
+            region: @file-repository
+        }
+
+        action format-and-reinitialize (
+            name: Format and reinitialize
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    blog.admin.ir.filesAfterRefresh({
+                      "region$": this.affectedElements
+                    , "browserEvent": this.browserEvent
+                    });
+                    ```
+            }
+            affectedElements {
+                selectionType: triggeringElement
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction process-file-update (
+        name: Process File Update
+        execution {
+            sequence: 30
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @file-repository
+        }
+
+        action refresh-report (
+            name: Refresh report
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @file-repository
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction process-file-upload (
+        name: Process File Upload
+        execution {
+            sequence: 20
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: button
+            button: @upload-file
+        }
+
+        action refresh-report (
+            name: Refresh report
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @file-repository
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    validation at-least-one-files-selected (
+        name: At Least one files selected
+        execution {
+            sequence: 20
+        }
+        validation {
+            type: rowsReturned
+            sqlQuery:
+                ```sql
+                select 1
+                from apex_collections
+                where 1 = 1
+                  and collection_name = :BLOG_SELECTED_FILES_COLLECTION
+                ```
+        }
+        error {
+            errorMessage: Please select at least one file.
+            displayLocation: inlineInNotification
+        }
+    )
+
+    process delete-selected-files (
+        name: Delete selected files
+        type: invokeApi
+        invoke {
+            package: BLOG_FILE
+            procedureOrFunction: DELETE_SELECTED_FILES
+        }
+        execution {
+            sequence: 10
+        }
+        successMessage {
+            successMessage: File(s) deleted.
+        }
+        advanced {
+            executionMappingIdentifier: 22080614920095101
+        }
+        serverSideCondition {
+            whenButtonPressed: @delete-selected
+        }
+        config {
+            buildOption: !@blog-feature-oci-object-storage
+        }
+
+        parameter p_collection_name (
+            value {
+                type: item
+                item: BLOG_SELECTED_FILES_COLLECTION
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process delete-selected-objects (
+        name: Delete selected objects
+        type: invokeApi
+        invoke {
+            package: BLOG_OCI_OS
+            procedureOrFunction: DELETE_SELECTED_OBJECTS
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 21474010070959477
+        }
+        serverSideCondition {
+            whenButtonPressed: @delete-selected
+        }
+        config {
+            buildOption: @blog-feature-oci-object-storage
+        }
+
+        parameter p_client_request_id (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_collection_name (
+            value {
+                type: item
+                item: BLOG_SELECTED_FILES_COLLECTION
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process dowbload-selected-files (
+        name: Dowbload selected files
+        type: invokeApi
+        invoke {
+            package: BLOG_FILE
+            procedureOrFunction: DOWNLOAD_SELECTED_FILES
+        }
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 22081649807091818
+        }
+        serverSideCondition {
+            type: request=Value
+            value: DOWNLOAD_SELECTED
+        }
+        config {
+            buildOption: !@blog-feature-oci-object-storage
+        }
+
+        parameter p_collection_name (
+            value {
+                type: item
+                item: BLOG_SELECTED_FILES_COLLECTION
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process download-selected-objects (
+        name: Download selected objects
+        type: invokeApi
+        invoke {
+            package: BLOG_OCI_OS
+            procedureOrFunction: DOWNLOAD_SELECTED_OBJECTS
+        }
+        execution {
+            sequence: 30
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 21477168636959470
+        }
+        serverSideCondition {
+            type: request=Value
+            value: DOWNLOAD_SELECTED
+        }
+        config {
+            buildOption: @blog-feature-oci-object-storage
+        }
+
+        parameter p_client_request_id (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_collection_name (
+            value {
+                type: item
+                item: BLOG_SELECTED_FILES_COLLECTION
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process select-file (
+        name: SELECT_FILE
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                blog_file.file_select_collection(
+                  p_collection_name => :BLOG_SELECTED_FILES_COLLECTION
+                , p_seq_id          => :APP_AJAX_X01
+                , p_id              => :APP_AJAX_X02
+                );
+                
+                ```
+        }
+        execution {
+            sequence: 30
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 21475896716959471
+        }
+    )
+
+    process truncate-file-select-collection (
+        name: Truncate file select collection
+        type: invokeApi
+        invoke {
+            package: APEX_COLLECTION
+            procedureOrFunction: TRUNCATE_COLLECTION
+        }
+        execution {
+            sequence: 40
+            point: afterHeader
+        }
+        advanced {
+            executionMappingIdentifier: 21476288698959471
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: apex_collection.collection_exists( :BLOG_SELECTED_FILES_COLLECTION )
+        }
+
+        parameter p_collection_name (
+            value {
+                type: item
+                item: BLOG_SELECTED_FILES_COLLECTION
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    branch (
+        name: Go to download selected objects
+        execution {
+            sequence: 20
+            point: processing
+        }
+        behavior {
+            target: {
+                page: &APP_PAGE_ID.
+                request: &REQUEST.
+                successMessage: false
+            }
+        }
+        serverSideCondition {
+            whenButtonPressed: @download-selected
+        }
+        config {
+            buildOption: @blog-feature-oci-object-storage
+        }
+    )
+
+    branch (
+        name: Go to download selected files
+        execution {
+            sequence: 10
+            point: processing
+        }
+        behavior {
+            target: {
+                page: &APP_PAGE_ID.
+                request: &REQUEST.
+                successMessage: false
+            }
+        }
+        serverSideCondition {
+            whenButtonPressed: @download-selected
+        }
+        config {
+            buildOption: !@blog-feature-oci-object-storage
+        }
+    )
+
+)
+

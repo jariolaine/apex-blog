@@ -1,0 +1,225 @@
+page 20020 (
+    name: AI Prompts
+    alias: AI-PROMPTS
+    title: AI Prompts
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/drawer
+        templateOptions: [
+            #DEFAULT#
+            t-Dialog--noPadding
+            js-dialog-class-t-Drawer--pullOutEnd
+            js-dialog-class-t-Drawer--xl
+            t-PageBody--noContentPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region ai-system-prompts (
+        name: AI System Prompts
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select 
+                  v1.translation_entry_id as id
+                , v1.language_code        as language_code
+                , v1.translatable_message as prompt
+                , v1.message_text         as prompt_text
+                , v1.last_updated_by      as changed_by
+                , v1.last_updated_on      as changed_time
+                , v1.last_updated_on      as changed_since
+                from apex_application_translations v1
+                where 1 = 1
+                  and v1.application_id = :APP_ID
+                  and v1.translatable_message like 'BLOG\_AI\_SYSTEM\_PROMPT%' escape '\'
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        performance {
+            maxRowsToProcess: 1000000
+        }
+        advanced {
+            savedReportMappingIdentifier: 103689038193906910
+        }
+
+        column CHANGED_BY (
+            type: plainText
+            heading {
+                heading: Changed By
+            }
+            layout {
+                sequence: 80
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: K
+            }
+        )
+
+        column CHANGED_SINCE (
+            type: plainText
+            heading {
+                heading: Changed
+                alternativeLabel: Changed Since
+                alignment: center
+            }
+            layout {
+                sequence: 100
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: M
+            }
+        )
+
+        column CHANGED_TIME (
+            type: plainText
+            heading {
+                heading: Changed
+                alternativeLabel: Changed Time
+                alignment: end
+            }
+            layout {
+                sequence: 90
+                columnAlignment: end
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: L
+            }
+        )
+
+        column ID (
+            type: hidden
+            heading {
+                heading: Id
+            }
+            layout {
+                sequence: 40
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        column LANGUAGE_CODE (
+            type: hidden
+            heading {
+                heading: Language Code
+            }
+            layout {
+                sequence: 50
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column PROMPT (
+            type: plainText
+            heading {
+                heading: Prompt
+            }
+            layout {
+                sequence: 60
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column PROMPT_TEXT (
+            type: plainText
+            heading {
+                heading: Text
+            }
+            layout {
+                sequence: 70
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: J
+            }
+            config {
+                buildOption: @under-development
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport 1090321 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn CHANGED_SINCE (
+                sequence: 3
+            )
+
+            displayColumn PROMPT (
+                sequence: 1
+            )
+
+            displayColumn PROMPT_TEXT (
+                sequence: 2
+            )
+
+        )
+
+    )
+
+)
+

@@ -1,0 +1,798 @@
+page 15 (
+    name: Add/Edit Tags
+    alias: TAGS
+    title: Tags
+    pageGroup: @posts
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            t-Dialog--noPadding
+            t-PageBody--noContentPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region add-edit-tags (
+        name: Add/Edit Tags
+        type: interactiveGrid
+        source {
+            location: localDatabase
+            tableName: BLOG_V_ALL_TAGS
+        }
+        layout {
+            sequence: 20
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+                margin-bottom-none
+            ]
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+            allowedRowOperationsColumn: ALLOWED_ROW_OPERATION
+            lostUpdateType: rowVersionColumn
+            rowVersionColumn: ROW_VERSION
+            addRowIfEmpty: false
+        }
+        componentAppearance {
+            showNullValuesAs: -
+            selectFirstRow: false
+        }
+        toolbar {
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                resetButton
+                saveButton
+            ]
+        }
+        enableUsersTo {
+            defineChartView: false
+        }
+        download {
+            formats: [
+                csv
+                html
+                pdf
+                excel
+            ]
+            sendAsEmail: false
+            filename: blog-tags
+            supplementalText: &P0_BLOG_APP_NAME!RAW. tags.
+        }
+        heading {
+            fixedTo: region
+            fixedReportHeight: 440
+        }
+        componentAdvanced {
+            initJavaScriptFunction: blog.admin.ig.region
+        }
+        advanced {
+            savedReportMappingIdentifier: 48358523962075856
+        }
+
+        savedReport 249323 (
+            visibility: primary
+            view {
+                default: grid
+                rowsPerPage: 20
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    frozen: true
+                    width: 42
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @TAG
+                layout {
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @ALLOWED_ROW_OPERATION
+                layout {
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @ID
+                layout {
+                    show: false
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @IS_ACTIVE
+                layout {
+                    width: 86
+                    sequence: 7
+                }
+            )
+
+            displayColumn (
+                column: @ROW_VERSION
+                layout {
+                    show: false
+                    sequence: 9
+                }
+            )
+
+            displayColumn (
+                column: @CREATED_ON
+                layout {
+                    show: false
+                    sequence: 10
+                }
+            )
+
+            displayColumn (
+                column: @CREATED_BY
+                layout {
+                    show: false
+                    sequence: 11
+                }
+            )
+
+            displayColumn (
+                column: @CHANGED_ON
+                layout {
+                    show: false
+                    sequence: 12
+                }
+            )
+
+            displayColumn (
+                column: @CHANGED_BY
+                layout {
+                    show: false
+                    sequence: 13
+                }
+            )
+
+            displayColumn (
+                column: @POSTS_COUNT
+                layout {
+                    width: 63
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @NOTES
+                layout {
+                    sequence: 6
+                }
+            )
+
+            displayColumn (
+                column: @VIEW_POSTS_LINK
+                layout {
+                    width: 42
+                    sequence: 8
+                }
+            )
+
+            sort (
+                column: @TAG
+                sort {
+                    nulls: last
+                    sequence: 1
+                }
+            )
+
+        )
+
+        column ALLOWED_ROW_OPERATION (
+            type: hidden
+            layout {
+                sequence: 50
+            }
+            source {
+                databaseColumn: ALLOWED_ROW_OPERATION
+                dataType: varchar2
+                queryOnly: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 20
+            }
+        )
+
+        column APEX$ROW_SELECTOR (
+            type: rowSelector
+            layout {
+                sequence: 10
+            }
+        )
+
+        column CHANGED_BY (
+            type: displayOnly
+            heading {
+                heading: Changed by
+            }
+            layout {
+                sequence: 130
+            }
+            source {
+                databaseColumn: CHANGED_BY
+                dataType: varchar2
+                queryOnly: true
+            }
+            columnFilter {
+                performanceImpactingOperators: contains
+                textCase: upper
+                lovType: none
+            }
+            enableUsersTo {
+                controlBreakAggregate: false
+            }
+            help {
+                helpText: Who has changed tag last.
+            }
+        )
+
+        column CHANGED_ON (
+            type: displayOnly
+            heading {
+                heading: Changed on
+                alignment: end
+            }
+            layout {
+                sequence: 110
+                columnAlignment: end
+            }
+            source {
+                databaseColumn: CHANGED_ON
+                dataType: timestampWithLocalTimeZone
+                queryOnly: true
+            }
+            enableUsersTo {
+                controlBreakAggregate: false
+            }
+            help {
+                helpText: When tag was last changed.
+            }
+        )
+
+        column CREATED_BY (
+            type: displayOnly
+            heading {
+                heading: Created by
+            }
+            layout {
+                sequence: 100
+            }
+            source {
+                databaseColumn: CREATED_BY
+                dataType: varchar2
+                queryOnly: true
+            }
+            columnFilter {
+                performanceImpactingOperators: contains
+                textCase: upper
+                lovType: none
+            }
+            enableUsersTo {
+                controlBreakAggregate: false
+            }
+            help {
+                helpText: Who created tag.
+            }
+        )
+
+        column CREATED_ON (
+            type: displayOnly
+            heading {
+                heading: Created on
+                alignment: end
+            }
+            layout {
+                sequence: 70
+                columnAlignment: end
+            }
+            source {
+                databaseColumn: CREATED_ON
+                dataType: timestampWithLocalTimeZone
+                queryOnly: true
+            }
+            enableUsersTo {
+                controlBreakAggregate: false
+            }
+            help {
+                helpText: When tag was created.
+            }
+        )
+
+        column ID (
+            type: hidden
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: ID
+                dataType: number
+                queryOnly: true
+                primaryKey: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column IS_ACTIVE (
+            type: switch
+            heading {
+                heading: Status
+                alignment: center
+            }
+            settings {
+                useDefaults: false
+                onValue: 1
+                onLabel: Enabled
+                offValue: 0
+                offLabel: Disabled
+            }
+            layout {
+                sequence: 140
+                columnAlignment: center
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: IS_ACTIVE
+                dataType: number
+            }
+            default {
+                type: static
+                staticValue: 1
+            }
+            columnFilter {
+                lovType: useLov
+            }
+            enableUsersTo {
+                hide: false
+            }
+            help {
+                helpText: Is tag enabled or disabled. If you disable existing tag, it will be hidden form all post from readers. Also tag is not available anymore in "Tags" field search when creating or changing posts. Still you can use disabled tag by typing it e.g. for new post. If enabling tag again it is then visible on all post where it is linked.
+            }
+        )
+
+        column NOTES (
+            type: textarea
+            heading {
+                heading: Notes
+            }
+            layout {
+                sequence: 160
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: NOTES
+                dataType: varchar2
+            }
+            default {
+                duplicateCopiesExistingValue: false
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    caseInsensitive
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+                hide: false
+            }
+            help {
+                helpText: Enter any comments or notes here. These notes not displayed for public.
+            }
+        )
+
+        column POSTS_COUNT (
+            type: displayOnly
+            heading {
+                heading: Posts
+                alignment: center
+            }
+            layout {
+                sequence: 170
+                columnAlignment: center
+            }
+            source {
+                databaseColumn: POSTS_COUNT
+                dataType: number
+                queryOnly: true
+            }
+            columnFilter {
+                lovType: none
+            }
+            enableUsersTo {
+                controlBreakAggregate: false
+                hide: false
+            }
+            help {
+                helpText: Number of post in this tag.
+            }
+        )
+
+        column ROW_VERSION (
+            type: hidden
+            layout {
+                sequence: 40
+            }
+            source {
+                databaseColumn: ROW_VERSION
+                dataType: number
+                queryOnly: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column TAG (
+            type: textField
+            heading {
+                heading: Tag
+            }
+            layout {
+                sequence: 150
+                stretch: always
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            validation {
+                valueRequired: true
+                maxLength: 256
+            }
+            source {
+                databaseColumn: TAG
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    caseInsensitive
+                    startsWith
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                controlBreakAggregate: false
+                hide: false
+            }
+            help {
+                helpText: Describes what your tag is about.
+            }
+        )
+
+        column VIEW_POSTS_LINK (
+            type: link
+            heading {
+                alignment: center
+                alternativeLabel: Link to Posts
+            }
+            layout {
+                sequence: 180
+                columnAlignment: center
+            }
+            link {
+                target: {
+                    page: 11
+                    items: {
+                        IRC_TAG_ID: &ID.
+                    }
+                    action: clearRegions
+                }
+                linkText: <span aria-hidden="true" class="t-Icon fa fa-external-link"></span>
+                linkAttributes: title="&APP_TEXT$BLOG_TXT_VIEW_POSTS." class="t-Button--stretch"
+            }
+            source {
+                type: none
+            }
+            help {
+                helpText: Filter posts report by this tag.
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+    )
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 40
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    button add-row (
+        buttonName: ADD_ROW
+        label: Add Row
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--primary
+            ]
+            icon: fa-plus
+        }
+        behavior {
+            action: redirectUrl
+            targetUrl: #action$selection-add-row
+            warnOnUnsavedChanges: doNotCheck
+        }
+        advanced {
+            customAttributes: data-action="selection-add-row" data-no-update="true"
+        }
+    )
+
+    button close (
+        buttonName: CLOSE
+        label: Close
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-close
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button delete-unused (
+        buttonName: DELETE_UNUSED
+        label: Delete Unused
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+            ]
+            icon: fa-trash-o
+        }
+        behavior {
+            action: definedByDynamicAction
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$BLOG_CONFIRM_DELETE_UNUSED_TAGS.
+            style: danger
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--mobileHideLabel
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            action: redirectUrl
+            targetUrl: #action$save
+            warnOnUnsavedChanges: doNotCheck
+        }
+        advanced {
+            customAttributes: data-action="save"
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close Dialog
+        execution {
+            sequence: 20
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @close
+        }
+
+        action native-dialog-close (
+            action: closeDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction delete-unused (
+        name: Delete unused
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @delete-unused
+        }
+
+        action delete-tags (
+            name: Delete tags
+            action: executeServerSideCode
+            settings {
+                plsqlCode: blog_admin.remove_unused_tags;
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+            comments {
+                comments: Call database procedure to delete tags that aren't used in any post.
+            }
+        )
+
+        action refresh-ig (
+            name: Refresh IG
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @add-edit-tags
+            }
+            execution {
+                sequence: 40
+                fireOnInit: false
+            }
+        )
+
+        action show-message (
+            name: Show message
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    blog.admin.showSuccessMessage({
+                      "text": "BLOG_MSG_TAGS_UNUSED_DELETED"
+                    });
+                    ```
+            }
+            execution {
+                sequence: 50
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction process-after-changes (
+        name: Process After Changes
+        execution {
+            sequence: 30
+        }
+        when {
+            event: region/interactiveGrid/interactivegridsave
+            selectionType: region
+            region: @add-edit-tags
+        }
+
+        action purge-public-application-global-page-cache (
+            name: Purge public application global page cache
+            action: executeServerSideCode
+            settings {
+                plsqlCode:
+                    ```plsql
+                    apex_util.cache_purge_by_page(
+                      p_application => :G_PUB_APP_ID
+                    , p_page => 0
+                    );
+                    ```
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+                waitForResult: false
+            }
+            comments {
+                comments: Purge public application global page regions cache.
+            }
+        )
+
+    )
+
+    process tags-save-interactive-grid-data (
+        name: Tags - Save Interactive Grid Data
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @add-edit-tags
+        target {
+            targetType: tableView
+            tableName: BLOG_TAGS
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 38485464513313036
+        }
+    )
+
+)
+

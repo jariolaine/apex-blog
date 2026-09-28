@@ -1,0 +1,187 @@
+page 20100 (
+    name: Settings Help
+    alias: SETTING-HELP
+    title: Help
+    pageGroup: @configuration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+    )
+
+    region help-text (
+        name: Help text
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                  v1.attribute_desc as label
+                , apex_lang.get_message(
+                    p_name    => v1.help_message
+                  , p_params  => 
+                      apex_t_varchar2(
+                        'min'
+                      , v1.int_min
+                      , 'max'
+                      , v1.int_max
+                      )
+                  )                 as help
+                from blog_v_settings v1
+                where 1 = 1
+                  and :REQUEST = 'SETTINGS'
+                  and v1.id = :P20100_ID
+                union all
+                select
+                  v1.feature_desc   as label
+                , apex_lang.get_message(
+                    p_name => v1.help_message
+                  )                 as help
+                from blog_v_features v1
+                where 1 = 1
+                  and :REQUEST = 'FEATURES'
+                  and v1.id = :P20100_ID
+                ```
+            optimizerHint: APEX$USE_NO_PAGINATION
+        }
+        layout {
+            sequence: 20
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+        reportLayout {
+            numberOfRows: 1
+        }
+        componentAppearance {
+            template: @/contextual-info
+            templateOptions: [
+                #DEFAULT#
+                t-ContextualInfo-item--stacked
+                t-ContextualInfo-label--stacked
+            ]
+        }
+        pagination {
+            partialPageRefresh: false
+        }
+
+        column HELP (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: &nbsp;
+                alignment: center
+            }
+            layout {
+                sequence: 20
+            }
+        )
+
+        column LABEL (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: &nbsp;
+                alignment: center
+            }
+            layout {
+                sequence: 10
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            columnFormatting {
+                cssClasses: u-bold
+            }
+        )
+
+    )
+
+    pageItem P20100_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @help-text
+            slot: regionBody
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+    )
+
+    button close (
+        buttonName: CLOSE
+        label: Close
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: belowBox
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-close
+        }
+        behavior {
+            action: definedByDynamicAction
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @close
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

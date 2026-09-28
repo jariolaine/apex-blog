@@ -1,0 +1,344 @@
+buildOption blog-feature-about (
+    name: BLOG_FEATURE_ABOUT
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable about page
+    }
+)
+
+buildOption blog-feature-allow-comments (
+    name: BLOG_FEATURE_ALLOW_COMMENTS
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable commenting to posts
+    }
+)
+
+buildOption blog-feature-archive (
+    name: BLOG_FEATURE_ARCHIVE
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable posts archives list
+    }
+)
+
+buildOption blog-feature-archive-post-count (
+    name: BLOG_FEATURE_ARCHIVE_POST_COUNT
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable post archive count in list
+    }
+)
+
+buildOption blog-feature-atom (
+    name: BLOG_FEATURE_ATOM
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable atom feed
+    }
+)
+
+buildOption blog-feature-category (
+    name: BLOG_FEATURE_CATEGORY
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable categories list
+    }
+)
+
+buildOption blog-feature-category-post-count (
+    name: BLOG_FEATURE_CATEGORY_POST_COUNT
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable category post count in list
+    }
+)
+
+buildOption blog-feature-comment-verify (
+    name: BLOG_FEATURE_COMMENT_VERIFY
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable comment verify question
+    }
+)
+
+buildOption blog-feature-files (
+    name: BLOG_FEATURE_FILES
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable files repository page
+    }
+)
+
+buildOption blog-feature-language-ai (
+    name: BLOG_FEATURE_LANGUAGE_AI
+    status {
+        status: include
+        defaultOnExport: exclude
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable comments sentiment analyze using OCI language AI
+    }
+)
+
+buildOption blog-feature-latest-posts (
+    name: BLOG_FEATURE_LATEST_POSTS
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable latest posts list
+    }
+)
+
+buildOption blog-feature-links (
+    name: BLOG_FEATURE_LINKS
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable link lists page
+    }
+)
+
+buildOption blog-feature-modal-pages (
+    name: BLOG_FEATURE_MODAL_PAGES
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable modal pages links in footer
+    }
+)
+
+buildOption blog-feature-moderate-comments (
+    name: BLOG_FEATURE_MODERATE_COMMENTS
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable comments moderation
+    }
+)
+
+buildOption blog-feature-moderate-comments-ai (
+    name: BLOG_FEATURE_MODERATE_COMMENTS_AI
+    status {
+        status: include
+        defaultOnExport: exclude
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable comments moderation automatically using AI
+    }
+)
+
+buildOption blog-feature-oci-object-storage (
+    name: BLOG_FEATURE_OCI_OBJECT_STORAGE
+    status {
+        status: include
+        defaultOnExport: exclude
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable Oracle cloud object storage
+    }
+)
+
+buildOption blog-feature-post-pagination (
+    name: BLOG_FEATURE_POST_PAGINATION
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable post pagination in page 2
+    }
+)
+
+buildOption blog-feature-rss (
+    name: BLOG_FEATURE_RSS
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable "Subscribe in a Reader" link and page header link tag
+    }
+)
+
+buildOption blog-feature-search (
+    name: BLOG_FEATURE_SEARCH
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable search page
+    }
+)
+
+buildOption blog-feature-search-comments (
+    name: BLOG_FEATURE_SEARCH_COMMENTS
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable search from comments
+    }
+)
+
+buildOption blog-feature-search-files (
+    name: BLOG_FEATURE_SEARCH_FILES
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable search from files
+    }
+)
+
+buildOption blog-feature-search-links (
+    name: BLOG_FEATURE_SEARCH_LINKS
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable search from links
+    }
+)
+
+buildOption blog-feature-search-posts (
+    name: BLOG_FEATURE_SEARCH_POSTS
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable search from posts
+    }
+)
+
+buildOption blog-feature-sitemap (
+    name: BLOG_FEATURE_SITEMAP
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable sitemap application processes
+    }
+)
+
+buildOption blog-feature-subscribe-comments (
+    name: BLOG_FEATURE_SUBSCRIBE_COMMENTS
+    status {
+        status: include
+        defaultOnExport: exclude
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable the ability to subscribe to email notification of new comments
+    }
+)
+
+buildOption blog-feature-tag-cloud (
+    name: BLOG_FEATURE_TAG_CLOUD
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable tag cloud list
+    }
+)
+
+buildOption blog-feature-tag-cloud-post-count (
+    name: BLOG_FEATURE_TAG_CLOUD_POST_COUNT
+    status {
+        status: include
+        defaultOnExport: include
+        onUpgradeKeepStatus: true
+    }
+    comments {
+        comments: Enable/disable tag post count in list
+    }
+)
+
+buildOption commented-out (
+    name: Commented Out
+    status {
+        defaultOnExport: exclude
+    }
+    comments {
+        comments: Features that have been commented out
+    }
+)
+
+buildOption obsolete (
+    name: Obsolete
+    status {
+        defaultOnExport: exclude
+    }
+    comments {
+        comments: Obsolete objects that are considered to be removed
+    }
+)
+

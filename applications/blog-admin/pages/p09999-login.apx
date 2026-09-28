@@ -1,0 +1,469 @@
+page 9999 (
+    name: Login Page
+    alias: LOGIN
+    title: &P0_BLOG_APP_NAME. - Sign In
+    pageGroup: @general
+    appearance {
+        pageTemplate: @/login
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authentication: public
+        formAutoComplete: false
+    }
+
+    region another-identity-provider (
+        name: Another Identity Provider
+        type: staticContent
+        source {
+            htmlCode: <div class="blog-hr-section">or</div>
+        }
+        layout {
+            sequence: 10
+            parentRegion: @p0-blog-app-name
+            slot: subRegions
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        serverSideCondition {
+            type: rowsReturned
+            sqlQuery:
+                ```sql
+                select 1
+                from apex_application_build_options
+                where 1 = 1
+                  and application_id = :APP_ID
+                  and build_option_status = 'Include'
+                  and build_option_name like 'BLOG\_AUTHENTICATION\_%' escape '\'
+                having count(1) > 1
+                ```
+        }
+        comments {
+            comments: Region is displayed if both authentication methods are enabled by build options
+        }
+    )
+
+    region google-authentication (
+        name: Google Authentication
+        type: staticContent
+        layout {
+            sequence: 20
+            parentRegion: @p0-blog-app-name
+            slot: subRegions
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+            cssClasses: t-Login-buttons
+        }
+        config {
+            buildOption: @blog-authentication-google
+        }
+        settings {
+            expandShortcuts: true
+        }
+    )
+
+    region language-selector (
+        name: Language Selector
+        type: plSqlDynamicContent
+        source {
+            plsqlCode: apex_lang.emit_language_selector_list;
+        }
+        layout {
+            sequence: 40
+            parentRegion: @p0-blog-app-name
+            slot: subRegions
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region p0-blog-app-name (
+        name: &P0_BLOG_APP_NAME.
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/login
+            templateOptions: #DEFAULT#
+            icon: fa-sign-in fa-lg u-color-31
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    pageItem P9999_PASSWORD (
+        type: password
+        label {
+            label: Password
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @p0-blog-app-name
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: #DEFAULT#
+            icon: fa-key
+            width: 40
+            valuePlaceholder: password
+        }
+        validation {
+            maxLength: 100
+        }
+        sessionState {
+            storage: request
+        }
+        config {
+            buildOption: @blog-authentication-apex
+        }
+    )
+
+    pageItem P9999_REMEMBER (
+        type: checkbox
+        label {
+            label: Remember username
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @p0-blog-app-name
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: #DEFAULT#
+        }
+        sessionState {
+            storage: request
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: apex_authentication.persistent_cookies_enabled
+        }
+        help {
+            helpText:
+                ```html
+                <p>
+                If you select this checkbox, the application will save your username in a persistent browser cookie named "LOGIN_USERNAME_COOKIE".
+                When you go to the login page the next time,
+                the username field will be automatically populated with this value.
+                </p>
+                <p>
+                If you deselect this checkbox and your username is already saved in the cookie,
+                the application will overwrite it with an empty value.
+                You can also use your browser's developer tools to completely remove the cookie.
+                </p>
+                ```
+        }
+        config {
+            buildOption: @blog-authentication-apex
+        }
+    )
+
+    pageItem P9999_USERNAME (
+        type: textField
+        label {
+            label: Username
+            alignment: left
+        }
+        settings {
+            trimSpaces: none
+        }
+        layout {
+            sequence: 10
+            region: @p0-blog-app-name
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: #DEFAULT#
+            icon: fa-user
+            width: 40
+            valuePlaceholder: username
+        }
+        validation {
+            maxLength: 100
+        }
+        sessionState {
+            storage: request
+        }
+        config {
+            buildOption: @blog-authentication-apex
+        }
+    )
+
+    button login (
+        buttonName: LOGIN
+        label: Sign in
+        layout {
+            sequence: 40
+            region: @p0-blog-app-name
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+            icon: fa-apex
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+        config {
+            buildOption: @blog-authentication-apex
+        }
+    )
+
+    button login-google (
+        buttonName: LOGIN_GOOGLE
+        label: Sign in with Google
+        layout {
+            sequence: 10
+            region: @google-authentication
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+            cssClasses: [
+                u-bold
+                u-color-39
+            ]
+            icon: fa-google
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: HOME
+                request: APEX_AUTHENTICATION=Google
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+        config {
+            buildOption: @blog-authentication-google
+        }
+    )
+
+    computation p9999-remember (
+        itemName: P9999_REMEMBER
+        execution {
+            sequence: 10
+            point: afterHeader
+        }
+        computation {
+            type: staticValue
+            staticValue: Y
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P9999_USERNAME
+        }
+    )
+
+    process clear-page-s-cache (
+        name: Clear Page(s) Cache
+        type: clearSessionState
+        execution {
+            sequence: 30
+        }
+        advanced {
+            executionMappingIdentifier: 8579610184518310
+        }
+        config {
+            buildOption: @blog-authentication-apex
+        }
+    )
+
+    process get-username-cookie (
+        name: Get Username Cookie
+        type: invokeApi
+        invoke {
+            package: APEX_AUTHENTICATION
+            procedureOrFunction: GET_LOGIN_USERNAME_COOKIE
+        }
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 8579277880518310
+        }
+        config {
+            buildOption: @blog-authentication-apex
+        }
+
+        parameter (
+            type: functionResult
+            value {
+                item: P9999_USERNAME
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_cookie_name (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    process login (
+        name: Login
+        type: invokeApi
+        invoke {
+            package: APEX_AUTHENTICATION
+            procedureOrFunction: LOGIN
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 8578406811518309
+        }
+        config {
+            buildOption: @blog-authentication-apex
+        }
+
+        parameter p_password (
+            value {
+                type: item
+                item: P9999_PASSWORD
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_set_persistent_auth (
+            parameter {
+                dataType: boolean
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 40
+            }
+        )
+
+        parameter p_uppercase_username (
+            parameter {
+                dataType: boolean
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+        parameter p_username (
+            value {
+                type: item
+                item: P9999_USERNAME
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process set-username-cookie (
+        name: Set Username Cookie
+        type: invokeApi
+        invoke {
+            package: APEX_AUTHENTICATION
+            procedureOrFunction: SEND_LOGIN_USERNAME_COOKIE
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 8578843525518309
+        }
+        config {
+            buildOption: @blog-authentication-apex
+        }
+
+        parameter p_consent (
+            parameter {
+                dataType: boolean
+                hasDefault: true
+            }
+            value {
+                type: expression
+                plsqlExpression: :P9999_REMEMBER = 'Y'
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+        parameter p_cookie_name (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_username (
+            value {
+                type: item
+                item: P9999_USERNAME
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+)
+

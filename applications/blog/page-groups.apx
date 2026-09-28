@@ -1,0 +1,22 @@
+pageGroup comments (
+    name: Comments
+)
+
+pageGroup general (
+    name: General
+)
+
+pageGroup post-report (
+    name: Post Report
+    description {
+        description: Pages showing report of search, categories, tags and single post
+    }
+)
+
+pageGroup sitemap-main (
+    name: Sitemap Main
+    description {
+        description: Pages accessed from tab and included to sitemap-main
+    }
+)
+

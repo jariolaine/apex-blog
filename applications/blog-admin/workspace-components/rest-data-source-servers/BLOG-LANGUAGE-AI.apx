@@ -1,0 +1,13 @@
+restDataSourceServer BLOG_LANGUAGE_AI (
+    name: Blog Language AI
+    endpointUrl {
+        url: https://language.aiservice.eu-frankfurt-1.oci.oraclecloud.com/
+    }
+    advanced {
+        promptOnInstall: true
+    }
+    comments {
+        comments: Remote server for Oracle cloud language AI
+    }
+)
+

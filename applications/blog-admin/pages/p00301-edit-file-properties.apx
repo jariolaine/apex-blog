@@ -1,0 +1,899 @@
+page 301 (
+    name: Edit File Properties
+    alias: EDIT-FILE-PROPERTIES
+    title: Properties
+    pageGroup: @files
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region file-properties (
+        name: File Properties
+        type: form
+        source {
+            location: localDatabase
+            tableName: BLOG_FILES
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Form--stretchInputs
+            ]
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+            lostUpdateType: rowVersionColumn
+            rowVersionColumn: ROW_VERSION
+        }
+    )
+
+    pageItem P301_ETAG (
+        type: hidden
+        layout {
+            sequence: 40
+            region: @file-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @file-properties
+            column: ETAG
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P301_FILE_DESC (
+        type: textarea
+        label {
+            label: Description
+            alignment: left
+        }
+        settings {
+            autoHeight: true
+        }
+        layout {
+            sequence: 100
+            region: @file-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--postTextBlock
+            ]
+            cssClasses: [
+                blog-item
+                blog-postText
+            ]
+            width: 30
+            height: 4
+        }
+        validation {
+            maxLength: 4000
+        }
+        advanced {
+            postText: "\"BLOG_BTN_AI_ASSISTANT\""
+        }
+        source {
+            formRegion: @file-properties
+            column: FILE_DESC
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+        help {
+            helpText: File description displayed in public application "Files" page.
+        }
+    )
+
+    pageItem P301_FILE_DIR (
+        type: popupLov
+        label {
+            label: Directory
+            alignment: left
+        }
+        settings {
+            manualEntry: true
+        }
+        lov {
+            type: sharedComponent
+            lov: @file-directories
+            displayExtraValues: false
+            nullDisplayValue: Root
+        }
+        layout {
+            sequence: 60
+            region: @file-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            maxLength: 256
+        }
+        source {
+            formRegion: @file-properties
+            column: FILE_DIR
+            dataType: varchar2
+            queryOnly: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+        help {
+            helpText: File directory in repository.
+        }
+    )
+
+    pageItem P301_FILE_NAME (
+        type: textField
+        label {
+            label: Name
+            alignment: left
+        }
+        layout {
+            sequence: 70
+            region: @file-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            valueRequired: true
+            maxLength: 256
+        }
+        source {
+            formRegion: @file-properties
+            column: FILE_NAME
+            dataType: varchar2
+            queryOnly: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+        help {
+            helpText: File name.
+        }
+    )
+
+    pageItem P301_FILE_PATH (
+        type: hidden
+        layout {
+            sequence: 30
+            region: @file-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @file-properties
+            column: FILE_PATH
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P301_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @file-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @file-properties
+            column: ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P301_IS_ACTIVE (
+        type: switch
+        label {
+            label: Status
+            alignment: left
+        }
+        settings {
+            useDefaults: false
+            onValue: 1
+            onLabel: Enabled
+            offValue: 0
+            offLabel: Disabled
+        }
+        layout {
+            sequence: 80
+            region: @file-properties
+            slot: regionBody
+            alignment: left
+            labelColumnSpan: 1
+        }
+        appearance {
+            template: @/required
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @file-properties
+            column: IS_ACTIVE
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 1
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        help {
+            helpText:
+                ```html
+                <p>
+                  Enable/disable public access to file.
+                </p>
+                
+                <p>
+                  <strong>When object storage is used as file storage:</strong>
+                </p>
+                <p>
+                  The attribute does not block access to the file.
+                  It <strong>only hides</strong> the file from the public application <strong>Files page</strong>,
+                  if the <strong>Shared</strong> attribute of the file is <strong>Yes</strong>.
+                </p>
+                <p>
+                  Files with <strong>disabled</strong> status are not synchronized to <strong>object storage</strong>.
+                </p>
+                ```
+        }
+    )
+
+    pageItem P301_IS_DOWNLOAD (
+        type: switch
+        label {
+            label: Shared
+            alignment: left
+        }
+        settings {
+            useDefaults: false
+            onValue: 1
+            onLabel: Yes
+            offValue: 0
+            offLabel: No
+        }
+        layout {
+            sequence: 90
+            region: @file-properties
+            slot: regionBody
+            alignment: left
+            labelColumnSpan: 1
+        }
+        appearance {
+            template: @/required
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @file-properties
+            column: IS_DOWNLOAD
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 0
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        help {
+            helpText: Is file available for download in public application "Files" page.
+        }
+    )
+
+    pageItem P301_NOTES (
+        type: textarea
+        label {
+            label: Notes
+            alignment: left
+        }
+        layout {
+            sequence: 110
+            region: @file-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            cssClasses: [
+                blog-item
+                blog-noItemHelp
+            ]
+            width: 30
+            height: 5
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @file-properties
+            column: NOTES
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+        help {
+            inlineHelpText: Enter any comments or notes here. These notes not displayed for public.
+        }
+    )
+
+    pageItem P301_OLD_FILE_PATH (
+        type: hidden
+        layout {
+            sequence: 120
+            region: @file-properties
+            slot: regionBody
+        }
+        source {
+            type: item
+            item: P301_FILE_PATH
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        config {
+            buildOption: @blog-feature-oci-object-storage
+        }
+    )
+
+    pageItem P301_ROW_VERSION (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @file-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @file-properties
+            column: ROW_VERSION
+            dataType: number
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-chevron-left
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: Delete
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+            ]
+            icon: fa-trash-o
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--mobileHideLabel
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction initialize-assistant-button-action (
+        name: Initialize assistant button action
+        execution {
+            sequence: 30
+        }
+        when {
+            event: ready
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    apex.actions.add({
+                      name: "gen-ai-assistant"
+                    , action: ( event, element, args ) => { 
+                        apex.event.trigger( this.affectedElements, "action-open-assistant", args );
+                      }
+                    });
+                    ```
+            }
+            affectedElements {
+                selectionType: items
+                items: P301_FILE_DESC
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction open-ai-assistant (
+        name: Open AI assistant
+        execution {
+            sequence: 40
+        }
+        when {
+            event: custom
+            customEvent: action-open-assistant
+            selectionType: items
+            items: P301_FILE_DESC
+        }
+
+        action native-open-ai-assistant (
+            action: showAiAssistant
+            genAI {
+                welcomeMessage: &APP_TEXT$BLOG_MSG_AI_ASSISTANT_WELCOME.
+            }
+            useResponse {
+                type: item
+                item: P301_FILE_DESC
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction process-shared-attribute (
+        name: Process Shared Attribute
+        execution {
+            sequence: 20
+        }
+        when {
+            selectionType: items
+            items: P301_IS_DOWNLOAD
+        }
+        clientSideCondition {
+            type: item=value
+            item: P301_IS_DOWNLOAD
+            value: 1
+        }
+        config {
+            buildOption: @under-development
+        }
+
+        action native-disable (
+            action: disable
+            affectedElements {
+                selectionType: items
+                items: P301_IS_ACTIVE
+            }
+            execution {
+                sequence: 20
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-enable (
+            action: enable
+            affectedElements {
+                selectionType: items
+                items: P301_IS_ACTIVE
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-hide (
+            action: hide
+            affectedElements {
+                selectionType: items
+                items: P301_IS_ACTIVE
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-show (
+            action: show
+            affectedElements {
+                selectionType: items
+                items: P301_IS_ACTIVE
+            }
+            execution {
+                sequence: 30
+            }
+        )
+
+    )
+
+    computation p301-file-dir (
+        itemName: P301_FILE_DIR
+        execution {
+            sequence: 20
+        }
+        computation {
+            type: expression
+            plsqlExpression: trim( both '/' from :P301_FILE_DIR )
+        }
+    )
+
+    computation p301-file-path (
+        itemName: P301_FILE_PATH
+        execution {
+            sequence: 40
+            point: afterSubmit
+        }
+        computation {
+            type: expression
+            plsqlExpression:
+                ```plsql
+                blog_file.format_file_path(
+                  p_file_name => :P301_FILE_NAME
+                , p_dir       => :P301_FILE_DIR
+                )
+                ```
+        }
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        execution {
+            sequence: 60
+        }
+        advanced {
+            executionMappingIdentifier: 22052849619139901
+        }
+    )
+
+    process delete-object (
+        name: Delete Object
+        type: invokeApi
+        invoke {
+            package: BLOG_OCI_OS
+            procedureOrFunction: DELETE_OBJECT
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 22050918369139903
+        }
+        serverSideCondition {
+            whenButtonPressed: @delete
+        }
+        config {
+            buildOption: @blog-feature-oci-object-storage
+        }
+
+        parameter p_client_request_id (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+        parameter p_file_path (
+            value {
+                type: item
+                item: P301_FILE_PATH
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_if_match (
+            value {
+                type: item
+                item: P301_ETAG
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    process initialize-form-file-properties (
+        name: Initialize form File Properties
+        type: formInitialization
+        formRegion: @file-properties
+        execution {
+            sequence: 20
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 22047385078139914
+        }
+    )
+
+    process process-form-file-properties (
+        name: Process form File Properties
+        type: formAutoRowProcessing
+        formRegion: @file-properties
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 22047694596139913
+        }
+    )
+
+    process purge-public-application-files-page-cache (
+        name: Purge Public Application Files Page Cache
+        type: invokeApi
+        invoke {
+            package: APEX_UTIL
+            procedureOrFunction: CACHE_PURGE_BY_PAGE
+        }
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 22053296986139901
+        }
+
+        parameter p_application (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: item
+                item: G_PUB_APP_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_page (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: staticValue
+                staticValue: 11
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+    )
+
+    process rename-object (
+        name: Rename Object
+        type: invokeApi
+        invoke {
+            package: BLOG_OCI_OS
+            procedureOrFunction: RENAME_OBJECT
+        }
+        execution {
+            sequence: 30
+        }
+        advanced {
+            executionMappingIdentifier: 20449304870353535
+        }
+        serverSideCondition {
+            whenButtonPressed: @save
+            type: item!=value
+            item: P301_FILE_PATH
+            value: &P301_OLD_FILE_PATH.
+        }
+        config {
+            buildOption: @blog-feature-oci-object-storage
+        }
+
+        parameter p_client_request_id (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 70
+            }
+        )
+
+        parameter p_new_file_path (
+            value {
+                type: item
+                item: P301_FILE_PATH
+            }
+            advanced {
+                displaySequence: 60
+            }
+        )
+
+        parameter p_old_file_path (
+            value {
+                type: item
+                item: P301_OLD_FILE_PATH
+            }
+            advanced {
+                displaySequence: 40
+            }
+        )
+
+        parameter p_old_if_match (
+            value {
+                type: item
+                item: P301_ETAG
+            }
+            advanced {
+                displaySequence: 50
+            }
+        )
+
+    )
+
+)
+

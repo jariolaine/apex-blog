@@ -1,0 +1,474 @@
+page 20017 (
+    name: Google Authentication
+    alias: GOOGLE-AUTHENTICATION
+    title: Google Authentication
+    pageGroup: @configuration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/wizard-modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 40
+            slot: wizardButtons
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region credential (
+        name: Credential
+        type: staticContent
+        layout {
+            sequence: 30
+            slot: wizardBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--noUI
+                t-Region--scrollBody
+            ]
+        }
+    )
+
+    region google-authentication (
+        name: Google Authentication
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: wizardBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Region-orderBy--center
+            ]
+        }
+    )
+
+    region information (
+        name: Information
+        type: staticContent
+        source {
+            htmlCode: &APP_TEXT$BLOG_MSG_GOOGLE_AUTH_INFO!RAW.
+        }
+        layout {
+            sequence: 10
+            slot: wizardBody
+        }
+        appearance {
+            template: @/alert
+            templateOptions: [
+                #DEFAULT#
+                t-Alert--wizard
+                t-Alert--defaultIcons
+                t-Alert--info
+                t-Alert--removeHeading js-removeLandmark
+                margin-bottom-none
+            ]
+        }
+    )
+
+    pageItem P20017_BUILD_OPTION_NAME (
+        type: hidden
+        layout {
+            sequence: 40
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        security {
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P20017_BUILD_STATUS (
+        type: switch
+        label {
+            label: Status
+            alignment: left
+        }
+        settings {
+            useDefaults: false
+            onValue: INCLUDE
+            onLabel: Enabled
+            offValue: EXCLUDE
+            offLabel: Disabled
+        }
+        layout {
+            sequence: 30
+            region: @google-authentication
+            slot: regionBody
+            alignment: left
+            labelColumnSpan: 1
+        }
+        appearance {
+            template: @/required
+            templateOptions: #DEFAULT#
+        }
+        source {
+            type: expression
+            plsqlExpression:
+                ```plsql
+                apex_application_admin.get_build_option_status(
+                  p_application_id     => :APP_ID
+                , p_build_option_name  => :P20017_BUILD_OPTION_NAME
+                )
+                ```
+            used: always
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P20017_CLIENT_ID (
+        type: textField
+        label {
+            label: Client ID
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            region: @credential
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    pageItem P20017_CLIENT_SECRET (
+        type: password
+        label {
+            label: Client Secret
+            alignment: left
+        }
+        settings {
+            submitWhenEnterPressed: false
+        }
+        layout {
+            sequence: 20
+            region: @credential
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-close
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            showProcessing: true
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction process-feature-status (
+        name: Process Feature Status
+        execution {
+            sequence: 20
+        }
+        when {
+            selectionType: items
+            items: P20017_BUILD_STATUS
+        }
+        clientSideCondition {
+            type: item=value
+            item: P20017_BUILD_STATUS
+            value: INCLUDE
+        }
+
+        action native-disable (
+            action: disable
+            affectedElements {
+                selectionType: items
+                items: [
+                    P20017_CLIENT_ID
+                    P20017_CLIENT_SECRET
+                ]
+            }
+            execution {
+                sequence: 30
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-enable (
+            action: enable
+            affectedElements {
+                selectionType: items
+                items: [
+                    P20017_CLIENT_ID
+                    P20017_CLIENT_SECRET
+                ]
+            }
+            execution {
+                sequence: 30
+            }
+        )
+
+    )
+
+    validation one-authentication-scheme-enabled (
+        name: One authentication scheme enabled
+        execution {
+            sequence: 10
+        }
+        validation {
+            plsqlExpression: :P20017_BUILD_STATUS = apex_application_admin.c_build_option_status_include
+        }
+        error {
+            errorMessage: At least one authentication scheme must be enabled.
+            displayLocation: inlineInNotification
+        }
+        config {
+            buildOption: !@blog-authentication-apex
+        }
+    )
+
+    computation p20017-build-option-name (
+        itemName: P20017_BUILD_OPTION_NAME
+        execution {
+            sequence: 20
+        }
+        computation {
+            type: staticValue
+            staticValue: BLOG_AUTHENTICATION_GOOGLE
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P20017_BUILD_OPTION_NAME
+        }
+    )
+
+    process update-credential (
+        name: Update Credential
+        type: invokeApi
+        invoke {
+            package: APEX_CREDENTIAL
+            procedureOrFunction: SET_PERSISTENT_CREDENTIALS
+        }
+        execution {
+            sequence: 20
+        }
+        successMessage {
+            successMessage: Credential updated.
+        }
+        advanced {
+            executionMappingIdentifier: 97806614154050627
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression:
+                ```plsql
+                :P20017_CLIENT_ID is not null and
+                :P20017_CLIENT_SECRET is not null and
+                :P20017_BUILD_STATUS = apex_application_admin.c_build_option_status_include
+                ```
+        }
+
+        parameter p_credential_static_id (
+            value {
+                type: staticValue
+                staticValue: BLOG_GOOGLE_OAUTH2
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_password (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P20017_CLIENT_SECRET
+            }
+            advanced {
+                displaySequence: 50
+            }
+        )
+
+        parameter p_username (
+            value {
+                type: item
+                item: P20017_CLIENT_ID
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+    )
+
+    process update-feature (
+        name: Update Feature
+        type: invokeApi
+        invoke {
+            package: BLOG_ADMIN
+            procedureOrFunction: UPDATE_FEATURE
+        }
+        execution {
+            sequence: 10
+        }
+        successMessage {
+            successMessage: Google authentication status updated.
+        }
+        advanced {
+            executionMappingIdentifier: 97805388353048929
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression:
+                ```plsql
+                apex_application_admin.get_build_option_status(
+                  p_application_id     => :APP_ID
+                , p_build_option_name  => :P20017_BUILD_OPTION_NAME
+                ) != :P20017_BUILD_STATUS
+                ```
+        }
+
+        parameter p_build_option_name (
+            value {
+                type: item
+                item: P20017_BUILD_OPTION_NAME
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_build_status (
+            value {
+                type: item
+                item: P20017_BUILD_STATUS
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    branch (
+        name: Go to Page 20010
+        execution {
+            sequence: 30
+        }
+        behavior {
+            target: {
+                page: 20010
+            }
+        }
+    )
+
+)
+

@@ -1,0 +1,1363 @@
+textMessage BLOG_AI_GENERATE_MESSAGE (
+    message {
+        text:
+            ```
+            Consider the following blog post: """
+            %post
+            """
+            ```
+        language: en
+    }
+)
+
+textMessage BLOG_AI_GENERATE_PROMPT (
+    message {
+        text: Please generate
+        language: en
+    }
+)
+
+textMessage BLOG_AI_SYSTEM_PROMPT_POST_ASSISTANT (
+    message {
+        text: You are an advanced AI assistant specializing in writing engaging, informative, and well-structured blog posts tailored to a specific audience. Your goal is to produce content that is easy to read, factually accurate, and optimized for search engines (SEO). Use a tone that aligns with the intended audience, whether professional, casual, or conversational. Typically aim for 800-1500 words unless a specific length is requested. Generate only blog post content. Do not include title or description for post as those are generated separately.
+        language: en
+    }
+)
+
+textMessage BLOG_AI_SYSTEM_PROMPT_POST_CATEGORY (
+    message {
+        text: Generate a blog post category that is appropriate for SEO, ensuring it aligns with commonly searched phrases and terms relevant to the provided topic. The category should be concise, descriptive, and structured to improve content discoverability. It should capture the main theme or purpose of the blog while resonating with user search behavior and keyword trends. Please keep it down 2 words. Use only same language as blog post. Category should be plain text. Do not use any other kind formatting. Do not respond anything other than the generated category.
+        language: en
+    }
+)
+
+textMessage BLOG_AI_SYSTEM_PROMPT_POST_DESCRIPTION (
+    message {
+        text: Generate a compelling and concise blog post summary based on the provided content topic or details. The summary should be 1-2 sentences long, summarize the main points of the blog post, and engage readers by highlighting the value or benefits of reading the post. Use clear and engaging language, incorporating relevant keywords to optimize for SEO and attract the target audience. Use only same language as blog post. The response must be plain text only, without any enclosures such as quotation marks, brackets, or other symbols. Do not use any other kind formatting. Do not respond anything other than the generated summary.
+        language: en
+    }
+)
+
+textMessage BLOG_AI_SYSTEM_PROMPT_POST_TAGS (
+    message {
+        text: Generate a list of relevant, SEO-friendly tags for a blog post based on the provided content details or keywords. Tags should be short (1-2 words), directly related to the topic, and optimized for discoverability. Include a mix of specific and general terms to help categorize the post effectively and improve its visibility on search engines and within the website's taxonomy. Please keep it down to 6 tags. Use only same language as blog post.Tags should be plain text and separated by comma character. Do not use any other kind formatting. Make the tags lowercase and sorted alphabetically. Do not respond anything other than the generated tags.
+        language: en
+    }
+)
+
+textMessage BLOG_AI_SYSTEM_PROMPT_POST_TITLE (
+    message {
+        text: Generate a creative, engaging, and SEO-friendly blog post title based on the provided description, topic, or keywords. The title should be concise (preferably under 60 characters), appealing to the target audience, and accurately reflect the content's tone and purpose. Ensure the title is attention-grabbing and optimized for search engines, while avoiding clickbait. If specific keywords or themes are mentioned, incorporate them naturally into the title. Use only same language as blog post. The response must be plain text only, without any enclosures such as quotation marks, brackets, or other symbols. Do not use any other kind formatting. Do not respond anything other than the generated title.
+        language: en
+    }
+)
+
+textMessage BLOG_BTN_TITLE_AI_ASSISTANT (
+    message {
+        text: Chat with AI assistant
+        language: en
+    }
+)
+
+textMessage BLOG_BTN_TITLE_GEN_AI_POST_CATEGORY (
+    message {
+        text: Generate Category Using AI
+        language: en
+    }
+)
+
+textMessage BLOG_BTN_TITLE_GEN_AI_POST_DESCRIPTION (
+    message {
+        text: Generate Summary Using AI
+        language: en
+    }
+)
+
+textMessage BLOG_BTN_TITLE_GEN_AI_POST_TAGS (
+    message {
+        text: Generate Tags Using AI
+        language: en
+    }
+)
+
+textMessage BLOG_BTN_TITLE_GEN_AI_POST_TITLE (
+    message {
+        text: Generate Title Using AI
+        language: en
+    }
+)
+
+textMessage BLOG_BTN_TITLE_RECORD (
+    message {
+        text: Speech to Post
+        language: en
+    }
+)
+
+textMessage BLOG_CATEGORIES_UK1 (
+    message {
+        text: Category with same name already exists.
+        language: en
+    }
+)
+
+textMessage BLOG_COMMENTS_FK1 (
+    message {
+        text: There are comments in this post. Please delete the comments first.
+        language: en
+    }
+)
+
+textMessage BLOG_COMMENTS_FK2 (
+    message {
+        text: This comment has been replied. Please delete the reply first.
+        language: en
+    }
+)
+
+textMessage BLOG_CONFIRM_DELETE_UNUSED_CATEGORIES (
+    message {
+        text: All categories without posts will be deleted. Would you like to perform this delete action?
+        language: en
+    }
+)
+
+textMessage BLOG_CONFIRM_DELETE_UNUSED_TAGS (
+    message {
+        text: All tags not used in posts will be deleted. Would you like to perform this delete action?
+        language: en
+    }
+)
+
+textMessage BLOG_CONFIRM_FILE_OVERWRITE (
+    message {
+        text: Following file(s) already exists. Please confirm file overwrite.
+        language: en
+    }
+)
+
+textMessage BLOG_CONFIRM_LINK_GROUP_DELETE (
+    message {
+        text: You have requested the permanent deletion of links collection. Following link(s) will be also deleted.
+        language: en
+    }
+)
+
+textMessage BLOG_CONFIRM_RESEQUENCE_CATEGORIES (
+    message {
+        text: Resequence categories, incrementing sequence numbers by 10?
+        language: en
+    }
+)
+
+textMessage BLOG_CONFIRM_RESEQUENCE_DYNAMIC_CONTENT (
+    message {
+        text: Resequence popup pages entries, incrementing sequence numbers by 10?
+        language: en
+    }
+)
+
+textMessage BLOG_CONFIRM_RESEQUENCE_LINKS (
+    message {
+        text: Resequence link entries, incrementing sequence numbers by 10?
+        language: en
+    }
+)
+
+textMessage BLOG_CONFIRM_RESEQUENCE_LINK_GROUPS (
+    message {
+        text: Resequence group entries, incrementing sequence numbers by 10?
+        language: en
+    }
+)
+
+textMessage BLOG_CONFIRM_RESEQUENCE_TAGS (
+    message {
+        text: Resequence tags, incrementing sequence numbers by 10?
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_ABOUT (
+    message {
+        text: About
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_ALLOW_COMMENTS (
+    message {
+        text: Commenting to posts
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_ARCHIVE (
+    message {
+        text: Archives list
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_ARCHIVE_POST_COUNT (
+    message {
+        text: Archive post count
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_ATOM (
+    message {
+        text: Atom feed
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_CATEGORY (
+    message {
+        text: Categories list
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_CATEGORY_POST_COUNT (
+    message {
+        text: Category post count
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_COMMENT_VERIFY (
+    message {
+        text: Comment verify question
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_FILES (
+    message {
+        text: Files
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_GROUP_COMMENTS (
+    message {
+        text: Comments
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_GROUP_MISC (
+    message {
+        text: Miscellaneous
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_GROUP_PAGE (
+    message {
+        text: Pages
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_GROUP_POST (
+    message {
+        text: Post Page
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_GROUP_RIGHT_COLUMN (
+    message {
+        text: Right column
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_LATEST_POSTS (
+    message {
+        text: Latest posts list
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_LINKS (
+    message {
+        text: Links
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_MODAL_PAGES (
+    message {
+        text: Modal pages links in blog footer
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_MODERATE_COMMENTS (
+    message {
+        text: Comment must be approved
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_MODERATE_COMMENTS_AI (
+    message {
+        text: AI approve comments
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_POST_PAGINATION (
+    message {
+        text: Links to newer and older post
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_RSS (
+    message {
+        text: RSS feed link
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_SEARCH (
+    message {
+        text: Search
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_SEARCH_COMMENTS (
+    message {
+        text: Search from comments
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_SEARCH_FILES (
+    message {
+        text: Search from files
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_SEARCH_LINKS (
+    message {
+        text: Search from links
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_SEARCH_POSTS (
+    message {
+        text: Search from posts
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_SITEMAP (
+    message {
+        text: Generate sitemap
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_SUBSCRIBE_COMMENTS (
+    message {
+        text: Email notification of new comments for users
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_TAG_CLOUD (
+    message {
+        text: Tag Cloud
+        language: en
+    }
+)
+
+textMessage BLOG_FEATURE_TAG_CLOUD_POST_COUNT (
+    message {
+        text: Tag post count
+        language: en
+    }
+)
+
+textMessage BLOG_FILES_CK4 (
+    message {
+        text: The shared file must have a description.
+        language: en
+    }
+)
+
+textMessage BLOG_FILES_UK1 (
+    message {
+        text: File with same name already exists.
+        language: en
+    }
+)
+
+textMessage BLOG_GENERIC_ERROR (
+    message {
+        text: Ooops... We are sorry! Unexpected internal error have occurred.
+        language: en
+        usedInJavaScript: true
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_ABOUT (
+    message {
+        text: Enable or disable "About" page.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_ALLOW_COMMENTS (
+    message {
+        text: Enable or disable commenting on blog posts.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_ARCHIVE (
+    message {
+        text: Enable or disable archives list.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_ARCHIVE_POST_COUNT (
+    message {
+        text: Enable or disable post count in the archive list.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_ATOM (
+    message {
+        text: Enable or disable atom feed.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_CATEGORY (
+    message {
+        text: Enable or disable categories link list.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_CATEGORY_POST_COUNT (
+    message {
+        text: Enable or disable post count in the category list.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_COMMENT_VERIFY (
+    message {
+        text: "Enable or disable comment verify question. Enabling this feature may prevent some spam bots entering comments. "
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_FILES (
+    message {
+        text: Enable or disable the "Files" page. If it is disabled, file search is also disabled.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_LATEST_POSTS (
+    message {
+        text: Enable or disable the latest blog posts list.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_LINKS (
+    message {
+        text: Enable or disable the "Links" page. If it is disabled, link search is also disabled.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_MODAL_PAGES (
+    message {
+        text: Enable or disable popup pages links in blog footer.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_MODERATE_COMMENTS (
+    message {
+        text: Enable or disable comments approval before they are published.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_MODERATE_COMMENTS_AI (
+    message {
+        text: Enable or disable AI-powered moderation to automatically approve comments. If comment moderation is enabled and the AI analyzes the comment sentiment as positive, the comment is automatically approved.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_POST_PAGINATION (
+    message {
+        text: Enable or disable links to previous and / or newer posts.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_RSS (
+    message {
+        text: Enable or disable link to the RSS feed.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_SEARCH (
+    message {
+        text: Enable or disable "Search" page.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_SEARCH_COMMENTS (
+    message {
+        text: Enable or disable comment search.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_SEARCH_FILES (
+    message {
+        text: Enable or disable file search. Search is available if the "Files" page is also enabled.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_SEARCH_LINKS (
+    message {
+        text: Enable or disable link search. Search is available if the "Link" page is also enabled.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_SEARCH_POSTS (
+    message {
+        text: Enable or disable post search.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_SITEMAP (
+    message {
+        text: Enable or disable generating sitemap index and sitemaps for public pages. See sitemap URL from this application home page.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_SUBSCRIBE_COMMENTS (
+    message {
+        text: When commenting on a blog post, users can enter their email address and receive an email notification when their comment is answered. The application email address must also be filled in the application settings to send the email.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_TAG_CLOUD (
+    message {
+        text: Enable or disable tag cloud.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_FEATURE_TAG_CLOUD_POST_COUNT (
+    message {
+        text: Enable or disable post count in the tag cloud
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_G_APP_EMAIL (
+    message {
+        text:
+            ```
+            Email address from which notifications will be sent, for example
+            notification of new comments. If blank, no notifications will be sent.
+            ```
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_G_CANONICAL_HOST (
+    message {
+        text: Protocol and host used for pages header link rel="canonical", RSS feed and sitemap. Example https://example.com. If empty, current URL protocol and host is used.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_G_COMMENT_WATCH_MONTHS (
+    message {
+        text: How many months will a user receive an email notification of new replies after they last comment on a post. The value must be an integer between %min and %max.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_G_LATEST_POST_ROWS (
+    message {
+        text: The number of post displayed on the latest post list. The value must be an integer between %min and %max. Changes to this settings only take effect in new sessions of the public application.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_G_MAX_AGE_DOWNLOAD (
+    message {
+        text: Cache-Control HTTP response header max-age for files that are available for download on the "Files" page of the public application. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an integer between %min and %max.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_G_MAX_AGE_FILE (
+    message {
+        text: Cache-Control HTTP response header max-age for files that are not downloadable on the "Files" page of the public application. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an integer between %min and %max.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_G_MAX_AGE_RSS (
+    message {
+        text: RSS feed Cache-Control HTTP response header max-age. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an integer between %min and %max.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_G_MAX_AGE_RSS_XSL (
+    message {
+        text: RSS feed XSL Cache-Control HTTP response header max-age. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an integer between %min and %max.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_G_MAX_AGE_SITEMAP (
+    message {
+        text: Sitemap Cache-Control HTTP response header max-age. The maximum amount of time in seconds that fetched responses are allowed to be used again by clients. The value must be an integer between %min and %max.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_G_RSS_URL (
+    message {
+        text: Specify custom RSS feed URL. If empty, default public application RSS feed is used.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_G_RSS_XSL_URL (
+    message {
+        text: RSS feed custom XSL transformations (XSLT) URL for public application default RSS feed.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_P0_BLOG_APP_DATE_FORMAT (
+    message {
+        text: Public pages date format. Changes to this settings only take effect in new sessions of the public application.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_P0_BLOG_APP_DESC (
+    message {
+        text: Description of this blog. Changes to this settings only take effect in new sessions of the public application.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_P0_BLOG_APP_NAME (
+    message {
+        text: Name of this blog. Changes to this settings only take effect in new sessions of the public application.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_P0_BLOG_POST_DATE_FORMAT (
+    message {
+        text: Date format for blog posts header. Changes to this settings only take effect in new sessions of the public application.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_P0_BLOG_SEARCH_ROWS (
+    message {
+        text: The number of Search results per report page. The value must be an integer between %min and %max. Changes to this settings only take effect in new sessions of the public application.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_P1_BLOG_POST_ROWS (
+    message {
+        text: The number of posts per report page displayed on the home page. The value must be an integer between %min and %max. Changes to this settings only take effect in new sessions of the public application.
+        language: en
+    }
+)
+
+textMessage BLOG_HELP_P2_BLOG_COMMENT_ROWS (
+    message {
+        text: The number of comments per report page displayed on the post page. The value must be an integer between %min and %max. Changes to this settings only take effect in new sessions of the public application.
+        language: en
+    }
+)
+
+textMessage BLOG_LINK_GROUPS_UK1 (
+    message {
+        text: Label with same name already exists.
+        language: en
+    }
+)
+
+textMessage BLOG_LOV_COMMENT_FLAG_NEW (
+    message {
+        text: New
+        language: en
+    }
+)
+
+textMessage BLOG_LOV_COMMENT_FLAG_READ (
+    message {
+        text: Read
+        language: en
+        usedInJavaScript: true
+    }
+)
+
+textMessage BLOG_LOV_COMMENT_FLAG_REPLY (
+    message {
+        text: Reply
+        language: en
+    }
+)
+
+textMessage BLOG_LOV_COMMENT_FLAG_UNREAD (
+    message {
+        text: Unread
+        language: en
+    }
+)
+
+textMessage BLOG_LOV_COMMENT_STATUS_MODERATE (
+    message {
+        text: Not Approved
+        language: en
+    }
+)
+
+textMessage BLOG_LOV_LINK_STATUS_GROUP_DISABLED (
+    message {
+        text: Group is Disabled
+        language: en
+    }
+)
+
+textMessage BLOG_LOV_POST_STATUS_BLOGGER_DISABLED (
+    message {
+        text: Blogger is Disabled
+        language: en
+    }
+)
+
+textMessage BLOG_LOV_POST_STATUS_CATEGORY_DISABLED (
+    message {
+        text: Category is Disabled
+        language: en
+    }
+)
+
+textMessage BLOG_LOV_POST_STATUS_DRAFT (
+    message {
+        text: Draft
+        language: en
+    }
+)
+
+textMessage BLOG_LOV_POST_STATUS_PUBLISHED (
+    message {
+        text: Published
+        language: en
+    }
+)
+
+textMessage BLOG_LOV_POST_STATUS_SCHEDULED (
+    message {
+        text: Scheduled
+        language: en
+    }
+)
+
+textMessage BLOG_LOV_YES_NO_NO (
+    message {
+        text: No
+        language: en
+    }
+)
+
+textMessage BLOG_LOV_YES_NO_YES (
+    message {
+        text: Yes
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_AI_ASSISTANT_WELCOME (
+    message {
+        text: Hello. How can I help you?
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_AI_NO_POST_FOR_CONTEXT (
+    message {
+        text: AI cannot generate text without context. Please create and provide a blog post as context before proceeding.
+        language: en
+        usedInJavaScript: true
+    }
+)
+
+textMessage BLOG_MSG_APEX_AUTH_INFO (
+    message {
+        text:
+            ```
+            <p>You can enable or disable APEX authentication for this administrative service.</p>
+            
+            ```
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_BASIC_SETTINGS_INFO (
+    message {
+        text: Changes to some settings only take effect in new sessions of the public application. See settings help for details.
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_CATEGORIES_RESEQUENCED (
+    message {
+        text: Categories resequenced.
+        language: en
+        usedInJavaScript: true
+    }
+)
+
+textMessage BLOG_MSG_CATEGORIES_UNUSED_DELETED (
+    message {
+        text: Unused categories deleted.
+        language: en
+        usedInJavaScript: true
+    }
+)
+
+textMessage BLOG_MSG_DYNAMIC_CONTENT_RESEQUENCED (
+    message {
+        text: Popup pages resequenced.
+        language: en
+        usedInJavaScript: true
+    }
+)
+
+textMessage BLOG_MSG_FILE_SYNC_INFO (
+    message {
+        text:
+            ```
+            <p>
+            Select the file synchronization action.
+            If the file exists, you will be prompted to confirm the overwrite.</p>
+            <p>
+            Note that files in the <strong>disabled</strong> status are not copied from the local file repository to the object storage.
+            </p>
+            ```
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_GENERATIVE_AI_INFO (
+    message {
+        text:
+            ```
+            <p>When Generative AI is enabled, it enables generate for post e.g. title, description, category and tags.</p>
+            <p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for API key.</p>
+            ```
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_GOOGLE_AUTH_INFO (
+    message {
+        text:
+            ```
+            <p>You can enable or disable Google authentication for this administrative service.</p>
+            <p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for both Client ID and Client Secret.</p>
+            ```
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_LANGUAGE_AI_INFO (
+    message {
+        text:
+            ```
+            <p>To use language AI, you must configure an Oracle <i>Cloud API Key</i>.</p>
+            <p>When language AI is enabled, the sentiment of all new comments is analyzed. You can see the analysis result when opening a comment.</p>
+            ```
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_LINKS_RESEQUENCED (
+    message {
+        text: Links resequenced.
+        language: en
+        usedInJavaScript: true
+    }
+)
+
+textMessage BLOG_MSG_LINK_GROUPS_RESEQUENCED (
+    message {
+        text: Link groups resequenced.
+        language: en
+        usedInJavaScript: true
+    }
+)
+
+textMessage BLOG_MSG_NO_DATA_FOUND (
+    message {
+        text: No records found.
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_OBJECT_STORAGE_INFO (
+    message {
+        text:
+            ```
+            <p>To use object storage, you must configure an <i>Oracle Cloud API Key</i>.</p>
+            <p>Once object storage is enabled, go to <strong>Synchronize Files</strong> and sync files between local file repository and object storage.</p>
+            <p>When object storage is enabled, new files are no longer saved to the local file repository. You can use synchronization to retrieve files from object storage to the local file repository.</p>
+            ```
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_OCI_API_KEY_INFO (
+    message {
+        text:
+            ```
+            <p>To enable Oracle Cloud services, please provide your API Key in the fields below.</p>
+            <p>This key is used for the following features:</p>
+            <ul>
+              <li><strong>Object Storage</strong>: Required to upload and manage files in your Oracle Cloud Object Storage bucket.</li>
+              <li><strong>Language AI</strong>: Required to analyze the sentiment of comments using Oracle's Language AI service.</li>
+            </ul>
+            <p>You can generate an API Key in your Oracle Cloud Console.</p>
+            <p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for all fields.</p>
+            ```
+        language: en
+    }
+)
+
+textMessage BLOG_MSG_SELECTED_FILES_DELETED (
+    message {
+        text: File(s) deleted.
+        language: en
+        usedInJavaScript: true
+    }
+)
+
+textMessage BLOG_MSG_TAGS_RESEQUENCED (
+    message {
+        text: Tags resequenced.
+        language: en
+        usedInJavaScript: true
+    }
+)
+
+textMessage BLOG_MSG_TAGS_UNUSED_DELETED (
+    message {
+        text: Unused tags deleted.
+        language: en
+        usedInJavaScript: true
+    }
+)
+
+textMessage BLOG_POSTS_FK2 (
+    message {
+        text: Posts found from this category. Move posts to other category and then delete category.
+        language: en
+    }
+)
+
+textMessage BLOG_POSTS_UK1 (
+    message {
+        text: Post with same published on date and time already exists.
+        language: en
+    }
+)
+
+textMessage BLOG_POST_TAGS_UK1 (
+    message {
+        text: Post have duplicate tags.
+        language: en
+    }
+)
+
+textMessage BLOG_PUB_APP_LINK_ATOM (
+    message {
+        text: Atom feed
+        language: en
+    }
+)
+
+textMessage BLOG_PUB_APP_LINK_HOME (
+    message {
+        text: Home page canonical URL
+        language: en
+    }
+)
+
+textMessage BLOG_PUB_APP_LINK_RSS (
+    message {
+        text: RSS feed
+        language: en
+    }
+)
+
+textMessage BLOG_PUB_APP_LINK_SITEMAP (
+    message {
+        text: Sitemap
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_GROUP_COMMENTS (
+    message {
+        text: Comments
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_GROUP_FILE_REPO (
+    message {
+        text: File Repository
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_GROUP_GENERAL (
+    message {
+        text: General
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_GROUP_REPORTS (
+    message {
+        text: Reports
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_GROUP_RSS (
+    message {
+        text: RSS & Atom
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_GROUP_SEO (
+    message {
+        text: URL
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_GROUP_SITEMAP (
+    message {
+        text: Sitemap
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_GROUP_UI (
+    message {
+        text: Appearance
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_G_APP_EMAIL (
+    message {
+        text: Blog email address
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_G_CANONICAL_HOST (
+    message {
+        text: Canonical protocol and host for URLs
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_G_COMMENT_WATCH_MONTHS (
+    message {
+        text: Month(s) user email notification subscription is valid
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_G_LATEST_POST_ROWS (
+    message {
+        text: Number of latest posts
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_G_MAX_AGE_DOWNLOAD (
+    message {
+        text: Downloads cache max age
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_G_MAX_AGE_FILE (
+    message {
+        text: Inline files cache max age
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_G_MAX_AGE_RSS (
+    message {
+        text: RSS and atom feed cache max age
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_G_MAX_AGE_RSS_XSL (
+    message {
+        text: RSS feed XSL cache max age
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_G_MAX_AGE_SITEMAP (
+    message {
+        text: Sitemaps cache max age
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_G_RSS_URL (
+    message {
+        text: Custom RSS feed URL
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_G_RSS_XSL_URL (
+    message {
+        text: RSS feed custom XSL URL
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_P0_BLOG_APP_DATE_FORMAT (
+    message {
+        text: Date format
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_P0_BLOG_APP_DESC (
+    message {
+        text: Blog description
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_P0_BLOG_APP_NAME (
+    message {
+        text: Blog name
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_P0_BLOG_POST_DATE_FORMAT (
+    message {
+        text: Posts header date format
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_P0_BLOG_SEARCH_ROWS (
+    message {
+        text: Number of search results
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_P1_BLOG_POST_ROWS (
+    message {
+        text: Number of post on home page
+        language: en
+    }
+)
+
+textMessage BLOG_SETTING_P2_BLOG_COMMENT_ROWS (
+    message {
+        text: Number of comments
+        language: en
+    }
+)
+
+textMessage BLOG_TAGS_UK1 (
+    message {
+        text: Tag with same name already exists.
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_COMMENT_FLAG (
+    message {
+        text: Type
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_COPY_TO_CLIPBOARD (
+    message {
+        text: Copy URL to Clipboard
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_DISABLED (
+    message {
+        text: Disabled
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_DOWNLOAD (
+    message {
+        text: Download
+        language: en
+        usedInJavaScript: true
+    }
+)
+
+textMessage BLOG_TXT_EDIT (
+    message {
+        text: Edit
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_ENABLED (
+    message {
+        text: Enabled
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_HELP (
+    message {
+        text: Help
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_OPEN_COMMENT (
+    message {
+        text: Open Comment
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_OPEN_NEW_TAB (
+    message {
+        text: Open in a new tab
+        language: en
+        usedInJavaScript: true
+    }
+)
+
+textMessage BLOG_TXT_SELECT_ROW (
+    message {
+        text: Select Row
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_SENTIMENT (
+    message {
+        text: Sentiment
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_SEQUENCE (
+    message {
+        text: Sequence
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_STATUS (
+    message {
+        text: Status
+        language: en
+    }
+)
+
+textMessage BLOG_TXT_VIEW_POSTS (
+    message {
+        text: View Posts
+        language: en
+    }
+)
+
+textMessage BLOG_VALIDATION_ERR_DATE_FORMAT (
+    message {
+        text: Value is not valid date format.
+        language: en
+    }
+)
+
+textMessage BLOG_VALIDATION_ERR_EMAIL (
+    message {
+        text: Not valid email address.
+        language: en
+    }
+)
+
+textMessage BLOG_VALIDATION_ERR_INTEGER (
+    message {
+        text: The value must be an integer between %min and %max.
+        language: en
+    }
+)
+
+textMessage BLOG_VALIDATION_ERR_URL (
+    message {
+        text: URL must begin with http(s)://.
+        language: en
+    }
+)
+

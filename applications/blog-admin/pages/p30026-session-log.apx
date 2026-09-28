@@ -1,0 +1,614 @@
+page 30026 (
+    name: Session Log
+    alias: SESSION-LOG
+    title: Session Log
+    pageGroup: @activity-reporting
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region session-log (
+        name: Session Log
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                  l.page_id                 as page
+                , l.page_name               as page_name
+                , l.think_time              as think_time
+                , l.log_context             as log_context
+                , l.elapsed_time            as elapsed_time
+                , l.rows_queried            as rows_queried
+                , l.ip_address              as ip_address
+                , l.agent                   as agent
+                , l.apex_session_id         as apex_session_id
+                , l.error_message           as error_message
+                , l.error_on_component_type as error_on_component_type
+                , l.error_on_component_name as error_on_component_name
+                , l.page_view_mode          as page_view_mode
+                , l.application_info        as application_info
+                , l.interactive_report_id   as interactive_report_id
+                , l.ir_saved_report_id      as ir_saved_report_id
+                , l.ir_search               as ir_search
+                , l.content_length          as content_length
+                , l.regions_from_cache      as regions_from_cache
+                , l.page_view_type          as page_view_type
+                , l.request_value           as request_value
+                , l.debug_page_view_id      as debug_page_view_id
+                , l.view_timestamp          as view_timestamp
+                , l.view_timestamp          as view_since
+                , l.ecid                    as ecid
+                from apex_workspace_activity_log l
+                where 1 = 1
+                and apex_session_id = :P30026_APEX_SESSION_ID
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: No data found.
+            whenMoreDataFound: The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.
+        }
+        advanced {
+            savedReportMappingIdentifier: 19643484232399856
+        }
+
+        column AGENT (
+            type: plainText
+            heading {
+                heading: User Agent
+            }
+            layout {
+                sequence: 80
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: J
+            }
+        )
+
+        column APEX_SESSION_ID (
+            type: plainText
+            heading {
+                heading: Session ID
+                alignment: end
+            }
+            layout {
+                sequence: 90
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: K
+            }
+        )
+
+        column APPLICATION_INFO (
+            type: plainText
+            heading {
+                heading: Application Info
+            }
+            layout {
+                sequence: 140
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: Q
+            }
+        )
+
+        column CONTENT_LENGTH (
+            type: plainText
+            heading {
+                heading: Content Length
+                alignment: end
+            }
+            layout {
+                sequence: 180
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: U
+            }
+        )
+
+        column DEBUG_PAGE_VIEW_ID (
+            type: plainText
+            heading {
+                heading: Debug Page View ID
+                alignment: end
+            }
+            layout {
+                sequence: 220
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: Z
+            }
+        )
+
+        column ECID (
+            type: plainText
+            heading {
+                heading: ECID
+            }
+            layout {
+                sequence: 250
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AB
+            }
+        )
+
+        column ELAPSED_TIME (
+            type: plainText
+            heading {
+                heading: Elapsed Time
+                alignment: end
+            }
+            layout {
+                sequence: 50
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column ERROR_MESSAGE (
+            type: plainText
+            heading {
+                heading: Error Message
+            }
+            layout {
+                sequence: 100
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: M
+            }
+        )
+
+        column ERROR_ON_COMPONENT_NAME (
+            type: plainText
+            heading {
+                heading: Error on Component Name
+            }
+            layout {
+                sequence: 120
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: O
+            }
+        )
+
+        column ERROR_ON_COMPONENT_TYPE (
+            type: plainText
+            heading {
+                heading: Error on Component Type
+            }
+            layout {
+                sequence: 110
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: N
+            }
+        )
+
+        column INTERACTIVE_REPORT_ID (
+            type: hidden
+            heading {
+                heading: Interactive Report Id
+            }
+            layout {
+                sequence: 150
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: R
+            }
+        )
+
+        column IP_ADDRESS (
+            type: plainText
+            heading {
+                heading: IP Address
+            }
+            layout {
+                sequence: 70
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column IR_SAVED_REPORT_ID (
+            type: hidden
+            heading {
+                heading: Ir Saved Report Id
+            }
+            layout {
+                sequence: 160
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: S
+            }
+        )
+
+        column IR_SEARCH (
+            type: hidden
+            heading {
+                heading: Ir Search
+            }
+            layout {
+                sequence: 170
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: T
+            }
+        )
+
+        column LOG_CONTEXT (
+            type: plainText
+            heading {
+                heading: Log Context
+            }
+            layout {
+                sequence: 40
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column PAGE (
+            type: plainText
+            heading {
+                heading: Page
+                alignment: center
+            }
+            layout {
+                sequence: 10
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AD
+            }
+        )
+
+        column PAGE_NAME (
+            type: plainText
+            heading {
+                heading: Page Name
+            }
+            layout {
+                sequence: 20
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            columnFormatting {
+                htmlExpression: #PAGE#. #PAGE_NAME#
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column PAGE_VIEW_MODE (
+            type: plainText
+            heading {
+                heading: Page View Mode
+            }
+            layout {
+                sequence: 130
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: P
+            }
+        )
+
+        column PAGE_VIEW_TYPE (
+            type: plainText
+            heading {
+                heading: Page View Type
+            }
+            layout {
+                sequence: 200
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: X
+            }
+        )
+
+        column REGIONS_FROM_CACHE (
+            type: plainText
+            heading {
+                heading: Regions From Cache
+                alignment: end
+            }
+            layout {
+                sequence: 190
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: V
+            }
+        )
+
+        column REQUEST_VALUE (
+            type: plainText
+            heading {
+                heading: Request Value
+            }
+            layout {
+                sequence: 210
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: Y
+            }
+        )
+
+        column ROWS_QUERIED (
+            type: plainText
+            heading {
+                heading: Rows Queried
+                alignment: end
+            }
+            layout {
+                sequence: 60
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        column THINK_TIME (
+            type: plainText
+            heading {
+                heading: Think Time
+                alignment: end
+            }
+            layout {
+                sequence: 30
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column VIEW_SINCE (
+            type: plainText
+            heading {
+                heading: Logged
+                alignment: center
+            }
+            layout {
+                sequence: 240
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: AC
+            }
+        )
+
+        column VIEW_TIMESTAMP (
+            type: plainText
+            heading {
+                heading: Timestamp
+            }
+            layout {
+                sequence: 230
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: AA
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Session Log
+        }
+
+        savedReport 196594 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn AGENT (
+                sequence: 6
+            )
+
+            displayColumn ECID (
+                sequence: 7
+            )
+
+            displayColumn ELAPSED_TIME (
+                sequence: 3
+            )
+
+            displayColumn IP_ADDRESS (
+                sequence: 5
+            )
+
+            displayColumn PAGE_NAME (
+                sequence: 1
+            )
+
+            displayColumn ROWS_QUERIED (
+                sequence: 4
+            )
+
+            displayColumn VIEW_SINCE (
+                sequence: 2
+            )
+
+            sort (
+                column: VIEW_TIMESTAMP
+                sort {
+                    sequence: 1
+                }
+            )
+
+            sort (
+                column: SECONDS_AGO
+                sort {
+                    sequence: 2
+                }
+            )
+
+        )
+
+    )
+
+    pageItem P30026_APEX_SESSION_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @session-log
+            slot: regionBody
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Reset Report
+        layout {
+            sequence: 20
+            region: @session-log
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: &APP_PAGE_ID.
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+)
+

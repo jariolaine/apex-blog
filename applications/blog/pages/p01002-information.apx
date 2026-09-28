@@ -1,0 +1,246 @@
+page 1002 (
+    name: Footer Link Modal Dialog
+    alias: INFORMATION
+    title: &P1002_PAGE_TITLE.
+    pageGroup: @general
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/wizard-modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authentication: public
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region dynamic-content (
+        name: Dynamic content
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                   null             as region_title
+                  ,v1.content_html  as body_html
+                 -- save content_desc to compute item after regions
+                  ,apex_util.savekey_vc2(
+                    p_val => v1.content_desc
+                  )                 as dialog_title
+                  ,case v1.show_changed_on
+                    when 1 then v1.changed_on 
+                  end               as changed_on
+                from blog_v_dynamic_content v1
+                where 1 = 1
+                and v1.content_id = :REQUEST
+                order by v1.content_id
+                ```
+            optimizerHint: APEX$USE_NO_PAGINATION
+        }
+        layout {
+            sequence: 10
+            slot: wizardBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+            renderComponents: belowContent
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        comments {
+            comments: Dialog page to show footer links content.
+        }
+        reportLayout {
+            numberOfRows: 1
+        }
+        componentAppearance {
+            template: @blog-content-custom
+            templateOptions: #DEFAULT#
+        }
+
+        column BODY_HTML (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Body Html
+                alignment: center
+            }
+            layout {
+                sequence: 20
+            }
+            sorting {
+                sortable: false
+            }
+            security {
+                escapeSpecialChars: false
+            }
+        )
+
+        column CHANGED_ON (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Changed On
+                alignment: center
+            }
+            layout {
+                sequence: 40
+            }
+            columnFormatting {
+                htmlExpression: "{if CHANGED_ON/}<p>&APP_TEXT$BLOG_MSG_LAST_UPDATED. #CHANGED_ON#.</p>{endif/}"
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column DIALOG_TITLE (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Dialog Title
+                alignment: center
+            }
+            layout {
+                sequence: 30
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column REGION_TITLE (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Region Title
+                alignment: center
+            }
+            layout {
+                sequence: 10
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    pageItem P1002_PAGE_TITLE (
+        type: hidden
+        layout {
+            sequence: 70
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+    button close (
+        buttonName: CLOSE
+        label: Close
+        layout {
+            sequence: 20
+            region: @dynamic-content
+            slot: regionBody
+            columnCssClasses: [
+                u-textCenter
+                padding-top-md
+            ]
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--large
+                t-Button--iconRight
+            ]
+            cssClasses: [
+                w40p
+                mxw240
+            ]
+            icon: fa-close
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @close
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction set-dialog-title (
+        name: Set Dialog Title
+        execution {
+            sequence: 20
+        }
+        when {
+            event: ready
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode: blog.ui.setDialogTitle( "&P1002_PAGE_TITLE." );
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    computation p1002-page-title (
+        itemName: P1002_PAGE_TITLE
+        execution {
+            sequence: 10
+            point: afterRegions
+        }
+        computation {
+            type: expression
+            plsqlExpression: apex_util.keyval_vc2
+        }
+    )
+
+)
+

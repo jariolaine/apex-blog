@@ -1,0 +1,871 @@
+page 16 (
+    name: Post Tags
+    alias: POST-TAGS
+    title: Post Tags
+    pageGroup: @posts
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            t-Dialog--noPadding
+            t-PageBody--noContentPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: contentBody
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region tags (
+        name: Tags
+        type: interactiveGrid
+        source {
+            location: localDatabase
+            tableName: BLOG_V_ALL_POST_TAGS
+            whereClause: post_id = :P16_POST_ID
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+                margin-bottom-none
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+            lostUpdateType: rowVersionColumn
+            rowVersionColumn: ROW_VERSION
+            addRowIfEmpty: false
+        }
+        componentAppearance {
+            selectFirstRow: false
+        }
+        toolbar {
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                resetButton
+                saveButton
+            ]
+        }
+        download {
+            formats: [
+                csv
+                html
+                excel
+                pdf
+            ]
+        }
+        heading {
+            fixedTo: region
+            fixedReportHeight: 440
+        }
+        componentAdvanced {
+            initJavaScriptFunction: blog.admin.ig.region
+        }
+        advanced {
+            savedReportMappingIdentifier: 52121414669405506
+        }
+
+        savedReport 136438 (
+            visibility: primary
+            view {
+                default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @ID
+                layout {
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @ROW_VERSION
+                layout {
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @CREATED_ON
+                layout {
+                    show: false
+                    sequence: 9
+                }
+            )
+
+            displayColumn (
+                column: @CREATED_BY
+                layout {
+                    show: false
+                    sequence: 14
+                }
+            )
+
+            displayColumn (
+                column: @CHANGED_ON
+                layout {
+                    show: false
+                    sequence: 15
+                }
+            )
+
+            displayColumn (
+                column: @CHANGED_BY
+                layout {
+                    show: false
+                    sequence: 16
+                }
+            )
+
+            displayColumn (
+                column: @IS_ACTIVE
+                layout {
+                    width: 96
+                    sequence: 5
+                }
+            )
+
+            displayColumn (
+                column: @DISPLAY_SEQ
+                layout {
+                    width: 94
+                    sequence: 4
+                }
+            )
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    frozen: true
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @POST_ID
+                layout {
+                    sequence: 11
+                }
+            )
+
+            displayColumn (
+                column: @TAG_DISPLAY
+                layout {
+                    width: 181
+                    sequence: 6
+                }
+            )
+
+            displayColumn (
+                column: @TAG_ID
+                layout {
+                    sequence: 12
+                }
+            )
+
+            displayColumn (
+                column: @TAG
+                layout {
+                    sequence: 13
+                }
+            )
+
+            displayColumn (
+                column: @TAG_IS_ACTIVE
+                layout {
+                    width: 84
+                    sequence: 7
+                }
+            )
+
+            sort (
+                column: @DISPLAY_SEQ
+                sort {
+                    nulls: last
+                    sequence: 1
+                }
+            )
+
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 20
+            }
+        )
+
+        column APEX$ROW_SELECTOR (
+            type: rowSelector
+            layout {
+                sequence: 10
+            }
+        )
+
+        column CHANGED_BY (
+            type: displayOnly
+            heading {
+                heading: Changed by
+            }
+            layout {
+                sequence: 130
+            }
+            source {
+                databaseColumn: CHANGED_BY
+                dataType: varchar2
+                queryOnly: true
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+            help {
+                helpText: User who has last changed tag.
+            }
+        )
+
+        column CHANGED_ON (
+            type: displayOnly
+            heading {
+                heading: Changed on
+                alignment: end
+            }
+            layout {
+                sequence: 110
+                columnAlignment: end
+            }
+            source {
+                databaseColumn: CHANGED_ON
+                dataType: timestampWithLocalTimeZone
+                queryOnly: true
+            }
+            help {
+                helpText: Date and time when tag was last changed.
+            }
+        )
+
+        column CREATED_BY (
+            type: displayOnly
+            heading {
+                heading: Created by
+            }
+            layout {
+                sequence: 100
+            }
+            source {
+                databaseColumn: CREATED_BY
+                dataType: varchar2
+                queryOnly: true
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: none
+            }
+            enableUsersTo {
+                sort: false
+            }
+            help {
+                helpText: User who created tag.
+            }
+        )
+
+        column CREATED_ON (
+            type: displayOnly
+            heading {
+                heading: Created on
+                alignment: end
+            }
+            layout {
+                sequence: 80
+                columnAlignment: end
+            }
+            source {
+                databaseColumn: CREATED_ON
+                dataType: timestampWithLocalTimeZone
+                queryOnly: true
+            }
+            help {
+                helpText: Date and time when tag was created.
+            }
+        )
+
+        column DISPLAY_SEQ (
+            type: numberField
+            heading {
+                heading: Sequence
+                alignment: end
+            }
+            settings {
+                virtualKeyboard: numeric
+            }
+            layout {
+                sequence: 150
+                columnAlignment: end
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: DISPLAY_SEQ
+                dataType: number
+            }
+            columnFilter {
+                lovType: none
+            }
+            help {
+                helpText: Tag display sequence in post.
+            }
+        )
+
+        column ID (
+            type: hidden
+            layout {
+                sequence: 30
+            }
+            source {
+                databaseColumn: ID
+                dataType: number
+                primaryKey: true
+            }
+            default {
+                duplicateCopiesExistingValue: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column IS_ACTIVE (
+            type: switch
+            heading {
+                heading: Status
+                alignment: center
+            }
+            settings {
+                useDefaults: false
+                onValue: 1
+                onLabel: Enabled
+                offValue: 0
+                offLabel: Disabled
+            }
+            layout {
+                sequence: 140
+                columnAlignment: center
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                databaseColumn: IS_ACTIVE
+                dataType: number
+            }
+            default {
+                type: static
+                staticValue: 1
+            }
+            columnFilter {
+                lovType: none
+            }
+            help {
+                helpText: Tag status in post.
+            }
+        )
+
+        column POST_ID (
+            type: hidden
+            layout {
+                sequence: 50
+            }
+            source {
+                databaseColumn: POST_ID
+                dataType: number
+            }
+            default {
+                type: item
+                item: P16_POST_ID
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column ROW_VERSION (
+            type: hidden
+            layout {
+                sequence: 70
+            }
+            source {
+                databaseColumn: ROW_VERSION
+                dataType: number
+            }
+            default {
+                duplicateCopiesExistingValue: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column TAG (
+            type: hidden
+            layout {
+                sequence: 60
+            }
+            source {
+                databaseColumn: TAG
+                dataType: varchar2
+                queryOnly: true
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column TAG_DISPLAY (
+            type: popupLov
+            heading {
+                heading: Tag
+            }
+            settings {
+                displayAs: modalDialog
+                manualEntry: true
+                fetchOnSearch: true
+            }
+            lov {
+                type: sharedComponent
+                lov: @post-tags
+                displayExtraValues: false
+                displayNullValue: false
+            }
+            layout {
+                sequence: 170
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            validation {
+                valueRequired: true
+            }
+            source {
+                type: sqlExpression
+                sqlExpression: TAG
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+            help {
+                helpText: Tag name.
+            }
+        )
+
+        column TAG_ID (
+            type: hidden
+            layout {
+                sequence: 40
+            }
+            source {
+                databaseColumn: TAG_ID
+                dataType: number
+            }
+            default {
+                duplicateCopiesExistingValue: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column TAG_IS_ACTIVE (
+            type: displayOnly
+            heading {
+                heading: Tag Status
+                alignment: center
+            }
+            settings {
+                basedOn: lov
+            }
+            lov {
+                type: sharedComponent
+                lov: @is-active
+                displayExtraValues: false
+            }
+            layout {
+                sequence: 180
+                columnAlignment: center
+            }
+            source {
+                databaseColumn: TAG_IS_ACTIVE
+                dataType: number
+                queryOnly: true
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+                lovType: useLov
+            }
+            help {
+                helpText: Tag status.
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Tags
+        }
+    )
+
+    pageItem P16_POST_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @tags
+            slot: regionBody
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    button add-row (
+        buttonName: ADD_ROW
+        label: Add
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--primary
+            ]
+            icon: fa-plus
+        }
+        behavior {
+            action: redirectUrl
+            targetUrl: #action$selection-add-row
+            warnOnUnsavedChanges: doNotCheck
+        }
+        advanced {
+            customAttributes: data-action="selection-add-row"
+        }
+    )
+
+    button close (
+        buttonName: CLOSE
+        label: Close
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-close
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button resequence-tags (
+        buttonName: RESEQUENCE_TAGS
+        label: Resequence
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-sequence
+        }
+        behavior {
+            action: definedByDynamicAction
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$BLOG_CONFIRM_RESEQUENCE_TAGS.
+            style: warning
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            action: redirectUrl
+            targetUrl: #action$save
+            warnOnUnsavedChanges: doNotCheck
+        }
+        advanced {
+            customAttributes: data-action="save"
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close Dialog
+        execution {
+            sequence: 30
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @close
+        }
+
+        action native-dialog-close (
+            action: closeDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction process-after-changes (
+        name: Process After Changes
+        execution {
+            sequence: 10
+        }
+        when {
+            event: region/interactiveGrid/interactivegridsave
+            selectionType: region
+            region: @tags
+        }
+
+        action purge-public-application-global-page-cache (
+            name: Purge public application global page cache
+            action: executeServerSideCode
+            settings {
+                plsqlCode:
+                    ```plsql
+                    apex_util.cache_purge_by_page(
+                       p_application => :G_PUB_APP_ID
+                      ,p_page => 0
+                    );
+                    ```
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+                waitForResult: false
+            }
+            comments {
+                comments: Purge public application global page regions cache.
+            }
+        )
+
+    )
+
+    dynamicAction resequence (
+        name: Resequence
+        execution {
+            sequence: 20
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @resequence-tags
+        }
+
+        action refresh-ig (
+            name: Refresh IG
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @tags
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+        )
+
+        action resequence-tags (
+            name: Resequence tags
+            action: executeServerSideCode
+            settings {
+                plsqlCode:
+                    ```plsql
+                    blog_admin.resequence_tags(
+                      p_post_id => :P16_POST_ID
+                    );
+                    ```
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+        action show-message (
+            name: Show message
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    blog.admin.showSuccessMessage({
+                      "text": "BLOG_MSG_TAGS_RESEQUENCED"
+                    });
+                    ```
+            }
+            execution {
+                sequence: 30
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process add-tag (
+        name: Add Tag
+        type: invokeApi
+        editableRegion: @tags
+        invoke {
+            package: BLOG_ADMIN
+            procedureOrFunction: ADD_TAG
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 38504002544327702
+        }
+        comments {
+            comments: Add new tags to repository.
+        }
+
+        parameter p_tag (
+            value {
+                type: item
+                item: TAG_DISPLAY
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_tag_id (
+            parameter {
+                direction: out
+                dataType: number
+            }
+            value {
+                item: TAG_ID
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    process tags-save-interactive-grid-data (
+        name: Tags - Save Interactive Grid Data
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @tags
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 38503631725327701
+        }
+    )
+
+)
+

@@ -1,0 +1,30 @@
+appComputation p501-display-date-format (
+    itemName: P501_DISPLAY_DATE_FORMAT
+    execution {
+        sequence: 10
+        point: afterAuthentication
+    }
+    computation {
+        staticValue: DD.MM.YYYY HH24:MI
+    }
+    serverSideCondition {
+        type: itemIsNull
+        item: P501_DISPLAY_DATE_FORMAT
+    }
+)
+
+appComputation p501-input-date-format (
+    itemName: P501_INPUT_DATE_FORMAT
+    execution {
+        sequence: 20
+        point: afterAuthentication
+    }
+    computation {
+        staticValue: DD.MM.YYYY HH24:MI
+    }
+    serverSideCondition {
+        type: itemIsNull
+        item: P501_INPUT_DATE_FORMAT
+    }
+)
+

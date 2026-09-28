@@ -1,0 +1,36 @@
+listTemplate blog-tag-cloud-custom (
+    name: Blog Tag Cloud (Custom 2)
+    templateClass: custom2
+    list {
+        beforeEntries: " <ul class=\"blog-tagCloud #COMPONENT_CSS_CLASSES#\" id=\"#LIST_ID#\">"
+        afterEntries: " </ul>"
+    }
+    entry {
+        current:
+            ```html
+            <li class="blog-tagCloud-item #A03# is-current" aria-current="page">
+              <a class="blog-tagCloud-link" href="#LINK#" data-weight="#A02#" data-item-id="#A04#">
+                <span class="blog-tagCloud-text">#TEXT#</span>
+                <span class="blog-tagCloud-badge">#A01#</span>
+              </a>
+            </li>
+            ```
+        noncurrent:
+            ```html
+            <li class="blog-tagCloud-item #A03#">
+              <a class="blog-tagCloud-link" href="#LINK#" data-weight="#A02#" data-item-id="#A04#">
+                <span class="blog-tagCloud-text">#TEXT#</span>
+                <span class="blog-tagCloud-badge">#A01#</span>
+              </a>
+            </li>
+            ```
+    }
+    attributeDescriptions {
+        a01: Badge. For example, the number of posts with a tag
+        a02: Tag weight as an integer between 1 and 8
+    }
+    advanced {
+        identifier: BLOG_TAG_CLOUD
+    }
+)
+

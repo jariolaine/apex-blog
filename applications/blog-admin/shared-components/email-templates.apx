@@ -1,0 +1,42 @@
+emailTemplate BLOG_REPLY_TO_COMMENT_NOTIFY (
+    name: Blog reply to comment notification
+    emailSubject: #APP_NAME!RAW# new reply to comments
+    htmlFormat {
+        header: Hi,
+        body:
+            ```html
+            <p>You have chosen to receive follow up notification if new reply is posted to <a href="#POST_LINK#">#POST_TITLE#</a>.</p>
+            <p>Please do not reply to this email. This mailbox does not allow incoming messages.</p>
+            <p>If you wish not get notification email in future you can <a href="#UNSUBSCRIBE_LINK#">unsubscibe</a>.</p>
+            ```
+        footer:
+            ```html
+            <p>
+            Best Regards,<br>
+            #APP_NAME!RAW#
+            </p>
+            ```
+    }
+    plainTextFormat {
+        content:
+            ```html
+            Hi,
+            
+            You have chosen to receive follow up notification if new reply is posted to "#POST_TITLE!RAW#".
+            See blog post and comments from below link.
+            #POST_LINK!RAW#
+            
+            Please do not reply to this email. This mailbox does not allow incoming messages.
+            
+            If you wish not get notification email in future you can unsubscibe using below link.
+            #UNSUBSCRIBE_LINK!RAW#
+            
+            Best Regards,
+            #APP_NAME!RAW#
+            ```
+    }
+    advanced {
+        versionNumber: 2
+    }
+)
+

@@ -1,0 +1,1013 @@
+page 11 (
+    name: Posts
+    alias: POSTS
+    title: Posts
+    pageGroup: @posts
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <h2>
+              Create, edit, manage or delete a post
+            </h2>
+            <h3>
+              Write a new post
+            </h3>
+            <ol>
+              <li>
+                Click New Post.
+              </li>  
+              <li>
+                Create the post. Use editor options to format post. E.g. in "Styles" select list you find block style "Program Code" that is useful when posting code.
+              </li>
+              <li>
+                To save your post without publishing it, click Save Draf. To publish your post, click Publish.
+              </li>
+            </ol>
+            <h3>
+              Edit a post
+            </h3>
+            <ol>
+              <li>
+                Click edit button on post you want to edit.
+              </li>
+              <li>
+                Make your changes.
+              </li>
+              <li>
+                Click Save.
+              </li>
+            </ol>
+            <h3>
+              Delete a post  
+            </h3>
+            <ol>
+              <li>
+                Click edit button on post you want to delete.
+              </li>
+              <li>
+                Click Delete.
+              </li>
+            </ol>
+            
+            ```
+    }
+
+    region breadcump (
+        name: Breadcump
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcumb
+        }
+        layout {
+            sequence: 20
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region posts-report (
+        name: Posts Report
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                  v1.id                 as post_id
+                , v1.category_id        as category_id
+                , v1.tag_id             as tag_id
+                , v1.created_on         as created_on
+                , v1.created_on         as created_since
+                , v1.created_by         as created_by
+                , v1.changed_on         as changed_on
+                , v1.changed_on         as changed_since
+                , v1.changed_by         as changed_by
+                , v1.published_display  as published_on
+                , v1.published_display  as published_since
+                , v1.blogger_name       as blogger_name
+                , v1.category_title     as category_title
+                , v1.title              as post_title
+                , v1.post_desc          as post_desc
+                , v1.visible_tags       as visible_tags
+                , v1.hidden_tags        as hidden_tags
+                , v1.body_length        as body_length
+                , v1.comments_cnt       as comments_count
+                , v1.notes              as notes
+                , v1.post_status_txt    as post_status
+                , null                  as btn_edit_tags
+                , v1.post_status_icon   as post_status_icon
+                -- Workaround for detail view
+                , apex_page.get_url(
+                    p_page   => 12
+                  , p_items  => 'P12_ID'
+                  , p_values => v1.id
+                  )                     as edit_url
+                -- Post date for detail view
+                , detail_view_published as detail_view_published
+                -- Post HTML for detail view
+                , v1.body_html          as body_html
+                -- Tags HTML for detail view
+                , v1.tags_html          as tags_html
+                -- Text search
+                , v1.ctx_search         as ctx_search
+                from blog_v_all_posts v1
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: fullWidthContent
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+            cssClasses: [
+                blog-IR--iconLinks
+                blog-posts
+                blog-post--IR
+            ]
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        link {
+            linkColumn: customTarget
+            target: {
+                type: url
+                url: #EDIT_URL#
+            }
+            linkIcon: <span aria-hidden="true" class="t-Icon fa fa-pencil"></span>
+            linkAttributes: title="&APP_TEXT$BLOG_TXT_EDIT." class="t-Button t-Button--noLabel t-Button--icon t-Button--small"
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: No data found.
+            whenMoreDataFound: The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.
+        }
+        download {
+            filename: blog-posts
+            supplementalText: &P0_BLOG_APP_NAME!RAW. posts.
+        }
+        detailView {
+            show: true
+            forEachRow:
+                ```html
+                <article role="article" class="blog-post">
+                  <header class="blog-post--header">
+                    <div class="blog-post--date">#DETAIL_VIEW_PUBLISHED#</div>
+                    <h1 class="blog-post--title "><a href="#EDIT_URL#" class="u-normal">#POST_TITLE#</a></h1>
+                    <div class="blog-post--category">#CATEGORY_TITLE#</div>
+                  </header>
+                  <div class="blog-post--body">#BODY_HTML#</div>
+                  <footer class="blog-post--footer">
+                    <div class="blog-post--tags">#TAGS_HTML#</div>
+                  </footer>
+                </article>
+                ```
+        }
+        componentAdvanced {
+            oracleTextIndexColumn: CTX_SEARCH
+        }
+        advanced {
+            savedReportMappingIdentifier: 4850446289826818
+        }
+
+        column BLOGGER_NAME (
+            type: plainText
+            heading {
+                heading: Blogger
+            }
+            layout {
+                sequence: 170
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AF
+            }
+        )
+
+        column BODY_HTML (
+            type: hidden
+            heading {
+                heading: Body Html
+            }
+            layout {
+                sequence: 310
+            }
+            source {
+                dataType: CLOB
+            }
+            advanced {
+                endUserAlias: CF
+            }
+            security {
+                escapeSpecialChars: false
+            }
+        )
+
+        column BODY_LENGTH (
+            type: plainText
+            heading {
+                heading: HTML Length
+                alignment: end
+            }
+            layout {
+                sequence: 230
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AK
+            }
+        )
+
+        column BTN_EDIT_TAGS (
+            type: link
+            heading {
+                heading: Edit Tags
+                alignment: center
+            }
+            layout {
+                sequence: 270
+                columnAlignment: center
+            }
+            link {
+                target: {
+                    page: 16
+                    items: {
+                        P16_POST_ID: #POST_ID#
+                    }
+                }
+                linkText: <span aria-hidden="true" class="fa fa-tags"></span>
+                linkAttributes: title="&APP_TEXT$BLOG_TXT_EDIT." class="t-Button t-Button--noLabel t-Button--icon t-Button--small w40"
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: CA
+            }
+            enableUsersTo {
+                sort: false
+                filter: false
+                highlight: false
+                controlBreak: false
+                aggregate: false
+                compute: false
+                chart: false
+                groupBy: false
+                pivot: false
+            }
+        )
+
+        column CATEGORY_ID (
+            type: hidden
+            heading {
+                heading: Category ID
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AS
+            }
+        )
+
+        column CATEGORY_TITLE (
+            type: plainTextBasedOnLov
+            heading {
+                heading: Category
+            }
+            lov {
+                lov: @categories
+            }
+            layout {
+                sequence: 180
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AG
+            }
+        )
+
+        column CHANGED_BY (
+            type: plainText
+            heading {
+                heading: Changed by
+            }
+            layout {
+                sequence: 110
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column CHANGED_ON (
+            type: plainText
+            heading {
+                heading: Changed
+                alternativeLabel: Changed Time
+                alignment: end
+            }
+            layout {
+                sequence: 90
+                columnAlignment: end
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column CHANGED_SINCE (
+            type: plainText
+            heading {
+                heading: Changed
+                alternativeLabel: Changed Since
+                alignment: center
+            }
+            layout {
+                sequence: 130
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: CH
+            }
+        )
+
+        column COMMENTS_COUNT (
+            type: plainText
+            heading {
+                heading: Comments
+                alternativeLabel: Comments Count
+                alignment: end
+            }
+            layout {
+                sequence: 240
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AP
+            }
+        )
+
+        column CREATED_BY (
+            type: plainText
+            heading {
+                heading: Created by
+            }
+            layout {
+                sequence: 70
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: BI
+            }
+        )
+
+        column CREATED_ON (
+            type: plainText
+            heading {
+                heading: Created
+                alternativeLabel: Created Time
+                alignment: end
+            }
+            layout {
+                sequence: 50
+                columnAlignment: end
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: BH
+            }
+        )
+
+        column CREATED_SINCE (
+            type: plainText
+            heading {
+                heading: Created
+                alternativeLabel: Created Since
+                alignment: center
+            }
+            layout {
+                sequence: 100
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: CG
+            }
+        )
+
+        column CTX_SEARCH (
+            type: hidden
+            heading {
+                heading: Ctx Search
+            }
+            layout {
+                sequence: 330
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: CD
+            }
+        )
+
+        column DETAIL_VIEW_PUBLISHED (
+            type: hidden
+            heading {
+                heading: Detail View Published
+            }
+            layout {
+                sequence: 300
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: BY
+            }
+        )
+
+        column EDIT_URL (
+            type: hidden
+            heading {
+                heading: Edit Url
+            }
+            layout {
+                sequence: 290
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: BD
+            }
+        )
+
+        column HIDDEN_TAGS (
+            type: plainTextBasedOnLov
+            heading {
+                heading: Tags (Disabled)
+            }
+            lov {
+                lov: @post-tags-hidden
+            }
+            layout {
+                sequence: 220
+            }
+            source {
+                dataType: STRING
+            }
+            columnFilter {
+                type: namedLovWordContains
+            }
+            advanced {
+                endUserAlias: BA
+            }
+        )
+
+        column NOTES (
+            type: plainText
+            heading {
+                heading: Notes
+            }
+            layout {
+                sequence: 250
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AX
+            }
+        )
+
+        column POST_DESC (
+            type: plainText
+            heading {
+                heading: Summary
+                alternativeLabel: Post Summary
+            }
+            layout {
+                sequence: 200
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AJ
+            }
+        )
+
+        column POST_ID (
+            type: plainText
+            heading {
+                heading: Post ID
+                alignment: center
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                primaryKey: true
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: AD
+            }
+        )
+
+        column POST_STATUS (
+            type: plainTextBasedOnLov
+            heading {
+                heading: Status
+                alignment: center
+            }
+            lov {
+                lov: @post-status
+            }
+            layout {
+                sequence: 260
+                columnAlignment: center
+            }
+            columnFormatting {
+                htmlExpression:
+                    ```html
+                    {with/}
+                    TEXT:=#POST_STATUS#
+                    ICON_CLASSES:=#POST_STATUS_ICON# w40
+                    {apply THEME$ICON_CUSTOM/}
+                    ```
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AM
+            }
+            comments {
+                comments: Using HTML Expression because need column filter
+            }
+        )
+
+        column POST_STATUS_ICON (
+            type: hidden
+            heading {
+                heading: Post Status Icon
+            }
+            layout {
+                sequence: 280
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: BW
+            }
+        )
+
+        column POST_TITLE (
+            type: plainText
+            heading {
+                heading: Title
+            }
+            layout {
+                sequence: 190
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: AH
+            }
+        )
+
+        column PUBLISHED_ON (
+            type: plainText
+            heading {
+                heading: Published
+                alternativeLabel: Published Time
+                alignment: end
+            }
+            layout {
+                sequence: 150
+                columnAlignment: end
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: AY
+            }
+        )
+
+        column PUBLISHED_SINCE (
+            type: plainText
+            heading {
+                heading: Published
+                alternativeLabel: Published Since
+                alignment: center
+            }
+            layout {
+                sequence: 160
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+                timezoneAware: Y
+            }
+            advanced {
+                endUserAlias: CI
+            }
+        )
+
+        column TAGS_HTML (
+            type: hidden
+            heading {
+                heading: Tags Html
+            }
+            layout {
+                sequence: 320
+            }
+            source {
+                dataType: CLOB
+            }
+            advanced {
+                endUserAlias: BP
+            }
+            security {
+                escapeSpecialChars: false
+            }
+        )
+
+        column TAG_ID (
+            type: hidden
+            heading {
+                heading: Tag ID
+            }
+            layout {
+                sequence: 40
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: BN
+            }
+        )
+
+        column VISIBLE_TAGS (
+            type: plainTextBasedOnLov
+            heading {
+                heading: Tags (Enabled)
+            }
+            lov {
+                lov: @post-tags-visible
+            }
+            layout {
+                sequence: 210
+            }
+            source {
+                dataType: STRING
+            }
+            columnFilter {
+                type: namedLovWordContains
+            }
+            advanced {
+                endUserAlias: BB
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport 48583 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn BTN_EDIT_TAGS (
+                sequence: 5
+            )
+
+            displayColumn CATEGORY_TITLE (
+                sequence: 2
+            )
+
+            displayColumn POST_STATUS (
+                sequence: 6
+            )
+
+            displayColumn POST_TITLE (
+                sequence: 1
+            )
+
+            displayColumn PUBLISHED_SINCE (
+                sequence: 4
+            )
+
+            displayColumn VISIBLE_TAGS (
+                sequence: 3
+            )
+
+            sort (
+                column: PUBLISHED_SINCE
+                sort {
+                    direction: desc
+                    nulls: first
+                    sequence: 1
+                }
+            )
+
+            sort (
+                column: CREATED_ON
+                sort {
+                    direction: desc
+                    sequence: 2
+                }
+            )
+
+        )
+
+    )
+
+    button create-post (
+        buttonName: CREATE_POST
+        label: New Post
+        layout {
+            sequence: 10
+            region: @posts-report
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--mobileHideLabel
+                t-Button--iconLeft
+            ]
+            icon: fa-plus
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 12
+                clearCache: 12
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button open-categories (
+        buttonName: OPEN_CATEGORIES
+        label: Categories
+        layout {
+            sequence: 20
+            region: @posts-report
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-media-list
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 14
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button open-tags (
+        buttonName: OPEN_TAGS
+        label: All Tags
+        layout {
+            sequence: 30
+            region: @posts-report
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-tags
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 15
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Reset Report
+        layout {
+            sequence: 40
+            region: @posts-report
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: [
+                    &APP_PAGE_ID.
+                    RIR
+                ]
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction change-post (
+        name: Change Post
+        execution {
+            sequence: 40
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @posts-report
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: triggeringElement
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction create-post (
+        name: Create Post
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: button
+            button: @create-post
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @posts-report
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction process-all-tags (
+        name: Process All Tags
+        execution {
+            sequence: 30
+        }
+        when {
+            event: apexafterclosecanceldialog
+            selectionType: button
+            button: @open-tags
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @posts-report
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction process-category (
+        name: Process Category
+        execution {
+            sequence: 20
+        }
+        when {
+            event: apexafterclosecanceldialog
+            selectionType: button
+            button: @open-categories
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @posts-report
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

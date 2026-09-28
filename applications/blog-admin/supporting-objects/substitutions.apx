@@ -1,0 +1,12 @@
+substitution BLOG_DEFAULT_TIMEFRAME (
+)
+
+substitution BLOG_REPLACE_FILES_COLLECTION (
+)
+
+substitution BLOG_SELECTED_FILES_COLLECTION (
+)
+
+substitution WORKSPACE_COOKIE (
+)
+

@@ -1,0 +1,346 @@
+page 20018 (
+    name: APEX Authentication
+    alias: APEX-AUTHENTICATION
+    title: APEX Authentication
+    pageGroup: @configuration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/wizard-modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region apex-authentication (
+        name: APEX Authentication
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: wizardBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Region-orderBy--center
+            ]
+        }
+    )
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 40
+            slot: wizardButtons
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region information (
+        name: Information
+        type: staticContent
+        source {
+            htmlCode: &APP_TEXT$BLOG_MSG_APEX_AUTH_INFO!RAW.
+        }
+        layout {
+            sequence: 10
+            slot: wizardBody
+        }
+        appearance {
+            template: @/alert
+            templateOptions: [
+                #DEFAULT#
+                t-Alert--wizard
+                t-Alert--defaultIcons
+                t-Alert--info
+                t-Alert--removeHeading js-removeLandmark
+                margin-bottom-none
+            ]
+        }
+    )
+
+    pageItem P20018_BUILD_OPTION_NAME (
+        type: hidden
+        layout {
+            sequence: 40
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        security {
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P20018_BUILD_STATUS (
+        type: switch
+        label {
+            label: Status
+            alignment: left
+        }
+        settings {
+            useDefaults: false
+            onValue: INCLUDE
+            onLabel: Enabled
+            offValue: EXCLUDE
+            offLabel: Disabled
+        }
+        layout {
+            sequence: 30
+            region: @apex-authentication
+            slot: regionBody
+            alignment: left
+            labelColumnSpan: 1
+        }
+        appearance {
+            template: @/required
+            templateOptions: #DEFAULT#
+        }
+        source {
+            type: expression
+            plsqlExpression:
+                ```plsql
+                apex_application_admin.get_build_option_status(
+                  p_application_id     => :APP_ID
+                , p_build_option_name  => :P20018_BUILD_OPTION_NAME
+                )
+                ```
+            used: always
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-close
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            showProcessing: true
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    validation one-authentication-scheme-enabled (
+        name: One authentication scheme enabled
+        execution {
+            sequence: 10
+        }
+        validation {
+            plsqlExpression: :P20018_BUILD_STATUS = apex_application_admin.c_build_option_status_include
+        }
+        error {
+            errorMessage: At least one authentication scheme must be enabled.
+            displayLocation: inlineInNotification
+        }
+        config {
+            buildOption: !@blog-authentication-google
+        }
+    )
+
+    computation p20018-build-option-name (
+        itemName: P20018_BUILD_OPTION_NAME
+        execution {
+            sequence: 20
+        }
+        computation {
+            type: staticValue
+            staticValue: BLOG_AUTHENTICATION_APEX
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P20018_BUILD_OPTION_NAME
+        }
+    )
+
+    process default-authentication-scheme (
+        name: Default authentication scheme
+        type: invokeApi
+        invoke {
+            package: APEX_APPLICATION_ADMIN
+            procedureOrFunction: SET_AUTHENTICATION_SCHEME
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 105272091258048374
+        }
+        comments {
+            comments: If APEX authentication is disabled set Google as default authentication scheme.
+        }
+
+        parameter p_application_id (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: item
+                item: APP_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_name (
+            value {
+                type: expression
+                plsqlExpression:
+                    ```plsql
+                    case :P20018_BUILD_STATUS 
+                      when apex_application_admin.c_build_option_status_include
+                      then 'APEX'
+                      when apex_application_admin.c_build_option_status_exclude
+                      then 'Google'
+                    end
+                    ```
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    process update-feature (
+        name: Update Feature
+        type: invokeApi
+        invoke {
+            package: BLOG_ADMIN
+            procedureOrFunction: UPDATE_FEATURE
+        }
+        execution {
+            sequence: 10
+        }
+        successMessage {
+            successMessage: APEX authentication status updated.
+        }
+        advanced {
+            executionMappingIdentifier: 97826150616357010
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression:
+                ```plsql
+                apex_application_admin.get_build_option_status(
+                  p_application_id     => :APP_ID
+                , p_build_option_name  => :P20018_BUILD_OPTION_NAME
+                ) != :P20018_BUILD_STATUS
+                ```
+        }
+
+        parameter p_build_option_name (
+            value {
+                type: item
+                item: P20018_BUILD_OPTION_NAME
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_build_status (
+            value {
+                type: item
+                item: P20018_BUILD_STATUS
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    branch (
+        name: Go to Page 20010
+        execution {
+            sequence: 30
+        }
+        behavior {
+            target: {
+                page: 20010
+            }
+        }
+    )
+
+)
+

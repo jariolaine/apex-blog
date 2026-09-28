@@ -1,0 +1,124 @@
+shortcut BLOG_BTN_AI_ASSISTANT (
+    source {
+        type: functionBody
+        plsqlFunctionBody:
+            ```plsql
+            return
+              blog_html.get_button(
+                p_app_id        => :APP_ID
+              , p_title         => :APP_TEXT$BLOG_BTN_TITLE_AI_ASSISTANT
+              , p_action        => 'gen-ai-assistant'
+              , p_icon_classes  => 'fa-lg fa-chatbot'
+              , p_build_option  => 'BLOG_FEATURE_GENERATIVE_AI'
+              )
+            ;
+            ```
+    }
+)
+
+shortcut BLOG_BTN_POST_BODY (
+    source {
+        type: functionBody
+        plsqlFunctionBody:
+            ```plsql
+            return
+              blog_html.get_button(
+                p_app_id          => :APP_ID
+              , p_title           => :APP_TEXT$BLOG_BTN_TITLE_RECORD
+              , p_action          => 'record-post'
+              , p_icon_classes    => 'fa-lg fa-microphone'
+              , p_button_classes  => 't-Button t-Button--noLabel t-Button--icon t-Button--link margin-top-lg u-align-self-flex-start'
+              , p_build_option    => 'BLOG_FEATURE_POST_SPEECH'
+              )
+            ;
+            ```
+    }
+    comments {
+        comments: Post editor item post text button
+    }
+)
+
+shortcut BLOG_BTN_POST_CATEGORY (
+    source {
+        type: functionBody
+        plsqlFunctionBody:
+            ```plsql
+            return
+              blog_html.get_button(
+                p_app_id        => :APP_ID
+              , p_title         => :APP_TEXT$BLOG_BTN_TITLE_GEN_AI_POST_CATEGORY
+              , p_action        => 'gen-ai-post-category'
+              , p_icon_classes  => 'fa-lg fa-ai-generative'
+              , p_build_option  => 'BLOG_FEATURE_GENERATIVE_AI'
+              )
+            ;
+            ```
+    }
+    comments {
+        comments: Post page category item post text button
+    }
+)
+
+shortcut BLOG_BTN_POST_DESCRIPTION (
+    source {
+        type: functionBody
+        plsqlFunctionBody:
+            ```plsql
+            return
+              blog_html.get_button(
+                p_app_id        => :APP_ID
+              , p_title         => :APP_TEXT$BLOG_BTN_TITLE_GEN_AI_POST_DESCRIPTION
+              , p_action        => 'gen-ai-post-description'
+              , p_icon_classes  => 'fa-lg fa-ai-generative'
+              , p_build_option  => 'BLOG_FEATURE_GENERATIVE_AI'
+              )
+            ;
+            ```
+    }
+    comments {
+        comments: Post page description item post text button
+    }
+)
+
+shortcut BLOG_BTN_POST_TAGS (
+    source {
+        type: functionBody
+        plsqlFunctionBody:
+            ```plsql
+            return
+              blog_html.get_button(
+                p_app_id        => :APP_ID
+              , p_title         => :APP_TEXT$BLOG_BTN_TITLE_GEN_AI_POST_TAGS
+              , p_action        => 'gen-ai-post-tags'
+              , p_icon_classes  => 'fa-lg fa-ai-generative'
+              , p_build_option  => 'BLOG_FEATURE_GENERATIVE_AI'
+              )
+            ;
+            ```
+    }
+    comments {
+        comments: Post page tags item post text button
+    }
+)
+
+shortcut BLOG_BTN_POST_TITLE (
+    source {
+        type: functionBody
+        plsqlFunctionBody:
+            ```plsql
+            return
+              blog_html.get_button(
+                p_app_id        => :APP_ID
+              , p_title         => :APP_TEXT$BLOG_BTN_TITLE_GEN_AI_POST_TITLE
+              , p_action        => 'gen-ai-post-title'
+              , p_icon_classes  => 'fa-lg fa-ai-generative'
+              , p_build_option  => 'BLOG_FEATURE_GENERATIVE_AI'
+              )
+            ;
+            ```
+    }
+    comments {
+        comments: Post page title item post text button
+    }
+)
+

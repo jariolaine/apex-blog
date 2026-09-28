@@ -1,0 +1,471 @@
+page 20015 (
+    name: Language AI Configuration
+    alias: LANGUAGE-AI-CONFIGURATION
+    title: Language AI
+    pageGroup: @configuration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/wizard-modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 50
+            slot: wizardButtons
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region information (
+        name: Information
+        type: staticContent
+        source {
+            htmlCode: &APP_TEXT$BLOG_MSG_LANGUAGE_AI_INFO!RAW.
+        }
+        layout {
+            sequence: 10
+            slot: wizardBody
+        }
+        appearance {
+            template: @/alert
+            templateOptions: [
+                #DEFAULT#
+                t-Alert--wizard
+                t-Alert--defaultIcons
+                t-Alert--info
+                t-Alert--removeHeading js-removeLandmark
+                margin-bottom-none
+            ]
+        }
+    )
+
+    region language-ai (
+        name: Language AI
+        type: form
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                  t1.row_version      as row_version
+                , t1.attribute_name   as attribute_name
+                , t1.attribute_value  as compartment_id
+                , apex_application_admin.get_build_option_status(
+                    p_application_id     => :APP_ID
+                  , p_build_option_name  => blog_ai.get_param_value( 'lang_ai_build_option' )
+                  )                   as build_status
+                , (
+                    select
+                      lkp.base_url
+                    from apex_workspace_remote_servers lkp
+                    where 1 = 1
+                      and lkp.remote_server_static_id = blog_ai.get_param_value( 'lang_ai_static_id' )
+                  )                   as base_url
+                from blog_settings t1
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: wizardBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Region-orderBy--center
+            ]
+        }
+        edit {
+            enabled: true
+            allowedOperations: update
+            lostUpdateType: rowVersionColumn
+            rowVersionColumn: ROW_VERSION
+        }
+    )
+
+    pageItem P20015_ATTRIBUTE_NAME (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @language-ai
+            slot: regionBody
+        }
+        source {
+            formRegion: @language-ai
+            column: ATTRIBUTE_NAME
+            dataType: varchar2
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: noSpecialCharNoNewline
+        }
+    )
+
+    pageItem P20015_BASE_URL (
+        type: textField
+        label {
+            label: Base URL
+            alignment: left
+        }
+        settings {
+            subtype: url
+        }
+        layout {
+            sequence: 50
+            region: @language-ai
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @language-ai
+            column: BASE_URL
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    pageItem P20015_BUILD_STATUS (
+        type: switch
+        label {
+            label: Status
+            alignment: left
+        }
+        settings {
+            useDefaults: false
+            onValue: INCLUDE
+            onLabel: Enabled
+            offValue: EXCLUDE
+            offLabel: Disabled
+        }
+        layout {
+            sequence: 30
+            region: @language-ai
+            slot: regionBody
+            alignment: left
+            labelColumnSpan: 1
+        }
+        appearance {
+            template: @/required
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @language-ai
+            column: BUILD_STATUS
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P20015_COMPARTMENT_OCID (
+        type: textField
+        label {
+            label: Compartment ID
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @language-ai
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @language-ai
+            column: COMPARTMENT_ID
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        help {
+            inlineHelpText: The compartment OCID for which the user has been granted access.
+        }
+    )
+
+    pageItem P20015_ROW_VERSION (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @language-ai
+            slot: regionBody
+        }
+        source {
+            formRegion: @language-ai
+            column: ROW_VERSION
+            dataType: number
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-close
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            showProcessing: true
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction process-feature-status (
+        name: Process Feature Status
+        execution {
+            sequence: 20
+        }
+        when {
+            selectionType: items
+            items: P20015_BUILD_STATUS
+        }
+        clientSideCondition {
+            type: item=value
+            item: P20015_BUILD_STATUS
+            value: INCLUDE
+        }
+
+        action native-disable (
+            action: disable
+            affectedElements {
+                selectionType: items
+                items: [
+                    P20015_COMPARTMENT_OCID
+                    P20015_BASE_URL
+                ]
+            }
+            execution {
+                sequence: 20
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-enable (
+            action: enable
+            affectedElements {
+                selectionType: items
+                items: [
+                    P20015_COMPARTMENT_OCID
+                    P20015_BASE_URL
+                ]
+            }
+            execution {
+                sequence: 20
+            }
+        )
+
+    )
+
+    validation p20015-base-url-is-not-null (
+        name: P20015_BASE_URL is not null
+        execution {
+            sequence: 40
+        }
+        validation {
+            type: itemIsNotNull
+            item: P20015_BASE_URL
+        }
+        error {
+            errorMessage: #LABEL# must have a value if language AI is enabled.
+            displayLocation: inlineWithField
+            associatedItem: @P20015_BASE_URL
+        }
+        serverSideCondition {
+            type: item=value
+            item: P20015_BUILD_STATUS
+            value: INCLUDE
+        }
+    )
+
+    validation p20015-compartment-ocid-is-not-null (
+        name: P20015_COMPARTMENT_OCID is not null
+        execution {
+            sequence: 30
+        }
+        validation {
+            type: itemIsNotNull
+            item: P20015_COMPARTMENT_OCID
+        }
+        error {
+            errorMessage: #LABEL# must have a value if language AI is enabled.
+            displayLocation: inlineWithField
+            associatedItem: @P20015_COMPARTMENT_OCID
+        }
+        serverSideCondition {
+            type: item=value
+            item: P20015_BUILD_STATUS
+            value: INCLUDE
+        }
+    )
+
+    computation p20015-attribute-name (
+        itemName: P20015_ATTRIBUTE_NAME
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        computation {
+            type: expression
+            plsqlExpression: blog_ai.get_param_value( 'lang_ai_compartment_param_name' )
+        }
+    )
+
+    process initialize-form-language-ai-settings (
+        name: Initialize form - Language AI Settings
+        type: formInitialization
+        formRegion: @language-ai
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 32849983336309317
+        }
+    )
+
+    process process-form-language-ai (
+        name: Process form - Language AI
+        type: formAutoRowProcessing
+        formRegion: @language-ai
+        target {
+            targetType: plsqlCode
+            plsqlCode:
+                ```plsql
+                blog_ai.set_lang_ai(
+                  p_build_status    => :P20015_BUILD_STATUS
+                , p_base_url        => :P20015_BASE_URL
+                , p_compartment_id  => :P20015_COMPARTMENT_OCID
+                );
+                ```
+        }
+        lockRow {
+            lockRow: false
+        }
+        execution {
+            sequence: 20
+        }
+        successMessage {
+            successMessage: Language AI settings updated.
+        }
+        advanced {
+            executionMappingIdentifier: 32850392005309321
+        }
+    )
+
+    branch (
+        name: Go to Page 20010
+        execution {
+            sequence: 20
+        }
+        behavior {
+            target: {
+                page: 20010
+            }
+        }
+    )
+
+)
+

@@ -1,0 +1,66 @@
+appProcess get-blogger-details (
+    name: Get blogger details
+    type: executeCode
+    source {
+        plsqlCode:
+            ```plsql
+            blog_admin.get_blogger_details(
+              p_app_id    => :APP_ID  
+            , p_username  => :APP_USER
+            , p_user_id   => :G_BLOGGER_ID
+            , p_name      => :G_BLOGGER_NAME
+            );
+            ```
+    }
+    execution {
+        sequence: 10
+    }
+    serverSideCondition {
+        type: itemIsNull
+        item: G_BLOGGER_ID
+    }
+    security {
+        authorizationScheme: @bloggers
+    }
+)
+
+appProcess initialize-after-authentication (
+    name: Initialize after authentication
+    type: executeCode
+    source {
+        plsqlCode:
+            ```plsql
+            blog_util.initialize_items(
+              p_app_id => :APP_ID
+            );
+            ```
+    }
+    execution {
+        sequence: 10
+        point: afterAuthentication
+    }
+    comments {
+        comments: Set application and page item values for new session from parameter table.
+    }
+)
+
+appProcess initialize-new-session (
+    name: Initialize new session
+    type: executeCode
+    source {
+        plsqlCode:
+            ```plsql
+            blog_util.initialize_items(
+              p_app_id => :APP_ID
+            );
+            ```
+    }
+    execution {
+        sequence: 10
+        point: newSession
+    }
+    comments {
+        comments: Set application and page item values for new session from parameter table.
+    }
+)
+

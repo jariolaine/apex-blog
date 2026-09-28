@@ -1,0 +1,18 @@
+authorization bloggers (
+    name: Bloggers
+    type: isInRoleOrGroup
+    settings {
+        type: workspaceGroup
+        names: Bloggers
+    }
+    error {
+        errorMessage: You are not authorized to access this application.
+    }
+    advanced {
+        evaluationType: perSession
+    }
+    comments {
+        comments: Users who belong to the workspace user group "Bloggers" are authorized.
+    }
+)
+

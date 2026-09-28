@@ -1,0 +1,353 @@
+page 53 (
+    name: Confirm Link Group Delete
+    alias: CONFIRM-LINK-GROUP-DELETE
+    title: Confirm
+    pageGroup: @links
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+                t-ButtonRegion--noBorder
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region confirm-link-collection-deletion (
+        name: Confirm Link Collection Deletion
+        type: form
+        source {
+            location: localDatabase
+            tableName: BLOG_V_ALL_LINK_GROUPS
+        }
+        layout {
+            sequence: 10
+            slot: dialogHeader
+        }
+        appearance {
+            template: @/alert
+            templateOptions: [
+                #DEFAULT#
+                t-Alert--horizontal
+                t-Alert--defaultIcons
+                t-Alert--warning
+                t-Alert--removeHeading js-removeLandmark
+                margin-bottom-none
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+        headerAndFooter {
+            headerText: &APP_TEXT$BLOG_CONFIRM_LINK_GROUP_DELETE.
+        }
+        edit {
+            enabled: true
+            allowedOperations: delete
+            lostUpdateType: rowVersionColumn
+            rowVersionColumn: ROW_VERSION
+        }
+    )
+
+    region links-to-be-deleted (
+        name: Links to be Deleted
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select v1.title
+                  ,v1.link_desc
+                from blog_v_all_links v1
+                where v1.link_group_id = :P53_ID
+                order by v1.display_seq
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: contentBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--hideHeader js-addHiddenHeadingRoleDesc
+                t-Region--noBorder
+                t-Region--scrollBody
+                margin-bottom-none
+            ]
+        }
+        reportLayout {
+            numberOfRows: 10
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--staticRowColors
+                t-Report--rowHighlightOff
+                t-Report--hideNoPagination
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        componentAdvanced {
+            stripHtml: true
+        }
+
+        column LINK_DESC (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Description
+            }
+            layout {
+                sequence: 2
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column TITLE (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Title
+            }
+            layout {
+                sequence: 1
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    pageItem P53_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @confirm-link-collection-deletion
+            slot: regionBody
+        }
+        source {
+            formRegion: @confirm-link-collection-deletion
+            column: ID
+            dataType: number
+            primaryKey: true
+        }
+        sessionState {
+            storage: session
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P53_ROW_VERSION (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @confirm-link-collection-deletion
+            slot: regionBody
+        }
+        source {
+            formRegion: @confirm-link-collection-deletion
+            column: ROW_VERSION
+            dataType: number
+            queryOnly: true
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: previous
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-chevron-left
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 52
+                items: {
+                    P52_ID: \&P53_ID.\
+                }
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: Permanent Delete Link(s)
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+                t-Button--iconRight
+            ]
+            icon: fa-trash-o
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+    )
+
+    process initialize-form-link-group-delete (
+        name: Initialize form Link Group Delete
+        type: formInitialization
+        formRegion: @confirm-link-collection-deletion
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 38433712613315408
+        }
+    )
+
+    process process-form-link-group-delete (
+        name: Process Form Link Group Delete
+        type: formAutoRowProcessing
+        formRegion: @confirm-link-collection-deletion
+        target {
+            targetType: tableView
+            tableName: BLOG_LINK_GROUPS
+            returnPksAfterInsert: false
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 38434147446315409
+        }
+    )
+
+    process purge-public-application-links-page-cache (
+        name: Purge Public Application Links Page Cache
+        type: invokeApi
+        invoke {
+            package: APEX_UTIL
+            procedureOrFunction: CACHE_PURGE_BY_PAGE
+        }
+        execution {
+            sequence: 30
+        }
+        advanced {
+            executionMappingIdentifier: 39217205653837693
+        }
+
+        parameter p_application (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: item
+                item: G_PUB_APP_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_page (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: staticValue
+                staticValue: 10
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+    )
+
+    branch (
+        name: Go To Page 50
+        execution {
+            sequence: 10
+        }
+        behavior {
+            target: {
+                page: 50
+                clearCache: 50
+            }
+        }
+    )
+
+)
+

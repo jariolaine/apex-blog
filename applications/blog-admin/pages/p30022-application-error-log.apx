@@ -1,0 +1,546 @@
+page 30022 (
+    name: Application Error Log
+    alias: APPLICATION-ERROR-LOG
+    title: Application Error Log
+    pageGroup: @activity-reporting
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+            t-Dialog--noPadding
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>This page provides an interactive report of all unexpected errors logged by this application.</p>
+            <p>Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back to the default settings.</p>
+            ```
+    }
+
+    region application-error-log (
+        name: Application Error Log
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                  l.page_id                 as page
+                , l.page_name               as page_name
+                , l.apex_session_id         as session_id
+                , l.debug_page_view_id      as debug_id
+                , l.view_timestamp 
+                    at time zone sessiontimezone
+                                            as error_time
+                , l.view_timestamp 
+                    at time zone sessiontimezone
+                                            as error_since
+                , l.error_message           as error_message
+                , l.error_on_component_type as component_type
+                , l.error_on_component_name as component_name
+                , l.page_view_mode          as view_mode
+                , l.page_view_type          as view_type
+                , l.request_value           as request
+                , l.log_context             as context
+                , l.application_info        as info
+                , l.ecid                    as ecid
+                from apex_workspace_activity_log l
+                where l.application_id = :G_PUB_APP_ID
+                and l.view_date >= sysdate - ( 1/24/60/60 * :P30022_TIMEFRAME )
+                and l.error_message is not null
+                
+                ```
+            pageItemsToSubmit: P30022_TIMEFRAME
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--noBorders
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        performance {
+            maxRowsToProcess: 1000000
+        }
+        messages {
+            whenNoDataFound: No data found.
+            whenMoreDataFound: The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.
+        }
+        advanced {
+            savedReportMappingIdentifier: 43861986124616960
+        }
+
+        column COMPONENT_NAME (
+            type: plainText
+            heading {
+                heading: Component Name
+                alignment: center
+            }
+            layout {
+                sequence: 100
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: M
+            }
+        )
+
+        column COMPONENT_TYPE (
+            type: plainText
+            heading {
+                heading: Context
+                alignment: center
+            }
+            layout {
+                sequence: 90
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: L
+            }
+        )
+
+        column CONTEXT (
+            type: plainText
+            heading {
+                heading: Context
+                alignment: center
+            }
+            layout {
+                sequence: 140
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: R
+            }
+        )
+
+        column DEBUG_ID (
+            type: link
+            heading {
+                heading: Debug
+                alignment: center
+            }
+            layout {
+                sequence: 50
+                columnAlignment: end
+            }
+            link {
+                target: {
+                    page: 30025
+                    items: {
+                        P30025_DEBUG_ID: #DEBUG_ID#
+                    }
+                }
+                linkText: #DEBUG_ID#
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: N
+            }
+        )
+
+        column ECID (
+            type: plainText
+            heading {
+                heading: ECID
+                alignment: center
+            }
+            layout {
+                sequence: 160
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: T
+            }
+        )
+
+        column ERROR_MESSAGE (
+            type: plainText
+            heading {
+                heading: Message
+                alignment: center
+            }
+            layout {
+                sequence: 80
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: K
+            }
+        )
+
+        column ERROR_SINCE (
+            type: plainText
+            heading {
+                heading: Occurred
+                alignment: center
+            }
+            layout {
+                sequence: 70
+                columnAlignment: center
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: U
+            }
+        )
+
+        column ERROR_TIME (
+            type: plainText
+            heading {
+                heading: Timestamp
+                alignment: end
+            }
+            layout {
+                sequence: 60
+                columnAlignment: end
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: J
+            }
+        )
+
+        column INFO (
+            type: plainText
+            heading {
+                heading: Info
+                alignment: center
+            }
+            layout {
+                sequence: 150
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: S
+            }
+        )
+
+        column PAGE (
+            type: plainText
+            heading {
+                heading: Page
+                alignment: center
+            }
+            layout {
+                sequence: 10
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: W
+            }
+        )
+
+        column PAGE_NAME (
+            type: plainText
+            heading {
+                heading: Page Name
+                alignment: center
+            }
+            layout {
+                sequence: 20
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            columnFormatting {
+                htmlExpression: #PAGE#. #PAGE_NAME#
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: V
+            }
+        )
+
+        column REQUEST (
+            type: plainText
+            heading {
+                heading: Request
+                alignment: center
+            }
+            layout {
+                sequence: 130
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: Q
+            }
+        )
+
+        column SESSION_ID (
+            type: link
+            heading {
+                heading: Session
+                alignment: center
+            }
+            layout {
+                sequence: 40
+                columnAlignment: end
+            }
+            link {
+                target: {
+                    page: 30026
+                    items: {
+                        P30026_APEX_SESSION_ID: #SESSION_ID#
+                    }
+                }
+                linkText: #SESSION_ID#
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column VIEW_MODE (
+            type: plainText
+            heading {
+                heading: View Mode
+                alignment: center
+            }
+            layout {
+                sequence: 110
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: O
+            }
+        )
+
+        column VIEW_TYPE (
+            type: plainText
+            heading {
+                heading: View Type
+                alignment: center
+            }
+            layout {
+                sequence: 120
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: P
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+        pageHeader {
+            pageHeaderText: Application Error Log
+        }
+
+        savedReport 438648 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn COMPONENT_NAME (
+                sequence: 7
+            )
+
+            displayColumn COMPONENT_TYPE (
+                sequence: 6
+            )
+
+            displayColumn DEBUG_ID (
+                sequence: 3
+            )
+
+            displayColumn ERROR_MESSAGE (
+                sequence: 5
+            )
+
+            displayColumn ERROR_SINCE (
+                sequence: 4
+            )
+
+            displayColumn PAGE_NAME (
+                sequence: 1
+            )
+
+            displayColumn SESSION_ID (
+                sequence: 2
+            )
+
+            sort (
+                column: ERROR_TIME
+                sort {
+                    direction: desc
+                    sequence: 1
+                }
+            )
+
+            sort (
+                column: ERR_TIME
+                sort {
+                    direction: desc
+                    sequence: 2
+                }
+            )
+
+        )
+
+    )
+
+    region button-bar (
+        name: Button Bar
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogHeader
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--noBorder
+                t-Form--large
+            ]
+        }
+    )
+
+    pageItem P30022_TIMEFRAME (
+        type: selectList
+        label {
+            label: Timeframe
+            alignment: left
+        }
+        lov {
+            type: sharedComponent
+            lov: @timeframe-4-weeks
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 10
+            region: @button-bar
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        default {
+            type: item
+            item: BLOG_DEFAULT_TIMEFRAME
+        }
+        sessionState {
+            storage: user
+        }
+        security {
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    button reset-report (
+        buttonName: RESET_REPORT
+        label: Reset Report
+        layout {
+            sequence: 20
+            region: @application-error-log
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: &APP_PAGE_ID.
+                clearCache: &APP_PAGE_ID.
+                action: resetRegions
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction refresh-report (
+        name: Refresh Report
+        execution {
+            sequence: 10
+        }
+        when {
+            selectionType: items
+            items: P30022_TIMEFRAME
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @application-error-log
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

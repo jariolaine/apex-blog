@@ -1,0 +1,24 @@
+plugin iconCustom (
+    name: Icon (Custom)
+    staticId: THEME_42$ICON_CUSTOM
+    theme: @universal-theme
+    templateComponent {
+        availableAs: partial
+        partial:
+            ```html
+            {if ?ICON_CLASSES/}
+            <span{if TEXT_IN_TITLE/} title="#TEXT!ATTR#"{endif/} aria-hidden="true" class="t-Icon fa #ICON_CLASSES!ATTR#"{if ?ICON_ID/} id="#ICON_ID!ATTR#"{endif/}></span>
+            {endif/}
+            {if ?TEXT/}
+            <span class="u-VisuallyHidden">#TEXT!HTML#</span>
+            {endif/}
+            ```
+    }
+    component {
+        standardAttributes: regionTemplateAttr
+    }
+    information {
+        version: 1.0
+    }
+)
+

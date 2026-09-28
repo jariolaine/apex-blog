@@ -1,0 +1,18 @@
+installScript "Database objects" (
+    execution {
+        sequence: 10
+    }
+    script {
+        contentFile: database-objects.sql
+    }
+)
+
+installScript Metadata (
+    execution {
+        sequence: 20
+    }
+    script {
+        contentFile: metadata.sql
+    }
+)
+

@@ -1,0 +1,278 @@
+list footer-modal-pages (
+    name: Footer Modal Pages
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+               1                as list_level
+              ,v1.content_desc  as list_label
+              ,v1.content_url   as list_target
+              ,'NO'             as is_current
+            from blog_v_dynamic_content v1
+            where 1 = 1
+              and v1.content_type = 'FOOTER_LINK'
+            order by v1.display_seq
+            ```
+    }
+    config {
+        buildOption: @blog-feature-modal-pages
+    }
+)
+
+list latest-posts (
+    name: Latest Posts
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+               1                  as link_level
+              ,v1.post_title      as link_text
+              ,v1.post_url        as target_url
+            -- list is cached, can't use is_current attribute.
+              ,'NO'               as is_current
+              ,'fa-chevron-right' as image
+              ,null               as image_attribute
+              ,null               as image_alt_attribute
+              ,null               as attribute1
+            -- Post id data attribute.
+            -- Used in dynamic action to set class for current list item.
+              ,v1.list_attr       as attribute2
+              ,'blog-linkList'    as attribute3
+            from blog_v_posts_last20 v1
+            where 1 = 1
+              and v1.display_seq <= (
+                select to_number( blog_util.get_attribute_value( 'G_LATEST_POST_ROWS' ) )
+                from dual
+              )
+            order by v1.published_on desc
+            ```
+    }
+    config {
+        buildOption: @blog-feature-latest-posts
+    }
+)
+
+list navigation-bar (
+    name: Navigation Bar
+    config {
+        buildOption: @commented-out
+    }
+
+    entry app-user (
+        label: &APP_USER.
+        icon {
+            imageIconCssClasses: fa-user
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                type: url
+                url: #
+            }
+        }
+        userDefinedAttributes {
+            2: has-username
+        }
+        security {
+            authorizationScheme: mustNotBePublicUser
+        }
+    )
+
+    entry list_item (
+        label: ---
+        layout {
+            sequence: 30
+            parentEntry: @app-user
+        }
+        link {
+            target: {
+                type: url
+                url: separator
+            }
+        }
+    )
+
+    entry sign-out (
+        label: Sign Out
+        icon {
+            imageIconCssClasses: fa-sign-out
+        }
+        layout {
+            sequence: 40
+            parentEntry: @app-user
+        }
+        link {
+            target: {
+                type: url
+                url: &LOGOUT_URL.
+            }
+        }
+    )
+
+)
+
+list navigation-menu (
+    name: Navigation Menu
+
+    entry about (
+        label: About
+        icon {
+            imageIconCssClasses: fa-info-square-o
+        }
+        layout {
+            sequence: 40
+        }
+        link {
+            target: {
+                page: 12
+            }
+        }
+        config {
+            buildOption: @blog-feature-about
+        }
+    )
+
+    entry files (
+        label: Files
+        icon {
+            imageIconCssClasses: fa-download
+        }
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                page: 11
+            }
+        }
+        config {
+            buildOption: @blog-feature-files
+        }
+    )
+
+    entry home (
+        label: Home
+        icon {
+            imageIconCssClasses: fa-home
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+    entry links (
+        label: Links
+        icon {
+            imageIconCssClasses: fa-external-link
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 10
+            }
+        }
+        config {
+            buildOption: @blog-feature-links
+        }
+    )
+
+)
+
+list post-archives (
+    name: Post Archives
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+              1                   as link_level
+            , v1.archive_year     as link_text
+            , v1.archive_url      as target_url
+            -- list is cached, can't use is_current attribute.
+            , 'NO'                as is_current
+            , 'fa-chevron-right'  as image
+            , null                as image_attribute
+            , null                as image_alt_attribute
+            , v1.list_badge       as attribute1
+            -- Archive id data attribute.
+            -- Used in dynamic action to set class for current list item.
+            , v1.list_attr        as attribute2
+            , 'blog-linkList'     as attribute3
+            from blog_v_archive_year v1
+            order by v1.archive_year desc
+            ```
+    }
+    config {
+        buildOption: @blog-feature-archive
+    }
+)
+
+list post-categories (
+    name: Post Categories
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+               1                  as link_level
+              ,v1.category_title  as link_text
+              ,v1.category_url    as target_url
+            -- list is cached, can't use is_current attribute.
+              ,'NO'               as is_current
+              ,'fa-chevron-right' as image
+              ,null               as image_attribute
+              ,null               as image_alt_attribute
+              ,list_badge         as attribute1
+            -- Category id data attribute.
+            -- Used in dynamic action to set class for current list item.
+              ,v1.list_attr       as attribute2
+              ,'blog-linkList'       as attribute3
+            from blog_v_categories v1
+            where 1 = 1
+            order by v1.display_seq
+            ```
+    }
+    config {
+        buildOption: @blog-feature-category
+    }
+)
+
+list post-tags (
+    name: Post Tags
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select
+              1               as link_level
+            , v1.tag          as link_text
+            , v1.tag_url      as target_url
+            , 'NO'            as is_current
+            , null            as image
+            , null            as image_attribute
+            , null            as image_alt_attribute
+            , v1.list_badge   as attribute1
+            , v1.tag_bucket   as attribute2
+            , 'blog-linkList' as attribute3
+            , v1.tag_id       as attribute4
+            from blog_v_tags v1
+            where 1 = 1
+            order by v1.tag
+            ```
+    }
+    config {
+        buildOption: @blog-feature-tag-cloud
+    }
+)
+

@@ -1,0 +1,333 @@
+page 1 (
+    name: Home
+    alias: HOME
+    title: Home | &P0_BLOG_APP_NAME.
+    pageGroup: @sitemap-main
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    htmlHeader {
+        htmlHeader:
+            ```html
+            "BLOG_CANONICAL_LINK_TAB"
+            "BLOG_RSS_LINK"
+            "BLOG_ATOM_LINK"
+            
+            ```
+    }
+    security {
+        authentication: public
+        formAutoComplete: false
+    }
+    advanced {
+        enableMetaTags: true
+    }
+    comments {
+        comments: Blog home page
+    }
+
+    region posts (
+        name: Posts
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                   v1.post_id         as post_id
+                  ,v1.category_id     as category_id
+                  ,v1.published_on    as published_on
+                  ,v1.published_on    as pubdate
+                  ,v1.post_title      as post_title
+                  ,v1.category_title  as category_title
+                  ,v1.first_paragraph as body_html
+                  ,null               as tags_html
+                  ,'Y'                as read_more_link
+                from blog_v_posts v1
+                where 1 = 1
+                order by v1.published_on desc
+                
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        advanced {
+            htmlDomId: page-content-container
+            excludeTitleFromTranslation: true
+        }
+        reportLayout {
+            numberOfRowsType: itemValue
+            item: P1_BLOG_POST_ROWS
+        }
+        componentAppearance {
+            template: @blog-posts-custom
+            templateOptions: #DEFAULT#
+        }
+        pagination {
+            type: setPaginationSearchEngine
+        }
+        messages {
+            whenNoDataFound: &APP_TEXT$BLOG_MSG_NO_DATA_FOUND.
+        }
+        heading {
+            type: none
+        }
+
+        column BODY_HTML (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Body Html
+                alignment: center
+            }
+            layout {
+                sequence: 52
+            }
+            sorting {
+                sortable: false
+            }
+            security {
+                escapeSpecialChars: false
+            }
+        )
+
+        column CATEGORY_ID (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Category Id
+                alignment: center
+            }
+            layout {
+                sequence: 2
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column CATEGORY_TITLE (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            type: link
+            heading {
+                heading: Category Title
+                alignment: center
+            }
+            layout {
+                sequence: 42
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            link {
+                target: {
+                    page: CATEGORY
+                    items: {
+                        P14_CATEGORY_ID: #CATEGORY_ID#
+                    }
+                }
+                linkText: #CATEGORY_TITLE#
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column POST_ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Post Id
+                alignment: center
+            }
+            layout {
+                sequence: 1
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column POST_TITLE (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            type: link
+            heading {
+                heading: Post Title
+                alignment: center
+            }
+            layout {
+                sequence: 32
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            link {
+                target: {
+                    page: POST
+                    items: {
+                        P2_POST_ID: #POST_ID#
+                    }
+                }
+                linkText: #POST_TITLE#
+                linkAttributes: class="u-normal-text"
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column PUBDATE (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Pubdate
+                alignment: center
+            }
+            layout {
+                sequence: 22
+            }
+            appearance {
+                formatMask: YYYY-MM-DD
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column PUBLISHED_ON (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Published On
+                alignment: center
+            }
+            layout {
+                sequence: 12
+            }
+            appearance {
+                formatMask: &P0_BLOG_POST_DATE_FORMAT.
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column READ_MORE_LINK (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            type: link
+            heading {
+                heading: Read More Link
+                alignment: center
+            }
+            layout {
+                sequence: 72
+            }
+            link {
+                target: {
+                    page: 2
+                    items: {
+                        P2_POST_ID: #POST_ID#
+                    }
+                }
+                linkText: &APP_TEXT$BLOG_TXT_READ_MORE.<span aria-hidden="true" class="fa fa-angle-double-right u-alignMiddle margin-left-sm"></span>
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column TAGS_HTML (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: Tags Html
+                alignment: center
+            }
+            layout {
+                sequence: 62
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    pageItem P1_BLOG_POST_ROWS (
+        type: hidden
+        layout {
+            sequence: 70
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: user
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        comments {
+            comments: Report rows to display per report page
+        }
+    )
+
+    metaTag description (
+        value: &P0_BLOG_APP_DESC.
+    )
+
+    metaTag og-description (
+        name: og:description
+        value: &P0_BLOG_APP_DESC.
+    )
+
+    metaTag og-image (
+        name: og:image
+        value: &APP_FILES.icons/app-icon-512.png
+    )
+
+    metaTag og-title (
+        name: og:title
+        value: Home | &P0_BLOG_APP_NAME.
+    )
+
+    metaTag og-type (
+        name: og:type
+        value: website
+    )
+
+    metaTag og-url (
+        name: og:url
+        value: &P0_PAGE_URL.
+    )
+
+    process reset-posts-pagination (
+        name: Reset Posts Pagination
+        type: resetPagination
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 26063441570107812
+        }
+    )
+
+)
+

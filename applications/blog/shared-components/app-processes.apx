@@ -1,0 +1,50 @@
+appProcess initialize-session (
+    name: Initialize session
+    type: executeCode
+    source {
+        plsqlCode:
+            ```plsql
+            blog_util.initialize_items( 
+              p_app_id => :APP_ID
+            );
+            ```
+    }
+    execution {
+        sequence: 10
+        point: newSession
+    }
+    comments {
+        comments: Set application and page item values for new session from parameter table.
+    }
+)
+
+appProcess redirect-to-search-page (
+    name: Redirect to search page
+    type: executeCode
+    source {
+        plsqlCode:
+            ```plsql
+            blog_util.redirect_search(
+              p_value => :P0_SEARCH
+            );
+            ```
+    }
+    execution {
+        sequence: 20
+        point: afterSubmit
+    }
+    error {
+        displayLocation: onErrorPage
+    }
+    serverSideCondition {
+        type: request=Value
+        value: P0_SEARCH
+    }
+    config {
+        buildOption: @blog-feature-search
+    }
+    comments {
+        comments: Redirect to search result when request is P0_SEARCH
+    }
+)
+

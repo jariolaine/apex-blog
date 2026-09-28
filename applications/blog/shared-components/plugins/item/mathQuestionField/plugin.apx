@@ -1,0 +1,31 @@
+plugin mathQuestionField (
+    name: Math Question Field
+    staticId: FI.JARIS.MATH_QUESTION_FIELD
+    type: item
+    component {
+        supports: pageItems
+        standardAttributes: [
+            visibleWidget
+            standardFormElement
+            sessionStateChangeable
+            elementAttrs
+            widthAttrs
+            placeholderAttr
+            iconAttr
+            encryptSessionStateAttr
+        ]
+    }
+    callbacks {
+        apiInterface: procedureWithLegacyAttributes
+        renderProcedureName: blog_plugin.render_math_question_field
+        ajaxProcedureName: blog_plugin.ajax_math_question_field
+        validationProcedureName: blog_plugin.validate_math_question_field
+    }
+    advanced {
+        substituteAttributeValues: true
+    }
+    information {
+        version: 1.0
+    }
+)
+

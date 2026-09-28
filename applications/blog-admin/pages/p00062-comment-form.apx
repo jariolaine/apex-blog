@@ -1,0 +1,1200 @@
+page 62 (
+    name: Edit/Reply to Comment
+    alias: COMMENT-FORM
+    title: &P61_POST_TITLE.
+    pageGroup: @comments
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region comment (
+        name: Comment
+        type: form
+        source {
+            location: localDatabase
+            tableName: BLOG_V_FORM_COMMENTS
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Form--stretchInputs
+            ]
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+            ]
+            lostUpdateType: rowVersionColumn
+            rowVersionColumn: ROW_VERSION
+        }
+    )
+
+    region reply-to-comment (
+        name: Reply to Comment
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select 
+                  v1.comment_by   as user_name
+                  ,v1.body_html   as comment_text
+                  ,v1.created_on  as comment_date
+                  ,'u-hidden'     as icon_modifier
+                  ,'blog-comment' as comment_modifiers
+                  ,null           as user_icon
+                  ,null           as actions
+                  ,null           as attribute_1
+                  ,null           as attribute_2
+                  ,null           as attribute_3
+                  ,null           as attribute_4
+                from blog_v_all_comments v1
+                where 1 = 1
+                  and v1.id = :P62_PARENT_ID
+                order by v1.id
+                ```
+            optimizerHint: APEX$USE_NO_PAGINATION
+        }
+        layout {
+            sequence: 30
+            slot: contentBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--hideHeader js-addHiddenHeadingRoleDesc
+                t-Region--noBorder
+                t-Region--scrollBody
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P62_ID
+        }
+        reportLayout {
+            numberOfRows: 1
+        }
+        componentAppearance {
+            template: @/comments
+            templateOptions: [
+                #DEFAULT#
+                t-Comments--basic
+                t-Comments--iconsRounded
+            ]
+        }
+
+        column ACTIONS (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Actions
+                alignment: center
+            }
+            layout {
+                sequence: 1
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ATTRIBUTE_1 (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: Attribute 1
+                alignment: center
+            }
+            layout {
+                sequence: 8
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ATTRIBUTE_2 (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            heading {
+                heading: Attribute 2
+                alignment: center
+            }
+            layout {
+                sequence: 9
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ATTRIBUTE_3 (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            heading {
+                heading: Attribute 3
+                alignment: center
+            }
+            layout {
+                sequence: 10
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column ATTRIBUTE_4 (
+            reportColumnQueryId: 11
+            derivedColumn: N
+            heading {
+                heading: Attribute 4
+                alignment: center
+            }
+            layout {
+                sequence: 11
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column COMMENT_DATE (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Comment Date
+                alignment: center
+            }
+            layout {
+                sequence: 4
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column COMMENT_MODIFIERS (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Comment Modifiers
+                alignment: center
+            }
+            layout {
+                sequence: 7
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column COMMENT_TEXT (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Comment Text
+                alignment: center
+            }
+            layout {
+                sequence: 3
+            }
+            sorting {
+                sortable: false
+            }
+            security {
+                escapeSpecialChars: false
+            }
+        )
+
+        column ICON_MODIFIER (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Icon Modifier
+                alignment: center
+            }
+            layout {
+                sequence: 6
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column USER_ICON (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: User Icon
+                alignment: center
+            }
+            layout {
+                sequence: 5
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column USER_NAME (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: User Name
+                alignment: center
+            }
+            layout {
+                sequence: 2
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    pageItem P62_BODY_HTML (
+        type: richTextEditor
+        label {
+            label: Comment
+            alignment: left
+        }
+        settings {
+            format: html
+            toolbar: full
+            toolbarStyle: multiline
+            minHeight: 180
+            allowCustomHtml: true
+        }
+        layout {
+            sequence: 80
+            region: @comment
+            slot: regionBody
+            alignment: left
+            labelColumnSpan: 0
+        }
+        appearance {
+            template: @/hidden
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            valueRequired: true
+        }
+        advanced {
+            initJavaScriptFunction: blog.admin.editor.init
+        }
+        source {
+            formRegion: @comment
+            column: BODY_HTML
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P62_COMMENT_BY (
+        type: hidden
+        layout {
+            sequence: 70
+            region: @comment
+            slot: regionBody
+        }
+        source {
+            formRegion: @comment
+            column: COMMENT_BY
+            dataType: varchar2
+        }
+        default {
+            type: item
+            item: G_BLOGGER_NAME
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P62_ID (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @comment
+            slot: regionBody
+        }
+        source {
+            formRegion: @comment
+            column: ID
+            dataType: number
+            queryOnly: true
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P62_IS_ACTIVE (
+        type: hidden
+        layout {
+            sequence: 40
+            region: @comment
+            slot: regionBody
+        }
+        source {
+            formRegion: @comment
+            column: IS_ACTIVE
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 1
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P62_LANGUAGE_CODE (
+        type: hidden
+        layout {
+            sequence: 60
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P62_PARENT_ID (
+        type: hidden
+        layout {
+            sequence: 60
+            region: @comment
+            slot: regionBody
+        }
+        source {
+            formRegion: @comment
+            column: PARENT_ID
+            dataType: number
+        }
+        default {
+            type: item
+            item: P61_ID
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P62_PLAIN_TEXT (
+        type: hidden
+        layout {
+            sequence: 30
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            dataType: clob
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P62_POST_ID (
+        type: hidden
+        layout {
+            sequence: 50
+            region: @comment
+            slot: regionBody
+        }
+        source {
+            formRegion: @comment
+            column: POST_ID
+            dataType: number
+        }
+        default {
+            type: item
+            item: P61_POST_ID
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P62_RESPOSE_BODY (
+        type: hidden
+        layout {
+            sequence: 40
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            dataType: clob
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P62_ROW_VERSION (
+        type: hidden
+        layout {
+            sequence: 30
+            region: @comment
+            slot: regionBody
+        }
+        source {
+            formRegion: @comment
+            column: ROW_VERSION
+            dataType: number
+            queryOnly: true
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: previous
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-chevron-left
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 61
+                clearCache: 62
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button reply (
+        buttonName: REPLY
+        label: Reply
+        layout {
+            sequence: 50
+            region: @buttons
+            slot: create
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--mobileHideLabel
+                t-Button--iconRight
+            ]
+            icon: fa-send-o
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P62_ID
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 40
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--mobileHideLabel
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P62_ID
+        }
+    )
+
+    validation validate-comment-length (
+        name: Validate comment length
+        execution {
+            sequence: 10
+        }
+        validation {
+            plsqlExpression: length( :P62_BODY_HTML ) <= 2800
+        }
+        error {
+            errorMessage: #LABEL# max HTML length is 2800 characters.
+            associatedItem: @P62_BODY_HTML
+        }
+    )
+
+    computation p62-body-html (
+        itemName: P62_BODY_HTML
+        execution {
+            sequence: 20
+            point: afterSubmit
+        }
+        computation {
+            type: expression
+            plsqlExpression: replace( :P62_BODY_HTML, '#', '&#35;' )
+        }
+        comments {
+            comments: Replace hashmark to HTML entity for preventing APEX substitutions.
+        }
+    )
+
+    computation p62-plain-text (
+        itemName: P62_PLAIN_TEXT
+        execution {
+            sequence: 30
+            point: afterSubmit
+        }
+        computation {
+            type: expression
+            plsqlExpression:
+                ```plsql
+                blog_comment.plain_text(
+                  p_string => :P62_BODY_HTML
+                )
+                ```
+        }
+    )
+
+    process close-dialog-comment-edited (
+        name: Close Dialog Comment Edited
+        type: closeDialog
+        execution {
+            sequence: 60
+        }
+        advanced {
+            executionMappingIdentifier: 31503980397325822
+        }
+    )
+
+    process close-dialog-reply-posted (
+        name: Close Dialog Reply Posted
+        type: closeDialog
+        execution {
+            sequence: 50
+        }
+        successMessage {
+            successMessage: Reply to comment sent.
+        }
+        advanced {
+            executionMappingIdentifier: 38590247640274303
+        }
+        serverSideCondition {
+            whenButtonPressed: @reply
+        }
+    )
+
+    process get-dominant-language (
+        name: Get Dominant Language
+        type: invokeApi
+        executionChain: @sentiment-analyze
+        invoke {
+            type: restSource
+            restSource: @BLOG_LANGUAGE_AI
+            operation: @single_document
+        }
+        execution {
+            sequence: 70
+        }
+        advanced {
+            executionMappingIdentifier: 116941482072878618
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+
+        parameter (
+            name: @key
+            value {
+                type: item
+                item: P62_ID
+            }
+        )
+
+        parameter (
+            name: @languagecode
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @level
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @response-body
+            parameter {
+                ignoreOutput: false
+            }
+            value {
+                type: item
+                item: P62_RESPOSE_BODY
+            }
+        )
+
+        parameter (
+            name: @singledocumentservice
+            value {
+                type: staticValue
+                staticValue: batchDetectDominantLanguage
+            }
+        )
+
+        parameter (
+            name: @targetlanguagecode
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @text
+            value {
+                type: item
+                item: P62_PLAIN_TEXT
+            }
+        )
+
+        parameter (
+            name: @compartmentid
+            value {
+                type: expression
+                plsqlExpression:
+                    ```plsql
+                    blog_util.get_attribute_value(
+                      p_attribute_name => 'G_OCI_LANG_AI_COMPARTMENT_OCID'
+                    )
+                    ```
+            }
+        )
+
+    )
+
+    process get-language-code (
+        name: Get Language Code
+        type: invokeApi
+        executionChain: @sentiment-analyze
+        invoke {
+            package: BLOG_AI
+            procedureOrFunction: GET_LANG_CODE
+        }
+        execution {
+            sequence: 80
+        }
+        advanced {
+            executionMappingIdentifier: 116946015163879703
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+
+        parameter p_documents (
+            parameter {
+                dataType: clob
+            }
+            value {
+                type: item
+                item: P62_RESPOSE_BODY
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_lang_code (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P62_LANGUAGE_CODE
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    process get-sentiment (
+        name: Get Sentiment
+        type: invokeApi
+        executionChain: @sentiment-analyze
+        invoke {
+            type: restSource
+            restSource: @BLOG_LANGUAGE_AI
+            operation: @single_document
+        }
+        execution {
+            sequence: 110
+        }
+        advanced {
+            executionMappingIdentifier: 116953848363882864
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+
+        parameter (
+            name: @compartmentid
+            value {
+                type: expression
+                plsqlExpression:
+                    ```plsql
+                    blog_util.get_attribute_value(
+                      p_attribute_name => 'G_OCI_LANG_AI_COMPARTMENT_OCID'
+                    )
+                    ```
+            }
+        )
+
+        parameter (
+            name: @key
+            value {
+                type: item
+                item: P62_ID
+            }
+        )
+
+        parameter (
+            name: @languagecode
+            value {
+                type: staticValue
+                staticValue: en
+            }
+        )
+
+        parameter (
+            name: @level
+            value {
+                type: staticValue
+                staticValue: SENTENCE
+            }
+        )
+
+        parameter (
+            name: @response-body
+            parameter {
+                ignoreOutput: false
+            }
+            value {
+                type: item
+                item: P62_RESPOSE_BODY
+            }
+        )
+
+        parameter (
+            name: @singledocumentservice
+            value {
+                type: staticValue
+                staticValue: batchDetectLanguageSentiments
+            }
+        )
+
+        parameter (
+            name: @targetlanguagecode
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @text
+            value {
+                type: item
+                item: P62_PLAIN_TEXT
+            }
+        )
+
+    )
+
+    process get-translated-text (
+        name: Get Translated Text
+        type: invokeApi
+        executionChain: @sentiment-analyze
+        invoke {
+            package: BLOG_AI
+            procedureOrFunction: GET_TRANSLATION
+        }
+        execution {
+            sequence: 100
+        }
+        advanced {
+            executionMappingIdentifier: 116952203507881650
+        }
+        serverSideCondition {
+            type: item!=value
+            item: P62_LANGUAGE_CODE
+            value: en
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+
+        parameter p_documents (
+            parameter {
+                dataType: clob
+            }
+            value {
+                type: item
+                item: P62_RESPOSE_BODY
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_translation (
+            parameter {
+                direction: out
+                dataType: clob
+            }
+            value {
+                item: P62_PLAIN_TEXT
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    process initialize-form-comment (
+        name: Initialize form Comment
+        type: formInitialization
+        formRegion: @comment
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 38172399620729062
+        }
+    )
+
+    process merge-comment-sentiments (
+        name: Merge Comment Sentiments
+        type: invokeApi
+        executionChain: @sentiment-analyze
+        invoke {
+            package: BLOG_AI
+            procedureOrFunction: MERGE_SENTIMENT
+        }
+        execution {
+            sequence: 120
+        }
+        advanced {
+            executionMappingIdentifier: 116958400550883830
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+
+        parameter p_documents (
+            parameter {
+                dataType: clob
+            }
+            value {
+                type: item
+                item: P62_RESPOSE_BODY
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_language (
+            value {
+                type: item
+                item: P62_LANGUAGE_CODE
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process process-form-comment (
+        name: Process form Comment
+        type: formAutoRowProcessing
+        formRegion: @comment
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 38172754113729062
+        }
+    )
+
+    process sent-reply-notification (
+        name: Sent reply notification
+        type: invokeApi
+        invoke {
+            package: BLOG_COMMENT
+            procedureOrFunction: REPLY_NOTIFY
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 38174693289729064
+        }
+        serverSideCondition {
+            whenButtonPressed: @reply
+            type: expression
+            plsqlExpression:
+                ```plsql
+                apex_application_admin.get_build_option_status(
+                   p_application_id    => :G_PUB_APP_ID
+                  ,p_build_option_name => 'BLOG_FEATURE_SUBSCRIBE_COMMENTS'
+                ) = 'INCLUDE'
+                
+                ```
+        }
+
+        parameter p_app_id (
+            value {
+                type: item
+                item: G_PUB_APP_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_app_name (
+            value {
+                type: item
+                item: P0_BLOG_APP_NAME
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_email_template (
+            value {
+                type: staticValue
+                staticValue: BLOG_REPLY_TO_COMMENT_NOTIFY
+            }
+            advanced {
+                displaySequence: 40
+            }
+        )
+
+        parameter p_post_id (
+            value {
+                type: item
+                item: P62_POST_ID
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+    )
+
+    process sentiment-analyze (
+        name: Sentiment Analyze
+        type: executionChain
+        execution {
+            sequence: 30
+        }
+        advanced {
+            executionMappingIdentifier: 31503412167325817
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+    )
+
+    process translate-to-english (
+        name: Translate to English
+        type: invokeApi
+        executionChain: @sentiment-analyze
+        invoke {
+            type: restSource
+            restSource: @BLOG_LANGUAGE_AI
+            operation: @single_document
+        }
+        execution {
+            sequence: 90
+        }
+        advanced {
+            executionMappingIdentifier: 116947649539880769
+        }
+        serverSideCondition {
+            type: item!=value
+            item: P62_LANGUAGE_CODE
+            value: en
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+
+        parameter (
+            name: @compartmentid
+            value {
+                type: expression
+                plsqlExpression:
+                    ```plsql
+                    blog_util.get_attribute_value(
+                      p_attribute_name => 'G_OCI_LANG_AI_COMPARTMENT_OCID'
+                    )
+                    ```
+            }
+        )
+
+        parameter (
+            name: @key
+            value {
+                type: item
+                item: P62_ID
+            }
+        )
+
+        parameter (
+            name: @languagecode
+            value {
+                type: item
+                item: P62_LANGUAGE_CODE
+            }
+        )
+
+        parameter (
+            name: @level
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @response-body
+            parameter {
+                ignoreOutput: false
+            }
+            value {
+                type: item
+                item: P62_RESPOSE_BODY
+            }
+        )
+
+        parameter (
+            name: @singledocumentservice
+            value {
+                type: staticValue
+                staticValue: batchLanguageTranslation
+            }
+        )
+
+        parameter (
+            name: @targetlanguagecode
+            value {
+                type: staticValue
+                staticValue: en
+            }
+        )
+
+        parameter (
+            name: @text
+            value {
+                type: item
+                item: P62_PLAIN_TEXT
+            }
+        )
+
+    )
+
+)
+

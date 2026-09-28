@@ -1,0 +1,598 @@
+page 30021 (
+    name: Page Views Metric
+    alias: PAGE-VIEWS-METRIC
+    title: Page Views Metric
+    pageGroup: @activity-reporting
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+    }
+    advanced {
+        reloadOnSubmit: always
+    }
+    help {
+        helpText: High level view of application logging information.
+    }
+
+    region breakdown-by-page (
+        name: Breakdown by Page
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                with q1 as(
+                  select 
+                    case l.page_id
+                      when 1003
+                      then replace( lower( l.request_value ), 'application_process=' ) 
+                      else l.page_name
+                    end as page_name
+                  , l.page_id
+                  , l.elapsed_time
+                  , count(1) over() as all_pages_view_cnt
+                  from apex_workspace_activity_log l
+                  where 1 = 1
+                    and l.application_id = :G_PUB_APP_ID
+                    and l.page_id is not null
+                    and l.view_date >= sysdate - ( 1 / 24 / 60 / 60 * :P30021_TIMEFRAME )
+                )
+                select 
+                  q1.page_id                                  as page_id
+                , q1.page_name                                as page_name
+                , median( q1.elapsed_time )                   as median_elap
+                , min( q1.elapsed_time )                      as min_elap
+                , avg( q1.elapsed_time )                      as avg_elap
+                , max( q1.elapsed_time )                      as max_elap
+                , count(1)                                    as view_cnt
+                , ( count(1) / q1.all_pages_view_cnt ) * 100  as view_pct
+                , ( count(1) / q1.all_pages_view_cnt ) * 100  as view_pct_graph
+                from q1
+                group by
+                  q1.page_name
+                , q1.page_id
+                , q1.all_pages_view_cnt
+                
+                ```
+            pageItemsToSubmit: P30021_TIMEFRAME
+            optimizerHint: APEX$USE_NO_PAGINATION
+        }
+        layout {
+            sequence: 30
+            slot: contentBody
+        }
+        appearance {
+            template: @/content-block
+            templateOptions: [
+                #DEFAULT#
+                t-ContentBlock--h3
+                t-ContentBlock--lightBG
+            ]
+        }
+        reportLayout {
+            numberOfRows: 50
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+                t-Report--inline
+            ]
+            cssClasses: blog-page-view-breakdown
+            showNullValuesAs: " - "
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        componentAdvanced {
+            stripHtml: true
+        }
+
+        column AVG_ELAP (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Avg Elapsed
+                alignment: end
+            }
+            layout {
+                sequence: 50
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999999999999990D000
+            }
+        )
+
+        column MAX_ELAP (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: Max Elapsed
+                alignment: end
+            }
+            layout {
+                sequence: 60
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999999999999990D000
+            }
+        )
+
+        column MEDIAN_ELAP (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Median Elapsed
+                alignment: end
+            }
+            layout {
+                sequence: 30
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999999999999990D000
+            }
+        )
+
+        column MIN_ELAP (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Min Elapsed
+                alignment: end
+            }
+            layout {
+                sequence: 40
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999999999999990D000
+            }
+        )
+
+        column PAGE_ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 10
+            }
+        )
+
+        column PAGE_NAME (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Page Name
+            }
+            layout {
+                sequence: 20
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            columnFormatting {
+                htmlExpression: #PAGE_ID#. #PAGE_NAME#
+            }
+        )
+
+        column VIEW_CNT (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: View Count
+                alignment: end
+            }
+            layout {
+                sequence: 70
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999999999999990
+            }
+            sorting {
+                defaultSequence: 1
+                direction: desc
+            }
+        )
+
+        column VIEW_PCT (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: View %
+                alignment: end
+            }
+            layout {
+                sequence: 80
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999999999999990D00
+            }
+            columnFormatting {
+                htmlExpression: #VIEW_PCT# %
+            }
+        )
+
+        column VIEW_PCT_GRAPH (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            type: percentGraph
+            heading {
+                alignment: center
+            }
+            layout {
+                sequence: 90
+            }
+            appearance {
+                backgroundColor: #DDDDDD
+                foregroundColor: #5486C3
+            }
+            sorting {
+                sortable: false
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+    )
+
+    region button-bar (
+        name: Button Bar
+        type: staticContent
+        layout {
+            sequence: 40
+            slot: dialogHeader
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--noBorder
+                t-Form--large
+            ]
+        }
+    )
+
+    region summary (
+        name: Summary
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                  count(1)                          as page_views
+                --, sum( rows_queried )               as rows_queried
+                , count( distinct apex_session_id ) as apex_session
+                , count( distinct ip_address )      as ip_address
+                , count( distinct agent )           as user_agent
+                , median( l.elapsed_time )          as median_elapsed_time
+                , min( l.elapsed_time )             as min_elapsed_time
+                , avg( l.elapsed_time )             as avg_elapsed_time
+                , max( l.elapsed_time )             as max_elapsed_time
+                from apex_workspace_activity_log l
+                where 1 = 1
+                and l.application_id = :G_PUB_APP_ID
+                and l.page_id is not null
+                and l.view_date >= sysdate - ( 1 / 24 / 60 / 60 * :P30021_TIMEFRAME )
+                ```
+            pageItemsToSubmit: P30021_TIMEFRAME
+            optimizerHint: APEX$USE_NO_PAGINATION
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/content-block
+            templateOptions: [
+                #DEFAULT#
+                t-ContentBlock--h3
+                t-ContentBlock--lightBG
+            ]
+        }
+        reportLayout {
+            numberOfRows: 50
+        }
+        componentAppearance {
+            template: @/badge-list
+            templateOptions: [
+                #DEFAULT#
+                t-BadgeList--large
+                t-BadgeList--dash
+                t-BadgeList--cols t-BadgeList--4cols
+                t-Report--hideNoPagination
+            ]
+            showNullValuesAs: 0
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        componentAdvanced {
+            stripHtml: true
+        }
+
+        column APEX_SESSION (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Session
+                alignment: center
+            }
+            layout {
+                sequence: 26
+            }
+        )
+
+        column AVG_ELAPSED_TIME (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Avg Elapsed  (seconds)
+            }
+            layout {
+                sequence: 86
+            }
+            appearance {
+                formatMask: 999999999999990D000
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column IP_ADDRESS (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: IP Address
+                alignment: center
+            }
+            layout {
+                sequence: 36
+            }
+        )
+
+        column MAX_ELAPSED_TIME (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: Max Elapsed  (seconds)
+            }
+            layout {
+                sequence: 96
+            }
+            appearance {
+                formatMask: 999999999999990D000
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column MEDIAN_ELAPSED_TIME (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Median Elapsed  (seconds)
+                alignment: end
+            }
+            layout {
+                sequence: 66
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999999999999990D000
+            }
+        )
+
+        column MIN_ELAPSED_TIME (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: Min Elapsed (seconds)
+            }
+            layout {
+                sequence: 76
+            }
+            appearance {
+                formatMask: 999999999999990D000
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column PAGE_VIEWS (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Page Views
+            }
+            layout {
+                sequence: 1
+                columnAlignment: end
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            appearance {
+                formatMask: 999999999999990
+            }
+            sorting {
+                defaultSequence: 1
+            }
+        )
+
+        column USER_AGENT (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: User Agent
+                alignment: center
+            }
+            layout {
+                sequence: 56
+            }
+        )
+
+    )
+
+    pageItem P30021_TIMEFRAME (
+        type: selectList
+        label {
+            label: Timeframe
+            alignment: left
+        }
+        lov {
+            type: sharedComponent
+            lov: @timeframe-4-weeks
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 10
+            region: @button-bar
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        default {
+            type: item
+            item: BLOG_DEFAULT_TIMEFRAME
+        }
+        sessionState {
+            storage: user
+        }
+        security {
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    button refresh (
+        buttonName: REFRESH
+        label: Refresh
+        layout {
+            sequence: 20
+            region: @button-bar
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-refresh
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    dynamicAction refresh-report (
+        name: Refresh Report
+        execution {
+            sequence: 10
+        }
+        when {
+            selectionType: items
+            items: P30021_TIMEFRAME
+        }
+
+        action refresh-breakdown (
+            name: Refresh Breakdown
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @breakdown-by-page
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+        )
+
+        action refresh-summary (
+            name: Refresh Summary
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @summary
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction refresh-reports (
+        name: Refresh reports
+        execution {
+            sequence: 20
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @refresh
+        }
+
+        action refresh-breakdown (
+            name: Refresh Breakdown
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @breakdown-by-page
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+        )
+
+        action refresh-summary (
+            name: Refresh Summary
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @summary
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

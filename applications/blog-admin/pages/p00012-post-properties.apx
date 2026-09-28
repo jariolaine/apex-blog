@@ -1,0 +1,1876 @@
+page 12 (
+    name: Add/Edit Post
+    alias: POST-PROPERTIES
+    title: Post
+    pageGroup: @posts
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+        ]
+    }
+    dialog {
+        chained: false
+        resizable: false
+    }
+    navigationMenu {
+        overrideUserInterfaceLevel: true
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <h2>
+              Create, edit, manage or delete a post
+            </h2>
+            <h3>
+              Write a new post
+            </h3>
+            <ol>
+              <li>
+                Click New Post.
+              </li>  
+              <li>
+                Create the post. Use editor options to format post. E.g. in "Styles" select list you find block style "Program Code" that is useful when posting code.
+              </li>
+              <li>
+                To save your post without publishing it, click Save Draf. To publish your post, click Publish.
+              </li>
+            </ol>
+            <h3>
+              Edit a post
+            </h3>
+            <ol>
+              <li>
+                Click edit button on post you want to edit.
+              </li>
+              <li>
+                Make your changes.
+              </li>
+              <li>
+                Click Save.
+              </li>
+            </ol>
+            <h3>
+              Delete a post  
+            </h3>
+            <ol>
+              <li>
+                Click edit button on post you want to delete.
+              </li>
+              <li>
+                Click Delete.
+              </li>
+            </ol>
+            
+            ```
+    }
+
+    region ai-assistant-buttons (
+        name: AI Assistant Buttons
+        type: staticContent
+        layout {
+            sequence: 10
+            parentRegion: @assistant
+            slot: subRegions
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+                t-ButtonRegion--noBorder
+                margin-bottom-none
+            ]
+            cssClasses: blog-assistant-buttons
+        }
+        config {
+            buildOption: @blog-feature-generative-ai
+        }
+    )
+
+    region assistant (
+        name: Assistant
+        type: staticContent
+        source {
+            htmlCode: <div id="blog-ai-assistant"></div>
+        }
+        layout {
+            sequence: 30
+            parentRegion: @post-content
+            slot: subRegions
+            startNewRow: false
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--hideHeader js-addHiddenHeadingRoleDesc
+                t-Region--scrollBody
+            ]
+            cssClasses: [
+                blog-assistant
+                blog-region-noItemHelp
+            ]
+        }
+        config {
+            buildOption: @blog-feature-generative-ai
+        }
+    )
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 50
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+                t-Form--noPadding
+                margin-top-none
+                margin-bottom-none
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region changes (
+        name: Changes
+        type: staticContent
+        layout {
+            sequence: 40
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P12_ID
+        }
+        config {
+            buildOption: @under-development
+        }
+    )
+
+    region post-content (
+        name: Post Content
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: contentBody
+            columnSpan: 8
+            columnCssClasses: padding-right-none
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region post-properties (
+        name: Post Properties
+        type: form
+        source {
+            location: localDatabase
+            tableName: BLOG_V_FORM_POSTS
+        }
+        layout {
+            sequence: 20
+            slot: contentBody
+            startNewRow: false
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Form--stretchInputs
+            ]
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+            lostUpdateType: rowVersionColumn
+            rowVersionColumn: ROW_VERSION
+        }
+    )
+
+    pageItem P12_BLOGGER_ID (
+        type: hidden
+        layout {
+            sequence: 30
+            region: @post-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @post-properties
+            column: BLOGGER_ID
+            dataType: number
+        }
+        default {
+            type: item
+            item: G_BLOGGER_ID
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P12_BODY_HTML (
+        type: richTextEditor
+        label {
+            label: Post Editor
+            alignment: left
+        }
+        settings {
+            format: html
+            toolbar: full
+            minHeight: 320
+            allowCustomHtml: true
+        }
+        layout {
+            sequence: 40
+            region: @post-content
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--postTextBlock
+                margin-bottom-none
+            ]
+            cssClasses: [
+                padding-bottom-none
+                blog-item
+            ]
+        }
+        validation {
+            valueRequired: true
+        }
+        advanced {
+            postText: "\"BLOG_BTN_POST_BODY\""
+            initJavaScriptFunction: blog.admin.editor.init
+        }
+        source {
+            formRegion: @post-properties
+            column: BODY_HTML
+            dataType: clob
+        }
+        sessionState {
+            dataType: clob
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        help {
+            helpText: Refer online document <a target="_blank" href="https://ckeditor.com/docs/ckeditor5/latest/features/basic-styles.html">Basic Text Styles: Bold, Italic and More</a> how style your post.
+        }
+    )
+
+    pageItem P12_CATEGORY_ID (
+        type: hidden
+        layout {
+            sequence: 50
+            region: @post-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @post-properties
+            column: CATEGORY_ID
+            dataType: number
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P12_CATEGORY_TITLE (
+        type: popupLov
+        label {
+            label: Category
+            alignment: left
+        }
+        settings {
+            manualEntry: true
+        }
+        lov {
+            type: sharedComponent
+            lov: @categories
+        }
+        layout {
+            sequence: 110
+            region: @post-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--postTextBlock
+            ]
+            cssClasses: blog-item
+            width: 30
+        }
+        validation {
+            maxLength: 256
+        }
+        advanced {
+            postText: "\"BLOG_BTN_POST_CATEGORY\""
+        }
+        source {
+            formRegion: @post-properties
+            column: CATEGORY_TITLE
+            dataType: varchar2
+            queryOnly: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: webSafe
+        }
+        help {
+            helpText: Categories are case insensitive unique. Example, if you enter "my category" and there is already category "My Category", later will be used as post category. Use search to find existing categories. You can maintain categories information by clicking <em>Categories</em> tab at Posts page.
+        }
+    )
+
+    pageItem P12_CHANGE_NOTE (
+        type: textField
+        label {
+            label: Change Notes
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @changes
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        help {
+            helpText: If you edit existing post, you can add comments to version. This attribute is available only after you first time save post.
+        }
+        config {
+            buildOption: @under-development
+        }
+    )
+
+    pageItem P12_FIRST_PARAGRAPH (
+        type: hidden
+        layout {
+            sequence: 70
+            region: @post-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @post-properties
+            column: FIRST_PARAGRAPH
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P12_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @post-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @post-properties
+            column: ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P12_IS_ACTIVE (
+        type: hidden
+        layout {
+            sequence: 60
+            region: @post-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @post-properties
+            column: IS_ACTIVE
+            dataType: number
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P12_NOTES (
+        type: textarea
+        label {
+            label: Notes
+            alignment: left
+        }
+        settings {
+            autoHeight: true
+        }
+        layout {
+            sequence: 180
+            region: @post-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            cssClasses: [
+                blog-item
+                blog-noItemHelp
+            ]
+            height: 4
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @post-properties
+            column: NOTES
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        help {
+            inlineHelpText: Enter any comments or notes here. These notes not displayed for public.
+        }
+    )
+
+    pageItem P12_POST_DESC (
+        type: textarea
+        label {
+            label: Summary
+            alignment: left
+        }
+        settings {
+            autoHeight: true
+        }
+        layout {
+            sequence: 80
+            region: @post-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--postTextBlock
+            ]
+            cssClasses: [
+                blog-item
+                blog-postText
+            ]
+            height: 6
+        }
+        validation {
+            valueRequired: true
+            maxLength: 1024
+        }
+        advanced {
+            postText: "\"BLOG_BTN_POST_DESCRIPTION\""
+        }
+        source {
+            formRegion: @post-properties
+            column: POST_DESC
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+        }
+        help {
+            helpText: Short description of post. Description is used in search results and RSS feed. Whitespaces other than spaces are removed when you save post.
+        }
+    )
+
+    pageItem P12_PUBLISHED_DISPLAY (
+        type: displayOnly
+        label {
+            label: Published on
+            alignment: left
+        }
+        settings {
+            showLineBreaks: false
+            sendOnPageSubmit: false
+        }
+        layout {
+            sequence: 160
+            region: @post-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            formatMask: &P501_DISPLAY_DATE_FORMAT.
+        }
+        source {
+            type: item
+            item: P12_PUBLISHED_ON
+        }
+        sessionState {
+            storage: request
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P12_PUBLISHED_ON
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        help {
+            helpText: Date when post was/will be published.
+        }
+    )
+
+    pageItem P12_PUBLISHED_ON (
+        type: datePicker
+        label {
+            label: Set Published on
+            alignment: left
+        }
+        settings {
+            showTime: true
+        }
+        layout {
+            sequence: 170
+            region: @post-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            formatMask: &P501_INPUT_DATE_FORMAT.
+            width: 30
+        }
+        source {
+            formRegion: @post-properties
+            column: PUBLISHED_ON
+            dataType: timestampWithLocalTimeZone
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        help {
+            helpText: Date when post will be published.
+        }
+    )
+
+    pageItem P12_ROW_VERSION (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @post-properties
+            slot: regionBody
+        }
+        source {
+            formRegion: @post-properties
+            column: ROW_VERSION
+            dataType: number
+            queryOnly: true
+        }
+        default {
+            type: item
+            item: G_BLOGGER_ID
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P12_SCHEDULE (
+        type: switch
+        label {
+            label: Schedule
+            alignment: left
+        }
+        layout {
+            sequence: 150
+            region: @post-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        help {
+            helpText: Enable editing publsih date.
+        }
+    )
+
+    pageItem P12_TAGS (
+        type: popupLov
+        label {
+            label: Tags
+            alignment: left
+        }
+        settings {
+            manualEntry: true
+            fetchOnSearch: true
+        }
+        lov {
+            type: sharedComponent
+            lov: @post-tags
+            displayNullValue: false
+        }
+        multipleValues {
+            type: delimitedList
+            separator: ,
+        }
+        layout {
+            sequence: 130
+            region: @post-properties
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--postTextBlock
+            ]
+            cssClasses: blog-item
+            width: 30
+        }
+        validation {
+            maxLength: 32767
+        }
+        advanced {
+            postText: "\"BLOG_BTN_POST_TAGS\""
+        }
+        source {
+            formRegion: @post-properties
+            column: TAGS
+            dataType: varchar2
+            queryOnly: true
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: webSafe
+        }
+        help {
+            helpText:
+                ```html
+                Comma separated list of tags. 
+                Tags are case insensitive unique. 
+                Example, if you enter "my tag" and there is already tag "My Tag",
+                later will be used as tag. 
+                Use search to find existing tags. 
+                You can maintain  all tags information by clicking <em>All Tags</em> tab at Posts page. To edit e.g. display sequence of tags linked to post, click <em>Edit Tags</em> button on Posts page report.
+                ```
+        }
+    )
+
+    pageItem P12_TITLE (
+        type: textField
+        label {
+            label: Title
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @post-content
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--postTextBlock
+            ]
+            cssClasses: blog-item
+        }
+        validation {
+            valueRequired: true
+            maxLength: 256
+        }
+        advanced {
+            postText: "\"BLOG_BTN_POST_TITLE\""
+        }
+        source {
+            formRegion: @post-properties
+            column: TITLE
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        help {
+            helpText: Describes what your post is about.
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-chevron-left
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Publish
+        layout {
+            sequence: 80
+            region: @buttons
+            slot: create
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        advanced {
+            htmlDomId: CREATE
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P12_ID
+        }
+    )
+
+    button create-draft (
+        buttonName: CREATE_DRAFT
+        label: Save Draft
+        layout {
+            sequence: 70
+            region: @buttons
+            slot: create
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--mobileHideLabel
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P12_ID
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: Delete
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+            ]
+            icon: fa-trash-o
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P12_ID
+        }
+    )
+
+    button reset-chat (
+        buttonName: RESET_CHAT
+        label: Reset Chat
+        layout {
+            sequence: 10
+            region: @ai-assistant-buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-undo
+        }
+        behavior {
+            action: definedByDynamicAction
+        }
+        config {
+            buildOption: @blog-feature-generative-ai
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 60
+            region: @buttons
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: item=value
+            item: P12_IS_ACTIVE
+            value: 1
+        }
+    )
+
+    button save-and-publish (
+        buttonName: SAVE_AND_PUBLISH
+        label: Publish
+        layout {
+            sequence: 40
+            region: @buttons
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: item=value
+            item: P12_IS_ACTIVE
+            value: 0
+        }
+    )
+
+    button save-draft (
+        buttonName: SAVE_DRAFT
+        label: Save Draft
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--mobileHideLabel
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: item=value
+            item: P12_IS_ACTIVE
+            value: 0
+        }
+    )
+
+    button save-revert-to-draft (
+        buttonName: SAVE_REVERT_TO_DRAFT
+        label: Revert to Draft
+        layout {
+            sequence: 50
+            region: @buttons
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--mobileHideLabel
+                t-Button--iconRight
+            ]
+            icon: fa-undo
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: item=value
+            item: P12_IS_ACTIVE
+            value: 1
+        }
+    )
+
+    button talk-to-assistant (
+        buttonName: TALK_TO_ASSISTANT
+        label: Talk to Assistant
+        layout {
+            sequence: 30
+            region: @ai-assistant-buttons
+            slot: change
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+            icon: fa-microphone
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+        advanced {
+            htmlDomId: TALK_TO_ASSISTANT
+        }
+        config {
+            buildOption: @blog-feature-post-speech
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction generative-ai-buttons (
+        name: Generative AI Buttons
+        execution {
+            sequence: 110
+        }
+        when {
+            event: ready
+        }
+        config {
+            buildOption: @blog-feature-generative-ai
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    blog.admin.ai.post.buttonActions();
+                    
+                    
+                    ```
+            }
+            execution {
+                sequence: 20
+            }
+        )
+
+    )
+
+    dynamicAction post-speech-recognition-button (
+        name: Post Speech Recognition Button
+        execution {
+            sequence: 120
+        }
+        when {
+            event: ready
+        }
+        clientSideCondition {
+            type: jsExpression
+            javaScriptExpression: "webkitSpeechRecognition" in window
+        }
+
+        action remove-button (
+            name: Remove Button
+            action: executeJsCode
+            settings {
+                jsCode: this.affectedElements.siblings( ".t-Form-itemText--post" ).has( ":button" ).remove();
+            }
+            affectedElements {
+                selectionType: items
+                items: P12_BODY_HTML
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action set-speech-recognition (
+            name: Set Speech Recognition
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    blog.admin.speechRecognition.initButtonAction({
+                      element$: this.affectedElements
+                    , objectName: "post"
+                    , action: "record-post"
+                    , class: [ "u-warning-text" ]
+                    });
+                    
+                    ```
+            }
+            affectedElements {
+                selectionType: items
+                items: P12_BODY_HTML
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction process-schedule (
+        name: Process Schedule
+        execution {
+            sequence: 30
+        }
+        when {
+            selectionType: items
+            items: P12_SCHEDULE
+        }
+        clientSideCondition {
+            type: item=value
+            item: P12_SCHEDULE
+            value: Y
+        }
+
+        action native-disable (
+            action: disable
+            affectedElements {
+                selectionType: button
+                button: @save-draft
+            }
+            execution {
+                sequence: 30
+            }
+        )
+
+        action native-disable-2 (
+            action: disable
+            affectedElements {
+                selectionType: button
+                button: @create-draft
+            }
+            execution {
+                sequence: 40
+            }
+        )
+
+        action native-disable-3 (
+            action: disable
+            affectedElements {
+                selectionType: button
+                button: @save-revert-to-draft
+            }
+            execution {
+                sequence: 50
+            }
+        )
+
+        action native-enable (
+            action: enable
+            affectedElements {
+                selectionType: button
+                button: @save-draft
+            }
+            execution {
+                sequence: 40
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-enable-2 (
+            action: enable
+            affectedElements {
+                selectionType: button
+                button: @create-draft
+            }
+            execution {
+                sequence: 50
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-enable-3 (
+            action: enable
+            affectedElements {
+                selectionType: button
+                button: @save-revert-to-draft
+            }
+            execution {
+                sequence: 60
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-hide (
+            action: hide
+            affectedElements {
+                selectionType: items
+                items: P12_PUBLISHED_DISPLAY
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        action native-hide-2 (
+            action: hide
+            affectedElements {
+                selectionType: items
+                items: P12_PUBLISHED_ON
+            }
+            execution {
+                sequence: 20
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-hide-3 (
+            action: hide
+            affectedElements {
+                selectionType: button
+                button: @save-draft
+            }
+            execution {
+                sequence: 60
+            }
+        )
+
+        action native-hide-4 (
+            action: hide
+            affectedElements {
+                selectionType: button
+                button: @create-draft
+            }
+            execution {
+                sequence: 70
+            }
+        )
+
+        action native-hide-5 (
+            action: hide
+            affectedElements {
+                selectionType: button
+                button: @save-revert-to-draft
+            }
+            execution {
+                sequence: 80
+            }
+        )
+
+        action native-set-value (
+            action: setValue
+            settings {
+                value: &P12_PUBLISHED_ON.
+                suppressChangeEvent: true
+            }
+            affectedElements {
+                selectionType: items
+                items: P12_PUBLISHED_ON
+            }
+            execution {
+                sequence: 110
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-show (
+            action: show
+            affectedElements {
+                selectionType: items
+                items: P12_PUBLISHED_ON
+            }
+            execution {
+                sequence: 20
+            }
+        )
+
+        action native-show-2 (
+            action: show
+            affectedElements {
+                selectionType: items
+                items: P12_PUBLISHED_DISPLAY
+            }
+            execution {
+                sequence: 30
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-show-3 (
+            action: show
+            affectedElements {
+                selectionType: button
+                button: @save-draft
+            }
+            execution {
+                sequence: 80
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-show-4 (
+            action: show
+            affectedElements {
+                selectionType: button
+                button: @create-draft
+            }
+            execution {
+                sequence: 90
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-show-5 (
+            action: show
+            affectedElements {
+                selectionType: button
+                button: @save-revert-to-draft
+            }
+            execution {
+                sequence: 100
+                fireWhenEventResultIs: false
+            }
+        )
+
+    )
+
+    dynamicAction set-ai-assistant (
+        name: Set AI Assistant
+        execution {
+            sequence: 20
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @reset-chat
+        }
+        config {
+            buildOption: @blog-feature-generative-ai
+        }
+
+        action initialize-open-ai-assistant (
+            name: Initialize Open AI Assistant
+            action: showAiAssistant
+            genAI {
+                service: @BLOG_OPEN_AI_API
+                systemPrompt: &APP_TEXT$BLOG_AI_SYSTEM_PROMPT_POST_ASSISTANT.
+                welcomeMessage: &APP_TEXT$BLOG_MSG_AI_ASSISTANT_WELCOME.
+            }
+            appearance {
+                displayAs: inline
+                containerSelector: #blog-ai-assistant
+            }
+            useResponse {
+                type: jsCode
+                jsCode: "blog.admin.ai.post.assistant.useResponse({ text: this });"
+            }
+            execution {
+                sequence: 10
+            }
+            advanced {
+                initJavaScriptFunction:
+                    ```javascript-browser
+                    function( options ) {
+                      options = $.extend( true, {}, options, {
+                        "view":{ "focus": false }
+                      });
+                      return options;
+                    }
+                    ```
+            }
+        )
+
+        action set-speech-recognition (
+            name: Set Speech Recognition
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    blog.admin.speechRecognition.init({
+                      element$: this.affectedElements
+                    , objectName: "assistant"
+                    , clearPreviousText: true
+                    });
+                    ```
+            }
+            affectedElements {
+                selectionType: jquerySelector
+                jquerySelector: .a-ChatInput-text
+            }
+            execution {
+                sequence: 30
+            }
+        )
+
+        action show-talk-to-assistant-button (
+            name: Show Talk to Assistant Button
+            action: show
+            affectedElements {
+                selectionType: button
+                button: @talk-to-assistant
+            }
+            execution {
+                sequence: 40
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction toggle-ai-assistant-speech (
+        name: Toggle AI Assistant Speech
+        execution {
+            sequence: 110
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @talk-to-assistant
+        }
+        clientSideCondition {
+            type: jsExpression
+            javaScriptExpression: "webkitSpeechRecognition" in window
+        }
+        config {
+            buildOption: @blog-feature-generative-ai
+        }
+
+        action remove-button (
+            name: Remove Button
+            action: executeJsCode
+            settings {
+                jsCode: this.affectedElements.remove()
+            }
+            affectedElements {
+                selectionType: triggeringElement
+            }
+            execution {
+                sequence: 20
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action start-stop-speech-recognition (
+            name: Start / Stop Speech Recognition
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    blog.admin.speechRecognition.toggleRecording({
+                      element: this.triggeringElement
+                    , objectName: "assistant"
+                    });
+                    ```
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    validation first-paragraph (
+        name: First paragraph
+        execution {
+            sequence: 20
+        }
+        validation {
+            type: itemIsNotNull
+            item: P12_FIRST_PARAGRAPH
+        }
+        error {
+            errorMessage: Post must have at least one paragraph.
+            associatedItem: @P12_BODY_HTML
+        }
+    )
+
+    validation p12-valid-from-must-be-timestamp (
+        name: P12_VALID_FROM must be timestamp
+        execution {
+            sequence: 10
+        }
+        validation {
+            type: itemIsAValidTimestamp
+            item: P12_PUBLISHED_ON
+        }
+        error {
+            errorMessage: #LABEL# must be a valid timestamp.
+            associatedItem: @P12_PUBLISHED_ON
+        }
+    )
+
+    computation p12-body-html (
+        itemName: P12_BODY_HTML
+        execution {
+            sequence: 10
+            point: afterSubmit
+        }
+        computation {
+            type: expression
+            plsqlExpression: replace( :P12_BODY_HTML, '#', '&#35;' )
+        }
+        comments {
+            comments: Replace hashmark to HTML entity for preventing APEX substitutions. This must be run before we compute item P12_FIRST_PARAGRAPH.
+        }
+    )
+
+    computation p12-first-paragraph (
+        itemName: P12_FIRST_PARAGRAPH
+        execution {
+            sequence: 70
+            point: afterSubmit
+        }
+        computation {
+            type: expression
+            plsqlExpression:
+                ```plsql
+                blog_admin.get_first_paragraph(
+                  p_body_html => :P12_BODY_HTML
+                )
+                ```
+        }
+        comments {
+            comments: Get first paragraph fro post as preview. Must be run after computation of P12_HTML_BODY.
+        }
+    )
+
+    computation p12-is-active (
+        itemName: P12_IS_ACTIVE
+        execution {
+            sequence: 60
+            point: afterSubmit
+        }
+        computation {
+            type: expression
+            plsqlExpression:
+                ```plsql
+                blog_admin.request_to_post_status(
+                  p_request => :REQUEST
+                )
+                ```
+        }
+        comments {
+            comments: Compute IS_ACTIVE from button request.
+        }
+    )
+
+    computation p12-post-desc (
+        itemName: P12_POST_DESC
+        execution {
+            sequence: 20
+            point: afterSubmit
+        }
+        computation {
+            type: expression
+            plsqlExpression:
+                ```plsql
+                blog_util.remove_whitespace(
+                  p_string => :P12_POST_DESC
+                )
+                ```
+        }
+        comments {
+            comments: Remove whitespace from description.
+        }
+    )
+
+    computation p12-published-on (
+        itemName: P12_PUBLISHED_ON
+        execution {
+            sequence: 50
+            point: afterSubmit
+        }
+        computation {
+            type: expression
+            plsqlExpression: to_char( localtimestamp, :P501_INPUT_DATE_FORMAT )
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P12_PUBLISHED_ON
+        }
+        comments {
+            comments: Set published on if no schedule set when publishing post.
+        }
+    )
+
+    process clear-published-on (
+        name: Clear Published on
+        type: clearSessionState
+        clear {
+            type: items
+            items: P12_PUBLISHED_ON
+        }
+        execution {
+            sequence: 20
+            point: afterHeader
+        }
+        advanced {
+            executionMappingIdentifier: 27060510671689106
+        }
+        serverSideCondition {
+            type: item=value
+            item: P12_IS_ACTIVE
+            value: 0
+        }
+        comments {
+            comments: Clear published on item if post was draft. Then new published on will be set automatically on after submit computation e.g. in case post is published.
+        }
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        execution {
+            sequence: 80
+        }
+        advanced {
+            executionMappingIdentifier: 38476711128283538
+        }
+    )
+
+    process generative-ai-content (
+        name: GENERATIVE_AI_CONTENT
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                blog_ai.gen_ai_chat(
+                  p_post          => :APP_AJAX_X01
+                , p_system_prompt => :APP_AJAX_X02
+                );
+                ```
+        }
+        execution {
+            sequence: 10
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 31504800464325831
+        }
+        config {
+            buildOption: @blog-feature-generative-ai
+        }
+    )
+
+    process initialize-form-post (
+        name: Initialize Form Post
+        type: formInitialization
+        formRegion: @post-properties
+        execution {
+            sequence: 10
+            point: afterHeader
+        }
+        advanced {
+            executionMappingIdentifier: 8801973868610789
+        }
+    )
+
+    process markdown-to-html (
+        name: MARKDOWN_TO_HTML
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                blog_html.prn_html(
+                  p_markdown => apex_application.g_f01
+                );
+                ```
+        }
+        execution {
+            sequence: 20
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 103688660304906906
+        }
+        config {
+            buildOption: @blog-feature-generative-ai
+        }
+    )
+
+    process process-category (
+        name: Process Category
+        type: invokeApi
+        invoke {
+            package: BLOG_ADMIN
+            procedureOrFunction: ADD_CATEGORY
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 6929777493150993
+        }
+        serverSideCondition {
+            type: request!=Value
+            value: DELETE
+        }
+        comments {
+            comments: Add new category if not exists and get category id. If category exists return category id. Run only when post is inserted or updated.
+        }
+
+        parameter p_category_id (
+            parameter {
+                direction: out
+                dataType: number
+            }
+            value {
+                item: P12_CATEGORY_ID
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_category_title (
+            value {
+                type: item
+                item: P12_CATEGORY_TITLE
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process process-form-post-properties (
+        name: Process form Post Properties
+        type: formAutoRowProcessing
+        formRegion: @post-properties
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 21087092448244622
+        }
+    )
+
+    process process-tags (
+        name: Process Tags
+        type: invokeApi
+        invoke {
+            package: BLOG_ADMIN
+            procedureOrFunction: ADD_POST_TAGS
+        }
+        execution {
+            sequence: 30
+        }
+        advanced {
+            executionMappingIdentifier: 7077714087172775
+        }
+        serverSideCondition {
+            type: request!=Value
+            value: DELETE
+        }
+        comments {
+            comments: Add and or remove tags from post. Run only when post is inserted or updated.
+        }
+
+        parameter p_post_id (
+            value {
+                type: item
+                item: P12_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_sep (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+        parameter p_tags (
+            value {
+                type: item
+                item: P12_TAGS
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    process purge-public-application-global-page-cache (
+        name: Purge Public Application Global Page Cache
+        type: invokeApi
+        invoke {
+            package: APEX_UTIL
+            procedureOrFunction: CACHE_PURGE_BY_PAGE
+        }
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 26610837157511893
+        }
+        comments {
+            comments: Purge public application cached regions.
+        }
+
+        parameter p_application (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: item
+                item: G_PUB_APP_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_page (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: staticValue
+                staticValue: 0
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+    )
+
+)
+

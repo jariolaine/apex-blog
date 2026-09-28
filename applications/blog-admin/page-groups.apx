@@ -1,0 +1,58 @@
+pageGroup activity-reporting (
+    name: Activity Reporting
+)
+
+pageGroup administration (
+    name: Administration
+)
+
+pageGroup comments (
+    name: Comments
+)
+
+pageGroup configuration (
+    name: Configuration
+    description {
+        description: Public application configuration
+    }
+)
+
+pageGroup files (
+    name: Files
+    description {
+        description: Database and object storage
+    }
+)
+
+pageGroup general (
+    name: General
+    description {
+        description: Supporting pages e.g. global page, login page and home
+    }
+)
+
+pageGroup links (
+    name: Links
+    description {
+        description: Links and link groups
+    }
+)
+
+pageGroup modal-pages (
+    name: Modal Pages
+)
+
+pageGroup posts (
+    name: Posts
+    description {
+        description: Posts, categories and tags
+    }
+)
+
+pageGroup user-details-preferences (
+    name: User Details & Preferences
+    description {
+        description: Update currently logged in user
+    }
+)
+

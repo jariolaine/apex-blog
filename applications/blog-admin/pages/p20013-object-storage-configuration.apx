@@ -1,0 +1,511 @@
+page 20013 (
+    name: Object Storage Configuration
+    alias: OBJECT-STORAGE-CONFIGURATION
+    title: Object Storage
+    pageGroup: @configuration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/wizard-modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 50
+            slot: wizardButtons
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+            excludeTitleFromTranslation: true
+        }
+    )
+
+    region information (
+        name: Information
+        type: staticContent
+        source {
+            htmlCode: &APP_TEXT$BLOG_MSG_OBJECT_STORAGE_INFO!RAW.
+        }
+        layout {
+            sequence: 20
+            slot: wizardBody
+        }
+        appearance {
+            template: @/alert
+            templateOptions: [
+                #DEFAULT#
+                t-Alert--wizard
+                t-Alert--defaultIcons
+                t-Alert--info
+                t-Alert--removeHeading js-removeLandmark
+                margin-bottom-none
+            ]
+        }
+    )
+
+    region object-storage (
+        name: Object Storage
+        type: form
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                  t1.row_version      as row_version
+                , t1.attribute_name   as attribute_name
+                , apex_application_admin.get_build_option_status(
+                    p_application_id     => :APP_ID
+                  , p_build_option_name  => blog_oci_os.get_param_value( 'build_option_name' )
+                  )                   as build_status
+                , t1.attribute_value  as bucket_name
+                , (
+                    select
+                      lkp.base_url
+                    from apex_workspace_remote_servers lkp
+                    where 1 = 1
+                      and lkp.remote_server_static_id = blog_oci_os.get_param_value( 'remote_server_static_id' )
+                  )                   as base_url
+                from blog_settings t1
+                
+                ```
+        }
+        layout {
+            sequence: 30
+            slot: wizardBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: [
+                #DEFAULT#
+                t-Region-orderBy--center
+            ]
+        }
+        edit {
+            enabled: true
+            allowedOperations: update
+            lostUpdateType: rowVersionColumn
+            rowVersionColumn: ROW_VERSION
+        }
+    )
+
+    pageItem P20013_ATTRIBUTE_NAME (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @object-storage
+            slot: regionBody
+        }
+        source {
+            formRegion: @object-storage
+            column: ATTRIBUTE_NAME
+            dataType: varchar2
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: noSpecialCharNoNewline
+        }
+    )
+
+    pageItem P20013_BASE_URL (
+        type: textField
+        label {
+            label: Base URL
+            alignment: left
+        }
+        settings {
+            subtype: url
+        }
+        layout {
+            sequence: 50
+            region: @object-storage
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @object-storage
+            column: BASE_URL
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    pageItem P20013_BUCKET_NAME (
+        type: textField
+        label {
+            label: Bucket Name
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @object-storage
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        validation {
+            maxLength: 4000
+        }
+        source {
+            formRegion: @object-storage
+            column: BUCKET_NAME
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P20013_BUILD_STATUS (
+        type: switch
+        label {
+            label: Status
+            alignment: left
+        }
+        settings {
+            useDefaults: false
+            onValue: INCLUDE
+            onLabel: Enabled
+            offValue: EXCLUDE
+            offLabel: Disabled
+        }
+        layout {
+            sequence: 30
+            region: @object-storage
+            slot: regionBody
+            alignment: left
+            labelColumnSpan: 1
+        }
+        appearance {
+            template: @/required
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @object-storage
+            column: BUILD_STATUS
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P20013_ROW_VERSION (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @object-storage
+            slot: regionBody
+        }
+        source {
+            formRegion: @object-storage
+            column: ROW_VERSION
+            dataType: number
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-close
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Save
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-save
+        }
+        behavior {
+            showProcessing: true
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction process-feature-status (
+        name: Process Feature Status
+        execution {
+            sequence: 20
+        }
+        when {
+            selectionType: items
+            items: P20013_BUILD_STATUS
+        }
+        clientSideCondition {
+            type: item=value
+            item: P20013_BUILD_STATUS
+            value: INCLUDE
+        }
+
+        action native-disable (
+            action: disable
+            affectedElements {
+                selectionType: items
+                items: [
+                    P20013_BUCKET_NAME
+                    P20013_BASE_URL
+                ]
+            }
+            execution {
+                sequence: 10
+                fireWhenEventResultIs: false
+            }
+        )
+
+        action native-enable (
+            action: enable
+            affectedElements {
+                selectionType: items
+                items: [
+                    P20013_BUCKET_NAME
+                    P20013_BASE_URL
+                ]
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    validation p20013-base-url-is-not-null (
+        name: P20013_BASE_URL is not null
+        execution {
+            sequence: 40
+        }
+        validation {
+            type: itemIsNotNull
+            item: P20013_BASE_URL
+        }
+        error {
+            errorMessage: #LABEL# must have a value if object storage is enabled.
+            displayLocation: inlineWithField
+            associatedItem: @P20013_BASE_URL
+        }
+        serverSideCondition {
+            type: item=value
+            item: P20013_BUILD_STATUS
+            value: INCLUDE
+        }
+    )
+
+    validation p20013-bucket-is-not-null (
+        name: P20013_BUCKET is not null
+        execution {
+            sequence: 30
+        }
+        validation {
+            type: itemIsNotNull
+            item: P20013_BUCKET_NAME
+        }
+        error {
+            errorMessage: #LABEL# must have a value if object storage is enabled.
+            displayLocation: inlineWithField
+            associatedItem: @P20013_BUCKET_NAME
+        }
+        serverSideCondition {
+            type: item=value
+            item: P20013_BUILD_STATUS
+            value: INCLUDE
+        }
+    )
+
+    computation p20013-attribute-name (
+        itemName: P20013_ATTRIBUTE_NAME
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        computation {
+            type: expression
+            plsqlExpression: blog_oci_os.get_param_value( 'bucket_param_name' )
+        }
+    )
+
+    process initialize-form-object-storage (
+        name: Initialize form - Object Storage
+        type: formInitialization
+        formRegion: @object-storage
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 32850580306309323
+        }
+    )
+
+    process process-form-object-storage (
+        name: Process form - Object Storage
+        type: formAutoRowProcessing
+        formRegion: @object-storage
+        target {
+            targetType: plsqlCode
+            plsqlCode:
+                ```plsql
+                blog_oci_os.set_object_storage(
+                  p_bucket_name   => :P20013_BUCKET_NAME
+                , p_base_url      => :P20013_BASE_URL
+                , p_build_status  => :P20013_BUILD_STATUS
+                );
+                ```
+        }
+        lockRow {
+            lockRow: false
+        }
+        execution {
+            sequence: 20
+        }
+        successMessage {
+            successMessage: Object storage settings updated.
+        }
+        advanced {
+            executionMappingIdentifier: 32850918119309327
+        }
+    )
+
+    process purge-public-application-files-page-cache (
+        name: Purge Public Application Files Page Cache
+        type: invokeApi
+        invoke {
+            package: APEX_UTIL
+            procedureOrFunction: CACHE_PURGE_BY_PAGE
+        }
+        execution {
+            sequence: 40
+        }
+        advanced {
+            executionMappingIdentifier: 23303793730378882
+        }
+
+        parameter p_application (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: item
+                item: G_PUB_APP_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_page (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: staticValue
+                staticValue: 11
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+    )
+
+    branch (
+        name: Go to Page 20010
+        execution {
+            sequence: 20
+        }
+        behavior {
+            target: {
+                page: 20010
+            }
+        }
+    )
+
+)
+

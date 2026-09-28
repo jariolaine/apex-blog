@@ -1,0 +1,529 @@
+page 302 (
+    name: Upload File
+    alias: UPLOAD-FILE
+    title: Upload File(s)
+    pageGroup: @files
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+    )
+
+    region content (
+        name: Content
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+    )
+
+    pageItem P302_CACHE_CONTROL (
+        type: textField
+        label {
+            label: Cache Control
+            alignment: left
+        }
+        layout {
+            sequence: 70
+            region: @content
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        advanced {
+            cssClasses: margin-bottom-sm
+        }
+        sessionState {
+            storage: request
+        }
+        quickPicks {
+            type: static
+            label1: 1 hour
+            value1: max-age-3600
+            label2: 10 hours
+            value2: max-age=36000
+            label3: 1 day
+            value3: max-age=86400
+            label4: 10 days
+            value4: max-age=864000
+            label5: 1 month
+            value5: max-age=26280000
+            label6: 10 months
+            value6: max-age=262800000
+            label7: No cache
+            value7: no-cache
+            linkAttributes: class="u-bold x-quickPick"
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: webSafe
+        }
+        help {
+            inlineHelpText: The optional Cache-Control header that defines the caching behavior value to be returned in GetObject and HeadObject responses. Specifying values for this header has no effect on Object Storage behavior. Programs that read the object determine what to do based on the value provided. For example, you could use this header to identify objects that require caching restrictions.
+        }
+        config {
+            buildOption: @blog-feature-oci-object-storage
+        }
+    )
+
+    pageItem P302_DIR (
+        type: popupLov
+        label {
+            label: Directory
+            alignment: left
+        }
+        settings {
+            displayAs: modalDialog
+            manualEntry: true
+        }
+        lov {
+            type: sharedComponent
+            lov: @file-directories
+            displayExtraValues: false
+            nullDisplayValue: ( Root )
+        }
+        layout {
+            sequence: 20
+            region: @content
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P302_EXTRACT (
+        type: switch
+        label {
+            label: Unzip File(s)
+            alignment: left
+        }
+        layout {
+            sequence: 50
+            region: @content
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            valueRequired: true
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        help {
+            inlineHelpText: If the file is a zip archive, upload the extracted files.
+        }
+    )
+
+    pageItem P302_FILE_NAMES (
+        type: fileUpload
+        label {
+            label: File Name(s)
+            alignment: left
+        }
+        display {
+            displayAs: blockDropzone
+        }
+        storage {
+            type: appTempFiles
+            purgeFileAt: endOfRequest
+            allowMultipleFiles: true
+        }
+        layout {
+            sequence: 40
+            region: @content
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--xlarge
+            ]
+            width: 30
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+            icon: fa-chevron-left
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button upload (
+        buttonName: UPLOAD
+        label: Upload
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--mobileHideLabel
+                t-Button--iconRight
+            ]
+            icon: fa-upload
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction cancel-dialog (
+        name: Cancel Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 30
+        }
+        successMessage {
+            successMessage: Object(s) uploaded.
+        }
+        advanced {
+            executionMappingIdentifier: 21486967602954895
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression:
+                ```plsql
+                not apex_collection.collection_exists( :BLOG_REPLACE_FILES_COLLECTION )
+                
+                ```
+        }
+    )
+
+    process process-file-upload (
+        name: Process File Upload
+        type: invokeApi
+        invoke {
+            package: BLOG_FILE
+            procedureOrFunction: UPLOAD_FILE
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 22471106585556204
+        }
+        config {
+            buildOption: !@blog-feature-oci-object-storage
+        }
+
+        parameter p_collection_name (
+            value {
+                type: item
+                item: BLOG_REPLACE_FILES_COLLECTION
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+        parameter p_dir (
+            value {
+                type: item
+                item: P302_DIR
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_extract (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P302_EXTRACT
+            }
+            advanced {
+                displaySequence: 50
+            }
+        )
+
+        parameter p_file_names (
+            value {
+                type: item
+                item: P302_FILE_NAMES
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_overwrite_file (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 60
+            }
+        )
+
+    )
+
+    process process-object-upload (
+        name: Process Object Upload
+        type: invokeApi
+        invoke {
+            package: BLOG_OCI_OS
+            procedureOrFunction: UPLOAD_OBJECT
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 21483536920954897
+        }
+        config {
+            buildOption: @blog-feature-oci-object-storage
+        }
+
+        parameter p_cache_control (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P302_CACHE_CONTROL
+            }
+            advanced {
+                displaySequence: 50
+            }
+        )
+
+        parameter p_client_request_id (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 80
+            }
+        )
+
+        parameter p_collection_name (
+            value {
+                type: item
+                item: BLOG_REPLACE_FILES_COLLECTION
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+        parameter p_dir (
+            value {
+                type: item
+                item: P302_DIR
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_extract (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P302_EXTRACT
+            }
+            advanced {
+                displaySequence: 60
+            }
+        )
+
+        parameter p_file_names (
+            value {
+                type: item
+                item: P302_FILE_NAMES
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_overwrite_file (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 70
+            }
+        )
+
+    )
+
+    branch (
+        name: Go To Confirm Object Overwrite
+        execution {
+            sequence: 10
+        }
+        behavior {
+            target: {
+                page: 303
+                items: {
+                    P303_ACTION: OCI
+                }
+                action: resetPagination
+                successMessage: false
+            }
+        }
+        serverSideCondition {
+            whenButtonPressed: @upload
+        }
+        config {
+            buildOption: @blog-feature-oci-object-storage
+        }
+        comments {
+            comments: Branch to confirm overwrite file(s)
+        }
+    )
+
+    branch (
+        name: Go To Confirm File Overwrite
+        execution {
+            sequence: 20
+        }
+        behavior {
+            target: {
+                page: 303
+                items: {
+                    P303_ACTION: DB
+                }
+                action: resetPagination
+                successMessage: false
+            }
+        }
+        serverSideCondition {
+            whenButtonPressed: @upload
+        }
+        config {
+            buildOption: !@blog-feature-oci-object-storage
+        }
+        comments {
+            comments: Branch to confirm overwrite file(s)
+        }
+    )
+
+)
+

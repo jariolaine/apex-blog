@@ -1,0 +1,1459 @@
+page 1001 (
+    name: New Comment
+    alias: COMMENT
+    title: Leave your comment
+    pageGroup: @comments
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/wizard-modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        resizable: false
+    }
+    htmlHeader {
+        htmlHeader: "\"BLOG_META_ROBOTS_NOINDEX\""
+    }
+    readOnly {
+        type: itemIsNull
+        item: P1001_POST_ID
+    }
+    security {
+        authentication: public
+        deepLinking: false
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+        browserCache: false
+    }
+    sessionManagement {
+        rejoinSessions: false
+    }
+    advanced {
+        enableDuplicatePageSubmissions: false
+        reloadOnSubmit: always
+    }
+    config {
+        buildOption: @blog-feature-allow-comments
+    }
+    comments {
+        comments: Dialog page to allow users comment blog posts.
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 30
+            slot: wizardButtons
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--slimPadding
+                t-ButtonRegion--noBorder
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+    )
+
+    region comment-form (
+        name: Comment Form
+        type: form
+        source {
+            location: localDatabase
+            tableName: BLOG_COMMENTS
+        }
+        layout {
+            sequence: 20
+            slot: wizardBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+            renderComponents: belowContent
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        edit {
+            enabled: true
+            allowedOperations: add
+        }
+    )
+
+    region notification (
+        name: Notification
+        type: staticContent
+        source {
+            htmlCode: &APP_TEXT$BLOG_MSG_MODERATE_ENABLED.
+        }
+        layout {
+            sequence: 10
+            slot: wizardProgressBar
+        }
+        appearance {
+            template: @/alert
+            templateOptions: [
+                #DEFAULT#
+                t-Alert--horizontal
+                t-Alert--defaultIcons
+                t-Alert--info
+                t-Alert--removeHeading js-removeLandmark
+                margin-bottom-none
+            ]
+        }
+        advanced {
+            regionDisplaySelector: true
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression:
+                ```plsql
+                blog_util.get_attribute_value( 'G_APP_EMAIL' ) is not null
+                and
+                apex_application_admin.get_build_option_status(
+                  p_application_id    => :APP_ID
+                , p_build_option_name => 'BLOG_FEATURE_SUBSCRIBE_COMMENTS'
+                ) = 'INCLUDE'
+                ```
+        }
+        config {
+            buildOption: @blog-feature-moderate-comments
+        }
+    )
+
+    pageItem P1001_ANSWER (
+        type: hidden
+        layout {
+            sequence: 70
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        security {
+            sessionStateProtection: restricted
+            restrictedChars: alphanumWithSpace
+        }
+        config {
+            buildOption: @blog-feature-comment-verify
+        }
+    )
+
+    pageItem P1001_BODY_HTML (
+        type: hidden
+        layout {
+            sequence: 120
+            region: @comment-form
+            slot: regionBody
+        }
+        source {
+            formRegion: @comment-form
+            column: BODY_HTML
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        comments {
+            comments: This item is used on automatic form processing process. After submit computation stores formatted comment to item.
+        }
+    )
+
+    pageItem P1001_COMMENT_TEXT (
+        type: textarea
+        label {
+            label: Comment
+            alignment: left
+        }
+        layout {
+            sequence: 100
+            region: @comment-form
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            cssClasses: padding-top-none
+            width: 30
+            height: 5
+        }
+        validation {
+            maxLength: 4000
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        help {
+            inlineHelpText: You can use <strong>&lt;b&gt;</strong>, <strong>&lt;i&gt;</strong>, <strong>&lt;u&gt;</strong> and <strong>&lt;code&gt;</strong> HTML tags. Example, wrap program code to &lt;code&gt; &lt;&#x2f;code&gt; tag so it is easier to read.
+        }
+        comments {
+            comments: Item visible to user for entering comment.
+        }
+    )
+
+    pageItem P1001_EMAIL (
+        type: textField
+        label {
+            label: Email
+            alignment: left
+        }
+        settings {
+            subtype: email
+        }
+        layout {
+            sequence: 80
+            region: @comment-form
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            maxLength: 256
+        }
+        sessionState {
+            storage: request
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: blog_util.get_attribute_value('G_APP_EMAIL') is not null
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        help {
+            inlineHelpText: Provide your email address if you wish receive followup notification when new reply is posted. <br>Your email address will not be published or shared.
+        }
+        config {
+            buildOption: @blog-feature-subscribe-comments
+        }
+        comments {
+            comments: Application email must be set and feature "Sent email notification of new comments" enabled before users can subscribe to get email notifications
+        }
+    )
+
+    pageItem P1001_FIRST_NAME (
+        type: textField
+        label {
+            label: Name
+            alignment: left
+        }
+        layout {
+            sequence: 60
+            region: @comment-form
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            valueRequired: true
+            maxLength: 256
+        }
+        source {
+            formRegion: @comment-form
+            column: COMMENT_BY
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: noSpecialCharNoNewline
+        }
+        help {
+            inlineHelpText: Enter your name. The name is visible in the comments.
+        }
+    )
+
+    pageItem P1001_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @comment-form
+            slot: regionBody
+        }
+        source {
+            formRegion: @comment-form
+            column: ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P1001_IS_ACTIVE (
+        type: hidden
+        layout {
+            sequence: 40
+            region: @comment-form
+            slot: regionBody
+        }
+        source {
+            formRegion: @comment-form
+            column: IS_ACTIVE
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 1
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+        comments {
+            comments: If comments need to be moderated, computation set value to zero (0). Else use default value 1
+        }
+    )
+
+    pageItem P1001_LANGUAGE_CODE (
+        type: hidden
+        layout {
+            sequence: 90
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+    )
+
+    pageItem P1001_LAST_NAME (
+        type: textField
+        label {
+            label: Last Name
+            alignment: left
+        }
+        layout {
+            sequence: 70
+            region: @comment-form
+            slot: regionBody
+            alignment: left
+            rowCssClasses: u-hidden
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            maxLength: 256
+        }
+        advanced {
+            warnOnUnsavedChanges: ignore
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        comments {
+            comments: Field is not for human input. Row CSS class hides item from screen. If field isn't empty close dialog process is fired before submitting comment.
+        }
+    )
+
+    pageItem P1001_POST_ID (
+        type: hidden
+        layout {
+            sequence: 30
+            region: @comment-form
+            slot: regionBody
+        }
+        advanced {
+            warnOnUnsavedChanges: ignore
+        }
+        source {
+            formRegion: @comment-form
+            column: POST_ID
+            dataType: number
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    pageItem P1001_QUESTION (
+        type: plugin/mathQuestionField
+        label {
+            label: Answer to
+            alignment: left
+        }
+        settings {
+            firstNumberMaxValue: 32
+            secondNumberMinValue: 8
+            secondNumberMaxValue: 64
+            itemHoldCorrectAnswer: P1001_ANSWER
+        }
+        layout {
+            sequence: 110
+            region: @comment-form
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+        }
+        validation {
+            maxLength: 20
+        }
+        advanced {
+            warnOnUnsavedChanges: ignore
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        help {
+            inlineHelpText: Please answer this question before you submit comment.
+        }
+        config {
+            buildOption: @blog-feature-comment-verify
+        }
+    )
+
+    pageItem P1001_RESPONSE_BODY (
+        type: hidden
+        layout {
+            sequence: 80
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+            icon: fa-chevron-left
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button submit (
+        buttonName: SUBMIT
+        label: Submit
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconRight
+            ]
+            icon: fa-send-o
+        }
+        behavior {
+            showProcessing: true
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+    )
+
+    dynamicAction close-dialog (
+        name: Close Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    validation validate-comment (
+        name: Validate comment
+        execution {
+            sequence: 20
+        }
+        validation {
+            type: functionBody
+            plsqlFunctionBody:
+                ```plsql
+                return blog_comment.validate_comment(
+                  p_comment => :P1001_BODY_HTML
+                );
+                ```
+        }
+        error {
+            displayLocation: inlineWithField
+            associatedItem: @P1001_COMMENT_TEXT
+        }
+        comments {
+            comments: Validate formatted comment length and HTML. Return error text if validation fails
+        }
+    )
+
+    validation validate-comment-length (
+        name: Validate comment length
+        execution {
+            sequence: 10
+        }
+        validation {
+            plsqlExpression: length( :P1001_COMMENT_TEXT ) <= 2000
+        }
+        error {
+            errorMessage: #LABEL# can be only 2000 characters long.
+            associatedItem: @P1001_COMMENT_TEXT
+        }
+    )
+
+    validation validate-email (
+        name: Validate email
+        execution {
+            sequence: 40
+        }
+        validation {
+            type: functionBody
+            plsqlFunctionBody:
+                ```plsql
+                return blog_comment.is_email(
+                  p_email     => :P1001_EMAIL
+                  ,p_err_mesg => 'BLOG_VALIDATION_ERR_EMAIL'
+                );
+                ```
+        }
+        error {
+            displayLocation: inlineWithField
+            associatedItem: @P1001_EMAIL
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P1001_EMAIL
+        }
+    )
+
+    computation p1001-is-active (
+        itemName: P1001_IS_ACTIVE
+        execution {
+            sequence: 20
+            point: afterSubmit
+        }
+        computation {
+            type: staticValue
+            staticValue: 0
+        }
+        config {
+            buildOption: @blog-feature-moderate-comments
+        }
+        comments {
+            comments: If comments need to be moderated, set is_active value to zero (0)
+        }
+    )
+
+    computation p1001-language-code (
+        itemName: P1001_LANGUAGE_CODE
+        execution {
+            sequence: 30
+            point: afterSubmit
+        }
+        computation {
+            type: staticValue
+            staticValue: en
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+    )
+
+    process automatic-approve-comment (
+        name: Automatic Approve Comment
+        type: invokeApi
+        executionChain: @comment-sentiment-analyze
+        invoke {
+            package: BLOG_COMMENT
+            procedureOrFunction: AUTO_APPROVE
+        }
+        execution {
+            sequence: 90
+        }
+        advanced {
+            executionMappingIdentifier: 29562870479765203
+        }
+        config {
+            buildOption: @blog-feature-moderate-comments-ai
+        }
+        comments {
+            comments: Automatically approve comment depending sentiment
+        }
+
+        parameter p_comment_id (
+            value {
+                type: item
+                item: P1001_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process clear-page-items (
+        name: Clear page items
+        type: clearSessionState
+        execution {
+            sequence: 100
+        }
+        advanced {
+            executionMappingIdentifier: 31247931198982919
+        }
+        comments {
+            comments: At least question answer item saves session state to disk. Clear all page items session state.
+        }
+    )
+
+    process comment-approved (
+        name: Comment approved
+        type: closeDialog
+        execution {
+            sequence: 120
+        }
+        successMessage {
+            successMessage: Thanks for commenting.
+        }
+        advanced {
+            executionMappingIdentifier: 26385226571542645
+        }
+        config {
+            buildOption: !@blog-feature-moderate-comments
+        }
+        comments {
+            comments: Comments aren't moderated
+        }
+    )
+
+    process comment-sentiment-analyze (
+        name: Comment Sentiment Analyze
+        type: executionChain
+        backgroundExecution {
+            runInBackground: true
+        }
+        execution {
+            sequence: 80
+        }
+        advanced {
+            executionMappingIdentifier: 30672865567897807
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+        comments {
+            comments: Execution change run in background to analyze comment sentiment
+        }
+    )
+
+    process comment-will-be-moderated (
+        name: Comment will be moderated
+        type: closeDialog
+        execution {
+            sequence: 110
+        }
+        successMessage {
+            successMessage: Thanks for commenting. Your comment will be published after author has review it.
+        }
+        advanced {
+            executionMappingIdentifier: 31617539210094011
+        }
+        config {
+            buildOption: @blog-feature-moderate-comments
+        }
+        comments {
+            comments: Comments are moderated
+        }
+    )
+
+    process format-and-cleanup-comment (
+        name: Format and cleanup comment
+        type: invokeApi
+        invoke {
+            package: BLOG_COMMENT
+            procedureOrFunction: FORMAT_COMMENT
+        }
+        execution {
+            sequence: 30
+            point: afterSubmit
+        }
+        advanced {
+            executionMappingIdentifier: 20471016925872825
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P1001_COMMENT_TEXT
+        }
+
+        parameter (
+            type: functionResult
+            value {
+                item: P1001_BODY_HTML
+            }
+            advanced {
+                displaySequence: 40
+            }
+        )
+
+        parameter p_comment (
+            value {
+                type: item
+                item: P1001_COMMENT_TEXT
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    process get-dominant-language (
+        name: Get Dominant Language
+        type: invokeApi
+        executionChain: @comment-sentiment-analyze
+        invoke {
+            type: restSource
+            restSource: @BLOG_LANGUAGE_AI
+            operation: @single_document
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 29836666832333219
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+        comments {
+            comments: Analyze comment dominant language
+        }
+
+        parameter (
+            name: @compartmentid
+            value {
+                type: expression
+                plsqlExpression:
+                    ```plsql
+                    blog_util.get_attribute_value(
+                      p_attribute_name => 'G_OCI_LANG_AI_COMPARTMENT_OCID'
+                    )
+                    ```
+            }
+        )
+
+        parameter (
+            name: @key
+            value {
+                type: item
+                item: P1001_ID
+            }
+        )
+
+        parameter (
+            name: @languagecode
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @level
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @response-body
+            parameter {
+                ignoreOutput: false
+            }
+            value {
+                type: item
+                item: P1001_RESPONSE_BODY
+            }
+        )
+
+        parameter (
+            name: @singledocumentservice
+            value {
+                type: staticValue
+                staticValue: batchDetectDominantLanguage
+            }
+        )
+
+        parameter (
+            name: @targetlanguagecode
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @text
+            value {
+                type: expression
+                plsqlExpression:
+                    ```plsql
+                    blog_comment.plain_text(
+                      p_string => :P1001_COMMENT_TEXT
+                    )
+                    ```
+            }
+        )
+
+    )
+
+    process get-english-text (
+        name: Get English Text
+        type: invokeApi
+        executionChain: @comment-sentiment-analyze
+        invoke {
+            package: BLOG_AI
+            procedureOrFunction: GET_TRANSLATION
+        }
+        execution {
+            sequence: 60
+        }
+        advanced {
+            executionMappingIdentifier: 40918733813167506
+        }
+        serverSideCondition {
+            type: item!=value
+            item: P1001_LANGUAGE_CODE
+            value: en
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+        comments {
+            comments: Get comment English translation
+        }
+
+        parameter p_documents (
+            parameter {
+                dataType: clob
+            }
+            value {
+                type: item
+                item: P1001_RESPONSE_BODY
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_translation (
+            parameter {
+                direction: out
+                dataType: clob
+            }
+            value {
+                item: P1001_COMMENT_TEXT
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    process get-language-code (
+        name: Get Language Code
+        type: invokeApi
+        executionChain: @comment-sentiment-analyze
+        invoke {
+            package: BLOG_AI
+            procedureOrFunction: GET_LANG_CODE
+        }
+        execution {
+            sequence: 30
+        }
+        advanced {
+            executionMappingIdentifier: 29839134570333244
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+        comments {
+            comments: Get comment dominant language
+        }
+
+        parameter p_documents (
+            parameter {
+                dataType: clob
+            }
+            value {
+                type: item
+                item: P1001_RESPONSE_BODY
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_lang_code (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P1001_LANGUAGE_CODE
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    process get-sentiment (
+        name: Get Sentiment
+        type: invokeApi
+        executionChain: @comment-sentiment-analyze
+        invoke {
+            type: restSource
+            restSource: @BLOG_LANGUAGE_AI
+            operation: @single_document
+        }
+        execution {
+            sequence: 70
+        }
+        advanced {
+            executionMappingIdentifier: 30821601482807036
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+        comments {
+            comments: Analyze comment sentiment
+        }
+
+        parameter (
+            name: @compartmentid
+            value {
+                type: expression
+                plsqlExpression:
+                    ```plsql
+                    blog_util.get_attribute_value(
+                      p_attribute_name => 'G_OCI_LANG_AI_COMPARTMENT_OCID'
+                    )
+                    ```
+            }
+        )
+
+        parameter (
+            name: @key
+            value {
+                type: item
+                item: P1001_ID
+            }
+        )
+
+        parameter (
+            name: @languagecode
+            value {
+                type: staticValue
+                staticValue: en
+            }
+        )
+
+        parameter (
+            name: @level
+            value {
+                type: staticValue
+                staticValue: SENTENCE
+            }
+        )
+
+        parameter (
+            name: @response-body
+            parameter {
+                ignoreOutput: false
+            }
+            value {
+                type: item
+                item: P1001_RESPONSE_BODY
+            }
+        )
+
+        parameter (
+            name: @singledocumentservice
+            value {
+                type: staticValue
+                staticValue: batchDetectLanguageSentiments
+            }
+        )
+
+        parameter (
+            name: @targetlanguagecode
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @text
+            value {
+                type: expression
+                plsqlExpression:
+                    ```plsql
+                    blog_comment.plain_text(
+                      p_string => :P1001_COMMENT_TEXT
+                    )
+                    ```
+            }
+        )
+
+    )
+
+    process if-hidden-item-p1001-last-name-not-null (
+        name: If Hidden Item P1001_LAST_NAME not Null
+        type: closeDialog
+        settings {
+            showSuccessMessages: false
+        }
+        execution {
+            sequence: 10
+            point: afterSubmit
+        }
+        advanced {
+            executionMappingIdentifier: 26385135588542644
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P1001_LAST_NAME
+        }
+        comments {
+            comments: Close dialog if not for human input field is not null
+        }
+    )
+
+    process initialize-form-leave-reply (
+        name: Initialize form Leave Reply
+        type: formInitialization
+        formRegion: @comment-form
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 26385626116542649
+        }
+    )
+
+    process insert-sentiment (
+        name: Insert Sentiment
+        type: invokeApi
+        executionChain: @comment-sentiment-analyze
+        invoke {
+            package: BLOG_AI
+            procedureOrFunction: MERGE_SENTIMENT
+        }
+        execution {
+            sequence: 80
+        }
+        advanced {
+            executionMappingIdentifier: 30673613598897815
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+        comments {
+            comments: Insert sentiment analyze result to table
+        }
+
+        parameter p_documents (
+            parameter {
+                dataType: clob
+            }
+            value {
+                type: item
+                item: P1001_RESPONSE_BODY
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_language (
+            value {
+                type: item
+                item: P1001_LANGUAGE_CODE
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process notify-blogger (
+        name: Notify blogger
+        type: invokeApi
+        invoke {
+            package: BLOG_COMMENT
+            procedureOrFunction: NEW_COMMENT_NOTIFY
+        }
+        execution {
+            sequence: 70
+        }
+        advanced {
+            executionMappingIdentifier: 26970862080257336
+        }
+        comments {
+            comments: Notify blogger about new comment for post
+        }
+
+        parameter p_app_name (
+            value {
+                type: item
+                item: P0_BLOG_APP_NAME
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_email_template (
+            value {
+                type: staticValue
+                staticValue: BLOG_NEW_COMMENT_NOTIFY
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+        parameter p_post_id (
+            value {
+                type: item
+                item: P1001_POST_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process process-form-leave-reply (
+        name: Process form Leave Reply
+        type: formAutoRowProcessing
+        formRegion: @comment-form
+        target {
+            preventLostUpdates: false
+        }
+        lockRow {
+            lockRow: false
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 26968482248257312
+        }
+        serverSideCondition {
+            whenButtonPressed: @submit
+        }
+        comments {
+            comments: Save comment
+        }
+    )
+
+    process set-moderate-flag (
+        name: Set moderate flag
+        type: invokeApi
+        invoke {
+            package: BLOG_COMMENT
+            procedureOrFunction: FLAG_COMMENT
+        }
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 36228592519379744
+        }
+        config {
+            buildOption: @blog-feature-moderate-comments
+        }
+        comments {
+            comments: Mark new comment to be moderated if feature "Comments need to moderated" ia enabled
+        }
+
+        parameter p_comment_id (
+            value {
+                type: item
+                item: P1001_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_flags (
+            value {
+                type: staticValue
+                staticValue: MODERATE
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    process set-new-flag (
+        name: Set new flag
+        type: invokeApi
+        invoke {
+            package: BLOG_COMMENT
+            procedureOrFunction: FLAG_COMMENT
+        }
+        execution {
+            sequence: 30
+        }
+        advanced {
+            executionMappingIdentifier: 36228428060379743
+        }
+        comments {
+            comments: Mark new comment as unread
+        }
+
+        parameter p_comment_id (
+            value {
+                type: item
+                item: P1001_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_flags (
+            value {
+                type: staticValue
+                staticValue: NEW
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    process subscribe-user (
+        name: Subscribe user
+        type: invokeApi
+        invoke {
+            package: BLOG_COMMENT
+            procedureOrFunction: SUBSCRIBE
+        }
+        execution {
+            sequence: 60
+        }
+        advanced {
+            executionMappingIdentifier: 31248826734982928
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P1001_EMAIL
+        }
+        config {
+            buildOption: @blog-feature-subscribe-comments
+        }
+        comments {
+            comments: Save user email for notification for new replies to comment if user provides email address and feature "Sent email notification of new comments" is enabled
+        }
+
+        parameter p_email (
+            value {
+                type: item
+                item: P1001_EMAIL
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_post_id (
+            value {
+                type: item
+                item: P1001_POST_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process translate-to-english (
+        name: Translate to English
+        type: invokeApi
+        executionChain: @comment-sentiment-analyze
+        invoke {
+            type: restSource
+            restSource: @BLOG_LANGUAGE_AI
+            operation: @single_document
+        }
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 29839484271333247
+        }
+        serverSideCondition {
+            type: item!=value
+            item: P1001_LANGUAGE_CODE
+            value: en
+        }
+        config {
+            buildOption: @blog-feature-language-ai
+        }
+        comments {
+            comments: Translate comment to English if needed
+        }
+
+        parameter (
+            name: @compartmentid
+            value {
+                type: expression
+                plsqlExpression:
+                    ```plsql
+                    blog_util.get_attribute_value(
+                      p_attribute_name => 'G_OCI_LANG_AI_COMPARTMENT_OCID'
+                    )
+                    ```
+            }
+        )
+
+        parameter (
+            name: @key
+            value {
+                type: item
+                item: P1001_ID
+            }
+        )
+
+        parameter (
+            name: @languagecode
+            value {
+                type: item
+                item: P1001_LANGUAGE_CODE
+            }
+        )
+
+        parameter (
+            name: @level
+            value {
+                type: null
+            }
+        )
+
+        parameter (
+            name: @response-body
+            parameter {
+                ignoreOutput: false
+            }
+            value {
+                type: item
+                item: P1001_RESPONSE_BODY
+            }
+        )
+
+        parameter (
+            name: @singledocumentservice
+            value {
+                type: staticValue
+                staticValue: batchLanguageTranslation
+            }
+        )
+
+        parameter (
+            name: @targetlanguagecode
+            value {
+                type: staticValue
+                staticValue: en
+            }
+        )
+
+        parameter (
+            name: @text
+            value {
+                type: expression
+                plsqlExpression:
+                    ```plsql
+                    blog_comment.plain_text(
+                      p_string => :P1001_COMMENT_TEXT
+                    )
+                    ```
+            }
+        )
+
+    )
+
+)
+

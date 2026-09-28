@@ -1,0 +1,127 @@
+shortcut BLOG_ATOM_LINK (
+    source {
+        type: functionBody
+        plsqlFunctionBody:
+            ```plsql
+            return blog_html.get_atom_link(
+              p_app_id        => :APP_ID
+            , p_app_name      => :P0_BLOG_APP_NAME
+            , p_message       => :APP_TEXT$BLOG_TXT_ATOM
+            , p_build_option  => 'BLOG_FEATURE_ATOM'
+            );
+            ```
+    }
+    comments {
+        comments: Generate atom link to page header. Used in page 1 page html header
+    }
+)
+
+shortcut BLOG_CANONICAL_LINK_ARCHIVE (
+    source {
+        type: functionBody
+        plsqlFunctionBody:
+            ```plsql
+            return blog_html.set_archive_canonical_link(
+              p_archive_id  => :P15_ARCHIVE_ID
+            , p_url         => :P0_PAGE_URL
+            );
+            
+            ```
+    }
+    comments {
+        comments: Get canonical link for archive. Used in page 15 page html header.
+    }
+)
+
+shortcut BLOG_CANONICAL_LINK_CATEGORY (
+    source {
+        type: functionBody
+        plsqlFunctionBody:
+            ```plsql
+            return blog_html.set_category_canonical_link(
+              p_category_id => :P14_CATEGORY_ID
+            , p_url         => :P0_PAGE_URL
+            );
+            ```
+    }
+    comments {
+        comments: Get canonical link for category. Used in page 14 page html header.
+    }
+)
+
+shortcut BLOG_CANONICAL_LINK_POST (
+    source {
+        type: functionBody
+        plsqlFunctionBody:
+            ```plsql
+            return blog_html.set_post_canonical_link(
+              p_post_id => :P2_POST_ID
+            , p_url     => :P0_PAGE_URL
+            );
+            ```
+    }
+    comments {
+        comments: Get canonical link for post. Used in page 2 page html header.
+    }
+)
+
+shortcut BLOG_CANONICAL_LINK_TAB (
+    source {
+        type: functionBody
+        plsqlFunctionBody:
+            ```plsql
+            return blog_html.set_tab_canonical_link(
+              p_page  => :APP_PAGE_ID
+            , p_url   => :P0_PAGE_URL
+            );
+            ```
+    }
+    comments {
+        comments: Get canonical link for page that is accessed form tabs. Used in pages 1, 10, 11 and 12 page html header.
+    }
+)
+
+shortcut BLOG_CANONICAL_LINK_TAG (
+    source {
+        type: functionBody
+        plsqlFunctionBody:
+            ```plsql
+            return blog_html.set_tag_canonical_link(
+              p_tag_id  => :P6_TAG_ID
+            , p_url     => :P0_PAGE_URL
+            );
+            ```
+    }
+    comments {
+        comments: Get canonical link for tag. Used in page 6 page html header.
+    }
+)
+
+shortcut BLOG_META_ROBOTS_NOINDEX (
+    source {
+        type: functionBody
+        plsqlFunctionBody: return blog_html.get_robots_noindex_meta;
+    }
+    comments {
+        comments: Get meta tag robots noindex. Used in page 4, 1001 and 9999 page html header.
+    }
+)
+
+shortcut BLOG_RSS_LINK (
+    source {
+        type: functionBody
+        plsqlFunctionBody:
+            ```plsql
+            return blog_html.get_rss_link(
+              p_app_id        => :APP_ID
+            , p_app_name      => :P0_BLOG_APP_NAME
+            , p_message       => :APP_TEXT$BLOG_TXT_RSS
+            , p_build_option  => 'BLOG_FEATURE_RSS'
+            );
+            ```
+    }
+    comments {
+        comments: Generate RSS link to page header. Used in page 1 page html header
+    }
+)
+

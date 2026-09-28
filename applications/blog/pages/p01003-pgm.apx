@@ -1,0 +1,271 @@
+page 1003 (
+    name: Sitemap, RSS and File Download
+    alias: PGM
+    title: Sitemap, RSS and File Download
+    pageGroup: @general
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        authentication: public
+        formAutoComplete: false
+        browserCache: true
+    }
+    comments {
+        comments: Page to hold Ajax callback processes e.g. for generate RSS feed and download files.
+    }
+
+    pageItem P1003_FILE_NAME (
+        type: hidden
+        layout {
+            sequence: 70
+            region: @/not-rendered-items
+            slot: regionBody
+        }
+        sessionState {
+            storage: request
+        }
+        security {
+            encryptSessionState: false
+        }
+    )
+
+    process atom-xml (
+        name: atom.xml
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                blog_xml.atom(
+                  p_app_name  => :P0_BLOG_APP_NAME
+                , p_app_desc  => :P0_BLOG_APP_DESC
+                );
+                
+                
+                ```
+        }
+        execution {
+            sequence: 20
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 38320627145727401
+        }
+        config {
+            buildOption: @blog-feature-atom
+        }
+    )
+
+    process download (
+        name: download
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                blog_util.download_file (
+                  p_file_path => :P1003_FILE_NAME
+                );
+                ```
+        }
+        execution {
+            sequence: 100
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 63039875243126599
+        }
+        config {
+            buildOption: !@blog-feature-oci-object-storage
+        }
+    )
+
+    process rss-xml (
+        name: rss.xml
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                blog_xml.rss(
+                  p_app_name  => :P0_BLOG_APP_NAME
+                , p_app_desc  => :P0_BLOG_APP_DESC
+                );
+                
+                
+                ```
+        }
+        execution {
+            sequence: 10
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 63036620652126597
+        }
+        config {
+            buildOption: @blog-feature-rss
+        }
+    )
+
+    process rss-xsl (
+        name: rss.xsl
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                blog_xml.rss_xsl(
+                  p_css_file => :APP_FILES || 'css/rss-xsl.min.css'
+                );
+                ```
+        }
+        execution {
+            sequence: 30
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 63037094013126597
+        }
+        config {
+            buildOption: @blog-feature-rss
+        }
+    )
+
+    process sitemap-archives-xml (
+        name: sitemap-archives.xml
+        type: executeCode
+        source {
+            plsqlCode: blog_xml.sitemap_archives;
+        }
+        execution {
+            sequence: 80
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 63039095924126598
+        }
+        config {
+            buildOption: @blog-feature-sitemap
+        }
+    )
+
+    process sitemap-categories-xml (
+        name: sitemap-categories.xml
+        type: executeCode
+        source {
+            plsqlCode: blog_xml.sitemap_categories;
+        }
+        execution {
+            sequence: 70
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 63038641489126598
+        }
+        config {
+            buildOption: @blog-feature-sitemap
+        }
+    )
+
+    process sitemap-index-xml (
+        name: sitemap-index.xml
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                blog_xml.sitemap_index(
+                   p_app_id       => :APP_ID
+                  ,p_app_page_id  => :APP_PAGE_ID
+                  ,p_process_name => 'sitemap-index.xml' 
+                );
+                ```
+        }
+        execution {
+            sequence: 40
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 63037470481126597
+        }
+        config {
+            buildOption: @blog-feature-sitemap
+        }
+    )
+
+    process sitemap-main-xml (
+        name: sitemap-main.xml
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                blog_xml.sitemap_main(
+                  p_app_id      => :APP_ID
+                , p_page_group  => 'Sitemap Main'
+                );
+                ```
+        }
+        execution {
+            sequence: 50
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 63037810302126598
+        }
+        config {
+            buildOption: @blog-feature-sitemap
+        }
+    )
+
+    process sitemap-posts-xml (
+        name: sitemap-posts.xml
+        type: executeCode
+        source {
+            plsqlCode: blog_xml.sitemap_posts;
+        }
+        execution {
+            sequence: 60
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 63038262775126598
+        }
+        config {
+            buildOption: @blog-feature-sitemap
+        }
+    )
+
+    process sitemap-tags-xml (
+        name: sitemap-tags.xml
+        type: executeCode
+        source {
+            plsqlCode: blog_xml.sitemap_tags;
+        }
+        execution {
+            sequence: 90
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 63039494696126598
+        }
+        config {
+            buildOption: @blog-feature-sitemap
+        }
+    )
+
+    branch (
+        name: Go to Home Page
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        behavior {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+)
+

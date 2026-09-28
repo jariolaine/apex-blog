@@ -1,0 +1,11 @@
+appGroup apex-blog (
+    name: APEX Blog
+    comments {
+        comments:
+            ```
+            APEX Blog applications.
+            Source code: https://github.com/jariolaine/apex-blog
+            ```
+    }
+)
+

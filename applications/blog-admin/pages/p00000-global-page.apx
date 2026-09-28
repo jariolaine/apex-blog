@@ -1,0 +1,51 @@
+page 0 (
+    name: Global Page - Desktop
+    pageGroup: @general
+
+    region not-rendered-items (
+        name: Not Rendered Items
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: footer
+        }
+        appearance {
+            template: @/blank-with-attributes-no-grid
+            templateOptions: #DEFAULT#
+        }
+        advanced {
+            excludeTitleFromTranslation: true
+        }
+        serverSideCondition {
+            type: never
+        }
+    )
+
+    pageItem P0_BLOG_APP_DESC (
+        type: hidden
+        layout {
+            sequence: 20
+            region: @not-rendered-items
+            slot: regionBody
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+    pageItem P0_BLOG_APP_NAME (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @not-rendered-items
+            slot: regionBody
+        }
+        security {
+            sessionStateProtection: restricted
+            encryptSessionState: false
+        }
+    )
+
+)
+

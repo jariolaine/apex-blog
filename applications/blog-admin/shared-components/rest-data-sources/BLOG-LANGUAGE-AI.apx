@@ -1,0 +1,589 @@
+restDataSource BLOG_LANGUAGE_AI (
+    name: Blog Language AI
+    source {
+        type: oci
+        remoteServer: @BLOG_LANGUAGE_AI
+        urlPathPrefix: 20221001/actions/
+    }
+    authentication {
+        credentials: @BLOG_OCI_API_KEY
+    }
+
+    operation batch_document (
+        name: Batch Document
+        label: Batch Document
+        operation {
+            urlPattern: :batchDocumentService
+            httpMethod: post
+        }
+        requestBody {
+            template:
+                ```
+                {
+                  "compartmentId": "#compartmentId#",
+                  "targetLanguageCode": "#targetLanguageCode#",
+                  "documents": #documents#
+                }
+                ```
+            versionNumber: 1
+        }
+    )
+
+    operation single_document (
+        name: Single Document
+        label: Single Document
+        operation {
+            urlPattern: :singleDocumentService
+            httpMethod: post
+            databaseOperation: fetchRows
+        }
+        requestBody {
+            template:
+                ```
+                {
+                  "compartmentId": "#compartmentId#",
+                  "targetLanguageCode": "#targetLanguageCode#",
+                  "documents":[{
+                    "key": "#key#",
+                    "languageCode": "#languageCode#",
+                    "text": "#text#"
+                  }]
+                }
+                ```
+            versionNumber: 1
+        }
+    )
+
+    parameter accept (
+        name: Accept
+        parameter {
+            type: httpHeader
+        }
+        value {
+            static: true
+            defaultValueType: staticValue
+            staticValue: application/json
+        }
+    )
+
+    parameter accept-encoding (
+        name: Accept-Encoding
+        parameter {
+            type: httpHeader
+        }
+        value {
+            static: true
+            defaultValueType: staticValue
+            staticValue: gzip, deflate
+        }
+    )
+
+    parameter batchdocumentservice (
+        name: batchDocumentService
+        operation: @batch_document
+        value {
+            defaultValueType: staticValue
+            staticValue: batchDetectLanguageSentiments
+        }
+        validation {
+            required: true
+        }
+    )
+
+    parameter compartmentid (
+        name: compartmentId
+        operation: @single_document
+        parameter {
+            type: requestOrResponseBody
+        }
+        validation {
+            required: true
+        }
+    )
+
+    parameter compartmentid-2 (
+        name: compartmentId
+        operation: @batch_document
+        parameter {
+            type: requestOrResponseBody
+        }
+        validation {
+            required: true
+        }
+    )
+
+    parameter content-type (
+        name: Content-Type
+        parameter {
+            type: httpHeader
+        }
+        value {
+            static: true
+            defaultValueType: staticValue
+            staticValue: application/json
+        }
+    )
+
+    parameter documents (
+        name: documents
+        operation: @batch_document
+        parameter {
+            type: requestOrResponseBody
+        }
+        validation {
+            required: true
+        }
+    )
+
+    parameter key (
+        name: key
+        operation: @single_document
+        parameter {
+            type: requestOrResponseBody
+        }
+        validation {
+            required: true
+        }
+    )
+
+    parameter languagecode (
+        name: languageCode
+        operation: @single_document
+        parameter {
+            type: requestOrResponseBody
+        }
+    )
+
+    parameter level (
+        name: level
+        operation: @single_document
+        parameter {
+            type: urlQueryString
+            omitWhenValueIsEmpty: true
+        }
+    )
+
+    parameter level-2 (
+        name: level
+        operation: @batch_document
+        parameter {
+            type: urlQueryString
+            omitWhenValueIsEmpty: true
+        }
+    )
+
+    parameter response-body (
+        name: response_body
+        operation: @single_document
+        parameter {
+            type: requestOrResponseBody
+            direction: out
+        }
+    )
+
+    parameter response-body-2 (
+        name: response_body
+        operation: @batch_document
+        parameter {
+            type: requestOrResponseBody
+            direction: out
+        }
+    )
+
+    parameter singledocumentservice (
+        name: singleDocumentService
+        operation: @single_document
+        value {
+            defaultValueType: staticValue
+            staticValue: batchDetectLanguageSentiments
+        }
+        validation {
+            required: true
+        }
+    )
+
+    parameter targetlanguagecode (
+        name: targetLanguageCode
+        operation: @single_document
+        parameter {
+            type: requestOrResponseBody
+        }
+    )
+
+    parameter targetlanguagecode-2 (
+        name: targetLanguageCode
+        operation: @batch_document
+        parameter {
+            type: requestOrResponseBody
+        }
+    )
+
+    parameter text (
+        name: text
+        operation: @single_document
+        parameter {
+            type: requestOrResponseBody
+        }
+        validation {
+            required: true
+        }
+    )
+
+    parameter user-agent (
+        name: User-Agent
+        parameter {
+            type: httpHeader
+        }
+        value {
+            static: true
+            defaultValueType: staticValue
+            staticValue: Oracle Application Express (gzip)
+        }
+    )
+
+    dataProfile {
+        name: Blog Language AI
+        rowSelector: .
+    }
+
+    dataProfileColumn aspect-length (
+        columnName: ASPECT_LENGTH
+        source {
+            sequence: 50
+            parentColumn: @aspects
+            dataType: number
+        }
+        parsing {
+            pathExpression: length
+        }
+    )
+
+    dataProfileColumn aspect-offset (
+        columnName: ASPECT_OFFSET
+        source {
+            sequence: 60
+            parentColumn: @aspects
+            dataType: number
+        }
+        parsing {
+            pathExpression: offset
+        }
+    )
+
+    dataProfileColumn aspect-score-mixed (
+        columnName: ASPECT_SCORE_MIXED
+        source {
+            sequence: 70
+            parentColumn: @aspects
+            dataType: number
+        }
+        parsing {
+            pathExpression: scores.Mixed
+        }
+    )
+
+    dataProfileColumn aspect-score-negative (
+        columnName: ASPECT_SCORE_NEGATIVE
+        source {
+            sequence: 90
+            parentColumn: @aspects
+            dataType: number
+        }
+        parsing {
+            pathExpression: scores.Negative
+        }
+    )
+
+    dataProfileColumn aspect-score-neutral (
+        columnName: ASPECT_SCORE_NEUTRAL
+        source {
+            sequence: 80
+            parentColumn: @aspects
+            dataType: number
+        }
+        parsing {
+            pathExpression: scores.Neutral
+        }
+    )
+
+    dataProfileColumn aspect-score-positive (
+        columnName: ASPECT_SCORE_POSITIVE
+        source {
+            sequence: 100
+            parentColumn: @aspects
+            dataType: number
+        }
+        parsing {
+            pathExpression: scores.Positive
+        }
+    )
+
+    dataProfileColumn aspect-sentiment (
+        columnName: ASPECT_SENTIMENT
+        source {
+            sequence: 110
+            parentColumn: @aspects
+            dataType: varchar2
+        }
+        parsing {
+            pathExpression: sentiment
+        }
+    )
+
+    dataProfileColumn aspect-text (
+        columnName: ASPECT_TEXT
+        source {
+            sequence: 40
+            parentColumn: @aspects
+            dataType: varchar2
+        }
+        parsing {
+            pathExpression: text
+        }
+    )
+
+    dataProfileColumn aspects (
+        columnName: ASPECTS
+        source {
+            sequence: 30
+            parentColumn: @documents
+            dataType: array
+        }
+        parsing {
+            pathExpression: aspects
+        }
+    )
+
+    dataProfileColumn document-score-mixed (
+        columnName: DOCUMENT_SCORE_MIXED
+        source {
+            sequence: 200
+            parentColumn: @documents
+            dataType: number
+        }
+        parsing {
+            pathExpression: documentScores.mixed
+        }
+    )
+
+    dataProfileColumn document-score-negative (
+        columnName: DOCUMENT_SCORE_NEGATIVE
+        source {
+            sequence: 220
+            parentColumn: @documents
+            dataType: number
+        }
+        parsing {
+            pathExpression: documentScores.negative
+        }
+    )
+
+    dataProfileColumn document-score-neutral (
+        columnName: DOCUMENT_SCORE_NEUTRAL
+        source {
+            sequence: 210
+            parentColumn: @documents
+            dataType: number
+        }
+        parsing {
+            pathExpression: documentScores.neutral
+        }
+    )
+
+    dataProfileColumn document-score-positive (
+        columnName: DOCUMENT_SCORE_POSITIVE
+        source {
+            sequence: 230
+            parentColumn: @documents
+            dataType: number
+        }
+        parsing {
+            pathExpression: documentScores.positive
+        }
+    )
+
+    dataProfileColumn document-sentiment (
+        columnName: DOCUMENT_SENTIMENT
+        source {
+            sequence: 240
+            parentColumn: @documents
+            dataType: varchar2
+            maxLength: 32767
+        }
+        parsing {
+            pathExpression: documentSentiment
+        }
+    )
+
+    dataProfileColumn documents (
+        columnName: DOCUMENTS
+        source {
+            sequence: 10
+            dataType: array
+        }
+        parsing {
+            pathExpression: documents
+        }
+    )
+
+    dataProfileColumn error-code (
+        columnName: ERROR_CODE
+        source {
+            sequence: 270
+            parentColumn: @errors
+            dataType: varchar2
+            maxLength: 32767
+        }
+        parsing {
+            pathExpression: error.code
+        }
+    )
+
+    dataProfileColumn error-key (
+        columnName: ERROR_KEY
+        source {
+            sequence: 260
+            parentColumn: @errors
+            dataType: varchar2
+        }
+        parsing {
+            pathExpression: key
+        }
+    )
+
+    dataProfileColumn error-message (
+        columnName: ERROR_MESSAGE
+        source {
+            sequence: 280
+            parentColumn: @errors
+            dataType: varchar2
+            maxLength: 32767
+        }
+        parsing {
+            pathExpression: error.message
+        }
+    )
+
+    dataProfileColumn errors (
+        columnName: ERRORS
+        source {
+            sequence: 250
+            dataType: array
+        }
+        parsing {
+            pathExpression: errors
+        }
+    )
+
+    dataProfileColumn key (
+        columnName: KEY
+        source {
+            sequence: 20
+            parentColumn: @documents
+            dataType: varchar2
+            primaryKey: true
+        }
+        parsing {
+            pathExpression: key
+        }
+    )
+
+    dataProfileColumn language-code (
+        columnName: LANGUAGE_CODE
+        source {
+            sequence: 190
+            parentColumn: @documents
+            dataType: varchar2
+            maxLength: 32767
+        }
+        parsing {
+            pathExpression: languageCode
+        }
+    )
+
+    dataProfileColumn sentence-score-mixed (
+        columnName: SENTENCE_SCORE_MIXED
+        source {
+            sequence: 140
+            parentColumn: @sentences
+            dataType: number
+        }
+        parsing {
+            pathExpression: scores.mixed
+        }
+    )
+
+    dataProfileColumn sentence-score-negative (
+        columnName: SENTENCE_SCORE_NEGATIVE
+        source {
+            sequence: 160
+            parentColumn: @sentences
+            dataType: number
+        }
+        parsing {
+            pathExpression: scores.negative
+        }
+    )
+
+    dataProfileColumn sentence-score-neutral (
+        columnName: SENTENCE_SCORE_NEUTRAL
+        source {
+            sequence: 150
+            parentColumn: @sentences
+            dataType: number
+        }
+        parsing {
+            pathExpression: scores.neutral
+        }
+    )
+
+    dataProfileColumn sentence-score-positive (
+        columnName: SENTENCE_SCORE_POSITIVE
+        source {
+            sequence: 170
+            parentColumn: @sentences
+            dataType: number
+        }
+        parsing {
+            pathExpression: scores.positive
+        }
+    )
+
+    dataProfileColumn sentence-sentiment (
+        columnName: SENTENCE_SENTIMENT
+        source {
+            sequence: 180
+            parentColumn: @sentences
+            dataType: varchar2
+        }
+        parsing {
+            pathExpression: sentiment
+        }
+    )
+
+    dataProfileColumn sentence-text (
+        columnName: SENTENCE_TEXT
+        source {
+            sequence: 130
+            parentColumn: @sentences
+            dataType: varchar2
+        }
+        parsing {
+            pathExpression: text
+        }
+    )
+
+    dataProfileColumn sentences (
+        columnName: SENTENCES
+        source {
+            sequence: 120
+            parentColumn: @documents
+            dataType: array
+        }
+        parsing {
+            pathExpression: sentences
+        }
+    )
+
+)
+

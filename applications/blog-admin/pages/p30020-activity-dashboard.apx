@@ -1,0 +1,523 @@
+page 30020 (
+    name: Activity Dashboard
+    alias: ACTIVITY-DASHBOARD
+    title: Activity Dashboard
+    pageGroup: @activity-reporting
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: [
+            #DEFAULT#
+            ui-dialog--stretch
+        ]
+    }
+    dialog {
+        resizable: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region filters (
+        name: Filters
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: dialogHeader
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: [
+                #DEFAULT#
+                t-ButtonRegion--noBorder
+                t-Form--large
+            ]
+        }
+    )
+
+    region hourly-page-events (
+        name: Hourly Page Events
+        type: chart
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                i-h320
+                t-Region--scrollBody
+            ]
+        }
+        settings {
+            timeAxisType: enabled
+        }
+        tooltip {
+            showSeriesName: false
+        }
+        legend {
+            show: false
+        }
+
+        series series (
+            name: Series 1
+            execution {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    with window as (
+                      select
+                         trunc( current_timestamp - ( ( level - 1 ) / 24 ), 'HH' )  as start_tm
+                        ,trunc( current_timestamp - ( ( level - 2 ) / 24 ), 'HH' )  as end_tm
+                      from dual
+                      connect by level <= round( 24 * ( 1/24/60/60 * nvl( :P30020_TIMEFRAME, 1 ) ) )
+                    )
+                    select  w.start_tm as log_time
+                      ,(
+                        select count(*)
+                        from apex_workspace_activity_log l
+                        where 1 = 1
+                          and l.application_id = :G_PUB_APP_ID
+                          and l.view_timestamp at time zone sessiontimezone between w.start_tm and w.end_tm
+                      ) as value
+                    from window w
+                    order by 1
+                    
+                    ```
+                pageItemsToSubmit: P30020_TIMEFRAME
+            }
+            columnMapping {
+                label: LOG_TIME
+                value: VALUE
+            }
+            performance {
+                maxRowsToProcess: 350
+            }
+        )
+
+        axis x (
+            name: x
+            value {
+                format: datetimeShort
+            }
+            minorTicks {
+                show: true
+            }
+        )
+
+        axis y (
+            name: y
+            value {
+                format: decimal
+                decimalPlaces: 0
+            }
+            majorTicks {
+                show: auto
+            }
+        )
+
+    )
+
+    region most-active-pages (
+        name: Most Active Pages
+        type: chart
+        layout {
+            sequence: 30
+            slot: contentBody
+            startNewRow: false
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                i-h320
+                t-Region--scrollBody
+            ]
+        }
+        chartAppearance {
+            orientation: horizontal
+        }
+        tooltip {
+            showSeriesName: false
+        }
+        legend {
+            show: false
+        }
+
+        series series (
+            name: Series 1
+            execution {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select
+                      case l.page_id
+                        when 1003
+                        then replace( lower( l.request_value ), 'application_process=' )
+                        else l.page_name
+                      end       as label
+                      ,count(*) as value
+                    from apex_workspace_activity_log l
+                    where 1 = 1
+                    and l.application_id = :G_PUB_APP_ID
+                    and l.page_id is not null
+                    and l.view_date >= sysdate - ( 1/24/60/60 * :P30020_TIMEFRAME )
+                    group by
+                      case l.page_id
+                        when 1003
+                        then replace( lower( l.request_value ), 'application_process=' )
+                        else l.page_name
+                      end
+                    order by 2 desc
+                    ```
+                pageItemsToSubmit: P30020_TIMEFRAME
+            }
+            columnMapping {
+                label: LABEL
+                value: VALUE
+            }
+            performance {
+                maxRowsToProcess: 20
+            }
+        )
+
+        axis x (
+            name: x
+            majorTicks {
+                show: auto
+            }
+        )
+
+        axis y (
+            name: y
+            value {
+                format: decimal
+                decimalPlaces: 0
+            }
+            majorTicks {
+                show: auto
+            }
+        )
+
+    )
+
+    region recent-errors (
+        name: Recent Errors
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select
+                   error_message  as label
+                  ,view_timestamp as value
+                from apex_workspace_activity_log
+                where application_id = :G_PUB_APP_ID
+                  and view_date >= sysdate - ( 1/24/60/60 * :P30020_TIMEFRAME )
+                  and error_message is not null
+                order by 2 desc
+                  ,1
+                ```
+            pageItemsToSubmit: P30020_TIMEFRAME
+        }
+        layout {
+            sequence: 40
+            slot: contentBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                i-h240
+                t-Region--scrollBody
+            ]
+        }
+        reportLayout {
+            numberOfRows: 10
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+                t-Report--inline
+            ]
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        componentAdvanced {
+            stripHtml: true
+        }
+        heading {
+            type: none
+        }
+
+        column LABEL (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Label
+            }
+            layout {
+                sequence: 1
+            }
+            accessibility {
+                valueIdentifiesRow: true
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column VALUE (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Value
+            }
+            layout {
+                sequence: 2
+            }
+            appearance {
+                formatMask: SINCE
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+    )
+
+    pageItem P30020_TIMEFRAME (
+        type: selectList
+        label {
+            label: Timeframe
+            alignment: left
+        }
+        lov {
+            type: sharedComponent
+            lov: @timeframe-4-weeks
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 10
+            region: @filters
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        default {
+            type: item
+            item: BLOG_DEFAULT_TIMEFRAME
+        }
+        sessionState {
+            storage: user
+        }
+        security {
+            encryptSessionState: false
+            restrictedChars: alphanumWithSpace
+        }
+    )
+
+    button refresh (
+        buttonName: REFRESH
+        label: Refresh
+        layout {
+            sequence: 20
+            region: @filters
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: #DEFAULT#
+            icon: fa-refresh
+        }
+        behavior {
+            action: definedByDynamicAction
+            executeValidations: false
+        }
+    )
+
+    button view-activity-details (
+        buttonName: VIEW_ACTIVITY_DETAILS
+        label: View Details
+        layout {
+            sequence: 10
+            region: @most-active-pages
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--simple
+            ]
+            icon: fa-angle-right
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 30024
+                clearCache: 30024
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button view-recent-errors (
+        buttonName: VIEW_RECENT_ERRORS
+        label: View Details
+        layout {
+            sequence: 10
+            region: @recent-errors
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--simple
+            ]
+            icon: fa-angle-right
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 30022
+                clearCache: 30022
+                action: resetPagination
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction change-filters (
+        name: Change Filters
+        execution {
+            sequence: 10
+        }
+        when {
+            selectionType: items
+            items: P30020_TIMEFRAME
+        }
+
+        action refresh-hourly-page-events (
+            name: Refresh Hourly Page events
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @hourly-page-events
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+        action refresh-most-active-pages (
+            name: Refresh Most Active Pages
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @most-active-pages
+            }
+            execution {
+                sequence: 30
+                fireOnInit: false
+            }
+        )
+
+        action refresh-recent-errors (
+            name: Refresh Recent Errors
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @recent-errors
+            }
+            execution {
+                sequence: 40
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction refresh-reports (
+        name: Refresh reports
+        execution {
+            sequence: 20
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @refresh
+        }
+
+        action refresh-hourly-page-events (
+            name: Refresh Hourly Page events
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @hourly-page-events
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+        action refresh-most-active-pages (
+            name: Refresh Most Active Pages
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @most-active-pages
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+        )
+
+        action refresh-recent-errors (
+            name: Refresh Recent Errors
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @recent-errors
+            }
+            execution {
+                sequence: 30
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+
