@@ -1,1 +1,0 @@
-License: https://raw.githubusercontent.com/jariolaine/apex-blog/master/LICENSE.txt
