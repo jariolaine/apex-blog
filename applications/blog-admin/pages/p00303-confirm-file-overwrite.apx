@@ -46,7 +46,7 @@ page 303 (
         name: Confirm Message
         type: staticContent
         source {
-            htmlCode: &APP_TEXT$BLOG_CONFIRM_FILE_OVERWRITE.
+            htmlCode: "&{BLOG_CONFIRM_FILE_OVERWRITE}."
         }
         layout {
             sequence: 60
@@ -202,9 +202,17 @@ page 303 (
             icon: fa-close
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button save (
@@ -227,27 +235,6 @@ page 303 (
         behavior {
             warnOnUnsavedChanges: doNotCheck
         }
-    )
-
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 30
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @cancel
-        }
-
-        action native-dialog-cancel (
-            action: cancelDialog
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
     )
 
     process close-dialog (

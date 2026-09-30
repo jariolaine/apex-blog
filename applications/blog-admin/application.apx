@@ -58,6 +58,8 @@ app BLOG-ADMIN (
         sourceForRoleOrGroupSchemes: authenticationScheme
     }
     security {
+        enableDictation: true
+        httpResponseHeaders: Permissions-Policy: microphone=(self)
         runtimeApiUsage: [
             modifyThisApp
             modifyOtherApps
@@ -67,7 +69,6 @@ app BLOG-ADMIN (
     sessionStateProtection {
         allowUrlsCreatedAfter: 2020-03-29T21:15:09
         checksumSalt: B22C496AFD040C7B5F1E21FA4AC20C2D68FA779C3AF68FB8A6F3F4BB268E96B2
-        acceptPre202UrlChecksums: false
     }
     globalization {
         documentDirection: leftToRight

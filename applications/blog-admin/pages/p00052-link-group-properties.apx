@@ -293,9 +293,17 @@ page 52 (
             icon: fa-chevron-left
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button create (
@@ -419,27 +427,6 @@ page 52 (
             type: itemIsNotNull
             item: P52_ID
         }
-    )
-
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 10
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @cancel
-        }
-
-        action native-dialog-cancel (
-            action: cancelDialog
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
     )
 
     process initialize-form-link-group-properties (

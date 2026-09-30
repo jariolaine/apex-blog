@@ -79,7 +79,7 @@ page 1 (
             type: setPaginationSearchEngine
         }
         messages {
-            whenNoDataFound: &APP_TEXT$BLOG_MSG_NO_DATA_FOUND.
+            whenNoDataFound: "&{BLOG_MSG_NO_DATA_FOUND}."
         }
         heading {
             type: none
@@ -244,7 +244,7 @@ page 1 (
                         P2_POST_ID: #POST_ID#
                     }
                 }
-                linkText: &APP_TEXT$BLOG_TXT_READ_MORE.<span aria-hidden="true" class="fa fa-angle-double-right u-alignMiddle margin-left-sm"></span>
+                linkText: "<span>&{BLOG_TXT_READ_MORE}.</span><span aria-hidden=\"true\" class=\"fa fa-angle-double-right u-alignMiddle margin-left-sm\"></span>"
             }
             sorting {
                 sortable: false
@@ -272,8 +272,7 @@ page 1 (
         type: hidden
         layout {
             sequence: 70
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: body
         }
         sessionState {
             storage: user

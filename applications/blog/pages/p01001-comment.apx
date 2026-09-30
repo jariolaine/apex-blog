@@ -88,7 +88,7 @@ page 1001 (
         name: Notification
         type: staticContent
         source {
-            htmlCode: &APP_TEXT$BLOG_MSG_MODERATE_ENABLED.
+            htmlCode: "&{BLOG_MSG_MODERATE_ENABLED}."
         }
         layout {
             sequence: 10
@@ -129,8 +129,7 @@ page 1001 (
         type: hidden
         layout {
             sequence: 70
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: wizardBody
         }
         security {
             sessionStateProtection: restricted
@@ -328,8 +327,7 @@ page 1001 (
         type: hidden
         layout {
             sequence: 90
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: wizardBody
         }
         sessionState {
             storage: request
@@ -444,8 +442,7 @@ page 1001 (
         type: hidden
         layout {
             sequence: 80
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: wizardBody
         }
         sessionState {
             storage: request
@@ -476,9 +473,17 @@ page 1001 (
             icon: fa-chevron-left
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button submit (
@@ -503,27 +508,6 @@ page 1001 (
             warnOnUnsavedChanges: doNotCheck
             databaseAction: insert
         }
-    )
-
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 10
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @cancel
-        }
-
-        action native-dialog-cancel (
-            action: cancelDialog
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
     )
 
     validation validate-comment (

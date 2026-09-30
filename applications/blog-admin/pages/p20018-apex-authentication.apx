@@ -59,7 +59,7 @@ page 20018 (
         name: Information
         type: staticContent
         source {
-            htmlCode: &APP_TEXT$BLOG_MSG_APEX_AUTH_INFO!RAW.
+            htmlCode: "&{BLOG_MSG_APEX_AUTH_INFO!RAW}."
         }
         layout {
             sequence: 10
@@ -149,9 +149,17 @@ page 20018 (
             icon: fa-close
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button save (
@@ -176,27 +184,6 @@ page 20018 (
             warnOnUnsavedChanges: doNotCheck
             databaseAction: update
         }
-    )
-
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 10
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @cancel
-        }
-
-        action native-dialog-cancel (
-            action: cancelDialog
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
     )
 
     validation one-authentication-scheme-enabled (
@@ -266,7 +253,7 @@ page 20018 (
                 type: expression
                 plsqlExpression:
                     ```plsql
-                    case :P20018_BUILD_STATUS 
+                    case :P20018_BUILD_STATUS
                       when apex_application_admin.c_build_option_status_include
                       then 'APEX'
                       when apex_application_admin.c_build_option_status_exclude

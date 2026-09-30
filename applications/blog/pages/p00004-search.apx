@@ -55,13 +55,13 @@ page 4 (
             noQueryEnteredMessage:
                 ```html
                 <span class="nodatafound">
-                  &APP_TEXT$BLOG_MSG_ENTER_SEARCH_TERM.
+                  &{BLOG_MSG_ENTER_SEARCH_TERM}.
                 </span>
                 ```
             noResultsFoundMessage:
                 ```html
                 <span class="nodatafound">
-                  &APP_TEXT$BLOG_MSG_NO_DATA_FOUND.
+                  &{BLOG_MSG_NO_DATA_FOUND}.
                 </span>
                 ```
         }

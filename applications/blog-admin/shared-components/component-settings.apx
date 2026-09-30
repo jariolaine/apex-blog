@@ -4,6 +4,16 @@ componentSetting (
 )
 
 componentSetting (
+    type: dynamicAction
+    name: plugin/copyToClipboard
+)
+
+componentSetting (
+    type: dynamicAction
+    name: plugin/speechRecognition
+)
+
+componentSetting (
     type: item
     name: colorPicker
 )

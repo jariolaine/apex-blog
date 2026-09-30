@@ -43,7 +43,7 @@ page 20013 (
         name: Information
         type: staticContent
         source {
-            htmlCode: &APP_TEXT$BLOG_MSG_OBJECT_STORAGE_INFO!RAW.
+            htmlCode: "&{BLOG_MSG_OBJECT_STORAGE_INFO!RAW}."
         }
         layout {
             sequence: 20
@@ -261,9 +261,17 @@ page 20013 (
             icon: fa-close
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button save (
@@ -288,27 +296,6 @@ page 20013 (
             warnOnUnsavedChanges: doNotCheck
             databaseAction: update
         }
-    )
-
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 10
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @cancel
-        }
-
-        action native-dialog-cancel (
-            action: cancelDialog
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
     )
 
     dynamicAction process-feature-status (

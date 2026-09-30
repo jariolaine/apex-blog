@@ -104,7 +104,7 @@ page 61 (
                   where 1 = 1
                     and v1.id = :P61_ID
                 )
-                select 
+                select
                   j.sentiment
                 , j.sentence
                 , j.mixed * 100     as sentiment_mixed_pct
@@ -301,7 +301,7 @@ page 61 (
             type: sqlQuery
             sqlQuery:
                 ```sql
-                select 
+                select
                   v1.comment_by   as user_name
                   ,v1.body_html   as comment_text
                   ,v1.created_on  as comment_date
@@ -523,7 +523,7 @@ page 61 (
             type: sqlQuery
             sqlQuery:
                 ```sql
-                select 
+                select
                   v1.sentiment              as sentiment
                 , v1.sentiment_icon         as sentiment_icon
                 , v1.sentiment_positive_pct as positive
@@ -896,9 +896,17 @@ page 61 (
             icon: fa-close
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button delete (
@@ -1069,27 +1077,6 @@ page 61 (
             type: itemIsNull
             item: P61_PARENT_ID
         }
-    )
-
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 20
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @close
-        }
-
-        action native-dialog-cancel (
-            action: cancelDialog
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
     )
 
     computation p61-is-active (

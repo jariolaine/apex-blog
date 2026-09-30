@@ -1,0 +1,84 @@
+plugin copyToClipboard (
+    name: Copy to Clipboard
+    staticId: FI.JARIS.COPY_TO_CLIPBOARD
+    type: dynamicAction
+    component {
+        standardAttributes: [
+            forItem
+            forButton
+            forJquerySelector
+            forJavaScriptExpression
+            forTriggeringElement
+            forEventSource
+            affectedElementRequired
+            stopExecutionOnErrorAttr
+            waitForResultAttr
+        ]
+    }
+    source {
+        plsqlCode:
+            ```plsql
+            procedure render_copy_to_clipboard(
+              p_dynamic_action  in            apex_plugin.t_dynamic_action
+            , p_plugin          in            apex_plugin.t_plugin
+            , p_param           in            apex_plugin.t_dynamic_action_render_param
+            , p_result          in out nocopy apex_plugin.t_dynamic_action_render_result
+            )
+            as
+              l_tooltip_message varchar2(4000) :=
+                p_plugin.attributes.get_varchar2('tooltip_message');
+              l_source_attribute varchar2(4000) :=
+                p_dynamic_action.attributes.get_varchar2('source_attribute');
+              l_tooltip_duration number :=
+                p_dynamic_action.attributes.get_number('tooltip_duration');
+            begin
+            
+              if apex_application.g_debug then
+                apex_plugin_util.debug_dynamic_action(
+                  p_plugin          => p_plugin
+                , p_dynamic_action  => p_dynamic_action
+                );
+              end if;
+            
+              p_result.function_name :=
+                'fi_jaris_copy_to_clipboard.copy';
+            
+              p_result.function_param.open_object;
+            
+              p_result.function_param.put(
+                'tooltipMessage'
+              , l_tooltip_message
+              );
+            
+              p_result.function_param.put(
+                'sourceAttribute'
+              , l_source_attribute
+              );
+            
+              p_result.function_param.put(
+                'tooltipDuration'
+              , l_tooltip_duration
+              );
+            
+              p_result.function_param.close_object;
+            
+            end render_copy_to_clipboard;
+            ```
+    }
+    callbacks {
+        renderProcedureName: render_copy_to_clipboard
+    }
+    advanced {
+        category: execute
+    }
+    css {
+        fileUrls: #PLUGIN_FILES#copy-to-clipboard#MIN#.css
+    }
+    javaScript {
+        fileUrls: #PLUGIN_FILES#copy-to-clipboard#MIN#.js
+    }
+    information {
+        version: 1.0.0
+    }
+)
+

@@ -109,7 +109,6 @@ as
   function get_button(
     p_app_id          in varchar2,
     p_title           in varchar2,
-    p_action          in varchar2,
     p_icon_classes    in varchar2,
     p_button_classes  in varchar2 default null,
     p_build_option    in varchar2 default null
@@ -431,14 +430,15 @@ as
   function get_button(
     p_app_id          in varchar2,
     p_title           in varchar2,
-    p_action          in varchar2,
     p_icon_classes    in varchar2,
     p_button_classes  in varchar2 default null,
     p_build_option    in varchar2 default null
   ) return varchar2
   as
-    l_app_id  number;
-    l_button  varchar2(32700) := '<span class="blog-hidden"></span>';
+    l_app_id          number;
+    l_title           varchar2(400);
+    l_button          varchar2(32700) := '<span class="blog-post-text-disabled" aria-hidden="true"></span>';
+    l_button_classes  varchar2(255)   := 't-Button t-Button--noLabel t-Button--icon t-Button--link blog-item-button';
   begin
 
     l_app_id := to_number( p_app_id );
@@ -450,19 +450,38 @@ as
       , p_build_option_name => p_build_option
       ) = apex_application_admin.c_build_option_status_include
     then
+
+      l_title :=
+        apex_lang.get_message(
+          p_name => p_title
+        )
+      ;
+
+      if upper( l_title ) = upper( p_title )
+      then
+        l_title := p_title;
+      end if;
+
+      l_button_classes :=
+        case
+          when p_button_classes is null
+            then l_button_classes
+            else l_button_classes || ' ' || p_button_classes
+        end
+      ;
       -- generate button HTML
       l_button :=
         apex_string.format(
           p_message =>
-            '<button type="button" data-action="%0" title="%1" aria-label="%1" class="%2" data-no-update="true">' ||
-            '<span class="t-Icon fa %3" aria-hidden="true"></span>' ||
+            '<button type="button" title="%0" aria-label="%0" class="%1">' ||
+              '<span class="t-Icon fa %2" aria-hidden="true"></span>' ||
             '</button>'
-        , p0 => p_action
-        , p1 => p_title
-        , p2 => coalesce( p_button_classes, 't-Button t-Button--noLabel t-Button--icon t-Button--link' )
-        , p3 => p_icon_classes
+        , p0 => l_title
+        , p1 => l_button_classes
+        , p2 => p_icon_classes
         )
       ;
+
     end if;
 
     return l_button;

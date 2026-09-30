@@ -641,9 +641,17 @@ page 16 (
             icon: fa-close
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-close (
+            action: closeDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button resequence-tags (
@@ -660,13 +668,52 @@ page 16 (
             icon: fa-sequence
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             requiresConfirmation: true
         }
         confirmation {
-            message: &APP_TEXT$BLOG_CONFIRM_RESEQUENCE_TAGS.
-            style: warning
+            message: "&{BLOG_CONFIRM_RESEQUENCE_TAGS}."
+            style: information
         }
+
+        triggerAction native-show-success-message (
+            action: showSuccessMessage
+            settings {
+                message: "&{BLOG_MSG_TAGS_RESEQUENCED}."
+            }
+            execution {
+                sequence: 30
+            }
+        )
+
+        triggerAction refresh-ig (
+            name: Refresh IG
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @tags
+            }
+            execution {
+                sequence: 20
+            }
+        )
+
+        triggerAction resequence-tags (
+            name: Resequence tags
+            action: executeServerSideCode
+            settings {
+                plsqlCode:
+                    ```plsql
+                    blog_admin.resequence_tags(
+                      p_post_id => :P16_POST_ID
+                    );
+                    ```
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button save (
@@ -694,27 +741,6 @@ page 16 (
         advanced {
             customAttributes: data-action="save"
         }
-    )
-
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 30
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @close
-        }
-
-        action native-dialog-close (
-            action: closeDialog
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
     )
 
     dynamicAction process-after-changes (
@@ -747,66 +773,6 @@ page 16 (
             }
             comments {
                 comments: Purge public application global page regions cache.
-            }
-        )
-
-    )
-
-    dynamicAction resequence (
-        name: Resequence
-        execution {
-            sequence: 20
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @resequence-tags
-        }
-
-        action refresh-ig (
-            name: Refresh IG
-            action: refresh
-            affectedElements {
-                selectionType: region
-                region: @tags
-            }
-            execution {
-                sequence: 20
-                fireOnInit: false
-            }
-        )
-
-        action resequence-tags (
-            name: Resequence tags
-            action: executeServerSideCode
-            settings {
-                plsqlCode:
-                    ```plsql
-                    blog_admin.resequence_tags(
-                      p_post_id => :P16_POST_ID
-                    );
-                    ```
-            }
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
-        action show-message (
-            name: Show message
-            action: executeJsCode
-            settings {
-                jsCode:
-                    ```javascript-browser
-                    blog.admin.showSuccessMessage({
-                      "text": "BLOG_MSG_TAGS_RESEQUENCED"
-                    });
-                    ```
-            }
-            execution {
-                sequence: 30
-                fireOnInit: false
             }
         )
 

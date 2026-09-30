@@ -14,7 +14,7 @@ blockquote::after {
   display: none;
   visibility: none;
 }
-.blog-item.blog-noItemHelp {
+.blog-noItemHelp {
   width: calc(100% - 0.5rem);
 }
 .blog-region-noItemHelp {
@@ -36,15 +36,15 @@ blockquote::after {
 * Public application header
 **************************************/
 .blog-app-banner {
-  background-color: var(--ut-header-background-color);
-  padding: 1rem 1rem 0;
-  font-size: 1.75rem;
-  font-weight: var(--ut-logo-font-weight, var(--a-base-font-weight-semibold, 500));
-  color: var(--ut-header-text-color, inherit);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   margin: 0;
+}
+.t-Header-logo {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
 }
 /**************************************
 * Public app media list report extra classes
@@ -173,10 +173,12 @@ blockquote::after {
 .blog-posts .blog-post .blog-post--footer .blog-post--tags {
   width: 100%;
   clear: both;
-  padding: 1rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin: 0;
+  padding: 1rem;
+  list-style: none;
   border-top: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
 }
 .blog-posts .blog-posts--pagination {
@@ -422,15 +424,33 @@ pre.blog-program-code code,
 /**************************************
 * Public app search result reports tags
 **************************************/
+/*
 .blog-search--tags {
   margin-inline-start: 0.5rem;
   margin-bottom: 0.5rem;
   display: inline-block;
+  &:first-child {
+    margin-inline-start: 0!important;
+  }
+  &:not( :last-child ) {
+    &::after {
+      content: ",";
+    }
+  }
 }
-.blog-search--tags:first-child {
-  margin-inline-start: 0!important;
+*/
+.blog-search-tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.blog-search--tags:not( :last-child )::after {
+.blog-search-tags li {
+  font-size: inherit;
+}
+.blog-search-tags li:not(:last-child)::after {
   content: ",";
 }
 /**************************************

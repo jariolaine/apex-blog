@@ -1,0 +1,162 @@
+customAttribute animation_class (
+    apexlangName: animationClass
+    attribute: 9
+    name: Animation Class
+    validation {
+        maxLength: 200
+    }
+    appearance {
+        attributeGroup: @triggerButtonUi
+        sequence: 90
+    }
+    builder {
+        displayWidth: 30
+    }
+    default {
+        value: fa-anim-flash
+    }
+    help {
+        helpText: <p>Optional icon animation class applied while recognition is active.</p>
+    }
+)
+
+customAttribute append_period (
+    apexlangName: appendPeriod
+    attribute: 5
+    name: Append Period
+    type: yesNo
+    appearance {
+        attributeGroup: @transcriptFormatting
+        sequence: 50
+    }
+    default {
+        value: true
+    }
+    help {
+        helpText: <p>Append a period when the transcript does not already end in terminal punctuation.</p>
+    }
+)
+
+customAttribute capitalize_first (
+    apexlangName: capitalizeFirst
+    attribute: 4
+    name: Capitalize First
+    type: yesNo
+    appearance {
+        attributeGroup: @transcriptFormatting
+        sequence: 40
+    }
+    default {
+        value: true
+    }
+    help {
+        helpText: <p>Uppercase the first character of each recognized transcript.</p>
+    }
+)
+
+customAttribute clear_previous_text (
+    apexlangName: clearPreviousText
+    attribute: 1
+    name: Clear Previous Text
+    type: yesNo
+    appearance {
+        attributeGroup: @recognition
+        sequence: 10
+    }
+    help {
+        helpText: <p>Clear the affected element when speech recognition starts.</p>
+    }
+)
+
+customAttribute continuous (
+    apexlangName: continuous
+    attribute: 2
+    name: Continuous
+    type: yesNo
+    appearance {
+        attributeGroup: @recognition
+        sequence: 20
+    }
+    default {
+        value: true
+    }
+    help {
+        helpText: <p>Request continuous speech recognition results until the action is fired again or the browser ends recognition.</p>
+    }
+)
+
+customAttribute idle_icon_class (
+    apexlangName: idleIconClass
+    attribute: 7
+    name: Idle Icon Class
+    type: icon
+    appearance {
+        attributeGroup: @triggerButtonUi
+        sequence: 70
+    }
+    default {
+        value: fa-microphone
+    }
+    help {
+        helpText: <p>Font APEX icon class shown while recognition is idle.</p>
+    }
+)
+
+customAttribute language (
+    apexlangName: language
+    attribute: 3
+    name: Language
+    validation {
+        maxLength: 40
+    }
+    appearance {
+        attributeGroup: @recognition
+        sequence: 30
+    }
+    builder {
+        displayWidth: 20
+    }
+    help {
+        helpText: <p>Optional BCP 47 language tag such as en-US or fi-FI. When blank, the page or browser language is used.</p>
+    }
+)
+
+customAttribute recording_button_class (
+    apexlangName: recordingButtonClass
+    attribute: 6
+    name: Recording Button Class
+    validation {
+        maxLength: 200
+    }
+    appearance {
+        attributeGroup: @triggerButtonUi
+        sequence: 60
+    }
+    builder {
+        displayWidth: 30
+    }
+    default {
+        value: t-Button--warning
+    }
+    help {
+        helpText: <p>CSS class applied to the triggering button while recording.</p>
+    }
+)
+
+customAttribute recording_icon_class (
+    apexlangName: recordingIconClass
+    attribute: 8
+    name: Recording Icon Class
+    type: icon
+    appearance {
+        attributeGroup: @triggerButtonUi
+        sequence: 80
+    }
+    default {
+        value: fa-stop-circle
+    }
+    help {
+        helpText: <p>Font APEX icon class shown while recognition is active.</p>
+    }
+)
+

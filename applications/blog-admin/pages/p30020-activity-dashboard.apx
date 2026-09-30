@@ -357,9 +357,45 @@ page 30020 (
             icon: fa-refresh
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-refresh_1 (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @most-active-pages
+            }
+            execution {
+                sequence: 20
+            }
+        )
+
+        triggerAction refresh-hourly-page-events (
+            name: Refresh Hourly Page events
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @hourly-page-events
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        triggerAction refresh-recent-errors (
+            name: Refresh Recent Errors
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @recent-errors
+            }
+            execution {
+                sequence: 30
+            }
+        )
+
     )
 
     button view-activity-details (
@@ -461,58 +497,6 @@ page 30020 (
             }
             execution {
                 sequence: 40
-                fireOnInit: false
-            }
-        )
-
-    )
-
-    dynamicAction refresh-reports (
-        name: Refresh reports
-        execution {
-            sequence: 20
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @refresh
-        }
-
-        action refresh-hourly-page-events (
-            name: Refresh Hourly Page events
-            action: refresh
-            affectedElements {
-                selectionType: region
-                region: @hourly-page-events
-            }
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
-        action refresh-most-active-pages (
-            name: Refresh Most Active Pages
-            action: refresh
-            affectedElements {
-                selectionType: region
-                region: @most-active-pages
-            }
-            execution {
-                sequence: 20
-                fireOnInit: false
-            }
-        )
-
-        action refresh-recent-errors (
-            name: Refresh Recent Errors
-            action: refresh
-            affectedElements {
-                selectionType: region
-                region: @recent-errors
-            }
-            execution {
-                sequence: 30
                 fireOnInit: false
             }
         )

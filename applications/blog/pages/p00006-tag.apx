@@ -30,20 +30,21 @@ page 6 (
             type: sqlQuery
             sqlQuery:
                 ```sql
-                select 
-                   v1.category_id     as category_id
-                  ,v1.post_title      as search_title
-                  ,v1.post_url        as search_link
-                  ,v1.post_desc       as search_desc
+                select
+                  v1.category_id      as category_id
+                , v1.post_title       as search_title
+                , v1.post_url         as search_link
+                , v1.post_desc        as search_desc
                 -- see label columns HTML expression
-                  ,'Y'                as label_01
-                  ,v1.category_title  as value_01
-                  ,'Y'                as label_02
-                  ,v1.blogger_name    as value_02
-                  ,'Y'                as label_03
-                  ,v1.published_on    as value_03
-                  ,'Y'                as label_04
-                  ,v1.tags_html1      as value_04
+                , 'Y'                 as label_01
+                , v1.category_title   as value_01
+                , 'Y'                 as label_02
+                , v1.blogger_name     as value_02
+                , 'Y'                 as label_03
+                , v1.published_on     as value_03
+                , 'Y'                 as label_04
+                , v1.search_tags_html as value_04
+                , v1.published_on     as pubdate
                 from blog_v_posts v1
                 where 1 = 1
                 and exists(
@@ -94,7 +95,7 @@ page 6 (
             maxRowsToProcess: 500
         }
         messages {
-            whenNoDataFound: &APP_TEXT$BLOG_MSG_NO_DATA_FOUND.
+            whenNoDataFound: "&{BLOG_MSG_NO_DATA_FOUND}."
         }
         componentAdvanced {
             stripHtml: true
@@ -131,7 +132,7 @@ page 6 (
                 sequence: 5
             }
             columnFormatting {
-                htmlExpression: &APP_TEXT$BLOG_TXT_CATEGORY.
+                htmlExpression: "&{BLOG_TXT_CATEGORY}."
             }
             sorting {
                 sortable: false
@@ -148,7 +149,7 @@ page 6 (
                 sequence: 7
             }
             columnFormatting {
-                htmlExpression: &APP_TEXT$BLOG_TXT_POSTED_BY.
+                htmlExpression: "&{BLOG_TXT_POSTED_BY}."
             }
             sorting {
                 sortable: false
@@ -165,7 +166,7 @@ page 6 (
                 sequence: 9
             }
             columnFormatting {
-                htmlExpression: &APP_TEXT$BLOG_TXT_POSTED_ON.
+                htmlExpression: "&{BLOG_TXT_POSTED_ON}."
             }
             sorting {
                 sortable: false
@@ -183,7 +184,24 @@ page 6 (
                 sequence: 11
             }
             columnFormatting {
-                htmlExpression: &APP_TEXT$BLOG_TXT_TAGS.
+                htmlExpression: "&{BLOG_TXT_TAGS}."
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column PUBDATE (
+            reportColumnQueryId: 13
+            derivedColumn: N
+            heading {
+                heading: Pubdate
+            }
+            layout {
+                sequence: 22
+            }
+            appearance {
+                formatMask: YYYY-MM-DD
             }
             sorting {
                 sortable: false
@@ -282,6 +300,9 @@ page 6 (
             layout {
                 sequence: 10
             }
+            columnFormatting {
+                htmlExpression: <time datetime="#PUBDATE#">#VALUE_03#</time>
+            }
             sorting {
                 sortable: false
             }
@@ -327,8 +348,7 @@ page 6 (
         type: hidden
         layout {
             sequence: 70
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: body
         }
         source {
             used: always
@@ -359,11 +379,10 @@ page 6 (
             settings {
                 jsCode:
                     ```javascript-browser
-                    blog.ui.setListCurrentItem({
-                       affectedElements: this.affectedElements
-                      ,pageItem: "P6_TAG_ID"
-                    });
-                    
+                    blog.ui.setListCurrentItem(
+                      this.affectedElements
+                    , { pageItem: "P6_TAG_ID" }
+                    );
                     ```
             }
             affectedElements {

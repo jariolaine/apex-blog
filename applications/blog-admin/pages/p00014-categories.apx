@@ -582,7 +582,7 @@ page 14 (
                     action: clearRegions
                 }
                 linkText: <span aria-hidden="true" class="t-Icon fa fa-external-link"></span>
-                linkAttributes: title="&APP_TEXT$BLOG_TXT_VIEW_POSTS." class="t-Button--stretch"
+                linkAttributes: "title=\"&{BLOG_TXT_VIEW_POSTS}.\" class=\"t-Button--stretch\""
             }
             source {
                 type: none
@@ -622,7 +622,7 @@ page 14 (
         buttonName: ADD_ROW
         label: Add Row
         layout {
-            sequence: 20
+            sequence: 30
             region: @buttons
             slot: next
         }
@@ -658,43 +658,84 @@ page 14 (
             icon: fa-close
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-close (
+            action: closeDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button delete-unused (
         buttonName: DELETE_UNUSED
         label: Delete Unused
         layout {
-            sequence: 40
+            sequence: 10
             region: @buttons
-            slot: delete
+            slot: next
         }
         appearance {
             buttonTemplate: @/icon
             templateOptions: [
                 #DEFAULT#
-                t-Button--danger
                 t-Button--simple
             ]
             icon: fa-trash-o
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             requiresConfirmation: true
         }
         confirmation {
-            message: &APP_TEXT$BLOG_CONFIRM_DELETE_UNUSED_CATEGORIES.
-            style: danger
+            message: "&{BLOG_CONFIRM_DELETE_UNUSED_CATEGORIES}."
+            style: warning
         }
+
+        triggerAction delete-unused-categories (
+            name: Delete unused categories
+            action: executeServerSideCode
+            settings {
+                plsqlCode: blog_admin.remove_unused_categories;
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        triggerAction native-show-success-message (
+            action: showSuccessMessage
+            settings {
+                message: "&{BLOG_MSG_CATEGORIES_UNUSED_DELETED}."
+            }
+            execution {
+                sequence: 30
+            }
+        )
+
+        triggerAction refresh-ig (
+            name: Refresh IG
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @add-edit-categories
+            }
+            execution {
+                sequence: 20
+            }
+        )
+
     )
 
     button resequence-categories (
         buttonName: RESEQUENCE_CATEGORIES
         label: Resequence
         layout {
-            sequence: 10
+            sequence: 20
             region: @buttons
             slot: next
         }
@@ -704,20 +745,54 @@ page 14 (
             icon: fa-sequence
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             requiresConfirmation: true
         }
         confirmation {
-            message: &APP_TEXT$BLOG_CONFIRM_RESEQUENCE_CATEGORIES.
-            style: warning
+            message: "&{BLOG_CONFIRM_RESEQUENCE_CATEGORIES}."
+            style: information
         }
+
+        triggerAction native-show-success-message (
+            action: showSuccessMessage
+            settings {
+                message: "&{BLOG_MSG_CATEGORIES_RESEQUENCED}."
+            }
+            execution {
+                sequence: 30
+            }
+        )
+
+        triggerAction refresh-ig (
+            name: Refresh IG
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @add-edit-categories
+            }
+            execution {
+                sequence: 20
+            }
+        )
+
+        triggerAction resequence-categories (
+            name: Resequence categories
+            action: executeServerSideCode
+            settings {
+                plsqlCode: blog_admin.resequence_categories;
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button save (
         buttonName: SAVE
         label: Save
         layout {
-            sequence: 30
+            sequence: 40
             region: @buttons
             slot: next
         }
@@ -739,85 +814,6 @@ page 14 (
         advanced {
             customAttributes: data-action="save" data-no-update="true"
         }
-    )
-
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 50
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @close
-        }
-
-        action native-dialog-close (
-            action: closeDialog
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
-    )
-
-    dynamicAction delete-unused (
-        name: Delete unused
-        execution {
-            sequence: 40
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @delete-unused
-        }
-
-        action delete-categories (
-            name: Delete categories
-            action: executeServerSideCode
-            settings {
-                plsqlCode: blog_admin.remove_unused_categories;
-            }
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-            comments {
-                comments: Call database procedure to delete categories that aren't used in any post.
-            }
-        )
-
-        action refresh-ig (
-            name: Refresh IG
-            action: refresh
-            affectedElements {
-                selectionType: region
-                region: @add-edit-categories
-            }
-            execution {
-                sequence: 40
-                fireOnInit: false
-            }
-        )
-
-        action show-message (
-            name: Show message
-            action: executeJsCode
-            settings {
-                jsCode:
-                    ```javascript-browser
-                    blog.admin.showSuccessMessage({
-                      "text": "BLOG_MSG_CATEGORIES_UNUSED_DELETED"
-                    });
-                    ```
-            }
-            execution {
-                sequence: 50
-                fireOnInit: false
-            }
-        )
-
     )
 
     dynamicAction process-after-changes (
@@ -850,61 +846,6 @@ page 14 (
             }
             comments {
                 comments: Purge public application global page regions cache.
-            }
-        )
-
-    )
-
-    dynamicAction resequence (
-        name: Resequence
-        execution {
-            sequence: 30
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @resequence-categories
-        }
-
-        action refresh-ig (
-            name: Refresh IG
-            action: refresh
-            affectedElements {
-                selectionType: region
-                region: @add-edit-categories
-            }
-            execution {
-                sequence: 20
-                fireOnInit: false
-            }
-        )
-
-        action resequence-categories (
-            name: Resequence categories
-            action: executeServerSideCode
-            settings {
-                plsqlCode: blog_admin.resequence_categories;
-            }
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
-        action show-message (
-            name: Show message
-            action: executeJsCode
-            settings {
-                jsCode:
-                    ```javascript-browser
-                    blog.admin.showSuccessMessage({
-                      "text": "BLOG_MSG_CATEGORIES_RESEQUENCED"
-                    });
-                    ```
-            }
-            execution {
-                sequence: 40
-                fireOnInit: false
             }
         )
 

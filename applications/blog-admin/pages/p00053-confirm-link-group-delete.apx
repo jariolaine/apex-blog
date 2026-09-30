@@ -69,7 +69,7 @@ page 53 (
             regionDisplaySelector: true
         }
         headerAndFooter {
-            headerText: &APP_TEXT$BLOG_CONFIRM_LINK_GROUP_DELETE.
+            headerText: "&{BLOG_CONFIRM_LINK_GROUP_DELETE}."
         }
         edit {
             enabled: true

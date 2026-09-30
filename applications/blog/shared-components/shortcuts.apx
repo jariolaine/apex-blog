@@ -1,3 +1,10 @@
+shortcut BLOG_APP_NAME (
+    source {
+        type: functionBody
+        plsqlFunctionBody: return blog_util.get_attribute_value( 'P0_BLOG_APP_NAME' );
+    }
+)
+
 shortcut BLOG_ATOM_LINK (
     source {
         type: functionBody

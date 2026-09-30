@@ -43,7 +43,7 @@ theme universal-theme (
     dialogDefaults {
         dialogContentRegion: @/blank-with-attributes
         dialogButtonRegion: @/buttons-container
-        dialogPage: 2121795032473542284
+        dialogPage: @/drawer
     }
     icons {
         library: fontApex

@@ -4,7 +4,7 @@ app BLOG (
     group: @apex-blog
     logo {
         type: text
-        text: &P0_BLOG_APP_DESC.
+        text: &P0_BLOG_APP_NAME.
     }
     navigation {
         homeUrl: {
@@ -57,7 +57,6 @@ app BLOG (
     sessionStateProtection {
         allowUrlsCreatedAfter: 2021-11-27T07:53:25
         checksumSalt: 79ABAEFD7AD8D73AC0DC0A616F42577F97F051356BED99D8EBB45C92C0F77585
-        acceptPre202UrlChecksums: false
     }
     sessionManagement {
         rejoinSessions: publicSessions

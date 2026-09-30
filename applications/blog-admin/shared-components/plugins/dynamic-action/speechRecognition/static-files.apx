@@ -1,0 +1,10 @@
+file speech-recognition.js (
+    mimeType: text/javascript
+    charSet: utf-8
+)
+
+file speech-recognition.min.js (
+    mimeType: text/javascript
+    charSet: utf-8
+)
+

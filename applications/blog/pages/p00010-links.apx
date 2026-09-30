@@ -91,7 +91,7 @@ page 10 (
             maxRowsToProcess: 100
         }
         messages {
-            whenNoDataFound: &APP_TEXT$BLOG_MSG_NO_DATA_FOUND.
+            whenNoDataFound: "&{BLOG_MSG_NO_DATA_FOUND}."
         }
         heading {
             type: none

@@ -2,6 +2,7 @@
 /**************************************
 * Public app search result reports tags
 **************************************/
+/*
 .blog-search--tags {
   margin-inline-start: 0.5rem;
   margin-bottom: 0.5rem;
@@ -10,6 +11,24 @@
     margin-inline-start: 0!important;
   }
   &:not( :last-child ) {
+    &::after {
+      content: ",";
+    }
+  }
+}
+*/
+
+.blog-search-tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  li {
+    font-size: inherit;
+  }
+  li:not(:last-child) {
     &::after {
       content: ",";
     }

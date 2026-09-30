@@ -528,7 +528,7 @@ page 15 (
                     action: clearRegions
                 }
                 linkText: <span aria-hidden="true" class="t-Icon fa fa-external-link"></span>
-                linkAttributes: title="&APP_TEXT$BLOG_TXT_VIEW_POSTS." class="t-Button--stretch"
+                linkAttributes: "title=\"&{BLOG_TXT_VIEW_POSTS}.\" class=\"t-Button--stretch\""
             }
             source {
                 type: none
@@ -568,7 +568,7 @@ page 15 (
         buttonName: ADD_ROW
         label: Add Row
         layout {
-            sequence: 20
+            sequence: 30
             region: @buttons
             slot: next
         }
@@ -604,9 +604,17 @@ page 15 (
             icon: fa-close
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-close (
+            action: closeDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button delete-unused (
@@ -615,32 +623,65 @@ page 15 (
         layout {
             sequence: 10
             region: @buttons
-            slot: delete
+            slot: next
         }
         appearance {
             buttonTemplate: @/icon
             templateOptions: [
                 #DEFAULT#
-                t-Button--danger
                 t-Button--simple
             ]
             icon: fa-trash-o
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             requiresConfirmation: true
         }
         confirmation {
-            message: &APP_TEXT$BLOG_CONFIRM_DELETE_UNUSED_TAGS.
-            style: danger
+            message: "&{BLOG_CONFIRM_DELETE_UNUSED_TAGS}."
+            style: warning
         }
+
+        triggerAction delete-unused-tags (
+            name: Delete unused tags
+            action: executeServerSideCode
+            settings {
+                plsqlCode: blog_admin.remove_unused_tags;
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        triggerAction native-show-success-message (
+            action: showSuccessMessage
+            settings {
+                message: "&{BLOG_MSG_TAGS_UNUSED_DELETED}."
+            }
+            execution {
+                sequence: 30
+            }
+        )
+
+        triggerAction refresh-ig (
+            name: Refresh IG
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @add-edit-tags
+            }
+            execution {
+                sequence: 20
+            }
+        )
+
     )
 
     button save (
         buttonName: SAVE
         label: Save
         layout {
-            sequence: 30
+            sequence: 40
             region: @buttons
             slot: next
         }
@@ -662,85 +703,6 @@ page 15 (
         advanced {
             customAttributes: data-action="save"
         }
-    )
-
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 20
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @close
-        }
-
-        action native-dialog-close (
-            action: closeDialog
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
-    )
-
-    dynamicAction delete-unused (
-        name: Delete unused
-        execution {
-            sequence: 10
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @delete-unused
-        }
-
-        action delete-tags (
-            name: Delete tags
-            action: executeServerSideCode
-            settings {
-                plsqlCode: blog_admin.remove_unused_tags;
-            }
-            execution {
-                sequence: 20
-                fireOnInit: false
-            }
-            comments {
-                comments: Call database procedure to delete tags that aren't used in any post.
-            }
-        )
-
-        action refresh-ig (
-            name: Refresh IG
-            action: refresh
-            affectedElements {
-                selectionType: region
-                region: @add-edit-tags
-            }
-            execution {
-                sequence: 40
-                fireOnInit: false
-            }
-        )
-
-        action show-message (
-            name: Show message
-            action: executeJsCode
-            settings {
-                jsCode:
-                    ```javascript-browser
-                    blog.admin.showSuccessMessage({
-                      "text": "BLOG_MSG_TAGS_UNUSED_DELETED"
-                    });
-                    ```
-            }
-            execution {
-                sequence: 50
-                fireOnInit: false
-            }
-        )
-
     )
 
     dynamicAction process-after-changes (

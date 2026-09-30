@@ -61,7 +61,7 @@ page 20019 (
         name: Information
         type: staticContent
         source {
-            htmlCode: &APP_TEXT$BLOG_MSG_OCI_API_KEY_INFO!RAW.
+            htmlCode: "&{BLOG_MSG_OCI_API_KEY_INFO!RAW}."
         }
         layout {
             sequence: 10
@@ -195,9 +195,17 @@ page 20019 (
             icon: fa-close
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button save (
@@ -222,27 +230,6 @@ page 20019 (
             warnOnUnsavedChanges: doNotCheck
             databaseAction: update
         }
-    )
-
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 10
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @cancel
-        }
-
-        action native-dialog-cancel (
-            action: cancelDialog
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
     )
 
     process update-credential (

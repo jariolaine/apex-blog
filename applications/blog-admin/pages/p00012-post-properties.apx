@@ -34,7 +34,7 @@ page 12 (
             <ol>
               <li>
                 Click New Post.
-              </li>  
+              </li>
               <li>
                 Create the post. Use editor options to format post. E.g. in "Styles" select list you find block style "Program Code" that is useful when posting code.
               </li>
@@ -57,7 +57,7 @@ page 12 (
               </li>
             </ol>
             <h3>
-              Delete a post  
+              Delete a post
             </h3>
             <ol>
               <li>
@@ -70,59 +70,6 @@ page 12 (
             
             ```
     }
-
-    region ai-assistant-buttons (
-        name: AI Assistant Buttons
-        type: staticContent
-        layout {
-            sequence: 10
-            parentRegion: @assistant
-            slot: subRegions
-        }
-        appearance {
-            template: @/buttons-container
-            templateOptions: [
-                #DEFAULT#
-                t-ButtonRegion--slimPadding
-                t-ButtonRegion--noBorder
-                margin-bottom-none
-            ]
-            cssClasses: blog-assistant-buttons
-        }
-        config {
-            buildOption: @blog-feature-generative-ai
-        }
-    )
-
-    region assistant (
-        name: Assistant
-        type: staticContent
-        source {
-            htmlCode: <div id="blog-ai-assistant"></div>
-        }
-        layout {
-            sequence: 30
-            parentRegion: @post-content
-            slot: subRegions
-            startNewRow: false
-        }
-        appearance {
-            template: @/standard
-            templateOptions: [
-                #DEFAULT#
-                t-Region--noPadding
-                t-Region--hideHeader js-addHiddenHeadingRoleDesc
-                t-Region--scrollBody
-            ]
-            cssClasses: [
-                blog-assistant
-                blog-region-noItemHelp
-            ]
-        }
-        config {
-            buildOption: @blog-feature-generative-ai
-        }
-    )
 
     region buttons (
         name: Buttons
@@ -249,7 +196,7 @@ page 12 (
             allowCustomHtml: true
         }
         layout {
-            sequence: 40
+            sequence: 20
             region: @post-content
             slot: regionBody
             alignment: left
@@ -261,16 +208,12 @@ page 12 (
                 t-Form-fieldContainer--postTextBlock
                 margin-bottom-none
             ]
-            cssClasses: [
-                padding-bottom-none
-                blog-item
-            ]
         }
         validation {
             valueRequired: true
         }
         advanced {
-            postText: "\"BLOG_BTN_POST_BODY\""
+            postText: "\"BLOG_BTN_POST_DICTATION\""
             initJavaScriptFunction: blog.admin.editor.init
         }
         source {
@@ -334,7 +277,6 @@ page 12 (
                 #DEFAULT#
                 t-Form-fieldContainer--postTextBlock
             ]
-            cssClasses: blog-item
             width: 30
         }
         validation {
@@ -462,11 +404,11 @@ page 12 (
         }
         appearance {
             template: @/optional-floating
-            templateOptions: #DEFAULT#
-            cssClasses: [
-                blog-item
-                blog-noItemHelp
+            templateOptions: [
+                #DEFAULT#
+                t-Form-fieldContainer--postTextBlock
             ]
+            cssClasses: blog-noItemHelp
             height: 4
         }
         validation {
@@ -507,10 +449,6 @@ page 12 (
                 #DEFAULT#
                 t-Form-fieldContainer--postTextBlock
             ]
-            cssClasses: [
-                blog-item
-                blog-postText
-            ]
             height: 6
         }
         validation {
@@ -518,7 +456,7 @@ page 12 (
             maxLength: 1024
         }
         advanced {
-            postText: "\"BLOG_BTN_POST_DESCRIPTION\""
+            postText: "\"BLOG_BTN_POST_SUMMARY\""
         }
         source {
             formRegion: @post-properties
@@ -693,7 +631,6 @@ page 12 (
                 #DEFAULT#
                 t-Form-fieldContainer--postTextBlock
             ]
-            cssClasses: blog-item
             width: 30
         }
         validation {
@@ -716,11 +653,11 @@ page 12 (
         help {
             helpText:
                 ```html
-                Comma separated list of tags. 
-                Tags are case insensitive unique. 
+                Comma separated list of tags.
+                Tags are case insensitive unique.
                 Example, if you enter "my tag" and there is already tag "My Tag",
-                later will be used as tag. 
-                Use search to find existing tags. 
+                later will be used as tag.
+                Use search to find existing tags.
                 You can maintain  all tags information by clicking <em>All Tags</em> tab at Posts page. To edit e.g. display sequence of tags linked to post, click <em>Edit Tags</em> button on Posts page report.
                 ```
         }
@@ -733,7 +670,7 @@ page 12 (
             alignment: left
         }
         layout {
-            sequence: 20
+            sequence: 10
             region: @post-content
             slot: regionBody
             alignment: left
@@ -744,7 +681,6 @@ page 12 (
                 #DEFAULT#
                 t-Form-fieldContainer--postTextBlock
             ]
-            cssClasses: blog-item
         }
         validation {
             valueRequired: true
@@ -781,9 +717,17 @@ page 12 (
             icon: fa-chevron-left
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button create (
@@ -877,24 +821,50 @@ page 12 (
     )
 
     button reset-chat (
-        buttonName: RESET_CHAT
-        label: Reset Chat
+        buttonName: OPEN_ASSISTANT
+        label: Open Assistant
         layout {
-            sequence: 10
-            region: @ai-assistant-buttons
-            slot: next
+            sequence: 30
+            region: @buttons
+            slot: change
         }
         appearance {
-            buttonTemplate: @/icon
-            templateOptions: #DEFAULT#
-            icon: fa-undo
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--primary
+                t-Button--iconLeft
+            ]
+            icon: fa-sparkles
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
         }
         config {
             buildOption: @blog-feature-generative-ai
         }
+
+        triggerAction native-open-ai-assistant (
+            action: showAiAssistant
+            genAI {
+                systemPrompt: "&{BLOG_AI_SYSTEM_PROMPT_POST_ASSISTANT}."
+                welcomeMessage: "&{BLOG_MSG_AI_ASSISTANT_WELCOME}."
+            }
+            useResponse {
+                type: jsCode
+                jsCode:
+                    ```javascript-browser
+                    blog.admin.ai.useResponse({
+                      postItem: "P12_BODY_HTML",
+                      text: this.data.response
+                    });
+                    ```
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button save (
@@ -1009,47 +979,29 @@ page 12 (
         }
     )
 
-    button talk-to-assistant (
-        buttonName: TALK_TO_ASSISTANT
-        label: Talk to Assistant
-        layout {
-            sequence: 30
-            region: @ai-assistant-buttons
-            slot: change
-        }
-        appearance {
-            buttonTemplate: @/text-with-icon
-            templateOptions: [
-                #DEFAULT#
-                t-Button--iconLeft
-            ]
-            icon: fa-microphone
-        }
-        behavior {
-            action: definedByDynamicAction
-            executeValidations: false
-        }
-        advanced {
-            htmlDomId: TALK_TO_ASSISTANT
-        }
-        config {
-            buildOption: @blog-feature-post-speech
-        }
-    )
-
-    dynamicAction close-dialog (
-        name: Close Dialog
+    dynamicAction dic (
+        name: Blog Post Dictation
         execution {
-            sequence: 10
+            sequence: 170
         }
         when {
             event: click
-            selectionType: button
-            button: @cancel
+            selectionType: jQuerySelector
+            jquerySelector: .js-post-dictation
         }
 
-        action native-dialog-cancel (
-            action: cancelDialog
+        action plugin-fi-jaris-speech-recognition (
+            action: plugin/speechRecognition
+            plugin-triggerButtonUi {
+                recordingButtonClass: t-Button--warning
+                idleIconClass: fa-microphone
+                recordingIconClass: fa-stop-circle
+                animationClass: fa-anim-flash
+            }
+            affectedElements {
+                selectionType: items
+                items: P12_BODY_HTML
+            }
             execution {
                 sequence: 10
                 fireOnInit: false
@@ -1058,85 +1010,125 @@ page 12 (
 
     )
 
-    dynamicAction generative-ai-buttons (
-        name: Generative AI Buttons
+    dynamicAction generate-post-category (
+        name: Generate Category
         execution {
-            sequence: 110
+            sequence: 150
         }
         when {
-            event: ready
-        }
-        config {
-            buildOption: @blog-feature-generative-ai
+            event: click
+            selectionType: jQuerySelector
+            jquerySelector: .js-generate-category
         }
 
-        action native-javascript-code (
-            action: executeJsCode
-            settings {
-                jsCode:
-                    ```javascript-browser
-                    blog.admin.ai.post.buttonActions();
-                    
-                    
-                    ```
+        action native-generate-text-ai (
+            action: generateTextWithAi
+            genAI {
+                systemPrompt: "&{BLOG_AI_SYSTEM_PROMPT_POST_CATEGORY}."
+            }
+            inputValue {
+                type: jsCode
+                jsExpression: blog.admin.ai.valueToAiInput( "P12_BODY_HTML" )
+            }
+            useResponse {
+                item: P12_CATEGORY_TITLE
             }
             execution {
-                sequence: 20
+                sequence: 10
+                fireOnInit: false
             }
         )
 
     )
 
-    dynamicAction post-speech-recognition-button (
-        name: Post Speech Recognition Button
+    dynamicAction generate-post-summary (
+        name: Generate Summary
         execution {
-            sequence: 120
+            sequence: 140
         }
         when {
-            event: ready
-        }
-        clientSideCondition {
-            type: jsExpression
-            javaScriptExpression: "webkitSpeechRecognition" in window
+            event: click
+            selectionType: jQuerySelector
+            jquerySelector: .js-generate-summary
         }
 
-        action remove-button (
-            name: Remove Button
-            action: executeJsCode
-            settings {
-                jsCode: this.affectedElements.siblings( ".t-Form-itemText--post" ).has( ":button" ).remove();
+        action native-generate-text-ai (
+            action: generateTextWithAi
+            genAI {
+                systemPrompt: "&{BLOG_AI_SYSTEM_PROMPT_POST_SUMMARY}."
             }
-            affectedElements {
-                selectionType: items
-                items: P12_BODY_HTML
+            inputValue {
+                type: jsCode
+                jsExpression: blog.admin.ai.valueToAiInput( "P12_BODY_HTML" )
+            }
+            useResponse {
+                item: P12_POST_DESC
             }
             execution {
                 sequence: 10
-                fireWhenEventResultIs: false
+                fireOnInit: false
             }
         )
 
-        action set-speech-recognition (
-            name: Set Speech Recognition
-            action: executeJsCode
-            settings {
-                jsCode:
-                    ```javascript-browser
-                    blog.admin.speechRecognition.initButtonAction({
-                      element$: this.affectedElements
-                    , objectName: "post"
-                    , action: "record-post"
-                    , class: [ "u-warning-text" ]
-                    });
-                    
-                    ```
+    )
+
+    dynamicAction generate-post-tags (
+        name: Generate Tags
+        execution {
+            sequence: 160
+        }
+        when {
+            event: click
+            selectionType: jQuerySelector
+            jquerySelector: .js-generate-tags
+        }
+
+        action native-generate-text-ai (
+            action: generateTextWithAi
+            genAI {
+                systemPrompt: "&{BLOG_AI_SYSTEM_PROMPT_POST_TAGS}."
             }
-            affectedElements {
-                selectionType: items
-                items: P12_BODY_HTML
+            inputValue {
+                type: jsCode
+                jsExpression: blog.admin.ai.valueToAiInput( "P12_BODY_HTML" )
+            }
+            useResponse {
+                item: P12_TAGS
             }
             execution {
                 sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction new (
+        name: Generate Title
+        execution {
+            sequence: 130
+        }
+        when {
+            event: click
+            selectionType: jQuerySelector
+            jquerySelector: .js-generate-title
+        }
+
+        action native-generate-text-ai (
+            action: generateTextWithAi
+            genAI {
+                systemPrompt: "&{BLOG_AI_SYSTEM_PROMPT_POST_TITLE}."
+            }
+            inputValue {
+                type: jsCode
+                jsExpression: blog.admin.ai.valueToAiInput( "P12_BODY_HTML" )
+            }
+            useResponse {
+                item: P12_TITLE
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
             }
         )
 
@@ -1354,142 +1346,6 @@ page 12 (
             execution {
                 sequence: 100
                 fireWhenEventResultIs: false
-            }
-        )
-
-    )
-
-    dynamicAction set-ai-assistant (
-        name: Set AI Assistant
-        execution {
-            sequence: 20
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @reset-chat
-        }
-        config {
-            buildOption: @blog-feature-generative-ai
-        }
-
-        action initialize-open-ai-assistant (
-            name: Initialize Open AI Assistant
-            action: showAiAssistant
-            genAI {
-                service: @BLOG_OPEN_AI_API
-                systemPrompt: &APP_TEXT$BLOG_AI_SYSTEM_PROMPT_POST_ASSISTANT.
-                welcomeMessage: &APP_TEXT$BLOG_MSG_AI_ASSISTANT_WELCOME.
-            }
-            appearance {
-                displayAs: inline
-                containerSelector: #blog-ai-assistant
-            }
-            useResponse {
-                type: jsCode
-                jsCode: "blog.admin.ai.post.assistant.useResponse({ text: this });"
-            }
-            execution {
-                sequence: 10
-            }
-            advanced {
-                initJavaScriptFunction:
-                    ```javascript-browser
-                    function( options ) {
-                      options = $.extend( true, {}, options, {
-                        "view":{ "focus": false }
-                      });
-                      return options;
-                    }
-                    ```
-            }
-        )
-
-        action set-speech-recognition (
-            name: Set Speech Recognition
-            action: executeJsCode
-            settings {
-                jsCode:
-                    ```javascript-browser
-                    blog.admin.speechRecognition.init({
-                      element$: this.affectedElements
-                    , objectName: "assistant"
-                    , clearPreviousText: true
-                    });
-                    ```
-            }
-            affectedElements {
-                selectionType: jquerySelector
-                jquerySelector: .a-ChatInput-text
-            }
-            execution {
-                sequence: 30
-            }
-        )
-
-        action show-talk-to-assistant-button (
-            name: Show Talk to Assistant Button
-            action: show
-            affectedElements {
-                selectionType: button
-                button: @talk-to-assistant
-            }
-            execution {
-                sequence: 40
-                fireOnInit: false
-            }
-        )
-
-    )
-
-    dynamicAction toggle-ai-assistant-speech (
-        name: Toggle AI Assistant Speech
-        execution {
-            sequence: 110
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @talk-to-assistant
-        }
-        clientSideCondition {
-            type: jsExpression
-            javaScriptExpression: "webkitSpeechRecognition" in window
-        }
-        config {
-            buildOption: @blog-feature-generative-ai
-        }
-
-        action remove-button (
-            name: Remove Button
-            action: executeJsCode
-            settings {
-                jsCode: this.affectedElements.remove()
-            }
-            affectedElements {
-                selectionType: triggeringElement
-            }
-            execution {
-                sequence: 20
-                fireWhenEventResultIs: false
-            }
-        )
-
-        action start-stop-speech-recognition (
-            name: Start / Stop Speech Recognition
-            action: executeJsCode
-            settings {
-                jsCode:
-                    ```javascript-browser
-                    blog.admin.speechRecognition.toggleRecording({
-                      element: this.triggeringElement
-                    , objectName: "assistant"
-                    });
-                    ```
-            }
-            execution {
-                sequence: 20
-                fireOnInit: false
             }
         )
 

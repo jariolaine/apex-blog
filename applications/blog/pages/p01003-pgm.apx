@@ -24,8 +24,7 @@ page 1003 (
         type: hidden
         layout {
             sequence: 70
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: body
         }
         sessionState {
             storage: request

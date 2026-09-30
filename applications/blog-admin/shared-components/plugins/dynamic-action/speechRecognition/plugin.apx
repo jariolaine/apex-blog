@@ -1,0 +1,126 @@
+plugin speechRecognition (
+    name: Speech Recognition
+    staticId: FI.JARIS.SPEECH_RECOGNITION
+    type: dynamicAction
+    component {
+        standardAttributes: [
+            forItem
+            forJquerySelector
+            forJavaScriptExpression
+            forEventSource
+            affectedElementRequired
+            stopExecutionOnErrorAttr
+            waitForResultAttr
+        ]
+    }
+    source {
+        plsqlCode:
+            ```plsql
+            procedure render_speech_recognition(
+              p_dynamic_action  in            apex_plugin.t_dynamic_action
+            , p_plugin          in            apex_plugin.t_plugin
+            , p_param           in            apex_plugin.t_dynamic_action_render_param
+            , p_result          in out nocopy apex_plugin.t_dynamic_action_render_result
+            )
+            as
+              l_clear_previous_text   boolean :=
+                p_dynamic_action.attributes.get_boolean('clear_previous_text');
+              l_continuous            boolean :=
+                p_dynamic_action.attributes.get_boolean('continuous');
+              l_language              varchar2(4000) :=
+                p_dynamic_action.attributes.get_varchar2('language');
+              l_recording_button_class varchar2(4000) :=
+                p_dynamic_action.attributes.get_varchar2('recording_button_class');
+              l_idle_icon_class       varchar2(4000) :=
+                p_dynamic_action.attributes.get_varchar2('idle_icon_class');
+              l_recording_icon_class  varchar2(4000) :=
+                p_dynamic_action.attributes.get_varchar2('recording_icon_class');
+              l_animation_class       varchar2(4000) :=
+                p_dynamic_action.attributes.get_varchar2('animation_class');
+              l_capitalize_first      boolean :=
+                p_dynamic_action.attributes.get_boolean('capitalize_first');
+              l_append_period         boolean :=
+                p_dynamic_action.attributes.get_boolean('append_period');
+            begin
+            
+              if apex_application.g_debug then
+                apex_plugin_util.debug_dynamic_action(
+                  p_plugin => p_plugin,
+                  p_dynamic_action => p_dynamic_action
+                );
+              end if;
+            
+              p_result.function_name := 'fi_jaris_speech_recognition.toggle';
+            
+              p_result.function_param.open_object;
+            
+              p_result.function_param.put(
+                'clearPreviousText',
+                l_clear_previous_text
+              );
+            
+              p_result.function_param.put(
+                'continuous',
+                l_continuous
+              );
+            
+              p_result.function_param.put(
+                'language',
+                l_language
+              );
+            
+              p_result.function_param.put(
+                'recordingButtonClass',
+                l_recording_button_class
+              );
+            
+              p_result.function_param.put(
+                'idleIconClass',
+                l_idle_icon_class
+              );
+            
+              p_result.function_param.put(
+                'recordingIconClass',
+                l_recording_icon_class
+              );
+            
+              p_result.function_param.put(
+                'animationClass',
+                l_animation_class
+              );
+            
+              p_result.function_param.put(
+                'capitalizeFirst',
+                l_capitalize_first
+              );
+            
+              p_result.function_param.put(
+                'appendPeriod',
+                l_append_period
+              );
+            
+              p_result.function_param.close_object;
+            
+            end render_speech_recognition;
+            ```
+    }
+    callbacks {
+        renderProcedureName: render_speech_recognition
+    }
+    advanced {
+        category: execute
+    }
+    javaScript {
+        fileUrls: #PLUGIN_FILES#speech-recognition#MIN#.js
+    }
+    information {
+        version: 1.0.0
+        helpText:
+            ```
+            <p>Toggle browser speech recognition and append recognized speech to the first affected element.</p>
+            <p>The affected element does not need an ID. The plug-in uses the affected DOM element directly with APEX value APIs.</p>
+            <p>Browser support depends on the Web Speech API implementation.</p>
+            ```
+    }
+)
+

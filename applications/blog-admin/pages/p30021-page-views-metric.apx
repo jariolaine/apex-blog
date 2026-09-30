@@ -512,9 +512,34 @@ page 30021 (
             icon: fa-refresh
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction refresh-breakdown (
+            name: Refresh Breakdown
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @breakdown-by-page
+            }
+            execution {
+                sequence: 20
+            }
+        )
+
+        triggerAction refresh-summary (
+            name: Refresh Summary
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @summary
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     dynamicAction refresh-report (
@@ -525,45 +550,6 @@ page 30021 (
         when {
             selectionType: items
             items: P30021_TIMEFRAME
-        }
-
-        action refresh-breakdown (
-            name: Refresh Breakdown
-            action: refresh
-            affectedElements {
-                selectionType: region
-                region: @breakdown-by-page
-            }
-            execution {
-                sequence: 20
-                fireOnInit: false
-            }
-        )
-
-        action refresh-summary (
-            name: Refresh Summary
-            action: refresh
-            affectedElements {
-                selectionType: region
-                region: @summary
-            }
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
-    )
-
-    dynamicAction refresh-reports (
-        name: Refresh reports
-        execution {
-            sequence: 20
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @refresh
         }
 
         action refresh-breakdown (

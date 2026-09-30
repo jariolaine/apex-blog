@@ -1,0 +1,14 @@
+.clipboard-tooltip {
+  position: absolute;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.clipboard-copy-source {
+  position: fixed;
+  inset-block-start: -10000px;
+  inset-inline-start: -10000px;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+}

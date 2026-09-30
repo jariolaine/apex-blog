@@ -14,7 +14,7 @@ blockquote::after {
   display: none;
   visibility: none;
 }
-.blog-item.blog-noItemHelp {
+.blog-noItemHelp {
   width: calc(100% - 0.5rem);
 }
 .blog-region-noItemHelp {
@@ -114,10 +114,12 @@ blockquote::after {
 .blog-posts .blog-post .blog-post--footer .blog-post--tags {
   width: 100%;
   clear: both;
-  padding: 1rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin: 0;
+  padding: 1rem;
+  list-style: none;
   border-top: var(--ut-component-inner-border-width) solid var(--ut-component-inner-border-color);
 }
 .blog-posts .blog-posts--pagination {
@@ -293,15 +295,15 @@ pre.blog-program-code code,
 /**************************************
 * Post editor page
 **************************************/
-.blog-assistant {
-  border-top: none;
+.blog-item-button {
+  outline: none;
+  padding: 0;
 }
-.blog-assistant .blog-assistant-buttons {
-  border-top: var(--ut-component-border-width) solid var(--ut-component-border-color);
-}
-.blog-item .t-Form-itemText--post:has(span.blog-hidden) {
+.t-Form-fieldContainer--postTextBlock:has(.blog-post-text-disabled) .t-Form-itemText--post {
   display: none;
-  visibility: none;
+}
+.t-Form-fieldContainer--postTextBlock:has(.blog-post-text-disabled) .t-Form-inputContainer {
+  border-radius: var(--a-field-input-border-radius);
 }
 /**************************************
 * Interactive Reports link and icon column

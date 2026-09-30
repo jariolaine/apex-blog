@@ -26,7 +26,7 @@ page 11 (
             <ol>
               <li>
                 Click New Post.
-              </li>  
+              </li>
               <li>
                 Create the post. Use editor options to format post. E.g. in "Styles" select list you find block style "Program Code" that is useful when posting code.
               </li>
@@ -49,7 +49,7 @@ page 11 (
               </li>
             </ol>
             <h3>
-              Delete a post  
+              Delete a post
             </h3>
             <ol>
               <li>
@@ -161,7 +161,7 @@ page 11 (
                 url: #EDIT_URL#
             }
             linkIcon: <span aria-hidden="true" class="t-Icon fa fa-pencil"></span>
-            linkAttributes: title="&APP_TEXT$BLOG_TXT_EDIT." class="t-Button t-Button--noLabel t-Button--icon t-Button--small"
+            linkAttributes: "title=\"&{BLOG_TXT_EDIT}.\" class=\"t-Button t-Button--noLabel t-Button--icon t-Button--small\""
         }
         pagination {
             type: rowRangesXToY
@@ -269,7 +269,7 @@ page 11 (
                     }
                 }
                 linkText: <span aria-hidden="true" class="fa fa-tags"></span>
-                linkAttributes: title="&APP_TEXT$BLOG_TXT_EDIT." class="t-Button t-Button--noLabel t-Button--icon t-Button--small w40"
+                linkAttributes: "title=\"&{BLOG_TXT_EDIT}.\" class=\"t-Button t-Button--noLabel t-Button--icon t-Button--noUI t-Button--small w40\""
             }
             source {
                 dataType: STRING

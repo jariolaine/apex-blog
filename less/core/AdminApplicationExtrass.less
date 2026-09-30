@@ -54,17 +54,19 @@
 /**************************************
 * Post editor page
 **************************************/
-.blog-assistant {
-  .blog-assistant-buttons {
-    border-top: var(--ut-component-border-width) solid var(--ut-component-border-color);
-  }
-  border-top: none;
+.blog-item-button {
+  outline: none;
+  padding: 0;
 }
-.blog-item {
-  .t-Form-itemText--post:has(span.blog-hidden) {
-    display: none;
-    visibility: none;
-  }
+
+.t-Form-fieldContainer--postTextBlock:has(.blog-post-text-disabled)
+  .t-Form-itemText--post {
+  display: none;
+}
+
+.t-Form-fieldContainer--postTextBlock:has(.blog-post-text-disabled)
+  .t-Form-inputContainer {
+  border-radius: var(--a-field-input-border-radius);
 }
 
 /**************************************

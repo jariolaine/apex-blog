@@ -1,0 +1,20 @@
+file copy-to-clipboard.css (
+    mimeType: text/css
+    charSet: utf-8
+)
+
+file copy-to-clipboard.js (
+    mimeType: text/javascript
+    charSet: utf-8
+)
+
+file copy-to-clipboard.min.css (
+    mimeType: text/css
+    charSet: utf-8
+)
+
+file copy-to-clipboard.min.js (
+    mimeType: text/javascript
+    charSet: utf-8
+)
+

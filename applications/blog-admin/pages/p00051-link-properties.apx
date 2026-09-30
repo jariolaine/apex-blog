@@ -241,23 +241,13 @@ page 51 (
         }
         appearance {
             template: @/required-floating
-            templateOptions: [
-                #DEFAULT#
-                t-Form-fieldContainer--postTextBlock
-            ]
-            cssClasses: [
-                blog-item
-                blog-postText
-            ]
+            templateOptions: #DEFAULT#
             width: 30
             height: 4
         }
         validation {
             valueRequired: true
             maxLength: 4000
-        }
-        advanced {
-            postText: "\"BLOG_BTN_AI_ASSISTANT\""
         }
         source {
             formRegion: @link-properties
@@ -469,9 +459,17 @@ page 51 (
             icon: fa-chevron-left
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button create (
@@ -561,89 +559,6 @@ page 51 (
             type: itemIsNotNull
             item: P51_ID
         }
-    )
-
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 10
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @cancel
-        }
-
-        action native-dialog-cancel (
-            action: cancelDialog
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
-    )
-
-    dynamicAction initialize-assistant-button-action (
-        name: Initialize assistant button action
-        execution {
-            sequence: 20
-        }
-        when {
-            event: ready
-        }
-
-        action native-javascript-code (
-            action: executeJsCode
-            settings {
-                jsCode:
-                    ```javascript-browser
-                    apex.actions.add({
-                      name: "gen-ai-assistant"
-                    , action: ( event, element, args ) => { 
-                        apex.event.trigger( this.affectedElements, "action-open-assistant", args );
-                      }
-                    });
-                    ```
-            }
-            affectedElements {
-                selectionType: items
-                items: P51_LINK_DESC
-            }
-            execution {
-                sequence: 10
-            }
-        )
-
-    )
-
-    dynamicAction open-ai-assistant (
-        name: Open AI assistant
-        execution {
-            sequence: 30
-        }
-        when {
-            event: custom
-            customEvent: action-open-assistant
-            selectionType: items
-            items: P51_LINK_DESC
-        }
-
-        action native-open-ai-assistant (
-            action: showAiAssistant
-            genAI {
-                welcomeMessage: &APP_TEXT$BLOG_MSG_AI_ASSISTANT_WELCOME.
-            }
-            useResponse {
-                type: item
-                item: P51_LINK_DESC
-            }
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
     )
 
     process close-dialog (

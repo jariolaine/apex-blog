@@ -56,21 +56,39 @@ select
   ,(
     select
       xmlserialize(
-        content xmlagg( lkp_tag.tag_html1 order by lkp_tag.display_seq ) as varchar2(4000)
+        content
+        xmlelement( "ul"
+        , xmlattributes(
+            'blog-search-tags' as "class"
+          )
+        , xmlagg(
+            xmlelement(
+              "li"
+            , lkp_tag.tag_html1
+            ) order by lkp_tag.display_seq
+          )
+        ) as varchar2(4000)
       ) as tags_html
     from blog_v_post_tags lkp_tag
     where 1 = 1
       and lkp_tag.post_id = q1.post_id
-  )                   as tags_html1
+  )                   as search_tags_html
   ,(
     select
       xmlserialize(
-        content xmlagg( lkp_tag.tag_html2 order by lkp_tag.display_seq )
-      ) as tags_html
+        content
+        xmlagg(
+          xmlelement(
+            "li"
+          , lkp_tag.tag_html2
+          ) order by lkp_tag.display_seq
+        )
+      )
+      as tags_html
     from blog_v_post_tags lkp_tag
     where 1 = 1
       and lkp_tag.post_id = q1.post_id
-  )                   as tags_html2
+  )                   as post_tags_html
 -- Fetch next post id and title
   ,(
     select

@@ -53,7 +53,7 @@ page 80 (
             type: sqlQuery
             sqlQuery:
                 ```sql
-                select 
+                select
                    v1.id                    as id
                   ,v1.created_on            as created_on
                   ,v1.created_on            as created_since
@@ -92,7 +92,7 @@ page 80 (
                 action: resetPagination
             }
             linkIcon: <span aria-hidden="true" class="t-Icon fa fa-pencil"></span>
-            linkAttributes: title="&APP_TEXT$BLOG_TXT_EDIT." class="t-Button t-Button--noLabel t-Button--icon t-Button--small"
+            linkAttributes: "title=\"&{BLOG_TXT_EDIT}.\" class=\"t-Button t-Button--noLabel t-Button--icon t-Button--small\""
         }
         pagination {
             type: rowRangesXToY
@@ -401,9 +401,17 @@ page 80 (
             icon: fa-close
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button create-popup-page (
@@ -451,13 +459,47 @@ page 80 (
             icon: fa-sequence
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             requiresConfirmation: true
         }
         confirmation {
-            message: &APP_TEXT$BLOG_CONFIRM_RESEQUENCE_DYNAMIC_CONTENT.
-            style: warning
+            message: "&{BLOG_CONFIRM_RESEQUENCE_DYNAMIC_CONTENT}."
+            style: information
         }
+
+        triggerAction native-show-success-message (
+            action: showSuccessMessage
+            settings {
+                message: "&{BLOG_MSG_DYNAMIC_CONTENT_RESEQUENCED}."
+            }
+            execution {
+                sequence: 30
+            }
+        )
+
+        triggerAction refresh-report (
+            name: Refresh Report
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @modal-popup-pages
+            }
+            execution {
+                sequence: 20
+            }
+        )
+
+        triggerAction resequence-modal-popup-pages (
+            name: Resequence Modal Popup Pages
+            action: executeServerSideCode
+            settings {
+                plsqlCode: blog_admin.resequence_dynamic_content;
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button reset-report (
@@ -487,27 +529,6 @@ page 80 (
         }
     )
 
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 20
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @close
-        }
-
-        action native-dialog-cancel (
-            action: cancelDialog
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
-    )
-
     dynamicAction edit-report-dialog-closed (
         name: Edit Report - Dialog Closed
         execution {
@@ -527,61 +548,6 @@ page 80 (
             }
             execution {
                 sequence: 10
-                fireOnInit: false
-            }
-        )
-
-    )
-
-    dynamicAction resequence-modal-popup-pages (
-        name: Resequence Modal Popup Pages
-        execution {
-            sequence: 30
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @resequence-links
-        }
-
-        action refresh-report (
-            name: Refresh Report
-            action: refresh
-            affectedElements {
-                selectionType: region
-                region: @modal-popup-pages
-            }
-            execution {
-                sequence: 20
-                fireOnInit: false
-            }
-        )
-
-        action resequence (
-            name: Resequence
-            action: executeServerSideCode
-            settings {
-                plsqlCode: blog_admin.resequence_dynamic_content;
-            }
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
-        action show-message (
-            name: Show message
-            action: executeJsCode
-            settings {
-                jsCode:
-                    ```javascript-browser
-                    blog.admin.showSuccessMessage({
-                      "text": "BLOG_MSG_DYNAMIC_CONTENT_RESEQUENCED"
-                    });
-                    ```
-            }
-            execution {
-                sequence: 40
                 fireOnInit: false
             }
         )

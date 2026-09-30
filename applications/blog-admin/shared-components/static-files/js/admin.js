@@ -1,655 +1,714 @@
 /**
-* @namespace blog
-**/
-var blog = blog || {};
+ * @namespace blog
+ * @description Blog administration JavaScript for Oracle APEX 26.1.
+ */
+window.blog = window.blog || {};
 
-( function( $, region, blog ) {
+(function ($, region, blog) {
+  "use strict";
 
-  gErrMesgKey = "BLOG_GENERIC_ERROR";
+  const BLOG_GENERIC_ERROR = "BLOG_GENERIC_ERROR";
+  const LOG_PREFIX = "[blog.admin]";
 
-  function get_message( message ){
-    return apex.lang.hasMessage( message ) ? apex.lang.getMessage( message ) : message;
+  function get_message(message) {
+    if (apex.lang.hasMessage(message)) {
+      return apex.lang.getMessage(message);
+    }
+
+    apex.debug.info(
+      LOG_PREFIX,
+      "Message key not found; using literal value.",
+      message
+    );
+    return message;
   }
 
-  /**
-  * @module blog.admin
-  **/
+  function showPageError(message, context) {
+
+    apex.debug.error(
+      LOG_PREFIX,
+      context,
+      message
+    );
+
+    apex.message.clearErrors();
+    apex.message.showErrors([
+      {
+        type: "error",
+        location: "page",
+        message: message
+      }
+    ]);
+  }
+
+  function getButton$(element) {
+    const element$ = $(element);
+    return element$.is(":button") ? element$ : element$.closest("button");
+  }
+
+  function addGlobalAction(action) {
+    const existingAction = apex.actions.lookup(action.name);
+
+    if (existingAction) {
+      if (existingAction.blogAdminOwned === true) {
+        apex.debug.warn(
+          LOG_PREFIX,
+          "Replacing a previously registered blog.admin action.",
+          action.name
+        );
+        apex.actions.remove(action.name);
+      } else {
+        apex.debug.error(
+          LOG_PREFIX,
+          "Global action name collision; existing action was not replaced.",
+          action.name
+        );
+        return false;
+      }
+    }
+
+    action.blogAdminOwned = true;
+    const added = apex.actions.add(action);
+
+    if (added === false) {
+      apex.debug.error(
+        LOG_PREFIX,
+        "Failed to add global action.",
+        action.name
+      );
+      return false;
+    }
+
+    apex.debug.info(
+      LOG_PREFIX,
+      "Global action registered.",
+      action.name
+    );
+    return true;
+  }
+
   blog.admin = {
 
     /**
-    * @function blog.admin.showSuccessMessage
-    * @desc Show APEX success message
-    **/
-    showSuccessMessage: function( message ){
-
-      if( typeof message === "object" ){
-        if( "text" in message ){
-          if( message.text ){
-            let lMsg = get_message( message.text );
-            apex.message.showPageSuccess( lMsg );
-          }
-        }
-      }
-
-    }
-
-    /**
-    * @module blog.admin.ir
-    **/
-  , ir: {
-
+     * @module blog.admin.ir
+     */
+    ir: {
       /**
-      * @function blog.admin.ir.filesAfterRefresh
-      * @desc Handle page 70 "Files" interactive report after refresh actions
-      **/
-      filesAfterRefresh: function( options ){
-
-        // set defaults
+       * @function blog.admin.ir.filesAfterRefresh
+       * @desc Handle page 70 Files interactive report after refresh actions.
+       */
+      filesAfterRefresh: function (options) {
         options = $.extend({
-          clipboardSourceAttr: "data-clipboard-source"
-        , loadingIconClass: [ "fa-refresh", "fa-anim-spin" ]
-        , onOffIconClass: [ "fa-check-square-o", "fa-square-o" ]
-        }, options );
+          loadingIconClass: ["fa-refresh", "fa-anim-spin"],
+          onOffIconClass: ["fa-check-square-o", "fa-square-o"]
+        }, options);
 
-        // on page load add action to select file switch
-        if( options.browserEvent === "load" ){
+        apex.debug.info(
+          LOG_PREFIX,
+          "Files IR refresh handler.",
+          {
+            browserEvent: options.browserEvent
+          }
+        );
 
-          apex.actions.add({
-            name: "select-file"
-          , action: ( event, element, args ) => {
+        if (options.browserEvent !== "load") {
+          return;
+        }
 
-              let element$ = $( element )
-                // Find button element
-                , button$ = element$.is( ":button" ) ? element$ : element$.parent()
-                // Find icon element and set loading icon
-                , icon$ = button$.children( ".t-Icon" ).removeClass( options.onOffIconClass ).addClass( options.loadingIconClass )
-                // Disable button and get stored collection seq_id from data attribute
-                , seqId = button$.prop( "disabled", true ).data( "seq" )
-                // Get fallback generic error message
-                , errMsg = get_message( gErrMesgKey );
-              ;
+          addGlobalAction({
+            name: "select-file",
+            action: (event, element, args) => {
+              const button$ = getButton$(element);
+              const icon$ = button$.children(".t-Icon");
+              const seqId = button$.data("seq");
+              let errMsg = get_message(BLOG_GENERIC_ERROR);
 
-              // Call Ajax process to save selected file id to collection
-              apex.server.process(
-                args.process
-              , {
-                  x01: seqId
-                , x02: args.id
-                }
-              , {
-                  success: function( data ){
-                    // Check if seq key is in returned data
-                    if( "seq" in data ){
-
-                      // Remove loading icon
-                      icon$.removeClass( options.loadingIconClass ).addClass( data.seq ? options.onOffIconClass[0] : options.onOffIconClass[1] );
-                      // Set aria-checked attribute true/false, save returned seq and enable button
-                      button$.attr( "aria-checked", data.seq ? "true" : "false" ).data( "seq", data.seq ).prop( "disabled", false );
-
-                    // If seq key not exists in returned data, some error has happend
-                    // show returned or generic error message
-                    } else {
-                      // Clear all previous errors
-                      apex.message.clearErrors();
-                      // Get error message from returned data if exists
-                      if( "errMsg" in data ){
-                        errMsg = get_message( data.errMsg );
-                      }
-                      // Show error in page
-                      apex.message.showErrors([
-                        {
-                          type:     "error"
-                        , location: "page"
-                        , message:  errMsg
-                        , unsafe:   false
-                        }
-                      ]);
-                    }
-                  }
+              apex.debug.info(
+                LOG_PREFIX,
+                "Select file action invoked.",
+                {
+                  process: args && args.process,
+                  id: args && args.id,
+                  seqId: seqId
                 }
               );
 
+              if (!button$.length) {
+                apex.debug.error(
+                  LOG_PREFIX, "Select file action could not resolve its button element.",
+                  element
+                );
+                return;
+              }
+
+              if (!args || !args.process) {
+                apex.debug.error(
+                  LOG_PREFIX, "Select file action has no Ajax process name.",
+                  args
+                );
+                return;
+              }
+
+              button$.prop("disabled", true);
+              icon$
+                .removeClass(options.onOffIconClass)
+                .addClass(options.loadingIconClass);
+
+              apex.server.process(
+                args.process,
+                {
+                  x01: seqId,
+                  x02: args.id
+                }
+              )
+                .done(function (data) {
+                  apex.debug.info(LOG_PREFIX, "Select file Ajax response received.",
+                    {
+                      process: args.process,
+                      hasSeq: !!data && Object.prototype.hasOwnProperty.call(data, "seq"),
+                      keys: data && typeof data === "object" ? Object.keys(data) : []
+                    }
+                  );
+
+                  if (data && Object.prototype.hasOwnProperty.call(data, "seq")) {
+                    icon$.addClass(
+                      data.seq
+                        ? options.onOffIconClass[0]
+                        : options.onOffIconClass[1]
+                    );
+
+                    button$
+                      .attr("aria-checked", data.seq ? "true" : "false")
+                      .data("seq", data.seq);
+
+                    return;
+                  }
+
+                  if (data && Object.prototype.hasOwnProperty.call(data, "errMsg")) {
+                    errMsg = get_message(data.errMsg);
+                  }
+
+                  showPageError(
+                    errMsg,
+                    "Select file process returned no seq property."
+                  );
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                  apex.debug.error(
+                    LOG_PREFIX, "Select file Ajax request failed.",
+                    {
+                      process: args.process,
+                      textStatus: textStatus,
+                      errorThrown: errorThrown,
+                      status: jqXHR && jqXHR.status
+                    }
+                  );
+
+                  showPageError(
+                    errMsg,
+                    "Select file Ajax request failed."
+                  );
+                })
+                .always(function () {
+                  icon$.removeClass(options.loadingIconClass);
+                  button$.prop("disabled", false);
+
+                  apex.debug.info(
+                    LOG_PREFIX,
+                    "Select file action cleanup completed."
+                  );
+                });
             }
           });
-
-        } else {
-          // Reinitialize copy to clipboard when report is changed
-          options.region$.find( "[" + options.clipboardSourceAttr + "]" ).each( function() {
-            apex.clipboard.addText( $( this ).attr( options.clipboardSourceAttr ), this );
-          });
-        }
-
-      }
+      },
 
       /**
-      * @function blog.admin.ir.commentsAfterRefresh
-      * @desc Handle page 60 "Comments" interactive report after refresh actions
-      **/
-    , commentsAfterRefresh: function( options ){
-
-        // set defaults
+       * @function blog.admin.ir.commentsAfterRefresh
+       * @desc Handle page 60 Comments interactive report after refresh actions.
+       */
+      commentsAfterRefresh: function (options) {
         options = $.extend({
-          openLink: "a[data-unread=\"true\"]"
-        , newClass: "fa-envelope-open-o"
-        , oldClass: ["fa-envelope-o", "fa-envelope-arrow-down"]
-        , titleMsg: "BLOG_LOV_COMMENT_FLAG_READ"
-        }, options );
+          openLink: "a[data-unread=\"true\"]",
+          newClass: "fa-envelope-open-o",
+          oldClass: ["fa-envelope-o", "fa-envelope-arrow-down"],
+          titleMsg: "BLOG_LOV_COMMENT_FLAG_READ"
+        }, options);
 
-        // change link column css class
-        options.region$.find( options.openLink ).one( "click", function(){
-          $( $x( $( this ).data( "id" ) ) )
-            .removeClass( options.oldClass )
-            .addClass( options.newClass )
-            .attr( "title", get_message( options.titleMsg ) )
-          ;
+        if (!options.region$ || !options.region$.length) {
+          apex.debug.warn(
+            LOG_PREFIX,
+            "Comments IR region is unavailable after refresh."
+          );
+          return;
+        }
+
+        const unreadLinks$ = options.region$.find(options.openLink);
+
+        apex.debug.info(
+          LOG_PREFIX,
+          "Initializing unread comment links.", {
+          count: unreadLinks$.length
+        });
+
+        unreadLinks$.one("click.blogAdminComments", function () {
+          const targetId = $(this).data("id");
+          const target = $x(targetId);
+
+          if (!target) {
+            apex.debug.warn(
+              LOG_PREFIX,
+              "Comment status target was not found.",
+              targetId
+            );
+            return true;
+          }
+
+          $(target)
+            .removeClass(options.oldClass)
+            .addClass(options.newClass)
+            .attr("title", get_message(options.titleMsg));
+
+          apex.debug.info(
+            LOG_PREFIX,
+            "Comment marked read in the UI.",
+            targetId
+          );
           return true;
         });
-
       }
-
-    }
+    },
 
     /**
-    * @module blog.admin.ig
-    **/
-  , ig : {
-
+     * @module blog.admin.ig
+     */
+    ig: {
       /**
-      * @function blog.admin.ig.processChildFeatures
-      * @desc hide / show child features depending pElement type
-      **/
-      processChildFeatures: function( pElement ){
+       * @function blog.admin.ig.processChildFeatures
+       * @desc Hide/show child features depending on the parent feature state.
+       */
+      processChildFeatures: function (pElement) {
+        const domElement = $x(pElement);
 
-        let element$ = $( $x( pElement ) )
-          , nextRowsToHide = "tr:has(span.blog-feature-level1),:has(th)"
-          , readOnlyClass = "is-readonly blog-text-line-through"
-          , lineThroughClass = "blog-text-line-through"
-        ;
-        // Check if function called by checkbox or page load
-        if( element$.is( "input" ) ){
-
-          let thisRow$ = element$.parents( "tr:has(span[data-status])" )
-            , label$ = thisRow$.find( "td:first-child>span[data-status]" )
-          ;
-
-          if( element$.is( ":checked" ) ){
-
-            let affectedRows$ = thisRow$.nextUntil( "tr:has(span[data-status=\"Exclude\"]),tr:has(th)" )
-              , nextRow$      = affectedRows$.next( "tr:has(td)" )
-            ;
-
-            affectedRows$.children( "td:first-child" ).removeClass( lineThroughClass );
-            affectedRows$.children( "td:nth-child(2)" ).removeClass( readOnlyClass );
-
-            nextRow$.children( "td:first-child" ).removeClass( lineThroughClass );
-            nextRow$.children( "td:nth-child(2)" ).removeClass( readOnlyClass );
-
-            label$.attr( "data-status", "Include" );
-
-          } else {
-
-            let affectedRows$ = thisRow$.nextUntil( nextRowsToHide );
-
-            affectedRows$.children( "td:first-child" ).addClass( lineThroughClass );
-            affectedRows$.children( "td:nth-child(2)" ).addClass( readOnlyClass );
-
-            label$.attr( "data-status", "Exclude" );
-
-          }
-
-        } else {
-
-          let affectedRows$ = element$.find( "tr:has(span[data-status=\"Exclude\"])" ).nextUntil( nextRowsToHide );
-
-          affectedRows$.children( "td:first-child" ).addClass( lineThroughClass );
-          affectedRows$.children( "td:nth-child(2)" ).addClass( readOnlyClass );
-
+        if (!domElement) {
+          apex.debug.warn(
+            LOG_PREFIX,
+            "processChildFeatures target was not found.",
+            pElement
+          );
+          return;
         }
 
-      }
+        const element$ = $(domElement);
+        const nextRowsToHide = "tr:has(span.blog-feature-level1),tr:has(th)";
+        const readOnlyClass = "is-readonly blog-text-line-through";
+        const lineThroughClass = "blog-text-line-through";
 
-      /**
-      * @function blog.admin.ig.region
-      * @desc IG region initialization code
-      **/
-    , region: function( options ){
-
-        let igId        = options.regionDomId
-          , isConfigIg  = region( igId ).element.hasClass( "blog-config-ig" )
-          , toolbarData = $.apex.interactiveGrid.copyDefaultToolbar()
-        ;
-        // remove default "Save" and "Add Row" buttons form IG toolbar
-        toolbarData.toolbarRemove( "save" );
-        toolbarData.toolbarRemove( "selection-add-row" );
-
-        options = $.extend({
-          toolbarData: toolbarData
-        }, options );
-
-        // disable options from features and settings IG
-        if( isConfigIg ) {
-
-          options = $.extend({
-            reportSettingsArea: false
-          , defaultGridViewOptions: {
-              footer: false
-            , collapsibleControlBreaks: false
-            , reorderColumns: false
-            , columnSort: false
-            , resizeColumns: false
-            }
-          }, options );
-
-        }
-
-        options.columns.forEach( column => {
-          // disable column header menu for all columns
-          if( isConfigIg ) {
-
-            $.extend( true, column, { defaultGridColumnOptions: { noHeaderActivate: true } } );
-
-          } else if( column.name === "DISPLAY_SEQ" ){
-
-            options = $.extend({
-              defaultModelOptions: {
-                sequenceField: column.name
-              , sequenceStep: 10
-              }
-            }, options );
-
-          }
-
+        apex.debug.info(LOG_PREFIX, "Processing child feature visibility.", {
+          element: pElement,
+          invokedByInput: element$.is("input")
         });
 
-        // run code when page is ready
-        $(function(){
+        if (element$.is("input")) {
+          const thisRow$ = element$.parents("tr:has(span[data-status])").first();
+          const label$ = thisRow$.find("td:first-child>span[data-status]");
 
-          // Set IG save action to custom button
-          apex.actions.add({
-            name: "save"
-          , action: function(){
-              region( igId ).call( "getActions" ).invoke( "save" );
+          if (!thisRow$.length) {
+            apex.debug.warn(
+              LOG_PREFIX,
+              "Parent feature row could not be resolved.",
+              pElement
+            );
+            return;
+          }
+
+          if (element$.is(":checked")) {
+            const affectedRows$ = thisRow$.nextUntil(
+              "tr:has(span[data-status=\"Exclude\"]),tr:has(th)"
+            );
+            const nextRow$ = affectedRows$.next("tr:has(td)");
+
+            affectedRows$.children("td:first-child").removeClass(lineThroughClass);
+            affectedRows$.children("td:nth-child(2)").removeClass(readOnlyClass);
+
+            nextRow$.children("td:first-child").removeClass(lineThroughClass);
+            nextRow$.children("td:nth-child(2)").removeClass(readOnlyClass);
+
+            label$.attr("data-status", "Include");
+
+            apex.debug.info(LOG_PREFIX, "Child features enabled.", {
+              affectedRows: affectedRows$.length,
+              includedNextRow: nextRow$.length > 0
+            });
+          } else {
+            const affectedRows$ = thisRow$.nextUntil(nextRowsToHide);
+
+            affectedRows$.children("td:first-child").addClass(lineThroughClass);
+            affectedRows$.children("td:nth-child(2)").addClass(readOnlyClass);
+
+            label$.attr("data-status", "Exclude");
+
+            apex.debug.info(
+              LOG_PREFIX,
+              "Child features disabled.", {
+              affectedRows: affectedRows$.length
+            });
+          }
+
+          return;
+        }
+
+        const affectedRows$ = element$
+          .find("tr:has(span[data-status=\"Exclude\"])")
+          .nextUntil(nextRowsToHide);
+
+        affectedRows$.children("td:first-child").addClass(lineThroughClass);
+        affectedRows$.children("td:nth-child(2)").addClass(readOnlyClass);
+
+        apex.debug.info(
+          LOG_PREFIX,
+          "Initial excluded child feature styling applied.",
+          {
+            affectedRows: affectedRows$.length
+          }
+        );
+      },
+
+      /**
+       * @function blog.admin.ig.region
+       * @desc Interactive Grid region initialization code for APEX 26.1.
+       */
+      region: function (options) {
+        const igId = options.regionDomId;
+
+        if (!igId) {
+          apex.debug.error(
+            LOG_PREFIX,
+            "IG initialization has no regionDomId.",
+            options
+          );
+          return options;
+        }
+
+        const igRegion = region(igId);
+
+        if (!igRegion || !igRegion.element || !igRegion.element.length) {
+          apex.debug.error(
+            LOG_PREFIX,
+            "IG region could not be resolved.",
+            igId
+          );
+          return options;
+        }
+
+        const isConfigIg = igRegion.element.hasClass("blog-config-ig");
+        const toolbarData = $.apex.interactiveGrid.copyDefaultToolbar();
+
+        apex.debug.info(
+          LOG_PREFIX,
+          "Initializing Interactive Grid.",
+          {
+            regionDomId: igId,
+            isConfigIg: isConfigIg,
+            columnCount: Array.isArray(options.columns) ? options.columns.length : undefined
+          }
+        );
+
+        toolbarData.toolbarRemove("save");
+        toolbarData.toolbarRemove("selection-add-row");
+        options.toolbarData = toolbarData;
+
+        if (isConfigIg) {
+          options.reportSettingsArea = false;
+          options.defaultGridViewOptions = $.extend(
+            true,
+            {},
+            options.defaultGridViewOptions,
+            {
+              footer: false,
+              collapsibleControlBreaks: false,
+              reorderColumns: false,
+              columnSort: false,
+              resizeColumns: false
+            }
+          );
+        }
+
+        if (!Array.isArray(options.columns)) {
+          apex.debug.warn(
+            LOG_PREFIX,
+            "IG columns configuration is not an array; column customization skipped.",
+            igId
+          );
+        } else {
+          options.columns.forEach(function (column) {
+            if (isConfigIg) {
+              $.extend(
+                true,
+                column,
+                {
+                  defaultGridColumnOptions: {
+                    noHeaderActivate: true
+                  }
+                }
+              );
+              return;
+            }
+
+            if (column.name === "DISPLAY_SEQ") {
+              options.defaultModelOptions = $.extend(
+                {},
+                options.defaultModelOptions,
+                {
+                  sequenceField: column.name,
+                  sequenceStep: 10
+                }
+              );
+
+              apex.debug.info(
+                LOG_PREFIX,
+                "IG sequence field configured.",
+                {
+                  regionDomId: igId,
+                  sequenceField: column.name,
+                  sequenceStep: 10
+                }
+              );
+            }
+          });
+        }
+
+        $(function () {
+          apex.debug.info(
+            LOG_PREFIX,
+            "Registering Interactive Grid proxy actions.",
+            igId
+          );
+
+          addGlobalAction({
+            name: "save",
+            action: function () {
+              apex.debug.info(
+                LOG_PREFIX,
+                "Invoking IG save action.",
+                igId
+              );
+              region(igId).call("getActions").invoke("save");
             }
           });
 
-          // don't include "Add Row" button to blog features and settings IG
-          if( !isConfigIg ) {
-
-            // Set IG add row action to custom button
-            apex.actions.add({
-              name: "selection-add-row"
-            , action: function(){
-                region( igId ).call( "getActions" ).invoke( "selection-add-row" );
+          if (!isConfigIg) {
+            addGlobalAction({
+              name: "selection-add-row",
+              action: function () {
+                apex.debug.info(
+                  LOG_PREFIX,
+                  "Invoking IG add-row action.",
+                  igId
+                );
+                region(igId).call("getActions").invoke("selection-add-row");
               }
             });
-
           } else {
-            // Hide child features on page load
-            blog.admin.ig.processChildFeatures( igId );
+            blog.admin.ig.processChildFeatures(igId);
           }
-
         });
 
-        // Set IG to edit mode by default on page loadeditor
-        $( window ).on( "theme42ready", function(){
-          region( igId ).call( "getActions" ).set( "edit", true );
-        });
+        apex.gPageContext$
+          .off("apexreadyend.blogAdminIg." + igId)
+          .on("apexreadyend.blogAdminIg." + igId, function () {
+            apex.debug.info(
+              LOG_PREFIX,
+              "Setting IG edit mode after apexreadyend.",
+              igId
+            );
+
+            try {
+              region(igId).call("getActions").set("edit", true);
+            } catch (error) {
+              apex.debug.error(
+                LOG_PREFIX,
+                "Failed to enable IG edit mode.",
+                igId,
+                error
+              );
+            }
+          });
 
         return options;
-
       }
-
-    }
+    },
 
     /**
-    * @module blog.admin.editor
-    **/
-  , editor: {
-
+     * @module blog.admin.editor
+     */
+    editor: {
       /**
-      * @function blog.admin.editor.init
-      * @desc Editor item initialization code
-      **/
-      init: function( options ){
+       * @function blog.admin.editor.init
+       * @desc Rich Text Editor initialization code.
+       */
+      init: function (options) {
+        const messageKey = "BLOG_TXT_OPEN_NEW_TAB";
+        const linkTarget = "_blank";
 
-        let messageKey  = "BLOG_TXT_OPEN_NEW_TAB"
-          , linkTarget  = "_blank"
-        ;
+        apex.debug.info(
+          LOG_PREFIX,
+          "Initializing Rich Text Editor link options.",
+          {
+            messageKey: messageKey,
+            linkTarget: linkTarget
+          }
+        );
 
-        // include option to add target attribute to links
-        options = $.extend( true, {
-          editorOptions: {
-            link: {
-              decorators: {
-                openInNewTab: {
-                  mode: "manual"
-                , label: get_message( messageKey )
-                , attributes: {
-                    target: linkTarget
+        options = $.extend(
+          true,
+          {
+            editorOptions: {
+              link: {
+                decorators: {
+                  openInNewTab: {
+                    mode: "manual",
+                    label: get_message(messageKey),
+                    attributes: {
+                      target: linkTarget
+                    }
                   }
                 }
               }
             }
-          }
-        }, options );
+          },
+          options
+        );
+
+        apex.debug.info(
+          LOG_PREFIX,
+          "Rich Text Editor initialization completed.",
+          options.editorOptions
+        );
 
         return options;
-
       }
-
-    }
+    },
 
     /**
-    * @module blog.admin.ai
-    **/
-  , ai: {
+     * @module blog.admin.ai
+     */
+    ai: {
 
       /**
-      * @module blog.admin.ai.post
-      **/
-      post: {
+       * @function blog.admin.ai.valueToAiInput
+       * @desc Convert item value to AI context. Function strips HTML e.g. from editor.
+       */
+      valueToAiInput: function (pItem) {
 
-        item: "P12_BODY_HTML"
+        const html =
+          apex.item(pItem).getValue();
 
-        /**
-        * @module blog.admin.ai.post.assistant
-        **/
-      , assistant: {
+        const content$
+          = $("<div/>").html(html);
 
-          button: "TALK_TO_ASSISTANT"
+        content$
+          .find("script, style, code, pre")
+          .remove();
 
-          /**
-          * @function blog.admin.ai.post.assistant.useResponse
-          * @desc Use assistant generated text
-          **/
-        , useResponse: function( options ){
+        content$
+          .find("p, div, h1, h2, h3, h4, h5, h6, li, blockquote, br")
+          .after("\n");
 
-            options = $.extend({
-              postItem: blog.admin.ai.post.item
-            , talkButton: this.button
-            , process: "MARKDOWN_TO_HTML"
-            }, options);
+        return content$
+          .text()
+          .replace(/\u00a0/g, " ")
+          .replace(/[ \t]+/g, " ")
+          .replace(/\n\s*\n+/g, "\n")
+          .trim();
+      },
 
-            apex.debug.info( "AI response markdown to html options", options )
+      /**
+       * @function blog.admin.ai.useResponse
+       * @desc Convert AI Assistant Markdown response to HTML and set the post body.
+       */
+      useResponse: function (options) {
+        options = $.extend(
+          {
+            process: "MARKDOWN_TO_HTML"
+          },
+          options
+        );
 
-            // Call Ajax callback process to convert markdown to HTML
-            apex.server.process( options.process, {
-              f01: apex.server.chunk( options.text )
-            },{
-              dataType: "html"
-            , success: function( html ){
-                $s( options.postItem, html );
-                $( $x( options.talkButton ) ).hide();
-              }
-            });
-
+        apex.debug.info(
+          LOG_PREFIX,
+          "AI Assistant response handling started.",
+          {
+            postItem: options.postItem,
+            process: options.process,
+            textType: typeof options.text,
+            textLength: typeof options.text === "string" ? options.text.length : undefined
           }
+        );
 
+        if (typeof options.text !== "string") {
+          apex.debug.error(
+            LOG_PREFIX,
+            "AI Assistant response is not a string.",
+            {
+              textType: typeof options.text,
+              process: options.process
+            }
+          );
+          return;
         }
 
-        /**
-        * @function blog.admin.ai.post.buttonActions
-        * @desc Set blog post page item buttons action
-        **/
-      , buttonActions: function( options ){
-
-          options = $.extend({
-            postItem: blog.admin.ai.post.item
-          , process: "GENERATIVE_AI_CONTENT"
-          , buttons: [
+        apex.server.process(
+          options.process,
+          {
+            f01: apex.server.chunk(options.text)
+          },
+          {
+            dataType: "html"
+          }
+        )
+          .done(function (html) {
+            apex.debug.info(
+              LOG_PREFIX,
+              "Markdown-to-HTML conversion succeeded.",
               {
-                action: "gen-ai-post-category"
-              , targetItem: "P12_CATEGORY_TITLE"
-              , systemPromptMsg: "BLOG_AI_SYSTEM_PROMPT_POST_CATEGORY"
+                process: options.process,
+                htmlLength: typeof html === "string" ? html.length : undefined
               }
-            , {
-                action: "gen-ai-post-description"
-              , targetItem: "P12_POST_DESC"
-              , systemPromptMsg: "BLOG_AI_SYSTEM_PROMPT_POST_DESCRIPTION"
-              }
-            , {
-                action: "gen-ai-post-tags"
-              , targetItem: "P12_TAGS"
-              , systemPromptMsg: "BLOG_AI_SYSTEM_PROMPT_POST_TAGS"
-              }
-            , {
-                action: "gen-ai-post-title"
-              , targetItem: "P12_TITLE"
-              , systemPromptMsg: "BLOG_AI_SYSTEM_PROMPT_POST_TITLE"
-              }
-            ]
-          }, options );
+            );
 
+            apex.item(options.postItem).setValue(html);
 
-          $.each( options.buttons, function( idx, button ){
-            apex.actions.add({
-              name: button.action
-            , action: ( event, element, args ) => {
-                blog.admin.ai.post.generate({
-                  triggeringElement: element
-                , process: options.process
-                , postItem: options.postItem
-                , targetItem: button.targetItem
-                , systemPromptMsg: button.systemPromptMsg
-                });
+          })
+          .fail(function (jqXHR, textStatus, errorThrown) {
+            apex.debug.error(
+              LOG_PREFIX,
+              "Markdown-to-HTML conversion failed.",
+              {
+                process: options.process,
+                textStatus: textStatus,
+                errorThrown: errorThrown,
+                status: jqXHR && jqXHR.status
               }
-            });
+            );
+
+            showPageError(
+              get_message(BLOG_GENERIC_ERROR),
+              "Markdown-to-HTML conversion failed."
+            );
           });
 
-        }
+      },
 
-        /**
-        * @function blog.admin.ai.post.generate
-        * @desc Call Ajax process to generate content
-        **/
-      , generate: function( options ){
+    },
 
-          options = $.extend({
-            buttonProcessingClass: ""
-          , systemPromptMsg: ""
-          , iconProcessingClass: "fa-anim-spin"
-          }, options );
+  };
 
-          apex.debug.info( "AI generate options", options )
-
-          // Remove HTML from editor text
-          let text = $( "<div/>" ).html( $v( options.postItem ) )
-            .find( "code" ).remove().end()
-            .text().trim().substring( 0, 32000 )
-          ;
-
-          // exit if there isn't text
-          if( text.length === 0 ){
-            apex.message.alert( apex.lang.getMessage( 'BLOG_MSG_AI_NO_POST_FOR_CONTEXT' ) )
-            return;
-          }
-
-          let element$ = $( options.triggeringElement )
-            , button$ = element$.is( ":button" ) ? element$ : element$.parent()
-            , icon$ = button$.children( "span.t-Icon" )
-            , errMsg = get_message( gErrMesgKey );
-          ;
-
-          button$.prop( "disabled", true ).addClass( options.buttonProcessingClass );
-          icon$.addClass( options.iconProcessingClass );
-          apex.item( options.targetItem ).disable();
-
-          apex.server.process( options.process, {
-            x01: text
-          , x02: options.systemPromptMsg
-          },{
-            success: function( data ){
-
-              apex.debug.info( "AI generate content response", data )
-
-              if( "response" in data ){
-                $s( options.targetItem, data.response );
-              } else {
-                // Clear all previous errors
-                apex.message.clearErrors();
-                // Get error message from returned data if exists
-                if( "errMsg" in data ){
-                  errMsg = get_message( data.errMsg );
-                }
-                // Show error in page
-                apex.message.showErrors([{
-                  type:     "error"
-                , location: "page"
-                , message:  errMsg
-                , unsafe:   false
-                }]);
-              }
-
-              apex.item( options.targetItem ).enable();
-              icon$.removeClass( options.iconProcessingClass );
-              button$.prop( "disabled", false ).removeClass( options.buttonProcessingClass );
-
-            }
-          , error: function( jqXHR, textStatus, errorThrown ){
-              apex.item( options.targetItem ).enable();
-              icon$.removeClass( options.iconProcessingClass );
-              button$.prop( "disabled", false ).removeClass( options.buttonProcessingClass );
-            }
-          });
-
-        }
-
-      }
-
+  apex.debug.info(
+    LOG_PREFIX,
+    "JavaScript module loaded.",
+    {
+      apexVersion: apex.env.APEX_VERSION
     }
+  );
 
-    /**
-    * @module blog.admin.speechRecognition
-    **/
-  , speechRecognition: {
-
-      /**
-      * @variable blog.admin.speechRecognition.buttonAction
-      * @desc Add toggle speech recognition action
-      **/
-      buttonAction: function( options ){
-
-        if( "action" in options ){
-          apex.actions.add({
-            name: options.action
-          , action: ( event, element, args ) => {
-              blog.admin.speechRecognition.toggleRecording({
-                element: element
-              , class: options.class
-              , objectName: options.objectName
-              });
-            }
-          });
-        }
-      }
-
-      /**
-      * @function blog.admin.speechRecognition.init
-      * @desc Initialize speech recognition
-      **/
-    , init: function( options ){
-
-        if ( "webkitSpeechRecognition" in window ) {
-
-          options = $.extend({
-            clearPreviousText: false
-          }, options );
-
-          this[ options.objectName ] = this[ options.objectName ] || {};
-          this[ options.objectName ].element$ = options.element$;
-
-          // Initialize webkitSpeechRecognition
-          this[ options.objectName ].speech = new webkitSpeechRecognition();
-
-          // Set the properties for the Speech Recognition object
-          this[ options.objectName ].speech.continuous = true;
-          //this[ options.objectName ].speech.interimResults = true;
-          this[ options.objectName ].speech.lang = navigator.language || navigator.userLanguage;
-
-          this[ options.objectName ].speech.onresult = ( event ) => {
-
-            let transcript = event.results[event.resultIndex][0].transcript;
-            transcript = transcript.trim();
-            transcript = transcript.charAt(0).toUpperCase() + transcript.slice(1) + ".";
-
-            // append transcript to item value
-            $s( options.element$[0], $v( options.element$[0] ) + transcript );
-            options.element$.trigger( "change" );
-
-          };
-
-          this[ options.objectName ].speech.onend = ( event ) => {
-            this.startEndCallback({
-              element$: options.element$
-            , objectName: options.objectName
-            });
-          }
-
-          this[ options.objectName ].speech.onstart = ( event ) => {
-
-            options.clearPreviousText ? $s( options.element$[0], "" ) : null;
-
-            this.startEndCallback({
-              element$: options.element$
-            , objectName: options.objectName
-            });
-
-          }
-
-        } else {
-          apex.debug.info( "Speech Recognition Not Available." );
-        }
-      }
-
-      /**
-      * @function blog.admin.speechRecognition.toggleRecording
-      * @desc Start or end speech recognition
-      **/
-    , toggleRecording: function( options ){
-
-        if( [ options.objectName ] in this ){
-
-          let element$ = $( options.element );
-
-          // set defaults
-          this[ options.objectName ].button = $.extend({
-            element$: element$.is(":button") ? element$ : element$.parent()
-          , class: [ "t-Button--warning" ]
-          , icons: [ "fa-microphone", "fa-stop-circle" ]
-          }, options );
-
-          this[ options.objectName ].recording ? this[ options.objectName ].speech.stop() : this[ options.objectName ].speech.start();
-
-        }
-
-      }
-
-      /**
-      * @function blog.admin.speechRecognition.startEndCallback
-      * @desc Handles record stop and start
-      **/
-    , startEndCallback: function( options ){
-
-        this[ options.objectName ].recording = this[ options.objectName ].recording ? false : true;
-
-        this[ options.objectName ].button.element$.toggleClass( this[ options.objectName ].button.class )
-          .children( "span.t-Icon" )
-          .toggleClass( this[ options.objectName ].button.icons )
-          .toggleClass( "fa-anim-flash" )
-        ;
-
-      }
-
-      /**
-      * @function blog.admin.speechRecognition.initButtonAction
-      * @desc Initialize speech recognition and adds toggle
-      **/
-    , initButtonAction: function( options ){
-        this.init( options );
-        this.buttonAction( options );
-      }
-
-    }
-
-  }
-})( apex.jQuery, apex.region, blog );
+})(apex.jQuery, apex.region, window.blog);

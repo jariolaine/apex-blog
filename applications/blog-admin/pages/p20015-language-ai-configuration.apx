@@ -43,7 +43,7 @@ page 20015 (
         name: Information
         type: staticContent
         source {
-            htmlCode: &APP_TEXT$BLOG_MSG_LANGUAGE_AI_INFO!RAW.
+            htmlCode: "&{BLOG_MSG_LANGUAGE_AI_INFO!RAW}."
         }
         layout {
             sequence: 10
@@ -263,9 +263,17 @@ page 20015 (
             icon: fa-close
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button save (
@@ -290,27 +298,6 @@ page 20015 (
             warnOnUnsavedChanges: doNotCheck
             databaseAction: update
         }
-    )
-
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 10
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @cancel
-        }
-
-        action native-dialog-cancel (
-            action: cancelDialog
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
     )
 
     dynamicAction process-feature-status (

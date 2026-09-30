@@ -78,27 +78,14 @@ page 201 (
             icon: fa-close
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
-    )
 
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 10
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @close
-        }
-
-        action native-dialog-cancel (
+        triggerAction native-dialog-cancel (
             action: cancelDialog
             execution {
                 sequence: 10
-                fireOnInit: false
             }
         )
 

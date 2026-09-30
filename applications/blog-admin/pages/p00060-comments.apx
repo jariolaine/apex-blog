@@ -49,7 +49,7 @@ page 60 (
             type: sqlQuery
             sqlQuery:
                 ```sql
-                select 
+                select
                   v1.id                   as comment_id
                 , v1.post_id              as post_id
                 , v1.parent_id            as parent_id
@@ -105,7 +105,7 @@ page 60 (
                 url: #EDIT_URL#
             }
             linkIcon: <span aria-hidden="true" class="t-Icon fa fa-pencil"></span>
-            linkAttributes: data-unread="#BTN_DATA_UNREAD#" data-id="CF#COMMENT_ID#" title="&APP_TEXT$BLOG_TXT_OPEN_COMMENT." class="t-Button t-Button--noLabel t-Button--icon t-Button--small"
+            linkAttributes: "data-unread=\"#BTN_DATA_UNREAD#\" data-id=\"CF#COMMENT_ID#\" title=\"&{BLOG_TXT_OPEN_COMMENT}.\" class=\"t-Button t-Button--noLabel t-Button--icon t-Button--small\""
         }
         componentAppearance {
             showNullValuesAs: -
@@ -127,10 +127,10 @@ page 60 (
                 ```html
                 <div class="blog-comment-IR">
                   <div class="blog-commentIcon">
-                    <span title="&APP_TEXT$BLOG_TXT_COMMENT_FLAG.: #COMMENT_FLAG#" arial-label="&APP_TEXT$BLOG_TXT_COMMENT_FLAG.: #COMMENT_FLAG#" class="fa fa-lg fa-2x #FLAG_ICON#" id="CF#COMMENT_ID#"></span>
+                    <span title="&{BLOG_TXT_COMMENT_FLAG.: #COMMENT_FLAG#" arial-label="&{BLOG_TXT_COMMENT_FLAG}}.: #COMMENT_FLAG#" class="fa fa-lg fa-2x #FLAG_ICON#" id="CF#COMMENT_ID#"></span>
                   </div>
                   <div class="blog-commentIcon">
-                    <span title="&APP_TEXT$BLOG_TXT_SENTIMENT.: #SENTIMENT#" arial-label="&APP_TEXT$BLOG_TXT_SENTIMENT.: #SENTIMENT#" class="blog-comment-SentimentIcon fa fa-lg fa-2x #SENTIMENT_ICON#"></span>
+                    <span title="&{BLOG_TXT_SENTIMENT.: #SENTIMENT#" arial-label="&{BLOG_TXT_SENTIMENT}}.: #SENTIMENT#" class="blog-comment-SentimentIcon fa fa-lg fa-2x #SENTIMENT_ICON#"></span>
                   </div>
                   <div class="blog-commentContainer">
                     <div class="blog-commentTitle u-flex">
@@ -146,7 +146,7 @@ page 60 (
                     </div>
                   </div>
                   <div class="blog-commentStatus">
-                    <span title="&APP_TEXT$BLOG_TXT_STATUS.: #COMMENT_STATUS#" arial-label="&APP_TEXT$BLOG_TXT_STATUS.: #COMMENT_STATUS#" class="fa fa-lg #STATUS_ICON#"></span>
+                    <span title="&{BLOG_TXT_STATUS.: #COMMENT_STATUS#" arial-label="&{BLOG_TXT_STATUS}}.: #COMMENT_STATUS#" class="fa fa-lg #STATUS_ICON#"></span>
                   </div>
                 </div>
                 ```

@@ -240,8 +240,8 @@ page 20010 (
             slot: regionBody
         }
         source {
-            type: item
-            item: APP_TEXT$BLOG_TXT_DISABLED
+            type: staticValue
+            staticValue: "&{BLOG_TXT_DISABLED}."
         }
         sessionState {
             storage: request
@@ -264,8 +264,8 @@ page 20010 (
             slot: regionBody
         }
         source {
-            type: item
-            item: APP_TEXT$BLOG_TXT_DISABLED
+            type: staticValue
+            staticValue: "&{BLOG_TXT_DISABLED}."
         }
         sessionState {
             storage: request
@@ -288,8 +288,8 @@ page 20010 (
             slot: regionBody
         }
         source {
-            type: item
-            item: APP_TEXT$BLOG_TXT_DISABLED
+            type: staticValue
+            staticValue: "&{BLOG_TXT_DISABLED}."
         }
         sessionState {
             storage: request
@@ -312,8 +312,8 @@ page 20010 (
             slot: regionBody
         }
         source {
-            type: item
-            item: APP_TEXT$BLOG_TXT_DISABLED
+            type: staticValue
+            staticValue: "&{BLOG_TXT_DISABLED}."
         }
         sessionState {
             storage: request
@@ -336,8 +336,8 @@ page 20010 (
             slot: regionBody
         }
         source {
-            type: item
-            item: APP_TEXT$BLOG_TXT_DISABLED
+            type: staticValue
+            staticValue: "&{BLOG_TXT_DISABLED}."
         }
         sessionState {
             storage: request
@@ -358,8 +358,8 @@ page 20010 (
             sequence: 50
         }
         computation {
-            type: item
-            itemName: APP_TEXT$BLOG_TXT_ENABLED
+            type: staticValue
+            staticValue: "&{BLOG_TXT_ENABLED}."
         }
         config {
             buildOption: @blog-authentication-apex
@@ -375,8 +375,8 @@ page 20010 (
             sequence: 20
         }
         computation {
-            type: item
-            itemName: APP_TEXT$BLOG_TXT_ENABLED
+            type: staticValue
+            staticValue: "&{BLOG_TXT_ENABLED}."
         }
         config {
             buildOption: @blog-feature-generative-ai
@@ -389,8 +389,8 @@ page 20010 (
             sequence: 40
         }
         computation {
-            type: item
-            itemName: APP_TEXT$BLOG_TXT_ENABLED
+            type: staticValue
+            staticValue: "&{BLOG_TXT_ENABLED}."
         }
         config {
             buildOption: @blog-authentication-google
@@ -406,8 +406,8 @@ page 20010 (
             sequence: 30
         }
         computation {
-            type: item
-            itemName: APP_TEXT$BLOG_TXT_ENABLED
+            type: staticValue
+            staticValue: "&{BLOG_TXT_ENABLED}."
         }
         config {
             buildOption: @blog-feature-language-ai
@@ -423,8 +423,8 @@ page 20010 (
             sequence: 10
         }
         computation {
-            type: item
-            itemName: APP_TEXT$BLOG_TXT_ENABLED
+            type: staticValue
+            staticValue: "&{BLOG_TXT_ENABLED}."
         }
         config {
             buildOption: @blog-feature-oci-object-storage

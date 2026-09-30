@@ -425,7 +425,7 @@ page 20011 (
                     request: FEATURES
                 }
                 linkText: <span aria-hidden="true" class="t-Icon fa fa-question-circle-o"></span>
-                linkAttributes: title="&APP_TEXT$BLOG_TXT_HELP." aria-label="&APP_TEXT$BLOG_TXT_HELP." class="t-Button t-Button--noLabel t-Button--icon t-Button--link t-Button--stretch padding-none"
+                linkAttributes: "title=\"&{BLOG_TXT_HELP.\" aria-label=\"&{BLOG_TXT_HELP}}.\" class=\"t-Button t-Button--noLabel t-Button--icon t-Button--link t-Button--stretch padding-none\""
             }
             source {
                 type: none
@@ -531,9 +531,17 @@ page 20011 (
             icon: fa-close
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button save (
@@ -561,27 +569,6 @@ page 20011 (
         advanced {
             customAttributes: data-action="save" data-no-update="true"
         }
-    )
-
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 10
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @close
-        }
-
-        action native-dialog-cancel (
-            action: cancelDialog
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
     )
 
     dynamicAction process-after-changes (

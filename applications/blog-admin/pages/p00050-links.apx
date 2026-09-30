@@ -229,7 +229,7 @@ page 50 (
                 sequence: 170
             }
             columnFormatting {
-                htmlExpression: &APP_TEXT$BLOG_TXT_SEQUENCE.: #DISPLAY_SEQ#
+                htmlExpression: "&{BLOG_TXT_SEQUENCE}.: #DISPLAY_SEQ#"
             }
         )
 
@@ -273,11 +273,11 @@ page 50 (
             columnFormatting {
                 htmlExpression:
                     ```html
-                    #LIST_TITLE# 
-                    <span class="u-VisuallyHidden">(&APP_TEXT$BLOG_TXT_STATUS.: {if IS_ACTIVE/}
-                    &APP_TEXT$BLOG_TXT_ENABLED.
+                    #LIST_TITLE#
+                    <span class="u-VisuallyHidden">(&{BLOG_TXT_STATUS}.: {if IS_ACTIVE/}
+                    &{BLOG_TXT_ENABLED}.
                     {else/}
-                    &APP_TEXT$BLOG_TXT_DISABLED.
+                    &{BLOG_TXT_DISABLED}.
                     {endif/})</span>
                     
                     ```
@@ -341,7 +341,7 @@ page 50 (
                 action: resetPagination
             }
             linkIcon: <span aria-hidden="true" class="t-Icon fa fa-pencil"></span>
-            linkAttributes: title="&APP_TEXT$BLOG_TXT_EDIT." class="t-Button t-Button--noLabel t-Button--icon t-Button--small"
+            linkAttributes: "title=\"&{BLOG_TXT_EDIT}.\" class=\"t-Button t-Button--noLabel t-Button--icon t-Button--small\""
         }
         componentAppearance {
             showNullValuesAs: -
@@ -742,7 +742,7 @@ page 50 (
                 , null            as icon_class
                 , null            as icon_color_class
                 , case when v1.id = coalesce( to_number( :P50_LINK_GROUP_ID ), 0 )
-                    then 'is-active' 
+                    then 'is-active'
                   end             as list_class
                 , substr( v1.title, 1, 50 ) || ( case when length( v1.title ) > 50 then '...' end ) as list_title
                 , null            as list_text
@@ -1021,14 +1021,60 @@ page 50 (
             icon: fa-sequence
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
             requiresConfirmation: true
         }
         confirmation {
-            message: &APP_TEXT$BLOG_CONFIRM_RESEQUENCE_LINK_GROUPS.
-            style: warning
+            message: "&{BLOG_CONFIRM_RESEQUENCE_LINK_GROUPS}."
+            style: information
         }
+
+        triggerAction native-show-success-message (
+            action: showSuccessMessage
+            settings {
+                message: "&{BLOG_MSG_LINK_GROUPS_RESEQUENCED}."
+            }
+            execution {
+                sequence: 40
+            }
+        )
+
+        triggerAction refresh-link-group-details (
+            name: Refresh Link Group Details
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @link-group
+            }
+            execution {
+                sequence: 20
+            }
+        )
+
+        triggerAction refresh-link-group-list (
+            name: Refresh Link Group List
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @select-link-group
+            }
+            execution {
+                sequence: 30
+            }
+        )
+
+        triggerAction resequence-link-groups (
+            name: Resequence Link Groups
+            action: executeServerSideCode
+            settings {
+                plsqlCode: blog_admin.resequence_link_groups;
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button resequence-links (
@@ -1045,14 +1091,51 @@ page 50 (
             icon: fa-sequence
         }
         behavior {
-            action: definedByDynamicAction
-            executeValidations: false
+            action: triggerAction
             requiresConfirmation: true
         }
         confirmation {
-            message: &APP_TEXT$BLOG_CONFIRM_RESEQUENCE_LINKS.
-            style: warning
+            message: "&{BLOG_CONFIRM_RESEQUENCE_LINKS}."
+            style: information
         }
+
+        triggerAction native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @links
+            }
+            execution {
+                sequence: 20
+            }
+        )
+
+        triggerAction native-show-success-message (
+            action: showSuccessMessage
+            settings {
+                message: "&{BLOG_MSG_LINKS_RESEQUENCED}."
+            }
+            execution {
+                sequence: 30
+            }
+        )
+
+        triggerAction resequence-links (
+            name: Resequence Links
+            action: executeServerSideCode
+            settings {
+                plsqlCode:
+                    ```plsql
+                    blog_admin.resequence_links(
+                      p_link_group_id => :P50_LINK_GROUP_ID
+                    );
+                    ```
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button reset-report (
@@ -1077,135 +1160,6 @@ page 50 (
             }
             warnOnUnsavedChanges: doNotCheck
         }
-    )
-
-    dynamicAction link-groups-resequence (
-        name: Link Groups Resequence
-        execution {
-            sequence: 60
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @resequence-groups
-        }
-
-        action refresh-link-group-details (
-            name: Refresh Link Group Details
-            action: refresh
-            affectedElements {
-                selectionType: region
-                region: @link-group
-            }
-            execution {
-                sequence: 20
-                fireOnInit: false
-            }
-        )
-
-        action refresh-link-group-list (
-            name: Refresh Link Group List
-            action: refresh
-            affectedElements {
-                selectionType: region
-                region: @select-link-group
-            }
-            execution {
-                sequence: 30
-                fireOnInit: false
-            }
-        )
-
-        action resequence-link-groups (
-            name: Resequence Link Groups
-            action: executeServerSideCode
-            settings {
-                plsqlCode: blog_admin.resequence_link_groups;
-            }
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
-        action show-message (
-            name: Show message
-            action: executeJsCode
-            settings {
-                jsCode:
-                    ```javascript-browser
-                    blog.admin.showSuccessMessage({
-                      "text": "BLOG_MSG_LINK_GROUPS_RESEQUENCED"
-                    });
-                    ```
-            }
-            execution {
-                sequence: 40
-                fireOnInit: false
-            }
-        )
-
-    )
-
-    dynamicAction links-resequence (
-        name: Links Resequence
-        execution {
-            sequence: 80
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @resequence-links
-        }
-
-        action refresh-links-report (
-            name: Refresh Links Report
-            action: refresh
-            affectedElements {
-                selectionType: region
-                region: @links
-            }
-            execution {
-                sequence: 20
-                fireOnInit: false
-            }
-        )
-
-        action resequence-links (
-            name: Resequence Links
-            action: executeServerSideCode
-            settings {
-                plsqlCode:
-                    ```plsql
-                    blog_admin.resequence_links(
-                      p_link_group_id => :P50_LINK_GROUP_ID
-                    );
-                    ```
-                itemsToSubmit: P50_LINK_GROUP_ID
-            }
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
-        action show-message (
-            name: Show message
-            action: executeJsCode
-            settings {
-                jsCode:
-                    ```javascript-browser
-                    blog.admin.showSuccessMessage({
-                      "text": "BLOG_MSG_LINKS_RESEQUENCED"
-                    });
-                    ```
-            }
-            execution {
-                sequence: 30
-                fireOnInit: false
-            }
-        )
-
     )
 
     dynamicAction process-link (

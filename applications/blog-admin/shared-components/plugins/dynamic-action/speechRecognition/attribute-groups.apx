@@ -1,0 +1,24 @@
+attributeGroup recognition (
+    name: Recognition
+    sequence: 10
+    advanced {
+        staticId: recognition
+    }
+)
+
+attributeGroup transcriptFormatting (
+    name: Transcript Formatting
+    sequence: 20
+    advanced {
+        staticId: transcript-formatting
+    }
+)
+
+attributeGroup triggerButtonUi (
+    name: Trigger Button UI
+    sequence: 30
+    advanced {
+        staticId: trigger-button-ui
+    }
+)
+

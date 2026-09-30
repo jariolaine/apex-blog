@@ -31,7 +31,7 @@ textMessage BLOG_AI_SYSTEM_PROMPT_POST_CATEGORY (
     }
 )
 
-textMessage BLOG_AI_SYSTEM_PROMPT_POST_DESCRIPTION (
+textMessage BLOG_AI_SYSTEM_PROMPT_POST_SUMMARY (
     message {
         text: Generate a compelling and concise blog post summary based on the provided content topic or details. The summary should be 1-2 sentences long, summarize the main points of the blog post, and engage readers by highlighting the value or benefits of reading the post. Use clear and engaging language, incorporating relevant keywords to optimize for SEO and attract the target audience. Use only same language as blog post. The response must be plain text only, without any enclosures such as quotation marks, brackets, or other symbols. Do not use any other kind formatting. Do not respond anything other than the generated summary.
         language: en
@@ -66,7 +66,7 @@ textMessage BLOG_BTN_TITLE_GEN_AI_POST_CATEGORY (
     }
 )
 
-textMessage BLOG_BTN_TITLE_GEN_AI_POST_DESCRIPTION (
+textMessage BLOG_BTN_TITLE_GEN_AI_POST_SUMMARY (
     message {
         text: Generate Summary Using AI
         language: en

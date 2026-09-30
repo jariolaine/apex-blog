@@ -1,9 +1,6 @@
 page 0 (
     name: Global Page - Desktop
     pageGroup: @general
-    appearance {
-        templateOptions: #DEFAULT#
-    }
     comments {
         comments: The global page
     }
@@ -12,11 +9,11 @@ page 0 (
         name: Application Banner
         type: staticContent
         source {
-            htmlCode: &P0_BLOG_APP_NAME.
+            htmlCode: &P0_BLOG_APP_DESC.
         }
         layout {
             sequence: 10
-            slot: banner
+            slot: afterLogo
         }
         appearance {
             template: @/blank-with-attributes-no-grid
@@ -41,7 +38,7 @@ page 0 (
             list: @post-archives
         }
         layout {
-            sequence: 80
+            sequence: 60
             parentRegion: @global-column
             slot: subRegions
         }
@@ -87,7 +84,7 @@ page 0 (
             list: @post-categories
         }
         layout {
-            sequence: 60
+            sequence: 40
             parentRegion: @global-column
             slot: subRegions
         }
@@ -199,7 +196,7 @@ page 0 (
             list: @latest-posts
         }
         layout {
-            sequence: 50
+            sequence: 30
             parentRegion: @global-column
             slot: subRegions
         }
@@ -299,17 +296,19 @@ page 0 (
     )
 
     region search-container (
-        name: Search Container
+        name: Search
         type: staticContent
         layout {
-            sequence: 20
-            slot: beforeNavigationBar
+            sequence: 10
+            slot: afterNavigationBar
         }
         appearance {
             template: @/item-container
             templateOptions: [
                 #DEFAULT#
-                t-Form--noPadding
+                t-ItemContainer--stackMobile
+                t-ItemContainer--wrap
+                t-Form--labelsAbove
             ]
         }
         advanced {
@@ -330,7 +329,7 @@ page 0 (
                 ```
         }
         layout {
-            sequence: 90
+            sequence: 70
             parentRegion: @global-column
             slot: subRegions
         }
@@ -369,7 +368,7 @@ page 0 (
             list: @post-tags
         }
         layout {
-            sequence: 70
+            sequence: 50
             parentRegion: @global-column
             slot: subRegions
         }
@@ -536,11 +535,10 @@ page 0 (
                 #DEFAULT#
                 t-Form-fieldContainer--stretchInputs
                 t-Form-fieldContainer--xlarge
-                margin-bottom-sm
+                margin-bottom-none
             ]
-            cssClasses: mxw360
             icon: fa-search
-            valuePlaceholder: Search ...
+            valuePlaceholder: Search...
         }
         validation {
             maxLength: 256
@@ -581,7 +579,14 @@ page 0 (
         action native-javascript-code (
             action: executeJsCode
             settings {
-                jsCode: apex.theme42.util.scrollTo( this.triggeringElement.id == "comments" ? this.triggeringElement.id : "wwvFlowForm" );
+                jsCode:
+                    ```javascript-browser
+                    apex.theme42.util.scrollTo( 
+                      this.triggeringElement.id == "comments" ?
+                      this.triggeringElement.id :
+                      "wwvFlowForm"
+                    );
+                    ```
             }
             execution {
                 sequence: 10

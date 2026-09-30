@@ -31,17 +31,18 @@ page 2 (
             sqlQuery:
                 ```sql
                 select
-                   v1.comment_by    as user_name
-                  ,v1.user_icon     as user_icon
-                  ,v1.icon_modifier as icon_modifier
-                  ,v1.comment_body  as comment_text
-                  ,v1.created_on    as comment_date
-                  ,null             as comment_modifiers -- see column HTML Expression
-                  ,null             as actions
-                  ,null             as attribute_1
-                  ,null             as attribute_2
-                  ,null             as attribute_3
-                  ,null             as attribute_4
+                  v1.comment_by     as user_name
+                , v1.user_icon      as user_icon
+                , v1.icon_modifier  as icon_modifier
+                , v1.comment_body   as comment_text
+                , v1.created_on     as comment_date
+                , null              as comment_modifiers -- see column HTML Expression
+                , null              as actions
+                , null              as attribute_1
+                , null              as attribute_2
+                , null              as attribute_3
+                , null              as attribute_4
+                , v1.created_on     as pubdate
                 from blog_v_comments v1
                 where 1 = 1
                   and v1.post_id = :P2_POST_ID
@@ -90,7 +91,7 @@ page 2 (
             type: nextAndPreviousLinks
         }
         messages {
-            whenNoDataFound: &APP_TEXT$BLOG_MSG_NO_COMMENTS.
+            whenNoDataFound: "&{BLOG_MSG_NO_COMMENTS}."
         }
         heading {
             type: none
@@ -181,6 +182,9 @@ page 2 (
             layout {
                 sequence: 42
             }
+            columnFormatting {
+                htmlExpression: <time datetime="#PUBDATE#">#COMMENT_DATE#</time>
+            }
             sorting {
                 sortable: false
             }
@@ -231,6 +235,23 @@ page 2 (
             }
             layout {
                 sequence: 22
+            }
+            sorting {
+                sortable: false
+            }
+        )
+
+        column PUBDATE (
+            reportColumnQueryId: 12
+            derivedColumn: N
+            heading {
+                heading: Pubdate
+            }
+            layout {
+                sequence: 122
+            }
+            appearance {
+                formatMask: YYYY-MM-DD
             }
             sorting {
                 sortable: false
@@ -324,7 +345,7 @@ page 2 (
                 , v1.post_title      as post_title
                 , v1.category_title  as category_title
                 , v1.body_html       as body_html
-                , v1.tags_html2      as tags_html
+                , v1.post_tags_html  as tags_html
                 , null               as read_more_link
                 from blog_v_posts v1
                 where 1 = 1
@@ -366,7 +387,7 @@ page 2 (
             maxRowsToProcess: 1
         }
         messages {
-            whenNoDataFound: &APP_TEXT$BLOG_MSG_NO_DATA_FOUND.
+            whenNoDataFound: "&{BLOG_MSG_NO_DATA_FOUND}."
         }
         heading {
             type: none
@@ -538,8 +559,7 @@ page 2 (
         type: hidden
         layout {
             sequence: 70
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: body
         }
         sessionState {
             storage: user
@@ -558,8 +578,7 @@ page 2 (
         type: hidden
         layout {
             sequence: 150
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: body
         }
         sessionState {
             storage: request
@@ -575,8 +594,7 @@ page 2 (
         type: hidden
         layout {
             sequence: 160
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: body
         }
         sessionState {
             storage: request
@@ -591,8 +609,7 @@ page 2 (
         type: hidden
         layout {
             sequence: 80
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: body
         }
         sessionState {
             storage: request
@@ -610,8 +627,7 @@ page 2 (
         type: hidden
         layout {
             sequence: 90
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: body
         }
         sessionState {
             storage: request
@@ -629,8 +645,7 @@ page 2 (
         type: hidden
         layout {
             sequence: 110
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: body
         }
         sessionState {
             storage: request
@@ -667,8 +682,7 @@ page 2 (
         type: hidden
         layout {
             sequence: 120
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: body
         }
         sessionState {
             storage: request
@@ -686,8 +700,7 @@ page 2 (
         type: hidden
         layout {
             sequence: 130
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: body
         }
         sessionState {
             storage: request
@@ -705,8 +718,7 @@ page 2 (
         type: hidden
         layout {
             sequence: 140
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: body
         }
         sessionState {
             storage: request
@@ -724,8 +736,7 @@ page 2 (
         type: hidden
         layout {
             sequence: 170
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: body
         }
         sessionState {
             storage: request
@@ -741,8 +752,7 @@ page 2 (
         type: hidden
         layout {
             sequence: 180
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: body
         }
         sessionState {
             storage: request
@@ -757,8 +767,7 @@ page 2 (
         type: hidden
         layout {
             sequence: 190
-            region: @/not-rendered-items
-            slot: regionBody
+            slot: body
         }
         sessionState {
             storage: request
@@ -945,11 +954,10 @@ page 2 (
             settings {
                 jsCode:
                     ```javascript-browser
-                    blog.ui.setListCurrentItem({
-                      affectedElements: this.affectedElements
-                    , pageItem: "P2_POST_ID"
-                    });
-                    
+                    blog.ui.setListCurrentItem(
+                      this.affectedElements
+                    , { pageItem: "P2_POST_ID" }
+                    );
                     ```
             }
             affectedElements {

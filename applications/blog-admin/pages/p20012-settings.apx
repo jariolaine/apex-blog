@@ -49,7 +49,7 @@ page 20012 (
         name: Information
         type: staticContent
         source {
-            htmlCode: &APP_TEXT$BLOG_MSG_BASIC_SETTINGS_INFO.
+            htmlCode: "&{BLOG_MSG_BASIC_SETTINGS_INFO}."
         }
         layout {
             sequence: 10
@@ -488,7 +488,7 @@ page 20012 (
                     request: SETTINGS
                 }
                 linkText: <span aria-hidden="true" class="t-Icon fa fa-question-circle-o"></span>
-                linkAttributes: title="&APP_TEXT$BLOG_TXT_HELP." aria-label="&APP_TEXT$BLOG_TXT_HELP." class="t-Button t-Button--noLabel t-Button--icon t-Button--link t-Button--stretch padding-none"
+                linkAttributes: "title=\"&{BLOG_TXT_HELP.\" aria-label=\"&{BLOG_TXT_HELP}}.\" class=\"t-Button t-Button--noLabel t-Button--icon t-Button--link t-Button--stretch padding-none\""
             }
             source {
                 type: none
@@ -621,9 +621,17 @@ page 20012 (
             icon: fa-close
         }
         behavior {
-            action: definedByDynamicAction
+            action: triggerAction
             executeValidations: false
         }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
     )
 
     button save (
@@ -651,27 +659,6 @@ page 20012 (
         advanced {
             customAttributes: data-action="save" data-no-update="true"
         }
-    )
-
-    dynamicAction close-dialog (
-        name: Close Dialog
-        execution {
-            sequence: 10
-        }
-        when {
-            event: click
-            selectionType: button
-            button: @close
-        }
-
-        action native-dialog-cancel (
-            action: cancelDialog
-            execution {
-                sequence: 10
-                fireOnInit: false
-            }
-        )
-
     )
 
     dynamicAction process-after-changes (
@@ -723,7 +710,8 @@ page 20012 (
                 ```plsql
                 return blog_admin.is_date_format(
                   p_value     => :ATTRIBUTE_VALUE
-                , p_err_mesg  => :APP_TEXT$BLOG_VALIDATION_ERR_DATE_FORMAT
+                , p_err_mesg  =>
+                    apex_lang.get_message( 'BLOG_VALIDATION_ERR_DATE_FORMAT' )
                 );
                 ```
         }
@@ -749,7 +737,8 @@ page 20012 (
                 ```plsql
                 return blog_comment.is_email(
                   p_email     => :ATTRIBUTE_VALUE
-                , p_err_mesg  => :APP_TEXT$BLOG_VALIDATION_ERR_EMAIL
+                , p_err_mesg  =>
+                    apex_lang.get_message( 'BLOG_VALIDATION_ERR_EMAIL' )
                 );
                 ```
         }
@@ -824,7 +813,8 @@ page 20012 (
                 ```plsql
                 return blog_admin.is_url(
                   p_value     => :ATTRIBUTE_VALUE
-                , p_err_mesg  => :APP_TEXT$BLOG_VALIDATION_ERR_URL
+                , p_err_mesg  =>
+                    apex_lang.get_message( 'BLOG_VALIDATION_ERR_URL' )
                 );
                 ```
         }

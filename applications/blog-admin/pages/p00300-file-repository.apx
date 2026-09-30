@@ -53,7 +53,7 @@ page 300 (
             type: sqlQuery
             sqlQuery:
                 ```sql
-                select                        
+                select
                   v1.id             as id
                 , c1.seq_id         as seq_id
                 , v1.row_version    as row_version
@@ -101,6 +101,9 @@ page 300 (
             ]
             cssClasses: blog-IR--iconLinks
         }
+        advanced {
+            htmlDomId: files_ir
+        }
         link {
             linkColumn: customTarget
             target: {
@@ -110,7 +113,7 @@ page 300 (
                 }
             }
             linkIcon: <span aria-hidden="true" class="t-Icon fa fa-pencil"></span>
-            linkAttributes: title="&APP_TEXT$BLOG_TXT_EDIT." class="t-Button t-Button--noLabel t-Button--icon t-Button--small"
+            linkAttributes: "title=\"&{BLOG_TXT_EDIT}.\" class=\"t-Button t-Button--noLabel t-Button--icon t-Button--small\""
         }
         pagination {
             type: rowRangesXToY
@@ -133,13 +136,16 @@ page 300 (
                 alignment: center
             }
             settings {
-                label: &APP_TEXT$BLOG_TXT_COPY_TO_CLIPBOARD.
-                customAttributes: data-clipboard-source="#FILE_URL#"
+                label: "&{BLOG_TXT_COPY_TO_CLIPBOARD}."
+                customAttributes: data-clipboard-text="#FILE_URL!ATTR#"
             }
             plugin-appearance {
                 iconClass: fa-clipboard
+                cssClasses: js-copy-clipboard
                 iconOnly: true
                 size: small
+                style: removeUiDecorations
+                width: stretch
             }
             layout {
                 sequence: 220
@@ -510,9 +516,10 @@ page 300 (
         )
 
         column MD5 (
-            type: plainText
+            type: hidden
             heading {
                 heading: MD5
+                alternativeLabel: Copy to Clipboard
             }
             layout {
                 sequence: 250
@@ -522,9 +529,6 @@ page 300 (
             }
             advanced {
                 endUserAlias: A
-            }
-            config {
-                buildOption: @blog-feature-oci-object-storage
             }
         )
 
@@ -578,7 +582,7 @@ page 300 (
                 htmlExpression:
                     ```html
                     {with/}
-                    LABEL:=&APP_TEXT$BLOG_TXT_SELECT_ROW.
+                    LABEL:=&{BLOG_TXT_SELECT_ROW}.
                     BUTTON_ACTION:=select-file?process=SELECT_FILE&id=#ID#
                     BUTTON_ATTR:=role="switch" aria-checked="{if ?SEQ_ID/}true{else/}false{endif/}" data-seq="#SEQ_ID#"
                     NO_UPDATE:=Y
@@ -900,6 +904,32 @@ page 300 (
             }
             execution {
                 sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction copy-to-clipboard (
+        name: Copy to Clipboard
+        execution {
+            sequence: 40
+            eventScope: dynamic
+            staticContainer: #files_ir
+        }
+        when {
+            event: click
+            selectionType: jQuerySelector
+            jquerySelector: .js-copy-clipboard
+        }
+
+        action plugin-fi-jaris-copy-to-clipboard (
+            action: plugin/copyToClipboard
+            affectedElements {
+                selectionType: triggeringElement
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
             }
         )
 
