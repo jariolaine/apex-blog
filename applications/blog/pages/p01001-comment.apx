@@ -129,7 +129,8 @@ page 1001 (
         type: hidden
         layout {
             sequence: 70
-            slot: wizardBody
+            region: @/not-rendered-items
+            slot: regionBody
         }
         security {
             sessionStateProtection: restricted
@@ -326,8 +327,9 @@ page 1001 (
     pageItem P1001_LANGUAGE_CODE (
         type: hidden
         layout {
-            sequence: 90
-            slot: wizardBody
+            sequence: 100
+            region: @/not-rendered-items
+            slot: regionBody
         }
         sessionState {
             storage: request
@@ -441,8 +443,9 @@ page 1001 (
     pageItem P1001_RESPONSE_BODY (
         type: hidden
         layout {
-            sequence: 80
-            slot: wizardBody
+            sequence: 90
+            region: @/not-rendered-items
+            slot: regionBody
         }
         sessionState {
             storage: request
@@ -572,6 +575,18 @@ page 1001 (
         }
     )
 
+    computation p1001-body-html (
+        itemName: P1001_BODY_HTML
+        execution {
+            sequence: 40
+            point: afterSubmit
+        }
+        computation {
+            type: expression
+            plsqlExpression: blog_comment.format_comment( :P1001_COMMENT_TEXT )
+        }
+    )
+
     computation p1001-is-active (
         itemName: P1001_IS_ACTIVE
         execution {
@@ -673,7 +688,7 @@ page 1001 (
     )
 
     process comment-sentiment-analyze (
-        name: Comment Sentiment Analyze
+        name: Sentiment analyze
         type: executionChain
         backgroundExecution {
             runInBackground: true
@@ -710,47 +725,6 @@ page 1001 (
         comments {
             comments: Comments are moderated
         }
-    )
-
-    process format-and-cleanup-comment (
-        name: Format and cleanup comment
-        type: invokeApi
-        invoke {
-            package: BLOG_COMMENT
-            procedureOrFunction: FORMAT_COMMENT
-        }
-        execution {
-            sequence: 30
-            point: afterSubmit
-        }
-        advanced {
-            executionMappingIdentifier: 20471016925872825
-        }
-        serverSideCondition {
-            type: itemIsNotNull
-            item: P1001_COMMENT_TEXT
-        }
-
-        parameter (
-            type: functionResult
-            value {
-                item: P1001_BODY_HTML
-            }
-            advanced {
-                displaySequence: 40
-            }
-        )
-
-        parameter p_comment (
-            value {
-                type: item
-                item: P1001_COMMENT_TEXT
-            }
-            advanced {
-                displaySequence: 20
-            }
-        )
-
     )
 
     process get-dominant-language (
@@ -1142,7 +1116,7 @@ page 1001 (
             procedureOrFunction: NEW_COMMENT_NOTIFY
         }
         execution {
-            sequence: 70
+            sequence: 90
         }
         advanced {
             executionMappingIdentifier: 26970862080257336

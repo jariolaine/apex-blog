@@ -1,6 +1,6 @@
 app BLOG-ADMIN (
     name: Blog Administration
-    version: Release 24.2.11.20260126
+    version: Release 26.1.5.20261003
     group: @apex-blog
     genAI {
         service: @BLOG_OPEN_AI_API

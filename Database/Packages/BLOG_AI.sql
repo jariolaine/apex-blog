@@ -37,11 +37,6 @@ as
     p_ai_attributes   in varchar2
   );
 --------------------------------------------------------------------------------
-  procedure gen_ai_chat(
-    p_post            in varchar2,
-    p_system_prompt   in varchar2
-  );
---------------------------------------------------------------------------------
 -- Called from:
 --  Public app page 1001 and admin app 62
   procedure merge_sentiment(

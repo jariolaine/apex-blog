@@ -1028,7 +1028,6 @@ as
   function get_button(
     p_app_id          in varchar2,
     p_title           in varchar2,
-    p_action          in varchar2,
     p_icon_classes    in varchar2,
     p_button_classes  in varchar2 default null,
     p_build_option    in varchar2 default null
@@ -1263,11 +1262,6 @@ as
     p_ai_model_name   in varchar2,
     p_ai_http_headers in varchar2,
     p_ai_attributes   in varchar2
-  );
---------------------------------------------------------------------------------
-  procedure gen_ai_chat(
-    p_post            in varchar2,
-    p_system_prompt   in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -1726,33 +1720,33 @@ with read only
 create or replace force view blog_v_post_tags as
 with q1 as(
   select --+ inline
-     t2.post_id     as post_id
-    ,t2.tag_id      as tag_id
-    ,t2.display_seq as display_seq
-    ,t1.tag         as tag
-    ,greatest(
-       t1.changed_on
-      ,t2.changed_on
-    )               as changed_on
+    t2.post_id     as post_id
+  , t2.tag_id      as tag_id
+  , t2.display_seq as display_seq
+  , t1.tag         as tag
+  , greatest(
+      t1.changed_on
+    , t2.changed_on
+    ) as changed_on
   -- Generate tag URL
-    ,blog_url.get_tag(
+  , blog_url.get_tag(
       p_tag_id => t1.id
-    )               as tag_url
+    ) as tag_url
   -- Generate HTML for tags used in APEX reports
-    ,xmlelement( "span"
-      ,xmlattributes(
+  , xmlelement( "span"
+    , xmlattributes(
         't-Icon fa fa-tag'  as "class"
-        ,'true'             as "aria-hidden"
+      , 'true'              as "aria-hidden"
       )
-    )               as tag_icon
-    ,xmlelement( "span"
+    ) as tag_icon
+  , xmlelement( "span"
       ,xmlattributes(
-        't-Button-label'    as "class"
+        't-Button-label' as "class"
       )
-      ,t1.tag
-    )               as tag_label
+    , t1.tag
+    ) as tag_label
   -- Tag CSS class
-    ,'t-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft' as tag_class
+  , 't-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft' as tag_class
   from blog_tags t1
   join blog_post_tags t2 on t1.id = t2.tag_id
   where 1 = 1
@@ -1760,36 +1754,36 @@ with q1 as(
     and t2.is_active = 1
 )
 select
-   q1.post_id                         as post_id
-  ,q1.tag_id                          as tag_id
-  ,q1.display_seq                     as display_seq
-  ,q1.tag                             as tag
-  ,q1.changed_on                      as changed_on
-  ,q1.tag_url                         as tag_url
+  q1.post_id      as post_id
+, q1.tag_id       as tag_id
+, q1.display_seq  as display_seq
+, q1.tag          as tag
+, q1.changed_on   as changed_on
+, q1.tag_url      as tag_url
 -- Generate HTML for tags used in APEX reports
-  ,xmlelement( "a"
-    ,xmlattributes(
-      q1.tag_url            as "href"
-      ,'blog-search--tags'  as "class"
+, xmlelement( "a"
+  , xmlattributes(
+      q1.tag_url          as "href"
+    , 'tag'               as "rel"
     )
     ,q1.tag
-  )                                   as tag_html1
-  ,xmlelement( "a"
-    ,xmlattributes(
-       q1.tag_url       as "href"
-      ,q1.tag_class     as "class"
-      ,'tag'            as "rel"
+  ) as tag_html1
+, xmlelement( "a"
+  , xmlattributes(
+      q1.tag_url    as "href"
+    , q1.tag_class  as "class"
+    , 'tag'         as "rel"
     )
-    ,q1.tag_icon
-    ,q1.tag_label
-  )                                   as tag_html2
-  ,xmlelement( "span"
-    ,xmlattributes(
-      q1.tag_class      as "class"
+  , q1.tag_icon
+  , q1.tag_label
+  ) as tag_html2
+, xmlelement( "span"
+  , xmlattributes(
+      q1.tag_class as "class"
     )
-    ,q1.tag_icon
-    ,q1.tag_label
-  )                                    as tag_html3
+  , q1.tag_icon
+  , q1.tag_label
+  ) as tag_html3
 from q1
 with read only
 /
@@ -2297,21 +2291,39 @@ select
   ,(
     select
       xmlserialize(
-        content xmlagg( lkp_tag.tag_html1 order by lkp_tag.display_seq ) as varchar2(4000)
+        content
+        xmlelement( "ul"
+        , xmlattributes(
+            'blog-search-tags' as "class"
+          )
+        , xmlagg(
+            xmlelement(
+              "li"
+            , lkp_tag.tag_html1
+            ) order by lkp_tag.display_seq
+          )
+        ) as varchar2(4000)
       ) as tags_html
     from blog_v_post_tags lkp_tag
     where 1 = 1
       and lkp_tag.post_id = q1.post_id
-  )                   as tags_html1
+  )                   as search_tags_html
   ,(
     select
       xmlserialize(
-        content xmlagg( lkp_tag.tag_html2 order by lkp_tag.display_seq )
-      ) as tags_html
+        content
+        xmlagg(
+          xmlelement(
+            "li"
+          , lkp_tag.tag_html2
+          ) order by lkp_tag.display_seq
+        )
+      )
+      as tags_html
     from blog_v_post_tags lkp_tag
     where 1 = 1
       and lkp_tag.post_id = q1.post_id
-  )                   as tags_html2
+  )                   as post_tags_html
 -- Fetch next post id and title
   ,(
     select
@@ -8050,7 +8062,7 @@ as
     l_cnt number;
   begin
 
-    apex_debug.info( 'Automaticallu approve comment id %s if sentiment is Positive', p_comment_id );
+    apex_debug.info( 'Automaticaly approve comment id %s if sentiment is Positive', p_comment_id );
 
     -- check that comment exists
     select 1
@@ -8390,14 +8402,15 @@ as
   function get_button(
     p_app_id          in varchar2,
     p_title           in varchar2,
-    p_action          in varchar2,
     p_icon_classes    in varchar2,
     p_button_classes  in varchar2 default null,
     p_build_option    in varchar2 default null
   ) return varchar2
   as
-    l_app_id  number;
-    l_button  varchar2(32700) := '<span class="blog-hidden"></span>';
+    l_app_id          number;
+    l_title           varchar2(400);
+    l_button          varchar2(32700) := '<span class="blog-post-text-disabled" aria-hidden="true"></span>';
+    l_button_classes  varchar2(255)   := 't-Button t-Button--noLabel t-Button--icon t-Button--link blog-item-button';
   begin
 
     l_app_id := to_number( p_app_id );
@@ -8409,19 +8422,38 @@ as
       , p_build_option_name => p_build_option
       ) = apex_application_admin.c_build_option_status_include
     then
+
+      l_title :=
+        apex_lang.get_message(
+          p_name => p_title
+        )
+      ;
+
+      if upper( l_title ) = upper( p_title )
+      then
+        l_title := p_title;
+      end if;
+
+      l_button_classes :=
+        case
+          when p_button_classes is null
+            then l_button_classes
+            else l_button_classes || ' ' || p_button_classes
+        end
+      ;
       -- generate button HTML
       l_button :=
         apex_string.format(
           p_message =>
-            '<button type="button" data-action="%0" title="%1" aria-label="%1" class="%2" data-no-update="true">' ||
-            '<span class="t-Icon fa %3" aria-hidden="true"></span>' ||
+            '<button type="button" title="%0" aria-label="%0" class="%1">' ||
+              '<span class="t-Icon fa %2" aria-hidden="true"></span>' ||
             '</button>'
-        , p0 => p_action
-        , p1 => p_title
-        , p2 => coalesce( p_button_classes, 't-Button t-Button--noLabel t-Button--icon t-Button--link' )
-        , p3 => p_icon_classes
+        , p0 => l_title
+        , p1 => l_button_classes
+        , p2 => p_icon_classes
         )
       ;
+
     end if;
 
     return l_button;

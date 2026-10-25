@@ -989,6 +989,9 @@ page 12 (
             selectionType: jQuerySelector
             jquerySelector: .js-post-dictation
         }
+        config {
+            buildOption: @blog-feature-post-speech
+        }
 
         action plugin-fi-jaris-speech-recognition (
             action: plugin/speechRecognition
@@ -1019,6 +1022,9 @@ page 12 (
             event: click
             selectionType: jQuerySelector
             jquerySelector: .js-generate-category
+        }
+        config {
+            buildOption: @blog-feature-generative-ai
         }
 
         action native-generate-text-ai (
@@ -1051,6 +1057,9 @@ page 12 (
             selectionType: jQuerySelector
             jquerySelector: .js-generate-summary
         }
+        config {
+            buildOption: @blog-feature-generative-ai
+        }
 
         action native-generate-text-ai (
             action: generateTextWithAi
@@ -1082,6 +1091,9 @@ page 12 (
             selectionType: jQuerySelector
             jquerySelector: .js-generate-tags
         }
+        config {
+            buildOption: @blog-feature-generative-ai
+        }
 
         action native-generate-text-ai (
             action: generateTextWithAi
@@ -1112,6 +1124,9 @@ page 12 (
             event: click
             selectionType: jQuerySelector
             jquerySelector: .js-generate-title
+        }
+        config {
+            buildOption: @blog-feature-generative-ai
         }
 
         action native-generate-text-ai (
@@ -1507,30 +1522,6 @@ page 12 (
         }
         advanced {
             executionMappingIdentifier: 38476711128283538
-        }
-    )
-
-    process generative-ai-content (
-        name: GENERATIVE_AI_CONTENT
-        type: executeCode
-        source {
-            plsqlCode:
-                ```plsql
-                blog_ai.gen_ai_chat(
-                  p_post          => :APP_AJAX_X01
-                , p_system_prompt => :APP_AJAX_X02
-                );
-                ```
-        }
-        execution {
-            sequence: 10
-            point: ajaxCallback
-        }
-        advanced {
-            executionMappingIdentifier: 31504800464325831
-        }
-        config {
-            buildOption: @blog-feature-generative-ai
         }
     )
 

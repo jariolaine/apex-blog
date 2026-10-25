@@ -1,19 +1,67 @@
+customAttribute feedback_type (
+    apexlangName: feedbackType
+    attribute: 6
+    name: Feedback
+    type: selectList
+    validation {
+        required: true
+    }
+    appearance {
+        sequence: 60
+    }
+    default {
+        value: TOOLTIP
+    }
+    help {
+        helpText:
+            ```
+            <p>
+            Choose how success is communicated after the browser confirms the copy.
+            </p>
+            ```
+    }
+
+    entry apexSuccessMessage (
+        sequence: 20
+        display: APEX Success Message
+        return: APEX_SUCCESS
+    )
+
+    entry none (
+        sequence: 30
+        display: None
+        return: NONE
+    )
+
+    entry tooltip (
+        sequence: 10
+        display: Tooltip
+        return: TOOLTIP
+    )
+
+)
+
 customAttribute source_attribute (
     apexlangName: sourceAttribute
-    attribute: 1
+    attribute: 2
     name: Source Attribute
     validation {
         required: true
         maxLength: 100
     }
     appearance {
-        sequence: 10
+        sequence: 20
     }
     builder {
         displayWidth: 40
     }
     default {
         value: data-clipboard-text
+    }
+    dependingOn {
+        attribute: @source_type/component
+        conditionType: =
+        value: ATTRIBUTE
     }
     help {
         helpText:
@@ -25,9 +73,197 @@ customAttribute source_attribute (
     }
 )
 
+customAttribute source_item (
+    apexlangName: sourceItem
+    attribute: 3
+    name: Source Item
+    type: pageItem
+    appearance {
+        sequence: 30
+    }
+    dependingOn {
+        attribute: @source_type/component
+        conditionType: =
+        value: ITEM
+    }
+    help {
+        helpText:
+            ```
+            <p>
+            APEX page item whose current client-side value is copied.
+            </p>
+            ```
+    }
+)
+
+customAttribute source_template (
+    apexlangName: sourceTemplate
+    attribute: 5
+    name: Source Template
+    validation {
+        maxLength: 4000
+    }
+    appearance {
+        sequence: 50
+    }
+    builder {
+        displayWidth: 60
+    }
+    dependingOn {
+        attribute: @source_type/component
+        conditionType: =
+        value: TEMPLATE
+    }
+    help {
+        helpText:
+            ```
+            <p>
+            Text containing {ITEM_NAME} placeholders. Placeholders are resolved from current APEX item values when the action runs.
+            </p>
+            ```
+    }
+)
+
+customAttribute source_text (
+    apexlangName: sourceText
+    attribute: 4
+    name: Source Text
+    validation {
+        maxLength: 4000
+    }
+    appearance {
+        sequence: 40
+    }
+    builder {
+        displayWidth: 60
+    }
+    dependingOn {
+        attribute: @source_type/component
+        conditionType: =
+        value: STATIC
+    }
+    help {
+        helpText:
+            ```
+            <p>
+            Literal text copied to the clipboard.
+            </p>
+            ```
+    }
+)
+
+customAttribute source_type (
+    apexlangName: sourceType
+    attribute: 1
+    name: Source Type
+    type: selectList
+    validation {
+        required: true
+    }
+    appearance {
+        sequence: 10
+    }
+    default {
+        value: ATTRIBUTE
+    }
+    help {
+        helpText:
+            ```
+            <p>
+            Select where the text to copy is resolved from.
+            </p>
+            ```
+    }
+
+    entry apexItem (
+        sequence: 20
+        display: APEX Item
+        return: ITEM
+        help {
+            helpText:
+                ```
+                <p>
+                Copies the current client-side value of an APEX item. Specify the item name, for example <code>P10_CUSTOMER_ID.</code> The value is read without submitting the page.
+                </p>
+                ```
+        }
+    )
+
+    entry elementAttribute (
+        sequence: 10
+        display: Element Attribute
+        return: ATTRIBUTE
+        help {
+            helpText:
+                ```
+                <p>
+                Copies the value of an HTML attribute from the affected element. Use this for report rows or custom markup where the value to copy is stored in a <code>data-*</code> attribute, such as <code>data-clipboard-text</code>.
+                </p>
+                ```
+        }
+    )
+
+    entry elementText (
+        sequence: 30
+        display: Element Text
+        return: TEXT
+        help {
+            helpText:
+                ```
+                <p>
+                Copies the visible text content of the affected element. Use this when the text displayed on the page is the value you want to copy.
+                </p>
+                ```
+        }
+    )
+
+    entry elementValue (
+        sequence: 40
+        display: Element Value
+        return: VALUE
+        help {
+            helpText:
+                ```
+                <p>
+                Copies the current value of the affected form element, such as an input, textarea, or select element.
+                </p>
+                ```
+        }
+    )
+
+    entry itemTemplate (
+        sequence: 60
+        display: Item Template
+        return: TEMPLATE
+        help {
+            helpText:
+                ```
+                <p>
+                Copies text built from one or more current APEX item values. Reference items with placeholders such as <code>{P10_CUSTOMER}</code> or <code>{P10_REFERENCE}</code>. The placeholders are replaced with the current client-side item values when the Dynamic Action runs.
+                </p>
+                ```
+        }
+    )
+
+    entry staticText (
+        sequence: 50
+        display: Static Text
+        return: STATIC
+        help {
+            helpText:
+                ```
+                <p>
+                Copies a fixed text value configured directly in the Dynamic Action. Use this when the copied content does not depend on page state or the triggering element.
+                </p>
+                ```
+        }
+    )
+
+)
+
 customAttribute tooltip_duration (
     apexlangName: tooltipDuration
-    attribute: 2
+    attribute: 7
     name: Tooltip Duration
     type: integer
     validation {
@@ -35,13 +271,18 @@ customAttribute tooltip_duration (
         maxLength: 10
     }
     appearance {
-        sequence: 20
+        sequence: 70
     }
     builder {
         displayWidth: 10
     }
     default {
         value: 1200
+    }
+    dependingOn {
+        attribute: @feedback_type/component
+        conditionType: =
+        value: TOOLTIP
     }
     help {
         helpText:
@@ -54,9 +295,9 @@ customAttribute tooltip_duration (
 )
 
 customAttribute tooltip_message (
-    apexlangName: tooltipMessage
+    apexlangName: successMessage
     attribute: 1
-    name: Tooltip Message
+    name: Success Message
     scope: app
     validation {
         required: true

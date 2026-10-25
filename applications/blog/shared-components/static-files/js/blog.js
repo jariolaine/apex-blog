@@ -1,11 +1,12 @@
 /**
 * @namespace blog
 **/
-var blog = blog || {};
+window.blog = window.blog || {};
 
 (function($, blog) {
+  "use strict";
 
-  blog = blog || {};
+  const LOG_PREFIX = "[blog.public]";
 
   /*
    * @module blog.ui
@@ -14,38 +15,61 @@ var blog = blog || {};
 
     /*
      * @function blog.ui.setListCurrentItem
-     * @example blog.UI.setListCurrentItem( this.affectedElements, { pageItem: "PX_ITEM", currentClass: "is-current" } );
+     * @example blog.ui.setListCurrentItem( this.affectedElements, { pageItem: "PX_ITEM", currentClass: "is-current" } );
      * @summary set list cached item class indicate current page
      * @desc global page lists are cached use passed parameters to set class to list that indicate current page.
      */
-    setListCurrentItem: function( region$, options ){
+    setListCurrentItem: function (region$, options) {
+      options = $.extend(
+        {
+          currentClass: "is-current",
+          dataAttrName: "item-id"
+        },
+        options
+      );
 
-      options =
-        $.extend( {}, {
-          currentClass: "is-current"
-        , dataAttrName: "item-id"
-        }, options );
+      const selector = `a[data-${options.dataAttrName}]`;
+      const links$ = region$.find(selector);
 
-      region$.find( `a[data-${options.dataAttrName}]` ).filter( function(){
+      apex.debug.info(
+        LOG_PREFIX,
+        "Setting current list item.",
+        {
+          pageItem: options.pageItem,
+          selector: selector,
+          linkCount: links$.length
+        }
+      );
 
-        let result =
-          $v_CheckValueAgainst(
-            options.pageItem
-          , $( this ).data( options.dataAttrName )
-          );
+      links$
+        .removeAttr("aria-current")
+        .closest("li")
+        .removeClass(options.currentClass);
 
-        return result;
+      const currentLinks$ = links$.filter(function () {
+        return $v_CheckValueAgainst(
+          options.pageItem,
+          $(this).attr(`data-${options.dataAttrName}`)
+        );
+      });
 
-      })
-        .parent()
-        .addClass( options.currentClass )
-        .attr( "aria-current", "page" );
+      currentLinks$
+        .attr("aria-current", "page")
+        .closest("li")
+        .addClass(options.currentClass);
 
+      apex.debug.info(
+        LOG_PREFIX,
+        "Current list item updated.",
+        {
+          matchedCount: currentLinks$.length
+        }
+      );
     },
 
     /*
      * @function blog.ui.setDialogTitle
-     * @example blog.UI.setDialogTitle("Dialog Title");
+     * @example blog.ui.setDialogTitle("Dialog Title");
      * @summary set dialog title
      * @desc set dynamically dialog page title.
      */

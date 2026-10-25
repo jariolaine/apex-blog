@@ -4,7 +4,7 @@
   pointer-events: none;
 }
 
-.clipboard-copy-source {
+.clipboard-copy-text {
   position: fixed;
   inset-block-start: -10000px;
   inset-inline-start: -10000px;

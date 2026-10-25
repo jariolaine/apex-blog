@@ -9,6 +9,19 @@ window.fi_jaris_copy_to_clipboard = window.fi_jaris_copy_to_clipboard || {};
 
   const LOG_PREFIX = "[Clipboard DA]";
   const TOOLTIP_CLASS = "clipboard-tooltip";
+  const SOURCE_TYPES = {
+    ATTRIBUTE: "ATTRIBUTE",
+    ITEM: "ITEM",
+    TEXT: "TEXT",
+    VALUE: "VALUE",
+    STATIC: "STATIC",
+    TEMPLATE: "TEMPLATE"
+  };
+  const FEEDBACK_TYPES = {
+    TOOLTIP: "TOOLTIP",
+    APEX_SUCCESS: "APEX_SUCCESS",
+    NONE: "NONE"
+  };
 
   function resume(daConfig, errorOccurred) {
     apex.da.resume(daConfig.resumeCallback, errorOccurred);
@@ -55,6 +68,129 @@ window.fi_jaris_copy_to_clipboard = window.fi_jaris_copy_to_clipboard || {};
     return legacyWriteText(text);
   }
 
+  function firstAffectedElement(daConfig) {
+    const affected$ = daConfig.affectedElements;
+
+    if (!affected$ || !affected$.length) {
+      return null;
+    }
+
+    if (affected$.length > 1) {
+      apex.debug.warn(
+        LOG_PREFIX,
+        "Multiple affected elements found; only the first element will be used.",
+        affected$.length
+      );
+    }
+
+    return affected$.eq(0);
+  }
+
+  function requireAffectedElement(daConfig, sourceType) {
+    const source$ = firstAffectedElement(daConfig);
+
+    if (!source$) {
+      throw new Error(
+        "Source Type " + sourceType + " requires an affected element."
+      );
+    }
+
+    return source$;
+  }
+
+  function resolveItemValue(itemName) {
+    if (!itemName) {
+      throw new Error("Source Item is required when Source Type is APEX Item.");
+    }
+
+    const item = apex.item(itemName);
+
+    if (!item || !item.node) {
+      throw new Error("APEX item not found: " + itemName);
+    }
+
+    return item.getValue();
+  }
+
+  function resolveTemplate(template) {
+    if (typeof template !== "string") {
+      throw new Error("Source Template is required when Source Type is Item Template.");
+    }
+
+    return template.replace(/\{([A-Za-z][A-Za-z0-9_$#]*)\}/g, function (match, itemName) {
+      const item = apex.item(itemName);
+
+      if (!item || !item.node) {
+        apex.debug.warn(
+          LOG_PREFIX,
+          "Template item was not found; placeholder left unchanged.",
+          itemName
+        );
+        return match;
+      }
+
+      const value = item.getValue();
+      return value == null ? "" : String(value);
+    });
+  }
+
+  function resolveText(settings, daConfig) {
+    const sourceType = settings.sourceType || SOURCE_TYPES.ATTRIBUTE;
+    let source$;
+    let value;
+
+    switch (sourceType) {
+      case SOURCE_TYPES.ATTRIBUTE:
+        source$ = requireAffectedElement(daConfig, sourceType);
+
+        if (!settings.sourceAttribute) {
+          throw new Error("Source Attribute is required for Element Attribute.");
+        }
+
+        value = source$.attr(settings.sourceAttribute);
+        if (typeof value !== "string") {
+          throw new Error(
+            "Clipboard source attribute is missing: " + settings.sourceAttribute
+          );
+        }
+        break;
+
+      case SOURCE_TYPES.ITEM:
+        value = resolveItemValue(settings.sourceItem);
+        break;
+
+      case SOURCE_TYPES.TEXT:
+        source$ = requireAffectedElement(daConfig, sourceType);
+        value = source$.text();
+        break;
+
+      case SOURCE_TYPES.VALUE:
+        source$ = requireAffectedElement(daConfig, sourceType);
+        value = source$.val();
+        break;
+
+      case SOURCE_TYPES.STATIC:
+        value = settings.sourceText;
+        break;
+
+      case SOURCE_TYPES.TEMPLATE:
+        value = resolveTemplate(settings.sourceTemplate);
+        break;
+
+      default:
+        throw new Error("Unsupported Source Type: " + sourceType);
+    }
+
+    if (value == null) {
+      throw new Error("Clipboard source resolved to no value.");
+    }
+
+    return {
+      source$: source$ || null,
+      text: Array.isArray(value) ? value.join(",") : String(value)
+    };
+  }
+
   function positionTooltip(tooltip$, anchor$) {
     if ($.ui && $.ui.position) {
       tooltip$.position({
@@ -83,6 +219,11 @@ window.fi_jaris_copy_to_clipboard = window.fi_jaris_copy_to_clipboard || {};
   }
 
   function showTooltip(anchor$, message, duration) {
+    if (!anchor$ || !anchor$.length) {
+      apex.debug.warn(LOG_PREFIX, "No element available for tooltip feedback.");
+      return;
+    }
+
     $("." + TOOLTIP_CLASS).stop(true, true).remove();
 
     const tooltip$ = $("<div>", {
@@ -106,69 +247,64 @@ window.fi_jaris_copy_to_clipboard = window.fi_jaris_copy_to_clipboard || {};
     }, duration);
   }
 
+  function showFeedback(settings, daConfig, source$) {
+    const feedbackType = settings.feedbackType || FEEDBACK_TYPES.TOOLTIP;
+
+    if (feedbackType === FEEDBACK_TYPES.NONE) {
+      return;
+    }
+
+    if (feedbackType === FEEDBACK_TYPES.APEX_SUCCESS) {
+      apex.message.showPageSuccess(settings.successMessage);
+      return;
+    }
+
+    const anchor$ = daConfig.triggeringElement
+      ? $(daConfig.triggeringElement)
+      : source$;
+
+    showTooltip(
+      anchor$,
+      settings.successMessage,
+      settings.tooltipDuration
+    );
+  }
+
   clipboard.copy = function (settings, daConfig) {
-    const affected$ = daConfig.affectedElements;
+    let resolved;
 
     apex.debug.info(
       LOG_PREFIX,
       "Copy to clipboard action fired.",
       {
-        sourceAttribute: settings.sourceAttribute,
-        affectedElementCount: affected$ ? affected$.length : 0
+        sourceType: settings.sourceType,
+        feedbackType: settings.feedbackType,
+        affectedElementCount: daConfig.affectedElements
+          ? daConfig.affectedElements.length
+          : 0
       }
     );
 
-    if (!affected$ || !affected$.length) {
-      apex.debug.error(
-        LOG_PREFIX,
-        "Copy to clipboard requires an affected element."
-      );
+    try {
+      resolved = resolveText(settings, daConfig);
+    } catch (error) {
+      apex.debug.error(LOG_PREFIX, "Clipboard source resolution failed.", error);
       resume(daConfig, true);
       return;
     }
 
-    if (affected$.length > 1) {
-      apex.debug.warn(
-        LOG_PREFIX,
-        "Multiple affected elements found; only the first element will be copied.",
-        affected$.length
-      );
-    }
-
-    const source$ = affected$.eq(0);
-    const anchor$ = daConfig.triggeringElement
-      ? $(daConfig.triggeringElement)
-      : source$;
-    const text = source$.attr(settings.sourceAttribute);
-
-    if (typeof text !== "string") {
-      apex.debug.error(
-        LOG_PREFIX,
-        "Clipboard source attribute is missing from the affected element.",
-        settings.sourceAttribute,
-        source$[0]
-      );
-      resume(daConfig, true);
-      return;
-    }
-
-    writeText(text)
+    writeText(resolved.text)
       .then(function () {
         apex.debug.info(
           LOG_PREFIX,
           "Clipboard copy completed.",
           {
-            sourceAttribute: settings.sourceAttribute,
-            textLength: text.length
+            sourceType: settings.sourceType,
+            textLength: resolved.text.length
           }
         );
 
-        showTooltip(
-          anchor$.length ? anchor$ : source$,
-          settings.tooltipMessage,
-          settings.tooltipDuration
-        );
-
+        showFeedback(settings, daConfig, resolved.source$);
         resume(daConfig, false);
       })
       .catch(function (error) {

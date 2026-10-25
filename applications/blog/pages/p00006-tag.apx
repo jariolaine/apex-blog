@@ -348,7 +348,8 @@ page 6 (
         type: hidden
         layout {
             sequence: 70
-            slot: body
+            region: @/not-rendered-items
+            slot: regionBody
         }
         source {
             used: always

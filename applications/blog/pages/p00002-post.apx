@@ -559,7 +559,8 @@ page 2 (
         type: hidden
         layout {
             sequence: 70
-            slot: body
+            region: @/not-rendered-items
+            slot: regionBody
         }
         sessionState {
             storage: user
@@ -577,8 +578,9 @@ page 2 (
     pageItem P2_NEXT_POST_ID (
         type: hidden
         layout {
-            sequence: 150
-            slot: body
+            sequence: 140
+            region: @/not-rendered-items
+            slot: regionBody
         }
         sessionState {
             storage: request
@@ -593,8 +595,9 @@ page 2 (
     pageItem P2_NEXT_POST_TITLE (
         type: hidden
         layout {
-            sequence: 160
-            slot: body
+            sequence: 150
+            region: @/not-rendered-items
+            slot: regionBody
         }
         sessionState {
             storage: request
@@ -609,7 +612,8 @@ page 2 (
         type: hidden
         layout {
             sequence: 80
-            slot: body
+            region: @/not-rendered-items
+            slot: regionBody
         }
         sessionState {
             storage: request
@@ -627,7 +631,8 @@ page 2 (
         type: hidden
         layout {
             sequence: 90
-            slot: body
+            region: @/not-rendered-items
+            slot: regionBody
         }
         sessionState {
             storage: request
@@ -644,8 +649,9 @@ page 2 (
     pageItem P2_POST_DESC (
         type: hidden
         layout {
-            sequence: 110
-            slot: body
+            sequence: 100
+            region: @/not-rendered-items
+            slot: regionBody
         }
         sessionState {
             storage: request
@@ -681,8 +687,9 @@ page 2 (
     pageItem P2_POST_MODIFIED (
         type: hidden
         layout {
-            sequence: 120
-            slot: body
+            sequence: 110
+            region: @/not-rendered-items
+            slot: regionBody
         }
         sessionState {
             storage: request
@@ -699,8 +706,9 @@ page 2 (
     pageItem P2_POST_PUBLISHED (
         type: hidden
         layout {
-            sequence: 130
-            slot: body
+            sequence: 120
+            region: @/not-rendered-items
+            slot: regionBody
         }
         sessionState {
             storage: request
@@ -717,8 +725,9 @@ page 2 (
     pageItem P2_POST_TITLE (
         type: hidden
         layout {
-            sequence: 140
-            slot: body
+            sequence: 130
+            region: @/not-rendered-items
+            slot: regionBody
         }
         sessionState {
             storage: request
@@ -735,8 +744,9 @@ page 2 (
     pageItem P2_PREV_POST_ID (
         type: hidden
         layout {
-            sequence: 170
-            slot: body
+            sequence: 160
+            region: @/not-rendered-items
+            slot: regionBody
         }
         sessionState {
             storage: request
@@ -751,8 +761,9 @@ page 2 (
     pageItem P2_PREV_POST_TITLE (
         type: hidden
         layout {
-            sequence: 180
-            slot: body
+            sequence: 170
+            region: @/not-rendered-items
+            slot: regionBody
         }
         sessionState {
             storage: request
@@ -766,8 +777,9 @@ page 2 (
     pageItem P2_SUBSCRIPTION_ID (
         type: hidden
         layout {
-            sequence: 190
-            slot: body
+            sequence: 180
+            region: @/not-rendered-items
+            slot: regionBody
         }
         sessionState {
             storage: request

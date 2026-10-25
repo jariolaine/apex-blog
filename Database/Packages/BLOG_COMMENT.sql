@@ -791,7 +791,7 @@ as
     l_cnt number;
   begin
 
-    apex_debug.info( 'Automaticallu approve comment id %s if sentiment is Positive', p_comment_id );
+    apex_debug.info( 'Automaticaly approve comment id %s if sentiment is Positive', p_comment_id );
 
     -- check that comment exists
     select 1

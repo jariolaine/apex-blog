@@ -25,10 +25,20 @@ plugin copyToClipboard (
             , p_result          in out nocopy apex_plugin.t_dynamic_action_render_result
             )
             as
-              l_tooltip_message varchar2(4000) :=
+              l_success_message varchar2(4000) :=
                 p_plugin.attributes.get_varchar2('tooltip_message');
+              l_source_type varchar2(4000) :=
+                p_dynamic_action.attributes.get_varchar2('source_type');
               l_source_attribute varchar2(4000) :=
                 p_dynamic_action.attributes.get_varchar2('source_attribute');
+              l_source_item varchar2(4000) :=
+                p_dynamic_action.attributes.get_varchar2('source_item');
+              l_source_text varchar2(32767) :=
+                p_dynamic_action.attributes.get_varchar2('source_text');
+              l_source_template varchar2(32767) :=
+                p_dynamic_action.attributes.get_varchar2('source_template');
+              l_feedback_type varchar2(4000) :=
+                p_dynamic_action.attributes.get_varchar2('feedback_type');
               l_tooltip_duration number :=
                 p_dynamic_action.attributes.get_number('tooltip_duration');
             begin
@@ -45,20 +55,14 @@ plugin copyToClipboard (
             
               p_result.function_param.open_object;
             
-              p_result.function_param.put(
-                'tooltipMessage'
-              , l_tooltip_message
-              );
-            
-              p_result.function_param.put(
-                'sourceAttribute'
-              , l_source_attribute
-              );
-            
-              p_result.function_param.put(
-                'tooltipDuration'
-              , l_tooltip_duration
-              );
+              p_result.function_param.put('successMessage', l_success_message);
+              p_result.function_param.put('sourceType', l_source_type);
+              p_result.function_param.put('sourceAttribute', l_source_attribute);
+              p_result.function_param.put('sourceItem', l_source_item);
+              p_result.function_param.put('sourceText', l_source_text);
+              p_result.function_param.put('sourceTemplate', l_source_template);
+              p_result.function_param.put('feedbackType', l_feedback_type);
+              p_result.function_param.put('tooltipDuration', l_tooltip_duration);
             
               p_result.function_param.close_object;
             
@@ -79,6 +83,12 @@ plugin copyToClipboard (
     }
     information {
         version: 1.0.0
+        helpText:
+            ```
+            <p>
+            Copies text from an element, APEX item, static value, or item template to the clipboard, with optional success feedback and Dynamic Action error handling.
+            </p>
+            ```
     }
 )
 

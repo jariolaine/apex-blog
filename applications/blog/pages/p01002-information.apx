@@ -145,7 +145,8 @@ page 1002 (
         type: hidden
         layout {
             sequence: 70
-            slot: wizardBody
+            region: @/not-rendered-items
+            slot: regionBody
         }
         sessionState {
             storage: request

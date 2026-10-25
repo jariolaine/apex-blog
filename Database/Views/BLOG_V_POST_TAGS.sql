@@ -9,7 +9,7 @@ with q1 as(
   , t2.display_seq as display_seq
   , t1.tag         as tag
   , greatest(
-       t1.changed_on
+      t1.changed_on
     , t2.changed_on
     ) as changed_on
   -- Generate tag URL
