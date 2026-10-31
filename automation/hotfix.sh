@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Simple application-only hotfix: export BOTH QA/UAT apps, then import BOTH to PROD.
+# Deliberately separate from DEV/TEST, APEXLang, BUILD_API and release packaging.
+set -Eeuo pipefail
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+source "$SCRIPT_DIR/lib/common.sh"
+
+case "${1:-}" in
+    export)
+        mkdir -p -- "$buildDir"
+        staging="$(mktemp -d "$buildDir/.hotfix.XXXXXXXX")"
+        trap 'rm -rf -- "$staging"' EXIT
+        for i in "${!uatAppIds[@]}"; do
+            id="${uatAppIds[$i]}"
+            printf 'apex export -applicationid %s -exptype SQL -expsupportingobjects Y -exppubreports -dir %s\n' \
+                "$id" "$(sqlcl_arg "$staging")" >"$staging/export-$i.sqlcl"
+            log "Exporting QA/UAT ${appAliases[$i]} (application $id)"
+            run_sqlcl "$uatDbConnName" "$staging/export-$i.log" "$staging/export-$i.sqlcl" \
+                || die "QA/UAT export failed: ${appAliases[$i]}"
+            require_file "$staging/f${id}.sql"
+        done
+        # Replace the previous hotfix only when BOTH exports have succeeded.
+        rm -rf -- "$buildDir/hotfix"
+        mv -- "$staging" "$buildDir/hotfix"
+        trap - EXIT
+        log "Both QA/UAT application exports are in $buildDir/hotfix"
+        ;;
+    production)
+        for id in "${uatAppIds[@]}"; do
+            require_file "$buildDir/hotfix/f${id}.sql"
+        done
+        for i in "${!uatAppIds[@]}"; do
+            file="$buildDir/hotfix/f${uatAppIds[$i]}.sql"
+            require_file "$file"
+            cat >"$buildDir/hotfix/import-$i.sqlcl" <<SQL
+begin
+  apex_application_install.set_workspace('$prdWorkspace');
+  apex_application_install.set_schema('$prdDbSchema');
+  apex_application_install.set_application_id(${prdAppIds[$i]});
+  apex_application_install.generate_offset;
+  apex_application_install.set_auto_install_sup_obj(false);
+end;
+/
+@$(sqlcl_arg "$file")
+SQL
+            log "Importing QA/UAT ${appAliases[$i]} as production application ${prdAppIds[$i]}"
+            run_sqlcl "$prdDbConnName" "$buildDir/hotfix/production-$i.log" \
+                "$buildDir/hotfix/import-$i.sqlcl" \
+                || die "Production import failed: ${appAliases[$i]}"
+        done
+        log 'Both QA/UAT applications imported into production'
+        ;;
+    *)
+        printf 'Usage: %s export|production\n' "$0" >&2
+        exit 2
+        ;;
+esac

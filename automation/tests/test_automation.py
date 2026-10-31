@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -31,6 +32,10 @@ class AutomationTests(unittest.TestCase):
                 'variables.local.sh', 'docker', 'log', '__pycache__', '*.pyc'
             ),
         )
+        # ZIP snapshots may lose Unix execute bits. The fixture must remain
+        # runnable even when the test suite is extracted without Git metadata.
+        for script in (self.repo / 'automation').glob('*.sh'):
+            script.chmod(script.stat().st_mode | stat.S_IXUSR)
         # Tests need the APEXLang source IDs (402/401), regardless of the
         # developer's machine-specific configuration or repository defaults.
         (self.repo / 'automation/variables.local.sh').write_text(

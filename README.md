@@ -69,3 +69,19 @@ objects.
 ## License
 
 This code is released under [MIT license](LICENSE.txt) by Jari Laine.
+
+## Development and automation
+
+The repository stores APEX applications as APEXLang in `applications/`, while
+release downloads contain full SQL application exports with Supporting Objects.
+Use `make help` to see build, validation, test and deployment commands.
+Contributors and coding agents should follow [AGENT.md](AGENT.md) before
+changing or running the automation.
+For application-only emergency promotion from QA/UAT to production, see
+[the hotfix workflow](automation/HOTFIX.md). It bypasses the normal release build.
+
+The mock regression tests can be run with:
+
+```bash
+python3 -m unittest discover -s automation/tests -v
+```

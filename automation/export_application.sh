@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Export APEXlang source (not split SQL) and SQL-format packaged release files.
-# See automation/AUTOMATION.md for workflow and synchronization guidance.
+# See AGENT.md for workflow, safety and synchronization guidance.
 set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/lib/common.sh"

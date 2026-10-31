@@ -1,7 +1,7 @@
 # Developer-facing entry points; database connections live in variables.sh or
 # the ignored automation/variables.local.sh file.
 SCRIPTS := automation
-.PHONY: help setup-build-api prepare-release supporting source sync-dev build validate qa production test-install test-upgrade
+.PHONY: help setup-build-api prepare-release supporting source sync-dev build validate qa production test-install test-upgrade hotfix-export hotfix-production
 
 help:
 	@printf '%s\n' \
@@ -15,7 +15,9 @@ help:
 	  'make test-install  		Reset disposable TEST and test fresh installation' \
 	  'make test-upgrade  		Reset TEST, install previous release, then upgrade' \
 	  'make qa            		Deploy built SQL release to QA' \
-	  'make production    		Promote that same built SQL release to production'
+	  'make production    		Promote that same built SQL release to production' \
+	  'make hotfix-export 		Export BOTH QA/UAT apps as SQL (no build)' \
+	  'make hotfix-production Import those SQL files into production'
 
 setup-build-api:
 	./$(SCRIPTS)/setup_build_api.sh --confirm-dev-ddl
@@ -51,3 +53,11 @@ qa:
 production:
 	@test "$(CONFIRM)" = "YES" || (echo 'Production requires: make production CONFIRM=YES' >&2; exit 1)
 	./$(SCRIPTS)/import_apps_to_pro.sh --confirm-production
+
+# Emergency application-only QA/UAT -> production path. Does not use DEV/TEST,
+# release files, BUILD_API, APEXLang, or Supporting Objects installation.
+hotfix-export:
+	./$(SCRIPTS)/hotfix.sh export
+
+hotfix-production:
+	./$(SCRIPTS)/hotfix.sh production
