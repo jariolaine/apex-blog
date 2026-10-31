@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Export APEXlang source (not split SQL) and SQL-format packaged release files.
-# See APEXLANG_AUTOMATION.md for workflow and synchronization guidance.
+# See automation/AUTOMATION.md for workflow and synchronization guidance.
 set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/lib/common.sh"
@@ -85,8 +85,11 @@ SQL
         || die "SQLcl did not confirm validation success: $alias (see log)"
 
     if [[ "$mode" != source ]]; then
-        python3 "$SCRIPT_DIR/lib/check_supporting_parity.py" "$repo_dir" "$app_dir" \
-            || die "Supporting Objects differ for $alias. Aborting release."
+        # SQL generated from BUILD_API and application static assets are owned
+        # by Git, not by an APEXlang export. Detect *any* DEV drift (including
+        # binary files and missing/extra files) before building a release.
+        python3 "$SCRIPT_DIR/lib/check_preserved_parity.py" "$repo_dir" "$app_dir" \
+            || die "Locally maintained Supporting Objects / static files differ for $alias. Aborting release."
         if [[ "$mode" == build ]]; then
             diff -qr --exclude=deployments "$repo_dir" "$app_dir" >"$run_dir/logs/source-diff-$id.log" \
                 || {
@@ -106,9 +109,9 @@ SQL
 done
 
 if [[ "$mode" != build ]]; then
-    # Assemble complete APEXlang trees in temporary space so that source-only
-    # exports cannot publish an invalid mixture of newly exported .apx and
-    # locally generated Supporting Objects SQL.
+    # Assemble complete APEXlang trees in temporary space. Preserve SQL
+    # generated from BUILD_API AND local static assets (CSS, JS, images, etc.).
+    # This avoids overwriting files authored in Git with older DEV copies.
     for i in "${!devAppIds[@]}"; do
         alias="${appAliases[$i]}"
         candidate="$run_dir/merged/$alias"
@@ -116,11 +119,21 @@ if [[ "$mode" != build ]]; then
         cp -R -- "$apexSourceDir/$alias/." "$candidate/"
         rsync -r --checksum --delete \
             --exclude='/deployments/' --exclude='*.sql' \
+            --exclude='/shared-components/static-files/' \
             "$run_dir/apexlang/$alias/" "$candidate/"
-        # New SQL assets are added; existing BUILD_API-generated SQL is kept.
+        # Keep all existing SQL content, but pick up new SQL exported by DEV.
         rsync -r --checksum --ignore-existing \
             --include='*/' --include='*.sql' --exclude='*' \
             "$run_dir/apexlang/$alias/" "$candidate/"
+        # Same semantics for application static files: the repository is the
+        # source of truth for existing bytes, including minified CSS/JS and PNGs.
+        # Newly exported assets are added; missing assets are NOT deleted.
+        exported_static="$run_dir/apexlang/$alias/shared-components/static-files"
+        if [[ -d "$exported_static" ]]; then
+            mkdir -p -- "$candidate/shared-components/static-files"
+            rsync -r --checksum --ignore-existing \
+                "$exported_static/" "$candidate/shared-components/static-files/"
+        fi
         printf 'apex validate -input "%s"\n' "$candidate" >"$run_dir/validate-merged-${i}.sqlcl"
         run_sqlcl_nolog "$run_dir/logs/validate-merged-${i}.log" "$run_dir/validate-merged-${i}.sqlcl" \
             || die "Validation failed for merged local source: $alias"

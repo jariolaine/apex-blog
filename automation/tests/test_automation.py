@@ -103,6 +103,63 @@ class AutomationTests(unittest.TestCase):
                          {'app': {'id': 402}})
         self.assertFalse((self.repo/'build/apex-blog-latest.zip').exists())
 
+    def test_source_only_preserves_local_static_files_and_adds_new_dev_files(self):
+        # Static CSS/JS/images belong to Git just like BUILD_API-generated SQL.
+        # A source export must not overwrite locally maintained asset bytes.
+        public = self.repo/'applications/blog/shared-components/static-files'
+        admin = self.repo/'applications/blog-admin/shared-components/static-files'
+        css = public/'css/style.css'
+        js = public/'js/blog.js'
+        icon = public/'icons/app-icon-192.png'
+        admin_css = admin/'css/admin.css'
+        css.write_bytes(css.read_bytes() + b'\n/* locally authored CSS */\n')
+        js.write_bytes(js.read_bytes() + b'\n// locally authored JS\n')
+        icon.write_bytes((public/'icons/app-icon-512.png').read_bytes())
+        admin_css.write_bytes(admin_css.read_bytes() + b'\n/* local admin CSS */\n')
+        expected = {p: p.read_bytes() for p in (css, js, icon, admin_css)}
+        self.env['MOCK_CHANGE_STATIC'] = '1'
+        self.env['MOCK_ADD_STATIC'] = '1'
+        self.env['MOCK_CHANGE_PAGE'] = '1'
+        self.script('export_application.sh', '--source-only')
+        for path, data in expected.items():
+            self.assertEqual(path.read_bytes(), data, str(path))
+        self.assertEqual((public/'css/new-from-dev.css').read_text(), '/* New from DEV */\n')
+        self.assertEqual((admin/'css/new-from-dev.css').read_text(), '/* New from DEV */\n')
+        self.assertIn('css/new-from-dev.css',
+                      (self.repo/'applications/blog/shared-components/static-files.apx').read_text())
+        self.assertFalse((self.repo/'build/apex-blog-latest.zip').exists())
+
+    def test_build_rejects_static_drift_before_publishing(self):
+        css = self.repo/'applications/blog/shared-components/static-files/css/style.css'
+        original = css.read_bytes()
+        css.write_bytes(original + b'\n/* repository edit not imported to DEV */\n')
+        app = self.repo/'applications/blog/application.apx'
+        original_app = app.read_bytes()
+        out = self.script('export_application.sh', ok=False)
+        self.assertIn('Static application files', out.stderr)
+        self.assertIn('css/style.css', out.stderr)
+        self.assertEqual(css.read_bytes(), original + b'\n/* repository edit not imported to DEV */\n')
+        self.assertEqual(app.read_bytes(), original_app)
+        self.assertFalse((self.repo/'build/SHA256SUMS').exists())
+
+    def test_build_rejects_binary_static_drift(self):
+        icon = self.repo/'applications/blog/shared-components/static-files/icons/app-icon-192.png'
+        icon.write_bytes((self.repo/'applications/blog/shared-components/static-files/icons/app-icon-512.png').read_bytes())
+        out = self.script('export_application.sh', '--build-only', ok=False)
+        self.assertIn('Static application files', out.stderr)
+        self.assertIn('app-icon-192.png', out.stderr)
+        self.assertFalse((self.repo/'build/SHA256SUMS').exists())
+
+    def test_build_works_when_static_files_match_dev(self):
+        # A source refresh preserves local edits. Importing them to DEV is an
+        # explicit step; simulate that step by updating the mock DB snapshot.
+        css = self.repo/'applications/blog/shared-components/static-files/css/style.css'
+        css.write_bytes(css.read_bytes() + b'\n/* custom CSS */\n')
+        self.script('export_application.sh', '--source-only')
+        shutil.copytree(self.repo/'applications/blog', self.template/'blog', dirs_exist_ok=True)
+        self.script('export_application.sh', '--build-only')
+        self.assertTrue((self.repo/'build/SHA256SUMS').is_file())
+
     def test_release_rejects_supporting_sql_drift_without_publishing(self):
         local = self.repo/'applications/blog/supporting-objects/install-scripts/metadata.sql'
         local.write_text(local.read_text()+'\n-- different from DEV\n')
@@ -184,14 +241,15 @@ class AutomationTests(unittest.TestCase):
         self.assertEqual((self.repo/'LICENSE.txt').read_text(), (SOURCE/'LICENSE.txt').read_text())
         self.assertEqual((self.repo/'VERSION.txt').read_text(), (SOURCE/'VERSION.txt').read_text())
         sql_calls = '\n'.join(c['sql'] for c in self.calls_data())
-        self.assertIn("p_release_version => 'Release 26.1.5.20261025'", sql_calls)
+        release_version = (self.repo/'VERSION.txt').read_text().strip()
+        self.assertIn(f"p_release_version => '{release_version}'", sql_calls)
         self.assertNotIn('build_api.export_license', sql_calls)
         self.assertNotIn('build_api.export_readme', sql_calls)
         self.assertNotIn('build_api.export_postupgrade', sql_calls)
         public_metadata = self.repo/'applications/blog/supporting-objects/install-scripts/metadata.sql'
-        self.assertIn("'Release 26.1.5.20261025'", public_metadata.read_text())
+        self.assertIn(f"'{release_version}'", public_metadata.read_text())
         postupgrade = self.repo/'applications/blog/supporting-objects/upgrade-scripts/postupgrade.sql'
-        self.assertIn("'Release 26.1.5.20261025'", postupgrade.read_text())
+        self.assertIn(f"'{release_version}'", postupgrade.read_text())
 
     def test_version_change_is_deterministic_and_does_not_touch_docs(self):
         expected = 'Release 26.1.6.20261101'
@@ -246,7 +304,8 @@ class AutomationTests(unittest.TestCase):
         self.assertNotIn('set_application_version(', export_settings.lower())
         self.assertNotIn('update blog_settings', export_settings.lower())
         self.assertIn('p_release_version', export_settings)
-        self.assertIn('and t1.object_type = t2.type', plsql)
+        # Dependency ordering now lives in WRITE_OBJECT_LIST (NOCYCLE).
+        self.assertIn('and d.type = c.object_type', plsql)
         self.assertNotIn('t1.object_type = t2.referenced_type', plsql)
 
     def test_upgrade_uses_previous_and_candidate(self):

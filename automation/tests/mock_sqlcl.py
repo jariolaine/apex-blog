@@ -57,6 +57,18 @@ if match:
         if os.environ.get('MOCK_CHANGE_PAGE'):
             page = next((out/output_alias/'pages').glob('*.apx'))
             page.write_text(page.read_text()+'\n-- mock changed page\n')
+        if os.environ.get('MOCK_CHANGE_STATIC'):
+            static = out / output_alias / 'shared-components/static-files'
+            css = next(static.rglob('*.css'))
+            css.write_bytes(css.read_bytes() + b'\n/* DEV static edit */\n')
+            png = next(static.rglob('*.png'))
+            png.write_bytes(png.read_bytes() + b'\x00DEV')
+        if os.environ.get('MOCK_ADD_STATIC'):
+            static = out / output_alias / 'shared-components/static-files'
+            (static / 'css/new-from-dev.css').write_text('/* New from DEV */\n')
+            metadata = out / output_alias / 'shared-components/static-files.apx'
+            with metadata.open('a') as f:
+                f.write('\nfile "css/new-from-dev.css" (\n    mimeType: text/css\n    charSet: utf-8\n)\n')
     elif kind == 'SQL':
         (out / f'f{app_id}.sql').write_text(f'prompt Release app {app_id} with Supporting Objects\n')
     else:

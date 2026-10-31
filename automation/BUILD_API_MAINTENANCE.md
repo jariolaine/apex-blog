@@ -13,7 +13,8 @@ application exports from the same release candidate.
 | `VERSION.txt`, `README.md`, `LICENSE.txt` | Git repository |
 | `automation/templates/postupgrade.sql.in` | Git repository |
 | Admin/Public Supporting Objects SQL | Generated from BUILD_API + source DDL + Git template |
-| APEXLang source | Git; deliberately synchronized with DEV |
+| APEXLang `.apx` source | Git; deliberately synchronized with DEV |
+| Application static assets (CSS, JS, PNG, etc.) | Git; preserved on source export, synchronized explicitly into DEV |
 | Release ZIP / SQL exports | `make build`, then promote unchanged |
 | DEV APEX application versions | Explicit `make prepare-release CONFIRM=YES` |
 | DEV `BLOG_SETTINGS.G_APP_VERSION` | Explicit `make prepare-release CONFIRM=YES` |

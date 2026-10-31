@@ -17,13 +17,13 @@ production install the SAME files; production is NOT re-exported from QA.
 Requirements: Bash 4.4+, Python 3.9+, rsync, zip, sha256sum, Git (optional),
 Oracle SQLcl 26.1.2 or later, APEX 26.1+, and SQLcl saved connections to the
 correct *parsing schema* in each database. Oracle SQLcl 26.2.2 or later is
-recommended for current APEXlang fixes. Configure `tools/script/variables.sh`,
-then override site-specific settings in `tools/script/variables.local.sh` or
+recommended for current APEXlang fixes. Configure `automation/variables.sh`,
+then override site-specific settings in `automation/variables.local.sh` or
 with environment variables:
 
 ```
 export APEX_BLOG_DEV_CONNECTION=blog_dev
-export APEX_BLOG_UAT_CNNECTION=blog_uat
+export APEX_BLOG_UAT_CONNECTION=blog_uat
 export APEX_BLOG_PRD_CONNECTION=blog_prd
 export APEX_BLOG_TST_CONNECTION=YOUR_DISPOSABLE_SCHEMA_SAVED_CONNECTION
 # Optional: SQLCL_BIN=/path/to/sql
@@ -51,10 +51,14 @@ connection names and require an explicit reset flag.
    from the repository into release ZIPs, never regenerated from the database.
    Inspect the diff.
 3. `make source` exports DEV applications into **APEXlang**, validates each
-   export and synchronizes `.apx` and static files into `applications/`.
-   It preserves local `supporting-objects/*.sql` and `deployments/` settings.
-   Existing SQL is never silently replaced by the database's copy. New SQL
-   assets exported by DEV are added without overwriting existing SQL files.
+   export and synchronizes `.apx` into `applications/`.
+   It **preserves existing locally maintained files** in both applications'
+   `shared-components/static-files/` (CSS, JS, images and other binaries),
+   `supporting-objects/*.sql`, and `deployments/` settings. Newly exported
+   static assets and SQL files are added without overwriting existing files.
+   The corresponding `shared-components/static-files.apx` *metadata* is still
+   exported from DEV; it must reference any new locally added assets before
+   `make sync-dev` imports them.
 4. Review APEXlang changes, then `make validate` to validate local source.
 5. `make sync-dev` *explicitly overwrites the two DEV applications* with the
    checked-in APEXlang source, synchronizing new Supporting Objects metadata.
@@ -62,15 +66,17 @@ connection names and require an explicit reset flag.
    applying install/upgrade scripts to the DEV schema. It does **not** execute
    database DDL; your development database remains your source of schema data.
 6. `make build` exports both APEXlang and full **non-split SQL** packages from
-   DEV, validating and ensuring that **every exported Supporting Objects SQL
-   file exactly matches the repository**. It refuses to build on drift so that
-   package content cannot silently become stale. It also checks that the DEV
+   DEV. It checks **all Supporting Objects SQL and all static application file
+   contents/names byte-for-byte** against Git (including PNG binaries) before
+   publishing. A build fails if DEV has newer, older, missing or additional
+   protected files. It also checks that the DEV
    `BLOG_SETTINGS.G_APP_VERSION` and both DEV APEX application versions match
    `VERSION.txt`; use `make prepare-release CONFIRM=YES` if they differ.
    Updates to APEXlang `.apx`
    files are synchronized after both exports succeed. If the command fails
-   with Supporting Objects drift, inspect the diff, run `make sync-dev`, and
-   retry. `make build` never changes DEV data.
+   with Supporting Objects or static-file drift, inspect the differences,
+   ensure `static-files.apx` lists any new assets, then run `make sync-dev` to
+   update DEV and retry. `make build` never changes DEV data.
 7. `make test-install`; `make test-upgrade PREVIOUS_ZIP=path/to/previous.zip`
    (optional PREVIOUS_ZIP; by default downloads the latest published release).
    These tests reset a **disposable** test schema. The previous version should
@@ -90,17 +96,17 @@ artifact store; never rerun `make build` between QA and production.
 ## Useful direct commands
 
 ```
-./tools/script/export_application.sh --source-only
-./tools/script/export_application.sh --build-only
-./tools/script/deploy.sh qa --release-dir /path/to/tested/candidate
-./tools/script/deploy.sh production --release-dir /path/to/tested/candidate --confirm-production
-./tools/script/run_upgrade_test.sh --confirm-reset-test --previous-zip /path/to/apex-blog-previous.zip
-./tools/script/validate_apexlang.sh
+./automation/export_application.sh --source-only
+./automation/export_application.sh --build-only
+./automation/deploy.sh qa --release-dir /path/to/tested/candidate
+./automation/deploy.sh production --release-dir /path/to/tested/candidate --confirm-production
+./automation/run_upgrade_test.sh --confirm-reset-test --previous-zip /path/to/apex-blog-previous.zip
+./automation/validate_apexlang.sh
 ```
 
-`--build-only` requires local APEXlang source and Supporting Objects to be
-byte-for-byte synchronized with DEV (except deployment profiles). This is
-intentionally strict for a release candidate.
+`--build-only` requires local APEXlang source, Supporting Objects SQL and
+application static assets to be byte-for-byte synchronized with DEV (except
+deployment profiles). This is intentionally strict for a release candidate.
 
 ## Safety and troubleshooting
 
@@ -117,6 +123,17 @@ intentionally strict for a release candidate.
   `APEX_APPLICATION_INSTALL` SQL setup script.
 - Generated SQL and PL/SQL whitespace is **not** normalized with `sed`, since
   blank lines/spaces inside literals may be semantically significant.
+- **Static-file ownership:** `applications/blog/shared-components/static-files/`
+  and the equivalent `blog-admin` directory are maintained in Git. For example,
+  `less/style.less` generates the Public application's `css/style.css`.
+  `make source` never overwrites existing static assets from DEV; it only adds
+  new ones. If you add/remove/rename files, update `static-files.apx` (or
+  update the application in DEV and export its metadata), then use `make sync-dev`
+  to upload local assets before building. Files absent from `static-files.apx`
+  are not automatically registered as application static files.
+- If static files appear corrupted during a SQLcl APEXlang export, do not
+  publish the result. APEX 26.1 / SQLcl 26.1.2 had a publicly reported
+  static-file export issue; compare the generated bytes and try a newer SQLcl.
 - SQLcl can sometimes print command errors without a nonzero process exit.
   The automation checks expected outputs and validation/import markers.
 - DEV imports are explicit because they overwrite APEX application metadata.
@@ -135,8 +152,8 @@ intentionally strict for a release candidate.
 ## Regression tests (without a database)
 
 ```
-python3 -m unittest discover -s tools/script/tests -v
-bash -n tools/script/*.sh
+python3 -m unittest discover -s automation/tests -v
+bash -n automation/*.sh
 ```
 
 The tests use a mock SQLcl executable. They exercise shell orchestration,
