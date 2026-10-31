@@ -1,0 +1,21 @@
+# Generated/disposable data
+.vscode/
+build/
+ideas/
+*.log
+*.code-workspace
+.hidden
+
+# Track automation and its SQL dependencies; other local tool directories
+# contain generated/test material, not release source.
+automation/docker/apex
+automation/log/
+automation/variables.local.sh
+automation/__pycache__/
+automation/tests/__pycache__/
+
+# Local Terraform / Docker credentials and working directories
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/.env

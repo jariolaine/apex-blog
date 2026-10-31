@@ -1,0 +1,7 @@
+--  Postupgrade
+-- Update version info
+update blog_settings
+  set attribute_value = '#APP_VERSION#'
+where 1 = 1
+  and attribute_name = 'G_APP_VERSION'
+;
