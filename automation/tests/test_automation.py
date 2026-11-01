@@ -127,6 +127,33 @@ class AutomationTests(unittest.TestCase):
         version = (self.repo / 'VERSION.txt').read_text().strip()
         return self.repo / 'build/releases' / version.removeprefix('Release ')
 
+    def stub_release_candidate(self):
+        """Create a checksum-valid lightweight candidate for TEST orchestration tests.
+
+        No DEV export/SQLcl or APEXLang parity checks are needed to exercise
+        the test-install -> test-deinstall Make dependency and TEST SQL ordering.
+        """
+        release = self.candidate()
+        release.mkdir(parents=True, exist_ok=True)
+        for name in ('VERSION.txt', 'README.md', 'LICENSE.txt'):
+            shutil.copy2(self.repo / name, release / name)
+        sql_names = ('blog-administration-latest.sql', 'blog-public-pages-latest.sql')
+        for name in sql_names:
+            (release / name).write_text(f'prompt Mock release SQL {name}\n')
+        with ZipFile(release / 'apex-blog-latest.zip', 'w') as archive:
+            for name in sql_names:
+                archive.write(release / name, arcname=name)
+        with ZipFile(release / 'apex-blog-stack-latest.zip', 'w') as archive:
+            archive.writestr('readme.txt', 'Mock stack archive\n')
+        manifest = self.repo / 'automation/lib/release_manifest.py'
+        subprocess.run([
+            sys.executable, str(manifest), 'create', '--dir', str(release),
+            '--repo', str(self.repo), '--sql-names', *sql_names,
+            '--zip-name', 'apex-blog-latest.zip', '--stack-name', 'apex-blog-stack-latest.zip',
+            '--dev-ids', '402', '401',
+        ], check=True, capture_output=True, text=True)
+        return release
+
     def drift_app_version(self, app: Path):
         """Change the fixture's current release date, never an old hardcoded version."""
         version = (self.repo / 'VERSION.txt').read_text(encoding='utf-8').strip()
@@ -365,6 +392,91 @@ class AutomationTests(unittest.TestCase):
         reset = [c['sql'] for c in tests if 'remove_application.sql' in c['sql']]
         self.assertEqual(len(reset), 1)
         self.assertNotIn('deinstall_supporting_objects.sql', reset[0])
+
+    def test_deinstall_runs_install_first_and_verifies_everything_is_removed(self):
+        self.stub_release_candidate()
+        self.env['MOCK_SCHEMA_EMPTY'] = '1'
+        # The same RELEASE_DIR must be used by the test-install prerequisite.
+        self.make('test-deinstall', f'RELEASE_DIR={self.candidate()}')
+        tests = [c for c in self.calls_data()
+                 if c['argv'][-1] == 'DISPOSABLE_TEST_SAVED']
+        commands = [c['sql'] for c in tests]
+        installs = [i for i, sql in enumerate(commands)
+                    if 'install_application.sql' in sql]
+        deinstalls = [i for i, sql in enumerate(commands)
+                      if 'deinstall_supporting_objects.sql' in sql]
+        verification = [i for i, sql in enumerate(commands)
+                        if 'verify_deinstalled_objects.sql' in sql]
+        self.assertEqual(len(installs), 2)
+        self.assertEqual(len(deinstalls), 1)  # initial clean TEST skips reset deinstall
+        self.assertEqual(len(verification), 1)
+        self.assertLess(max(installs), deinstalls[0])
+        self.assertLess(deinstalls[0], verification[0])
+        self.assertIn('remove_application.sql', commands[deinstalls[0]])
+        self.assertIn('"102"', commands[deinstalls[0]])
+        self.assertIn('"101"', commands[deinstalls[0]])
+        self.assertIn('"BLOG_TST"', commands[verification[0]])
+        self.assertIn('"102"', commands[verification[0]])
+        self.assertIn('"101"', commands[verification[0]])
+        self.assertTrue(all(c['argv'][-1] == 'DISPOSABLE_TEST_SAVED' for c in tests))
+
+    def test_deinstall_requires_successful_install_before_cleanup(self):
+        self.stub_release_candidate()
+        self.env['MOCK_SCHEMA_EMPTY'] = '1'
+        self.env['MOCK_INSTALL_WRONG_VERSION'] = '1'
+        p = self.make('test-deinstall', ok=False)
+        self.assertIn('Installation failed', p.stderr)
+        commands = [c['sql'] for c in self.calls_data()
+                    if c['argv'][-1] == 'DISPOSABLE_TEST_SAVED']
+        self.assertFalse(any('verify_deinstalled_objects.sql' in s for s in commands))
+        self.assertFalse(any('deinstall_supporting_objects.sql' in s for s in commands))
+
+    def test_deinstall_rejects_unconfirmed_or_non_test_connection(self):
+        p = self.script('run_deinstall_test.sh', ok=False)
+        self.assertIn('--confirm-test-deinstall', p.stderr)
+        self.assertFalse(self.calls.exists())
+        self.env['APEX_BLOG_TST_CONNECTION'] = 'PROD_TEST_SAVED'
+        p = self.script('run_deinstall_test.sh', '--confirm-test-deinstall', ok=False)
+        self.assertIn('TEST saved connection must be different', p.stderr)
+        self.assertFalse(self.calls.exists())
+
+    def test_deinstall_stops_when_sql_cleanup_fails(self):
+        self.stub_release_candidate()
+        self.env.update(MOCK_SCHEMA_EMPTY='1', MOCK_DEINSTALL_SQL_ERROR='1')
+        p = self.make('test-deinstall', ok=False)
+        self.assertIn('TEST deinstallation failed', p.stderr)
+        self.assertFalse(any('verify_deinstalled_objects.sql' in c['sql']
+                             for c in self.calls_data()))
+
+    def test_deinstall_fails_if_any_user_objects_remain(self):
+        self.stub_release_candidate()
+        self.env.update(MOCK_SCHEMA_EMPTY='1', MOCK_DEINSTALL_LEFTOVER_OBJECTS='1')
+        p = self.make('test-deinstall', ok=False)
+        self.assertIn('1 user object', p.stderr)
+        self.assertIn('TEST deinstallation left objects', p.stderr)
+
+    def test_deinstall_fails_if_test_apex_application_remains(self):
+        self.stub_release_candidate()
+        self.env.update(MOCK_SCHEMA_EMPTY='1', MOCK_DEINSTALL_LEFTOVER_APPS='1')
+        p = self.make('test-deinstall', ok=False)
+        self.assertIn('1 application remains', p.stderr)
+        self.assertIn('TEST deinstallation left objects', p.stderr)
+
+    def test_deinstall_requires_sqlcl_positive_verification_marker(self):
+        self.stub_release_candidate()
+        self.env.update(MOCK_SCHEMA_EMPTY='1', MOCK_DEINSTALL_MISSING_MARKER='1')
+        p = self.make('test-deinstall', ok=False)
+        self.assertIn('missing success marker', p.stderr)
+        self.assertTrue(any('verify_deinstalled_objects.sql' in c['sql']
+                            for c in self.calls_data()))
+
+    def test_deinstall_verification_checks_every_user_object_not_just_blog(self):
+        sql = (SOURCE / 'automation/sql/verify_deinstalled_objects.sql').read_text()
+        self.assertIn('select count(*) into l_objects from user_objects', sql.lower())
+        self.assertIn('from apex_applications', sql.lower())
+        self.assertIn('raise_application_error', sql.lower())
+        self.assertIn('APEX_BLOG_DEINSTALL_OK', sql)
+        self.assertNotRegex(sql.lower(), r"object_name\s+like\s+'blog_")
 
     def test_supporting_objects_generation_preserves_sql_literals(self):
         self.script('supporting_objects.sh')

@@ -92,9 +92,23 @@ python3 -m unittest discover -s automation/tests -v
 
 The repository uses shared local pre-commit hooks and GitHub Actions for
 CSS/LESS, JavaScript, SQL, Bash, Python, Markdown, Terraform and APEXLang checks.
-Run `make setup-ci` to set up repository-local lint tools and install the Git hook.
+For a new Git checkout, `make doctor` checks local prerequisites without changing
+anything or connecting to Oracle. To configure both local lint tooling and the
+DEV database's `BUILD_API` package, run **`make setup CONFIRM=YES`**. This is
+one command, but it **modifies DEV** after installing the local Git hook, so
+confirm the saved DEV SQLcl connection and schema first. To install only local
+tools with no database change, use `make setup-ci`; to compile only the DEV
+package, use `make setup-build-api`. Use `make check` for the local quality gate.
 No global `pre-commit` installation or fixed Node.js major version is needed.
 See [automation/ci/README.md](automation/ci/README.md) for details.
+
+To verify removal as well as installation, run `make test-deinstall` after
+building a release candidate. This **destructively resets the disposable TEST
+schema**: it first runs `make test-install`, then executes the tracked
+Supporting Objects deinstall script, removes both TEST applications, and
+fails unless the TEST schema contains **zero `USER_OBJECTS`** and neither
+application remains. `RELEASE_DIR=...` selects the same candidate for the
+fresh-install prerequisite. This must not be run on DEV/QA/production.
 
 `make sync-dev` and `make qa` always execute the complete local preflight
 before performing their database operations. Emergency QA/UAT-to-production

@@ -25,13 +25,15 @@ Scope: this repository. Target Oracle APEX **26.1**. Work in small, reviewable s
 **Local checks (may run):**
 
 ```sh
+make doctor
 make lint
 make test
 make validate
 make check-source
 make check-release
 make verify-release
-make preflight
+make release-check
+make check
 ```
 
 `make validate` needs SQLcl but does not connect to a database. If SQLcl is missing, say so.
@@ -44,10 +46,12 @@ make preflight
 
 **Requires explicit human approval BEFORE execution:**
 
-- `make setup-build-api`: compiles `BUILD_API` in DEV.
+- `make setup CONFIRM=YES`: installs local CI tools and then compiles `BUILD_API`
+  in DEV. This is one command, but **not a local-only operation**.
+- `make setup-build-api`: compiles `BUILD_API` in DEV only.
 - `make prepare-release CONFIRM=YES`: changes DEV versions.
 - `make sync-dev`: overwrites both DEV APEX application definitions.
-- `make test-install` / `make test-upgrade`: reset the **disposable TEST** schema.
+- `make test-install` / `make test-upgrade` / `make test-deinstall`: reset the **disposable TEST** schema. `test-deinstall` always runs `test-install` first, then removes both TEST apps and Supporting Objects and verifies the schema has **zero** user objects. Run only against an approved disposable TEST schema.
 - `make qa` / `make production CONFIRM=YES`: deploy normal release applications.
 - `make hotfix-production`: directly replace both PROD applications from saved QA/UAT exports; no build or release gates.
 
@@ -55,7 +59,11 @@ Check the saved SQLcl connection and target schema before any approved database 
 
 ## Mandatory quality checks
 
-- Read `automation/ci/README.md` for tooling setup and lint scope; run `make setup-ci` to create the local `.venv/` and install the Git hook. Do not require a fixed Node.js major version or global `pre-commit`.
+- Read `automation/ci/README.md` for tooling setup and lint scope. Use
+  `make setup-ci` to create the local `.venv/` and Git hook without touching
+  a database; use `make setup CONFIRM=YES` only with explicit authorization
+  for DEV `BUILD_API` compilation. `make doctor` is a read-only diagnostic.
+  Do not require a fixed Node.js major version or global `pre-commit`.
 - Use `make lint` for all linters, `make test` for full automation regression
   tests, and `make preflight` for both plus SQLcl APEXLang validation.
 - Pre-commit hooks and GitHub Actions run matching checks. Do not change code

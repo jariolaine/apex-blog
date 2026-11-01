@@ -37,8 +37,14 @@ overrides belong in the ignored `automation/variables.local.sh`.
 
 ```bash
 make build
-make verify-release
+make release-check  # Strict source versions + built candidate manifest/checksums
 ```
+
+`make release-check` combines `make check-release` and `make verify-release`.
+It is read-only, requires a built candidate, and supports `RELEASE_DIR=...`.
+It does **not** compare the candidate fingerprint with the current working
+source; the mandatory QA gate checks that separately. Use `make verify-release`
+alone to verify an older candidate without requiring current source versions.
 
 For a release with version `Release 26.1.5.20261101`, the output is:
 
@@ -99,11 +105,22 @@ Use `RELEASE_DIR` to select a previously built candidate explicitly:
 ```bash
 make verify-release RELEASE_DIR=build/releases/26.1.5.20261101
 make test-install RELEASE_DIR=build/releases/26.1.5.20261101
+make test-deinstall RELEASE_DIR=build/releases/26.1.5.20261101
 make test-upgrade RELEASE_DIR=build/releases/26.1.5.20261101  # Downloads GitHub latest release
 make test-upgrade PREVIOUS_ZIP=/path/to/previous/apex-blog-latest.zip RELEASE_DIR=build/releases/26.1.5.20261101  # Uses local ZIP
 make qa RELEASE_DIR=build/releases/26.1.5.20261101
 make production CONFIRM=YES RELEASE_DIR=build/releases/26.1.5.20261101
 ```
+
+`make test-deinstall` is destructive and is only for the dedicated disposable
+TEST schema. It runs `make test-install` **first** using the selected release,
+then executes the tracked admin Supporting Objects deinstall SQL, removes both
+TEST APEX applications, and verifies that `USER_OBJECTS` contains **zero** rows
+(not merely zero `BLOG_` rows) and neither TEST app is still installed.
+Any remaining object or app fails the test. The database is left empty on
+success; run `make test-install` again if you need TEST populated afterward.
+This checks the current checked-in deinstall script against the release candidate;
+review source/candidate alignment before testing an older `RELEASE_DIR`.
 
 `make test-upgrade` downloads the **latest published GitHub release** by default,
 using `upgDownloadUrl` from `automation/variables.sh` (overridable in

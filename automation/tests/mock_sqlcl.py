@@ -114,6 +114,24 @@ if 'build_api.export_object_list' in src:
         file.write_text(fixtures[file.name], encoding='utf-8')
     sys.exit(0)
 
+if re.search(r'^@', src, flags=re.M) and 'deinstall_supporting_objects.sql' in src:
+    if os.environ.get('MOCK_DEINSTALL_SQL_ERROR'):
+        print('ORA-00942: simulated deinstallation failure')
+        sys.exit(2)
+    print('Deinstallation completed')
+    sys.exit(0)
+
+if re.search(r'^@', src, flags=re.M) and 'verify_deinstalled_objects.sql' in src:
+    if os.environ.get('MOCK_DEINSTALL_LEFTOVER_OBJECTS'):
+        print('ORA-20058: TEST deinstall incomplete: 1 user object, 0 applications remain')
+        sys.exit(2)
+    if os.environ.get('MOCK_DEINSTALL_LEFTOVER_APPS'):
+        print('ORA-20058: TEST deinstall incomplete: 0 user objects, 1 application remains')
+        sys.exit(2)
+    if not os.environ.get('MOCK_DEINSTALL_MISSING_MARKER'):
+        print('APEX_BLOG_DEINSTALL_OK')
+    sys.exit(0)
+
 if re.search(r'^@', src, flags=re.M) and 'install_application.sql' in src:
     if os.environ.get('MOCK_INSTALL_WRONG_VERSION'):
         print('ORA-20056: Installed application version mismatch')

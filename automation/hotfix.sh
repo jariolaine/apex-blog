@@ -38,7 +38,7 @@ begin
   apex_application_install.set_schema('$prdDbSchema');
   apex_application_install.set_application_id(${prdAppIds[$i]});
   apex_application_install.generate_offset;
-  apex_application_install.set_auto_install_sup_obj(false);
+  apex_application_install.set_auto_install_sup_obj(true);
 end;
 /
 @$(sqlcl_arg "$file")

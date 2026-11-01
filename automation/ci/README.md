@@ -15,11 +15,25 @@ python3-venv`), plus Git, curl, ShellCheck, Terraform, and Oracle SQLcl with a
 supported Java runtime for APEXLang validation.
 
 ```bash
-make setup-ci
-make lint
-make test
-make validate
+make doctor             # Read-only diagnostics; missing setup is expected at first
+make setup CONFIRM=YES  # Local CI tooling + compile BUILD_API in DEV
+make check              # Lint + complete tests + SQLcl APEXLang validation
 ```
+
+`make setup CONFIRM=YES` is the **single setup entry point**. It first runs
+`make setup-ci`, then `make setup-build-api` **sequentially** and stops if
+either fails. The second step connects to the saved DEV SQLcl connection,
+verifies the expected workspace/schema, and compiles `BUILD_API` in DEV. It
+never targets QA or production. Run it only with approval to modify DEV and
+with a correctly configured connection. Do **not** use this target in GitHub
+Actions, where database credentials are intentionally absent. For local
+lint/test tooling **without Oracle access**, run only `make setup-ci`; for
+recompilation of the package alone, use `make setup-build-api`.
+
+`make doctor` checks installed commands, the local virtual environment,
+pre-commit hook and necessary setup files. It reads no connection secrets,
+never executes SQLcl and cannot prove database access or package validity.
+It exits nonzero when required local setup is missing.
 
 `make setup-ci` creates an ignored `.venv/`, uses `python3` from your PATH to
 install Python tools into it, runs npm using the existing Node.js installation,
@@ -55,13 +69,22 @@ Oracle connection; however **Oracle SQLcl requires a supported Java version**.
 ## Commands
 
 ```bash
-make setup-ci      # Install tools and hook into local .venv
-make lint          # All configured linters against all tracked files
-make test-fast     # Short regression + CI/permissions checks (also in Git hooks)
-make test          # Complete mocked automation suite
-make validate      # SQLcl APEXLang validation (no database)
-make preflight     # Lint + full tests + validate
+make doctor             # Read-only local environment diagnostics (no database)
+make setup CONFIRM=YES  # One command: local tools, then DEV BUILD_API compilation
+make setup-ci           # Local tools and Git hook only (no database)
+make setup-build-api    # Explicit DEV BUILD_API compilation only
+make lint               # All configured linters against all tracked files
+make test-fast          # Short regression + CI/permissions checks (also in Git hooks)
+make test               # Complete mocked automation suite
+make validate           # SQLcl APEXLang validation (no database)
+make check              # Alias for make preflight (lint + full tests + validate)
+make release-check      # Strict release source + built candidate integrity checks
 ```
+
+`make release-check` requires an existing built release candidate (use
+`RELEASE_DIR=...` to select one). It is read-only and does not build, deploy,
+or claim the candidate matches the current working-source fingerprint;
+normal QA promotion performs that additional check.
 
 A regular commit runs the applicable pre-commit hooks. GitHub Actions runs
 `make ci` (`make preflight`) on push and pull requests. Its Python version is

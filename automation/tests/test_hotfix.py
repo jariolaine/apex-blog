@@ -58,7 +58,7 @@ class HotfixTests(unittest.TestCase):
             self.assertNotIn('apex validate', call['sql'])
             self.assertNotIn('BUILD_API', call['sql'])
 
-    def test_import_both_apps_without_preflight_or_supporting_object_execution(self):
+    def test_import_both_apps_without_preflight_execution(self):
         self.run_hotfix('export')
         self.run_hotfix('production')
         calls = self.calls()
@@ -70,7 +70,7 @@ class HotfixTests(unittest.TestCase):
             self.assertIn(f'apex_application_install.set_application_id({app_id})', call['sql'])
             self.assertIn('apex_application_install.set_workspace(', call['sql'])
             self.assertIn('apex_application_install.set_schema(', call['sql'])
-            self.assertIn('set_auto_install_sup_obj(false)', call['sql'])
+            self.assertIn('set_auto_install_sup_obj(true)', call['sql'])
             self.assertIn(f'/f{app_id}.sql', call['sql'])
             self.assertNotIn('APEX_BLOG_ENV_OK', call['sql'])
             self.assertNotIn('apex export', call['sql'])
