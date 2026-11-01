@@ -168,12 +168,14 @@ sqlcl_arg() {
 # Emit a SQLcl command that imports one full packaged SQL export. Used by QA,
 # production, fresh-install tests and upgrade tests; no re-export from QA.
 emit_install_app() {
-    local workspace="$1" schema="$2" app_id="$3" file="$4"
+    local workspace="$1" schema="$2" app_id="$3" file="$4" version="$5"
     require_file "$file"
-    printf '@%s %s %s %s %s\n' \
+    [[ "$version" =~ ^Release\ [0-9]+(\.[0-9]+)+\.[0-9]{8}$ ]] \
+        || die "Invalid expected application release version: $version"
+    printf '@%s %s %s %s %s %s\n' \
         "$(sqlcl_arg "$sqlScriptDir/install_application.sql")" \
         "$(sqlcl_arg "$workspace")" "$(sqlcl_arg "$schema")" \
-        "$(sqlcl_arg "$app_id")" "$(sqlcl_arg "$file")"
+        "$(sqlcl_arg "$app_id")" "$(sqlcl_arg "$file")" "$(sqlcl_arg "$version")"
 }
 
 emit_remove_app() {
@@ -195,19 +197,31 @@ emit_deinstall_objects() {
 # Run two application SQL exports sequentially through separate sessions.
 install_two_apps() {
     local conn="$1" workspace="$2" schema="$3" id0="$4" id1="$5" dir="$6" logs="$7" label="$8" \
-          i file script
+          i file script expected_version
     local ids=("$id0" "$id1")
+    require_file "$dir/VERSION.txt"
+    expected_version="$(<"$dir/VERSION.txt")"
+    [[ "$expected_version" =~ ^Release\ [0-9]+(\.[0-9]+)+\.[0-9]{8}$ ]] \
+        || die "Invalid release VERSION.txt in $dir"
     for i in 0 1; do
         file="$dir/${releaseSqlNames[$i]}"
         require_file "$file"
         script="$logs/${label}-install-$i.sqlcl"
-        emit_install_app "$workspace" "$schema" "${ids[$i]}" "$file" >"$script"
+        emit_install_app "$workspace" "$schema" "${ids[$i]}" "$file" "$expected_version" >"$script"
         log "Installing ${releaseSqlNames[$i]} as app ${ids[$i]} ($label)"
         run_sqlcl "$conn" "$logs/${label}-install-$i.log" "$script" \
             || die "Installation failed ($label, app ${ids[$i]})"
-        grep -q 'APEX_BLOG_INSTALL_OK' "$logs/${label}-install-$i.log" \
+        grep -qx 'APEX_BLOG_INSTALL_OK' "$logs/${label}-install-$i.log" \
             || die "Cannot verify app ${ids[$i]} installation ($label); inspect SQLcl log"
     done
+    # Check invalid Supporting Objects after BOTH imports, since they may have
+    # cross-app dependencies. Keep diagnostics out of the candidate directory.
+    script="$logs/${label}-verify-objects.sqlcl"
+    printf '@%s\n' "$(sqlcl_arg "$sqlScriptDir/verify_installed_objects.sql")" >"$script"
+    run_sqlcl "$conn" "$logs/${label}-verify-objects.log" "$script" \
+        || die "Invalid BLOG_ database objects after installation ($label)"
+    grep -qx 'APEX_BLOG_OBJECTS_VALID' "$logs/${label}-verify-objects.log" \
+        || die "Cannot verify BLOG_ database objects after installation ($label)"
 }
 
 # Probe if database Supporting Objects have ever been installed in disposable

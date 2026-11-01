@@ -1,9 +1,17 @@
 --  Patch 24.2.20250701 part 1
+
+-- Drop renamed packages
+drop package blog_cm
+/
+drop package blog_comm
+/
+
 -- Rename table BLOG_COMMENTS constraints
 alter table blog_comments rename constraint blog_comment_ck1 to blog_comments_ck1
 /
 alter table blog_comments rename constraint blog_comment_ck2 to blog_comments_ck2
 /
+
 -- Alter table BLOG_FILES
 alter table blog_files rename column file_name to file_path
 /
@@ -18,6 +26,7 @@ alter table blog_files add(
 , file_name varchar2(260 char) generated always as ( substr( file_path, instr( file_path, '/', - 1 ) + 1 ) ) virtual not null
 )
 /
+
 -- Alter table BLOG_FEATURES
 alter table blog_features add(
   ref_build_option_name varchar2( 256 char )
@@ -27,6 +36,7 @@ alter table blog_features add(
 alter table blog_features add constraint blog_features_fk2 foreign key( ref_build_option_name )
 references blog_features( build_option_name ) enable
 /
+
 -- Alter table BLOG_SETTINGS
 alter table blog_settings add(
   build_option_name varchar2( 256 char )
@@ -36,12 +46,15 @@ alter table blog_settings add(
 alter table blog_settings add constraint blog_settings_fk1 foreign key( build_option_name )
 references blog_features( build_option_name ) enable
 /
+
 -- Alter table BLOG_POSTS
 alter table blog_posts modify post_desc varchar2(4000 byte)
 /
+
 -- Alter table BLOG_COMMENTS
 alter table blog_comments add( comment_preview varchar2(4000 byte) )
 /
+
 -- Create table BLOG_COMMENT_SENTIMENTS
 create table blog_comment_sentiments(
   id number( 38, 0 ) not null,
@@ -60,6 +73,7 @@ create table blog_comment_sentiments(
   constraint blog_comment_sentiments_fk1 foreign key( comment_id ) references blog_comments(id) on delete cascade
 )
 /
+
 -- Create indexes for foreign key columns
 create index blog_comments_ix1 on blog_comments( post_id )
 /
@@ -81,8 +95,56 @@ create index blog_post_tags_ix1 on blog_post_tags( tag_id )
 /
 create index blog_settings_ix1 on blog_settings( build_option_name )
 /
--- Drop renamed packages
-drop package blog_cm
+
+-- Update BLOG_COMMENTS comment preview
+alter trigger blog_comments_trg disable
 /
-drop package blog_comm
+update blog_comments
+  set comment_preview = blog_comment.short_text( body_html )
 /
+alter table blog_comments modify comment_preview not null
+/
+alter trigger blog_comments_trg enable
+/
+
+-- Update BLOG_SETTINGS
+update blog_settings
+  set attribute_name = 'P0_BLOG_APP_NAME'
+where attribute_name = 'BLOG_APP_NAME'
+/
+update blog_settings
+  set attribute_name = 'P0_BLOG_APP_DESC'
+where attribute_name = 'BLOG_APP_DESC'
+/
+
+-- Set user date format preferences
+begin
+  for c1 in(
+    select
+      user_name
+    , preference_name
+    , preference_value
+    from apex_workspace_preferences
+    where 1 = 1
+      and preference_name in( 'BLOG_DISPLAY_DATE_FORMAT', 'BLOG_INPUT_DATE_FORMAT' )
+  ) loop
+    apex_util.set_preference(
+      p_preference =>
+        case c1.preference_name
+          when 'BLOG_DISPLAY_DATE_FORMAT'
+            then 'PERSISTENT_ITEM_P501_DISPLAY_DATE_FORMAT'
+          else 'PERSISTENT_ITEM_P501_INPUT_DATE_FORMAT'
+        end
+    , p_value      => c1.preference_value
+    , p_user       => c1.user_name
+    );
+    apex_util.remove_preference(
+      p_preference => c1.preference_name
+    , p_user       => c1.user_name
+    );
+  end loop;
+end;
+/
+
+-- Truncate table BLOG_INIT_ITEMS
+truncate table blog_init_items;

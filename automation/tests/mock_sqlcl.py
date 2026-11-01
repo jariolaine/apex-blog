@@ -115,7 +115,19 @@ if 'build_api.export_object_list' in src:
     sys.exit(0)
 
 if re.search(r'^@', src, flags=re.M) and 'install_application.sql' in src:
-    print('APEX_BLOG_INSTALL_OK')
+    if os.environ.get('MOCK_INSTALL_WRONG_VERSION'):
+        print('ORA-20056: Installed application version mismatch')
+        sys.exit(2)
+    if not os.environ.get('MOCK_INSTALL_MISSING_MARKER'):
+        print('APEX_BLOG_INSTALL_OK')
+    sys.exit(0)
+
+if re.search(r'^@', src, flags=re.M) and 'verify_installed_objects.sql' in src:
+    if os.environ.get('MOCK_INVALID_BLOG_OBJECTS'):
+        print('ORA-20057: Installation left invalid BLOG_ database objects')
+        sys.exit(2)
+    if not os.environ.get('MOCK_OBJECTS_MISSING_MARKER'):
+        print('APEX_BLOG_OBJECTS_VALID')
     sys.exit(0)
 
 print('OK')

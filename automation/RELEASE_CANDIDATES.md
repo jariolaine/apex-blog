@@ -74,10 +74,23 @@ Use `RELEASE_DIR` to select a previously built candidate explicitly:
 ```bash
 make verify-release RELEASE_DIR=build/releases/26.1.5.20261101
 make test-install RELEASE_DIR=build/releases/26.1.5.20261101
-make test-upgrade PREVIOUS_ZIP=/path/to/previous.zip RELEASE_DIR=build/releases/26.1.5.20261101
+make test-upgrade RELEASE_DIR=build/releases/26.1.5.20261101  # Downloads GitHub latest release
+make test-upgrade PREVIOUS_ZIP=/path/to/previous/apex-blog-latest.zip RELEASE_DIR=build/releases/26.1.5.20261101  # Uses local ZIP
 make qa RELEASE_DIR=build/releases/26.1.5.20261101
 make production CONFIRM=YES RELEASE_DIR=build/releases/26.1.5.20261101
 ```
+
+`make test-upgrade` downloads the **latest published GitHub release** by default,
+using `upgDownloadUrl` from `automation/variables.sh` (overridable in
+`automation/variables.local.sh` or `APEX_BLOG_UPGRADE_DOWNLOAD_URL`). Pass
+`PREVIOUS_ZIP=/path/to/previous.zip` to use a local release ZIP instead and
+skip the download. The ZIP must contain `VERSION.txt` and both application SQL
+exports, and its version must be **strictly older** than the selected candidate.
+The ZIP is validated **before** the disposable TEST schema is reset. If GitHub
+latest is the same version or newer, explicitly select an older ZIP.
+After importing both applications, TEST/QA/production verify application
+versions and fail if BLOG_ database objects remain invalid. The application
+installer does not override APEX-managed remote-server URLs.
 
 `make qa` continues to run the **mandatory full preflight** and checks that
 the local source fingerprint matches the chosen candidate before connecting

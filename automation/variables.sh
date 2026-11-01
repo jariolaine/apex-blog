@@ -40,7 +40,9 @@ releaseSqlNames=(blog-administration-latest.sql blog-public-pages-latest.sql)
 # Release and previous-release test inputs.
 releaseZipName="apex-blog-latest.zip"
 stackZipName="apex-blog-stack-latest.zip"
-upgDownloadUrl="https://github.com/jariolaine/apex-blog/releases/latest/download/apex-blog-latest.zip"
+# By default, upgrade tests use the newest published release. PREVIOUS_ZIP
+# overrides the download; variables.local.sh may override this URL.
+upgDownloadUrl="${APEX_BLOG_UPGRADE_DOWNLOAD_URL:-https://github.com/jariolaine/apex-blog/releases/latest/download/apex-blog-latest.zip}"
 deinstallSqlScript="$apexSourceDir/blog-admin/supporting-objects/deinstall-script.sql"
 
 # BUILD_API generated Supporting Objects source and destination.

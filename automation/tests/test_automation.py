@@ -26,16 +26,33 @@ class AutomationTests(unittest.TestCase):
             shutil.copy2(SOURCE / file, self.repo / file)
         for folder in ['applications', 'Database', 'Stack/terraform', 'less']:
             shutil.copytree(SOURCE / folder, self.repo / folder)
-        # Keep isolated mock source aligned with VERSION.txt. The checked-in
-        # repository intentionally has version drift that release checks reject;
-        # unrelated orchestration tests need a ready candidate fixture.
-        version = (self.repo / 'VERSION.txt').read_text().strip()
+        # Mock releases must be internally consistent even when the working
+        # checkout is mid-release preparation. Normalize *only* fixture copies;
+        # the real release checks must still reject drift in checked-in sources.
+        version = (self.repo / 'VERSION.txt').read_text(encoding='utf-8').strip()
         for alias in ('blog-admin', 'blog'):
             app = self.repo / 'applications' / alias / 'application.apx'
             content, count = re.subn(r'(?m)^    version: .+$',
                                       f'    version: {version}', app.read_text(), count=1)
-            assert count == 1
+            assert count == 1, f'Missing application version in {app}'
             app.write_text(content)
+        # The application version alone is not enough: release readiness also
+        # checks the *current* installer and post-upgrade version statements.
+        # Do not rewrite historical upgrade scripts or unrelated SQL literals.
+        current_metadata = (
+            ('applications/blog/supporting-objects/install-scripts/metadata.sql',
+             r"(?m)^([ \t]*blog_install\.settings_merge\('G_APP_VERSION'[^;\r\n]*?,)'Release [^'\r\n]+'(?=\);[ \t]*$)"),
+            ('applications/blog/supporting-objects/upgrade-scripts/postupgrade.sql',
+             r"(?mi)^([ \t]*set[ \t]+attribute_value[ \t]*=[ \t]*)'Release [^'\r\n]+'(?=[ \t]*$)"),
+        )
+        for relative_path, pattern in current_metadata:
+            path = self.repo / relative_path
+            content, count = re.subn(
+                pattern, lambda match: f"{match.group(1)}'{version}'",
+                path.read_text(encoding='utf-8'),
+            )
+            assert count == 1, f'Missing current release statement in {path}'
+            path.write_text(content, encoding='utf-8')
         # Automation now lives directly under automation/, not tools/script/.
         # Never copy machine-specific credentials, Docker assets or old logs.
         shutil.copytree(
@@ -107,6 +124,46 @@ class AutomationTests(unittest.TestCase):
         old = f'version: {version}'
         self.assertIn(old, content, f'Expected current release version in {app}')
         app.write_text(content.replace(old, f'version: {mismatched}', 1), encoding='utf-8')
+
+    def older_version(self):
+        version = (self.repo / 'VERSION.txt').read_text(encoding='utf-8').strip()
+        prefix, date = version.rsplit('.', 1)
+        previous_date = (datetime.strptime(date, '%Y%m%d') - timedelta(days=1)).strftime('%Y%m%d')
+        return f'{prefix}.{previous_date}'
+
+    def previous_zip(self, path, version=None):
+        """Write a minimal prior-release ZIP for mocked install tests."""
+        with ZipFile(path, 'w') as archive:
+            if version is not None:
+                archive.writestr('VERSION.txt', version + '\n')
+            archive.writestr('blog-administration-latest.sql', 'prompt previous admin\n')
+            archive.writestr('blog-public-pages-latest.sql', 'prompt previous public\n')
+
+    def mock_curl_download(self, version):
+        """Make a local ZIP look like a GitHub download, without using the network."""
+        archive = self.root / 'github-previous.zip'
+        self.previous_zip(archive, version)
+        curl = self.bin / 'curl'
+        curl.write_text(
+            '#!/usr/bin/env bash\n'
+            'set -Eeuo pipefail\n'
+            'printf "%s\\n" "$@" > "$MOCK_CURL_ARGS"\n'
+            '[[ "${MOCK_CURL_FAIL:-0}" != "1" ]] || exit 22\n'
+            'dest=""\n'
+            'while (( $# )); do\n'
+            '  case "$1" in\n'
+            '    --output) dest="$2"; shift 2 ;;\n'
+            '    *) shift ;;\n'
+            '  esac\n'
+            'done\n'
+            '[[ -n "$dest" ]] || exit 2\n'
+            'cp -- "$MOCK_CURL_ZIP" "$dest"\n',
+            encoding='utf-8',
+        )
+        curl.chmod(0o755)
+        self.env['PATH'] = f"{self.bin}{os.pathsep}{self.env.get('PATH', '')}"
+        self.env['MOCK_CURL_ZIP'] = str(archive)
+        self.env['MOCK_CURL_ARGS'] = str(self.root / 'curl-args.txt')
 
     def calls_data(self):
         return [json.loads(ln) for ln in self.calls.read_text().splitlines()]
@@ -252,6 +309,8 @@ class AutomationTests(unittest.TestCase):
         prod = [c for c in commands if c['argv'][-1] == 'PROD_TEST_SAVED']
         self.assertEqual(sum('install_application.sql' in c['sql'] for c in qa), 2)
         self.assertEqual(sum('install_application.sql' in c['sql'] for c in prod), 2)
+        self.assertEqual(sum('verify_installed_objects.sql' in c['sql'] for c in qa), 1)
+        self.assertEqual(sum('verify_installed_objects.sql' in c['sql'] for c in prod), 1)
         self.assertTrue(all('apex export' not in c['sql'] for c in qa+prod))
         self.assertTrue(all('blog-administration-latest.sql' in c['sql'] or
                             'blog-public-pages-latest.sql' in c['sql']
@@ -373,13 +432,117 @@ class AutomationTests(unittest.TestCase):
     def test_upgrade_uses_previous_and_candidate(self):
         self.script('export_application.sh')
         previous = self.root/'previous.zip'
-        with ZipFile(previous, 'w') as z:
-            z.writestr('blog-administration-latest.sql', 'prompt old admin\n')
-            z.writestr('blog-public-pages-latest.sql', 'prompt old public\n')
+        self.previous_zip(previous, self.older_version())
+        # Explicit PREVIOUS_ZIP must bypass the GitHub download altogether.
+        self.mock_curl_download(self.older_version())
+        self.env['MOCK_CURL_FAIL'] = '1'
         self.script('run_upgrade_test.sh', '--confirm-reset-test', '--previous-zip', str(previous))
+        self.assertFalse((self.root / 'curl-args.txt').exists())
         commands = self.calls_data()
         tests = [c for c in commands if c['argv'][-1] == 'DISPOSABLE_TEST_SAVED']
-        self.assertEqual(sum('install_application.sql' in c['sql'] for c in tests), 4)
+        installs = [c['sql'] for c in tests if 'install_application.sql' in c['sql']]
+        self.assertEqual(len(installs), 4)
+        expected = (self.repo / 'VERSION.txt').read_text().strip()
+        self.assertTrue(all(self.older_version() in cmd for cmd in installs[:2]))
+        self.assertTrue(all(expected in cmd for cmd in installs[2:]))
+        self.assertEqual(sum('verify_installed_objects.sql' in c['sql'] for c in tests), 2)
+
+    def test_upgrade_downloads_latest_when_previous_zip_not_provided(self):
+        self.script('export_application.sh')
+        self.mock_curl_download(self.older_version())
+        self.script('run_upgrade_test.sh', '--confirm-reset-test')
+        args = (self.root / 'curl-args.txt').read_text().splitlines()
+        self.assertIn('https://github.com/jariolaine/apex-blog/releases/latest/download/apex-blog-latest.zip', args)
+        tests = [c for c in self.calls_data()
+                 if c['argv'][-1] == 'DISPOSABLE_TEST_SAVED']
+        installs = [c['sql'] for c in tests if 'install_application.sql' in c['sql']]
+        self.assertEqual(len(installs), 4)
+        self.assertTrue(all(self.older_version() in cmd for cmd in installs[:2]))
+
+    def test_upgrade_download_failure_does_not_reset_test(self):
+        self.script('export_application.sh')
+        self.mock_curl_download(self.older_version())
+        self.env['MOCK_CURL_FAIL'] = '1'
+        out = self.script('run_upgrade_test.sh', '--confirm-reset-test', ok=False)
+        self.assertIn('Could not download previous release', out.stderr)
+        self.assertFalse(any(c['argv'][-1] == 'DISPOSABLE_TEST_SAVED'
+                             for c in self.calls_data()))
+
+    def test_upgrade_rejects_latest_when_it_is_not_older(self):
+        self.script('export_application.sh')
+        current = (self.repo / 'VERSION.txt').read_text().strip()
+        self.mock_curl_download(current)
+        out = self.script('run_upgrade_test.sh', '--confirm-reset-test', ok=False)
+        self.assertIn('Previous release ZIP must identify a release older', out.stderr)
+        self.assertIn('PREVIOUS_ZIP', out.stderr)
+        self.assertFalse(any(c['argv'][-1] == 'DISPOSABLE_TEST_SAVED'
+                             for c in self.calls_data()))
+
+    def test_upgrade_rejects_same_newer_and_unidentified_release_before_reset(self):
+        self.script('export_application.sh')
+        current = (self.repo / 'VERSION.txt').read_text().strip()
+        prefix, date = current.rsplit('.', 1)
+        later_date = (datetime.strptime(date, '%Y%m%d') + timedelta(days=1)).strftime('%Y%m%d')
+        later = f'{prefix}.{later_date}'
+        for label, version in (('same', current), ('newer', later),
+                               ('missing', None), ('malformed', 'Release wrong')):
+            previous = self.root / f'{label}.zip'
+            self.previous_zip(previous, version)
+            out = self.script('run_upgrade_test.sh', '--confirm-reset-test',
+                              '--previous-zip', str(previous), ok=False)
+            self.assertIn('Previous release ZIP', out.stderr)
+            self.assertFalse(any(c['argv'][-1] == 'DISPOSABLE_TEST_SAVED'
+                                 for c in self.calls_data()), label)
+
+    def test_installer_checks_expected_version_and_preserves_apex_remote_servers(self):
+        installer = (self.repo / 'automation/sql/install_application.sql').read_text()
+        self.assertIn('apex_application_admin.get_application_version', installer)
+        self.assertIn("l_actual_version <> '^expectedVersion.'", installer)
+        self.assertIn('raise_application_error(-20056', installer)
+        self.assertNotIn('set_remote_server', installer.lower())
+        self.script('export_application.sh')
+        self.script('run_install_test.sh', '--confirm-reset-test')
+        installs = [c['sql'] for c in self.calls_data()
+                    if 'install_application.sql' in c['sql']]
+        self.assertEqual(len(installs), 2)
+        current = (self.repo / 'VERSION.txt').read_text().strip()
+        self.assertTrue(all(current in sql for sql in installs))
+
+    def test_wrong_installed_app_version_blocks_install(self):
+        self.script('export_application.sh')
+        self.env['MOCK_INSTALL_WRONG_VERSION'] = '1'
+        result = self.script('run_install_test.sh', '--confirm-reset-test', ok=False)
+        self.assertIn('Installation failed', result.stderr)
+        tests = [c for c in self.calls_data()
+                 if c['argv'][-1] == 'DISPOSABLE_TEST_SAVED']
+        self.assertEqual(sum('install_application.sql' in c['sql'] for c in tests), 1)
+        self.assertFalse(any('verify_installed_objects.sql' in c['sql'] for c in tests))
+
+    def test_missing_install_success_marker_blocks_install(self):
+        self.script('export_application.sh')
+        self.env['MOCK_INSTALL_MISSING_MARKER'] = '1'
+        out = self.script('run_install_test.sh', '--confirm-reset-test', ok=False)
+        self.assertIn('Cannot verify app', out.stderr)
+
+    def test_invalid_blog_objects_block_complete_install(self):
+        checker = (self.repo / 'automation/sql/verify_installed_objects.sql').read_text()
+        self.assertIn('from user_objects', checker)
+        self.assertIn("substr(object_name, 1, 5) = 'BLOG_'", checker)
+        self.assertIn('raise_application_error(-20057', checker)
+        self.script('export_application.sh')
+        self.env['MOCK_INVALID_BLOG_OBJECTS'] = '1'
+        result = self.script('run_install_test.sh', '--confirm-reset-test', ok=False)
+        self.assertIn('Invalid BLOG_ database objects', result.stderr)
+        calls = [c for c in self.calls_data()
+                 if c['argv'][-1] == 'DISPOSABLE_TEST_SAVED']
+        self.assertEqual(sum('install_application.sql' in c['sql'] for c in calls), 2)
+        self.assertEqual(sum('verify_installed_objects.sql' in c['sql'] for c in calls), 1)
+
+    def test_missing_object_verification_marker_blocks_install(self):
+        self.script('export_application.sh')
+        self.env['MOCK_OBJECTS_MISSING_MARKER'] = '1'
+        out = self.script('run_install_test.sh', '--confirm-reset-test', ok=False)
+        self.assertIn('Cannot verify BLOG_ database objects', out.stderr)
 
     def test_assembler_keeps_sql_whitespace_and_package_order(self):
         root = self.root/'ddl'; (root/'Packages').mkdir(parents=True)

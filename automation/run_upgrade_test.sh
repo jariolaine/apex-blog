@@ -20,6 +20,9 @@ while (( $# )); do
     esac
 done
 $confirmed || die 'Usage: run_upgrade_test.sh --confirm-reset-test [--previous-zip PATH] [--release-dir PATH]'
+if [[ -n "$previous_zip" ]]; then
+    require_file "$previous_zip"
+fi
 [[ -n "$tstDbConnName" ]] || die 'Set APEX_BLOG_TEST_CONNECTION to a disposable TEST saved connection'
 [[ "$tstDbConnName" != "$devDbConnName" && "$tstDbConnName" != "$uatDbConnName" && "$tstDbConnName" != "$prdDbConnName" ]] \
     || die 'TEST saved connection must differ from DEV, QA and production'
@@ -31,16 +34,22 @@ trap 'rm -rf -- "$run_dir"' EXIT
 mkdir -p "$run_dir/previous"
 
 if [[ -n "$previous_zip" ]]; then
-    require_file "$previous_zip"
+    log "Using previous release ZIP: $previous_zip"
     cp -- "$previous_zip" "$run_dir/previous.zip"
 else
     require_tool curl
+    [[ -n "$upgDownloadUrl" ]] || die 'Set upgDownloadUrl in automation/variables.local.sh or supply PREVIOUS_ZIP'
     log "Downloading previous release: $upgDownloadUrl"
-    curl -fsSL --retry 3 -o "$run_dir/previous.zip" "$upgDownloadUrl"
+    curl --fail --silent --show-error --location --retry 3 \
+        --output "$run_dir/previous.zip" "$upgDownloadUrl" \
+        || die "Could not download previous release from $upgDownloadUrl; provide PREVIOUS_ZIP to use a local archive"
 fi
+# The candidate's VERSION.txt is checksum-verified by verify_release. Require
+# the previous ZIP to identify an OLDER release before resetting TEST.
 python3 "$SCRIPT_DIR/lib/extract_previous_release.py" \
+    --candidate-version-file "$release_dir/VERSION.txt" \
     "$run_dir/previous.zip" "$run_dir/previous" "${releaseSqlNames[@]}" \
-    || die 'Invalid previous release ZIP'
+    || die 'Previous release ZIP must identify a release older than the candidate; provide PREVIOUS_ZIP if GitHub latest is not older'
 check_environment "$tstDbConnName" "$tstWorkspace" "$tstDbSchema" "$run_dir/preflight.log"
 
 {

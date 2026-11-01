@@ -13,7 +13,7 @@ help:
 	  'make build               Export APEXlang + immutable versioned SQL release ZIPs' \
 	  'make validate            Validate local APEXlang source with SQLcl' \
 	  'make test-install        Reset disposable TEST and test fresh installation' \
-	  'make test-upgrade        Reset TEST, install previous release, then upgrade' \
+	  'make test-upgrade        Reset TEST, download GitHub latest (or PREVIOUS_ZIP), then upgrade' \
 	  'make qa                  Deploy built SQL release to QA' \
 	  'make production          Promote that same built SQL release to production' \
 	  'make setup-ci            Install lint tools and Git hook locally' \
