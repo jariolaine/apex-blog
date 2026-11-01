@@ -12,7 +12,6 @@ blockquote::after {
 **************************************/
 .blog-hidden {
   display: none;
-  visibility: none;
 }
 .blog-noItemHelp {
   width: calc(100% - 0.5rem);
