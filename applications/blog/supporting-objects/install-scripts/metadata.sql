@@ -80,3 +80,4 @@ blog_install.list_of_values_ins(1,20,'YES_NO','1','BLOG_LOV_YES_NO_YES');
 blog_install.init_items_ins;
 end;
 /
+
