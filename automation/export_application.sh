@@ -6,20 +6,43 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/lib/common.sh"
 
 mode=all
-case "${1:-}" in
-    '') ;;
-    --source-only) mode=source ;;
-    --build-only) mode=build ;;
-    *) die 'Usage: export_application.sh [--source-only|--build-only]' ;;
-esac
-[[ $# -le 1 ]] || die 'Only one option is accepted'
+overwrite=false
+mode_option_seen=false
+for opt in "$@"; do
+    case "$opt" in
+        --source-only|--build-only)
+            $mode_option_seen && die 'Only one export mode is accepted'
+            mode_option_seen=true
+            if [[ "$opt" == --source-only ]]; then mode=source; else mode=build; fi ;;
+        --overwrite) $overwrite && die 'Duplicate --overwrite'; overwrite=true ;;
+        *) die 'Usage: export_application.sh [--source-only|--build-only] [--overwrite (requires --build-only)]' ;;
+    esac
+done
+if $overwrite && [[ "$mode" != build ]]; then
+    die '--overwrite requires --build-only; never overwrite a candidate while refreshing APEXLang source'
+fi
 require_tool "$sqlcl_bin"
 require_tool rsync
 require_tool python3
 if [[ "$mode" != source ]]; then
     require_tool zip
-    [[ ! -e "$(current_release_dir)" ]] \
-        || die "Release candidate already exists; it will not be overwritten: $(current_release_dir)"
+    release_version="$(read_release_version)"
+    slug="${release_version#Release }"
+    target="$buildDir/releases/$slug"
+    # Readers hold shared locks through TEST/QA/production imports. If anyone
+    # is deploying this candidate, refuse the rebuild instead of racing it.
+    acquire_release_lock "$target" exclusive
+    if [[ -L "$target" || ( -e "$target" && ! -d "$target" ) ]]; then
+        die "Unsafe release candidate target (not a real directory): $target"
+    fi
+    if [[ -e "$target" ]]; then
+        $overwrite || die "Release candidate already exists; it will not be overwritten: $target (use make build OVERWRITE=YES)"
+        # Never replace a random user-created directory under build/releases/.
+        [[ -f "$target/manifest.json" && ! -L "$target/manifest.json" && -f "$target/VERSION.txt" && ! -L "$target/VERSION.txt" ]] \
+            || die "Refusing to overwrite unrecognized release directory: $target"
+        [[ "$(<"$target/VERSION.txt")" == "$release_version" ]] \
+            || die "Refusing to overwrite candidate with a different VERSION.txt: $target"
+    fi
 fi
 
 mkdir -p -- "$buildDir"
@@ -190,35 +213,86 @@ fi
 
 if [[ "$mode" != source ]]; then
     # Bind packaged SQL, sources and version metadata in one checksummed
-    # manifest. No build output can overwrite an existing candidate.
+    # manifest. An explicit --overwrite only replaces this version's local
+    # candidate after the complete replacement is staged and verified.
     python3 "$SCRIPT_DIR/lib/release_manifest.py" create \
         --dir "$run_dir/out" --repo "$repoHome" \
         --sql-names "${releaseSqlNames[@]}" --dev-ids "${devAppIds[@]}" \
         --zip-name "$releaseZipName" --stack-name "$stackZipName" \
         || die 'Cannot create release manifest'
-    release_version="$(read_release_version)"
-    slug="${release_version#Release }"
-    target="$buildDir/releases/$slug"
-    mkdir -p -- "$buildDir/releases/.locks"
-    lock="$buildDir/releases/.locks/$slug"
-    mkdir -- "$lock" || die "Another build is in progress (or lock remains): $lock"
+    mkdir -p -- "$buildDir/releases"
     stage=''
+    backup=''
+    replaced_old=false
+    published_new=false
+    publish_completed=false
     finish_candidate() {
-        [[ -z "$stage" || ! -d "$stage" ]] || rm -rf -- "$stage"
-        rmdir -- "$lock" 2>/dev/null || true
+        local rc=$?
+        trap - EXIT
+        # On failure restore the old candidate before discarding the backup.
+        # No other cooperating process can use target while our exclusive
+        # flock is held. Keep a backup on disk if restoration itself fails.
+        if [[ "$publish_completed" != true ]]; then
+            # The existence of the backup itself is authoritative; a signal
+            # may arrive between a successful mv and updating a shell flag.
+            if [[ -n "$backup" && -d "$backup" && ! -L "$backup" ]]; then
+                # Never delete an unrelated directory that appeared while
+                # publishing; only remove our own staged replacement.
+                if [[ -d "$target" && ! -L "$target" &&
+                      ( "$published_new" == true || ( -n "$stage" && ! -e "$stage" ) ) ]]; then
+                    rm -rf -- "$target" || log "Cannot remove failed candidate: $target"
+                fi
+                if [[ ! -e "$target" && ! -L "$target" ]]; then
+                    mv -T -- "$backup" "$target" \
+                        && log "Restored previous release candidate: $target" \
+                        || log "RESTORE FAILED: previous candidate retained at $backup"
+                else
+                    log "RESTORE BLOCKED: previous candidate retained at $backup"
+                fi
+            elif [[ "$published_new" == true || ( -n "$stage" && ! -e "$stage" ) ]]; then
+                # Initial candidate published but not verified; no old one.
+                if [[ -d "$target" && ! -L "$target" ]]; then
+                    rm -rf -- "$target" || log "Cannot remove failed candidate: $target"
+                fi
+            fi
+        fi
+        [[ -z "$stage" || ! -d "$stage" || -L "$stage" ]] || rm -rf -- "$stage"
         rm -rf -- "$run_dir"
+        return "$rc"
     }
     trap finish_candidate EXIT
-    [[ ! -e "$target" ]] || die "Release candidate already exists; it will not be overwritten: $target"
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
     stage="$(mktemp -d "$buildDir/releases/.candidate.XXXXXXXX")"
     cp -R -- "$run_dir/out/." "$stage/"
     python3 "$SCRIPT_DIR/lib/release_manifest.py" verify \
         --dir "$stage" --staging || die 'Staged release candidate failed verification'
+
+    if [[ -d "$target" ]]; then
+        # Rename the old candidate out of the way; never delete it until the
+        # replacement has passed its final verification. Both remain within
+        # the same filesystem for atomic directory renames.
+        backup="$(mktemp -d "$buildDir/releases/.backup.XXXXXXXX")"
+        rmdir -- "$backup"
+        mv -T -- "$target" "$backup"
+        replaced_old=true
+    fi
+    # New candidates are also published via a staged rename. The build lock
+    # excludes other builds and all deployments using this repository.
+    [[ ! -e "$target" && ! -L "$target" ]] \
+        || die "Release candidate appeared while publishing: $target"
     mv -nT -- "$stage" "$target"
-    [[ ! -d "$stage" ]] || die "Release candidate appeared while building: $target"
+    [[ ! -d "$stage" ]] || die "Release candidate appeared while publishing: $target"
     stage=''
+    published_new=true
     python3 "$SCRIPT_DIR/lib/release_manifest.py" verify --dir "$target" \
         || die 'Published release failed verification'
-    log "Immutable release candidate created: $target"
+    publish_completed=true
+    if $replaced_old; then
+        rm -rf -- "$backup" || log "Old backup could not be removed: $backup"
+        log "Local release candidate safely replaced: $target (retest before promotion)"
+    else
+        log "Immutable release candidate created: $target"
+    fi
 fi
 log "Completed mode: $mode"

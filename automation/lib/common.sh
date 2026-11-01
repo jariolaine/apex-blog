@@ -141,11 +141,42 @@ current_release_dir() {
     printf '%s/releases/%s\n' "$buildDir" "${version#Release }"
 }
 
+# Lock files are persistent: deleting them can break flock's inode-based
+# exclusion while another process is using the candidate. The descriptor is
+# intentionally held until the calling script exits (including SQLcl imports).
+# Build obtains an exclusive non-waiting lock; TEST/QA/production and artifact
+# verification take a shared lock. Lock names come only from candidate slugs.
+acquire_release_lock() {
+    local dir="$1" access="$2" slug lock_file
+    slug="${dir%/}"
+    slug="${slug##*/}"
+    [[ "$slug" =~ ^[0-9]+(\.[0-9]+)+\.[0-9]{8}$ ]] \
+        || die "Invalid release candidate directory name: $slug"
+    require_tool flock
+    [[ -z "${release_lock_fd:-}" ]] || die 'Release candidate lock already held by this process'
+    mkdir -p -- "$buildDir/releases/.locks"
+    lock_file="$buildDir/releases/.locks/$slug.lock"
+    [[ ! -L "$lock_file" && ( ! -e "$lock_file" || -f "$lock_file" ) ]] \
+        || die "Unsafe release lock file: $lock_file"
+    exec {release_lock_fd}>>"$lock_file"
+    case "$access" in
+        exclusive)
+            flock -n -x "$release_lock_fd" \
+                || die "Release candidate is in use by another build or deployment: $dir" ;;
+        shared)
+            flock -s "$release_lock_fd" \
+                || die "Could not lock release candidate for deployment/verification: $dir" ;;
+        *) die "Unknown release lock access: $access" ;;
+    esac
+}
+
 # Verify both checksums and the release manifest; QA also requires the exact
-# source snapshot that was used to create this candidate.
+# source snapshot that was used to create this candidate. The lock stays held
+# throughout any subsequent TEST/QA/production imports in this shell process.
 verify_release() {
     local dir="$1" check_source="${2:-false}"
     require_tool python3
+    acquire_release_lock "$dir" shared
     [[ -d "$dir" ]] || die "Release candidate not found: $dir"
     if [[ "$check_source" == true ]]; then
         python3 "$repoHome/automation/lib/release_manifest.py" verify \

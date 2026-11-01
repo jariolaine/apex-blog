@@ -61,9 +61,34 @@ records the version, DEV IDs, Git commit (if available), whether the checkout
 had uncommitted changes, a fingerprint of release-relevant source, and file
 checksums. `SHA256SUMS` also covers the manifest.
 
-**A candidate cannot be overwritten:** rebuilding the same version fails.
-Never manually edit files inside `build/releases/<version>/`. Keep the candidate
-outside Git as a local or CI artifact until it is promoted and published.
+By default, **a candidate cannot be overwritten**: a repeated `make build`
+fails. For local development, deliberately replace just the current version
+without manually removing anything from `build/`:
+
+```bash
+make build OVERWRITE=YES
+make verify-release
+```
+
+`make build` is read-only with respect to tracked APEXLang: it exports DEV to a
+temporary directory, checks that it matches `applications/`, and creates SQL
+releases without refreshing source. Use `make source` explicitly to refresh
+APEXLang when required.
+
+An overwrite checks the configured release version, takes an exclusive lock,
+completely builds and verifies the replacement before publication, backs up
+and replaces only `build/releases/<version>/`, then verifies the published files.
+If publication fails, automation restores the old candidate; it never deletes
+other versions or deployment logs. Concurrent TEST/QA/production/verification
+operations hold shared locks, so a rebuild refuses to run while a candidate is
+in use. This locking requires the Linux `flock` command (util-linux). Lock files inside `.locks/` are persistent and should not be removed.
+A sudden machine shutdown during directory renames may leave a hidden
+`.backup.*` directory under `build/releases/`; retain it for recovery.
+
+**Rebuild only local, unpromoted candidates.** After TEST or QA approval or
+public release publication, do not overwrite that version: use a new release
+version and repeat verification and testing. Local automation cannot know if a
+candidate was uploaded to GitHub elsewhere. Never manually edit release files.
 Checksums detect accidental changes but are not a substitute for signatures.
 
 ## Test and promote the exact same candidate

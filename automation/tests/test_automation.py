@@ -1,6 +1,7 @@
 """Mock-backed regression tests for APEXlang scripts; no Oracle instance needed."""
 from datetime import datetime, timedelta
 import json
+import fcntl
 import re
 import os
 from pathlib import Path
@@ -22,7 +23,7 @@ class AutomationTests(unittest.TestCase):
         self.root = Path(self.td.name)
         self.repo = self.root / 'repo'
         self.repo.mkdir()
-        for file in ['README.md', 'LICENSE.txt', 'VERSION.txt']:
+        for file in ['README.md', 'LICENSE.txt', 'VERSION.txt', 'Makefile']:
             shutil.copy2(SOURCE / file, self.repo / file)
         for folder in ['applications', 'Database', 'Stack/terraform', 'less']:
             shutil.copytree(SOURCE / folder, self.repo / folder)
@@ -109,6 +110,18 @@ class AutomationTests(unittest.TestCase):
         if not ok and p.returncode == 0:
             self.fail(f'{name} unexpectedly succeeded')
         return p
+
+    def make(self, *args, ok=True):
+        result = subprocess.run(
+            ['make', '--no-print-directory', '-C', str(self.repo), *args],
+            env=self.env, cwd=self.root, text=True,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        )
+        if ok and result.returncode != 0:
+            self.fail(f'make {args} failed {result.returncode}:\n{result.stdout}\n{result.stderr}')
+        if not ok and result.returncode == 0:
+            self.fail(f'make {args} unexpectedly succeeded')
+        return result
 
     def candidate(self):
         version = (self.repo / 'VERSION.txt').read_text().strip()
@@ -594,6 +607,114 @@ class AutomationTests(unittest.TestCase):
         out = self.script('export_application.sh', ok=False)
         self.assertIn('already exists', out.stderr)
         self.assertEqual(manifest, (self.candidate() / 'manifest.json').read_bytes())
+
+    def test_make_build_does_not_modify_tracked_apexlang(self):
+        app = self.repo / 'applications/blog-admin/application.apx'
+        before = app.read_bytes()
+        # A changed DEV page must cause a read-only build to fail rather than
+        # silently refresh the local APEXLang source.
+        self.env['MOCK_CHANGE_PAGE'] = '1'
+        out = self.make('build', ok=False)
+        self.assertIn('differs from DEV', out.stderr)
+        self.assertEqual(app.read_bytes(), before)
+        self.assertFalse(self.candidate().exists())
+        self.env.pop('MOCK_CHANGE_PAGE')
+        self.make('build')
+        self.assertEqual(app.read_bytes(), before)
+        self.script('verify_release.sh')
+
+    def test_make_build_overwrite_replaces_only_current_candidate(self):
+        self.make('build')
+        current = self.candidate()
+        old_manifest = (current / 'manifest.json').read_bytes()
+        previous = current.parent / '26.1.5.20250101'
+        previous.mkdir()
+        (previous / 'keep.txt').write_text('keep previous version')
+        log_file = current.parents[1] / 'deploy-logs' / current.name / 'qa' / 'note.txt'
+        log_file.parent.mkdir(parents=True)
+        log_file.write_text('keep deployment log')
+        page = next((self.repo / 'applications/blog-admin/pages').glob('*.apx'))
+        mirror = self.template / 'blog-admin/pages' / page.name
+        for f in (page, mirror):
+            f.write_bytes(f.read_bytes() + b'\n-- reviewed change\n')
+        denied = self.make('build', ok=False)
+        self.assertIn('already exists', denied.stderr)
+        self.make('build', 'OVERWRITE=YES')
+        self.assertNotEqual((current / 'manifest.json').read_bytes(), old_manifest)
+        self.assertEqual((previous / 'keep.txt').read_text(), 'keep previous version')
+        self.assertEqual(log_file.read_text(), 'keep deployment log')
+        self.script('verify_release.sh')
+        self.assertEqual(list(current.parent.glob('.backup.*')), [])
+        self.assertEqual(list(current.parent.glob('.candidate.*')), [])
+        # The rebuilt candidate has the current source fingerprint.
+        self.script('import_apps_to_qa.sh')
+
+    def test_overwrite_failure_restores_previous_verified_candidate(self):
+        self.make('build')
+        current = self.candidate()
+        before = {f.name: f.read_bytes() for f in current.iterdir() if f.is_file()}
+        mover = self.bin / 'mv'
+        mover.write_text(
+            '#!/usr/bin/env bash\n'
+            'if [[ "${MOCK_FAIL_STAGE_PUBLISH:-}" == "1" && "$*" == *"/.candidate."* ]]; then\n'
+            '  echo "mock publish failure" >&2; exit 77\n'
+            'fi\n'
+            'exec /usr/bin/mv "$@"\n', encoding='utf-8',
+        )
+        mover.chmod(0o755)
+        self.env['PATH'] = f"{self.bin}{os.pathsep}{self.env.get('PATH', '')}"
+        self.env['MOCK_FAIL_STAGE_PUBLISH'] = '1'
+        out = self.make('build', 'OVERWRITE=YES', ok=False)
+        self.assertIn('mock publish failure', out.stderr)
+        self.assertIn('Restored previous release candidate', out.stderr)
+        self.assertEqual(before, {f.name: f.read_bytes() for f in current.iterdir() if f.is_file()})
+        self.assertEqual(list(current.parent.glob('.backup.*')), [])
+        self.assertEqual(list(current.parent.glob('.candidate.*')), [])
+        self.script('verify_release.sh')
+
+    def test_failed_overwrite_during_exports_preserves_old_candidate(self):
+        self.make('build')
+        before = (self.candidate() / 'manifest.json').read_bytes()
+        self.env['MOCK_FAIL_VALIDATE'] = '1'
+        out = self.make('build', 'OVERWRITE=YES', ok=False)
+        self.assertIn('validation success', out.stderr)
+        self.assertEqual((self.candidate() / 'manifest.json').read_bytes(), before)
+        self.script('verify_release.sh')
+
+    def test_overwrite_rejects_symlinks_and_unknown_directories(self):
+        external = self.root / 'outside'
+        external.mkdir()
+        (external / 'dont-delete.txt').write_text('important')
+        self.candidate().parent.mkdir(parents=True, exist_ok=True)
+        self.candidate().symlink_to(external, target_is_directory=True)
+        out = self.make('build', 'OVERWRITE=YES', ok=False)
+        self.assertIn('Unsafe release candidate target', out.stderr)
+        self.assertEqual((external / 'dont-delete.txt').read_text(), 'important')
+        self.candidate().unlink()
+        self.candidate().mkdir()
+        (self.candidate() / 'notes.txt').write_text('not a candidate')
+        out = self.make('build', 'OVERWRITE=YES', ok=False)
+        self.assertIn('unrecognized release directory', out.stderr)
+        self.assertEqual((self.candidate() / 'notes.txt').read_text(), 'not a candidate')
+
+    def test_overwrite_rejected_while_candidate_is_locked(self):
+        self.make('build')
+        lock_file = self.candidate().parent / '.locks' / (self.candidate().name + '.lock')
+        before = (self.candidate() / 'manifest.json').read_bytes()
+        with lock_file.open('a') as holder:
+            fcntl.flock(holder.fileno(), fcntl.LOCK_SH | fcntl.LOCK_NB)
+            out = self.make('build', 'OVERWRITE=YES', ok=False)
+            self.assertIn('in use by another build or deployment', out.stderr)
+            fcntl.flock(holder.fileno(), fcntl.LOCK_UN)
+        self.assertEqual((self.candidate() / 'manifest.json').read_bytes(), before)
+
+    def test_overwrite_flag_requires_explicit_build_mode(self):
+        out = self.script('export_application.sh', '--source-only', '--overwrite', ok=False)
+        self.assertIn('--overwrite requires --build-only', out.stderr)
+        self.assertFalse(self.calls.exists())
+        out = self.make('build', 'OVERWRITE=possibly', ok=False)
+        self.assertIn('OVERWRITE must be YES', out.stderr)
+        self.assertFalse(self.calls.exists())
 
     def test_qa_checks_source_fingerprint_against_candidate(self):
         self.script('export_application.sh')

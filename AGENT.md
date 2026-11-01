@@ -40,7 +40,7 @@ make preflight
 
 - `make supporting`: regenerate Supporting Objects SQL from DEV; inspect the diff.
 - `make source`: export APEXLang from DEV; may overwrite `.apx` changes. Existing local Supporting Objects SQL and static-file bytes are preserved.
-- `make build`: check DEV parity, enforce strict source consistency, and create a new immutable versioned release with two packaged SQL applications, ZIPs, a manifest, and checksums. Existing versions cannot be overwritten. May refresh local APEXLang source.
+- `make build`: read-only APEXLang parity/source validation and versioned SQL release ZIPs, manifest, checksums. Existing versions remain protected by default; `make build OVERWRITE=YES` replaces only the current unpromoted local candidate with staged verification and rollback, without changing tracked source. Never overwrite a QA-approved/published candidate.
 
 **Requires explicit human approval BEFORE execution:**
 

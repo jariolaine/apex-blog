@@ -10,7 +10,8 @@ help:
 	  'make supporting          Generate Supporting Objects SQL using BUILD_API' \
 	  'make source              Export APEXlang from DEV to applications/ (no SQL build)' \
 	  'make sync-dev            Import local APEXlang into DEV (explicit overwrite)' \
-	  'make build               Export APEXlang + immutable versioned SQL release ZIPs' \
+	  'make build               Read-only APEXLang build of versioned SQL release ZIPs' \
+	  'make build OVERWRITE=YES  Safely replace the current local release candidate' \
 	  'make validate            Validate local APEXlang source with SQLcl' \
 	  'make test-install        Reset disposable TEST and test fresh installation' \
 	  'make test-upgrade        Reset TEST, download GitHub latest (or PREVIOUS_ZIP), then upgrade' \
@@ -64,7 +65,8 @@ sync-dev:
 	./$(SCRIPTS)/import_apps_to_dev.sh --confirm-dev-import
 
 build:
-	./$(SCRIPTS)/export_application.sh
+	@case "$(OVERWRITE)" in 	  ""|NO|YES) ;; 	  *) echo 'OVERWRITE must be YES (or omitted): make build OVERWRITE=YES' >&2; exit 2 ;; 	esac
+	./$(SCRIPTS)/export_application.sh --build-only $(if $(filter YES,$(OVERWRITE)),--overwrite,)
 
 check-source:
 	./$(SCRIPTS)/check_source.sh source
