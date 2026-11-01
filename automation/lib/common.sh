@@ -133,13 +133,28 @@ SQL
     grep -q '^APEX_BLOG_ENV_OK' "$log_file" || die "Missing environment verification marker: $log_file"
 }
 
-# Prevent accidentally deploying stale or changed release files.
+# The default candidate is selected by VERSION.txt. Older candidates can be
+# deployed explicitly using --release-dir without rebuilding or re-exporting.
+current_release_dir() {
+    local version
+    version="$(read_release_version)"
+    printf '%s/releases/%s\n' "$buildDir" "${version#Release }"
+}
+
+# Verify both checksums and the release manifest; QA also requires the exact
+# source snapshot that was used to create this candidate.
 verify_release() {
-    local dir="$1" file
-    require_tool sha256sum
-    for file in "${releaseSqlNames[@]}"; do require_file "$dir/$file"; done
-    require_file "$dir/SHA256SUMS"
-    (cd "$dir" && sha256sum -c SHA256SUMS --status) || die "Release checksum mismatch: $dir"
+    local dir="$1" check_source="${2:-false}"
+    require_tool python3
+    [[ -d "$dir" ]] || die "Release candidate not found: $dir"
+    if [[ "$check_source" == true ]]; then
+        python3 "$repoHome/automation/lib/release_manifest.py" verify \
+            --dir "$dir" --repo "$repoHome" --check-source \
+            || die "Release checksum or source mismatch: $dir"
+    else
+        python3 "$repoHome/automation/lib/release_manifest.py" verify \
+            --dir "$dir" || die "Release checksum mismatch: $dir"
+    fi
 }
 
 # Quote a string argument passed to an SQLcl @script call; configuration is

@@ -31,7 +31,7 @@ tstWorkspace="$tstDbSchema"
 
 # Array indexes always correspond: Admin first, then Public Pages.
 appAliases=(blog-admin blog)
-devAppIds=(102 101)
+devAppIds=(402 401)
 uatAppIds=(102 101)
 prdAppIds=(102 101)
 tstAppIds=(102 101)

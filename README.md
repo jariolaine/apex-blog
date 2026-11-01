@@ -76,7 +76,8 @@ The repository stores APEX applications as APEXLang in `applications/`, while
 release downloads contain full SQL application exports with Supporting Objects.
 Use `make help` to see build, validation, test and deployment commands.
 Contributors and coding agents should follow [AGENT.md](AGENT.md) before
-changing or running the automation.
+changing or running the automation. See [release candidates](automation/RELEASE_CANDIDATES.md)
+for source consistency checks and versioned, non-overwritable release artifacts.
 For application-only emergency promotion from QA/UAT to production, see
 [the hotfix workflow](automation/HOTFIX.md). It bypasses the normal release build.
 

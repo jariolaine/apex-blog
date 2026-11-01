@@ -18,7 +18,7 @@ Scope: this repository. Target Oracle APEX **26.1**. Work in small, reviewable s
 - `less/`: LESS source for generated CSS. Keep LESS and CSS consistent.
 - `VERSION.txt`: authoritative release version; keep its final `YYYYMMDD` suffix.
 - `automation/variables.sh`: default settings. `automation/variables.local.sh`: local overrides; **never commit or print secrets**.
-- `build/`: generated release artifacts; do not commit.
+- `build/releases/<version>/`: immutable SQL release candidates with manifest and checksums. `build/hotfix/` stays separate. Never commit generated artifacts.
 
 ## Commands and permission
 
@@ -28,6 +28,9 @@ Scope: this repository. Target Oracle APEX **26.1**. Work in small, reviewable s
 make lint
 make test
 make validate
+make check-source
+make check-release
+make verify-release
 make preflight
 ```
 
@@ -37,7 +40,7 @@ make preflight
 
 - `make supporting`: regenerate Supporting Objects SQL from DEV; inspect the diff.
 - `make source`: export APEXLang from DEV; may overwrite `.apx` changes. Existing local Supporting Objects SQL and static-file bytes are preserved.
-- `make build`: check DEV parity and create full SQL exports with embedded Supporting Objects, ZIPs and checksums; can refresh local APEXLang source. Never bypass a parity failure.
+- `make build`: check DEV parity, enforce strict source consistency, and create a new immutable versioned release with two packaged SQL applications, ZIPs, a manifest, and checksums. Existing versions cannot be overwritten. May refresh local APEXLang source.
 
 **Requires explicit human approval BEFORE execution:**
 
@@ -70,7 +73,8 @@ Check the saved SQLcl connection and target schema before any approved database 
 - `make source` protects locally maintained SQL and static assets, but does **not** prove that DEV matches Git. Inspect changes to `.apx` and static-file metadata.
 - `make build` must fail on Supporting Objects or static-file drift from DEV. Correct the drift deliberately; do not overwrite files or weaken checks to make the build pass.
 - Installer is the **full SQL export with Supporting Objects**, not APEXLang alone. Install Admin before Public. Preserve package-spec/body ordering and `BUILD_API` dependency handling (`CONNECT BY NOCYCLE`).
-- For **normal releases**, use the **same checksum-verified build** for TEST, QA, production, and GitHub releases. Never rebuild between environments.
+- `make check-source` is safe for work-in-progress; `make check-release` is strict and requires both app versions and current Supporting Objects versions to match VERSION.txt. Historical upgrade SQL retains old version dates.
+- For **normal releases**, use one **unchanged versioned candidate** under `build/releases/<version>/` for TEST, QA, production, and GitHub. Use `RELEASE_DIR=...` to select it; QA also verifies the candidate's source fingerprint. Never rebuild between environments. Follow `automation/RELEASE_CANDIDATES.md`.
 
 ## Emergency QA/UAT -> production application hotfix
 

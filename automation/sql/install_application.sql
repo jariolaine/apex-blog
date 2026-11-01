@@ -19,18 +19,6 @@ begin
   apex_application_install.set_schema( '^dbSchema.' );
   apex_application_install.set_application_id( '^appId.' );
   apex_application_install.generate_offset;
-  apex_application_install.set_remote_server(
-    p_static_id => 'BLOG_OPEN_AI_API'
-  , p_base_url  => 'https://example.com'
-  );
-  apex_application_install.set_remote_server(
-    p_static_id => 'BLOG_LANGUAGE_AI'
-  , p_base_url  => 'https://example.com'
-  );
-  apex_application_install.set_remote_server(
-    p_static_id => 'BLOG_OBJECT_STORAGE'
-  , p_base_url  => 'https://example.com'
-  );
 end;
 /
 set verify on;

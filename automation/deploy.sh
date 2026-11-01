@@ -6,7 +6,7 @@ source "$SCRIPT_DIR/lib/common.sh"
 
 [[ $# -ge 1 ]] || die 'Usage: deploy.sh qa|production [--release-dir PATH] [--confirm-production]'
 environment="$1"; shift
-release_dir="$buildDir"
+release_dir="$(current_release_dir)"
 confirmed=false
 while (( $# )); do
     case "$1" in
@@ -31,9 +31,10 @@ case "$environment" in
     *) die 'Environment must be qa or production' ;;
 esac
 require_tool "$sqlcl_bin"
-verify_release "$release_dir"
+verify_release "$release_dir" "$([[ "$environment" == qa ]] && echo true || echo false)"
 release_dir="$(cd -- "$release_dir" && pwd -P)"
-logs="$release_dir/deploy-logs"
+# Deployment output must never modify an immutable candidate directory.
+logs="$buildDir/deploy-logs/${release_dir##*/}/$environment"
 mkdir -p -- "$logs"
 check_environment "$conn" "$ws" "$schema" "$logs/$environment-preflight.log"
 install_two_apps "$conn" "$ws" "$schema" "${ids[0]}" "${ids[1]}" \

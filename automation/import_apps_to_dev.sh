@@ -8,6 +8,11 @@ source "$SCRIPT_DIR/lib/common.sh"
     || die 'Usage: import_apps_to_dev.sh --confirm-dev-import (overwrites DEV applications)'
 # Always validate before SQLcl or any DEV change, even if invoked directly.
 "$SCRIPT_DIR/ci/preflight.sh"
+# Keep the dev import independent of release-version preparation. Only local
+# references and effective target IDs are checked here.
+python3 "$SCRIPT_DIR/lib/check_source_consistency.py" \
+    --repo "$repoHome" --dev-ids "${devAppIds[@]}" --mode source \
+    || die 'Local APEXLang source consistency failed'
 require_tool "$sqlcl_bin"
 log_dir="$(mktemp -d "${TMPDIR:-/tmp}/apex-blog-dev-import.XXXXXXXX")"
 trap 'rm -rf -- "$log_dir"' EXIT

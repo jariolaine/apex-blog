@@ -1,5 +1,7 @@
 """Mock-backed regression tests for APEXlang scripts; no Oracle instance needed."""
+from datetime import datetime, timedelta
 import json
+import re
 import os
 from pathlib import Path
 import shutil
@@ -22,8 +24,18 @@ class AutomationTests(unittest.TestCase):
         self.repo.mkdir()
         for file in ['README.md', 'LICENSE.txt', 'VERSION.txt']:
             shutil.copy2(SOURCE / file, self.repo / file)
-        for folder in ['applications', 'Database', 'Stack/terraform']:
+        for folder in ['applications', 'Database', 'Stack/terraform', 'less']:
             shutil.copytree(SOURCE / folder, self.repo / folder)
+        # Keep isolated mock source aligned with VERSION.txt. The checked-in
+        # repository intentionally has version drift that release checks reject;
+        # unrelated orchestration tests need a ready candidate fixture.
+        version = (self.repo / 'VERSION.txt').read_text().strip()
+        for alias in ('blog-admin', 'blog'):
+            app = self.repo / 'applications' / alias / 'application.apx'
+            content, count = re.subn(r'(?m)^    version: .+$',
+                                      f'    version: {version}', app.read_text(), count=1)
+            assert count == 1
+            app.write_text(content)
         # Automation now lives directly under automation/, not tools/script/.
         # Never copy machine-specific credentials, Docker assets or old logs.
         shutil.copytree(
@@ -81,6 +93,21 @@ class AutomationTests(unittest.TestCase):
             self.fail(f'{name} unexpectedly succeeded')
         return p
 
+    def candidate(self):
+        version = (self.repo / 'VERSION.txt').read_text().strip()
+        return self.repo / 'build/releases' / version.removeprefix('Release ')
+
+    def drift_app_version(self, app: Path):
+        """Change the fixture's current release date, never an old hardcoded version."""
+        version = (self.repo / 'VERSION.txt').read_text(encoding='utf-8').strip()
+        prefix, date = version.rsplit('.', 1)
+        next_date = (datetime.strptime(date, '%Y%m%d') + timedelta(days=1)).strftime('%Y%m%d')
+        mismatched = f'{prefix}.{next_date}'
+        content = app.read_text(encoding='utf-8')
+        old = f'version: {version}'
+        self.assertIn(old, content, f'Expected current release version in {app}')
+        app.write_text(content.replace(old, f'version: {mismatched}', 1), encoding='utf-8')
+
     def calls_data(self):
         return [json.loads(ln) for ln in self.calls.read_text().splitlines()]
 
@@ -113,7 +140,7 @@ class AutomationTests(unittest.TestCase):
         self.assertTrue((self.repo/'applications/blog-admin/.apex/apexlang.json').is_file())
         self.assertEqual(json.loads((self.repo/'applications/blog-admin/deployments/default.json').read_text()),
                          {'app': {'id': 402}})
-        build = self.repo/'build'
+        build = self.candidate()
         self.assertTrue((build/'SHA256SUMS').is_file())
         with ZipFile(build/'apex-blog-latest.zip') as z:
             self.assertIn('blog-administration-latest.sql', z.namelist())
@@ -136,7 +163,7 @@ class AutomationTests(unittest.TestCase):
             p.read_text() for p in (self.repo/'applications/blog-admin/pages').glob('*.apx')))
         self.assertEqual(json.loads((self.repo/'applications/blog-admin/deployments/default.json').read_text()),
                          {'app': {'id': 402}})
-        self.assertFalse((self.repo/'build/apex-blog-latest.zip').exists())
+        self.assertFalse((self.candidate()/'apex-blog-latest.zip').exists())
 
     def test_source_only_preserves_local_static_files_and_adds_new_dev_files(self):
         # Static CSS/JS/images belong to Git just like BUILD_API-generated SQL.
@@ -162,7 +189,7 @@ class AutomationTests(unittest.TestCase):
         self.assertEqual((admin/'css/new-from-dev.css').read_text(), '/* New from DEV */\n')
         self.assertIn('css/new-from-dev.css',
                       (self.repo/'applications/blog/shared-components/static-files.apx').read_text())
-        self.assertFalse((self.repo/'build/apex-blog-latest.zip').exists())
+        self.assertFalse((self.candidate()/'apex-blog-latest.zip').exists())
 
     def test_build_rejects_static_drift_before_publishing(self):
         css = self.repo/'applications/blog/shared-components/static-files/css/style.css'
@@ -175,7 +202,7 @@ class AutomationTests(unittest.TestCase):
         self.assertIn('css/style.css', out.stderr)
         self.assertEqual(css.read_bytes(), original + b'\n/* repository edit not imported to DEV */\n')
         self.assertEqual(app.read_bytes(), original_app)
-        self.assertFalse((self.repo/'build/SHA256SUMS').exists())
+        self.assertFalse((self.candidate()/'SHA256SUMS').exists())
 
     def test_build_rejects_binary_static_drift(self):
         icon = self.repo/'applications/blog/shared-components/static-files/icons/app-icon-192.png'
@@ -183,7 +210,7 @@ class AutomationTests(unittest.TestCase):
         out = self.script('export_application.sh', '--build-only', ok=False)
         self.assertIn('Static application files', out.stderr)
         self.assertIn('app-icon-192.png', out.stderr)
-        self.assertFalse((self.repo/'build/SHA256SUMS').exists())
+        self.assertFalse((self.candidate()/'SHA256SUMS').exists())
 
     def test_build_works_when_static_files_match_dev(self):
         # A source refresh preserves local edits. Importing them to DEV is an
@@ -193,27 +220,27 @@ class AutomationTests(unittest.TestCase):
         self.script('export_application.sh', '--source-only')
         shutil.copytree(self.repo/'applications/blog', self.template/'blog', dirs_exist_ok=True)
         self.script('export_application.sh', '--build-only')
-        self.assertTrue((self.repo/'build/SHA256SUMS').is_file())
+        self.assertTrue((self.candidate()/'SHA256SUMS').is_file())
 
     def test_release_rejects_supporting_sql_drift_without_publishing(self):
         local = self.repo/'applications/blog/supporting-objects/install-scripts/metadata.sql'
         local.write_text(local.read_text()+'\n-- different from DEV\n')
         p = self.script('export_application.sh', ok=False)
         self.assertIn('Supporting Objects', p.stderr)
-        self.assertFalse((self.repo/'build/SHA256SUMS').exists())
+        self.assertFalse((self.candidate()/'SHA256SUMS').exists())
 
     def test_build_only_requires_apexlang_match(self):
         local = self.repo/'applications/blog-admin/application.apx'
         local.write_text(local.read_text()+'\n-- local change\n')
         p = self.script('export_application.sh', '--build-only', ok=False)
         self.assertIn('differs from DEV', p.stderr)
-        self.assertFalse((self.repo/'build/SHA256SUMS').exists())
+        self.assertFalse((self.candidate()/'SHA256SUMS').exists())
 
     def test_validation_failure_never_publishes(self):
         self.env['MOCK_FAIL_VALIDATE'] = '1'
         p = self.script('export_application.sh', ok=False)
         self.assertIn('validation success', p.stderr)
-        self.assertFalse((self.repo/'build/SHA256SUMS').exists())
+        self.assertFalse((self.candidate()/'SHA256SUMS').exists())
 
     def test_qa_and_production_use_same_sql_release_and_distinct_connections(self):
         self.script('export_application.sh')
@@ -232,7 +259,7 @@ class AutomationTests(unittest.TestCase):
 
     def test_bad_release_checksum_blocks_qa_import(self):
         self.script('export_application.sh')
-        with (self.repo/'build/blog-public-pages-latest.sql').open('a') as f:
+        with (self.candidate()/'blog-public-pages-latest.sql').open('a') as f:
             f.write('prompt unexpected edit\n')
         p = self.script('import_apps_to_qa.sh', ok=False)
         self.assertIn('checksum mismatch', p.stderr)
@@ -308,13 +335,13 @@ class AutomationTests(unittest.TestCase):
         self.script('supporting_objects.sh', ok=False)
         self.assertFalse(self.calls.exists())
         self.script('export_application.sh', ok=False)
-        self.assertFalse((self.repo/'build/SHA256SUMS').exists())
+        self.assertFalse((self.candidate()/'SHA256SUMS').exists())
 
     def test_release_build_requires_dev_version_match(self):
         self.env['MOCK_WRONG_RELEASE_VERSION'] = '1'
         result = self.script('export_application.sh', ok=False)
         self.assertIn('Release versions differ', result.stderr)
-        self.assertFalse((self.repo/'build/SHA256SUMS').exists())
+        self.assertFalse((self.candidate()/'SHA256SUMS').exists())
 
     def test_prepare_release_requires_confirmation(self):
         self.script('prepare_release.sh', ok=False)
@@ -385,6 +412,121 @@ class AutomationTests(unittest.TestCase):
                str(bad), str(out), 'blog-administration-latest.sql', 'blog-public-pages-latest.sql']
         result = subprocess.run(cmd, capture_output=True, text=True)
         self.assertNotEqual(result.returncode, 0)
+
+
+    def test_versioned_manifest_records_both_apps_and_source_fingerprint(self):
+        self.script('export_application.sh')
+        candidate = self.candidate()
+        manifest = json.loads((candidate / 'manifest.json').read_text())
+        self.assertEqual(manifest['release'], (self.repo / 'VERSION.txt').read_text().strip())
+        self.assertEqual([a['devId'] for a in manifest['applications']], [402, 401])
+        self.assertEqual(len(manifest['sourceSha256']), 64)
+        self.assertEqual(len(manifest['files']), 7)
+        self.script('verify_release.sh')
+        self.assertTrue((candidate / 'SHA256SUMS').is_file())
+
+    def test_rebuild_same_version_refuses_to_overwrite_candidate(self):
+        self.script('export_application.sh')
+        manifest = (self.candidate() / 'manifest.json').read_bytes()
+        out = self.script('export_application.sh', ok=False)
+        self.assertIn('already exists', out.stderr)
+        self.assertEqual(manifest, (self.candidate() / 'manifest.json').read_bytes())
+
+    def test_qa_checks_source_fingerprint_against_candidate(self):
+        self.script('export_application.sh')
+        before = len(self.calls_data())
+        ddl = self.repo / 'Database/Packages/BLOG_UTIL.sql'
+        ddl.write_bytes(ddl.read_bytes() + b'\n-- changed after build\n')
+        out = self.script('import_apps_to_qa.sh', ok=False)
+        self.assertIn('source fingerprint differs', out.stderr)
+        self.assertFalse(any(c['argv'][-1] == 'QA_TEST_SAVED'
+                             for c in self.calls_data()[before:]))
+
+    def test_production_uses_original_candidate_after_source_changes(self):
+        self.script('export_application.sh')
+        candidate = self.candidate()
+        self.script('import_apps_to_qa.sh')
+        ddl = self.repo / 'Database/Packages/BLOG_UTIL.sql'
+        ddl.write_bytes(ddl.read_bytes() + b'\n-- WIP DEV modification\n')
+        self.script('import_apps_to_pro.sh', '--confirm-production', '--release-dir', str(candidate))
+        self.assertEqual(sum('install_application.sql' in c['sql']
+                             for c in self.calls_data() if c['argv'][-1] == 'PROD_TEST_SAVED'), 2)
+        self.assertFalse((candidate / 'deploy-logs').exists())
+
+    def test_stack_package_excludes_local_terraform_state_and_secrets(self):
+        tf = self.repo / 'Stack/terraform'
+        (tf / '.terraform/cache').mkdir(parents=True)
+        (tf / '.terraform/cache/large.bin').write_bytes(b'PRIVATE CACHE')
+        (tf / 'terraform.tfstate').write_text('private state')
+        (tf / 'terraform.tfvars').write_text('private values')
+        (tf / 'terraform.auto.tfvars.json').write_text('{"secret": true}')
+        (tf / '.env').write_text('PRIVATE=YES')
+        self.script('export_application.sh')
+        with ZipFile(self.candidate() / 'apex-blog-stack-latest.zip') as archive:
+            names = archive.namelist()
+            self.assertFalse(any('.terraform/' in n or n.endswith('.tfstate')
+                                 or n.endswith('.tfvars') or n.endswith('.tfvars.json')
+                                 or n.endswith('.env')
+                                 for n in names), names)
+            self.assertIn('VERSION.txt', names)
+
+    def test_manifest_and_package_tampering_are_detected(self):
+        self.script('export_application.sh')
+        candidate = self.candidate()
+        with (candidate / 'manifest.json').open('a') as stream:
+            stream.write('\n')
+        out = self.script('verify_release.sh', ok=False)
+        self.assertIn('checksum mismatch', out.stderr.lower())
+
+    def test_release_readiness_rejects_mismatched_application_version(self):
+        self.drift_app_version(self.repo / 'applications/blog/application.apx')
+        self.script('check_source.sh', 'source')  # WIP source can be edited.
+        out = self.script('check_source.sh', 'release', ok=False)
+        self.assertIn('application.apx version', out.stderr)
+
+    def test_release_build_stops_before_publish_on_version_drift(self):
+        for root in (self.repo / 'applications', self.template):
+            for alias in ('blog-admin', 'blog'):
+                self.drift_app_version(root / alias / 'application.apx')
+        out = self.script('export_application.sh', ok=False)
+        self.assertIn('Release source consistency failed', out.stderr)
+        self.assertFalse(self.candidate().exists())
+
+    def test_dev_sync_checks_deployment_id_before_connecting(self):
+        deployment = self.repo / 'applications/blog/deployments/default.json'
+        deployment.write_text('{"app": {"id": 999}}\n')
+        out = self.script('import_apps_to_dev.sh', '--confirm-dev-import', ok=False)
+        self.assertIn('Local APEXLang source consistency failed', out.stderr)
+        self.assertFalse(self.calls.exists())
+
+    def test_source_check_rejects_missing_static_and_supporting_files(self):
+        static = self.repo / 'applications/blog/shared-components/static-files/css/style.css'
+        static.unlink()
+        supporting = self.repo / 'applications/blog/supporting-objects/upgrade-scripts/postupgrade.sql'
+        supporting.unlink()
+        out = self.script('check_source.sh', 'source', ok=False)
+        self.assertIn('referenced static file missing', out.stderr)
+        self.assertIn('referenced Supporting Objects SQL missing', out.stderr)
+
+    def test_source_check_catches_app_id_drift(self):
+        deployment = self.repo / 'applications/blog/deployments/default.json'
+        deployment.write_text('{"app": {"id": 999}}\n')
+        out = self.script('check_source.sh', 'source', ok=False)
+        self.assertIn('deployment app ID 999 differs from DEV ID 401', out.stderr)
+
+    def test_explicit_candidate_is_accepted_by_install_tests(self):
+        self.script('export_application.sh')
+        self.script('run_install_test.sh', '--confirm-reset-test',
+                    '--release-dir', str(self.candidate()))
+        tests = [c for c in self.calls_data()
+                 if c['argv'][-1] == 'DISPOSABLE_TEST_SAVED']
+        self.assertEqual(sum('install_application.sql' in c['sql'] for c in tests), 2)
+
+    def test_candidate_directory_name_must_match_manifest(self):
+        self.script('export_application.sh')
+        fake = self.repo / 'build/releases/not-the-version'
+        shutil.copytree(self.candidate(), fake)
+        self.script('verify_release.sh', '--release-dir', str(fake), ok=False)
 
 
 if __name__ == '__main__':

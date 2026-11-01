@@ -18,7 +18,8 @@ require_tool rsync
 require_tool python3
 if [[ "$mode" != source ]]; then
     require_tool zip
-    require_tool sha256sum
+    [[ ! -e "$(current_release_dir)" ]] \
+        || die "Release candidate already exists; it will not be overwritten: $(current_release_dir)"
 fi
 
 mkdir -p -- "$buildDir"
@@ -142,6 +143,20 @@ if [[ "$mode" != build ]]; then
     done
 fi
 
+# Strict release readiness is separate from work-in-progress source validation:
+# fail before modifying local APEXLang or publishing any candidate.
+if [[ "$mode" != source ]]; then
+    if [[ "$mode" == build ]]; then
+        consistency_apps="$apexSourceDir"
+    else
+        consistency_apps="$run_dir/merged"
+    fi
+    python3 "$SCRIPT_DIR/lib/check_source_consistency.py" \
+        --repo "$repoHome" --apps-dir "$consistency_apps" \
+        --dev-ids "${devAppIds[@]}" --mode release \
+        || die 'Release source consistency failed; run prepare-release, supporting and source as appropriate'
+fi
+
 if [[ "$mode" != source ]]; then
     for f in README.md LICENSE.txt VERSION.txt; do
         require_file "$repoHome/$f"
@@ -154,16 +169,14 @@ if [[ "$mode" != source ]]; then
     )
     [[ -d "$stackSrc" ]] || die "Stack source directory not found: $stackSrc"
     mkdir -p "$run_dir/Stack"
-    cp -R -- "$stackSrc/." "$run_dir/Stack/"
+    # Never distribute local Terraform state, provider caches or credentials.
+    rsync -r --exclude='/.terraform/' --exclude='*.tfstate' \
+        --exclude='*.tfstate.*' --exclude='*.tfvars' --exclude='*.tfvars.json' --exclude='.env*' \
+        "$stackSrc/" "$run_dir/Stack/"
     cp -- "$repoHome/VERSION.txt" "$run_dir/Stack/VERSION.txt"
     (
         cd "$run_dir/Stack"
         zip -q -r "$run_dir/out/$stackZipName" .
-    )
-    (
-        cd "$run_dir/out"
-        sha256sum "${releaseSqlNames[@]}" "$releaseZipName" "$stackZipName" >SHA256SUMS
-        sha256sum --check --status SHA256SUMS
     )
 fi
 
@@ -176,11 +189,36 @@ if [[ "$mode" != build ]]; then
 fi
 
 if [[ "$mode" != source ]]; then
-    # A build only publishes after source consistency and all artifacts pass.
-    for file in "${releaseSqlNames[@]}" "$releaseZipName" "$stackZipName" SHA256SUMS; do
-        cp -- "$run_dir/out/$file" "$buildDir/.${file}.new"
-        mv -f -- "$buildDir/.${file}.new" "$buildDir/$file"
-    done
-    log "Release artifacts ready in: $buildDir"
+    # Bind packaged SQL, sources and version metadata in one checksummed
+    # manifest. No build output can overwrite an existing candidate.
+    python3 "$SCRIPT_DIR/lib/release_manifest.py" create \
+        --dir "$run_dir/out" --repo "$repoHome" \
+        --sql-names "${releaseSqlNames[@]}" --dev-ids "${devAppIds[@]}" \
+        --zip-name "$releaseZipName" --stack-name "$stackZipName" \
+        || die 'Cannot create release manifest'
+    release_version="$(read_release_version)"
+    slug="${release_version#Release }"
+    target="$buildDir/releases/$slug"
+    mkdir -p -- "$buildDir/releases/.locks"
+    lock="$buildDir/releases/.locks/$slug"
+    mkdir -- "$lock" || die "Another build is in progress (or lock remains): $lock"
+    stage=''
+    finish_candidate() {
+        [[ -z "$stage" || ! -d "$stage" ]] || rm -rf -- "$stage"
+        rmdir -- "$lock" 2>/dev/null || true
+        rm -rf -- "$run_dir"
+    }
+    trap finish_candidate EXIT
+    [[ ! -e "$target" ]] || die "Release candidate already exists; it will not be overwritten: $target"
+    stage="$(mktemp -d "$buildDir/releases/.candidate.XXXXXXXX")"
+    cp -R -- "$run_dir/out/." "$stage/"
+    python3 "$SCRIPT_DIR/lib/release_manifest.py" verify \
+        --dir "$stage" --staging || die 'Staged release candidate failed verification'
+    mv -nT -- "$stage" "$target"
+    [[ ! -d "$stage" ]] || die "Release candidate appeared while building: $target"
+    stage=''
+    python3 "$SCRIPT_DIR/lib/release_manifest.py" verify --dir "$target" \
+        || die 'Published release failed verification'
+    log "Immutable release candidate created: $target"
 fi
 log "Completed mode: $mode"

@@ -6,22 +6,26 @@ source "$SCRIPT_DIR/lib/common.sh"
 
 confirmed=false
 previous_zip=''
+release_dir="$(current_release_dir)"
 while (( $# )); do
     case "$1" in
         --confirm-reset-test) confirmed=true; shift ;;
+        --release-dir)
+            (( $# >= 2 )) || die '--release-dir requires a directory'
+            release_dir="$2"; shift 2 ;;
         --previous-zip)
             (( $# >= 2 )) || die '--previous-zip requires a file'
             previous_zip="$2"; shift 2 ;;
         *) die "Unknown option: $1" ;;
     esac
 done
-$confirmed || die 'Usage: run_upgrade_test.sh --confirm-reset-test [--previous-zip PATH]'
+$confirmed || die 'Usage: run_upgrade_test.sh --confirm-reset-test [--previous-zip PATH] [--release-dir PATH]'
 [[ -n "$tstDbConnName" ]] || die 'Set APEX_BLOG_TEST_CONNECTION to a disposable TEST saved connection'
 [[ "$tstDbConnName" != "$devDbConnName" && "$tstDbConnName" != "$uatDbConnName" && "$tstDbConnName" != "$prdDbConnName" ]] \
     || die 'TEST saved connection must differ from DEV, QA and production'
 require_tool "$sqlcl_bin"
 require_tool python3
-verify_release "$buildDir"
+verify_release "$release_dir"
 run_dir="$(mktemp -d "${TMPDIR:-/tmp}/apex-blog-upgrade-test.XXXXXXXX")"
 trap 'rm -rf -- "$run_dir"' EXIT
 mkdir -p "$run_dir/previous"
@@ -54,5 +58,5 @@ run_sqlcl "$tstDbConnName" "$run_dir/reset.log" "$run_dir/reset.sqlcl" \
 install_two_apps "$tstDbConnName" "$tstWorkspace" "$tstDbSchema" \
     "${tstAppIds[0]}" "${tstAppIds[1]}" "$run_dir/previous" "$run_dir" previous
 install_two_apps "$tstDbConnName" "$tstWorkspace" "$tstDbSchema" \
-    "${tstAppIds[0]}" "${tstAppIds[1]}" "$buildDir" "$run_dir" upgrade
+    "${tstAppIds[0]}" "${tstAppIds[1]}" "$release_dir" "$run_dir" upgrade
 log 'Upgrade test completed: previous release to current candidate'
