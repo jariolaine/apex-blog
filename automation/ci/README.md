@@ -11,7 +11,7 @@ installed `pre-commit`. You still need versions compatible with the upstream
 lint tools; **no software can work with every past/future runtime version**.
 
 Install Python's `venv` module if needed (Ubuntu: `sudo apt install
-python3-venv`), plus Git, ShellCheck, Terraform, and Oracle SQLcl with a
+python3-venv`), plus Git, curl, ShellCheck, Terraform, and Oracle SQLcl with a
 supported Java runtime for APEXLang validation.
 
 ```bash
@@ -23,7 +23,12 @@ make validate
 
 `make setup-ci` creates an ignored `.venv/`, uses `python3` from your PATH to
 install Python tools into it, runs npm using the existing Node.js installation,
-and registers the Git pre-commit hook. You need neither `nvm use 22` nor
+installs **actionlint 1.7.12** from a SHA-256-verified upstream release, and
+registers the Git pre-commit hook. The actionlint executable lives under
+`.venv/bin/`, and requires neither a Go compiler nor Docker. It supports Linux
+(x86_64/arm64) and macOS (x86_64/arm64). Updating actionlint requires changing
+the version and verified release digests in `automation/ci/install_actionlint.sh`.
+You need neither `nvm use 22` nor
 `pipx` nor a global `pre-commit` installation.
 
 The package has **no Node engine upper bound** and uses semver-compatible npm
@@ -52,7 +57,7 @@ Oracle connection; however **Oracle SQLcl requires a supported Java version**.
 ```bash
 make setup-ci      # Install tools and hook into local .venv
 make lint          # All configured linters against all tracked files
-make test-fast     # Short regression subset (also run in Git hooks)
+make test-fast     # Short regression + CI/permissions checks (also in Git hooks)
 make test          # Complete mocked automation suite
 make validate      # SQLcl APEXLang validation (no database)
 make preflight     # Lint + full tests + validate
@@ -77,6 +82,7 @@ There is no bypass flag. Emergency `make hotfix-export` and
 - Stylelint: LESS and nonminified CSS; generated CSS is not rewritten.
 - Markdownlint: repository documentation.
 - Prettier: GitHub workflow YAML and `package.json`, not bulk source reformat.
+- actionlint: GitHub Actions workflow syntax, expressions, and embedded shell.
 - ShellCheck and `bash -n`: Bash scripts.
 - Ruff: Python correctness checks.
 - SQL source hygiene and conservative SQLFluff Oracle checks on views.
@@ -93,3 +99,24 @@ reduces npm drift without enforcing a specific Node.js version.
 GitHub branch protection must mark the quality job as required; workflow YAML
 alone does not enforce branch protection. The mocked regression suite does not
 replace real fresh-install/upgrade tests on disposable Oracle instances.
+
+## GitHub Actions reliability and branch protection
+
+The `quality` job uses the same lint, full regression tests, and APEXLang
+validation as local preflight. `setup-node` and `setup-python` cache npm and pip
+downloads using committed dependency files; the caches do **not** include
+`node_modules` or a Python virtual environment. Superseded push/PR checks for
+the same branch are cancelled. When a job fails, GitHub uploads the available
+quality and Terraform logs as a short-lived `quality-failure-logs` artifact.
+The workflow has only `contents: read` permissions and no deployment secrets.
+
+After the first successful push/PR run, configure GitHub under **Settings ->
+Rules -> Rulesets** (or **Branches** in older interfaces): protect your default
+branch and require the `quality` status check before merging. Use GitHub's
+status-check picker to select the check actually reported by the workflow.
+A workflow file cannot itself enable branch protection; repository admins must
+configure it. If direct pushes must also be blocked, configure the ruleset to
+enforce that policy for the appropriate actors.
+
+Keep normal DEV/QA preflight mandatory in the scripts. The independent QA/UAT
+-> production emergency hotfix commands are intentionally outside these gates.

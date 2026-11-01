@@ -41,6 +41,10 @@ else
   fi
 fi
 
+# Install a checksum-verified actionlint binary in the same local tool directory.
+# No system-wide installation, Go toolchain, or Docker daemon is required.
+bash automation/ci/install_actionlint.sh
+
 if [[ "${1:-}" != '--no-hooks' ]]; then
   if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     printf '[apex-blog] No Git working tree; run setup-ci from a Git checkout.\n' >&2

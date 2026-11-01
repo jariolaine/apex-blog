@@ -34,6 +34,7 @@ lint:
 test-fast:
 	python3 -m unittest discover -s automation/tests -p 'test_preserved_parity.py' -v
 	python3 -m unittest discover -s automation/tests -p 'test_build_api_object_list.py' -v
+	python3 -m unittest discover -s automation/tests -p 'test_ci_reliability.py' -v
 
 test:
 	python3 -m unittest discover -s automation/tests -v

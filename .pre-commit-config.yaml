@@ -31,6 +31,12 @@ repos:
         language: system
         pass_filenames: false
         files: (\.md$|\.markdownlint-cli2\.jsonc$)
+      - id: actionlint
+        name: GitHub Actions workflow validation
+        entry: bash automation/ci/check_actionlint.sh
+        language: system
+        pass_filenames: false
+        files: ^\.github/workflows/.*\.ya?ml$
       - id: prettier-config
         name: Prettier workflow and package configuration
         entry: npm run lint:format

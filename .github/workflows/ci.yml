@@ -8,6 +8,11 @@ on:
 permissions:
   contents: read
 
+# Only CI is cancelled; no release or database deployment job runs here.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality:
     runs-on: ubuntu-latest
@@ -19,10 +24,14 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+          cache: pip
+          cache-dependency-path: automation/ci/requirements.txt
       - name: Node.js (latest LTS)
         uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
+          cache: npm
+          cache-dependency-path: package-lock.json
       - name: Java 21 for SQLcl
         uses: actions/setup-java@v4
         with:
@@ -42,9 +51,26 @@ jobs:
             --output "$RUNNER_TEMP/sqlcl.zip"
           unzip -q "$RUNNER_TEMP/sqlcl.zip" -d "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/sqlcl/bin" >> "$GITHUB_PATH"
+      - name: Validate GitHub Actions workflows
+        run: bash automation/ci/check_actionlint.sh
       - name: Lint, complete regression suite, APEXLang validation
-        run: make ci
+        run: |
+          set -o pipefail
+          make ci 2>&1 | tee "$RUNNER_TEMP/quality.log"
       - name: Terraform syntax and provider configuration
         run: |
-          terraform -chdir=Stack/terraform init -backend=false -input=false
-          terraform -chdir=Stack/terraform validate -no-color
+          set -o pipefail
+          {
+            terraform -chdir=Stack/terraform init -backend=false -input=false &&
+            terraform -chdir=Stack/terraform validate -no-color
+          } 2>&1 | tee "$RUNNER_TEMP/terraform.log"
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-failure-logs
+          path: |
+            ${{ runner.temp }}/quality.log
+            ${{ runner.temp }}/terraform.log
+          if-no-files-found: ignore
+          retention-days: 7

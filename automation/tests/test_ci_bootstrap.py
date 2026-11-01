@@ -16,7 +16,7 @@ class CiBootstrapTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.repo = Path(self.temp.name) / "repo"
         (self.repo / "automation/ci").mkdir(parents=True)
-        for filename in ("bootstrap.sh", "run_pre_commit.sh"):
+        for filename in ("bootstrap.sh", "run_pre_commit.sh", "install_actionlint.sh", "check_actionlint.sh"):
             shutil.copy2(
                 SOURCE / "automation/ci" / filename,
                 self.repo / "automation/ci" / filename,
@@ -45,7 +45,11 @@ cat > .venv/bin/pre-commit <<'SH'
 #!/usr/bin/env bash
 printf 'precommit %s\n' "$*" >> "$TOOL_LOG"
 SH
-chmod +x .venv/bin/python .venv/bin/pre-commit
+cat > .venv/bin/actionlint <<'SH'
+#!/usr/bin/env bash
+printf 'actionlint %s\n' "$*" >> "$TOOL_LOG"
+SH
+chmod +x .venv/bin/python .venv/bin/pre-commit .venv/bin/actionlint
 """, encoding="utf-8")
         npm = self.fake_bin / "npm"
         npm.write_text('#!/usr/bin/env bash\nprintf "npm %s\\n" "$*" >> "$TOOL_LOG"\n')
@@ -79,7 +83,9 @@ chmod +x .venv/bin/python .venv/bin/pre-commit
         self.assertIn("npm install --ignore-scripts --no-audit --no-fund", log)
         self.assertIn("precommit install", log)
         self.run_bash("run_pre_commit.sh", "run", "--all-files")
+        self.run_bash("check_actionlint.sh", "-color")
         self.assertIn("precommit run --all-files", self.log.read_text())
+        self.assertIn("actionlint -color", self.log.read_text())
 
     def test_ci_uses_lockfile_without_installing_hook(self):
         (self.repo / "package-lock.json").write_text('{"lockfileVersion":3}\n')
