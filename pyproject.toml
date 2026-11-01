@@ -1,0 +1,7 @@
+[tool.ruff]
+target-version = "py312"
+include = ["automation/**/*.py"]
+
+[tool.ruff.lint]
+# Start with clear correctness errors rather than reformatting legacy sources.
+select = ["E4", "E9", "F63", "F7", "F82"]

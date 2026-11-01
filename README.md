@@ -85,3 +85,15 @@ The mock regression tests can be run with:
 ```bash
 python3 -m unittest discover -s automation/tests -v
 ```
+
+## Developer quality checks
+
+The repository uses shared local pre-commit hooks and GitHub Actions for
+CSS/LESS, JavaScript, SQL, Bash, Python, Markdown, Terraform and APEXLang checks.
+Run `make setup-ci` to set up repository-local lint tools and install the Git hook.
+No global `pre-commit` installation or fixed Node.js major version is needed.
+See [automation/ci/README.md](automation/ci/README.md) for details.
+
+`make sync-dev` and `make qa` always execute the complete local preflight
+before performing their database operations. Emergency QA/UAT-to-production
+hotfix exports remain separate (see [HOTFIX.md](automation/HOTFIX.md)).

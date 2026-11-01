@@ -1,0 +1,5 @@
+# Install into the local .venv; no exact Python/tool version pinning.
+# Pip resolves compatible versions for the Python interpreter in use.
+pre-commit>=4
+ruff>=0.17
+sqlfluff>=4

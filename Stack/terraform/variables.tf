@@ -11,12 +11,12 @@ variable "resources_prefix" {
 
 ## Network Details
 variable "network_details" {
-  type      = map( string )
-  nullable  = false
-  default   = {
-    "VCN-CIDR"                  = "10.1.0.0/16"
-    "COMPUTE-SUBNET-CIDR"       = "10.1.21.0/24"
-    "LB-SUBNET-CIDR"            = "10.1.22.0/24"
+  type     = map(string)
+  nullable = false
+  default = {
+    "VCN-CIDR"            = "10.1.0.0/16"
+    "COMPUTE-SUBNET-CIDR" = "10.1.21.0/24"
+    "LB-SUBNET-CIDR"      = "10.1.22.0/24"
   }
 }
 
@@ -57,7 +57,7 @@ variable "image_operating_system_version" {
 }
 
 ## Autonomous Database
-variable "adb_admin_user"{
+variable "adb_admin_user" {
   default = "ADMIN"
 }
 
@@ -98,6 +98,6 @@ variable "adb_wallet_generate_type" {
   default = "SINGLE"
 }
 ## Application
-variable app_download_url {
+variable "app_download_url" {
   default = "https://github.com/jariolaine/apex-blog/releases/latest/download/apex-blog-latest.zip"
 }

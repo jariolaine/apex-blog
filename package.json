@@ -1,0 +1,19 @@
+{
+  "name": "apex-blog-quality-checks",
+  "private": true,
+  "description": "Non-destructive lint checks for the APEX Blog repository",
+  "scripts": {
+    "lint:js": "bash automation/ci/check_js.sh",
+    "lint:styles": "stylelint 'less/**/*.less' 'applications/**/*.css'",
+    "lint:markdown": "markdownlint-cli2 'README.md' 'AGENT.md' 'automation/**/*.md' 'Stack/**/*.md'",
+    "lint:format": "prettier --check 'package.json' '.github/workflows/*.yml'",
+    "audit:tools": "npm audit --audit-level=high"
+  },
+  "devDependencies": {
+    "eslint": "^10.13.0",
+    "markdownlint-cli2": "^0.24.0",
+    "postcss-less": "^6.0.0",
+    "prettier": "^3.9.10",
+    "stylelint": "^17.16.0"
+  }
+}

@@ -19,6 +19,9 @@ while (( $# )); do
 done
 case "$environment" in
     qa)
+        # Only normal QA promotion has this gate; emergency hotfix uses hotfix.sh.
+        # This runs before SQLcl and any database changes, including direct calls.
+        "$SCRIPT_DIR/ci/preflight.sh"
         conn="$uatDbConnName"; ws="$uatWorkspace"; schema="$uatDbSchema"
         ids=("${uatAppIds[@]}") ;;
     production|prod)

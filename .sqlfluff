@@ -1,0 +1,7 @@
+[sqlfluff]
+# Oracle PL/SQL and SQLcl commands need their own parser; only enable the
+# conservative final-newline rule on hand-maintained views for this first gate.
+dialect = oracle
+rules = LT12
+ignore = parsing,templating
+sql_file_exts = .sql

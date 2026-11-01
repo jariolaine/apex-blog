@@ -1,20 +1,20 @@
 # Virtual clod network
 
 resource "oci_core_vcn" "vcn" {
-  compartment_id  = var.compartment_ocid
-  display_name    = local.vcn_name
-  cidr_block      = lookup( var.network_details, "VCN-CIDR" )
-  defined_tags    = {}
-  freeform_tags   = local.common_tags
+  compartment_id = var.compartment_ocid
+  display_name   = local.vcn_name
+  cidr_block     = lookup(var.network_details, "VCN-CIDR")
+  defined_tags   = {}
+  freeform_tags  = local.common_tags
 }
 
 ## Internet gateway for virtual clod network
-resource oci_core_internet_gateway"internet_gateway" {
-  compartment_id  = var.compartment_ocid
-  vcn_id          = oci_core_vcn.vcn.id
-  display_name    = format( "Internet Gateway for %s", local.vcn_name )
-  defined_tags    = {}
-  freeform_tags   = local.common_tags
+resource "oci_core_internet_gateway" "internet_gateway" {
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_vcn.vcn.id
+  display_name   = format("Internet Gateway for %s", local.vcn_name)
+  defined_tags   = {}
+  freeform_tags  = local.common_tags
 }
 
 ## Default toute table for Virtual clod network
@@ -31,7 +31,7 @@ resource "oci_core_default_route_table" "default_route" {
 resource "oci_core_security_list" "lb_subnet_security_list" {
   compartment_id = var.compartment_ocid
   vcn_id         = oci_core_vcn.vcn.id
-  display_name   = format( "Security list for %s", local.lb_subnet_name )
+  display_name   = format("Security list for %s", local.lb_subnet_name)
 }
 
 
@@ -39,35 +39,35 @@ resource "oci_core_security_list" "lb_subnet_security_list" {
 
 ## Load balancer subnet
 resource "oci_core_subnet" "lb_subnet" {
-  cidr_block                  = lookup( var.network_details, "LB-SUBNET-CIDR" )
-  display_name                = local.lb_subnet_name
-  compartment_id              = var.compartment_ocid
-  vcn_id                      = oci_core_vcn.vcn.id
-  security_list_ids           = [ oci_core_security_list.lb_subnet_security_list.id ]
-  prohibit_public_ip_on_vnic  = false
-  defined_tags                = {}
-  freeform_tags               = local.common_tags
+  cidr_block                 = lookup(var.network_details, "LB-SUBNET-CIDR")
+  display_name               = local.lb_subnet_name
+  compartment_id             = var.compartment_ocid
+  vcn_id                     = oci_core_vcn.vcn.id
+  security_list_ids          = [oci_core_security_list.lb_subnet_security_list.id]
+  prohibit_public_ip_on_vnic = false
+  defined_tags               = {}
+  freeform_tags              = local.common_tags
 }
 
 ## Compute instance subnet
 resource "oci_core_subnet" "compute_subnet" {
-  cidr_block                  = lookup( var.network_details, "COMPUTE-SUBNET-CIDR" )
-  display_name                = local.vm_subnet_name
-  compartment_id              = var.compartment_ocid
-  vcn_id                      = oci_core_vcn.vcn.id
-  security_list_ids           = [ "${oci_core_vcn.vcn.default_security_list_id}" ]
-  prohibit_public_ip_on_vnic  = false
-  defined_tags                = {}
-  freeform_tags               = local.common_tags
+  cidr_block                 = lookup(var.network_details, "COMPUTE-SUBNET-CIDR")
+  display_name               = local.vm_subnet_name
+  compartment_id             = var.compartment_ocid
+  vcn_id                     = oci_core_vcn.vcn.id
+  security_list_ids          = ["${oci_core_vcn.vcn.default_security_list_id}"]
+  prohibit_public_ip_on_vnic = false
+  defined_tags               = {}
+  freeform_tags              = local.common_tags
 }
 
 # Nework security groups
 
 ## Network security group for public load balancer
 resource "oci_core_network_security_group" "lb_network_security_group" {
-  compartment_id  = var.compartment_ocid
-  vcn_id          = oci_core_vcn.vcn.id
-  display_name    = format( "lb-nsg-%s", random_string.deploy_id.result )
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_vcn.vcn.id
+  display_name   = format("lb-nsg-%s", random_string.deploy_id.result)
 }
 
 resource "oci_core_network_security_group_security_rule" "lb_nsg_public_ingress_https" {
@@ -109,7 +109,7 @@ resource "oci_core_network_security_group_security_rule" "lb_nsg_vm_ingress" {
   stateless                 = true
   protocol                  = "6"
   source_type               = "CIDR_BLOCK"
-  source                    = lookup( var.network_details, "COMPUTE-SUBNET-CIDR" )
+  source                    = lookup(var.network_details, "COMPUTE-SUBNET-CIDR")
   tcp_options {
     source_port_range {
       min = "80"
@@ -125,7 +125,7 @@ resource "oci_core_network_security_group_security_rule" "lb_nsg_vm_egress" {
   stateless                 = true
   protocol                  = "6"
   destination_type          = "CIDR_BLOCK"
-  destination               = lookup( var.network_details, "COMPUTE-SUBNET-CIDR" )
+  destination               = lookup(var.network_details, "COMPUTE-SUBNET-CIDR")
   tcp_options {
     destination_port_range {
       min = "80"
@@ -152,9 +152,9 @@ resource "oci_core_network_security_group_security_rule" "lb_nsg_public_ingress_
 
 ## Network security group for compute instance
 resource "oci_core_network_security_group" "compute_network_security_group" {
-  compartment_id  = var.compartment_ocid
-  vcn_id          = oci_core_vcn.vcn.id
-  display_name    = format( "compute-nsg-%s", random_string.deploy_id.result )
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_vcn.vcn.id
+  display_name   = format("compute-nsg-%s", random_string.deploy_id.result)
 }
 
 resource "oci_core_network_security_group_security_rule" "compute_nsg_ingress" {
@@ -164,7 +164,7 @@ resource "oci_core_network_security_group_security_rule" "compute_nsg_ingress" {
   stateless                 = true
   protocol                  = "6"
   source_type               = "CIDR_BLOCK"
-  source                    = lookup( var.network_details, "LB-SUBNET-CIDR" )
+  source                    = lookup(var.network_details, "LB-SUBNET-CIDR")
   tcp_options {
     destination_port_range {
       min = "80"
@@ -180,7 +180,7 @@ resource "oci_core_network_security_group_security_rule" "compute_nsg_egress" {
   stateless                 = true
   protocol                  = "6"
   destination_type          = "CIDR_BLOCK"
-  destination               = lookup( var.network_details, "LB-SUBNET-CIDR" )
+  destination               = lookup(var.network_details, "LB-SUBNET-CIDR")
   tcp_options {
     source_port_range {
       min = "80"

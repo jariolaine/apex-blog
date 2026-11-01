@@ -1,0 +1,50 @@
+name: Repository quality
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Python (latest stable Python 3)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Node.js (latest LTS)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - name: Java 21 for SQLcl
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Install lint dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq shellcheck unzip
+          bash automation/ci/bootstrap.sh --no-hooks
+      - name: Install Oracle SQLcl (no database credentials)
+        run: |
+          curl --fail --location --retry 3 \
+            https://download.oracle.com/otn_software/java/sqldeveloper/sqlcl-latest.zip \
+            --output "$RUNNER_TEMP/sqlcl.zip"
+          unzip -q "$RUNNER_TEMP/sqlcl.zip" -d "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/sqlcl/bin" >> "$GITHUB_PATH"
+      - name: Lint, complete regression suite, APEXLang validation
+        run: make ci
+      - name: Terraform syntax and provider configuration
+        run: |
+          terraform -chdir=Stack/terraform init -backend=false -input=false
+          terraform -chdir=Stack/terraform validate -no-color

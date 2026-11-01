@@ -1,7 +1,7 @@
 # Developer-facing entry points; database connections live in variables.sh or
 # the ignored automation/variables.local.sh file.
 SCRIPTS := automation
-.PHONY: help setup-build-api prepare-release supporting source sync-dev build validate qa production test-install test-upgrade hotfix-export hotfix-production
+.PHONY: help setup-ci lint test test-fast preflight ci setup-build-api prepare-release supporting source sync-dev build validate qa production test-install test-upgrade hotfix-export hotfix-production
 
 help:
 	@printf '%s\n' \
@@ -16,8 +16,32 @@ help:
 	  'make test-upgrade  		Reset TEST, install previous release, then upgrade' \
 	  'make qa            		Deploy built SQL release to QA' \
 	  'make production    		Promote that same built SQL release to production' \
+	  'make setup-ci      Install lint tools and Git hook locally' \
+	  'make lint          Run all repository linters (pre-commit)' \
+	  'make test          Run all Python regression tests' \
+	  'make preflight     Lint + full tests + APEXLang validation' \
 	  'make hotfix-export 		Export BOTH QA/UAT apps as SQL (no build)' \
 	  'make hotfix-production Import those SQL files into production'
+
+# The preflight is enforced INSIDE the DEV/QA scripts, so direct invocations
+# cannot bypass it. Do not duplicate it as a Makefile prerequisite.
+setup-ci:
+	bash ./automation/ci/bootstrap.sh
+
+lint:
+	bash ./automation/ci/run_pre_commit.sh run --all-files
+
+test-fast:
+	python3 -m unittest discover -s automation/tests -p 'test_preserved_parity.py' -v
+	python3 -m unittest discover -s automation/tests -p 'test_build_api_object_list.py' -v
+
+test:
+	python3 -m unittest discover -s automation/tests -v
+
+preflight:
+	./automation/ci/preflight.sh
+
+ci: preflight
 
 setup-build-api:
 	./$(SCRIPTS)/setup_build_api.sh --confirm-dev-ddl

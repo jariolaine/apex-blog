@@ -1,0 +1,13 @@
+{
+  "ignoreFiles": ["**/*.min.css"],
+  "overrides": [
+    {
+      "files": ["**/*.less"],
+      "customSyntax": "postcss-less"
+    }
+  ],
+  "rules": {
+    "block-no-empty": true,
+    "color-no-invalid-hex": true
+  }
+}

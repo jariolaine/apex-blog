@@ -19,3 +19,13 @@ automation/tests/__pycache__/
 **/*.tfstate
 **/*.tfstate.*
 **/.env
+
+# Local lint tools / package installs
+node_modules/
+.venv/
+.pre-commit/
+.ruff_cache/
+.sqlfluffcache
+.pytest_cache/
+**/__pycache__/
+*.pyc

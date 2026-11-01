@@ -6,6 +6,8 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/lib/common.sh"
 [[ "${1:-}" == '--confirm-dev-import' && $# -eq 1 ]] \
     || die 'Usage: import_apps_to_dev.sh --confirm-dev-import (overwrites DEV applications)'
+# Always validate before SQLcl or any DEV change, even if invoked directly.
+"$SCRIPT_DIR/ci/preflight.sh"
 require_tool "$sqlcl_bin"
 log_dir="$(mktemp -d "${TMPDIR:-/tmp}/apex-blog-dev-import.XXXXXXXX")"
 trap 'rm -rf -- "$log_dir"' EXIT

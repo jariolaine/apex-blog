@@ -1,0 +1,76 @@
+# Run locally with `make setup-ci` and in CI with `make lint`.
+# Hooks report failures; none rewrites version-controlled source files.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=2048]
+      - id: check-json
+      - id: check-yaml
+        exclude: ^Stack/terraform/templates/
+      - id: detect-private-key
+  - repo: local
+    hooks:
+      - id: eslint
+        name: ESLint and JavaScript syntax
+        entry: bash automation/ci/check_js.sh
+        language: system
+        pass_filenames: false
+        files: ^(applications/.*\.js|eslint\.config\.mjs)$
+      - id: css-less
+        name: Stylelint CSS and LESS
+        entry: npm run lint:styles
+        language: system
+        pass_filenames: false
+        files: ^(less/.*\.less|applications/.*\.css|\.stylelintrc\.json)$
+      - id: markdown
+        name: Markdownlint
+        entry: npm run lint:markdown
+        language: system
+        pass_filenames: false
+        files: (\.md$|\.markdownlint-cli2\.jsonc$)
+      - id: prettier-config
+        name: Prettier workflow and package configuration
+        entry: npm run lint:format
+        language: system
+        pass_filenames: false
+        files: ^(package\.json|\.github/workflows/.*\.yml)$
+      - id: shellcheck
+        name: Bash syntax and ShellCheck errors
+        entry: bash automation/ci/check_shell.sh
+        language: system
+        pass_filenames: false
+        files: ^(automation/.*\.sh|Makefile)$
+      - id: ruff
+        name: Ruff Python errors
+        entry: .venv/bin/ruff check automation
+        language: system
+        pass_filenames: false
+        files: ^(automation/.*\.py|pyproject\.toml)$
+      - id: sql-hygiene
+        name: Source SQL sanity
+        entry: python3 automation/ci/check_sql.py
+        language: system
+        pass_filenames: false
+        files: ^(Database/.*\.sql|automation/(database|sql)/.*\.sql)$
+      - id: sqlfluff
+        name: SQLFluff Oracle views (initial conservative rule)
+        entry: .venv/bin/sqlfluff lint Database/Views
+        language: system
+        pass_filenames: false
+        files: ^(Database/Views/.*\.sql|\.sqlfluff)$
+      - id: terraform
+        name: Terraform format
+        entry: terraform fmt -check -recursive Stack/terraform
+        language: system
+        pass_filenames: false
+        files: ^Stack/terraform/.*\.tf$
+      - id: fast-tests
+        name: Fast automation regression tests
+        entry: make --no-print-directory test-fast
+        language: system
+        pass_filenames: false
+        always_run: true
+        files: ^(automation/(ci/|tests/|lib/|.*\.sh)|Makefile)$

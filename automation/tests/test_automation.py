@@ -36,6 +36,18 @@ class AutomationTests(unittest.TestCase):
         # runnable even when the test suite is extracted without Git metadata.
         for script in (self.repo / 'automation').glob('*.sh'):
             script.chmod(script.stat().st_mode | stat.S_IXUSR)
+        # Mock the quality gate in isolated automation unit tests: exercising
+        # the real gate here would recursively launch this unittest suite.
+        # No production script supports a preflight bypass flag.
+        gate = self.repo / 'automation/ci/preflight.sh'
+        gate.parent.mkdir(parents=True, exist_ok=True)
+        gate.write_text(
+            '#!/usr/bin/env bash\n'
+            'printf "preflight\\n" >> "$MOCK_PREFLIGHT_LOG"\n'
+            '[[ "${MOCK_PREFLIGHT_FAIL:-0}" != "1" ]]\n',
+            encoding='utf-8',
+        )
+        gate.chmod(0o755)
         # Tests need the APEXLang source IDs (402/401), regardless of the
         # developer's machine-specific configuration or repository defaults.
         (self.repo / 'automation/variables.local.sh').write_text(
@@ -53,6 +65,7 @@ class AutomationTests(unittest.TestCase):
                         SQLCL_BIN=str(self.mock),
                         MOCK_SQLCL_LOG=str(self.calls),
                         MOCK_APEX_TEMPLATE=str(self.template),
+                        MOCK_PREFLIGHT_LOG=str(self.root / 'preflight.log'),
                         APEX_BLOG_DEV_CONNECTION='DEV_TEST_SAVED',
                         APEX_BLOG_UAT_CONNECTION='QA_TEST_SAVED',
                         APEX_BLOG_PRD_CONNECTION='PROD_TEST_SAVED',
@@ -70,6 +83,23 @@ class AutomationTests(unittest.TestCase):
 
     def calls_data(self):
         return [json.loads(ln) for ln in self.calls.read_text().splitlines()]
+
+    def test_dev_import_preflight_blocks_database_calls(self):
+        self.env['MOCK_PREFLIGHT_FAIL'] = '1'
+        self.script('import_apps_to_dev.sh', '--confirm-dev-import', ok=False)
+        self.assertEqual((self.root / 'preflight.log').read_text().strip(), 'preflight')
+        self.assertFalse(self.calls.exists())
+
+    def test_direct_qa_deploy_preflight_blocks_database_calls(self):
+        self.env['MOCK_PREFLIGHT_FAIL'] = '1'
+        self.script('deploy.sh', 'qa', ok=False)
+        self.assertEqual((self.root / 'preflight.log').read_text().strip(), 'preflight')
+        self.assertFalse(self.calls.exists())
+
+    def test_hotfix_path_does_not_call_normal_preflight(self):
+        self.env['MOCK_PREFLIGHT_FAIL'] = '1'
+        self.script('hotfix.sh', 'export')
+        self.assertFalse((self.root / 'preflight.log').exists())
 
     def test_export_apexlang_and_full_sql_release(self):
         self.script('export_application.sh')

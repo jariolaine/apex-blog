@@ -25,9 +25,10 @@ Scope: this repository. Target Oracle APEX **26.1**. Work in small, reviewable s
 **Local checks (may run):**
 
 ```sh
-bash -n automation/*.sh
-python3 -m unittest discover -s automation/tests -v
+make lint
+make test
 make validate
+make preflight
 ```
 
 `make validate` needs SQLcl but does not connect to a database. If SQLcl is missing, say so.
@@ -48,6 +49,19 @@ make validate
 - `make hotfix-production`: directly replace both PROD applications from saved QA/UAT exports; no build or release gates.
 
 Check the saved SQLcl connection and target schema before any approved database operation. Do not automatically execute SQL that drops or upgrades objects. Never run a command just because it is listed here.
+
+## Mandatory quality checks
+
+- Read `automation/ci/README.md` for tooling setup and lint scope; run `make setup-ci` to create the local `.venv/` and install the Git hook. Do not require a fixed Node.js major version or global `pre-commit`.
+- Use `make lint` for all linters, `make test` for full automation regression
+  tests, and `make preflight` for both plus SQLcl APEXLang validation.
+- Pre-commit hooks and GitHub Actions run matching checks. Do not change code
+  or suppress failures merely to make a test pass.
+- `make sync-dev` and `make qa` **always** run mandatory preflight inside the
+  underlying Bash scripts, including direct invocations. A failed check must
+  stop before connecting to DEV/QA. No bypass flag is available.
+- The independent QA-to-production emergency hotfix workflow is deliberately
+  exempt. Do not insert normal release gates into it.
 
 ## APEXLang and release rules
 
