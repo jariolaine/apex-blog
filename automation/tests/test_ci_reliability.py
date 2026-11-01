@@ -34,7 +34,11 @@ class CiReliabilityTests(unittest.TestCase):
             workflow.index("make ci 2>&1"),
         )
         self.assertIn("set -o pipefail", workflow)
-        self.assertIn("actions/upload-artifact@v4", workflow)
+        # Check that diagnostics are uploaded, independent of action major version.
+        self.assertRegex(
+            workflow,
+            r"(?m)^[ \t]*uses:[ \t]*actions/upload-artifact@v[0-9]+[ \t]*$",
+        )
         self.assertIn("if: failure()", workflow)
         self.assertIn("quality.log", workflow)
         self.assertIn("terraform.log", workflow)

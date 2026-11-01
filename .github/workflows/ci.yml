@@ -19,26 +19,26 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Python (latest stable Python 3)
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.x"
           cache: pip
           cache-dependency-path: automation/ci/requirements.txt
       - name: Node.js (latest LTS)
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "lts/*"
           cache: npm
           cache-dependency-path: package-lock.json
       - name: Java 21 for SQLcl
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
       - name: Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
       - name: Install lint dependencies
         run: |
           sudo apt-get update -qq
@@ -68,7 +68,7 @@ jobs:
           } 2>&1 | tee "$RUNNER_TEMP/terraform.log"
       - name: Upload failure diagnostics
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: quality-failure-logs
           path: |
