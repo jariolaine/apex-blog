@@ -7,10 +7,19 @@ from the emergency QA/UAT-to-production hotfix workflow in `HOTFIX.md`.
 ## Check source before preparing a release
 
 ```bash
+make check-schema    # Offline: validate manifests and tracked deinstall SQL
 make check-source    # WIP-safe: APEXLang static and Supporting Objects references, DEV IDs
 make check-release   # Strict: also match VERSION.txt and current installer metadata
 ```
 
+`make supporting` assembles schema files in manifest order, uses the checked-in
+foreign keys and indexes, and contacts DEV **only for metadata**. It validates
+but never regenerates the repository-owned admin deinstall script. When an
+object, foreign key, or Oracle Text preference is added or removed, update
+`applications/blog-admin/supporting-objects/deinstall-script.sql` together
+with `install.list`, run `make check-schema`, and validate actual removal with
+`make test-deinstall` against disposable TEST. Review regenerated install and
+upgrade Supporting Objects SQL against the previous release.
 `make validate` includes the WIP-safe source check. `make build` includes the
 strict check; a failed check stops before publishing a candidate. Historical
 upgrade patch version numbers are intentionally *not* compared to VERSION.txt.

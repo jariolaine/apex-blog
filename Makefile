@@ -1,7 +1,7 @@
 # Developer-facing entry points; database connections live in variables.sh or
 # the ignored automation/variables.local.sh file.
 SCRIPTS := automation
-.PHONY: help setup setup-ci setup-build-api doctor lint test test-fast preflight check ci prepare-release supporting source sync-dev build validate qa production test-install test-deinstall test-upgrade hotfix-export hotfix-production check-source check-release verify-release release-check
+.PHONY: help setup setup-ci setup-build-api doctor lint test test-fast check-schema preflight check ci prepare-release supporting source sync-dev build validate qa production test-install test-deinstall test-upgrade hotfix-export hotfix-production check-source check-release verify-release release-check
 
 help:
 	@printf '%s\n' \
@@ -18,10 +18,11 @@ help:
 	  '  make validate                      Validate APEXLang with SQLcl (no database)' \
 	  '  make check                         Alias for make preflight (lint + test + validate)' \
 	  '  make check-source                  Check local APEXLang references and DEV app IDs' \
+	  '  make check-schema                  Validate manifests and tracked deinstall SQL (offline)' \
 	  '' \
 	  'Development and releases:' \
 	  '  make prepare-release CONFIRM=YES   Set DEV versions from VERSION.txt' \
-	  '  make supporting                    Generate Supporting Objects SQL from DEV' \
+	  '  make supporting                    Assemble schema from Git; export metadata from DEV' \
 	  '  make source                        Export APEXLang from DEV to applications/' \
 	  '  make sync-dev                      Overwrite DEV with local APEXLang (explicit)' \
 	  '  make build                         Build versioned SQL release ZIPs (read-only)' \
@@ -63,11 +64,16 @@ lint:
 
 test-fast:
 	python3 -m unittest discover -s automation/tests -p 'test_preserved_parity.py' -v
-	python3 -m unittest discover -s automation/tests -p 'test_build_api_object_list.py' -v
+	python3 -m unittest discover -s automation/tests -p 'test_schema_manifests.py' -v
 	python3 -m unittest discover -s automation/tests -p 'test_ci_reliability.py' -v
 
 test:
 	python3 -m unittest discover -s automation/tests -v
+
+check-schema:
+	python3 $(SCRIPTS)/lib/assemble_objects.py $(SCRIPTS)/schema/install.list Database --check-only --check-inventory
+	python3 $(SCRIPTS)/lib/assemble_objects.py $(SCRIPTS)/schema/upgrade.list Database --check-only
+	python3 $(SCRIPTS)/lib/check_deinstall.py $(SCRIPTS)/schema/install.list Database applications/blog-admin/supporting-objects/deinstall-script.sql
 
 preflight:
 	./automation/ci/preflight.sh

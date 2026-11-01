@@ -25,6 +25,10 @@ require_tool "$sqlcl_bin"
 require_tool rsync
 require_tool python3
 if [[ "$mode" != source ]]; then
+    # Reject incomplete Git-owned uninstall SQL before contacting DEV or building.
+    python3 "$SCRIPT_DIR/lib/check_deinstall.py" \
+        "$SCRIPT_DIR/schema/install.list" "$scriptSourceDir" "$deinstallSqlScript" \
+        || die 'Release deinstall SQL is inconsistent with schema sources'
     require_tool zip
     release_version="$(read_release_version)"
     slug="${release_version#Release }"
@@ -109,8 +113,8 @@ SQL
         || die "SQLcl did not confirm validation success: $alias (see log)"
 
     if [[ "$mode" != source ]]; then
-        # SQL generated from BUILD_API and application static assets are owned
-        # by Git, not by an APEXlang export. Detect *any* DEV drift (including
+        # Supporting Objects SQL (Git schema/deinstall + BUILD_API metadata) and
+        # application static assets are owned by Git, not by an APEXlang export. Detect *any* DEV drift (including
         # binary files and missing/extra files) before building a release.
         python3 "$SCRIPT_DIR/lib/check_preserved_parity.py" "$repo_dir" "$app_dir" \
             || die "Locally maintained Supporting Objects / static files differ for $alias. Aborting release."
@@ -133,8 +137,8 @@ SQL
 done
 
 if [[ "$mode" != build ]]; then
-    # Assemble complete APEXlang trees in temporary space. Preserve SQL
-    # generated from BUILD_API AND local static assets (CSS, JS, images, etc.).
+    # Assemble complete APEXlang trees in temporary space. Preserve tracked
+    # Supporting Objects SQL and local static assets (CSS, JS, images, etc.).
     # This avoids overwriting files authored in Git with older DEV copies.
     for i in "${!devAppIds[@]}"; do
         alias="${appAliases[$i]}"

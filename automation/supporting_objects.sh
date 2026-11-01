@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Generate repository-maintained Supporting Objects SQL from BUILD_API and DDL.
+# Assemble schema SQL from Git manifests; export only metadata from DEV.
 # Run this BEFORE refreshing/importing APEXlang in DEV and building an installer.
 set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
@@ -12,6 +12,21 @@ release_version="$(read_release_version)"
 run_dir="$(mktemp -d "${TMPDIR:-/tmp}/apex-blog-objects.XXXXXXXX")"
 trap 'rm -rf -- "$run_dir"' EXIT
 mkdir -p -- "$run_dir/out" "$run_dir/logs"
+# Validate and assemble Git-owned schema SQL BEFORE contacting DEV. Neither
+# foreign keys nor indexes are exported from a mutable database anymore.
+python3 "$SCRIPT_DIR/lib/assemble_objects.py" \
+    "$SCRIPT_DIR/schema/install.list" "$scriptSourceDir" "$run_dir/out/database-objects.sql" \
+    --check-inventory || die 'Install schema manifest validation failed'
+python3 "$SCRIPT_DIR/lib/assemble_objects.py" \
+    "$SCRIPT_DIR/schema/upgrade.list" "$scriptSourceDir" "$run_dir/out/database-objects-upgrade.sql" \
+    --header $'-- Database objects upgrade\n-- --------------------------------------------------------\n' \
+    || die 'Upgrade schema manifest validation failed'
+# Deinstall SQL is authored in Git, not generated from mutable DEV metadata.
+# Fail before contacting DEV when it drifts from the installation inventory.
+python3 "$SCRIPT_DIR/lib/check_deinstall.py" \
+    "$SCRIPT_DIR/schema/install.list" "$scriptSourceDir" "$deinstallSqlScript" \
+    || die 'Checked-in deinstall script is inconsistent with install.list'
+
 check_environment "$devDbConnName" "$devWorkspace" "$devDbSchema" "$run_dir/logs/check-dev.log"
 
 # Spool targets are unique per run and never overlap a previous invocation.
@@ -29,60 +44,33 @@ set newpage none
 set embedded on
 set tab off
 set serveroutput on size unlimited
-spool "$run_dir/out/objects.list"
-exec build_api.export_object_list;
-spool off
-spool "$run_dir/out/upgrade.list"
-exec build_api.export_upgrade_list;
-spool off
-spool "$run_dir/out/foreign_keys.sql"
-exec build_api.export_foreign_keys;
-spool off
-spool "$run_dir/out/foreign_key_indexes.sql"
-exec build_api.export_indexes;
-spool off
 spool "$run_dir/out/admin_metadata.sql"
 exec build_api.export_metadata(p_application => 'ADMIN', p_release_version => '$release_version');
 spool off
 spool "$run_dir/out/public_metadata.sql"
 exec build_api.export_metadata(p_application => 'PUBLIC', p_release_version => '$release_version');
 spool off
-spool "$run_dir/out/deinstall.sql"
-exec build_api.export_deinstall;
-spool off
 SQL
-log 'Generating Supporting Objects using BUILD_API'
+log 'Exporting metadata using BUILD_API (deinstall SQL remains tracked in Git)'
 run_sqlcl "$devDbConnName" "$run_dir/logs/build-api.log" "$run_dir/build.sqlcl" \
     || die 'BUILD_API failed; no repository files updated'
 
-for file in objects.list foreign_keys.sql foreign_key_indexes.sql admin_metadata.sql \
-            public_metadata.sql deinstall.sql; do
+for file in admin_metadata.sql public_metadata.sql; do
     require_file "$run_dir/out/$file"
 done
-# Upgrade list may be empty (meaning there are no database objects to upgrade).
-[[ -f "$run_dir/out/upgrade.list" ]] || die 'BUILD_API did not create upgrade.list'
 render_release_template "$SCRIPT_DIR/templates/postupgrade.sql.in" \
     "$run_dir/out/postupgrade.sql" "$release_version"
 
-python3 "$SCRIPT_DIR/lib/assemble_objects.py" \
-    "$run_dir/out/objects.list" "$scriptSourceDir" "$run_dir/out/database-objects.sql" \
-    --append "$run_dir/out/foreign_keys.sql" \
-    --append "$run_dir/out/foreign_key_indexes.sql" || die 'Object installation assembly failed'
-python3 "$SCRIPT_DIR/lib/assemble_objects.py" \
-    "$run_dir/out/upgrade.list" "$scriptSourceDir" "$run_dir/out/database-objects-upgrade.sql" \
-    --header $'-- Database objects upgrade\n-- --------------------------------------------------------\n' \
-    || die 'Object upgrade assembly failed'
-
 # Validate all files first, THEN synchronize: not halfway through generation.
 source_files=(
-    foreign_keys.sql foreign_key_indexes.sql database-objects.sql
-    admin_metadata.sql public_metadata.sql postupgrade.sql deinstall.sql
+    database-objects.sql
+    admin_metadata.sql public_metadata.sql postupgrade.sql
     database-objects-upgrade.sql
 )
 target_files=(
-    "${dbForeignKeysFile[1]}" "${dbIndexFile[1]}" "${dbObjectsFile[1]}"
+    "${dbObjectsFile[1]}"
     "${adminAppMetadataFile[1]}" "${publicAppMetadataFile[1]}"
-    "${appPostupgradeFile[1]}" "${dbDeinstallFile[1]}"
+    "${appPostupgradeFile[1]}"
     "${upgradeFile[1]}"
 )
 for file in "${source_files[@]}"; do require_file "$run_dir/out/$file"; done

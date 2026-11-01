@@ -89,21 +89,21 @@ if re.search(r'^apex import ', src, flags=re.M):
     print('Import successful')
     sys.exit(0)
 
-if 'build_api.export_object_list' in src:
+if 'build_api.export_metadata' in src:
     # An explicit release must be supplied for both applications.
     versions = re.findall(r"build_api\.export_metadata\(p_application => '(?:ADMIN|PUBLIC)', p_release_version => '([^']+)'\)", src)
     if len(versions) != 2 or versions[0] != versions[1]:
         print('Missing or inconsistent version in BUILD_API calls', file=sys.stderr)
         sys.exit(2)
     version = versions[0]
+    if any(f'build_api.{name}' in src for name in (
+        'export_object_list', 'export_upgrade_list', 'export_foreign_keys', 'export_indexes', 'export_deinstall'
+    )):
+        print('Obsolete BUILD_API exporter called', file=sys.stderr)
+        sys.exit(2)
     fixtures = {
-      'objects.list': 'Tables/BLOG_POSTS\nPackages/BLOG_UTIL\n',
-      'upgrade.list': 'Packages/BLOG_UTIL\n',
-      'foreign_keys.sql': "select 'a  b' from dual;\n",
-      'foreign_key_indexes.sql': "select '  spaced' from dual;\n",
       'admin_metadata.sql': 'prompt admin metadata\n',
       'public_metadata.sql': "blog_install.settings_merge('G_APP_VERSION',10,0,'STRING','INTERNAL',null,null,null,null,'" + version + "');\n",
-      'deinstall.sql': 'prompt deinstall\n',
     }
     for output in re.findall(r'^spool\s+"([^"]+)"', src, flags=re.M):
         file = Path(output)

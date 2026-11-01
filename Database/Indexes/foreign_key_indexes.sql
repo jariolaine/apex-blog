@@ -1,32 +1,21 @@
 -- DDL for foreign key indexes
-
-  CREATE INDEX "BLOG_COMMENTS_IX1" ON "BLOG_COMMENTS" ("POST_ID")
-  ;
-
-  CREATE INDEX "BLOG_COMMENTS_IX2" ON "BLOG_COMMENTS" ("PARENT_ID")
-  ;
-
-  CREATE INDEX "BLOG_COMMENT_SUBSCRIBERS_IX1" ON "BLOG_COMMENT_SUBSCRIBERS" ("EMAIL_ID")
-  ;
-
-  CREATE INDEX "BLOG_FEATURES_IX1" ON "BLOG_FEATURES" ("BUILD_OPTION_PARENT")
-  ;
-
-  CREATE INDEX "BLOG_FEATURES_IX2" ON "BLOG_FEATURES" ("REF_BUILD_OPTION_NAME")
-  ;
-
-  CREATE INDEX "BLOG_INIT_ITEMS_IX1" ON "BLOG_INIT_ITEMS" ("ITEM_NAME")
-  ;
-
-  CREATE INDEX "BLOG_POSTS_IX1" ON "BLOG_POSTS" ("BLOGGER_ID")
-  ;
-
-  CREATE INDEX "BLOG_POSTS_IX2" ON "BLOG_POSTS" ("CATEGORY_ID")
-  ;
-
-  CREATE INDEX "BLOG_POST_TAGS_IX1" ON "BLOG_POST_TAGS" ("TAG_ID")
-  ;
-
-  CREATE INDEX "BLOG_SETTINGS_IX1" ON "BLOG_SETTINGS" ("BUILD_OPTION_NAME")
-  ;
-
+create index blog_comments_ix1 on blog_comments (post_id)
+/
+create index blog_comments_ix2 on blog_comments (parent_id)
+/
+create index blog_comment_subscribers_ix1 on blog_comment_subscribers (email_id)
+/
+create index blog_features_ix1 on blog_features (build_option_parent)
+/
+create index blog_features_ix2 on blog_features (ref_build_option_name)
+/
+create index blog_init_items_ix1 on blog_init_items (item_name)
+/
+create index blog_posts_ix1 on blog_posts (blogger_id)
+/
+create index blog_posts_ix2 on blog_posts (category_id)
+/
+create index blog_post_tags_ix1 on blog_post_tags (tag_id)
+/
+create index blog_settings_ix1 on blog_settings (build_option_name)
+/

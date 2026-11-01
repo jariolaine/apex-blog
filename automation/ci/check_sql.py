@@ -10,8 +10,6 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 SQL_ROOTS = (ROOT / "Database", ROOT / "automation/database", ROOT / "automation/sql")
-EXCLUDED = {"foreign_keys.sql", "foreign_key_indexes.sql"}
-
 
 def check(path: Path) -> list[str]:
     problems = []
@@ -32,8 +30,8 @@ def check(path: Path) -> list[str]:
 
 
 def main() -> int:
-    files = sorted(p for root in SQL_ROOTS for p in root.rglob("*.sql")
-                   if p.name not in EXCLUDED)
+    files = sorted(p for root in SQL_ROOTS for p in root.rglob("*")
+                   if p.is_file() and p.suffix.lower() in {".sql", ".pks", ".pkb"})
     issues = [msg for path in files for msg in check(path)]
     for msg in issues:
         print(msg, file=sys.stderr)

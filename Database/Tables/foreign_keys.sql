@@ -1,47 +1,46 @@
 -- DDL for Foreign Keys
-
-  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK1" FOREIGN KEY ("POST_ID")
-	  REFERENCES "BLOG_POSTS" ("ID") ENABLE;
-
-  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK2" FOREIGN KEY ("PARENT_ID")
-	  REFERENCES "BLOG_COMMENTS" ("ID") ENABLE;
-
-  ALTER TABLE "BLOG_COMMENT_FLAGS" ADD CONSTRAINT "BLOG_COMMENT_FLAGS_FK1" FOREIGN KEY ("COMMENT_ID")
-	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE CASCADE ENABLE;
-
-  ALTER TABLE "BLOG_COMMENT_SENTIMENTS" ADD CONSTRAINT "BLOG_COMMENT_SENTIMENTS_FK1" FOREIGN KEY ("COMMENT_ID")
-	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE CASCADE ENABLE;
-
-  ALTER TABLE "BLOG_COMMENT_SUBSCRIBERS" ADD CONSTRAINT "BLOG_COMMENT_SUBSCRIBERS_FK1" FOREIGN KEY ("POST_ID")
-	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
-
-  ALTER TABLE "BLOG_COMMENT_SUBSCRIBERS" ADD CONSTRAINT "BLOG_COMMENT_SUBSCRIBERS_FK2" FOREIGN KEY ("EMAIL_ID")
-	  REFERENCES "BLOG_SUBSCRIBERS_EMAIL" ("ID") ON DELETE CASCADE ENABLE;
-
-  ALTER TABLE "BLOG_FEATURES" ADD CONSTRAINT "BLOG_FEATURES_FK1" FOREIGN KEY ("BUILD_OPTION_PARENT")
-	  REFERENCES "BLOG_FEATURES" ("BUILD_OPTION_NAME") ENABLE;
-
-  ALTER TABLE "BLOG_FEATURES" ADD CONSTRAINT "BLOG_FEATURES_FK2" FOREIGN KEY ("REF_BUILD_OPTION_NAME")
-	  REFERENCES "BLOG_FEATURES" ("BUILD_OPTION_NAME") ENABLE;
-
-  ALTER TABLE "BLOG_INIT_ITEMS" ADD CONSTRAINT "BLOG_INIT_ITEMS_FK1" FOREIGN KEY ("ITEM_NAME")
-	  REFERENCES "BLOG_SETTINGS" ("ATTRIBUTE_NAME") ENABLE;
-
-  ALTER TABLE "BLOG_LINKS" ADD CONSTRAINT "BLOG_LINKS_FK1" FOREIGN KEY ("LINK_GROUP_ID")
-	  REFERENCES "BLOG_LINK_GROUPS" ("ID") ON DELETE CASCADE ENABLE;
-
-  ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK1" FOREIGN KEY ("BLOGGER_ID")
-	  REFERENCES "BLOG_BLOGGERS" ("ID") ENABLE;
-
-  ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK2" FOREIGN KEY ("CATEGORY_ID")
-	  REFERENCES "BLOG_CATEGORIES" ("ID") ENABLE;
-
-  ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK1" FOREIGN KEY ("POST_ID")
-	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
-
-  ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK2" FOREIGN KEY ("TAG_ID")
-	  REFERENCES "BLOG_TAGS" ("ID") ENABLE;
-
-  ALTER TABLE "BLOG_SETTINGS" ADD CONSTRAINT "BLOG_SETTINGS_FK1" FOREIGN KEY ("BUILD_OPTION_NAME")
-	  REFERENCES "BLOG_FEATURES" ("BUILD_OPTION_NAME") ENABLE;
-
+alter table blog_comments add constraint blog_comments_fk1 foreign key (post_id)
+  references blog_posts (id) enable
+/
+alter table blog_comments add constraint blog_comments_fk2 foreign key (parent_id)
+  references blog_comments (id) enable
+/
+alter table blog_comment_flags add constraint blog_comment_flags_fk1 foreign key (comment_id)
+  references blog_comments (id) on delete cascade enable
+/
+alter table blog_comment_sentiments add constraint blog_comment_sentiments_fk1 foreign key (comment_id)
+  references blog_comments (id) on delete cascade enable
+/
+alter table blog_comment_subscribers add constraint blog_comment_subscribers_fk1 foreign key (post_id)
+  references blog_posts (id) on delete cascade enable
+/
+alter table blog_comment_subscribers add constraint blog_comment_subscribers_fk2 foreign key (email_id)
+  references blog_subscribers_email (id) on delete cascade enable
+/
+alter table blog_features add constraint blog_features_fk1 foreign key (build_option_parent)
+  references blog_features (build_option_name) enable
+/
+alter table blog_features add constraint blog_features_fk2 foreign key (ref_build_option_name)
+  references blog_features (build_option_name) enable
+/
+alter table blog_init_items add constraint blog_init_items_fk1 foreign key (item_name)
+  references blog_settings (attribute_name) enable
+/
+alter table blog_links add constraint blog_links_fk1 foreign key (link_group_id)
+  references blog_link_groups (id) on delete cascade enable
+/
+alter table blog_posts add constraint blog_posts_fk1 foreign key (blogger_id)
+  references blog_bloggers (id) enable
+/
+alter table blog_posts add constraint blog_posts_fk2 foreign key (category_id)
+  references blog_categories (id) enable
+/
+alter table blog_post_tags add constraint blog_post_tags_fk1 foreign key (post_id)
+  references blog_posts (id) on delete cascade enable
+/
+alter table blog_post_tags add constraint blog_post_tags_fk2 foreign key (tag_id)
+  references blog_tags (id) enable
+/
+alter table blog_settings add constraint blog_settings_fk1 foreign key (build_option_name)
+  references blog_features (build_option_name) enable
+/

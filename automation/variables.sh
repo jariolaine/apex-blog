@@ -45,20 +45,15 @@ stackZipName="apex-blog-stack-latest.zip"
 upgDownloadUrl="${APEX_BLOG_UPGRADE_DOWNLOAD_URL:-https://github.com/jariolaine/apex-blog/releases/latest/download/apex-blog-latest.zip}"
 deinstallSqlScript="$apexSourceDir/blog-admin/supporting-objects/deinstall-script.sql"
 
-# BUILD_API generated Supporting Objects source and destination.
-# Generated SQL is edited locally by BUILD_API. APEXlang source exports must NOT overwrite it.
+# Supporting Objects destinations. Schema SQL is assembled from Git manifests,
+# metadata comes from DEV; deinstall SQL is maintained in Git.
 objExportDir="$tempDir/blog_objects"
 objLogFile="$objExportDir/blog_supporting_objects.log"
-installList="$objExportDir/blog_objects.out"
-upgradeList="$objExportDir/blog_objects_upgrade.out"
 
-dbForeignKeysFile=("$objExportDir/foreign_keys.sql" "$scriptSourceDir/Tables/foreign_keys.sql")
-dbIndexFile=("$objExportDir/foreign_key_indexes.sql" "$scriptSourceDir/Indexes/foreign_key_indexes.sql")
 dbObjectsFile=("$objExportDir/database_objects.sql" "$apexSourceDir/blog-admin/supporting-objects/install-scripts/database-objects.sql")
 adminAppMetadataFile=("$objExportDir/admin_app_metadata.sql" "$apexSourceDir/blog-admin/supporting-objects/install-scripts/metadata.sql")
 publicAppMetadataFile=("$objExportDir/public_app_metadata.sql" "$apexSourceDir/blog/supporting-objects/install-scripts/metadata.sql")
 appPostupgradeFile=("$objExportDir/postupgrade.sql" "$apexSourceDir/blog/supporting-objects/upgrade-scripts/postupgrade.sql")
-dbDeinstallFile=("$objExportDir/deinstall.sql" "$apexSourceDir/blog-admin/supporting-objects/deinstall-script.sql")
 upgradeFile=("$objExportDir/database_objects_upgrade.sql" "$apexSourceDir/blog/supporting-objects/upgrade-scripts/database-objects-upgrade.sql")
 pubVwBlogVersion=("$scriptSourceDir/Views/BLOG_V_VERSION.sql" "$apexSourceDir/blog/supporting-objects/install-scripts/create-view-blog-v-version.sql")
 

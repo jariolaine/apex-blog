@@ -12,10 +12,10 @@ import zipfile
 
 SOURCE_DIRS = (
     "applications", "Database", "less", "automation/database",
-    "automation/lib", "automation/sql", "automation/templates", "Stack/terraform",
+    "automation/lib", "automation/schema", "automation/sql", "automation/templates", "Stack/terraform",
 )
 RELEASE_FILES = ("VERSION.txt", "README.md", "LICENSE.txt")
-ROOT_FILES = (*RELEASE_FILES, "automation/export_application.sh", "automation/variables.sh")
+ROOT_FILES = (*RELEASE_FILES, "automation/export_application.sh", "automation/supporting_objects.sh", "automation/variables.sh")
 # Files produced by Terraform initialization or build-time stack packaging.
 IGNORED_PARTS = {".terraform", "__pycache__", ".git"}
 IGNORED_NAMES = {".terraform.lock.hcl", "VERSION.txt", ".DS_Store"}

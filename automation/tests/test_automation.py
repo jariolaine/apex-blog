@@ -479,10 +479,19 @@ class AutomationTests(unittest.TestCase):
         self.assertNotRegex(sql.lower(), r"object_name\s+like\s+'blog_")
 
     def test_supporting_objects_generation_preserves_sql_literals(self):
+        deinstall = self.repo / 'applications/blog-admin/supporting-objects/deinstall-script.sql'
+        original_deinstall = deinstall.read_bytes()
         self.script('supporting_objects.sh')
+        self.assertEqual(deinstall.read_bytes(), original_deinstall,
+                         'make supporting must not regenerate the Git-owned deinstall script')
         target = self.repo/'applications/blog-admin/supporting-objects/install-scripts/database-objects.sql'
-        self.assertIn("'a  b'", target.read_text())
-        self.assertIn('package body', target.read_text().lower())
+        generated = target.read_text()
+        self.assertIn((self.repo/'Database/Packages/BLOG_ADMIN.pks').read_text(), generated)
+        self.assertIn((self.repo/'Database/Packages/BLOG_ADMIN.pkb').read_text(), generated)
+        self.assertIn((self.repo/'Database/Tables/foreign_keys.sql').read_text(), generated)
+        self.assertIn((self.repo/'Database/Indexes/foreign_key_indexes.sql').read_text(), generated)
+        self.assertEqual(generated.count('alter table blog_comments add constraint blog_comments_fk1'), 1)
+        self.assertEqual(generated.count('create index blog_comments_ix1 on blog_comments'), 1)
         self.assertEqual((self.repo/'README.md').read_text(), (SOURCE/'README.md').read_text())
         self.assertEqual((self.repo/'LICENSE.txt').read_text(), (SOURCE/'LICENSE.txt').read_text())
         self.assertEqual((self.repo/'VERSION.txt').read_text(), (SOURCE/'VERSION.txt').read_text())
@@ -492,10 +501,41 @@ class AutomationTests(unittest.TestCase):
         self.assertNotIn('build_api.export_license', sql_calls)
         self.assertNotIn('build_api.export_readme', sql_calls)
         self.assertNotIn('build_api.export_postupgrade', sql_calls)
+        for obsolete in ('export_object_list', 'export_upgrade_list',
+                         'export_foreign_keys', 'export_indexes'):
+            self.assertNotIn('build_api.' + obsolete, sql_calls)
+        self.assertNotIn('build_api.export_deinstall', sql_calls)
+        self.assertNotIn('deinstall.sql', sql_calls,
+                         'BUILD_API must spool only metadata, never deinstall SQL')
         public_metadata = self.repo/'applications/blog/supporting-objects/install-scripts/metadata.sql'
         self.assertIn(f"'{release_version}'", public_metadata.read_text())
         postupgrade = self.repo/'applications/blog/supporting-objects/upgrade-scripts/postupgrade.sql'
         self.assertIn(f"'{release_version}'", postupgrade.read_text())
+
+    def test_release_build_rejects_deinstall_drift_before_dev_sqlcl(self):
+        deinstall = self.repo / 'applications/blog-admin/supporting-objects/deinstall-script.sql'
+        source = deinstall.read_text()
+        self.assertIn('drop package blog_install;', source)
+        deinstall.write_text(source.replace('drop package blog_install;\n', ''))
+        result = self.script('export_application.sh', '--build-only', ok=False)
+        self.assertIn('Release deinstall SQL is inconsistent', result.stderr)
+        self.assertFalse(self.calls.exists(), 'Invalid uninstall SQL must stop before contacting DEV')
+
+    def test_deinstall_drift_stops_before_dev_sqlcl(self):
+        deinstall = self.repo / 'applications/blog-admin/supporting-objects/deinstall-script.sql'
+        source = deinstall.read_text()
+        self.assertIn('drop table blog_settings;', source)
+        deinstall.write_text(source.replace('drop table blog_settings;\n', ''))
+        result = self.script('supporting_objects.sh', ok=False)
+        self.assertIn('Checked-in deinstall script is inconsistent', result.stderr)
+        self.assertFalse(self.calls.exists(), 'Deinstall drift must stop before contacting DEV')
+
+    def test_manifest_error_stops_before_dev_sqlcl(self):
+        manifest = self.repo / 'automation/schema/upgrade.list'
+        manifest.write_text(manifest.read_text().replace('Packages/BLOG_UTIL.pkb\n', ''))
+        result = self.script('supporting_objects.sh', ok=False)
+        self.assertIn('Upgrade schema manifest validation failed', result.stderr)
+        self.assertFalse(self.calls.exists(), 'Invalid manifest must not contact DEV')
 
     def test_version_change_is_deterministic_and_does_not_touch_docs(self):
         expected = 'Release 26.1.6.20261101'
@@ -550,9 +590,10 @@ class AutomationTests(unittest.TestCase):
         self.assertNotIn('set_application_version(', export_settings.lower())
         self.assertNotIn('update blog_settings', export_settings.lower())
         self.assertIn('p_release_version', export_settings)
-        # Dependency ordering now lives in WRITE_OBJECT_LIST (NOCYCLE).
-        self.assertIn('and d.type = c.object_type', plsql)
-        self.assertNotIn('t1.object_type = t2.referenced_type', plsql)
+        # G_APP_VERSION is generated from the explicit release input, not DEV state.
+        self.assertIn("when c1.attribute_name = 'G_APP_VERSION'", export_settings)
+        self.assertIn('then quote(p_release_version)', export_settings)
+        # Repository object inventory/order is verified in test_schema_manifests.py.
 
     def test_upgrade_uses_previous_and_candidate(self):
         self.script('export_application.sh')
@@ -673,10 +714,11 @@ class AutomationTests(unittest.TestCase):
         root = self.root/'ddl'; (root/'Packages').mkdir(parents=True)
         (root/'Tables').mkdir()
         (root/'Tables/A.sql').write_text("select 'a  b' from dual;\n")
-        (root/'Packages/API.sql').write_text('create or replace package api as end;\n/\n'
+        (root/'Packages/API.pks').write_text('create or replace package api as end;\n/\n')
+        (root/'Packages/API.pkb').write_text(
             'create or replace editionable package body api as end;\n/\n')
         listing = self.root/'names.txt'
-        listing.write_text('Tables/A\nPackages/API\n')
+        listing.write_text('Tables/A.sql\nPackages/API.pks\nPackages/API.pkb\n')
         output = self.root/'install.sql'
         script = self.repo/'automation/lib/assemble_objects.py'
         subprocess.run([sys.executable, str(script), str(listing), str(root), str(output)], check=True)
@@ -831,8 +873,18 @@ class AutomationTests(unittest.TestCase):
     def test_qa_checks_source_fingerprint_against_candidate(self):
         self.script('export_application.sh')
         before = len(self.calls_data())
-        ddl = self.repo / 'Database/Packages/BLOG_UTIL.sql'
+        ddl = self.repo / 'Database/Packages/BLOG_UTIL.pkb'
         ddl.write_bytes(ddl.read_bytes() + b'\n-- changed after build\n')
+        out = self.script('import_apps_to_qa.sh', ok=False)
+        self.assertIn('source fingerprint differs', out.stderr)
+        self.assertFalse(any(c['argv'][-1] == 'QA_TEST_SAVED'
+                             for c in self.calls_data()[before:]))
+
+    def test_qa_source_fingerprint_includes_schema_manifests(self):
+        self.script('export_application.sh')
+        before = len(self.calls_data())
+        manifest = self.repo / 'automation/schema/upgrade.list'
+        manifest.write_text(manifest.read_text() + '\n# reviewed manifest change\n')
         out = self.script('import_apps_to_qa.sh', ok=False)
         self.assertIn('source fingerprint differs', out.stderr)
         self.assertFalse(any(c['argv'][-1] == 'QA_TEST_SAVED'
@@ -842,7 +894,7 @@ class AutomationTests(unittest.TestCase):
         self.script('export_application.sh')
         candidate = self.candidate()
         self.script('import_apps_to_qa.sh')
-        ddl = self.repo / 'Database/Packages/BLOG_UTIL.sql'
+        ddl = self.repo / 'Database/Packages/BLOG_UTIL.pkb'
         ddl.write_bytes(ddl.read_bytes() + b'\n-- WIP DEV modification\n')
         self.script('import_apps_to_pro.sh', '--confirm-production', '--release-dir', str(candidate))
         self.assertEqual(sum('install_application.sql' in c['sql']

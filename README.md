@@ -88,6 +88,29 @@ The mock regression tests can be run with:
 python3 -m unittest discover -s automation/tests -v
 ```
 
+## Git-owned database schema assembly
+
+All application PL/SQL packages are split into `Database/Packages/*.pks` and
+`*.pkb`. The explicit `automation/schema/install.list` and `upgrade.list`
+manifest files define the SQL input order, including package specs and bodies.
+The **install** manifest must include every `Database/` SQL source except
+`Database/Views/BLOG_V_VERSION.sql` (installed separately by the Public app).
+Upgrade inputs are deliberately narrower than fresh-install inputs; review
+migration requirements separately instead of automatically including every DDL
+file in an upgrade. Foreign keys and their indexes come directly from
+`Database/Tables/foreign_keys.sql` and `Database/Indexes/foreign_key_indexes.sql`.
+
+Run `make check-schema` to validate the manifests and the checked-in deinstall
+script locally without Oracle access. The authoritative uninstall SQL is
+`applications/blog-admin/supporting-objects/deinstall-script.sql`: update it
+when schema objects, foreign keys or Oracle Text preferences change. The check
+compares DROP statements to the installation inventory and repository SQL.
+Run `make supporting` to assemble tracked schema SQL into Supporting Objects
+and export **metadata only** from DEV through `BUILD_API`. It does not generate
+or overwrite the deinstall SQL or foreign-key/index source files. Review the
+generated SQL diff and run fresh-install, upgrade and deinstall tests before
+making a release.
+
 ## Developer quality checks
 
 The repository uses shared local pre-commit hooks and GitHub Actions for

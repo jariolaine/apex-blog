@@ -74,7 +74,8 @@ make setup CONFIRM=YES  # One command: local tools, then DEV BUILD_API compilati
 make setup-ci           # Local tools and Git hook only (no database)
 make setup-build-api    # Explicit DEV BUILD_API compilation only
 make lint               # All configured linters against all tracked files
-make test-fast          # Short regression + CI/permissions checks (also in Git hooks)
+make test-fast          # Short regression + manifest/CI/permissions checks (Git hooks)
+make check-schema       # Check schema manifests and tracked deinstall SQL offline
 make test               # Complete mocked automation suite
 make validate           # SQLcl APEXLang validation (no database)
 make check              # Alias for make preflight (lint + full tests + validate)
@@ -108,7 +109,9 @@ There is no bypass flag. Emergency `make hotfix-export` and
 - actionlint: GitHub Actions workflow syntax, expressions, and embedded shell.
 - ShellCheck and `bash -n`: Bash scripts.
 - Ruff: Python correctness checks.
-- SQL source hygiene and conservative SQLFluff Oracle checks on views.
+- SQL source hygiene for `.sql`, `.pks` and `.pkb`, plus conservative SQLFluff Oracle checks on views.
+- Manifest validation ensures every repository schema source is accounted for and package specs/bodies are paired.
+- Deinstall validation compares the tracked uninstall SQL to the manifest, foreign keys and Oracle Text preferences.
 - Terraform `fmt` locally; `init -backend=false` and `validate` in CI.
 - Pre-commit: merge conflicts, large files, JSON/YAML syntax, private keys.
 

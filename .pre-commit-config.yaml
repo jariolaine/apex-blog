@@ -60,7 +60,7 @@ repos:
         entry: python3 automation/ci/check_sql.py
         language: system
         pass_filenames: false
-        files: ^(Database/.*\.sql|automation/(database|sql)/.*\.sql)$
+        files: ^(Database/.*\.(sql|pks|pkb)|automation/(database|sql)/.*\.sql)$
       - id: sqlfluff
         name: SQLFluff Oracle views (initial conservative rule)
         entry: .venv/bin/sqlfluff lint Database/Views
@@ -79,4 +79,4 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-        files: ^(automation/(ci/|tests/|lib/|.*\.sh)|Makefile)$
+        files: ^(automation/(ci/|tests/|lib/|schema/|.*\.sh)|Database/|Makefile)$
