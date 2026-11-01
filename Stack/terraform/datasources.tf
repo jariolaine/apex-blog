@@ -124,14 +124,12 @@ data "oci_core_images" "compute_images" {
 locals {
 
   tomcat_server_xml     = file("${path.module}/templates/tomcat/server.template.xml")
-  jk_workers_properties = file("${path.module}/templates/httpd/workers.template.properties")
   httpd_site_conf       = file("${path.module}/templates/httpd/adb-site.template.conf")
   httpd_cache_disk_conf = file("${path.module}/templates/httpd/cache_disk.template.conf")
   httpd_deflate_conf    = file("${path.module}/templates/httpd/deflate.template.conf")
   httpd_headers_conf    = file("${path.module}/templates/httpd/headers.template.conf")
   httpd_remoteip_conf   = file("${path.module}/templates/httpd/remoteip.template.conf")
   httpd_apache2_conf    = file("${path.module}/templates/httpd/apache2.template.conf")
-  httpd_jk_conf         = file("${path.module}/templates/httpd/jk.template.conf")
 
   database_setup_template = templatefile("${path.module}/templates/database/database-setup.template.sql", {
     app_owner_name      = upper(var.app_owner_name)

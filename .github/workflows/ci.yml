@@ -60,6 +60,8 @@ jobs:
       - name: Terraform syntax and provider configuration
         run: |
           set -o pipefail
+          # Match the standalone stack ZIP built by export_application.sh.
+          cp VERSION.txt Stack/terraform/VERSION.txt
           {
             terraform -chdir=Stack/terraform init -backend=false -input=false &&
             terraform -chdir=Stack/terraform validate -no-color

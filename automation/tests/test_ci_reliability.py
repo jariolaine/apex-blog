@@ -45,6 +45,26 @@ class CiReliabilityTests(unittest.TestCase):
         self.assertIn("automation/ci/check_actionlint.sh", hooks)
         self.assertIn("automation/ci/install_actionlint.sh", (SOURCE / "automation/ci/bootstrap.sh").read_text())
 
+    def test_terraform_file_references_exist_or_are_staged(self):
+        """Catch deleted templates before Terraform validation reaches GitHub."""
+        module = SOURCE / "Stack/terraform"
+        workflow = WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("cp VERSION.txt Stack/terraform/VERSION.txt", workflow)
+        release_builder = (SOURCE / "automation/export_application.sh").read_text(encoding="utf-8")
+        self.assertIn('cp -- "$repoHome/VERSION.txt" "$run_dir/Stack/VERSION.txt"', release_builder)
+        references = []
+        for config in module.glob("*.tf"):
+            references.extend(
+                (config.name, path)
+                for path in re.findall(r'(?:templatefile|file)\("\$\{path\.module\}/([^"\n]+)"',
+                                       config.read_text(encoding="utf-8"))
+            )
+        self.assertGreater(len(references), 5)
+        for config, path in references:
+            with self.subTest(config=config, referenced_path=path):
+                target = SOURCE / "VERSION.txt" if path == "VERSION.txt" else module / path
+                self.assertTrue(target.is_file(), f"Missing Terraform input: {target}")
+
     def test_executable_make_entrypoints(self):
         makefile = (SOURCE / "Makefile").read_text(encoding="utf-8")
         # Check the entry points actually executed by Make, not every file in automation/.
