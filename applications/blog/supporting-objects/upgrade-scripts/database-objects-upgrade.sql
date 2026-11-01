@@ -8204,6 +8204,15 @@ as
 
       apex_string.plist_push( l_attributes, param_t( 'region_param_name' ), l_region );
 
+      l_base_url := rtrim( p_base_url, '/' ) || '/';
+
+      apex_debug.info( 'Set object storage remote server %s: %s', param_t( 'remote_server_static_id' ), l_base_url );
+      -- Set remote server URL
+      apex_application_admin.set_remote_server(
+        p_static_id => param_t( 'remote_server_static_id' )
+      , p_base_url  => l_base_url
+      );
+
       l_namespace := get_namespace;
 
       apex_debug.info( 'Set object storage  namespace: %s', l_namespace );
@@ -8225,15 +8234,6 @@ as
 
       blog_admin.set_attribute_value(
         p_attribute_list  => l_attributes
-      );
-
-      l_base_url := rtrim( p_base_url, '/' ) || '/';
-
-      apex_debug.info( 'Set object storage remote server %s: %s', param_t( 'remote_server_static_id' ), l_base_url );
-      -- Set remote server URL
-      apex_application_admin.set_remote_server(
-        p_static_id => param_t( 'remote_server_static_id' )
-      , p_base_url  => l_base_url
       );
 
     end if;

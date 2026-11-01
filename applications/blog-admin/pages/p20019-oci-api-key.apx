@@ -61,7 +61,7 @@ page 20019 (
         name: Information
         type: staticContent
         source {
-            htmlCode: "&{BLOG_MSG_OCI_API_KEY_INFO!RAW}."
+            htmlCode: "&{BLOG_MSG_OCI_API_KEY_INFO}!RAW."
         }
         layout {
             sequence: 10

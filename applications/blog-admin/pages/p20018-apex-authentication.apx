@@ -59,7 +59,7 @@ page 20018 (
         name: Information
         type: staticContent
         source {
-            htmlCode: "&{BLOG_MSG_APEX_AUTH_INFO!RAW}."
+            htmlCode: "&{BLOG_MSG_APEX_AUTH_INFO}!RAW."
         }
         layout {
             sequence: 10

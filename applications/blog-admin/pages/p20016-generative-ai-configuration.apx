@@ -81,7 +81,7 @@ page 20016 (
         name: Information
         type: staticContent
         source {
-            htmlCode: "&{BLOG_MSG_GENERATIVE_AI_INFO!RAW}."
+            htmlCode: "&{BLOG_MSG_GENERATIVE_AI_INFO}!RAW."
         }
         layout {
             sequence: 10

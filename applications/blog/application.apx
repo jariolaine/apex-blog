@@ -1,6 +1,6 @@
 app BLOG (
     name: Blog Public Pages
-    version: Release 26.1.5.20261031
+    version: Release 26.1.5.20261101
     group: @apex-blog
     logo {
         type: text

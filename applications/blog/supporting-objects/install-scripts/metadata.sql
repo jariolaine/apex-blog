@@ -30,7 +30,7 @@ blog_install.features_merge('BLOG_FEATURE_MODAL_PAGES',1,1510,'BLOG_FEATURE_GROU
 blog_install.features_merge('BLOG_FEATURE_SITEMAP',1,1520,'BLOG_FEATURE_GROUP_MISC',null,null,null);
 blog_install.features_merge('BLOG_FEATURE_ATOM',1,1530,'BLOG_FEATURE_GROUP_MISC',null,null,null);
 -- Inserting into BLOG_SETTINGS
-blog_install.settings_merge('G_APP_VERSION',10,0,'STRING','INTERNAL',null,null,null,null,'Release 26.1.5.20261003');
+blog_install.settings_merge('G_APP_VERSION',10,0,'STRING','INTERNAL',null,null,null,null,'Release 26.1.5.20261101');
 blog_install.settings_merge('G_PUB_APP_ID',20,0,'STRING','INTERNAL',null,null,null,null,blog_util.int_to_vc2(apex_application_install.get_application_id));
 blog_install.settings_merge('G_OCI_OS_PROXY_URL',40,1,'URL','INTERNAL',null,null,null,null,null);
 blog_install.settings_merge('G_OCI_OS_NAMESPACE',50,1,'STRING','INTERNAL',null,null,null,null,null);

@@ -43,7 +43,7 @@ page 20013 (
         name: Information
         type: staticContent
         source {
-            htmlCode: "&{BLOG_MSG_OBJECT_STORAGE_INFO!RAW}."
+            htmlCode: "&{BLOG_MSG_OBJECT_STORAGE_INFO}!RAW."
         }
         layout {
             sequence: 20

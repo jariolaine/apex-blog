@@ -39,7 +39,7 @@ page 20014 (
         name: Information
         type: staticContent
         source {
-            htmlCode: "&{BLOG_MSG_FILE_SYNC_INFO!RAW}."
+            htmlCode: "&{BLOG_MSG_FILE_SYNC_INFO}!RAW."
         }
         layout {
             sequence: 10
