@@ -95,7 +95,12 @@ Only use this path when explicitly requested. Follow `automation/HOTFIX.md`:
 
 - `make hotfix-export`: export both current QA/UAT applications to `build/hotfix/f<ID>.sql` (overwrites any prior hotfix candidate).
 - `make hotfix-production`: import those two saved SQL files into PROD, Admin first. Request explicit human approval before running.
-- This path deliberately skips DEV/TEST, APEXLang export, checksum validation, and normal release gates. Supporting Objects are exported but **not executed** on import.
+- This path deliberately skips DEV/TEST, APEXLang export, checksum validation,
+  and normal release gates. Supporting Objects are **installed by default** in
+  both PROD imports; review possible schema/data changes. To skip their
+  automatic installation, use
+  `make hotfix-production INSTALL_SUPPORTING_OBJECTS=NO` (direct script:
+  `production --skip-supporting-objects`).
 - Do not commit generated `build/hotfix/` files. Developers must carry fixes back into the usual development and source-control process separately.
 
 ## Finish every task

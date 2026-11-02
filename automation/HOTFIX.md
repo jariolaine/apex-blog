@@ -11,7 +11,10 @@ Run from the repository root:
 
 ```bash
 make hotfix-export       # QA/UAT -> build/hotfix/f102.sql and f101.sql
-make hotfix-production   # Those two files -> production
+make hotfix-production   # Import both apps + Supporting Objects (default)
+
+# Only replace the applications; do not run Supporting Objects scripts:
+make hotfix-production INSTALL_SUPPORTING_OBJECTS=NO
 ```
 
 Application IDs are taken from `uatAppIds` and `prdAppIds` in
@@ -23,13 +26,23 @@ These are **normal, single-file SQL exports**, not APEXLang exports and not
 packaged releases. The production step imports exactly the saved SQL files;
 it does not export again or contact DEV or TEST.
 
-The export includes Supporting Objects **definitions** but import explicitly
-sets `APEX_APPLICATION_INSTALL.SET_AUTO_INSTALL_SUP_OBJ(FALSE)`, so their
-installation/upgrade scripts are **not executed**. No schema migration or data
-migration is performed by this workflow.
+Exports always include Supporting Objects. By default, production import sets
+`APEX_APPLICATION_INSTALL.SET_AUTO_INSTALL_SUP_OBJ(TRUE)` for **both** apps.
+The exported Supporting Objects installation/upgrade scripts can modify the
+production schema and data. **Review those scripts and confirm they are safe to
+run on production before importing.** This hotfix path does not check schema
+migration compatibility.
+
+Set `INSTALL_SUPPORTING_OBJECTS=NO` on `make hotfix-production` to set
+`SET_AUTO_INSTALL_SUP_OBJ(FALSE)` for **both** imports. The SQL exports still
+include Supporting Objects, but their automatic installation/upgrade scripts
+are skipped. Direct script invocation supports
+`automation/hotfix.sh production --skip-supporting-objects`.
 
 No release validation, version check, checksum check, backup, or confirmation
-is performed. This command **overwrites the production application definitions**.
+is performed. This command **overwrites the production application definitions**
+and, by default, may change database objects or data through Supporting Objects.
+Explicitly obtain production approval and verify the saved SQLcl connection.
 A new `make hotfix-export` replaces `build/hotfix/` with a new pair of exports.
 SQLcl operation failures still stop the command; if the second production import
 fails, the first application may already have been replaced.

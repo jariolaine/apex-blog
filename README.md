@@ -66,32 +66,15 @@ objects.
 4. Import and install *blog-public-pages-latest.sql* and select upgrade
    supporting objects.
 
-## License
-
-This code is released under [MIT license](LICENSE.txt) by Jari Laine.
-
 ## Development and automation
 
 The repository keeps application source as APEXLang in `applications/` and
 packages releases as full SQL exports with Supporting Objects. Contributors
 and coding agents should read [AGENT.md](AGENT.md).
 
-For local development, run:
-
-```bash
-make doctor         # Check local prerequisites (no database access)
-make setup          # Install local tooling and Git hook (no database access)
-make check          # Lint, schema/source, full mocked tests, APEXLang validation
-make check-schema   # Verify manifests, metadata and deinstall SQL offline
-make supporting     # Update tracked Supporting Objects from Git (offline)
-```
-
-`make supporting` modifies tracked SQL; review the diff before committing.
-`make test-install`, `make test-upgrade` and `make test-deinstall` **reset the
-disposable TEST schema** and require an approved TEST target.
-
 Read the **[automation guide](automation/README.md)** for setup,
 configuration, Make targets, schema manifests, CI and troubleshooting.
-Normal releases use [versioned release candidates](automation/RELEASE_CANDIDATES.md);
-emergency QA/UAT-to-production application changes use the separate
-[hotfix procedure](automation/HOTFIX.md).
+
+## License
+
+This code is released under [MIT license](LICENSE.txt) by Jari Laine.

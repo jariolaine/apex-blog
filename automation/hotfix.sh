@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Simple application-only hotfix: export BOTH QA/UAT apps, then import BOTH to PROD.
+# QA/UAT -> PROD hotfix: both apps, including Supporting Objects by default.
 # Deliberately separate from DEV/TEST, APEXLang and release packaging.
 set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
@@ -7,6 +7,7 @@ source "$SCRIPT_DIR/lib/common.sh"
 
 case "${1:-}" in
     export)
+        (( $# == 1 )) || die "Usage: hotfix.sh export"
         mkdir -p -- "$buildDir"
         staging="$(mktemp -d "$buildDir/.hotfix.XXXXXXXX")"
         trap 'rm -rf -- "$staging"' EXIT
@@ -26,9 +27,18 @@ case "${1:-}" in
         log "Both QA/UAT application exports are in $buildDir/hotfix"
         ;;
     production)
+        # By default run the exported Supporting Objects install/upgrade scripts.
+        # The only opt-out is explicit, and is valid only for production import.
+        install_supporting_objects=true
+        if (( $# != 1 )); then
+            (( $# == 2 )) && [[ "$2" == '--skip-supporting-objects' ]] \
+                || die 'Usage: hotfix.sh production [--skip-supporting-objects]'
+            install_supporting_objects=false
+        fi
         for id in "${uatAppIds[@]}"; do
             require_file "$buildDir/hotfix/f${id}.sql"
         done
+        log "Production hotfix: automatic Supporting Objects installation = $install_supporting_objects"
         for i in "${!uatAppIds[@]}"; do
             file="$buildDir/hotfix/f${uatAppIds[$i]}.sql"
             require_file "$file"
@@ -38,7 +48,7 @@ begin
   apex_application_install.set_schema('$prdDbSchema');
   apex_application_install.set_application_id(${prdAppIds[$i]});
   apex_application_install.generate_offset;
-  apex_application_install.set_auto_install_sup_obj(true);
+  apex_application_install.set_auto_install_sup_obj($install_supporting_objects);
 end;
 /
 @$(sqlcl_arg "$file")
@@ -51,7 +61,7 @@ SQL
         log 'Both QA/UAT applications imported into production'
         ;;
     *)
-        printf 'Usage: %s export|production\n' "$0" >&2
+        printf 'Usage: %s export\n       %s production [--skip-supporting-objects]\n' "$0" "$0" >&2
         exit 2
         ;;
 esac

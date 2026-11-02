@@ -107,7 +107,7 @@ Use `make verify-release` alone when verifying an older candidate.
 | `make test-deinstall` | Runs `test-install` first, then removes both TEST apps and all user objects. |
 | `make qa` | Deploys the selected candidate to QA after mandatory preflight. |
 | `make production CONFIRM=YES` | Promotes the candidate to production; requires approval. |
-| `make hotfix-export` / `make hotfix-production` | Separate emergency path; see [HOTFIX.md](HOTFIX.md). |
+| `make hotfix-export` / `make hotfix-production` | Emergency QA/UAT-to-PROD path; installs Supporting Objects by default. Use `INSTALL_SUPPORTING_OBJECTS=NO` to skip their automatic installation. See [HOTFIX.md](HOTFIX.md). |
 
 Database targets must only be run against verified saved SQLcl connections and
 approved environments. TEST reset/deinstall targets are **destructive** and

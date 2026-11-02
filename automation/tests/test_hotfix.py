@@ -16,6 +16,7 @@ class HotfixTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name) / 'repo'
         (self.root / 'automation/lib').mkdir(parents=True)
+        shutil.copy2(SOURCE / 'Makefile', self.root / 'Makefile')
         for name in ('variables.sh', 'hotfix.sh'):
             shutil.copy2(SOURCE / 'automation' / name, self.root / 'automation' / name)
         shutil.copy2(SOURCE / 'automation/lib/common.sh', self.root / 'automation/lib/common.sh')
@@ -29,10 +30,11 @@ class HotfixTests(unittest.TestCase):
                         APEX_BLOG_UAT_CONNECTION='QA_HOTFIX_TEST',
                         APEX_BLOG_PRD_CONNECTION='PRODUCTION_HOTFIX_TEST')
 
-    def run_hotfix(self, action, ok=True):
+    def run_hotfix(self, action, *options, ok=True):
         result = subprocess.run(
-            ['bash', str(self.root / 'automation/hotfix.sh'), action],
+            ['bash', str(self.root / 'automation/hotfix.sh'), action, *options],
             env=self.env, cwd=self.root, text=True, capture_output=True,
+            timeout=30,
         )
         if ok:
             self.assertEqual(result.returncode, 0, result.stderr)
@@ -75,6 +77,59 @@ class HotfixTests(unittest.TestCase):
             self.assertNotIn('APEX_BLOG_ENV_OK', call['sql'])
             self.assertNotIn('apex export', call['sql'])
             self.assertNotIn('BUILD_API', call['sql'])
+
+    def test_skip_supporting_objects_imports_both_applications(self):
+        self.run_hotfix('export')
+        self.run_hotfix('production', '--skip-supporting-objects')
+        imports = self.calls()[2:]
+        self.assertEqual(len(imports), 2)
+        for call, app_id in zip(imports, (102, 101)):
+            self.assertIn('set_auto_install_sup_obj(false)', call['sql'])
+            self.assertNotIn('set_auto_install_sup_obj(true)', call['sql'])
+            self.assertIn(f'set_application_id({app_id})', call['sql'])
+        # The opt-out affects only import; exports always contain definitions.
+        for call in self.calls()[:2]:
+            self.assertIn('-expsupportingobjects Y', call['sql'])
+
+    def test_invalid_options_fail_before_sqlcl(self):
+        for options in (
+            ('export', '--skip-supporting-objects'),
+            ('production', '--unknown'),
+            ('production', '--skip-supporting-objects', '--unknown'),
+        ):
+            result = self.run_hotfix(*options, ok=False)
+            self.assertIn('Usage:', result.stderr)
+        self.assertFalse(self.calls_file.exists())
+
+    def test_make_hotfix_supporting_objects_option(self):
+        self.run_hotfix('export')
+        default = subprocess.run(
+            ['make', '--no-print-directory', 'hotfix-production'],
+            env=self.env, cwd=self.root, text=True, capture_output=True,
+            timeout=30,
+        )
+        self.assertEqual(default.returncode, 0, default.stderr)
+        for call in self.calls()[2:4]:
+            self.assertIn('set_auto_install_sup_obj(true)', call['sql'])
+        result = subprocess.run(
+            ['make', '--no-print-directory', 'hotfix-production',
+             'INSTALL_SUPPORTING_OBJECTS=NO'],
+            env=self.env, cwd=self.root, text=True, capture_output=True,
+            timeout=30,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for call in self.calls()[4:]:
+            self.assertIn('set_auto_install_sup_obj(false)', call['sql'])
+        previous_calls = len(self.calls())
+        invalid = subprocess.run(
+            ['make', '--no-print-directory', 'hotfix-production',
+             'INSTALL_SUPPORTING_OBJECTS=MAYBE'],
+            env=self.env, cwd=self.root, text=True, capture_output=True,
+            timeout=30,
+        )
+        self.assertNotEqual(invalid.returncode, 0)
+        self.assertIn('must be YES or NO', invalid.stderr)
+        self.assertEqual(len(self.calls()), previous_calls)
 
     def test_import_uses_production_application_ids(self):
         self.run_hotfix('export')
