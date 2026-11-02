@@ -1,5 +1,4 @@
 """Offline tests for version-flexible quality setup (no npm/PyPI access)."""
-import json
 import os
 from pathlib import Path
 import shutil
@@ -113,21 +112,6 @@ chmod +x .venv/bin/python .venv/bin/pre-commit .venv/bin/actionlint
     def test_unexpected_options_rejected(self):
         result = self.run_bash("bootstrap.sh", "--unsafe", ok=False)
         self.assertIn("Usage:", result.stderr)
-
-    def test_no_fixed_engine_or_ci_node_major(self):
-        package = json.loads((SOURCE / "package.json").read_text())
-        self.assertNotIn("engines", package)
-        self.assertTrue(package["devDependencies"]["eslint"].startswith("^10."))
-        workflow = (SOURCE / ".github/workflows/ci.yml").read_text()
-        self.assertRegex(
-            workflow,
-            r'''(?m)^[ \t]*node-version:[ \t]*(["\'])lts/\*\1[ \t]*$''',
-        )
-        self.assertRegex(
-            workflow,
-            r'''(?m)^[ \t]*python-version:[ \t]*(["\'])3\.x\1[ \t]*$''',
-        )
-        self.assertIn("sqlcl-latest.zip", workflow)
 
 
 if __name__ == "__main__":

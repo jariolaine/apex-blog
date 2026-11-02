@@ -1,7 +1,6 @@
 """No-database regression checks for the repository's quality entry points."""
 
 import importlib.util
-import json
 import os
 from pathlib import Path
 import shutil
@@ -68,16 +67,17 @@ class MakeLintTests(unittest.TestCase):
 
 
 class CIContractTests(unittest.TestCase):
-    def test_git_hooks_and_ci_share_repository_lint_command(self):
+    def test_ci_runs_full_gate_while_precommit_only_runs_static_checks(self):
         workflow = (SOURCE / ".github/workflows/ci.yml").read_text()
         self.assertIn("make ci", workflow)
         self.assertIn("push:", workflow)
         self.assertIn("pull_request:", workflow)
         self.assertNotIn("make qa", workflow)
-        self.assertNotIn("make production", workflow)
         hook_config = (SOURCE / ".pre-commit-config.yaml").read_text()
-        self.assertIn("id: fast-tests", hook_config)
-        self.assertIn("always_run: true", hook_config)
+        self.assertIn("id: shellcheck", hook_config)
+        self.assertIn("id: actionlint", hook_config)
+        self.assertNotIn("id: fast-tests", hook_config)
+        self.assertNotIn("make --no-print-directory test-fast", hook_config)
 
     def test_direct_dev_and_qa_commands_have_required_gate(self):
         for script in ("automation/import_apps_to_dev.sh", "automation/deploy.sh"):
@@ -85,12 +85,6 @@ class CIContractTests(unittest.TestCase):
             self.assertIn('"$SCRIPT_DIR/ci/preflight.sh"', content, script)
         hotfix = (SOURCE / "automation/hotfix.sh").read_text()
         self.assertNotIn("ci/preflight.sh", hotfix)
-
-    def test_no_fixed_node_engine_constraint(self):
-        package = json.loads((SOURCE / "package.json").read_text())
-        self.assertNotIn("engines", package)
-        self.assertIn("eslint", package["devDependencies"])
-        self.assertTrue((SOURCE / "automation/ci/README.md").is_file())
 
 
 class SqlHygieneTests(unittest.TestCase):

@@ -81,7 +81,7 @@ For local development, run:
 ```bash
 make doctor         # Check local prerequisites (no database access)
 make setup          # Install local tooling and Git hook (no database access)
-make check          # Lint, full mocked tests and SQLcl APEXLang validation
+make check          # Lint, schema/source, full mocked tests, APEXLang validation
 make check-schema   # Verify manifests, metadata and deinstall SQL offline
 make supporting     # Update tracked Supporting Objects from Git (offline)
 ```

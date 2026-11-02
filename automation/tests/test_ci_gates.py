@@ -36,11 +36,12 @@ class CIGateTests(unittest.TestCase):
             cwd=self.root, env=self.env, capture_output=True, text=True,
         )
 
-    def test_runs_lint_full_tests_and_apexlang_validation(self):
+    def test_runs_static_checks_full_tests_once_and_apexlang_validation(self):
         result = self.run_gate()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.log.read_text().splitlines(), [
-            "--no-print-directory lint", "--no-print-directory test",
+            "--no-print-directory lint", "--no-print-directory check-schema",
+            "--no-print-directory check-source", "--no-print-directory test",
             "--no-print-directory validate",
         ])
 
@@ -50,12 +51,30 @@ class CIGateTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(self.log.read_text().splitlines(), ["--no-print-directory lint"])
 
+    def test_failed_schema_check_stops_before_source_tests_or_validation(self):
+        self.env["MOCK_FAIL_STAGE"] = "check-schema"
+        result = self.run_gate()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.log.read_text().splitlines(), [
+            "--no-print-directory lint", "--no-print-directory check-schema",
+        ])
+
+    def test_failed_source_check_stops_before_tests_or_validation(self):
+        self.env["MOCK_FAIL_STAGE"] = "check-source"
+        result = self.run_gate()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.log.read_text().splitlines(), [
+            "--no-print-directory lint", "--no-print-directory check-schema",
+            "--no-print-directory check-source",
+        ])
+
     def test_failed_tests_stop_before_apexlang_validation(self):
         self.env["MOCK_FAIL_STAGE"] = "test"
         result = self.run_gate()
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(self.log.read_text().splitlines(), [
-            "--no-print-directory lint", "--no-print-directory test",
+            "--no-print-directory lint", "--no-print-directory check-schema",
+            "--no-print-directory check-source", "--no-print-directory test",
         ])
 
 

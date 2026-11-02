@@ -10,9 +10,7 @@ sqlScriptDir="$repoHome/automation/sql"
 scriptSourceDir="$repoHome/Database"
 apexSourceDir="$repoHome/applications"       # APEXlang, not split SQL
 buildDir="$repoHome/build"
-stackDir="$repoHome/Stack"
-stackSrc="$stackDir/terraform"
-tempDir="${TMPDIR:-/tmp}"
+stackSrc="$repoHome/Stack/terraform"
 
 # These are saved SQLcl connection names, not passwords or connect strings.
 devDbConnName="${APEX_BLOG_DEV_CONNECTION:-blog_dev}"

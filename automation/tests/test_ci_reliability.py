@@ -23,7 +23,6 @@ class CiReliabilityTests(unittest.TestCase):
         self.assertRegex(workflow, r"(?m)^\s*cache: pip$")
         self.assertIn("cache-dependency-path: package-lock.json", workflow)
         self.assertIn("cache-dependency-path: automation/ci/requirements.txt", workflow)
-        self.assertIn("make ci", workflow)
         self.assertNotIn("make production", workflow)
         self.assertNotIn("make hotfix-production", workflow)
 

@@ -77,10 +77,10 @@ Review advisories with `npm audit` or `npm run audit:tools`; do not run
 | `make setup` | Install local tooling and Git hook; no DEV database change. |
 | `make setup-ci` | Underlying local bootstrap, equivalent setup for CI tools. |
 | `make lint` | Run all configured pre-commit linters on tracked files. |
-| `make test-fast` | Run the small regression selection used by hooks. |
+| `make test-fast` | Run quick regression tests explicitly; not a pre-commit hook. |
 | `make test` | Run the complete mocked automation test suite. |
 | `make validate` | Validate APEXLang with SQLcl; no database login. |
-| `make check` | Run mandatory `preflight`: lint, full tests, validation. |
+| `make check` | Run mandatory `preflight`: lint, schema/source, full tests, APEXLang validation. |
 | `make check-source` | WIP-safe local source/reference checks. |
 | `make check-schema` | Validate schema manifests, metadata and deinstall SQL offline. |
 | `make check-release` | Strict source-version and Supporting Objects checks. |
@@ -118,13 +118,16 @@ selects an existing release candidate for the install/test/promotion commands.
 
 ## Quality gates and lint scope
 
-Local commits, GitHub Actions, normal DEV synchronization and QA promotion
-share the same lint, full regression tests and APEXLang validation via
-`automation/ci/preflight.sh`. `make check` and `make ci` run that gate.
-Normal `make sync-dev` and `make qa` also enforce preflight **inside their
-scripts**, so direct script invocations cannot bypass it. Failures stop before
-a database connection. The independent emergency hotfix path intentionally
-does not run these normal gates.
+Pre-commit hooks run **static lint and formatting checks only**; they do not
+run Python regression tests. Use `make test-fast` explicitly while developing.
+GitHub Actions, `make check` and `make ci` run the complete
+`automation/ci/preflight.sh` gate, in order: lint, offline `check-schema`,
+WIP-safe `check-source`, the full regression suite **once**, and SQLcl APEXLang
+validation. This avoids running the fast tests both in pre-commit and again as
+part of the full suite. Normal `make sync-dev` and `make qa` enforce this gate
+**inside their scripts**, so direct invocations cannot bypass it; failures
+stop before a database connection. The emergency hotfix path intentionally
+does not run the normal gate.
 
 - ESLint and `node --check`: hand-maintained JavaScript (excluding `.min.js`).
 - Stylelint: LESS and nonminified CSS; generated CSS is not rewritten.
@@ -141,8 +144,40 @@ does not run these normal gates.
 - Pre-commit checks for merge conflicts, oversized files, JSON/YAML syntax
   and accidentally committed private keys.
 
-Mock tests cannot substitute for actual TEST fresh-install, upgrade and
-deinstallation tests against Oracle.
+### Automation regression test layout
+
+The tests in `automation/tests/` have separate purposes:
+
+- `test_source_workflows.py` runs real source/sync and Supporting Objects
+  scripts against a private fixture.
+- `test_release_workflows.py` checks real build, candidate publication,
+  checksums and rollback behavior.
+- `test_deploy_workflows.py` checks QA and production safety boundaries using
+  verified, locally created release candidates; it does not re-export DEV.
+- `test_test_database_workflows.py` checks TEST installation, upgrade and
+  deinstallation **orchestration**, not database-side PL/SQL execution.
+- `test_previous_release_archive.py`, the schema/metadata modules, and the
+  CI modules cover focused parsers, source consistency and gate policies.
+
+Workflow tests run actual Bash scripts and Make targets in isolated temporary
+repositories with a deterministic stand-in for SQLcl. The SQLcl stand-in
+records commands and simulates database responses; it **cannot** prove that
+SQL, APEX or PL/SQL executes correctly on Oracle. The shared fixture lives in
+`automation/tests/workflow_fixture.py`, has bounded subprocess runtimes, and
+uses locally generated checksum-valid candidates for deployment and TEST
+orchestration checks rather than requiring unnecessary DEV exports.
+
+Run a specific group while changing that workflow, for example:
+
+```bash
+python3 -m unittest discover -s automation/tests -p 'test_release_workflows.py' -v
+```
+
+`make test` runs every offline group, and `make check` adds lint, source checks
+and APEXLang validation. **Release acceptance still requires** `make
+test-install`, `make test-upgrade` and `make test-deinstall` against an approved,
+disposable TEST schema; those commands reset/remove real database objects and
+must never be run as ordinary unit tests or with production credentials.
 
 ## GitHub Actions and branch protection
 

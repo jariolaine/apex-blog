@@ -1,4 +1,5 @@
 # Run locally with `make setup-ci` and in CI with `make lint`.
+# Pre-commit runs static checks only. `make check` runs full regression tests once.
 # Hooks report failures; none rewrites version-controlled source files.
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -73,10 +74,3 @@ repos:
         language: system
         pass_filenames: false
         files: ^Stack/terraform/.*\.tf$
-      - id: fast-tests
-        name: Fast automation regression tests
-        entry: make --no-print-directory test-fast
-        language: system
-        pass_filenames: false
-        always_run: true
-        files: ^(automation/(ci/|tests/|lib/|schema/|.*\.sh)|Database/|Makefile)$

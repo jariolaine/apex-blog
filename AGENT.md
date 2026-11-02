@@ -70,8 +70,9 @@ Check the saved SQLcl connection and target schema before any approved database 
   Do not require a fixed Node.js major version or global `pre-commit`.
 - Use `make lint` for all linters, `make test` for full automation regression
   tests, and `make preflight` for both plus SQLcl APEXLang validation.
-- Pre-commit hooks and GitHub Actions run matching checks. Do not change code
-  or suppress failures merely to make a test pass.
+- Pre-commit hooks run static lint only. GitHub Actions and `make preflight`
+  additionally run offline schema/source checks, full mocked tests (once) and
+  APEXLang validation. Do not suppress failures merely to make a test pass.
 - `make sync-dev` and `make qa` **always** run mandatory preflight inside the
   underlying Bash scripts, including direct invocations. A failed check must
   stop before connecting to DEV/QA. No bypass flag is available.

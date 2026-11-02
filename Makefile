@@ -12,9 +12,9 @@ help:
 	  'Quality checks:' \
 	  '  make lint                          Run repository linters (pre-commit)' \
 	  '  make test                          Run all Python regression tests' \
-	  '  make test-fast                     Run a small selection of regression tests' \
+	  '  make test-fast                     Run quick regression tests on demand' \
 	  '  make validate                      Validate APEXLang with SQLcl (no database)' \
-	  '  make check                         Alias for make preflight (lint + test + validate)' \
+	  '  make check                         Lint + schema/source + full tests + APEXLang' \
 	  '  make check-source                  Check local APEXLang references and DEV app IDs' \
 	  '  make check-schema                  Validate manifests, metadata and deinstall SQL (offline)' \
 	  '' \
